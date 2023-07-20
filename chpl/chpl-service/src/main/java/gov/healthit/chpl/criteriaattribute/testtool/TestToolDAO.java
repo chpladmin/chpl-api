@@ -223,7 +223,7 @@ public class TestToolDAO extends BaseDAOImpl implements CriteriaAttributeDAO {
                 entityManager.createQuery("SELECT cr "
                         + "FROM CertificationResultTestToolEntity crt, CertificationResultEntity cr "
                         + "WHERE crt.certificationResultId = cr.id "
-                        + "AND crt.testToolId = :testToolId "
+                        + "AND crt.testTool.id = :testToolId "
                         + "AND cr.certificationCriterionId= :criterionId "
                         + "AND crt.deleted <> true "
                         + "AND cr.deleted <> true ",
