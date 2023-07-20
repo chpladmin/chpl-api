@@ -12,6 +12,8 @@ import gov.healthit.chpl.criteriaattribute.CriteriaAttributeSaveContext;
 import gov.healthit.chpl.criteriaattribute.CriteriaAttributeService;
 import gov.healthit.chpl.criteriaattribute.CriteriaAttributeValidationContext;
 import gov.healthit.chpl.criteriaattribute.CriteriaAttributeValidator;
+import gov.healthit.chpl.dao.CertificationCriterionAttributeDAO;
+import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.sharedstore.listing.ListingStoreRemove;
@@ -24,15 +26,18 @@ public class TestToolManager {
     private CriteriaAttributeValidator criteriaAttributeValidator;
     private CriteriaAttributeService criteriaAttributeService;
     private TestToolDAO testToolDAO;
+    private CertificationCriterionAttributeDAO certificationCriterionAttributeDAO;
     private ErrorMessageUtil errorMessageUtil;
 
     @Autowired
     public TestToolManager(TestToolDAO testToolDAO, CriteriaAttributeValidator criteriaAttributeValidator,
-            CriteriaAttributeService criteriaAttributeService, ErrorMessageUtil errorMessageUtil) {
+            CriteriaAttributeService criteriaAttributeService, CertificationCriterionAttributeDAO certificationCriterionAttributeDAO,
+            ErrorMessageUtil errorMessageUtil) {
 
         this.testToolDAO = testToolDAO;
         this.criteriaAttributeValidator = criteriaAttributeValidator;
         this.criteriaAttributeService = criteriaAttributeService;
+        this.certificationCriterionAttributeDAO = certificationCriterionAttributeDAO;
         this.errorMessageUtil = errorMessageUtil;
     }
 
@@ -40,6 +45,12 @@ public class TestToolManager {
     public List<TestTool> getAll() {
         return testToolDAO.getAll();
     }
+
+    @Transactional
+    public List<CertificationCriterion> getCertificationCriteriaForTestTools() {
+        return certificationCriterionAttributeDAO.getCriteriaForSvap();
+    }
+
 
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).TEST_TOOL, "
             + "T(gov.healthit.chpl.permissions.domains.TestToolDomainPermissions).UPDATE)")

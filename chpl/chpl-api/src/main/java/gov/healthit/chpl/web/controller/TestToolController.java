@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import gov.healthit.chpl.criteriaattribute.testtool.TestTool;
 import gov.healthit.chpl.criteriaattribute.testtool.TestToolManager;
+import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
@@ -40,6 +41,16 @@ public class TestToolController {
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<TestTool> getAllTestTools() {
         return testToolManager.getAll();
+    }
+
+    @Operation(summary = "Get all criteria that Test Tools can be associated with.",
+            description = "Returns all of the Criteria that a Test Tool can be associated to.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
+    @RequestMapping(value = "/criteria", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public @ResponseBody List<CertificationCriterion> getCertificationCriteriaForSvap() {
+        return testToolManager.getCertificationCriteriaForTestTools();
     }
 
     @Operation(summary = "Create a Test Tool.",
