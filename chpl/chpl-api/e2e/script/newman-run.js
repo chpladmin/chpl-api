@@ -278,6 +278,16 @@ const testToolsControllerTests = {
   },
 };
 
+const rulesControllerTests = {
+  ...commonOptions,
+  collection: collection_path + '/rules-controller.postman_collection.json',
+  reporter: {
+    junit: {
+      export: reports_path + '/rules-controller-tests.xml',
+    },
+  },
+};
+
 const jobs = [
   cb => newman.run(acbControllerTests,cb),
   cb => newman.run(accessibilityStandardsControllerTests,cb),
@@ -303,6 +313,7 @@ const jobs = [
   cb => newman.run(changerequestsControllerTests,cb),
   cb => newman.run(qmsStandardsControllerTests,cb),
   cb => newman.run(ucdProcessesControllerTests,cb),
+  cb => newman.run(rulesControllerTests,cb),
   cb => newman.run(searchComplaintsControllerTests,cb),
   cb => newman.run(testToolsControllerTests,cb),
   ];
