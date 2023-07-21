@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import javax.persistence.Query;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -78,7 +79,7 @@ public class TestToolDAO extends BaseDAOImpl implements CriteriaAttributeDAO {
 
     public TestTool getByName(String name) {
         List<TestToolEntity> entities = getEntitiesByName(name);
-        if (entities == null || entities.size() > 0) {
+        if (CollectionUtils.isEmpty(entities)) {
             return null;
         }
         return entities.get(0).toDomain();
