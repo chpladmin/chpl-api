@@ -397,7 +397,7 @@ public class CriteriAttributeValidatorTest {
 
         ValidationException e = assertThrows(ValidationException.class, () -> criteriaAttributeValidator.validateForEdit(context));
         assertNotNull(e);
-        assertTrue(e.getErrorMessages().contains("criteriaAttribute.edit.deletedCriteria.listingsExist chpl_prod_nbr"));
+        assertTrue(e.getErrorMessages().contains("criteriaAttribute.edit.deletedCriteria.listingsExist: chpl_prod_nbr"));
     }
 
     @Test
@@ -498,7 +498,7 @@ public class CriteriAttributeValidatorTest {
 
         ValidationException e = assertThrows(ValidationException.class, () -> criteriaAttributeValidator.validateForDelete(context));
         assertNotNull(e);
-        assertTrue(e.getErrorMessages().contains("criteriaAttribute.delete.listingsExist chpl_prod_nbr"));
+        assertTrue(e.getErrorMessages().contains("criteriaAttribute.delete.listingsExist: chpl_prod_nbr"));
     }
 
     private CriteriaAttribute getStandardCriteriaAttrbute() {
