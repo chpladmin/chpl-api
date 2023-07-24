@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
+import gov.healthit.chpl.email.footer.PublicFooter;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.scheduler.job.developer.attestation.email.DeveloperEmail;
 import gov.healthit.chpl.scheduler.job.developer.attestation.email.DeveloperEmailGenerator;
@@ -77,7 +78,7 @@ public class MissingAttestationChangeRequestDeveloperEmailGenerator implements D
                 .paragraph("", String.format(emailParagraph2, getUsersAsString(developerUsers)))
                 .paragraph("", emailParagraph3)
                 .paragraph("", emailClosing)
-                .footer(true)
+                .footer(PublicFooter.class)
                 .build();
     }
 

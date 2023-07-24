@@ -1,6 +1,5 @@
 package gov.healthit.chpl.web.controller;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -12,7 +11,6 @@ import org.ff4j.FF4j;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,7 +24,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.certificationId.Validator;
 import gov.healthit.chpl.certificationId.ValidatorFactory;
-import gov.healthit.chpl.domain.SimpleCertificationId;
 import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
 import gov.healthit.chpl.dto.CQMMetDTO;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
@@ -39,9 +36,7 @@ import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.CertificationIdManager;
 import gov.healthit.chpl.manager.CertifiedProductManager;
-import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
-import gov.healthit.chpl.web.controller.annotation.DeprecatedApi;
 import gov.healthit.chpl.web.controller.results.CertificationIdLookupResults;
 import gov.healthit.chpl.web.controller.results.CertificationIdResults;
 import gov.healthit.chpl.web.controller.results.CertificationIdVerifyResults;
@@ -58,44 +53,17 @@ public class CertificationIdController {
 
     private CertifiedProductManager certifiedProductManager;
     private CertificationIdManager certificationIdManager;
-    private ResourcePermissions resourcePermissions;
     private ValidatorFactory validatorFactory;
     private FF4j ff4j;
 
     @Autowired
     public CertificationIdController(CertifiedProductManager certifiedProductManager,
             CertificationIdManager certificationIdManager, ValidatorFactory validatorFactory,
-            ResourcePermissions resourcePermissions, FF4j ff4j) {
+            FF4j ff4j) {
         this.certifiedProductManager = certifiedProductManager;
         this.certificationIdManager = certificationIdManager;
-        this.resourcePermissions = resourcePermissions;
         this.validatorFactory = validatorFactory;
         this.ff4j = ff4j;
-    }
-
-    @Deprecated
-    @DeprecatedApi(friendlyUrl = "/certification_ids",
-        removalDate = "2023-03-15",
-        message = "This endpoint is deprecated and will be removed in a future release. Please use /certification_ids/report-request to receive all certification IDs in an emailed report.")
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC', 'ROLE_CMS_STAFF')")
-    @Operation(summary = "Retrieves a list of all CMS EHR Certification IDs along with the date they were created.",
-            description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_CMS_STAFF",
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
-            })
-    @RequestMapping(value = "", method = RequestMethod.GET, produces = {
-            MediaType.APPLICATION_JSON_VALUE
-    })
-    public List<SimpleCertificationId> getAll() throws IOException {
-        List<SimpleCertificationId> results = null;
-        if (resourcePermissions.isUserRoleAdmin() || resourcePermissions.isUserRoleOnc()) {
-            results = certificationIdManager.getAllWithProducts();
-        } else {
-            results = certificationIdManager.getAll();
-        }
-
-        return results;
     }
 
     @Operation(summary = "Generate the CMS EHR Certification ID Report and email the results to the logged-in user.",

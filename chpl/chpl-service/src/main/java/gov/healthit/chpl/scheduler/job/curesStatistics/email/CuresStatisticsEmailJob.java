@@ -14,6 +14,7 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
+import gov.healthit.chpl.email.footer.AdminFooter;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.scheduler.job.QuartzJob;
 import gov.healthit.chpl.scheduler.job.curesStatistics.email.spreadsheet.CuresChartsOverTimeSpreadheet;
@@ -75,7 +76,7 @@ public class CuresStatisticsEmailJob  extends QuartzJob {
         return chplHtmlEmailBuilder.initialize()
                 .heading("Cures Upgrade Statistics")
                 .paragraph("", env.getProperty("curesStatisticsReport.listingCuresStatusStatistics.body"))
-                .footer(true)
+                .footer(AdminFooter.class)
                 .build();
     }
 }

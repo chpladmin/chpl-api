@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
+import gov.healthit.chpl.email.footer.PublicFooter;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.subscription.domain.Subscriber;
 import lombok.extern.log4j.Log4j2;
@@ -21,29 +22,25 @@ public class SubscriberMessagingService {
 
     private String pendingSubscriberSubject;
     private String pendingSubscriberBody1;
-    private String pendingSubscriberBody2;
 
     @Autowired
     public SubscriberMessagingService(ChplEmailFactory chplEmailFactory,
             ChplHtmlEmailBuilder emailBuilder,
             @Value("${subscriber.confirmMessage.subject}") String pendingSubscriberSubject,
             @Value("${subscriber.confirmMessage.paragraph1}") String pendingSubscriberBody1,
-            @Value("${subscriber.confirmMessage.paragraph2}") String pendingSubscriberBody2,
             SubscriptionLookupUtil lookupUtil) {
         this.chplEmailFactory = chplEmailFactory;
         this.emailBuilder = emailBuilder;
         this.lookupUtil = lookupUtil;
         this.pendingSubscriberSubject = pendingSubscriberSubject;
         this.pendingSubscriberBody1 = pendingSubscriberBody1;
-        this.pendingSubscriberBody2 = pendingSubscriberBody2;
     }
 
     public void sendConfirmation(Subscriber subscriber) {
         String htmlMessage = emailBuilder.initialize()
                 .heading(pendingSubscriberSubject)
                 .paragraph(null, String.format(pendingSubscriberBody1, lookupUtil.getConfirmationUrl(subscriber)))
-                .paragraph(null, String.format(pendingSubscriberBody2, lookupUtil.getUnsubscribeUrl(subscriber)))
-                .footer(true)
+                .footer(PublicFooter.class)
                 .build();
 
         try {

@@ -19,11 +19,8 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.Where;
 
-import gov.healthit.chpl.domain.CertificationCriterion;
-import gov.healthit.chpl.domain.surveillance.RequirementGroupType;
 import gov.healthit.chpl.domain.surveillance.SurveillanceRequirement;
 import gov.healthit.chpl.service.CertificationCriterionService;
-import gov.healthit.chpl.util.NullSafeEvaluator;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -84,28 +81,6 @@ public class SurveillanceRequirementEntity {
                 .requirementTypeOther(this.requirementTypeOther)
                 .result(this.getSurveillanceResultTypeEntity() != null ? this.getSurveillanceResultTypeEntity().toDomain() : null)
                 .build();
-
-        if (NullSafeEvaluator.eval(() -> this.requirementType.getRequirementGroupType(), null) != null) {
-            req.setType(RequirementGroupType.builder()
-                    .id(this.requirementType.getRequirementGroupType().getId())
-                    .name(this.requirementType.getRequirementGroupType().getName())
-                    .build());
-
-            int intValue = this.getRequirementType().getRequirementGroupType().getId().intValue();
-            if (intValue == RequirementGroupType.CERTIFIED_CAPABILITY_ID) {
-                CertificationCriterion criterion = certificationCriterionService.get(req.getRequirementType().getId());
-                req.setCriterion(criterion);
-            } else if (intValue == RequirementGroupType.TRANS_DISCLOSURE_ID || intValue == RequirementGroupType.RWT_SUBMISSION_ID || intValue == RequirementGroupType.ATTESTATION_SUBMISSION_ID) {
-                req.setRequirement(req.getRequirementType().getTitle());
-            }
-        } else if (this.requirementTypeOther != null) {
-            req.setType(RequirementGroupType.builder()
-                    .id(RequirementGroupType.OTHER_ID)
-                    .name(RequirementGroupType.OTHER)
-                    .build());
-            req.setRequirement(req.getRequirementTypeOther());
-        }
-
         return req;
     }
 }

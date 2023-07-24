@@ -21,14 +21,11 @@ public class SurveillanceRequirementXmlGenerator extends XmlGenerator {
     public static void add(SurveillanceRequirement sr, String rootNodeName, XMLStreamWriter sw) throws XMLStreamException {
         if (sr != null) {
             sw.writeStartElement(rootNodeName);
-            CertificationCriterionXmlGenerator.add(sr.getCriterion(), "criterion", sw);
             createSimpleElement(sr.getId(), "id", sw);
             SurveillanceNonConformityXmlGenerator.add(sr.getNonconformities(), "nonconformities", sw);
-            createSimpleElement(sr.getRequirement(), "requirement", sw);
             RequirementTypeXmlGenerator.add(sr.getRequirementType(), "requirementType", sw);
             createSimpleElement(sr.getRequirementTypeOther(), "requirementTypeOther", sw);
             SurveillanceResultTypeXmlGenerator.add(sr.getResult(), "result", sw);
-            RequirementGroupTypeXmlGenerator.addRequirementGroupType(sr.getType(), "type", sw);
             sw.writeEndElement();
         }
     }

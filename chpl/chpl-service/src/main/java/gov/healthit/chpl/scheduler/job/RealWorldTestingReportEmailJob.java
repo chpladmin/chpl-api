@@ -24,6 +24,7 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
+import gov.healthit.chpl.email.footer.AdminFooter;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.SchedulerManager;
@@ -96,7 +97,7 @@ public class RealWorldTestingReportEmailJob implements Job {
                 .heading(env.getProperty("rwt.report.subject"))
                 .paragraph(String.format(env.getProperty("rwt.report.body")), getAcbNamesAsBrSeparatedList(context))
                 .paragraph("Real World Testing Report Summary", getEmailSummaryParagraph(rows))
-                .footer(true)
+                .footer(AdminFooter.class)
                 .build();
     }
 

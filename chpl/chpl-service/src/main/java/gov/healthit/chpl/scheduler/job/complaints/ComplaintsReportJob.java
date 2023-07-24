@@ -18,6 +18,7 @@ import gov.healthit.chpl.compliance.surveillance.SurveillanceManager;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
+import gov.healthit.chpl.email.footer.PublicFooter;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import lombok.extern.log4j.Log4j2;
 
@@ -112,7 +113,7 @@ public class ComplaintsReportJob  implements Job {
                 .paragraph(
                         "",
                         env.getProperty("complaintsReport.paragraph1.body"))
-                .footer(true)
+                .footer(PublicFooter.class)
                 .build();
     }
 }
