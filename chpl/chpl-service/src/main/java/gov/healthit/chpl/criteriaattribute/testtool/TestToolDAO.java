@@ -190,9 +190,11 @@ public class TestToolDAO extends BaseDAOImpl implements CriteriaAttributeDAO {
 
     private List<TestToolEntity> getEntitiesByName(String name) {
         Query query = entityManager.createQuery(
-                "FROM TestToolEntity "
-                + "WHERE (NOT deleted = true) "
-                + "AND (UPPER(name) = :name) ", TestToolEntity.class);
+                "FROM TestToolEntity tt "
+                + "INNER JOIN FETCH tt.criteria c "
+                + "INNER JOIN FETCH c.certificationEdition "
+                + "WHERE (NOT tt.deleted = true) "
+                + "AND (UPPER(tt.name) = :name) ", TestToolEntity.class);
         query.setParameter("name", name.toUpperCase());
         List<TestToolEntity> result = query.getResultList();
 
