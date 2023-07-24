@@ -1,5 +1,21 @@
 # Release Notes
 
+## Version 41.0.0
+_24 July 2023_
+
+### Breaking Changes
+* Remove deprecated endpoints eligible for deletion
+
+### Features
+* Track and analyze (g)(10) Service Base URL List availability
+* Add certificationDay attribute to listing/id/ics-relationships response
+* Add certificationDay property of listing details
+
+### Flagged Features
+* Add endpoint to unsubscribe-all subscriptions
+
+---
+
 ## Version 40.7.0
 _3 July 2023_
 
