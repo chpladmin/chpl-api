@@ -1,5 +1,6 @@
 package gov.healthit.chpl.scheduler.job.urluptime;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 import javax.persistence.Basic;
@@ -10,18 +11,20 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import gov.healthit.chpl.util.DateUtil;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "chpl_uptime_monitor")
+@Table(name = "url_uptime_monitor_test")
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ChplUptimeMonitorEntity {
+public class UrlUptimeMonitorTestEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
@@ -29,16 +32,20 @@ public class ChplUptimeMonitorEntity {
     private Long id;
 
     @Basic(optional = false)
-    @Column(name = "description", nullable = false)
-    private String description;
+    @Column(name = "url_uptime_monitor_id", nullable = false)
+    private Long urlUptimeMonitorId;
 
     @Basic(optional = false)
-    @Column(name = "url", nullable = false)
-    private String url;
+    @Column(name = "datadog_test_key", nullable = false)
+    private String datadogTestKey;
 
     @Basic(optional = false)
-    @Column(name = "datadog_monitor_key", nullable = false)
-    private String datadogMonitorKey;
+    @Column(name = "check_time", nullable = false)
+    private LocalDateTime checkTime;
+
+    @Basic(optional = false)
+    @Column(name = "passed", nullable = false)
+    private Boolean passed;
 
     @Basic(optional = false)
     @Column(name = "creation_date", nullable = false)
@@ -56,12 +63,14 @@ public class ChplUptimeMonitorEntity {
     @Column(nullable = false, name = "deleted")
     private Boolean deleted;
 
-    public ChplUptimeMonitor toDomain() {
-        return ChplUptimeMonitor.builder()
+    public UrlUptimeMonitorTest toDomain() {
+        return UrlUptimeMonitorTest.builder()
                 .id(id)
-                .datadogMonitorKey(datadogMonitorKey)
-                .description(description)
-                .url(url)
+                .urlUptimeMonitorId(urlUptimeMonitorId)
+                .datadogTestKey(datadogTestKey)
+                .checkTime(DateUtil.fromSystemToEastern(checkTime))
+                .passed(passed)
                 .build();
     }
+
 }

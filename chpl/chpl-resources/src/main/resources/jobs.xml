@@ -8,6 +8,22 @@
         <delete-triggers-in-group>triggerJob</delete-triggers-in-group>
         <delete-triggers-in-group>interruptJob</delete-triggers-in-group>
         <!-- BEGIN REMOVE after PROD push -->
+        <delete-job>
+            <name>urlUptimeCreatorJob</name>
+            <group>systemJobs</group>
+        </delete-job>
+        <delete-job>
+            <name>CHPL URL Uptime Report</name>
+            <group>chplJobs</group>
+        </delete-job>
+        <delete-job>
+            <name>serviceBasedUrlUptimeCreatorJob</name>
+            <group>systemJobs</group>
+        </delete-job>
+        <delete-job>
+            <name>Service Based URL Uptime Report</name>
+            <group>chplJobs</group>
+        </delete-job>
         <!-- END remove after PROD push -->
     </pre-processing-commands>
     <processing-directives>
@@ -815,25 +831,25 @@
         </job>
 
         <job>
-            <name>urlUptimeCreatorJob</name>
+            <name>serviceBaseUrlListUptimeCreatorJob</name>
             <group>systemJobs</group>
-            <description>Retrieve uptime information from Datadog got (g)(10) Service Based URLs.</description>
-            <job-class>gov.healthit.chpl.scheduler.job.urluptime.UrlUptimeCreatorJob</job-class>
+            <description>Retrieve uptime information from Datadog for (g)(10) Service Base URL Lists.</description>
+            <job-class>gov.healthit.chpl.scheduler.job.urluptime.ServiceBaseUrlListUptimeCreatorJob</job-class>
             <durability>true</durability>
             <recover>false</recover>
         </job>
 
         <job>
-            <name>CHPL URL Uptime Report</name>
+            <name>Service Base URL List Uptime Report</name>
             <group>chplJobs</group>
-            <description>Sends the CHPL URL Uptime Report</description>
-            <job-class>gov.healthit.chpl.scheduler.job.urluptime.UrlUptimeEmailJob</job-class>
+            <description>Sends the Service Base URL List Uptime Report</description>
+            <job-class>gov.healthit.chpl.scheduler.job.urluptime.ServiceBaseUrlListUptimeEmailJob</job-class>
             <durability>true</durability>
             <recover>false</recover>
             <job-data-map>
                 <entry>
                     <key>authorities</key>
-                    <value>ROLE_ADMIN;ROLE_ONC</value>
+                    <value>ROLE_ADMIN;ROLE_ONC;ROLE_ACB</value>
                 </entry>
             </job-data-map>
         </job>

@@ -7,8 +7,9 @@ import lombok.Data;
 
 @Data
 @Builder
-public class UrlUptimeReport {
-    private String description;
+public class ServiceBaseUrlListUptimeReport {
+    private String developerName;
+    private Long developerId;
     private String url;
     private Long totalTestCount;
     private Long totalSuccessfulTestCount;
@@ -19,7 +20,8 @@ public class UrlUptimeReport {
 
     public List<String> toListOfStrings() {
         return List.of(
-                description,
+                developerName,
+                developerId.toString(),
                 url,
                 totalTestCount.toString(),
                 totalSuccessfulTestCount.toString(),
@@ -31,7 +33,8 @@ public class UrlUptimeReport {
     }
 
     public static List<String> getHeaders() {
-        return List.of("Monitor Description",
+        return List.of("Developer",
+                "Developer Id",
                 "URL",
                 "All Time Total Tests",
                 "All Time Successful Tests",

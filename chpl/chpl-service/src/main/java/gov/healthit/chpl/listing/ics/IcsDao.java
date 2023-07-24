@@ -13,6 +13,7 @@ import gov.healthit.chpl.domain.CertificationStatus;
 import gov.healthit.chpl.domain.IdNamePair;
 import gov.healthit.chpl.listing.ics.ListingIcsNode.ListingRelative;
 import gov.healthit.chpl.search.entity.ListingSearchEntity;
+import gov.healthit.chpl.util.DateUtil;
 
 @Component
 public class IcsDao extends BaseDAOImpl {
@@ -38,6 +39,7 @@ public class IcsDao extends BaseDAOImpl {
                 .id(result.getId())
                 .chplProductNumber(result.getChplProductNumber())
                 .certificationDate(result.getCertificationDate())
+                .certificationDay(DateUtil.toLocalDate(result.getCertificationDate().getTime()))
                 .certificationStatus(CertificationStatus.builder()
                         .id(result.getCertificationStatusId())
                         .name(result.getCertificationStatus())
