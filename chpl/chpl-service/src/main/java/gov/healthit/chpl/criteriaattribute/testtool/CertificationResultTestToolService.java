@@ -34,9 +34,6 @@ public class CertificationResultTestToolService {
         List<CertificationResultTestTool> addedTestTools = new ArrayList<CertificationResultTestTool>();
         List<CertificationResultTestTool> removedTestTools = new ArrayList<CertificationResultTestTool>();
 
-        //Normalize the Test Tools
-        testToolNormalizer.normalize(certResultTestTools);
-
         //Find the updated Test Tools (version)
         if (!CollectionUtils.isEmpty(certResultTestTools)) {
             updatedTestTools = certResultTestTools.stream()
