@@ -1,5 +1,9 @@
 package gov.healthit.chpl.subscription.domain;
 
+import java.util.Date;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,5 +19,6 @@ public class Subscription {
     private SubscriptionSubject subject;
     private Long subscribedObjectId;
     private SubscriptionConsolidationMethod consolidationMethod;
-
+    @JsonIgnore
+    private Date creationDate;
 }
