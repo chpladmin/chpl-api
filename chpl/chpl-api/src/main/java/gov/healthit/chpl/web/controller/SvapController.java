@@ -17,7 +17,6 @@ import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.svap.domain.Svap;
 import gov.healthit.chpl.svap.manager.SvapManager;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
-import gov.healthit.chpl.web.controller.annotation.DeprecatedApi;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -58,24 +57,6 @@ public class SvapController {
             produces = "application/json; charset=utf-8")
     public @ResponseBody Svap createSvap(@RequestBody(required = true) Svap svap) throws EntityRetrievalException, ValidationException {
         return svapManager.create(svap);
-    }
-
-    @Deprecated
-    @DeprecatedApi(friendlyUrl = "/svaps",
-       httpMethod = "DELETE",
-       removalDate = "2023-04-01",
-       message = "This endpoint is deprecated and will be removed in a future release. Please use DELETE /svaps/{svapId} instead.")
-    @Operation(summary = "Delete an Standards Version Advancement Process.",
-            description = "Provides functionality to delete an existing SVAP and the Criteria associated with it. "
-                    + "Security Restrictions: To update: ROLE_ADMIN or ROLE_ONC.",
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
-            })
-    @RequestMapping(value = "", method = RequestMethod.DELETE, consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = "application/json; charset=utf-8")
-    public void deleteSvapDeprecated(@RequestBody(required = true) Svap svap) throws EntityRetrievalException, ValidationException {
-        svapManager.delete(svap);
     }
 
     @Operation(summary = "Delete an Standards Version Advancement Process.",

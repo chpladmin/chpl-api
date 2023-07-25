@@ -17,8 +17,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseField;
-import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.NonconformityType;
 import gov.healthit.chpl.util.LocalDateAdapter;
 import gov.healthit.chpl.util.LocalDateDeserializer;
@@ -48,26 +46,6 @@ public class SurveillanceNonconformity implements Serializable {
      */
     @XmlElement(required = true)
     private Long id;
-
-    /**
-     * Type of non-conformity; this is either a certification criteria number or
-     * a textual description
-     */
-    @Deprecated
-    @DeprecatedResponseField(removalDate = "2023-05-01",
-        message = "This field is deprecated and will be removed from the response data in a future release. "
-                + "Please replace usage of the 'nonconformityType' field with 'type'.")
-    private String nonconformityType;
-
-    /**
-     * If the non-conformity type is a certified capability
-     * then this field will have the criterion details (number, title, etc).
-     */
-    @Deprecated
-    @DeprecatedResponseField(removalDate = "2023-05-01",
-    message = "This field is deprecated and will be removed from the response data in a future release. "
-            + "Please replace usage of the 'criterion' field with 'type'.")
-    private CertificationCriterion criterion;
 
     /**
      * Type of non-conformity; this is either a certification criteria number or
@@ -302,26 +280,6 @@ public class SurveillanceNonconformity implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    @Deprecated
-    public String getNonconformityType() {
-        return nonconformityType;
-    }
-
-    @Deprecated
-    public void setNonconformityType(String nonconformityType) {
-        this.nonconformityType = nonconformityType;
-    }
-
-    @Deprecated
-    public CertificationCriterion getCriterion() {
-        return criterion;
-    }
-
-    @Deprecated
-    public void setCriterion(CertificationCriterion criterion) {
-        this.criterion = criterion;
     }
 
     public NonconformityType getType() {

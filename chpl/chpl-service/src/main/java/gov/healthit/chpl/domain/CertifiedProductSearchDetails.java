@@ -37,6 +37,7 @@ import gov.healthit.chpl.domain.comparator.CertificationStatusEventComparator;
 import gov.healthit.chpl.domain.compliance.DirectReview;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.entity.CertificationStatusType;
+import gov.healthit.chpl.util.DateUtil;
 import gov.healthit.chpl.util.LocalDateAdapter;
 import gov.healthit.chpl.util.LocalDateDeserializer;
 import gov.healthit.chpl.util.LocalDateSerializer;
@@ -96,12 +97,6 @@ public class CertifiedProductSearchDetails implements Serializable {
      */
     @XmlElement(required = false, nillable = true)
     private String sedIntendedUserDescription;
-
-    @XmlTransient
-    @Deprecated
-    @DeprecatedResponseField(removalDate = "2023-05-01",
-            message = "This field is deprecated and will be removed from the response data in a future release. Please use sedTestingEndDay")
-    private Date sedTestingEndDate;
 
     /**
      * Date all SED testing was concluded for the Health IT. The format for the date is YYYMMDD
@@ -750,16 +745,6 @@ public class CertifiedProductSearchDetails implements Serializable {
         this.sedIntendedUserDescription = sedIntendedUserDescription;
     }
 
-    @Deprecated
-    public Date getSedTestingEndDate() {
-        return sedTestingEndDate;
-    }
-
-    @Deprecated
-    public void setSedTestingEndDate(Date sedTestingEndDate) {
-        this.sedTestingEndDate = sedTestingEndDate;
-    }
-
     public LocalDate getSedTestingEndDay() {
         return sedTestingEndDay;
     }
@@ -935,6 +920,22 @@ public class CertifiedProductSearchDetails implements Serializable {
             return null;
         }
         return result.getEventDate();
+    }
+
+    /**
+     * Certification day
+     */
+    @XmlElement(nillable = false, required = true)
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonSerialize(using = LocalDateSerializer.class)
+    @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
+    public LocalDate getCertificationDay() {
+        Long certificationDateMillis = getCertificationDate();
+        if (certificationDateMillis == null) {
+            return null;
+        }
+
+        return DateUtil.toLocalDate(certificationDateMillis);
     }
 
     private boolean anyCertificationEventIsMissingNameField(List<CertificationStatusEvent> certificationStatusEvents) {

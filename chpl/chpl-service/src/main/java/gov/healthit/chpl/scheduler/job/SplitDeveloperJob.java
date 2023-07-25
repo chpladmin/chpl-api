@@ -43,6 +43,7 @@ import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
+import gov.healthit.chpl.email.footer.AdminFooter;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -344,7 +345,7 @@ public class SplitDeveloperJob implements Job {
                 .heading(title)
                 .paragraph(null, summaryText)
                 .paragraph(null, productList)
-                .footer(false)
+                .footer(AdminFooter.class)
                 .build();
         return htmlMessage;
     }
@@ -370,7 +371,7 @@ public class SplitDeveloperJob implements Job {
                 .heading(title)
                 .paragraph(null, summaryText)
                 .paragraph(null, String.format("Reason for failure: %s", exceptionMessage))
-                .footer(false)
+                .footer(AdminFooter.class)
                 .build();
 
         return htmlMessage;

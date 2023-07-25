@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
+import gov.healthit.chpl.email.footer.PublicFooter;
 import gov.healthit.chpl.scheduler.job.developer.attestation.email.DeveloperEmail;
 import gov.healthit.chpl.scheduler.job.developer.attestation.email.StatusReportEmail;
 import lombok.extern.log4j.Log4j2;
@@ -48,7 +49,7 @@ public class MissingAttestationChangeRequestDeveloperStatusReportEmailGenerator 
                 .paragraph("", String.format(emailSalutation, submittedUser.getFullName()))
                 .paragraph("", emailParagraph)
                 .table(tableHeaders, getTableRows(developerEmails))
-                .footer(true)
+                .footer(PublicFooter.class)
                 .build();
     }
 

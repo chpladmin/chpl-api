@@ -64,6 +64,16 @@ public class SubscriberDao extends BaseDAOImpl {
         update(subscriber);
     }
 
+    public void deleteSubscriber(UUID subscriberUuid) {
+        SubscriberEntity subscriber = entityManager.find(SubscriberEntity.class, subscriberUuid);
+        if (subscriber == null) {
+            LOGGER.error("No subscriber was found with ID " + subscriberUuid);
+            return;
+        }
+        subscriber.setDeleted(true);
+        update(subscriber);
+    }
+
     public Subscriber getSubscriberByEmail(String email) {
         Query query = entityManager.createQuery(SUBSCRIBER_HQL
                 + "WHERE subscriber.email = :email",

@@ -13,7 +13,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-import gov.healthit.chpl.domain.surveillance.NonconformityClassification;
 import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformity;
 import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformityStatus;
 import gov.healthit.chpl.service.CertificationCriterionService;
@@ -110,13 +109,7 @@ public class SurveillanceNonconformityEntity {
                 .totalSites(this.getTotalSites())
                 .lastModifiedDate(this.getLastModifiedDate())
                 .nonconformityStatus(this.getNonconformityCloseDate() == null ? SurveillanceNonconformityStatus.OPEN : SurveillanceNonconformityStatus.CLOSED)
-                .nonconformityType(this.getType().getClassification().equals(NonconformityClassification.REQUIREMENT) ? this.getType().getNumber() : null)
                 .build();
-
-        if (nc.getType().getClassification().equals(NonconformityClassification.CRITERION)) {
-            nc.setCriterion(certificationCriterionService.get(nc.getType().getId()));
-        }
-
         return nc;
     }
 }

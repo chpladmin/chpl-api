@@ -30,6 +30,7 @@ import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
+import gov.healthit.chpl.email.footer.AdminFooter;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -245,7 +246,7 @@ public class QuarterlyReportGenerationJob implements Job {
                             .heading(subject)
                             .paragraph("", htmlContent)
                             .paragraph("", String.format(chplEmailValediction, acbatlFeedbackUrl))
-                            .footer(true)
+                            .footer(AdminFooter.class)
                             .build())
                     .fileAttachments(attachments)
                     .sendEmail();

@@ -1,23 +1,15 @@
 package gov.healthit.chpl.web.controller;
 
-import java.io.IOException;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 
 import gov.healthit.chpl.changerequest.manager.ChangeRequestManager;
 import gov.healthit.chpl.complaint.ComplaintManager;
@@ -31,15 +23,10 @@ import gov.healthit.chpl.domain.Measure;
 import gov.healthit.chpl.domain.MeasureType;
 import gov.healthit.chpl.domain.SearchOption;
 import gov.healthit.chpl.domain.TestStandard;
-import gov.healthit.chpl.domain.surveillance.SurveillanceRequirementOptions;
-import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.functionalityTested.FunctionalityTested;
 import gov.healthit.chpl.functionalityTested.FunctionalityTestedManager;
-import gov.healthit.chpl.fuzzyMatching.FuzzyChoices;
 import gov.healthit.chpl.manager.DimensionalDataManager;
-import gov.healthit.chpl.manager.FilterManager;
 import gov.healthit.chpl.optionalStandard.domain.OptionalStandard;
 import gov.healthit.chpl.surveillance.report.SurveillanceReportManager;
 import gov.healthit.chpl.svap.manager.SvapManager;
@@ -61,7 +48,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 public class DimensionalDataController {
     private DimensionalDataManager dimensionalDataManager;
     private FunctionalityTestedManager functionalityTestedManager;
-    private FilterManager filterManager;
     private ComplaintManager complaintManager;
     private SurveillanceReportManager survReportManager;
     private ChangeRequestManager changeRequestManager;
@@ -70,64 +56,16 @@ public class DimensionalDataController {
     @Autowired
     public DimensionalDataController(DimensionalDataManager dimensionalDataManager,
             FunctionalityTestedManager functionalityTestedManager,
-            FilterManager filterManager,
             ComplaintManager complaintManager,
             SurveillanceReportManager survReportManager,
             ChangeRequestManager changeRequestManager,
             SvapManager svapManager) {
         this.dimensionalDataManager = dimensionalDataManager;
         this.functionalityTestedManager = functionalityTestedManager;
-        this.filterManager = filterManager;
         this.complaintManager = complaintManager;
         this.survReportManager = survReportManager;
         this.changeRequestManager = changeRequestManager;
         this.svapManager = svapManager;
-    }
-
-    @Deprecated
-    @DeprecatedApi(friendlyUrl = "/data/fuzzy_choices",
-        message = "This endpoint is deprecated and will be removed in a future release.",
-        removalDate = "2023-04-30")
-    @Operation(summary = "Get all fuzzy matching choices for the items that be fuzzy matched.",
-            description = "Security Restrictions: ROLE_ADMIN or ROLE_ONC.",
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
-            })
-    @RequestMapping(value = "/fuzzy_choices", method = RequestMethod.GET,
-            produces = "application/json; charset=utf-8")
-    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
-    public @ResponseBody Set<FuzzyChoices> getFuzzyChoices()
-            throws EntityRetrievalException, JsonParseException, JsonMappingException, IOException {
-        return new HashSet<FuzzyChoices>();
-    }
-
-    @DeprecatedApi(friendlyUrl = "/data/fuzzy_choices/{id}",
-            httpMethod = "PUT",
-            message = "This endpoint is deprecated and will be removed in a future release.",
-            removalDate = "2023-04-30")
-    @Deprecated
-    @Operation(summary = "Change existing fuzzy matching choices.",
-            description = "Security Restrictions: ROLE_ADMIN or ROLE_ONC",
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
-            })
-    @RequestMapping(value = "/fuzzy_choices/{fuzzyChoiceId}", method = RequestMethod.PUT,
-            consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
-    public FuzzyChoices updateFuzzyChoicesForSearching(@RequestBody FuzzyChoices fuzzyChoices)
-            throws InvalidArgumentsException, EntityRetrievalException, JsonProcessingException,
-            EntityCreationException, IOException {
-
-        return updateFuzzyChoices(fuzzyChoices);
-    }
-
-    @Deprecated
-    private FuzzyChoices updateFuzzyChoices(FuzzyChoices fuzzyChoices)
-            throws InvalidArgumentsException, EntityRetrievalException, JsonProcessingException,
-            EntityCreationException, IOException {
-        //no update is made any longer
-        return fuzzyChoices;
     }
 
     @Operation(summary = "Get a list of quarters for which a surveillance report can be created.",
@@ -403,46 +341,6 @@ public class DimensionalDataController {
         return result;
     }
 
-    @Deprecated
-    @DeprecatedApi(friendlyUrl = "/data/ucd_processes",
-        message = "This endpoint is deprecated and will be removed. Please GET from /ucd-processes.",
-        removalDate = "2023-04-30")
-    @Operation(summary = "Get all possible UCD process options in the CHPL",
-            description = "This is useful for knowing what values one might possibly search for.",
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
-    @RequestMapping(value = "/ucd_processes", method = RequestMethod.GET,
-            produces = "application/json; charset=utf-8")
-    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
-    public @ResponseBody SearchOption getUcdProcesses() {
-        Set<KeyValueModel> data = dimensionalDataManager.getUcdProcesses();
-        SearchOption result = new SearchOption();
-        result.setExpandable(true);
-        result.setData(data);
-        return result;
-    }
-
-    @Deprecated
-    @DeprecatedApi(friendlyUrl = "/data/accessibility_standards",
-        message = "This endpoint is deprecated and will be removed. Please GET from /accessibility-standards.",
-        removalDate = "2023-06-30")
-    @Operation(summary = "Get all possible accessibility standard options in the CHPL",
-            description = "This is useful for knowing what values one might possibly search for.",
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
-    @RequestMapping(value = "/accessibility_standards", method = RequestMethod.GET,
-            produces = "application/json; charset=utf-8")
-    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
-    public @ResponseBody SearchOption getAccessibilityStandards() {
-        Set<KeyValueModel> data = dimensionalDataManager.getAccessibilityStandards();
-        SearchOption result = new SearchOption();
-        result.setExpandable(true);
-        result.setData(data);
-        return result;
-    }
-
     @Operation(summary = "Get all possible measure options in the CHPL",
             description = "This is useful for knowing what values one might possibly search for.",
             security = {
@@ -524,26 +422,6 @@ public class DimensionalDataController {
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
-    @RequestMapping(value = "/surveillance_requirement_types", method = RequestMethod.GET,
-            produces = "application/json; charset=utf-8")
-    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
-    @Deprecated
-    @DeprecatedApi(friendlyUrl = "/data/surveillance_requirements_types",
-    removalDate = "2023-05-01",
-    message = "This endpoint is deprecated and will be removed in a future release. Please use /data/requirement-group-types "
-            + "to get the Requirement Group types.")
-    public @ResponseBody SearchOption getSurveillanceRequirementTypes() {
-        Set<KeyValueModel> data = dimensionalDataManager.getRequirementGroupTypes();
-        SearchOption result = new SearchOption();
-        result.setExpandable(false);
-        result.setData(data);
-        return result;
-    }
-
-    @Operation(summary = "Get all possible requirement group type options in the CHPL",
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
     @RequestMapping(value = "/requirement-group-types", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
@@ -569,23 +447,6 @@ public class DimensionalDataController {
         return result;
     }
 
-    @Operation(summary = "Get all possible surveillance requirement options in the CHPL",
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
-    @RequestMapping(value = "/surveillance-requirements", method = RequestMethod.GET,
-            produces = "application/json; charset=utf-8")
-    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
-    @Deprecated
-    @DeprecatedApi(friendlyUrl = "/data/surveillance-requirements",
-    removalDate = "2023-05-01",
-    message = "This endpoint is deprecated and will be removed in a future release. Please use /data/surveillance-requirement-detail-types "
-            + "to get the Surveillance Requirement types.")
-    public @ResponseBody SurveillanceRequirementOptions getSurveillanceRequirementOptions() {
-        SurveillanceRequirementOptions data = dimensionalDataManager.getSurveillanceRequirementOptions();
-        return data;
-    }
-
     @Operation(summary = "Get all possible nonconformity type options in the CHPL",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
@@ -597,25 +458,6 @@ public class DimensionalDataController {
         SearchOption result = new SearchOption();
         result.setExpandable(false);
         result.setData(dimensionalDataManager.getNonconformityTypes());
-        return result;
-    }
-
-    @Operation(summary = "Get all possible nonconformity type options in the CHPL",
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
-    @RequestMapping(value = "/nonconformity-types", method = RequestMethod.GET,
-            produces = "application/json; charset=utf-8")
-    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
-    @Deprecated
-    @DeprecatedApi(friendlyUrl = "/data/nonconformity-types",
-        removalDate = "2023-05-01",
-        message = "This endpoint is deprecated and will be removed in a future release. Please use /data/nonconformity-types/v2 to get the Non-conformity types.")
-    public @ResponseBody SearchOption getNonconformityTypeOptions() {
-        Set<CertificationCriterion> data = dimensionalDataManager.getNonconformityTypeOptions();
-        SearchOption result = new SearchOption();
-        result.setExpandable(false);
-        result.setData(data);
         return result;
     }
 
@@ -631,25 +473,6 @@ public class DimensionalDataController {
             @RequestParam(value = "simple", required = false, defaultValue = "false") Boolean simple)
             throws EntityRetrievalException {
         return dimensionalDataManager.getDimensionalData(simple);
-    }
-
-    @Deprecated
-    @DeprecatedApi(friendlyUrl = "/data/filter_types",
-        message = "This endpoint is deprecated and will be removed.",
-        removalDate = "2023-06-01")
-    @Operation(summary = "Get all available filter type.",
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
-    @RequestMapping(value = "/filter_types", method = RequestMethod.GET,
-            produces = "application/json; charset=utf-8")
-    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
-    public @ResponseBody SearchOption getFilterTypes() {
-        Set<KeyValueModel> data = filterManager.getFilterTypes();
-        SearchOption result = new SearchOption();
-        result.setExpandable(false);
-        result.setData(data);
-        return result;
     }
 
     @Operation(summary = "Get all possible complainant types in the CHPL",

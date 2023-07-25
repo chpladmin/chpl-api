@@ -15,6 +15,7 @@ import gov.healthit.chpl.entity.CertificationBodyEntity;
 import gov.healthit.chpl.entity.auth.UserPermissionEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.util.AuthUtil;
+import gov.healthit.chpl.util.DateUtil;
 
 @Repository("changeRequestStatusDAO")
 public class ChangeRequestStatusDAO extends BaseDAOImpl {
@@ -59,7 +60,7 @@ public class ChangeRequestStatusDAO extends BaseDAOImpl {
         }
         entity.setUserPermission(getSession().load(UserPermissionEntity.class, crStatus.getUserPermission().getId()));
         entity.setComment(crStatus.getComment());
-        entity.setStatusChangeDate(crStatus.getStatusChangeDate());
+        entity.setStatusChangeDate(DateUtil.toDate(crStatus.getStatusChangeDateTime()));
         entity.setDeleted(false);
         entity.setLastModifiedUser(AuthUtil.getAuditId());
         entity.setCreationDate(new Date());

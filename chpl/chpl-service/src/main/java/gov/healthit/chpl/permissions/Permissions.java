@@ -19,7 +19,6 @@ import gov.healthit.chpl.permissions.domains.ComplaintDomainPermissions;
 import gov.healthit.chpl.permissions.domains.CorrectiveActionPlanDomainPermissions;
 import gov.healthit.chpl.permissions.domains.DeveloperDomainPermissions;
 import gov.healthit.chpl.permissions.domains.DomainPermissions;
-import gov.healthit.chpl.permissions.domains.FilterDomainPermissions;
 import gov.healthit.chpl.permissions.domains.InvitationDomainPermissions;
 import gov.healthit.chpl.permissions.domains.ListingUploadDomainPerissions;
 import gov.healthit.chpl.permissions.domains.ProductDomainPermissions;
@@ -57,7 +56,6 @@ public class Permissions {
     public static final String PRODUCT_VERSION = "PRODUCT_VERSION";
     public static final String SECURED_USER = "SECURED_USER";
     public static final String TESTING_LAB = "TESTING_LAB";
-    public static final String FILTER = "FILTER";
     public static final String COMPLAINT = "COMPLAINT";
     public static final String ACTIVITY_METADATA = "ACTIVTY_METADATA";
     public static final String ANNOUNCEMENT = "ANNOUNCEMENT";
@@ -92,7 +90,6 @@ public class Permissions {
             SecuredUserDomainPermissions securedUserDomainPermissions,
             SchedulerDomainPermissions schedulerDomainPermissions,
             TestingLabDomainPermissions testingLabDomainPermissions,
-            FilterDomainPermissions filterDomainPermissions,
             ComplaintDomainPermissions complaintDomainPermissions,
             AnnouncementDomainPermissions announcementDomainPermissions,
             ChangeRequestDomainPermissions changeRequestDomainPermissions,
@@ -122,7 +119,6 @@ public class Permissions {
         domainPermissions.put(SECURED_USER, securedUserDomainPermissions);
         domainPermissions.put(SCHEDULER, schedulerDomainPermissions);
         domainPermissions.put(TESTING_LAB, testingLabDomainPermissions);
-        domainPermissions.put(FILTER, filterDomainPermissions);
         domainPermissions.put(COMPLAINT, complaintDomainPermissions);
         domainPermissions.put(ANNOUNCEMENT, announcementDomainPermissions);
         domainPermissions.put(CHANGE_REQUEST, changeRequestDomainPermissions);

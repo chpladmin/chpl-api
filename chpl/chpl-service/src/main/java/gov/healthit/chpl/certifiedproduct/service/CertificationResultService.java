@@ -123,7 +123,7 @@ public class CertificationResultService {
     }
 
     private void populateTestTasks(CertificationResultDetailsDTO certResult, CertifiedProductSearchDetails searchDetails, CertificationCriterion criteria) {
-        if (certRules.hasCertOption(certResult.getCertificationCriterionId(), CertificationResultRules.TEST_TASK)) {
+        if (certRules.hasCertOption(certResult.getCertificationCriterionId(), CertificationResultRules.SED)) {
             List<CertificationResultTestTaskDTO> testTask = certResultManager.getTestTasksForCertificationResult(certResult.getId());
             for (CertificationResultTestTaskDTO currResult : testTask) {
                 boolean alreadyExists = false;
@@ -143,7 +143,7 @@ public class CertificationResultService {
     }
 
     private void populateSed(CertificationResultDetailsDTO certResult, CertifiedProductSearchDetails searchDetails, CertificationResult result, CertificationCriterion criteria) {
-        if (certRules.hasCertOption(certResult.getCertificationCriterionId(), CertificationResultRules.UCD_FIELDS)) {
+        if (certRules.hasCertOption(certResult.getCertificationCriterionId(), CertificationResultRules.SED)) {
             List<CertificationResultUcdProcessDTO> ucdProcesses = certResultManager.getUcdProcessesForCertificationResult(result.getId());
             for (CertificationResultUcdProcessDTO currResult : ucdProcesses) {
                 boolean alreadyExists = false;

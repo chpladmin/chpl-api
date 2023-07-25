@@ -22,6 +22,7 @@ import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
+import gov.healthit.chpl.email.footer.AdminFooter;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.scheduler.job.surveillancereportingactivity.excel.SurveillanceActivityReportWorkbook;
@@ -94,7 +95,7 @@ public class SurveillanceReportingActivityJob implements Job {
             .heading(surveillanceActvityReportTitle)
             .paragraph(null, String.format(surveillanceActvityReportBody, emailDateFormatter.format(getStartDate(context)),
                         emailDateFormatter.format(getEndDate(context))))
-            .footer(false)
+            .footer(AdminFooter.class)
             .build();
 
         chplEmailFactory.emailBuilder()
