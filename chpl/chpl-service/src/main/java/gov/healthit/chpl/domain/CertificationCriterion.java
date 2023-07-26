@@ -10,8 +10,10 @@ import javax.xml.bind.annotation.XmlType;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseField;
 import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.entity.CertificationCriterionEntity;
+import jakarta.xml.bind.annotation.XmlTransient;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.ToString;
@@ -34,10 +36,14 @@ public class CertificationCriterion implements Serializable {
     @XmlElement(required = false, nillable = true)
     private String title;
 
-    @XmlElement(required = false, nillable = true)
+    @XmlTransient
+    @Deprecated
+    @DeprecatedResponseField(message = "The certification edition will be removed.", removalDate = "2024-02-01")
     private Long certificationEditionId;
 
-    @XmlElement(required = false, nillable = true)
+    @XmlTransient
+    @Deprecated
+    @DeprecatedResponseField(message = "The certification edition will be removed.", removalDate = "2024-02-01")
     private String certificationEdition;
 
     @XmlElement(required = false, nillable = true)
