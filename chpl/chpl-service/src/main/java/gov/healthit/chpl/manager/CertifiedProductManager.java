@@ -382,8 +382,7 @@ public class CertifiedProductManager extends SecuredManager {
         CertifiedProductSearchDetails existingListing = null;
         try {
             CertifiedProductSearchDetails updatedListing = updateRequest.getListing();
-            existingListing = certifiedProductDetailsManager
-                    .getCertifiedProductDetails(updatedListing.getId());
+            existingListing = certifiedProductDetailsManager.getCertifiedProductDetails(updatedListing.getId());
 
             listingNormalizer.normalize(updatedListing);
 
@@ -407,7 +406,7 @@ public class CertifiedProductManager extends SecuredManager {
             logCertifiedProductUpdateActivity(existingListing, updateRequest.getReason());
 
             //Send notification to Team
-            if (wereBusinessRulesOvewrriddenDuringUpdate(updateRequest)) {
+            if (wereBusinessRulesOverriddenDuringUpdate(updateRequest)) {
                 chplTeamNotifier.sendNotification(new BusinessRulesOverrideNotifierMessage(
                         updateRequest.getListing().getChplProductNumber(),
                         AuthUtil.getCurrentUser(),
@@ -426,7 +425,7 @@ public class CertifiedProductManager extends SecuredManager {
     }
 
 
-    private boolean wereBusinessRulesOvewrriddenDuringUpdate(ListingUpdateRequest request) {
+    private boolean wereBusinessRulesOverriddenDuringUpdate(ListingUpdateRequest request) {
         return !request.getListing().getBusinessErrorMessages().isEmpty()
                 && request.isAcknowledgeBusinessErrors();
     }

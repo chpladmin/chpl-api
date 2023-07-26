@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -38,9 +39,22 @@ public class OptionalStandardNormalizer {
 
     public void normalize(CertifiedProductSearchDetails listing) {
         if (listing.getCertificationResults() != null && listing.getCertificationResults().size() > 0) {
+            clearDataForUnattestedCriteria(listing);
             listing.getCertificationResults().stream()
                 .forEach(certResult -> fillInOptionalStandardsData(certResult));
         }
+    }
+
+    private void clearDataForUnattestedCriteria(CertifiedProductSearchDetails listing) {
+        listing.getCertificationResults().stream()
+            .filter(certResult -> (certResult.isSuccess() == null || BooleanUtils.isFalse(certResult.isSuccess())
+                    && certResult.getOptionalStandards() != null && certResult.getOptionalStandards().size() > 0))
+            .forEach(unattestedCertResult -> unattestedCertResult.getOptionalStandards().clear());
+
+        listing.getCertificationResults().stream()
+            .filter(certResult -> (certResult.isSuccess() == null || BooleanUtils.isFalse(certResult.isSuccess()))
+                    && certResult.getTestStandards() != null && certResult.getTestStandards().size() > 0)
+            .forEach(unattestedCertResult -> unattestedCertResult.getTestStandards().clear());
     }
 
     private void fillInOptionalStandardsData(CertificationResult certResult) {
