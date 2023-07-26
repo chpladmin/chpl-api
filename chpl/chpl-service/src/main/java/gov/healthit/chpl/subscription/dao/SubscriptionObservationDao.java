@@ -1,7 +1,11 @@
 package gov.healthit.chpl.subscription.dao;
 
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import javax.persistence.Query;
 
@@ -9,9 +13,11 @@ import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
+import gov.healthit.chpl.subscription.domain.Subscription;
 import gov.healthit.chpl.subscription.domain.SubscriptionObservation;
 import gov.healthit.chpl.subscription.entity.SubscriptionEntity;
 import gov.healthit.chpl.subscription.entity.SubscriptionObservationEntity;
+import gov.healthit.chpl.subscription.entity.SubscriptionObservationIncludingDeletedEntity;
 import lombok.extern.log4j.Log4j2;
 
 @Repository
@@ -57,6 +63,28 @@ public class SubscriptionObservationDao extends BaseDAOImpl {
                 .toList();
     }
 
+    public Map<Long, Date> getLastObservationDatesForSubscriptions(List<Subscription> subscriptions) {
+        Query query = entityManager.createQuery(
+                "SELECT obs "
+                + "FROM SubscriptionObservationIncludingDeletedEntity obs "
+                + "WHERE subscriptionId IN (:subscriptionIds)",
+                SubscriptionObservationIncludingDeletedEntity.class);
+        query.setParameter("subscriptionIds", subscriptions.stream().map(sub -> sub.getId()).toList());
+        List<SubscriptionObservationIncludingDeletedEntity> results = query.getResultList();
+        Map<Long, List<SubscriptionObservationIncludingDeletedEntity>> observationsBySubscription = results.stream()
+                .collect(Collectors.groupingBy(SubscriptionObservationIncludingDeletedEntity::getSubscriptionId));
+
+        Map<Long, Date> observationDatesBySubscription = new HashMap<Long, Date>();
+        observationsBySubscription.keySet().stream()
+            .forEach(key -> {
+                Date maxObservationDate = observationsBySubscription.get(key).stream()
+                        .map(obs -> obs.getCreationDate())
+                        .max(Date::compareTo).get();
+                observationDatesBySubscription.put(key, maxObservationDate);
+            });
+        return observationDatesBySubscription;
+    }
+
     public void deleteObservations(List<Long> observationIds) {
         Query query = entityManager.createQuery("UPDATE SubscriptionObservationEntity observations "
                 + "SET observations.deleted = true "
@@ -65,7 +93,7 @@ public class SubscriptionObservationDao extends BaseDAOImpl {
         query.executeUpdate();
     }
 
-    public void deleteObservations(UUID subscriberId) {
+    public void deleteAllObservationsForSubscriber(UUID subscriberId) {
         LOGGER.info("Deleting observations for subscriber " + subscriberId);
         //get the subscription IDs that are being deleted
         Query subscriptionIdsQuery = entityManager.createQuery("SELECT sub "
@@ -76,6 +104,39 @@ public class SubscriptionObservationDao extends BaseDAOImpl {
         List<Long> subscriptionIds = subscriptionIdsQuery.getResultList().stream()
                 .map(sub -> ((SubscriptionEntity) sub).getId())
                 .toList();
+        deleteObservationsForSubscriptions(subscriptionIds);
+    }
+
+    public void deleteObservationsForSubscribedObject(UUID subscriberId, Long subscribedObjectTypeId, Long subscribedObjectId) {
+        LOGGER.info("Deleting observations for subscriber " + subscriberId + " and object type " + subscribedObjectTypeId + " and object ID " + subscribedObjectId);
+        //get the subscription IDs that are being deleted
+        Query subscriptionIdsQuery = entityManager.createQuery("SELECT sub "
+                + "FROM SubscriptionEntity sub "
+                + "WHERE sub.subscriberId = :subscriberId "
+                + "AND sub.subscriptionSubject.subscriptionObjectType.id = :subscribedObjectTypeId "
+                + "AND sub.subscribedObjectId = :subscribedObjectId",
+                SubscriptionEntity.class);
+        subscriptionIdsQuery.setParameter("subscriberId", subscriberId);
+        subscriptionIdsQuery.setParameter("subscribedObjectTypeId", subscribedObjectTypeId);
+        subscriptionIdsQuery.setParameter("subscribedObjectId", subscribedObjectId);
+        List<Long> subscriptionIds = subscriptionIdsQuery.getResultList().stream()
+                .map(sub -> ((SubscriptionEntity) sub).getId())
+                .toList();
+        deleteObservationsForSubscriptions(subscriptionIds);
+    }
+
+    public void deleteObservationsForSubscription(Long subscriptionId) {
+        LOGGER.info("Deleting observations for subscription " + subscriptionId);
+        int numUpdates = entityManager.createQuery(
+                "UPDATE SubscriptionObservationEntity "
+                + "SET deleted = true "
+                + "WHERE subscriptionId = :subscriptionId")
+        .setParameter("subscriptionId", subscriptionId)
+        .executeUpdate();
+        LOGGER.info("Deleted " + numUpdates + " observations.");
+    }
+
+    private void deleteObservationsForSubscriptions(List<Long> subscriptionIds) {
         LOGGER.info("Deleting observations for " + subscriptionIds + " subscriptions.");
         int numUpdates = entityManager.createQuery(
                 "UPDATE SubscriptionObservationEntity "

@@ -1,7 +1,10 @@
 package gov.healthit.chpl.subscription;
 
+import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -35,6 +38,7 @@ import gov.healthit.chpl.subscription.service.SubscriberMessagingService;
 import gov.healthit.chpl.subscription.service.SubscriptionLookupUtil;
 import gov.healthit.chpl.subscription.validation.SubscriptionRequestValidationContext;
 import gov.healthit.chpl.subscription.validation.SubscriptionRequestValidationService;
+import gov.healthit.chpl.util.DateUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import lombok.extern.log4j.Log4j2;
 
@@ -110,14 +114,20 @@ public class SubscriptionManager {
     }
 
     @Transactional
-    public Subscriber getSubscriber(UUID subscriberId) {
-        return subscriberDao.getSubscriberById(subscriberId);
+    public Subscriber getSubscriber(UUID subscriberId) throws EntityRetrievalException {
+        Subscriber subscriber = subscriberDao.getSubscriberById(subscriberId);
+        if (subscriber == null) {
+            throw new EntityRetrievalException("No subscriber matching " + subscriberId + " was found.");
+        }
+        return subscriber;
     }
 
     @Transactional
-    public List<? extends ChplItemSubscriptionGroup> getGroupedSubscriptions(UUID subscriberId) {
+    public List<? extends ChplItemSubscriptionGroup> getGroupedSubscriptions(UUID subscriberId) throws EntityRetrievalException {
+        Subscriber subscriber = getSubscriber(subscriberId);
+
         //get flattened list of subscriptions
-        List<Subscription> subscriptions = subscriptionDao.getSubscriptionsForSubscriber(subscriberId);
+        List<Subscription> subscriptions = subscriptionDao.getSubscriptionsForSubscriber(subscriber.getId());
 
         //group the subscriptions together by subject ID and subscribedObjectID
         Map<Pair<Long, Long>, List<Subscription>> subscriptionsGroupedByChplItem
@@ -162,6 +172,8 @@ public class SubscriptionManager {
             LOGGER.error("Unable to find listing with ID " + listingId, ex);
         }
 
+        Map<Long, Date> subscriptionIdObservationDateMap = observationDao.getLastObservationDatesForSubscriptions(flatSubscriptionsForListing);
+
         if (listing != null) {
             return ListingSubscriptionGroup.builder()
                     .certificationBodyId(listing.getCertificationBody().getId())
@@ -180,12 +192,23 @@ public class SubscriptionManager {
                                     .consolidationMethod(sub.getConsolidationMethod())
                                     .subject(sub.getSubject())
                                     .creationDate(sub.getCreationDate())
-                                    .lastNotificationDate(null) //TODO
+                                    .lastNotificationDate(getLastNotificationDate(sub.getId(), subscriptionIdObservationDateMap))
                                     .build())
                             .collect(Collectors.toList()))
             .build();
         }
         return null;
+    }
+
+    private LocalDate getLastNotificationDate(Long subscriptionId, Map<Long, Date> subscriptionIdObservationDateMap) {
+        Optional<Long> subscriptionIdInMap = subscriptionIdObservationDateMap.keySet().stream()
+            .filter(key -> key.equals(subscriptionId))
+            .findAny();
+
+        if (subscriptionIdInMap.isEmpty()) {
+            return null;
+        }
+        return DateUtil.toLocalDate(subscriptionIdObservationDateMap.get(subscriptionIdInMap.get()).getTime());
     }
 
     @Transactional
@@ -200,14 +223,28 @@ public class SubscriptionManager {
     }
 
     @Transactional
-    public void unsubscribeAll(UUID subscriberId) throws EntityRetrievalException {
+    public void deleteSubscription(Long subscriptionId) {
+        observationDao.deleteObservationsForSubscription(subscriptionId);
+        subscriptionDao.deleteSubscription(subscriptionId);
+    }
+
+    @Transactional
+    public void deleteSubscriptions(UUID subscriberId, Long subscribedObjectTypeId, Long subscribedObjectId) throws EntityRetrievalException {
         if (subscriberDao.getSubscriberById(subscriberId) == null) {
             throw new EntityRetrievalException("No subscriber matching " + subscriberId + " was found.");
         }
 
-        observationDao.deleteObservations(subscriberId);
-        subscriptionDao.deleteSubscriptions(subscriberId);
-        subscriberDao.deleteSubscriber(subscriberId);
+        observationDao.deleteObservationsForSubscribedObject(subscriberId, subscribedObjectTypeId, subscribedObjectId);
+        subscriptionDao.deleteSubscriptions(subscriberId, subscribedObjectTypeId, subscribedObjectId);
+    }
+
+    @Transactional
+    public void unsubscribeAll(UUID subscriberId) throws EntityRetrievalException {
+        Subscriber subscriber = getSubscriber(subscriberId);
+
+        observationDao.deleteAllObservationsForSubscriber(subscriber.getId());
+        subscriptionDao.deleteSubscriptions(subscriber.getId());
+        subscriberDao.deleteSubscriber(subscriber.getId());
     }
 
     private SubscriptionRequestValidationContext getSubscriptionValidationContext(SubscriptionRequest subscriptionRequest) {

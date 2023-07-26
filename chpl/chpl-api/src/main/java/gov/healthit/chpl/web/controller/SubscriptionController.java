@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -72,16 +73,11 @@ public class SubscriptionController {
             })
     @RequestMapping(value = "/subscribers/{subscriberId:^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$}", method = RequestMethod.GET, produces = "application/json; charset=utf-8",
             consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Subscriber getSubscriber(@PathVariable String subscriberId)
-        throws EntityRetrievalException {
+    public Subscriber getSubscriber(@PathVariable String subscriberId) throws EntityRetrievalException {
         if (!ff4j.check(FeatureList.SUBSCRIPTIONS)) {
             throw new NotImplementedException("The subscriptions feature is not yet implemented.");
         }
-        Subscriber subscriber = subscriptionManager.getSubscriber(UUID.fromString(subscriberId));
-        if (subscriber == null) {
-            throw new EntityRetrievalException("Subscriber was not found.");
-        }
-        return subscriber;
+        return subscriptionManager.getSubscriber(UUID.fromString(subscriberId));
     }
 
     @Operation(summary = "Gets all the subscriptions for a subscriber grouped by each item in the CHPL.",
@@ -95,11 +91,43 @@ public class SubscriptionController {
         if (!ff4j.check(FeatureList.SUBSCRIPTIONS)) {
             throw new NotImplementedException("The subscriptions feature is not yet implemented.");
         }
-        Subscriber subscriber = subscriptionManager.getSubscriber(UUID.fromString(subscriberId));
-        if (subscriber == null) {
-            throw new EntityRetrievalException("Subscriber was not found.");
-        }
         return subscriptionManager.getGroupedSubscriptions(UUID.fromString(subscriberId));
+    }
+
+    @Operation(summary = "Delete one subscription",
+            description = "Example: Unsubscribe subscriber with ID 1 from subscription ID 1",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
+    @RequestMapping(value = "/subscribers/{subscriberId}/subscriptions/{subscriptionId}", method = RequestMethod.DELETE, produces = "application/json; charset=utf-8",
+            consumes = MediaType.APPLICATION_JSON_VALUE)
+    public void deleteSubscription(@PathVariable String subscriberId, @PathVariable Long subscriptionId) throws EntityRetrievalException{
+        if (!ff4j.check(FeatureList.SUBSCRIPTIONS)) {
+            throw new NotImplementedException("The subscriptions feature is not yet implemented.");
+        }
+        //NOTE: I put the subscriberID in the URL here because that makes it harder to guess the URL to delete a subscription.
+        //Without it, you could put in a URL like DELETE /subscriptions/7 and delete a subscription that doesn't belong to you
+
+        //throw 404 if invalid subscriber ID
+        subscriptionManager.getSubscriber(UUID.fromString(subscriberId));
+        subscriptionManager.deleteSubscription(subscriptionId);
+    }
+
+    @Operation(summary = "Delete all subscriptions on a particular CHPL object for a subscriber. ",
+            description = "Example: Unsubscribe subscriber with ID 1 from all notifications about listing ID 1",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
+    @RequestMapping(value = "/subscribers/{subscriberId}/subscriptions",
+            method = RequestMethod.DELETE, produces = "application/json; charset=utf-8",
+            consumes = MediaType.APPLICATION_JSON_VALUE)
+    public void deleteSubscriptionsForObject(@PathVariable String subscriberId,
+            @RequestParam(name = "subscribedObjectTypeId") Long subscribedObjectTypeId,
+            @RequestParam(name = "subscribedObjectId") Long subscribedObjectId) throws EntityRetrievalException {
+        if (!ff4j.check(FeatureList.SUBSCRIPTIONS)) {
+            throw new NotImplementedException("The subscriptions feature is not yet implemented.");
+        }
+        subscriptionManager.deleteSubscriptions(UUID.fromString(subscriberId), subscribedObjectTypeId, subscribedObjectId);
     }
 
     @Operation(summary = "Subscribe to periodic notifications about changes to a specific item in the CHPL. "
