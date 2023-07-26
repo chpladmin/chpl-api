@@ -6,6 +6,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -41,6 +43,7 @@ public class TestDataNormalizerTest {
     public void normalize_nullTestData_noChanges() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .certificationResult(CertificationResult.builder()
+                        .success(true)
                         .build())
                 .build();
         listing.getCertificationResults().get(0).setTestDataUsed(null);
@@ -52,7 +55,28 @@ public class TestDataNormalizerTest {
     public void normalize_emptyTestData_noChanges() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .certificationResult(CertificationResult.builder()
+                        .success(true)
                         .testDataUsed(new ArrayList<CertificationResultTestData>())
+                        .build())
+                .build();
+        normalizer.normalize(listing);
+        assertNotNull(listing.getCertificationResults().get(0).getTestDataUsed());
+        assertEquals(0, listing.getCertificationResults().get(0).getTestDataUsed().size());
+    }
+
+    @Test
+    public void normalize_unattestedCriteriWithTestData_testDataRemoved() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .success(false)
+                        .testDataUsed(Stream.of(CertificationResultTestData.builder()
+                                .id(1L)
+                                .testData(TestData.builder()
+                                        .name("test")
+                                        .id(2L)
+                                        .build())
+                                .version("3")
+                                .build()).collect(Collectors.toList()))
                         .build())
                 .build();
         normalizer.normalize(listing);
@@ -71,6 +95,7 @@ public class TestDataNormalizerTest {
                 .build());
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .certificationResult(CertificationResult.builder()
+                        .success(true)
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
                                 .number("170.315 (b)(1)")
@@ -106,6 +131,7 @@ public class TestDataNormalizerTest {
                 .build());
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .certificationResult(CertificationResult.builder()
+                        .success(true)
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
                                 .number("170.315 (b)(1)")
@@ -143,6 +169,7 @@ public class TestDataNormalizerTest {
                 .build());
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .certificationResult(CertificationResult.builder()
+                        .success(true)
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
                                 .number("170.315 (b)(1)")

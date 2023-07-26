@@ -210,6 +210,7 @@ public class ConformanceMethodNormalizerTest {
     public void normalize_criterionHasAllowedConformanceMethods_addsAllowedConformanceMethodsToCertificationResult() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .certificationResult(CertificationResult.builder()
+                        .success(true)
                         .criterion(CertificationCriterion.builder()
                                     .id(1L)
                                     .number("170.315 (a)(1)")
@@ -225,6 +226,7 @@ public class ConformanceMethodNormalizerTest {
     public void normalize_criterionHasNoAllowedConformanceMethods_noAllowedConformanceMethodsAdded() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .certificationResult(CertificationResult.builder()
+                        .success(true)
                         .criterion(CertificationCriterion.builder()
                                     .id(4L)
                                     .number("170.315 (c)(2)")

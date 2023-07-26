@@ -35,7 +35,6 @@ import gov.healthit.chpl.validation.listing.reviewer.TestStandardRemovalReviewer
 import gov.healthit.chpl.validation.listing.reviewer.TestStandardReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.TestToolReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.TestingLabReviewer;
-import gov.healthit.chpl.validation.listing.reviewer.UnattestedCriteriaWithDataReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.UnsupportedCharacterReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.UrlReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.ValidDataReviewer;
@@ -110,10 +109,6 @@ public class Edition2015ListingValidator extends Validator {
     @Autowired
     @Qualifier("certificationDateReviewer")
     private CertificationDateReviewer certDateReviewer;
-
-    @Autowired
-    @Qualifier("unattestedCriteriaWithDataReviewer")
-    private UnattestedCriteriaWithDataReviewer unattestedCriteriaWithDataReviewer;
 
     @Autowired
     @Qualifier("testStandardRemovalReviewer")
@@ -274,7 +269,6 @@ public class Edition2015ListingValidator extends Validator {
         reviewers.add(oldCriteriaWithoutIcsReviewer);
         reviewers.add(certStatusReviewer);
         reviewers.add(certDateReviewer);
-        reviewers.add(unattestedCriteriaWithDataReviewer);
         reviewers.add(optionalStandardReviewer);
         reviewers.add(conformanceMethodReviewer);
         reviewers.add(tsrReviewer);
