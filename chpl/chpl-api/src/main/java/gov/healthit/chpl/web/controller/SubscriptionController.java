@@ -47,7 +47,8 @@ public class SubscriptionController {
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
-    @RequestMapping(value = "/subscribers/roles", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    @RequestMapping(value = "/subscribers/roles",
+        method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<SubscriberRole> getSubscriptionRoles() {
         if (!ff4j.check(FeatureList.SUBSCRIPTIONS)) {
             throw new NotImplementedException("The subscriptions feature is not yet implemented.");
@@ -59,7 +60,8 @@ public class SubscriptionController {
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
-    @RequestMapping(value = "/subscriptions/types", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    @RequestMapping(value = "/subscriptions/types",
+        method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<SubscriptionObjectType> getSubscribedObjectTypes() {
         if (!ff4j.check(FeatureList.SUBSCRIPTIONS)) {
             throw new NotImplementedException("The subscriptions feature is not yet implemented.");
@@ -71,8 +73,8 @@ public class SubscriptionController {
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
-    @RequestMapping(value = "/subscribers/{subscriberId:^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$}", method = RequestMethod.GET, produces = "application/json; charset=utf-8",
-            consumes = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/subscribers/{subscriberId:^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$}",
+        method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public Subscriber getSubscriber(@PathVariable String subscriberId) throws EntityRetrievalException {
         if (!ff4j.check(FeatureList.SUBSCRIPTIONS)) {
             throw new NotImplementedException("The subscriptions feature is not yet implemented.");
@@ -84,8 +86,8 @@ public class SubscriptionController {
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
-    @RequestMapping(value = "/subscribers/{subscriberId}/subscriptions", method = RequestMethod.GET, produces = "application/json; charset=utf-8",
-            consumes = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/subscribers/{subscriberId}/subscriptions",
+        method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public List<? extends ChplItemSubscriptionGroup> getSubscriptionsForSubscriber(@PathVariable String subscriberId)
         throws EntityRetrievalException {
         if (!ff4j.check(FeatureList.SUBSCRIPTIONS)) {
@@ -99,9 +101,10 @@ public class SubscriptionController {
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
-    @RequestMapping(value = "/subscribers/{subscriberId}/subscriptions/{subscriptionId}", method = RequestMethod.DELETE, produces = "application/json; charset=utf-8",
-            consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void deleteSubscription(@PathVariable String subscriberId, @PathVariable Long subscriptionId) throws EntityRetrievalException{
+    @RequestMapping(value = "/subscribers/{subscriberId}/subscriptions/{subscriptionId}",
+        method = RequestMethod.DELETE, produces = "application/json; charset=utf-8")
+    public void deleteSubscription(@PathVariable String subscriberId, @PathVariable Long subscriptionId)
+            throws EntityRetrievalException {
         if (!ff4j.check(FeatureList.SUBSCRIPTIONS)) {
             throw new NotImplementedException("The subscriptions feature is not yet implemented.");
         }
@@ -119,8 +122,7 @@ public class SubscriptionController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
     @RequestMapping(value = "/subscribers/{subscriberId}/subscriptions",
-            method = RequestMethod.DELETE, produces = "application/json; charset=utf-8",
-            consumes = MediaType.APPLICATION_JSON_VALUE)
+            method = RequestMethod.DELETE, produces = "application/json; charset=utf-8")
     public void deleteSubscriptionsForObject(@PathVariable String subscriberId,
             @RequestParam(name = "subscribedObjectTypeId") Long subscribedObjectTypeId,
             @RequestParam(name = "subscribedObjectId") Long subscribedObjectId) throws EntityRetrievalException {
@@ -136,8 +138,9 @@ public class SubscriptionController {
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
-    @RequestMapping(value = "/subscriptions", method = RequestMethod.POST, produces = "application/json; charset=utf-8",
-            consumes = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/subscriptions",
+        method = RequestMethod.POST, produces = "application/json; charset=utf-8",
+        consumes = MediaType.APPLICATION_JSON_VALUE)
     public Subscriber subscribe(@RequestBody(required = true) SubscriptionRequest subscriptionRequest)
         throws ValidationException {
         if (!ff4j.check(FeatureList.SUBSCRIPTIONS)) {
@@ -151,8 +154,9 @@ public class SubscriptionController {
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
-    @RequestMapping(value = "/subscriptions/confirm-subscriber", method = RequestMethod.PUT, produces = "application/json; charset=utf-8",
-            consumes = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/subscriptions/confirm-subscriber",
+        method = RequestMethod.PUT, produces = "application/json; charset=utf-8",
+        consumes = MediaType.APPLICATION_JSON_VALUE)
     public Subscriber confirmSubscriber(@RequestBody(required = true) SubscriberRequest request)
         throws ValidationException {
         if (!ff4j.check(FeatureList.SUBSCRIPTIONS)) {
@@ -165,8 +169,9 @@ public class SubscriptionController {
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
-    @RequestMapping(value = "/subscriptions/unsubscribe-all", method = RequestMethod.PUT, produces = "application/json; charset=utf-8",
-            consumes = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/subscriptions/unsubscribe-all",
+        method = RequestMethod.PUT, produces = "application/json; charset=utf-8",
+        consumes = MediaType.APPLICATION_JSON_VALUE)
     public void unsubscribeAll(@RequestBody(required = true) SubscriberRequest request)
         throws EntityRetrievalException {
         if (!ff4j.check(FeatureList.SUBSCRIPTIONS)) {
