@@ -14,8 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.statistics.CuresCriterionChartStatistic;
-import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.scheduler.job.curesStatistics.email.CuresStatisticsChartData;
 import lombok.extern.log4j.Log4j2;
 
@@ -37,8 +37,8 @@ public class CuresChartsOverTimeSheet {
         this.maxDaysToCheckForData = maxDaysToCheckForData;
     }
 
-    public void populate(Sheet sheet, CertificationCriterionDTO criterion) {
-        Map<LocalDate, Map<CertificationCriterionDTO, CuresCriterionChartStatistic>> dataOverTime = getDataOverTime(criterion);
+    public void populate(Sheet sheet, CertificationCriterion criterion) {
+        Map<LocalDate, Map<CertificationCriterion, CuresCriterionChartStatistic>> dataOverTime = getDataOverTime(criterion);
         Integer columnIndex = 1;
 
         for (LocalDate dateForColumn : dataOverTime.keySet()) {
@@ -69,14 +69,14 @@ public class CuresChartsOverTimeSheet {
         currentRow.getCell(columnIndex).setCellValue(stats == null ? 0 : stats.getNewCertificationCount());
     }
 
-    private Map<LocalDate, Map<CertificationCriterionDTO, CuresCriterionChartStatistic>> getDataOverTime(CertificationCriterionDTO criterion) {
-        Map<LocalDate, Map<CertificationCriterionDTO, CuresCriterionChartStatistic>> dataOverTime =
-                new TreeMap<LocalDate, Map<CertificationCriterionDTO, CuresCriterionChartStatistic>>();
+    private Map<LocalDate, Map<CertificationCriterion, CuresCriterionChartStatistic>> getDataOverTime(CertificationCriterion criterion) {
+        Map<LocalDate, Map<CertificationCriterion, CuresCriterionChartStatistic>> dataOverTime =
+                new TreeMap<LocalDate, Map<CertificationCriterion, CuresCriterionChartStatistic>>();
 
         getTargetDatesForPastYear().stream()
                 .sorted()
                 .forEach(targetDate -> {
-                    Map<CertificationCriterionDTO, CuresCriterionChartStatistic> stats = getDataAtOrNearTargetData(targetDate, criterion);
+                    Map<CertificationCriterion, CuresCriterionChartStatistic> stats = getDataAtOrNearTargetData(targetDate, criterion);
                     dataOverTime.put(targetDate, stats);
                 });
 
@@ -91,8 +91,8 @@ public class CuresChartsOverTimeSheet {
         return targetDates;
     }
 
-    private Map<CertificationCriterionDTO, CuresCriterionChartStatistic> getDataAtOrNearTargetData(LocalDate targetDate, CertificationCriterionDTO criterion) {
-        Map<CertificationCriterionDTO, CuresCriterionChartStatistic> data = null;
+    private Map<CertificationCriterion, CuresCriterionChartStatistic> getDataAtOrNearTargetData(LocalDate targetDate, CertificationCriterion criterion) {
+        Map<CertificationCriterion, CuresCriterionChartStatistic> data = null;
 
         for (Integer offset : getDayOffsetList()) {
             data = curesStatisticsChartData.getCuresCriterionChartStatistics(targetDate.plusDays(offset));
@@ -105,7 +105,7 @@ public class CuresChartsOverTimeSheet {
         return null;
     }
 
-    private Boolean isTheDataComplete(Map<CertificationCriterionDTO, CuresCriterionChartStatistic> data) {
+    private Boolean isTheDataComplete(Map<CertificationCriterion, CuresCriterionChartStatistic> data) {
         for (CuresCriterionChartStatistic stats : data.values()) {
             if (ObjectUtils.anyNull(stats.getExistingCertificationCount(),
                 stats.getListingCount(),

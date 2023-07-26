@@ -18,7 +18,6 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.domain.CertificationCriterion;
-import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import lombok.extern.log4j.Log4j2;
 
 @Component
@@ -44,7 +43,6 @@ public class CertificationCriterionService {
     @PostConstruct
     public void postConstruct() {
         criteriaByIdMap = certificationCriterionDAO.findAll().stream()
-                .map(criterion -> new CertificationCriterion(criterion))
                 .collect(Collectors.toMap(CertificationCriterion::getId, cc -> cc));
         criteriaByNumberMap = criteriaByIdMap.values().stream()
                 .collect(Collectors.groupingBy(CertificationCriterion::getNumber));
@@ -91,12 +89,6 @@ public class CertificationCriterionService {
         return originalToCuresCriteriaMap;
     }
 
-    public int sortCriteria(CertificationCriterionDTO c1, CertificationCriterionDTO c2) {
-        String valueA = formatCriteriaNumber(c1);
-        String valueB = formatCriteriaNumber(c2);
-        return getCertificationResultSortIndex(valueA) - getCertificationResultSortIndex(valueB);
-    }
-
     public int sortCriteria(CertificationCriterion c1, CertificationCriterion c2) {
         String valueA = formatCriteriaNumber(c1);
         String valueB = formatCriteriaNumber(c2);
@@ -108,10 +100,6 @@ public class CertificationCriterionService {
     }
 
     public static boolean hasCuresInTitle(CertificationCriterion criterion) {
-        return hasCuresInTitle(criterion.getTitle());
-    }
-
-    public static boolean hasCuresInTitle(CertificationCriterionDTO criterion) {
         return hasCuresInTitle(criterion.getTitle());
     }
 
@@ -133,10 +121,6 @@ public class CertificationCriterionService {
             result = "Removed | " + result;
         }
         return result;
-    }
-
-    public static String formatCriteriaNumber(CertificationCriterionDTO criterion) {
-        return formatCriteriaNumber(new CertificationCriterion(criterion));
     }
 
     public boolean isCriteriaNumber(String input) {

@@ -2,6 +2,7 @@ package gov.healthit.chpl.dto;
 
 import java.io.Serializable;
 
+import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.entity.listing.CQMResultCriteriaEntity;
 
 public class CQMResultCriteriaDTO implements Serializable {
@@ -9,7 +10,7 @@ public class CQMResultCriteriaDTO implements Serializable {
     private Long id;
     private Long cqmResultId;
     private Long criterionId;
-    private CertificationCriterionDTO criterion;
+    private CertificationCriterion criterion;
 
     public CQMResultCriteriaDTO() {
     }
@@ -20,7 +21,7 @@ public class CQMResultCriteriaDTO implements Serializable {
         this.cqmResultId = entity.getCqmResultId();
         this.criterionId = entity.getCertificationCriterionId();
         if (entity.getCertCriteria() != null) {
-            this.criterion = new CertificationCriterionDTO(entity.getCertCriteria());
+            this.criterion = entity.getCertCriteria().toDomain();
         }
     }
 
@@ -48,11 +49,11 @@ public class CQMResultCriteriaDTO implements Serializable {
         this.criterionId = criterionId;
     }
 
-    public CertificationCriterionDTO getCriterion() {
+    public CertificationCriterion getCriterion() {
         return criterion;
     }
 
-    public void setCriterion(final CertificationCriterionDTO criterion) {
+    public void setCriterion(final CertificationCriterion criterion) {
         this.criterion = criterion;
     }
 }

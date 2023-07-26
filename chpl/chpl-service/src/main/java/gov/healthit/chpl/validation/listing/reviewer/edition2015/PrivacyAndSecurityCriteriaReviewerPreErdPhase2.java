@@ -96,7 +96,7 @@ public class PrivacyAndSecurityCriteriaReviewerPreErdPhase2 implements Compariso
 
     private CertificationCriterion getCertificationCriterion(Long certificationCriterionId) {
         try {
-            return new CertificationCriterion(certificationCriterionDao.getById(certificationCriterionId));
+            return certificationCriterionDao.getById(certificationCriterionId);
         } catch (Exception e) {
             return null;
         }

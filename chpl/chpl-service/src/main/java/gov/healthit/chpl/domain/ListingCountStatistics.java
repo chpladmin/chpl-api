@@ -22,7 +22,7 @@ public class ListingCountStatistics implements Serializable {
         this.developerCount = dto.getDeveloperCount();
         this.productCount = dto.getProductCount();
         if (dto.getCertificationEdition() != null) {
-            this.certificationEdition = new CertificationEdition(dto.getCertificationEdition());
+            this.certificationEdition = dto.getCertificationEdition();
         }
         if (dto.getCertificationStatus() != null) {
             this.certificationStatus = dto.getCertificationStatus();

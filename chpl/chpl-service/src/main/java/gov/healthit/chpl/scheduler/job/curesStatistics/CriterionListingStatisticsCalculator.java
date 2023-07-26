@@ -10,9 +10,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.dao.statistics.CriterionListingStatisticsDAO;
+import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.domain.statistics.CriterionListingCountStatistic;
-import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import lombok.extern.log4j.Log4j2;
 
 @Component
@@ -44,13 +44,13 @@ public class CriterionListingStatisticsCalculator {
     }
 
     private List<CriterionListingCountStatistic> calculateCurrentStatistics(LocalDate statisticDate) {
-        List<CertificationCriterionDTO> allCriteria = criteriaDao.findByCertificationEditionYear(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear());
+        List<CertificationCriterion> allCriteria = criteriaDao.findByCertificationEditionYear(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear());
         return allCriteria.stream()
             .map(criterion -> getStatisticForCriterion(criterion, statisticDate))
             .collect(Collectors.toList());
     }
 
-    private CriterionListingCountStatistic getStatisticForCriterion(CertificationCriterionDTO criterion, LocalDate statisticDate) {
+    private CriterionListingCountStatistic getStatisticForCriterion(CertificationCriterion criterion, LocalDate statisticDate) {
         LOGGER.info("Getting listing count for criterion id: " + criterion.getId() + ", number: " + criterion.getNumber());
         Long listingCount = criterionListingStatisticsDao.getListingCountForCriterion(criterion.getId());
         return CriterionListingCountStatistic.builder()

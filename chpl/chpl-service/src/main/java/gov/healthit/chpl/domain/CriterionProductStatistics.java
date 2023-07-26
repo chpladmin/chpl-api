@@ -38,7 +38,7 @@ public class CriterionProductStatistics implements Serializable {
         this.id = dto.getId();
         this.productCount = dto.getProductCount();
         this.certificationCriterionId = dto.getCertificationCriterionId();
-        this.criterion = new CertificationCriterion(dto.getCriteria());
+        this.criterion = dto.getCriteria();
         this.deleted = dto.getDeleted();
         this.lastModifiedDate = dto.getLastModifiedDate();
         this.lastModifiedUser = dto.getLastModifiedUser();

@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.entity.listing.CertificationResultConformanceMethodEntity;
 import gov.healthit.chpl.entity.listing.CertificationResultDetailsEntity;
 import gov.healthit.chpl.functionalityTested.CertificationResultFunctionalityTested;
@@ -37,7 +38,7 @@ public class CertificationResultDetailsDTO implements Serializable {
     private String useCases;
     private String serviceBaseUrlList;
     private String privacySecurityFramework;
-    private CertificationCriterionDTO criterion;
+    private CertificationCriterion criterion;
 
     private List<CertificationResultOptionalStandard> optionalStandards;
     private List<CertificationResultFunctionalityTested> functionalitiesTested;
@@ -68,7 +69,7 @@ public class CertificationResultDetailsDTO implements Serializable {
         this.serviceBaseUrlList = entity.getServiceBaseUrlList();
         this.privacySecurityFramework = entity.getPrivacySecurityFramework();
         if (entity.getCertificationCriterion() != null) {
-            this.criterion = new CertificationCriterionDTO(entity.getCertificationCriterion());
+            this.criterion = entity.getCertificationCriterion().toDomain();
         }
 
         if (entity.getCertificationResultOptionalStandards() != null) {

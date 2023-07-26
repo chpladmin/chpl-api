@@ -93,10 +93,13 @@ public class CertificationCriterionEntity implements Serializable {
     private Boolean removed;
 
     public static CertificationCriterionEntity getNewCertificationCriterionEntity(CertificationCriterion criterion) {
+        CertificationEditionEntity edition = new CertificationEditionEntity();
+        edition.setId(criterion.getCertificationEditionId());
+
         return CertificationCriterionEntity.builder()
                 .id(criterion.getId())
                 .certificationEditionId(criterion.getCertificationEditionId())
-                .certificationEdition(new CertificationEditionEntity(criterion.getCertificationEditionId()))
+                .certificationEdition(edition)
                 .description(criterion.getDescription())
                 .number(criterion.getNumber())
                 .title(criterion.getTitle())

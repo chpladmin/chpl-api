@@ -3,6 +3,7 @@ package gov.healthit.chpl.dto;
 import java.io.Serializable;
 import java.util.Date;
 
+import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.entity.TestDataCriteriaMapEntity;
 import gov.healthit.chpl.util.Util;
 
@@ -10,7 +11,7 @@ public class TestDataCriteriaMapDTO implements Serializable {
     private static final long serialVersionUID = -1863384619196377463L;
     private Long id;
     private Long criteriaId;
-    private CertificationCriterionDTO criteria;
+    private CertificationCriterion criteria;
     private Long testDataId;
     private TestDataDTO testData;
     private Date creationDate;
@@ -27,10 +28,10 @@ public class TestDataCriteriaMapDTO implements Serializable {
         this.id = entity.getId();
         this.criteriaId = entity.getCertificationCriterionId();
         if (entity.getCertificationCriterion() != null) {
-            this.criteria = new CertificationCriterionDTO(entity.getCertificationCriterion());
+            this.criteria = entity.getCertificationCriterion().toDomain();
         }
         this.testDataId = entity.getTestDataId();
-        if(entity.getTestData() != null) {
+        if (entity.getTestData() != null) {
             this.testData = new TestDataDTO(entity.getTestData());
         }
 
@@ -71,7 +72,7 @@ public class TestDataCriteriaMapDTO implements Serializable {
     public void setLastModifiedDate(final Date lastModifiedDate) {
         this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
     }
-    
+
     public Long getLastModifiedUser() {
         return lastModifiedUser;
     }
@@ -88,11 +89,11 @@ public class TestDataCriteriaMapDTO implements Serializable {
         this.criteriaId = criteriaId;
     }
 
-    public CertificationCriterionDTO getCriteria() {
+    public CertificationCriterion getCriteria() {
         return criteria;
     }
 
-    public void setCriteria(final CertificationCriterionDTO criteria) {
+    public void setCriteria(final CertificationCriterion criteria) {
         this.criteria = criteria;
     }
 

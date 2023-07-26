@@ -9,9 +9,9 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.dao.CertificationEditionDAO;
 import gov.healthit.chpl.dao.CertifiedProductSearchDAO;
 import gov.healthit.chpl.dao.ListingGraphDAO;
+import gov.healthit.chpl.domain.CertificationEdition;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.dto.CertificationEditionDTO;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import lombok.extern.log4j.Log4j2;
@@ -90,10 +90,10 @@ public class InheritanceReviewer implements Reviewer {
     }
 
     private void reviewListingParentsHaveSameEditionAsListing(List<Long> parentIds, CertifiedProductSearchDetails listing) {
-        List<CertificationEditionDTO> parentEditions = certEditionDao.getEditions(parentIds);
+        List<CertificationEdition> parentEditions = certEditionDao.getEditions(parentIds);
         parentEditions.stream()
                 .filter(parentEdition -> !listing.getCertificationEdition().get(CertifiedProductSearchDetails.EDITION_ID_KEY).toString()
-                        .equals(parentEdition.getId().toString()))
+                        .equals(parentEdition.getCertificationEditionId().toString()))
                 .forEach(parentEdition -> listing.addBusinessErrorMessage(
                         msgUtil.getMessage("listing.icsEditionMismatch", parentEdition.getYear())));
     }

@@ -3,6 +3,7 @@ package gov.healthit.chpl.dto;
 import java.io.Serializable;
 import java.util.Date;
 
+import gov.healthit.chpl.domain.CertificationEdition;
 import gov.healthit.chpl.entity.statistics.IncumbentDevelopersStatisticsEntity;
 import gov.healthit.chpl.util.Util;
 
@@ -20,8 +21,8 @@ public class IncumbentDevelopersStatisticsDTO implements Serializable {
     private Long incumbentCount;
     private Long oldCertificationEditionId;
     private Long newCertificationEditionId;
-    private CertificationEditionDTO oldCertificationEdition;
-    private CertificationEditionDTO newCertificationEdition;
+    private CertificationEdition oldCertificationEdition;
+    private CertificationEdition newCertificationEdition;
     private Date creationDate;
     private Boolean deleted;
     private Date lastModifiedDate;
@@ -45,10 +46,10 @@ public class IncumbentDevelopersStatisticsDTO implements Serializable {
         this.oldCertificationEditionId = entity.getOldCertificationEditionId();
         this.newCertificationEditionId = entity.getNewCertificationEditionId();
         if (entity.getOldCertificationEdition() != null) {
-            this.oldCertificationEdition = new CertificationEditionDTO(entity.getOldCertificationEdition());
+            this.oldCertificationEdition = entity.getOldCertificationEdition().toDomain();
         }
         if (entity.getNewCertificationEdition() != null) {
-            this.newCertificationEdition = new CertificationEditionDTO(entity.getNewCertificationEdition());
+            this.newCertificationEdition = entity.getNewCertificationEdition().toDomain();
         }
         this.creationDate = entity.getCreationDate();
         this.deleted = entity.getDeleted();
@@ -128,19 +129,19 @@ public class IncumbentDevelopersStatisticsDTO implements Serializable {
         this.newCertificationEditionId = newCertificationEditionId;
     }
 
-    public CertificationEditionDTO getOldCertificationEdition() {
+    public CertificationEdition getOldCertificationEdition() {
         return oldCertificationEdition;
     }
 
-    public void setOldCertificationEdition(final CertificationEditionDTO oldCertificationEdition) {
+    public void setOldCertificationEdition(final CertificationEdition oldCertificationEdition) {
         this.oldCertificationEdition = oldCertificationEdition;
     }
 
-    public CertificationEditionDTO getNewCertificationEdition() {
+    public CertificationEdition getNewCertificationEdition() {
         return newCertificationEdition;
     }
 
-    public void setNewCertificationEdition(final CertificationEditionDTO newCertificationEdition) {
+    public void setNewCertificationEdition(final CertificationEdition newCertificationEdition) {
         this.newCertificationEdition = newCertificationEdition;
     }
 

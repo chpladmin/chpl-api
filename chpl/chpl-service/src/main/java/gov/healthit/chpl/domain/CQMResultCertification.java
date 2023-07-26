@@ -51,7 +51,7 @@ public class CQMResultCertification implements Serializable {
     public CQMResultCertification(CQMResultCriteriaDTO dto) {
         this.id = dto.getId();
         this.certificationId = dto.getCriterionId();
-        this.criterion = new CertificationCriterion(dto.getCriterion());
+        this.criterion = dto.getCriterion();
         if (dto.getCriterion() != null) {
             this.certificationNumber = dto.getCriterion().getNumber();
         }

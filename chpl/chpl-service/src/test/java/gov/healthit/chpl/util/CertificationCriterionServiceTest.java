@@ -13,14 +13,13 @@ import org.springframework.core.env.Environment;
 
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.domain.CertificationCriterion;
-import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.service.CertificationCriterionService;
 
 public class CertificationCriterionServiceTest {
 
-    private CertificationCriterionDTO criterionDto;
     private CertificationCriterion criterion;
-    private CertificationCriterionDTO criterionDto2;
+    private CertificationCriterion criterion1;
+    private CertificationCriterion criterion2;
 
     private CertificationCriterionService service;
     private Environment env;
@@ -28,15 +27,15 @@ public class CertificationCriterionServiceTest {
 
     @Before
     public void setup() {
-        criterionDto = new CertificationCriterionDTO();
         criterion = new CertificationCriterion();
-        criterionDto2 = new CertificationCriterionDTO();
+        criterion1 = new CertificationCriterion();
+        criterion2 = new CertificationCriterion();
 
         env = Mockito.mock(Environment.class);
         Mockito.when(env.getProperty("criteria.sortOrder")).thenReturn(sortOrderFromProperty());
 
         certificationCriterionDAO = Mockito.mock(CertificationCriterionDAO.class);
-        Mockito.when(certificationCriterionDAO.findAll()).thenReturn(new ArrayList<CertificationCriterionDTO>());
+        Mockito.when(certificationCriterionDAO.findAll()).thenReturn(new ArrayList<CertificationCriterion>());
 
         service = new CertificationCriterionService(certificationCriterionDAO, env);
         service.postConstruct();
@@ -44,43 +43,43 @@ public class CertificationCriterionServiceTest {
 
     @Test
     public void sortCriteria_BetweenEditions_SortCorrectly() {
-        criterionDto.setNumber("170.302 (h)");
-        criterionDto2.setNumber("170.314 (a)(1)");
-        assertTrue("2011 should be earlier than 2014", service.sortCriteria(criterionDto, criterionDto2) < 0);
-        criterionDto.setNumber("170.315 (b)(2)");
-        assertTrue("2015 should be later than 2014", service.sortCriteria(criterionDto, criterionDto2) > 0);
-        criterionDto2.setNumber("170.304 (d)");
-        assertTrue("2015 should be later than 2011", service.sortCriteria(criterionDto, criterionDto2) > 0);
+        criterion1.setNumber("170.302 (h)");
+        criterion2.setNumber("170.314 (a)(1)");
+        assertTrue("2011 should be earlier than 2014", service.sortCriteria(criterion1, criterion2) < 0);
+        criterion1.setNumber("170.315 (b)(2)");
+        assertTrue("2015 should be later than 2014", service.sortCriteria(criterion1, criterion2) > 0);
+        criterion2.setNumber("170.304 (d)");
+        assertTrue("2015 should be later than 2011", service.sortCriteria(criterion1, criterion2) > 0);
     }
 
     @Test
     public void sortCriteria_WithOneParagraph_SortCorrectly() {
-        criterionDto.setNumber("170.302 (h)");
-        criterionDto2.setNumber("170.302 (i)");
-        assertTrue("h should be earlier than i", service.sortCriteria(criterionDto, criterionDto2) < 0);
+        criterion1.setNumber("170.302 (h)");
+        criterion2.setNumber("170.302 (i)");
+        assertTrue("h should be earlier than i", service.sortCriteria(criterion1, criterion2) < 0);
     }
 
     @Test
     public void sortCriteria_WithTwoParagraphs_SortCorrectly() {
-        criterionDto.setNumber("170.314 (a)(3)");
-        criterionDto2.setNumber("170.314 (a)(2)");
-        assertTrue("3 should be after 2", service.sortCriteria(criterionDto, criterionDto2) > 0);
+        criterion1.setNumber("170.314 (a)(3)");
+        criterion2.setNumber("170.314 (a)(2)");
+        assertTrue("3 should be after 2", service.sortCriteria(criterion1, criterion2) > 0);
     }
 
     @Test
     public void sortCriteria_WithDifferingParagraphComponentCount_SortCorrectly() {
-        criterionDto.setNumber("170.314 (d)(3)");
-        criterionDto2.setNumber("170.314 (d)(3)(A)");
-        assertTrue("fewer paragraphs should be before ones with more", service.sortCriteria(criterionDto, criterionDto2) < 0);
+        criterion1.setNumber("170.314 (d)(3)");
+        criterion2.setNumber("170.314 (d)(3)(A)");
+        assertTrue("fewer paragraphs should be before ones with more", service.sortCriteria(criterion1, criterion2) < 0);
     }
 
     @Test
     public void sortCriteria_WithMatchingNumbers_SortCorrectly() {
-        criterionDto.setNumber("170.314 (a)(3)");
-        criterionDto.setTitle("This is a title");
-        criterionDto2.setNumber("170.314 (a)(3)");
-        criterionDto2.setTitle("This is a title (Cures Update)");
-        assertTrue("should sort by title if paragraphs match", service.sortCriteria(criterionDto, criterionDto2) < 0);
+        criterion1.setNumber("170.314 (a)(3)");
+        criterion1.setTitle("This is a title");
+        criterion2.setNumber("170.314 (a)(3)");
+        criterion2.setTitle("This is a title (Cures Update)");
+        assertTrue("should sort by title if paragraphs match", service.sortCriteria(criterion1, criterion2) < 0);
     }
 
     @Test

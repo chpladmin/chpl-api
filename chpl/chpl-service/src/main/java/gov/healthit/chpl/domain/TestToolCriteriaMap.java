@@ -1,6 +1,5 @@
 package gov.healthit.chpl.domain;
 
-import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.entity.TestToolCriteriaMapEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,7 +22,7 @@ public class TestToolCriteriaMap {
             this.testTool = new TestTool(entity.getTestTool());
         }
         if (entity.getCriteria() != null) {
-            this.criterion = new CertificationCriterion(new CertificationCriterionDTO(entity.getCriteria()));
+            this.criterion = entity.getCriteria().toDomain();
         }
     }
 }

@@ -15,7 +15,6 @@ import org.mockito.Mockito;
 
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.domain.CertificationCriterion;
-import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.upload.listing.ListingUploadHandlerUtil;
 import gov.healthit.chpl.upload.listing.ListingUploadTestUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -53,7 +52,7 @@ public class CertificationCriterionUploadHandlerTest {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString("CRITERIA_170_315_R_4__C").get(0);
         assertNotNull(headingRecord);
         Mockito.when(criterionDao.getAllByNumber(ArgumentMatchers.eq("170.315 (r)(4)")))
-            .thenReturn(new ArrayList<CertificationCriterionDTO>());
+            .thenReturn(new ArrayList<CertificationCriterion>());
 
         CertificationCriterion parsedCriterion = handler.handle(headingRecord);
         assertNull(parsedCriterion);
@@ -63,8 +62,8 @@ public class CertificationCriterionUploadHandlerTest {
     public void parseCriterion_ValidCriterionFormatWithSingleMatch_ReturnsCriterion() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString("CRITERIA_170_315_D_4__C").get(0);
         assertNotNull(headingRecord);
-        List<CertificationCriterionDTO> criterionDtos = new ArrayList<CertificationCriterionDTO>();
-        criterionDtos.add(createCriterionDto(1L, "170.315 (d)(4)", "test title"));
+        List<CertificationCriterion> criterionDtos = new ArrayList<CertificationCriterion>();
+        criterionDtos.add(createCriterion(1L, "170.315 (d)(4)", "test title"));
         Mockito.when(criterionDao.getAllByNumber(ArgumentMatchers.eq("170.315 (d)(4)")))
             .thenReturn(criterionDtos);
 
@@ -78,9 +77,9 @@ public class CertificationCriterionUploadHandlerTest {
     public void parseCriterion_ValidCriterionFormatWithTwoMatches_ReturnsCriterion() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString("CRITERIA_170_315_D_4__C").get(0);
         assertNotNull(headingRecord);
-        List<CertificationCriterionDTO> criterionDtos = new ArrayList<CertificationCriterionDTO>();
-        criterionDtos.add(createCriterionDto(1L, "170.315 (d)(4)", "test title"));
-        criterionDtos.add(createCriterionDto(2L, "170.315 (d)(4)", "test title (Cures Update)"));
+        List<CertificationCriterion> criterionDtos = new ArrayList<CertificationCriterion>();
+        criterionDtos.add(createCriterion(1L, "170.315 (d)(4)", "test title"));
+        criterionDtos.add(createCriterion(2L, "170.315 (d)(4)", "test title (Cures Update)"));
 
         Mockito.when(criterionDao.getAllByNumber(ArgumentMatchers.eq("170.315 (d)(4)")))
             .thenReturn(criterionDtos);
@@ -95,9 +94,9 @@ public class CertificationCriterionUploadHandlerTest {
     public void parseCriterion_ValidCuresCriterionColumnWithTwoMatches_ReturnsCriterion() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString("CRITERIA_170_315_D_3_Cures__C").get(0);
         assertNotNull(headingRecord);
-        List<CertificationCriterionDTO> criterionDtos = new ArrayList<CertificationCriterionDTO>();
-        criterionDtos.add(createCriterionDto(1L, "170.315 (d)(3)", "test title"));
-        criterionDtos.add(createCriterionDto(2L, "170.315 (d)(3)", "test title (Cures Update)"));
+        List<CertificationCriterion> criterionDtos = new ArrayList<CertificationCriterion>();
+        criterionDtos.add(createCriterion(1L, "170.315 (d)(3)", "test title"));
+        criterionDtos.add(createCriterion(2L, "170.315 (d)(3)", "test title (Cures Update)"));
         Mockito.when(criterionDao.getAllByNumber(ArgumentMatchers.eq("170.315 (d)(3)")))
             .thenReturn(criterionDtos);
 
@@ -107,8 +106,8 @@ public class CertificationCriterionUploadHandlerTest {
         assertEquals("170.315 (d)(3)", parsedCriterion.getNumber());
     }
 
-    private CertificationCriterionDTO createCriterionDto(Long id, String number, String title) {
-        return CertificationCriterionDTO.builder()
+    private CertificationCriterion createCriterion(Long id, String number, String title) {
+        return CertificationCriterion.builder()
                 .id(id)
                 .number(number)
                 .title(title)

@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.domain.CertificationCriterion;
-import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.upload.listing.ListingUploadHandlerUtil;
 import lombok.extern.log4j.Log4j2;
 
@@ -45,13 +44,13 @@ public class CertificationCriterionUploadHandler {
     }
 
     private CertificationCriterion getCriterion(String criterionNumber, boolean isCures) {
-        List<CertificationCriterionDTO> criteriaWithNumber = criteriaDao.getAllByNumber(criterionNumber);
+        List<CertificationCriterion> criteriaWithNumber = criteriaDao.getAllByNumber(criterionNumber);
         if (criteriaWithNumber == null || criteriaWithNumber.size() == 0) {
             LOGGER.warn("Could not find a certification criterion matching " + criterionNumber);
             return null;
         }
 
-        Optional<CertificationCriterionDTO> criterionOpt = null;
+        Optional<CertificationCriterion> criterionOpt = null;
         if (criteriaWithNumber.size() == 1) {
             criterionOpt = Optional.of(criteriaWithNumber.get(0));
         } else if (isCures) {
@@ -70,6 +69,6 @@ public class CertificationCriterionUploadHandler {
             LOGGER.warn("Could not find a certification criterion (cures=" + isCures + ") matching " + criterionNumber);
             return null;
         }
-        return new CertificationCriterion(criterionOpt.get());
+        return criterionOpt.get();
     }
 }

@@ -20,7 +20,6 @@ import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultAdditionalSoftware;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.util.CertificationResultRules;
 
 public class CertificationCriterionNormalizerTest {
@@ -43,8 +42,8 @@ public class CertificationCriterionNormalizerTest {
     public void normalize_noCriteriaInListing_allCriteriaAddedAsUnattestedAndAllFieldsNull() {
         Mockito.when(criterionDao.findByCertificationEditionYear(ArgumentMatchers.anyString()))
             .thenReturn(Stream.of(
-                    buildCriterionDto(1L, "170.315 (a)(1)", "a1"),
-                    buildCriterionDto(2L, "170.315 (a)(2)", "a2"))
+                    buildCriterion(1L, "170.315 (a)(1)", "a1"),
+                    buildCriterion(2L, "170.315 (a)(2)", "a2"))
                     .collect(Collectors.toList()));
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .build();
@@ -83,8 +82,8 @@ public class CertificationCriterionNormalizerTest {
             .thenReturn(true);
         Mockito.when(criterionDao.findByCertificationEditionYear(ArgumentMatchers.anyString()))
             .thenReturn(Stream.of(
-                    buildCriterionDto(1L, "170.315 (a)(1)", "a1"),
-                    buildCriterionDto(2L, "170.315 (a)(2)", "a2"))
+                    buildCriterion(1L, "170.315 (a)(1)", "a1"),
+                    buildCriterion(2L, "170.315 (a)(2)", "a2"))
                     .collect(Collectors.toList()));
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .build();
@@ -108,8 +107,8 @@ public class CertificationCriterionNormalizerTest {
             .thenReturn(true);
         Mockito.when(criterionDao.findByCertificationEditionYear(ArgumentMatchers.anyString()))
             .thenReturn(Stream.of(
-                    buildCriterionDto(1L, "170.315 (a)(1)", "a1"),
-                    buildCriterionDto(2L, "170.315 (a)(2)", "a2"))
+                    buildCriterion(1L, "170.315 (a)(1)", "a1"),
+                    buildCriterion(2L, "170.315 (a)(2)", "a2"))
                     .collect(Collectors.toList()));
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .build();
@@ -133,8 +132,8 @@ public class CertificationCriterionNormalizerTest {
             .thenReturn(true);
         Mockito.when(criterionDao.findByCertificationEditionYear(ArgumentMatchers.anyString()))
             .thenReturn(Stream.of(
-                    buildCriterionDto(1L, "170.315 (a)(1)", "a1"),
-                    buildCriterionDto(2L, "170.315 (a)(2)", "a2"))
+                    buildCriterion(1L, "170.315 (a)(1)", "a1"),
+                    buildCriterion(2L, "170.315 (a)(2)", "a2"))
                     .collect(Collectors.toList()));
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .build();
@@ -158,8 +157,8 @@ public class CertificationCriterionNormalizerTest {
             .thenReturn(true);
         Mockito.when(criterionDao.findByCertificationEditionYear(ArgumentMatchers.anyString()))
             .thenReturn(Stream.of(
-                    buildCriterionDto(1L, "170.315 (a)(1)", "a1"),
-                    buildCriterionDto(2L, "170.315 (a)(2)", "a2"))
+                    buildCriterion(1L, "170.315 (a)(1)", "a1"),
+                    buildCriterion(2L, "170.315 (a)(2)", "a2"))
                     .collect(Collectors.toList()));
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .build();
@@ -183,8 +182,8 @@ public class CertificationCriterionNormalizerTest {
             .thenReturn(true);
         Mockito.when(criterionDao.findByCertificationEditionYear(ArgumentMatchers.anyString()))
             .thenReturn(Stream.of(
-                    buildCriterionDto(1L, "170.315 (a)(1)", "a1"),
-                    buildCriterionDto(2L, "170.315 (a)(2)", "a2"))
+                    buildCriterion(1L, "170.315 (a)(1)", "a1"),
+                    buildCriterion(2L, "170.315 (a)(2)", "a2"))
                     .collect(Collectors.toList()));
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .build();
@@ -208,8 +207,8 @@ public class CertificationCriterionNormalizerTest {
             .thenReturn(true);
         Mockito.when(criterionDao.findByCertificationEditionYear(ArgumentMatchers.anyString()))
             .thenReturn(Stream.of(
-                    buildCriterionDto(1L, "170.315 (a)(1)", "a1"),
-                    buildCriterionDto(2L, "170.315 (a)(2)", "a2"))
+                    buildCriterion(1L, "170.315 (a)(1)", "a1"),
+                    buildCriterion(2L, "170.315 (a)(2)", "a2"))
                     .collect(Collectors.toList()));
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .build();
@@ -233,8 +232,8 @@ public class CertificationCriterionNormalizerTest {
             .thenReturn(true);
         Mockito.when(criterionDao.findByCertificationEditionYear(ArgumentMatchers.anyString()))
             .thenReturn(Stream.of(
-                    buildCriterionDto(1L, "170.315 (a)(1)", "a1"),
-                    buildCriterionDto(2L, "170.315 (a)(2)", "a2"))
+                    buildCriterion(1L, "170.315 (a)(1)", "a1"),
+                    buildCriterion(2L, "170.315 (a)(2)", "a2"))
                     .collect(Collectors.toList()));
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .build();
@@ -258,8 +257,8 @@ public class CertificationCriterionNormalizerTest {
             .thenReturn(true);
         Mockito.when(criterionDao.findByCertificationEditionYear(ArgumentMatchers.anyString()))
             .thenReturn(Stream.of(
-                    buildCriterionDto(1L, "170.315 (a)(1)", "a1"),
-                    buildCriterionDto(2L, "170.315 (a)(2)", "a2"))
+                    buildCriterion(1L, "170.315 (a)(1)", "a1"),
+                    buildCriterion(2L, "170.315 (a)(2)", "a2"))
                     .collect(Collectors.toList()));
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .build();
@@ -283,8 +282,8 @@ public class CertificationCriterionNormalizerTest {
             .thenReturn(true);
         Mockito.when(criterionDao.findByCertificationEditionYear(ArgumentMatchers.anyString()))
             .thenReturn(Stream.of(
-                    buildCriterionDto(1L, "170.315 (a)(1)", "a1"),
-                    buildCriterionDto(2L, "170.315 (a)(2)", "a2"))
+                    buildCriterion(1L, "170.315 (a)(1)", "a1"),
+                    buildCriterion(2L, "170.315 (a)(2)", "a2"))
                     .collect(Collectors.toList()));
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .build();
@@ -308,8 +307,8 @@ public class CertificationCriterionNormalizerTest {
             .thenReturn(true);
         Mockito.when(criterionDao.findByCertificationEditionYear(ArgumentMatchers.anyString()))
             .thenReturn(Stream.of(
-                    buildCriterionDto(1L, "170.315 (a)(1)", "a1"),
-                    buildCriterionDto(2L, "170.315 (a)(2)", "a2"))
+                    buildCriterion(1L, "170.315 (a)(1)", "a1"),
+                    buildCriterion(2L, "170.315 (a)(2)", "a2"))
                     .collect(Collectors.toList()));
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .build();
@@ -333,8 +332,8 @@ public class CertificationCriterionNormalizerTest {
             .thenReturn(true);
         Mockito.when(criterionDao.findByCertificationEditionYear(ArgumentMatchers.anyString()))
             .thenReturn(Stream.of(
-                    buildCriterionDto(1L, "170.315 (a)(1)", "a1"),
-                    buildCriterionDto(2L, "170.315 (a)(2)", "a2"))
+                    buildCriterion(1L, "170.315 (a)(1)", "a1"),
+                    buildCriterion(2L, "170.315 (a)(2)", "a2"))
                     .collect(Collectors.toList()));
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .build();
@@ -358,8 +357,8 @@ public class CertificationCriterionNormalizerTest {
             .thenReturn(true);
         Mockito.when(criterionDao.findByCertificationEditionYear(ArgumentMatchers.anyString()))
             .thenReturn(Stream.of(
-                    buildCriterionDto(1L, "170.315 (a)(1)", "a1"),
-                    buildCriterionDto(2L, "170.315 (a)(2)", "a2"))
+                    buildCriterion(1L, "170.315 (a)(1)", "a1"),
+                    buildCriterion(2L, "170.315 (a)(2)", "a2"))
                     .collect(Collectors.toList()));
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .build();
@@ -383,8 +382,8 @@ public class CertificationCriterionNormalizerTest {
             .thenReturn(true);
         Mockito.when(criterionDao.findByCertificationEditionYear(ArgumentMatchers.anyString()))
             .thenReturn(Stream.of(
-                    buildCriterionDto(1L, "170.315 (a)(1)", "a1"),
-                    buildCriterionDto(2L, "170.315 (a)(2)", "a2"))
+                    buildCriterion(1L, "170.315 (a)(1)", "a1"),
+                    buildCriterion(2L, "170.315 (a)(2)", "a2"))
                     .collect(Collectors.toList()));
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .build();
@@ -408,8 +407,8 @@ public class CertificationCriterionNormalizerTest {
             .thenReturn(true);
         Mockito.when(criterionDao.findByCertificationEditionYear(ArgumentMatchers.anyString()))
             .thenReturn(Stream.of(
-                    buildCriterionDto(1L, "170.315 (a)(1)", "a1"),
-                    buildCriterionDto(2L, "170.315 (a)(2)", "a2"))
+                    buildCriterion(1L, "170.315 (a)(1)", "a1"),
+                    buildCriterion(2L, "170.315 (a)(2)", "a2"))
                     .collect(Collectors.toList()));
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .build();
@@ -433,8 +432,8 @@ public class CertificationCriterionNormalizerTest {
             .thenReturn(true);
         Mockito.when(criterionDao.findByCertificationEditionYear(ArgumentMatchers.anyString()))
             .thenReturn(Stream.of(
-                    buildCriterionDto(1L, "170.315 (a)(1)", "a1"),
-                    buildCriterionDto(2L, "170.315 (a)(2)", "a2"))
+                    buildCriterion(1L, "170.315 (a)(1)", "a1"),
+                    buildCriterion(2L, "170.315 (a)(2)", "a2"))
                     .collect(Collectors.toList()));
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .build();
@@ -458,8 +457,8 @@ public class CertificationCriterionNormalizerTest {
             .thenReturn(true);
         Mockito.when(criterionDao.findByCertificationEditionYear(ArgumentMatchers.anyString()))
             .thenReturn(Stream.of(
-                    buildCriterionDto(1L, "170.315 (a)(1)", "a1"),
-                    buildCriterionDto(2L, "170.315 (a)(2)", "a2"))
+                    buildCriterion(1L, "170.315 (a)(1)", "a1"),
+                    buildCriterion(2L, "170.315 (a)(2)", "a2"))
                     .collect(Collectors.toList()));
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .build();
@@ -483,8 +482,8 @@ public class CertificationCriterionNormalizerTest {
             .thenReturn(true);
         Mockito.when(criterionDao.findByCertificationEditionYear(ArgumentMatchers.anyString()))
             .thenReturn(Stream.of(
-                    buildCriterionDto(1L, "170.315 (a)(1)", "a1"),
-                    buildCriterionDto(2L, "170.315 (a)(2)", "a2"))
+                    buildCriterion(1L, "170.315 (a)(1)", "a1"),
+                    buildCriterion(2L, "170.315 (a)(2)", "a2"))
                     .collect(Collectors.toList()));
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .build();
@@ -508,8 +507,8 @@ public class CertificationCriterionNormalizerTest {
             .thenReturn(true);
         Mockito.when(criterionDao.findByCertificationEditionYear(ArgumentMatchers.anyString()))
             .thenReturn(Stream.of(
-                    buildCriterionDto(1L, "170.315 (a)(1)", "a1"),
-                    buildCriterionDto(2L, "170.315 (a)(2)", "a2"))
+                    buildCriterion(1L, "170.315 (a)(1)", "a1"),
+                    buildCriterion(2L, "170.315 (a)(2)", "a2"))
                     .collect(Collectors.toList()));
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .build();
@@ -533,8 +532,8 @@ public class CertificationCriterionNormalizerTest {
             .thenReturn(true);
         Mockito.when(criterionDao.findByCertificationEditionYear(ArgumentMatchers.anyString()))
             .thenReturn(Stream.of(
-                    buildCriterionDto(1L, "170.315 (a)(1)", "a1"),
-                    buildCriterionDto(2L, "170.315 (a)(2)", "a2"))
+                    buildCriterion(1L, "170.315 (a)(1)", "a1"),
+                    buildCriterion(2L, "170.315 (a)(2)", "a2"))
                     .collect(Collectors.toList()));
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .build();
@@ -558,8 +557,8 @@ public class CertificationCriterionNormalizerTest {
             .thenReturn(true);
         Mockito.when(criterionDao.findByCertificationEditionYear(ArgumentMatchers.anyString()))
             .thenReturn(Stream.of(
-                    buildCriterionDto(1L, "170.315 (a)(1)", "a1"),
-                    buildCriterionDto(2L, "170.315 (a)(2)", "a2"))
+                    buildCriterion(1L, "170.315 (a)(1)", "a1"),
+                    buildCriterion(2L, "170.315 (a)(2)", "a2"))
                     .collect(Collectors.toList()));
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .build();
@@ -580,8 +579,8 @@ public class CertificationCriterionNormalizerTest {
     public void normalize_oneCriteriaInListingAndNoFieldsAllowed_oneCriteriaAddedAsUnattestedAndAllFieldsNull() {
         Mockito.when(criterionDao.findByCertificationEditionYear(ArgumentMatchers.anyString()))
             .thenReturn(Stream.of(
-                    buildCriterionDto(1L, "170.315 (a)(1)", "a1"),
-                    buildCriterionDto(2L, "170.315 (a)(2)", "a2"))
+                    buildCriterion(1L, "170.315 (a)(1)", "a1"),
+                    buildCriterion(2L, "170.315 (a)(2)", "a2"))
                     .collect(Collectors.toList()));
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .build();
@@ -626,8 +625,8 @@ public class CertificationCriterionNormalizerTest {
     public void normalize_oneAttestedCriteriaInListingAndNoFieldsAllowed_AllCriteriaAddedAndAttestedCriteriaIsUnchanged() {
         Mockito.when(criterionDao.findByCertificationEditionYear(ArgumentMatchers.anyString()))
             .thenReturn(Stream.of(
-                    buildCriterionDto(1L, "170.315 (a)(1)", "a1"),
-                    buildCriterionDto(2L, "170.315 (a)(2)", "a2"))
+                    buildCriterion(1L, "170.315 (a)(1)", "a1"),
+                    buildCriterion(2L, "170.315 (a)(2)", "a2"))
                     .collect(Collectors.toList()));
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .build();
@@ -662,8 +661,8 @@ public class CertificationCriterionNormalizerTest {
             .thenReturn(true);
         Mockito.when(criterionDao.findByCertificationEditionYear(ArgumentMatchers.anyString()))
             .thenReturn(Stream.of(
-                    buildCriterionDto(1L, "170.315 (a)(1)", "a1"),
-                    buildCriterionDto(2L, "170.315 (a)(2)", "a2"))
+                    buildCriterion(1L, "170.315 (a)(1)", "a1"),
+                    buildCriterion(2L, "170.315 (a)(2)", "a2"))
                     .collect(Collectors.toList()));
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .build();
@@ -698,8 +697,8 @@ public class CertificationCriterionNormalizerTest {
             .thenReturn(true);
         Mockito.when(criterionDao.findByCertificationEditionYear(ArgumentMatchers.anyString()))
             .thenReturn(Stream.of(
-                    buildCriterionDto(1L, "170.315 (a)(1)", "a1"),
-                    buildCriterionDto(2L, "170.315 (a)(2)", "a2"))
+                    buildCriterion(1L, "170.315 (a)(1)", "a1"),
+                    buildCriterion(2L, "170.315 (a)(2)", "a2"))
                     .collect(Collectors.toList()));
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .build();
@@ -734,8 +733,8 @@ public class CertificationCriterionNormalizerTest {
             .thenReturn(true);
         Mockito.when(criterionDao.findByCertificationEditionYear(ArgumentMatchers.anyString()))
             .thenReturn(Stream.of(
-                    buildCriterionDto(1L, "170.315 (a)(1)", "a1"),
-                    buildCriterionDto(2L, "170.315 (a)(2)", "a2"))
+                    buildCriterion(1L, "170.315 (a)(1)", "a1"),
+                    buildCriterion(2L, "170.315 (a)(2)", "a2"))
                     .collect(Collectors.toList()));
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .build();
@@ -770,8 +769,8 @@ public class CertificationCriterionNormalizerTest {
             .thenReturn(true);
         Mockito.when(criterionDao.findByCertificationEditionYear(ArgumentMatchers.anyString()))
             .thenReturn(Stream.of(
-                    buildCriterionDto(1L, "170.315 (a)(1)", "a1"),
-                    buildCriterionDto(2L, "170.315 (a)(2)", "a2"))
+                    buildCriterion(1L, "170.315 (a)(1)", "a1"),
+                    buildCriterion(2L, "170.315 (a)(2)", "a2"))
                     .collect(Collectors.toList()));
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .build();
@@ -806,8 +805,8 @@ public class CertificationCriterionNormalizerTest {
             .thenReturn(true);
         Mockito.when(criterionDao.findByCertificationEditionYear(ArgumentMatchers.anyString()))
             .thenReturn(Stream.of(
-                    buildCriterionDto(1L, "170.315 (a)(1)", "a1"),
-                    buildCriterionDto(2L, "170.315 (a)(2)", "a2"))
+                    buildCriterion(1L, "170.315 (a)(1)", "a1"),
+                    buildCriterion(2L, "170.315 (a)(2)", "a2"))
                     .collect(Collectors.toList()));
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .build();
@@ -842,8 +841,8 @@ public class CertificationCriterionNormalizerTest {
             .thenReturn(true);
         Mockito.when(criterionDao.findByCertificationEditionYear(ArgumentMatchers.anyString()))
             .thenReturn(Stream.of(
-                    buildCriterionDto(1L, "170.315 (a)(1)", "a1"),
-                    buildCriterionDto(2L, "170.315 (a)(2)", "a2"))
+                    buildCriterion(1L, "170.315 (a)(1)", "a1"),
+                    buildCriterion(2L, "170.315 (a)(2)", "a2"))
                     .collect(Collectors.toList()));
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .build();
@@ -878,8 +877,8 @@ public class CertificationCriterionNormalizerTest {
             .thenReturn(true);
         Mockito.when(criterionDao.findByCertificationEditionYear(ArgumentMatchers.anyString()))
             .thenReturn(Stream.of(
-                    buildCriterionDto(1L, "170.315 (a)(1)", "a1"),
-                    buildCriterionDto(2L, "170.315 (a)(2)", "a2"))
+                    buildCriterion(1L, "170.315 (a)(1)", "a1"),
+                    buildCriterion(2L, "170.315 (a)(2)", "a2"))
                     .collect(Collectors.toList()));
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .build();
@@ -914,8 +913,8 @@ public class CertificationCriterionNormalizerTest {
             .thenReturn(true);
         Mockito.when(criterionDao.findByCertificationEditionYear(ArgumentMatchers.anyString()))
             .thenReturn(Stream.of(
-                    buildCriterionDto(1L, "170.315 (a)(1)", "a1"),
-                    buildCriterionDto(2L, "170.315 (a)(2)", "a2"))
+                    buildCriterion(1L, "170.315 (a)(1)", "a1"),
+                    buildCriterion(2L, "170.315 (a)(2)", "a2"))
                     .collect(Collectors.toList()));
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .build();
@@ -950,8 +949,8 @@ public class CertificationCriterionNormalizerTest {
             .thenReturn(true);
         Mockito.when(criterionDao.findByCertificationEditionYear(ArgumentMatchers.anyString()))
             .thenReturn(Stream.of(
-                    buildCriterionDto(1L, "170.315 (a)(1)", "a1"),
-                    buildCriterionDto(2L, "170.315 (a)(2)", "a2"))
+                    buildCriterion(1L, "170.315 (a)(1)", "a1"),
+                    buildCriterion(2L, "170.315 (a)(2)", "a2"))
                     .collect(Collectors.toList()));
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .build();
@@ -986,8 +985,8 @@ public class CertificationCriterionNormalizerTest {
             .thenReturn(true);
         Mockito.when(criterionDao.findByCertificationEditionYear(ArgumentMatchers.anyString()))
             .thenReturn(Stream.of(
-                    buildCriterionDto(1L, "170.315 (a)(1)", "a1"),
-                    buildCriterionDto(2L, "170.315 (a)(2)", "a2"))
+                    buildCriterion(1L, "170.315 (a)(1)", "a1"),
+                    buildCriterion(2L, "170.315 (a)(2)", "a2"))
                     .collect(Collectors.toList()));
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .build();
@@ -1022,8 +1021,8 @@ public class CertificationCriterionNormalizerTest {
             .thenReturn(true);
         Mockito.when(criterionDao.findByCertificationEditionYear(ArgumentMatchers.anyString()))
             .thenReturn(Stream.of(
-                    buildCriterionDto(1L, "170.315 (a)(1)", "a1"),
-                    buildCriterionDto(2L, "170.315 (a)(2)", "a2"))
+                    buildCriterion(1L, "170.315 (a)(1)", "a1"),
+                    buildCriterion(2L, "170.315 (a)(2)", "a2"))
                     .collect(Collectors.toList()));
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .build();
@@ -1058,8 +1057,8 @@ public class CertificationCriterionNormalizerTest {
             .thenReturn(true);
         Mockito.when(criterionDao.findByCertificationEditionYear(ArgumentMatchers.anyString()))
             .thenReturn(Stream.of(
-                    buildCriterionDto(1L, "170.315 (a)(1)", "a1"),
-                    buildCriterionDto(2L, "170.315 (a)(2)", "a2"))
+                    buildCriterion(1L, "170.315 (a)(1)", "a1"),
+                    buildCriterion(2L, "170.315 (a)(2)", "a2"))
                     .collect(Collectors.toList()));
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .build();
@@ -1094,8 +1093,8 @@ public class CertificationCriterionNormalizerTest {
             .thenReturn(true);
         Mockito.when(criterionDao.findByCertificationEditionYear(ArgumentMatchers.anyString()))
             .thenReturn(Stream.of(
-                    buildCriterionDto(1L, "170.315 (a)(1)", "a1"),
-                    buildCriterionDto(2L, "170.315 (a)(2)", "a2"))
+                    buildCriterion(1L, "170.315 (a)(1)", "a1"),
+                    buildCriterion(2L, "170.315 (a)(2)", "a2"))
                     .collect(Collectors.toList()));
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .build();
@@ -1130,8 +1129,8 @@ public class CertificationCriterionNormalizerTest {
             .thenReturn(true);
         Mockito.when(criterionDao.findByCertificationEditionYear(ArgumentMatchers.anyString()))
             .thenReturn(Stream.of(
-                    buildCriterionDto(1L, "170.315 (a)(1)", "a1"),
-                    buildCriterionDto(2L, "170.315 (a)(2)", "a2"))
+                    buildCriterion(1L, "170.315 (a)(1)", "a1"),
+                    buildCriterion(2L, "170.315 (a)(2)", "a2"))
                     .collect(Collectors.toList()));
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .build();
@@ -1166,8 +1165,8 @@ public class CertificationCriterionNormalizerTest {
             .thenReturn(true);
         Mockito.when(criterionDao.findByCertificationEditionYear(ArgumentMatchers.anyString()))
             .thenReturn(Stream.of(
-                    buildCriterionDto(1L, "170.315 (a)(1)", "a1"),
-                    buildCriterionDto(2L, "170.315 (a)(2)", "a2"))
+                    buildCriterion(1L, "170.315 (a)(1)", "a1"),
+                    buildCriterion(2L, "170.315 (a)(2)", "a2"))
                     .collect(Collectors.toList()));
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .build();
@@ -1202,8 +1201,8 @@ public class CertificationCriterionNormalizerTest {
             .thenReturn(true);
         Mockito.when(criterionDao.findByCertificationEditionYear(ArgumentMatchers.anyString()))
             .thenReturn(Stream.of(
-                    buildCriterionDto(1L, "170.315 (a)(1)", "a1"),
-                    buildCriterionDto(2L, "170.315 (a)(2)", "a2"))
+                    buildCriterion(1L, "170.315 (a)(1)", "a1"),
+                    buildCriterion(2L, "170.315 (a)(2)", "a2"))
                     .collect(Collectors.toList()));
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .build();
@@ -1238,8 +1237,8 @@ public class CertificationCriterionNormalizerTest {
             .thenReturn(true);
         Mockito.when(criterionDao.findByCertificationEditionYear(ArgumentMatchers.anyString()))
             .thenReturn(Stream.of(
-                    buildCriterionDto(1L, "170.315 (a)(1)", "a1"),
-                    buildCriterionDto(2L, "170.315 (a)(2)", "a2"))
+                    buildCriterion(1L, "170.315 (a)(1)", "a1"),
+                    buildCriterion(2L, "170.315 (a)(2)", "a2"))
                     .collect(Collectors.toList()));
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .build();
@@ -1274,8 +1273,8 @@ public class CertificationCriterionNormalizerTest {
             .thenReturn(true);
         Mockito.when(criterionDao.findByCertificationEditionYear(ArgumentMatchers.anyString()))
             .thenReturn(Stream.of(
-                    buildCriterionDto(1L, "170.315 (a)(1)", "a1"),
-                    buildCriterionDto(2L, "170.315 (a)(2)", "a2"))
+                    buildCriterion(1L, "170.315 (a)(1)", "a1"),
+                    buildCriterion(2L, "170.315 (a)(2)", "a2"))
                     .collect(Collectors.toList()));
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .build();
@@ -1310,8 +1309,8 @@ public class CertificationCriterionNormalizerTest {
             .thenReturn(true);
         Mockito.when(criterionDao.findByCertificationEditionYear(ArgumentMatchers.anyString()))
             .thenReturn(Stream.of(
-                    buildCriterionDto(1L, "170.315 (a)(1)", "a1"),
-                    buildCriterionDto(2L, "170.315 (a)(2)", "a2"))
+                    buildCriterion(1L, "170.315 (a)(1)", "a1"),
+                    buildCriterion(2L, "170.315 (a)(2)", "a2"))
                     .collect(Collectors.toList()));
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .build();
@@ -1346,8 +1345,8 @@ public class CertificationCriterionNormalizerTest {
             .thenReturn(true);
         Mockito.when(criterionDao.findByCertificationEditionYear(ArgumentMatchers.anyString()))
             .thenReturn(Stream.of(
-                    buildCriterionDto(1L, "170.315 (a)(1)", "a1"),
-                    buildCriterionDto(2L, "170.315 (a)(2)", "a2"))
+                    buildCriterion(1L, "170.315 (a)(1)", "a1"),
+                    buildCriterion(2L, "170.315 (a)(2)", "a2"))
                     .collect(Collectors.toList()));
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .build();
@@ -1382,8 +1381,8 @@ public class CertificationCriterionNormalizerTest {
             .thenReturn(false);
         Mockito.when(criterionDao.findByCertificationEditionYear(ArgumentMatchers.anyString()))
             .thenReturn(Stream.of(
-                    buildCriterionDto(1L, "170.315 (a)(1)", "a1"),
-                    buildCriterionDto(2L, "170.315 (a)(2)", "a2"))
+                    buildCriterion(1L, "170.315 (a)(1)", "a1"),
+                    buildCriterion(2L, "170.315 (a)(2)", "a2"))
                     .collect(Collectors.toList()));
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .build();
@@ -1418,8 +1417,8 @@ public class CertificationCriterionNormalizerTest {
             .thenReturn(true);
         Mockito.when(criterionDao.findByCertificationEditionYear(ArgumentMatchers.anyString()))
             .thenReturn(Stream.of(
-                    buildCriterionDto(1L, "170.315 (a)(1)", "a1"),
-                    buildCriterionDto(2L, "170.315 (a)(2)", "a2"))
+                    buildCriterion(1L, "170.315 (a)(1)", "a1"),
+                    buildCriterion(2L, "170.315 (a)(2)", "a2"))
                     .collect(Collectors.toList()));
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .build();
@@ -1451,8 +1450,8 @@ public class CertificationCriterionNormalizerTest {
     public void normalize_allCriteriaInListingAndNoFieldsAllowed_allFieldsNull() {
         Mockito.when(criterionDao.findByCertificationEditionYear(ArgumentMatchers.anyString()))
             .thenReturn(Stream.of(
-                    buildCriterionDto(1L, "170.315 (a)(1)", "a1"),
-                    buildCriterionDto(2L, "170.315 (a)(2)", "a2"))
+                    buildCriterion(1L, "170.315 (a)(1)", "a1"),
+                    buildCriterion(2L, "170.315 (a)(2)", "a2"))
                     .collect(Collectors.toList()));
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .certificationResult(CertificationResult.builder()
@@ -1503,8 +1502,8 @@ public class CertificationCriterionNormalizerTest {
         }
     }
 
-    private CertificationCriterionDTO buildCriterionDto(Long id, String number, String title) {
-        return CertificationCriterionDTO.builder()
+    private CertificationCriterion buildCriterion(Long id, String number, String title) {
+        return CertificationCriterion.builder()
                 .id(id)
                 .number(number)
                 .title(title)
