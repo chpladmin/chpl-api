@@ -1,12 +1,15 @@
 package gov.healthit.chpl.upload.listing.normalizer;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductUcdProcess;
 import gov.healthit.chpl.fuzzyMatching.FuzzyChoicesManager;
@@ -27,8 +30,8 @@ public class UcdProcessNormalizer {
     }
 
     public void normalize(CertifiedProductSearchDetails listing) {
-        if (listing.getSed() != null && listing.getSed().getUcdProcesses() != null
-                && listing.getSed().getUcdProcesses().size() > 0) {
+        if (listing.getSed() != null && !CollectionUtils.isEmpty(listing.getSed().getUcdProcesses())) {
+            clearDataForUnattestedCriteria(listing);
             listing.getSed().getUcdProcesses().stream()
                 .forEach(ucdProcess -> populateUcdProcessId(ucdProcess));
             findFuzzyMatchesForUnknownUcdProcesses(listing);
@@ -38,6 +41,26 @@ public class UcdProcessNormalizer {
                 listing.getSed().getUcdProcesses().removeAll(ucdProcessesToRemove);
             }
         }
+    }
+
+    private void clearDataForUnattestedCriteria(CertifiedProductSearchDetails listing) {
+        List<Long> unattestedCriteriaIds = listing.getCertificationResults().stream()
+                .filter(certResult -> certResult.isSuccess() == null || BooleanUtils.isFalse(certResult.isSuccess()))
+                .map(unattestedCertResult -> unattestedCertResult.getCriterion().getId())
+                .toList();
+
+        listing.getSed().getUcdProcesses().stream()
+            .forEach(ucdProcess -> removeUnattestedCriteriaFromUcdProcess(unattestedCriteriaIds, ucdProcess));
+    }
+
+    private void removeUnattestedCriteriaFromUcdProcess(List<Long> unattestedCriteriaIds, CertifiedProductUcdProcess ucdProcess) {
+        List<CertificationCriterion> ucdProcessCriteria = ucdProcess.getCriteria().stream().toList();
+        List<CertificationCriterion> ucdCriteriaToRemove = new ArrayList<CertificationCriterion>();
+        ucdProcessCriteria.stream()
+            .filter(criterion -> unattestedCriteriaIds.contains(criterion.getId()))
+            .forEach(unattestedCriterion -> ucdCriteriaToRemove.add(unattestedCriterion));
+
+        ucdProcess.getCriteria().removeAll(ucdCriteriaToRemove);
     }
 
     private List<CertifiedProductUcdProcess> getHopelessUcdProcesses(List<CertifiedProductUcdProcess> ucdProcesses) {

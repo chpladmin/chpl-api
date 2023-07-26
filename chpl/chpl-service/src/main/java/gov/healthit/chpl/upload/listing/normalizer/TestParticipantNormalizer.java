@@ -1,11 +1,16 @@
 package gov.healthit.chpl.upload.listing.normalizer;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.dao.AgeRangeDAO;
 import gov.healthit.chpl.dao.EducationTypeDAO;
+import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.TestParticipant;
 import gov.healthit.chpl.domain.TestTask;
@@ -13,12 +18,12 @@ import gov.healthit.chpl.dto.AgeRangeDTO;
 import gov.healthit.chpl.dto.EducationTypeDTO;
 
 @Component
-public class TestParticipantNoramlizer {
+public class TestParticipantNormalizer {
     private AgeRangeDAO ageRangeDao;
     private EducationTypeDAO educationTypeDao;
 
     @Autowired
-    public TestParticipantNoramlizer(AgeRangeDAO ageRangeDao, EducationTypeDAO educationTypeDao) {
+    public TestParticipantNormalizer(AgeRangeDAO ageRangeDao, EducationTypeDAO educationTypeDao) {
         this.ageRangeDao = ageRangeDao;
         this.educationTypeDao = educationTypeDao;
     }
@@ -26,6 +31,7 @@ public class TestParticipantNoramlizer {
     public void normalize(CertifiedProductSearchDetails listing) {
         if (listing.getSed() != null && listing.getSed().getTestTasks() != null
                 && listing.getSed().getTestTasks().size() > 0) {
+            clearDataForUnattestedCriteria(listing);
             listing.getSed().getTestTasks().stream()
                 .forEach(testTask -> {
                     setTestTaskUniqueIdToIdIfNegative(testTask);
@@ -34,6 +40,26 @@ public class TestParticipantNoramlizer {
                     populateTestParticipantEducationTypes(testTask);
                 });
         }
+    }
+
+    private void clearDataForUnattestedCriteria(CertifiedProductSearchDetails listing) {
+        List<Long> unattestedCriteriaIds = listing.getCertificationResults().stream()
+                .filter(certResult -> certResult.isSuccess() == null || BooleanUtils.isFalse(certResult.isSuccess()))
+                .map(unattestedCertResult -> unattestedCertResult.getCriterion().getId())
+                .toList();
+
+        listing.getSed().getTestTasks().stream()
+            .forEach(testTask -> removeUnattestedCriteriaFromTestTask(unattestedCriteriaIds, testTask));
+    }
+
+    private void removeUnattestedCriteriaFromTestTask(List<Long> unattestedCriteriaIds, TestTask testTask) {
+        List<CertificationCriterion> testTaskCriteria = testTask.getCriteria().stream().toList();
+        List<CertificationCriterion> testTaskCriteriaToRemove = new ArrayList<CertificationCriterion>();
+        testTaskCriteria.stream()
+            .filter(criterion -> unattestedCriteriaIds.contains(criterion.getId()))
+            .forEach(unattestedCriterion -> testTaskCriteriaToRemove.add(unattestedCriterion));
+
+        testTask.getCriteria().removeAll(testTaskCriteriaToRemove);
     }
 
     private void setTestTaskUniqueIdToIdIfNegative(TestTask testTask) {
