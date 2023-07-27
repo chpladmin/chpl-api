@@ -31,8 +31,6 @@ import gov.healthit.chpl.validation.listing.reviewer.RealWorldTestingReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.Reviewer;
 import gov.healthit.chpl.validation.listing.reviewer.SvapReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.TestProcedureReviewer;
-import gov.healthit.chpl.validation.listing.reviewer.TestStandardRemovalReviewer;
-import gov.healthit.chpl.validation.listing.reviewer.TestStandardReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.TestToolReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.TestingLabReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.UnsupportedCharacterReviewer;
@@ -109,14 +107,6 @@ public class Edition2015ListingValidator extends Validator {
     @Autowired
     @Qualifier("certificationDateReviewer")
     private CertificationDateReviewer certDateReviewer;
-
-    @Autowired
-    @Qualifier("testStandardRemovalReviewer")
-    private TestStandardRemovalReviewer tsrReviewer;
-
-    @Autowired
-    @Qualifier("testStandardReviewer")
-    private TestStandardReviewer tsReviewer;
 
     @Autowired
     @Qualifier("testProcedureReviewer")
@@ -271,8 +261,6 @@ public class Edition2015ListingValidator extends Validator {
         reviewers.add(certDateReviewer);
         reviewers.add(optionalStandardReviewer);
         reviewers.add(conformanceMethodReviewer);
-        reviewers.add(tsrReviewer);
-        reviewers.add(tsReviewer);
         reviewers.add(tpReviewer);
         reviewers.add(inheritanceReviewer);
         reviewers.add(ttReviewer);

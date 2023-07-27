@@ -42,25 +42,6 @@ public class TestStandardDAO extends BaseDAOImpl {
         return dto;
     }
 
-    @Deprecated
-    public List<TestStandard> getAllByNumberAndEdition(String number, Long editionId) {
-        List<TestStandardEntity> entities = getEntitiesByNumberAndYear(number, editionId);
-
-        return entities.stream()
-                .map(entity -> entity.toDomain())
-                .collect(Collectors.toList());
-    }
-
-    @Deprecated
-    public TestStandard getByIdAndEdition(Long testStandardId, Long editionId) {
-        TestStandard dto = null;
-        List<TestStandardEntity> entities = getEntitiesByIdAndYear(testStandardId, editionId);
-        if (entities != null && entities.size() > 0) {
-            dto = entities.get(0).toDomain();
-        }
-        return dto;
-    }
-
     private List<TestStandardEntity> getAllEntities() {
         return entityManager
                 .createQuery("from TestStandardEntity where (NOT deleted = true) ", TestStandardEntity.class)
@@ -106,20 +87,5 @@ public class TestStandardDAO extends BaseDAOImpl {
             matches = query.getResultList();
         }
         return matches;
-    }
-
-    @Deprecated
-    private List<TestStandardEntity> getEntitiesByIdAndYear(Long id, Long editionId) {
-        String tsQuery = "SELECT ts "
-                + "FROM TestStandardEntity ts "
-                + "JOIN FETCH ts.certificationEdition edition "
-                + "WHERE ts.deleted <> true "
-                + "AND ts.id = :id "
-                + "AND edition.id = :editionId ";
-        Query query = entityManager.createQuery(tsQuery, TestStandardEntity.class);
-        query.setParameter("id", id);
-        query.setParameter("editionId", editionId);
-
-        return query.getResultList();
     }
 }
