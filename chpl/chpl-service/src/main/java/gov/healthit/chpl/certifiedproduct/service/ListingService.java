@@ -303,6 +303,7 @@ public class ListingService {
         return cp;
     }
 
+    @Deprecated
     private CertificationEdition getEdition(Long editionId) {
         Optional<CertificationEdition> certEdition = dimensionalDataManager.getCertificationEditions().stream()
                 .filter(ed -> ed.getCertificationEditionId().equals(editionId))

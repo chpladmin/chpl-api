@@ -262,6 +262,7 @@ public class CertifiedProductDAO extends BaseDAOImpl {
                 .collect(Collectors.toList());
     }
 
+    @Deprecated
     @Transactional(readOnly = true)
     public List<CertifiedProductDetailsDTO> findByEdition(final String edition) {
         Query query = entityManager.createQuery("SELECT cpd "
@@ -279,6 +280,7 @@ public class CertifiedProductDAO extends BaseDAOImpl {
         return products;
     }
 
+    @Deprecated
     @Transactional(readOnly = true)
     public List<Long> findIdsByEdition(String edition) {
         Query query = entityManager.createQuery("SELECT cpd.id "

@@ -12,6 +12,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
+import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseField;
 import gov.healthit.chpl.domain.CertificationEdition;
 import gov.healthit.chpl.util.LocalDateDeserializer;
 import gov.healthit.chpl.util.LocalDateSerializer;
@@ -40,6 +41,8 @@ public class CertifiedProductSearchResult implements Serializable {
     })
     private String chplProductNumber;
 
+    @Deprecated
+    @DeprecatedResponseField(message = "The certification edition will be removed.", removalDate = "2024-02-01")
     @JsonView({
             SearchViews.Default.class
     })

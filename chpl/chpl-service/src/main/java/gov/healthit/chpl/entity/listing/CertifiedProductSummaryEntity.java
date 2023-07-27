@@ -31,6 +31,7 @@ public class CertifiedProductSummaryEntity implements Serializable {
     @Column(name = "certified_product_id", nullable = false)
     private Long id;
 
+    @Deprecated
     @Column(name = "certification_edition_id")
     private Long certificationEditionId;
 
@@ -115,6 +116,7 @@ public class CertifiedProductSummaryEntity implements Serializable {
     @Column(name = "promoting_interoperability_user_count")
     private Long promotingInteroperabilityUserCount;
 
+    @Deprecated
     @Column(name = "year")
     private String year;
 

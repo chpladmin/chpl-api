@@ -18,6 +18,7 @@ public class TestStandard implements Serializable {
     private Long id;
     private String name;
     private String description;
+    @Deprecated
     private String year;
 
     public TestStandard(TestStandardDTO dto) {

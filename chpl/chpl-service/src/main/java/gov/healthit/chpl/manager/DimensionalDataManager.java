@@ -363,6 +363,7 @@ public class DimensionalDataManager {
         return result;
     }
 
+    @Deprecated
     @Transactional
     @Cacheable(value = CacheNames.EDITIONS)
     public List<CertificationEdition> getCertificationEditions() {
@@ -407,6 +408,7 @@ public class DimensionalDataManager {
         return cacheableDimensionalDataManager.getClassificationNames();
     }
 
+    @Deprecated
     public Set<KeyValueModel> getEditionNames(final Boolean simple) {
        return cacheableDimensionalDataManager.getEditionNames(simple);
     }

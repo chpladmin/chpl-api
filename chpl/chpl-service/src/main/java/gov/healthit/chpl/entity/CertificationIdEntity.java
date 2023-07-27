@@ -52,6 +52,7 @@ public class CertificationIdEntity implements Serializable {
     @Column(name = "practice_type_id", nullable = true)
     private Long practiceTypeId;
 
+    @Deprecated
     @Basic(optional = false)
     @Column(name = "year", nullable = false)
     private String year;

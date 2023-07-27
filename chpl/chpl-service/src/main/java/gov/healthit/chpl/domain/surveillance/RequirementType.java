@@ -9,6 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseField;
 import gov.healthit.chpl.domain.CertificationEdition;
 import gov.healthit.chpl.util.NullSafeEvaluator;
 import gov.healthit.chpl.util.Util;
@@ -27,14 +28,19 @@ public class RequirementType {
     private String title;
     private Boolean removed;
 
+    @Deprecated
+    @DeprecatedResponseField(message = "The certification edition will be removed.", removalDate = "2024-02-01")
     @XmlTransient
     private CertificationEdition certificationEdition;
 
+    @Deprecated
+    @DeprecatedResponseField(message = "The certification edition will be removed.", removalDate = "2024-02-01")
     @JsonIgnore
     private String edition;
 
     private RequirementGroupType requirementGroupType;
 
+    @Deprecated
     public String getEdition() {
         return NullSafeEvaluator.eval(() -> certificationEdition.getYear(), null);
     }
@@ -80,10 +86,12 @@ public class RequirementType {
         this.removed = removed;
     }
 
+    @Deprecated
     public CertificationEdition getCertificationEdition() {
         return certificationEdition;
     }
 
+    @Deprecated
     public void setCertificationEdition(CertificationEdition certificationEdition) {
         this.certificationEdition = certificationEdition;
     }
@@ -96,6 +104,7 @@ public class RequirementType {
         this.requirementGroupType = requirementGroupType;
     }
 
+    @Deprecated
     public void setEdition(String edition) {
         this.edition = edition;
     }

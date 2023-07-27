@@ -13,6 +13,7 @@ import gov.healthit.chpl.domain.CertificationEdition;
 import gov.healthit.chpl.entity.CertificationEditionEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 
+@Deprecated
 @Repository("certificationEditionDAO")
 public class CertificationEditionDAO extends BaseDAOImpl {
 

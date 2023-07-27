@@ -11,6 +11,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.ToString;
 
+@Deprecated
 @AllArgsConstructor
 @Builder
 @ToString

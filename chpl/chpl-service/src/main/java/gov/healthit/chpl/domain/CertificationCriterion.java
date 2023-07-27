@@ -53,10 +53,12 @@ public class CertificationCriterion implements Serializable {
     public CertificationCriterion() {
     }
 
+    @Deprecated
     public String getCertificationEdition() {
         return certificationEdition;
     }
 
+    @Deprecated
     public void setCertificationEdition(final String certificationEdition) {
         this.certificationEdition = certificationEdition;
     }

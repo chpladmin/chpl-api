@@ -46,10 +46,12 @@ public class CertificationCriterionEntity implements Serializable {
     @Column(name = "automated_numerator_capable")
     private Boolean automatedNumeratorCapable;
 
+    @Deprecated
     @Basic(optional = false)
     @Column(name = "certification_edition_id", nullable = false)
     private Long certificationEditionId;
 
+    @Deprecated
     @Basic(optional = true)
     @OneToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "certification_edition_id", unique = true, nullable = true, insertable = false,

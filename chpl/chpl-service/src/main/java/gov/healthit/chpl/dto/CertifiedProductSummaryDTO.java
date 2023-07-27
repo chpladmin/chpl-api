@@ -30,6 +30,7 @@ public class CertifiedProductSummaryDTO implements Serializable {
     private static final long serialVersionUID = 6196943224875685772L;
     private Long id;
     private String chplProductNumber;
+    @Deprecated
     private String year;
     private String certificationStatus;
     private Date certificationDate;

@@ -35,6 +35,7 @@ public class CertifiedProductDTO implements Serializable {
     private String certifiedDateCode;
     private String acbCertificationId;
     private Long certificationBodyId;
+    @Deprecated
     private Long certificationEditionId;
     private String chplProductNumber;
     private Date creationDate;

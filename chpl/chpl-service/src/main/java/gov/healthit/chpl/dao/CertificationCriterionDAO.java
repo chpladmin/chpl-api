@@ -39,6 +39,7 @@ public class CertificationCriterionDAO extends BaseDAOImpl {
                 .toList();
     }
 
+    @Deprecated
     public List<CertificationCriterion> findByCertificationEditionYear(String year) {
         List<CertificationCriterionEntity> entities = getEntitiesByCertificationEditionYear(year);
         return entities.stream()
@@ -86,6 +87,7 @@ public class CertificationCriterionDAO extends BaseDAOImpl {
         return result;
     }
 
+    @Deprecated
     @SuppressWarnings("unchecked")
     private List<CertificationCriterionEntity> getEntitiesByCertificationEditionYear(String year) {
         Query query = entityManager.createQuery("SELECT cce "

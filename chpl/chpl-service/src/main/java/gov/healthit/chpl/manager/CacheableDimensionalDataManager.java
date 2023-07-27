@@ -77,6 +77,7 @@ public class CacheableDimensionalDataManager {
         return classificationTypeNames;
     }
 
+    @Deprecated
     @Transactional
     @Cacheable(value = CacheNames.EDITION_NAMES)
     public Set<KeyValueModel> getEditionNames(final Boolean simple) {
