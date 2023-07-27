@@ -1,10 +1,7 @@
 package gov.healthit.chpl.subscription;
 
-import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -38,7 +35,6 @@ import gov.healthit.chpl.subscription.service.SubscriberMessagingService;
 import gov.healthit.chpl.subscription.service.SubscriptionLookupUtil;
 import gov.healthit.chpl.subscription.validation.SubscriptionRequestValidationContext;
 import gov.healthit.chpl.subscription.validation.SubscriptionRequestValidationService;
-import gov.healthit.chpl.util.DateUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import lombok.extern.log4j.Log4j2;
 
@@ -172,8 +168,6 @@ public class SubscriptionManager {
             LOGGER.error("Unable to find listing with ID " + listingId, ex);
         }
 
-        Map<Long, Date> subscriptionIdObservationDateMap = observationDao.getLastObservationDatesForSubscriptions(flatSubscriptionsForListing);
-
         if (listing != null) {
             return ListingSubscriptionGroup.builder()
                     .certificationBodyId(listing.getCertificationBody().getId())
@@ -191,24 +185,11 @@ public class SubscriptionManager {
                                     .id(sub.getId())
                                     .consolidationMethod(sub.getConsolidationMethod())
                                     .subject(sub.getSubject())
-                                    .creationDate(sub.getCreationDate())
-                                    .lastNotificationDate(getLastNotificationDate(sub.getId(), subscriptionIdObservationDateMap))
                                     .build())
                             .collect(Collectors.toList()))
             .build();
         }
         return null;
-    }
-
-    private LocalDate getLastNotificationDate(Long subscriptionId, Map<Long, Date> subscriptionIdObservationDateMap) {
-        Optional<Long> subscriptionIdInMap = subscriptionIdObservationDateMap.keySet().stream()
-            .filter(key -> key.equals(subscriptionId))
-            .findAny();
-
-        if (subscriptionIdInMap.isEmpty()) {
-            return null;
-        }
-        return DateUtil.toLocalDate(subscriptionIdObservationDateMap.get(subscriptionIdInMap.get()).getTime());
     }
 
     @Transactional
