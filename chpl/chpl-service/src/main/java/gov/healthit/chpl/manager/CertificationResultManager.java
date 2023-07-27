@@ -38,6 +38,7 @@ import gov.healthit.chpl.domain.CertificationResultTestTool;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductUcdProcess;
 import gov.healthit.chpl.domain.TestParticipant;
+import gov.healthit.chpl.domain.TestStandard;
 import gov.healthit.chpl.domain.TestTask;
 import gov.healthit.chpl.dto.AgeRangeDTO;
 import gov.healthit.chpl.dto.CertificationResultAdditionalSoftwareDTO;
@@ -50,7 +51,6 @@ import gov.healthit.chpl.dto.CertificationResultTestToolDTO;
 import gov.healthit.chpl.dto.CertificationResultUcdProcessDTO;
 import gov.healthit.chpl.dto.EducationTypeDTO;
 import gov.healthit.chpl.dto.TestParticipantDTO;
-import gov.healthit.chpl.dto.TestStandardDTO;
 import gov.healthit.chpl.dto.TestTaskDTO;
 import gov.healthit.chpl.dto.TestToolDTO;
 import gov.healthit.chpl.entity.listing.CertificationResultConformanceMethodEntity;
@@ -636,7 +636,7 @@ public class CertificationResultManager extends SecuredManager {
             for (CertificationResultTestStandard updatedItem : updatedTestStandards) {
                 if (updatedItem.getTestStandardId() == null
                         && !StringUtils.isEmpty(updatedItem.getTestStandardName())) {
-                    TestStandardDTO foundStd = testStandardDAO.getByNumberAndEdition(updatedItem.getTestStandardName(),
+                    TestStandard foundStd = testStandardDAO.getByNumberAndEdition(updatedItem.getTestStandardName(),
                             Long.valueOf(editionIdString));
                     if (foundStd == null) {
                         LOGGER.error("Could not find test standard " + updatedItem.getTestStandardName()

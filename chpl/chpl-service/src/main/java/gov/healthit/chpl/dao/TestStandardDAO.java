@@ -1,6 +1,5 @@
 package gov.healthit.chpl.dao;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -10,56 +9,54 @@ import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.TestStandard;
-import gov.healthit.chpl.dto.TestStandardDTO;
 import gov.healthit.chpl.entity.TestStandardEntity;
 
 @Repository("testStandardDAO")
 public class TestStandardDAO extends BaseDAOImpl {
 
-    public TestStandardDTO getById(Long id) {
-        TestStandardDTO dto = null;
+    public TestStandard getById(Long id) {
+        TestStandard testStandard = null;
         TestStandardEntity entity = getEntityById(id);
 
         if (entity != null) {
-            dto = new TestStandardDTO(entity);
+            testStandard = entity.toDomain();
         }
-        return dto;
+        return testStandard;
     }
 
-    public List<TestStandardDTO> findAll() {
+    public List<TestStandard> findAll() {
         List<TestStandardEntity> entities = getAllEntities();
-        List<TestStandardDTO> dtos = new ArrayList<TestStandardDTO>();
-
-        for (TestStandardEntity entity : entities) {
-            TestStandardDTO dto = new TestStandardDTO(entity);
-            dtos.add(dto);
-        }
-        return dtos;
+        return entities.stream()
+                .map(entity -> entity.toDomain())
+                .collect(Collectors.toList());
     }
 
-    public TestStandardDTO getByNumberAndEdition(String number, Long editionId) {
-        TestStandardDTO dto = null;
+    @Deprecated
+    public TestStandard getByNumberAndEdition(String number, Long editionId) {
+        TestStandard dto = null;
         List<TestStandardEntity> entities = getEntitiesByNumberAndYear(number, editionId);
 
         if (entities != null && entities.size() > 0) {
-            dto = new TestStandardDTO(entities.get(0));
+            dto = entities.get(0).toDomain();
         }
         return dto;
     }
 
+    @Deprecated
     public List<TestStandard> getAllByNumberAndEdition(String number, Long editionId) {
         List<TestStandardEntity> entities = getEntitiesByNumberAndYear(number, editionId);
 
         return entities.stream()
-                .map(entity -> new TestStandard(entity))
+                .map(entity -> entity.toDomain())
                 .collect(Collectors.toList());
     }
 
-    public TestStandardDTO getByIdAndEdition(Long testStandardId, Long editionId) {
-        TestStandardDTO dto = null;
+    @Deprecated
+    public TestStandard getByIdAndEdition(Long testStandardId, Long editionId) {
+        TestStandard dto = null;
         List<TestStandardEntity> entities = getEntitiesByIdAndYear(testStandardId, editionId);
         if (entities != null && entities.size() > 0) {
-            dto = new TestStandardDTO(entities.get(0));
+            dto = entities.get(0).toDomain();
         }
         return dto;
     }
@@ -73,8 +70,10 @@ public class TestStandardDAO extends BaseDAOImpl {
     private TestStandardEntity getEntityById(Long id) {
         TestStandardEntity entity = null;
 
-        Query query = entityManager.createQuery("SELECT ts " + "FROM TestStandardEntity ts "
-                + "WHERE (NOT deleted = true) " + "AND (ts.id = :entityid) ", TestStandardEntity.class);
+        Query query = entityManager.createQuery("SELECT ts "
+                + "FROM TestStandardEntity ts "
+                + "WHERE (NOT deleted = true) "
+                + "AND (ts.id = :entityid) ", TestStandardEntity.class);
         query.setParameter("entityid", id);
         List<TestStandardEntity> result = query.getResultList();
 
@@ -84,8 +83,8 @@ public class TestStandardDAO extends BaseDAOImpl {
         return entity;
     }
 
+    @Deprecated
     private List<TestStandardEntity> getEntitiesByNumberAndYear(String number, Long editionId) {
-        TestStandardEntity entity = null;
         String tsQuery = "SELECT ts "
                 + "FROM TestStandardEntity ts "
                 + "JOIN FETCH ts.certificationEdition edition "
@@ -109,8 +108,8 @@ public class TestStandardDAO extends BaseDAOImpl {
         return matches;
     }
 
+    @Deprecated
     private List<TestStandardEntity> getEntitiesByIdAndYear(Long id, Long editionId) {
-        TestStandardEntity entity = null;
         String tsQuery = "SELECT ts "
                 + "FROM TestStandardEntity ts "
                 + "JOIN FETCH ts.certificationEdition edition "

@@ -17,8 +17,8 @@ import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultTestStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.TestStandard;
 import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
-import gov.healthit.chpl.dto.TestStandardDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
@@ -30,9 +30,9 @@ public class TestStandardReviewerTest {
     @Before
     public void before() throws EntityRetrievalException {
         testStandardDao = Mockito.mock(TestStandardDAO.class);
-        TestStandardDTO ts = new TestStandardDTO();
+        TestStandard ts = new TestStandard();
         ts.setId(1L);
-        ts.setCertificationEditionId(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getId());
+        ts.setYear("2015");
         ts.setName("mock");
         Mockito.when(testStandardDao.getByNumberAndEdition(
                 ArgumentMatchers.eq("mock"),
