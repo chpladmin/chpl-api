@@ -165,7 +165,7 @@ public class SubscriptionController {
         return subscriptionManager.confirm(UUID.fromString(request.getSubscriberId()));
     }
 
-    @Operation(summary = "Unsubscribe from all notifications associated with a subscriber.",
+    @Operation(summary = "Unsubscribe from all notifications associated with a subscriber and delete that subscriber.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
