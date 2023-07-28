@@ -1,14 +1,12 @@
 package gov.healthit.chpl.upload.listing.normalizer;
 
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.junit.Before;
@@ -22,7 +20,6 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.functionalityTested.CertificationResultFunctionalityTested;
 import gov.healthit.chpl.functionalityTested.FunctionalityTested;
 import gov.healthit.chpl.functionalityTested.FunctionalityTestedDAO;
-import gov.healthit.chpl.functionalityTested.FunctionalityTestedManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 
 public class FunctionalityTestedNormalizerTest {
@@ -35,19 +32,15 @@ public class FunctionalityTestedNormalizerTest {
     private static final Long FUNCTIONALITY_TESTED_ID_WITHOUT_RESTRICTIONS = 52L;
 
     private FunctionalityTestedDAO functionalityTestedDao;
-    private FunctionalityTestedManager functionalityTestedManager;
     private ResourcePermissions resourcePermissions;
     private FunctionalityTestedNormalizer normalizer;
 
     @Before
     public void before() {
         functionalityTestedDao = Mockito.mock(FunctionalityTestedDAO.class);
-        functionalityTestedManager = Mockito.mock(FunctionalityTestedManager.class);
-        Mockito.when(functionalityTestedManager.getFunctionalitiesTested(ArgumentMatchers.anyLong(), ArgumentMatchers.anyLong()))
-            .thenReturn(new ArrayList<FunctionalityTested>());
 
         resourcePermissions = Mockito.mock(ResourcePermissions.class);
-        normalizer = new FunctionalityTestedNormalizer(functionalityTestedDao, functionalityTestedManager,
+        normalizer = new FunctionalityTestedNormalizer(functionalityTestedDao,
                 resourcePermissions, RESTRICTED_FUNCTIONALITIES_TESTED_JSON);
     }
 
@@ -242,9 +235,6 @@ public class FunctionalityTestedNormalizerTest {
                         .build()).toList())
                 .build());
 
-        Mockito.when(functionalityTestedManager.getFunctionalitiesTested(ArgumentMatchers.anyLong(), ArgumentMatchers.nullable(Long.class)))
-            .thenReturn(allowedFunctionalitiesTested);
-
         Map<String, Object> editionMap = create2015EditionMap();
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .certificationEdition(editionMap)
@@ -258,20 +248,10 @@ public class FunctionalityTestedNormalizerTest {
                 .build();
         normalizer.normalize(listing);
         assertEquals(0, listing.getCertificationResults().get(0).getFunctionalitiesTested().size());
-        assertEquals(2, listing.getCertificationResults().get(0).getAllowedTestFunctionalities().size());
-        assertTrue(listing.getCertificationResults().get(0).getAllowedTestFunctionalities().stream()
-                .map(tf -> tf.getId())
-                .collect(Collectors.toList()).contains(1L));
-        assertTrue(listing.getCertificationResults().get(0).getAllowedTestFunctionalities().stream()
-                .map(tf -> tf.getId())
-                .collect(Collectors.toList()).contains(2L));
     }
 
     @Test
     public void normalize_hasNoAllowedValues_addsNoAllowedFunctionalityTested() {
-        Mockito.when(functionalityTestedManager.getFunctionalitiesTested(ArgumentMatchers.eq(4L), ArgumentMatchers.nullable(Long.class)))
-            .thenReturn(new ArrayList<FunctionalityTested>());
-
         Map<String, Object> editionMap = create2015EditionMap();
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .certificationEdition(editionMap)
@@ -285,7 +265,6 @@ public class FunctionalityTestedNormalizerTest {
                 .build();
         normalizer.normalize(listing);
         assertEquals(0, listing.getCertificationResults().get(0).getFunctionalitiesTested().size());
-        assertEquals(0, listing.getCertificationResults().get(0).getAllowedTestFunctionalities().size());
     }
 
     private Map<String, Object> create2015EditionMap() {

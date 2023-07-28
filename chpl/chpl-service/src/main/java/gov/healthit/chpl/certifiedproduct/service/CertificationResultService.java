@@ -25,9 +25,6 @@ import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
 import gov.healthit.chpl.dto.CertificationResultTestTaskDTO;
 import gov.healthit.chpl.dto.CertificationResultUcdProcessDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.functionalityTested.FunctionalityTested;
-import gov.healthit.chpl.functionalityTested.FunctionalityTestedComparator;
-import gov.healthit.chpl.functionalityTested.FunctionalityTestedManager;
 import gov.healthit.chpl.manager.CertificationResultManager;
 import gov.healthit.chpl.optionalStandard.OptionalStandardComparator;
 import gov.healthit.chpl.optionalStandard.dao.OptionalStandardDAO;
@@ -43,7 +40,6 @@ import gov.healthit.chpl.util.CertificationResultRules;
 public class CertificationResultService {
     private CertificationResultRules certRules;
     private CertificationResultManager certResultManager;
-    private FunctionalityTestedManager functionalityTestedManager;
     private CertificationResultDetailsDAO certificationResultDetailsDAO;
     private SvapDAO svapDao;
     private OptionalStandardDAO optionalStandardDAO;
@@ -54,18 +50,16 @@ public class CertificationResultService {
     private ConformanceMethodComparator conformanceMethodComparator;
     private OptionalStandardComparator optionalStandardComparator;
     private SvapComparator svapComparator;
-    private FunctionalityTestedComparator funcTestedComparator;
     private TestToolComparator testToolComparator;
 
     @Autowired
     public CertificationResultService(CertificationResultRules certRules, CertificationResultManager certResultManager,
-            FunctionalityTestedManager functionalityTestedManager, CertificationResultDetailsDAO certificationResultDetailsDAO,
+            CertificationResultDetailsDAO certificationResultDetailsDAO,
             SvapDAO svapDAO, OptionalStandardDAO optionalStandardDAO, TestToolDAO testToolDAO,
             ConformanceMethodDAO conformanceMethodDAO,
             CertificationResultComparator certResultComparator) {
         this.certRules = certRules;
         this.certResultManager = certResultManager;
-        this.functionalityTestedManager = functionalityTestedManager;
         this.certificationResultDetailsDAO = certificationResultDetailsDAO;
         this.svapDao = svapDAO;
         this.optionalStandardDAO = optionalStandardDAO;
@@ -76,7 +70,6 @@ public class CertificationResultService {
         this.conformanceMethodComparator = new ConformanceMethodComparator();
         this.optionalStandardComparator = new OptionalStandardComparator();
         this.svapComparator = new SvapComparator();
-        this.funcTestedComparator = new FunctionalityTestedComparator();
         this.testToolComparator = new TestToolComparator();
     }
 
@@ -117,7 +110,6 @@ public class CertificationResultService {
         result.setAllowedConformanceMethods(getAvailableConformanceMethodsForCriteria(result, conformanceMethodCriteriaMap));
         result.setAllowedOptionalStandards(getAvailableOptionalStandardsForCriteria(result, optionalStandardCriteriaMap));
         result.setAllowedSvaps(getAvailableSvapForCriteria(result, svapCriteriaMap));
-        result.setAllowedTestFunctionalities(getAvailableFunctionalitiesTested(result, searchDetails));
         result.setAllowedTestTools(getAvailableTestToolForCriteria(result, testToolCriteriaMap));
         return result;
     }
@@ -185,18 +177,6 @@ public class CertificationResultService {
                 .filter(scm -> scm.getCriterion().getId().equals(result.getCriterion().getId()))
                 .map(scm -> scm.getSvap())
                 .sorted(svapComparator)
-                .collect(Collectors.toList());
-    }
-
-    private List<FunctionalityTested> getAvailableFunctionalitiesTested(CertificationResult cr, CertifiedProductSearchDetails cp) {
-        Long practiceTypeId = null;
-        if (cp.getPracticeType().containsKey("id")) {
-            if (cp.getPracticeType().get("id") != null) {
-                practiceTypeId = Long.valueOf(cp.getPracticeType().get("id").toString());
-            }
-        }
-        return functionalityTestedManager.getFunctionalitiesTested(cr.getCriterion().getId(), practiceTypeId).stream()
-                .sorted(funcTestedComparator)
                 .collect(Collectors.toList());
     }
 

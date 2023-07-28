@@ -1,8 +1,6 @@
 package gov.healthit.chpl.web.controller;
 
-import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,8 +22,6 @@ import gov.healthit.chpl.domain.MeasureType;
 import gov.healthit.chpl.domain.SearchOption;
 import gov.healthit.chpl.domain.TestStandard;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.functionalityTested.FunctionalityTested;
-import gov.healthit.chpl.functionalityTested.FunctionalityTestedManager;
 import gov.healthit.chpl.manager.DimensionalDataManager;
 import gov.healthit.chpl.optionalStandard.domain.OptionalStandard;
 import gov.healthit.chpl.surveillance.report.SurveillanceReportManager;
@@ -47,7 +43,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RequestMapping("/data")
 public class DimensionalDataController {
     private DimensionalDataManager dimensionalDataManager;
-    private FunctionalityTestedManager functionalityTestedManager;
     private ComplaintManager complaintManager;
     private SurveillanceReportManager survReportManager;
     private ChangeRequestManager changeRequestManager;
@@ -55,13 +50,11 @@ public class DimensionalDataController {
 
     @Autowired
     public DimensionalDataController(DimensionalDataManager dimensionalDataManager,
-            FunctionalityTestedManager functionalityTestedManager,
             ComplaintManager complaintManager,
             SurveillanceReportManager survReportManager,
             ChangeRequestManager changeRequestManager,
             SvapManager svapManager) {
         this.dimensionalDataManager = dimensionalDataManager;
-        this.functionalityTestedManager = functionalityTestedManager;
         this.complaintManager = complaintManager;
         this.survReportManager = survReportManager;
         this.changeRequestManager = changeRequestManager;
@@ -234,26 +227,6 @@ public class DimensionalDataController {
         SearchOption result = new SearchOption();
         result.setExpandable(false);
         result.setData(data);
-        return result;
-    }
-
-    @Deprecated
-    @DeprecatedApi(friendlyUrl = "/data/test_functionality",
-        message = "This endpoint is deprecated and will be removed. Please GET /functionalities-tested for this data.",
-        removalDate = "2023-08-01")
-    @Operation(summary = "Get all possible test functionality options in the CHPL",
-            description = "This is useful for knowing what values one might possibly search for.",
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
-    @RequestMapping(value = "/test_functionality", method = RequestMethod.GET,
-            produces = "application/json; charset=utf-8")
-    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
-    public @ResponseBody SearchOption getTestFunctionality() {
-        List<FunctionalityTested> data = functionalityTestedManager.getFunctionalitiesTested();
-        SearchOption result = new SearchOption();
-        result.setExpandable(false);
-        result.setData(data.stream().collect(Collectors.toSet()));
         return result;
     }
 
