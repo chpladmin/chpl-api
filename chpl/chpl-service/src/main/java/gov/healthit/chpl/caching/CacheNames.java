@@ -6,7 +6,9 @@ public final class CacheNames {
     public static final String ALL_DEVELOPERS = "allDevelopers";
     public static final String ALL_DEVELOPERS_INCLUDING_DELETED = "allDevelopersIncludingDeleted";
     public static final String JOB_TYPES = "jobTypes";
+    @Deprecated
     public static final String EDITIONS = "editions";
+    @Deprecated
     public static final String EDITION_NAMES = "editionNames";
     public static final String CERTIFICATION_STATUSES = "certificationStatuses";
     public static final String PRACTICE_TYPE_NAMES = "practiceTypeNames";
