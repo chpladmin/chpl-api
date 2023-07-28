@@ -19,6 +19,7 @@ import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.ProductVersion;
 import gov.healthit.chpl.entity.search.CertifiedProductBasicSearchResultEntity;
 import gov.healthit.chpl.search.domain.CertifiedProductFlatSearchResult;
+import gov.healthit.chpl.search.domain.CertifiedProductSearchResult;
 import gov.healthit.chpl.search.domain.ListingSearchResult;
 import lombok.extern.log4j.Log4j2;
 
