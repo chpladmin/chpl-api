@@ -229,6 +229,8 @@ public class SurveillanceReportController {
             })
     @RequestMapping(value = "/quarterly/{quarterlyReportId}/listings",
             method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    @DeprecatedApiResponseFields(friendlyUrl = "/surveillance-report/quarterly/{quarterlyReportId}/listings",
+        responseClass = RelevantListing.class)
     public @ResponseBody List<RelevantListing> getRelevantListings(@PathVariable Long quarterlyReportId)
             throws AccessDeniedException, EntityRetrievalException {
         QuarterlyReportDTO reportDto = reportManager.getQuarterlyReport(quarterlyReportId);
@@ -320,6 +322,9 @@ public class SurveillanceReportController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
     @RequestMapping(value = "/quarterly/{quarterlyReportId}/listings/{listingId}", method = RequestMethod.PUT, produces = "application/json; charset=utf-8")
+    @DeprecatedApiResponseFields(friendlyUrl = "/surveillance-report/quarterly/{quarterlyReportId}/listings/{listingId}",
+        httpMethod = "PUT",
+        responseClass = RelevantListing.class)
     public RelevantListing updateRelevantListing(@PathVariable Long quarterlyReportId,
             @PathVariable Long listingId,
             @RequestBody(required = true) RelevantListing updateExclusionRequest)
