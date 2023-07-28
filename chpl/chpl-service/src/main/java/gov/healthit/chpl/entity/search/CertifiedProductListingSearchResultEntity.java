@@ -41,6 +41,7 @@ public class CertifiedProductListingSearchResultEntity {
     @Column(name = "mandatory_disclosures")
     private String mandatoryDisclosures;
 
+    @Deprecated
     @Column(name = "year")
     private String edition;
 
