@@ -19,7 +19,7 @@ import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.ProductVersion;
 import gov.healthit.chpl.entity.search.CertifiedProductBasicSearchResultEntity;
 import gov.healthit.chpl.search.domain.CertifiedProductFlatSearchResult;
-import gov.healthit.chpl.search.domain.CertifiedProductSearchResult;
+import gov.healthit.chpl.search.domain.ListingSearchResult;
 import lombok.extern.log4j.Log4j2;
 
 @Repository("certifiedProductSearchDAO")
@@ -163,9 +163,9 @@ public class CertifiedProductSearchDAO extends BaseDAOImpl {
         node.setVersion(pv);
         ArrayList<CertifiedProduct> childrenList = new ArrayList<CertifiedProduct>();
         if (result.getChild() != null) {
-            String[] children = result.getChild().split(CertifiedProductSearchResult.SMILEY_SPLIT_CHAR);
+            String[] children = result.getChild().split(ListingSearchResult.SMILEY_SPLIT_CHAR);
             for (String child : children) {
-                String[] childInfo = child.split(CertifiedProductSearchResult.FROWNEY_SPLIT_CHAR);
+                String[] childInfo = child.split(ListingSearchResult.FROWNEY_SPLIT_CHAR);
                 CertifiedProduct cp = new CertifiedProduct();
                 cp.setChplProductNumber(childInfo[0]);
                 cp.setId(Long.decode(childInfo[1]));
@@ -175,9 +175,9 @@ public class CertifiedProductSearchDAO extends BaseDAOImpl {
         node.setChildren(childrenList);
         ArrayList<CertifiedProduct> parentList = new ArrayList<CertifiedProduct>();
         if (result.getParent() != null) {
-            String[] parents = result.getParent().split(CertifiedProductSearchResult.SMILEY_SPLIT_CHAR);
+            String[] parents = result.getParent().split(ListingSearchResult.SMILEY_SPLIT_CHAR);
             for (String parent : parents) {
-                String[] parentInfo = parent.split(CertifiedProductSearchResult.FROWNEY_SPLIT_CHAR);
+                String[] parentInfo = parent.split(ListingSearchResult.FROWNEY_SPLIT_CHAR);
                 CertifiedProduct cp = new CertifiedProduct();
                 cp.setChplProductNumber(parentInfo[0]);
                 cp.setId(Long.decode(parentInfo[1]));

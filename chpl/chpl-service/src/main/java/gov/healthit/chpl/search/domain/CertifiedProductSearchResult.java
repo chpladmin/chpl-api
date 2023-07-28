@@ -26,10 +26,9 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @SuperBuilder
 @Data
+@Deprecated
 public class CertifiedProductSearchResult implements Serializable {
     private static final long serialVersionUID = -2547390525592841123L;
-    public static final String SMILEY_SPLIT_CHAR = "\u263A";
-    public static final String FROWNEY_SPLIT_CHAR = "\u2639";
 
     @JsonView({
             SearchViews.Default.class

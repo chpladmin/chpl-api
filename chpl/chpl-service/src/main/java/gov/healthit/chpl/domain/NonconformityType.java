@@ -11,6 +11,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseField;
 import gov.healthit.chpl.domain.surveillance.NonconformityClassification;
 import gov.healthit.chpl.util.NullSafeEvaluator;
 import gov.healthit.chpl.util.Util;
@@ -30,9 +31,12 @@ public class NonconformityType implements Serializable {
     private Long id;
 
     @XmlTransient
+    @Deprecated
+    @DeprecatedResponseField(message = "The certification edition will be removed.", removalDate = "2024-02-01")
     private CertificationEdition certificationEdition;
 
     @JsonIgnore
+    @Deprecated
     private String edition;
 
     private String number;
@@ -51,10 +55,12 @@ public class NonconformityType implements Serializable {
         this.id = id;
     }
 
+    @Deprecated
     public CertificationEdition getCertificationEdition() {
         return certificationEdition;
     }
 
+    @Deprecated
     public void setCertificationEdition(CertificationEdition certificationEdition) {
         this.certificationEdition = certificationEdition;
     }
@@ -91,11 +97,13 @@ public class NonconformityType implements Serializable {
         this.classification = classification;
     }
 
+    @Deprecated
     public void setEdition(String edition) {
         this.edition = edition;
     }
 
     @JsonIgnore
+    @Deprecated
     public String getEdition() {
         return NullSafeEvaluator.eval(() -> certificationEdition.getYear(), null);
     }

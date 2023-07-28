@@ -48,7 +48,9 @@ public class CertifiedProductDetailsDTO implements Serializable {
     private String certificationStatusName;
     private Date certificationStatusDate;
     private Boolean curesUpdate;
+    @Deprecated
     private Long certificationEditionId;
+    @Deprecated
     private String year;
     private Long certificationBodyId;
     private String certificationBodyName;
@@ -291,6 +293,7 @@ public class CertifiedProductDetailsDTO implements Serializable {
         this.lastModifiedDate = entity.getLastModifiedDate();
     }
 
+    @Deprecated
     public String getYearCode() {
         if (StringUtils.isEmpty(this.getYear())) {
             return "";

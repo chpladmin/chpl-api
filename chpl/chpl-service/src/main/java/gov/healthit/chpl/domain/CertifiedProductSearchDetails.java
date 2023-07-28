@@ -62,7 +62,9 @@ public class CertifiedProductSearchDetails implements Serializable {
     public static final String ACB_ID_KEY = "id";
     public static final String ACB_NAME_KEY = "name";
     public static final String ACB_CODE_KEY = "code";
+    @Deprecated
     public static final String EDITION_ID_KEY = "id";
+    @Deprecated
     public static final String EDITION_NAME_KEY = "name";
 
     /**
@@ -153,6 +155,8 @@ public class CertifiedProductSearchDetails implements Serializable {
      * The certification edition. It takes a value of 2011, 2014 or 2015.
      */
     @XmlElement(required = true)
+    @Deprecated
+    @DeprecatedResponseField(message = "The certification edition will be removed.", removalDate = "2024-02-01")
     private Map<String, Object> certificationEdition = new HashMap<String, Object>();
 
     /**
@@ -493,10 +497,12 @@ public class CertifiedProductSearchDetails implements Serializable {
         this.developer = developer;
     }
 
+    @Deprecated
     public Map<String, Object> getCertificationEdition() {
         return certificationEdition;
     }
 
+    @Deprecated
     public void setCertificationEdition(Map<String, Object> certificationEdition) {
         this.certificationEdition = certificationEdition;
     }

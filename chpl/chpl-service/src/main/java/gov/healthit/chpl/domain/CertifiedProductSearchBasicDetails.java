@@ -103,6 +103,8 @@ public class CertifiedProductSearchBasicDetails implements Serializable {
     /**
      * The certification edition. It takes a value of 2011, 2014 or 2015.
      */
+    @Deprecated
+    @DeprecatedResponseField(message = "The certification edition will be removed.", removalDate = "2024-02-01")
     private Map<String, Object> certificationEdition = new HashMap<String, Object>();
 
     /**

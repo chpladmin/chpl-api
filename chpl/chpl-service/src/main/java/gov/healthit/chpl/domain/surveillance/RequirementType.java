@@ -34,7 +34,6 @@ public class RequirementType {
     private CertificationEdition certificationEdition;
 
     @Deprecated
-    @DeprecatedResponseField(message = "The certification edition will be removed.", removalDate = "2024-02-01")
     @JsonIgnore
     private String edition;
 

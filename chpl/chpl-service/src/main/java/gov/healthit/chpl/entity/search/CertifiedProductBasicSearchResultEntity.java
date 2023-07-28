@@ -25,6 +25,7 @@ public class CertifiedProductBasicSearchResultEntity {
     @Column(name = "chpl_product_number")
     private String chplProductNumber;
 
+    @Deprecated
     @Column(name = "year")
     private String edition;
 

@@ -57,6 +57,8 @@ public class CertifiedProduct implements Serializable {
      * Edition of the listing. Ex: 2011, 2014, or 2015
      */
     @XmlElement(required = false, nillable = true)
+    @Deprecated
+    @DeprecatedResponseField(message = "The certification edition will be removed.", removalDate = "2024-02-01")
     private String edition;
 
     /**

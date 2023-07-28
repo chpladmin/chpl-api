@@ -94,9 +94,11 @@ public class CertifiedProductDetailsEntity {
     @Column(name = "cures_update")
     private Boolean curesUpdate;
 
+    @Deprecated
     @Column(name = "certification_edition_id")
     private Long certificationEditionId;
 
+    @Deprecated
     @Column(name = "year")
     private String year;
 
