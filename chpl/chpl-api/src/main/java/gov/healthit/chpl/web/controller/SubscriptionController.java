@@ -169,14 +169,14 @@ public class SubscriptionController {
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
-    @RequestMapping(value = "/subscriptions/unsubscribe-all",
-        method = RequestMethod.PUT, produces = "application/json; charset=utf-8",
+    @RequestMapping(value = "/subscribers/{subscriberId:^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$}",
+        method = RequestMethod.DELETE, produces = "application/json; charset=utf-8",
         consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void unsubscribeAll(@RequestBody(required = true) SubscriberRequest request)
+    public void unsubscribeAll(@PathVariable String subscriberId)
         throws EntityRetrievalException {
         if (!ff4j.check(FeatureList.SUBSCRIPTIONS)) {
             throw new NotImplementedException("The subscriptions feature is not yet implemented.");
         }
-        subscriptionManager.unsubscribeAll(UUID.fromString(request.getSubscriberId()));
+        subscriptionManager.unsubscribeAll(UUID.fromString(subscriberId));
     }
 }
