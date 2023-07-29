@@ -37,6 +37,7 @@ import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.CertificationIdManager;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
+import gov.healthit.chpl.web.controller.annotation.DeprecatedApiResponseFields;
 import gov.healthit.chpl.web.controller.results.CertificationIdLookupResults;
 import gov.healthit.chpl.web.controller.results.CertificationIdResults;
 import gov.healthit.chpl.web.controller.results.CertificationIdVerifyResults;
@@ -124,6 +125,7 @@ public class CertificationIdController {
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
+    @DeprecatedApiResponseFields(friendlyUrl = "/certification_ids/{certificationId}", responseClass = CertificationIdLookupResults.class)
     @RequestMapping(value = "/{certificationId:^[A-Z0-9]+$}", method = RequestMethod.GET, produces = {
             MediaType.APPLICATION_JSON_VALUE
     })
