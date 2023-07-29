@@ -33,8 +33,10 @@ public class SearchRequest implements Serializable {
     private Set<Long> listingIds = new HashSet<Long>();
     @Builder.Default
     private Set<String> certificationStatuses = new HashSet<String>();
+    @Deprecated
     @Builder.Default
     private Set<String> derivedCertificationEditions = new HashSet<String>();
+    @Deprecated
     @Builder.Default
     private Set<String> certificationEditions = new HashSet<String>();
     @Builder.Default

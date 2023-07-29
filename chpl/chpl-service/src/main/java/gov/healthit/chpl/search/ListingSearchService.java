@@ -256,6 +256,7 @@ public class ListingSearchService {
                 && certificationStatusesUpperCase.contains(listing.getCertificationStatus().getName().toUpperCase());
     }
 
+    @Deprecated
     private boolean matchesCertificationEditions(ListingSearchResult listing, Set<String> certificationEditions) {
         if (CollectionUtils.isEmpty(certificationEditions)) {
             return true;
@@ -266,6 +267,7 @@ public class ListingSearchService {
                 && certificationEditions.contains(listing.getEdition().getName());
     }
 
+    @Deprecated
     private boolean matchesDerivedCertificationEditions(ListingSearchResult listing, Set<String> derivedCertificationEditions) {
         if (CollectionUtils.isEmpty(derivedCertificationEditions)) {
             return true;
@@ -275,6 +277,7 @@ public class ListingSearchService {
             .anyMatch(edition -> matchesDerivedCertificationEdition(listing, edition));
     }
 
+    @Deprecated
     private boolean matchesDerivedCertificationEdition(ListingSearchResult listing, String derivedCertificationEdition) {
         boolean editionMatch = false;
         if (derivedCertificationEdition.equalsIgnoreCase(CURES_UPDATE_EDITION)) {
