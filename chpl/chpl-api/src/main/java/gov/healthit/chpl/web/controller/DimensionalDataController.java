@@ -30,7 +30,6 @@ import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import gov.healthit.chpl.web.controller.annotation.CacheControl;
 import gov.healthit.chpl.web.controller.annotation.CacheMaxAge;
 import gov.healthit.chpl.web.controller.annotation.CachePolicy;
-import gov.healthit.chpl.web.controller.annotation.DeprecatedApi;
 import gov.healthit.chpl.web.controller.annotation.DeprecatedApiResponseFields;
 import gov.healthit.chpl.web.controller.results.CertificationCriterionResults;
 import gov.healthit.chpl.web.controller.results.SvapResults;
@@ -274,26 +273,6 @@ public class DimensionalDataController {
         Set<TestStandard> data = dimensionalDataManager.getTestStandards();
         SearchOption result = new SearchOption();
         result.setExpandable(false);
-        result.setData(data);
-        return result;
-    }
-
-    @Deprecated
-    @DeprecatedApi(friendlyUrl = "/data/qms_standards",
-        message = "This endpoint is deprecated and will be removed. Please GET from /qms-standards.",
-        removalDate = "2023-07-31")
-    @Operation(summary = "Get all possible qms standard options in the CHPL",
-            description = "This is useful for knowing what values one might possibly search for.",
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
-    @RequestMapping(value = "/qms_standards", method = RequestMethod.GET,
-            produces = "application/json; charset=utf-8")
-    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
-    public @ResponseBody SearchOption getQmsStandards() {
-        Set<KeyValueModel> data = dimensionalDataManager.getQmsStandards();
-        SearchOption result = new SearchOption();
-        result.setExpandable(true);
         result.setData(data);
         return result;
     }
