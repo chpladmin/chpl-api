@@ -31,7 +31,6 @@ import gov.healthit.chpl.dao.CertificationStatusEventDAO;
 import gov.healthit.chpl.dao.CertifiedProductAccessibilityStandardDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.CertifiedProductQmsStandardDAO;
-import gov.healthit.chpl.dao.CertifiedProductSearchDAO;
 import gov.healthit.chpl.dao.CertifiedProductSearchResultDAO;
 import gov.healthit.chpl.dao.CertifiedProductTargetedUserDAO;
 import gov.healthit.chpl.dao.CertifiedProductTestingLabDAO;
@@ -81,7 +80,6 @@ public class CertifiedProductManagerTest {
 
     private ErrorMessageUtil msgUtil;
     private CertifiedProductDAO cpDao;
-    private CertifiedProductSearchDAO searchDao;
     private CertificationResultDAO certDao;
     private CertificationCriterionDAO certCriterionDao;
     private QmsStandardDAO qmsDao;
@@ -119,7 +117,6 @@ public class CertifiedProductManagerTest {
     public void before() {
         msgUtil = Mockito.mock(ErrorMessageUtil.class);
         cpDao = Mockito.mock(CertifiedProductDAO.class);
-        searchDao = Mockito.mock(CertifiedProductSearchDAO.class);
         certDao = Mockito.mock(CertificationResultDAO.class);
         certCriterionDao = Mockito.mock(CertificationCriterionDAO.class);
         qmsDao = Mockito.mock(QmsStandardDAO.class);
@@ -151,7 +148,7 @@ public class CertifiedProductManagerTest {
         validatorFactory = Mockito.mock(ListingValidatorFactory.class);
         curesUpdateService = Mockito.mock(CuresUpdateService.class);
 
-        certifiedProductManager = new  CertifiedProductManager(msgUtil, cpDao,  searchDao, certDao,
+        certifiedProductManager = new  CertifiedProductManager(msgUtil, cpDao, certDao,
                 certCriterionDao, qmsDao,  targetedUserDao, asDao,  cpQmsDao, cpMeasureDao, cpTestingLabDao,
                 cpTargetedUserDao, cpAccStdDao,  cqmResultDAO, cqmCriterionDao,  atlDao,
                 developerDao,  devStatusDao, developerManager,  productManager, versionManager,

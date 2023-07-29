@@ -23,7 +23,6 @@ import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductSearchBasicDetails;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.domain.IcsFamilyTreeNode;
 import gov.healthit.chpl.domain.ListingUpdateRequest;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.exception.CertifiedProductUpdateException;
@@ -46,7 +45,6 @@ import gov.healthit.chpl.validation.listing.Validator;
 import gov.healthit.chpl.web.controller.annotation.CacheControl;
 import gov.healthit.chpl.web.controller.annotation.CacheMaxAge;
 import gov.healthit.chpl.web.controller.annotation.CachePolicy;
-import gov.healthit.chpl.web.controller.annotation.DeprecatedApi;
 import gov.healthit.chpl.web.controller.annotation.DeprecatedApiResponseFields;
 import gov.healthit.chpl.web.controller.results.CQMResultDetailResults;
 import gov.healthit.chpl.web.controller.results.CertificationResults;
@@ -665,85 +663,6 @@ public class CertifiedProductController {
             @PathVariable("identifier") String identifier) throws EntityRetrievalException {
         String chplProductNumber = chplProductNumberUtil.getChplProductNumber(chplPrefix, identifier);
         return icsManager.getIcsFamilyTree(chplProductNumber);
-    }
-
-    @Deprecated
-    @DeprecatedApi(friendlyUrl = "/certified_products/{certifiedProductId}/ics_relationships",
-            message = "This endpoint is deprecated and will be removed. Please use /certified_products/{certifiedProductId}/ics-relationships.",
-            removalDate = "2023-07-15")
-    @Operation(summary = "Get the ICS family tree for the specified certified product.",
-            description = "Returns all members of the family tree connected to the specified certified product.",
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
-    @RequestMapping(value = "/{certifiedProductId:^-?\\d+$}/ics_relationships", method = RequestMethod.GET,
-            produces = "application/json; charset=utf-8")
-    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
-    public @ResponseBody List<IcsFamilyTreeNode> getIcsFamilyTreeById(
-            @PathVariable("certifiedProductId") Long certifiedProductId) throws EntityRetrievalException {
-        List<IcsFamilyTreeNode> familyTree = cpManager.getIcsFamilyTree(certifiedProductId);
-        return familyTree;
-    }
-
-    @SuppressWarnings({
-            "checkstyle:parameternumber"
-    })
-    @Deprecated
-    @DeprecatedApi(friendlyUrl = "/certified_products/{chplProductNumber}/ics_relationships",
-            message = "This endpoint is deprecated and will be removed. Please use /certified_products/{certifiedProductId}/ics-relationships.",
-            removalDate = "2023-07-15")
-    @Operation(summary = "Get the ICS family tree for the specified certified product based on a CHPL Product Number.",
-            description = "{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}."
-                    + "{addlSoftwareCode}.{certDateCode} represents a valid CHPL Product Number.  A valid call to this "
-                    + "service would look like /certified_products/YY.99.99.9999.XXXX.99.99.9."
-                    + "YYMMDD/ics_relationships.",
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
-    @RequestMapping(value = "/{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}.{addlSoftwareCode}.{certDateCode}/ics_relationships",
-            method = RequestMethod.GET,
-            produces = "application/json; charset=utf-8")
-    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
-    public @ResponseBody List<IcsFamilyTreeNode> getIcsFamilyTreeByChplProductNumber(
-            @PathVariable("year") String year,
-            @PathVariable("testingLab") String testingLab,
-            @PathVariable("certBody") String certBody,
-            @PathVariable("vendorCode") String vendorCode,
-            @PathVariable("productCode") String productCode,
-            @PathVariable("versionCode") String versionCode,
-            @PathVariable("icsCode") String icsCode,
-            @PathVariable("addlSoftwareCode") String addlSoftwareCode,
-            @PathVariable("certDateCode") String certDateCode) throws EntityRetrievalException {
-
-        String chplProductNumber = chplProductNumberUtil.getChplProductNumber(year, testingLab, certBody, vendorCode, productCode,
-                versionCode, icsCode, addlSoftwareCode, certDateCode);
-
-        List<IcsFamilyTreeNode> familyTree = cpManager.getIcsFamilyTree(chplProductNumber);
-
-        return familyTree;
-    }
-
-    @Deprecated
-    @DeprecatedApi(friendlyUrl = "/certified_products/{chplProductNumber}/ics_relationships",
-            message = "This endpoint is deprecated and will be removed. Please use /certified_products/{certifiedProductId}/ics-relationships.",
-            removalDate = "2023-07-15")
-    @Operation(summary = "Get the ICS family tree for the specified certified product based on a legacy CHPL Product Number",
-            description = "{chplPrefix}-{identifier} represents a valid legacy CHPL Product Number.  A valid call to this "
-                    + "service would look like /certified_products/CHP-999999/ics_relationships.",
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
-    @RequestMapping(value = "/{chplPrefix}-{identifier}/ics_relationships", method = RequestMethod.GET,
-            produces = "application/json; charset=utf-8")
-    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
-    public @ResponseBody List<IcsFamilyTreeNode> getIcsFamilyTreeByChplProductNumber(
-            @PathVariable("chplPrefix") String chplPrefix,
-            @PathVariable("identifier") String identifier) throws EntityRetrievalException {
-
-        String chplProductNumber = chplProductNumberUtil.getChplProductNumber(chplPrefix, identifier);
-        List<IcsFamilyTreeNode> familyTree = cpManager.getIcsFamilyTree(chplProductNumber);
-
-        return familyTree;
     }
 
     @Operation(summary = "Update an existing certified product.",

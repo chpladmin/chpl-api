@@ -3,10 +3,7 @@ package gov.healthit.chpl.manager;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Objects;
 
 import javax.persistence.EntityNotFoundException;
@@ -40,7 +37,6 @@ import gov.healthit.chpl.dao.CertificationStatusEventDAO;
 import gov.healthit.chpl.dao.CertifiedProductAccessibilityStandardDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.CertifiedProductQmsStandardDAO;
-import gov.healthit.chpl.dao.CertifiedProductSearchDAO;
 import gov.healthit.chpl.dao.CertifiedProductSearchResultDAO;
 import gov.healthit.chpl.dao.CertifiedProductTargetedUserDAO;
 import gov.healthit.chpl.dao.CertifiedProductTestingLabDAO;
@@ -67,7 +63,6 @@ import gov.healthit.chpl.domain.CertifiedProductTestingLab;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.DeveloperStatus;
 import gov.healthit.chpl.domain.DeveloperStatusEvent;
-import gov.healthit.chpl.domain.IcsFamilyTreeNode;
 import gov.healthit.chpl.domain.InheritedCertificationStatus;
 import gov.healthit.chpl.domain.ListingMeasure;
 import gov.healthit.chpl.domain.ListingUpdateRequest;
@@ -124,7 +119,6 @@ import lombok.extern.log4j.Log4j2;
 public class CertifiedProductManager extends SecuredManager {
     private ErrorMessageUtil msgUtil;
     private CertifiedProductDAO cpDao;
-    private CertifiedProductSearchDAO searchDao;
     private CertificationCriterionDAO certCriterionDao;
     private QmsStandardDAO qmsDao;
     private TargetedUserDAO targetedUserDao;
@@ -169,7 +163,7 @@ public class CertifiedProductManager extends SecuredManager {
     })
     @Autowired
     public CertifiedProductManager(ErrorMessageUtil msgUtil,
-            CertifiedProductDAO cpDao, CertifiedProductSearchDAO searchDao,
+            CertifiedProductDAO cpDao,
             CertificationResultDAO certDao, CertificationCriterionDAO certCriterionDao,
             QmsStandardDAO qmsDao, TargetedUserDAO targetedUserDao,
             AccessibilityStandardDAO asDao, CertifiedProductQmsStandardDAO cpQmsDao,
@@ -196,7 +190,6 @@ public class CertifiedProductManager extends SecuredManager {
 
         this.msgUtil = msgUtil;
         this.cpDao = cpDao;
-        this.searchDao = searchDao;
         this.certCriterionDao = certCriterionDao;
         this.qmsDao = qmsDao;
         this.targetedUserDao = targetedUserDao;
@@ -291,58 +284,6 @@ public class CertifiedProductManager extends SecuredManager {
             acbIdList.add(dto.getId());
         }
         return cpDao.getDetailsByVersionAndAcbIds(versionId, acbIdList);
-    }
-
-    @Deprecated
-    @Transactional
-    public List<IcsFamilyTreeNode> getIcsFamilyTree(String chplProductNumber) throws EntityRetrievalException {
-        CertifiedProductDetailsDTO dto = getCertifiedProductDetailsDtoByChplProductNumber(chplProductNumber);
-        return getIcsFamilyTree(dto.getId());
-    }
-
-    @Deprecated
-    @Transactional
-    public List<IcsFamilyTreeNode> getIcsFamilyTree(Long certifiedProductId) throws EntityRetrievalException {
-        getById(certifiedProductId); // sends back 404 if bad id
-
-        List<IcsFamilyTreeNode> familyTree = new ArrayList<IcsFamilyTreeNode>();
-        Map<Long, Boolean> queue = new HashMap<Long, Boolean>();
-        List<Long> toAdd = new ArrayList<Long>();
-
-        // add first element to processing queue
-        queue.put(certifiedProductId, false);
-
-        // while queue contains elements that need processing
-        while (queue.containsValue(false)) {
-            for (Entry<Long, Boolean> cp : queue.entrySet()) {
-                Boolean isProcessed = cp.getValue();
-                Long cpId = cp.getKey();
-                if (!isProcessed) {
-                    IcsFamilyTreeNode node = searchDao.getICSFamilyTree(cpId);
-                    // add family to array that will be used to add to
-                    // processing array
-                    familyTree.add(node);
-                    // done processing node - set processed to true
-                    for (CertifiedProduct certProd : node.getChildren()) {
-                        toAdd.add(certProd.getId());
-                    }
-                    for (CertifiedProduct certProd : node.getParents()) {
-                        toAdd.add(certProd.getId());
-                    }
-                    queue.put(cpId, true);
-                }
-            }
-            // add elements from toAdd array to queue if they are not already
-            // there
-            for (Long id : toAdd) {
-                if (!queue.containsKey(id)) {
-                    queue.put(id, false);
-                }
-            }
-            toAdd.clear();
-        }
-
-        return familyTree;
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")
