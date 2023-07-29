@@ -49,7 +49,6 @@ import gov.healthit.chpl.dao.TargetedUserDAO;
 import gov.healthit.chpl.dao.TestingLabDAO;
 import gov.healthit.chpl.domain.CQMResultCertification;
 import gov.healthit.chpl.domain.CQMResultDetails;
-import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationStatus;
@@ -269,21 +268,6 @@ public class CertifiedProductManager extends SecuredManager {
     public List<CertifiedProductDetailsDTO> getByProduct(Long productId) throws EntityRetrievalException {
         productManager.getById(productId); // throws 404 if bad id
         return cpDao.getDetailsByProductId(productId);
-    }
-
-    @Transactional(readOnly = true)
-    public List<CertifiedProduct> getByVersionWithEditPermission(Long versionId)
-            throws EntityRetrievalException {
-        versionManager.getById(versionId); // throws 404 if bad id
-        List<CertificationBody> userAcbs = resourcePermissions.getAllAcbsForCurrentUser();
-        if (userAcbs == null || userAcbs.size() == 0) {
-            return new ArrayList<CertifiedProduct>();
-        }
-        List<Long> acbIdList = new ArrayList<Long>(userAcbs.size());
-        for (CertificationBody dto : userAcbs) {
-            acbIdList.add(dto.getId());
-        }
-        return cpDao.getDetailsByVersionAndAcbIds(versionId, acbIdList);
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")

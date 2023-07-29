@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -20,7 +19,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
-import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductSearchBasicDetails;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.ListingUpdateRequest;
@@ -86,33 +84,6 @@ public class CertifiedProductController {
         this.activityManager = activityManager;
         this.validatorFactory = validatorFactory;
         this.chplProductNumberUtil = chplProductNumberUtil;
-    }
-
-    @Operation(summary = "List all certified products",
-            description = "Default behavior is to return all certified products in the system. "
-                    + " The required 'versionId' parameter filters the certified products to those"
-                    + " assigned to that version. The 'editable' parameter will return only those"
-                    + " certified products that the logged in user has permission to edit as "
-                    + " determined by ACB roles and authorities. Not all information about "
-                    + " every certified product is returned. Call the /details service for more information.",
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
-    @DeprecatedApiResponseFields(friendlyUrl = "/certified_products", httpMethod = "GET", responseClass = CertifiedProduct.class)
-    @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public @ResponseBody List<CertifiedProduct> getCertifiedProductsByVersion(
-            @RequestParam(required = true) Long versionId,
-            @RequestParam(required = false, defaultValue = "false") boolean editable)
-            throws EntityRetrievalException {
-        List<CertifiedProduct> certifiedProductList = null;
-
-        if (editable) {
-            certifiedProductList = cpManager.getByVersionWithEditPermission(versionId);
-        } else {
-            certifiedProductList = cpManager.getByVersion(versionId);
-        }
-
-        return certifiedProductList;
     }
 
     @Operation(summary = "Get all details for a specified certified product.",
