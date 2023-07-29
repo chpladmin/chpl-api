@@ -21,6 +21,7 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import gov.healthit.chpl.web.controller.annotation.DeprecatedApi;
+import gov.healthit.chpl.web.controller.annotation.DeprecatedApiResponseFields;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -220,6 +221,8 @@ public class SearchComplaintsController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
+    @DeprecatedApiResponseFields(friendlyUrl = "/complaints/search/v2", httpMethod = "GET",
+            responseClass = ComplaintSearchResponse.class)
     @RequestMapping(value = "/v2", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody ComplaintSearchResponse searchV2(
             @Parameter(description = "Searches all complaints by ONC-ACB Complaint ID, ONC Complaint ID, Associated Certified Product, or Associated Criteria.",
