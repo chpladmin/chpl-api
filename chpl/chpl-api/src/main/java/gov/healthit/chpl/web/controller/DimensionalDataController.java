@@ -448,6 +448,8 @@ public class DimensionalDataController {
             })
     @RequestMapping(value = "/certification-criteria", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
+    @DeprecatedApiResponseFields(friendlyUrl = "/data/certification-criteria", httpMethod = "GET",
+        responseClass = CertificationCriterionResults.class)
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody CertificationCriterionResults getCertificationCriteria() {
         Set<CertificationCriterion> criteria = dimensionalDataManager.getCertificationCriterion();
