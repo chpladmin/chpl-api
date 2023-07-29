@@ -17,6 +17,7 @@ import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.svap.domain.Svap;
 import gov.healthit.chpl.svap.manager.SvapManager;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
+import gov.healthit.chpl.web.controller.annotation.DeprecatedApiResponseFields;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -86,6 +87,7 @@ public class SvapController {
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
+    @DeprecatedApiResponseFields(friendlyUrl = "/svaps/criteria", httpMethod = "GET", responseClass = CertificationCriterion.class)
     @RequestMapping(value = "/criteria", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<CertificationCriterion> getCertificationCriteriaForSvap() {
         return svapManager.getCertificationCriteriaForSvap();
