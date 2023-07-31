@@ -38,6 +38,7 @@ public class CuresUpdateEventEntity implements Serializable {
     @Column(name = "certified_product_id")
     private Long certifiedProductId;
 
+    @Deprecated
     @Column(name = "cures_update")
     private Boolean curesUpdate;
 

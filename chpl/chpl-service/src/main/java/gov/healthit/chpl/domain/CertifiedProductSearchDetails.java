@@ -368,6 +368,8 @@ public class CertifiedProductSearchDetails implements Serializable {
     /**
      * This variable identifies if the listing meets the definition of "Cures Update". It is a binary variable that takes value of true or false.
      */
+    @Deprecated
+    @DeprecatedResponseField(message = "The Cures Update field will be removed.", removalDate = "2024-02-01")
     @XmlElement(required = false, nillable = true)
     private Boolean curesUpdate;
 
@@ -571,10 +573,12 @@ public class CertifiedProductSearchDetails implements Serializable {
         this.certificationEvents = certificationEvents;
     }
 
+    @Deprecated
     public void setCuresUpdate(Boolean curesUpdate) {
         this.curesUpdate = curesUpdate;
     }
 
+    @Deprecated
     public Boolean getCuresUpdate() {
         return curesUpdate;
     }

@@ -85,6 +85,7 @@ public class CertifiedProductDetailsEntitySimple {
     @Column(name = "last_certification_status_change")
     private Date certificationStatusDate;
 
+    @Deprecated
     @Column(name = "cures_update")
     private Boolean curesUpdate;
 

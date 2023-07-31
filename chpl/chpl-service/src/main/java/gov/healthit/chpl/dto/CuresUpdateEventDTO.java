@@ -21,6 +21,7 @@ public class CuresUpdateEventDTO implements Serializable {
     private static final long serialVersionUID = 1171613630377844762L;
     private Long id;
     private Long certifiedProductId;
+    @Deprecated
     private Boolean curesUpdate;
     @Setter(AccessLevel.NONE)
     @Getter(AccessLevel.NONE)

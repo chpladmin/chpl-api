@@ -22,7 +22,10 @@ public final class Util {
     private static final int BASE_16 = 16;
     private static final String DATE_FORMAT = "yyyy-MM-dd";
     private static final String TIMESTAMP_FORMAT = "yyyyMMdd_HHmmss";
+
+    @Deprecated
     private static final String CURES_TITLE = "Cures Update";
+    @Deprecated
     public static final String CURES_SUFFIX = " (" + CURES_TITLE + ")";
 
     private Util() {
@@ -67,10 +70,12 @@ public final class Util {
         }
     }
 
+    @Deprecated
     private static boolean isCures(String title) {
         return title != null && title.contains(CURES_TITLE);
     }
 
+    @Deprecated
     public static boolean isCures(CertificationCriterion criterion) {
         return isCures(criterion.getTitle());
     }

@@ -20,6 +20,8 @@ public class ListingActivityMetadata extends ActivityMetadata {
     @Deprecated
     @DeprecatedResponseField(message = "The certification edition will be removed.", removalDate = "2024-02-01")
     private String edition;
+    @Deprecated
+    @DeprecatedResponseField(message = "The Cures Update field will be removed.", removalDate = "2024-02-01")
     private Boolean curesUpdate;
     private Long certificationDate;
 }

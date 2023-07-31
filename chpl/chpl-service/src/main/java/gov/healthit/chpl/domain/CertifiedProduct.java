@@ -77,6 +77,8 @@ public class CertifiedProduct implements Serializable {
      * Whether the Listing is consider "Cures Update" or not
      */
     @XmlElement(required = false, nillable = true)
+    @Deprecated
+    @DeprecatedResponseField(message = "The Cures Update field will be removed.", removalDate = "2024-02-01")
     private Boolean curesUpdate;
 
     public CertifiedProduct() {

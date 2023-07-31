@@ -1172,6 +1172,7 @@ public class CertifiedProductManager extends SecuredManager {
         return numChanges;
     }
 
+    @Deprecated
     private int updateCuresUpdateEvents(Long listingId, Boolean existingCuresUpdate,
             CertifiedProductSearchDetails updatedListing) throws EntityCreationException, EntityRetrievalException {
         int numChanges = 0;

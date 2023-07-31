@@ -135,6 +135,7 @@ public class CertifiedProductSummaryEntity implements Serializable {
     @Column(name = "certification_date")
     private Date certificationDate;
 
+    @Deprecated
     @Column(name = "cures_update")
     private Boolean curesUpdate;
 

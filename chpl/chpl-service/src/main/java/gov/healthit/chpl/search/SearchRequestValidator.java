@@ -40,6 +40,7 @@ public class SearchRequestValidator {
     private SvapManager svapManager;
     private ErrorMessageUtil msgUtil;
     private DateTimeFormatter dateFormatter;
+    @Deprecated
     private Set<String> allowedDerivedCertificationEditions;
 
     @Autowired
@@ -126,6 +127,7 @@ public class SearchRequestValidator {
             .collect(Collectors.toSet());
     }
 
+    @Deprecated
     private Set<String> getDerivedCertificationEditionErrors(Set<String> derivedCertificationEditions) {
         if (CollectionUtils.isEmpty(derivedCertificationEditions)) {
             return Collections.emptySet();
@@ -137,6 +139,7 @@ public class SearchRequestValidator {
             .collect(Collectors.toSet());
     }
 
+    @Deprecated
     private Set<String> getCertificationEditionErrors(Set<String> certificationEditions) {
         if (certificationEditions == null || certificationEditions.size() == 0) {
             return Collections.emptySet();

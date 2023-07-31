@@ -34,6 +34,7 @@ public class CertifiedProductSummaryDTO implements Serializable {
     private String year;
     private String certificationStatus;
     private Date certificationDate;
+    @Deprecated
     private Boolean curesUpdate;
     private CertificationBody acb;
     private Developer developer;

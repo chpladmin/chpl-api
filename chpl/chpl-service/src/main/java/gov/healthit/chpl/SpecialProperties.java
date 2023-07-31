@@ -22,6 +22,7 @@ public class SpecialProperties {
         this.env = env;
     }
 
+    @Deprecated
     public Date getEffectiveRuleDate() {
         SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
         try {
@@ -32,6 +33,7 @@ public class SpecialProperties {
         }
     }
 
+    @Deprecated
     public Date getEffectiveRuleDatePlus18Months() {
         SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
         try {
@@ -42,6 +44,7 @@ public class SpecialProperties {
         }
     }
 
+    @Deprecated
     public Date getEffectiveRuleTimestamp() {
         Date curesEffectiveRuleDate = getEffectiveRuleDate();
         Calendar cal = Calendar.getInstance();

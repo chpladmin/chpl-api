@@ -47,6 +47,7 @@ public class CertifiedProductDetailsDTO implements Serializable {
     private Long certificationStatusId;
     private String certificationStatusName;
     private Date certificationStatusDate;
+    @Deprecated
     private Boolean curesUpdate;
     @Deprecated
     private Long certificationEditionId;

@@ -29,6 +29,7 @@ public class CertifiedProductBasicSearchResultEntity {
     @Column(name = "year")
     private String edition;
 
+    @Deprecated
     @Column(name = "cures_update")
     private Boolean curesUpdate;
 

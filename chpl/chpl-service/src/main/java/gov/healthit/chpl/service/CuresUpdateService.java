@@ -17,6 +17,7 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.service.CertificationCriterionService.Criteria2015;
 
 @Component
+@Deprecated
 public class CuresUpdateService {
     private static final Logger LOGGER = LogManager.getLogger(CuresUpdateService.class);
     private CertificationCriterionService criteriaService;
@@ -115,6 +116,7 @@ public class CuresUpdateService {
                 criteriaService.get(Criteria2015.G_6_CURES).getId()));
     }
 
+    @Deprecated
     public Boolean isCuresUpdate(CertifiedProductSearchDetails listing) {
         List<Long> criteriaIds = listing.getCertificationResults().stream()
                 .filter(criterion -> BooleanUtils.isTrue(criterion.isSuccess()))
@@ -123,6 +125,7 @@ public class CuresUpdateService {
         return isCuresUpdate(criteriaIds);
     }
 
+    @Deprecated
     private Boolean isCuresUpdate(List<Long> criteriaIds) {
         try {
             if (!passNeedsToBeUpdatedCriteriaRequirement(criteriaIds)) {

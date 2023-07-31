@@ -100,6 +100,8 @@ public class CertifiedProductSearchResult implements Serializable {
     @JsonView({
         SearchViews.Default.class
     })
+    @Deprecated
+    @DeprecatedResponseField(message = "The Cures Update field will be removed.", removalDate = "2024-02-01")
     private Boolean curesUpdate;
 
     @JsonView({

@@ -19,6 +19,8 @@ import lombok.ToString;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class CertificationEdition implements Serializable {
     private static final long serialVersionUID = 5732322243572571895L;
+
+    @Deprecated
     public static final String CURES_SUFFIX = " Cures Update";
 
     @Deprecated

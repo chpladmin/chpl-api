@@ -42,6 +42,7 @@ public class ListingSearchEntity {
     @Column(name = "year")
     private String certificationEditionYear;
 
+    @Deprecated
     @Column(name = "cures_update")
     private Boolean curesUpdate;
 

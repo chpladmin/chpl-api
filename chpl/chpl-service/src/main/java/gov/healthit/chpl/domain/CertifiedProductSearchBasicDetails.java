@@ -248,6 +248,8 @@ public class CertifiedProductSearchBasicDetails implements Serializable {
     /**
      * Whether or not the listing meets the definition of "Cures Update".
      */
+    @Deprecated
+    @DeprecatedResponseField(message = "The Cures Update field will be removed.", removalDate = "2024-02-01")
     private Boolean curesUpdate;
 
     /**

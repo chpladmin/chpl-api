@@ -23,7 +23,9 @@ import lombok.extern.log4j.Log4j2;
 @Component
 @Log4j2
 public class CertificationCriterionService {
+    @Deprecated
     private static final String CURES_TITLE = "Cures Update";
+    @Deprecated
     public static final String CURES_SUFFIX = " (" + CURES_TITLE + ")";
 
     private CertificationCriterionDAO certificationCriterionDAO;
@@ -50,6 +52,7 @@ public class CertificationCriterionService {
         initOriginalToCuresCriteriaMap();
     }
 
+    @Deprecated
     private void initOriginalToCuresCriteriaMap() {
         originalToCuresCriteriaMap.put(get("criterion.170_315_b_1_old"), get("criterion.170_315_b_1_cures"));
         originalToCuresCriteriaMap.put(get("criterion.170_315_b_2_old"), get("criterion.170_315_b_2_cures"));
@@ -85,6 +88,7 @@ public class CertificationCriterionService {
         return criteriaByNumberMap.get(certificationCriterionNumber);
     }
 
+    @Deprecated
     public Map<CertificationCriterion, CertificationCriterion> getOriginalToCuresCriteriaMap() {
         return originalToCuresCriteriaMap;
     }
@@ -95,10 +99,12 @@ public class CertificationCriterionService {
         return getCertificationResultSortIndex(valueA) - getCertificationResultSortIndex(valueB);
     }
 
+    @Deprecated
     public static boolean hasCuresInTitle(String title) {
         return title != null && title.contains(CURES_TITLE);
     }
 
+    @Deprecated
     public static boolean hasCuresInTitle(CertificationCriterion criterion) {
         return hasCuresInTitle(criterion.getTitle());
     }

@@ -44,6 +44,7 @@ public class ListingWithPrivilegedSurveillanceEntity {
     @Column(name = "year")
     private String year;
 
+    @Deprecated
     @Column(name = "cures_update")
     private Boolean curesUpdate;
 

@@ -55,6 +55,8 @@ public class ListingSearchResult implements Serializable {
     @JsonSerialize(using = LocalDateSerializer.class)
     private LocalDate decertificationDate;
     private IdNamePair certificationStatus;
+    @Deprecated
+    @DeprecatedResponseField(message = "The Cures Update field will be removed.", removalDate = "2024-02-01")
     private Boolean curesUpdate;
     private Long surveillanceCount;
     private Long openSurveillanceNonConformityCount;

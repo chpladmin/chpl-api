@@ -23,6 +23,7 @@ import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.domain.activity.ActivityDetails;
 import gov.healthit.chpl.domain.activity.ActivityMetadata;
 import gov.healthit.chpl.domain.activity.ActivityMetadataPage;
+import gov.healthit.chpl.domain.activity.ListingActivityMetadata;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
@@ -36,6 +37,7 @@ import gov.healthit.chpl.manager.ProductVersionManager;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
+import gov.healthit.chpl.web.controller.annotation.DeprecatedApiResponseFields;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -109,6 +111,7 @@ public class ActivityController {
             })
     @RequestMapping(value = "/metadata/listings", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
+    @DeprecatedApiResponseFields(friendlyUrl = "/activity/metadata/listings", httpMethod = "GET", responseClass = ListingActivityMetadata.class)
     public ActivityMetadataPage metadataForListings(@RequestParam(required = false) Long start,
             @RequestParam(required = false) Long end, @RequestParam(required = false) Integer pageNum,
             @RequestParam(required = false) Integer pageSize) throws JsonParseException, IOException, ValidationException {
@@ -121,6 +124,7 @@ public class ActivityController {
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
+    @DeprecatedApiResponseFields(friendlyUrl = "/activity/metadata/listings/{listingId}", httpMethod = "GET", responseClass = ListingActivityMetadata.class)
     @RequestMapping(value = "/metadata/listings/{id:^-?\\d+$}", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     public List<ActivityMetadata> metadataForListingById(@PathVariable("id") Long id,
@@ -143,6 +147,7 @@ public class ActivityController {
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
+    @DeprecatedApiResponseFields(friendlyUrl = "/activity/metadata/listings/{listingId}", httpMethod = "GET", responseClass = ListingActivityMetadata.class)
     @RequestMapping(value = "/metadata/listings/{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}.{addlSoftwareCode}.{certDateCode}",
             method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
@@ -180,6 +185,7 @@ public class ActivityController {
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
+    @DeprecatedApiResponseFields(friendlyUrl = "/activity/metadata/listings/{listingId}", httpMethod = "GET", responseClass = ListingActivityMetadata.class)
     @RequestMapping(value = "/metadata/listings/{chplPrefix}-{identifier}",
             method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
