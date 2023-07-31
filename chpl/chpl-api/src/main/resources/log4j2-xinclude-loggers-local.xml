@@ -179,4 +179,8 @@
         <Logger name="serviceBaseUrlListUptimeEmailJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="serviceBaseUrlListUptimeEmailJob" />
     </Logger>
+    </Logger>
+        <Logger name="jsonListingDownloadCreatorJobJobLogger" level="INFO" additivity="false">
+        <AppenderRef ref="jsonListingDownloadCreatorJob" />
+    </Logger>
 </Loggers>

@@ -27,7 +27,7 @@ import gov.healthit.chpl.scheduler.presenter.CertifiedProductJsonPresenter;
 import gov.healthit.chpl.scheduler.presenter.CertifiedProductPresenter;
 import lombok.extern.log4j.Log4j2;
 
-@Log4j2(topic = "certifiedProductDownloadableResourceCreatorJobLogger")
+@Log4j2(topic = "jsonListingDownloadCreatorJobLogger")
 @DisallowConcurrentExecution
 public class JsonListingDownloadCreatorJob extends DownloadableResourceCreatorJob {
     private static final int MILLIS_PER_SECOND = 1000;
