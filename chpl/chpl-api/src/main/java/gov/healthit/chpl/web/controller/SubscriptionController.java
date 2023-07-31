@@ -170,8 +170,7 @@ public class SubscriptionController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
     @RequestMapping(value = "/subscribers/{subscriberId:^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$}",
-        method = RequestMethod.DELETE, produces = "application/json; charset=utf-8",
-        consumes = MediaType.APPLICATION_JSON_VALUE)
+        method = RequestMethod.DELETE, produces = "application/json; charset=utf-8")
     public void unsubscribeAll(@PathVariable String subscriberId)
         throws EntityRetrievalException {
         if (!ff4j.check(FeatureList.SUBSCRIPTIONS)) {
