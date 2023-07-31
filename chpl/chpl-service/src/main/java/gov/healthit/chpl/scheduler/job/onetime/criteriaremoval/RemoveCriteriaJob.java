@@ -32,8 +32,7 @@ public class RemoveCriteriaJob extends QuartzJob {
     @Autowired
     private CacheManager cacheManager;
 
-    private static final String[] CRITERIA_TO_REMOVE = {
-            "170.315 (b)(6):Data Export",};
+    private static final String[] CRITERIA_TO_REMOVE = { "170.315 (b)(6):Data Export" };
 
     public RemoveCriteriaJob() throws Exception {
         super();
