@@ -7,7 +7,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -68,8 +67,7 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
                 initializeWritingToFiles(xmlPresenter, csvPresenter, jsonPresenter);
                 initializeExecutorService();
 
-                List<CertifiedProductPresenter> presenters = new ArrayList<CertifiedProductPresenter>(
-                        Arrays.asList(xmlPresenter, csvPresenter));
+                List<CertifiedProductPresenter> presenters = List.of(xmlPresenter, csvPresenter, jsonPresenter);
                 List<CompletableFuture<Void>> futures = getCertifiedProductSearchFutures(getRelevantListings(), presenters);
                 CompletableFuture<Void> combinedFutures = CompletableFuture
                         .allOf(futures.toArray(new CompletableFuture[futures.size()]));
