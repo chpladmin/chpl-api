@@ -234,8 +234,4 @@
         <AppenderRef ref="serviceBaseUrlListUptimeEmailJob" />
         <AppenderRef ref="serviceBaseUrlListUptimeEmailJobJson" />
     </Logger>
-    <Logger name="jsonListingDownloadCreatorJobLogger" level="INFO" additivity="false">
-        <AppenderRef ref="jsonListingDownloadCreatorJob" />
-        <AppenderRef ref="jsonListingDownloadCreatorJobJson" />
-    </Logger>
 </Loggers>

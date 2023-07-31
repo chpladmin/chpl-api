@@ -854,14 +854,5 @@
             </job-data-map>
         </job>
 
-        <job>
-            <name>jsonListingDownloadCreatorJob</name>
-            <group>systemJobs</group>
-            <description>Generates JSON file for download with all listings.</description>
-            <job-class>gov.healthit.chpl.scheduler.job.JsonListingDownloadCreatorJob</job-class>
-            <durability>true</durability>
-            <recover>false</recover>
-        </job>
-
     </schedule>
 </job-scheduling-data>

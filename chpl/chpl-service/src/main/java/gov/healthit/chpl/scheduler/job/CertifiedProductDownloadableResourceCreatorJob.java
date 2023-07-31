@@ -30,6 +30,7 @@ import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.scheduler.presenter.CertifiedProduct2014CsvPresenter;
 import gov.healthit.chpl.scheduler.presenter.CertifiedProductCsvPresenter;
+import gov.healthit.chpl.scheduler.presenter.CertifiedProductJsonPresenter;
 import gov.healthit.chpl.scheduler.presenter.CertifiedProductPresenter;
 import gov.healthit.chpl.scheduler.presenter.CertifiedProductXmlPresenter;
 import gov.healthit.chpl.service.CertificationCriterionService;
@@ -39,7 +40,7 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
     private static final Logger LOGGER = LogManager.getLogger("certifiedProductDownloadableResourceCreatorJobLogger");
     private static final int MILLIS_PER_SECOND = 1000;
     private String edition;
-    private File tempDirectory, tempCsvFile, tempXmlFile;
+    private File tempDirectory, tempCsvFile, tempXmlFile, tempJsonFile;
     private ExecutorService executorService;
 
     @Autowired
@@ -60,10 +61,11 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
 
         LOGGER.info("********* Starting the Certified Product Downloadable Resource Creator job for {}. *********", edition);
         try (CertifiedProductXmlPresenter xmlPresenter = new CertifiedProductXmlPresenter();
-                CertifiedProductCsvPresenter csvPresenter = getCsvPresenter()) {
+                CertifiedProductCsvPresenter csvPresenter = getCsvPresenter();
+                CertifiedProductJsonPresenter jsonPresenter = new CertifiedProductJsonPresenter()) {
             initializeTempFiles();
             if (tempCsvFile != null && tempXmlFile != null) {
-                initializeWritingToFiles(xmlPresenter, csvPresenter);
+                initializeWritingToFiles(xmlPresenter, csvPresenter, jsonPresenter);
                 initializeExecutorService();
 
                 List<CertifiedProductPresenter> presenters = new ArrayList<CertifiedProductPresenter>(
@@ -119,7 +121,7 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
                 });
     }
 
-    private void initializeWritingToFiles(CertifiedProductXmlPresenter xmlPresenter, CertifiedProductCsvPresenter csvPresenter)
+    private void initializeWritingToFiles(CertifiedProductXmlPresenter xmlPresenter, CertifiedProductCsvPresenter csvPresenter, CertifiedProductJsonPresenter jsonPresenter)
             throws IOException {
         xmlPresenter.setLogger(LOGGER);
         xmlPresenter.open(tempXmlFile);
@@ -132,6 +134,9 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
                 .collect(Collectors.<CertificationCriterionDTO>toList());
         csvPresenter.setApplicableCriteria(criteria);
         csvPresenter.open(tempCsvFile);
+
+        jsonPresenter.setLogger(LOGGER);
+        jsonPresenter.open(tempJsonFile);
     }
 
     private List<CertifiedProductDetailsDTO> getRelevantListings() throws EntityRetrievalException {
@@ -165,6 +170,8 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
 
         Path xmlPath = Files.createTempFile(tempDir, "chpl-" + edition, ".xml");
         tempXmlFile = xmlPath.toFile();
+        Path jsonPath = Files.createTempFile(tempDir, "chpl-" + edition, ".json");
+        tempJsonFile = jsonPath.toFile();
     }
 
     private void swapFiles() throws IOException {
@@ -194,6 +201,18 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
         } else {
             LOGGER.warn("Temp XML File was null and could not be moved.");
         }
+
+        if (tempJsonFile != null) {
+            String jsonFilename = getFileName(downloadFolder.getAbsolutePath(),
+                    getFilenameTimestampFormat().format(new Date()), "json");
+            LOGGER.info("Moving " + tempJsonFile.getAbsolutePath() + " to " + tempJsonFile);
+            Path targetFile = Files.move(tempJsonFile.toPath(), Paths.get(jsonFilename), StandardCopyOption.ATOMIC_MOVE);
+            if (targetFile == null) {
+                LOGGER.warn("JSON file move may not have succeeded. Check file system.");
+            }
+        } else {
+            LOGGER.warn("Temp JSON File was null and could not be moved.");
+        }
     }
 
     private void cleanupTempFiles() {
@@ -208,6 +227,12 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
             tempXmlFile.delete();
         } else {
             LOGGER.warn("Temp XML File was null and could not be deleted.");
+        }
+
+        if (tempJsonFile != null && tempJsonFile.exists()) {
+            tempJsonFile.delete();
+        } else {
+            LOGGER.warn("Temp JSON File was null and could not be deleted.");
         }
 
         if (tempDirectory != null && tempDirectory.exists()) {
