@@ -37,26 +37,26 @@ public class CriteriaAttribute implements Serializable {
     private static final long serialVersionUID = 2856878300304895096L;
 
     /**
-     * TODO: OCD-4242 - Need this text
+     * Criteria Attribute internal ID
      */
     @XmlElement(required = true)
     private Long id;
 
     /**
-     * This is the text assoc with the element
+     * A string value to represent the value to be used for the Criteria Attribute.
      */
     @XmlElement(required = true)
     private String value;
 
     /**
-     * TODO: OCD-4242 - Need this text
+     * A string value representing a law and section (e.g., 170.202(a)).
      */
     @XmlElement(required = false, nillable = true)
     private String regulatoryTextCitation;
 
 
     /**
-     * TODO: OCD-4242 - Need this text
+     * A date value representing the date by which the Criteria Attribute became available.
      */
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
@@ -65,7 +65,7 @@ public class CriteriaAttribute implements Serializable {
     private LocalDate startDay;
 
     /**
-     * TODO: OCD-4242 - Need this text
+     * A date value representing the date by which the Criteria Attribute can no longer be used.
      */
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
@@ -74,7 +74,7 @@ public class CriteriaAttribute implements Serializable {
     private LocalDate endDay;
 
     /**
-     * TODO: OCD-4242 - Need this text
+     * A date value representing the date by which the Criteria Attribute is required for selected criteria.
      */
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
@@ -85,7 +85,7 @@ public class CriteriaAttribute implements Serializable {
     private List<CertificationCriterion> criteria;
 
     /**
-     * TODO: OCD-4242 - Need this text
+     * The rule which this Criteria Attrbute is associated with.
      */
     @XmlElement(required = false, nillable = true)
     private Rule rule;

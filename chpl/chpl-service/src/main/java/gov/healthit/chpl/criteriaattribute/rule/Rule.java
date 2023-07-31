@@ -22,13 +22,13 @@ public class Rule implements Serializable {
     private static final long serialVersionUID = 1896885792278074234L;
 
     /**
-     * TODO: OCD-4242 - Need this text
+     * Rule internal ID
      */
     @XmlElement(required = true)
     private Long id;
 
     /**
-     * TODO: OCD-4242 - Need this text
+     * A string value representing an abbreviation for the specific rule name.
      */
     @XmlElement(required = true)
     private String name;
