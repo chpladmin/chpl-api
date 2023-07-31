@@ -37,8 +37,6 @@ public class CertificationCriterionDAO extends BaseDAOImpl {
         } else {
 
             entity = new CertificationCriterionEntity();
-            entity.setAutomatedMeasureCapable(dto.getAutomatedMeasureCapable());
-            entity.setAutomatedNumeratorCapable(dto.getAutomatedNumeratorCapable());
             entity.setCertificationEditionId(dto.getCertificationEditionId());
             entity.setCreationDate(new Date());
             entity.setDeleted(false);
@@ -46,7 +44,6 @@ public class CertificationCriterionDAO extends BaseDAOImpl {
             entity.setLastModifiedDate(new Date());
             entity.setLastModifiedUser(AuthUtil.getAuditId());
             entity.setNumber(dto.getNumber());
-            entity.setRequiresSed(dto.getRequiresSed());
             entity.setTitle(dto.getTitle());
             entity.setRemoved(dto.getRemoved());
 
@@ -61,8 +58,6 @@ public class CertificationCriterionDAO extends BaseDAOImpl {
 
         CertificationCriterionEntity entity = this.getEntityById(dto.getId());
 
-        entity.setAutomatedMeasureCapable(dto.getAutomatedMeasureCapable());
-        entity.setAutomatedNumeratorCapable(dto.getAutomatedNumeratorCapable());
         entity.setCertificationEditionId(dto.getCertificationEditionId());
         entity.setCreationDate(dto.getCreationDate());
         entity.setDeleted(dto.getDeleted());
@@ -70,7 +65,6 @@ public class CertificationCriterionDAO extends BaseDAOImpl {
         entity.setId(dto.getId());
         entity.setLastModifiedUser(AuthUtil.getAuditId());
         entity.setNumber(dto.getNumber());
-        entity.setRequiresSed(dto.getRequiresSed());
         entity.setTitle(dto.getTitle());
         entity.setRemoved(dto.getRemoved());
         update(entity);

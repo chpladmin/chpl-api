@@ -38,14 +38,6 @@ public class CertificationCriterionEntity implements Serializable {
     @JoinColumn(name = "certification_criterion_id", nullable = false)
     private Long id;
 
-    @Basic(optional = true)
-    @Column(name = "automated_measure_capable")
-    private Boolean automatedMeasureCapable;
-
-    @Basic(optional = true)
-    @Column(name = "automated_numerator_capable")
-    private Boolean automatedNumeratorCapable;
-
     @Basic(optional = false)
     @Column(name = "certification_edition_id", nullable = false)
     private Long certificationEditionId;
@@ -79,10 +71,6 @@ public class CertificationCriterionEntity implements Serializable {
     @Basic(optional = true)
     @Column(length = 15)
     private String number;
-
-    @Basic(optional = true)
-    @Column(name = "requires_sed")
-    private Boolean requiresSed;
 
     @Basic(optional = true)
     @Column(length = 250)

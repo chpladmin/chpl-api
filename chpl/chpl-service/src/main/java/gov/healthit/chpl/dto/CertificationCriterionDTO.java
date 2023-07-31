@@ -33,8 +33,6 @@ public class CertificationCriterionDTO implements Serializable {
 
     public CertificationCriterionDTO(final CertificationCriterionEntity entity) {
         this.id = entity.getId();
-        this.automatedMeasureCapable = entity.getAutomatedMeasureCapable();
-        this.automatedNumeratorCapable = entity.getAutomatedNumeratorCapable();
         this.certificationEditionId = entity.getCertificationEditionId();
         if (entity.getCertificationEdition() != null) {
             this.certificationEdition = entity.getCertificationEdition().getYear();
@@ -46,7 +44,6 @@ public class CertificationCriterionDTO implements Serializable {
         this.lastModifiedUser = entity.getLastModifiedUser();
         this.number = entity.getNumber();
 
-        this.requiresSed = entity.getRequiresSed();
         this.title = entity.getTitle();
         this.removed = entity.getRemoved();
     }
