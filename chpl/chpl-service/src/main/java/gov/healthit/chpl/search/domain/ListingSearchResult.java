@@ -14,6 +14,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
+import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseField;
 import gov.healthit.chpl.domain.CertificationEdition;
 import gov.healthit.chpl.domain.IdNamePair;
 import gov.healthit.chpl.entity.CertificationStatusType;
@@ -38,6 +39,8 @@ public class ListingSearchResult implements Serializable {
     private Long id;
     private String chplProductNumber;
     private Set<String> previousChplProductNumbers;
+    @Deprecated
+    @DeprecatedResponseField(message = "The certification edition will be removed.", removalDate = "2024-02-01")
     private IdNamePair edition;
     private IdNamePair certificationBody;
     private String acbCertificationId;
@@ -120,6 +123,7 @@ public class ListingSearchResult implements Serializable {
         return this.getId().hashCode();
     }
 
+    @Deprecated
     @JsonIgnore
     public String getDerivedEdition() {
         return getEdition().getName() + (BooleanUtils.isTrue(getCuresUpdate()) ? CertificationEdition.CURES_SUFFIX : "");
