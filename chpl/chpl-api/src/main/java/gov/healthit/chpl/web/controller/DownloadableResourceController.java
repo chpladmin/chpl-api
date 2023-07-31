@@ -266,4 +266,34 @@ public class DownloadableResourceController {
         LOGGER.info("Downloading " + downloadFile.getName());
         fileUtils.streamFileAsResponse(downloadFile, "text/csv", response);
     }
+
+    @Operation(summary = "Download Listings as JSON.",
+            description = "Once per day, the entire certified product listing is written out to JSON "
+                    + "file on the CHPL servers. This method allows any user to download that JSON file. ",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
+    @RequestMapping(value = "/download/json", method = RequestMethod.GET, produces = "application/json")
+    public void downloadListingsDetailsAsJson(final HttpServletRequest request, final HttpServletResponse response)
+            throws IOException, EntityRetrievalException {
+
+        File downloadFile = null;
+        try {
+            downloadFile = fileUtils.getNewestFileMatchingName("^chpl-.+\\w.json$");
+        } catch (final IOException ex) {
+            response.getWriter().append(ex.getMessage());
+            return;
+        }
+
+        if (!downloadFile.exists()) {
+            response.getWriter()
+                    .write(msgUtil.getMessage("resources.schemaFileNotFound", downloadFile.getAbsolutePath()));
+            return;
+        }
+
+        LOGGER.info("Downloading " + downloadFile.getName());
+        fileUtils.streamFileAsResponse(downloadFile, "application/json", response);
+    }
+
 }
