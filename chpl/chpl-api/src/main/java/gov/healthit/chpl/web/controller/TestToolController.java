@@ -55,7 +55,7 @@ public class TestToolController {
 
     @Operation(summary = "Create a Test Tool.",
             description = "Provides functionality to add a new Test Tool and the Criteria associated with it. "
-                    + "Security Restrictions: To create: ROLE_ADMIN or ROLE_ONC.",
+                    + "Security Restrictions: To create: ROLE_ADMIN",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
@@ -68,7 +68,7 @@ public class TestToolController {
 
     @Operation(summary = "Update a Test Tool.",
             description = "Provides functionality to update a Test Tool and the Criteria associated with it. "
-                    + "Security Restrictions: To update: ROLE_ADMIN or ROLE_ONC.",
+                    + "Security Restrictions: To update: ROLE_ADMIN",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
@@ -81,7 +81,7 @@ public class TestToolController {
 
     @Operation(summary = "Delete a Test Tool.",
             description = "Provides functionality to delete an existing Test Tool and the Criteria associated with it. "
-                    + "Security Restrictions: To update: ROLE_ADMIN or ROLE_ONC.",
+                    + "Security Restrictions: To update: ROLE_ADMIN",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
