@@ -42,7 +42,6 @@ public class ProductOwner implements Serializable {
     @XmlElement(required = true)
     private Developer developer;
 
-    //TODO: Need a definition for this OCD-4264
     @Schema(description = "")
     @XmlElement(required = true, nillable = false)
     @JsonDeserialize(using = LocalDateDeserializer.class)
