@@ -94,7 +94,7 @@ public class SurveillanceRequirementReviewer implements Reviewer {
         if (!isRequirementTypeOther(req.getRequirementType()) && isRequirementTypeCertifiedCapability(req.getRequirementType())) {
             Long requirementCriteriaEdition = NullSafeEvaluator.eval(() ->
                     getRequirementTypeFullyPopulated(req.getRequirementType().getId())
-                            .getCertificationEdition().getCertificationEditionId(), NOT_FOUND);
+                            .getCertificationEdition().getId(), NOT_FOUND);
 
             if (!requirementCriteriaEdition.equals(NOT_FOUND)) {
                 Long listingEdition = NullSafeEvaluator.eval(() -> getCertificationEditionIdFromListing(surv.getCertifiedProduct().getId()), NOT_FOUND);

@@ -87,11 +87,11 @@ public class CacheableDimensionalDataManager {
         for (CertificationEdition edition : certificationEditions) {
 
             if (simple) {
-                if (edition.getYear().equals("2011")) {
+                if (edition.getName().equals("2011")) {
                     continue;
                 }
             }
-            editionNames.add(new KeyValueModel(edition.getCertificationEditionId(), edition.getYear()));
+            editionNames.add(new KeyValueModel(edition.getId(), edition.getName()));
         }
 
         return editionNames;

@@ -36,7 +36,7 @@ public class RequirementType {
     private RequirementGroupType requirementGroupType;
 
     public String getEdition() {
-        return NullSafeEvaluator.eval(() -> certificationEdition.getYear(), null);
+        return NullSafeEvaluator.eval(() -> certificationEdition.getName(), null);
     }
 
     @JsonIgnore

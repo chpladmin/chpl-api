@@ -87,8 +87,8 @@ public class IncumbentDevelopersStatistics implements Serializable {
         return "Incumbent Developers Statistics Domain object ["
                 + "[New: " + this.newCount + "]"
                 + "[Incumbent: " + this.incumbentCount + "]"
-                + "[Old Edition: " + this.oldCertificationEdition.getYear() + "]"
-                + "[New Edition: " + this.newCertificationEdition.getYear() + "]"
+                + "[Old Edition: " + this.oldCertificationEdition.getName() + "]"
+                + "[New Edition: " + this.newCertificationEdition.getName() + "]"
                 + "]";
     }
 }

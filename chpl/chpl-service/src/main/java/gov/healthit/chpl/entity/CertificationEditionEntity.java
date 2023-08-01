@@ -70,8 +70,10 @@ public class CertificationEditionEntity implements Serializable {
     public CertificationEdition toDomain() {
         return CertificationEdition.builder()
                 .certificationEditionId(getId())
+                .id(getId())
                 .retired(getRetired())
                 .year(getYear())
+                .name(getYear())
                 .build();
     }
 }

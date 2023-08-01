@@ -93,9 +93,9 @@ public class InheritanceReviewer implements Reviewer {
         List<CertificationEdition> parentEditions = certEditionDao.getEditions(parentIds);
         parentEditions.stream()
                 .filter(parentEdition -> !listing.getCertificationEdition().get(CertifiedProductSearchDetails.EDITION_ID_KEY).toString()
-                        .equals(parentEdition.getCertificationEditionId().toString()))
+                        .equals(parentEdition.getId().toString()))
                 .forEach(parentEdition -> listing.addBusinessErrorMessage(
-                        msgUtil.getMessage("listing.icsEditionMismatch", parentEdition.getYear())));
+                        msgUtil.getMessage("listing.icsEditionMismatch", parentEdition.getName())));
     }
 
     private void reviewListingIcsCodeIsOneGreaterThanParents(List<Long> parentIds, CertifiedProductSearchDetails listing) {

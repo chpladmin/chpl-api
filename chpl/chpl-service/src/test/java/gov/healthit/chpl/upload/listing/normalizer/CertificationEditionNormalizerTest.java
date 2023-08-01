@@ -79,8 +79,8 @@ public class CertificationEditionNormalizerTest {
 
         Mockito.when(editionDao.getById(ArgumentMatchers.anyLong()))
             .thenReturn(CertificationEdition.builder()
-                    .certificationEditionId(1L)
-                    .year("2015")
+                    .id(1L)
+                    .name("2015")
                     .build());
 
         normalizer.normalize(listing);
@@ -100,8 +100,8 @@ public class CertificationEditionNormalizerTest {
 
         Mockito.when(editionDao.getById(ArgumentMatchers.anyLong()))
             .thenReturn(CertificationEdition.builder()
-                    .certificationEditionId(1L)
-                    .year("2015")
+                    .id(1L)
+                    .name("2015")
                     .build());
 
         normalizer.normalize(listing);
@@ -121,8 +121,8 @@ public class CertificationEditionNormalizerTest {
 
         Mockito.when(editionDao.getById(ArgumentMatchers.anyLong()))
             .thenReturn(CertificationEdition.builder()
-                    .certificationEditionId(1L)
-                    .year("2015")
+                    .id(1L)
+                    .name("2015")
                     .build());
 
         normalizer.normalize(listing);
@@ -158,8 +158,8 @@ public class CertificationEditionNormalizerTest {
 
         Mockito.when(editionDao.getByYear(ArgumentMatchers.anyString()))
             .thenReturn(CertificationEdition.builder()
-                    .certificationEditionId(1L)
-                    .year("2015")
+                    .id(1L)
+                    .name("2015")
                     .build());
 
         normalizer.normalize(listing);
@@ -179,8 +179,8 @@ public class CertificationEditionNormalizerTest {
 
         Mockito.when(editionDao.getByYear(ArgumentMatchers.anyString()))
             .thenReturn(CertificationEdition.builder()
-                    .certificationEditionId(1L)
-                    .year("2015")
+                    .id(1L)
+                    .name("2015")
                     .build());
 
         normalizer.normalize(listing);
@@ -200,8 +200,8 @@ public class CertificationEditionNormalizerTest {
 
         Mockito.when(editionDao.getByYear(ArgumentMatchers.anyString()))
             .thenReturn(CertificationEdition.builder()
-                    .certificationEditionId(1L)
-                    .year("2015")
+                    .id(1L)
+                    .name("2015")
                     .build());
 
         normalizer.normalize(listing);
@@ -221,8 +221,8 @@ public class CertificationEditionNormalizerTest {
 
         Mockito.when(editionDao.getByYear(ArgumentMatchers.anyString()))
             .thenReturn(CertificationEdition.builder()
-                    .certificationEditionId(1L)
-                    .year("2015")
+                    .id(1L)
+                    .name("2015")
                     .build());
 
         normalizer.normalize(listing);
@@ -256,8 +256,8 @@ public class CertificationEditionNormalizerTest {
 
         Mockito.when(editionDao.getByYear(ArgumentMatchers.anyString()))
         .thenReturn(CertificationEdition.builder()
-                .certificationEditionId(1L)
-                .year("2015")
+                .id(1L)
+                .name("2015")
                 .build());
 
         normalizer.normalize(listing);

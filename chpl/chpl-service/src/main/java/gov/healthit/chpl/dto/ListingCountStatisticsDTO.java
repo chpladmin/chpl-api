@@ -48,7 +48,7 @@ public class ListingCountStatisticsDTO implements Serializable {
     public ListingCountStatisticsDTO(CertificationEdition edition, CertificationStatus status) {
         this.developerCount = 0L;
         this.productCount = 0L;
-        this.certificationEditionId = edition.getCertificationEditionId();
+        this.certificationEditionId = edition.getId();
         this.certificationStatusId = status.getId();
     }
 }

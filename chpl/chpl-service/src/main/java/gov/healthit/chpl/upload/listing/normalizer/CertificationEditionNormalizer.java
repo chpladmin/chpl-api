@@ -54,7 +54,7 @@ public class CertificationEditionNormalizer {
     private void updateListingFromEditionYear(CertifiedProductSearchDetails listing) {
         String year = MapUtils.getString(listing.getCertificationEdition(), CertifiedProductSearchDetails.EDITION_NAME_KEY);
         CertificationEdition foundEdition = editionDao.getByYear(year);
-        populateListingEditionFromDto(listing, foundEdition);
+        populateListingEdition(listing, foundEdition);
     }
 
     private void updateListingFromEditionId(CertifiedProductSearchDetails listing) {
@@ -65,7 +65,7 @@ public class CertificationEditionNormalizer {
         } catch (Exception ex) {
             LOGGER.warn("No certification edition found with ID " + editionId);
         }
-        populateListingEditionFromDto(listing, foundEdition);
+        populateListingEdition(listing, foundEdition);
     }
 
     private boolean isEditionPortionOfChplProductNumberValid(CertifiedProductSearchDetails listing) {
@@ -80,17 +80,17 @@ public class CertificationEditionNormalizer {
         if (!StringUtils.isEmpty(editionCodeFromChplProductNumber)) {
             String year = "20" + editionCodeFromChplProductNumber;
             CertificationEdition foundEdition = editionDao.getByYear(year);
-            populateListingEditionFromDto(listing, foundEdition);
+            populateListingEdition(listing, foundEdition);
         }
     }
 
-    private void populateListingEditionFromDto(CertifiedProductSearchDetails listing, CertificationEdition editionDto) {
-        if (editionDto != null) {
+    private void populateListingEdition(CertifiedProductSearchDetails listing, CertificationEdition edition) {
+        if (edition != null) {
             if (listing.getCertificationEdition() == null) {
                 listing.setCertificationEdition(new HashMap<String, Object>());
             }
-            listing.getCertificationEdition().put(CertifiedProductSearchDetails.EDITION_ID_KEY, editionDto.getCertificationEditionId());
-            listing.getCertificationEdition().put(CertifiedProductSearchDetails.EDITION_NAME_KEY, editionDto.getYear());
+            listing.getCertificationEdition().put(CertifiedProductSearchDetails.EDITION_ID_KEY, edition.getId());
+            listing.getCertificationEdition().put(CertifiedProductSearchDetails.EDITION_NAME_KEY, edition.getName());
         }
     }
 }

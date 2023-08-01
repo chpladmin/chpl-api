@@ -292,7 +292,7 @@ public class ListingService {
         cp.setLastModifiedDate(dto.getLastModifiedDate() != null ? dto.getLastModifiedDate().getTime() : null);
         CertificationEdition edition = getEdition(dto.getCertificationEditionId());
         if (edition != null) {
-            cp.setEdition(edition.getYear());
+            cp.setEdition(edition.getName());
         }
         CertificationStatusEvent cse = certificationStatusEventsService.getInitialCertificationEvent(dto.getId());
         if (cse != null) {
@@ -305,7 +305,7 @@ public class ListingService {
 
     private CertificationEdition getEdition(Long editionId) {
         Optional<CertificationEdition> certEdition = dimensionalDataManager.getCertificationEditions().stream()
-                .filter(ed -> ed.getCertificationEditionId().equals(editionId))
+                .filter(ed -> ed.getId().equals(editionId))
                 .findAny();
 
         return certEdition.orElse(null);
