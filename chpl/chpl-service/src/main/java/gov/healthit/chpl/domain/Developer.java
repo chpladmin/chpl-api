@@ -19,6 +19,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import gov.healthit.chpl.domain.contact.PointOfContact;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 
@@ -33,6 +34,7 @@ public class Developer implements Serializable {
     /**
      * The internal ID of the developer.
      */
+    @Schema(description = "The internal ID of the developer.")
     @XmlElement(required = true)
     @JsonAlias("developerId")
     private Long id;
@@ -40,6 +42,7 @@ public class Developer implements Serializable {
     /**
      * A four-digit code assigned to each developer when it was created.
      */
+    @Schema(description = "A four-digit code assigned to each developer when it was created.")
     @XmlElement(required = true)
     private String developerCode;
 
@@ -49,6 +52,9 @@ public class Developer implements Serializable {
      * please use the CHPL Developer management functionality to ensure that the name of the developer matches the
      * database record to prevent duplication.
      */
+    @Schema(description = "The name of the developer or vendor of the certified health IT product being uploaded. It is applicable to 2014"
+            + "and 2015 Edition. If uploading a certified product from a developer that already exists in the CHPL database, please use the "
+            + "CHPL Developer management functionality to ensure that the name of the developer matches the database record to prevent duplication.")
     @XmlElement(required = true)
     private String name;
 
@@ -56,24 +62,29 @@ public class Developer implements Serializable {
      * Website of health IT developer. Fully qualified URL which is reachable via web browser validation and
      * verification. This variable is applicable for 2014 and 2015 Edition.
      */
+    @Schema(description = "Website of health IT developer. Fully qualified URL which is reachable via web browser validation and "
+            + "verification. This variable is applicable for 2014 and 2015 Edition.")
     @XmlElement(required = false, nillable = true)
     private String website;
 
     /**
      * Indication of whether a health IT developer is a "self-developer" or not.
      */
+    @Schema(description = "Indication of whether a health IT developer is a \"self-developer\" or not.")
     @XmlElement(required = true)
     private Boolean selfDeveloper;
 
     /**
      * Developer's physical address
      */
+    @Schema(description = "Developer's physical address")
     @XmlElement(required = false, nillable = true)
     private Address address;
 
     /**
      * Contact information for the developer.
      */
+    @Schema(description = "Contact information for the developer.")
     @XmlElement(required = false, nillable = true)
     private PointOfContact contact;
 
@@ -86,6 +97,7 @@ public class Developer implements Serializable {
     /**
      * Status changes that have occurred on the developer.
      */
+    @Schema(description = "Status changes that have occurred on the developer.")
     @XmlElementWrapper(name = "statusEvents", nillable = true, required = false)
     @XmlElement(name = "statusEvent", required = false, nillable = true)
     @Builder.Default
@@ -94,6 +106,7 @@ public class Developer implements Serializable {
     /**
      * Public attestations submitted by the developer.
      */
+    @Schema(description = "Public attestations submitted by the developer.")
     @XmlElementWrapper(name = "attestations", nillable = true, required = false)
     @XmlElement(name = "attestation")
     private List<PublicAttestation> attestations;
@@ -198,6 +211,8 @@ public class Developer implements Serializable {
      * The status of a developer with certified Health IT. Allowable values are "Active", "Suspended by ONC", or "Under
      * Certification Ban by ONC"
      */
+    @Schema(description = "The status of a developer with certified Health IT. Allowable values are \"Active\", \"Suspended by ONC\", or \"Under "
+            + "Certification Ban by ONC\"")
     @XmlElement(required = false, nillable = true)
     public DeveloperStatus getStatus() {
         if (CollectionUtils.isEmpty(this.getStatusEvents())) {

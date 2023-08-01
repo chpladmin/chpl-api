@@ -12,6 +12,7 @@ import org.springframework.util.StringUtils;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import gov.healthit.chpl.dto.CertificationResultTestToolDTO;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 
@@ -32,12 +33,14 @@ public class CertificationResultTestTool implements Serializable {
     /**
      * Test tool to certification result mapping internal ID
      */
+    @Schema(description = "Test tool to certification result mapping internal ID")
     @XmlElement(required = true)
     private Long id;
 
     /**
      * Test tool internal ID
      */
+    @Schema(description = "Test tool internal ID")
     @XmlElement(required = true)
     private Long testToolId;
 
@@ -45,6 +48,7 @@ public class CertificationResultTestTool implements Serializable {
      * The test tool used to certify the Health IT Module to the corresponding
      * certification criteria
      */
+    @Schema(description = "The test tool used to certify the Health IT Module to the corresponding certification criteria")
     @XmlElement(required = true)
     private String testToolName;
 
@@ -53,12 +57,16 @@ public class CertificationResultTestTool implements Serializable {
      * 2014 and 2015 Edition, and a string variable that does not take any
      * restrictions on formatting or values.
      */
+    @Schema(description = "The version of the test tool being used. This variable is applicable for "
+            + "2014 and 2015 Edition, and a string variable that does not take any "
+            + "restrictions on formatting or values.")
     @XmlElement(required = false, nillable = true)
     private String testToolVersion;
 
     /**
      * Whether or not the test tool has been retired.
      */
+    @Schema(description = "Whether or not the test tool has been retired.")
     @XmlElement(required = false, nillable = true)
     private boolean retired;
 

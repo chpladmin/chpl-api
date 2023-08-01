@@ -12,6 +12,7 @@ import org.springframework.util.StringUtils;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import gov.healthit.chpl.dto.CertificationResultTestProcedureDTO;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 
@@ -30,6 +31,7 @@ public class CertificationResultTestProcedure implements Serializable {
     /**
      * Test Procedure to certification result mapping internal ID
      */
+    @Schema(description = "Test Procedure to certification result mapping internal ID")
     @XmlElement(required = true)
     private Long id;
 
@@ -37,6 +39,8 @@ public class CertificationResultTestProcedure implements Serializable {
      * This variable explains the test procedure being used to test
      * the associated criteria. It is applicable for 2015 Edition.
      */
+    @Schema(description = "This variable explains the test procedure being used to test "
+            + "the associated criteria. It is applicable for 2015 Edition.")
     @XmlElement(required = true)
     private TestProcedure testProcedure;
 
@@ -45,6 +49,9 @@ public class CertificationResultTestProcedure implements Serializable {
      * variable is a string variable that does not take any restrictions on
      * formatting or values and is applicable for 2014 and 2015 Edition.
      */
+    @Schema(description = "The test procedure version used for a given certification criteria. This "
+            + "variable is a string variable that does not take any restrictions on "
+            + "formatting or values and is applicable for 2014 and 2015 Edition.")
     @XmlElement(required = true)
     private String testProcedureVersion;
 

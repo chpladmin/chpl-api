@@ -13,6 +13,7 @@ import org.apache.commons.lang3.StringUtils;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import gov.healthit.chpl.dto.ProductVersionDTO;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 
@@ -28,17 +29,20 @@ public class ProductVersion implements Serializable {
      * Product version internal ID
      */
     @XmlElement(required = true)
+    @Schema(description = "Product version internal ID")
     private Long id;
 
     /**
      * Version name (i.e. "1.0")
      */
+    @Schema(description = "Version name (i.e. \"1.0\")")
     @XmlElement(required = true)
     private String version;
 
     /**
      * Details/description of the product version.
      */
+    @Schema(description = "Details/description of the product version.")
     @XmlElement(required = false, nillable = true)
     private String details;
 

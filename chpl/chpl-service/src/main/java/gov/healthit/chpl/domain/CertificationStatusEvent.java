@@ -10,6 +10,7 @@ import javax.xml.bind.annotation.XmlType;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
@@ -26,24 +27,28 @@ public class CertificationStatusEvent implements Serializable {
     /**
      * Internal ID
      */
+    @Schema(description = "Internal ID")
     @XmlElement(required = true)
     private Long id;
 
     /**
      * The date on which a change of certification status occurred.
      */
+    @Schema(description = "The date on which a change of certification status occurred.")
     @XmlElement(required = true)
     private Long eventDate;
 
     /**
      * The certification status for the listing on the eventDate.
      */
+    @Schema(description = "The certification status for the listing on the eventDate.")
     @XmlElement(required = true)
     private CertificationStatus status;
 
     /**
      * The user-provided reason that a change of certification status occurred.
      */
+    @Schema(description = "The user-provided reason that a change of certification status occurred.")
     @XmlTransient
     private String reason;
 
