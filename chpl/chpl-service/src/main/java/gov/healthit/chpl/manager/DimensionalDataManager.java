@@ -52,7 +52,6 @@ import gov.healthit.chpl.dto.EducationTypeDTO;
 import gov.healthit.chpl.dto.TargetedUserDTO;
 import gov.healthit.chpl.dto.TestDataCriteriaMapDTO;
 import gov.healthit.chpl.dto.TestProcedureCriteriaMapDTO;
-import gov.healthit.chpl.dto.TestStandardDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.listing.measure.ListingMeasureDAO;
 import gov.healthit.chpl.listing.measure.MeasureDAO;
@@ -220,15 +219,8 @@ public class DimensionalDataManager {
     @Transactional
     public Set<TestStandard> getTestStandards() {
         LOGGER.debug("Getting all test standards from the database (not cached).");
-
-        List<TestStandardDTO> dtos = this.testStandardDao.findAll();
-        Set<TestStandard> testStds = new HashSet<TestStandard>();
-
-        for (TestStandardDTO dto : dtos) {
-            testStds.add(new TestStandard(dto));
-        }
-
-        return testStds;
+        return this.testStandardDao.findAll().stream()
+                .collect(Collectors.toSet());
     }
 
     public Set<KeyValueModel> getSurveillanceTypes() {

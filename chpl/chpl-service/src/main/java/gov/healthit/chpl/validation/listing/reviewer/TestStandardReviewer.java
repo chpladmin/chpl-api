@@ -9,7 +9,7 @@ import gov.healthit.chpl.dao.TestStandardDAO;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultTestStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.dto.TestStandardDTO;
+import gov.healthit.chpl.domain.TestStandard;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
 
@@ -38,7 +38,7 @@ public class TestStandardReviewer implements Reviewer {
         Long editionId = MapUtils.getLong(listing.getCertificationEdition(), CertifiedProductSearchDetails.EDITION_ID_KEY);
 
         if (testStandard.getTestStandardId() != null) {
-            TestStandardDTO foundTestStandard = testStandardDao.getByIdAndEdition(testStandard.getTestStandardId(), editionId);
+            TestStandard foundTestStandard = testStandardDao.getByIdAndEdition(testStandard.getTestStandardId(), editionId);
             if (foundTestStandard == null) {
                 listing.addDataErrorMessage(
                         msgUtil.getMessage("listing.criteria.testStandardIdNotFound",
@@ -47,7 +47,7 @@ public class TestStandardReviewer implements Reviewer {
                                 MapUtils.getString(listing.getCertificationEdition(), CertifiedProductSearchDetails.EDITION_NAME_KEY)));
             }
         } else if (!StringUtils.isEmpty(testStandardName)) {
-            TestStandardDTO foundTestStandard = testStandardDao.getByNumberAndEdition(testStandardName, editionId);
+            TestStandard foundTestStandard = testStandardDao.getByNumberAndEdition(testStandardName, editionId);
             if (foundTestStandard == null) {
                 listing.addDataErrorMessage(
                         msgUtil.getMessage("listing.criteria.testStandardNotFound",
