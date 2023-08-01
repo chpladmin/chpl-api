@@ -20,11 +20,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationEdition;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.compliance.DirectReviewNonConformity;
-import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
 
 public class CertifiedProductCsvPresenter implements CertifiedProductPresenter, AutoCloseable {
@@ -32,7 +32,7 @@ public class CertifiedProductCsvPresenter implements CertifiedProductPresenter, 
     private static final String UNKNOWN_VALUE = "?";
 
     private Logger logger;
-    private List<CertificationCriterionDTO> applicableCriteria = new ArrayList<CertificationCriterionDTO>();
+    private List<CertificationCriterion> applicableCriteria = new ArrayList<CertificationCriterion>();
     private OutputStreamWriter writer = null;
     private CSVPrinter csvPrinter = null;
 
@@ -114,7 +114,7 @@ public class CertifiedProductCsvPresenter implements CertifiedProductPresenter, 
         result.add("Open Direct Review Non-conformities");
 
         if (applicableCriteria != null) {
-            for (CertificationCriterionDTO criteria : applicableCriteria) {
+            for (CertificationCriterion criteria : applicableCriteria) {
                 result.add(criteria.getNumber() + ": " + criteria.getTitle());
             }
         }
@@ -165,7 +165,7 @@ public class CertifiedProductCsvPresenter implements CertifiedProductPresenter, 
     protected List<String> generateCriteriaValues(final CertifiedProductSearchDetails data) {
         List<String> result = new ArrayList<String>();
 
-        for (CertificationCriterionDTO criteria : applicableCriteria) {
+        for (CertificationCriterion criteria : applicableCriteria) {
             boolean criteriaMatch = false;
             for (int i = 0; i < data.getCertificationResults().size() && !criteriaMatch; i++) {
                 CertificationResult currCriteria = data.getCertificationResults().get(i);
@@ -315,11 +315,11 @@ public class CertifiedProductCsvPresenter implements CertifiedProductPresenter, 
         return result;
     }
 
-    public List<CertificationCriterionDTO> getApplicableCriteria() {
+    public List<CertificationCriterion> getApplicableCriteria() {
         return applicableCriteria;
     }
 
-    public void setApplicableCriteria(final List<CertificationCriterionDTO> applicableCriteria) {
+    public void setApplicableCriteria(final List<CertificationCriterion> applicableCriteria) {
         this.applicableCriteria = applicableCriteria;
     }
 }

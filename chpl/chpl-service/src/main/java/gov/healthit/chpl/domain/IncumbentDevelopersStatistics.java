@@ -34,10 +34,10 @@ public class IncumbentDevelopersStatistics implements Serializable {
         this.setNewCount(dto.getNewCount());
         this.setIncumbentCount(dto.getIncumbentCount());
         if (dto.getOldCertificationEdition() != null) {
-            this.oldCertificationEdition = new CertificationEdition(dto.getOldCertificationEdition());
+            this.oldCertificationEdition = dto.getOldCertificationEdition();
         }
         if (dto.getNewCertificationEdition() != null) {
-            this.newCertificationEdition = new CertificationEdition(dto.getNewCertificationEdition());
+            this.newCertificationEdition = dto.getNewCertificationEdition();
         }
 
     }

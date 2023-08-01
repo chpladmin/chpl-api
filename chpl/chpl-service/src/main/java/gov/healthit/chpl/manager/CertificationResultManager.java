@@ -40,7 +40,6 @@ import gov.healthit.chpl.domain.CertifiedProductUcdProcess;
 import gov.healthit.chpl.domain.TestParticipant;
 import gov.healthit.chpl.domain.TestTask;
 import gov.healthit.chpl.dto.AgeRangeDTO;
-import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.CertificationResultAdditionalSoftwareDTO;
 import gov.healthit.chpl.dto.CertificationResultDTO;
 import gov.healthit.chpl.dto.CertificationResultTestDataDTO;
@@ -134,7 +133,7 @@ public class CertificationResultManager extends SecuredManager {
             CertificationResultDTO toUpdate = new CertificationResultDTO();
             toUpdate.setId(orig.getId());
             toUpdate.setCertifiedProductId(updatedListing.getId());
-            CertificationCriterionDTO criteria = criteriaDao.getById(orig.getCriterion().getId());
+            CertificationCriterion criteria = criteriaDao.getById(orig.getCriterion().getId());
             if (criteria == null || criteria.getId() == null) {
                 throw new EntityCreationException(
                         "Cannot add certification result mapping for unknown criteria " + orig.getCriterion().getNumber());

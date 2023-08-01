@@ -7,13 +7,16 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
-import gov.healthit.chpl.dto.CertificationEditionDTO;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 
 /**
  * Domain object for Certification Edition.
  * @author alarned
  *
  */
+@AllArgsConstructor
+@Builder
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class CertificationEdition implements Serializable {
@@ -29,20 +32,7 @@ public class CertificationEdition implements Serializable {
     @XmlElement(required = true)
     private boolean retired;
 
-    /**
-     * Default constructor.
-     */
     public CertificationEdition() {
-    }
-
-    /**
-     * Constructed from DTO.
-     * @param dto the constructing DTO
-     */
-    public CertificationEdition(final CertificationEditionDTO dto) {
-        this.certificationEditionId = dto.getId();
-        this.year = dto.getYear();
-        this.retired = dto.getRetired();
     }
 
     public Long getCertificationEditionId() {

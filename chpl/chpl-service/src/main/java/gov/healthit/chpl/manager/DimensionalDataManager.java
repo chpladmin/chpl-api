@@ -48,8 +48,6 @@ import gov.healthit.chpl.domain.surveillance.SurveillanceResultType;
 import gov.healthit.chpl.domain.surveillance.SurveillanceType;
 import gov.healthit.chpl.dto.AgeRangeDTO;
 import gov.healthit.chpl.dto.CQMCriterionDTO;
-import gov.healthit.chpl.dto.CertificationCriterionDTO;
-import gov.healthit.chpl.dto.CertificationEditionDTO;
 import gov.healthit.chpl.dto.EducationTypeDTO;
 import gov.healthit.chpl.dto.TargetedUserDTO;
 import gov.healthit.chpl.dto.TestDataCriteriaMapDTO;
@@ -307,7 +305,7 @@ public class DimensionalDataManager {
         for (TestProcedureCriteriaMapDTO dto : testProcedureDtos) {
             testProcedures.add(new CriteriaSpecificDescriptiveModel(
                     dto.getTestProcedureId(), dto.getTestProcedure().getName(), null,
-                    null, new CertificationCriterion(dto.getCriteria())));
+                    null, dto.getCriteria()));
         }
         return testProcedures;
     }
@@ -323,7 +321,7 @@ public class DimensionalDataManager {
         for (TestDataCriteriaMapDTO dto : testDataDtos) {
             testData.add(new CriteriaSpecificDescriptiveModel(
                     dto.getTestDataId(), dto.getTestData().getName(), null,
-                    null, new CertificationCriterion(dto.getCriteria())));
+                    null, dto.getCriteria()));
         }
         return testData;
     }
@@ -333,14 +331,8 @@ public class DimensionalDataManager {
     public Set<CertificationCriterion> getCertificationCriterion() {
         LOGGER.debug("Getting all criterion with editions from the database (not cached).");
 
-        List<CertificationCriterionDTO> dtos = this.certificationCriterionDao.findAll();
-        Set<CertificationCriterion> criterion = new HashSet<CertificationCriterion>();
-
-        for (CertificationCriterionDTO dto : dtos) {
-            criterion.add(new CertificationCriterion(dto));
-        }
-
-        return criterion;
+        return this.certificationCriterionDao.findAll().stream()
+                .collect(Collectors.toSet());
     }
 
     @Transactional
@@ -369,12 +361,7 @@ public class DimensionalDataManager {
     @Cacheable(value = CacheNames.EDITIONS)
     public List<CertificationEdition> getCertificationEditions() {
         List<CertificationEdition> result = new ArrayList<CertificationEdition>();
-        List<CertificationEditionDTO> dtos = certEditionDao.findAll();
-        for (CertificationEditionDTO dto : dtos) {
-            CertificationEdition edition = new CertificationEdition(dto);
-            result.add(edition);
-        }
-        return result;
+        return certEditionDao.findAll();
     }
 
     public DimensionalData getDimensionalData(final Boolean simple) throws EntityRetrievalException {
@@ -394,13 +381,9 @@ public class DimensionalDataManager {
         }
         result.setDevelopers(developerNames);
 
-        List<CertificationCriterionDTO> dtos = this.certificationCriterionDao.findAll();
-        Set<CertificationCriterion> criteria = new HashSet<CertificationCriterion>();
-        for (CertificationCriterionDTO dto : dtos) {
-            criteria.add(new CertificationCriterion(dto));
-        }
+        Set<CertificationCriterion> criteria = this.certificationCriterionDao.findAll().stream()
+                .collect(Collectors.toSet());
         result.setCertificationCriteria(criteria);
-
         result.setAcbs(getAllAcbs());
         result.setEditions(getEditionNames(simple));
         result.setCertificationStatuses(getCertificationStatuses());

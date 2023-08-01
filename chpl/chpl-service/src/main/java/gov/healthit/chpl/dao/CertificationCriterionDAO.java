@@ -1,8 +1,7 @@
 package gov.healthit.chpl.dao;
 
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.persistence.Query;
 
@@ -10,7 +9,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
-import gov.healthit.chpl.dto.CertificationCriterionDTO;
+import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.entity.CertificationCriterionEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -20,138 +19,51 @@ import gov.healthit.chpl.util.AuthUtil;
 public class CertificationCriterionDAO extends BaseDAOImpl {
 
     @Transactional
-    public CertificationCriterionDTO create(CertificationCriterionDTO dto)
-            throws EntityCreationException, EntityRetrievalException {
-
-        CertificationCriterionEntity entity = null;
-        try {
-            if (dto.getId() != null) {
-                entity = this.getEntityById(dto.getId());
-            }
-        } catch (final EntityRetrievalException e) {
-            throw new EntityCreationException(e);
-        }
-
-        if (entity != null) {
-            throw new EntityCreationException("An entity with this ID already exists.");
-        } else {
-
-            entity = new CertificationCriterionEntity();
-            entity.setCertificationEditionId(dto.getCertificationEditionId());
-            entity.setCreationDate(new Date());
-            entity.setDeleted(false);
-            entity.setDescription(dto.getDescription());
-            entity.setLastModifiedDate(new Date());
-            entity.setLastModifiedUser(AuthUtil.getAuditId());
-            entity.setNumber(dto.getNumber());
-            entity.setTitle(dto.getTitle());
-            entity.setRemoved(dto.getRemoved());
-
-            create(entity);
-        }
-        return new CertificationCriterionDTO(entity);
-    }
-
-    @Transactional
-    public CertificationCriterionDTO update(CertificationCriterionDTO dto)
+    public CertificationCriterion update(CertificationCriterion criterion)
             throws EntityRetrievalException, EntityCreationException {
-
-        CertificationCriterionEntity entity = this.getEntityById(dto.getId());
-
-        entity.setCertificationEditionId(dto.getCertificationEditionId());
-        entity.setCreationDate(dto.getCreationDate());
-        entity.setDeleted(dto.getDeleted());
-        entity.setDescription(dto.getDescription());
-        entity.setId(dto.getId());
+        CertificationCriterionEntity entity = this.getEntityById(criterion.getId());
+        entity.setCertificationEditionId(criterion.getCertificationEditionId());
+        entity.setDescription(criterion.getDescription());
+        entity.setId(criterion.getId());
         entity.setLastModifiedUser(AuthUtil.getAuditId());
-        entity.setNumber(dto.getNumber());
-        entity.setTitle(dto.getTitle());
-        entity.setRemoved(dto.getRemoved());
+        entity.setNumber(criterion.getNumber());
+        entity.setTitle(criterion.getTitle());
+        entity.setRemoved(criterion.getRemoved());
         update(entity);
 
-        return new CertificationCriterionDTO(entity);
+        return entity.toDomain();
     }
 
-    @Transactional
-    public void delete(final Long criterionId) {
-
-        Query query = entityManager.createQuery(
-                "UPDATE CertificationCriterionEntity SET deleted = true WHERE certification_criterion_id = :entityid");
-        query.setParameter("entityid", criterionId);
-        query.executeUpdate();
-
-    }
-
-    public List<CertificationCriterionDTO> findAll() {
-
+    public List<CertificationCriterion> findAll() {
         List<CertificationCriterionEntity> entities = getAllEntities();
-        List<CertificationCriterionDTO> dtos = new ArrayList<>();
-
-        for (CertificationCriterionEntity entity : entities) {
-            CertificationCriterionDTO dto = new CertificationCriterionDTO(entity);
-            dtos.add(dto);
-        }
-        return dtos;
+        return entities.stream()
+                .map(entity -> entity.toDomain())
+                .collect(Collectors.toList());
     }
 
-    public List<CertificationCriterionDTO> findByCertificationEditionYear(String year) {
-
+    public List<CertificationCriterion> findByCertificationEditionYear(String year) {
         List<CertificationCriterionEntity> entities = getEntitiesByCertificationEditionYear(year);
-        List<CertificationCriterionDTO> dtos = new ArrayList<>();
-
-        for (CertificationCriterionEntity entity : entities) {
-            CertificationCriterionDTO dto = new CertificationCriterionDTO(entity);
-            dtos.add(dto);
-        }
-        return dtos;
+        return entities.stream()
+                .map(entity -> entity.toDomain())
+                .collect(Collectors.toList());
     }
 
-    public List<CertificationCriterionDTO> getAllByNumber(String criterionName) {
+    public List<CertificationCriterion> getAllByNumber(String criterionName) {
         List<CertificationCriterionEntity> entities = getEntitiesByNumber(criterionName);
-        List<CertificationCriterionDTO> dtos = new ArrayList<>();
-
-        for (CertificationCriterionEntity entity : entities) {
-            CertificationCriterionDTO dto = new CertificationCriterionDTO(entity);
-            dtos.add(dto);
-        }
-        return dtos;
+        return entities.stream()
+                .map(entity -> entity.toDomain())
+                .collect(Collectors.toList());
     }
 
-    public CertificationCriterionDTO getById(Long criterionId) throws EntityRetrievalException {
-
-        CertificationCriterionDTO dto = null;
+    public CertificationCriterion getById(Long criterionId) throws EntityRetrievalException {
         CertificationCriterionEntity entity = getEntityById(criterionId);
-
-        if (entity != null) {
-            dto = new CertificationCriterionDTO(entity);
-        }
-        return dto;
+        return entity.toDomain();
     }
 
     @Transactional
-    public CertificationCriterionDTO getByNumberAndTitle(String criterionNumber, String criterionTitle) {
-        CertificationCriterionDTO result = null;
+    public CertificationCriterion getByNumberAndTitle(String criterionNumber, String criterionTitle) {
         CertificationCriterionEntity entity = getEntityByNumberAndTitle(criterionNumber, criterionTitle);
-        if (entity != null) {
-            result = new CertificationCriterionDTO(entity);
-        }
-        return result;
-    }
-
-    @Transactional
-    private void create(final CertificationCriterionEntity entity) {
-
-        entityManager.persist(entity);
-        entityManager.flush();
-
-    }
-
-    @Transactional
-    private void update(final CertificationCriterionEntity entity) {
-
-        entityManager.merge(entity);
-        entityManager.flush();
-
+        return entity.toDomain();
     }
 
     private List<CertificationCriterionEntity> getAllEntities() {

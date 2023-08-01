@@ -13,8 +13,8 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
 import gov.healthit.chpl.dao.CertificationEditionDAO;
+import gov.healthit.chpl.domain.CertificationEdition;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.dto.CertificationEditionDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ValidationUtils;
@@ -78,8 +78,8 @@ public class CertificationEditionNormalizerTest {
                 .build();
 
         Mockito.when(editionDao.getById(ArgumentMatchers.anyLong()))
-            .thenReturn(CertificationEditionDTO.builder()
-                    .id(1L)
+            .thenReturn(CertificationEdition.builder()
+                    .certificationEditionId(1L)
                     .year("2015")
                     .build());
 
@@ -99,8 +99,8 @@ public class CertificationEditionNormalizerTest {
                 .build();
 
         Mockito.when(editionDao.getById(ArgumentMatchers.anyLong()))
-            .thenReturn(CertificationEditionDTO.builder()
-                    .id(1L)
+            .thenReturn(CertificationEdition.builder()
+                    .certificationEditionId(1L)
                     .year("2015")
                     .build());
 
@@ -120,8 +120,8 @@ public class CertificationEditionNormalizerTest {
                 .build();
 
         Mockito.when(editionDao.getById(ArgumentMatchers.anyLong()))
-            .thenReturn(CertificationEditionDTO.builder()
-                    .id(1L)
+            .thenReturn(CertificationEdition.builder()
+                    .certificationEditionId(1L)
                     .year("2015")
                     .build());
 
@@ -157,8 +157,8 @@ public class CertificationEditionNormalizerTest {
                 .build();
 
         Mockito.when(editionDao.getByYear(ArgumentMatchers.anyString()))
-            .thenReturn(CertificationEditionDTO.builder()
-                    .id(1L)
+            .thenReturn(CertificationEdition.builder()
+                    .certificationEditionId(1L)
                     .year("2015")
                     .build());
 
@@ -178,8 +178,8 @@ public class CertificationEditionNormalizerTest {
                 .build();
 
         Mockito.when(editionDao.getByYear(ArgumentMatchers.anyString()))
-            .thenReturn(CertificationEditionDTO.builder()
-                    .id(1L)
+            .thenReturn(CertificationEdition.builder()
+                    .certificationEditionId(1L)
                     .year("2015")
                     .build());
 
@@ -199,8 +199,8 @@ public class CertificationEditionNormalizerTest {
                 .build();
 
         Mockito.when(editionDao.getByYear(ArgumentMatchers.anyString()))
-            .thenReturn(CertificationEditionDTO.builder()
-                    .id(1L)
+            .thenReturn(CertificationEdition.builder()
+                    .certificationEditionId(1L)
                     .year("2015")
                     .build());
 
@@ -220,8 +220,8 @@ public class CertificationEditionNormalizerTest {
                 .build();
 
         Mockito.when(editionDao.getByYear(ArgumentMatchers.anyString()))
-            .thenReturn(CertificationEditionDTO.builder()
-                    .id(1L)
+            .thenReturn(CertificationEdition.builder()
+                    .certificationEditionId(1L)
                     .year("2015")
                     .build());
 
@@ -255,8 +255,8 @@ public class CertificationEditionNormalizerTest {
                 .build();
 
         Mockito.when(editionDao.getByYear(ArgumentMatchers.anyString()))
-        .thenReturn(CertificationEditionDTO.builder()
-                .id(1L)
+        .thenReturn(CertificationEdition.builder()
+                .certificationEditionId(1L)
                 .year("2015")
                 .build());
 

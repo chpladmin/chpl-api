@@ -9,11 +9,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.dao.TestToolDAO;
+import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultTestTool;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.TestToolCriteriaMap;
-import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.TestToolDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.permissions.ResourcePermissions;
@@ -67,7 +67,7 @@ public class TestToolReviewer extends PermissionBasedReviewer {
                 return;
             }
 
-            if (!isTestToolValidForCriteria(new CertificationCriterionDTO(cert.getCriterion()), tt.get())) {
+            if (!isTestToolValidForCriteria(cert.getCriterion(), tt.get())) {
                 listing.addBusinessErrorMessage(msgUtil.getMessage(
                         "listing.criteria.testToolCriterionMismatch",
                         testTool.getTestToolName(),
@@ -88,7 +88,7 @@ public class TestToolReviewer extends PermissionBasedReviewer {
         return testTool != null && testTool.isRetired();
     }
 
-    private Boolean isTestToolValidForCriteria(CertificationCriterionDTO criterion, TestToolDTO testTool) {
+    private Boolean isTestToolValidForCriteria(CertificationCriterion criterion, TestToolDTO testTool) {
         return testToolCriteriaMap.stream()
                 .filter(ttcm -> ttcm.getCriterion().getId().equals(criterion.getId())
                         && ttcm.getTestTool().getId().equals(testTool.getId()))

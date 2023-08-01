@@ -354,7 +354,7 @@ public class CertificationResult implements Serializable {
         this.setServiceBaseUrlList(certResult.getServiceBaseUrlList());
         this.setPrivacySecurityFramework(certResult.getPrivacySecurityFramework());
         if (certResult.getCriterion() != null) {
-            this.criterion = new CertificationCriterion(certResult.getCriterion());
+            this.criterion = certResult.getCriterion();
         }
     }
 
@@ -434,10 +434,7 @@ public class CertificationResult implements Serializable {
         } else {
             this.setPrivacySecurityFramework(certResult.getPrivacySecurityFramework());
         }
-
-        if (certResult.getCriterion() != null) {
-            this.criterion = new CertificationCriterion(certResult.getCriterion());
-        }
+        this.criterion = certResult.getCriterion();
 
         this.setOptionalStandards(getOptionalStandards(certResult, certRules));
         this.setFunctionalitiesTested(getFunctionalitiesTested(certResult, certRules));

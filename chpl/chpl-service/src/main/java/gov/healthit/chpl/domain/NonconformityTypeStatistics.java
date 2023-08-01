@@ -19,9 +19,7 @@ public class NonconformityTypeStatistics {
     public NonconformityTypeStatistics(NonconformityTypeStatisticsDTO dto) {
         this.nonconformityCount = dto.getNonconformityCount();
         this.nonconformityType = dto.getNonconformityType();
-        if (dto.getCriterion() != null) {
-            this.criterion = new CertificationCriterion(dto.getCriterion());
-        }
+        this.criterion = dto.getCriterion();
         this.setCreationDate(dto.getCreationDate());
         this.setDeleted(dto.getDeleted());
         this.setLastModifiedUser(dto.getLastModifiedUser());

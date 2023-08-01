@@ -54,6 +54,7 @@ import gov.healthit.chpl.dao.TestingLabDAO;
 import gov.healthit.chpl.domain.CQMResultCertification;
 import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.CertificationBody;
+import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationStatus;
 import gov.healthit.chpl.domain.CertificationStatusEvent;
@@ -79,7 +80,6 @@ import gov.healthit.chpl.dto.CQMCriterionDTO;
 import gov.healthit.chpl.dto.CQMResultCriteriaDTO;
 import gov.healthit.chpl.dto.CQMResultDTO;
 import gov.healthit.chpl.dto.CQMResultDetailsDTO;
-import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.CertifiedProductAccessibilityStandardDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
@@ -1576,7 +1576,7 @@ public class CertifiedProductManager extends SecuredManager {
             return cqm.getCriterion().getId();
         } else if (cqm.getCriterion() != null && !StringUtils.isEmpty(cqm.getCriterion().getNumber())
                 && !StringUtils.isEmpty(cqm.getCriterion().getTitle())) {
-            CertificationCriterionDTO cert = certCriterionDao.getByNumberAndTitle(
+            CertificationCriterion cert = certCriterionDao.getByNumberAndTitle(
                     cqm.getCriterion().getNumber(), cqm.getCriterion().getTitle());
             if (cert != null) {
                 return cert.getId();
@@ -1608,10 +1608,10 @@ public class CertifiedProductManager extends SecuredManager {
                         CQMResultCriteriaDTO cqmdto = new CQMResultCriteriaDTO();
                         cqmdto.setId(criteria.getId());
                         cqmdto.setCriterionId(criteria.getCertificationId());
-                        CertificationCriterionDTO certDto = new CertificationCriterionDTO();
-                        certDto.setId(criteria.getCertificationId());
-                        certDto.setNumber(criteria.getCertificationNumber());
-                        cqmdto.setCriterion(certDto);
+                        CertificationCriterion cert = new CertificationCriterion();
+                        cert.setId(criteria.getCertificationId());
+                        cert.setNumber(criteria.getCertificationNumber());
+                        cqmdto.setCriterion(cert);
                         dto.getCriteria().add(cqmdto);
                     }
                 }

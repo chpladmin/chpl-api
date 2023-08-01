@@ -23,9 +23,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
+import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.dto.CQMMetDTO;
-import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.CertificationIdAndCertifiedProductDTO;
 import gov.healthit.chpl.dto.CertificationIdDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
@@ -184,7 +184,7 @@ public class CertificationIdDAO extends BaseDAOImpl {
         return queryResult;
     }
 
-    public List<CertificationCriterionDTO> getCriteriaMetByCertifiedProductIds(List<Long> productIds) {
+    public List<CertificationCriterion> getCriteriaMetByCertifiedProductIds(List<Long> productIds) {
         List<CertificationCriterionEntity> entities = new ArrayList<CertificationCriterionEntity>();
         if ((null != productIds) && (productIds.size() > 0)) {
             Query query = entityManager.createQuery(
@@ -196,12 +196,9 @@ public class CertificationIdDAO extends BaseDAOImpl {
             query.setParameter("productIds", productIds);
             entities = query.getResultList();
         }
-        List<CertificationCriterionDTO> results = new ArrayList<CertificationCriterionDTO>();
-        for (CertificationCriterionEntity entity : entities) {
-            CertificationCriterionDTO dto = new CertificationCriterionDTO(entity);
-            results.add(dto);
-        }
-        return results;
+        return entities.stream()
+                .map(entity -> entity.toDomain())
+                .collect(Collectors.toList());
     }
 
     public List<CQMMetDTO> getCqmsMetByCertifiedProductIds(List<Long> productIds) {

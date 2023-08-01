@@ -15,7 +15,6 @@ import org.apache.commons.validator.routines.EmailValidator;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.NonconformityType;
 import gov.healthit.chpl.domain.surveillance.RequirementType;
-import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -93,18 +92,6 @@ public final class Util {
     }
 
     public static String formatCriteriaNumber(CertificationCriterion criterion) {
-        String result = criterion.getNumber();
-        if (isCures(criterion)) {
-            result += CURES_SUFFIX;
-        }
-        return result;
-    }
-
-    public static boolean isCures(CertificationCriterionDTO criterion) {
-        return criterion.getTitle() != null && criterion.getTitle().contains(CURES_TITLE);
-    }
-
-    public static String formatCriteriaNumber(CertificationCriterionDTO criterion) {
         String result = criterion.getNumber();
         if (isCures(criterion)) {
             result += CURES_SUFFIX;
