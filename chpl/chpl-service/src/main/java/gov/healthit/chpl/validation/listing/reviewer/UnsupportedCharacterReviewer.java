@@ -147,10 +147,10 @@ public class UnsupportedCharacterReviewer implements Reviewer {
                     MapUtils.getString(listing.getCertifyingBody(), CertifiedProductSearchDetails.ACB_NAME_KEY),
                     "ACB Name '" + MapUtils.getString(listing.getCertifyingBody(), CertifiedProductSearchDetails.ACB_NAME_KEY) + "'");
         }
-        if (MapUtils.getString(listing.getCertificationEdition(), CertifiedProductSearchDetails.EDITION_NAME_KEY) != null) {
+        if (listing.getEdition() != null) {
             addListingWarningIfNotValid(listing,
-                    MapUtils.getString(listing.getCertificationEdition(), CertifiedProductSearchDetails.EDITION_NAME_KEY),
-                    "Certification Edition '" + MapUtils.getString(listing.getCertificationEdition(), CertifiedProductSearchDetails.EDITION_NAME_KEY) + "'");
+                    listing.getEdition().getName(),
+                    "Certification Edition '" + listing.getEdition().getName() + "'");
         }
         addListingWarningIfNotValid(listing, listing.getProductAdditionalSoftware(),
                 "Listing-level Additional Software '" + listing.getProductAdditionalSoftware() + "'");

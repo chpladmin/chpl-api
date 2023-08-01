@@ -92,8 +92,7 @@ public class InheritanceReviewer implements Reviewer {
     private void reviewListingParentsHaveSameEditionAsListing(List<Long> parentIds, CertifiedProductSearchDetails listing) {
         List<CertificationEdition> parentEditions = certEditionDao.getEditions(parentIds);
         parentEditions.stream()
-                .filter(parentEdition -> !listing.getCertificationEdition().get(CertifiedProductSearchDetails.EDITION_ID_KEY).toString()
-                        .equals(parentEdition.getId().toString()))
+                .filter(parentEdition -> !listing.getEdition().getId().equals(parentEdition.getId()))
                 .forEach(parentEdition -> listing.addBusinessErrorMessage(
                         msgUtil.getMessage("listing.icsEditionMismatch", parentEdition.getName())));
     }

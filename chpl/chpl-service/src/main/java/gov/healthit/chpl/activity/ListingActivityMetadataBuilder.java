@@ -80,7 +80,9 @@ public class ListingActivityMetadataBuilder extends ActivityMetadataBuilder {
         if (listing.getDeveloper() != null) {
             listingMetadata.setDeveloperName(listing.getDeveloper().getName());
         }
-        if (listing.getCertificationEdition() != null
+        if (listing.getEdition() != null) {
+            listingMetadata.setEdition(listing.getEdition().getName());
+        } else if (listing.getCertificationEdition() != null
                 && listing.getCertificationEdition().get(CertifiedProductSearchDetails.EDITION_NAME_KEY) != null) {
             listingMetadata.setEdition(listing.getCertificationEdition()
                     .get(CertifiedProductSearchDetails.EDITION_NAME_KEY).toString());

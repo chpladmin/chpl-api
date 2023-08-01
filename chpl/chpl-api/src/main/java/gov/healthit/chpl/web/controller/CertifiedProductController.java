@@ -707,6 +707,7 @@ public class CertifiedProductController {
                 .accessibilityStandards(e.getAccessibilityStandards())
                 .certificationDate(e.getCertificationDate())
                 .certificationEdition(e.getCertificationEdition())
+                .edition(e.getEdition())
                 .certificationEvents(e.getCertificationEvents())
                 .certificationStatus(e.getCertificationStatus())
                 .certifyingBody(e.getCertifyingBody())

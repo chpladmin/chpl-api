@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -56,7 +55,7 @@ public class EditionCodeReviewer implements Reviewer {
                     editionCode, Stream.of(EDITION_CODES).collect(Collectors.joining(","))));
         }
 
-        String editionYear = MapUtils.getString(listing.getCertificationEdition(), CertifiedProductSearchDetails.EDITION_NAME_KEY);
+        String editionYear = listing.getEdition() == null ? null : listing.getEdition().getName();
         if (isValidEditionCode(listing.getChplProductNumber()) && !StringUtils.isEmpty(editionYear)
                 && !convertEditionCodeToYear(editionCode).equals(editionYear)) {
             listing.addDataErrorMessage(msgUtil.getMessage("listing.certificationEditionMismatch", editionCode, editionYear));

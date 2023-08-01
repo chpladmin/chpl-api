@@ -7,7 +7,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -407,7 +406,7 @@ public abstract class ActivitiesAndOutcomesWorksheetBuilder {
             if (determineIfSurveillanceHappenedDuringQuarter("Q4", quarterlyReports, surv)) {
                 addDataCell(workbook, row, COL_Q4, "X");
             }
-            String edition = listing.getCertificationEdition().get("name").toString();
+            String edition = listing.getEdition().getName();
             if (listing.getCuresUpdate() != null && listing.getCuresUpdate()) {
                 edition += CertificationEdition.CURES_SUFFIX;
             }
@@ -513,10 +512,10 @@ public abstract class ActivitiesAndOutcomesWorksheetBuilder {
             if (listingDetails.getCuresUpdate() != null && listingDetails.getCuresUpdate()) {
                 edition += CertificationEdition.CURES_SUFFIX;
             }
-            Map<String, Object> editionMap = new HashMap<String, Object>();
-            editionMap.put("id", listingDetails.getCertificationEditionId());
-            editionMap.put("name",  edition);
-            completeListingDetails.setCertificationEdition(editionMap);
+            completeListingDetails.setEdition(CertificationEdition.builder()
+                    .id(listingDetails.getCertificationEditionId())
+                    .name(edition)
+                    .build());
             Developer dev = new Developer();
             dev.setId(listingDetails.getDeveloper().getId());
             dev.setName(listingDetails.getDeveloper().getName());

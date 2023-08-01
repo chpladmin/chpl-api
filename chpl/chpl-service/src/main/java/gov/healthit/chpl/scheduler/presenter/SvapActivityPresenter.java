@@ -129,7 +129,7 @@ public class SvapActivityPresenter implements AutoCloseable {
     }
 
     private String formatEdition(CertifiedProductSearchDetails listing) {
-        String edition = MapUtils.getString(listing.getCertificationEdition(), CertifiedProductSearchDetails.EDITION_NAME_KEY);
+        String edition = listing.getEdition().getName();
         if (listing.getCuresUpdate() != null && listing.getCuresUpdate()) {
             edition = edition + CertificationEdition.CURES_SUFFIX;
         }

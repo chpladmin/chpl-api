@@ -25,7 +25,7 @@ public class ListingValidatorFactory {
     }
 
     public Validator getValidator(final CertifiedProductSearchDetails listing) {
-        String edition = listing.getCertificationEdition().get(CertifiedProductSearchDetails.EDITION_NAME_KEY).toString();
+        String edition = listing.getEdition().getName();
         if (StringUtils.isEmpty(listing.getChplProductNumber())
                 || StringUtils.isEmpty(edition)) {
             String errMsg = msgUtil.getMessage("listing.validator.editionOrChplNumberNotFound", listing.getId().toString());
@@ -34,10 +34,10 @@ public class ListingValidatorFactory {
             return null;
         }
 
-        if (edition.equals("2011") || edition.equals("2014")) {
-            return allowedValidator;
-        } else if (edition.equals("2015")) {
+        if (edition == null || edition.equals("2015")) {
             return edition2015Validator;
+        } else if (edition.equals("2011") || edition.equals("2014")) {
+            return allowedValidator;
         } else {
             String errMsg = msgUtil.getMessage("listing.validator.certificationEditionNotFound", edition);
             listing.addBusinessErrorMessage(errMsg);

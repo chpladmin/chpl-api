@@ -43,6 +43,7 @@ import gov.healthit.chpl.dao.TargetedUserDAO;
 import gov.healthit.chpl.dao.TestingLabDAO;
 import gov.healthit.chpl.domain.Address;
 import gov.healthit.chpl.domain.CQMResultDetails;
+import gov.healthit.chpl.domain.CertificationEdition;
 import gov.healthit.chpl.domain.CertificationStatus;
 import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
@@ -245,7 +246,7 @@ public class CertifiedProductManagerTest {
         return CertifiedProductSearchDetails.builder()
                 .id(1L)
                 .certificationDate(cal1.getTime().getTime())
-                .certificationEdition(getCertificationEdition())
+                .edition(CertificationEdition.builder().id(3L).name("2015").build())
                 .certificationEvent(CertificationStatusEvent.builder()
                         .eventDate(cal1.getTime().getTime())
                         .id(1L)
@@ -302,13 +303,6 @@ public class CertifiedProductManagerTest {
                         .version("11.3")
                         .build())
                 .build();
-    }
-
-    private Map<String, Object> getCertificationEdition() {
-        Map<String, Object> edition = new HashMap<String, Object>();
-        edition.put("name", "2015");
-        edition.put("id", EDITION_2015_ID);
-        return edition;
     }
 
     private Map<String, Object> getCertifyingBody() {

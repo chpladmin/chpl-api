@@ -15,6 +15,7 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
 import gov.healthit.chpl.domain.CertificationCriterion;
+import gov.healthit.chpl.domain.CertificationEdition;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.functionalityTested.CertificationResultFunctionalityTested;
@@ -81,13 +82,12 @@ public class FunctionalityTestedNormalizerTest {
                 .functionalityTestedId(null)
                 .name("notindb")
                 .build());
-        Map<String, Object> editionMap = create2015EditionMap();
 
         Mockito.when(functionalityTestedDao.getFunctionalitiesTestedCriteriaMaps())
             .thenReturn(new HashMap<Long, List<FunctionalityTested>>());
 
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .certificationEdition(editionMap)
+                .edition(create2015Edition())
                 .certificationResult(CertificationResult.builder()
                         .success(true)
                         .criterion(CertificationCriterion.builder()
@@ -109,7 +109,6 @@ public class FunctionalityTestedNormalizerTest {
                 .functionalityTestedId(null)
                 .name("valid")
                 .build());
-        Map<String, Object> editionMap = create2015EditionMap();
 
         Map<Long, List<FunctionalityTested>> funcTestedMaps = new HashMap<Long, List<FunctionalityTested>>();
         funcTestedMaps.put(CRITERIA_ID_WITHOUT_RESTRICTIONS, Stream.of(FunctionalityTested.builder()
@@ -125,7 +124,7 @@ public class FunctionalityTestedNormalizerTest {
             .thenReturn(funcTestedMaps);
 
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .certificationEdition(editionMap)
+                .edition(create2015Edition())
                 .certificationResult(CertificationResult.builder()
                         .success(true)
                         .criterion(CertificationCriterion.builder()
@@ -212,10 +211,10 @@ public class FunctionalityTestedNormalizerTest {
         assertEquals(0, listing.getCertificationResults().get(0).getFunctionalitiesTested().size());
     }
 
-    private Map<String, Object> create2015EditionMap() {
-        Map<String, Object> editionMap = new HashMap<String, Object>();
-        editionMap.put(CertifiedProductSearchDetails.EDITION_ID_KEY, 3L);
-        editionMap.put(CertifiedProductSearchDetails.EDITION_NAME_KEY, "2015");
-        return editionMap;
+    private CertificationEdition create2015Edition() {
+        return CertificationEdition.builder()
+                .id(3L)
+                .name("2015")
+                .build();
     }
 }

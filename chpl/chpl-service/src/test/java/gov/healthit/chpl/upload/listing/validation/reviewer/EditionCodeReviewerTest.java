@@ -3,14 +3,12 @@ package gov.healthit.chpl.upload.listing.validation.reviewer;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
+import gov.healthit.chpl.domain.CertificationEdition;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -33,7 +31,7 @@ public class EditionCodeReviewerTest {
     public void review_nullEditionValidCode_noError() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .chplProductNumber("15.04.04.2526.WEBe.06.00.1.210101")
-                .certificationEdition(null)
+                .edition(null)
                 .build();
         reviewer.review(listing);
 
@@ -44,7 +42,7 @@ public class EditionCodeReviewerTest {
     public void review_nullEditionEmptyCode_noError() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .chplProductNumber(".04.04.2526.WEBe.06.00.1.210101")
-                .certificationEdition(null)
+                .edition(null)
                 .build();
         reviewer.review(listing);
 
@@ -54,12 +52,9 @@ public class EditionCodeReviewerTest {
 
     @Test
     public void review_emptyEditionValidCode_noError() {
-        Map<String, Object> certEditionMap = new HashMap<String, Object>();
-        certEditionMap.put(CertifiedProductSearchDetails.EDITION_NAME_KEY, "");
-
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .chplProductNumber("15.04.04.2526.WEBe.06.00.1.210101")
-                .certificationEdition(certEditionMap)
+                .edition(CertificationEdition.builder().name("").build())
                 .build();
 
         reviewer.review(listing);
@@ -69,12 +64,9 @@ public class EditionCodeReviewerTest {
 
     @Test
     public void review_legacyChplProductNumberWithEdition_noError() {
-        Map<String, Object> certEditionMap = new HashMap<String, Object>();
-        certEditionMap.put(CertifiedProductSearchDetails.EDITION_NAME_KEY, "2014");
-
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .chplProductNumber("CHP-123456")
-                .certificationEdition(certEditionMap)
+                .edition(CertificationEdition.builder().name("2014").build())
                 .build();
         reviewer.review(listing);
 
@@ -85,7 +77,7 @@ public class EditionCodeReviewerTest {
     public void review_legacyChplProductNumberNullEdition_noError() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .chplProductNumber("CHP-123456")
-                .certificationEdition(null)
+                .edition(null)
                 .build();
         reviewer.review(listing);
 
@@ -97,12 +89,9 @@ public class EditionCodeReviewerTest {
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.certificationEditionMismatch"), ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(MISMATCHED_CERT_EDITION, i.getArgument(1), i.getArgument(2)));
 
-        Map<String, Object> certEditionMap = new HashMap<String, Object>();
-        certEditionMap.put(CertifiedProductSearchDetails.EDITION_NAME_KEY, "2014");
-
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .chplProductNumber("15.04.04.2526.WEBe.06.00.1.210101")
-                .certificationEdition(certEditionMap)
+                .edition(CertificationEdition.builder().name("2014").build())
                 .build();
 
         reviewer.review(listing);
@@ -113,12 +102,9 @@ public class EditionCodeReviewerTest {
 
     @Test
     public void review_mismatchedEditionInvalidChplProductNumber_noError() {
-        Map<String, Object> certEditionMap = new HashMap<String, Object>();
-        certEditionMap.put(CertifiedProductSearchDetails.EDITION_NAME_KEY, "2014");
-
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .chplProductNumber("ED.04.04.2526.WEBe.06.00.1.210101")
-                .certificationEdition(certEditionMap)
+                .edition(CertificationEdition.builder().name("2014").build())
                 .build();
 
         reviewer.review(listing);
@@ -133,7 +119,7 @@ public class EditionCodeReviewerTest {
 
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .chplProductNumber("11.04.04.2526.WEBe.06.00.1.210101")
-                .certificationEdition(null)
+                .edition(null)
                 .build();
         reviewer.review(listing);
 
@@ -143,12 +129,9 @@ public class EditionCodeReviewerTest {
 
     @Test
     public void review_goodCertEditionCodeWithMatchingListingEdition_noError() {
-        Map<String, Object> certEditionMap = new HashMap<String, Object>();
-        certEditionMap.put(CertifiedProductSearchDetails.EDITION_NAME_KEY, "2015");
-
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .chplProductNumber("15.04.04.2526.WEBe.06.00.1.210101")
-                .certificationEdition(certEditionMap)
+                .edition(CertificationEdition.builder().name("2015").build())
                 .build();
         reviewer.review(listing);
 

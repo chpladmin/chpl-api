@@ -3,10 +3,6 @@ package gov.healthit.chpl.upload.listing.normalizer;
 import static org.junit.Assert.assertNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.apache.commons.collections.MapUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
@@ -24,8 +20,19 @@ public class CertificationEditionNormalizerTest {
     private CertificationEditionDAO editionDao;
     private CertificationEditionNormalizer normalizer;
 
+    private CertificationEdition edition2015, edition2014;
+
     @Before
     public void setup() {
+        edition2015 = CertificationEdition.builder()
+                .id(1L)
+                .name("2015")
+                .build();
+        edition2014 = CertificationEdition.builder()
+                .id(2L)
+                .name("2014")
+                .build();
+
         editionDao = Mockito.mock(CertificationEditionDAO.class);
         normalizer = new CertificationEditionNormalizer(editionDao, new ValidationUtils(), new ChplProductNumberUtil());
     }
@@ -33,110 +40,69 @@ public class CertificationEditionNormalizerTest {
     @Test
     public void normalize_nullEdition_noChanges() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .certificationEdition(null)
+                .edition(null)
                 .build();
         normalizer.normalize(listing);
-        assertNull(listing.getCertificationEdition());
+        assertNull(listing.getEdition());
     }
 
     @Test
     public void normalize_editionIdAndYearExist_normalChplProductNumber_noChanges() {
-        Map<String, Object> edition = new HashMap<String, Object>();
-        edition.put(CertifiedProductSearchDetails.EDITION_ID_KEY, 1L);
-        edition.put(CertifiedProductSearchDetails.EDITION_NAME_KEY, "2015");
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .chplProductNumber("15.07.04.2663.ABCD.R2.01.0.200511")
-                .certificationEdition(edition)
+                .edition(edition2015)
                 .build();
         normalizer.normalize(listing);
 
-        assertEquals(1L, MapUtils.getLong(listing.getCertificationEdition(), CertifiedProductSearchDetails.EDITION_ID_KEY));
-        assertEquals("2015", MapUtils.getString(listing.getCertificationEdition(), CertifiedProductSearchDetails.EDITION_NAME_KEY));
+        assertEquals(1L, listing.getEdition().getId());
+        assertEquals("2015", listing.getEdition().getName());
     }
 
     @Test
     public void normalize_editionIdAndYearExist_legacyChplProductNumber_noChanges() {
-        Map<String, Object> edition = new HashMap<String, Object>();
-        edition.put(CertifiedProductSearchDetails.EDITION_ID_KEY, 2L);
-        edition.put(CertifiedProductSearchDetails.EDITION_NAME_KEY, "2014");
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .chplProductNumber("CHP-123456")
-                .certificationEdition(edition)
+                .edition(edition2014)
                 .build();
         normalizer.normalize(listing);
 
-        assertEquals(2L, MapUtils.getLong(listing.getCertificationEdition(), CertifiedProductSearchDetails.EDITION_ID_KEY));
-        assertEquals("2014", MapUtils.getString(listing.getCertificationEdition(), CertifiedProductSearchDetails.EDITION_NAME_KEY));
+        assertEquals(2L, listing.getEdition().getId());
+        assertEquals("2014", listing.getEdition().getName());
     }
 
     @Test
-    public void normalize_yearKeyMissingEditionFoundById_yearAdded() throws EntityRetrievalException {
-        Map<String, Object> edition = new HashMap<String, Object>();
-        edition.put(CertifiedProductSearchDetails.EDITION_ID_KEY, 1L);
+    public void normalize_yearMissingEditionFoundById_yearAdded() throws EntityRetrievalException {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .certificationEdition(edition)
+                .edition(CertificationEdition.builder().id(1L).build())
                 .build();
 
         Mockito.when(editionDao.getById(ArgumentMatchers.anyLong()))
-            .thenReturn(CertificationEdition.builder()
-                    .id(1L)
-                    .name("2015")
-                    .build());
+            .thenReturn(edition2015);
 
         normalizer.normalize(listing);
 
-        assertEquals(1L, MapUtils.getLong(listing.getCertificationEdition(), CertifiedProductSearchDetails.EDITION_ID_KEY));
-        assertEquals("2015", MapUtils.getString(listing.getCertificationEdition(), CertifiedProductSearchDetails.EDITION_NAME_KEY));
+        assertEquals(1L, listing.getEdition().getId());
+        assertEquals("2015", listing.getEdition().getName());
     }
 
     @Test
-    public void normalize_yearKeyNullEditionFoundById_yearAdded() throws EntityRetrievalException {
-        Map<String, Object> edition = new HashMap<String, Object>();
-        edition.put(CertifiedProductSearchDetails.EDITION_ID_KEY, 1L);
-        edition.put(CertifiedProductSearchDetails.EDITION_NAME_KEY, null);
+    public void normalize_yearEmptyEditionFoundById_yearAdded() throws EntityRetrievalException {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .certificationEdition(edition)
+                .edition(CertificationEdition.builder().id(1L).name("").build())
                 .build();
 
         Mockito.when(editionDao.getById(ArgumentMatchers.anyLong()))
-            .thenReturn(CertificationEdition.builder()
-                    .id(1L)
-                    .name("2015")
-                    .build());
-
+            .thenReturn(edition2015);
         normalizer.normalize(listing);
 
-        assertEquals(1L, MapUtils.getLong(listing.getCertificationEdition(), CertifiedProductSearchDetails.EDITION_ID_KEY));
-        assertEquals("2015", MapUtils.getString(listing.getCertificationEdition(), CertifiedProductSearchDetails.EDITION_NAME_KEY));
+        assertEquals(1L, listing.getEdition().getId());
+        assertEquals("2015", listing.getEdition().getName());
     }
 
     @Test
-    public void normalize_yearKeyEmptyEditionFoundById_yearAdded() throws EntityRetrievalException {
-        Map<String, Object> edition = new HashMap<String, Object>();
-        edition.put(CertifiedProductSearchDetails.EDITION_ID_KEY, 1L);
-        edition.put(CertifiedProductSearchDetails.EDITION_NAME_KEY, "");
+    public void normalize_yearMissingEditionNotFoundById_yearNull() throws EntityRetrievalException {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .certificationEdition(edition)
-                .build();
-
-        Mockito.when(editionDao.getById(ArgumentMatchers.anyLong()))
-            .thenReturn(CertificationEdition.builder()
-                    .id(1L)
-                    .name("2015")
-                    .build());
-
-        normalizer.normalize(listing);
-
-        assertEquals(1L, MapUtils.getLong(listing.getCertificationEdition(), CertifiedProductSearchDetails.EDITION_ID_KEY));
-        assertEquals("2015", MapUtils.getString(listing.getCertificationEdition(), CertifiedProductSearchDetails.EDITION_NAME_KEY));
-    }
-
-    @Test
-    public void normalize_yearKeyMissingEditionNotFoundById_yearNull() throws EntityRetrievalException {
-        Map<String, Object> edition = new HashMap<String, Object>();
-        edition.put(CertifiedProductSearchDetails.EDITION_ID_KEY, 1L);
-        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .certificationEdition(edition)
+                .edition(CertificationEdition.builder().id(1L).build())
                 .build();
 
         Mockito.when(editionDao.getById(ArgumentMatchers.anyLong()))
@@ -144,99 +110,29 @@ public class CertificationEditionNormalizerTest {
 
         normalizer.normalize(listing);
 
-        assertEquals(1L, MapUtils.getLong(listing.getCertificationEdition(), CertifiedProductSearchDetails.EDITION_ID_KEY));
-        assertNull(MapUtils.getString(listing.getCertificationEdition(), CertifiedProductSearchDetails.EDITION_NAME_KEY));
+        assertEquals(1L, listing.getEdition().getId());
+        assertNull(listing.getEdition().getName());
     }
 
     @Test
-    public void normalize_idKeyMissingEditionFoundByYear_idAdded() {
-        Map<String, Object> edition = new HashMap<String, Object>();
-        edition.put(CertifiedProductSearchDetails.EDITION_NAME_KEY, "2015");
+    public void normalize_idMissingEditionFoundByYear_idAdded() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .certificationEdition(edition)
+                .edition(CertificationEdition.builder().name("2015").build())
                 .build();
 
         Mockito.when(editionDao.getByYear(ArgumentMatchers.anyString()))
-            .thenReturn(CertificationEdition.builder()
-                    .id(1L)
-                    .name("2015")
-                    .build());
+            .thenReturn(edition2015);
 
         normalizer.normalize(listing);
 
-        assertEquals(1L, MapUtils.getLong(listing.getCertificationEdition(), CertifiedProductSearchDetails.EDITION_ID_KEY));
-        assertEquals("2015", MapUtils.getString(listing.getCertificationEdition(), CertifiedProductSearchDetails.EDITION_NAME_KEY));
+        assertEquals(1L, listing.getEdition().getId());
+        assertEquals("2015", listing.getEdition().getName());
     }
 
     @Test
-    public void normalize_idKeyNullEditionFoundByYear_idAdded() {
-        Map<String, Object> edition = new HashMap<String, Object>();
-        edition.put(CertifiedProductSearchDetails.EDITION_ID_KEY, null);
-        edition.put(CertifiedProductSearchDetails.EDITION_NAME_KEY, "2015");
+    public void normalize_idMissingEditionNotFoundByYear_idNull() throws EntityRetrievalException {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .certificationEdition(edition)
-                .build();
-
-        Mockito.when(editionDao.getByYear(ArgumentMatchers.anyString()))
-            .thenReturn(CertificationEdition.builder()
-                    .id(1L)
-                    .name("2015")
-                    .build());
-
-        normalizer.normalize(listing);
-
-        assertEquals(1L, MapUtils.getLong(listing.getCertificationEdition(), CertifiedProductSearchDetails.EDITION_ID_KEY));
-        assertEquals("2015", MapUtils.getString(listing.getCertificationEdition(), CertifiedProductSearchDetails.EDITION_NAME_KEY));
-    }
-
-    @Test
-    public void normalize_idKeyEmptyEditionFoundByYear_idAdded() {
-        Map<String, Object> edition = new HashMap<String, Object>();
-        edition.put(CertifiedProductSearchDetails.EDITION_ID_KEY, "");
-        edition.put(CertifiedProductSearchDetails.EDITION_NAME_KEY, "2015");
-        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .certificationEdition(edition)
-                .build();
-
-        Mockito.when(editionDao.getByYear(ArgumentMatchers.anyString()))
-            .thenReturn(CertificationEdition.builder()
-                    .id(1L)
-                    .name("2015")
-                    .build());
-
-        normalizer.normalize(listing);
-
-        assertEquals(1L, MapUtils.getLong(listing.getCertificationEdition(), CertifiedProductSearchDetails.EDITION_ID_KEY));
-        assertEquals("2015", MapUtils.getString(listing.getCertificationEdition(), CertifiedProductSearchDetails.EDITION_NAME_KEY));
-    }
-
-    @Test
-    public void normalize_idKeyNaNEditionFoundByYear_idAdded() {
-        Map<String, Object> edition = new HashMap<String, Object>();
-        edition.put(CertifiedProductSearchDetails.EDITION_ID_KEY, "this is not a number");
-        edition.put(CertifiedProductSearchDetails.EDITION_NAME_KEY, "2015");
-        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .certificationEdition(edition)
-                .build();
-
-        Mockito.when(editionDao.getByYear(ArgumentMatchers.anyString()))
-            .thenReturn(CertificationEdition.builder()
-                    .id(1L)
-                    .name("2015")
-                    .build());
-
-        normalizer.normalize(listing);
-
-        assertEquals(1L, MapUtils.getLong(listing.getCertificationEdition(), CertifiedProductSearchDetails.EDITION_ID_KEY));
-        assertEquals("2015", MapUtils.getString(listing.getCertificationEdition(), CertifiedProductSearchDetails.EDITION_NAME_KEY));
-    }
-
-    @Test
-    public void normalize_idKeyMissingEditionNotFoundByYear_idNull() throws EntityRetrievalException {
-        Map<String, Object> edition = new HashMap<String, Object>();
-        edition.put(CertifiedProductSearchDetails.EDITION_NAME_KEY, "2021");
-        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .certificationEdition(edition)
+                .edition(CertificationEdition.builder().name("2021").build())
                 .build();
 
         Mockito.when(editionDao.getByYear(ArgumentMatchers.anyString()))
@@ -244,8 +140,8 @@ public class CertificationEditionNormalizerTest {
 
         normalizer.normalize(listing);
 
-        assertNull(MapUtils.getLong(listing.getCertificationEdition(), CertifiedProductSearchDetails.EDITION_ID_KEY));
-        assertEquals("2021", MapUtils.getString(listing.getCertificationEdition(), CertifiedProductSearchDetails.EDITION_NAME_KEY));
+        assertNull(listing.getEdition().getId());
+        assertEquals("2021", listing.getEdition().getName());
     }
 
     @Test
@@ -255,14 +151,11 @@ public class CertificationEditionNormalizerTest {
                 .build();
 
         Mockito.when(editionDao.getByYear(ArgumentMatchers.anyString()))
-        .thenReturn(CertificationEdition.builder()
-                .id(1L)
-                .name("2015")
-                .build());
+        .thenReturn(edition2015);
 
         normalizer.normalize(listing);
-        assertEquals(1L, MapUtils.getLong(listing.getCertificationEdition(), CertifiedProductSearchDetails.EDITION_ID_KEY));
-        assertEquals("2015", MapUtils.getString(listing.getCertificationEdition(), CertifiedProductSearchDetails.EDITION_NAME_KEY));
+        assertEquals(1L, listing.getEdition().getId());
+        assertEquals("2015", listing.getEdition().getName());
     }
 
     @Test
@@ -272,7 +165,7 @@ public class CertificationEditionNormalizerTest {
                 .build();
 
         normalizer.normalize(listing);
-        assertNull(listing.getCertificationEdition());
+        assertNull(listing.getEdition());
     }
 
     @Test
@@ -282,7 +175,7 @@ public class CertificationEditionNormalizerTest {
                 .build();
 
         normalizer.normalize(listing);
-        assertNull(listing.getCertificationEdition());
+        assertNull(listing.getEdition());
     }
 
     @Test
@@ -292,6 +185,6 @@ public class CertificationEditionNormalizerTest {
                 .build();
 
         normalizer.normalize(listing);
-        assertNull(listing.getCertificationEdition());
+        assertNull(listing.getEdition());
     }
 }

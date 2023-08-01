@@ -25,8 +25,8 @@ public class RequiredDataReviewer extends PermissionBasedReviewer {
 
     @Override
     public void review(final CertifiedProductSearchDetails listing) {
-        if (listing.getCertificationEdition() == null
-                || listing.getCertificationEdition().get(CertifiedProductSearchDetails.EDITION_ID_KEY) == null) {
+        if (listing.getEdition() == null
+                || listing.getEdition().getId() == null) {
             listing.addBusinessErrorMessage("Certification edition is required but was not found.");
         }
         if (StringUtils.isEmpty(listing.getAcbCertificationId())) {

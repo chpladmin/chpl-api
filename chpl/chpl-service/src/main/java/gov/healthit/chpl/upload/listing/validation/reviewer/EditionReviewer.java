@@ -1,8 +1,5 @@
 package gov.healthit.chpl.upload.listing.validation.reviewer;
 
-import java.util.Map;
-
-import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -22,14 +19,13 @@ public class EditionReviewer implements Reviewer {
 
     @Override
     public void review(CertifiedProductSearchDetails listing) {
-        Map<String, Object> certEditionMap = listing.getCertificationEdition();
-        if (certEditionMap == null) {
+        if (listing.getEdition() == null) {
             listing.addDataErrorMessage(msgUtil.getMessage("listing.missingEdition"));
             return;
         }
 
-        Long editionId = MapUtils.getLong(certEditionMap, CertifiedProductSearchDetails.EDITION_ID_KEY);
-        String editionYear = MapUtils.getString(certEditionMap, CertifiedProductSearchDetails.EDITION_NAME_KEY);
+        Long editionId = listing.getEdition().getId();
+        String editionYear = listing.getEdition().getName();
 
         if (editionId == null && StringUtils.isEmpty(editionYear)) {
             listing.addDataErrorMessage(msgUtil.getMessage("listing.missingEdition"));

@@ -112,8 +112,7 @@ public class CertifiedProductDTO implements Serializable {
         }
         this.setProductVersionId(from.getVersion().getId());
         this.certificationStatus = from.getCurrentStatus().getStatus();
-        this.setCertificationEditionId(
-                Long.valueOf(from.getCertificationEdition().get(CertifiedProductSearchDetails.EDITION_ID_KEY).toString()));
+        this.setCertificationEditionId(from.getEdition().getId());
         this.setReportFileLocation(from.getReportFileLocation());
         this.setSedReportFileLocation(from.getSedReportFileLocation());
         this.setSedIntendedUserDescription(from.getSedIntendedUserDescription());

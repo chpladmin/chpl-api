@@ -15,7 +15,7 @@ public class Updated2014EditionListingActivity implements ListingActivity {
     @Override
     public List<QuestionableActivityListing> check(CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing) {
         QuestionableActivityListing activity = null;
-        if (origListing.getCertificationEdition().get(CertifiedProductSearchDetails.EDITION_NAME_KEY).equals("2014")) {
+        if (origListing.getEdition().getName().equals("2014")) {
             activity = new QuestionableActivityListing();
             activity.setBefore(null);
             activity.setAfter(null);

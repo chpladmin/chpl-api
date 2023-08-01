@@ -626,7 +626,7 @@ public class CertificationResultManager extends SecuredManager {
             List<CertificationResultTestStandard> existingTestStandards,
             List<CertificationResultTestStandard> updatedTestStandards) throws EntityCreationException {
         int numChanges = 0;
-        String editionIdString = listing.getCertificationEdition().get(CertifiedProductSearchDetails.EDITION_ID_KEY).toString();
+        Long editionId = listing.getEdition().getId();
         List<CertificationResultTestStandardDTO> testStandardsToAdd = new ArrayList<CertificationResultTestStandardDTO>();
         List<Long> idsToRemove = new ArrayList<Long>();
 
@@ -636,8 +636,7 @@ public class CertificationResultManager extends SecuredManager {
             for (CertificationResultTestStandard updatedItem : updatedTestStandards) {
                 if (updatedItem.getTestStandardId() == null
                         && !StringUtils.isEmpty(updatedItem.getTestStandardName())) {
-                    TestStandard foundStd = testStandardDAO.getByNumberAndEdition(updatedItem.getTestStandardName(),
-                            Long.valueOf(editionIdString));
+                    TestStandard foundStd = testStandardDAO.getByNumberAndEdition(updatedItem.getTestStandardName(), editionId);
                     if (foundStd == null) {
                         LOGGER.error("Could not find test standard " + updatedItem.getTestStandardName()
                                 + "; will not be adding this as a test standard to certification result id "

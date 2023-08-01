@@ -1,6 +1,5 @@
 package gov.healthit.chpl.validation.listing.reviewer;
 
-import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -35,8 +34,7 @@ public class TestStandardReviewer implements Reviewer {
     private void reviewTestStandard(CertifiedProductSearchDetails listing, CertificationResult certResult,
             CertificationResultTestStandard testStandard) {
         String testStandardName = testStandard.getTestStandardName();
-        Long editionId = MapUtils.getLong(listing.getCertificationEdition(), CertifiedProductSearchDetails.EDITION_ID_KEY);
-
+        Long editionId = listing.getEdition().getId();
         if (testStandard.getTestStandardId() != null) {
             TestStandard foundTestStandard = testStandardDao.getByIdAndEdition(testStandard.getTestStandardId(), editionId);
             if (foundTestStandard == null) {
@@ -44,7 +42,7 @@ public class TestStandardReviewer implements Reviewer {
                         msgUtil.getMessage("listing.criteria.testStandardIdNotFound",
                                 Util.formatCriteriaNumber(certResult.getCriterion()),
                                 testStandard.getTestStandardId(),
-                                MapUtils.getString(listing.getCertificationEdition(), CertifiedProductSearchDetails.EDITION_NAME_KEY)));
+                                listing.getEdition().getName()));
             }
         } else if (!StringUtils.isEmpty(testStandardName)) {
             TestStandard foundTestStandard = testStandardDao.getByNumberAndEdition(testStandardName, editionId);
@@ -53,7 +51,7 @@ public class TestStandardReviewer implements Reviewer {
                         msgUtil.getMessage("listing.criteria.testStandardNotFound",
                                 Util.formatCriteriaNumber(certResult.getCriterion()),
                                 testStandardName,
-                                MapUtils.getString(listing.getCertificationEdition(), CertifiedProductSearchDetails.EDITION_NAME_KEY)));
+                                listing.getEdition().getName()));
             }
         } else {
             listing.addDataErrorMessage(

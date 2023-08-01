@@ -7,9 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -24,6 +22,7 @@ import gov.healthit.chpl.conformanceMethod.domain.ConformanceMethod;
 import gov.healthit.chpl.conformanceMethod.domain.ConformanceMethodCriteriaMap;
 import gov.healthit.chpl.dao.CertificationResultDAO;
 import gov.healthit.chpl.domain.CertificationCriterion;
+import gov.healthit.chpl.domain.CertificationEdition;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultTestData;
 import gov.healthit.chpl.domain.CertificationResultTestTool;
@@ -59,9 +58,14 @@ public class ConformanceMethodReviewerTest {
     private CertificationResultRules certResultRules;
     private ResourcePermissions resourcePermissions;
     private ConformanceMethodReviewer conformanceMethodReviewer;
+    private CertificationEdition edition2015;
 
     @Before
     public void before() throws EntityRetrievalException {
+        edition2015 = CertificationEdition.builder()
+                .id(3L)
+                .name("2015")
+                .build();
         ConformanceMethodDAO conformanceMethodDao = Mockito.mock(ConformanceMethodDAO.class);
         Mockito.when(conformanceMethodDao.getAllConformanceMethodCriteriaMap())
             .thenReturn(Stream.of(ConformanceMethodCriteriaMap.builder()
@@ -201,7 +205,7 @@ public class ConformanceMethodReviewerTest {
                                 .build())
                         .conformanceMethods(null)
                         .build())
-                .certificationEdition(get2015CertificationEdition())
+                .edition(edition2015)
                 .build();
         conformanceMethodReviewer.review(listing);
 
@@ -220,7 +224,7 @@ public class ConformanceMethodReviewerTest {
                                 .id(1L)
                                 .build())
                         .build())
-                .certificationEdition(get2015CertificationEdition())
+                .edition(edition2015)
                 .build();
         listing.getCertificationResults().get(0).setConformanceMethods(new ArrayList<CertificationResultConformanceMethod>());
         conformanceMethodReviewer.review(listing);
@@ -255,7 +259,7 @@ public class ConformanceMethodReviewerTest {
                                 .build())
                         .conformanceMethods(crcms)
                         .build())
-                .certificationEdition(get2015CertificationEdition())
+                .edition(edition2015)
                 .build();
         conformanceMethodReviewer.review(listing);
 
@@ -291,7 +295,7 @@ public class ConformanceMethodReviewerTest {
                                 .build())
                         .conformanceMethods(crcms)
                         .build())
-                .certificationEdition(get2015CertificationEdition())
+                .edition(edition2015)
                 .build();
         conformanceMethodReviewer.review(listing);
 
@@ -322,7 +326,7 @@ public class ConformanceMethodReviewerTest {
                                 .build())
                         .conformanceMethods(crcms)
                         .build())
-                .certificationEdition(get2015CertificationEdition())
+                .edition(edition2015)
                 .build();
 
         conformanceMethodReviewer.review(listing);
@@ -354,7 +358,7 @@ public class ConformanceMethodReviewerTest {
                                 .build())
                         .conformanceMethods(crcms)
                         .build())
-                .certificationEdition(get2015CertificationEdition())
+                .edition(edition2015)
                 .build();
 
         conformanceMethodReviewer.review(listing);
@@ -386,7 +390,7 @@ public class ConformanceMethodReviewerTest {
                                 .build())
                         .conformanceMethods(crcms)
                         .build())
-                .certificationEdition(get2015CertificationEdition())
+                .edition(edition2015)
                 .build();
 
         conformanceMethodReviewer.review(listing);
@@ -422,7 +426,7 @@ public class ConformanceMethodReviewerTest {
                                 .build())
                         .conformanceMethods(crcms)
                         .build())
-                .certificationEdition(get2015CertificationEdition())
+                .edition(edition2015)
                 .build();
         conformanceMethodReviewer.review(listing);
 
@@ -453,7 +457,7 @@ public class ConformanceMethodReviewerTest {
                                 .build())
                         .conformanceMethods(crcms)
                         .build())
-                .certificationEdition(get2015CertificationEdition())
+                .edition(edition2015)
                 .build();
         conformanceMethodReviewer.review(listing);
 
@@ -487,7 +491,7 @@ public class ConformanceMethodReviewerTest {
                         .conformanceMethods(crcms)
                         .build())
                 .certificationDate(DateUtil.toEpochMillis(LocalDate.parse("2022-05-01")))
-                .certificationEdition(get2015CertificationEdition())
+                .edition(edition2015)
                 .build();
 
         conformanceMethodReviewer.review(listing);
@@ -520,7 +524,7 @@ public class ConformanceMethodReviewerTest {
                         .conformanceMethods(crcms)
                         .build())
                 .certificationDate(DateUtil.toEpochMillis(LocalDate.parse("2022-06-02")))
-                .certificationEdition(get2015CertificationEdition())
+                .edition(edition2015)
                 .ics(null)
                 .build();
 
@@ -555,7 +559,7 @@ public class ConformanceMethodReviewerTest {
                         .conformanceMethods(crcms)
                         .build())
                 .certificationDate(DateUtil.toEpochMillis(LocalDate.parse("2022-06-02")))
-                .certificationEdition(get2015CertificationEdition())
+                .edition(edition2015)
                 .ics(InheritedCertificationStatus.builder()
                         .build())
                 .build();
@@ -591,7 +595,7 @@ public class ConformanceMethodReviewerTest {
                         .conformanceMethods(crcms)
                         .build())
                 .certificationDate(DateUtil.toEpochMillis(LocalDate.parse("2022-06-02")))
-                .certificationEdition(get2015CertificationEdition())
+                .edition(edition2015)
                 .ics(InheritedCertificationStatus.builder()
                         .parents(new ArrayList<CertifiedProduct>())
                         .build())
@@ -630,7 +634,7 @@ public class ConformanceMethodReviewerTest {
                         .conformanceMethods(crcms)
                         .build())
                 .certificationDate(DateUtil.toEpochMillis(LocalDate.parse("2022-06-02")))
-                .certificationEdition(get2015CertificationEdition())
+                .edition(edition2015)
                 .ics(InheritedCertificationStatus.builder()
                         .parent(CertifiedProduct.builder()
                                 .id(1L)
@@ -671,7 +675,7 @@ public class ConformanceMethodReviewerTest {
                         .conformanceMethods(crcms)
                         .build())
                 .certificationDate(DateUtil.toEpochMillis(LocalDate.parse("2022-06-02")))
-                .certificationEdition(get2015CertificationEdition())
+                .edition(edition2015)
                 .ics(InheritedCertificationStatus.builder()
                         .parent(CertifiedProduct.builder()
                                 .id(1L)
@@ -718,7 +722,7 @@ public class ConformanceMethodReviewerTest {
                         .conformanceMethods(crcms)
                         .build())
                 .certificationDate(DateUtil.toEpochMillis(LocalDate.parse("2022-06-02")))
-                .certificationEdition(get2015CertificationEdition())
+                .edition(edition2015)
                 .ics(InheritedCertificationStatus.builder()
                         .parent(CertifiedProduct.builder()
                                 .id(1L)
@@ -766,7 +770,7 @@ public class ConformanceMethodReviewerTest {
                         .conformanceMethods(crcms)
                         .build())
                 .certificationDate(DateUtil.toEpochMillis(LocalDate.parse("2022-06-02")))
-                .certificationEdition(get2015CertificationEdition())
+                .edition(edition2015)
                 .ics(InheritedCertificationStatus.builder()
                         .parent(CertifiedProduct.builder()
                                 .id(1L)
@@ -800,7 +804,7 @@ public class ConformanceMethodReviewerTest {
                                 .build())
                         .conformanceMethods(crcms)
                         .build())
-                .certificationEdition(get2015CertificationEdition())
+                .edition(edition2015)
                 .build();
         conformanceMethodReviewer.review(listing);
 
@@ -829,7 +833,7 @@ public class ConformanceMethodReviewerTest {
                         .criterion(getF3())
                         .conformanceMethods(crcms)
                         .build())
-                .certificationEdition(get2015CertificationEdition())
+                .edition(edition2015)
                 .build();
         conformanceMethodReviewer.review(listing);
 
@@ -857,7 +861,7 @@ public class ConformanceMethodReviewerTest {
                         .criterion(getF3())
                         .conformanceMethods(crcms)
                         .build())
-                .certificationEdition(get2015CertificationEdition())
+                .edition(edition2015)
                 .build();
         conformanceMethodReviewer.review(listing);
 
@@ -886,7 +890,7 @@ public class ConformanceMethodReviewerTest {
                         .criterion(getF3())
                         .conformanceMethods(crcms)
                         .build())
-                .certificationEdition(get2015CertificationEdition())
+                .edition(edition2015)
                 .build();
         conformanceMethodReviewer.review(listing);
 
@@ -913,7 +917,7 @@ public class ConformanceMethodReviewerTest {
                         .criterion(getF3())
                         .conformanceMethods(crcms)
                         .build())
-                .certificationEdition(get2015CertificationEdition())
+                .edition(edition2015)
                 .build();
         conformanceMethodReviewer.review(listing);
 
@@ -946,7 +950,7 @@ public class ConformanceMethodReviewerTest {
                                 .testToolVersion("1")
                                 .build()).collect(Collectors.toList()))
                         .build())
-                .certificationEdition(get2015CertificationEdition())
+                .edition(edition2015)
                 .build();
         conformanceMethodReviewer.review(listing);
 
@@ -975,7 +979,7 @@ public class ConformanceMethodReviewerTest {
                         .criterion(getF3())
                         .conformanceMethods(crcms)
                         .build())
-                .certificationEdition(get2015CertificationEdition())
+                .edition(edition2015)
                 .build();
         conformanceMethodReviewer.review(listing);
 
@@ -1009,7 +1013,7 @@ public class ConformanceMethodReviewerTest {
                                 .testToolVersion("1")
                                 .build()).collect(Collectors.toList()))
                         .build())
-                .certificationEdition(get2015CertificationEdition())
+                .edition(edition2015)
                 .build();
         conformanceMethodReviewer.review(listing);
 
@@ -1045,7 +1049,7 @@ public class ConformanceMethodReviewerTest {
                                         .build())
                                 .build()).collect(Collectors.toList()))
                         .build())
-                .certificationEdition(get2015CertificationEdition())
+                .edition(edition2015)
                 .build();
         conformanceMethodReviewer.review(listing);
 
@@ -1074,7 +1078,7 @@ public class ConformanceMethodReviewerTest {
                         .criterion(getF3())
                         .conformanceMethods(crcms)
                         .build())
-                .certificationEdition(get2015CertificationEdition())
+                .edition(edition2015)
                 .build();
         conformanceMethodReviewer.review(listing);
 
@@ -1110,7 +1114,7 @@ public class ConformanceMethodReviewerTest {
                                         .build())
                                 .build()).collect(Collectors.toList()))
                         .build())
-                .certificationEdition(get2015CertificationEdition())
+                .edition(edition2015)
                 .build();
         conformanceMethodReviewer.review(listing);
 
@@ -1180,7 +1184,7 @@ public class ConformanceMethodReviewerTest {
                                 .build())
                         .conformanceMethods(crcms)
                         .build())
-                .certificationEdition(get2015CertificationEdition())
+                .edition(edition2015)
                 .build();
 
         conformanceMethodReviewer.review(listing);
@@ -1195,12 +1199,5 @@ public class ConformanceMethodReviewerTest {
                 .number("170.315 (f)(3)")
                 .title("f3 title")
                 .build();
-    }
-
-    private Map<String, Object> get2015CertificationEdition() {
-        Map<String, Object> certEdition = new HashMap<String, Object>();
-        certEdition.put(CertifiedProductSearchDetails.EDITION_ID_KEY, 3L);
-        certEdition.put(CertifiedProductSearchDetails.EDITION_NAME_KEY, "2015");
-        return certEdition;
     }
 }

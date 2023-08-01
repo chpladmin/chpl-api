@@ -48,8 +48,8 @@ public class TestStandardRemovalReviewer extends PermissionBasedReviewer {
     }
 
     private String getListingEdition(CertifiedProductSearchDetails listing) {
-        return listing.getCertificationEdition().containsKey(CertifiedProductSearchDetails.EDITION_NAME_KEY)
-                ? listing.getCertificationEdition().get(CertifiedProductSearchDetails.EDITION_NAME_KEY).toString()
+        return listing.getEdition() != null
+                ? listing.getEdition().getName()
                 : "";
     }
 }

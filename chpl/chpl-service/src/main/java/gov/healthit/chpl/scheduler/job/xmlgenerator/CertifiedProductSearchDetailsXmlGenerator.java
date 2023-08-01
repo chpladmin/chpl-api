@@ -33,20 +33,6 @@ public class CertifiedProductSearchDetailsXmlGenerator extends XmlGenerator {
                     "accessibilityStandards", sw);
             createSimpleElement(cp.getCertificationDate(), "certificationDate", sw);
             createSimpleElement(cp.getCertificationDay(), "certificationDay", sw);
-            if (cp.getCertificationEdition() != null && cp.getCertificationEdition().size() > 0) {
-                sw.writeStartElement("certificationEdition");
-                for (Entry<String, Object> entry : cp.getCertificationEdition().entrySet()) {
-                    sw.writeStartElement("entry");
-                    if (entry.getKey() != null) {
-                        createSimpleElement(entry.getKey(), "key", sw);
-                    }
-                    if (entry.getValue() != null) {
-                        createSimpleElement(entry.getValue().toString(), "value", sw);
-                    }
-                    sw.writeEndElement();
-                }
-                sw.writeEndElement();
-            }
             CertificationStatusEventXmlGenerator.add(cp.getCertificationEvents(), "certificationEvents", sw);
             CertificationResultXmlGenerator.add(cp.getCertificationResults(), "certificationResults", sw);
             if (cp.getCertifyingBody() != null && cp.getCertifyingBody().size() > 0) {
@@ -91,6 +77,7 @@ public class CertifiedProductSearchDetailsXmlGenerator extends XmlGenerator {
             createSimpleElement(cp.getDecertificationDate(), "decertificationDate", sw);
             DeveloperXmlGenerator.addDeveloper(cp.getDeveloper(), "developer", sw);
             DirectReviewXmlGenerator.add(cp.getDirectReviews(), "directReviews", sw);
+            CertificationEditionXmlGenerator.add(cp.getEdition(), "edition", sw);
             InheritedCertificationStatusXmlGenerator.add(cp.getIcs(), "ics", sw);
             createSimpleElement(cp.getId(), "id", sw);
             createSimpleElement(cp.getMandatoryDisclosures(), "mandatoryDisclosures", sw);

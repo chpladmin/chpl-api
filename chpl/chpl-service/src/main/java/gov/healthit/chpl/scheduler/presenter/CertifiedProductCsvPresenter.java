@@ -182,7 +182,7 @@ public class CertifiedProductCsvPresenter implements CertifiedProductPresenter, 
     }
 
     protected String formatEdition(CertifiedProductSearchDetails listing) {
-        String edition = listing.getCertificationEdition().get(CertifiedProductSearchDetails.EDITION_NAME_KEY).toString();
+        String edition = listing.getEdition().getName();
         if (listing.getCuresUpdate() != null && listing.getCuresUpdate()) {
             edition = edition + CertificationEdition.CURES_SUFFIX;
         }

@@ -1,8 +1,5 @@
 package gov.healthit.chpl.upload.listing.normalizer;
 
-import java.util.HashMap;
-
-import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -40,25 +37,25 @@ public class CertificationEditionNormalizer {
     }
 
     private boolean doesListingHaveEditionYear(CertifiedProductSearchDetails listing) {
-        Long editionId = MapUtils.getLong(listing.getCertificationEdition(), CertifiedProductSearchDetails.EDITION_ID_KEY);
-        String year = MapUtils.getString(listing.getCertificationEdition(), CertifiedProductSearchDetails.EDITION_NAME_KEY);
+        Long editionId = listing.getEdition() == null ? null : listing.getEdition().getId();
+        String year = listing.getEdition() == null ? null : listing.getEdition().getName();
         return editionId == null && !StringUtils.isEmpty(year);
     }
 
     private boolean doesListingHaveEditionId(CertifiedProductSearchDetails listing) {
-        Long editionId = MapUtils.getLong(listing.getCertificationEdition(), CertifiedProductSearchDetails.EDITION_ID_KEY);
-        String year = MapUtils.getString(listing.getCertificationEdition(), CertifiedProductSearchDetails.EDITION_NAME_KEY);
+        Long editionId = listing.getEdition() == null ? null : listing.getEdition().getId();
+        String year = listing.getEdition() == null ? null : listing.getEdition().getName();
         return editionId != null && StringUtils.isEmpty(year);
     }
 
     private void updateListingFromEditionYear(CertifiedProductSearchDetails listing) {
-        String year = MapUtils.getString(listing.getCertificationEdition(), CertifiedProductSearchDetails.EDITION_NAME_KEY);
+        String year = listing.getEdition() == null ? null : listing.getEdition().getName();
         CertificationEdition foundEdition = editionDao.getByYear(year);
         populateListingEdition(listing, foundEdition);
     }
 
     private void updateListingFromEditionId(CertifiedProductSearchDetails listing) {
-        Long editionId = MapUtils.getLong(listing.getCertificationEdition(), CertifiedProductSearchDetails.EDITION_ID_KEY);
+        Long editionId = listing.getEdition() == null ? null : listing.getEdition().getId();
         CertificationEdition foundEdition = null;
         try {
             foundEdition = editionDao.getById(editionId);
@@ -86,9 +83,7 @@ public class CertificationEditionNormalizer {
 
     private void populateListingEdition(CertifiedProductSearchDetails listing, CertificationEdition edition) {
         if (edition != null) {
-            if (listing.getCertificationEdition() == null) {
-                listing.setCertificationEdition(new HashMap<String, Object>());
-            }
+            listing.setEdition(edition);
             listing.getCertificationEdition().put(CertifiedProductSearchDetails.EDITION_ID_KEY, edition.getId());
             listing.getCertificationEdition().put(CertifiedProductSearchDetails.EDITION_NAME_KEY, edition.getName());
         }

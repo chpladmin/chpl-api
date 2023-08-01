@@ -16,6 +16,7 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
 import gov.healthit.chpl.domain.CertificationCriterion;
+import gov.healthit.chpl.domain.CertificationEdition;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -118,7 +119,7 @@ public class FunctionalityTestedReviewerTest {
                 .name("func tested")
                 .build());
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .certificationEdition(create2015EditionMap())
+                .edition(create2015Edition())
                 .certificationResult(CertificationResult.builder()
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
@@ -149,7 +150,7 @@ public class FunctionalityTestedReviewerTest {
                 .name("func tested")
                 .build());
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .certificationEdition(create2015EditionMap())
+                .edition(create2015Edition())
                 .certificationResult(CertificationResult.builder()
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
@@ -181,7 +182,7 @@ public class FunctionalityTestedReviewerTest {
                 .build());
 
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .certificationEdition(create2015EditionMap())
+                .edition(create2015Edition())
                 .certificationResult(CertificationResult.builder()
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
@@ -216,7 +217,7 @@ public class FunctionalityTestedReviewerTest {
                 .build());
 
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .certificationEdition(create2015EditionMap())
+                .edition(create2015Edition())
                 .certificationResult(CertificationResult.builder()
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
@@ -248,7 +249,7 @@ public class FunctionalityTestedReviewerTest {
                 .name("")
                 .build());
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .certificationEdition(create2015EditionMap())
+                .edition(create2015Edition())
                 .certificationResult(CertificationResult.builder()
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
@@ -283,7 +284,7 @@ public class FunctionalityTestedReviewerTest {
                 .name("")
                 .build());
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .certificationEdition(create2015EditionMap())
+                .edition(create2015Edition())
                 .certificationResult(CertificationResult.builder()
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
@@ -315,7 +316,7 @@ public class FunctionalityTestedReviewerTest {
                 .name("")
                 .build());
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .certificationEdition(create2015EditionMap())
+                .edition(create2015Edition())
                 .certificationResult(CertificationResult.builder()
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
@@ -350,7 +351,7 @@ public class FunctionalityTestedReviewerTest {
                 .name("")
                 .build());
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .certificationEdition(create2015EditionMap())
+                .edition(create2015Edition())
                 .certificationResult(CertificationResult.builder()
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
@@ -394,7 +395,7 @@ public class FunctionalityTestedReviewerTest {
                 .build());
 
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                    .certificationEdition(create2015EditionMap())
+                    .edition(create2015Edition())
                 .certificationResult(CertificationResult.builder()
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
@@ -431,7 +432,7 @@ public class FunctionalityTestedReviewerTest {
                 .build());
 
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                    .certificationEdition(create2015EditionMap())
+                    .edition(create2015Edition())
                 .certificationResult(CertificationResult.builder()
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
@@ -463,7 +464,7 @@ public class FunctionalityTestedReviewerTest {
                 .name("another func tested")
                 .build());
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                    .certificationEdition(create2015EditionMap())
+                    .edition(create2015Edition())
                 .certificationResult(CertificationResult.builder()
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
@@ -535,10 +536,10 @@ public class FunctionalityTestedReviewerTest {
         return maps;
     }
 
-    private Map<String, Object> create2015EditionMap() {
-        Map<String, Object> editionMap = new HashMap<String, Object>();
-        editionMap.put(CertifiedProductSearchDetails.EDITION_ID_KEY, 3L);
-        editionMap.put(CertifiedProductSearchDetails.EDITION_NAME_KEY, "2015");
-        return editionMap;
+    private CertificationEdition create2015Edition() {
+        return CertificationEdition.builder()
+                .id(3L)
+                .name("2015")
+                .build();
     }
 }
