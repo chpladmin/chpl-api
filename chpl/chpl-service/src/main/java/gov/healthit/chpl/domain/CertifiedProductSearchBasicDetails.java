@@ -20,6 +20,7 @@ import gov.healthit.chpl.domain.compliance.DirectReview;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.util.LocalDateDeserializer;
 import gov.healthit.chpl.util.LocalDateSerializer;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -35,12 +36,16 @@ public class CertifiedProductSearchBasicDetails implements Serializable {
     /**
      * The internal ID of the certified product.
      */
+    @Schema(description = "The internal ID of the certified product.")
     private Long id;
 
     /**
      * The unique CHPL ID of the certified product. This variable is applicable to 2014 and 2015 Edition. New uploads to
      * CHPL will use the format: CertEdYr.ATL.ACB.Dev.Prod.Ver.ICS.AddS.Date
      */
+    @Schema(description = "The unique CHPL ID of the certified product. This variable is applicable to "
+            + "2014 and 2015 Edition. New uploads to CHPL will use the format: "
+            + "CertEdYr.ATL.ACB.Dev.Prod.Ver.ICS.AddS.Date")
     private String chplProductNumber;
 
     /**
@@ -48,12 +53,18 @@ public class CertifiedProductSearchBasicDetails implements Serializable {
      * public. This variable is applicable to 2014 Edition. Fully qualified URL which is reachable via web browser
      * validation and verification.
      */
+    @Schema(description = "A hyperlink to the test results used to certify the Complete EHRs and/or EHR Modules "
+            + "that can be accessed by the public. This variable is applicable to 2014 Edition. Fully qualified "
+            + "URL which is reachable via web browser validation and verification.")
     private String reportFileLocation;
 
     /**
      * Hyperlink to FULL Usability Test Report meeting all the SED requirements. This variable is applicable for 2014
      * and 2015 Edition. Fully qualified URL which is reachable via web browser validation and verification.
      */
+    @Schema(description = "Hyperlink to FULL Usability Test Report meeting all the SED requirements. This variable "
+            + "is applicable for 2014 and 2015 Edition. Fully qualified URL which is reachable via web browser "
+            + "validation and verification.")
     private String sedReportFileLocation;
 
     /**
