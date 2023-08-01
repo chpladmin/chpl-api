@@ -572,32 +572,6 @@ public class CertifiedProductDAO extends BaseDAOImpl {
     }
 
     @Transactional(readOnly = true)
-    public List<CertifiedProduct> getDetailsByVersionAndAcbIds(final Long versionId,
-            final List<Long> acbIds) {
-        Query query = entityManager.createQuery(
-                "from CertifiedProductDetailsEntity WHERE (NOT deleted = true) and "
-                        + "certification_body_id IN :idList and product_version_id = :versionId",
-                        CertifiedProductDetailsEntity.class);
-        query.setParameter("idList", acbIds);
-        query.setParameter("versionId", versionId);
-        List<CertifiedProductDetailsEntity> results = query.getResultList();
-
-        List<CertifiedProduct> dtoResults = new ArrayList<CertifiedProduct>(results.size());
-        for (CertifiedProductDetailsEntity result : results) {
-            CertifiedProduct cp = new CertifiedProduct();
-            cp.setCertificationDate(result.getCertificationDate().getTime());
-            cp.setCertificationStatus(result.getCertificationStatusName());
-            cp.setCuresUpdate(result.getCuresUpdate());
-            cp.setChplProductNumber(result.getChplProductNumber());
-            cp.setEdition(result.getYear());
-            cp.setId(result.getId());
-            cp.setLastModifiedDate(result.getLastModifiedDate().getTime());
-            dtoResults.add(cp);
-        }
-        return dtoResults;
-    }
-
-    @Transactional(readOnly = true)
     public List<CertifiedProductSummaryDTO> getSummaryByUrl(final String url, final UrlType urlType) {
         String queryStr = "SELECT cp "
                 + "FROM CertifiedProductSummaryEntity cp "
