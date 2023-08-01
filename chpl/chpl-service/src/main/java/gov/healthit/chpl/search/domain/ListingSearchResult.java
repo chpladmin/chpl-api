@@ -9,6 +9,7 @@ import java.util.Set;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -123,7 +124,9 @@ public class ListingSearchResult implements Serializable {
 
     @JsonIgnore
     public String getDerivedEdition() {
-        return getEdition().getName() + (BooleanUtils.isTrue(getCuresUpdate()) ? CertificationEdition.CURES_SUFFIX : "");
+        return getEdition() == null || StringUtils.isEmpty(getEdition().getName())
+                ? null
+                : getEdition().getName() + (BooleanUtils.isTrue(getCuresUpdate()) ? CertificationEdition.CURES_SUFFIX : "");
     }
 
     @Getter

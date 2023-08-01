@@ -65,18 +65,20 @@ public class IncumbentDevelopersStatisticsCalculator {
         HashSet<String> developers2014 = new HashSet<String>();
         HashSet<String> developers2015 = new HashSet<String>();
         for (ListingSearchResult listing : certifiedProducts) {
-            switch (listing.getEdition().getName()) {
-            case "2011":
-                developers2011.add(listing.getDeveloper().getName());
-                break;
-            case "2014":
-                developers2014.add(listing.getDeveloper().getName());
-                break;
-            case "2015":
-                developers2015.add(listing.getDeveloper().getName());
-                break;
-            default:
-                LOGGER.info("Listing has no edition");
+            if (listing.getEdition() != null) {
+                switch (listing.getEdition().getName()) {
+                case "2011":
+                    developers2011.add(listing.getDeveloper().getName());
+                    break;
+                case "2014":
+                    developers2014.add(listing.getDeveloper().getName());
+                    break;
+                case "2015":
+                    developers2015.add(listing.getDeveloper().getName());
+                    break;
+                default:
+                    LOGGER.info("Listing has no edition");
+                }
             }
         }
 
