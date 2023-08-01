@@ -58,8 +58,6 @@ import gov.healthit.chpl.listing.measure.MeasureDAO;
 import gov.healthit.chpl.optionalStandard.dao.OptionalStandardDAO;
 import gov.healthit.chpl.optionalStandard.domain.OptionalStandard;
 import gov.healthit.chpl.optionalStandard.entity.OptionalStandardEntity;
-import gov.healthit.chpl.qmsStandard.QmsStandard;
-import gov.healthit.chpl.qmsStandard.QmsStandardDAO;
 import gov.healthit.chpl.surveillance.report.QuarterDAO;
 import gov.healthit.chpl.surveillance.report.domain.Quarter;
 import lombok.extern.log4j.Log4j2;
@@ -76,7 +74,6 @@ public class DimensionalDataManager {
     private TestStandardDAO testStandardDao;
     private TestProcedureDAO testProcedureDao;
     private TestDataDAO testDataDao;
-    private QmsStandardDAO qmsDao;
     private TargetedUserDAO tuDao;
     private DeveloperStatusDAO devStatusDao;
     private SurveillanceDAO survDao;
@@ -95,7 +92,7 @@ public class DimensionalDataManager {
                                   EducationTypeDAO educationTypeDao, AgeRangeDAO ageRangeDao,
                                   TestStandardDAO testStandardDao, TestProcedureDAO testProcedureDao,
                                   TestDataDAO testDataDao,
-                                  QmsStandardDAO qmsDao, TargetedUserDAO tuDao, DeveloperStatusDAO devStatusDao,
+                                  TargetedUserDAO tuDao, DeveloperStatusDAO devStatusDao,
                                   SurveillanceDAO survDao, QuarterDAO quarterDao,
                                   ProductDAO productDao, DeveloperDAO devDao, MeasureDAO measureDao,
                                   ListingMeasureDAO listingMeasureDao, CQMCriterionDAO cqmCriterionDao,
@@ -109,7 +106,6 @@ public class DimensionalDataManager {
         this.testStandardDao = testStandardDao;
         this.testProcedureDao = testProcedureDao;
         this.testDataDao = testDataDao;
-        this.qmsDao = qmsDao;
         this.tuDao = tuDao;
         this.devStatusDao = devStatusDao;
         this.survDao = survDao;
@@ -194,16 +190,6 @@ public class DimensionalDataManager {
         }
 
         return statuses;
-    }
-
-    @Deprecated
-    public Set<KeyValueModel> getQmsStandards() {
-        LOGGER.debug("Getting all qms standards from the database (not cached).");
-
-        List<QmsStandard> qmsStandards = this.qmsDao.getAll();
-        return qmsStandards.stream()
-            .map(qms -> new KeyValueModel(qms.getId(), qms.getName()))
-            .collect(Collectors.toSet());
     }
 
     public Set<KeyValueModel> getTargetedUesrs() {
@@ -352,7 +338,6 @@ public class DimensionalDataManager {
     @Transactional
     @Cacheable(value = CacheNames.EDITIONS)
     public List<CertificationEdition> getCertificationEditions() {
-        List<CertificationEdition> result = new ArrayList<CertificationEdition>();
         return certEditionDao.findAll();
     }
 
