@@ -95,6 +95,9 @@ public class CertificationResultTestToolService {
     }
 
     private Optional<CertificationResultTestTool> getMatchingItemInList(CertificationResultTestTool crtt, List<CertificationResultTestTool> certificationResultTestTools) {
+        if (CollectionUtils.isEmpty(certificationResultTestTools)) {
+            return Optional.empty();
+        }
         return certificationResultTestTools.stream()
                 .filter(certificationResultTestTool ->
                         certificationResultTestTool != null ? certificationResultTestTool.getTestTool().getId().equals(crtt.getTestTool().getId()) : false)
