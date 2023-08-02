@@ -1,5 +1,7 @@
 package gov.healthit.chpl.upload.listing.normalizer;
 
+import java.util.HashMap;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -84,6 +86,9 @@ public class CertificationEditionNormalizer {
     private void populateListingEdition(CertifiedProductSearchDetails listing, CertificationEdition edition) {
         if (edition != null) {
             listing.setEdition(edition);
+            if (listing.getCertificationEdition() == null) {
+                listing.setCertificationEdition(new HashMap<String, Object>());
+            }
             listing.getCertificationEdition().put(CertifiedProductSearchDetails.EDITION_ID_KEY, edition.getId());
             listing.getCertificationEdition().put(CertifiedProductSearchDetails.EDITION_NAME_KEY, edition.getName());
         }

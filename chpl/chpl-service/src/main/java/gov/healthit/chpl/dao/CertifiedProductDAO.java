@@ -54,7 +54,7 @@ public class CertifiedProductDAO extends BaseDAOImpl {
             //foreign keys
             entity.setCertificationBodyId(MapUtils.getLong(listing.getCertifyingBody(), CertifiedProductSearchDetails.ACB_ID_KEY));
             entity.setProductVersionId(listing.getVersion().getId());
-            entity.setCertificationEditionId(listing.getEdition().getId());
+            entity.setCertificationEditionId(listing.getEdition() != null ? listing.getEdition().getId() : null);
             //other listing fields
             entity.setAcbCertificationId(listing.getAcbCertificationId());
             entity.setProductCode(chplProductNumberUtil.getProductCode(listing.getChplProductNumber()));

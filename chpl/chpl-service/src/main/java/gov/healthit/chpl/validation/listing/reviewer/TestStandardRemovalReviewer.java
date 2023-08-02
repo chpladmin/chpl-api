@@ -36,7 +36,9 @@ public class TestStandardRemovalReviewer extends PermissionBasedReviewer {
         String message = msgUtil.getMessage("listing.criteria.testStandardNotAllowed",
                 Util.formatCriteriaNumber(certResult.getCriterion()),
                 testStandardName);
-        if ((certResult.getOptionalStandards() != null && certResult.getOptionalStandards().size() > 0) || isListing2015Edition(listing)) {
+        if ((certResult.getOptionalStandards() != null && certResult.getOptionalStandards().size() > 0)
+                || listing.getEdition() == null
+                || isListing2015Edition(listing)) {
             addBusinessCriterionError(listing, certResult, message);
         } else {
             listing.addWarningMessage(message);

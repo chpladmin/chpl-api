@@ -158,6 +158,7 @@ public class CertifiedProductSearchDetails implements Serializable {
     @XmlTransient
     private Map<String, Object> certificationEdition = new HashMap<String, Object>();
 
+    @XmlElement(required = false, nillable = true)
     private CertificationEdition edition;
 
     /**

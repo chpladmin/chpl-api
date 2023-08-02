@@ -182,11 +182,15 @@ public class CertifiedProductCsvPresenter implements CertifiedProductPresenter, 
     }
 
     protected String formatEdition(CertifiedProductSearchDetails listing) {
-        String edition = listing.getEdition().getName();
-        if (listing.getCuresUpdate() != null && listing.getCuresUpdate()) {
-            edition = edition + CertificationEdition.CURES_SUFFIX;
+        if (listing.getEdition() == null) {
+            return "";
+        } else {
+            String edition = listing.getEdition().getName();
+            if (listing.getCuresUpdate() != null && listing.getCuresUpdate()) {
+                edition = edition + CertificationEdition.CURES_SUFFIX;
+            }
+            return edition;
         }
-        return edition;
     }
 
     protected String formatInactiveDate(CertifiedProductSearchDetails listing) {

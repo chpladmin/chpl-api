@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.questionableactivity.QuestionableActivityTriggerConcept;
 import gov.healthit.chpl.questionableactivity.domain.QuestionableActivityListing;
 
@@ -15,7 +16,8 @@ public class Updated2014EditionListingActivity implements ListingActivity {
     @Override
     public List<QuestionableActivityListing> check(CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing) {
         QuestionableActivityListing activity = null;
-        if (origListing.getEdition().getName().equals("2014")) {
+        if (origListing.getEdition() != null && origListing.getEdition().getName()
+                .equals(CertificationEditionConcept.CERTIFICATION_EDITION_2014.getYear())) {
             activity = new QuestionableActivityListing();
             activity.setBefore(null);
             activity.setAfter(null);

@@ -129,11 +129,15 @@ public class SvapActivityPresenter implements AutoCloseable {
     }
 
     private String formatEdition(CertifiedProductSearchDetails listing) {
-        String edition = listing.getEdition().getName();
-        if (listing.getCuresUpdate() != null && listing.getCuresUpdate()) {
-            edition = edition + CertificationEdition.CURES_SUFFIX;
+        if (listing.getEdition() == null) {
+            return "";
+        } else {
+            String edition = listing.getEdition().getName();
+            if (listing.getCuresUpdate() != null && listing.getCuresUpdate()) {
+                edition = edition + CertificationEdition.CURES_SUFFIX;
+            }
+            return edition;
         }
-        return edition;
     }
 
     private String formatReplaced(Svap svap) {

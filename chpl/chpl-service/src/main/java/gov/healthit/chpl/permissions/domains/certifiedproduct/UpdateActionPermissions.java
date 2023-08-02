@@ -36,7 +36,8 @@ public class UpdateActionPermissions extends ActionPermissions {
                 LOGGER.error("Unable to parse the ACB ID from the listing update request.", ex);
                 return false;
             }
-            return !listing.getEdition().getName().equalsIgnoreCase("2014") && isAcbValidForCurrentUser(acbId);
+            return (listing.getEdition() == null || !listing.getEdition().getName().equalsIgnoreCase("2014"))
+                    && isAcbValidForCurrentUser(acbId);
         } else {
             return false;
         }

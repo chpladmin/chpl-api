@@ -406,9 +406,13 @@ public abstract class ActivitiesAndOutcomesWorksheetBuilder {
             if (determineIfSurveillanceHappenedDuringQuarter("Q4", quarterlyReports, surv)) {
                 addDataCell(workbook, row, COL_Q4, "X");
             }
-            String edition = listing.getEdition().getName();
-            if (listing.getCuresUpdate() != null && listing.getCuresUpdate()) {
-                edition += CertificationEdition.CURES_SUFFIX;
+
+            String edition = "";
+            if (listing.getEdition() != null) {
+                edition = listing.getEdition().getName();
+                if (listing.getCuresUpdate() != null && listing.getCuresUpdate()) {
+                    edition += CertificationEdition.CURES_SUFFIX;
+                }
             }
             addDataCell(workbook, row, COL_CERT_EDITION, edition);
             addDataCell(workbook, row, COL_DEVELOPER_NAME, listing.getDeveloper().getName());

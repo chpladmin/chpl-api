@@ -39,7 +39,8 @@ public class SvapReviewer implements ComparisonReviewer {
     public void review(CertifiedProductSearchDetails existingListing, CertifiedProductSearchDetails updatedListing) {
         // Make sure there are no SVAPs for non-2015 listings
 
-        if (!isListing2015Edition(existingListing)) {
+        if (existingListing.getEdition() != null
+                && !isListing2015Edition(existingListing)) {
             updatedListing.getCertificationResults().stream()
                     .filter(cr -> cr.getSvaps() != null && cr.getSvaps().size() > 0)
                     .forEach(cr -> updatedListing.addBusinessErrorMessage(
