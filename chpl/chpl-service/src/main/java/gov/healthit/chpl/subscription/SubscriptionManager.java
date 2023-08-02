@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -204,19 +205,30 @@ public class SubscriptionManager {
     }
 
     @Transactional
-    public void deleteSubscription(Long subscriptionId) {
+    public void deleteSubscription(Subscriber subscriber, Long subscriptionId) {
         observationDao.deleteObservationsForSubscription(subscriptionId);
         subscriptionDao.deleteSubscription(subscriptionId);
+        deleteSubscriberIfNoRemainingSubscriptions(subscriber);
     }
 
     @Transactional
-    public void deleteSubscriptions(UUID subscriberId, Long subscribedObjectTypeId, Long subscribedObjectId) throws EntityRetrievalException {
-        if (subscriberDao.getSubscriberById(subscriberId) == null) {
-            throw new EntityRetrievalException("No subscriber matching " + subscriberId + " was found.");
+    public void deleteSubscriptions(Subscriber subscriber, Long subscribedObjectTypeId, Long subscribedObjectId) throws EntityRetrievalException {
+        if (subscriber == null
+                || subscriber.getId() == null
+                || subscriberDao.getSubscriberById(subscriber.getId()) == null) {
+            throw new EntityRetrievalException("No subscriber matching " + subscriber.getId() + " was found.");
         }
 
-        observationDao.deleteObservationsForSubscribedObject(subscriberId, subscribedObjectTypeId, subscribedObjectId);
-        subscriptionDao.deleteSubscriptions(subscriberId, subscribedObjectTypeId, subscribedObjectId);
+        observationDao.deleteObservationsForSubscribedObject(subscriber.getId(), subscribedObjectTypeId, subscribedObjectId);
+        subscriptionDao.deleteSubscriptions(subscriber.getId(), subscribedObjectTypeId, subscribedObjectId);
+        deleteSubscriberIfNoRemainingSubscriptions(subscriber);
+    }
+
+    private void deleteSubscriberIfNoRemainingSubscriptions(Subscriber subscriber) {
+        List<Subscription> subscriptions = subscriptionDao.getSubscriptionsForSubscriber(subscriber.getId());
+        if (CollectionUtils.isEmpty(subscriptions)) {
+            subscriberDao.deleteSubscriber(subscriber.getId());
+        }
     }
 
     @Transactional

@@ -112,8 +112,8 @@ public class SubscriptionController {
         //Without it, you could put in a URL like DELETE /subscriptions/7 and delete a subscription that doesn't belong to you
 
         //throw 404 if invalid subscriber ID
-        subscriptionManager.getSubscriber(UUID.fromString(subscriberId));
-        subscriptionManager.deleteSubscription(subscriptionId);
+        Subscriber subscriber = subscriptionManager.getSubscriber(UUID.fromString(subscriberId));
+        subscriptionManager.deleteSubscription(subscriber, subscriptionId);
     }
 
     @Operation(summary = "Delete all subscriptions on a particular CHPL object for a subscriber. ",
@@ -129,7 +129,10 @@ public class SubscriptionController {
         if (!ff4j.check(FeatureList.SUBSCRIPTIONS)) {
             throw new NotImplementedException("The subscriptions feature is not yet implemented.");
         }
-        subscriptionManager.deleteSubscriptions(UUID.fromString(subscriberId), subscribedObjectTypeId, subscribedObjectId);
+        Subscriber subscriber = Subscriber.builder()
+                .id(UUID.fromString(subscriberId))
+                .build();
+        subscriptionManager.deleteSubscriptions(subscriber, subscribedObjectTypeId, subscribedObjectId);
     }
 
     @Operation(summary = "Subscribe to periodic notifications about changes to a specific item in the CHPL. "
