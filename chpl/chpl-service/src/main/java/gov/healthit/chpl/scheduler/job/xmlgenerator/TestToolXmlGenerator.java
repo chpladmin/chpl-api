@@ -11,8 +11,8 @@ public class TestToolXmlGenerator extends XmlGenerator {
             sw.writeStartElement(rootNodeName);
             createSimpleElement(testTool.getEndDay(), "endDay", sw);
             createSimpleElement(testTool.getId(), "id", sw);
-            createSimpleElement(testTool.getRequiredDay(), "requiredDay", sw);
             createSimpleElement(testTool.getRegulatoryTextCitation(), "regulatoryTextCitation", sw);
+            createSimpleElement(testTool.getRequiredDay(), "requiredDay", sw);
             RuleXmlGenerator.add(testTool.getRule(), "rule", sw);
             createSimpleElement(testTool.getStartDay(), "startDay", sw);
             createSimpleElement(testTool.getValue(), "value", sw);
