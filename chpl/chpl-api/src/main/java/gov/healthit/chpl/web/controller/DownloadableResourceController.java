@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
+import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.compliance.surveillance.SurveillanceManager;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.svap.manager.SvapManager;
@@ -35,6 +37,7 @@ public class DownloadableResourceController {
     private SurveillanceManager survManager;
     private SvapManager svapManager;
     private FileUtils fileUtils;
+    private FF4j ff4j;
 
     @Value("${directReviewsReportName}")
     private String directReviewsReportName;
@@ -47,12 +50,14 @@ public class DownloadableResourceController {
             ErrorMessageUtil msgUtil,
             SurveillanceManager survManager,
             SvapManager svapManager,
-            FileUtils fileUtils) {
+            FileUtils fileUtils,
+            FF4j ff4j) {
         this.env = env;
         this.msgUtil = msgUtil;
         this.survManager = survManager;
         this.svapManager = svapManager;
         this.fileUtils = fileUtils;
+        this.ff4j = ff4j;
     }
 
     @Operation(summary = "Download the entire CHPL as XML.",
@@ -101,7 +106,11 @@ public class DownloadableResourceController {
             } else if (edition.equals("2014")) {
                 toDownload = fileUtils.getDownloadFile(env.getProperty("schemaCsv2014Name"));
             } else if (edition.equals("2015")) {
-                toDownload = fileUtils.getDownloadFile(env.getProperty("schemaCsv2015Name"));
+                if (ff4j.check(FeatureList.ERD_PHASE_3)) {
+                    toDownload = fileUtils.getDownloadFile(env.getProperty("schemaCsv2015Name.postErdPhase3"));
+                } else {
+                    toDownload = fileUtils.getDownloadFile(env.getProperty("schemaCsv2015Name"));
+                }
             }
 
             if (!toDownload.exists()) {
