@@ -304,6 +304,9 @@ public class ListingService {
     }
 
     private CertificationEdition getEdition(Long editionId) {
+        if (editionId == null) {
+            return null;
+        }
         Optional<CertificationEdition> certEdition = dimensionalDataManager.getCertificationEditions().stream()
                 .filter(ed -> ed.getId().equals(editionId))
                 .findAny();
