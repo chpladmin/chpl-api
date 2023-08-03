@@ -258,7 +258,7 @@ public class ListingService {
         if (listing.getDeveloper() != null && listing.getDeveloper().getId() != null) {
             drs = drService.getDirectReviewsRelatedToListing(listing.getId(),
                     listing.getDeveloper().getId(),
-                    listing.getEdition().getName(),
+                    listing.getEdition() != null ?listing.getEdition().getName() : null,
                     listing.getCertificationEvents(), LOGGER);
         }
         listing.setDirectReviews(drs.stream()
@@ -323,6 +323,9 @@ public class ListingService {
     }
 
     private CertificationEdition getCertificationEdition(CertifiedProductDetailsDTO dto) {
+        if (dto.getCertificationEditionId() == null) {
+            return null;
+        }
         return CertificationEdition.builder()
                 .id(dto.getCertificationEditionId())
                 .certificationEditionId(dto.getCertificationEditionId())
@@ -333,6 +336,9 @@ public class ListingService {
 
     @Deprecated
     private Map<String, Object> getCertificationEditionDeprecated(CertifiedProductDetailsDTO dto) {
+        if (dto.getCertificationEditionId() == null) {
+            return null;
+        }
         Map<String, Object> certificationEdition = new HashMap<String, Object>();
         certificationEdition.put("id", dto.getCertificationEditionId());
         certificationEdition.put("name", dto.getYear());

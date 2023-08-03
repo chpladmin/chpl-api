@@ -187,4 +187,14 @@ public class CertificationEditionNormalizerTest {
         normalizer.normalize(listing);
         assertNull(listing.getEdition());
     }
+
+    @Test
+    public void normalize_editionMissingNoEditionCodeInChplProductNumber_editionNull() throws EntityRetrievalException {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .chplProductNumber(ChplProductNumberUtil.EDITION_CODE_NONE + ".07.04.2663.ABCD.R2.01.0.200511")
+                .build();
+
+        normalizer.normalize(listing);
+        assertNull(listing.getEdition());
+    }
 }

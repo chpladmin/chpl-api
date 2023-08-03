@@ -19,7 +19,7 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 public class EditionCodeReviewer implements Reviewer {
     private static final String[] EDITION_CODES = {
-            "15"
+            "15", ChplProductNumberUtil.EDITION_CODE_NONE
     };
     private ChplProductNumberUtil chplProductNumberUtil;
     private ValidationUtils validationUtils;
@@ -50,16 +50,27 @@ public class EditionCodeReviewer implements Reviewer {
             LOGGER.warn("Cannot find edition code in " + chplProductNumber);
         }
 
-        if (isValidEditionCode(listing.getChplProductNumber()) && !Arrays.asList(EDITION_CODES).contains(editionCode)) {
+        if (!StringUtils.isEmpty(editionCode) && !Arrays.asList(EDITION_CODES).contains(editionCode)) {
             listing.addDataErrorMessage(msgUtil.getMessage("listing.invalidEditionCode",
                     editionCode, Stream.of(EDITION_CODES).collect(Collectors.joining(","))));
+        } else {
+            reviewEditionYearMatchesEditionCode(listing, editionCode);
         }
+    }
 
+    private void reviewEditionYearMatchesEditionCode(CertifiedProductSearchDetails listing,
+            String editionCode) {
         String editionYear = listing.getEdition() == null ? null : listing.getEdition().getName();
-        if (isValidEditionCode(listing.getChplProductNumber())
+
+        if (StringUtils.isEmpty(editionYear)
+                && !editionCode.equals(ChplProductNumberUtil.EDITION_CODE_NONE)) {
+            listing.addDataErrorMessage(
+                    msgUtil.getMessage("listing.certificationEditionMismatch", editionCode, "<none>"));
+        } else if (isValidEditionCode(listing.getChplProductNumber())
                 && !StringUtils.isEmpty(editionYear)
                 && !convertEditionCodeToYear(editionCode).equals(editionYear)) {
-            listing.addDataErrorMessage(msgUtil.getMessage("listing.certificationEditionMismatch", editionCode, editionYear));
+            listing.addDataErrorMessage(
+                    msgUtil.getMessage("listing.certificationEditionMismatch", editionCode, editionYear));
         }
     }
 

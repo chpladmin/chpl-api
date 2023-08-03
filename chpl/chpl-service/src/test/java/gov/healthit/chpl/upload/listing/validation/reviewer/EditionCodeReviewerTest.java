@@ -17,6 +17,7 @@ import gov.healthit.chpl.util.ValidationUtils;
 public class EditionCodeReviewerTest {
     private static final String INVALID_EDITION_CODE = "The edition code %s is not one of the allowed edition codes %s.";
     private static final String MISMATCHED_CERT_EDITION = "The edition code from the listing %s does not match the certification edition of the listing %s.";
+    private static final String ALLOWED_EDITION_CODES = "15," + ChplProductNumberUtil.EDITION_CODE_NONE;
 
     private ErrorMessageUtil errorMessageUtil;
     private EditionCodeReviewer reviewer;
@@ -24,34 +25,53 @@ public class EditionCodeReviewerTest {
     @Before
     public void setup() {
         errorMessageUtil = Mockito.mock(ErrorMessageUtil.class);
+        Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.certificationEditionMismatch"), ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
+            .thenAnswer(i -> String.format(MISMATCHED_CERT_EDITION, i.getArgument(1), i.getArgument(2)));
+        Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.invalidEditionCode"), ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
+            .thenAnswer(i -> String.format(INVALID_EDITION_CODE, i.getArgument(1), i.getArgument(2)));
+
+
         reviewer = new EditionCodeReviewer(new ChplProductNumberUtil(), new ValidationUtils(), errorMessageUtil);
     }
 
     @Test
-    public void review_nullEditionValidCode_noError() {
+    public void review_nullEditionValidCode_hasError() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .chplProductNumber("15.04.04.2526.WEBe.06.00.1.210101")
                 .edition(null)
                 .build();
         reviewer.review(listing);
 
-        assertEquals(0, listing.getErrorMessages().size());
+        assertEquals(1, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(String.format(MISMATCHED_CERT_EDITION, "15", "<none>")));
     }
 
     @Test
-    public void review_nullEditionEmptyCode_noError() {
+    public void review_nullEditionInvalidCode_hasErrors() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .chplProductNumber("22.04.04.2526.WEBe.06.00.1.210101")
+                .edition(null)
+                .build();
+        reviewer.review(listing);
+
+        assertEquals(1, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(String.format(INVALID_EDITION_CODE, "22", ALLOWED_EDITION_CODES)));
+    }
+
+    @Test
+    public void review_nullEditionEmptyCode_hasError() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .chplProductNumber(".04.04.2526.WEBe.06.00.1.210101")
                 .edition(null)
                 .build();
         reviewer.review(listing);
 
-        assertEquals(0, listing.getErrorMessages().size());
+        assertEquals(1, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(String.format(MISMATCHED_CERT_EDITION, "", "<none>")));
     }
 
-
     @Test
-    public void review_emptyEditionValidCode_noError() {
+    public void review_emptyEditionValidCode_hasError() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .chplProductNumber("15.04.04.2526.WEBe.06.00.1.210101")
                 .edition(CertificationEdition.builder().name("").build())
@@ -59,7 +79,8 @@ public class EditionCodeReviewerTest {
 
         reviewer.review(listing);
 
-        assertEquals(0, listing.getErrorMessages().size());
+        assertEquals(1, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(String.format(MISMATCHED_CERT_EDITION, "15", "<none>")));
     }
 
     @Test
@@ -85,10 +106,7 @@ public class EditionCodeReviewerTest {
     }
 
     @Test
-    public void review_mismatchedEdition_hasError() {
-        Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.certificationEditionMismatch"), ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
-            .thenAnswer(i -> String.format(MISMATCHED_CERT_EDITION, i.getArgument(1), i.getArgument(2)));
-
+    public void review_mismatchedEditionAndCode_hasError() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .chplProductNumber("15.04.04.2526.WEBe.06.00.1.210101")
                 .edition(CertificationEdition.builder().name("2014").build())
@@ -101,7 +119,7 @@ public class EditionCodeReviewerTest {
     }
 
     @Test
-    public void review_mismatchedEditionInvalidChplProductNumber_noError() {
+    public void review_mismatchedEditionInvalidChplProductNumber_hasError() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .chplProductNumber("ED.04.04.2526.WEBe.06.00.1.210101")
                 .edition(CertificationEdition.builder().name("2014").build())
@@ -109,14 +127,24 @@ public class EditionCodeReviewerTest {
 
         reviewer.review(listing);
 
-        assertEquals(0, listing.getErrorMessages().size());
+        assertEquals(1, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(String.format(INVALID_EDITION_CODE, "ED", ALLOWED_EDITION_CODES)));
+    }
+
+    @Test
+    public void review_editionlessCertEditionCodeWithEdition_hasError() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .chplProductNumber(ChplProductNumberUtil.EDITION_CODE_NONE + ".04.04.2526.WEBe.06.00.1.210101")
+                .edition(CertificationEdition.builder().name("2014").build())
+                .build();
+        reviewer.review(listing);
+
+        assertEquals(1, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(String.format(MISMATCHED_CERT_EDITION, "XX", "2014")));
     }
 
     @Test
     public void review_invalidCodeNullEdition_hasError() {
-        Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.invalidEditionCode"), ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
-            .thenAnswer(i -> String.format(INVALID_EDITION_CODE, i.getArgument(1), i.getArgument(2)));
-
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .chplProductNumber("11.04.04.2526.WEBe.06.00.1.210101")
                 .edition(null)
@@ -124,7 +152,7 @@ public class EditionCodeReviewerTest {
         reviewer.review(listing);
 
         assertEquals(1, listing.getErrorMessages().size());
-        assertTrue(listing.getErrorMessages().contains(String.format(INVALID_EDITION_CODE, "11", "15")));
+        assertTrue(listing.getErrorMessages().contains(String.format(INVALID_EDITION_CODE, "11", ALLOWED_EDITION_CODES)));
     }
 
     @Test
@@ -132,6 +160,17 @@ public class EditionCodeReviewerTest {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .chplProductNumber("15.04.04.2526.WEBe.06.00.1.210101")
                 .edition(CertificationEdition.builder().name("2015").build())
+                .build();
+        reviewer.review(listing);
+
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_editionlessCertEditionCodeWithNullEdition_noError() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .chplProductNumber(ChplProductNumberUtil.EDITION_CODE_NONE + ".04.04.2526.WEBe.06.00.1.210101")
+                .edition(null)
                 .build();
         reviewer.review(listing);
 

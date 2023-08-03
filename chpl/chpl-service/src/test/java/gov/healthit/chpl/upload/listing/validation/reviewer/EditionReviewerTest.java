@@ -25,13 +25,13 @@ public class EditionReviewerTest {
         errorMessageUtil = Mockito.mock(ErrorMessageUtil.class);
 
         Mockito.when(errorMessageUtil.getMessage("listing.missingEdition"))
-        .thenReturn(MISSING_EDITION);
+            .thenReturn(MISSING_EDITION);
 
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.missingEditionYear")))
-        .thenReturn(MISSING_YEAR);
+            .thenReturn(MISSING_YEAR);
 
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.invalidEdition"), ArgumentMatchers.anyString()))
-        .thenAnswer(i -> String.format(INVALID_EDITION, i.getArgument(1), ""));
+            .thenAnswer(i -> String.format(INVALID_EDITION, i.getArgument(1), ""));
 
         reviewer = new EditionReviewer(errorMessageUtil);
     }

@@ -76,7 +76,8 @@ public class CertificationEditionNormalizer {
 
     private void updateEditionFromChplProductNumber(CertifiedProductSearchDetails listing) {
         String editionCodeFromChplProductNumber = chplProductNumberUtil.getCertificationEditionCode(listing.getChplProductNumber());
-        if (!StringUtils.isEmpty(editionCodeFromChplProductNumber)) {
+        if (!StringUtils.isEmpty(editionCodeFromChplProductNumber)
+                && !editionCodeFromChplProductNumber.equals(ChplProductNumberUtil.EDITION_CODE_NONE)) {
             String year = "20" + editionCodeFromChplProductNumber;
             CertificationEdition foundEdition = editionDao.getByYear(year);
             populateListingEdition(listing, foundEdition);

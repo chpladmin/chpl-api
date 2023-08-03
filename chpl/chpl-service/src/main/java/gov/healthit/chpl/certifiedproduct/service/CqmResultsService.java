@@ -80,7 +80,7 @@ public class CqmResultsService {
         }
 
         // now add allVersions for CMSs
-        if (!year.startsWith("2011")) {
+        if (!StringUtils.isEmpty(year) && !year.startsWith("2011")) {
             List<CQMCriterion> cqms = getAvailableCQMVersions();
             for (CQMCriterion cqm : cqms) {
                 boolean cqmExists = false;
