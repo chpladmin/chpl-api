@@ -32,7 +32,7 @@ public class RuleController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public @ResponseBody List<Rule> getAllTestTools() {
+    public @ResponseBody List<Rule> getAllRules() {
         return ruleManager.getAll();
     }
 

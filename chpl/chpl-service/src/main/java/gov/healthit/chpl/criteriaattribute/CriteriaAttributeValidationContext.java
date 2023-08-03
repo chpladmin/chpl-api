@@ -7,7 +7,7 @@ import lombok.Data;
 @Builder
 public class CriteriaAttributeValidationContext {
     private CriteriaAttributeDAO criteriaAttributeDAO;
-    private CriteriaAttribute criteriaAttribe;
+    private CriteriaAttribute criteriaAttribute;
     private String name;
 
     @Builder.Default

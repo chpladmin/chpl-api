@@ -49,7 +49,7 @@ public class TestToolController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
     @RequestMapping(value = "/criteria", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public @ResponseBody List<CertificationCriterion> getCertificationCriteriaForSvap() {
+    public @ResponseBody List<CertificationCriterion> getCertificationCriteriaForSTestTools() {
         return testToolManager.getCertificationCriteriaForTestTools();
     }
 
