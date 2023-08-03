@@ -1,7 +1,6 @@
 package gov.healthit.chpl.upload.listing.validation.reviewer;
 
 import java.util.Iterator;
-import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -13,21 +12,23 @@ import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultTestTool;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.domain.TestToolCriteriaMap;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
 import gov.healthit.chpl.util.ValidationUtils;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 @Component("listingUploadTestToolReviewer")
 public class TestToolReviewer {
     private CertificationResultRules certResultRules;
     private ValidationUtils validationUtils;
     private ErrorMessageUtil msgUtil;
     private ChplProductNumberUtil chplProductNumberUtil;
-    private List<TestToolCriteriaMap> testToolCriteriaMaps;
+    //private List<TestToolCriteriaMap> testToolCriteriaMaps;
+    private TestToolDAO testToolDao;
 
     @Autowired
     public TestToolReviewer(CertificationResultRules certResultRules,
@@ -38,7 +39,7 @@ public class TestToolReviewer {
         this.validationUtils = validationUtils;
         this.chplProductNumberUtil = chplProductNumberUtil;
         this.msgUtil = msgUtil;
-        testToolCriteriaMaps = testToolDAO.getAllTestToolCriteriaMap();
+        this.testToolDao = testToolDAO;
     }
 
     public void review(CertifiedProductSearchDetails listing) {
@@ -163,10 +164,15 @@ public class TestToolReviewer {
     }
 
     private Boolean isTestToolValidForCriteria(CertificationCriterion criterion, CertificationResultTestTool certResultTestTool) {
-        return testToolCriteriaMaps.stream()
-                .filter(ttcm -> ttcm.getCriterion().getId().equals(criterion.getId())
-                        && ttcm.getTestTool().getId().equals(certResultTestTool.getTestTool().getId()))
-                .findAny()
-                .isPresent();
+        try {
+            return testToolDao.getAllTestToolCriteriaMap().stream()
+                    .filter(ttcm -> ttcm.getCriterion().getId().equals(criterion.getId())
+                            && ttcm.getTestTool().getId().equals(certResultTestTool.getTestTool().getId()))
+                    .findAny()
+                    .isPresent();
+        } catch (EntityRetrievalException e) {
+            LOGGER.error("Could not validate Test Tool: {}", certResultTestTool.getTestTool().getValue());
+            return false;
+        }
     }
 }
