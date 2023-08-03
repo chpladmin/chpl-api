@@ -36,31 +36,31 @@ public class CriteriaAttributeValidator {
     public void validateForEdit(CriteriaAttributeValidationContext context) throws ValidationException, EntityRetrievalException {
         Set<String> messages = new HashSet<String>();
 
-        if (StringUtils.isEmpty(context.getCriteriaAttribe().getValue())) {
+        if (StringUtils.isEmpty(context.getCriteriaAttribute().getValue())) {
             messages.add(errorMessageUtil.getMessage("criteriaAttribute.edit.emptyValue"));
         }
 
         if (context.getIsRegulatoryTextCitationRequired()
-                && StringUtils.isEmpty(context.getCriteriaAttribe().getRegulatoryTextCitation())) {
+                && StringUtils.isEmpty(context.getCriteriaAttribute().getRegulatoryTextCitation())) {
             messages.add(errorMessageUtil.getMessage("criteriaAttribute.edit.emptyRegulatoryTextCitation"));
         }
 
         if (context.getStartDayRequired()
-                && context.getCriteriaAttribe().getStartDay() == null) {
+                && context.getCriteriaAttribute().getStartDay() == null) {
             messages.add(errorMessageUtil.getMessage("criteriaAttribute.edit.emptyStartDay"));
         }
 
         if (context.getEndDayRequired()
-                && context.getCriteriaAttribe().getEndDay() == null) {
+                && context.getCriteriaAttribute().getEndDay() == null) {
             messages.add(errorMessageUtil.getMessage("criteriaAttribute.edit.emptyEndDay"));
         }
 
         if (context.getRequiredDayRequired()
-                && context.getCriteriaAttribe().getRequiredDay() == null) {
+                && context.getCriteriaAttribute().getRequiredDay() == null) {
             messages.add(errorMessageUtil.getMessage("criteriaAttribute.edit.emptyRequiredDay"));
         }
 
-        if (CollectionUtils.isEmpty(context.getCriteriaAttribe().getCriteria())) {
+        if (CollectionUtils.isEmpty(context.getCriteriaAttribute().getCriteria())) {
             messages.add(errorMessageUtil.getMessage("criteriaAttribute.edit.noCriteria"));
         } else {
             if (isCriteriaAttributeDuplicateOnEdit(context)) {
@@ -71,12 +71,12 @@ public class CriteriaAttributeValidator {
 
 
         if (context.getRuleRequired()
-                && context.getCriteriaAttribe().getRule() == null) {
+                && context.getCriteriaAttribute().getRule() == null) {
             messages.add(errorMessageUtil.getMessage("criteriaAttribute.edit.emptyRule"));
         }
 
-        if (context.getCriteriaAttribe().getRule() != null
-                && ruleDAO.getRuleEntityById(context.getCriteriaAttribe().getRule().getId()) == null) {
+        if (context.getCriteriaAttribute().getRule() != null
+                && ruleDAO.getRuleEntityById(context.getCriteriaAttribute().getRule().getId()) == null) {
             messages.add(errorMessageUtil.getMessage("criteriaAttribute.edit.notFoundRule"));
         }
 
@@ -89,31 +89,31 @@ public class CriteriaAttributeValidator {
     public void validateForAdd(CriteriaAttributeValidationContext context) throws ValidationException, EntityRetrievalException {
         Set<String> messages = new HashSet<String>();
 
-        if (StringUtils.isEmpty(context.getCriteriaAttribe().getValue())) {
+        if (StringUtils.isEmpty(context.getCriteriaAttribute().getValue())) {
             messages.add(errorMessageUtil.getMessage("criteriaAttribute.edit.emptyValue"));
         }
 
         if (context.getIsRegulatoryTextCitationRequired()
-                && StringUtils.isEmpty(context.getCriteriaAttribe().getRegulatoryTextCitation())) {
+                && StringUtils.isEmpty(context.getCriteriaAttribute().getRegulatoryTextCitation())) {
             messages.add(errorMessageUtil.getMessage("criteriaAttribute.edit.emptyRegulatoryTextCitation"));
         }
 
         if (context.getStartDayRequired()
-                && context.getCriteriaAttribe().getStartDay() == null) {
+                && context.getCriteriaAttribute().getStartDay() == null) {
             messages.add(errorMessageUtil.getMessage("criteriaAttribute.edit.emptyStartDay"));
         }
 
         if (context.getEndDayRequired()
-                && context.getCriteriaAttribe().getEndDay() == null) {
+                && context.getCriteriaAttribute().getEndDay() == null) {
             messages.add(errorMessageUtil.getMessage("criteriaAttribute.edit.emptyEndDay"));
         }
 
         if (context.getRequiredDayRequired()
-                && context.getCriteriaAttribe().getRequiredDay() == null) {
+                && context.getCriteriaAttribute().getRequiredDay() == null) {
             messages.add(errorMessageUtil.getMessage("criteriaAttribute.edit.emptyRequiredDay"));
         }
 
-        if (CollectionUtils.isEmpty(context.getCriteriaAttribe().getCriteria())) {
+        if (CollectionUtils.isEmpty(context.getCriteriaAttribute().getCriteria())) {
             messages.add(errorMessageUtil.getMessage("criteriaAttribute.edit.noCriteria"));
         }
 
@@ -122,12 +122,12 @@ public class CriteriaAttributeValidator {
         }
 
         if (context.getRuleRequired()
-                && context.getCriteriaAttribe().getRule() == null) {
+                && context.getCriteriaAttribute().getRule() == null) {
             messages.add(errorMessageUtil.getMessage("criteriaAttribute.edit.emptyRule"));
         }
 
-        if (context.getCriteriaAttribe().getRule() != null
-                && ruleDAO.getRuleEntityById(context.getCriteriaAttribe().getRule().getId()) == null) {
+        if (context.getCriteriaAttribute().getRule() != null
+                && ruleDAO.getRuleEntityById(context.getCriteriaAttribute().getRule().getId()) == null) {
             messages.add(errorMessageUtil.getMessage("criteriaAttribute.edit.notFoundRule"));
         }
 
@@ -141,7 +141,7 @@ public class CriteriaAttributeValidator {
     public void validateForDelete(CriteriaAttributeValidationContext context) throws ValidationException {
         List<CertifiedProductDetailsDTO> listings = new ArrayList<CertifiedProductDetailsDTO>();
         try {
-            listings = context.getCriteriaAttributeDAO().getCertifiedProductsByCriteriaAttribute(context.getCriteriaAttribe());
+            listings = context.getCriteriaAttributeDAO().getCertifiedProductsByCriteriaAttribute(context.getCriteriaAttribute());
         } catch (EntityRetrievalException ex) {
             throw new ValidationException(ex.getMessage());
         }
@@ -165,9 +165,9 @@ public class CriteriaAttributeValidator {
 
     private Set<String> validateCriteriaRemovedFromCriteriaAttribute(CriteriaAttributeValidationContext context) {
         Set<String> messages = new HashSet<String>();
-        CriteriaAttribute origCriteriaAttribute = context.getCriteriaAttributeDAO().getCriteriaAttributeById(context.getCriteriaAttribe().getId());
+        CriteriaAttribute origCriteriaAttribute = context.getCriteriaAttributeDAO().getCriteriaAttributeById(context.getCriteriaAttribute().getId());
 
-        getCriteriaRemovedFromCriteriaAttribute(context.getCriteriaAttribe(), origCriteriaAttribute).stream()
+        getCriteriaRemovedFromCriteriaAttribute(context.getCriteriaAttribute(), origCriteriaAttribute).stream()
                 .forEach(crit -> {
                     List<CertifiedProductDetailsDTO> listings = new ArrayList<CertifiedProductDetailsDTO>();
                     try {
@@ -195,28 +195,28 @@ public class CriteriaAttributeValidator {
     }
 
     private boolean isCriteriaAttributeDuplicateOnEdit(CriteriaAttributeValidationContext context) throws EntityRetrievalException {
-        String updatedCitationText = context.getCriteriaAttribe().getRegulatoryTextCitation() != null ? context.getCriteriaAttribe().getRegulatoryTextCitation() : "";
+        String updatedCitationText = context.getCriteriaAttribute().getRegulatoryTextCitation() != null ? context.getCriteriaAttribute().getRegulatoryTextCitation() : "";
 
         return context.getCriteriaAttributeDAO().getAllAssociatedCriteriaMaps().stream()
                 .filter(map -> {
                         String origCitationText = map.getCriteriaAttribute().getRegulatoryTextCitation() != null ? map.getCriteriaAttribute().getRegulatoryTextCitation() : "";
 
-                        return map.getCriteriaAttribute().getValue().equalsIgnoreCase(context.getCriteriaAttribe().getValue())
+                        return map.getCriteriaAttribute().getValue().equalsIgnoreCase(context.getCriteriaAttribute().getValue())
                                 && origCitationText.equalsIgnoreCase(updatedCitationText)
-                                && !map.getCriteriaAttribute().getId().equals(context.getCriteriaAttribe().getId());
+                                && !map.getCriteriaAttribute().getId().equals(context.getCriteriaAttribute().getId());
                 })
                 .findAny()
                 .isPresent();
     }
 
     private boolean isCriteriaAttributeDuplicateOnAdd(CriteriaAttributeValidationContext context) throws EntityRetrievalException {
-        String updatedCitationText = context.getCriteriaAttribe().getRegulatoryTextCitation() != null ? context.getCriteriaAttribe().getRegulatoryTextCitation() : "";
+        String updatedCitationText = context.getCriteriaAttribute().getRegulatoryTextCitation() != null ? context.getCriteriaAttribute().getRegulatoryTextCitation() : "";
 
         return context.getCriteriaAttributeDAO().getAllAssociatedCriteriaMaps().stream()
                 .filter(map -> {
                         String origCitationText = map.getCriteriaAttribute().getRegulatoryTextCitation() != null ? map.getCriteriaAttribute().getRegulatoryTextCitation() : "";
 
-                        return map.getCriteriaAttribute().getValue().equalsIgnoreCase(context.getCriteriaAttribe().getValue())
+                        return map.getCriteriaAttribute().getValue().equalsIgnoreCase(context.getCriteriaAttribute().getValue())
                                 && origCitationText.equalsIgnoreCase(updatedCitationText);
                 })
                 .findAny()

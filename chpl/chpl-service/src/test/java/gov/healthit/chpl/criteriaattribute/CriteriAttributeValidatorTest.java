@@ -67,7 +67,7 @@ public class CriteriAttributeValidatorTest {
     public void validateForEdit_ValueIsNotNull_DoesNotThrowExcption() {
         CriteriaAttributeValidationContext context = CriteriaAttributeValidationContext.builder()
                 .criteriaAttributeDAO(criteriaAttributeDAO)
-                .criteriaAttribe(getStandardCriteriaAttrbute())
+                .criteriaAttribute(getStandardCriteriaAttrbute())
                 .name("Criteria Attribute")
                 .build();
 
@@ -78,11 +78,11 @@ public class CriteriAttributeValidatorTest {
     public void validateForEdit_ValueIsNull_ThrowsExcptionWithRelatedMessage() throws ValidationException, EntityRetrievalException {
         CriteriaAttributeValidationContext context = CriteriaAttributeValidationContext.builder()
                 .criteriaAttributeDAO(criteriaAttributeDAO)
-                .criteriaAttribe(getStandardCriteriaAttrbute())
+                .criteriaAttribute(getStandardCriteriaAttrbute())
                 .name("Criteria Attribute")
                 .build();
 
-        context.getCriteriaAttribe().setValue(null);
+        context.getCriteriaAttribute().setValue(null);
 
         ValidationException e = assertThrows(ValidationException.class, () -> criteriaAttributeValidator.validateForEdit(context));
         assertNotNull(e);
@@ -93,7 +93,7 @@ public class CriteriAttributeValidatorTest {
     public void validateForEdit_RegulatoryTextCitationIsNotNullAndNotRequired_DoesNotThrowExcption() {
         CriteriaAttributeValidationContext context = CriteriaAttributeValidationContext.builder()
                 .criteriaAttributeDAO(criteriaAttributeDAO)
-                .criteriaAttribe(getStandardCriteriaAttrbute())
+                .criteriaAttribute(getStandardCriteriaAttrbute())
                 .name("Criteria Attribute")
                 .build();
 
@@ -104,10 +104,10 @@ public class CriteriAttributeValidatorTest {
     public void validateForEdit_RegulatoryTextCitationNullAndNotRequired_DoesNotThrowExcption() {
         CriteriaAttributeValidationContext context = CriteriaAttributeValidationContext.builder()
                 .criteriaAttributeDAO(criteriaAttributeDAO)
-                .criteriaAttribe(getStandardCriteriaAttrbute())
+                .criteriaAttribute(getStandardCriteriaAttrbute())
                 .name("Criteria Attribute")
                 .build();
-        context.getCriteriaAttribe().setRegulatoryTextCitation(null);
+        context.getCriteriaAttribute().setRegulatoryTextCitation(null);
 
         assertDoesNotThrow(() -> criteriaAttributeValidator.validateForEdit(context));
     }
@@ -116,7 +116,7 @@ public class CriteriAttributeValidatorTest {
     public void validateForEdit_RegulatoryTextCitationIsNotNullAndIsRequired_DoesNotThrowExcption() {
         CriteriaAttributeValidationContext context = CriteriaAttributeValidationContext.builder()
                 .criteriaAttributeDAO(criteriaAttributeDAO)
-                .criteriaAttribe(getStandardCriteriaAttrbute())
+                .criteriaAttribute(getStandardCriteriaAttrbute())
                 .name("Criteria Attribute")
                 .build();
         context.setIsRegulatoryTextCitationRequired(true);
@@ -128,10 +128,10 @@ public class CriteriAttributeValidatorTest {
     public void validateForEdit_RegulatoryTextCitationIsNullAndIsRequired_ThrowsExcptionWithRelevantMessage() {
         CriteriaAttributeValidationContext context = CriteriaAttributeValidationContext.builder()
                 .criteriaAttributeDAO(criteriaAttributeDAO)
-                .criteriaAttribe(getStandardCriteriaAttrbute())
+                .criteriaAttribute(getStandardCriteriaAttrbute())
                 .name("Criteria Attribute")
                 .build();
-        context.getCriteriaAttribe().setRegulatoryTextCitation(null);
+        context.getCriteriaAttribute().setRegulatoryTextCitation(null);
         context.setIsRegulatoryTextCitationRequired(true);
 
         ValidationException e = assertThrows(ValidationException.class, () -> criteriaAttributeValidator.validateForEdit(context));
@@ -143,7 +143,7 @@ public class CriteriAttributeValidatorTest {
     public void validateForEdit_StartDayIsNotNullAndNotRequired_DoesNotThrowExcption() {
         CriteriaAttributeValidationContext context = CriteriaAttributeValidationContext.builder()
                 .criteriaAttributeDAO(criteriaAttributeDAO)
-                .criteriaAttribe(getStandardCriteriaAttrbute())
+                .criteriaAttribute(getStandardCriteriaAttrbute())
                 .name("Criteria Attribute")
                 .build();
 
@@ -154,10 +154,10 @@ public class CriteriAttributeValidatorTest {
     public void validateForEdit_StartDayNullAndNotRequired_DoesNotThrowExcption() {
         CriteriaAttributeValidationContext context = CriteriaAttributeValidationContext.builder()
                 .criteriaAttributeDAO(criteriaAttributeDAO)
-                .criteriaAttribe(getStandardCriteriaAttrbute())
+                .criteriaAttribute(getStandardCriteriaAttrbute())
                 .name("Criteria Attribute")
                 .build();
-        context.getCriteriaAttribe().setStartDay(null);
+        context.getCriteriaAttribute().setStartDay(null);
 
         assertDoesNotThrow(() -> criteriaAttributeValidator.validateForEdit(context));
     }
@@ -166,7 +166,7 @@ public class CriteriAttributeValidatorTest {
     public void validateForEdit_StartDayIsNotNullAndIsRequired_DoesNotThrowExcption() {
         CriteriaAttributeValidationContext context = CriteriaAttributeValidationContext.builder()
                 .criteriaAttributeDAO(criteriaAttributeDAO)
-                .criteriaAttribe(getStandardCriteriaAttrbute())
+                .criteriaAttribute(getStandardCriteriaAttrbute())
                 .name("Criteria Attribute")
                 .build();
         context.setStartDayRequired(true);
@@ -178,10 +178,10 @@ public class CriteriAttributeValidatorTest {
     public void validateForEdit_StartDayIsNullAndIsRequired_ThrowsExcptionWithRelevantMessage() {
         CriteriaAttributeValidationContext context = CriteriaAttributeValidationContext.builder()
                 .criteriaAttributeDAO(criteriaAttributeDAO)
-                .criteriaAttribe(getStandardCriteriaAttrbute())
+                .criteriaAttribute(getStandardCriteriaAttrbute())
                 .name("Criteria Attribute")
                 .build();
-        context.getCriteriaAttribe().setStartDay(null);
+        context.getCriteriaAttribute().setStartDay(null);
         context.setStartDayRequired(true);
 
         ValidationException e = assertThrows(ValidationException.class, () -> criteriaAttributeValidator.validateForEdit(context));
@@ -193,7 +193,7 @@ public class CriteriAttributeValidatorTest {
     public void validateForEdit_EndDayIsNotNullAndNotRequired_DoesNotThrowExcption() {
         CriteriaAttributeValidationContext context = CriteriaAttributeValidationContext.builder()
                 .criteriaAttributeDAO(criteriaAttributeDAO)
-                .criteriaAttribe(getStandardCriteriaAttrbute())
+                .criteriaAttribute(getStandardCriteriaAttrbute())
                 .name("Criteria Attribute")
                 .build();
 
@@ -204,10 +204,10 @@ public class CriteriAttributeValidatorTest {
     public void validateForEdit_EndDayNullAndNotRequired_DoesNotThrowExcption() {
         CriteriaAttributeValidationContext context = CriteriaAttributeValidationContext.builder()
                 .criteriaAttributeDAO(criteriaAttributeDAO)
-                .criteriaAttribe(getStandardCriteriaAttrbute())
+                .criteriaAttribute(getStandardCriteriaAttrbute())
                 .name("Criteria Attribute")
                 .build();
-        context.getCriteriaAttribe().setEndDay(null);
+        context.getCriteriaAttribute().setEndDay(null);
 
         assertDoesNotThrow(() -> criteriaAttributeValidator.validateForEdit(context));
     }
@@ -216,7 +216,7 @@ public class CriteriAttributeValidatorTest {
     public void validateForEdit_EndDayIsNotNullAndIsRequired_DoesNotThrowExcption() {
         CriteriaAttributeValidationContext context = CriteriaAttributeValidationContext.builder()
                 .criteriaAttributeDAO(criteriaAttributeDAO)
-                .criteriaAttribe(getStandardCriteriaAttrbute())
+                .criteriaAttribute(getStandardCriteriaAttrbute())
                 .name("Criteria Attribute")
                 .build();
         context.setEndDayRequired(true);
@@ -228,10 +228,10 @@ public class CriteriAttributeValidatorTest {
     public void validateForEdit_EndDayIsNullAndIsRequired_ThrowsExcptionWithRelevantMessage() {
         CriteriaAttributeValidationContext context = CriteriaAttributeValidationContext.builder()
                 .criteriaAttributeDAO(criteriaAttributeDAO)
-                .criteriaAttribe(getStandardCriteriaAttrbute())
+                .criteriaAttribute(getStandardCriteriaAttrbute())
                 .name("Criteria Attribute")
                 .build();
-        context.getCriteriaAttribe().setEndDay(null);
+        context.getCriteriaAttribute().setEndDay(null);
         context.setEndDayRequired(true);
 
         ValidationException e = assertThrows(ValidationException.class, () -> criteriaAttributeValidator.validateForEdit(context));
@@ -243,7 +243,7 @@ public class CriteriAttributeValidatorTest {
     public void validateForEdit_RequiredDayIsNotNullAndNotRequired_DoesNotThrowExcption() {
         CriteriaAttributeValidationContext context = CriteriaAttributeValidationContext.builder()
                 .criteriaAttributeDAO(criteriaAttributeDAO)
-                .criteriaAttribe(getStandardCriteriaAttrbute())
+                .criteriaAttribute(getStandardCriteriaAttrbute())
                 .name("Criteria Attribute")
                 .build();
 
@@ -254,10 +254,10 @@ public class CriteriAttributeValidatorTest {
     public void validateForEdit_RequiredDayNullAndNotRequired_DoesNotThrowExcption() {
         CriteriaAttributeValidationContext context = CriteriaAttributeValidationContext.builder()
                 .criteriaAttributeDAO(criteriaAttributeDAO)
-                .criteriaAttribe(getStandardCriteriaAttrbute())
+                .criteriaAttribute(getStandardCriteriaAttrbute())
                 .name("Criteria Attribute")
                 .build();
-        context.getCriteriaAttribe().setRequiredDay(null);
+        context.getCriteriaAttribute().setRequiredDay(null);
 
         assertDoesNotThrow(() -> criteriaAttributeValidator.validateForEdit(context));
     }
@@ -266,7 +266,7 @@ public class CriteriAttributeValidatorTest {
     public void validateForEdit_RequiredDayIsNotNullAndIsRequired_DoesNotThrowExcption() {
         CriteriaAttributeValidationContext context = CriteriaAttributeValidationContext.builder()
                 .criteriaAttributeDAO(criteriaAttributeDAO)
-                .criteriaAttribe(getStandardCriteriaAttrbute())
+                .criteriaAttribute(getStandardCriteriaAttrbute())
                 .name("Criteria Attribute")
                 .build();
         context.setRequiredDayRequired(true);
@@ -278,10 +278,10 @@ public class CriteriAttributeValidatorTest {
     public void validateForEdit_RequiredDayIsNullAndIsRequire_ThrowsExcptionWithRelevantMessage() {
         CriteriaAttributeValidationContext context = CriteriaAttributeValidationContext.builder()
                 .criteriaAttributeDAO(criteriaAttributeDAO)
-                .criteriaAttribe(getStandardCriteriaAttrbute())
+                .criteriaAttribute(getStandardCriteriaAttrbute())
                 .name("Criteria Attribute")
                 .build();
-        context.getCriteriaAttribe().setRequiredDay(null);
+        context.getCriteriaAttribute().setRequiredDay(null);
         context.setRequiredDayRequired(true);
 
         ValidationException e = assertThrows(ValidationException.class, () -> criteriaAttributeValidator.validateForEdit(context));
@@ -293,7 +293,7 @@ public class CriteriAttributeValidatorTest {
     public void validateForEdit_CriteriaListIsNotNull_DoesNotThrowExcption() {
         CriteriaAttributeValidationContext context = CriteriaAttributeValidationContext.builder()
                 .criteriaAttributeDAO(criteriaAttributeDAO)
-                .criteriaAttribe(getStandardCriteriaAttrbute())
+                .criteriaAttribute(getStandardCriteriaAttrbute())
                 .name("Criteria Attribute")
                 .build();
 
@@ -304,10 +304,10 @@ public class CriteriAttributeValidatorTest {
     public void validateForEdit_CriteriaListIsNull_ThrowsExcptionWithRelevantMessage() {
         CriteriaAttributeValidationContext context = CriteriaAttributeValidationContext.builder()
                 .criteriaAttributeDAO(criteriaAttributeDAO)
-                .criteriaAttribe(getStandardCriteriaAttrbute())
+                .criteriaAttribute(getStandardCriteriaAttrbute())
                 .name("Criteria Attribute")
                 .build();
-        context.getCriteriaAttribe().setCriteria(null);
+        context.getCriteriaAttribute().setCriteria(null);
 
         ValidationException e = assertThrows(ValidationException.class, () -> criteriaAttributeValidator.validateForEdit(context));
         assertNotNull(e);
@@ -318,7 +318,7 @@ public class CriteriAttributeValidatorTest {
     public void validateForEdit_DuplicateCriteriaAttributeOnEdit_ThrowsExcptionWithRelevantMessage() throws EntityRetrievalException {
         CriteriaAttributeValidationContext context = CriteriaAttributeValidationContext.builder()
                 .criteriaAttributeDAO(criteriaAttributeDAO)
-                .criteriaAttribe(getStandardCriteriaAttrbute())
+                .criteriaAttribute(getStandardCriteriaAttrbute())
                 .name("Criteria Attribute")
                 .build();
 
@@ -368,7 +368,7 @@ public class CriteriAttributeValidatorTest {
     public void validateForEdit_RemoveAttributeBeingUsedOnExistingListing_ThrowsExcptionWithRelevantMessage() throws EntityRetrievalException {
         CriteriaAttributeValidationContext context = CriteriaAttributeValidationContext.builder()
                 .criteriaAttributeDAO(criteriaAttributeDAO)
-                .criteriaAttribe(getStandardCriteriaAttrbute())
+                .criteriaAttribute(getStandardCriteriaAttrbute())
                 .name("Criteria Attribute")
                 .build();
 
@@ -404,7 +404,7 @@ public class CriteriAttributeValidatorTest {
     public void validateForEdit_RemoveAttributeNotBeingUsedOnExistingListing_DoesNotThrowExcption() throws EntityRetrievalException {
         CriteriaAttributeValidationContext context = CriteriaAttributeValidationContext.builder()
                 .criteriaAttributeDAO(criteriaAttributeDAO)
-                .criteriaAttribe(getStandardCriteriaAttrbute())
+                .criteriaAttribute(getStandardCriteriaAttrbute())
                 .name("Criteria Attribute")
                 .build();
 
@@ -434,11 +434,11 @@ public class CriteriAttributeValidatorTest {
     public void validateForAdd_DuplicateCriteriaAttributeOnEdit_ThrowsExcptionWithRelevantMessage() throws EntityRetrievalException {
         CriteriaAttributeValidationContext context = CriteriaAttributeValidationContext.builder()
                 .criteriaAttributeDAO(criteriaAttributeDAO)
-                .criteriaAttribe(getStandardCriteriaAttrbute())
+                .criteriaAttribute(getStandardCriteriaAttrbute())
                 .name("Criteria Attribute")
                 .build();
 
-        context.getCriteriaAttribe().setId(null);
+        context.getCriteriaAttribute().setId(null);
 
         Mockito.when(criteriaAttributeDAO.getAllAssociatedCriteriaMaps())
                 .thenReturn(List.of(CriteriaAttributeCriteriaMap.builder()
@@ -486,7 +486,7 @@ public class CriteriAttributeValidatorTest {
     public void validateForDelete_CriteriaAttributeBeingUsedOnExistingListing_ThrowsExcptionWithRelevantMessage() throws EntityRetrievalException {
         CriteriaAttributeValidationContext context = CriteriaAttributeValidationContext.builder()
                 .criteriaAttributeDAO(criteriaAttributeDAO)
-                .criteriaAttribe(getStandardCriteriaAttrbute())
+                .criteriaAttribute(getStandardCriteriaAttrbute())
                 .name("Criteria Attribute")
                 .build();
 

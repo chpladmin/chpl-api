@@ -58,7 +58,7 @@ public class TestToolManager {
     @ListingStoreRemove(removeBy = RemoveBy.ALL)
     public TestTool update(TestTool testTool) throws EntityRetrievalException, ValidationException {
         criteriaAttributeValidator.validateForEdit(CriteriaAttributeValidationContext.builder()
-                .criteriaAttribe(testTool)
+                .criteriaAttribute(testTool)
                 .criteriaAttributeDAO(testToolDAO)
                 .name("Test Tool")
                 .build());
@@ -76,7 +76,7 @@ public class TestToolManager {
     @Transactional
     public TestTool create(TestTool testTool) throws EntityRetrievalException, ValidationException {
         criteriaAttributeValidator.validateForAdd(CriteriaAttributeValidationContext.builder()
-                .criteriaAttribe(testTool)
+                .criteriaAttribute(testTool)
                 .criteriaAttributeDAO(testToolDAO)
                 .name("Test Tool")
                 .build());
@@ -100,7 +100,7 @@ public class TestToolManager {
             throw e;
         }
         criteriaAttributeValidator.validateForDelete(CriteriaAttributeValidationContext.builder()
-                .criteriaAttribe(testTool)
+                .criteriaAttribute(testTool)
                 .criteriaAttributeDAO(testToolDAO)
                 .name("Test Tool")
                 .build());
