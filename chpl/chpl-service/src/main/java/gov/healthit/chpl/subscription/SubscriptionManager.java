@@ -201,6 +201,12 @@ public class SubscriptionManager {
             throw validationException;
         }
         subscriberDao.confirmSubscriber(subscriberId);
+
+        Subscriber subscriber = subscriberDao.getSubscriberById(subscriberId);
+        if (subscriber.getStatus().getId().equals(lookupUtil.getConfirmedSubscriberStatusId())) {
+            subscriberMessagingService.sendWelcome(subscriber);
+        }
+
         return subscriberDao.getSubscriberById(subscriberId);
     }
 
