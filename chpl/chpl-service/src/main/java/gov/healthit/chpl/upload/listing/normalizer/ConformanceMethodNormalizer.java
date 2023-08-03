@@ -6,6 +6,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -36,9 +37,22 @@ public class ConformanceMethodNormalizer {
 
     public void normalize(CertifiedProductSearchDetails listing) {
         if (!CollectionUtils.isEmpty(listing.getCertificationResults())) {
+            clearDataForUnattestedCriteria(listing);
             listing.getCertificationResults().stream()
                 .forEach(certResult -> fillInConformanceMethodData(listing, certResult));
         }
+    }
+
+    private void clearDataForUnattestedCriteria(CertifiedProductSearchDetails listing) {
+        listing.getCertificationResults().stream()
+            .filter(certResult -> (certResult.isSuccess() == null || BooleanUtils.isFalse(certResult.isSuccess()))
+                    && certResult.getConformanceMethods() != null && certResult.getConformanceMethods().size() > 0)
+            .forEach(unattestedCertResult -> unattestedCertResult.getConformanceMethods().clear());
+
+        listing.getCertificationResults().stream()
+            .filter(certResult -> (certResult.isSuccess() == null || BooleanUtils.isFalse(certResult.isSuccess()))
+                    && certResult.getTestProcedures() != null && certResult.getTestProcedures().size() > 0)
+            .forEach(unattestedCertResult -> unattestedCertResult.getTestProcedures().clear());
     }
 
     private void fillInConformanceMethodData(CertifiedProductSearchDetails listing, CertificationResult certResult) {

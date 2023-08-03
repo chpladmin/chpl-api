@@ -23,7 +23,6 @@ public class CertificationStatusEventXmlGenerator extends XmlGenerator {
             sw.writeStartElement(rootNodeName);
             createSimpleElement(event.getEventDate(), "eventDate", sw);
             createSimpleElement(event.getId(), "id", sw);
-            createSimpleElement(event.getReason(), "reason", sw);
             CertificationStatusXmlGenerator.addCertificationStatus(event.getStatus(), "status", sw);
             sw.writeEndElement();
         }

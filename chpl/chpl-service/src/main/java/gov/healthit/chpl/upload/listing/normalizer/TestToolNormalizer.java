@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -37,6 +38,7 @@ public class TestToolNormalizer {
 
     public void normalize(CertifiedProductSearchDetails listing) {
         if (!CollectionUtils.isEmpty(listing.getCertificationResults())) {
+            clearDataForUnattestedCriteria(listing);
             listing.getCertificationResults().stream()
                 .forEach(certResult -> fillInTestToolData(certResult));
         }
@@ -47,6 +49,13 @@ public class TestToolNormalizer {
             testTools.stream()
                     .forEach(certResultTestTool -> populateTestToolId(certResultTestTool));
         }
+    }
+
+    private void clearDataForUnattestedCriteria(CertifiedProductSearchDetails listing) {
+        listing.getCertificationResults().stream()
+            .filter(certResult -> (certResult.isSuccess() == null || BooleanUtils.isFalse(certResult.isSuccess()))
+                    && certResult.getTestToolsUsed() != null && certResult.getTestToolsUsed().size() > 0)
+            .forEach(unattestedCertResult -> unattestedCertResult.getTestToolsUsed().clear());
     }
 
     private void fillInTestToolData(CertificationResult certResult) {

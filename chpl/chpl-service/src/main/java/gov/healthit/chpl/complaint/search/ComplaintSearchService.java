@@ -288,7 +288,7 @@ public class ComplaintSearchService {
                     || complaintOpenDate.isBefore(searchEndDate))
                 &&
                 (complaintClosedDate == null
-                    || complaintClosedDate.isAfter(searchEndDate)
+                    || complaintClosedDate.isEqual(searchStartDate)
                     || complaintClosedDate.isAfter(searchStartDate));
     }
 
