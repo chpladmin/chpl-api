@@ -41,9 +41,6 @@ public class CertificationResultTestToolEntity implements Serializable {
     @Column(name = "certification_result_id", nullable = false)
     private Long certificationResultId;
 
-    //@Column(name = "test_tool_id")
-    //private Long testToolId;
-
     @Column(name = "version")
     private String version;
 
