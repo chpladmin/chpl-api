@@ -48,7 +48,7 @@ public class TestToolManager {
 
     @Transactional
     public List<CertificationCriterion> getCertificationCriteriaForTestTools() {
-        return certificationCriterionAttributeDAO.getCriteriaForSvap();
+        return certificationCriterionAttributeDAO.getCriteriaForTestTools();
     }
 
 
