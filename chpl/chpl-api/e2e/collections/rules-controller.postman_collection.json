@@ -1,0 +1,55 @@
+{
+	"info": {
+		"name": "rules-controller",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "GET /rules - status 200 and valid response body",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonResponse = pm.response.json();\r",
+							"pm.test(\"/rules endpoint should return 200 status and response body should not be empty\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"    pm.expect(jsonResponse.response).not.eq(null);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "API-Key",
+						"value": "{{apiKey}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{url}}/rest/rules",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"rest",
+						"rules"
+					]
+				},
+				"description": "GET /rules - status 200 and valid response body "
+			},
+			"response": []
+		}
+	]
+}
