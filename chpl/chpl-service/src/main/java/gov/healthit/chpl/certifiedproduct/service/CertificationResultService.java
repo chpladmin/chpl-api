@@ -10,14 +10,14 @@ import gov.healthit.chpl.conformanceMethod.ConformanceMethodComparator;
 import gov.healthit.chpl.conformanceMethod.dao.ConformanceMethodDAO;
 import gov.healthit.chpl.conformanceMethod.domain.ConformanceMethod;
 import gov.healthit.chpl.conformanceMethod.domain.ConformanceMethodCriteriaMap;
+import gov.healthit.chpl.criteriaattribute.testtool.TestTool;
+import gov.healthit.chpl.criteriaattribute.testtool.TestToolDAO;
 import gov.healthit.chpl.dao.CertificationResultDetailsDAO;
-import gov.healthit.chpl.dao.TestToolDAO;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductUcdProcess;
 import gov.healthit.chpl.domain.TestTask;
-import gov.healthit.chpl.domain.TestTool;
 import gov.healthit.chpl.domain.TestToolCriteriaMap;
 import gov.healthit.chpl.domain.comparator.CertificationResultComparator;
 import gov.healthit.chpl.domain.comparator.TestToolComparator;
@@ -92,7 +92,7 @@ public class CertificationResultService {
                 .collect(Collectors.toList());
     }
 
-    public List<CertificationResultDetailsDTO> getCertificationResultDetailsDTOs(Long id) {
+    private List<CertificationResultDetailsDTO> getCertificationResultDetailsDTOs(Long id) {
         List<CertificationResultDetailsDTO> certificationResultDetailsDTOs = null;
         certificationResultDetailsDTOs = certificationResultDetailsDAO.getAllCertResultsForListing(id);
         return certificationResultDetailsDTOs;

@@ -22,10 +22,8 @@ public class CertificationResultTestToolXmlGenerator extends XmlGenerator {
         if (tool != null) {
             sw.writeStartElement(rootNodeName);
             createSimpleElement(tool.getId(), "id", sw);
-            createSimpleElement(tool.isRetired(), "retired", sw);
-            createSimpleElement(tool.getTestToolId(), "testToolId", sw);
-            createSimpleElement(tool.getTestToolName(), "testToolName", sw);
-            createSimpleElement(tool.getTestToolVersion(), "testToolVersion", sw);
+            TestToolXmlGenerator.add(tool.getTestTool(), "testTool", sw);
+            createSimpleElement(tool.getVersion(), "version", sw);
             sw.writeEndElement();
         }
     }

@@ -36,6 +36,7 @@ public class CertificationResultDetailsDAO extends BaseDAOImpl {
             + "LEFT OUTER JOIN FETCH crConfMeth.conformanceMethod confMeth "
             + "LEFT OUTER JOIN FETCH crd.certificationResultTestTools crtt "
             + "LEFT OUTER JOIN FETCH crtt.testTool tt "
+            + "LEFT OUTER JOIN FETCH tt.rule ttr "
             + "LEFT OUTER JOIN FETCH crd.certificationResultTestStandards crts "
             + "LEFT OUTER JOIN FETCH crd.certificationResultAdditionalSoftware cras "
             + "LEFT OUTER JOIN FETCH crd.certificationResultOptionalStandards crOptStds "

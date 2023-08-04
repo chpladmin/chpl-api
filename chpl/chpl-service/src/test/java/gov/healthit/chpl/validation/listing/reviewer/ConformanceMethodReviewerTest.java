@@ -22,6 +22,7 @@ import gov.healthit.chpl.conformanceMethod.dao.ConformanceMethodDAO;
 import gov.healthit.chpl.conformanceMethod.domain.CertificationResultConformanceMethod;
 import gov.healthit.chpl.conformanceMethod.domain.ConformanceMethod;
 import gov.healthit.chpl.conformanceMethod.domain.ConformanceMethodCriteriaMap;
+import gov.healthit.chpl.criteriaattribute.testtool.TestTool;
 import gov.healthit.chpl.dao.CertificationResultDAO;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
@@ -940,10 +941,13 @@ public class ConformanceMethodReviewerTest {
                         .criterion(getF3())
                         .conformanceMethods(crcms)
                         .testToolsUsed(Stream.of(CertificationResultTestTool.builder()
-                                .retired(false)
-                                .testToolId(1L)
-                                .testToolName("name")
-                                .testToolVersion("1")
+                                .testTool(TestTool.builder()
+                                        .id(1L)
+                                        .startDay(LocalDate.MIN)
+                                        .endDay(LocalDate.MAX)
+                                        .value("name")
+                                        .build())
+                                .version("1")
                                 .build()).collect(Collectors.toList()))
                         .build())
                 .certificationEdition(get2015CertificationEdition())
@@ -1003,10 +1007,13 @@ public class ConformanceMethodReviewerTest {
                         .criterion(getF3())
                         .conformanceMethods(crcms)
                         .testToolsUsed(Stream.of(CertificationResultTestTool.builder()
-                                .retired(false)
-                                .testToolId(1L)
-                                .testToolName("name")
-                                .testToolVersion("1")
+                                .testTool(TestTool.builder()
+                                        .id(1L)
+                                        .startDay(LocalDate.MIN)
+                                        .endDay(LocalDate.MAX)
+                                        .value("name")
+                                        .build())
+                                .version("1")
                                 .build()).collect(Collectors.toList()))
                         .build())
                 .certificationEdition(get2015CertificationEdition())

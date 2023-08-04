@@ -10,13 +10,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.dao.TestToolDAO;
+import gov.healthit.chpl.criteriaattribute.testtool.TestTool;
+import gov.healthit.chpl.criteriaattribute.testtool.TestToolDAO;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultTestTool;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.domain.TestTool;
 import gov.healthit.chpl.domain.TestToolCriteriaMap;
-import gov.healthit.chpl.dto.TestToolDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import lombok.extern.log4j.Log4j2;
 
@@ -42,6 +41,13 @@ public class TestToolNormalizer {
             clearDataForUnattestedCriteria(listing);
             listing.getCertificationResults().stream()
                 .forEach(certResult -> fillInTestToolData(certResult));
+        }
+    }
+
+    public void normalize(List<CertificationResultTestTool> testTools) {
+        if (!CollectionUtils.isEmpty(testTools)) {
+            testTools.stream()
+                    .forEach(certResultTestTool -> populateTestToolId(certResultTestTool));
         }
     }
 
@@ -76,12 +82,11 @@ public class TestToolNormalizer {
     }
 
     private void populateTestToolId(CertificationResultTestTool testTool) {
-        if (!StringUtils.isEmpty(testTool.getTestToolName())) {
-            TestToolDTO testToolDto =
-                    testToolDao.getByName(testTool.getTestToolName());
-            if (testToolDto != null) {
-                testTool.setTestToolId(testToolDto.getId());
-                testTool.setRetired(testToolDto.isRetired());
+        if (!StringUtils.isEmpty(testTool.getTestTool().getValue())) {
+            TestTool testToolFromDb =
+                    testToolDao.getByName(testTool.getTestTool().getValue());
+            if (testToolFromDb != null) {
+                testTool.setTestTool(testToolFromDb);
             }
         }
     }
