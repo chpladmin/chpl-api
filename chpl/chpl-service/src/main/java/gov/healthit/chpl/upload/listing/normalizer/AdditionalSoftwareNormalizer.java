@@ -2,6 +2,7 @@ package gov.healthit.chpl.upload.listing.normalizer;
 
 import java.util.List;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -26,9 +27,17 @@ public class AdditionalSoftwareNormalizer {
 
     public void normalize(CertifiedProductSearchDetails listing) {
         if (listing.getCertificationResults() != null && listing.getCertificationResults().size() > 0) {
+            clearDataForUnattestedCriteria(listing);
             listing.getCertificationResults().stream()
                 .forEach(certResult -> populateAdditionalSoftwareIds(certResult.getAdditionalSoftware()));
         }
+    }
+
+    private void clearDataForUnattestedCriteria(CertifiedProductSearchDetails listing) {
+        listing.getCertificationResults().stream()
+            .filter(certResult -> (certResult.isSuccess() == null || BooleanUtils.isFalse(certResult.isSuccess()))
+                    && certResult.getAdditionalSoftware() != null && certResult.getAdditionalSoftware().size() > 0)
+            .forEach(unattestedCertResult -> unattestedCertResult.getAdditionalSoftware().clear());
     }
 
     private void populateAdditionalSoftwareIds(List<CertificationResultAdditionalSoftware> additionalSoftwares) {

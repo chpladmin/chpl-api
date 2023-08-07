@@ -1,33 +1,34 @@
 package gov.healthit.chpl.upload.listing.validation.reviewer;
 
 import java.util.Iterator;
-import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.dao.TestToolDAO;
+import gov.healthit.chpl.criteriaattribute.testtool.TestToolDAO;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultTestTool;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.domain.TestToolCriteriaMap;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
 import gov.healthit.chpl.util.ValidationUtils;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 @Component("listingUploadTestToolReviewer")
 public class TestToolReviewer {
     private CertificationResultRules certResultRules;
     private ValidationUtils validationUtils;
     private ErrorMessageUtil msgUtil;
     private ChplProductNumberUtil chplProductNumberUtil;
-    private List<TestToolCriteriaMap> testToolCriteriaMaps;
+    //private List<TestToolCriteriaMap> testToolCriteriaMaps;
+    private TestToolDAO testToolDao;
 
     @Autowired
     public TestToolReviewer(CertificationResultRules certResultRules,
@@ -38,7 +39,7 @@ public class TestToolReviewer {
         this.validationUtils = validationUtils;
         this.chplProductNumberUtil = chplProductNumberUtil;
         this.msgUtil = msgUtil;
-        testToolCriteriaMaps = testToolDAO.getAllTestToolCriteriaMap();
+        this.testToolDao = testToolDAO;
     }
 
     public void review(CertifiedProductSearchDetails listing) {
@@ -82,10 +83,10 @@ public class TestToolReviewer {
         Iterator<CertificationResultTestTool> testToolIter = certResult.getTestToolsUsed().iterator();
         while (testToolIter.hasNext()) {
             CertificationResultTestTool testTool = testToolIter.next();
-            if (testTool.getTestToolId() == null) {
+            if (testTool.getTestTool().getId() == null) {
                 testToolIter.remove();
                 listing.addWarningMessage(msgUtil.getMessage("listing.criteria.testToolNotFoundAndRemoved",
-                        Util.formatCriteriaNumber(certResult.getCriterion()), testTool.getTestToolName()));
+                        Util.formatCriteriaNumber(certResult.getCriterion()), testTool.getTestTool().getValue()));
             }
         }
     }
@@ -118,24 +119,24 @@ public class TestToolReviewer {
 
     private void reviewNameAndVersionRequired(CertifiedProductSearchDetails listing,
             CertificationResult certResult, CertificationResultTestTool testTool) {
-        if (StringUtils.isEmpty(testTool.getTestToolName())) {
+        if (StringUtils.isEmpty(testTool.getTestTool().getValue())) {
             listing.addDataErrorMessage(msgUtil.getMessage("listing.criteria.missingTestToolName",
                     Util.formatCriteriaNumber(certResult.getCriterion())));
-        } else if (!StringUtils.isEmpty(testTool.getTestToolName())
-                && StringUtils.isEmpty(testTool.getTestToolVersion())) {
+        } else if (!StringUtils.isEmpty(testTool.getTestTool().getValue())
+                && StringUtils.isEmpty(testTool.getVersion())) {
             // require test tool version if a test tool name was entered
             listing.addDataErrorMessage(msgUtil.getMessage("listing.criteria.missingTestToolVersion",
-                    testTool.getTestToolName(), Util.formatCriteriaNumber(certResult.getCriterion())));
+                    testTool.getTestTool().getValue(), Util.formatCriteriaNumber(certResult.getCriterion())));
         }
     }
 
     private void reviewTestToolNotRetiredUnlessIcs(CertifiedProductSearchDetails listing,
             CertificationResult certResult, CertificationResultTestTool testTool) {
-        if (testTool.getTestToolId() != null && testTool.isRetired()
+        if (testTool.getTestTool().getId() != null && testTool.getTestTool().isRetired()
                 && (!hasIcs(listing) || hasIcsMismatch(listing))) {
             listing.addDataErrorMessage(msgUtil.getMessage(
                     "listing.criteria.retiredTestToolNoIcsNotAllowed",
-                    testTool.getTestToolName(),
+                    testTool.getTestTool().getValue(),
                     Util.formatCriteriaNumber(certResult.getCriterion())));
         }
     }
@@ -158,15 +159,20 @@ public class TestToolReviewer {
     private void reviewTestToolValidForCriteria(CertifiedProductSearchDetails listing, CertificationResult certResult, CertificationResultTestTool testTool) {
         if (!isTestToolValidForCriteria(certResult.getCriterion(), testTool)) {
             listing.addDataErrorMessage(msgUtil.getMessage("listing.criteria.testToolCriterionMismatch",
-                    testTool.getTestToolName(), Util.formatCriteriaNumber(certResult.getCriterion())));
+                    testTool.getTestTool().getValue(), Util.formatCriteriaNumber(certResult.getCriterion())));
         }
     }
 
     private Boolean isTestToolValidForCriteria(CertificationCriterion criterion, CertificationResultTestTool certResultTestTool) {
-        return testToolCriteriaMaps.stream()
-                .filter(ttcm -> ttcm.getCriterion().getId().equals(criterion.getId())
-                        && ttcm.getTestTool().getId().equals(certResultTestTool.getTestToolId()))
-                .findAny()
-                .isPresent();
+        try {
+            return testToolDao.getAllTestToolCriteriaMap().stream()
+                    .filter(ttcm -> ttcm.getCriterion().getId().equals(criterion.getId())
+                            && ttcm.getTestTool().getId().equals(certResultTestTool.getTestTool().getId()))
+                    .findAny()
+                    .isPresent();
+        } catch (EntityRetrievalException e) {
+            LOGGER.error("Could not validate Test Tool: {}", certResultTestTool.getTestTool().getValue());
+            return false;
+        }
     }
 }

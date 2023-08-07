@@ -2,7 +2,7 @@ package gov.healthit.chpl.domain.comparator;
 
 import java.util.Comparator;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.builder.CompareToBuilder;
 
 import gov.healthit.chpl.domain.CertificationResultTestTool;
 import lombok.NoArgsConstructor;
@@ -12,12 +12,9 @@ public class CertificationResultTestToolComparator implements Comparator<Certifi
 
     @Override
     public int compare(CertificationResultTestTool tt1, CertificationResultTestTool tt2) {
-        if (!StringUtils.isEmpty(tt1.getTestToolName())
-                && !StringUtils.isEmpty(tt2.getTestToolName())) {
-            return tt1.getTestToolName().compareTo(tt2.getTestToolName());
-        } else if (tt1.getTestToolId() != null && tt2.getTestToolId() != null) {
-            return tt1.getTestToolId().compareTo(tt2.getTestToolId());
-        }
-        return 0;
+        return new CompareToBuilder()
+                .append(tt1.getTestTool().getValue(), tt2.getTestTool().getValue())
+                .append(tt1.getVersion(), tt2.getVersion())
+                .toComparison();
     }
 }

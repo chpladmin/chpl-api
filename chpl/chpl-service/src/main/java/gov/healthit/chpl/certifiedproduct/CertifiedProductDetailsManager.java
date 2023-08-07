@@ -19,7 +19,9 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.ListingMeasure;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.sharedstore.listing.SharedListingStoreProvider;
+import gov.healthit.chpl.util.AuthUtil;
 import lombok.extern.log4j.Log4j2;
 
 @Component("certifiedProductDetailsManager")
@@ -32,6 +34,7 @@ public class CertifiedProductDetailsManager {
     private ListingMeasuresService listingMeasuresService;
     private CertificationStatusEventsService certificationStatusEventsService;
     private SharedListingStoreProvider sharedListingStoreProvider;
+    private  ResourcePermissions resourcePermissions;
 
     @Autowired
     public CertifiedProductDetailsManager(
@@ -41,7 +44,8 @@ public class CertifiedProductDetailsManager {
             CertificationResultService certificationResultService,
             ListingMeasuresService listingMeasuresService,
             CertificationStatusEventsService certificationStatusEventsService,
-            SharedListingStoreProvider sharedListingStoreProvider) {
+            SharedListingStoreProvider sharedListingStoreProvider,
+            ResourcePermissions resourcePermissions) {
 
         this.certifiedProductSearchResultDAO = certifiedProductSearchResultDAO;
         this.listingService = listingService;
@@ -50,6 +54,7 @@ public class CertifiedProductDetailsManager {
         this.listingMeasuresService = listingMeasuresService;
         this.certificationStatusEventsService = certificationStatusEventsService;
         this.sharedListingStoreProvider = sharedListingStoreProvider;
+        this.resourcePermissions = resourcePermissions;
     }
 
     @Transactional(readOnly = true)
@@ -83,12 +88,28 @@ public class CertifiedProductDetailsManager {
     @Transactional(readOnly = true)
     public CertifiedProductSearchDetails getCertifiedProductDetailsBasicByChplProductNumber(String chplProductNumber) throws EntityRetrievalException {
         CertifiedProductDetailsDTO dto = getCertifiedProductDetailsDtoByChplProductNumber(chplProductNumber);
-        return listingService.createCertifiedProductSearchDetailsBasic(dto.getId());
+        return getCertifiedProductDetailsBasic(dto.getId());
     }
 
     @Transactional(readOnly = true)
     public CertifiedProductSearchDetails getCertifiedProductDetailsBasic(Long certifiedProductId) throws EntityRetrievalException {
-        return listingService.createCertifiedProductSearchDetailsBasic(certifiedProductId);
+        CertifiedProductSearchDetails listing = listingService.createCertifiedProductSearchDetailsBasic(certifiedProductId);
+        filterListingDataForUser(listing);
+        return listing;
+    }
+
+    private void filterListingDataForUser(CertifiedProductSearchDetails listing) {
+        if (!canUserViewCertificationEventReasons()) {
+            listing.getCertificationEvents().stream()
+                .forEach(certEvent -> certEvent.setReason(null));
+        }
+    }
+
+    private Boolean canUserViewCertificationEventReasons() {
+        return AuthUtil.getCurrentUser() != null
+                && (resourcePermissions.isUserRoleAcbAdmin()
+                        || resourcePermissions.isUserRoleOnc()
+                        || resourcePermissions.isUserRoleAdmin());
     }
 
     @Transactional(readOnly = true)
