@@ -1,5 +1,18 @@
 # Release Notes
 
+## Version 41.1.0
+_7 August 2023_
+
+### Features
+* Create admin tool to manage Test Tools for new HTI-1 rule
+
+### Bug Fixes
+* Complaints search openDuring param correctly includes end date
+* Populate listing store with cert status change reason; remove it for anonymous users
+* Remove data under unattested criteria in normalizers
+
+---
+
 ## Version 41.0.0
 _24 July 2023_
 
