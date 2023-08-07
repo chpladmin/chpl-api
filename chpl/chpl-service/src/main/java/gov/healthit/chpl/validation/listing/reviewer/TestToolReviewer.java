@@ -1,39 +1,37 @@
 package gov.healthit.chpl.validation.listing.reviewer;
 
-import java.util.List;
 import java.util.Optional;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
-import gov.healthit.chpl.dao.TestToolDAO;
+import gov.healthit.chpl.criteriaattribute.testtool.TestTool;
+import gov.healthit.chpl.criteriaattribute.testtool.TestToolDAO;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultTestTool;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.domain.TestToolCriteriaMap;
-import gov.healthit.chpl.dto.TestToolDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 @Component("testToolReviewer")
 public class TestToolReviewer extends PermissionBasedReviewer {
     private TestToolDAO testToolDao;
 
-    private List<TestToolCriteriaMap> testToolCriteriaMap;
-
-    @Autowired
+        @Autowired
     public TestToolReviewer(TestToolDAO testToolDAO, ErrorMessageUtil msgUtil, ResourcePermissions resourcePermissions) throws EntityRetrievalException {
         super(msgUtil, resourcePermissions);
         this.testToolDao = testToolDAO;
-
-        testToolCriteriaMap = testToolDao.getAllTestToolCriteriaMap();
     }
 
+    @Transactional
     @Override
     public void review(CertifiedProductSearchDetails listing) {
         listing.getCertificationResults().stream()
@@ -53,24 +51,24 @@ public class TestToolReviewer extends PermissionBasedReviewer {
     }
 
     private void validateTestTool(CertifiedProductSearchDetails listing, CertificationResult cert, CertificationResultTestTool testTool) {
-        if (StringUtils.isEmpty(testTool.getTestToolName()) && testTool.getTestToolId() == null) {
+        if (StringUtils.isEmpty(testTool.getTestTool().getValue()) && testTool.getTestTool().getId() == null) {
             listing.addDataErrorMessage(msgUtil.getMessage(
                     "listing.criteria.missingTestToolName",
                     Util.formatCriteriaNumber(cert.getCriterion())));
         } else {
-            Optional<TestToolDTO> tt = getTestTool(testTool);
+            Optional<TestTool> tt = getTestTool(testTool);
             if (!tt.isPresent()) {
                 listing.addDataErrorMessage(msgUtil.getMessage(
                         "listing.criteria.testToolNotFound",
                         Util.formatCriteriaNumber(cert.getCriterion()),
-                        testTool.getTestToolName()));
+                        testTool.getTestTool().getValue()));
                 return;
             }
 
             if (!isTestToolValidForCriteria(cert.getCriterion(), tt.get())) {
                 listing.addBusinessErrorMessage(msgUtil.getMessage(
                         "listing.criteria.testToolCriterionMismatch",
-                        testTool.getTestToolName(),
+                        testTool.getTestTool().getValue(),
                         Util.formatCriteriaNumber(cert.getCriterion())));
                 return;
             }
@@ -78,30 +76,35 @@ public class TestToolReviewer extends PermissionBasedReviewer {
             if (isTestToolRetired(tt.get())) {
                 listing.addWarningMessage(msgUtil.getMessage(
                         "listing.criteria.retiredTestToolNotAllowed",
-                        testTool.getTestToolName(),
+                        testTool.getTestTool().getValue(),
                         Util.formatCriteriaNumber(cert.getCriterion())));
             }
         }
     }
 
-    private Boolean isTestToolRetired(TestToolDTO testTool) {
+    private Boolean isTestToolRetired(TestTool testTool) {
         return testTool != null && testTool.isRetired();
     }
 
-    private Boolean isTestToolValidForCriteria(CertificationCriterion criterion, TestToolDTO testTool) {
-        return testToolCriteriaMap.stream()
+    private Boolean isTestToolValidForCriteria(CertificationCriterion criterion, TestTool testTool) {
+        try {
+            return testToolDao.getAllTestToolCriteriaMap().stream()
                 .filter(ttcm -> ttcm.getCriterion().getId().equals(criterion.getId())
                         && ttcm.getTestTool().getId().equals(testTool.getId()))
                 .findAny()
                 .isPresent();
+        } catch (EntityRetrievalException e) {
+            LOGGER.error("Could not validate Test Tool for {}", criterion.getNumber(), e);
+            return false;
+        }
     }
 
-    private Optional<TestToolDTO> getTestTool(CertificationResultTestTool certResultTestTool) {
-        TestToolDTO testTool = null;
-        if (certResultTestTool.getTestToolId() != null) {
-            testTool = testToolDao.getById(certResultTestTool.getTestToolId());
-        } else if (!StringUtils.isEmpty(certResultTestTool.getTestToolName())) {
-            testTool = testToolDao.getByName(certResultTestTool.getTestToolName());
+    private Optional<TestTool> getTestTool(CertificationResultTestTool certResultTestTool) {
+        TestTool testTool = null;
+        if (certResultTestTool.getTestTool().getId() != null) {
+            testTool = testToolDao.getById(certResultTestTool.getTestTool().getId());
+        } else if (!StringUtils.isEmpty(certResultTestTool.getTestTool().getValue())) {
+            testTool = testToolDao.getByName(certResultTestTool.getTestTool().getValue());
         }
         return Optional.ofNullable(testTool);
     }

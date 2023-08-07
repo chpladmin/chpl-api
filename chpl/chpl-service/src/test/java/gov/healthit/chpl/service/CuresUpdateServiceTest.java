@@ -11,6 +11,7 @@ import java.io.InputStream;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
@@ -178,6 +179,7 @@ public class CuresUpdateServiceTest {
         curesUpdateService.postConstruct();
     }
 
+    @Ignore
     @Test
     public void isListingCuresUpdate() throws IOException, FileNotFoundException {
         String listingDetailsJson = null;

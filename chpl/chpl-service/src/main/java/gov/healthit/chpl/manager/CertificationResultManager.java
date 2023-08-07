@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.conformanceMethod.domain.CertificationResultConformanceMethod;
+import gov.healthit.chpl.criteriaattribute.testtool.CertificationResultTestToolService;
 import gov.healthit.chpl.dao.AgeRangeDAO;
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.dao.CertificationResultDAO;
@@ -27,14 +28,12 @@ import gov.healthit.chpl.dao.EducationTypeDAO;
 import gov.healthit.chpl.dao.TestParticipantDAO;
 import gov.healthit.chpl.dao.TestStandardDAO;
 import gov.healthit.chpl.dao.TestTaskDAO;
-import gov.healthit.chpl.dao.TestToolDAO;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultAdditionalSoftware;
 import gov.healthit.chpl.domain.CertificationResultTestData;
 import gov.healthit.chpl.domain.CertificationResultTestProcedure;
 import gov.healthit.chpl.domain.CertificationResultTestStandard;
-import gov.healthit.chpl.domain.CertificationResultTestTool;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductUcdProcess;
 import gov.healthit.chpl.domain.TestParticipant;
@@ -47,12 +46,10 @@ import gov.healthit.chpl.dto.CertificationResultTestDataDTO;
 import gov.healthit.chpl.dto.CertificationResultTestProcedureDTO;
 import gov.healthit.chpl.dto.CertificationResultTestStandardDTO;
 import gov.healthit.chpl.dto.CertificationResultTestTaskDTO;
-import gov.healthit.chpl.dto.CertificationResultTestToolDTO;
 import gov.healthit.chpl.dto.CertificationResultUcdProcessDTO;
 import gov.healthit.chpl.dto.EducationTypeDTO;
 import gov.healthit.chpl.dto.TestParticipantDTO;
 import gov.healthit.chpl.dto.TestTaskDTO;
-import gov.healthit.chpl.dto.TestToolDTO;
 import gov.healthit.chpl.entity.listing.CertificationResultConformanceMethodEntity;
 import gov.healthit.chpl.entity.listing.CertificationResultOptionalStandardEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
@@ -75,31 +72,30 @@ public class CertificationResultManager extends SecuredManager {
     private CertificationResultDAO certResultDAO;
     private CertificationResultFunctionalityTestedDAO certResultFuncTestedDao;
     private TestStandardDAO testStandardDAO;
-    private TestToolDAO testToolDAO;
     private FunctionalityTestedDAO functionalityTestedDao;
     private TestParticipantDAO testParticipantDAO;
     private AgeRangeDAO ageDao;
     private EducationTypeDAO educDao;
     private TestTaskDAO testTaskDAO;
+    private CertificationResultTestToolService certResultTestToolService;
 
     @SuppressWarnings("checkstyle:parameternumber")
     @Autowired
     public CertificationResultManager(CertifiedProductSearchDAO cpDao, CertificationCriterionDAO criteriaDao,
             CertificationResultDAO certResultDAO, CertificationResultFunctionalityTestedDAO certResultFuncTestedDao,
-            TestStandardDAO testStandardDAO, TestToolDAO testToolDAO,
-            FunctionalityTestedDAO functionalityTestedDao, TestParticipantDAO testParticipantDAO,
-            AgeRangeDAO ageDao, EducationTypeDAO educDao, TestTaskDAO testTaskDAO) {
+            TestStandardDAO testStandardDAO, FunctionalityTestedDAO functionalityTestedDao, TestParticipantDAO testParticipantDAO,
+            AgeRangeDAO ageDao, EducationTypeDAO educDao, TestTaskDAO testTaskDAO, CertificationResultTestToolService certResultTestToolService) {
         this.cpDao = cpDao;
         this.criteriaDao = criteriaDao;
         this.certResultDAO = certResultDAO;
         this.certResultFuncTestedDao = certResultFuncTestedDao;
         this.testStandardDAO = testStandardDAO;
-        this.testToolDAO = testToolDAO;
         this.functionalityTestedDao = functionalityTestedDao;
         this.testParticipantDAO = testParticipantDAO;
         this.ageDao = ageDao;
         this.educDao = educDao;
         this.testTaskDAO = testTaskDAO;
+        this.certResultTestToolService = certResultTestToolService;
     }
 
     @SuppressWarnings({"checkstyle:methodlength", "checkstyle:linelength"})
@@ -176,7 +172,7 @@ public class CertificationResultManager extends SecuredManager {
             numChanges += updateConformanceMethods(updatedListing, updated, orig.getConformanceMethods(), null);
             numChanges += updateOptionalStandards(updatedListing, updated, orig.getOptionalStandards(), null);
             numChanges += updateTestStandards(updatedListing, updated, orig.getTestStandards(), null);
-            numChanges += updateTestTools(updated, orig.getTestToolsUsed(), null);
+            numChanges += certResultTestToolService.synchronizeTestTools(updated, orig.getTestToolsUsed(), null);
             numChanges += updateTestData(updated, orig.getTestDataUsed(), null);
             numChanges += updateTestProcedures(updated, orig.getTestProcedures(), null);
             numChanges += updateFunctionalitiesTested(updatedListing, updated, orig.getFunctionalitiesTested(), null);
@@ -221,7 +217,7 @@ public class CertificationResultManager extends SecuredManager {
             numChanges += updateConformanceMethods(updatedListing, updated, orig.getConformanceMethods(), updated.getConformanceMethods());
             numChanges += updateOptionalStandards(updatedListing, updated, orig.getOptionalStandards(), updated.getOptionalStandards());
             numChanges += updateTestStandards(updatedListing, updated, orig.getTestStandards(), updated.getTestStandards());
-            numChanges += updateTestTools(updated, orig.getTestToolsUsed(), updated.getTestToolsUsed());
+            numChanges += certResultTestToolService.synchronizeTestTools(updated, orig.getTestToolsUsed(), updated.getTestToolsUsed());
             numChanges += updateTestData(updated, orig.getTestDataUsed(), updated.getTestDataUsed());
             numChanges += updateTestProcedures(updated, orig.getTestProcedures(), updated.getTestProcedures());
             numChanges += updateFunctionalitiesTested(updatedListing, updated, orig.getFunctionalitiesTested(), updated.getFunctionalitiesTested());
@@ -701,93 +697,6 @@ public class CertificationResultManager extends SecuredManager {
 
         for (Long idToRemove : idsToRemove) {
             certResultDAO.deleteTestStandardMapping(idToRemove);
-        }
-        return numChanges;
-    }
-
-    private int updateTestTools(CertificationResult certResult, List<CertificationResultTestTool> existingTestTools,
-            List<CertificationResultTestTool> updatedTestTools) throws EntityCreationException {
-        int numChanges = 0;
-        List<CertificationResultTestToolDTO> testToolsToAdd = new ArrayList<CertificationResultTestToolDTO>();
-        List<Long> idsToRemove = new ArrayList<Long>();
-
-        // figure out which test tools to add
-        if (updatedTestTools != null && updatedTestTools.size() > 0) {
-            // fill in potentially missing test standard id
-            for (CertificationResultTestTool updatedItem : updatedTestTools) {
-                if (updatedItem.getTestToolId() == null && !StringUtils.isEmpty(updatedItem.getTestToolName())) {
-                    TestToolDTO foundTool = testToolDAO.getByName(updatedItem.getTestToolName());
-                    if (foundTool == null) {
-                        LOGGER.error("Could not find test tool " + updatedItem.getTestToolName()
-                                + "; will not be adding this as a test tool to certification result id "
-                                + certResult.getId() + ", criteria " + certResult.getCriterion().getNumber());
-                    } else {
-                        updatedItem.setTestToolId(foundTool.getId());
-                        updatedItem.setTestToolVersion(updatedItem.getTestToolVersion());
-                    }
-                }
-            }
-
-            if (existingTestTools == null || existingTestTools.size() == 0) {
-                // existing listing has none, add all from the update
-                for (CertificationResultTestTool updatedItem : updatedTestTools) {
-                    if (updatedItem.getTestToolId() != null) {
-                        CertificationResultTestToolDTO toAdd = new CertificationResultTestToolDTO();
-                        toAdd.setCertificationResultId(certResult.getId());
-                        toAdd.setTestToolId(updatedItem.getTestToolId());
-                        toAdd.setTestToolVersion(updatedItem.getTestToolVersion());
-                        testToolsToAdd.add(toAdd);
-                    }
-                }
-            } else if (existingTestTools.size() > 0) {
-                // existing listing has some, compare to the update to see if
-                // any are different
-                for (CertificationResultTestTool updatedItem : updatedTestTools) {
-                    boolean inExistingListing = false;
-                    for (CertificationResultTestTool existingItem : existingTestTools) {
-                        inExistingListing = !inExistingListing ? updatedItem.matches(existingItem) : inExistingListing;
-                    }
-
-                    if (!inExistingListing) {
-                        if (updatedItem.getTestToolId() != null) {
-                            CertificationResultTestToolDTO toAdd = new CertificationResultTestToolDTO();
-                            toAdd.setCertificationResultId(certResult.getId());
-                            toAdd.setTestToolId(updatedItem.getTestToolId());
-                            toAdd.setTestToolVersion(updatedItem.getTestToolVersion());
-                            testToolsToAdd.add(toAdd);
-                        }
-                    }
-                }
-            }
-        }
-
-        // figure out which test tools to remove
-        if (existingTestTools != null && existingTestTools.size() > 0) {
-            // if the updated listing has none, remove them all from existing
-            if (updatedTestTools == null || updatedTestTools.size() == 0) {
-                for (CertificationResultTestTool existingItem : existingTestTools) {
-                    idsToRemove.add(existingItem.getId());
-                }
-            } else if (updatedTestTools.size() > 0) {
-                for (CertificationResultTestTool existingItem : existingTestTools) {
-                    boolean inUpdatedListing = false;
-                    for (CertificationResultTestTool updatedItem : updatedTestTools) {
-                        inUpdatedListing = !inUpdatedListing ? existingItem.matches(updatedItem) : inUpdatedListing;
-                    }
-                    if (!inUpdatedListing) {
-                        idsToRemove.add(existingItem.getId());
-                    }
-                }
-            }
-        }
-
-        numChanges = testToolsToAdd.size() + idsToRemove.size();
-        for (CertificationResultTestToolDTO toAdd : testToolsToAdd) {
-            certResultDAO.addTestToolMapping(toAdd);
-        }
-
-        for (Long idToRemove : idsToRemove) {
-            certResultDAO.deleteTestToolMapping(idToRemove);
         }
         return numChanges;
     }
@@ -1396,12 +1305,7 @@ public class CertificationResultManager extends SecuredManager {
         return result;
     }
 
-    public List<CertificationResultAdditionalSoftwareDTO> getAdditionalSoftwareMappingsForCertificationResult(
-            Long certificationResultId) {
-        return certResultDAO.getAdditionalSoftwareForCertificationResult(certificationResultId);
-    }
-
-    public boolean getCertifiedProductHasAdditionalSoftware(Long certifiedProductId) {
+        public boolean getCertifiedProductHasAdditionalSoftware(Long certifiedProductId) {
         return certResultDAO.getCertifiedProductHasAdditionalSoftware(certifiedProductId);
     }
 
@@ -1409,34 +1313,8 @@ public class CertificationResultManager extends SecuredManager {
         return certResultDAO.getUcdProcessesForCertificationResult(certificationResultId);
     }
 
-    public List<CertificationResultTestStandardDTO> getTestStandardsForCertificationResult(Long certificationResultId) {
-        return certResultDAO.getTestStandardsForCertificationResult(certificationResultId);
-    }
-
-    public List<CertificationResultTestToolDTO> getTestToolsForCertificationResult(Long certificationResultId) {
-        return certResultDAO.getTestToolsForCertificationResult(certificationResultId);
-    }
-
-    public List<CertificationResultTestDataDTO> getTestDataForCertificationResult(Long certificationResultId) {
-        return certResultDAO.getTestDataForCertificationResult(certificationResultId);
-    }
-
-    public List<CertificationResultTestProcedureDTO> getTestProceduresForCertificationResult(
-            Long certificationResultId) {
-        return certResultDAO.getTestProceduresForCertificationResult(certificationResultId);
-    }
-
-    public List<CertificationResultFunctionalityTested> getFunctionalitiesTestedForCertificationResult(
-            Long certificationResultId) {
-        return certResultFuncTestedDao.getFunctionalitiesTestedForCertificationResult(certificationResultId);
-    }
-
     public List<CertificationResultTestTaskDTO> getTestTasksForCertificationResult(Long certificationResultId) {
         return certResultDAO.getTestTasksForCertificationResult(certificationResultId);
-    }
-
-    public List<CertificationResultSvap> getSvapsForCertificationResult(Long certificationResultId) {
-        return certResultDAO.getSvapForCertificationResult(certificationResultId);
     }
 
     private static class CertificationResultAdditionalSoftwarePair {
@@ -1453,17 +1331,10 @@ public class CertificationResultManager extends SecuredManager {
             return orig;
         }
 
-        public void setOrig(final CertificationResultAdditionalSoftware orig) {
-            this.orig = orig;
-        }
-
         public CertificationResultAdditionalSoftware getUpdated() {
             return updated;
         }
 
-        public void setUpdated(final CertificationResultAdditionalSoftware updated) {
-            this.updated = updated;
-        }
     }
 
     private static class CertificationResultUcdProcessPair {
@@ -1479,16 +1350,8 @@ public class CertificationResultManager extends SecuredManager {
             return orig;
         }
 
-        public void setOrig(final CertifiedProductUcdProcess orig) {
-            this.orig = orig;
-        }
-
         public CertifiedProductUcdProcess getUpdated() {
             return updated;
-        }
-
-        public void setUpdated(final CertifiedProductUcdProcess updated) {
-            this.updated = updated;
         }
     }
 
@@ -1506,16 +1369,8 @@ public class CertificationResultManager extends SecuredManager {
             return orig;
         }
 
-        public void setOrig(final CertificationResultTestData orig) {
-            this.orig = orig;
-        }
-
         public CertificationResultTestData getUpdated() {
             return updated;
-        }
-
-        public void setUpdated(final CertificationResultTestData updated) {
-            this.updated = updated;
         }
     }
 
@@ -1532,16 +1387,8 @@ public class CertificationResultManager extends SecuredManager {
             return orig;
         }
 
-        public void setOrig(final TestTask orig) {
-            this.orig = orig;
-        }
-
         public TestTask getUpdated() {
             return updated;
-        }
-
-        public void setUpdated(final TestTask updated) {
-            this.updated = updated;
         }
     }
 
@@ -1558,16 +1405,9 @@ public class CertificationResultManager extends SecuredManager {
             return orig;
         }
 
-        public void setOrig(final TestParticipant orig) {
-            this.orig = orig;
-        }
-
         public TestParticipant getUpdated() {
             return updated;
         }
 
-        public void setUpdated(final TestParticipant updated) {
-            this.updated = updated;
-        }
     }
 }

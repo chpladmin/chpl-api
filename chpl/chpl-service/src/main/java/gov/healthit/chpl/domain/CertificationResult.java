@@ -19,9 +19,11 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
+import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseField;
 import gov.healthit.chpl.conformanceMethod.CertificationResultConformanceMethodComparator;
 import gov.healthit.chpl.conformanceMethod.domain.CertificationResultConformanceMethod;
 import gov.healthit.chpl.conformanceMethod.domain.ConformanceMethod;
+import gov.healthit.chpl.criteriaattribute.testtool.TestTool;
 import gov.healthit.chpl.domain.comparator.CertificationResultAdditionalSoftwareComparator;
 import gov.healthit.chpl.domain.comparator.CertificationResultTestDataComparator;
 import gov.healthit.chpl.domain.comparator.CertificationResultTestProcedureComparator;
@@ -172,6 +174,9 @@ public class CertificationResult implements Serializable {
     @XmlTransient
     private List<OptionalStandard> allowedOptionalStandards;
 
+    @Deprecated
+    @DeprecatedResponseField(message = "This field is deprecated and will be removed. This data can be found via a GET request to the endpoint /test-tools.",
+        removalDate = "2024-01-01")
     @XmlTransient
     private List<TestTool> allowedTestTools;
 
@@ -496,7 +501,6 @@ public class CertificationResult implements Serializable {
     private List<CertificationResultTestTool> getTestTools(CertificationResultDetailsDTO certResult, CertificationResultRules certRules) {
         if (certRules.hasCertOption(certResult.getCertificationCriterionId(), CertificationResultRules.TEST_TOOLS_USED)) {
             return certResult.getTestTools().stream()
-                    .map(item -> new CertificationResultTestTool(item))
                     .sorted(testToolComparator)
                     .collect(Collectors.toList());
         } else {

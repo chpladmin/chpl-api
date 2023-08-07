@@ -123,7 +123,7 @@ public class FieldLengthReviewer implements Reviewer {
         if (certResult.getTestToolsUsed() != null && certResult.getTestToolsUsed().size() > 0) {
             certResult.getTestToolsUsed().stream()
                     .forEach(testTool -> {
-                        checkFieldLength(listing, testTool.getTestToolVersion(), "testToolVersion");
+                        checkFieldLength(listing, testTool.getVersion(), "testToolVersion");
                     });
         }
     }

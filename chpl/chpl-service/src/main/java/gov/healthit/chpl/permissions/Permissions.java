@@ -31,6 +31,7 @@ import gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions;
 import gov.healthit.chpl.permissions.domains.SurveillanceDomainPermissions;
 import gov.healthit.chpl.permissions.domains.SurveillanceReportDomainPermissions;
 import gov.healthit.chpl.permissions.domains.SvapDomainPermissions;
+import gov.healthit.chpl.permissions.domains.TestToolDomainPermissions;
 import gov.healthit.chpl.permissions.domains.TestingLabDomainPermissions;
 import gov.healthit.chpl.permissions.domains.UcdProcessDomainPermissions;
 import gov.healthit.chpl.permissions.domains.UserPermissionsDomainPermissions;
@@ -66,6 +67,7 @@ public class Permissions {
     public static final String QMS_STANDARD = "QMS_STANDARD";
     public static final String ATTESTATION = "ATTESTATION";
     public static final String QUESTIONABLE_ACTIVITY = "QUESTIONABLE_ACTIVITY";
+    public static final String TEST_TOOL = "TEST_TOOL";
 
     private Map<String, DomainPermissions> domainPermissions = new HashMap<String, DomainPermissions>();
 
@@ -97,7 +99,8 @@ public class Permissions {
             AccessibilityStandardDomainPermissions accessibilityStandardDomainPermissions,
             QmsStandardDomainPermissions qmsStandardDomainPermissions,
             AttestationDomainPermissions attestationDomainPermissions,
-            QuestionableActivityDomainPermissions qaDomainPermissions) {
+            QuestionableActivityDomainPermissions qaDomainPermissions,
+            TestToolDomainPermissions testToolDomainPermissions) {
 
         domainPermissions.put(CERTIFICATION_RESULTS, certificationResultsDomainPermissions);
         domainPermissions.put(CERTIFIED_PRODUCT, certifiedProductDomainPermissions);
@@ -126,6 +129,7 @@ public class Permissions {
         domainPermissions.put(QMS_STANDARD, qmsStandardDomainPermissions);
         domainPermissions.put(ATTESTATION, attestationDomainPermissions);
         domainPermissions.put(QUESTIONABLE_ACTIVITY, qaDomainPermissions);
+        domainPermissions.put(TEST_TOOL, testToolDomainPermissions);
     }
 
     public boolean hasAccess(final String domain, final String action) {

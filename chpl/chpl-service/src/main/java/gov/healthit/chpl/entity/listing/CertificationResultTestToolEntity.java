@@ -15,7 +15,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-import gov.healthit.chpl.entity.TestToolEntity;
+import gov.healthit.chpl.criteriaattribute.testtool.TestToolEntity;
+import gov.healthit.chpl.domain.CertificationResultTestTool;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -40,15 +41,11 @@ public class CertificationResultTestToolEntity implements Serializable {
     @Column(name = "certification_result_id", nullable = false)
     private Long certificationResultId;
 
-    @Column(name = "test_tool_id")
-    private Long testToolId;
-
     @Column(name = "version")
     private String version;
 
-    @Basic(optional = true)
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "test_tool_id", unique = true, nullable = true, insertable = false, updatable = false)
+    @OneToOne(optional = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "test_tool_id", insertable = true, updatable = false)
     private TestToolEntity testTool;
 
     @Basic(optional = true)
@@ -67,4 +64,16 @@ public class CertificationResultTestToolEntity implements Serializable {
 
     @Column(name = "last_modified_date", insertable = false, updatable = false)
     private Date lastModifiedDate;
+
+    public CertificationResultTestTool toDomain() {
+        return CertificationResultTestTool.builder()
+                .id(id)
+                .certificationResultId(certificationResultId)
+                .testToolId(testTool.getId())
+                .testToolName(testTool.getName())
+                .testToolVersion(version)
+                .testTool(testTool.toDomain())
+                .version(version)
+                .build();
+    }
 }
