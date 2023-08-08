@@ -27,11 +27,11 @@ public class TestTool2015Reviewer extends PermissionBasedReviewer {
             if (BooleanUtils.isTrue(cert.isSuccess())
                     && cert.getTestToolsUsed() != null && cert.getTestToolsUsed().size() > 0) {
                 for (CertificationResultTestTool testTool : cert.getTestToolsUsed()) {
-                    if (!StringUtils.isEmpty(testTool.getTestToolName())
-                            && StringUtils.isEmpty(testTool.getTestToolVersion())) {
+                    if (!StringUtils.isEmpty(testTool.getTestTool().getValue())
+                            && StringUtils.isEmpty(testTool.getVersion())) {
                         // require test tool version if a test tool name was entered
                         addBusinessCriterionError(listing, cert, "listing.criteria.missingTestToolVersion",
-                                testTool.getTestToolName(), Util.formatCriteriaNumber(cert.getCriterion()));
+                                testTool.getTestTool().getValue(), Util.formatCriteriaNumber(cert.getCriterion()));
                     }
                 }
             }

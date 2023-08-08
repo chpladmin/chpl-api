@@ -15,6 +15,7 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.springframework.context.MessageSource;
 
+import gov.healthit.chpl.criteriaattribute.testtool.TestTool;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultTestData;
 import gov.healthit.chpl.domain.CertificationResultTestProcedure;
@@ -33,6 +34,7 @@ import gov.healthit.chpl.domain.TestProcedure;
 import gov.healthit.chpl.domain.TestTask;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
+@SuppressWarnings("checkstyle:magicnumber")
 public class FieldLengthReviewerTest {
     private static final String FIELD_TOO_LONG = "You have exceeded the max length, %s characters, for the %s. You will need to correct this error before you can confirm. Current value: '%s'";
 
@@ -614,9 +616,11 @@ public class FieldLengthReviewerTest {
     public void review_shortTestToolVersion_noError() {
         List<CertificationResultTestTool> testTools = new ArrayList<CertificationResultTestTool>();
         testTools.add(CertificationResultTestTool.builder()
-                .testToolName("a name")
-                .testToolId(1L)
-                .testToolVersion("1.1")
+                .testTool(TestTool.builder()
+                        .id(1L)
+                        .value("a name")
+                        .build())
+                .version("1.1")
                 .build());
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .certificationResult(CertificationResult.builder()
@@ -632,9 +636,11 @@ public class FieldLengthReviewerTest {
     public void review_longTestToolVersion_hasError() {
         List<CertificationResultTestTool> testTools = new ArrayList<CertificationResultTestTool>();
         testTools.add(CertificationResultTestTool.builder()
-                .testToolName("a name")
-                .testToolId(1L)
-                .testToolVersion(createStringLongerThan(20, "1"))
+                .testTool(TestTool.builder()
+                        .id(1L)
+                        .value("a name")
+                        .build())
+                .version(createStringLongerThan(20, "1"))
                 .build());
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .certificationResult(CertificationResult.builder()

@@ -366,7 +366,7 @@
             <version>8.5.86</version>
             <scope>provided</scope>
         </dependency>
-        
+
         <!-- Sprng Doc (Swagger) -->        
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -483,13 +483,12 @@
                         <source>src/main/java/gov/healthit/chpl/domain/TestParticipant.java</source>
                         <source>src/main/java/gov/healthit/chpl/domain/TestProcedure.java</source>
                         <source>src/main/java/gov/healthit/chpl/domain/TestTask.java</source>
-                        <source>src/main/java/gov/healthit/chpl/domain/UcdProcess.java</source>
+                        <source>src/main/java/gov/healthit/chpl/ucdProcess/UcdProcess.java</source>
                         <source>src/main/java/gov/healthit/chpl/domain/concept/PublicAttestationStatus.java</source>
                         <source>src/main/java/gov/healthit/chpl/domain/surveillance/RequirementGroupType.java</source>
                         <source>src/main/java/gov/healthit/chpl/domain/surveillance/RequirementType.java</source>
                         <source>src/main/java/gov/healthit/chpl/domain/surveillance/Surveillance.java</source>
                         <source>src/main/java/gov/healthit/chpl/domain/surveillance/SurveillanceNonconformity.java</source>
-                        <source>src/main/java/gov/healthit/chpl/domain/surveillance/SurveillanceNonconformityDocument.java</source>
                         <source>src/main/java/gov/healthit/chpl/domain/surveillance/SurveillanceNonconformityStatus.java</source>
                         <source>src/main/java/gov/healthit/chpl/domain/surveillance/SurveillanceRequirement.java</source>
                         <source>src/main/java/gov/healthit/chpl/domain/surveillance/SurveillanceResultType.java</source>
@@ -497,6 +496,9 @@
                         <source>src/main/java/gov/healthit/chpl/functionalityTested/CertificationResultFunctionalityTested.java</source>
                         <source>src/main/java/gov/healthit/chpl/optionalStandard/domain/CertificationResultOptionalStandard.java</source>
                         <source>src/main/java/gov/healthit/chpl/svap/domain/CertificationResultSvap.java</source>
+                        <source>src/main/java/gov/healthit/chpl/criteriaattribute/Rule.java</source>
+                        <source>src/main/java/gov/healthit/chpl/criteriaattribute/CriteriaAttribute.java</source>
+                        <source>src/main/java/gov/healthit/chpl/criteriaattribute/testtool/TestTool.java</source>
                     </sources>
                 </configuration>
                 <executions>

@@ -19,6 +19,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.conformanceMethod.domain.CertificationResultConformanceMethod;
+import gov.healthit.chpl.criteriaattribute.testtool.TestToolDAO;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultAdditionalSoftware;
@@ -34,7 +35,6 @@ import gov.healthit.chpl.dto.CertificationResultTestDataDTO;
 import gov.healthit.chpl.dto.CertificationResultTestProcedureDTO;
 import gov.healthit.chpl.dto.CertificationResultTestStandardDTO;
 import gov.healthit.chpl.dto.CertificationResultTestTaskDTO;
-import gov.healthit.chpl.dto.CertificationResultTestToolDTO;
 import gov.healthit.chpl.dto.CertificationResultUcdProcessDTO;
 import gov.healthit.chpl.dto.TestParticipantDTO;
 import gov.healthit.chpl.dto.TestTaskDTO;
@@ -65,13 +65,14 @@ public class CertificationResultDAO extends BaseDAOImpl {
 
     private TestParticipantDAO participantDao;
     private TestTaskDAO testTaskDao;
+    private TestToolDAO testToolDao;
     private ErrorMessageUtil msgUtil;
 
     @Autowired
-    public CertificationResultDAO(TestParticipantDAO participantDao,
-            TestTaskDAO testTaskDao, ErrorMessageUtil msgUtil) {
+    public CertificationResultDAO(TestParticipantDAO participantDao, TestTaskDAO testTaskDao, TestToolDAO testToolDao, ErrorMessageUtil msgUtil) {
         this.participantDao = participantDao;
         this.testTaskDao = testTaskDao;
+        this.testToolDao = testToolDao;
         this.msgUtil = msgUtil;
     }
 
@@ -818,26 +819,13 @@ public class CertificationResultDAO extends BaseDAOImpl {
      * Test Tool methods
      *
      *******************************************************/
-
-    public List<CertificationResultTestToolDTO> getTestToolsForCertificationResult(Long certificationResultId) {
-
-        List<CertificationResultTestToolEntity> entities = getTestToolsForCertification(certificationResultId);
-        List<CertificationResultTestToolDTO> dtos = new ArrayList<CertificationResultTestToolDTO>();
-
-        for (CertificationResultTestToolEntity entity : entities) {
-            CertificationResultTestToolDTO dto = new CertificationResultTestToolDTO(entity);
-            dtos.add(dto);
-        }
-        return dtos;
-    }
-
-    public Long createTestToolMapping(Long certResultId, CertificationResultTestTool testTool)
+    public Long createTestToolMapping(Long certResultId, CertificationResultTestTool certResultTestTool)
             throws EntityCreationException {
         try {
             CertificationResultTestToolEntity entity = new CertificationResultTestToolEntity();
             entity.setCertificationResultId(certResultId);
-            entity.setTestToolId(testTool.getTestToolId());
-            entity.setVersion(testTool.getTestToolVersion());
+            entity.setTestTool(testToolDao.getEntityById(certResultTestTool.getTestTool().getId()));
+            entity.setVersion(certResultTestTool.getVersion());
             entity.setLastModifiedUser(AuthUtil.getAuditId());
             create(entity);
             return entity.getId();
@@ -846,12 +834,12 @@ public class CertificationResultDAO extends BaseDAOImpl {
         }
     }
 
-    public CertificationResultTestToolDTO addTestToolMapping(CertificationResultTestToolDTO dto)
+    public CertificationResultTestTool addTestToolMapping(CertificationResultTestTool certResultTestTool)
             throws EntityCreationException {
         CertificationResultTestToolEntity mapping = new CertificationResultTestToolEntity();
-        mapping.setCertificationResultId(dto.getCertificationResultId());
-        mapping.setTestToolId(dto.getTestToolId());
-        mapping.setVersion(dto.getTestToolVersion());
+        mapping.setCertificationResultId(certResultTestTool.getCertificationResultId());
+        mapping.setTestTool(testToolDao.getEntityById(certResultTestTool.getTestTool().getId()));
+        mapping.setVersion(certResultTestTool.getVersion());
         mapping.setCreationDate(new Date());
         mapping.setDeleted(false);
         mapping.setLastModifiedDate(new Date());
@@ -860,12 +848,24 @@ public class CertificationResultDAO extends BaseDAOImpl {
             entityManager.persist(mapping);
             entityManager.flush();
         } catch (Exception ex) {
-            String msg = msgUtil.getMessage("listing.criteria.badTestTool", dto.getTestToolName());
+            String msg = msgUtil.getMessage("listing.criteria.badTestTool", certResultTestTool.getTestTool().getValue());
             LOGGER.error(msg, ex);
             throw new EntityCreationException(msg);
         }
 
-        return new CertificationResultTestToolDTO(mapping);
+        return getCertificationResultTestToolById(mapping.getId()).toDomain();
+    }
+
+    public CertificationResultTestTool updateTestToolMapping(Long certificationResultTestToolId, CertificationResultTestTool certResultTestTool) {
+        CertificationResultTestToolEntity mapping = getCertificationResultTestToolById(certificationResultTestToolId);
+
+        mapping.setVersion(certResultTestTool.getVersion());
+        mapping.setLastModifiedDate(new Date());
+        mapping.setLastModifiedUser(AuthUtil.getAuditId());
+        entityManager.merge(mapping);
+        entityManager.flush();
+
+        return getCertificationResultTestToolById(mapping.getId()).toDomain();
     }
 
     public void deleteTestToolMapping(Long mappingId) {
@@ -882,8 +882,13 @@ public class CertificationResultDAO extends BaseDAOImpl {
     private CertificationResultTestToolEntity getCertificationResultTestToolById(Long id) {
         CertificationResultTestToolEntity entity = null;
 
-        Query query = entityManager.createQuery("SELECT tt " + "FROM CertificationResultTestToolEntity tt "
-                + "LEFT OUTER JOIN FETCH tt.testTool " + "where (NOT tt.deleted = true) AND (tt.id = :id) ",
+        Query query = entityManager.createQuery("SELECT crtt "
+                + "FROM CertificationResultTestToolEntity crtt "
+                + "JOIN FETCH crtt.testTool tt "
+                + "JOIN FETCH tt.criteria "
+                + "LEFT OUTER JOIN FETCH tt.rule "
+                + "WHERE (NOT crtt.deleted = true) "
+                + "AND (crtt.id = :id) ",
                 CertificationResultTestToolEntity.class);
         query.setParameter("id", id);
         List<CertificationResultTestToolEntity> result = query.getResultList();
@@ -892,20 +897,6 @@ public class CertificationResultDAO extends BaseDAOImpl {
             entity = result.get(0);
         }
         return entity;
-    }
-
-    private List<CertificationResultTestToolEntity> getTestToolsForCertification(Long certificationResultId) {
-        Query query = entityManager.createQuery(
-                "SELECT tt " + "FROM CertificationResultTestToolEntity tt " + "LEFT OUTER JOIN FETCH tt.testTool "
-                        + "where (NOT tt.deleted = true) AND (certification_result_id = :certificationResultId) ",
-                CertificationResultTestToolEntity.class);
-        query.setParameter("certificationResultId", certificationResultId);
-
-        List<CertificationResultTestToolEntity> result = query.getResultList();
-        if (result == null) {
-            return null;
-        }
-        return result;
     }
 
     /******************************************************

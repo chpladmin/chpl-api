@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.List;
 
 import gov.healthit.chpl.domain.CertificationResult;
+import gov.healthit.chpl.domain.CertificationResultTestTool;
 import gov.healthit.chpl.entity.listing.CertificationResultEntity;
 import gov.healthit.chpl.functionalityTested.CertificationResultFunctionalityTested;
 import lombok.Data;
@@ -37,7 +38,7 @@ public class CertificationResultDTO implements Serializable {
     private List<CertificationResultFunctionalityTested> functionalitiesTested;
     private List<CertificationResultTestProcedureDTO> testProcedures;
     private List<CertificationResultTestDataDTO> testData;
-    private List<CertificationResultTestToolDTO> testTools;
+    private List<CertificationResultTestTool> testTools;
     private List<CertificationResultTestStandardDTO> testStandards;
     private List<CertificationResultAdditionalSoftwareDTO> additionalSoftware;
     private List<CertificationResultTestTaskDTO> testTasks;
@@ -46,7 +47,7 @@ public class CertificationResultDTO implements Serializable {
         ucdProcesses = new ArrayList<CertificationResultUcdProcessDTO>();
         additionalSoftware = new ArrayList<CertificationResultAdditionalSoftwareDTO>();
         testStandards = new ArrayList<CertificationResultTestStandardDTO>();
-        testTools = new ArrayList<CertificationResultTestToolDTO>();
+        testTools = new ArrayList<CertificationResultTestTool>();
         testData = new ArrayList<CertificationResultTestDataDTO>();
         testProcedures = new ArrayList<CertificationResultTestProcedureDTO>();
         functionalitiesTested = new ArrayList<CertificationResultFunctionalityTested>();

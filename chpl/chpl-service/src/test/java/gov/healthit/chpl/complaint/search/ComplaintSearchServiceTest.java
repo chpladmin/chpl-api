@@ -1053,6 +1053,21 @@ public class ComplaintSearchServiceTest {
     }
 
     @Test
+    public void search_openDuringRangeStartDateEqualsClosedComplaintClosedDate_findsMatches() throws ValidationException {
+        ComplaintSearchRequest searchRequest = ComplaintSearchRequest.builder()
+                .openDuringRangeStart("2022-04-02")
+                .openDuringRangeEnd("2022-04-30")
+                .pageNumber(0)
+                .pageSize(10)
+            .build();
+        ComplaintSearchResponse searchResponse = complaintSearchService.searchComplaints(searchRequest);
+
+        assertNotNull(searchResponse);
+        assertEquals(3, searchResponse.getRecordCount());
+        assertEquals(3, searchResponse.getResults().size());
+    }
+
+    @Test
     public void search_openDuringRangeStartAndEndDateEqualsClosedComplaintReceivedDate_findsMatches() throws ValidationException {
         ComplaintSearchRequest searchRequest = ComplaintSearchRequest.builder()
                 .openDuringRangeStart("2022-03-02")
