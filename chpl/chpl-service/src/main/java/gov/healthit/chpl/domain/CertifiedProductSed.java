@@ -16,6 +16,7 @@ import javax.xml.bind.annotation.XmlType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 
@@ -37,6 +38,8 @@ public class CertifiedProductSed implements Serializable {
      * certification criteria. This variable is applicable for 2014 and 2015
      * Edition.
      */
+    @Schema(description = "The user-centered design (UCD) process applied for the corresponding "
+            + "certification criteria. This variable is applicable for 2014 and 2015 Edition.")
     @XmlElementWrapper(name = "ucdProcesses", nillable = true, required = false)
     @XmlElement(name = "ucdProcess")
     @Builder.Default
@@ -45,6 +48,7 @@ public class CertifiedProductSed implements Serializable {
     /**
      * Tasks used for SED testing
      */
+    @Schema(description = "Tasks used for SED testing")
     @XmlElementWrapper(name = "testTasks", nillable = true, required = false)
     @XmlElement(name = "testTask")
     @Builder.Default

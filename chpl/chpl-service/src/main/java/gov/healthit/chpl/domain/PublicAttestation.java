@@ -12,6 +12,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import gov.healthit.chpl.attestation.domain.AttestationPeriod;
 import gov.healthit.chpl.domain.concept.PublicAttestationStatus;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 
@@ -27,12 +28,15 @@ public class PublicAttestation implements Serializable {
      * Identifier used to reference the Attestations status for a given
      * Developer during the associated Attestations period.
      */
+    @Schema(description = "Identifier used to reference the Attestations status for a given "
+            + "Developer during the associated Attestations period.")
     @XmlElement
     private Long id;
 
     /**
      * The period for which the Attestations status is valid.
      */
+    @Schema(description = "The period for which the Attestations status is valid.")
     @XmlElement(required = true)
     private AttestationPeriod attestationPeriod;
 
@@ -40,6 +44,8 @@ public class PublicAttestation implements Serializable {
      * A status of 'Attestations submitted' indicates that the Attestations for the selected
      * Developer have been submitted to the Office of the National Coordinator.
      */
+    @Schema(description = "A status of 'Attestations submitted' indicates that the Attestations for the selected "
+            + "Developer have been submitted to the Office of the National Coordinator.")
     @XmlElement(required = true)
     private PublicAttestationStatus status;
 

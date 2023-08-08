@@ -15,6 +15,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseField;
 import gov.healthit.chpl.criteriaattribute.testtool.TestTool;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
@@ -37,12 +38,15 @@ public class CertificationResultTestTool implements Serializable {
     /**
      * Test tool to certification result mapping internal ID
      */
+    @Schema(description = "Test tool to certification result mapping internal ID")
     @XmlElement(required = true)
     private Long id;
 
     /**
-     * Test tool
+     * The test tool used to certify the Health IT Module to the corresponding
+     * certification criteria
      */
+    @Schema(description = "The test tool used to certify the Health IT Module to the corresponding certification criteria")
     @XmlElement(required = true)
     private TestTool testTool;
 
@@ -51,6 +55,9 @@ public class CertificationResultTestTool implements Serializable {
      * 2014 and 2015 Edition, and a string variable that does not take any
      * restrictions on formatting or values.
      */
+    @Schema(description = "The version of the test tool being used. This variable is applicable for "
+            + "2014 and 2015 Edition, and a string variable that does not take any "
+            + "restrictions on formatting or values.")
     @XmlElement(required = false, nillable = true)
     private String version;
 
@@ -81,6 +88,7 @@ public class CertificationResultTestTool implements Serializable {
     @DeprecatedResponseField(message = "This field is deprecated and will be removed. This data can be found testTool.testTool.retired",
             removalDate = "2024-01-01")
     @XmlTransient
+    @Schema(description = "Whether or not the test tool has been retired.")
     private Boolean retired;
 
     public boolean matches(final CertificationResultTestTool anotherTool) {

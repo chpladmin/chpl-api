@@ -1,12 +1,12 @@
 package gov.healthit.chpl.domain;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.time.LocalDate;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -23,6 +23,7 @@ import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
 import gov.healthit.chpl.domain.contact.PointOfContact;
 import gov.healthit.chpl.util.DateUtil;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 
@@ -37,6 +38,7 @@ public class Product implements Serializable {
     /**
      * Product internal ID
      */
+    @Schema(description = "Product internal ID")
     @XmlElement(required = true)
     private Long id;
 
@@ -66,6 +68,7 @@ public class Product implements Serializable {
      * The name of the product being uploaded. It is applicable for 2014 and
      * 2015 Edition.
      */
+    @Schema(description = "The name of the product being uploaded. It is applicable for 2014 and 2015 Edition.")
     @XmlElement(required = true)
     private String name;
 
@@ -75,24 +78,31 @@ public class Product implements Serializable {
      * applicable to 2014 Edition. Fully qualified URL which is reachable via
      * web browser validation and verification.
      */
+    @Schema(description = "A hyperlink to the test results used to certify the Complete EHRs and/or "
+            + "EHR Modules that can be accessed by the public. This variable is "
+            + "applicable to 2014 Edition. Fully qualified URL which is reachable via "
+            + "web browser validation and verification.")
     @XmlElement(required = false, nillable = true)
     private String reportFileLocation;
 
     /**
      * The point of contact for the product
      */
+    @Schema(description = "The point of contact for the product")
     @XmlElement(required = false, nillable = true)
     private PointOfContact contact;
 
     /**
      * The developer that owns this product.
      */
+    @Schema(description = "The developer that owns this product.")
     @XmlElement(required = true)
     private Developer owner;
 
     /**
      * History of which developers have owned this product.
      */
+    @Schema(description = "History of which developers have owned this product.")
     @XmlElementWrapper(name = "ownerHistory", nillable = true, required = false)
     @XmlElement(name = "owner")
     private List<ProductOwner> ownerHistory;
