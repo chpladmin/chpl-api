@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.caching.CacheNames;
-import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
 import gov.healthit.chpl.compliance.surveillance.SurveillanceManager;
 import gov.healthit.chpl.domain.SimpleExplainableAction;
 import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
@@ -33,8 +32,6 @@ import gov.healthit.chpl.exception.MissingReasonException;
 import gov.healthit.chpl.exception.UserPermissionRetrievalException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
-import gov.healthit.chpl.manager.ActivityManager;
-import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import gov.healthit.chpl.web.controller.annotation.DeprecatedApiResponseFields;
@@ -49,22 +46,13 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 public class SurveillanceController {
     private SurveillanceManager survManager;
-    private ActivityManager activityManager;
-    private CertifiedProductDetailsManager cpdetailsManager;
-    private ResourcePermissions resourcePermissions;
     private ErrorMessageUtil errorMessageUtil;
 
     @Autowired
     public SurveillanceController(
             SurveillanceManager survManager,
-            ActivityManager activityManager,
-            CertifiedProductDetailsManager cpdetailsManager,
-            ResourcePermissions resourcePermissions,
             ErrorMessageUtil errorMessageUtil) {
         this.survManager = survManager;
-        this.activityManager = activityManager;
-        this.cpdetailsManager = cpdetailsManager;
-        this.resourcePermissions = resourcePermissions;
         this.errorMessageUtil = errorMessageUtil;
     }
 
