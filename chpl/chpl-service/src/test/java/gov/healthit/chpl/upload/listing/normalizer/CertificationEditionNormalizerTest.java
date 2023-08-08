@@ -3,12 +3,16 @@ package gov.healthit.chpl.upload.listing.normalizer;
 import static org.junit.Assert.assertNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import org.ff4j.FF4j;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.dao.CertificationEditionDAO;
+import gov.healthit.chpl.dao.CertifiedProductSearchResultDAO;
+import gov.healthit.chpl.dao.ChplProductNumberDAO;
 import gov.healthit.chpl.domain.CertificationEdition;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -34,7 +38,13 @@ public class CertificationEditionNormalizerTest {
                 .build();
 
         editionDao = Mockito.mock(CertificationEditionDAO.class);
-        normalizer = new CertificationEditionNormalizer(editionDao, new ValidationUtils(), new ChplProductNumberUtil());
+        FF4j ff4j = Mockito.mock(FF4j.class);
+        Mockito.when(ff4j.check(ArgumentMatchers.eq(FeatureList.EDITIONLESS))).thenReturn(false);
+        ChplProductNumberUtil chplProductNumberUtil = new ChplProductNumberUtil(
+                Mockito.mock(CertifiedProductSearchResultDAO.class),
+                Mockito.mock(ChplProductNumberDAO.class),
+                ff4j);
+        normalizer = new CertificationEditionNormalizer(editionDao, new ValidationUtils(), chplProductNumberUtil);
     }
 
     @Test

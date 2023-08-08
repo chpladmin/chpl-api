@@ -1,8 +1,6 @@
 package gov.healthit.chpl.upload.listing.validation.reviewer;
 
-import java.util.Arrays;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +9,7 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.util.Util;
 import gov.healthit.chpl.util.ValidationUtils;
 import gov.healthit.chpl.validation.listing.reviewer.Reviewer;
 import lombok.extern.log4j.Log4j2;
@@ -18,9 +17,6 @@ import lombok.extern.log4j.Log4j2;
 @Component("editionCodeReviewer")
 @Log4j2
 public class EditionCodeReviewer implements Reviewer {
-    private static final String[] EDITION_CODES = {
-            "15", ChplProductNumberUtil.EDITION_CODE_NONE
-    };
     private ChplProductNumberUtil chplProductNumberUtil;
     private ValidationUtils validationUtils;
     private ErrorMessageUtil msgUtil;
@@ -50,9 +46,10 @@ public class EditionCodeReviewer implements Reviewer {
             LOGGER.warn("Cannot find edition code in " + chplProductNumber);
         }
 
-        if (!StringUtils.isEmpty(editionCode) && !Arrays.asList(EDITION_CODES).contains(editionCode)) {
+        List<String> allowedEditionCodes = chplProductNumberUtil.getAllowedEditionCodes();
+        if (!StringUtils.isEmpty(editionCode) && !allowedEditionCodes.contains(editionCode)) {
             listing.addDataErrorMessage(msgUtil.getMessage("listing.invalidEditionCode",
-                    editionCode, Stream.of(EDITION_CODES).collect(Collectors.joining(","))));
+                    editionCode, Util.joinListGrammatically(allowedEditionCodes, "or")));
         } else {
             reviewEditionYearMatchesEditionCode(listing, editionCode);
         }
@@ -85,6 +82,6 @@ public class EditionCodeReviewer implements Reviewer {
     private boolean isValidEditionCode(String chplProductNumber) {
         return validationUtils.chplNumberPartIsValid(chplProductNumber,
                 ChplProductNumberUtil.EDITION_CODE_INDEX,
-                ChplProductNumberUtil.EDITION_CODE_REGEX);
+                chplProductNumberUtil.getCertificationEditionCodeRegex());
     }
 }

@@ -71,7 +71,7 @@ public class CertificationEditionNormalizer {
         return !StringUtils.isEmpty(listing.getChplProductNumber())
                 && validationUtils.chplNumberPartIsPresentAndValid(listing.getChplProductNumber(),
                     ChplProductNumberUtil.EDITION_CODE_INDEX,
-                    ChplProductNumberUtil.EDITION_CODE_REGEX);
+                    chplProductNumberUtil.getCertificationEditionCodeRegex());
     }
 
     private void updateEditionFromChplProductNumber(CertifiedProductSearchDetails listing) {
