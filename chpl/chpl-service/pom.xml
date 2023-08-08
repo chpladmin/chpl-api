@@ -367,7 +367,7 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- Sprng Doc (Swagger) -->        
+        <!-- Sprng Doc (Swagger) -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-autoconfigure</artifactId>
