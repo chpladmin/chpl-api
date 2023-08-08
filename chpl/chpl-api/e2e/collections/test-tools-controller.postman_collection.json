@@ -1,0 +1,468 @@
+{
+	"info": {
+		"name": "test-tools-controller",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "ROLE_ACB",
+			"item": [
+				{
+					"name": "POST /test-tools - ROLE_ACB user should get 401 status and access denied error",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"create test tools request by ROLE_ACB user should return Status code 401\", function () {\r",
+									"    pm.response.to.have.status(401);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"ROLE_ACB user should be denied access to create test tools\", function () {\r",
+									"    pm.expect(pm.response.text()).to.include(\"Access is denied\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "API-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"id\":1,\r\n  \"value\": \"test\",\r\n  \"regulatoryTextCitation\": \"test1\",\r\n  \"startDay\": \"2023-07-12\",\r\n  \"endDay\": \"2023-07-12\",\r\n  \"requiredDay\": \"2023-07-12\",\r\n  \"criteria\": [\r\n    {\r\n      \"id\": 0,\r\n      \"number\": \"string\",\r\n      \"title\": \"string\",\r\n      \"certificationEditionId\": 0,\r\n      \"certificationEdition\": \"string\",\r\n      \"description\": \"string\",\r\n      \"removed\": true\r\n    }\r\n  ],\r\n  \"rule\": {\r\n    \"id\": 0,\r\n    \"name\": \"string\"\r\n  }\r\n}"
+						},
+						"url": {
+							"raw": "{{url}}/rest/test-tools",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"test-tools"
+							]
+						},
+						"description": "POST /test-tools - ROLE_ACB user should get 401 status and access denied error"
+					},
+					"response": []
+				},
+				{
+					"name": "PUT /test-tools - ROLE_ACB user should get 401 status and access denied error",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"edit test tools request by ROLE_ACB user should return Status code 401\", function () {\r",
+									"    pm.response.to.have.status(401);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"ROLE_ACB user should be denied access to edit test tools\", function () {\r",
+									"    pm.expect(pm.response.text()).to.include(\"Access is denied\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "API-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"id\": 1,\r\n  \"value\": \"test2\",\r\n  \"regulatoryTextCitation\": \"test3\",\r\n  \"startDay\": \"2023-07-13\",\r\n  \"endDay\": \"2023-07-13\",\r\n  \"requiredDay\": \"2023-07-13\",\r\n  \"criteria\": [\r\n    {\r\n      \"id\": 0,\r\n      \"number\": \"string\",\r\n      \"title\": \"string\",\r\n      \"certificationEditionId\": 0,\r\n      \"certificationEdition\": \"string\",\r\n      \"description\": \"string\",\r\n      \"removed\": true\r\n    }\r\n  ],\r\n  \"rule\": {\r\n    \"id\": 0,\r\n    \"name\": \"string\"\r\n  }\r\n}"
+						},
+						"url": {
+							"raw": "{{url}}/rest/test-tools",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"test-tools"
+							]
+						},
+						"description": "PUT /test-tools - ROLE_ACB user should get 401 status and access denied error"
+					},
+					"response": []
+				},
+				{
+					"name": "GET /test-tools - returns 200 status and response is not null for ACB user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonResponse = pm.response.json();\r",
+									"pm.test(\"GET /test-tools endpoint should return 200 status and response body should not be empty for ACB user\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    pm.expect(jsonResponse.response).not.eq(null);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "API-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/rest/test-tools",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"test-tools"
+							]
+						},
+						"description": "GET /test-tools - returns 200 status and response is not null for ACB user"
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"var ReqBody= {",
+							"        userName:pm.environment.get(\"emailACB\"),password:pm.environment.get(\"passwordACB\")",
+							"    };",
+							"pm.sendRequest({",
+							"    url: pm.environment.get(\"authurl\"),",
+							"    method: \"POST\",",
+							"    header: {",
+							"        \"Content-Type\": \"application/json\",",
+							"        \"API-KEY\": pm.environment.get(\"apiKey\")",
+							"    },",
+							"    body: JSON.stringify(ReqBody)",
+							"}, function (err, response) {",
+							"   var jsonData = response.json();",
+							"   pm.environment.set(\"token\",jsonData[\"token\"])",
+							"});"
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "ROLE_ONC",
+			"item": [
+				{
+					"name": "POST /test-tools - ROLE_ONC user should get 401 status and access denied error",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"create test tools request by ROLE_ONC user should return Status code 401\", function () {\r",
+									"    pm.response.to.have.status(401);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"ROLE_ONC user should be denied access to create test tools\", function () {\r",
+									"    pm.expect(pm.response.text()).to.include(\"Access is denied\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "API-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"id\":1,\r\n  \"value\": \"test\",\r\n  \"regulatoryTextCitation\": \"test1\",\r\n  \"startDay\": \"2023-07-12\",\r\n  \"endDay\": \"2023-07-12\",\r\n  \"requiredDay\": \"2023-07-12\",\r\n  \"criteria\": [\r\n    {\r\n      \"id\": 0,\r\n      \"number\": \"string\",\r\n      \"title\": \"string\",\r\n      \"certificationEditionId\": 0,\r\n      \"certificationEdition\": \"string\",\r\n      \"description\": \"string\",\r\n      \"removed\": true\r\n    }\r\n  ],\r\n  \"rule\": {\r\n    \"id\": 0,\r\n    \"name\": \"string\"\r\n  }\r\n}"
+						},
+						"url": {
+							"raw": "{{url}}/rest/test-tools",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"test-tools"
+							]
+						},
+						"description": "ROLE_ONC user should get 401 status and access denied error to create Test Tools"
+					},
+					"response": []
+				},
+				{
+					"name": "PUT /test-tools - ROLE_ONC user should get 401 status and access denied error",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"edit test tools request by ROLE_ONC user should return Status code 401\", function () {\r",
+									"    pm.response.to.have.status(401);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"ROLE_ONC user should be denied access to edit test tools\", function () {\r",
+									"    pm.expect(pm.response.text()).to.include(\"Access is denied\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "API-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"id\": 1,\r\n  \"value\": \"test2\",\r\n  \"regulatoryTextCitation\": \"test3\",\r\n  \"startDay\": \"2023-07-13\",\r\n  \"endDay\": \"2023-07-13\",\r\n  \"requiredDay\": \"2023-07-13\",\r\n  \"criteria\": [\r\n    {\r\n      \"id\": 0,\r\n      \"number\": \"string\",\r\n      \"title\": \"string\",\r\n      \"certificationEditionId\": 0,\r\n      \"certificationEdition\": \"string\",\r\n      \"description\": \"string\",\r\n      \"removed\": true\r\n    }\r\n  ],\r\n  \"rule\": {\r\n    \"id\": 0,\r\n    \"name\": \"string\"\r\n  }\r\n}"
+						},
+						"url": {
+							"raw": "{{url}}/rest/test-tools",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"test-tools"
+							]
+						},
+						"description": "PUT /test-tools - ROLE_ONC user should get 401 status and access denied error"
+					},
+					"response": []
+				},
+				{
+					"name": "GET /test-tools - Returns 200 for ONC user",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonResponse = pm.response.json();\r",
+									"pm.test(\"GET /test-tools endpoint should return 200 status and response body should not be empty for ONC user\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    pm.expect(jsonResponse.response).not.eq(null);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "API-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/rest/test-tools",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"test-tools"
+							]
+						},
+						"description": "GET /test-tools - Returns 200 for ONC user"
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"var ReqBody= {",
+							"        userName:pm.environment.get(\"emailONC\"),password:pm.environment.get(\"passwordONC\")",
+							"    };",
+							"pm.sendRequest({",
+							"    url: pm.environment.get(\"authurl\"),",
+							"    method: \"POST\",",
+							"    header: {",
+							"        \"Content-Type\": \"application/json\",",
+							"        \"API-KEY\": pm.environment.get(\"apiKey\")",
+							"    },",
+							"    body: JSON.stringify(ReqBody)",
+							"}, function (err, response) {",
+							"   var jsonData = response.json();",
+							"   pm.environment.set(\"token\",jsonData[\"token\"])",
+							"});"
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		}
+	]
+}

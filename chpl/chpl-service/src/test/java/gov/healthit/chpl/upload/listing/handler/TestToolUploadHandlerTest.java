@@ -1,10 +1,10 @@
 package gov.healthit.chpl.upload.listing.handler;
 
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.List;
 
@@ -92,15 +92,15 @@ public class TestToolUploadHandlerTest {
         assertNotNull(parsedTestTools);
         assertEquals(2, parsedTestTools.size());
         parsedTestTools.stream().forEach(tt -> {
-            assertNull(tt.getTestToolId());
-            assertNotNull(tt.getTestToolName());
-            assertNotNull(tt.getTestToolVersion());
-            if (tt.getTestToolName().equals("Test Tool 1")) {
-                assertEquals("2.0", tt.getTestToolVersion());
-            } else if (tt.getTestToolName().equals("Test Tool 2")) {
-                assertEquals("1.0", tt.getTestToolVersion());
+            assertNull(tt.getTestTool().getId());
+            assertNotNull(tt.getTestTool().getValue());
+            assertNotNull(tt.getVersion());
+            if (tt.getTestTool().getValue().equals("Test Tool 1")) {
+                assertEquals("2.0", tt.getVersion());
+            } else if (tt.getTestTool().getValue().equals("Test Tool 2")) {
+                assertEquals("1.0", tt.getVersion());
             } else {
-                fail("No Test Tool with name " + tt.getTestToolName() + " should have been found.");
+                fail("No Test Tool with name " + tt.getTestTool().getValue() + " should have been found.");
             }
         });
     }
@@ -117,9 +117,9 @@ public class TestToolUploadHandlerTest {
         assertNotNull(parsedTestTools);
         assertEquals(2, parsedTestTools.size());
         parsedTestTools.stream().forEach(tt -> {
-            assertNull(tt.getTestToolId());
-            assertEquals("", tt.getTestToolName());
-            assertTrue(tt.getTestToolVersion().equals("1.0") || tt.getTestToolVersion().equals("v5"));
+            assertNull(tt.getTestTool().getId());
+            assertEquals("", tt.getTestTool().getValue());
+            assertTrue(tt.getVersion().equals("1.0") || tt.getVersion().equals("v5"));
         });
     }
 
@@ -134,9 +134,9 @@ public class TestToolUploadHandlerTest {
         assertNotNull(parsedTestTools);
         assertEquals(1, parsedTestTools.size());
         CertificationResultTestTool tt = parsedTestTools.get(0);
-        assertNull(tt.getTestToolName());
-        assertNull(tt.getTestToolId());
-        assertEquals("v1.6", tt.getTestToolVersion());
+        assertNull(tt.getTestTool().getValue());
+        assertNull(tt.getTestTool().getId());
+        assertEquals("v1.6", tt.getVersion());
     }
 
     @Test
@@ -151,7 +151,7 @@ public class TestToolUploadHandlerTest {
         assertNotNull(parsedTestTools);
         assertEquals(1, parsedTestTools.size());
         CertificationResultTestTool tt = parsedTestTools.get(0);
-        assertEquals("ONC Test Tool", tt.getTestToolName());
-        assertEquals("1.0", tt.getTestToolVersion());
+        assertEquals("ONC Test Tool", tt.getTestTool().getValue());
+        assertEquals("1.0", tt.getVersion());
     }
 }
