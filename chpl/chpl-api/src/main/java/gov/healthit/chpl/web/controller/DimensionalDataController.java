@@ -19,10 +19,8 @@ import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.domain.KeyValueModelStatuses;
 import gov.healthit.chpl.domain.Measure;
 import gov.healthit.chpl.domain.MeasureType;
-import gov.healthit.chpl.domain.NonconformityType;
 import gov.healthit.chpl.domain.SearchOption;
 import gov.healthit.chpl.domain.TestStandard;
-import gov.healthit.chpl.domain.surveillance.RequirementType;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.functionalityTested.FunctionalityTestedManager;
 import gov.healthit.chpl.manager.DimensionalDataManager;
@@ -395,7 +393,6 @@ public class DimensionalDataController {
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
-    @DeprecatedApiResponseFields(friendlyUrl = "/data/requirement-types", responseClass = RequirementType.class)
     @RequestMapping(value = "/requirement-types", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
@@ -410,7 +407,6 @@ public class DimensionalDataController {
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
-    @DeprecatedApiResponseFields(friendlyUrl = "/data/nonconformity-types/v2", responseClass = NonconformityType.class)
     @RequestMapping(value = "/nonconformity-types/v2", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
