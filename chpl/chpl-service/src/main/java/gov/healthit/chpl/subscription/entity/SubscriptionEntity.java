@@ -84,6 +84,7 @@ public class SubscriptionEntity {
                         ? SubscriptionConsolidationMethod.builder().id(getSubscriptionConsolidationMethodId()).build()
                                 : getSubscriptionConsolidationMethod().toDomain())
                 .subscribedObjectId(getSubscribedObjectId())
+                .creationDate(getCreationDate())
                 .build();
     }
 }
