@@ -11,23 +11,22 @@ import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
-import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultAdditionalSoftware;
+import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.dto.CertifiedProductDTO;
-import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.util.CertifiedProductUtil;
 
 public class AdditionalSoftwareNormalizerTest {
-    private CertifiedProductDAO certifiedProductDao;
+    private CertifiedProductUtil certifiedProductUtil;
     private AdditionalSoftwareNormalizer normalizer;
 
     @Before
     public void before() {
-        certifiedProductDao = Mockito.mock(CertifiedProductDAO.class);
-        normalizer = new AdditionalSoftwareNormalizer(certifiedProductDao);
+        certifiedProductUtil = Mockito.mock(CertifiedProductUtil.class);
+        normalizer = new AdditionalSoftwareNormalizer(certifiedProductUtil);
     }
 
     @Test
@@ -99,7 +98,7 @@ public class AdditionalSoftwareNormalizerTest {
                 .certifiedProductNumber("15.02.02.3007.A056.01.00.0.180214")
                 .build());
 
-        Mockito.when(certifiedProductDao.getByChplUniqueId(ArgumentMatchers.anyString()))
+        Mockito.when(certifiedProductUtil.getListing(ArgumentMatchers.anyString()))
             .thenReturn(null);
 
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
@@ -125,7 +124,7 @@ public class AdditionalSoftwareNormalizerTest {
                 .certifiedProductNumber("CHP-008408")
                 .build());
 
-        Mockito.when(certifiedProductDao.getByChplNumber(ArgumentMatchers.anyString()))
+        Mockito.when(certifiedProductUtil.getListing(ArgumentMatchers.anyString()))
             .thenReturn(null);
 
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
@@ -174,8 +173,8 @@ public class AdditionalSoftwareNormalizerTest {
                 .certifiedProductNumber("15.02.02.3007.A056.01.00.0.180214")
                 .build());
 
-        Mockito.when(certifiedProductDao.getByChplUniqueId(ArgumentMatchers.anyString()))
-            .thenReturn(CertifiedProductDetailsDTO.builder()
+        Mockito.when(certifiedProductUtil.getListing(ArgumentMatchers.anyString()))
+            .thenReturn(CertifiedProduct.builder()
                     .id(1L)
                     .chplProductNumber("15.02.02.3007.A056.01.00.0.180214")
                     .build());
@@ -204,8 +203,8 @@ public class AdditionalSoftwareNormalizerTest {
                 .certifiedProductNumber("CHP-008408")
                 .build());
 
-        Mockito.when(certifiedProductDao.getByChplNumber(ArgumentMatchers.anyString()))
-            .thenReturn(CertifiedProductDTO.builder()
+        Mockito.when(certifiedProductUtil.getListing(ArgumentMatchers.anyString()))
+            .thenReturn(CertifiedProduct.builder()
                     .id(1L)
                     .chplProductNumber("CHP-008408")
                     .build());

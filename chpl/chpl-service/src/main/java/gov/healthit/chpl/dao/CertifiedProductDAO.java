@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import javax.persistence.Query;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
@@ -38,7 +39,6 @@ import lombok.extern.log4j.Log4j2;
 @Repository(value = "certifiedProductDAO")
 @Primary
 public class CertifiedProductDAO extends BaseDAOImpl {
-    private static final int CHPL_ID_LENGTH = 9;
     private ChplProductNumberUtil chplProductNumberUtil;
     private ErrorMessageUtil msgUtil;
 
@@ -185,6 +185,29 @@ public class CertifiedProductDAO extends BaseDAOImpl {
             products.add(product);
         }
         return products;
+    }
+
+    public CertifiedProduct getByChplProductNumber(String chplProductNumber) {
+        Query query = entityManager.createQuery("SELECT cpd "
+                + "FROM CertifiedProductDetailsEntitySimple cpd "
+                + "WHERE chplProductNumber = :chplProductNumber",
+                CertifiedProductDetailsEntitySimple.class);
+        query.setParameter("chplProductNumber", chplProductNumber);
+
+        List<CertifiedProductDetailsEntitySimple> results = query.getResultList();
+        if (CollectionUtils.isEmpty(results)) {
+            return null;
+        }
+        CertifiedProductDetailsEntitySimple cpd = results.get(0);
+        return CertifiedProduct.builder()
+                .id(cpd.getId())
+                .certificationDate(cpd.getCertificationDate().getTime())
+                .certificationStatus(cpd.getCertificationStatusName())
+                .chplProductNumber(cpd.getChplProductNumber())
+                .curesUpdate(cpd.getCuresUpdate())
+                .edition(cpd.getYear())
+                .lastModifiedDate(cpd.getLastModifiedDate().getTime())
+                .build();
     }
 
     @Transactional(readOnly = true)
@@ -364,34 +387,6 @@ public class CertifiedProductDAO extends BaseDAOImpl {
             throw new EntityRetrievalException(msgUtil.getMessage("listing.notFound"));
         }
         return new CertifiedProductSummaryDTO(result.get(0));
-    }
-
-    @Transactional(readOnly = true)
-    public CertifiedProductDTO getByChplNumber(final String chplProductNumber) {
-        CertifiedProductDTO dto = null;
-        CertifiedProductEntity entity = getEntityByChplNumber(chplProductNumber);
-
-        if (entity != null) {
-            dto = new CertifiedProductDTO(entity);
-        }
-        return dto;
-    }
-
-    @SuppressWarnings({"checkstyle:magicnumber"})
-    @Transactional(readOnly = true)
-    public CertifiedProductDetailsDTO getByChplUniqueId(final String chplUniqueId) throws EntityRetrievalException {
-        CertifiedProductDetailsDTO dto = null;
-        String[] idParts = chplUniqueId.split("\\.");
-        if (idParts.length < CHPL_ID_LENGTH) {
-            throw new EntityRetrievalException("CHPL ID must have 9 parts separated by '.'");
-        }
-        CertifiedProductDetailsEntity entity = getEntityByUniqueIdParts(idParts[0], idParts[1], idParts[2], idParts[3],
-                idParts[4], idParts[5], idParts[6], idParts[7], idParts[8]);
-
-        if (entity != null) {
-            dto = new CertifiedProductDetailsDTO(entity);
-        }
-        return dto;
     }
 
     @Transactional(readOnly = true)
@@ -653,62 +648,6 @@ public class CertifiedProductDAO extends BaseDAOImpl {
         } else if (result.size() > 1) {
             throw new EntityRetrievalException("Data error. Duplicate Certified Product id in database.");
         }
-
-        if (result.size() > 0) {
-            entity = result.get(0);
-        }
-
-        return entity;
-    }
-
-    @Transactional(readOnly = true)
-    private CertifiedProductEntity getEntityByChplNumber(final String chplProductNumber) {
-
-        CertifiedProductEntity entity = null;
-
-        Query query = entityManager.createQuery(
-                "from CertifiedProductEntity where (chplProductNumber = :chplProductNumber) ",
-                CertifiedProductEntity.class);
-        query.setParameter("chplProductNumber", chplProductNumber);
-        List<CertifiedProductEntity> result = query.getResultList();
-
-        if (result.size() > 0) {
-            entity = result.get(0);
-        }
-
-        return entity;
-    }
-
-    @SuppressWarnings({"checkstyle:parameternumber"})
-    @Transactional(readOnly = true)
-    private CertifiedProductDetailsEntity getEntityByUniqueIdParts(final String yearCode, final String atlCode,
-            final String acbCode, final String developerCode, final String productCode, final String versionCode,
-            final String icsCode, final String additionalSoftwareCode, final String certifiedDateCode) {
-
-        CertifiedProductDetailsEntity entity = null;
-
-        Query query = entityManager.createQuery("from CertifiedProductDetailsEntity deets "
-                + "LEFT OUTER JOIN FETCH deets.product " + "where " + "deets.year = '20' || :yearCode AND "
-                // + "deets.testingLabCode = :atlCode AND " +
-                // "deets.certificationBodyCode = :acbCode AND "
-                + "deets.certificationBodyCode = :acbCode AND "
-                + "deets.developerCode = :developerCode AND " + "deets.productCode = :productCode AND "
-                + "deets.versionCode = :versionCode AND " + "deets.icsCode = :icsCode AND "
-                + "deets.additionalSoftwareCode = :additionalSoftwareCode AND "
-                + "deets.deleted = false AND "
-                + "deets.certifiedDateCode = :certifiedDateCode ", CertifiedProductDetailsEntity.class);
-
-        query.setParameter("yearCode", yearCode);
-        // query.setParameter("atlCode", atlCode);
-        query.setParameter("acbCode", acbCode);
-        query.setParameter("developerCode", developerCode);
-        query.setParameter("productCode", productCode);
-        query.setParameter("versionCode", versionCode);
-        query.setParameter("icsCode", icsCode);
-        query.setParameter("additionalSoftwareCode", additionalSoftwareCode);
-        query.setParameter("certifiedDateCode", certifiedDateCode);
-
-        List<CertifiedProductDetailsEntity> result = query.getResultList();
 
         if (result.size() > 0) {
             entity = result.get(0);

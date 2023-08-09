@@ -6,23 +6,23 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.dao.CertifiedProductSearchDAO;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.InheritedCertificationStatus;
+import gov.healthit.chpl.util.CertifiedProductUtil;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import lombok.extern.log4j.Log4j2;
 
 @Component
 @Log4j2
 public class IcsNormalizer {
-    private CertifiedProductSearchDAO cpSearchDao;
+    private CertifiedProductUtil cpUtil;
     private ChplProductNumberUtil chplProductNumberUtil;
 
     @Autowired
-    public IcsNormalizer(CertifiedProductSearchDAO cpSearchDao,
+    public IcsNormalizer(CertifiedProductUtil cpUtil,
             ChplProductNumberUtil chplProductNumberUtil) {
-        this.cpSearchDao = cpSearchDao;
+        this.cpUtil = cpUtil;
         this.chplProductNumberUtil = chplProductNumberUtil;
     }
 
@@ -47,14 +47,13 @@ public class IcsNormalizer {
 
         if (relative.getId() == null && !StringUtils.isEmpty(relative.getChplProductNumber())) {
             try {
-                CertifiedProduct foundListing = cpSearchDao.getByChplProductNumber(relative.getChplProductNumber());
+                CertifiedProduct foundListing = cpUtil.getListing(relative.getChplProductNumber());
                 if (foundListing != null) {
                     relative.setId(foundListing.getId());
                     relative.setCertificationDate(foundListing.getCertificationDate());
                     relative.setCertificationStatus(foundListing.getCertificationStatus());
                     relative.setCuresUpdate(foundListing.getCuresUpdate());
                     relative.setEdition(foundListing.getEdition());
-                    relative.setLastModifiedDate(foundListing.getLastModifiedDate());
                 }
             } catch (EntityNotFoundException ex) {
                 LOGGER.error("Listing uploaded with invalid ICS source " + relative.getChplProductNumber());

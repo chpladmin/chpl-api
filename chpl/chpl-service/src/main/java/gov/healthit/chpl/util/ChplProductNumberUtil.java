@@ -27,7 +27,7 @@ public class ChplProductNumberUtil {
     public static final int EDITION_CODE_INDEX = 0;
     public static final String EDITION_CODE_NONE = "XX";
     private static final String EDITION_CODE_REGEX = "^" + EDITION_CODE_NONE + "|[0-9]{" + ChplProductNumberUtil.EDITION_CODE_LENGTH + "}$";
-    private static final String EDITION_CODE_REGEX_WITH_YEAR = "^" + EDITION_CODE_NONE + "|[0-9]{" + ChplProductNumberUtil.EDITION_CODE_LENGTH + "}$";
+    private static final String EDITION_CODE_REGEX_WITH_YEAR = "^[0-9]{" + ChplProductNumberUtil.EDITION_CODE_LENGTH + "}$";
     public static final int EDITION_CODE_LENGTH = 2;
     public static final int ATL_CODE_INDEX = 1;
     public static final String ATL_CODE_REGEX = "^[0-9]{" + ChplProductNumberUtil.ATL_CODE_LENGTH + "}$";

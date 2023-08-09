@@ -23,7 +23,6 @@ import gov.healthit.chpl.criteriaattribute.testtool.CertificationResultTestToolS
 import gov.healthit.chpl.dao.AgeRangeDAO;
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.dao.CertificationResultDAO;
-import gov.healthit.chpl.dao.CertifiedProductSearchDAO;
 import gov.healthit.chpl.dao.EducationTypeDAO;
 import gov.healthit.chpl.dao.TestParticipantDAO;
 import gov.healthit.chpl.dao.TestStandardDAO;
@@ -34,6 +33,7 @@ import gov.healthit.chpl.domain.CertificationResultAdditionalSoftware;
 import gov.healthit.chpl.domain.CertificationResultTestData;
 import gov.healthit.chpl.domain.CertificationResultTestProcedure;
 import gov.healthit.chpl.domain.CertificationResultTestStandard;
+import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductUcdProcess;
 import gov.healthit.chpl.domain.TestParticipant;
@@ -61,13 +61,14 @@ import gov.healthit.chpl.functionalityTested.FunctionalityTestedDAO;
 import gov.healthit.chpl.manager.impl.SecuredManager;
 import gov.healthit.chpl.optionalStandard.domain.CertificationResultOptionalStandard;
 import gov.healthit.chpl.svap.domain.CertificationResultSvap;
+import gov.healthit.chpl.util.CertifiedProductUtil;
 import gov.healthit.chpl.util.Util;
 import lombok.extern.log4j.Log4j2;
 
 @Service
 @Log4j2
 public class CertificationResultManager extends SecuredManager {
-    private CertifiedProductSearchDAO cpDao;
+    private CertifiedProductUtil cpUtil;
     private CertificationCriterionDAO criteriaDao;
     private CertificationResultDAO certResultDAO;
     private CertificationResultFunctionalityTestedDAO certResultFuncTestedDao;
@@ -81,11 +82,11 @@ public class CertificationResultManager extends SecuredManager {
 
     @SuppressWarnings("checkstyle:parameternumber")
     @Autowired
-    public CertificationResultManager(CertifiedProductSearchDAO cpDao, CertificationCriterionDAO criteriaDao,
+    public CertificationResultManager(CertifiedProductUtil cpUtil, CertificationCriterionDAO criteriaDao,
             CertificationResultDAO certResultDAO, CertificationResultFunctionalityTestedDAO certResultFuncTestedDao,
             TestStandardDAO testStandardDAO, FunctionalityTestedDAO functionalityTestedDao, TestParticipantDAO testParticipantDAO,
             AgeRangeDAO ageDao, EducationTypeDAO educDao, TestTaskDAO testTaskDAO, CertificationResultTestToolService certResultTestToolService) {
-        this.cpDao = cpDao;
+        this.cpUtil = cpUtil;
         this.criteriaDao = criteriaDao;
         this.certResultDAO = certResultDAO;
         this.certResultFuncTestedDao = certResultFuncTestedDao;
@@ -344,8 +345,10 @@ public class CertificationResultManager extends SecuredManager {
             for (CertificationResultAdditionalSoftware updatedItem : updatedAdditionalSoftware) {
                 if (updatedItem.getCertifiedProductId() == null
                         && !StringUtils.isEmpty(updatedItem.getCertifiedProductNumber())) {
-                    Long cpId = cpDao.getListingIdByUniqueChplNumber(updatedItem.getCertifiedProductNumber());
-                    updatedItem.setCertifiedProductId(cpId);
+                    CertifiedProduct cp = cpUtil.getListing(updatedItem.getCertifiedProductNumber());
+                    if (cp != null) {
+                        updatedItem.setCertifiedProductId(cp.getId());
+                    }
                 }
             }
 
@@ -622,7 +625,7 @@ public class CertificationResultManager extends SecuredManager {
             List<CertificationResultTestStandard> existingTestStandards,
             List<CertificationResultTestStandard> updatedTestStandards) throws EntityCreationException {
         int numChanges = 0;
-        Long editionId = listing.getEdition().getId();
+        Long editionId = listing.getEdition() != null ? listing.getEdition().getId() : null;
         List<CertificationResultTestStandardDTO> testStandardsToAdd = new ArrayList<CertificationResultTestStandardDTO>();
         List<Long> idsToRemove = new ArrayList<Long>();
 

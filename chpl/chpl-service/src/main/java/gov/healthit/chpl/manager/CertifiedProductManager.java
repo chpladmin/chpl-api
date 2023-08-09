@@ -233,12 +233,6 @@ public class CertifiedProductManager extends SecuredManager {
     }
 
     @Transactional(readOnly = true)
-    public CertifiedProductDTO getByChplProductNumber(String chplProductNumber) throws EntityRetrievalException {
-        CertifiedProductDTO result = cpDao.getByChplNumber(chplProductNumber);
-        return result;
-    }
-
-    @Transactional(readOnly = true)
     public List<CertifiedProductDetailsDTO> getByDeveloperId(Long developerId) throws EntityRetrievalException {
         return cpDao.findByDeveloperId(developerId);
     }
