@@ -11,6 +11,7 @@ public class CertificationEditionXmlGenerator extends XmlGenerator {
             sw.writeStartElement(rootNodeName);
             createSimpleElement(edition.getId(), "id", sw);
             createSimpleElement(edition.getName(), "name", sw);
+            createSimpleElement(edition.isRetired(), "retired", sw);
             sw.writeEndElement();
         }
     }
