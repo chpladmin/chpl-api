@@ -42,8 +42,9 @@ public class SurveillanceDownloadableResourceCreatorJob extends DownloadableReso
         try {
             List<CertifiedProductDetailsDTO> listings = getRelevantListings();
 
-            List<Future<CertifiedProductSearchDetails>> futures = getCertifiedProductSearchDetailsFutures(listings);
+            List<Future<CertifiedProductSearchDetails>> futures = getCertifiedProductSearchDetailsFuturesSMALL(listings);
             Map<Long, CertifiedProductSearchDetails> cpMap = getMapFromFutures(futures);
+
             List<CertifiedProductSearchDetails> orderedListings = createOrderedListOfCertifiedProducts(cpMap, listings);
 
             File downloadFolder = getDownloadFolder();

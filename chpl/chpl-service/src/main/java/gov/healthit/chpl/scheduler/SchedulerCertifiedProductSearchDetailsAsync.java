@@ -31,4 +31,12 @@ public class SchedulerCertifiedProductSearchDetailsAsync {
         CertifiedProductSearchDetails dto = certifiedProductDetailsManager.getCertifiedProductDetails(id);
         return new AsyncResult<CertifiedProductSearchDetails>(dto);
     }
+
+    @Async("jobAsyncDataExecutor")
+    public Future<CertifiedProductSearchDetails> getCertifiedProductDetailSMALL(
+            final Long id, final CertifiedProductDetailsManager certifiedProductDetailsManager)
+                throws EntityRetrievalException {
+        CertifiedProductSearchDetails dto = certifiedProductDetailsManager.getCertifiedProductDetailsSMALL(id);
+        return new AsyncResult<CertifiedProductSearchDetails>(dto);
+    }
 }
