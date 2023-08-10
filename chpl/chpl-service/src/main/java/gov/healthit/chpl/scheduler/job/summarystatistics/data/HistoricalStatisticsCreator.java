@@ -138,7 +138,8 @@ public class HistoricalStatisticsCreator {
             Map<Long, List<CertificationStatusEvent>> allStatuses, Date endDate) {
 
         List<Developer> developers = allListings.stream()
-                .filter(listing -> listing.getCertificationEditionId().equals(EDITION_2014_ID)
+                .filter(listing -> listing.getCertificationEditionId() != null
+                        && listing.getCertificationEditionId().equals(EDITION_2014_ID)
                         && doesListingExistAsOfDate(listing.getId(), allStatuses, endDate))
                 .map(listing -> listing.getDeveloper())
                 .collect(Collectors.toList());
@@ -152,7 +153,8 @@ public class HistoricalStatisticsCreator {
             Map<Long, List<CertificationStatusEvent>> allStatuses, Date endDate) {
 
         List<Developer> developers = allListings.stream()
-                .filter(listing -> listing.getCertificationEditionId().equals(EDITION_2015_ID)
+                .filter(listing -> listing.getCertificationEditionId() != null
+                        && listing.getCertificationEditionId().equals(EDITION_2015_ID)
                         && doesListingExistAsOfDate(listing.getId(), allStatuses, endDate))
                 .map(listing -> listing.getDeveloper())
                 .collect(Collectors.toList());
@@ -181,7 +183,8 @@ public class HistoricalStatisticsCreator {
             Map<Long, List<CertificationStatusEvent>> allStatuses, Date endDate) {
 
         List<Product> products = allListings.stream()
-                .filter(listing -> listing.getCertificationEditionId().equals(EDITION_2014_ID)
+                .filter(listing -> listing.getCertificationEditionId() != null
+                        && listing.getCertificationEditionId().equals(EDITION_2014_ID)
                         && isListingActiveAsOfDate(listing.getId(), allStatuses, endDate))
                 .map(listing -> listing.getProduct())
                 .collect(Collectors.toList());
@@ -195,7 +198,8 @@ public class HistoricalStatisticsCreator {
             Map<Long, List<CertificationStatusEvent>> allStatuses, Date endDate) {
 
         List<Product> products = allListings.stream()
-                .filter(listing -> listing.getCertificationEditionId().equals(EDITION_2015_ID)
+                .filter(listing -> listing.getCertificationEditionId() != null
+                        && listing.getCertificationEditionId().equals(EDITION_2015_ID)
                         && isListingActiveAsOfDate(listing.getId(), allStatuses, endDate))
                 .map(listing -> listing.getProduct())
                 .collect(Collectors.toList());
