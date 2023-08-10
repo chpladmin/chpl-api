@@ -97,7 +97,7 @@ public class SubscriptionManager {
 
         Subscriber subscriber = subscriberDao.getSubscriberByEmail(subscriptionRequest.getEmail());
         if (subscriber == null) {
-            UUID newSubscriberId = subscriberDao.createSubscriber(subscriptionRequest.getEmail(), subscriptionRequest.getRoleId());
+            UUID newSubscriberId = subscriberDao.createSubscriber(subscriptionRequest.getEmail());
             subscriber = subscriberDao.getSubscriberById(newSubscriberId);
         }
 
@@ -194,13 +194,13 @@ public class SubscriptionManager {
     }
 
     @Transactional
-    public Subscriber confirm(UUID subscriberId) throws ValidationException {
+    public Subscriber confirm(UUID subscriberId, Long roleId) throws ValidationException {
         SubscriberValidationContext validationContext = getSubscriberValidationContext(subscriberId);
         ValidationException validationException = new ValidationException(subscriberValidationService.validate(validationContext));
         if (validationException.getErrorMessages().size() > 0) {
             throw validationException;
         }
-        subscriberDao.confirmSubscriber(subscriberId);
+        subscriberDao.confirmSubscriber(subscriberId, roleId);
 
         Subscriber subscriber = subscriberDao.getSubscriberById(subscriberId);
         if (subscriber.getStatus().getId().equals(lookupUtil.getConfirmedSubscriberStatusId())) {
