@@ -23,8 +23,14 @@ import org.hibernate.annotations.Where;
 
 import gov.healthit.chpl.criteriaattribute.rule.RuleEntity;
 import gov.healthit.chpl.entity.PracticeTypeEntity;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "functionality_tested")
 @Data
