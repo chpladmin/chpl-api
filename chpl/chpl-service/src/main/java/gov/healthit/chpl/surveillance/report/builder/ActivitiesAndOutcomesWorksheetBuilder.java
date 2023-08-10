@@ -407,14 +407,7 @@ public abstract class ActivitiesAndOutcomesWorksheetBuilder {
                 addDataCell(workbook, row, COL_Q4, "X");
             }
 
-            String edition = "";
-            if (listing.getEdition() != null) {
-                edition = listing.getEdition().getName();
-                if (listing.getCuresUpdate() != null && listing.getCuresUpdate()) {
-                    edition += CertificationEdition.CURES_SUFFIX;
-                }
-            }
-            addDataCell(workbook, row, COL_CERT_EDITION, edition);
+            addDataCell(workbook, row, COL_CERT_EDITION, listing.getEdition() != null ? listing.getEdition().getName() : "");
             addDataCell(workbook, row, COL_DEVELOPER_NAME, listing.getDeveloper().getName());
             addDataCell(workbook, row, COL_PRODUCT_NAME, listing.getProduct().getName());
             addDataCell(workbook, row, COL_PRODUCT_VERSION, listing.getVersion().getVersion());
@@ -513,13 +506,18 @@ public abstract class ActivitiesAndOutcomesWorksheetBuilder {
             completeListingDetails.setId(listingDetails.getId());
             completeListingDetails.setChplProductNumber(listingDetails.getChplProductNumber());
             String edition = listingDetails.getYear();
-            if (listingDetails.getCuresUpdate() != null && listingDetails.getCuresUpdate()) {
-                edition += CertificationEdition.CURES_SUFFIX;
-            }
-            completeListingDetails.setEdition(CertificationEdition.builder()
+            if (StringUtils.isEmpty(edition)) {
+                completeListingDetails.setEdition(null);
+            } else {
+                if (listingDetails.getCuresUpdate() != null && listingDetails.getCuresUpdate()) {
+                    edition += CertificationEdition.CURES_SUFFIX;
+                }
+
+                completeListingDetails.setEdition(CertificationEdition.builder()
                     .id(listingDetails.getCertificationEditionId())
                     .name(edition)
                     .build());
+            }
             Developer dev = new Developer();
             dev.setId(listingDetails.getDeveloper().getId());
             dev.setName(listingDetails.getDeveloper().getName());
