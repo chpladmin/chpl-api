@@ -28,7 +28,7 @@ public class CertificationResultFunctionalityTestedDAO extends BaseDAOImpl {
         try {
             CertificationResultFunctionalityTestedEntity entity = new CertificationResultFunctionalityTestedEntity();
             entity.setCertificationResultId(certResultId);
-            entity.setFunctionalityTestedId(functionalityTested.getFunctionalityTestedId());
+            entity.setFunctionalityTestedId(functionalityTested.getFunctionalityTested().getId());
             entity.setLastModifiedUser(AuthUtil.getAuditId());
             create(entity);
             return entity.getId();
@@ -40,7 +40,7 @@ public class CertificationResultFunctionalityTestedDAO extends BaseDAOImpl {
     public void addFunctionalityTestedMapping(CertificationResultFunctionalityTested functionalityTested) throws EntityCreationException {
         CertificationResultFunctionalityTestedEntity mapping = new CertificationResultFunctionalityTestedEntity();
         mapping.setCertificationResultId(functionalityTested.getCertificationResultId());
-        mapping.setFunctionalityTestedId(functionalityTested.getFunctionalityTestedId());
+        mapping.setFunctionalityTestedId(functionalityTested.getFunctionalityTested().getId());
         mapping.setCreationDate(new Date());
         mapping.setDeleted(false);
         mapping.setLastModifiedDate(new Date());

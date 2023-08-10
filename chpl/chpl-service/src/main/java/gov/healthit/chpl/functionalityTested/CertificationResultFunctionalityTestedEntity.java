@@ -59,9 +59,10 @@ public class CertificationResultFunctionalityTestedEntity {
     public CertificationResultFunctionalityTested toDomain() {
         return CertificationResultFunctionalityTested.builder()
                 .id(this.getId())
-                .functionalityTestedId(this.getFunctionalityTestedId())
-                .name(this.getFunctionalityTested() != null ? this.getFunctionalityTested().getNumber() : null)
-                .description(this.getFunctionalityTested() != null ? this.getFunctionalityTested().getName() : null)
+                .certificationResultId(certificationResultId)
+                .functionalityTested(this.functionalityTested.toDomain())
+                //.name(this.getFunctionalityTested() != null ? this.getFunctionalityTested().getRegulatoryTextCitation() : null)
+                //.description(this.getFunctionalityTested() != null ? this.getFunctionalityTested().getValue() : null)
                 .build();
     }
 }

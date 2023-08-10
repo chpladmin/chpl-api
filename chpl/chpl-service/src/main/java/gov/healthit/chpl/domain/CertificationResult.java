@@ -12,7 +12,6 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -445,17 +444,17 @@ public class CertificationResult implements Serializable {
 
         this.setOptionalStandards(getOptionalStandards(certResult, certRules));
         this.setFunctionalitiesTested(getFunctionalitiesTested(certResult, certRules));
-        if (!CollectionUtils.isEmpty(this.getFunctionalitiesTested())) {
-            this.setTestFunctionality(this.getFunctionalitiesTested().stream()
-                    .map(funcTested -> CertificationResultTestFunctionality.builder()
-                            .certificationResultId(funcTested.getCertificationResultId())
-                            .description(funcTested.getDescription())
-                            .id(funcTested.getId())
-                            .name(funcTested.getName())
-                            .testFunctionalityId(funcTested.getFunctionalityTestedId())
-                            .build())
-                    .collect(Collectors.toList()));
-        }
+//        if (!CollectionUtils.isEmpty(this.getFunctionalitiesTested())) {
+//            this.setTestFunctionality(this.getFunctionalitiesTested().stream()
+//                    .map(funcTested -> CertificationResultTestFunctionality.builder()
+//                            .certificationResultId(funcTested.getCertificationResultId())
+//                            .description(funcTested.getDescription())
+//                            .id(funcTested.getId())
+//                            .name(funcTested.getName())
+//                            .testFunctionalityId(funcTested.getFunctionalityTestedId())
+//                            .build())
+//                    .collect(Collectors.toList()));
+//        }
         this.setConformanceMethods(getConformanceMethods(certResult, certRules));
         this.setTestProcedures(getTestProcedures(certResult, certRules));
         this.setTestDataUsed(getTestData(certResult, certRules));
