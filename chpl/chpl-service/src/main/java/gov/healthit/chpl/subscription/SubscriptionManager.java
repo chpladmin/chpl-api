@@ -195,7 +195,7 @@ public class SubscriptionManager {
 
     @Transactional
     public Subscriber confirm(UUID subscriberId, Long roleId) throws ValidationException {
-        SubscriberValidationContext validationContext = getSubscriberValidationContext(subscriberId);
+        SubscriberValidationContext validationContext = getSubscriberValidationContext(subscriberId, roleId);
         ValidationException validationException = new ValidationException(subscriberValidationService.validate(validationContext));
         if (validationException.getErrorMessages().size() > 0) {
             throw validationException;
@@ -258,9 +258,10 @@ public class SubscriptionManager {
                 lookupUtil);
     }
 
-    private SubscriberValidationContext getSubscriberValidationContext(UUID subscriberId) {
+    private SubscriberValidationContext getSubscriberValidationContext(UUID subscriberId, Long roleId) {
         return new SubscriberValidationContext(
                 subscriberId,
+                roleId,
                 subscriberDao,
                 errorMessageUtil);
     }
