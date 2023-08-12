@@ -306,7 +306,7 @@ public class CertifiedProductSearchDetails implements Serializable {
      */
     @XmlElementWrapper(name = "targetedUsers", nillable = true, required = false)
     @XmlElement(name = "targetedUser")
-    @Singular
+    @Builder.Default
     private List<CertifiedProductTargetedUser> targetedUsers = new ArrayList<CertifiedProductTargetedUser>();
 
     /**
