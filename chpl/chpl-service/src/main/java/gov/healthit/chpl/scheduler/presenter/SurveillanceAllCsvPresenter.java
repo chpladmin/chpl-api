@@ -310,4 +310,8 @@ public class SurveillanceAllCsvPresenter implements CertifiedProductPresenter, A
     public final DateTimeFormatter getDateTimeFormatter() {
         return dateTimeFormatter;
     }
+
+    public CSVPrinter getCsvPrinter() {
+        return csvPrinter;
+    }
 }
