@@ -65,7 +65,7 @@ public class SubscriptionObservationDao extends BaseDAOImpl {
         query.executeUpdate();
     }
 
-    public void deleteObservations(UUID subscriberId) {
+    public void deleteAllObservationsForSubscriber(UUID subscriberId) {
         LOGGER.info("Deleting observations for subscriber " + subscriberId);
         //get the subscription IDs that are being deleted
         Query subscriptionIdsQuery = entityManager.createQuery("SELECT sub "
@@ -76,6 +76,39 @@ public class SubscriptionObservationDao extends BaseDAOImpl {
         List<Long> subscriptionIds = subscriptionIdsQuery.getResultList().stream()
                 .map(sub -> ((SubscriptionEntity) sub).getId())
                 .toList();
+        deleteObservationsForSubscriptions(subscriptionIds);
+    }
+
+    public void deleteObservationsForSubscribedObject(UUID subscriberId, Long subscribedObjectTypeId, Long subscribedObjectId) {
+        LOGGER.info("Deleting observations for subscriber " + subscriberId + " and object type " + subscribedObjectTypeId + " and object ID " + subscribedObjectId);
+        //get the subscription IDs that are being deleted
+        Query subscriptionIdsQuery = entityManager.createQuery("SELECT sub "
+                + "FROM SubscriptionEntity sub "
+                + "WHERE sub.subscriberId = :subscriberId "
+                + "AND sub.subscriptionSubject.subscriptionObjectType.id = :subscribedObjectTypeId "
+                + "AND sub.subscribedObjectId = :subscribedObjectId",
+                SubscriptionEntity.class);
+        subscriptionIdsQuery.setParameter("subscriberId", subscriberId);
+        subscriptionIdsQuery.setParameter("subscribedObjectTypeId", subscribedObjectTypeId);
+        subscriptionIdsQuery.setParameter("subscribedObjectId", subscribedObjectId);
+        List<Long> subscriptionIds = subscriptionIdsQuery.getResultList().stream()
+                .map(sub -> ((SubscriptionEntity) sub).getId())
+                .toList();
+        deleteObservationsForSubscriptions(subscriptionIds);
+    }
+
+    public void deleteObservationsForSubscription(Long subscriptionId) {
+        LOGGER.info("Deleting observations for subscription " + subscriptionId);
+        int numUpdates = entityManager.createQuery(
+                "UPDATE SubscriptionObservationEntity "
+                + "SET deleted = true "
+                + "WHERE subscriptionId = :subscriptionId")
+        .setParameter("subscriptionId", subscriptionId)
+        .executeUpdate();
+        LOGGER.info("Deleted " + numUpdates + " observations.");
+    }
+
+    private void deleteObservationsForSubscriptions(List<Long> subscriptionIds) {
         LOGGER.info("Deleting observations for " + subscriptionIds + " subscriptions.");
         int numUpdates = entityManager.createQuery(
                 "UPDATE SubscriptionObservationEntity "
