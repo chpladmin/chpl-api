@@ -305,9 +305,9 @@ public class DimensionalDataManager {
     }
 
     @Transactional
-    @Cacheable(value = CacheNames.CERTIFICATION_CRITERION_WITH_EDITIONS)
-    public Set<CertificationCriterion> getCertificationCriterion() {
-        LOGGER.debug("Getting all criterion with editions from the database (not cached).");
+    @Cacheable(value = CacheNames.CERTIFICATION_CRITERIA)
+    public Set<CertificationCriterion> getCertificationCriteria() {
+        LOGGER.debug("Getting all criterion from the database (not cached).");
 
         return this.certificationCriterionDao.findAll().stream()
                 .collect(Collectors.toSet());
@@ -397,10 +397,6 @@ public class DimensionalDataManager {
     @Transactional
     public Set<KeyValueModelStatuses> getDevelopers() {
         return cacheableDimensionalDataManager.getDevelopers();
-    }
-
-    public Set<CriteriaSpecificDescriptiveModel> getCertificationCriterionNumbers() throws EntityRetrievalException {
-        return cacheableDimensionalDataManager.getCertificationCriterionNumbers();
     }
 
     public Set<DescriptiveModel> getCQMCriterionNumbers(final Boolean simple) {

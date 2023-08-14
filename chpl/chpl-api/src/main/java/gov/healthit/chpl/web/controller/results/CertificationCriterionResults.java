@@ -6,6 +6,7 @@ import java.util.List;
 
 import gov.healthit.chpl.domain.CertificationCriterion;
 
+@Deprecated
 public class CertificationCriterionResults implements Serializable{
     private static final long serialVersionUID = -9145928293024042648L;
 

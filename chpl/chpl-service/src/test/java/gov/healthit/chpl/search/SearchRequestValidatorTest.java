@@ -391,7 +391,7 @@ public class SearchRequestValidatorTest {
         SearchRequest request = SearchRequest.builder()
             .certificationCriteriaIds(Stream.of(1L).collect(Collectors.toSet()))
             .build();
-        Mockito.when(dimensionalDataManager.getCertificationCriterion())
+        Mockito.when(dimensionalDataManager.getCertificationCriteria())
             .thenReturn(null);
 
         try {
@@ -409,7 +409,7 @@ public class SearchRequestValidatorTest {
         SearchRequest request = SearchRequest.builder()
             .certificationCriteriaIds(Stream.of(3L).collect(Collectors.toSet()))
             .build();
-        Mockito.when(dimensionalDataManager.getCertificationCriterion())
+        Mockito.when(dimensionalDataManager.getCertificationCriteria())
             .thenReturn(Stream.of(CertificationCriterion.builder().id(1L).number("170.315 (a)(1)").build(),
                     CertificationCriterion.builder().id(2L).number("170.315 (a)(2)").build())
                     .collect(Collectors.toSet()));
@@ -429,7 +429,7 @@ public class SearchRequestValidatorTest {
         SearchRequest request = SearchRequest.builder()
             .certificationCriteriaIds(Stream.of(1L).collect(Collectors.toSet()))
             .build();
-        Mockito.when(dimensionalDataManager.getCertificationCriterion())
+        Mockito.when(dimensionalDataManager.getCertificationCriteria())
         .thenReturn(Stream.of(CertificationCriterion.builder().id(1L).number("170.315 (a)(1)").build(),
                 CertificationCriterion.builder().id(2L).number("170.315 (a)(2)").build())
                 .collect(Collectors.toSet()));
@@ -507,7 +507,7 @@ public class SearchRequestValidatorTest {
         SearchRequest request = SearchRequest.builder()
             .certificationCriteriaIds(Stream.of(1L, 2L).collect(Collectors.toSet()))
             .build();
-        Mockito.when(dimensionalDataManager.getCertificationCriterion())
+        Mockito.when(dimensionalDataManager.getCertificationCriteria())
             .thenReturn(Stream.of(
                     CertificationCriterion.builder().id(1L).number("170.315 (a)(1)").build(),
                     CertificationCriterion.builder().id(2L).number("170.315 (a)(2)").build())

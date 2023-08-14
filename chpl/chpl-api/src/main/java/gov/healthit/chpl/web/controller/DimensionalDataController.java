@@ -33,6 +33,7 @@ import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import gov.healthit.chpl.web.controller.annotation.CacheControl;
 import gov.healthit.chpl.web.controller.annotation.CacheMaxAge;
 import gov.healthit.chpl.web.controller.annotation.CachePolicy;
+import gov.healthit.chpl.web.controller.annotation.DeprecatedApi;
 import gov.healthit.chpl.web.controller.annotation.DeprecatedApiResponseFields;
 import gov.healthit.chpl.web.controller.results.CertificationCriterionResults;
 import gov.healthit.chpl.web.controller.results.SvapResults;
@@ -450,6 +451,10 @@ public class DimensionalDataController {
         return result;
     }
 
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/data/certification-criteria",
+        message = "This endpoint will be removed. Please GET from /certification-criteria.",
+        removalDate = "2024-01-01")
     @Operation(summary = "Get all possible certification criteria in the CHPL",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
@@ -458,7 +463,7 @@ public class DimensionalDataController {
             produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody CertificationCriterionResults getCertificationCriteria() {
-        Set<CertificationCriterion> criteria = dimensionalDataManager.getCertificationCriterion();
+        Set<CertificationCriterion> criteria = dimensionalDataManager.getCertificationCriteria();
         CertificationCriterionResults result = new CertificationCriterionResults();
         for (CertificationCriterion criterion : criteria) {
             result.getCriteria().add(criterion);

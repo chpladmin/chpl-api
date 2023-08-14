@@ -167,7 +167,7 @@ public class SearchRequestValidator {
             return Collections.emptySet();
         }
 
-        Set<CertificationCriterion> allCriteria = dimensionalDataManager.getCertificationCriterion();
+        Set<CertificationCriterion> allCriteria = dimensionalDataManager.getCertificationCriteria();
         return certificationCriteriaIds.stream()
             .filter(certificationCriteriaId -> !isInSetOfCriteria(certificationCriteriaId, allCriteria))
             .map(certificationCriteriaId -> msgUtil.getMessage("search.certificationCriteria.invalid", certificationCriteriaId.toString()))
