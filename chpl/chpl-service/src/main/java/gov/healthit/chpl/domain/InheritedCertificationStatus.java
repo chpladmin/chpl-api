@@ -17,7 +17,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.Singular;
 
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -57,7 +56,7 @@ public class InheritedCertificationStatus implements Serializable {
      */
     @XmlElementWrapper(name = "parents", nillable = true, required = false)
     @XmlElement(name = "parent")
-    @Singular
+    @Builder.Default
     private List<CertifiedProduct> parents = new ArrayList<CertifiedProduct>();
 
     /**
@@ -65,7 +64,7 @@ public class InheritedCertificationStatus implements Serializable {
      */
     @XmlElementWrapper(name = "children", nillable = true, required = false)
     @XmlElement(name = "child")
-    @Singular
+    @Builder.Default
     private List<CertifiedProduct> children = new ArrayList<CertifiedProduct>();
 
 }
