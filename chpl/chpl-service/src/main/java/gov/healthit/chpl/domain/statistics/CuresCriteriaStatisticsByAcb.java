@@ -32,8 +32,8 @@ public class CuresCriteriaStatisticsByAcb {
     public CuresCriteriaStatisticsByAcb(CuresCriteriaStatisticsByAcbEntity entity) {
         this.id = entity.getId();
         this.certificationBody = entity.getCertificationBody().toDomain();
-        this.originalCriterion = new CertificationCriterion(entity.getOriginalCriterion());
-        this.curesCriterion = new CertificationCriterion(entity.getCuresCriterion());
+        this.originalCriterion = entity.getOriginalCriterion().toDomain();
+        this.curesCriterion = entity.getCuresCriterion().toDomain();
         this.originalCriterionUpgradedCount = entity.getOriginalCriterionUpgradedCount();
         this.curesCriterionCreatedCount = entity.getCuresCriterionCreatedCount();
         this.criteriaNeedingUpgradeCount = entity.getCriteriaNeedingUpgradeCount();

@@ -70,7 +70,7 @@ public class CertificationResultDetailsDTO implements Serializable {
         this.serviceBaseUrlList = entity.getServiceBaseUrlList();
         this.privacySecurityFramework = entity.getPrivacySecurityFramework();
         if (entity.getCertificationCriterion() != null) {
-            this.criterion = new CertificationCriterion(entity.getCertificationCriterion());
+            this.criterion = entity.getCertificationCriterion().toDomain();
         }
 
         if (entity.getCertificationResultOptionalStandards() != null) {

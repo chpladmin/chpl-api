@@ -1,25 +1,38 @@
 package gov.healthit.chpl.domain;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-import gov.healthit.chpl.entity.CertificationCriterionEntity;
+import gov.healthit.chpl.criteriaattribute.rule.Rule;
+import gov.healthit.chpl.util.LocalDateAdapter;
+import gov.healthit.chpl.util.LocalDateDeserializer;
+import gov.healthit.chpl.util.LocalDateSerializer;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
 
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Builder
+@NoArgsConstructor
 @AllArgsConstructor
+@Getter
+@Setter
 @ToString
 public class CertificationCriterion implements Serializable {
     private static final long serialVersionUID = 5732322243572571895L;
@@ -39,79 +52,35 @@ public class CertificationCriterion implements Serializable {
     @XmlElement(required = false, nillable = true)
     private String certificationEdition;
 
+    /**
+     * A date value representing the date by which the Criteria Attribute became available.
+     */
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonSerialize(using = LocalDateSerializer.class)
+    @XmlElement(required = false, nillable = true)
+    @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
+    private LocalDate startDay;
+
+    /**
+     * A date value representing the date by which the Criteria Attribute can no longer be used.
+     */
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonSerialize(using = LocalDateSerializer.class)
+    @XmlElement(required = false, nillable = true)
+    @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
+    private LocalDate endDay;
+
     @XmlElement(required = false, nillable = true)
     private String description;
 
     @XmlElement(required = true, nillable = false)
     private Boolean removed;
 
-    public CertificationCriterion() {
-    }
-
-    public CertificationCriterion(CertificationCriterionEntity entity) {
-        this.id = entity.getId();
-        this.certificationEditionId = entity.getCertificationEditionId();
-        this.description = entity.getDescription();
-        this.number = entity.getNumber();
-        this.title = entity.getTitle();
-        this.removed = entity.getRemoved();
-    }
-
-    public String getCertificationEdition() {
-        return certificationEdition;
-    }
-
-    public void setCertificationEdition(final String certificationEdition) {
-        this.certificationEdition = certificationEdition;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(final Long id) {
-        this.id = id;
-    }
-
-    public String getNumber() {
-        return number;
-    }
-
-    public void setNumber(final String number) {
-        this.number = number;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(final String title) {
-        this.title = title;
-    }
-
-    public Long getCertificationEditionId() {
-        return certificationEditionId;
-    }
-
-    public void setCertificationEditionId(final Long certificationEditionId) {
-        this.certificationEditionId = certificationEditionId;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(final String description) {
-        this.description = description;
-    }
-
-    public Boolean getRemoved() {
-        return removed;
-    }
-
-    public void setRemoved(final Boolean removed) {
-        this.removed = removed;
-    }
+    /**
+     * The rule which this criterion is associated with.
+     */
+    @XmlElement(required = false, nillable = true)
+    private Rule rule;
 
     @Override
     public int hashCode() {
