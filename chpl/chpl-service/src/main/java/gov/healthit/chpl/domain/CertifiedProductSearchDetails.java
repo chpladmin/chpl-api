@@ -174,7 +174,7 @@ public class CertifiedProductSearchDetails implements Serializable {
      */
     @XmlElementWrapper(name = "testingLabs", nillable = true, required = false)
     @XmlElement(name = "testingLab")
-    @Singular
+    @Builder.Default
     private List<CertifiedProductTestingLab> testingLabs = new ArrayList<CertifiedProductTestingLab>();
 
     @XmlTransient

@@ -8,6 +8,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -294,12 +295,12 @@ public class CertifiedProductManagerTest {
                         .owner(Developer.builder()
                                 .build())
                         .build())
-                .testingLab(CertifiedProductTestingLab.builder()
+                .testingLabs(Stream.of(CertifiedProductTestingLab.builder()
                         .id(1L)
                         .testingLabCode("04")
                         .testingLabId(1L)
                         .testingLabName("Drummond Group")
-                        .build())
+                        .build()).toList())
                 .version(ProductVersion.builder()
                         .id(1L)
                         .version("11.3")
