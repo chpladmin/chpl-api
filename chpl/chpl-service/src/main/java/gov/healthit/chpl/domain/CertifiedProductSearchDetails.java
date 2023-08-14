@@ -358,7 +358,7 @@ public class CertifiedProductSearchDetails implements Serializable {
      */
     @XmlElementWrapper(name = "certificationEvents", nillable = true, required = false)
     @XmlElement(name = "certificationEvent")
-    @Singular
+    @Builder.Default
     private List<CertificationStatusEvent> certificationEvents = new ArrayList<CertificationStatusEvent>();
 
     /**
