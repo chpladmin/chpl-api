@@ -16,7 +16,7 @@ import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformity;
 import gov.healthit.chpl.domain.surveillance.SurveillanceRequirement;
 import gov.healthit.chpl.util.NullSafeEvaluator;
 
-public class SurveillanceReportCsvPresenter extends SurveillanceCsvPresenter {
+public class SurveillanceReportCsvPresenter extends SurveillanceAllCsvPresenter {
 
     public SurveillanceReportCsvPresenter(Environment env) {
         super(env);

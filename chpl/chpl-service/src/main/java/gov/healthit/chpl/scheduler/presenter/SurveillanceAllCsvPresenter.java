@@ -1,8 +1,10 @@
 package gov.healthit.chpl.scheduler.presenter;
 
 import java.io.File;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -22,36 +24,61 @@ import gov.healthit.chpl.domain.surveillance.SurveillanceRequirement;
 import gov.healthit.chpl.util.NullSafeEvaluator;
 import gov.healthit.chpl.util.Util;
 
-public class SurveillanceCsvPresenter {
-    private static final Logger LOGGER = LogManager.getLogger(SurveillanceCsvPresenter.class);
+public class SurveillanceAllCsvPresenter implements CertifiedProductPresenter, AutoCloseable {
     private Environment env;
     private DateTimeFormatter dateFormatter;
     private DateTimeFormatter dateTimeFormatter;
+    private OutputStreamWriter writer = null;
+    private CSVPrinter csvPrinter = null;
+    private Logger logger;
 
-    public SurveillanceCsvPresenter(Environment env) {
+    public SurveillanceAllCsvPresenter(Environment env) {
         dateFormatter = DateTimeFormatter.ofPattern("uuuu/MM/dd");
         dateTimeFormatter = DateTimeFormatter.ofPattern("uuuu/MM/dd HH:mm Z");
         this.env = env;
     }
 
-    public void presentAsFile(final File file, final List<CertifiedProductSearchDetails> cpList) {
-        try (FileWriter writer = new FileWriter(file);
-                CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.EXCEL)) {
-            writer.write('\ufeff');
-            csvPrinter.printRecord(generateHeaderValues());
-            for (CertifiedProductSearchDetails cp : cpList) {
-                if (cp.getSurveillance() != null && cp.getSurveillance().size() > 0) {
-                    for (Surveillance currSurveillance : cp.getSurveillance()) {
-                        List<List<String>> rowValues = generateMultiRowValue(cp, currSurveillance);
-                        for (List<String> rowValue : rowValues) {
-                            csvPrinter.printRecord(rowValue);
-                        }
-                    }
+    @Override
+    public void open(final File file) throws IOException {
+        getLogger().info("Opening file, initializing Surveillance All CSV doc.");
+        writer = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8);
+        writer.write('\ufeff');
+        csvPrinter = new CSVPrinter(writer, CSVFormat.EXCEL);
+        csvPrinter.printRecord(generateHeaderValues());
+        csvPrinter.flush();
+    }
+
+    @Override
+    public synchronized void add(final CertifiedProductSearchDetails data) throws IOException {
+        getLogger().info("Adding Surveillance to Surveillance All CSV file: " + data.getId());
+
+        if (data.getSurveillance() != null && data.getSurveillance().size() > 0) {
+            for (Surveillance currSurveillance : data.getSurveillance()) {
+                List<List<String>> rowValues = generateMultiRowValue(data, currSurveillance);
+                for (List<String> rowValue : rowValues) {
+                    csvPrinter.printRecord(rowValue);
+                    csvPrinter.flush();
                 }
             }
-        } catch (final IOException ex) {
-            LOGGER.error("Could not write file " + file.getName(), ex);
         }
+    }
+
+    @Override
+    public void close() throws IOException {
+        getLogger().info("Closing the Surveillance All CSV file.");
+        csvPrinter.close();
+        writer.close();
+    }
+
+    public void setLogger(final Logger logger) {
+        this.logger = logger;
+    }
+
+    public Logger getLogger() {
+        if (logger == null) {
+            logger = LogManager.getLogger(CertifiedProductCsvPresenter.class);
+        }
+        return logger;
     }
 
     protected List<String> generateHeaderValues() {
@@ -146,7 +173,7 @@ public class SurveillanceCsvPresenter {
         return result;
     }
 
-    protected List<String> generateSurveillanceRowValues(final CertifiedProductSearchDetails listing,
+    private List<String> generateSurveillanceRowValues(final CertifiedProductSearchDetails listing,
             final Surveillance surv) {
         List<String> result = new ArrayList<String>();
         result.add(listing.getChplProductNumber());
@@ -177,7 +204,7 @@ public class SurveillanceCsvPresenter {
         return result;
     }
 
-    protected List<String> generateSurveilledRequirementRowValues(final SurveillanceRequirement req) {
+    private List<String> generateSurveilledRequirementRowValues(final SurveillanceRequirement req) {
         List<String> reqRow = new ArrayList<String>();
 
         if (req.getRequirementType() == null) {
@@ -198,7 +225,7 @@ public class SurveillanceCsvPresenter {
         return reqRow;
     }
 
-    protected List<String> generateNonconformityRowValues(final SurveillanceNonconformity nc) {
+    private List<String> generateNonconformityRowValues(final SurveillanceNonconformity nc) {
         List<String> ncRow = new ArrayList<String>();
         ncRow.add(NullSafeEvaluator.eval(() -> nc.getType().getFormattedTitle(), ""));
 

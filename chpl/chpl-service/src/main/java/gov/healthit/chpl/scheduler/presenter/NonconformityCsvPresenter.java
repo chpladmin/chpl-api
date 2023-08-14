@@ -16,7 +16,7 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.domain.surveillance.SurveillanceRequirement;
 
-public class NonconformityCsvPresenter extends SurveillanceCsvPresenter {
+public class NonconformityCsvPresenter extends SurveillanceAllCsvPresenter {
     private static final Logger LOGGER = LogManager.getLogger(NonconformityCsvPresenter.class);
 
     public NonconformityCsvPresenter(Environment env) {
