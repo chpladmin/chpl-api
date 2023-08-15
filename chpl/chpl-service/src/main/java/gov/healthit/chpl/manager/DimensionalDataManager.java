@@ -305,15 +305,6 @@ public class DimensionalDataManager {
     }
 
     @Transactional
-    @Cacheable(value = CacheNames.CERTIFICATION_CRITERIA)
-    public Set<CertificationCriterion> getCertificationCriteria() {
-        LOGGER.debug("Getting all criterion from the database (not cached).");
-
-        return this.certificationCriterionDao.findAll().stream()
-                .collect(Collectors.toSet());
-    }
-
-    @Transactional
     @Cacheable(value = CacheNames.CQM_CRITERION)
     public List<CQMCriterion> getCQMCriteria() {
         List<CQMCriterion> result = new ArrayList<CQMCriterion>();

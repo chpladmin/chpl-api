@@ -13,6 +13,7 @@ import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
+import gov.healthit.chpl.certificationCriteria.CertificationCriteriaManager;
 import gov.healthit.chpl.compliance.directreview.DirectReviewSearchService;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.CertificationCriterion;
@@ -56,6 +57,7 @@ public class SearchRequestValidatorTest {
     private static final String INVALID_ORDER_BY = "Order by parameter '%s' is invalid. Value must be one of %s.";
 
     private DimensionalDataManager dimensionalDataManager;
+    private CertificationCriteriaManager certificationCriteriaManager;
     private SvapManager svapManager;
     private DirectReviewSearchService drService;
     private ErrorMessageUtil msgUtil;
@@ -64,6 +66,7 @@ public class SearchRequestValidatorTest {
     @Before
     public void setup() {
         dimensionalDataManager = Mockito.mock(DimensionalDataManager.class);
+        certificationCriteriaManager = Mockito.mock(CertificationCriteriaManager.class);
         svapManager = Mockito.mock(SvapManager.class);
         drService = Mockito.mock(DirectReviewSearchService.class);
         Mockito.when(drService.doesCacheHaveAnyOkData()).thenReturn(true);
@@ -116,7 +119,7 @@ public class SearchRequestValidatorTest {
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("search.orderBy.invalid"), ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(INVALID_ORDER_BY, i.getArgument(1), i.getArgument(2)));
 
-        validator = new SearchRequestValidator(dimensionalDataManager, svapManager, msgUtil);
+        validator = new SearchRequestValidator(dimensionalDataManager, certificationCriteriaManager, svapManager, msgUtil);
     }
 
     @Test
@@ -391,7 +394,7 @@ public class SearchRequestValidatorTest {
         SearchRequest request = SearchRequest.builder()
             .certificationCriteriaIds(Stream.of(1L).collect(Collectors.toSet()))
             .build();
-        Mockito.when(dimensionalDataManager.getCertificationCriteria())
+        Mockito.when(certificationCriteriaManager.getAll())
             .thenReturn(null);
 
         try {
@@ -409,10 +412,10 @@ public class SearchRequestValidatorTest {
         SearchRequest request = SearchRequest.builder()
             .certificationCriteriaIds(Stream.of(3L).collect(Collectors.toSet()))
             .build();
-        Mockito.when(dimensionalDataManager.getCertificationCriteria())
+        Mockito.when(certificationCriteriaManager.getAll())
             .thenReturn(Stream.of(CertificationCriterion.builder().id(1L).number("170.315 (a)(1)").build(),
                     CertificationCriterion.builder().id(2L).number("170.315 (a)(2)").build())
-                    .collect(Collectors.toSet()));
+                    .collect(Collectors.toList()));
 
         try {
             validator.validate(request);
@@ -429,10 +432,10 @@ public class SearchRequestValidatorTest {
         SearchRequest request = SearchRequest.builder()
             .certificationCriteriaIds(Stream.of(1L).collect(Collectors.toSet()))
             .build();
-        Mockito.when(dimensionalDataManager.getCertificationCriteria())
+        Mockito.when(certificationCriteriaManager.getAll())
         .thenReturn(Stream.of(CertificationCriterion.builder().id(1L).number("170.315 (a)(1)").build(),
                 CertificationCriterion.builder().id(2L).number("170.315 (a)(2)").build())
-                .collect(Collectors.toSet()));
+                .collect(Collectors.toList()));
 
         try {
             validator.validate(request);
@@ -507,11 +510,11 @@ public class SearchRequestValidatorTest {
         SearchRequest request = SearchRequest.builder()
             .certificationCriteriaIds(Stream.of(1L, 2L).collect(Collectors.toSet()))
             .build();
-        Mockito.when(dimensionalDataManager.getCertificationCriteria())
+        Mockito.when(certificationCriteriaManager.getAll())
             .thenReturn(Stream.of(
                     CertificationCriterion.builder().id(1L).number("170.315 (a)(1)").build(),
                     CertificationCriterion.builder().id(2L).number("170.315 (a)(2)").build())
-                .collect(Collectors.toSet()));
+                .collect(Collectors.toList()));
         try {
             validator.validate(request);
         } catch (ValidationException ex) {

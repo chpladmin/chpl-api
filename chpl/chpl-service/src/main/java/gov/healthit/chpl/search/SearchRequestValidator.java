@@ -16,6 +16,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.certificationCriteria.CertificationCriteriaManager;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationEdition;
@@ -37,6 +38,7 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 @Component
 public class SearchRequestValidator {
     private DimensionalDataManager dimensionalDataManager;
+    private CertificationCriteriaManager certificationCriteriaManager;
     private SvapManager svapManager;
     private ErrorMessageUtil msgUtil;
     private DateTimeFormatter dateFormatter;
@@ -44,8 +46,10 @@ public class SearchRequestValidator {
 
     @Autowired
     public SearchRequestValidator(DimensionalDataManager dimensionalDataManager,
+            CertificationCriteriaManager certificationCriteriaManager,
             SvapManager svapManager, ErrorMessageUtil msgUtil) {
         this.dimensionalDataManager = dimensionalDataManager;
+        this.certificationCriteriaManager = certificationCriteriaManager;
         this.svapManager = svapManager;
         this.msgUtil = msgUtil;
         dateFormatter = DateTimeFormatter.ofPattern(SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT);
@@ -167,9 +171,9 @@ public class SearchRequestValidator {
             return Collections.emptySet();
         }
 
-        Set<CertificationCriterion> allCriteria = dimensionalDataManager.getCertificationCriteria();
+        List<CertificationCriterion> allCriteria = certificationCriteriaManager.getAll();
         return certificationCriteriaIds.stream()
-            .filter(certificationCriteriaId -> !isInSetOfCriteria(certificationCriteriaId, allCriteria))
+            .filter(certificationCriteriaId -> !isInListOfCriteria(certificationCriteriaId, allCriteria))
             .map(certificationCriteriaId -> msgUtil.getMessage("search.certificationCriteria.invalid", certificationCriteriaId.toString()))
             .collect(Collectors.toSet());
     }
@@ -496,11 +500,11 @@ public class SearchRequestValidator {
             .count() > 0;
     }
 
-    private boolean isInSetOfCriteria(Long value, Set<CertificationCriterion> setToSearch) {
-        if (setToSearch == null) {
+    private boolean isInListOfCriteria(Long value, List<CertificationCriterion> listToSearch) {
+        if (listToSearch == null) {
             return false;
         }
-        return setToSearch.stream()
+        return listToSearch.stream()
             .filter(item -> item.getId().equals(value))
             .count() > 0;
     }
