@@ -45,8 +45,8 @@ public class FunctionalityTestedManager {
     }
 
     @Transactional
-    public List<CertificationCriterion> getCertificationCriteriaForTestTools() {
-        return certificationCriterionAttributeDAO.getCriteriaForTestTools();
+    public List<CertificationCriterion> getCertificationCriteriaForFunctionalitiesTested() {
+        return certificationCriterionAttributeDAO.getCriteriaForFunctionalitiesTested();
     }
 
 
