@@ -16,12 +16,12 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.CollectionType;
 
+import gov.healthit.chpl.criteriaattribute.functionalitytested.FunctionalityTestedManager;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.functionalityTested.CertificationResultFunctionalityTested;
 import gov.healthit.chpl.functionalityTested.FunctionalityTested;
 import gov.healthit.chpl.functionalityTested.FunctionalityTestedDAO;
-import gov.healthit.chpl.functionalityTested.FunctionalityTestedManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import lombok.Data;
 import lombok.ToString;
@@ -113,11 +113,14 @@ public class FunctionalityTestedNormalizer {
     private void populateFunctionalityTestedId(CertifiedProductSearchDetails listing,
             CertificationResult certResult,
             CertificationResultFunctionalityTested functionalityTested) {
-        if (!StringUtils.isEmpty(functionalityTested.getName())) {
+        if (!StringUtils.isEmpty(functionalityTested.getFunctionalityTested().getValue())) {
             FunctionalityTested foundFunctionalityTested =
-                    getFunctionalityTested(functionalityTested.getName(), certResult.getCriterion().getId());
+                    getFunctionalityTested(functionalityTested.getFunctionalityTested().getValue(), certResult.getCriterion().getId());
             if (foundFunctionalityTested != null) {
-                functionalityTested.setFunctionalityTestedId(foundFunctionalityTested.getId());
+                //functionalityTested.setFunctionalityTestedId(foundFunctionalityTested.getId());
+                functionalityTested.setFunctionalityTested(FunctionalityTested.builder()
+                        .id(foundFunctionalityTested.getId())
+                        .build());
             }
         }
     }
@@ -129,7 +132,7 @@ public class FunctionalityTestedNormalizer {
         }
         List<FunctionalityTested> functionalityTestedForCriterion = funcTestedMappings.get(criterionId);
         Optional<FunctionalityTested> funcTestedOpt = functionalityTestedForCriterion.stream()
-            .filter(funcTested -> funcTested.getName().equalsIgnoreCase(functionalityTestedNumber))
+            .filter(funcTested -> funcTested.getValue().equalsIgnoreCase(functionalityTestedNumber))
             .findAny();
         return funcTestedOpt.isPresent() ? funcTestedOpt.get() : null;
     }
@@ -138,9 +141,9 @@ public class FunctionalityTestedNormalizer {
         Iterator<CertificationResultFunctionalityTested> functionalityTestedIter = certResult.getFunctionalitiesTested().listIterator();
         while (functionalityTestedIter.hasNext()) {
             CertificationResultFunctionalityTested currFunctionalityTested = functionalityTestedIter.next();
-            if (currFunctionalityTested.getFunctionalityTestedId() != null) {
+            if (currFunctionalityTested.getFunctionalityTested().getId() != null) {
                 Optional<RestrictedFunctionalityTested> restrictedFunctionalityTested
-                    = findRestrictedFunctionalityTested(certResult.getCriterion().getId(), currFunctionalityTested.getFunctionalityTestedId());
+                    = findRestrictedFunctionalityTested(certResult.getCriterion().getId(), currFunctionalityTested.getFunctionalityTested().getId());
                 if (restrictedFunctionalityTested.isPresent()) {
                     functionalityTestedIter.remove();
                 }

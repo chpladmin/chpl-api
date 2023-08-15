@@ -16,13 +16,13 @@ import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
+import gov.healthit.chpl.criteriaattribute.functionalitytested.FunctionalityTestedManager;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.functionalityTested.CertificationResultFunctionalityTested;
 import gov.healthit.chpl.functionalityTested.FunctionalityTested;
 import gov.healthit.chpl.functionalityTested.FunctionalityTestedDAO;
-import gov.healthit.chpl.functionalityTested.FunctionalityTestedManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 
 public class FunctionalityTestedNormalizerTest {
@@ -86,8 +86,10 @@ public class FunctionalityTestedNormalizerTest {
     public void normalize_functionalityTestedNotInDatabase_idIsNull() {
         List<CertificationResultFunctionalityTested> functionalitiesTested = new ArrayList<CertificationResultFunctionalityTested>();
         functionalitiesTested.add(CertificationResultFunctionalityTested.builder()
-                .functionalityTestedId(null)
-                .name("notindb")
+                .functionalityTested(FunctionalityTested.builder()
+                        .id(null)
+                        .value("notindb")
+                        .build())
                 .build());
         Map<String, Object> editionMap = create2015EditionMap();
 
@@ -107,28 +109,30 @@ public class FunctionalityTestedNormalizerTest {
                 .build();
         normalizer.normalize(listing);
         assertEquals(1, listing.getCertificationResults().get(0).getFunctionalitiesTested().size());
-        assertNull(listing.getCertificationResults().get(0).getFunctionalitiesTested().get(0).getFunctionalityTestedId());
+        assertNull(listing.getCertificationResults().get(0).getFunctionalitiesTested().get(0).getFunctionalityTested().getId());
     }
 
     @Test
     public void normalize_functionalityTestedInDatabase_setsId() {
         List<CertificationResultFunctionalityTested> functionalitiesTested = new ArrayList<CertificationResultFunctionalityTested>();
         functionalitiesTested.add(CertificationResultFunctionalityTested.builder()
-                .functionalityTestedId(null)
-                .name("valid")
+                .functionalityTested(FunctionalityTested.builder()
+                        .id(null)
+                        .value("valid")
+                        .build())
                 .build());
         Map<String, Object> editionMap = create2015EditionMap();
 
         Map<Long, List<FunctionalityTested>> funcTestedMaps = new HashMap<Long, List<FunctionalityTested>>();
-        funcTestedMaps.put(CRITERIA_ID_WITHOUT_RESTRICTIONS, Stream.of(FunctionalityTested.builder()
-                .id(1L)
-                .name("valid")
-                .description("valid")
-                .criteria(Stream.of(CertificationCriterion.builder()
-                        .id(CRITERIA_ID_WITHOUT_RESTRICTIONS)
-                        .number("170.315 (a)(13)")
-                        .build()).toList())
-                .build()).toList());
+        funcTestedMaps.put(CRITERIA_ID_WITHOUT_RESTRICTIONS, List.of(FunctionalityTested.builder()
+                    .id(1L)
+                    .value("valid")
+                    .regulatoryTextCitation("valid")
+                    .criteria(Stream.of(CertificationCriterion.builder()
+                            .id(CRITERIA_ID_WITHOUT_RESTRICTIONS)
+                            .number("170.315 (a)(13)")
+                            .build()).toList())
+                    .build()));
         Mockito.when(functionalityTestedDao.getFunctionalitiesTestedCriteriaMaps())
             .thenReturn(funcTestedMaps);
 
@@ -145,15 +149,17 @@ public class FunctionalityTestedNormalizerTest {
                 .build();
         normalizer.normalize(listing);
         assertEquals(1, listing.getCertificationResults().get(0).getFunctionalitiesTested().size());
-        assertEquals(1L, listing.getCertificationResults().get(0).getFunctionalitiesTested().get(0).getFunctionalityTestedId());
+        assertEquals(1L, listing.getCertificationResults().get(0).getFunctionalitiesTested().get(0).getFunctionalityTested().getId());
     }
 
     @Test
     public void normalize_noRestrictedFunctionalityTested_functionalityTestedNotRemoved() {
         List<CertificationResultFunctionalityTested> functionalitiesTested = new ArrayList<CertificationResultFunctionalityTested>();
         functionalitiesTested.add(CertificationResultFunctionalityTested.builder()
-                .functionalityTestedId(FUNCTIONALITY_TESTED_ID_WITHOUT_RESTRICTIONS)
-                .name("(a)(13)(iii)")
+                .functionalityTested(FunctionalityTested.builder()
+                        .id(FUNCTIONALITY_TESTED_ID_WITHOUT_RESTRICTIONS)
+                        .value("(a)(13)(iii)")
+                        .build())
                 .build());
 
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
@@ -177,8 +183,10 @@ public class FunctionalityTestedNormalizerTest {
 
         List<CertificationResultFunctionalityTested> functionalitiesTested = new ArrayList<CertificationResultFunctionalityTested>();
         functionalitiesTested.add(CertificationResultFunctionalityTested.builder()
-                .functionalityTestedId(FUNCTIONALITY_TESTED_ID_WITH_RESTRICTIONS)
-                .name("(c)(3)(ii)")
+                .functionalityTested(FunctionalityTested.builder()
+                        .id(FUNCTIONALITY_TESTED_ID_WITH_RESTRICTIONS)
+                        .value("(c)(3)(ii)")
+                        .build())
                 .build());
 
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
@@ -202,8 +210,10 @@ public class FunctionalityTestedNormalizerTest {
 
         List<CertificationResultFunctionalityTested> functionalityTested = new ArrayList<CertificationResultFunctionalityTested>();
         functionalityTested.add(CertificationResultFunctionalityTested.builder()
-                .functionalityTestedId(FUNCTIONALITY_TESTED_ID_WITH_RESTRICTIONS)
-                .name("(c)(3)(ii)")
+                .functionalityTested(FunctionalityTested.builder()
+                        .id(FUNCTIONALITY_TESTED_ID_WITH_RESTRICTIONS)
+                        .value("(c)(3)(ii)")
+                        .build())
                 .build());
 
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
@@ -224,8 +234,8 @@ public class FunctionalityTestedNormalizerTest {
     public void normalize_hasAllowedValues_addsAllowedFunctionalityTested() {
         List<FunctionalityTested> allowedFunctionalitiesTested = new ArrayList<FunctionalityTested>();
         allowedFunctionalitiesTested.add(FunctionalityTested.builder()
-                .name("TF1")
-                .description("tf1 desc")
+                .value("TF1")
+                .regulatoryTextCitation("tf1 desc")
                 .id(1L)
                 .criteria(Stream.of(CertificationCriterion.builder()
                                 .id(CRITERIA_ID_WITHOUT_RESTRICTIONS)
@@ -233,8 +243,8 @@ public class FunctionalityTestedNormalizerTest {
                                 .build()).toList())
                 .build());
         allowedFunctionalitiesTested.add(FunctionalityTested.builder()
-                .name("TF2")
-                .description("tf2 desc")
+                .value("TF2")
+                .regulatoryTextCitation("tf2 desc")
                 .id(2L)
                 .criteria(Stream.of(CertificationCriterion.builder()
                         .id(CRITERIA_ID_WITHOUT_RESTRICTIONS)

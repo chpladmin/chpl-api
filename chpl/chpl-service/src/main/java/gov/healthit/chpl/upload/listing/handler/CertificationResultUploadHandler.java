@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.functionalityTested.CertificationResultFunctionalityTested;
+import gov.healthit.chpl.functionalityTested.FunctionalityTested;
 import gov.healthit.chpl.optionalStandard.domain.CertificationResultOptionalStandard;
 import gov.healthit.chpl.svap.domain.CertificationResultSvap;
 import gov.healthit.chpl.upload.listing.Headings;
@@ -157,7 +158,9 @@ public class CertificationResultUploadHandler {
         if (functionalitiesTestedNames != null && functionalitiesTestedNames.size() > 0) {
             functionalitiesTestedNames.stream().forEach(functionalityTestedName -> {
                 CertificationResultFunctionalityTested functionalityTested = CertificationResultFunctionalityTested.builder()
-                        .name(functionalityTestedName)
+                        .functionalityTested(FunctionalityTested.builder()
+                                .value(functionalityTestedName)
+                                .build())
                         .build();
                 functionalitiesTested.add(functionalityTested);
             });

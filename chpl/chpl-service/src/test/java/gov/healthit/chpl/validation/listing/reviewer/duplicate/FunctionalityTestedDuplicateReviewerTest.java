@@ -11,6 +11,7 @@ import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.functionalityTested.CertificationResultFunctionalityTested;
+import gov.healthit.chpl.functionalityTested.FunctionalityTested;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 public class FunctionalityTestedDuplicateReviewerTest {
@@ -35,13 +36,18 @@ public class FunctionalityTestedDuplicateReviewerTest {
         CertifiedProductSearchDetails listing = new CertifiedProductSearchDetails();
         CertificationResult cert = getCertResult();
 
-        CertificationResultFunctionalityTested funcTest1 = new CertificationResultFunctionalityTested();
-        funcTest1.setFunctionalityTestedId(1L);
-        funcTest1.setName("FuncTest1");
-
-        CertificationResultFunctionalityTested funcTest2 = new CertificationResultFunctionalityTested();
-        funcTest2.setFunctionalityTestedId(1L);
-        funcTest2.setName("FuncTest1");
+        CertificationResultFunctionalityTested funcTest1 = CertificationResultFunctionalityTested.builder()
+                .functionalityTested(FunctionalityTested.builder()
+                        .id(1L)
+                        .value("FuncTest1")
+                        .build())
+                .build();
+        CertificationResultFunctionalityTested funcTest2 = CertificationResultFunctionalityTested.builder()
+                .functionalityTested(FunctionalityTested.builder()
+                        .id(2L)
+                        .value("FuncTest2")
+                        .build())
+                .build();
 
         cert.getFunctionalitiesTested().add(funcTest2);
         cert.getFunctionalitiesTested().add(funcTest2);
@@ -60,13 +66,19 @@ public class FunctionalityTestedDuplicateReviewerTest {
         CertifiedProductSearchDetails listing = new CertifiedProductSearchDetails();
         CertificationResult cert = getCertResult();
 
-        CertificationResultFunctionalityTested funcTest1 = new CertificationResultFunctionalityTested();
-        funcTest1.setFunctionalityTestedId(1L);
-        funcTest1.setName("FuncTest1");
+        CertificationResultFunctionalityTested funcTest1 = CertificationResultFunctionalityTested.builder()
+                .functionalityTested(FunctionalityTested.builder()
+                        .id(1L)
+                        .value("FuncTest1")
+                        .build())
+                .build();
 
-        CertificationResultFunctionalityTested funcTest2 = new CertificationResultFunctionalityTested();
-        funcTest2.setFunctionalityTestedId(2L);
-        funcTest2.setName("FuncTest2");
+        CertificationResultFunctionalityTested funcTest2 = CertificationResultFunctionalityTested.builder()
+                .functionalityTested(FunctionalityTested.builder()
+                        .id(2L)
+                        .value("FuncTest2")
+                        .build())
+                .build();
 
         cert.getFunctionalitiesTested().add(funcTest1);
         cert.getFunctionalitiesTested().add(funcTest2);
@@ -94,21 +106,33 @@ public class FunctionalityTestedDuplicateReviewerTest {
         CertifiedProductSearchDetails listing = new CertifiedProductSearchDetails();
         CertificationResult cert = getCertResult();
 
-        CertificationResultFunctionalityTested funcTest1 = new CertificationResultFunctionalityTested();
-        funcTest1.setFunctionalityTestedId(1L);
-        funcTest1.setName("FuncTest1");
+        CertificationResultFunctionalityTested funcTest1 = CertificationResultFunctionalityTested.builder()
+                .functionalityTested(FunctionalityTested.builder()
+                        .id(1L)
+                        .value("FuncTest1")
+                        .build())
+                .build();
 
-        CertificationResultFunctionalityTested funcTest2 = new CertificationResultFunctionalityTested();
-        funcTest2.setFunctionalityTestedId(2L);
-        funcTest2.setName("FuncTest2");
+        CertificationResultFunctionalityTested funcTest2 = CertificationResultFunctionalityTested.builder()
+                .functionalityTested(FunctionalityTested.builder()
+                        .id(2L)
+                        .value("FuncTest2")
+                        .build())
+                .build();
 
-        CertificationResultFunctionalityTested funcTest3 = new CertificationResultFunctionalityTested();
-        funcTest3.setFunctionalityTestedId(1L);
-        funcTest3.setName("FuncTest1");
+        CertificationResultFunctionalityTested funcTest3 = CertificationResultFunctionalityTested.builder()
+                .functionalityTested(FunctionalityTested.builder()
+                        .id(1L)
+                        .value("FuncTest1")
+                        .build())
+                .build();
 
-        CertificationResultFunctionalityTested funcTest4 = new CertificationResultFunctionalityTested();
-        funcTest4.setFunctionalityTestedId(3L);
-        funcTest4.setName("FuncTest3");
+        CertificationResultFunctionalityTested funcTest4 = CertificationResultFunctionalityTested.builder()
+                .functionalityTested(FunctionalityTested.builder()
+                        .id(3L)
+                        .value("FuncTest3")
+                        .build())
+                .build();
 
         cert.getFunctionalitiesTested().add(funcTest1);
         cert.getFunctionalitiesTested().add(funcTest2);

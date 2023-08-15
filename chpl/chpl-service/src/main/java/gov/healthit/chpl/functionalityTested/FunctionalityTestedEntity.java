@@ -43,11 +43,11 @@ public class FunctionalityTestedEntity implements Serializable {
     @Column(name = "id")
     private Long id;
 
-    //@Column(name = "name", nullable = false)
-    //private String name;
+    @Column(name = "name", nullable = false)
+    private String name;
 
-    //@Column(name = "number")
-    //private String number;
+    @Column(name = "number")
+    private String number;
 
     @Basic(optional = false)
     @Column(name = "value")
@@ -109,7 +109,7 @@ public class FunctionalityTestedEntity implements Serializable {
                 .startDay(this.startDay)
                 .endDay(this.endDay)
                 .requiredDay(this.requiredDay)
-                .rule(this.rule.toDomain())
+                .rule(this.rule != null ? this.rule.toDomain() : null)
                 .practiceType(this.getPracticeType() != null ? this.getPracticeType().toDomain() : null)
                 .criteria(this.getMappedCriteria() != null ? this.getMappedCriteria().stream()
                         .map(mappedCriterion -> mappedCriterion.getCriterion().toDomain())

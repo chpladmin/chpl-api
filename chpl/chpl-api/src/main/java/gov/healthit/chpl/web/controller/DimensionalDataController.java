@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import gov.healthit.chpl.changerequest.manager.ChangeRequestManager;
 import gov.healthit.chpl.complaint.ComplaintManager;
+import gov.healthit.chpl.criteriaattribute.functionalitytested.FunctionalityTestedManager;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CriteriaSpecificDescriptiveModel;
@@ -25,7 +26,6 @@ import gov.healthit.chpl.domain.SearchOption;
 import gov.healthit.chpl.domain.TestStandard;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.functionalityTested.FunctionalityTested;
-import gov.healthit.chpl.functionalityTested.FunctionalityTestedManager;
 import gov.healthit.chpl.manager.DimensionalDataManager;
 import gov.healthit.chpl.optionalStandard.domain.OptionalStandard;
 import gov.healthit.chpl.surveillance.report.SurveillanceReportManager;
@@ -250,7 +250,7 @@ public class DimensionalDataController {
             produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody SearchOption getTestFunctionality() {
-        List<FunctionalityTested> data = functionalityTestedManager.getFunctionalitiesTested();
+        List<FunctionalityTested> data = functionalityTestedManager.getAll();
         SearchOption result = new SearchOption();
         result.setExpandable(false);
         result.setData(data.stream().collect(Collectors.toSet()));

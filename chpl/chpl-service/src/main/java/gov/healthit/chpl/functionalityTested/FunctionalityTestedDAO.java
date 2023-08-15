@@ -18,12 +18,11 @@ import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.criteriaattribute.CriteriaAttribute;
 import gov.healthit.chpl.criteriaattribute.CriteriaAttributeCriteriaMap;
 import gov.healthit.chpl.criteriaattribute.CriteriaAttributeDAO;
+import gov.healthit.chpl.criteriaattribute.functionalitytested.FunctionalityTestedCriteriaMap;
 import gov.healthit.chpl.criteriaattribute.rule.RuleDAO;
-import gov.healthit.chpl.criteriaattribute.testtool.TestToolCriteriaMapEntity;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.CertificationCriterion;
-import gov.healthit.chpl.domain.TestToolCriteriaMap;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.entity.listing.CertificationResultEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -60,6 +59,8 @@ public class FunctionalityTestedDAO extends BaseDAOImpl implements CriteriaAttri
     @Override
     public CriteriaAttribute add(CriteriaAttribute criteriaAttribute) {
         FunctionalityTestedEntity entity = FunctionalityTestedEntity.builder()
+                .name(criteriaAttribute.getValue()) //TODO: OCD-4288 - Remove when column is removed
+                .number(criteriaAttribute.getRegulatoryTextCitation()) //TODO: OCD-4288 - Remove when column is removed
                 .value(criteriaAttribute.getValue())
                 .regulatoryTextCitation(criteriaAttribute.getRegulatoryTextCitation())
                 .startDay(criteriaAttribute.getStartDay())
@@ -87,7 +88,7 @@ public class FunctionalityTestedDAO extends BaseDAOImpl implements CriteriaAttri
         return getAllFunctionalityTestedCriteriaMap().stream()
                 .map(map -> CriteriaAttributeCriteriaMap.builder()
                         .criterion(map.getCriterion())
-                        .criteriaAttribute(map.getTestTool())
+                        .criteriaAttribute(map.getFunctionalityTested())
                         .build())
                 .toList();
     }
@@ -181,7 +182,7 @@ public class FunctionalityTestedDAO extends BaseDAOImpl implements CriteriaAttri
     }
 
     @Transactional
-    public List<TestToolCriteriaMap> getAllFunctionalityTestedCriteriaMap() throws EntityRetrievalException {
+    public List<FunctionalityTestedCriteriaMap> getAllFunctionalityTestedCriteriaMap() throws EntityRetrievalException {
         return getAllFunctionalityTestedCriteriaMapEntities().stream()
                 .map(e -> e.toDomain())
                 .collect(Collectors.toList());
@@ -214,7 +215,7 @@ public class FunctionalityTestedDAO extends BaseDAOImpl implements CriteriaAttri
         FunctionalityTestedEntity entity = null;
 
         Query query = entityManager
-                .createQuery("SELECT ft "
+                .createQuery("SELECT DISTINCT ft "
                         + "FROM FunctionalityTestedEntity ft "
                         + "LEFT OUTER JOIN FETCH ft.practiceType "
                         + "LEFT OUTER JOIN FETCH ft.mappedCriteria criteriaMapping "
@@ -237,15 +238,15 @@ public class FunctionalityTestedDAO extends BaseDAOImpl implements CriteriaAttri
         return entity;
     }
 
-    private List<TestToolCriteriaMapEntity> getAllFunctionalityTestedCriteriaMapEntities() throws EntityRetrievalException {
+    private List<FunctionalityTestedCriteriaMapEntity> getAllFunctionalityTestedCriteriaMapEntities() throws EntityRetrievalException {
         return entityManager.createQuery("SELECT DISTINCT ftcm "
                         + "FROM FunctionalityTestedCriteriaMapEntity ftcm "
-                        + "JOIN FETCH ftcm.criteria c "
+                        + "JOIN FETCH ftcm.criterion c "
                         + "JOIN FETCH c.certificationEdition "
                         + "JOIN FETCH ftcm.functionalityTested ft "
                         + "WHERE ftcm.deleted <> true "
                         + "AND ft.deleted <> true ",
-                        TestToolCriteriaMapEntity.class)
+                        FunctionalityTestedCriteriaMapEntity.class)
                 .getResultList();
     }
 
@@ -259,7 +260,7 @@ public class FunctionalityTestedDAO extends BaseDAOImpl implements CriteriaAttri
                         + "AND crft.deleted <> true "
                         + "AND cr.deleted <> true ",
                         CertificationResultEntity.class)
-                .setParameter("functionalityTetsedId", functionalityTestedId)
+                .setParameter("functionalityTestedId", functionalityTestedId)
                 .setParameter("criterionId", criterionId)
                 .getResultList();
 
@@ -272,7 +273,7 @@ public class FunctionalityTestedDAO extends BaseDAOImpl implements CriteriaAttri
     private FunctionalityTestedCriteriaMapEntity getFunctionalityTestedCriteriaMapByTestToolAndCriterionEntity(Long functionalityTestedId, Long certificationCriterionId) throws EntityRetrievalException {
         List<FunctionalityTestedCriteriaMapEntity> result = entityManager.createQuery("SELECT DISTINCT ftcm "
                         + "FROM FunctionalityTestedCriteriaMapEntity ftcm "
-                        + "JOIN FETCH ftcm.criteria c "
+                        + "JOIN FETCH ftcm.criterion c "
                         + "JOIN FETCH ftcm.functionalityTested ft "
                         + "WHERE c.id = :certificationCriterionId "
                         + "AND ft.id= :functionalityTestedId "
@@ -296,7 +297,7 @@ public class FunctionalityTestedDAO extends BaseDAOImpl implements CriteriaAttri
     private List<Long> getCertifiedProductIdsUsingFunctionalityTestedId(Long functionalityTestedId) {
         List<CertificationResultEntity> certResultsWithTestTool =
                 entityManager.createQuery("SELECT cr "
-                        + "FROM CertificationResultFunctionalityTestedEntity crty, CertificationResultEntity cr "
+                        + "FROM CertificationResultFunctionalityTestedEntity crtf, CertificationResultEntity cr "
                         + "WHERE crtf.certificationResultId = cr.id "
                         + "AND crtf.functionalityTested.id = :testToolId "
                         + "AND crtf.deleted <> true "

@@ -64,9 +64,9 @@ public class FunctionalityTestedAllowedByRoleReviewer implements ComparisonRevie
 
                 allEditedCrtfs.stream()
                         .forEach(crtf -> {
-                            if (!isFunctionalityTestedChangeAllowedBasedOnRole(updatedCr.getCriterion().getId(), crtf.getFunctionalityTestedId())) {
+                            if (!isFunctionalityTestedChangeAllowedBasedOnRole(updatedCr.getCriterion().getId(), crtf.getFunctionalityTested().getId())) {
                                 updatedListing.addBusinessErrorMessage(errorMessages.getMessage("listing.criteria.functionalityTestedPermissionError",
-                                        crtf.getName(), Util.formatCriteriaNumber(updatedCr.getCriterion())));
+                                        crtf.getFunctionalityTested().getValue(), Util.formatCriteriaNumber(updatedCr.getCriterion())));
                             }
                         });
             }

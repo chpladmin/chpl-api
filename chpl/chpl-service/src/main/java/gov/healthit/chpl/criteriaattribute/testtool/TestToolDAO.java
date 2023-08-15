@@ -40,7 +40,6 @@ public class TestToolDAO extends BaseDAOImpl implements CriteriaAttributeDAO {
     @Override
     public CriteriaAttribute add(CriteriaAttribute criteriaAttribute) {
         TestToolEntity entity = TestToolEntity.builder()
-                .name(criteriaAttribute.getValue())
                 .value(criteriaAttribute.getValue())
                 .regulatoryTextCitation(criteriaAttribute.getRegulatoryTextCitation())
                 .startDay(criteriaAttribute.getStartDay())

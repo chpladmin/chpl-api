@@ -70,7 +70,7 @@ public class CertificationResultTestToolEntity implements Serializable {
                 .id(id)
                 .certificationResultId(certificationResultId)
                 .testToolId(testTool.getId())
-                .testToolName(testTool.getName())
+                .testToolName(testTool.getValue())
                 .testToolVersion(version)
                 .testTool(testTool.toDomain())
                 .version(version)

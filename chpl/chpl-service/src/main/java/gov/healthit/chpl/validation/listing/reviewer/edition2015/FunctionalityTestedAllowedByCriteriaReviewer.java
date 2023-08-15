@@ -12,13 +12,13 @@ import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import gov.healthit.chpl.criteriaattribute.functionalitytested.FunctionalityTestedManager;
 import gov.healthit.chpl.dao.CertificationEditionDAO;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.functionalityTested.CertificationResultFunctionalityTested;
 import gov.healthit.chpl.functionalityTested.FunctionalityTested;
 import gov.healthit.chpl.functionalityTested.FunctionalityTestedDAO;
-import gov.healthit.chpl.functionalityTested.FunctionalityTestedManager;
 import gov.healthit.chpl.manager.DimensionalDataManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -61,13 +61,13 @@ public class FunctionalityTestedAllowedByCriteriaReviewer extends PermissionBase
     private void addFunctionalitiesTestedErrorMessages(CertificationResultFunctionalityTested crft,
             CertificationResult cr, CertifiedProductSearchDetails listing) {
         FunctionalityTested functionalityTested = null;
-        if (crft.getFunctionalityTestedId() != null) {
-            functionalityTested = getFunctionalityTested(crft.getFunctionalityTestedId(), cr.getCriterion().getId());
+        if (crft.getFunctionalityTested().getId() != null) {
+            functionalityTested = getFunctionalityTested(crft.getFunctionalityTested().getId(), cr.getCriterion().getId());
             if (functionalityTested == null) {
-                listing.addDataErrorMessage(msgUtil.getMessage("listing.criteria.invalidFunctionalityTestedId", Util.formatCriteriaNumber(cr.getCriterion()), crft.getFunctionalityTestedId()));
+                listing.addDataErrorMessage(msgUtil.getMessage("listing.criteria.invalidFunctionalityTestedId", Util.formatCriteriaNumber(cr.getCriterion()), crft.getFunctionalityTested().getId()));
             }
-        } else if (!StringUtils.isEmpty(crft.getName())) {
-            functionalityTested = getFunctionalityTested(crft.getName(), cr.getCriterion().getId());
+        } else if (!StringUtils.isEmpty(crft.getFunctionalityTested().getValue())) {
+            functionalityTested = getFunctionalityTested(crft.getFunctionalityTested().getValue(), cr.getCriterion().getId());
             if (!isFunctionalityTestedCritierionValid(cr.getCriterion().getId(), functionalityTested)) {
                 addFunctionalitiesTestedCriterionErrorMessage(crft, cr, listing);
             }
@@ -88,14 +88,14 @@ public class FunctionalityTestedAllowedByCriteriaReviewer extends PermissionBase
     private void addFunctionalitiesTestedCriterionErrorMessage(CertificationResultFunctionalityTested crft,
             CertificationResult cr, CertifiedProductSearchDetails cp) {
 
-        FunctionalityTested functionalityTested = getFunctionalityTested(crft.getFunctionalityTestedId(), cr.getCriterion().getId());
+        FunctionalityTested functionalityTested = getFunctionalityTested(crft.getFunctionalityTested().getId(), cr.getCriterion().getId());
         if (functionalityTested == null || functionalityTested.getId() == null) {
-            cp.addDataErrorMessage(msgUtil.getMessage("listing.criteria.invalidFunctionalityTested", Util.formatCriteriaNumber(cr.getCriterion()), crft.getName()));
+            cp.addDataErrorMessage(msgUtil.getMessage("listing.criteria.invalidFunctionalityTested", Util.formatCriteriaNumber(cr.getCriterion()), crft.getFunctionalityTested().getValue()));
 
         } else {
             cp.addBusinessErrorMessage(getFunctionalityTestedCriterionErrorMessage(
                     Util.formatCriteriaNumber(cr.getCriterion()),
-                    crft.getName(),
+                    crft.getFunctionalityTested().getValue(),
                     getDelimitedListOfValidCriteriaNumbers(functionalityTested),
                     Util.formatCriteriaNumber(cr.getCriterion())));
         }
@@ -120,6 +120,7 @@ public class FunctionalityTestedAllowedByCriteriaReviewer extends PermissionBase
         return funcTestedOpt.isPresent() ? funcTestedOpt.get() : null;
     }
 
+    //TODO OCD-4288 - Is functionalityTestedNumber being handled correctly
     private FunctionalityTested getFunctionalityTested(String functionalityTestedNumber, Long criterionId) {
         Map<Long, List<FunctionalityTested>> funcTestedMappings = functionalityTestedDao.getFunctionalitiesTestedCriteriaMaps();
         if (!funcTestedMappings.containsKey(criterionId)) {
@@ -127,7 +128,7 @@ public class FunctionalityTestedAllowedByCriteriaReviewer extends PermissionBase
         }
         List<FunctionalityTested> functionalityTestedForCriterion = funcTestedMappings.get(criterionId);
         Optional<FunctionalityTested> funcTestedOpt = functionalityTestedForCriterion.stream()
-                .filter(funcTested -> funcTested.getName().equalsIgnoreCase(functionalityTestedNumber))
+                .filter(funcTested -> funcTested.getValue().equalsIgnoreCase(functionalityTestedNumber))
                 .findAny();
         return funcTestedOpt.isPresent() ? funcTestedOpt.get() : null;
     }
