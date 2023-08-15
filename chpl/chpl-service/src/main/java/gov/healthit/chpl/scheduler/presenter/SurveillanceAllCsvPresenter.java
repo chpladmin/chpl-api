@@ -1,19 +1,10 @@
 package gov.healthit.chpl.scheduler.presenter;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.nio.charset.StandardCharsets;
 import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVPrinter;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.core.env.Environment;
 
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
@@ -24,28 +15,21 @@ import gov.healthit.chpl.domain.surveillance.SurveillanceRequirement;
 import gov.healthit.chpl.util.NullSafeEvaluator;
 import gov.healthit.chpl.util.Util;
 
-public class SurveillanceAllCsvPresenter implements CertifiedProductPresenter, AutoCloseable {
-    private Environment env;
-    private DateTimeFormatter dateFormatter;
-    private DateTimeFormatter dateTimeFormatter;
-    private OutputStreamWriter writer = null;
-    private CSVPrinter csvPrinter = null;
-    private Logger logger;
+public class SurveillanceAllCsvPresenter extends SurveillanceCsvPresenter {
+    private static final String PRESENTER_NAME = "Surveillance All";
 
     public SurveillanceAllCsvPresenter(Environment env) {
-        dateFormatter = DateTimeFormatter.ofPattern("uuuu/MM/dd");
-        dateTimeFormatter = DateTimeFormatter.ofPattern("uuuu/MM/dd HH:mm Z");
-        this.env = env;
+        super(env);
     }
 
     @Override
-    public void open(final File file) throws IOException {
-        getLogger().info("Opening file, initializing Surveillance All CSV doc.");
-        writer = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8);
-        writer.write('\ufeff');
-        csvPrinter = new CSVPrinter(writer, CSVFormat.EXCEL);
-        csvPrinter.printRecord(generateHeaderValues());
-        csvPrinter.flush();
+    public String getPresenterName() {
+        return PRESENTER_NAME;
+    }
+
+    @Override
+    public String getFileName() {
+        return getEnvironment().getProperty("surveillanceAllReportName");
     }
 
     @Override
@@ -56,32 +40,15 @@ public class SurveillanceAllCsvPresenter implements CertifiedProductPresenter, A
             for (Surveillance currSurveillance : data.getSurveillance()) {
                 List<List<String>> rowValues = generateMultiRowValue(data, currSurveillance);
                 for (List<String> rowValue : rowValues) {
-                    csvPrinter.printRecord(rowValue);
-                    csvPrinter.flush();
+                    getCsvPrinter().printRecord(rowValue);
+                    getCsvPrinter().flush();
                 }
             }
         }
     }
 
     @Override
-    public void close() throws IOException {
-        getLogger().info("Closing the Surveillance All CSV file.");
-        csvPrinter.close();
-        writer.close();
-    }
-
-    public void setLogger(final Logger logger) {
-        this.logger = logger;
-    }
-
-    public Logger getLogger() {
-        if (logger == null) {
-            logger = LogManager.getLogger(CertifiedProductCsvPresenter.class);
-        }
-        return logger;
-    }
-
-    protected List<String> generateHeaderValues() {
+    public List<String> generateHeaderValues() {
         List<String> result = new ArrayList<String>();
         result.add("RECORD_STATUS__C");
         result.add("UNIQUE_CHPL_ID__C");
@@ -118,7 +85,7 @@ public class SurveillanceAllCsvPresenter implements CertifiedProductPresenter, A
         return result;
     }
 
-    protected List<List<String>> generateMultiRowValue(final CertifiedProductSearchDetails data,
+    private List<List<String>> generateMultiRowValue(final CertifiedProductSearchDetails data,
             final Surveillance surv) {
         List<List<String>> result = new ArrayList<List<String>>();
 
@@ -177,7 +144,7 @@ public class SurveillanceAllCsvPresenter implements CertifiedProductPresenter, A
             final Surveillance surv) {
         List<String> result = new ArrayList<String>();
         result.add(listing.getChplProductNumber());
-        result.add(env.getProperty("chplUrlBegin") + env.getProperty("listingDetailsUrl") + listing.getId());
+        result.add(getEnvironment().getProperty("chplUrlBegin") + getEnvironment().getProperty("listingDetailsUrl") + listing.getId());
         result.add(listing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_NAME_KEY).toString());
         result.add(listing.getCurrentStatus().getStatus().getName());
         result.add(listing.getDeveloper().getName());
@@ -185,12 +152,12 @@ public class SurveillanceAllCsvPresenter implements CertifiedProductPresenter, A
         result.add(listing.getVersion().getVersion());
         result.add(surv.getFriendlyId());
         if (surv.getStartDay() != null) {
-            result.add(dateFormatter.format(surv.getStartDay()));
+            result.add(getDateFormatter().format(surv.getStartDay()));
         } else {
             result.add("");
         }
         if (surv.getEndDay() != null) {
-            result.add(dateFormatter.format(surv.getEndDay()));
+            result.add(getDateFormatter().format(surv.getEndDay()));
         } else {
             result.add("");
         }
@@ -200,7 +167,7 @@ public class SurveillanceAllCsvPresenter implements CertifiedProductPresenter, A
         } else {
             result.add("");
         }
-        result.add(surv.getLastModifiedDate().toInstant().atOffset(ZoneOffset.UTC).format(dateTimeFormatter));
+        result.add(surv.getLastModifiedDate().toInstant().atOffset(ZoneOffset.UTC).format(getDateTimeFormatter()));
         return result;
     }
 
@@ -236,32 +203,32 @@ public class SurveillanceAllCsvPresenter implements CertifiedProductPresenter, A
             ncRow.add("Closed");
         }
         if (nc.getNonconformityCloseDay() != null) {
-            ncRow.add(dateFormatter.format(nc.getNonconformityCloseDay()));
+            ncRow.add(getDateFormatter().format(nc.getNonconformityCloseDay()));
         } else {
             ncRow.add("");
         }
         if (nc.getDateOfDeterminationDay() != null) {
-            ncRow.add(dateFormatter.format(nc.getDateOfDeterminationDay()));
+            ncRow.add(getDateFormatter().format(nc.getDateOfDeterminationDay()));
         } else {
             ncRow.add("");
         }
         if (nc.getCapApprovalDay() != null) {
-            ncRow.add(dateFormatter.format(nc.getCapApprovalDay()));
+            ncRow.add(getDateFormatter().format(nc.getCapApprovalDay()));
         } else {
             ncRow.add("");
         }
         if (nc.getCapStartDay() != null) {
-            ncRow.add(dateFormatter.format(nc.getCapStartDay()));
+            ncRow.add(getDateFormatter().format(nc.getCapStartDay()));
         } else {
             ncRow.add("");
         }
         if (nc.getCapMustCompleteDay() != null) {
-            ncRow.add(dateFormatter.format(nc.getCapMustCompleteDay()));
+            ncRow.add(getDateFormatter().format(nc.getCapMustCompleteDay()));
         } else {
             ncRow.add("");
         }
         if (nc.getCapEndDay() != null) {
-            ncRow.add(dateFormatter.format(nc.getCapEndDay()));
+            ncRow.add(getDateFormatter().format(nc.getCapEndDay()));
         } else {
             ncRow.add("");
         }
@@ -295,23 +262,8 @@ public class SurveillanceAllCsvPresenter implements CertifiedProductPresenter, A
         } else {
             ncRow.add("");
         }
-        ncRow.add(nc.getLastModifiedDate().toInstant().atOffset(ZoneOffset.UTC).format(dateTimeFormatter));
+        ncRow.add(nc.getLastModifiedDate().toInstant().atOffset(ZoneOffset.UTC).format(getDateTimeFormatter()));
         return ncRow;
     }
 
-    public final Environment getEnv() {
-        return env;
-    }
-
-    public final DateTimeFormatter getDateFormatter() {
-        return dateFormatter;
-    }
-
-    public final DateTimeFormatter getDateTimeFormatter() {
-        return dateTimeFormatter;
-    }
-
-    public CSVPrinter getCsvPrinter() {
-        return csvPrinter;
-    }
 }

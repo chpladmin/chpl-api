@@ -25,14 +25,16 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.scheduler.presenter.CertifiedProductPresenter;
+import gov.healthit.chpl.scheduler.presenter.NonconformityCsvPresenter;
 import gov.healthit.chpl.scheduler.presenter.SurveillanceAllCsvPresenter;
+import gov.healthit.chpl.scheduler.presenter.SurveillanceBasicCsvPresenter;
+import gov.healthit.chpl.scheduler.presenter.SurveillanceCsvPresenter;
 
 @DisallowConcurrentExecution
 public class SurveillanceDownloadableResourceCreatorJob extends DownloadableResourceCreatorJob {
     private static final Logger LOGGER = LogManager.getLogger("surveillanceDownloadableResourceCreatorJobLogger");
 
-    private File tempDirectory, tempSurveillanceAllCsvFile;
+    private File tempDirectory; //, tempSurveillanceAllCsvFile, tempNonconformityCsvFile, tempSurveillanceCsvFile;
     private ExecutorService executorService;
 
     @Autowired
@@ -47,24 +49,27 @@ public class SurveillanceDownloadableResourceCreatorJob extends DownloadableReso
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
 
         LOGGER.info("********* Starting the Surveillance Downloadable Resource Creator job. *********");
+        List<SurveillanceCsvPresenter> presenters = new ArrayList<SurveillanceCsvPresenter>();
 
-        try (SurveillanceAllCsvPresenter surveillanceAllPresenter = new SurveillanceAllCsvPresenter(env)) {
-            initializeTempFiles();
-            //if (tempCsvFile != null && tempXmlFile != null) {
-            if (tempSurveillanceAllCsvFile != null) {
-                //initializeWritingToFiles(xmlPresenter, csvPresenter);
-                initializeWritingToFiles(surveillanceAllPresenter);
-                initializeExecutorService();
+        try (SurveillanceAllCsvPresenter surveillanceAllPresenter = new SurveillanceAllCsvPresenter(env);
+                NonconformityCsvPresenter nonConformityPresenter = new NonconformityCsvPresenter(env);
+                SurveillanceBasicCsvPresenter surveillanceBasicPresenter = new SurveillanceBasicCsvPresenter(env)) {
 
-                List<CertifiedProductPresenter> presenters = List.of(surveillanceAllPresenter);
-                List<CompletableFuture<Void>> futures = getCertifiedProductSearchFutures(getRelevantListings(), presenters);
-                CompletableFuture<Void> combinedFutures = CompletableFuture
-                        .allOf(futures.toArray(new CompletableFuture[futures.size()]));
+            presenters = List.of(surveillanceAllPresenter,
+                    nonConformityPresenter,
+                    surveillanceBasicPresenter);
 
-                // This is not blocking - presumably because the job executes using it's own ExecutorService
-                // This is necessary so that the system can indicate that the job and it's threads are still running
-                combinedFutures.get();
-            }
+            initializeWritingToFiles(presenters);
+            initializeExecutorService();
+
+            List<CompletableFuture<Void>> futures = getCertifiedProductSearchFutures(getRelevantListings(), presenters);
+            CompletableFuture<Void> combinedFutures = CompletableFuture
+                    .allOf(futures.toArray(new CompletableFuture[futures.size()]));
+
+            // This is not blocking - presumably because the job executes using it's own ExecutorService
+            // This is necessary so that the system can indicate that the job and it's threads are still running
+            combinedFutures.get();
+
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
         } finally {
@@ -74,19 +79,19 @@ public class SurveillanceDownloadableResourceCreatorJob extends DownloadableReso
         try {
             //has to happen in a separate try block because of the presenters
             //using auto-close - can't move the files until they are closed by the presenters
-            swapFiles();
+            swapFiles(presenters);
         } catch (Exception ex) {
             LOGGER.error(ex.getMessage(), ex);
-            cleanupTempFiles();
+            cleanupTempFiles(presenters);
         } finally {
-            cleanupTempFiles();
+            cleanupTempFiles(presenters);
             executorService.shutdown();
             LOGGER.info("********* Completed the Surveillance Downloadable Resource Creator job. *********");
         }
     }
 
     private List<CompletableFuture<Void>> getCertifiedProductSearchFutures(List<CertifiedProductDetailsDTO> listings,
-            List<CertifiedProductPresenter> presenters) {
+            List<SurveillanceCsvPresenter> presenters) {
 
         List<CompletableFuture<Void>> futures = new ArrayList<CompletableFuture<Void>>();
         for (CertifiedProductDetailsDTO certifiedProductDetails : listings) {
@@ -97,7 +102,7 @@ public class SurveillanceDownloadableResourceCreatorJob extends DownloadableReso
         return futures;
     }
 
-    private void addToPresenters(List<CertifiedProductPresenter> presenters, CertifiedProductSearchDetails listing) {
+    private void addToPresenters(List<SurveillanceCsvPresenter> presenters, CertifiedProductSearchDetails listing) {
         presenters.stream()
                 .forEach(p -> {
                     try {
@@ -108,20 +113,22 @@ public class SurveillanceDownloadableResourceCreatorJob extends DownloadableReso
                 });
     }
 
-   private void initializeWritingToFiles(SurveillanceAllCsvPresenter surveillanceCsvPresenter) throws IOException {
-        surveillanceCsvPresenter.setLogger(LOGGER);
-        surveillanceCsvPresenter.open(tempSurveillanceAllCsvFile);
-    }
-
-    private void initializeTempFiles() throws IOException {
+    private void initializeWritingToFiles(List<SurveillanceCsvPresenter> presenters) throws IOException {
         File downloadFolder = getDownloadFolder();
         Path tempDirBasePath = Paths.get(downloadFolder.getAbsolutePath());
         Path tempDir = Files.createTempDirectory(tempDirBasePath, TEMP_DIR_NAME);
         this.tempDirectory = tempDir.toFile();
 
-        Path csvPath = Files.createTempFile(tempDir, env.getProperty("surveillanceAllReportName") + "-" + getFilenameTimestampFormat().format(new Date()), ".csv");
-        tempSurveillanceAllCsvFile = csvPath.toFile();
-
+        presenters.forEach(presenter -> {
+            try {
+                presenter.setLogger(LOGGER);
+                presenter.setTempFile(Files.createTempFile(tempDir, presenter.getFileName() + "-"
+                    + getFilenameTimestampFormat().format(new Date()), ".csv").toFile());
+                presenter.open();
+            } catch (IOException e) {
+                LOGGER.error(e.getMessage(), e);
+            }
+        });
     }
 
     private List<CertifiedProductDetailsDTO> getRelevantListings() throws EntityRetrievalException {
@@ -131,35 +138,43 @@ public class SurveillanceDownloadableResourceCreatorJob extends DownloadableReso
         return listings;
     }
 
-    private void swapFiles() throws IOException {
+    private void swapFiles(List<SurveillanceCsvPresenter> presenters) throws IOException {
         LOGGER.info("Swapping temporary files.");
         File downloadFolder = getDownloadFolder();
 
-        if (tempSurveillanceAllCsvFile != null) {
-            String csvFilename = getFileName(downloadFolder.getAbsolutePath(),
-                    getFilenameTimestampFormat().format(new Date()), "csv");
-            LOGGER.info("Moving " + tempSurveillanceAllCsvFile.getAbsolutePath() + " to " + csvFilename);
-            Path targetFile = Files.move(tempSurveillanceAllCsvFile.toPath(), Paths.get(csvFilename), StandardCopyOption.ATOMIC_MOVE);
-            if (targetFile == null) {
-                LOGGER.warn("Surveillance All CSV file move may not have succeeded. Check file system.");
+        presenters.forEach(presenter -> {
+            try {
+                if (presenter.getTempFile() != null) {
+                    String csvFilename = getFileName(downloadFolder.getAbsolutePath(), presenter.getFileName(),
+                            getFilenameTimestampFormat().format(new Date()), "csv");
+                    LOGGER.info("Moving " + presenter.getTempFile().getAbsolutePath() + " to " + csvFilename);
+                    Path targetFile = Files.move(presenter.getTempFile().toPath(), Paths.get(csvFilename), StandardCopyOption.ATOMIC_MOVE);
+                    if (targetFile == null) {
+                        LOGGER.warn(presenter.getPresenterName() + " CSV file move may not have succeeded. Check file system.");
+                    }
+                } else {
+                    LOGGER.warn("Temp " + presenter.getPresenterName() + " Surveillance All CSV File was null and could not be moved.");
+                }
+            } catch (IOException ex) {
+
             }
-        } else {
-            LOGGER.warn("Temp Surveillance All CSV File was null and could not be moved.");
-        }
+        });
     }
 
-    private void cleanupTempFiles() {
+    private void cleanupTempFiles(List<SurveillanceCsvPresenter> presenters) {
         LOGGER.info("Deleting temporary files.");
-        if (tempSurveillanceAllCsvFile != null && tempSurveillanceAllCsvFile.exists()) {
-            tempSurveillanceAllCsvFile.delete();
-        } else {
-            LOGGER.warn("Temp CSV File was null and could not be deleted.");
-        }
+        presenters.forEach(presenter -> {
+            if (presenter.getTempFile() != null && presenter.getTempFile().exists()) {
+                presenter.getTempFile().delete();
+            } else {
+                LOGGER.warn("Temp " + presenter.getPresenterName() + " CSV File was null and could not be deleted.");
+            }
+
+        });
     }
 
-    private String getFileName(String path, String timeStamp, String extension) {
-        return path + File.separator + env.getProperty("surveillanceAllReportName") + "-"
-                + getFilenameTimestampFormat().format(new Date()) + extension;
+    private String getFileName(String path, String name, String timeStamp, String extension) {
+        return path + File.separator + name + "-" + getFilenameTimestampFormat().format(new Date()) + "." + extension;
     }
 
     private Integer getThreadCountForJob() throws NumberFormatException {
@@ -169,58 +184,4 @@ public class SurveillanceDownloadableResourceCreatorJob extends DownloadableReso
     private void initializeExecutorService() {
         executorService = Executors.newFixedThreadPool(getThreadCountForJob());
     }
-
-    /*
-    private void writeSurveillanceAllFile(final File downloadFolder, final List<CertifiedProductSearchDetails> results)
-            throws IOException {
-        String csvFilename = downloadFolder.getAbsolutePath()
-                + File.separator
-                + env.getProperty("surveillanceAllReportName") + "-"
-                + getFilenameTimestampFormat().format(new Date())
-                + ".csv";
-        File csvFile = getFile(csvFilename);
-        SurveillanceCsvPresenter csvPresenter = new SurveillanceCsvPresenter(env);
-        csvPresenter.presentAsFile(csvFile, results);
-        LOGGER.info("Wrote Surveillance-All CSV file.");
-    }
-
-    private void writeSurveillanceWithNonconformitiesFile(final File downloadFolder,
-            final List<CertifiedProductSearchDetails> results) throws IOException {
-        String csvFilename = downloadFolder.getAbsolutePath()
-                + File.separator
-                + env.getProperty("surveillanceNonconformitiesReportName") + "-"
-                + getFilenameTimestampFormat().format(new Date())
-                + ".csv";
-        File csvFile = getFile(csvFilename);
-        NonconformityCsvPresenter csvPresenter = new NonconformityCsvPresenter(env);
-        csvPresenter.presentAsFile(csvFile, results);
-        LOGGER.info("Wrote Surveillance With Nonconformities CSV file.");
-    }
-
-    private void writeSurveillanceBasicReportFile(final File downloadFolder,
-            final List<CertifiedProductSearchDetails> results) throws IOException {
-        String csvFilename = downloadFolder.getAbsolutePath()
-                + File.separator
-                + env.getProperty("surveillanceBasicReportName") + "-"
-                + getFilenameTimestampFormat().format(new Date())
-                + ".csv";
-        File csvFile = getFile(csvFilename);
-        SurveillanceReportCsvPresenter csvPresenter = new SurveillanceReportCsvPresenter(env);
-        csvPresenter.presentAsFile(csvFile, results);
-        LOGGER.info("Wrote Surveillance Basic Report CSV file.");
-    }
-
-    private File getFile(final String fileName) throws IOException {
-        File file = new File(fileName);
-        if (file.exists()) {
-            if (!file.delete()) {
-                throw new IOException("File exists; cannot delete");
-            }
-        }
-        if (!file.createNewFile()) {
-            throw new IOException("File can not be created");
-        }
-        return file;
-    }
-    */
 }

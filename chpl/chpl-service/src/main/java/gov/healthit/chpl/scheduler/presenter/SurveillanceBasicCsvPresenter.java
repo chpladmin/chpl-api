@@ -1,5 +1,6 @@
 package gov.healthit.chpl.scheduler.presenter;
 
+import java.io.IOException;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -16,14 +17,40 @@ import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformity;
 import gov.healthit.chpl.domain.surveillance.SurveillanceRequirement;
 import gov.healthit.chpl.util.NullSafeEvaluator;
 
-public class SurveillanceReportCsvPresenter extends SurveillanceAllCsvPresenter {
+public class SurveillanceBasicCsvPresenter extends SurveillanceCsvPresenter {
+    private static final String PRESENTER_NAME = "Surveillance Basic";
 
-    public SurveillanceReportCsvPresenter(Environment env) {
+    public SurveillanceBasicCsvPresenter(Environment env) {
         super(env);
     }
 
     @Override
-    protected List<String> generateHeaderValues() {
+    public String getPresenterName() {
+        return PRESENTER_NAME;
+    }
+
+    @Override
+    public void add(CertifiedProductSearchDetails data) throws IOException {
+        getLogger().info("Adding Surveillance to Surveillance Basic CSV file: " + data.getId());
+
+        if (data.getSurveillance() != null && data.getSurveillance().size() > 0) {
+            for (Surveillance currSurveillance : data.getSurveillance()) {
+                List<List<String>> rowValues = generateMultiRowValue(data, currSurveillance);
+                for (List<String> rowValue : rowValues) {
+                    getCsvPrinter().printRecord(rowValue);
+                    getCsvPrinter().flush();
+                }
+            }
+        }
+    }
+
+    @Override
+    public String getFileName() {
+        return getEnvironment().getProperty("surveillanceBasicReportName");
+    }
+
+    @Override
+    public List<String> generateHeaderValues() {
         List<String> result = new ArrayList<String>();
         result.add("Developer");
         result.add("Product");
@@ -57,8 +84,7 @@ public class SurveillanceReportCsvPresenter extends SurveillanceAllCsvPresenter 
         return result;
     }
 
-    @Override
-    protected List<List<String>> generateMultiRowValue(final CertifiedProductSearchDetails data,
+    private List<List<String>> generateMultiRowValue(final CertifiedProductSearchDetails data,
             final Surveillance surv) {
         List<List<String>> result = new ArrayList<List<String>>();
 
@@ -90,18 +116,18 @@ public class SurveillanceReportCsvPresenter extends SurveillanceAllCsvPresenter 
         return result;
     }
 
-    protected List<SurveillanceNonconformity> getNonconformities(final SurveillanceRequirement req) {
+    private List<SurveillanceNonconformity> getNonconformities(final SurveillanceRequirement req) {
         return req.getNonconformities();
     }
 
-    protected List<String> getSurveillanceFields(final CertifiedProductSearchDetails data,
+    private List<String> getSurveillanceFields(final CertifiedProductSearchDetails data,
             final Surveillance surv) {
         List<String> survFields = new ArrayList<String>();
         survFields.add(data.getDeveloper().getName());
         survFields.add(data.getProduct().getName());
         survFields.add(data.getVersion().getVersion());
         survFields.add(data.getChplProductNumber());
-        String productDetailsUrl = getEnv().getProperty("chplUrlBegin").trim() + getEnv().getProperty("listingDetailsUrl") + data.getId();
+        String productDetailsUrl = getEnvironment().getProperty("chplUrlBegin").trim() + getEnvironment().getProperty("listingDetailsUrl") + data.getId();
         survFields.add(productDetailsUrl);
         survFields.add(data.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_NAME_KEY).toString());
         survFields.add(data.getCurrentStatus().getStatus().getName());
@@ -134,7 +160,7 @@ public class SurveillanceReportCsvPresenter extends SurveillanceAllCsvPresenter 
         return survFields;
     }
 
-    protected List<String> getNoNonconformityFields(final CertifiedProductSearchDetails data,
+    private List<String> getNoNonconformityFields(final CertifiedProductSearchDetails data,
             final Surveillance surv) {
         List<String> ncFields = new ArrayList<String>();
         ncFields.add("N");
@@ -155,7 +181,7 @@ public class SurveillanceReportCsvPresenter extends SurveillanceAllCsvPresenter 
         return ncFields;
     }
 
-    protected List<String> getNonconformityFields(CertifiedProductSearchDetails data, Surveillance surv, SurveillanceNonconformity nc) {
+    private List<String> getNonconformityFields(CertifiedProductSearchDetails data, Surveillance surv, SurveillanceNonconformity nc) {
         List<String> ncFields = new ArrayList<String>();
         ncFields.add("Y");
 
