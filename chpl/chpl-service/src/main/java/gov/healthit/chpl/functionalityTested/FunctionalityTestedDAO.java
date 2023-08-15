@@ -12,6 +12,7 @@ import javax.persistence.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.criteriaattribute.CriteriaAttribute;
@@ -19,10 +20,12 @@ import gov.healthit.chpl.criteriaattribute.CriteriaAttributeCriteriaMap;
 import gov.healthit.chpl.criteriaattribute.CriteriaAttributeDAO;
 import gov.healthit.chpl.criteriaattribute.rule.RuleDAO;
 import gov.healthit.chpl.criteriaattribute.testtool.TestToolCriteriaMapEntity;
-import gov.healthit.chpl.criteriaattribute.testtool.TestToolEntity;
+import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.CertificationCriterion;
+import gov.healthit.chpl.domain.TestToolCriteriaMap;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
+import gov.healthit.chpl.entity.listing.CertificationResultEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.util.AuthUtil;
 import lombok.extern.log4j.Log4j2;
@@ -32,26 +35,31 @@ import lombok.extern.log4j.Log4j2;
 public class FunctionalityTestedDAO extends BaseDAOImpl implements CriteriaAttributeDAO {
 
     private RuleDAO ruleDAO;
+    private CertifiedProductDAO certifiedProductDAO;
 
     @Autowired
-    public FunctionalityTestedDAO(RuleDAO ruleDAO) {
+    public FunctionalityTestedDAO(RuleDAO ruleDAO, CertifiedProductDAO certifiedProductDAO) {
         this.ruleDAO = ruleDAO;
+        this.certifiedProductDAO = certifiedProductDAO;
     }
 
-    public FunctionalityTested getById(Long id) throws EntityRetrievalException {
-        FunctionalityTestedEntity entity = getEntityById(id);
-        if (entity != null) {
-            return entity.toDomain();
+    public FunctionalityTested getById(Long id) {
+        try {
+            FunctionalityTestedEntity entity = getEntityById(id);
+            if (entity != null) {
+                return entity.toDomain();
+            } else {
+                return null;
+            }
+        } catch (EntityRetrievalException e) {
+            LOGGER.error("Error retrieving Functionality Tested: {}", e.getMessage(), e);
+            return null;
         }
-        return null;
     }
-
-
 
     @Override
     public CriteriaAttribute add(CriteriaAttribute criteriaAttribute) {
         FunctionalityTestedEntity entity = FunctionalityTestedEntity.builder()
-                .name(criteriaAttribute.getValue())
                 .value(criteriaAttribute.getValue())
                 .regulatoryTextCitation(criteriaAttribute.getRegulatoryTextCitation())
                 .startDay(criteriaAttribute.getStartDay())
@@ -76,7 +84,7 @@ public class FunctionalityTestedDAO extends BaseDAOImpl implements CriteriaAttri
 
     @Override
     public List<CriteriaAttributeCriteriaMap> getAllAssociatedCriteriaMaps() throws EntityRetrievalException {
-        return getAllTestToolCriteriaMap().stream()
+        return getAllFunctionalityTestedCriteriaMap().stream()
                 .map(map -> CriteriaAttributeCriteriaMap.builder()
                         .criterion(map.getCriterion())
                         .criteriaAttribute(map.getTestTool())
@@ -87,13 +95,13 @@ public class FunctionalityTestedDAO extends BaseDAOImpl implements CriteriaAttri
     @Override
     public List<CertifiedProductDetailsDTO> getCertifiedProductsByCriteriaAttributeAndCriteria(CriteriaAttribute criteriaAttribute, CertificationCriterion criterion)
             throws EntityRetrievalException {
-        List<Long> certifiedProductIds = getCertifiedProductIdsUsingTestToolIdWithCriterion(criteriaAttribute.getId(), criterion.getId());
+        List<Long> certifiedProductIds = getCertifiedProductIdsUsingFunctionalityTestedIdWithCriterion(criteriaAttribute.getId(), criterion.getId());
         return certifiedProductDAO.getDetailsByIds(certifiedProductIds);
     }
 
     @Override
     public void update(CriteriaAttribute criteriaAttribute) throws EntityRetrievalException {
-        TestToolEntity entity = getEntityById(criteriaAttribute.getId());
+        FunctionalityTestedEntity entity = getEntityById(criteriaAttribute.getId());
 
         entity.setValue(criteriaAttribute.getValue());
         entity.setRegulatoryTextCitation(criteriaAttribute.getRegulatoryTextCitation());
@@ -114,9 +122,9 @@ public class FunctionalityTestedDAO extends BaseDAOImpl implements CriteriaAttri
 
     @Override
     public void addCriteriaAttributeCriteriaMap(CriteriaAttribute criteriaAttribute, CertificationCriterion criterion) {
-        TestToolCriteriaMapEntity entity = TestToolCriteriaMapEntity.builder()
+        FunctionalityTestedCriteriaMapEntity entity = FunctionalityTestedCriteriaMapEntity.builder()
                 .certificationCriterionId(criterion.getId())
-                .testToolId(criteriaAttribute.getId())
+                .functionalityTestedId(criteriaAttribute.getId())
                 .creationDate(new Date())
                 .lastModifiedDate(new Date())
                 .lastModifiedUser(AuthUtil.getAuditId())
@@ -129,7 +137,7 @@ public class FunctionalityTestedDAO extends BaseDAOImpl implements CriteriaAttri
     @Override
     public void removeCriteriaAttributeCriteriaMap(CriteriaAttribute criteriaAttribute, CertificationCriterion criterion) {
         try {
-            TestToolCriteriaMapEntity entity = getTestToolCriteriaMapByTestToolAndCriterionEntity(criteriaAttribute.getId(), criterion.getId());
+            FunctionalityTestedCriteriaMapEntity entity = getFunctionalityTestedCriteriaMapByTestToolAndCriterionEntity(criteriaAttribute.getId(), criterion.getId());
             entity.setDeleted(true);
             entity.setLastModifiedDate(new Date());
             entity.setLastModifiedUser(AuthUtil.getAuditId());
@@ -143,7 +151,7 @@ public class FunctionalityTestedDAO extends BaseDAOImpl implements CriteriaAttri
 
     @Override
     public List<CertifiedProductDetailsDTO> getCertifiedProductsByCriteriaAttribute(CriteriaAttribute criteriaAttribute) throws EntityRetrievalException {
-        List<Long> certifiedProductIds = getCertifiedProductIdsUsingTestToolId(criteriaAttribute.getId());
+        List<Long> certifiedProductIds = getCertifiedProductIdsUsingFunctionalityTestedId(criteriaAttribute.getId());
         return certifiedProductDAO.getDetailsByIds(certifiedProductIds);
     }
 
@@ -171,6 +179,14 @@ public class FunctionalityTestedDAO extends BaseDAOImpl implements CriteriaAttri
             .forEach(funcTest -> updateMapping(mapping, funcTest));
         return mapping;
     }
+
+    @Transactional
+    public List<TestToolCriteriaMap> getAllFunctionalityTestedCriteriaMap() throws EntityRetrievalException {
+        return getAllFunctionalityTestedCriteriaMapEntities().stream()
+                .map(e -> e.toDomain())
+                .collect(Collectors.toList());
+    }
+
 
     private void updateMapping(Map<Long, List<FunctionalityTested>> mapping, FunctionalityTested functionalityTested) {
         functionalityTested.getCriteria().stream()
@@ -220,4 +236,79 @@ public class FunctionalityTestedDAO extends BaseDAOImpl implements CriteriaAttri
 
         return entity;
     }
+
+    private List<TestToolCriteriaMapEntity> getAllFunctionalityTestedCriteriaMapEntities() throws EntityRetrievalException {
+        return entityManager.createQuery("SELECT DISTINCT ftcm "
+                        + "FROM FunctionalityTestedCriteriaMapEntity ftcm "
+                        + "JOIN FETCH ftcm.criteria c "
+                        + "JOIN FETCH c.certificationEdition "
+                        + "JOIN FETCH ftcm.functionalityTested ft "
+                        + "WHERE ftcm.deleted <> true "
+                        + "AND ft.deleted <> true ",
+                        TestToolCriteriaMapEntity.class)
+                .getResultList();
+    }
+
+    private List<Long> getCertifiedProductIdsUsingFunctionalityTestedIdWithCriterion(Long functionalityTestedId, Long criterionId) {
+        List<CertificationResultEntity> certResultsWithTestTool =
+                entityManager.createQuery("SELECT cr "
+                        + "FROM CertificationResultFunctionalityTestedEntity crft, CertificationResultEntity cr "
+                        + "WHERE crft.certificationResultId = cr.id "
+                        + "AND crft.functionalityTested.id = :functionalityTestedId "
+                        + "AND cr.certificationCriterionId= :criterionId "
+                        + "AND crft.deleted <> true "
+                        + "AND cr.deleted <> true ",
+                        CertificationResultEntity.class)
+                .setParameter("functionalityTetsedId", functionalityTestedId)
+                .setParameter("criterionId", criterionId)
+                .getResultList();
+
+        return certResultsWithTestTool.stream()
+                .map(certResult -> certResult.getCertifiedProductId())
+                .distinct()
+                .collect(Collectors.toList());
+    }
+
+    private FunctionalityTestedCriteriaMapEntity getFunctionalityTestedCriteriaMapByTestToolAndCriterionEntity(Long functionalityTestedId, Long certificationCriterionId) throws EntityRetrievalException {
+        List<FunctionalityTestedCriteriaMapEntity> result = entityManager.createQuery("SELECT DISTINCT ftcm "
+                        + "FROM FunctionalityTestedCriteriaMapEntity ftcm "
+                        + "JOIN FETCH ftcm.criteria c "
+                        + "JOIN FETCH ftcm.functionalityTested ft "
+                        + "WHERE c.id = :certificationCriterionId "
+                        + "AND ft.id= :functionalityTestedId "
+                        + "AND ftcm.deleted <> true "
+                        + "AND ft.deleted <> true "
+                        + "AND c.deleted <> true",
+                        FunctionalityTestedCriteriaMapEntity.class)
+                .setParameter("functionalityTestedId", functionalityTestedId)
+                .setParameter("certificationCriterionId", certificationCriterionId)
+                .getResultList();
+
+        if (result.size() > 1) {
+            throw new EntityRetrievalException("Data error. Duplicate functionality tested criteria map id in database.");
+        } else if (result.size() == 0) {
+            throw new EntityRetrievalException("Data error. Could not locate functionality tested criteria map {" + functionalityTestedId + ", " + certificationCriterionId + "} in database.");
+        }
+
+        return result.get(0);
+    }
+
+    private List<Long> getCertifiedProductIdsUsingFunctionalityTestedId(Long functionalityTestedId) {
+        List<CertificationResultEntity> certResultsWithTestTool =
+                entityManager.createQuery("SELECT cr "
+                        + "FROM CertificationResultFunctionalityTestedEntity crty, CertificationResultEntity cr "
+                        + "WHERE crtf.certificationResultId = cr.id "
+                        + "AND crtf.functionalityTested.id = :testToolId "
+                        + "AND crtf.deleted <> true "
+                        + "AND cr.deleted <> true ",
+                        CertificationResultEntity.class)
+                .setParameter("testToolId", functionalityTestedId)
+                .getResultList();
+
+        return certResultsWithTestTool.stream()
+                .map(certResult -> certResult.getCertifiedProductId())
+                .distinct()
+                .collect(Collectors.toList());
+    }
+
 }

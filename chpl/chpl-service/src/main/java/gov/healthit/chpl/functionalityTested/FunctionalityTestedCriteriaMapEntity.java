@@ -15,6 +15,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import gov.healthit.chpl.entity.CertificationCriterionEntity;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -23,6 +24,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
+@Builder
 @Table(name = "functionality_tested_criteria_map")
 public class FunctionalityTestedCriteriaMapEntity implements Serializable {
     private static final long serialVersionUID = 6446486138564063907L;
