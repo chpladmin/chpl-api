@@ -192,7 +192,8 @@ public class TestToolDAO extends BaseDAOImpl implements CriteriaAttributeDAO {
         Query query = entityManager.createQuery(
                 "FROM TestToolEntity tt "
                 + "INNER JOIN FETCH tt.criteria c "
-                + "INNER JOIN FETCH c.certificationEdition "
+                + "LEFT JOIN FETCH c.certificationEdition "
+                + "LEFT JOIN FETCH c.rule "
                 + "WHERE (NOT tt.deleted = true) "
                 + "AND (UPPER(tt.name) = :name) ", TestToolEntity.class);
         query.setParameter("name", name.toUpperCase());
@@ -205,7 +206,8 @@ public class TestToolDAO extends BaseDAOImpl implements CriteriaAttributeDAO {
         return entityManager.createQuery("SELECT DISTINCT ttm "
                         + "FROM TestToolCriteriaMapEntity ttm "
                         + "JOIN FETCH ttm.criteria c "
-                        + "JOIN FETCH c.certificationEdition "
+                        + "LEFT JOIN FETCH c.certificationEdition "
+                        + "LEFT JOIN FETCH c.rule "
                         + "JOIN FETCH ttm.testTool tt "
                         + "WHERE ttm.deleted <> true "
                         + "AND tt.deleted <> true ",

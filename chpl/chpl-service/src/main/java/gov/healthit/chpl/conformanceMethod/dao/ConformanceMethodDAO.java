@@ -41,7 +41,8 @@ public class ConformanceMethodDAO extends BaseDAOImpl {
                 + "FROM ConformanceMethodCriteriaMapEntity cmMap "
                 + "JOIN FETCH cmMap.conformanceMethod cm "
                 + "JOIN FETCH cmMap.certificationCriterion cce "
-                + "JOIN FETCH cce.certificationEdition "
+                + "LEFT JOIN FETCH cce.certificationEdition "
+                + "LEFT JOIN FETCH cce.rule "
                 + "WHERE cmMap.deleted <> true "
                 + "AND cm.deleted <> true "
                 + "AND cce.id = :criterionId",
@@ -66,7 +67,8 @@ public class ConformanceMethodDAO extends BaseDAOImpl {
         return entityManager.createQuery("SELECT DISTINCT cmcm "
                         + "FROM ConformanceMethodCriteriaMapEntity cmcm "
                         + "JOIN FETCH cmcm.certificationCriterion c "
-                        + "JOIN FETCH c.certificationEdition "
+                        + "LEFT JOIN FETCH c.certificationEdition "
+                        + "LEFT JOIN FETCH c.rule "
                         + "JOIN FETCH cmcm.conformanceMethod cm "
                         + "WHERE cmcm.deleted <> true "
                         + "AND cm.deleted <> true ",

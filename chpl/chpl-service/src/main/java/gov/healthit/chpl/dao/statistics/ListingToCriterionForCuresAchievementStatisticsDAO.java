@@ -67,6 +67,7 @@ public class ListingToCriterionForCuresAchievementStatisticsDAO extends BaseDAOI
                 + "FROM ListingToCriterionForCuresAchievementStatisticEntity stats "
                 + "LEFT OUTER JOIN FETCH stats.certificationCriterion cce "
                 + "LEFT OUTER JOIN FETCH cce.certificationEdition "
+                + "LEFT JOIN FETCH cce.rule "
                 + "WHERE (stats.deleted = false) "
                 + "AND stats.statisticDate = :statisticDate ",
                 ListingToCriterionForCuresAchievementStatisticEntity.class);
@@ -105,6 +106,7 @@ public class ListingToCriterionForCuresAchievementStatisticsDAO extends BaseDAOI
                 + "FROM ListingToCriterionForCuresAchievementStatisticEntity stats "
                 + "LEFT OUTER JOIN FETCH stats.certificationCriterion cce "
                 + "LEFT OUTER JOIN FETCH cce.certificationEdition "
+                + "LEFT JOIN FETCH cce.rule "
                 + "WHERE (stats.deleted = false)",
                 ListingToCriterionForCuresAchievementStatisticEntity.class);
         return query.getResultList();
@@ -116,6 +118,7 @@ public class ListingToCriterionForCuresAchievementStatisticsDAO extends BaseDAOI
                 + "FROM ListingToCriterionForCuresAchievementStatisticEntity stats "
                 + "LEFT OUTER JOIN FETCH stats.certificationCriterion cce "
                 + "LEFT OUTER JOIN FETCH cce.certificationEdition "
+                + "LEFT JOIN FETCH cce.rule "
                 + "WHERE (stats.deleted = false) "
                 + "AND (stats.id = :id)",
                 ListingToCriterionForCuresAchievementStatisticEntity.class);

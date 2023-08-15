@@ -83,6 +83,7 @@ public class CriterionProductStatisticsDAOImpl extends BaseDAOImpl implements Cr
         Query query = entityManager.createQuery("from CriterionProductStatisticsEntity cpse "
                 + "LEFT OUTER JOIN FETCH cpse.certificationCriterion cce "
                 + "LEFT OUTER JOIN FETCH cce.certificationEdition "
+                + "LEFT JOIN FETCH cce.rule "
                 + "WHERE (cpse.deleted = false)",
                 CriterionProductStatisticsEntity.class);
         return query.getResultList();
@@ -94,6 +95,7 @@ public class CriterionProductStatisticsDAOImpl extends BaseDAOImpl implements Cr
         Query query = entityManager.createQuery("from CriterionProductStatisticsEntity cpse "
                 + "LEFT OUTER JOIN FETCH cpse.certificationCriterion cce "
                 + "LEFT OUTER JOIN FETCH cce.certificationEdition "
+                + "LEFT JOIN FETCH cce.rule "
                 + "WHERE (cpse.deleted = false) AND (id = :entityid)",
                 CriterionProductStatisticsEntity.class);
         query.setParameter("entityid", id);
