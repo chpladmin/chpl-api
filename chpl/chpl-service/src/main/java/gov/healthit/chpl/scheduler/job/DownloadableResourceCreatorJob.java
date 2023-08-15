@@ -77,22 +77,6 @@ public abstract class DownloadableResourceCreatorJob extends QuartzJob {
         return futures;
     }
 
-    protected List<Future<CertifiedProductSearchDetails>> getCertifiedProductSearchDetailsFuturesSMALL(
-            final List<CertifiedProductDetailsDTO> listings) throws Exception {
-
-        List<Future<CertifiedProductSearchDetails>> futures = new ArrayList<Future<CertifiedProductSearchDetails>>();
-        SchedulerCertifiedProductSearchDetailsAsync cpsdAsync = getCertifiedProductDetailsAsyncRetrievalHelper();
-
-        for (CertifiedProductDetailsDTO currListing : listings) {
-            try {
-                futures.add(cpsdAsync.getCertifiedProductDetailSMALL(currListing.getId(), getCpdManager()));
-            } catch (EntityRetrievalException e) {
-                logger.error("Could not retrieve certified product details for id: " + currListing.getId(), e);
-            }
-        }
-        return futures;
-    }
-
     protected Optional<CertifiedProductSearchDetails> getCertifiedProductSearchDetails(Long listingId) {
         try {
             return Optional.of(certifiedProductDetailsManager.getCertifiedProductDetails(listingId));

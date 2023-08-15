@@ -34,7 +34,6 @@ import gov.healthit.chpl.scheduler.presenter.SurveillanceCsvPresenter;
 public class SurveillanceDownloadableResourceCreatorJob extends DownloadableResourceCreatorJob {
     private static final Logger LOGGER = LogManager.getLogger("surveillanceDownloadableResourceCreatorJobLogger");
 
-    private File tempDirectory; //, tempSurveillanceAllCsvFile, tempNonconformityCsvFile, tempSurveillanceCsvFile;
     private ExecutorService executorService;
 
     @Autowired
@@ -117,7 +116,6 @@ public class SurveillanceDownloadableResourceCreatorJob extends DownloadableReso
         File downloadFolder = getDownloadFolder();
         Path tempDirBasePath = Paths.get(downloadFolder.getAbsolutePath());
         Path tempDir = Files.createTempDirectory(tempDirBasePath, TEMP_DIR_NAME);
-        this.tempDirectory = tempDir.toFile();
 
         presenters.forEach(presenter -> {
             try {

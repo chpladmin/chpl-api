@@ -76,13 +76,6 @@ public class CertifiedProductDetailsManager {
     }
 
     @Transactional(readOnly = true)
-    public CertifiedProductSearchDetails getCertifiedProductDetailsSMALL(Long certifiedProductId) throws EntityRetrievalException {
-        CertifiedProductSearchDetails listing = getCertifiedProductDetails(certifiedProductId);
-        listing.getCertificationResults().removeIf(cr -> !cr.isSuccess());
-        return listing;
-    }
-
-    @Transactional(readOnly = true)
     public CertifiedProductSearchDetails getCertifiedProductDetailsNoCache(Long certifiedProductId) throws EntityRetrievalException {
         try {
             return listingService.createCertifiedSearchDetails(certifiedProductId);
