@@ -5,9 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -19,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.conformanceMethod.domain.CertificationResultConformanceMethod;
+import gov.healthit.chpl.criteriaattribute.functionalitytested.CertificationResultFunctionalityTestedService;
 import gov.healthit.chpl.criteriaattribute.testtool.CertificationResultTestToolService;
 import gov.healthit.chpl.dao.AgeRangeDAO;
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
@@ -55,14 +54,9 @@ import gov.healthit.chpl.entity.listing.CertificationResultConformanceMethodEnti
 import gov.healthit.chpl.entity.listing.CertificationResultOptionalStandardEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.functionalityTested.CertificationResultFunctionalityTested;
-import gov.healthit.chpl.functionalityTested.CertificationResultFunctionalityTestedDAO;
-import gov.healthit.chpl.functionalityTested.FunctionalityTested;
-import gov.healthit.chpl.functionalityTested.FunctionalityTestedDAO;
 import gov.healthit.chpl.manager.impl.SecuredManager;
 import gov.healthit.chpl.optionalStandard.domain.CertificationResultOptionalStandard;
 import gov.healthit.chpl.svap.domain.CertificationResultSvap;
-import gov.healthit.chpl.util.Util;
 import lombok.extern.log4j.Log4j2;
 
 @Service
@@ -71,32 +65,31 @@ public class CertificationResultManager extends SecuredManager {
     private CertifiedProductSearchDAO cpDao;
     private CertificationCriterionDAO criteriaDao;
     private CertificationResultDAO certResultDAO;
-    private CertificationResultFunctionalityTestedDAO certResultFuncTestedDao;
     private TestStandardDAO testStandardDAO;
-    private FunctionalityTestedDAO functionalityTestedDao;
     private TestParticipantDAO testParticipantDAO;
     private AgeRangeDAO ageDao;
     private EducationTypeDAO educDao;
     private TestTaskDAO testTaskDAO;
     private CertificationResultTestToolService certResultTestToolService;
+    private CertificationResultFunctionalityTestedService certResultFunctionalityTestedService;
 
     @SuppressWarnings("checkstyle:parameternumber")
     @Autowired
     public CertificationResultManager(CertifiedProductSearchDAO cpDao, CertificationCriterionDAO criteriaDao,
-            CertificationResultDAO certResultDAO, CertificationResultFunctionalityTestedDAO certResultFuncTestedDao,
-            TestStandardDAO testStandardDAO, FunctionalityTestedDAO functionalityTestedDao, TestParticipantDAO testParticipantDAO,
-            AgeRangeDAO ageDao, EducationTypeDAO educDao, TestTaskDAO testTaskDAO, CertificationResultTestToolService certResultTestToolService) {
+            CertificationResultDAO certResultDAO, TestStandardDAO testStandardDAO, TestParticipantDAO testParticipantDAO,
+            AgeRangeDAO ageDao, EducationTypeDAO educDao, TestTaskDAO testTaskDAO, CertificationResultTestToolService certResultTestToolService,
+            CertificationResultFunctionalityTestedService certResultFunctionalityTestedService) {
+
         this.cpDao = cpDao;
         this.criteriaDao = criteriaDao;
         this.certResultDAO = certResultDAO;
-        this.certResultFuncTestedDao = certResultFuncTestedDao;
         this.testStandardDAO = testStandardDAO;
-        this.functionalityTestedDao = functionalityTestedDao;
         this.testParticipantDAO = testParticipantDAO;
         this.ageDao = ageDao;
         this.educDao = educDao;
         this.testTaskDAO = testTaskDAO;
         this.certResultTestToolService = certResultTestToolService;
+        this.certResultFunctionalityTestedService = certResultFunctionalityTestedService;
     }
 
     @SuppressWarnings({"checkstyle:methodlength", "checkstyle:linelength"})
@@ -176,7 +169,7 @@ public class CertificationResultManager extends SecuredManager {
             numChanges += certResultTestToolService.synchronizeTestTools(updated, orig.getTestToolsUsed(), null);
             numChanges += updateTestData(updated, orig.getTestDataUsed(), null);
             numChanges += updateTestProcedures(updated, orig.getTestProcedures(), null);
-            numChanges += updateFunctionalitiesTested(updatedListing, updated, orig.getFunctionalitiesTested(), null);
+            numChanges += certResultFunctionalityTestedService.synchronizeFunctionalitiesTested(updated,  orig.getFunctionalitiesTested(), null);
             numChanges += updateSvap(updated, orig.getSvaps(), null);
 
             if (existingListing.getSed() != null && existingListing.getSed().getUcdProcesses() != null
@@ -221,7 +214,7 @@ public class CertificationResultManager extends SecuredManager {
             numChanges += certResultTestToolService.synchronizeTestTools(updated, orig.getTestToolsUsed(), updated.getTestToolsUsed());
             numChanges += updateTestData(updated, orig.getTestDataUsed(), updated.getTestDataUsed());
             numChanges += updateTestProcedures(updated, orig.getTestProcedures(), updated.getTestProcedures());
-            numChanges += updateFunctionalitiesTested(updatedListing, updated, orig.getFunctionalitiesTested(), updated.getFunctionalitiesTested());
+            numChanges += certResultFunctionalityTestedService.synchronizeFunctionalitiesTested(updated, orig.getFunctionalitiesTested(), updated.getFunctionalitiesTested());
             numChanges += updateSvap(updated, orig.getSvaps(), updated.getSvaps());
 
             List<CertifiedProductUcdProcess> origUcdsForCriteria = new ArrayList<CertifiedProductUcdProcess>();
@@ -863,6 +856,7 @@ public class CertificationResultManager extends SecuredManager {
         return numChanges;
     }
 
+    /*
     private int updateFunctionalitiesTested(CertifiedProductSearchDetails listing, CertificationResult certResult,
             List<CertificationResultFunctionalityTested> existingFunctionalitiesTested,
             List<CertificationResultFunctionalityTested> updatedFunctionalitiesTested) throws EntityCreationException {
@@ -959,7 +953,7 @@ public class CertificationResultManager extends SecuredManager {
             .findAny();
         return funcTestedOpt.isPresent() ? funcTestedOpt.get() : null;
     }
-
+    */
     private int updateTestTasks(CertificationResult certResult, List<TestTask> existingTestTasks,
             List<TestTask> updatedTestTasks) throws EntityCreationException, EntityRetrievalException {
         int numChanges = 0;

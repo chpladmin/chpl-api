@@ -37,7 +37,7 @@ public class CertificationResultFunctionalityTestedDAO extends BaseDAOImpl {
         }
     }
 
-    public void addFunctionalityTestedMapping(CertificationResultFunctionalityTested functionalityTested) throws EntityCreationException {
+    public CertificationResultFunctionalityTested addFunctionalityTestedMapping(CertificationResultFunctionalityTested functionalityTested) throws EntityCreationException {
         CertificationResultFunctionalityTestedEntity mapping = new CertificationResultFunctionalityTestedEntity();
         mapping.setCertificationResultId(functionalityTested.getCertificationResultId());
         mapping.setFunctionalityTestedId(functionalityTested.getFunctionalityTested().getId());
@@ -46,6 +46,8 @@ public class CertificationResultFunctionalityTestedDAO extends BaseDAOImpl {
         mapping.setLastModifiedDate(new Date());
         mapping.setLastModifiedUser(AuthUtil.getAuditId());
         create(mapping);
+
+        return getCertificationResultFunctionalityTestedById(mapping.getId()).toDomain();
     }
 
     public void deleteFunctionalityTestedMapping(Long mappingId) {
@@ -58,6 +60,18 @@ public class CertificationResultFunctionalityTestedDAO extends BaseDAOImpl {
             entityManager.flush();
         }
     }
+
+    public CertificationResultFunctionalityTested updateFunctionalityTestedMapping(Long certificationResultTestToolId, CertificationResultFunctionalityTested certResultFunctionalityTested) {
+        CertificationResultFunctionalityTestedEntity mapping = getCertificationResultFunctionalityTestedById(certificationResultTestToolId);
+
+        mapping.setLastModifiedDate(new Date());
+        mapping.setLastModifiedUser(AuthUtil.getAuditId());
+        entityManager.merge(mapping);
+        entityManager.flush();
+
+        return getCertificationResultFunctionalityTestedById(mapping.getId()).toDomain();
+    }
+
 
     private CertificationResultFunctionalityTestedEntity getCertificationResultFunctionalityTestedById(Long id) {
         CertificationResultFunctionalityTestedEntity entity = null;
