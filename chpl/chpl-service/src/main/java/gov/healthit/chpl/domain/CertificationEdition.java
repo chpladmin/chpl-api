@@ -11,6 +11,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseField;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.xml.bind.annotation.XmlTransient;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -35,6 +36,10 @@ public class CertificationEdition implements Serializable {
     @XmlTransient
     private Long certificationEditionId;
 
+    /**
+     * The internal ID of the edition.
+     */
+    @Schema(description = "The internal ID of the edition.")
     @XmlElement(required = true, nillable = false)
     private Long id;
 
@@ -43,9 +48,17 @@ public class CertificationEdition implements Serializable {
     @XmlTransient
     private String year;
 
+    /**
+     * The name of the edition.
+     */
+    @Schema(description = "The name of the edition.")
     @XmlElement(required = true, nillable = false)
     private String name;
 
+    /**
+     * Whether or not the edition has been retired.
+     */
+    @Schema(description = "Whether or not the edition has been retired.")
     @XmlElement(required = true)
     private boolean retired;
 
