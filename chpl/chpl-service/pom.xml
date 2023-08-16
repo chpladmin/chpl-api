@@ -31,6 +31,7 @@
       <spring.data.redis.version>3.1.0</spring.data.redis.version>
       <redisson.version>3.21.3</redisson.version>
       <ff4j.store.redis.version>2.0.0</ff4j.store.redis.version>
+      <org.springdoc.version>1.7.0</org.springdoc.version>
     </properties>
 
     <dependencies>
@@ -365,7 +366,24 @@
             <version>8.5.86</version>
             <scope>provided</scope>
         </dependency>
-        
+
+        <!-- Sprng Doc (Swagger) -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-autoconfigure</artifactId>
+            <version>${org.springboot.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot</artifactId>
+            <version>${org.springboot.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-webmvc-core</artifactId>
+            <version>${org.springdoc.version}</version>
+        </dependency>
+
         <!--  needed for unit tests -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>

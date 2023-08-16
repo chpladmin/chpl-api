@@ -15,6 +15,7 @@ import org.apache.commons.lang3.StringUtils;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.ToString;
@@ -39,24 +40,28 @@ public class CertificationResultFunctionalityTested implements Serializable {
     /**
      * Functionality tested to certification result mapping internal ID
      */
+    @Schema(description = "Functionality tested to certification result mapping internal ID")
     @XmlElement(required = true)
     private Long id;
 
     /**
      * Functionality tested internal ID
      */
+    @Schema(description = "Functionality tested internal ID")
     @XmlElement(required = true)
     private Long functionalityTestedId;
 
     /**
      * Description of functionality tested
      */
+    @Schema(description = "Description of functionality tested")
     @XmlElement(required = false, nillable = true)
     private String description;
 
     /**
      * Name of functionality tested
      */
+    @Schema(description = "Name of functionality tested")
     @XmlElement(required = true)
     private String name;
 

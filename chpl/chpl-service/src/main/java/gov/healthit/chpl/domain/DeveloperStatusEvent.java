@@ -11,6 +11,7 @@ import javax.xml.bind.annotation.XmlType;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import gov.healthit.chpl.util.Util;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 
@@ -25,24 +26,28 @@ public class DeveloperStatusEvent implements Serializable {
     /**
      * Developer status event internal ID
      */
+    @Schema(description = "Developer status event internal ID")
     @XmlElement(required = false, nillable = true)
     private Long id;
 
     /**
      * Developer internal ID
      */
+    @Schema(description = "Developer internal ID")
     @XmlElement(required = true)
     private Long developerId;
 
     /**
      * The status the developer changed TO with this status event.
      */
+    @Schema(description = "The status the developer changed TO with this status event.")
     @XmlElement(required = true)
     private DeveloperStatus status;
 
     /**
      * Date this status event occurred.
      */
+    @Schema(description = "Date this status event occurred.")
     @XmlElement(required = true)
     private Date statusDate;
 
@@ -50,6 +55,8 @@ public class DeveloperStatusEvent implements Serializable {
      * The reason for this status change.
      * It is required of the status changed to 'Under Certification Ban by ONC'
      */
+    @Schema(description = "The reason for this status change. "
+            + "It is required of the status changed to 'Under Certification Ban by ONC'")
     @XmlElement(required = false)
     private String reason;
 

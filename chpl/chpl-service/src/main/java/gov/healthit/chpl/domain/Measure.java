@@ -13,6 +13,7 @@ import org.apache.commons.lang3.ObjectUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.ToString;
@@ -29,6 +30,7 @@ public class Measure implements Serializable {
     /**
      * An internal ID for each valid measure
      */
+    @Schema(description = "An internal ID for each valid measure")
     @XmlElement(required = true)
     private Long id;
 
@@ -38,6 +40,7 @@ public class Measure implements Serializable {
     /**
      * Abbreviation of the Required Test. Examples are "RT7" or "RT9"
      */
+    @Schema(description = "Abbreviation of the Required Test. Examples are \"RT7\" or \"RT9\"")
     @XmlElement(required = true)
     private String abbreviation;
 
@@ -45,6 +48,8 @@ public class Measure implements Serializable {
      * The required test associated with each measure. For example, "Required Test 10: Stage 2 Objective 3 Measure 1 and
      * Stage 3 Objective 4 Measure 1"
      */
+    @Schema(description = "The required test associated with each measure. For example, \"Required Test 10: Stage 2 Objective 3 Measure 1 and "
+            + "Stage 3 Objective 4 Measure 1\"")
     @XmlElement(required = true)
     private String requiredTest;
 
@@ -52,18 +57,21 @@ public class Measure implements Serializable {
      * The name of the measure. For example, "Computerized Provider Order Entry -
      * Medications: Eligible Hospital/Critical"
      */
+    @Schema(description = "The name of the measure. For example, \"Computerized Provider Order Entry - Medications: Eligible Hospital/Critical\"")
     @XmlElement(required = true)
     private String name;
 
     /**
      * Whether or not this measure requires criteria to be designated as associated with it.
      */
+    @Schema(description = "Whether or not this measure requires criteria to be designated as associated with it.")
     @XmlElement(required = true)
     private Boolean requiresCriteriaSelection;
 
     /**
      * A flag indicating whether or not the measure has been marked as removed.
      */
+    @Schema(description = "A flag indicating whether or not the measure has been marked as removed.")
     @XmlElement(required = true)
     private Boolean removed;
 
