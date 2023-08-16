@@ -65,6 +65,7 @@ public class FunctionalityTestedManager {
         criteriaAttributeValidator.validateForEdit(CriteriaAttributeValidationContext.builder()
                 .criteriaAttribute(functionalityTested)
                 .criteriaAttributeDAO(functionalityTestedDAO)
+                .isRegulatoryTextCitationRequired(true)
                 .name("Functionality Tested")
                 .build());
 
@@ -83,6 +84,7 @@ public class FunctionalityTestedManager {
         criteriaAttributeValidator.validateForAdd(CriteriaAttributeValidationContext.builder()
                 .criteriaAttribute(functionalityTested)
                 .criteriaAttributeDAO(functionalityTestedDAO)
+                .isRegulatoryTextCitationRequired(true)
                 .name("Functionality Tested")
                 .build());
 
