@@ -10,6 +10,7 @@ import javax.xml.bind.annotation.XmlType;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import gov.healthit.chpl.dto.CertifiedProductTestingLabDTO;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 
@@ -28,24 +29,30 @@ public class CertifiedProductTestingLab implements Serializable {
     /**
      * Testing Lab to listing mapping internal ID
      */
+    @Schema(description = "Testing Lab to listing mapping internal ID")
     @XmlElement(required = true)
     private Long id;
 
+
+    //TODO: OCD-4242 - Is this the correct definition?  maybe "external"?
     /**
      * Testing Lab internal ID
      */
+    @Schema(description = "Testing Lab internal ID")
     @XmlElement(required = true)
     private Long testingLabId;
 
     /**
      * The Testing Lab's public name
      */
+    @Schema(description = "The Testing Lab's public name")
     @XmlElement(required = true)
     private String testingLabName;
 
     /**
      * The Testing Lab's Code
      */
+    @Schema(description = "The Testing Lab's Code")
     @XmlElement(required = true)
     private String testingLabCode;
 

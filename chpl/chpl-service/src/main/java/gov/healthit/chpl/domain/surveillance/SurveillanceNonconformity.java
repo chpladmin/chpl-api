@@ -23,6 +23,7 @@ import gov.healthit.chpl.util.LocalDateDeserializer;
 import gov.healthit.chpl.util.LocalDateSerializer;
 import gov.healthit.chpl.util.NullSafeEvaluator;
 import gov.healthit.chpl.util.Util;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
@@ -44,6 +45,7 @@ public class SurveillanceNonconformity implements Serializable {
     /**
      * Non-conformity internal ID
      */
+    @Schema(description = "Non-conformity internal ID")
     @XmlElement(required = true)
     private Long id;
 
@@ -51,6 +53,8 @@ public class SurveillanceNonconformity implements Serializable {
      * Type of non-conformity; this is either a certification criteria number or
      * a textual description
      */
+    @Schema(description = "Type of non-conformity; this is either a certification criteria number or "
+            + "a textual description")
     @XmlElement(required = false)
     private NonconformityType type;
 
@@ -58,12 +62,15 @@ public class SurveillanceNonconformity implements Serializable {
      * The status of a non-conformity found as a result of a surveillance
      * activity. Allowable values are "Open" or "Closed".
      */
+    @Schema(description = "The status of a non-conformity found as a result of a surveillance activity.",
+            allowableValues = {"Open", "Closed"})
     @XmlElement(required = true)
     private String nonconformityStatus;
 
     /**
      * Date of determination of non-conformity
      */
+    @Schema(description = "Date of determination of non-conformity")
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
     @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
@@ -73,6 +80,7 @@ public class SurveillanceNonconformity implements Serializable {
     /**
      * Corrective action plan approval day
      */
+    @Schema(description = "Corrective action plan approval day")
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
     @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
@@ -82,6 +90,7 @@ public class SurveillanceNonconformity implements Serializable {
     /**
      * Corrective action plan start day
      */
+    @Schema(description = "Corrective action plan start day")
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
     @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
@@ -91,6 +100,7 @@ public class SurveillanceNonconformity implements Serializable {
     /**
      * Corrective action plan end day
      */
+    @Schema(description = "Corrective action plan end day")
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
     @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
@@ -100,6 +110,7 @@ public class SurveillanceNonconformity implements Serializable {
     /**
      * Corrective action plan must complete date
      */
+    @Schema(description = "Corrective action plan must complete date")
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
     @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
@@ -109,6 +120,7 @@ public class SurveillanceNonconformity implements Serializable {
     /**
      * Date non-conformity was closed
      */
+    @Schema(description = "Date non-conformity was closed")
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
     @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
@@ -118,42 +130,49 @@ public class SurveillanceNonconformity implements Serializable {
     /**
      * Non-conformity summary
      */
+    @Schema(description = "Non-conformity summary")
     @XmlElement(required = false, nillable = true)
     private String summary;
 
     /**
      * Non-conformity findings.
      */
+    @Schema(description = "Non-conformity findings.")
     @XmlElement(required = false, nillable = true)
     private String findings;
 
     /**
      * Number of sites passed
      */
+    @Schema(description = "Number of sites passed")
     @XmlElement(required = false, nillable = true)
     private Integer sitesPassed;
 
     /**
      * Total number of sites tested
      */
+    @Schema(description = "Total number of sites tested")
     @XmlElement(required = false, nillable = true)
     private Integer totalSites;
 
     /**
      * Developer explanation for the non-conformity
      */
+    @Schema(description = "Developer explanation for the non-conformity")
     @XmlElement(required = false, nillable = true)
     private String developerExplanation;
 
     /**
      * Resolution description of the non-conformity
      */
+    @Schema(description = "Resolution description of the non-conformity")
     @XmlElement(required = false, nillable = true)
     private String resolution;
 
     /**
      * Date of the last modification of the surveillance.
      */
+    @Schema(description = "Date of the last modification of the surveillance.")
     @XmlElement(required = true)
     private Date lastModifiedDate;
 
