@@ -17,6 +17,7 @@ import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.svap.domain.Svap;
 import gov.healthit.chpl.svap.manager.SvapManager;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
+import gov.healthit.chpl.web.controller.annotation.DeprecatedApiResponseFields;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -33,6 +34,7 @@ public class SvapController {
         this.svapManager = svapManager;
     }
 
+    @DeprecatedApiResponseFields(friendlyUrl = "/svaps", responseClass = Svap.class)
     @Operation(summary = "Update an Standards Version Advancement Process.",
             description = "Provides functionality to update an SVAP and the Criteria associated with it. "
                     + "Security Restrictions: To update: ROLE_ADMIN or ROLE_ONC.",
@@ -46,6 +48,7 @@ public class SvapController {
         return svapManager.update(svap);
     }
 
+    @DeprecatedApiResponseFields(friendlyUrl = "/svaps", httpMethod = "POST", responseClass = Svap.class)
     @Operation(summary = "Create an Standards Version Advancement Process.",
             description = "Provides functionality to add a new SVAP and the Criteria associated with it. "
                     + "Security Restrictions: To create: ROLE_ADMIN or ROLE_ONC.",
@@ -59,6 +62,7 @@ public class SvapController {
         return svapManager.create(svap);
     }
 
+    @DeprecatedApiResponseFields(friendlyUrl = "/svaps/{svapId}", httpMethod = "DELETE", responseClass = Svap.class)
     @Operation(summary = "Delete an Standards Version Advancement Process.",
             description = "Provides functionality to delete an existing SVAP and the Criteria associated with it. "
                     + "Security Restrictions: To update: ROLE_ADMIN or ROLE_ONC.",
@@ -71,6 +75,7 @@ public class SvapController {
         svapManager.delete(svapId);
     }
 
+    @DeprecatedApiResponseFields(friendlyUrl = "/svaps", responseClass = Svap.class)
     @Operation(summary = "Retrieve all current Standards Version Advancement Processes. ",
             description = "Returns all of the SVAPs that are currenty in the CHPL.",
             security = {
@@ -81,6 +86,7 @@ public class SvapController {
         return svapManager.getAll();
     }
 
+    @DeprecatedApiResponseFields(friendlyUrl = "/svaps/criteria", responseClass = CertificationCriterion.class)
     @Operation(summary = "Get all criteria that SVAPs can be associated with.",
             description = "Returns all of the Criteria that an SVAP can be associated to.",
             security = {

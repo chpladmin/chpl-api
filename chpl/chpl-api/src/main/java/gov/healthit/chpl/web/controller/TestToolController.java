@@ -17,6 +17,7 @@ import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
+import gov.healthit.chpl.web.controller.annotation.DeprecatedApiResponseFields;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -33,6 +34,7 @@ public class TestToolController {
         this.testToolManager = testToolManager;
     }
 
+    @DeprecatedApiResponseFields(friendlyUrl = "/test-tools", responseClass = TestTool.class)
     @Operation(summary = "Retrieve all current Test Tools. ",
             description = "Returns all of the Test Tools that are currently in the CHPL.",
             security = {
@@ -43,6 +45,7 @@ public class TestToolController {
         return testToolManager.getAll();
     }
 
+    @DeprecatedApiResponseFields(friendlyUrl = "/test-tools/criteria", responseClass = CertificationCriterion.class)
     @Operation(summary = "Get all criteria that Test Tools can be associated with.",
             description = "Returns all of the Criteria that a Test Tool can be associated to.",
             security = {
@@ -53,6 +56,7 @@ public class TestToolController {
         return testToolManager.getCertificationCriteriaForTestTools();
     }
 
+    @DeprecatedApiResponseFields(friendlyUrl = "/test-tools", httpMethod = "POST", responseClass = TestTool.class)
     @Operation(summary = "Create a Test Tool.",
             description = "Provides functionality to add a new Test Tool and the Criteria associated with it. "
                     + "Security Restrictions: To create: ROLE_ADMIN",
@@ -66,6 +70,7 @@ public class TestToolController {
         return testToolManager.create(testTool);
     }
 
+    @DeprecatedApiResponseFields(friendlyUrl = "/test-tools", httpMethod = "PUT", responseClass = TestTool.class)
     @Operation(summary = "Update a Test Tool.",
             description = "Provides functionality to update a Test Tool and the Criteria associated with it. "
                     + "Security Restrictions: To update: ROLE_ADMIN",

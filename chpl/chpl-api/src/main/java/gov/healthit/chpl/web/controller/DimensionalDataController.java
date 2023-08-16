@@ -237,6 +237,7 @@ public class DimensionalDataController {
         return result;
     }
 
+    @DeprecatedApiResponseFields(friendlyUrl = "/data/test_procedures", responseClass = CriteriaSpecificDescriptiveModel.class)
     @Operation(summary = "Get all possible test procedure options in the CHPL",
             description = "This is useful for knowing what values one might possibly search for.",
             security = {
@@ -253,6 +254,7 @@ public class DimensionalDataController {
         return result;
     }
 
+    @DeprecatedApiResponseFields(friendlyUrl = "/data/test_data", responseClass = CriteriaSpecificDescriptiveModel.class)
     @Operation(summary = "Get all possible test data options in the CHPL",
             description = "This is useful for knowing what values one might possibly search for.",
             security = {
@@ -301,6 +303,7 @@ public class DimensionalDataController {
         return result;
     }
 
+    @DeprecatedApiResponseFields(friendlyUrl = "/data/measures", responseClass = Measure.class)
     @Operation(summary = "Get all possible measure options in the CHPL",
             description = "This is useful for knowing what values one might possibly search for.",
             security = {
@@ -423,6 +426,8 @@ public class DimensionalDataController {
         return result;
     }
 
+    @DeprecatedApiResponseFields(friendlyUrl = "/data/search-options",
+            responseClass = DimensionalData.class)
     @Operation(summary = "Get all search options in the CHPL",
             description = "This returns all of the other /data/{something} results in one single response.",
             security = {

@@ -37,6 +37,7 @@ import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.CertificationIdManager;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
+import gov.healthit.chpl.web.controller.annotation.DeprecatedApiResponseFields;
 import gov.healthit.chpl.web.controller.results.CertificationIdLookupResults;
 import gov.healthit.chpl.web.controller.results.CertificationIdResults;
 import gov.healthit.chpl.web.controller.results.CertificationIdVerifyResults;
@@ -116,6 +117,7 @@ public class CertificationIdController {
         return this.findCertificationByProductIds(ids, true);
     }
 
+    @DeprecatedApiResponseFields(friendlyUrl = "/certification_ids/{id}", responseClass = CertificationIdLookupResults.class)
     @Operation(summary = "Get information about a specific EHR Certification ID.",
             description = "Retrieves detailed information about a specific EHR Certification ID including the list of "
                     + "products that make it up.  This method can be used when verfying a small number of"

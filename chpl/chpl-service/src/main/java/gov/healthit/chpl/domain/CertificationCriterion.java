@@ -14,6 +14,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
+import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseField;
 import gov.healthit.chpl.criteriaattribute.rule.Rule;
 import gov.healthit.chpl.util.LocalDateAdapter;
 import gov.healthit.chpl.util.LocalDateDeserializer;
@@ -73,6 +74,9 @@ public class CertificationCriterion implements Serializable {
     @XmlElement(required = false, nillable = true)
     private String description;
 
+    @Deprecated
+    @DeprecatedResponseField(message = "This property will be removed. It can be derived based on the endDay.",
+        removalDate = "2024-01-01")
     @XmlElement(required = true, nillable = false)
     private Boolean removed;
 

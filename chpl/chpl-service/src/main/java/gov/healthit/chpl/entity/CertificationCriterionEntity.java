@@ -93,6 +93,7 @@ public class CertificationCriterionEntity implements Serializable {
     @Column(length = 250)
     private String title;
 
+    @Deprecated
     @Basic(optional = true)
     @Column(name = "removed")
     private Boolean removed;
