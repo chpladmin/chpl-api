@@ -14,6 +14,7 @@ import javax.xml.bind.annotation.XmlType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -45,6 +46,9 @@ public class InheritedCertificationStatus implements Serializable {
      * request. This variable is applicable for 2014 and 2015 Edition and a binary variable that takes either true or
      * false value.
      */
+    @Schema(description = "This variable indicates whether or not the certification issued was a result of an inherited certified status "
+            + "request. This variable is applicable for 2014 and 2015 Edition and a binary variable that takes either true or "
+            + "false value.")
     @XmlElement(name = "inherits")
     private Boolean inherits;
 
@@ -55,6 +59,7 @@ public class InheritedCertificationStatus implements Serializable {
     /**
      * The first-level parent listings that this listing inherits from
      */
+    @Schema(description = "The first-level parent listings that this listing inherits from")
     @XmlElementWrapper(name = "parents", nillable = true, required = false)
     @XmlElement(name = "parent")
     @Singular
@@ -63,6 +68,7 @@ public class InheritedCertificationStatus implements Serializable {
     /**
      * The first-level child listings that inherit from this listings
      */
+    @Schema(description = "The first-level child listings that inherit from this listings")
     @XmlElementWrapper(name = "children", nillable = true, required = false)
     @XmlElement(name = "child")
     @Singular

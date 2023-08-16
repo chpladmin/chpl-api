@@ -10,6 +10,7 @@ import javax.xml.bind.annotation.XmlType;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import gov.healthit.chpl.entity.listing.CertificationResultOptionalStandardEntity;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.ToString;
@@ -32,24 +33,28 @@ public class CertificationResultOptionalStandard implements Serializable {
     /**
      * Optional standard to certification result mapping internal ID.
      */
+    @Schema(description = "Optional standard to certification result mapping internal ID.")
     @XmlElement(required = true)
     private Long id;
 
     /**
      * The Optional Standard internal identifier.
      */
+    @Schema(description = "The Optional Standard internal identifier.")
     @XmlElement(required = true)
     private Long optionalStandardId;
 
     /**
      * The citation for the Optional Standard used to test the associated criteria.
      */
+    @Schema(description = "The citation for the Optional Standard used to test the associated criteria.")
     @XmlElement(required = true)
     private String citation;
 
     /**
      * The description of the Optional Standard used to test the associated criteria.
      */
+    @Schema(description = "The description of the Optional Standard used to test the associated criteria.")
     @XmlElement(required = true)
     private String description;
 

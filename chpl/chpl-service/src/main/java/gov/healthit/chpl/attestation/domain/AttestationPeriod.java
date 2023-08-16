@@ -22,6 +22,7 @@ import gov.healthit.chpl.form.Form;
 import gov.healthit.chpl.util.LocalDateAdapter;
 import gov.healthit.chpl.util.LocalDateDeserializer;
 import gov.healthit.chpl.util.LocalDateSerializer;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -41,12 +42,14 @@ public class AttestationPeriod implements Serializable {
     /**
      * The internal ID of the attestation period.
      */
+    @Schema(description = "The internal ID of the attestation period.")
     @XmlElement(required = true)
     private Long id;
 
     /**
      * The starting date for which the submitted Attestations are based.
      */
+    @Schema(description = "The starting date for which the submitted Attestations are based.")
     @XmlElement(required = true, nillable = false)
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
@@ -56,6 +59,7 @@ public class AttestationPeriod implements Serializable {
     /**
      * The ending date for which the submitted Attestations are based.
      */
+    @Schema(description = "The ending date for which the submitted Attestations are based.")
     @XmlElement(required = true, nillable = false)
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
@@ -78,6 +82,7 @@ public class AttestationPeriod implements Serializable {
      * A description of the attestation period.
      */
     @XmlElement(required = true)
+    @Schema(description = "A description of the attestation period.")
     private String description;
 
     public AttestationPeriod() {

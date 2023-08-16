@@ -14,6 +14,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import gov.healthit.chpl.dto.CertifiedProductAccessibilityStandardDTO;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 
@@ -37,18 +38,21 @@ public class CertifiedProductAccessibilityStandard implements Serializable {
     /**
      * Accessibility standard to listing mapping internal ID
      */
+    @Schema(description = "Accessibility standard to listing mapping internal ID")
     @XmlElement(required = true)
     private Long id;
 
     /**
      * Accessibility standard internal ID
      */
+    @Schema(description = "Accessibility standard internal ID")
     @XmlElement(required = true)
     private Long accessibilityStandardId;
 
     /**
      * Accessibility standard name
      */
+    @Schema(description = "Accessibility standard name")
     @XmlElement(required = true)
     private String accessibilityStandardName;
 

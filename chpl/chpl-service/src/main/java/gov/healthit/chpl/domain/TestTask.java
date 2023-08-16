@@ -27,6 +27,7 @@ import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.dto.CertificationResultTestTaskDTO;
 import gov.healthit.chpl.dto.TestParticipantDTO;
 import gov.healthit.chpl.dto.TestTaskDTO;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.ToString;
@@ -48,6 +49,7 @@ public class TestTask implements Serializable {
     /**
      * Test task internal ID
      */
+    @Schema(description = "Test task internal ID")
     @XmlElement(required = true)
     private Long id;
 
@@ -56,6 +58,9 @@ public class TestTask implements Serializable {
      * be unique to a particular task. This variable is only applicable to 2015
      * Edition and for internal use within an upload file only.
      */
+    @Schema(description = "An ONC-ACB designated identifier for an individual SED task and that must "
+            + "be unique to a particular task. This variable is only applicable to 2015 "
+            + "Edition and for internal use within an upload file only.")
     @XmlTransient
     private String uniqueId;
 
@@ -64,6 +69,9 @@ public class TestTask implements Serializable {
      * variable is only applicable to 2015 Edition, and a string variable that
      * does not take any restrictions on formatting or values.
      */
+    @Schema(description = "Brief description of task performed during SED/usability testing. This "
+            + "variable is only applicable to 2015 Edition, and a string variable that "
+            + "does not take any restrictions on formatting or values.")
     @XmlElement(required = true)
     private String description;
 
@@ -71,6 +79,8 @@ public class TestTask implements Serializable {
      * Mean task success rate (in percentages). It is only applicable to 2015
      * Edition, and takes only positive decimal numbers.
      */
+    @Schema(description = "Mean task success rate (in percentages). It is only applicable to 2015 "
+            + "Edition, and takes only positive decimal numbers.")
     @XmlElement(required = true)
     private Float taskSuccessAverage;
 
@@ -82,6 +92,8 @@ public class TestTask implements Serializable {
      * Standard deviation of the task success rate (in percentages). It is only
      * applicable to 2015 Edition, and takes only positive decimal numbers.
      */
+    @Schema(description = "Standard deviation of the task success rate (in percentages). It is only "
+            + "applicable to 2015 Edition, and takes only positive decimal numbers.")
     @XmlElement(required = true)
     private Float taskSuccessStddev;
 
@@ -94,6 +106,9 @@ public class TestTask implements Serializable {
      * corresponding task. It is applicable to 2015 Edition, and takes only
      * positive integer values.
      */
+    @Schema(description = "This variable indicates observed number of steps taken for the "
+            + "corresponding task. It is applicable to 2015 Edition, and takes only "
+            + "positive integer values.")
     @XmlElement(required = true)
     private Integer taskPathDeviationObserved;
 
@@ -106,6 +121,9 @@ public class TestTask implements Serializable {
      * task. It is only applicable to 2015 Edition, and only takes positive
      * integer(i.e. no decimals) values.
      */
+    @Schema(description = "This variable indicates optimal number of steps for the corresponding "
+            + "task. It is only applicable to 2015 Edition, and only takes positive "
+            + "integer(i.e. no decimals) values.")
     @XmlElement(required = true)
     private Integer taskPathDeviationOptimal;
 
@@ -118,6 +136,9 @@ public class TestTask implements Serializable {
      * only applicable to 2015 Edition, and takes only positive integer number
      * values.
      */
+    @Schema(description = "Average time of completion for the corresponding task, in seconds. It is "
+            + "only applicable to 2015 Edition, and takes only positive integer number "
+            + "values.")
     @XmlElement(required = true)
     private Long taskTimeAvg;
 
@@ -129,6 +150,8 @@ public class TestTask implements Serializable {
      * Standard deviation for task time, in seconds. It is only applicable to
      * 2015 Edition, and takes only positive integer number values.
      */
+    @Schema(description = "Standard deviation for task time, in seconds. It is only applicable to "
+            + "2015 Edition, and takes only positive integer number values.")
     @XmlElement(required = true)
     private Integer taskTimeStddev;
 
@@ -141,6 +164,9 @@ public class TestTask implements Serializable {
      * is only applicable to 2015 Edition, and takes only positive integer
      * number values.
      */
+    @Schema(description = "Observed number of time (in seconds) taken for the corresponding task. It "
+            + "is only applicable to 2015 Edition, and takes only positive integer "
+            + "number values.")
     @XmlElement(required = true)
     private Integer taskTimeDeviationObservedAvg;
 
@@ -153,6 +179,9 @@ public class TestTask implements Serializable {
      * is only applicable to 2015 Edition, and takes only positive integer
      * number values.
      */
+    @Schema(description = "Optimal number of time (in seconds) taken for the corresponding task. It "
+            + "is only applicable to 2015 Edition, and takes only positive integer "
+            + "number values.")
     @XmlElement(required = true)
     private Integer taskTimeDeviationOptimalAvg;
 
@@ -164,6 +193,8 @@ public class TestTask implements Serializable {
      * Mean task error rate (in percentages). It is only applicable to 2015
      * Edition, and takes only positive decimal numbers.
      */
+    @Schema(description = "Mean task error rate (in percentages). It is only applicable to 2015 "
+            + "Edition, and takes only positive decimal numbers.")
     @XmlElement(required = true)
     private Float taskErrors;
 
@@ -176,6 +207,9 @@ public class TestTask implements Serializable {
      * is only applicable to 2015 Edition, and takes only positive decimal
      * numbers.
      */
+    @Schema(description = "Standard deviation of the task error rate (in percentages). This variable "
+            + "is only applicable to 2015 Edition, and takes only positive decimal "
+            + "numbers.")
     @XmlElement(required = true)
     private Float taskErrorsStddev;
 
@@ -191,6 +225,12 @@ public class TestTask implements Serializable {
      * Likert scale, positive decimal numbers are allowed. It is only applicable
      * to 2015 Edition.
      */
+    @Schema(description = "This variable indicates the type of scale that was used to rate the "
+            + "usability of the task. System Usability Scale is preferred. Likert Scale "
+            + "is also accepted. If the scale type is System Usability Scale, only "
+            + "positive integers between 1-100 are allowed. If the scale type is the "
+            + "Likert scale, positive decimal numbers are allowed. It is only applicable "
+            + "to 2015 Edition.")
     @XmlElement(required = true)
     private String taskRatingScale;
 
@@ -201,6 +241,11 @@ public class TestTask implements Serializable {
      * type is the Likert scale, positive decimal numbers are allowed. It is
      * only applicable to 2015 Edition.
      */
+    @Schema(description = "This variable indicates mean usability rating of the corresponding task, "
+            + "based on the specified scale type. If the scale type is System Usability "
+            + "Scale, only positive integers between 1-100 are allowed. If the scale "
+            + "type is the Likert scale, positive decimal numbers are allowed. It is "
+            + "only applicable to 2015 Edition.")
     @XmlElement(required = true)
     private Float taskRating;
 
@@ -213,6 +258,9 @@ public class TestTask implements Serializable {
      * task, based on the specified scale type. It is only applicable to 2015
      * Edition, and takes only positive decimal numbers.
      */
+    @Schema(description = "Standard deviation of the mean usability rating of the corresponding "
+            + "task, based on the specified scale type. It is only applicable to 2015 "
+            + "Edition, and takes only positive decimal numbers.")
     @XmlElement(required = true)
     private Float taskRatingStddev;
 
@@ -223,6 +271,7 @@ public class TestTask implements Serializable {
     /**
      * The set of criteria within a listing to which this task is applied.
      */
+    @Schema(description = "The set of criteria within a listing to which this task is applied.")
     @XmlElementWrapper(name = "criteriaList", nillable = true, required = false)
     @XmlElement(name = "criteria")
     @Builder.Default
@@ -231,6 +280,7 @@ public class TestTask implements Serializable {
     /**
      * Participants in the test task.
      */
+    @Schema(description = "Participants in the test task.")
     @XmlElementWrapper(name = "participants", required = true)
     @XmlElement(name = "participant")
     @Builder.Default
