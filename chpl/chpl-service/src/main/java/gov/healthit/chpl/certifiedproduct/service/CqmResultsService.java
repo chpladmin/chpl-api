@@ -52,7 +52,8 @@ public class CqmResultsService {
             // for a CMS, first check to see if we already have an object with
             // the same CMS id
             // so we can just add to it's success versions.
-            if (!year.equals("2011") && !StringUtils.isEmpty(cqmResultDTO.getCmsId())) {
+            if (!StringUtils.isEmpty(year)
+                    && !year.equals("2011") && !StringUtils.isEmpty(cqmResultDTO.getCmsId())) {
                 for (CQMResultDetails result : cqmResults) {
                     if (cqmResultDTO.getCmsId().equals(result.getCmsId())) {
                         existingCms = true;
@@ -70,7 +71,8 @@ public class CqmResultsService {
                 result.setTitle(cqmResultDTO.getTitle());
                 result.setDescription(cqmResultDTO.getDescription());
                 result.setTypeId(cqmResultDTO.getCqmCriterionTypeId());
-                if (!year.equals("2011") && !StringUtils.isEmpty(cqmResultDTO.getCmsId())) {
+                if (!StringUtils.isEmpty(year)
+                        && !year.equals("2011") && !StringUtils.isEmpty(cqmResultDTO.getCmsId())) {
                     result.getSuccessVersions().add(cqmResultDTO.getVersion());
                 } else {
                     result.setSuccess(cqmResultDTO.getSuccess());
