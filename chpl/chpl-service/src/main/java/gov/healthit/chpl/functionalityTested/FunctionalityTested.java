@@ -30,6 +30,7 @@ public class FunctionalityTested implements Serializable {
     private String description;
     private PracticeType practiceType;
 
+    @Builder.Default
     private List<CertificationCriterion> criteria = new ArrayList<CertificationCriterion>();
 
     @Override

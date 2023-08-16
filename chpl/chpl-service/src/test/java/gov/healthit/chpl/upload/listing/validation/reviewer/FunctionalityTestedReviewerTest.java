@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.junit.Before;
@@ -382,7 +383,7 @@ public class FunctionalityTestedReviewerTest {
                             .number("170.315 (a)(2)")
                             .title("a2")
                             .removed(false)
-                            .build()).toList())
+                            .build()).collect(Collectors.toList()))
                     .build());
         List<CertificationResultFunctionalityTested> functionalitiesTested = new ArrayList<CertificationResultFunctionalityTested>();
         functionalitiesTested.add(CertificationResultFunctionalityTested.builder()
@@ -495,7 +496,7 @@ public class FunctionalityTestedReviewerTest {
                         .number("170.315 (a)(1)")
                         .title("a1")
                         .removed(false)
-                        .build()).toList())
+                        .build()).collect(Collectors.toList()))
                 .build());
         a1FunctionalityTested.add(FunctionalityTested.builder()
                 .id(2L)
@@ -506,7 +507,7 @@ public class FunctionalityTestedReviewerTest {
                         .number("170.315 (a)(1)")
                         .title("a1")
                         .removed(false)
-                        .build()).toList())
+                        .build()).collect(Collectors.toList()))
                 .build());
         a1FunctionalityTested.add(FunctionalityTested.builder()
                 .id(4L)
@@ -517,7 +518,7 @@ public class FunctionalityTestedReviewerTest {
                         .number("170.315 (a)(1)")
                         .title("a1")
                         .removed(false)
-                        .build()).toList())
+                        .build()).collect(Collectors.toList()))
                 .build());
         a2FunctionalityTested.add(FunctionalityTested.builder()
                 .id(3L)
@@ -528,7 +529,7 @@ public class FunctionalityTestedReviewerTest {
                         .number("170.315 (a)(2)")
                         .title("a2")
                         .removed(false)
-                        .build()).toList())
+                        .build()).collect(Collectors.toList()))
                 .build());
 
         maps.put(1L, a1FunctionalityTested);

@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.certificationCriteria.CertificationCriterionComparator;
 import gov.healthit.chpl.compliance.directreview.DirectReviewComparator;
 import gov.healthit.chpl.compliance.directreview.DirectReviewSearchService;
 import gov.healthit.chpl.compliance.surveillance.SurveillanceManager;
@@ -37,7 +38,6 @@ import gov.healthit.chpl.domain.CertifiedProductTestingLab;
 import gov.healthit.chpl.domain.InheritedCertificationStatus;
 import gov.healthit.chpl.domain.ProductVersion;
 import gov.healthit.chpl.domain.PromotingInteroperabilityUser;
-import gov.healthit.chpl.domain.comparator.CertificationCriterionComparator;
 import gov.healthit.chpl.domain.comparator.CertifiedProductAccessibilityStandardComparator;
 import gov.healthit.chpl.domain.comparator.CertifiedProductComparator;
 import gov.healthit.chpl.domain.comparator.CertifiedProductQmsStandardComparator;

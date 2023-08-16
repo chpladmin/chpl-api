@@ -1,4 +1,4 @@
-package gov.healthit.chpl.domain.comparator;
+package gov.healthit.chpl.certificationCriteria;
 
 import java.util.Comparator;
 
@@ -6,7 +6,6 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import lombok.NoArgsConstructor;
 

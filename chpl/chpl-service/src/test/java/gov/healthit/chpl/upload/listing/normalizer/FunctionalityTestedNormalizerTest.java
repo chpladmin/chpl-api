@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.junit.Before;
@@ -118,7 +119,7 @@ public class FunctionalityTestedNormalizerTest {
                 .criteria(Stream.of(CertificationCriterion.builder()
                         .id(CRITERIA_ID_WITHOUT_RESTRICTIONS)
                         .number("170.315 (a)(13)")
-                        .build()).toList())
+                        .build()).collect(Collectors.toList()))
                 .build()).toList());
         Mockito.when(functionalityTestedDao.getFunctionalitiesTestedCriteriaMaps())
             .thenReturn(funcTestedMaps);
