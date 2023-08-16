@@ -9,6 +9,7 @@ import javax.xml.bind.annotation.XmlType;
 
 import org.apache.commons.lang3.StringUtils;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
@@ -34,12 +35,14 @@ public class RequirementGroupType implements Serializable {
     /**
      * Requirement group type internal ID
      */
+    @Schema(description = "Requirement group type internal ID")
     @XmlElement(required = true)
     private Long id;
 
     /**
      * Requirement group type name
      */
+    @Schema(description = "Requirement group type name")
     @XmlElement(required = true)
     private String name;
 

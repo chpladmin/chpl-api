@@ -11,6 +11,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.extern.log4j.Log4j2;
@@ -27,6 +28,7 @@ public class PointOfContact extends Person {
      * Database ID of a point of contact.
      */
     @XmlElement(required = true)
+    @Schema(description = "Database ID of a point of contact.")
     private Long contactId;
 
     public PointOfContact() {

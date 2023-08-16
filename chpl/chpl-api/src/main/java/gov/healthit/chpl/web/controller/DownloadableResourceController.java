@@ -93,9 +93,12 @@ public class DownloadableResourceController {
 
         if (!StringUtils.isEmpty(format) && format.equalsIgnoreCase("csv")) {
             format = "csv";
-        } else {
+        } else if (!StringUtils.isEmpty(format) && format.equalsIgnoreCase("xml")) {
             format = "xml";
             responseType = "application/xml";
+        } else {
+            format = "json";
+            responseType = "application/json";
         }
 
         File toDownload = null;

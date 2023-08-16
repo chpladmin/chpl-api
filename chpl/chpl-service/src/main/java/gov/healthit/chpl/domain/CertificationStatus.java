@@ -7,6 +7,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
@@ -23,12 +24,14 @@ public class CertificationStatus implements Serializable {
     /**
      * Internal ID
      */
+    @Schema(description = "Internal ID")
     @XmlElement(required = true)
     private Long id;
 
     /**
      * Certification status name.
      */
+    @Schema(description = "Certification status name.")
     @XmlElement(required = true)
     private String name;
 
