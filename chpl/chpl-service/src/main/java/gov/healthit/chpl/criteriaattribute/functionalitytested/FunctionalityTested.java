@@ -14,6 +14,7 @@ import gov.healthit.chpl.criteriaattribute.CriteriaAttribute;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.PracticeType;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -49,6 +50,7 @@ public class FunctionalityTested extends CriteriaAttribute implements Serializab
     @DeprecatedResponseField(message = "This field is deprecated and will be removed.",
             removalDate = "2024-01-01")
     @XmlTransient
+    @Builder.Default
     private List<CertificationCriterion> criteria = new ArrayList<CertificationCriterion>();
 
     @Override
