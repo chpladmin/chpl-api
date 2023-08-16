@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -57,8 +58,8 @@ public class FunctionalityTestedManager {
     }
 
 
-    //@PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).TEST_TOOL, "
-    //        + "T(gov.healthit.chpl.permissions.domains.TestToolDomainPermissions).UPDATE)")
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).FUNCTIONALITY_TESTED, "
+            + "T(gov.healthit.chpl.permissions.domains.FunctionalityTestedDomainPermissions).UPDATE)")
     @Transactional
     @ListingStoreRemove(removeBy = RemoveBy.ALL)
     public FunctionalityTested update(FunctionalityTested functionalityTested) throws EntityRetrievalException, ValidationException {
@@ -77,8 +78,8 @@ public class FunctionalityTestedManager {
         return functionalityTestedDAO.getById(functionalityTested.getId());
     }
 
-    //@PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).TEST_TOOL, "
-    //        + "T(gov.healthit.chpl.permissions.domains.TestToolDomainPermissions).CREATE)")
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).FUNCTIONALITY_TESTED, "
+            + "T(gov.healthit.chpl.permissions.domains.FunctionalityTestedDomainPermissions).CREATE)")
     @Transactional
     public FunctionalityTested create(FunctionalityTested functionalityTested) throws EntityRetrievalException, ValidationException {
         criteriaAttributeValidator.validateForAdd(CriteriaAttributeValidationContext.builder()
@@ -97,8 +98,8 @@ public class FunctionalityTestedManager {
         return functionalityTestedDAO.getById(criteriaAttribute.getId());
     }
 
-    //@PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).TEST_TOOL, "
-    //        + "T(gov.healthit.chpl.permissions.domains.TestToolDomainPermissions).DELETE)")
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).FUNCTIONALITY_TESTED, "
+            + "T(gov.healthit.chpl.permissions.domains.FunctionalityTestedDomainPermissions).DELETE)")
     @Transactional
     public void delete(Long testToolId) throws EntityRetrievalException, ValidationException {
         FunctionalityTested functionalityTested = functionalityTestedDAO.getById(testToolId);
