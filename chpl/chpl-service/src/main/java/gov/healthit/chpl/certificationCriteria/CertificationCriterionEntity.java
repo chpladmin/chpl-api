@@ -1,4 +1,4 @@
-package gov.healthit.chpl.entity;
+package gov.healthit.chpl.certificationCriteria;
 
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -17,6 +17,7 @@ import javax.persistence.Table;
 
 import gov.healthit.chpl.criteriaattribute.rule.RuleEntity;
 import gov.healthit.chpl.domain.CertificationCriterion;
+import gov.healthit.chpl.entity.CertificationEditionEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
