@@ -10,6 +10,7 @@ import javax.xml.bind.annotation.XmlType;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import gov.healthit.chpl.svap.entity.CertificationResultSvapEntity;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.ToString;
@@ -33,30 +34,35 @@ public class CertificationResultSvap implements Serializable {
     /**
      * SVAP to certification result mapping internal ID
      */
+    @Schema(description = "SVAP to certification result mapping internal ID")
     @XmlElement(required = true)
     private Long id;
 
     /**
      * SVAP internal ID
      */
+    @Schema(description = "SVAP internal ID")
     @XmlElement(required = true)
     private Long svapId;
 
     /**
      * Regulatory Text Citation for Standard / Implementation Specification Adopted
      */
+    @Schema(description = "Regulatory Text Citation for Standard / Implementation Specification Adopted")
     @XmlElement(required = true)
     private String regulatoryTextCitation;
 
     /**
      *  National Coordinator Approved Advanced Version(s)
      */
+    @Schema(description = "National Coordinator Approved Advanced Version(s)")
     @XmlElement(required = true)
     private String approvedStandardVersion;
 
     /**
      *  Indicates if the SVAP has been replaced
      */
+    @Schema(description = "Indicates if the SVAP has been replaced")
     @XmlElement(required = true)
     private boolean replaced;
 

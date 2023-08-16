@@ -9,6 +9,7 @@ import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.criteriaattribute.testtool.TestTool;
 import gov.healthit.chpl.criteriaattribute.testtool.TestToolDAO;
@@ -36,6 +37,7 @@ public class TestToolNormalizer {
         }
     }
 
+    @Transactional
     public void normalize(CertifiedProductSearchDetails listing) {
         if (!CollectionUtils.isEmpty(listing.getCertificationResults())) {
             clearDataForUnattestedCriteria(listing);
@@ -44,6 +46,7 @@ public class TestToolNormalizer {
         }
     }
 
+    @Transactional
     public void normalize(List<CertificationResultTestTool> testTools) {
         if (!CollectionUtils.isEmpty(testTools)) {
             testTools.stream()

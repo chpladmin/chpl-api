@@ -16,6 +16,7 @@ import org.apache.logging.log4j.Logger;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 
@@ -36,6 +37,7 @@ public class Address implements Serializable {
      * Address internal ID.
      */
     @XmlElement(required = true)
+    @Schema(description = "Address internal ID.")
     private Long addressId;
 
     /**
@@ -43,6 +45,9 @@ public class Address implements Serializable {
      * 2015 Edition. This variable is a string variable that does not have any
      * restrictions on formatting or values.
      */
+    @Schema(description = "First line of the street address of the health IT developer for 2014 and "
+            + "2015 Edition. This variable is a string variable that does not have any "
+            + "restrictions on formatting or values.")
     @XmlElement(required = true)
     private String line1;
 
@@ -51,6 +56,9 @@ public class Address implements Serializable {
      * 2015 Edition. This variable is a string variable that does not have any
      * restrictions on formatting or values. This variable is optional.
      */
+    @Schema(description = "Second line of the street address of the health IT developer for 2014 and "
+            + "2015 Edition. This variable is a string variable that does not have any "
+            + "restrictions on formatting or values. This variable is optional.")
     @XmlElement(required = false, nillable = true)
     private String line2;
 
@@ -59,6 +67,9 @@ public class Address implements Serializable {
      * is for 2014 and 2015 Edition, and a string variable that does not have
      * any restrictions on formatting or values.
      */
+    @Schema(description = "The city in which the health IT developer can be contacted. This variable "
+            + "is for 2014 and 2015 Edition, and a string variable that does not have "
+            + "any restrictions on formatting or values.")
     @XmlElement(required = true)
     private String city;
 
@@ -68,6 +79,10 @@ public class Address implements Serializable {
      * that does not have any restrictions on formatting or values. Name of
      * states are denoted with two-letter abbreviation.
      */
+    @Schema(description = "The state in which the health IT developer can be contacted. This "
+            + "variable is applicable for 2014 and 2015 Edition and is a string variable "
+            + "that does not have any restrictions on formatting or values. Name of "
+            + "states are denoted with two-letter abbreviation.")
     @XmlElement(required = true)
     private String state;
 
@@ -76,12 +91,16 @@ public class Address implements Serializable {
      * variable applicable for 2014 and 2015 Edition, and a string variable that
      * does not have any restrictions on formatting or values.
      */
+    @Schema(description = "The ZIP code at which the health IT developer can be contacted. This is a "
+            + "variable applicable for 2014 and 2015 Edition, and a string variable that "
+            + "does not have any restrictions on formatting or values.")
     @XmlElement(required = true)
     private String zipcode;
 
     /**
      * Country of the address
      */
+    @Schema(description = "Country of the address")
     @XmlElement(required = true)
     private String country;
 

@@ -8,11 +8,11 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 
 /**
@@ -30,24 +30,28 @@ public class Person implements Serializable {
     /**
      * Person's full name.
      */
+    @Schema(description = "Person's full name.")
     @XmlElement(required = true)
     private String fullName;
 
     /**
      * Email address of the person.
      */
+    @Schema(description = "Email address of the person.")
     @XmlElement(required = true)
     private String email;
 
     /**
      * Phone number of the person.
      */
+    @Schema(description = "Phone number of the person.")
     @XmlElement(required = true)
     private String phoneNumber;
 
     /**
      * Title (Ms., Mr., Dr., etc) of the person.
      */
+    @Schema(description = "Title (Ms., Mr., Dr., etc) of the person.")
     @XmlElement(required = false, nillable = true)
     private String title;
 

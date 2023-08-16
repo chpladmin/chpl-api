@@ -9,6 +9,7 @@ import javax.xml.bind.annotation.XmlType;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 
@@ -23,12 +24,14 @@ public class DeveloperStatus implements Serializable {
     /**
      * Developer status internal id.
      */
+    @Schema(description = "Developer status internal id.")
     @XmlElement(required = true)
     private Long id;
 
     /**
      * Developer status name
      */
+    @Schema(description = "Developer status name")
     @XmlElement(required = true)
     private String status;
 

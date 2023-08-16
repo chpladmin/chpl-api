@@ -13,6 +13,7 @@ import javax.xml.bind.annotation.XmlType;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import gov.healthit.chpl.util.NullSafeEvaluator;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
@@ -29,6 +30,7 @@ public class SurveillanceRequirement implements Serializable {
     /**
      * Surveilled requirement internal ID
      */
+    @Schema(description = "Surveilled requirement internal ID")
     @XmlElement(required = true)
     private Long id;
 
@@ -36,12 +38,15 @@ public class SurveillanceRequirement implements Serializable {
      * For a given surveillance activity, details about the requirement and
      * the type of requirement being surveilled
      */
+    @Schema(description = "For a given surveillance activity, details about the requirement and "
+            + "the type of requirement being surveilled")
     @XmlElement
     private RequirementType requirementType;
 
     /**
      * When the requirement type is "Other", the value of the requirement type
      */
+    @Schema(description = "When the requirement type is \"Other\", the value of the requirement type")
     @XmlElement(required = false, nillable = true)
     private String requirementTypeOther;
 
@@ -49,12 +54,15 @@ public class SurveillanceRequirement implements Serializable {
      * The result for surveillance conducted on each surveillance requirement.
      * Allowable values are "Non-Conformity" or "No Non-Conformity"
      */
+    @Schema(description = "The result for surveillance conducted on each surveillance requirement.",
+            allowableValues = {"Non-Conformity", "No Non-Conformity"})
     @XmlElement(required = false, nillable = true)
     private SurveillanceResultType result;
 
     /**
      * List of nonconformities found for this surveilled requirement
      */
+    @Schema(description = "List of nonconformities found for this surveilled requirement")
     @XmlElementWrapper(name = "nonconformities", nillable = true, required = false)
     @XmlElement(name = "nonconformity")
     @Builder.Default

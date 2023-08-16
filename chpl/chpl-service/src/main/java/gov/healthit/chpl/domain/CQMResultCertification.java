@@ -9,6 +9,7 @@ import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
 import gov.healthit.chpl.dto.CQMResultCriteriaDTO;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 
@@ -26,18 +27,21 @@ public class CQMResultCertification implements Serializable {
     /**
      * CQM to criteria mapping internal ID
      */
+    @Schema(description = "CQM to criteria mapping internal ID")
     @XmlElement(required = true)
     private Long id;
 
     /**
      * Criteria internal ID
      */
+    @Schema(description = "Criteria internal ID")
     @XmlElement(required = true)
     private Long certificationId;
 
     /**
      * Certification number (i.e. 170.314 (c)(1)) of the criteria
      */
+    @Schema(description = "Certification number (i.e. 170.314 (c)(1)) of the criteria")
     @XmlElement(required = false, nillable = true)
     private String certificationNumber;
 
