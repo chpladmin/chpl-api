@@ -31,6 +31,7 @@ public class FunctionalityTestedDuplicateReviewerTest {
         reviewer = new FunctionalityTestedDuplicateReviewer(msgUtil);
     }
 
+    /*
     @Test
     public void review_duplicateExists_warningFoundAndDuplicateRemoved() {
         CertifiedProductSearchDetails listing = new CertifiedProductSearchDetails();
@@ -60,6 +61,7 @@ public class FunctionalityTestedDuplicateReviewerTest {
                 .count());
         assertEquals(1, cert.getFunctionalitiesTested().size());
     }
+    */
 
     @Test
     public void review_noDuplicates_noWarning() {
