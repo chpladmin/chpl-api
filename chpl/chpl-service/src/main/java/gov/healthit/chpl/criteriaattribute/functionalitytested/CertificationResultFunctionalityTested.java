@@ -15,6 +15,7 @@ import org.apache.commons.lang3.StringUtils;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseField;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
@@ -51,23 +52,23 @@ public class CertificationResultFunctionalityTested implements Serializable {
     @XmlElement(required = true)
     private FunctionalityTested functionalityTested;
 
-//    @Deprecated
-//    @DeprecatedResponseField(message = "This field is deprecated and will be removed. This data can be found functionalityTested.id",
-//            removalDate = "2024-01-01")
-//    @XmlTransient
-//    private Long functionalityTestedId;
-//
-//    @Deprecated
-//    @DeprecatedResponseField(message = "This field is deprecated and will be removed. This data can be found functionalityTested.value",
-//            removalDate = "2024-01-01")
-//    @XmlTransient
-//    private String description;
-//
-//    @Deprecated
-//    @DeprecatedResponseField(message = "This field is deprecated and will be removed. This data can be found functionalityTested.regulatoryTextCitation",
-//            removalDate = "2024-01-01")
-//    @XmlTransient
-//    private String name;
+    @Deprecated
+    @DeprecatedResponseField(message = "This field is deprecated and will be removed. This data can be found functionalityTested.id",
+            removalDate = "2024-01-01")
+    @XmlTransient
+    private Long functionalityTestedId;
+
+    @Deprecated
+    @DeprecatedResponseField(message = "This field is deprecated and will be removed. This data can be found functionalityTested.value",
+            removalDate = "2024-01-01")
+    @XmlTransient
+    private String description;
+
+    @Deprecated
+    @DeprecatedResponseField(message = "This field is deprecated and will be removed. This data can be found functionalityTested.regulatoryTextCitation",
+            removalDate = "2024-01-01")
+    @XmlTransient
+    private String name;
 
     @XmlTransient
     @JsonIgnore
