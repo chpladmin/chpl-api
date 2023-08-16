@@ -2,7 +2,7 @@ package gov.healthit.chpl.scheduler.job.svap;
 
 import java.time.LocalDate;
 
-import gov.healthit.chpl.domain.CertificationCriterion;
+import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.svap.domain.Svap;
 import lombok.AllArgsConstructor;

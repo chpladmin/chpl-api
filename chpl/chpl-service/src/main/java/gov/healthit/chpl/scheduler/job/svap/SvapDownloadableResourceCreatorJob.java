@@ -30,8 +30,8 @@ import gov.healthit.chpl.activity.history.explorer.CertificationResultContainsSv
 import gov.healthit.chpl.activity.history.explorer.SvapNoticeUrlLastUpdateActivityExplorer;
 import gov.healthit.chpl.activity.history.query.CertificationResultContainsSvapActivityQuery;
 import gov.healthit.chpl.activity.history.query.SvapNoticeUrlLastUpdateActivityQuery;
+import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
-import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.ActivityDTO;

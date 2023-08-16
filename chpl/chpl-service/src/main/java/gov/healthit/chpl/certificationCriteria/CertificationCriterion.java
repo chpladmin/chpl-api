@@ -1,4 +1,4 @@
-package gov.healthit.chpl.domain;
+package gov.healthit.chpl.certificationCriteria;
 
 import java.io.Serializable;
 import java.time.LocalDate;

@@ -3,8 +3,8 @@ package gov.healthit.chpl.domain.statistics;
 import java.time.LocalDate;
 import java.util.Date;
 
+import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationBody;
-import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.entity.statistics.CuresCriteriaStatisticsByAcbEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
