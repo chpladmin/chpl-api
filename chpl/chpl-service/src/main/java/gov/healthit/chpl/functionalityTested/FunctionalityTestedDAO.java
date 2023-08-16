@@ -201,7 +201,7 @@ public class FunctionalityTestedDAO extends BaseDAOImpl implements CriteriaAttri
 
     private List<FunctionalityTestedEntity> getAllEntities() {
         return entityManager
-                .createQuery("SELECT ft "
+                .createQuery("SELECT DISTINCT ft "
                             + "FROM FunctionalityTestedEntity ft "
                             + "LEFT OUTER JOIN FETCH ft.practiceType "
                             + "LEFT OUTER JOIN FETCH ft.mappedCriteria criteriaMapping "
