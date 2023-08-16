@@ -17,6 +17,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import gov.healthit.chpl.util.LocalDateTimeAdapter;
 import gov.healthit.chpl.util.LocalDateTimeDeserializer;
 import gov.healthit.chpl.util.LocalDateTimeSerializer;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 
@@ -31,12 +32,14 @@ public class CertifiedProductChplProductNumberHistory implements Serializable {
     /**
      * Internal ID of the CHPL Product Number history record.
      */
+    @Schema(description = "Internal ID of the CHPL Product Number history record.")
     @XmlElement(required = true)
     private Long id;
 
     /**
      * A CHPL Product Number that could have been used to reference this listing in the past.
      */
+    @Schema(description = "A CHPL Product Number that could have been used to reference this listing in the past.")
     @XmlElement(required = true)
     private String chplProductNumber;
 
@@ -44,6 +47,7 @@ public class CertifiedProductChplProductNumberHistory implements Serializable {
      * A timestamp indicating when this historical CHPL Product Number stopped being referenced
      * for this listing.
      */
+    @Schema(description = "A timestamp indicating when this historical CHPL Product Number stopped being referenced")
     @XmlElement(required = true)
     @XmlJavaTypeAdapter(value = LocalDateTimeAdapter.class)
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)

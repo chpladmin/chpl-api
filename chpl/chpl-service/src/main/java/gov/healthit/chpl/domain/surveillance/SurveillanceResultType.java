@@ -9,6 +9,7 @@ import javax.xml.bind.annotation.XmlType;
 
 import org.apache.commons.lang3.StringUtils;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
@@ -26,12 +27,14 @@ public class SurveillanceResultType implements Serializable {
     /**
      * Surveillance result type internal ID
      */
+    @Schema(description = "Surveillance result type internal ID")
     @XmlElement(required = true)
     private Long id;
 
     /**
      * Surveillance result type name. Nonconformity or No Nonconformity
      */
+    @Schema(description = "Surveillance result type name. Nonconformity or No Nonconformity")
     @XmlElement(required = true)
     private String name;
 
