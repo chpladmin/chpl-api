@@ -1,4 +1,4 @@
-package gov.healthit.chpl.functionalityTested;
+package gov.healthit.chpl.criteriaattribute.functionalitytested;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -14,7 +14,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-import gov.healthit.chpl.criteriaattribute.functionalitytested.FunctionalityTestedCriteriaMap;
 import gov.healthit.chpl.entity.CertificationCriterionEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

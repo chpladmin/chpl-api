@@ -1,4 +1,4 @@
-package gov.healthit.chpl.functionalityTested;
+package gov.healthit.chpl.criteriaattribute.functionalitytested;
 
 import java.util.Comparator;
 

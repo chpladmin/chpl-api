@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import gov.healthit.chpl.changerequest.manager.ChangeRequestManager;
 import gov.healthit.chpl.complaint.ComplaintManager;
+import gov.healthit.chpl.criteriaattribute.functionalitytested.FunctionalityTested;
 import gov.healthit.chpl.criteriaattribute.functionalitytested.FunctionalityTestedManager;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.CertificationCriterion;
@@ -25,7 +26,6 @@ import gov.healthit.chpl.domain.MeasureType;
 import gov.healthit.chpl.domain.SearchOption;
 import gov.healthit.chpl.domain.TestStandard;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.functionalityTested.FunctionalityTested;
 import gov.healthit.chpl.manager.DimensionalDataManager;
 import gov.healthit.chpl.optionalStandard.domain.OptionalStandard;
 import gov.healthit.chpl.surveillance.report.SurveillanceReportManager;

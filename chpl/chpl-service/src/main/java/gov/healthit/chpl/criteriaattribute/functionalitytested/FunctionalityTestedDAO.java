@@ -1,4 +1,4 @@
-package gov.healthit.chpl.functionalityTested;
+package gov.healthit.chpl.criteriaattribute.functionalitytested;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -18,7 +18,6 @@ import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.criteriaattribute.CriteriaAttribute;
 import gov.healthit.chpl.criteriaattribute.CriteriaAttributeCriteriaMap;
 import gov.healthit.chpl.criteriaattribute.CriteriaAttributeDAO;
-import gov.healthit.chpl.criteriaattribute.functionalitytested.FunctionalityTestedCriteriaMap;
 import gov.healthit.chpl.criteriaattribute.rule.RuleDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;

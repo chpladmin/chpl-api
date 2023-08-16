@@ -10,9 +10,9 @@ import org.apache.commons.csv.CSVRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.criteriaattribute.functionalitytested.CertificationResultFunctionalityTested;
+import gov.healthit.chpl.criteriaattribute.functionalitytested.FunctionalityTested;
 import gov.healthit.chpl.domain.CertificationResult;
-import gov.healthit.chpl.functionalityTested.CertificationResultFunctionalityTested;
-import gov.healthit.chpl.functionalityTested.FunctionalityTested;
 import gov.healthit.chpl.optionalStandard.domain.CertificationResultOptionalStandard;
 import gov.healthit.chpl.svap.domain.CertificationResultSvap;
 import gov.healthit.chpl.upload.listing.Headings;

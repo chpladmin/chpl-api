@@ -10,9 +10,6 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.exception.EntityCreationException;
-import gov.healthit.chpl.functionalityTested.CertificationResultFunctionalityTested;
-import gov.healthit.chpl.functionalityTested.CertificationResultFunctionalityTestedDAO;
-import gov.healthit.chpl.functionalityTested.FunctionalityTested;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2

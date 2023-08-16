@@ -15,8 +15,9 @@ import javax.persistence.Table;
 import org.hibernate.annotations.Immutable;
 import org.hibernate.annotations.Where;
 
+import gov.healthit.chpl.criteriaattribute.functionalitytested.CertificationResultFunctionalityTestedEntity;
+import gov.healthit.chpl.criteriaattribute.testtool.CertificationResultTestToolEntity;
 import gov.healthit.chpl.entity.CertificationCriterionEntity;
-import gov.healthit.chpl.functionalityTested.CertificationResultFunctionalityTestedEntity;
 import gov.healthit.chpl.svap.entity.CertificationResultSvapEntity;
 import lombok.Data;
 

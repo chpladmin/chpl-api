@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.dao.CertificationResultDAO;
 import gov.healthit.chpl.domain.CertificationResult;
-import gov.healthit.chpl.domain.CertificationResultTestTool;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.upload.listing.normalizer.TestToolNormalizer;
 import lombok.extern.log4j.Log4j2;

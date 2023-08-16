@@ -1,4 +1,4 @@
-package gov.healthit.chpl.entity.listing;
+package gov.healthit.chpl.criteriaattribute.testtool;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -15,8 +15,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-import gov.healthit.chpl.criteriaattribute.testtool.TestToolEntity;
-import gov.healthit.chpl.domain.CertificationResultTestTool;
+import gov.healthit.chpl.entity.listing.CertificationResultEntity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

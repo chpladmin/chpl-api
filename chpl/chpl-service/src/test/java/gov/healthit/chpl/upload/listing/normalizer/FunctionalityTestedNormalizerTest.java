@@ -16,13 +16,13 @@ import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
+import gov.healthit.chpl.criteriaattribute.functionalitytested.CertificationResultFunctionalityTested;
+import gov.healthit.chpl.criteriaattribute.functionalitytested.FunctionalityTested;
+import gov.healthit.chpl.criteriaattribute.functionalitytested.FunctionalityTestedDAO;
 import gov.healthit.chpl.criteriaattribute.functionalitytested.FunctionalityTestedManager;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.functionalityTested.CertificationResultFunctionalityTested;
-import gov.healthit.chpl.functionalityTested.FunctionalityTested;
-import gov.healthit.chpl.functionalityTested.FunctionalityTestedDAO;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 
 public class FunctionalityTestedNormalizerTest {

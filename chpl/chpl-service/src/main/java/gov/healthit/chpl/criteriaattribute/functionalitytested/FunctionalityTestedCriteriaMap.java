@@ -1,7 +1,6 @@
 package gov.healthit.chpl.criteriaattribute.functionalitytested;
 
 import gov.healthit.chpl.domain.CertificationCriterion;
-import gov.healthit.chpl.functionalityTested.FunctionalityTested;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
