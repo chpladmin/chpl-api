@@ -165,7 +165,7 @@ public class SubscriptionController {
         if (!ff4j.check(FeatureList.SUBSCRIPTIONS)) {
             throw new NotImplementedException("The subscriptions feature is not yet implemented.");
         }
-        return subscriptionManager.confirm(UUID.fromString(request.getSubscriberId()));
+        return subscriptionManager.confirm(UUID.fromString(request.getSubscriberId()), request.getRoleId());
     }
 
     @Operation(summary = "Unsubscribe from all notifications associated with a subscriber and delete that subscriber.",
