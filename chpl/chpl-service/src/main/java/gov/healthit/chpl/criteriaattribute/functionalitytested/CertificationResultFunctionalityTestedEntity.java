@@ -61,8 +61,9 @@ public class CertificationResultFunctionalityTestedEntity {
                 .id(this.getId())
                 .certificationResultId(certificationResultId)
                 .functionalityTested(this.functionalityTested.toDomain())
-                //.name(this.getFunctionalityTested() != null ? this.getFunctionalityTested().getRegulatoryTextCitation() : null)
-                //.description(this.getFunctionalityTested() != null ? this.getFunctionalityTested().getValue() : null)
+                .functionalityTestedId(this.getFunctionalityTested() != null ? this.getFunctionalityTested().getId() : null)
+                .name(this.getFunctionalityTested() != null ? this.getFunctionalityTested().getRegulatoryTextCitation() : null)
+                .description(this.getFunctionalityTested() != null ? this.getFunctionalityTested().getValue() : null)
                 .build();
     }
 }

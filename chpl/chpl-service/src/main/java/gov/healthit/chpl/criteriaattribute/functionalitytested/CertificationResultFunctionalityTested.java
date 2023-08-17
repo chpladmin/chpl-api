@@ -96,35 +96,35 @@ public class CertificationResultFunctionalityTested implements Serializable {
         this.id = id;
     }
 
-//    @Deprecated
-//    public Long getFunctionalityTestedId() {
-//        return functionalityTestedId;
-//    }
-//
-//    @Deprecated
-//    public void setFunctionalityTestedId(Long functionalityTestedId) {
-//        this.functionalityTestedId = functionalityTestedId;
-//    }
-//
-//    @Deprecated
-//    public String getDescription() {
-//        return description;
-//    }
-//
-//    @Deprecated
-//    public void setDescription(final String description) {
-//        this.description = description;
-//    }
-//
-//    @Deprecated
-//    public String getName() {
-//        return name;
-//    }
-//
-//    @Deprecated
-//    public void setName(final String name) {
-//        this.name = name;
-//    }
+    @Deprecated
+    public Long getFunctionalityTestedId() {
+        return functionalityTestedId;
+    }
+
+    @Deprecated
+    public void setFunctionalityTestedId(Long functionalityTestedId) {
+        this.functionalityTestedId = functionalityTestedId;
+    }
+
+    @Deprecated
+    public String getDescription() {
+        return description;
+    }
+
+    @Deprecated
+    public void setDescription(final String description) {
+        this.description = description;
+    }
+
+    @Deprecated
+    public String getName() {
+        return name;
+    }
+
+    @Deprecated
+    public void setName(final String name) {
+        this.name = name;
+    }
 
     public Long getCertificationResultId() {
         return this.certificationResultId;

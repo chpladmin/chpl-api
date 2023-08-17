@@ -25,7 +25,6 @@ import gov.healthit.chpl.conformanceMethod.domain.CertificationResultConformance
 import gov.healthit.chpl.conformanceMethod.domain.ConformanceMethod;
 import gov.healthit.chpl.criteriaattribute.functionalitytested.CertificationResultFunctionalityTested;
 import gov.healthit.chpl.criteriaattribute.functionalitytested.CertificationResultFunctionalityTestedComparator;
-import gov.healthit.chpl.criteriaattribute.functionalitytested.CertificationResultTestFunctionality;
 import gov.healthit.chpl.criteriaattribute.functionalitytested.FunctionalityTested;
 import gov.healthit.chpl.criteriaattribute.testtool.CertificationResultTestTool;
 import gov.healthit.chpl.criteriaattribute.testtool.CertificationResultTestToolComparator;
@@ -234,13 +233,6 @@ public class CertificationResult implements Serializable {
     @Builder.Default
     private List<CertificationResultFunctionalityTested> functionalitiesTested = new ArrayList<CertificationResultFunctionalityTested>();
 
-    @XmlTransient
-    @Deprecated
-    @DeprecatedResponseField(message = "This field is deprecated and will be removed. Please use 'functionalitiesTested'.",
-            removalDate = "2023-08-01")
-    @Builder.Default
-    private List<CertificationResultTestFunctionality> testFunctionality = new ArrayList<CertificationResultTestFunctionality>();
-
     /**
      * The methods used to evaluate compliance with the certification criterion.
      */
@@ -378,7 +370,6 @@ public class CertificationResult implements Serializable {
 
     public CertificationResult() {
         this.functionalitiesTested = new ArrayList<CertificationResultFunctionalityTested>();
-        this.testFunctionality = new ArrayList<CertificationResultTestFunctionality>();
         this.testToolsUsed = new ArrayList<CertificationResultTestTool>();
         this.testStandards = new ArrayList<CertificationResultTestStandard>();
         this.optionalStandards = new ArrayList<CertificationResultOptionalStandard>();
@@ -502,17 +493,6 @@ public class CertificationResult implements Serializable {
 
         this.setOptionalStandards(getOptionalStandards(certResult, certRules));
         this.setFunctionalitiesTested(getFunctionalitiesTested(certResult, certRules));
-//        if (!CollectionUtils.isEmpty(this.getFunctionalitiesTested())) {
-//            this.setTestFunctionality(this.getFunctionalitiesTested().stream()
-//                    .map(funcTested -> CertificationResultTestFunctionality.builder()
-//                            .certificationResultId(funcTested.getCertificationResultId())
-//                            .description(funcTested.getDescription())
-//                            .id(funcTested.getId())
-//                            .name(funcTested.getName())
-//                            .testFunctionalityId(funcTested.getFunctionalityTestedId())
-//                            .build())
-//                    .collect(Collectors.toList()));
-//        }
         this.setConformanceMethods(getConformanceMethods(certResult, certRules));
         this.setTestProcedures(getTestProcedures(certResult, certRules));
         this.setTestDataUsed(getTestData(certResult, certRules));
@@ -728,16 +708,6 @@ public class CertificationResult implements Serializable {
 
     public void setFunctionalitiesTested(List<CertificationResultFunctionalityTested> functionalitiesTested) {
         this.functionalitiesTested = functionalitiesTested;
-    }
-
-    @Deprecated
-    public List<CertificationResultTestFunctionality> getTestFunctionality() {
-        return this.testFunctionality;
-    }
-
-    @Deprecated
-    public void setTestFunctionality(List<CertificationResultTestFunctionality> testFunctionality) {
-        this.testFunctionality = testFunctionality;
     }
 
     public String getApiDocumentation() {
