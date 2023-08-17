@@ -3,6 +3,9 @@ package gov.healthit.chpl.validation.listing.reviewer;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.ArrayList;
+import java.util.stream.Stream;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
@@ -62,12 +65,12 @@ public class InheritanceComparisonReviewerTest {
     public void review_emptyIcsChildrenInCurrentOrUpdated_noErrors() {
         CertifiedProductSearchDetails existingListing = CertifiedProductSearchDetails.builder()
                 .ics(InheritedCertificationStatus.builder()
-                        .clearChildren()
+                        .children(new ArrayList<CertifiedProduct>())
                         .build())
                 .build();
         CertifiedProductSearchDetails updatedListing = CertifiedProductSearchDetails.builder()
                 .ics(InheritedCertificationStatus.builder()
-                        .clearChildren()
+                        .children(new ArrayList<CertifiedProduct>())
                         .build())
                 .build();
 
@@ -79,18 +82,18 @@ public class InheritanceComparisonReviewerTest {
     public void review_currentIcsEmptyChildrenUpdatedIcsOneChild_noErrors() {
         CertifiedProductSearchDetails existingListing = CertifiedProductSearchDetails.builder()
                 .ics(InheritedCertificationStatus.builder()
-                        .clearChildren()
+                        .children(new ArrayList<CertifiedProduct>())
                         .build())
                 .build();
         CertifiedProductSearchDetails updatedListing = CertifiedProductSearchDetails.builder()
                 .ics(InheritedCertificationStatus.builder()
-                        .child(CertifiedProduct.builder()
+                        .children(Stream.of(CertifiedProduct.builder()
                                 .id(1L)
                                 .certificationDate(System.currentTimeMillis())
                                 .certificationStatus(CertificationStatusType.Active.getName())
                                 .curesUpdate(false)
                                 .chplProductNumber("CHP-12345")
-                                .build())
+                                .build()).toList())
                         .build())
                 .build();
 
@@ -102,24 +105,24 @@ public class InheritanceComparisonReviewerTest {
     public void review_currentIcsMatchesUpdatedIcsOneChild_noErrors() {
         CertifiedProductSearchDetails existingListing = CertifiedProductSearchDetails.builder()
                 .ics(InheritedCertificationStatus.builder()
-                        .child(CertifiedProduct.builder()
+                        .children(Stream.of(CertifiedProduct.builder()
                                 .id(1L)
                                 .certificationDate(System.currentTimeMillis())
                                 .certificationStatus(CertificationStatusType.Active.getName())
                                 .curesUpdate(false)
                                 .chplProductNumber("CHP-12345")
-                                .build())
+                                .build()).toList())
                         .build())
                 .build();
         CertifiedProductSearchDetails updatedListing = CertifiedProductSearchDetails.builder()
                 .ics(InheritedCertificationStatus.builder()
-                        .child(CertifiedProduct.builder()
+                        .children(Stream.of(CertifiedProduct.builder()
                                 .id(1L)
                                 .certificationDate(System.currentTimeMillis())
                                 .certificationStatus(CertificationStatusType.Active.getName())
                                 .curesUpdate(false)
                                 .chplProductNumber("CHP-12345")
-                                .build())
+                                .build()).toList())
                         .build())
                 .build();
 
@@ -131,18 +134,18 @@ public class InheritanceComparisonReviewerTest {
     public void review_currentIcsOneChildUpdatedIcsEmptyChildren_hasError() {
         CertifiedProductSearchDetails existingListing = CertifiedProductSearchDetails.builder()
                 .ics(InheritedCertificationStatus.builder()
-                        .child(CertifiedProduct.builder()
+                        .children(Stream.of(CertifiedProduct.builder()
                                 .id(1L)
                                 .certificationDate(System.currentTimeMillis())
                                 .certificationStatus(CertificationStatusType.Active.getName())
                                 .curesUpdate(false)
                                 .chplProductNumber("CHP-12345")
-                                .build())
+                                .build()).toList())
                         .build())
                 .build();
         CertifiedProductSearchDetails updatedListing = CertifiedProductSearchDetails.builder()
                 .ics(InheritedCertificationStatus.builder()
-                        .clearChildren()
+                        .children(new ArrayList<CertifiedProduct>())
                         .build())
                 .build();
 
@@ -155,24 +158,24 @@ public class InheritanceComparisonReviewerTest {
     public void review_currentIcsOneChildUpdatedIcsDifferentChild_hasError() {
         CertifiedProductSearchDetails existingListing = CertifiedProductSearchDetails.builder()
                 .ics(InheritedCertificationStatus.builder()
-                        .child(CertifiedProduct.builder()
+                        .children(Stream.of(CertifiedProduct.builder()
                                 .id(1L)
                                 .certificationDate(System.currentTimeMillis())
                                 .certificationStatus(CertificationStatusType.Active.getName())
                                 .curesUpdate(false)
                                 .chplProductNumber("CHP-12345")
-                                .build())
+                                .build()).toList())
                         .build())
                 .build();
         CertifiedProductSearchDetails updatedListing = CertifiedProductSearchDetails.builder()
                 .ics(InheritedCertificationStatus.builder()
-                        .child(CertifiedProduct.builder()
+                        .children(Stream.of(CertifiedProduct.builder()
                                 .id(2L)
                                 .certificationDate(System.currentTimeMillis())
                                 .certificationStatus(CertificationStatusType.Active.getName())
                                 .curesUpdate(false)
                                 .chplProductNumber("CHP-12346")
-                                .build())
+                                .build()).toList())
                         .build())
                 .build();
 
@@ -185,31 +188,32 @@ public class InheritanceComparisonReviewerTest {
     public void review_currentIcsTwoChildrenUpdatedIcsOneChild_hasError() {
         CertifiedProductSearchDetails existingListing = CertifiedProductSearchDetails.builder()
                 .ics(InheritedCertificationStatus.builder()
-                        .child(CertifiedProduct.builder()
-                                .id(1L)
-                                .certificationDate(System.currentTimeMillis())
-                                .certificationStatus(CertificationStatusType.Active.getName())
-                                .curesUpdate(false)
-                                .chplProductNumber("CHP-12345")
-                                .build())
-                        .child(CertifiedProduct.builder()
-                                .id(2L)
-                                .certificationDate(System.currentTimeMillis())
-                                .certificationStatus(CertificationStatusType.Active.getName())
-                                .curesUpdate(false)
-                                .chplProductNumber("CHP-12346")
-                                .build())
+                        .children(Stream.of(
+                                CertifiedProduct.builder()
+                                    .id(1L)
+                                    .certificationDate(System.currentTimeMillis())
+                                    .certificationStatus(CertificationStatusType.Active.getName())
+                                    .curesUpdate(false)
+                                    .chplProductNumber("CHP-12345")
+                                    .build(),
+                                CertifiedProduct.builder()
+                                    .id(2L)
+                                    .certificationDate(System.currentTimeMillis())
+                                    .certificationStatus(CertificationStatusType.Active.getName())
+                                    .curesUpdate(false)
+                                    .chplProductNumber("CHP-12346")
+                                    .build()).toList())
                         .build())
                 .build();
         CertifiedProductSearchDetails updatedListing = CertifiedProductSearchDetails.builder()
                 .ics(InheritedCertificationStatus.builder()
-                        .child(CertifiedProduct.builder()
+                        .children(Stream.of(CertifiedProduct.builder()
                                 .id(2L)
                                 .certificationDate(System.currentTimeMillis())
                                 .certificationStatus(CertificationStatusType.Active.getName())
                                 .curesUpdate(false)
                                 .chplProductNumber("CHP-12346")
-                                .build())
+                                .build()).toList())
                         .build())
                 .build();
 

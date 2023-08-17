@@ -8,6 +8,8 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -249,14 +251,14 @@ public class CertifiedProductManagerTest {
                 .id(1L)
                 .certificationDate(cal1.getTime().getTime())
                 .certificationEdition(getCertificationEdition())
-                .certificationEvent(CertificationStatusEvent.builder()
+                .certificationEvents(Stream.of(CertificationStatusEvent.builder()
                         .eventDate(cal1.getTime().getTime())
                         .id(1L)
                         .status(CertificationStatus.builder()
                                 .id(1L)
                                 .name("Active")
                                 .build())
-                        .build())
+                        .build()).collect(Collectors.toList()))
                 .certifyingBody(getCertifyingBody())
                 .chplProductNumber("15.04.04.3046.Acel.11.01.0.190517")
                 .cqmResults(new ArrayList<CQMResultDetails>())
@@ -294,12 +296,12 @@ public class CertifiedProductManagerTest {
                         .owner(Developer.builder()
                                 .build())
                         .build())
-                .testingLab(CertifiedProductTestingLab.builder()
+                .testingLabs(Stream.of(CertifiedProductTestingLab.builder()
                         .id(1L)
                         .testingLabCode("04")
                         .testingLabId(1L)
                         .testingLabName("Drummond Group")
-                        .build())
+                        .build()).toList())
                 .version(ProductVersion.builder()
                         .id(1L)
                         .version("11.3")
