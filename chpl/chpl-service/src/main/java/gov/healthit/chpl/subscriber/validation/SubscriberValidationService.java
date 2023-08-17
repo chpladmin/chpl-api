@@ -20,7 +20,8 @@ public class SubscriberValidationService {
 
     private List<ValidationRule<SubscriberValidationContext>> getCreateValidations() {
         return new ArrayList<ValidationRule<SubscriberValidationContext>>(Arrays.asList(
-                new SubscriberUUIDValidation()));
+                new SubscriberUUIDValidation(),
+                new SubscriberRoleValidation()));
     }
 
     private List<String> runValidations(List<ValidationRule<SubscriberValidationContext>> rules, SubscriberValidationContext context) {

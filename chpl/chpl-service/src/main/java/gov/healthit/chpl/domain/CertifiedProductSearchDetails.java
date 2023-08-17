@@ -208,7 +208,7 @@ public class CertifiedProductSearchDetails implements Serializable {
             + "Drummond Group, ICSA Labs, UL LLC, National Technical Systems, SLI Global, CCHIT")
     @XmlElementWrapper(name = "testingLabs", nillable = true, required = false)
     @XmlElement(name = "testingLab")
-    @Singular
+    @Builder.Default
     private List<CertifiedProductTestingLab> testingLabs = new ArrayList<CertifiedProductTestingLab>();
 
     @XmlTransient
@@ -364,7 +364,7 @@ public class CertifiedProductSearchDetails implements Serializable {
             + "only for 2015 Edition, and a string variable that does not take any restrictions on formatting or values.")
     @XmlElementWrapper(name = "targetedUsers", nillable = true, required = false)
     @XmlElement(name = "targetedUser")
-    @Singular
+    @Builder.Default
     private List<CertifiedProductTargetedUser> targetedUsers = new ArrayList<CertifiedProductTargetedUser>();
 
     /**
@@ -428,7 +428,7 @@ public class CertifiedProductSearchDetails implements Serializable {
             + "the CHPL Public User Guide.")
     @XmlElementWrapper(name = "certificationEvents", nillable = true, required = false)
     @XmlElement(name = "certificationEvent")
-    @Singular
+    @Builder.Default
     private List<CertificationStatusEvent> certificationEvents = new ArrayList<CertificationStatusEvent>();
 
     /**
