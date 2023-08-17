@@ -637,9 +637,9 @@ public class ConformanceMethodReviewerTest {
                 .certificationDate(DateUtil.toEpochMillis(LocalDate.parse("2022-06-02")))
                 .edition(edition2015)
                 .ics(InheritedCertificationStatus.builder()
-                        .parent(CertifiedProduct.builder()
+                        .parents(Stream.of(CertifiedProduct.builder()
                                 .id(1L)
-                                .build())
+                                .build()).toList())
                         .build())
                 .build();
         conformanceMethodReviewer.review(listing);
@@ -678,9 +678,9 @@ public class ConformanceMethodReviewerTest {
                 .certificationDate(DateUtil.toEpochMillis(LocalDate.parse("2022-06-02")))
                 .edition(edition2015)
                 .ics(InheritedCertificationStatus.builder()
-                        .parent(CertifiedProduct.builder()
+                        .parents(Stream.of(CertifiedProduct.builder()
                                 .id(1L)
-                                .build())
+                                .build()).toList())
                         .build())
                 .build();
         conformanceMethodReviewer.review(listing);
@@ -725,9 +725,9 @@ public class ConformanceMethodReviewerTest {
                 .certificationDate(DateUtil.toEpochMillis(LocalDate.parse("2022-06-02")))
                 .edition(edition2015)
                 .ics(InheritedCertificationStatus.builder()
-                        .parent(CertifiedProduct.builder()
+                        .parents(Stream.of(CertifiedProduct.builder()
                                 .id(1L)
-                                .build())
+                                .build()).toList())
                         .build())
                 .build();
         conformanceMethodReviewer.review(listing);
@@ -773,9 +773,9 @@ public class ConformanceMethodReviewerTest {
                 .certificationDate(DateUtil.toEpochMillis(LocalDate.parse("2022-06-02")))
                 .edition(edition2015)
                 .ics(InheritedCertificationStatus.builder()
-                        .parent(CertifiedProduct.builder()
+                        .parents(Stream.of(CertifiedProduct.builder()
                                 .id(1L)
-                                .build())
+                                .build()).toList())
                         .build())
                 .build();
         conformanceMethodReviewer.review(listing);

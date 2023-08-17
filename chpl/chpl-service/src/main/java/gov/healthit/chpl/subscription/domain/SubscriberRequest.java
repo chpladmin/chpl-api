@@ -11,4 +11,5 @@ import lombok.NoArgsConstructor;
 @Builder
 public class SubscriberRequest {
     private String subscriberId;
+    private Long roleId;
 }

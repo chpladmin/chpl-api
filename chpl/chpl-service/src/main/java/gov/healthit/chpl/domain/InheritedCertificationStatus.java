@@ -18,7 +18,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.Singular;
 
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -62,7 +61,7 @@ public class InheritedCertificationStatus implements Serializable {
     @Schema(description = "The first-level parent listings that this listing inherits from")
     @XmlElementWrapper(name = "parents", nillable = true, required = false)
     @XmlElement(name = "parent")
-    @Singular
+    @Builder.Default
     private List<CertifiedProduct> parents = new ArrayList<CertifiedProduct>();
 
     /**
@@ -71,7 +70,7 @@ public class InheritedCertificationStatus implements Serializable {
     @Schema(description = "The first-level child listings that inherit from this listings")
     @XmlElementWrapper(name = "children", nillable = true, required = false)
     @XmlElement(name = "child")
-    @Singular
+    @Builder.Default
     private List<CertifiedProduct> children = new ArrayList<CertifiedProduct>();
 
 }

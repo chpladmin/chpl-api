@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.stream.Stream;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -147,9 +148,9 @@ public class IcsNormalizerTest {
     public void normalize_icsParentsHaveIds_noChanges() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .ics(InheritedCertificationStatus.builder()
-                        .parent(CertifiedProduct.builder()
+                        .parents(Stream.of(CertifiedProduct.builder()
                                 .id(1L)
-                                .build())
+                                .build()).toList())
                         .build())
                 .build();
         normalizer.normalize(listing);
@@ -163,9 +164,9 @@ public class IcsNormalizerTest {
     public void normalize_icsParentsMissingIds_getsData() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .ics(InheritedCertificationStatus.builder()
-                        .parent(CertifiedProduct.builder()
+                        .parents(Stream.of(CertifiedProduct.builder()
                                 .chplProductNumber("15.04.04.2526.WEBe.06.00.1.210101")
-                                .build())
+                                .build()).toList())
                         .build())
                 .build();
         Mockito.when(cpUtil.getListing(ArgumentMatchers.anyString()))
@@ -187,9 +188,9 @@ public class IcsNormalizerTest {
     public void normalize_icsParentsMissingIdsNoMatchingChplProductNumber_getsNoData() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .ics(InheritedCertificationStatus.builder()
-                        .parent(CertifiedProduct.builder()
+                        .parents(Stream.of(CertifiedProduct.builder()
                                 .chplProductNumber("15.04.04.2526.WEBe.06.00.1.210101")
-                                .build())
+                                .build()).toList())
                         .build())
                 .build();
         Mockito.when(cpUtil.getListing(ArgumentMatchers.anyString()))
