@@ -51,7 +51,7 @@ public class CertificationResultFunctionalityTestedService {
                     .filter(crtt -> getMatchingItemInList(crtt, certResultFunctionalitiesTestedFromDb).isEmpty())
                     .toList();
 
-            addedFunctionalitiesTested.forEach(x -> LOGGER.info("Added Test Tool: {}", x.getFunctionalityTested().getValue()));
+            addedFunctionalitiesTested.forEach(x -> LOGGER.info("Added Functionality Tested: {}", x.getFunctionalityTested().getValue()));
 
             addedFunctionalitiesTested.forEach(addedFunctionalityTested -> addCertificationResultFunctionalityTested(addedFunctionalityTested, certResult.getId()));
         }
@@ -62,7 +62,7 @@ public class CertificationResultFunctionalityTestedService {
                     .filter(crtt -> getMatchingItemInList(crtt, certResultFunctionalitiesTested).isEmpty())
                     .toList();
 
-            removedFunctionalitiesTested.forEach(x -> LOGGER.info("Removed Test Tool: {}", x.getFunctionalityTested().getValue()));
+            removedFunctionalitiesTested.forEach(x -> LOGGER.info("Removed Functionality Tested: {}", x.getFunctionalityTested().getValue()));
 
             removedFunctionalitiesTested.forEach(removedFunctionalityTested -> certResultTestFunctionalityDAO.deleteFunctionalityTestedMapping(
                     getMatchingItemInList(removedFunctionalityTested, certResultFunctionalitiesTestedFromDb).get().getId()));
@@ -71,29 +71,29 @@ public class CertificationResultFunctionalityTestedService {
         return updatedFunctionalitiesTested.size() + addedFunctionalitiesTested.size() + removedFunctionalitiesTested.size();
     }
 
-    private CertificationResultFunctionalityTested addCertificationResultFunctionalityTested(CertificationResultFunctionalityTested crtt, Long certificationResultId) {
+    private CertificationResultFunctionalityTested addCertificationResultFunctionalityTested(CertificationResultFunctionalityTested crft, Long certificationResultId) {
         try {
             return certResultTestFunctionalityDAO.addFunctionalityTestedMapping(
                     CertificationResultFunctionalityTested.builder()
                             .certificationResultId(certificationResultId)
                             .functionalityTested(FunctionalityTested.builder()
-                                    .id(crtt.getFunctionalityTested().getId())
+                                    .id(crft.getFunctionalityTested().getId())
                                     .build())
                             .build());
 
         } catch (EntityCreationException e) {
-            LOGGER.error("Could not create Certification Result Test Tool.", e);
+            LOGGER.error("Could not create Certification Result Functionality Tested.", e);
             return null;
         }
     }
 
-    private Optional<CertificationResultFunctionalityTested> getMatchingItemInList(CertificationResultFunctionalityTested crtt, List<CertificationResultFunctionalityTested> certificationResultFunctionalityTesteds) {
-        if (CollectionUtils.isEmpty(certificationResultFunctionalityTesteds)) {
+    private Optional<CertificationResultFunctionalityTested> getMatchingItemInList(CertificationResultFunctionalityTested crft, List<CertificationResultFunctionalityTested> certificationResultFunctionalitiesTested) {
+        if (CollectionUtils.isEmpty(certificationResultFunctionalitiesTested)) {
             return Optional.empty();
         }
-        return certificationResultFunctionalityTesteds.stream()
+        return certificationResultFunctionalitiesTested.stream()
                 .filter(certificationResultFunctionalityTested ->
-                        certificationResultFunctionalityTested != null ? certificationResultFunctionalityTested.getFunctionalityTested().getId().equals(crtt.getFunctionalityTested().getId()) : false)
+                        certificationResultFunctionalityTested != null ? certificationResultFunctionalityTested.getFunctionalityTested().getId().equals(crft.getFunctionalityTested().getId()) : false)
                 .findAny();
     }
 
