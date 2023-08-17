@@ -20,9 +20,11 @@ import gov.healthit.chpl.criteriaattribute.CriteriaAttributeCriteriaMap;
 import gov.healthit.chpl.criteriaattribute.CriteriaAttributeDAO;
 import gov.healthit.chpl.criteriaattribute.rule.RuleDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
+import gov.healthit.chpl.dao.PracticeTypeDAO;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
+import gov.healthit.chpl.entity.PracticeTypeEntity;
 import gov.healthit.chpl.entity.listing.CertificationResultEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.util.AuthUtil;
@@ -34,11 +36,13 @@ public class FunctionalityTestedDAO extends BaseDAOImpl implements CriteriaAttri
 
     private RuleDAO ruleDAO;
     private CertifiedProductDAO certifiedProductDAO;
+    private PracticeTypeDAO practiceTypeDAO;
 
     @Autowired
-    public FunctionalityTestedDAO(RuleDAO ruleDAO, CertifiedProductDAO certifiedProductDAO) {
+    public FunctionalityTestedDAO(RuleDAO ruleDAO, CertifiedProductDAO certifiedProductDAO, PracticeTypeDAO practiceTypeDAO) {
         this.ruleDAO = ruleDAO;
         this.certifiedProductDAO = certifiedProductDAO;
+        this.practiceTypeDAO = practiceTypeDAO;
     }
 
     public FunctionalityTested getById(Long id) {
@@ -57,6 +61,8 @@ public class FunctionalityTestedDAO extends BaseDAOImpl implements CriteriaAttri
 
     @Override
     public CriteriaAttribute add(CriteriaAttribute criteriaAttribute) {
+        FunctionalityTested ft = (FunctionalityTested) criteriaAttribute;
+
         FunctionalityTestedEntity entity = FunctionalityTestedEntity.builder()
                 .name(criteriaAttribute.getValue()) //TODO: OCD-4288 - Remove when column is removed
                 .number(criteriaAttribute.getRegulatoryTextCitation()) //TODO: OCD-4288 - Remove when column is removed
@@ -65,12 +71,18 @@ public class FunctionalityTestedDAO extends BaseDAOImpl implements CriteriaAttri
                 .startDay(criteriaAttribute.getStartDay())
                 .endDay(criteriaAttribute.getEndDay())
                 .requiredDay(criteriaAttribute.getRequiredDay())
-                .rule(criteriaAttribute.getRule() != null ? ruleDAO.getRuleEntityById(criteriaAttribute.getRule().getId()) : null)
+                .rule(criteriaAttribute.getRule() != null && criteriaAttribute.getRule().getId() != null
+                        ? ruleDAO.getRuleEntityById(criteriaAttribute.getRule().getId())
+                        : null)
+                .practiceType(ft.getPracticeType() != null && ft.getPracticeType().getId() != null
+                        ? getPracticeTypeEntity(ft.getPracticeType().getId())
+                        : null)
                 .creationDate(new Date())
                 .lastModifiedDate(new Date())
                 .lastModifiedUser(AuthUtil.getAuditId())
                 .deleted(false)
                 .build();
+
         create(entity);
 
         return getById(entity.getId());
@@ -114,11 +126,20 @@ public class FunctionalityTestedDAO extends BaseDAOImpl implements CriteriaAttri
             entity.setRule(null);
         }
 
+        FunctionalityTested ft = (FunctionalityTested) criteriaAttribute;
+        if (ft.getPracticeType() != null && ft.getPracticeType().getId() != null) {
+            entity.setPracticeType(practiceTypeDAO.getEntityById(ft.getPracticeType().getId()));
+        } else {
+            entity.setPracticeType(null);
+        }
+
         entity.setLastModifiedUser(AuthUtil.getAuditId());
         entity.setLastModifiedDate(new Date());
 
         update(entity);
     }
+
+    //public void update
 
     @Override
     public void addCriteriaAttributeCriteriaMap(CriteriaAttribute criteriaAttribute, CertificationCriterion criterion) {
@@ -311,4 +332,12 @@ public class FunctionalityTestedDAO extends BaseDAOImpl implements CriteriaAttri
                 .collect(Collectors.toList());
     }
 
+    private PracticeTypeEntity getPracticeTypeEntity(Long practiceTypeId) {
+        try {
+            return practiceTypeDAO.getEntityById(practiceTypeId);
+        } catch (EntityRetrievalException e) {
+            LOGGER.error("Could not retrieve Practice Type: {}", practiceTypeId, e);
+            return null;
+        }
+    }
 }
