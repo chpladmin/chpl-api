@@ -61,14 +61,12 @@ public class FunctionalityTestedReviewer {
                         "listing.criteria.functionalityTestedNotApplicable", Util.formatCriteriaNumber(certResult.getCriterion())));
             }
             certResult.setFunctionalitiesTested(null);
-            certResult.setTestFunctionality(null);
         }
     }
 
     private void removeFunctionalitiesTestedIfNotApplicable(CertificationResult certResult) {
         if (!certResultRules.hasCertOption(certResult.getCriterion().getId(), CertificationResultRules.FUNCTIONALITY_TESTED)) {
             certResult.setFunctionalitiesTested(null);
-            certResult.setTestFunctionality(null);
         }
     }
 
@@ -120,6 +118,7 @@ public class FunctionalityTestedReviewer {
         FunctionalityTested functionalityTested = null;
         functionalityTested = functionalityTestedDao.getById(crft.getFunctionalityTested().getId());
 
+        //TODO: OCD-4288 getCriteria is deprecated - do we still need this whole method?
         List<String> criteriaNumbers = functionalityTested.getCriteria().stream()
                 .map(criterion -> Util.formatCriteriaNumber(criterion))
                 .collect(Collectors.toList());

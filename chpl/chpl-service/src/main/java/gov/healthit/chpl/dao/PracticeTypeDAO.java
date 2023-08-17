@@ -1,5 +1,6 @@
 package gov.healthit.chpl.dao;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Query;
@@ -31,12 +32,11 @@ public class PracticeTypeDAO extends BaseDAOImpl {
         } else {
 
             entity = new PracticeTypeEntity();
-            entity.setCreationDate(practiceType.getCreationDate());
-            entity.setDeleted(practiceType.getDeleted());
+            entity.setCreationDate(new Date());
+            entity.setDeleted(false);
             entity.setId(practiceType.getId());
             entity.setName(practiceType.getName());
             entity.setDescription(practiceType.getDescription());
-            // entity.setLastModifiedDate(result.getLastModifiedDate());
             entity.setLastModifiedUser(AuthUtil.getAuditId());
 
             create(entity);
@@ -46,12 +46,9 @@ public class PracticeTypeDAO extends BaseDAOImpl {
 
     public void update(PracticeType practceType) throws EntityRetrievalException {
         PracticeTypeEntity entity = this.getEntityById(practceType.getId());
-        entity.setCreationDate(practceType.getCreationDate());
-        entity.setDeleted(practceType.getDeleted());
         entity.setId(practceType.getId());
         entity.setName(practceType.getName());
         entity.setDescription(practceType.getDescription());
-        // entity.setLastModifiedDate(result.getLastModifiedDate());
         entity.setLastModifiedUser(AuthUtil.getAuditId());
 
         update(entity);

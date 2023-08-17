@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.conformanceMethod.domain.CertificationResultConformanceMethod;
 import gov.healthit.chpl.criteriaattribute.functionalitytested.CertificationResultFunctionalityTested;
-import gov.healthit.chpl.criteriaattribute.functionalitytested.CertificationResultTestFunctionality;
 import gov.healthit.chpl.criteriaattribute.testtool.CertificationResultTestTool;
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.domain.CertificationCriterion;
@@ -125,11 +124,9 @@ public class CertificationCriterionNormalizer {
         if (BooleanUtils.isFalse(certResult.isSuccess())
                 && !isFieldAllowed(certResult.getCriterion(), CertificationResultRules.FUNCTIONALITY_TESTED)) {
             certResult.setFunctionalitiesTested(null);
-            certResult.setTestFunctionality(null);
         } else if (isFieldAllowed(certResult.getCriterion(), CertificationResultRules.FUNCTIONALITY_TESTED)
                 && certResult.getFunctionalitiesTested() == null) {
             certResult.setFunctionalitiesTested(new ArrayList<CertificationResultFunctionalityTested>());
-            certResult.setTestFunctionality(new ArrayList<CertificationResultTestFunctionality>());
         }
 
         if (BooleanUtils.isFalse(certResult.isSuccess())

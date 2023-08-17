@@ -5,7 +5,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import javax.xml.bind.annotation.XmlAccessOrder;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorOrder;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.XmlType;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -21,6 +27,11 @@ import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
+
+// TODO OCD-4288 - NEED TEXT TO DESCRIBE THIS OBJECT
+@XmlType(namespace = "http://chpl.healthit.gov/listings")
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlAccessorOrder(value = XmlAccessOrder.ALPHABETICAL)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @SuperBuilder
 @Getter
@@ -43,7 +54,10 @@ public class FunctionalityTested extends CriteriaAttribute implements Serializab
     @XmlTransient
     private String description;
 
-
+    /**
+     * TODO: NEED THIS TEXT
+     */
+    @XmlElement(required = false)
     private PracticeType practiceType;
 
     @Deprecated

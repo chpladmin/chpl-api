@@ -18,14 +18,11 @@ public class CertificationResultFunctionalityTestedXmlGenerator extends XmlGener
         }
     }
 
-    //TODO: OCD-4288
-    public static void add(CertificationResultFunctionalityTested test, String rootNodeName, XMLStreamWriter sw) throws XMLStreamException {
-        if (test != null) {
+    public static void add(CertificationResultFunctionalityTested crft, String rootNodeName, XMLStreamWriter sw) throws XMLStreamException {
+        if (crft != null) {
             sw.writeStartElement(rootNodeName);
-            //createSimpleElement(test.getDescription(), "description", sw);
-            //createSimpleElement(test.getFunctionalityTestedId(), "functionalityTestedId", sw);
-            //createSimpleElement(test.getId(), "id", sw);
-            //createSimpleElement(test.getName(), "name", sw);
+            FunctionalityTestedXmlGenerator.add(crft.getFunctionalityTested(), "functionalityTested", sw);
+            createSimpleElement(crft.getId(), "id", sw);
             sw.writeEndElement();
         }
     }

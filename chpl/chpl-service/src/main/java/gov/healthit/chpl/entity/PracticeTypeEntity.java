@@ -59,11 +59,11 @@ public class PracticeTypeEntity implements Serializable {
     public PracticeType toDomain() {
         return PracticeType.builder()
                 .id(this.getId())
-                .creationDate(this.getCreationDate())
-                .deleted(this.getDeleted())
+                //.creationDate(this.getCreationDate())
+                //.deleted(this.getDeleted())
                 .description(this.getDescription())
-                .lastModifiedDate(this.getLastModifiedDate())
-                .lastModifiedUser(this.getLastModifiedUser())
+                //.lastModifiedDate(this.getLastModifiedDate())
+                //.lastModifiedUser(this.getLastModifiedUser())
                 .name(this.getName())
                 .build();
     }
