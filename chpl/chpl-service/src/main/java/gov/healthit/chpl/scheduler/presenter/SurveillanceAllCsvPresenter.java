@@ -15,10 +15,10 @@ import gov.healthit.chpl.domain.surveillance.SurveillanceRequirement;
 import gov.healthit.chpl.util.NullSafeEvaluator;
 import gov.healthit.chpl.util.Util;
 
-public class NonconformityCsvPresenter extends SurveillanceCsvPresenter {
-    private static final String PRESENTER_NAME = "Non-conformity";
+public class SurveillanceAllCsvPresenter extends SurveillanceCsvPresenter {
+    private static final String PRESENTER_NAME = "Surveillance All";
 
-    public NonconformityCsvPresenter(Environment env) {
+    public SurveillanceAllCsvPresenter(Environment env) {
         super(env);
     }
 
@@ -29,40 +29,19 @@ public class NonconformityCsvPresenter extends SurveillanceCsvPresenter {
 
     @Override
     public String getFileName() {
-        return getEnvironment().getProperty("surveillanceNonconformitiesReportName");
+        return getEnvironment().getProperty("surveillanceAllReportName");
     }
 
     @Override
     public synchronized void add(final CertifiedProductSearchDetails data) throws IOException {
-        getLogger().info("Adding Surveillance to Non-conformity CSV file: " + data.getId());
+        getLogger().info("Adding Surveillance to Surveillance All CSV file: " + data.getId());
+
         if (data.getSurveillance() != null && data.getSurveillance().size() > 0) {
             for (Surveillance currSurveillance : data.getSurveillance()) {
-                // note if this surveillance has any nonconformities
-                boolean hasNc = false;
-                if (currSurveillance.getRequirements() != null
-                        && currSurveillance.getRequirements().size() > 0) {
-                    // marks requirements for removal if they have no non-conformities
-                    List<SurveillanceRequirement> reqsToRemove = new ArrayList<SurveillanceRequirement>();
-                    for (SurveillanceRequirement req : currSurveillance.getRequirements()) {
-                        if (req.getNonconformities() != null && req.getNonconformities().size() > 0) {
-                            hasNc = true;
-                        } else {
-                            reqsToRemove.add(req);
-                        }
-                    }
-
-                    // remove requirements without nonconformities
-                    for (SurveillanceRequirement reqToRemove : reqsToRemove) {
-                        currSurveillance.getRequirements().remove(reqToRemove);
-                    }
-                }
-
-                if (hasNc) {
-                    // write out surveillance with non-conformities only
-                    List<List<String>> rowValues = generateMultiRowValue(data, currSurveillance);
-                    for (List<String> rowValue : rowValues) {
-                        getCsvPrinter().printRecord(rowValue);
-                    }
+                List<List<String>> rowValues = generateMultiRowValue(data, currSurveillance);
+                for (List<String> rowValue : rowValues) {
+                    getCsvPrinter().printRecord(rowValue);
+                    getCsvPrinter().flush();
                 }
             }
         }
@@ -286,6 +265,5 @@ public class NonconformityCsvPresenter extends SurveillanceCsvPresenter {
         ncRow.add(nc.getLastModifiedDate().toInstant().atOffset(ZoneOffset.UTC).format(getDateTimeFormatter()));
         return ncRow;
     }
-
 
 }
