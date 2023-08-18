@@ -96,7 +96,8 @@ public class CriterionProductStatisticsDAOImpl extends BaseDAOImpl implements Cr
                 + "LEFT OUTER JOIN FETCH cpse.certificationCriterion cce "
                 + "LEFT OUTER JOIN FETCH cce.certificationEdition "
                 + "LEFT JOIN FETCH cce.rule "
-                + "WHERE (cpse.deleted = false) AND (id = :entityid)",
+                + "WHERE (cpse.deleted = false) "
+                + "AND (cpse.id = :entityid)",
                 CriterionProductStatisticsEntity.class);
         query.setParameter("entityid", id);
         List<CriterionProductStatisticsEntity> result = query.getResultList();
