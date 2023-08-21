@@ -1,8 +1,6 @@
 package gov.healthit.chpl.criteriaattribute.functionalitytested;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlAccessOrder;
@@ -17,10 +15,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseField;
 import gov.healthit.chpl.criteriaattribute.CriteriaAttribute;
-import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.PracticeType;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -60,12 +56,12 @@ public class FunctionalityTested extends CriteriaAttribute implements Serializab
     @XmlElement(required = false)
     private PracticeType practiceType;
 
-    @Deprecated
-    @DeprecatedResponseField(message = "This field is deprecated and will be removed.",
-            removalDate = "2024-01-01")
-    @XmlTransient
-    @Builder.Default
-    private List<CertificationCriterion> criteria = new ArrayList<CertificationCriterion>();
+//    @Deprecated
+//    @DeprecatedResponseField(message = "This field is deprecated and will be removed.",
+//            removalDate = "2024-01-01")
+//    @XmlTransient
+//    @Builder.Default
+//    private List<CertificationCriterion> criteria = new ArrayList<CertificationCriterion>();
 
     @Override
     public boolean equals(final Object o) {
