@@ -56,13 +56,6 @@ public class FunctionalityTested extends CriteriaAttribute implements Serializab
     @XmlElement(required = false)
     private PracticeType practiceType;
 
-//    @Deprecated
-//    @DeprecatedResponseField(message = "This field is deprecated and will be removed.",
-//            removalDate = "2024-01-01")
-//    @XmlTransient
-//    @Builder.Default
-//    private List<CertificationCriterion> criteria = new ArrayList<CertificationCriterion>();
-
     @Override
     public boolean equals(final Object o) {
         if (this == o) {
