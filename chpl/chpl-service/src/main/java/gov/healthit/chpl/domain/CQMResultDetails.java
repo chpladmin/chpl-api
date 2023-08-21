@@ -19,6 +19,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import gov.healthit.chpl.dto.CQMResultCriteriaDTO;
 import gov.healthit.chpl.dto.CQMResultDetailsDTO;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 
@@ -36,6 +37,7 @@ public class CQMResultDetails implements Serializable {
     /**
      * CQM internal ID
      */
+    @Schema(description = "CQM internal ID")
     @XmlElement(required = false, nillable = true)
     private Long id;
 
@@ -48,6 +50,9 @@ public class CQMResultDetails implements Serializable {
      * been certified. It is applicable to 2014 and 2015 Edition. For a list of
      * the clinical quality measures, please reference the CMS eCQM library.
      */
+    @Schema(description = "The CMS ID clinical quality measures to which the Health IT Module has "
+            + "been certified. It is applicable to 2014 and 2015 Edition. For a list of "
+            + "the clinical quality measures, please reference the CMS eCQM library.")
     @XmlElement(required = false, nillable = true)
     private String number;
 
@@ -55,30 +60,35 @@ public class CQMResultDetails implements Serializable {
      * The CMS ID clinical quality measures to which the Health IT Module has
      * been certified.
      */
+    @Schema(description = "The CMS ID clinical quality measures to which the Health IT Module has been certified.")
     @XmlElement(required = false, nillable = true)
     private String cmsId;
 
     /**
      * The title of the clinical quality measure.
      */
+    @Schema(description = "The title of the clinical quality measure.")
     @XmlElement(required = false, nillable = true)
     private String title;
 
     /**
      * The description of the clinical quality measure.
      */
+    @Schema(description = "The description of the clinical quality measure.")
     @XmlElement(required = false, nillable = true)
     private String description;
 
     /**
      * The NQF Number of the clinical quality measure
      */
+    @Schema(description = "The NQF Number of the clinical quality measure")
     @XmlElement(required = false, nillable = true)
     private String nqfNumber;
 
     /**
      * Type of CQM. 1 for Ambulatory, 2 for Inpatient
      */
+    @Schema(description = "Type of CQM. 1 for Ambulatory, 2 for Inpatient")
     @XmlElement(required = false, nillable = true)
     private Long typeId;
 
@@ -86,6 +96,8 @@ public class CQMResultDetails implements Serializable {
      * Category of the clinial quality measure. Examples include
      * "Population/Public Health" or "Patient and Family Engagement"
      */
+    @Schema(description = "Category of the clinial quality measure. Examples include "
+            + "\"Population/Public Health\" or \"Patient and Family Engagement\"")
     @XmlElement(required = false, nillable = true)
     private String domain;
 
@@ -94,6 +106,9 @@ public class CQMResultDetails implements Serializable {
      * been certified to the related listing. It is applicable to 2014 and 2015
      * Edition and a binary variable that takes either true or false value.
      */
+    @Schema(description = "This variable indicates whether or not the clinical quality measure has "
+            + "been certified to the related listing. It is applicable to 2014 and 2015 "
+            + "Edition and a binary variable that takes either true or false value.")
     @XmlElement(required = false, nillable = true)
     private Boolean success;
 
@@ -103,6 +118,10 @@ public class CQMResultDetails implements Serializable {
      * Edition. For a list of clinical quality measures and their viable
      * versions, please reference the CMS eCQM library.
      */
+    @Schema(description = "The corresponding version of the clinical quality measures to which the "
+            + "Health IT Module has been certified. It is applicable to 2014 and 2015 "
+            + "Edition. For a list of clinical quality measures and their viable "
+            + "versions, please reference the CMS eCQM library.")
     @XmlElementWrapper(name = "successVersions", nillable = true, required = false)
     @XmlElement(name = "version", required = false, nillable = true)
     @Builder.Default
@@ -113,6 +132,9 @@ public class CQMResultDetails implements Serializable {
      * clinical quality measures and their viable versions, please reference the
      * CMS eCQM library.
      */
+    @Schema(description = "All possible versions of the clinical quality measure. For a list of "
+            + "clinical quality measures and their viable versions, please reference the "
+            + "CMS eCQM library.")
     @XmlElementWrapper(name = "allVersions", nillable = true, required = false)
     @XmlElement(name = "version", required = false, nillable = true)
     @Builder.Default
@@ -124,6 +146,10 @@ public class CQMResultDetails implements Serializable {
      * c1, c2, c3, c4,c1;c2[DC1], c1;c3, c1;c4, c2;c3, c2;c4, c3;c4, c1;c2;c3,
      * c2;c3;c4, c1;c2;c3;c4
      */
+    @Schema(description = "The certification criteria to which a given clinical quality measure "
+            + "applies. It is only applicable to 2015 Edition. It takes values include: "
+            + "c1, c2, c3, c4,c1;c2[DC1], c1;c3, c1;c4, c2;c3, c2;c4, c3;c4, c1;c2;c3, "
+            + "c2;c3;c4, c1;c2;c3;c4")
     @XmlElementWrapper(name = "criteriaList", nillable = true, required = false)
     @XmlElement(name = "criteria")
     @Builder.Default

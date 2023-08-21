@@ -12,6 +12,7 @@ import org.springframework.util.StringUtils;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import gov.healthit.chpl.dto.CertificationResultTestStandardDTO;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 
@@ -32,24 +33,28 @@ public class CertificationResultTestStandard implements Serializable {
     /**
      * Test standard to certification result mapping internal ID
      */
+    @Schema(description = "Test standard to certification result mapping internal ID")
     @XmlElement(required = true)
     private Long id;
 
     /**
      * Test standard internal ID
      */
+    @Schema(description = "Test standard internal ID")
     @XmlElement(required = false, nillable = true)
     private Long testStandardId;
 
     /**
      * Description of test standard
      */
+    @Schema(description = "Description of test standard")
     @XmlElement(required = false, nillable = true)
     private String testStandardDescription;
 
     /**
      * Name of test standard
      */
+    @Schema(description = "Name of test standard")
     @XmlElement(required = false, nillable = true)
     private String testStandardName;
 

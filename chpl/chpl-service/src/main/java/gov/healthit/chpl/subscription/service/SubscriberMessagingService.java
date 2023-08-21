@@ -22,18 +22,27 @@ public class SubscriberMessagingService {
 
     private String pendingSubscriberSubject;
     private String pendingSubscriberBody1;
+    private String welcomeSubscriberSubject;
+    private String welcomeSubscriberBody1;
+    private String welcomeSubscriberBody2;
 
     @Autowired
     public SubscriberMessagingService(ChplEmailFactory chplEmailFactory,
             ChplHtmlEmailBuilder emailBuilder,
             @Value("${subscriber.confirmMessage.subject}") String pendingSubscriberSubject,
             @Value("${subscriber.confirmMessage.paragraph1}") String pendingSubscriberBody1,
+            @Value("${subscriber.welcomeMessage.subject}") String welcomeSubscriberSubject,
+            @Value("${subscriber.welcomeMessage.paragraph1}") String welcomeSubscriberBody1,
+            @Value("${subscriber.welcomeMessage.paragraph2}") String welcomeSubscriberBody2,
             SubscriptionLookupUtil lookupUtil) {
         this.chplEmailFactory = chplEmailFactory;
         this.emailBuilder = emailBuilder;
         this.lookupUtil = lookupUtil;
         this.pendingSubscriberSubject = pendingSubscriberSubject;
         this.pendingSubscriberBody1 = pendingSubscriberBody1;
+        this.welcomeSubscriberSubject = welcomeSubscriberSubject;
+        this.welcomeSubscriberBody1 = welcomeSubscriberBody1;
+        this.welcomeSubscriberBody2 = welcomeSubscriberBody2;
     }
 
     public void sendConfirmation(Subscriber subscriber) {
@@ -51,6 +60,25 @@ public class SubscriberMessagingService {
                     .sendEmail();
         } catch (EmailNotSentException msgEx) {
             LOGGER.error("Could not send confirmation email to subscriber " + subscriber.getEmail(), msgEx);
+        }
+    }
+
+    public void sendWelcome(Subscriber subscriber) {
+        String htmlMessage = emailBuilder.initialize()
+                .heading(welcomeSubscriberSubject)
+                .paragraph(null, welcomeSubscriberBody1)
+                .paragraph(null, String.format(welcomeSubscriberBody2, lookupUtil.getManageUrl(subscriber)))
+                .footer(PublicFooter.class)
+                .build();
+
+        try {
+            chplEmailFactory.emailBuilder()
+                    .recipients(List.of(subscriber.getEmail()))
+                    .subject(welcomeSubscriberSubject)
+                    .htmlMessage(htmlMessage)
+                    .sendEmail();
+        } catch (EmailNotSentException msgEx) {
+            LOGGER.error("Could not send welcome email to subscriber " + subscriber.getEmail(), msgEx);
         }
     }
 

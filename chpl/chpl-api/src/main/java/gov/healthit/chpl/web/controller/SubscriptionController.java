@@ -7,9 +7,11 @@ import org.apache.commons.lang3.NotImplementedException;
 import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -17,6 +19,7 @@ import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.subscription.SubscriptionManager;
+import gov.healthit.chpl.subscription.domain.ChplItemSubscriptionGroup;
 import gov.healthit.chpl.subscription.domain.Subscriber;
 import gov.healthit.chpl.subscription.domain.SubscriberRequest;
 import gov.healthit.chpl.subscription.domain.SubscriberRole;
@@ -29,7 +32,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 @Tag(name = "subscriptions", description = "Manage public user subscriptions.")
 @RestController
-@RequestMapping("/subscriptions")
 public class SubscriptionController {
     private SubscriptionManager subscriptionManager;
     private FF4j ff4j;
@@ -41,12 +43,13 @@ public class SubscriptionController {
         this.ff4j = ff4j;
     }
 
-    @Operation(summary = "Get available subscription reasons.",
+    @Operation(summary = "Get available subscriber roles.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
-    @RequestMapping(value = "/roles", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public @ResponseBody List<SubscriberRole> getSubscriptionReasons() {
+    @RequestMapping(value = "/subscribers/roles",
+        method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public @ResponseBody List<SubscriberRole> getSubscriptionRoles() {
         if (!ff4j.check(FeatureList.SUBSCRIPTIONS)) {
             throw new NotImplementedException("The subscriptions feature is not yet implemented.");
         }
@@ -57,12 +60,79 @@ public class SubscriptionController {
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
-    @RequestMapping(value = "/types", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    @RequestMapping(value = "/subscriptions/types",
+        method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<SubscriptionObjectType> getSubscribedObjectTypes() {
         if (!ff4j.check(FeatureList.SUBSCRIPTIONS)) {
             throw new NotImplementedException("The subscriptions feature is not yet implemented.");
         }
         return subscriptionManager.getAllSubscriptionObjectTypes();
+    }
+
+    @Operation(summary = "Get information about a subscriber.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
+    @RequestMapping(value = "/subscribers/{subscriberId:^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$}",
+        method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public Subscriber getSubscriber(@PathVariable String subscriberId) throws EntityRetrievalException {
+        if (!ff4j.check(FeatureList.SUBSCRIPTIONS)) {
+            throw new NotImplementedException("The subscriptions feature is not yet implemented.");
+        }
+        return subscriptionManager.getSubscriber(UUID.fromString(subscriberId));
+    }
+
+    @Operation(summary = "Gets all the subscriptions for a subscriber grouped by each item in the CHPL.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
+    @RequestMapping(value = "/subscribers/{subscriberId}/subscriptions",
+        method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public List<? extends ChplItemSubscriptionGroup> getSubscriptionsForSubscriber(@PathVariable String subscriberId)
+        throws EntityRetrievalException {
+        if (!ff4j.check(FeatureList.SUBSCRIPTIONS)) {
+            throw new NotImplementedException("The subscriptions feature is not yet implemented.");
+        }
+        return subscriptionManager.getGroupedSubscriptions(UUID.fromString(subscriberId));
+    }
+
+    @Operation(summary = "Delete one subscription",
+            description = "Example: Unsubscribe subscriber with ID 1 from subscription ID 1",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
+    @RequestMapping(value = "/subscribers/{subscriberId}/subscriptions/{subscriptionId}",
+        method = RequestMethod.DELETE, produces = "application/json; charset=utf-8")
+    public void deleteSubscription(@PathVariable String subscriberId, @PathVariable Long subscriptionId)
+            throws EntityRetrievalException {
+        if (!ff4j.check(FeatureList.SUBSCRIPTIONS)) {
+            throw new NotImplementedException("The subscriptions feature is not yet implemented.");
+        }
+        //NOTE: I put the subscriberID in the URL here because that makes it harder to guess the URL to delete a subscription.
+        //Without it, you could put in a URL like DELETE /subscriptions/7 and delete a subscription that doesn't belong to you
+
+        //throw 404 if invalid subscriber ID
+        Subscriber subscriber = subscriptionManager.getSubscriber(UUID.fromString(subscriberId));
+        subscriptionManager.deleteSubscription(subscriber, subscriptionId);
+    }
+
+    @Operation(summary = "Delete all subscriptions on a particular CHPL object for a subscriber. ",
+            description = "Example: Unsubscribe subscriber with ID 1 from all notifications about listing ID 1",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
+    @RequestMapping(value = "/subscribers/{subscriberId}/subscriptions",
+            method = RequestMethod.DELETE, produces = "application/json; charset=utf-8")
+    public void deleteSubscriptionsForObject(@PathVariable String subscriberId,
+            @RequestParam(name = "subscribedObjectTypeId") Long subscribedObjectTypeId,
+            @RequestParam(name = "subscribedObjectId") Long subscribedObjectId) throws EntityRetrievalException {
+        if (!ff4j.check(FeatureList.SUBSCRIPTIONS)) {
+            throw new NotImplementedException("The subscriptions feature is not yet implemented.");
+        }
+        Subscriber subscriber = Subscriber.builder()
+                .id(UUID.fromString(subscriberId))
+                .build();
+        subscriptionManager.deleteSubscriptions(subscriber, subscribedObjectTypeId, subscribedObjectId);
     }
 
     @Operation(summary = "Subscribe to periodic notifications about changes to a specific item in the CHPL. "
@@ -71,8 +141,9 @@ public class SubscriptionController {
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
-    @RequestMapping(value = "", method = RequestMethod.POST, produces = "application/json; charset=utf-8",
-            consumes = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/subscriptions",
+        method = RequestMethod.POST, produces = "application/json; charset=utf-8",
+        consumes = MediaType.APPLICATION_JSON_VALUE)
     public Subscriber subscribe(@RequestBody(required = true) SubscriptionRequest subscriptionRequest)
         throws ValidationException {
         if (!ff4j.check(FeatureList.SUBSCRIPTIONS)) {
@@ -86,27 +157,28 @@ public class SubscriptionController {
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
-    @RequestMapping(value = "/confirm-subscriber", method = RequestMethod.PUT, produces = "application/json; charset=utf-8",
-            consumes = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/subscriptions/confirm-subscriber",
+        method = RequestMethod.PUT, produces = "application/json; charset=utf-8",
+        consumes = MediaType.APPLICATION_JSON_VALUE)
     public Subscriber confirmSubscriber(@RequestBody(required = true) SubscriberRequest request)
         throws ValidationException {
         if (!ff4j.check(FeatureList.SUBSCRIPTIONS)) {
             throw new NotImplementedException("The subscriptions feature is not yet implemented.");
         }
-        return subscriptionManager.confirm(UUID.fromString(request.getSubscriberId()));
+        return subscriptionManager.confirm(UUID.fromString(request.getSubscriberId()), request.getRoleId());
     }
 
-    @Operation(summary = "Unsubscribe from all notifications associated with a subscriber.",
+    @Operation(summary = "Unsubscribe from all notifications associated with a subscriber and delete that subscriber.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
-    @RequestMapping(value = "unsubscribe-all", method = RequestMethod.PUT, produces = "application/json; charset=utf-8",
-            consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void unsubscribeAll(@RequestBody(required = true) SubscriberRequest request)
+    @RequestMapping(value = "/subscribers/{subscriberId:^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$}",
+        method = RequestMethod.DELETE, produces = "application/json; charset=utf-8")
+    public void unsubscribeAll(@PathVariable String subscriberId)
         throws EntityRetrievalException {
         if (!ff4j.check(FeatureList.SUBSCRIPTIONS)) {
             throw new NotImplementedException("The subscriptions feature is not yet implemented.");
         }
-        subscriptionManager.unsubscribeAll(UUID.fromString(request.getSubscriberId()));
+        subscriptionManager.unsubscribeAll(UUID.fromString(subscriberId));
     }
 }

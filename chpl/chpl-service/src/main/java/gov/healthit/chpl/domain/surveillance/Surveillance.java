@@ -27,6 +27,7 @@ import gov.healthit.chpl.util.LocalDateAdapter;
 import gov.healthit.chpl.util.LocalDateDeserializer;
 import gov.healthit.chpl.util.LocalDateSerializer;
 import gov.healthit.chpl.util.Util;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
@@ -46,6 +47,7 @@ public class Surveillance implements Serializable {
     /**
      * Surveillance internal ID
      */
+    @Schema(description = "Surveillance internal ID")
     @XmlElement(required = true)
     private Long id;
 
@@ -56,6 +58,7 @@ public class Surveillance implements Serializable {
      * The user-friendly ID of this surveillance relative to a listing. Ex:
      * SURV01
      */
+    @Schema(description = "The user-friendly ID of this surveillance relative to a listing. Ex: SURV01")
     @XmlElement(required = true)
     private String friendlyId;
 
@@ -63,11 +66,13 @@ public class Surveillance implements Serializable {
      * The listing under surveillance
      */
     @XmlElement(required = true)
+    @Schema(description = "The listing under surveillance")
     private CertifiedProduct certifiedProduct;
 
     /**
      * Day surveillance began
      */
+    @Schema(description = "Day surveillance began")
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
     @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
@@ -77,6 +82,7 @@ public class Surveillance implements Serializable {
     /**
      * Day surveillance ended
      */
+    @Schema(description = "Day surveillance ended")
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
     @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
@@ -87,6 +93,7 @@ public class Surveillance implements Serializable {
      * The type of surveillance conducted. Allowable values are "Reactive" or
      * "Randomized".
      */
+    @Schema(description = "The type of surveillance conducted. Allowable values are \"Reactive\" or \"Randomized\".")
     @XmlElement(required = true)
     private SurveillanceType type;
 
@@ -94,6 +101,7 @@ public class Surveillance implements Serializable {
      * Number of randomized sites used. Only applicable for randomized
      * surveillance.
      */
+    @Schema(description = "Number of randomized sites used. Only applicable for randomized surveillance.")
     @XmlElement(required = false, nillable = true)
     private Integer randomizedSitesUsed;
 
@@ -104,6 +112,11 @@ public class Surveillance implements Serializable {
      * 170.315(a)(2) or 170.315(k)(1)). However, other values are allowed to
      * provide a brief description of the surveilled requirement.
      */
+    @Schema(description = "For a given surveillance activity, the certification criteria or program "
+            + "requirement being surveilled. Where applicable, the surveillance "
+            + "requirement will be presented as the regulation text number (e.g. "
+            + "170.315(a)(2) or 170.315(k)(1)). However, other values are allowed to "
+            + "provide a brief description of the surveilled requirement.")
     @XmlElementWrapper(name = "surveilledRequirements", nillable = true, required = false)
     @XmlElement(name = "requirement")
     @Builder.Default
@@ -122,6 +135,7 @@ public class Surveillance implements Serializable {
     /**
      * Date of the last modification of the surveillance.
      */
+    @Schema(description = "Date of the last modification of the surveillance.")
     @XmlElement(required = true)
     private Date lastModifiedDate;
 

@@ -33,22 +33,7 @@ public class RemoveCriteriaJob extends QuartzJob {
     private CacheManager cacheManager;
 
     private static final String[] CRITERIA_TO_REMOVE = {
-            "170.315 (b)(1):Transitions of Care",
-            "170.315 (b)(2):Clinical Information Reconciliation and Incorporation",
-            "170.315 (b)(3):Electronic Prescribing",
-            "170.315 (b)(7):Data Segmentation for Privacy - Send",
-            "170.315 (b)(8):Data Segmentation for Privacy - Receive",
-            "170.315 (b)(9):Care Plan",
-            "170.315 (c)(3):Clinical Quality Measures - Report",
-            "170.315 (d)(2):Auditable Events and Tamper-Resistance",
-            "170.315 (d)(3):Audit Report(s)",
-            "170.315 (d)(10):Auditing Actions on Health Information",
-            "170.315 (e)(1):View, Download, and Transmit to 3rd Party",
-            "170.315 (f)(5):Transmission to Public Health Agencies - Electronic Case Reporting",
-            "170.315 (g)(6):Consolidated CDA Creation",
-            "170.315 (g)(8):Application Access - Data Category Request",
-            "170.315 (g)(9):Application Access - All Data Request"};
-
+            "170.315 (b)(6):Data Export"};
 
     public RemoveCriteriaJob() throws Exception {
         super();

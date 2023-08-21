@@ -11,6 +11,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 
 import gov.healthit.chpl.dto.SurveillanceTypeDTO;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 
@@ -27,12 +28,14 @@ public class SurveillanceType implements Serializable {
     /**
      * Surveillance type internal ID
      */
+    @Schema(description = "Surveillance type internal ID")
     @XmlElement(required = true)
     private Long id;
 
     /**
      * Surveillance type name (randomized, reactive)
      */
+    @Schema(description = "Surveillance type name (randomized, reactive)")
     @XmlElement(required = true)
     private String name;
 

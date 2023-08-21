@@ -13,6 +13,7 @@ import org.apache.commons.lang3.ObjectUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 
@@ -27,12 +28,14 @@ public class ListingMeasure implements Serializable {
     /**
      * An internal ID for each mapping between measure and listing.
      */
+    @Schema(description = "An internal ID for each mapping between measure and listing.")
     @XmlElement(required = false, nillable = true)
     private Long id;
 
     /**
      * The measure being applied to a listing.
      */
+    @Schema(description = "The measure being applied to a listing.")
     @XmlElement(required = true)
     private Measure measure;
 
@@ -40,6 +43,8 @@ public class ListingMeasure implements Serializable {
      * Indicates whether this measure was applied to the listing using
      * Automated Numerator Recording (G1) or Automated Measure Calculation (G2).
      */
+    @Schema(description = "Indicates whether this measure was applied to the listing using "
+            + "Automated Numerator Recording (G1) or Automated Measure Calculation (G2).")
     @XmlElement(required = true)
     private MeasureType measureType;
 

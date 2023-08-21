@@ -15,6 +15,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import gov.healthit.chpl.util.LocalDateDeserializer;
 import gov.healthit.chpl.util.LocalDateSerializer;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
@@ -31,12 +32,14 @@ public class ConformanceMethod implements Serializable {
     /**
      * Conformance Method internal ID.
      */
+    @Schema(description = "Conformance Method internal ID.")
     @XmlElement(required = true)
     private Long id;
 
     /**
      * Conformance method name.
      */
+    @Schema(description = "Conformance method name.")
     @XmlElement(required = true)
     private String name;
 
@@ -48,6 +51,7 @@ public class ConformanceMethod implements Serializable {
     /**
      * Whether the Conformance Method has been marked as removed.
      */
+    @Schema(description = "Whether the Conformance Method has been marked as removed.")
     @XmlElement(required = true)
     private Boolean removed;
 

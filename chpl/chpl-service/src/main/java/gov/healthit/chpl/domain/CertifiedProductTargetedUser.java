@@ -7,11 +7,12 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
-import org.springframework.util.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import gov.healthit.chpl.dto.CertifiedProductTargetedUserDTO;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 
@@ -31,18 +32,21 @@ public class CertifiedProductTargetedUser implements Serializable {
     /**
      * Targeted user to listing mapping internal ID
      */
+    @Schema(description = "Targeted user to listing mapping internal ID")
     @XmlElement(required = true)
     private Long id;
 
     /**
      * Targeted user internal ID
      */
+    @Schema(description = "Targeted user internal ID")
     @XmlElement(required = true)
     private Long targetedUserId;
 
     /**
      * Targeted user name
      */
+    @Schema(description = "Targeted user name")
     @XmlElement(required = true)
     private String targetedUserName;
 

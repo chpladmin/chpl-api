@@ -44,23 +44,23 @@ public class SubscriberDao extends BaseDAOImpl {
                 .toList();
     }
 
-    public UUID createSubscriber(String email, Long roleId) {
+    public UUID createSubscriber(String email) {
         SubscriberEntity subscriberToCreate = new SubscriberEntity();
         subscriberToCreate.setEmail(email);
-        subscriberToCreate.setSubscriberRoleId(roleId);
         subscriberToCreate.setLastModifiedUser(User.DEFAULT_USER_ID);
         subscriberToCreate.setSubscriberStatusId(lookupUtil.getPendingSubscriberStatusId());
         create(subscriberToCreate);
         return subscriberToCreate.getId();
     }
 
-    public void confirmSubscriber(UUID subscriberUuid) {
+    public void confirmSubscriber(UUID subscriberUuid, Long roleId) {
         SubscriberEntity subscriber = entityManager.find(SubscriberEntity.class, subscriberUuid);
         if (subscriber == null) {
             LOGGER.error("No subscriber was found with ID " + subscriberUuid);
             return;
         }
         subscriber.setSubscriberStatusId(lookupUtil.getConfirmedSubscriberStatusId());
+        subscriber.setSubscriberRoleId(roleId);
         update(subscriber);
     }
 

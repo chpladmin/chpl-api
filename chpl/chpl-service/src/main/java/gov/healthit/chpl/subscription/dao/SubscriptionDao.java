@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import javax.persistence.Query;
 import javax.transaction.Transactional;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.auth.user.User;
@@ -164,6 +165,39 @@ public class SubscriptionDao extends BaseDAOImpl {
                 + "WHERE sub.subscriberId = :subscriberId")
         .setParameter("subscriberId", subscriberId)
         .executeUpdate();
+    }
+
+    public void deleteSubscription(Long subscriptionId) {
+        entityManager.createQuery(
+                "UPDATE SubscriptionEntity sub "
+                + "SET sub.deleted = true "
+                + "WHERE sub.id = :subscriptionId")
+        .setParameter("subscriptionId", subscriptionId)
+        .executeUpdate();
+    }
+
+    public void deleteSubscriptions(UUID subscriberId, Long subscribedObjectTypeId, Long subscribedObjectId) {
+        Query query = entityManager.createQuery("SELECT subscription "
+                + "FROM SubscriptionEntity subscription "
+                + "JOIN subscription.subscriptionSubject subject "
+                + "JOIN subject.subscriptionObjectType objType "
+                + "WHERE subscription.subscriberId = :subscriberId "
+                + "AND subscription.subscribedObjectId = :subscribedObjectId "
+                + "AND objType.id = :subscribedObjectTypeId",
+                SubscriptionEntity.class);
+        query.setParameter("subscriberId", subscriberId);
+        query.setParameter("subscribedObjectId", subscribedObjectId);
+        query.setParameter("subscribedObjectTypeId", subscribedObjectTypeId);
+        List<SubscriptionEntity> results = query.getResultList();
+
+        if (!CollectionUtils.isEmpty(results)) {
+            entityManager.createQuery(
+                    "UPDATE SubscriptionEntity sub "
+                    + "SET sub.deleted = true "
+                    + "WHERE sub.id IN (:subscriptionIds)")
+            .setParameter("subscriptionIds", results.stream().map(result -> result.getId()).toList())
+            .executeUpdate();
+        }
     }
 
     public List<Long> getSubscriptionIdsForConfirmedSubscribers(Long subjectId, Long subscribedObjectId) {

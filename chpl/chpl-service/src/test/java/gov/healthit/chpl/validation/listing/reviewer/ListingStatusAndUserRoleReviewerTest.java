@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.List;
+import java.util.stream.Stream;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -69,11 +71,11 @@ public class ListingStatusAndUserRoleReviewerTest {
 
         CertifiedProductSearchDetails origListing = CertifiedProductSearchDetails.builder()
                 .id(1L)
-                .certificationEvent(getCertificationStatusEvent(1L, "01/01/2020", CertificationStatusProvider.ACTIVE))
+                .certificationEvents(getCertificationStatusEvents(1L, "01/01/2020", CertificationStatusProvider.ACTIVE))
                 .build();
         CertifiedProductSearchDetails updatedListing = CertifiedProductSearchDetails.builder()
                 .id(1L)
-                .certificationEvent(getCertificationStatusEvent(1L, "01/01/2020", CertificationStatusProvider.ACTIVE))
+                .certificationEvents(getCertificationStatusEvents(1L, "01/01/2020", CertificationStatusProvider.ACTIVE))
                 .certificationResult(CertificationResult.builder()
                         .success(true)
                         .criterion(CertificationCriterion.builder()
@@ -95,7 +97,7 @@ public class ListingStatusAndUserRoleReviewerTest {
 
         CertifiedProductSearchDetails origListing = CertifiedProductSearchDetails.builder()
                 .id(1L)
-                .certificationEvent(getCertificationStatusEvent(1L, "01/01/2020", CertificationStatusProvider.ACTIVE))
+                .certificationEvents(getCertificationStatusEvents(1L, "01/01/2020", CertificationStatusProvider.ACTIVE))
                 .certificationResult(CertificationResult.builder()
                         .success(true)
                         .criterion(CertificationCriterion.builder()
@@ -106,7 +108,7 @@ public class ListingStatusAndUserRoleReviewerTest {
                 .build();
         CertifiedProductSearchDetails updatedListing = CertifiedProductSearchDetails.builder()
                 .id(1L)
-                .certificationEvent(getCertificationStatusEvent(1L, "01/01/2020", CertificationStatusProvider.ACTIVE))
+                .certificationEvents(getCertificationStatusEvents(1L, "01/01/2020", CertificationStatusProvider.ACTIVE))
                 .build();
         reviewer.review(origListing, updatedListing);
 
@@ -120,11 +122,11 @@ public class ListingStatusAndUserRoleReviewerTest {
 
         CertifiedProductSearchDetails origListing = CertifiedProductSearchDetails.builder()
                 .id(1L)
-                .certificationEvent(getCertificationStatusEvent(1L, "01/01/2020", CertificationStatusProvider.SUSPENDED_BY_ACB))
+                .certificationEvents(getCertificationStatusEvents(1L, "01/01/2020", CertificationStatusProvider.SUSPENDED_BY_ACB))
                 .build();
         CertifiedProductSearchDetails updatedListing = CertifiedProductSearchDetails.builder()
                 .id(1L)
-                .certificationEvent(getCertificationStatusEvent(1L, "01/01/2020", CertificationStatusProvider.SUSPENDED_BY_ACB))
+                .certificationEvents(getCertificationStatusEvents(1L, "01/01/2020", CertificationStatusProvider.SUSPENDED_BY_ACB))
                 .certificationResult(CertificationResult.builder()
                         .success(true)
                         .criterion(CertificationCriterion.builder()
@@ -146,7 +148,7 @@ public class ListingStatusAndUserRoleReviewerTest {
 
         CertifiedProductSearchDetails origListing = CertifiedProductSearchDetails.builder()
                 .id(1L)
-                .certificationEvent(getCertificationStatusEvent(1L, "01/01/2020", CertificationStatusProvider.SUSPENDED_BY_ACB))
+                .certificationEvents(getCertificationStatusEvents(1L, "01/01/2020", CertificationStatusProvider.SUSPENDED_BY_ACB))
                 .certificationResult(CertificationResult.builder()
                         .success(true)
                         .criterion(CertificationCriterion.builder()
@@ -157,7 +159,7 @@ public class ListingStatusAndUserRoleReviewerTest {
                 .build();
         CertifiedProductSearchDetails updatedListing = CertifiedProductSearchDetails.builder()
                 .id(1L)
-                .certificationEvent(getCertificationStatusEvent(1L, "01/01/2020", CertificationStatusProvider.SUSPENDED_BY_ACB))
+                .certificationEvents(getCertificationStatusEvents(1L, "01/01/2020", CertificationStatusProvider.SUSPENDED_BY_ACB))
                 .build();
 
         reviewer.review(origListing, updatedListing);
@@ -172,11 +174,11 @@ public class ListingStatusAndUserRoleReviewerTest {
 
         CertifiedProductSearchDetails origListing = CertifiedProductSearchDetails.builder()
                 .id(1L)
-                .certificationEvent(getCertificationStatusEvent(1L, "01/01/2020", CertificationStatusProvider.RETIRED))
+                .certificationEvents(getCertificationStatusEvents(1L, "01/01/2020", CertificationStatusProvider.RETIRED))
                 .build();
         CertifiedProductSearchDetails updatedListing = CertifiedProductSearchDetails.builder()
                 .id(1L)
-                .certificationEvent(getCertificationStatusEvent(1L, "01/01/2020", CertificationStatusProvider.RETIRED))
+                .certificationEvents(getCertificationStatusEvents(1L, "01/01/2020", CertificationStatusProvider.RETIRED))
                 .certificationResult(CertificationResult.builder()
                         .success(true)
                         .criterion(CertificationCriterion.builder()
@@ -198,7 +200,7 @@ public class ListingStatusAndUserRoleReviewerTest {
 
         CertifiedProductSearchDetails origListing = CertifiedProductSearchDetails.builder()
                 .id(1L)
-                .certificationEvent(getCertificationStatusEvent(1L, "01/01/2020", CertificationStatusProvider.RETIRED))
+                .certificationEvents(getCertificationStatusEvents(1L, "01/01/2020", CertificationStatusProvider.RETIRED))
                 .certificationResult(CertificationResult.builder()
                         .success(true)
                         .criterion(CertificationCriterion.builder()
@@ -209,7 +211,7 @@ public class ListingStatusAndUserRoleReviewerTest {
                 .build();
         CertifiedProductSearchDetails updatedListing = CertifiedProductSearchDetails.builder()
                 .id(1L)
-                .certificationEvent(getCertificationStatusEvent(1L, "01/01/2020", CertificationStatusProvider.RETIRED))
+                .certificationEvents(getCertificationStatusEvents(1L, "01/01/2020", CertificationStatusProvider.RETIRED))
                 .build();
 
         reviewer.review(origListing, updatedListing);
@@ -224,13 +226,13 @@ public class ListingStatusAndUserRoleReviewerTest {
 
         CertifiedProductSearchDetails origListing = CertifiedProductSearchDetails.builder()
                 .id(1L)
-                .certificationEvent(
-                        getCertificationStatusEvent(1L, "01/01/2020", CertificationStatusProvider.WITHDRAWN_BY_DEVELOPER))
+                .certificationEvents(
+                        getCertificationStatusEvents(1L, "01/01/2020", CertificationStatusProvider.WITHDRAWN_BY_DEVELOPER))
                 .build();
         CertifiedProductSearchDetails updatedListing = CertifiedProductSearchDetails.builder()
                 .id(1L)
-                .certificationEvent(
-                        getCertificationStatusEvent(1L, "01/01/2020", CertificationStatusProvider.WITHDRAWN_BY_DEVELOPER))
+                .certificationEvents(
+                        getCertificationStatusEvents(1L, "01/01/2020", CertificationStatusProvider.WITHDRAWN_BY_DEVELOPER))
                 .certificationResult(CertificationResult.builder()
                         .success(true)
                         .criterion(CertificationCriterion.builder()
@@ -252,8 +254,8 @@ public class ListingStatusAndUserRoleReviewerTest {
 
         CertifiedProductSearchDetails origListing = CertifiedProductSearchDetails.builder()
                 .id(1L)
-                .certificationEvent(
-                        getCertificationStatusEvent(1L, "01/01/2020", CertificationStatusProvider.WITHDRAWN_BY_DEVELOPER))
+                .certificationEvents(
+                        getCertificationStatusEvents(1L, "01/01/2020", CertificationStatusProvider.WITHDRAWN_BY_DEVELOPER))
                 .certificationResult(CertificationResult.builder()
                         .success(true)
                         .criterion(CertificationCriterion.builder()
@@ -264,8 +266,8 @@ public class ListingStatusAndUserRoleReviewerTest {
                 .build();
         CertifiedProductSearchDetails updatedListing = CertifiedProductSearchDetails.builder()
                 .id(1L)
-                .certificationEvent(
-                        getCertificationStatusEvent(1L, "01/01/2020", CertificationStatusProvider.WITHDRAWN_BY_DEVELOPER))
+                .certificationEvents(
+                        getCertificationStatusEvents(1L, "01/01/2020", CertificationStatusProvider.WITHDRAWN_BY_DEVELOPER))
                 .build();
 
         reviewer.review(origListing, updatedListing);
@@ -280,12 +282,12 @@ public class ListingStatusAndUserRoleReviewerTest {
 
         CertifiedProductSearchDetails origListing = CertifiedProductSearchDetails.builder()
                 .id(1L)
-                .certificationEvent(getCertificationStatusEvent(1L, "01/01/2020", CertificationStatusProvider.ACTIVE))
+                .certificationEvents(getCertificationStatusEvents(1L, "01/01/2020", CertificationStatusProvider.ACTIVE))
                 .build();
         CertifiedProductSearchDetails updatedListing = CertifiedProductSearchDetails.builder()
                 .id(1L)
-                .certificationEvent(getCertificationStatusEvent(1L, "01/01/2020", CertificationStatusProvider.ACTIVE))
-                .certificationEvent(getCertificationStatusEvent(1L, "02/01/2020", CertificationStatusProvider.RETIRED))
+                .certificationEvents(getCertificationStatusEvents(1L, "01/01/2020", CertificationStatusProvider.ACTIVE))
+                .certificationEvents(getCertificationStatusEvents(1L, "02/01/2020", CertificationStatusProvider.RETIRED))
                 .certificationResult(CertificationResult.builder()
                         .success(true)
                         .criterion(CertificationCriterion.builder()
@@ -307,7 +309,7 @@ public class ListingStatusAndUserRoleReviewerTest {
 
         CertifiedProductSearchDetails origListing = CertifiedProductSearchDetails.builder()
                 .id(1L)
-                .certificationEvent(getCertificationStatusEvent(1L, "01/01/2020", CertificationStatusProvider.ACTIVE))
+                .certificationEvents(getCertificationStatusEvents(1L, "01/01/2020", CertificationStatusProvider.ACTIVE))
                 .certificationResult(CertificationResult.builder()
                         .success(true)
                         .criterion(CertificationCriterion.builder()
@@ -318,8 +320,8 @@ public class ListingStatusAndUserRoleReviewerTest {
                 .build();
         CertifiedProductSearchDetails updatedListing = CertifiedProductSearchDetails.builder()
                 .id(1L)
-                .certificationEvent(getCertificationStatusEvent(1L, "01/01/2020", CertificationStatusProvider.ACTIVE))
-                .certificationEvent(getCertificationStatusEvent(1L, "02/01/2020", CertificationStatusProvider.RETIRED))
+                .certificationEvents(getCertificationStatusEvents(1L, "01/01/2020", CertificationStatusProvider.ACTIVE))
+                .certificationEvents(getCertificationStatusEvents(1L, "02/01/2020", CertificationStatusProvider.RETIRED))
                 .build();
 
         reviewer.review(origListing, updatedListing);
@@ -335,14 +337,14 @@ public class ListingStatusAndUserRoleReviewerTest {
 
         CertifiedProductSearchDetails origListing = CertifiedProductSearchDetails.builder()
                 .id(1L)
-                .certificationEvent(getCertificationStatusEvent(1L, "01/01/2020", CertificationStatusProvider.ACTIVE))
-                .certificationEvent(getCertificationStatusEvent(1L, "02/01/2020", CertificationStatusProvider.RETIRED))
+                .certificationEvents(getCertificationStatusEvents(1L, "01/01/2020", CertificationStatusProvider.ACTIVE))
+                .certificationEvents(getCertificationStatusEvents(1L, "02/01/2020", CertificationStatusProvider.RETIRED))
                 .build();
         CertifiedProductSearchDetails updatedListing = CertifiedProductSearchDetails.builder()
                 .id(1L)
-                .certificationEvent(getCertificationStatusEvent(1L, "01/01/2020", CertificationStatusProvider.ACTIVE))
-                .certificationEvent(getCertificationStatusEvent(1L, "02/01/2020", CertificationStatusProvider.RETIRED))
-                .certificationEvent(getCertificationStatusEvent(1L, "03/01/2020", CertificationStatusProvider.ACTIVE))
+                .certificationEvents(getCertificationStatusEvents(1L, "01/01/2020", CertificationStatusProvider.ACTIVE))
+                .certificationEvents(getCertificationStatusEvents(1L, "02/01/2020", CertificationStatusProvider.RETIRED))
+                .certificationEvents(getCertificationStatusEvents(1L, "03/01/2020", CertificationStatusProvider.ACTIVE))
                 .certificationResult(CertificationResult.builder()
                         .success(true)
                         .criterion(CertificationCriterion.builder()
@@ -365,8 +367,8 @@ public class ListingStatusAndUserRoleReviewerTest {
 
         CertifiedProductSearchDetails origListing = CertifiedProductSearchDetails.builder()
                 .id(1L)
-                .certificationEvent(getCertificationStatusEvent(1L, "01/01/2020", CertificationStatusProvider.ACTIVE))
-                .certificationEvent(getCertificationStatusEvent(1L, "02/01/2020", CertificationStatusProvider.RETIRED))
+                .certificationEvents(getCertificationStatusEvents(1L, "01/01/2020", CertificationStatusProvider.ACTIVE))
+                .certificationEvents(getCertificationStatusEvents(1L, "02/01/2020", CertificationStatusProvider.RETIRED))
                 .certificationResult(CertificationResult.builder()
                         .success(true)
                         .criterion(CertificationCriterion.builder()
@@ -377,9 +379,9 @@ public class ListingStatusAndUserRoleReviewerTest {
                 .build();
         CertifiedProductSearchDetails updatedListing = CertifiedProductSearchDetails.builder()
                 .id(1L)
-                .certificationEvent(getCertificationStatusEvent(1L, "01/01/2020", CertificationStatusProvider.ACTIVE))
-                .certificationEvent(getCertificationStatusEvent(1L, "02/01/2020", CertificationStatusProvider.RETIRED))
-                .certificationEvent(getCertificationStatusEvent(1L, "03/01/2020", CertificationStatusProvider.ACTIVE))
+                .certificationEvents(getCertificationStatusEvents(1L, "01/01/2020", CertificationStatusProvider.ACTIVE))
+                .certificationEvents(getCertificationStatusEvents(1L, "02/01/2020", CertificationStatusProvider.RETIRED))
+                .certificationEvents(getCertificationStatusEvents(1L, "03/01/2020", CertificationStatusProvider.ACTIVE))
                 .build();
 
         reviewer.review(origListing, updatedListing);
@@ -395,7 +397,7 @@ public class ListingStatusAndUserRoleReviewerTest {
 
         CertifiedProductSearchDetails origListing = CertifiedProductSearchDetails.builder()
                 .id(1L)
-                .certificationEvent(getCertificationStatusEvent(1L, "01/01/2020", CertificationStatusProvider.RETIRED))
+                .certificationEvents(getCertificationStatusEvents(1L, "01/01/2020", CertificationStatusProvider.RETIRED))
                 .certificationResult(CertificationResult.builder()
                         .success(true)
                         .criterion(CertificationCriterion.builder()
@@ -406,7 +408,7 @@ public class ListingStatusAndUserRoleReviewerTest {
                 .build();
         CertifiedProductSearchDetails updatedListing = CertifiedProductSearchDetails.builder()
                 .id(1L)
-                .certificationEvent(getCertificationStatusEvent(1L, "01/01/2020", CertificationStatusProvider.RETIRED))
+                .certificationEvents(getCertificationStatusEvents(1L, "01/01/2020", CertificationStatusProvider.RETIRED))
                 .certificationResult(CertificationResult.builder()
                         .success(true)
                         .criterion(CertificationCriterion.builder()
@@ -421,12 +423,12 @@ public class ListingStatusAndUserRoleReviewerTest {
         assertEquals(1, updatedListing.getErrorMessages().size());
     }
 
-    private CertificationStatusEvent getCertificationStatusEvent(Long eventId, String date, Long statusId)
+    private List<CertificationStatusEvent> getCertificationStatusEvents(Long eventId, String date, Long statusId)
             throws ParseException {
-        return CertificationStatusEvent.builder()
+        return Stream.of(CertificationStatusEvent.builder()
                 .id(eventId)
                 .eventDate(sdf.parse(date).getTime())
                 .status(certificationStatusProvider.get(statusId))
-                .build();
+                .build()).toList();
     }
 }

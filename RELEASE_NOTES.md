@@ -1,5 +1,24 @@
 # Release Notes
 
+## Version 41.2.0
+_21 August 2023_
+
+### Features
+* Create listing details download files in JSON format
+* Update RemoveCriteriaJob to remove b6.
+
+### Flagged Features
+* Require subscriber role on confirm and not on subscribe
+* Remove b6 from CSV definition post ERD Phase 3
+* Add GET subscribers/<id> and subscribers/<id>/subscriptions
+
+### Bug Fixes
+* Fix issue where Surveillance Downloadable Resource Creator job uses all memory and kills Tomcat
+* Fix runtime error during the Listing Validation Report Creator job
+* Remove Singluar annotation from testing labs, ICS source, targeted users; fixes issue with multiple row in upload file
+
+---
+
 ## Version 41.1.0
 _7 August 2023_
 
