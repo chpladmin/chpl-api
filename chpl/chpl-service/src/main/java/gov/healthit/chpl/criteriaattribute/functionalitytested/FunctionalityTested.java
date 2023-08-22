@@ -50,8 +50,8 @@ public class FunctionalityTested extends CriteriaAttribute implements Serializab
     @XmlTransient
     private String description;
 
-    /**
-     * TODO: NEED THIS TEXT
+    /*
+     * TODO: OCD-4288 NEED THIS TEXT
      */
     @XmlElement(required = false)
     private PracticeType practiceType;

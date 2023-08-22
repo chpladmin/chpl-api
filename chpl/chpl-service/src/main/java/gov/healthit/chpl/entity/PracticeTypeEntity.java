@@ -15,12 +15,14 @@ import gov.healthit.chpl.domain.PracticeType;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 @Entity
 @Getter
 @Setter
 @ToString
-@Table(name = "practice_type", schema = "openchpl")
+@Table(name = "practice_type")
 public class PracticeTypeEntity implements Serializable {
 
     /** Serial Version UID. */
@@ -59,11 +61,7 @@ public class PracticeTypeEntity implements Serializable {
     public PracticeType toDomain() {
         return PracticeType.builder()
                 .id(this.getId())
-                //.creationDate(this.getCreationDate())
-                //.deleted(this.getDeleted())
                 .description(this.getDescription())
-                //.lastModifiedDate(this.getLastModifiedDate())
-                //.lastModifiedUser(this.getLastModifiedUser())
                 .name(this.getName())
                 .build();
     }

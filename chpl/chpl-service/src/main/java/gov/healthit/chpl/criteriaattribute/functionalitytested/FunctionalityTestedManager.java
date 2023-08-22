@@ -75,7 +75,7 @@ public class FunctionalityTestedManager {
                 .criteriaAttributeDAO(functionalityTestedDAO)
                 .name("Functionality Tested")
                 .build());
-        
+
         return functionalityTestedDAO.getById(functionalityTested.getId());
     }
 

@@ -70,7 +70,7 @@ public class FunctionalityTestedEntity implements Serializable {
     private LocalDate requiredDay;
 
     @OneToOne(optional = true, fetch = FetchType.LAZY)
-    @JoinColumn(name = "practice_type_id", insertable = false, updatable = false)
+    @JoinColumn(name = "practice_type_id", insertable = true, updatable = true)
     private PracticeTypeEntity practiceType;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "functionalityTestedId")

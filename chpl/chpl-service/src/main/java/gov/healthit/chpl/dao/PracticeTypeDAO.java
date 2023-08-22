@@ -103,11 +103,11 @@ public class PracticeTypeDAO extends BaseDAOImpl {
     }
 
     public PracticeTypeEntity getEntityById(Long id) throws EntityRetrievalException {
-
         PracticeTypeEntity entity = null;
-
         Query query = entityManager.createQuery(
-                "from PracticeTypeEntity where (NOT deleted = true) AND (practice_type_id = :entityid) ",
+                "FROM PracticeTypeEntity "
+                + "WHERE (NOT deleted = true) "
+                + "AND (id = :entityid) ",
                 PracticeTypeEntity.class);
         query.setParameter("entityid", id);
         List<PracticeTypeEntity> result = query.getResultList();
