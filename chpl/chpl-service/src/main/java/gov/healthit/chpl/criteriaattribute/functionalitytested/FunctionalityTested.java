@@ -54,6 +54,12 @@ public class FunctionalityTested extends CriteriaAttribute implements Serializab
      * TODO: OCD-4288 NEED THIS TEXT
      */
     @XmlElement(required = false)
+    private String additionalInformation;
+
+    /*
+     * TODO: OCD-4288 NEED THIS TEXT
+     */
+    @XmlElement(required = false)
     private PracticeType practiceType;
 
     @Override

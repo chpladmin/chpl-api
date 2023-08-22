@@ -9,6 +9,7 @@ public class FunctionalityTestedXmlGenerator extends XmlGenerator {
     public static void add(FunctionalityTested functionalityTested, String rootNodeName, XMLStreamWriter sw) throws XMLStreamException {
         if (functionalityTested != null) {
             sw.writeStartElement(rootNodeName);
+            createSimpleElement(functionalityTested.getAdditionalInformation(), "additionalInformation", sw);
             createSimpleElement(functionalityTested.getEndDay(), "endDay", sw);
             createSimpleElement(functionalityTested.getId(), "id", sw);
             PracticeTypeXmlGenerator.add(functionalityTested.getPracticeType(), "practiceType", sw);

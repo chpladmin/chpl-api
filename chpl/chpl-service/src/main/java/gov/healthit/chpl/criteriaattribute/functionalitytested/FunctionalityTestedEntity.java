@@ -58,6 +58,10 @@ public class FunctionalityTestedEntity implements Serializable {
     private String regulatoryTextCitation;
 
     @Basic(optional = true)
+    @Column(name = "additional_information")
+    private String additionalInformation;
+
+    @Basic(optional = true)
     @Column(name = "start_day")
     private LocalDate startDay;
 
@@ -102,10 +106,11 @@ public class FunctionalityTestedEntity implements Serializable {
     public FunctionalityTested toDomain() {
         return FunctionalityTested.builder()
                 .id(this.getId())
-                //.description(this.getName())
-                //.name(this.getNumber())
+                .description(this.getName())
+                .name(this.getNumber())
                 .value(this.getValue())
                 .regulatoryTextCitation(this.regulatoryTextCitation)
+                .additionalInformation(additionalInformation)
                 .startDay(this.startDay)
                 .endDay(this.endDay)
                 .requiredDay(this.requiredDay)

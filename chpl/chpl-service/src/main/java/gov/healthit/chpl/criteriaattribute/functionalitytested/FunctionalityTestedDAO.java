@@ -68,6 +68,7 @@ public class FunctionalityTestedDAO extends BaseDAOImpl implements CriteriaAttri
                 .number(criteriaAttribute.getRegulatoryTextCitation()) //TODO: OCD-4288 - Remove when column is removed
                 .value(criteriaAttribute.getValue())
                 .regulatoryTextCitation(criteriaAttribute.getRegulatoryTextCitation())
+                .additionalInformation(ft.getAdditionalInformation())
                 .startDay(criteriaAttribute.getStartDay())
                 .endDay(criteriaAttribute.getEndDay())
                 .requiredDay(criteriaAttribute.getRequiredDay())
@@ -132,14 +133,12 @@ public class FunctionalityTestedDAO extends BaseDAOImpl implements CriteriaAttri
         } else {
             entity.setPracticeType(null);
         }
-
+        entity.setAdditionalInformation(ft.getAdditionalInformation());
         entity.setLastModifiedUser(AuthUtil.getAuditId());
         entity.setLastModifiedDate(new Date());
 
         update(entity);
     }
-
-    //public void update
 
     @Override
     public void addCriteriaAttributeCriteriaMap(CriteriaAttribute criteriaAttribute, CertificationCriterion criterion) {
