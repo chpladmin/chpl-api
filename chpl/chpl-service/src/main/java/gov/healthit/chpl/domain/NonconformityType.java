@@ -97,7 +97,7 @@ public class NonconformityType implements Serializable {
 
     @JsonIgnore
     public String getEdition() {
-        return NullSafeEvaluator.eval(() -> certificationEdition.getYear(), null);
+        return NullSafeEvaluator.eval(() -> certificationEdition.getName(), null);
     }
 
     @JsonIgnore

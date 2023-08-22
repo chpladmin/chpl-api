@@ -10,8 +10,8 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
+import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
-import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.scheduler.job.QuartzJob;
 import gov.healthit.chpl.sharedstore.listing.SharedListingStoreProvider;
@@ -46,9 +46,9 @@ public class RemoveCriteriaJob extends QuartzJob {
         for (String criteria : CRITERIA_TO_REMOVE) {
             try {
                 String[] criterionElements = criteria.split(":");
-                CertificationCriterionDTO certDto = certCriteriaDao.getByNumberAndTitle(criterionElements[0], criterionElements[1]);
-                certDto.setRemoved(true);
-                certCriteriaDao.update(certDto);
+                CertificationCriterion criterion = certCriteriaDao.getByNumberAndTitle(criterionElements[0], criterionElements[1]);
+                criterion.setRemoved(true);
+                certCriteriaDao.update(criterion);
                 LOGGER.info("Updated criteria " + criteria);
             } catch (final Exception ex) {
                 LOGGER.error("Exception updating criteria " + criteria, ex);

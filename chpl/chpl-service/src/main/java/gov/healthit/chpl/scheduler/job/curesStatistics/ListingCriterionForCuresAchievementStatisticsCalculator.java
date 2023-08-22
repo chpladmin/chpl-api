@@ -17,9 +17,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
 import gov.healthit.chpl.dao.statistics.ListingToCriterionForCuresAchievementStatisticsDAO;
+import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.statistics.ListingToCriterionForCuresAchievementStatistic;
-import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.service.CertificationCriterionService.Criteria2015;
@@ -136,9 +136,9 @@ public class ListingCriterionForCuresAchievementStatisticsCalculator {
         List<ListingToCriterionForCuresAchievementStatistic> statisticsWithNeededCuresCriterion
             = new ArrayList<ListingToCriterionForCuresAchievementStatistic>();
         LOGGER.info("Getting criterion needed for Cures status for listing " + listing.getId());
-        List<CertificationCriterionDTO> neededCriteria = getCriterionNeededForCures(listing);
+        List<CertificationCriterion> neededCriteria = getCriterionNeededForCures(listing);
         if (neededCriteria != null && neededCriteria.size() > 0) {
-            for (CertificationCriterionDTO criterion : neededCriteria) {
+            for (CertificationCriterion criterion : neededCriteria) {
                 statisticsWithNeededCuresCriterion.add(ListingToCriterionForCuresAchievementStatistic.builder()
                         .statisticDate(statisticDate)
                         .listingId(listing.getId())
@@ -151,8 +151,8 @@ public class ListingCriterionForCuresAchievementStatisticsCalculator {
         return statisticsWithNeededCuresCriterion;
     }
 
-    private List<CertificationCriterionDTO> getCriterionNeededForCures(CertifiedProductSearchDetails listing) {
-        List<CertificationCriterionDTO> neededCriterion = new ArrayList<CertificationCriterionDTO>();
+    private List<CertificationCriterion> getCriterionNeededForCures(CertifiedProductSearchDetails listing) {
+        List<CertificationCriterion> neededCriterion = new ArrayList<CertificationCriterion>();
         neededCriterion.addAll(getCriteriaNeedingUpdates(listing));
         if (hasCriteriaRequiringPrivacyAndSecurity(listing)) {
             neededCriterion.addAll(getPrivacyAndSecurityRequiredCriteria(listing));
@@ -160,7 +160,7 @@ public class ListingCriterionForCuresAchievementStatisticsCalculator {
         return neededCriterion;
     }
 
-    private List<CertificationCriterionDTO> getCriteriaNeedingUpdates(CertifiedProductSearchDetails listing) {
+    private List<CertificationCriterion> getCriteriaNeedingUpdates(CertifiedProductSearchDetails listing) {
         List<Long> attestedCriterionIdsNeedingUpdate = listing.getCertificationResults().stream()
             .filter(certResult -> certResult.isSuccess())
             .map(attestedCertResult -> attestedCertResult.getCriterion().getId())
@@ -168,7 +168,7 @@ public class ListingCriterionForCuresAchievementStatisticsCalculator {
             .collect(Collectors.toList());
         return attestedCriterionIdsNeedingUpdate.stream()
             .map(criterionId -> certService.get(criterionId))
-            .map(criterion -> CertificationCriterionDTO.builder()
+            .map(criterion -> CertificationCriterion.builder()
                     .id(criterion.getId())
                     .number(criterion.getNumber())
                     .title(criterion.getTitle())
@@ -184,7 +184,7 @@ public class ListingCriterionForCuresAchievementStatisticsCalculator {
                 .findAny().isPresent();
     }
 
-    private List<CertificationCriterionDTO> getPrivacyAndSecurityRequiredCriteria(CertifiedProductSearchDetails listing) {
+    private List<CertificationCriterion> getPrivacyAndSecurityRequiredCriteria(CertifiedProductSearchDetails listing) {
         List<Long> unattestedRequiredCriteria = listing.getCertificationResults().stream()
                 .filter(certResult -> !certResult.isSuccess())
                 .map(unattestedCertResult -> unattestedCertResult.getCriterion().getId())
@@ -192,7 +192,7 @@ public class ListingCriterionForCuresAchievementStatisticsCalculator {
                 .collect(Collectors.toList());
             return unattestedRequiredCriteria.stream()
                 .map(criterionId -> certService.get(criterionId))
-                .map(criterion -> CertificationCriterionDTO.builder()
+                .map(criterion -> CertificationCriterion.builder()
                         .id(criterion.getId())
                         .number(criterion.getNumber())
                         .title(criterion.getTitle())

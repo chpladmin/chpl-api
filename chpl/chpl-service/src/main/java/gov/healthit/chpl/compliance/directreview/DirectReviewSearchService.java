@@ -86,7 +86,7 @@ public class DirectReviewSearchService {
         List<DirectReview> drs = new ArrayList<DirectReview>();
         drs.addAll(getDirectReviewsWithDeveloperAssociatedListingId(listingId, developerId));
 
-        if (!StringUtils.isEmpty(editionYear) && editionYear.equals(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear())) {
+        if (StringUtils.isEmpty(editionYear) || editionYear.equals(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear())) {
             drs.addAll(getDeveloperDirectReviewsWithoutAssociatedListings(developerId, statusEvents, logger));
         }
 

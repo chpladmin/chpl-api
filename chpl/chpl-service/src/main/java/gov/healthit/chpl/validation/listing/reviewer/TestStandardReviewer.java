@@ -1,6 +1,5 @@
 package gov.healthit.chpl.validation.listing.reviewer;
 
-import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -9,7 +8,7 @@ import gov.healthit.chpl.dao.TestStandardDAO;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultTestStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.dto.TestStandardDTO;
+import gov.healthit.chpl.domain.TestStandard;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
 
@@ -35,25 +34,24 @@ public class TestStandardReviewer implements Reviewer {
     private void reviewTestStandard(CertifiedProductSearchDetails listing, CertificationResult certResult,
             CertificationResultTestStandard testStandard) {
         String testStandardName = testStandard.getTestStandardName();
-        Long editionId = MapUtils.getLong(listing.getCertificationEdition(), CertifiedProductSearchDetails.EDITION_ID_KEY);
-
+        Long editionId = listing.getEdition().getId();
         if (testStandard.getTestStandardId() != null) {
-            TestStandardDTO foundTestStandard = testStandardDao.getByIdAndEdition(testStandard.getTestStandardId(), editionId);
+            TestStandard foundTestStandard = testStandardDao.getByIdAndEdition(testStandard.getTestStandardId(), editionId);
             if (foundTestStandard == null) {
                 listing.addDataErrorMessage(
                         msgUtil.getMessage("listing.criteria.testStandardIdNotFound",
                                 Util.formatCriteriaNumber(certResult.getCriterion()),
                                 testStandard.getTestStandardId(),
-                                MapUtils.getString(listing.getCertificationEdition(), CertifiedProductSearchDetails.EDITION_NAME_KEY)));
+                                listing.getEdition().getName()));
             }
         } else if (!StringUtils.isEmpty(testStandardName)) {
-            TestStandardDTO foundTestStandard = testStandardDao.getByNumberAndEdition(testStandardName, editionId);
+            TestStandard foundTestStandard = testStandardDao.getByNumberAndEdition(testStandardName, editionId);
             if (foundTestStandard == null) {
                 listing.addDataErrorMessage(
                         msgUtil.getMessage("listing.criteria.testStandardNotFound",
                                 Util.formatCriteriaNumber(certResult.getCriterion()),
                                 testStandardName,
-                                MapUtils.getString(listing.getCertificationEdition(), CertifiedProductSearchDetails.EDITION_NAME_KEY)));
+                                listing.getEdition().getName()));
             }
         } else {
             listing.addDataErrorMessage(

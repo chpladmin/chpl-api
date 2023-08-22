@@ -11,10 +11,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-import gov.healthit.chpl.domain.CertificationEdition;
 import gov.healthit.chpl.domain.NonconformityType;
 import gov.healthit.chpl.domain.surveillance.NonconformityClassification;
-import gov.healthit.chpl.dto.CertificationEditionDTO;
 import gov.healthit.chpl.entity.CertificationEditionEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -57,7 +55,7 @@ public class NonconformityTypeEntity implements Serializable {
     public NonconformityType toDomain() {
         return NonconformityType.builder()
                 .id(this.getId())
-                .certificationEdition(this.getCertificationEdition() != null ? new CertificationEdition(new CertificationEditionDTO(this.getCertificationEdition())) : null)
+                .certificationEdition(this.getCertificationEdition() != null ? this.getCertificationEdition().toDomain() : null)
                 .number(this.getNumber())
                 .removed(this.getRemoved())
                 .title(this.getTitle())

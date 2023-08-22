@@ -7,11 +7,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.dao.CertificationEditionDAO;
-import gov.healthit.chpl.dao.CertifiedProductSearchDAO;
 import gov.healthit.chpl.dao.ListingGraphDAO;
+import gov.healthit.chpl.domain.CertificationEdition;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.dto.CertificationEditionDTO;
+import gov.healthit.chpl.util.CertifiedProductUtil;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import lombok.extern.log4j.Log4j2;
@@ -19,16 +19,16 @@ import lombok.extern.log4j.Log4j2;
 @Component("inheritanceReviewer")
 @Log4j2
 public class InheritanceReviewer implements Reviewer {
-    private CertifiedProductSearchDAO searchDao;
+    private CertifiedProductUtil cpUtil;
     private ListingGraphDAO inheritanceDao;
     private CertificationEditionDAO certEditionDao;
     private ChplProductNumberUtil productNumUtil;
     private ErrorMessageUtil msgUtil;
 
     @Autowired
-    public InheritanceReviewer(CertifiedProductSearchDAO searchDao, ListingGraphDAO inheritanceDao,
+    public InheritanceReviewer(CertifiedProductUtil cpUtil, ListingGraphDAO inheritanceDao,
             CertificationEditionDAO certEditionDao, ChplProductNumberUtil productNumUtil, ErrorMessageUtil msgUtil) {
-        this.searchDao = searchDao;
+        this.cpUtil = cpUtil;
         this.inheritanceDao = inheritanceDao;
         this.certEditionDao = certEditionDao;
         this.productNumUtil = productNumUtil;
@@ -79,9 +79,9 @@ public class InheritanceReviewer implements Reviewer {
     private void lookupListingId(CertifiedProduct certifiedProduct) {
         if (certifiedProduct.getId() == null) {
             try {
-                CertifiedProduct found = searchDao.getByChplProductNumber(certifiedProduct.getChplProductNumber());
-                if (found != null) {
-                    certifiedProduct.setId(found.getId());
+                CertifiedProduct listing = cpUtil.getListing(certifiedProduct.getChplProductNumber());
+                if (listing != null) {
+                    certifiedProduct.setId(listing.getId());
                 }
             } catch (Exception ex) {
                 LOGGER.catching(ex);
@@ -90,12 +90,11 @@ public class InheritanceReviewer implements Reviewer {
     }
 
     private void reviewListingParentsHaveSameEditionAsListing(List<Long> parentIds, CertifiedProductSearchDetails listing) {
-        List<CertificationEditionDTO> parentEditions = certEditionDao.getEditions(parentIds);
+        List<CertificationEdition> parentEditions = certEditionDao.getEditions(parentIds);
         parentEditions.stream()
-                .filter(parentEdition -> !listing.getCertificationEdition().get(CertifiedProductSearchDetails.EDITION_ID_KEY).toString()
-                        .equals(parentEdition.getId().toString()))
+                .filter(parentEdition -> listing.getEdition() != null && !listing.getEdition().getId().equals(parentEdition.getId()))
                 .forEach(parentEdition -> listing.addBusinessErrorMessage(
-                        msgUtil.getMessage("listing.icsEditionMismatch", parentEdition.getYear())));
+                        msgUtil.getMessage("listing.icsEditionMismatch", parentEdition.getName())));
     }
 
     private void reviewListingIcsCodeIsOneGreaterThanParents(List<Long> parentIds, CertifiedProductSearchDetails listing) {

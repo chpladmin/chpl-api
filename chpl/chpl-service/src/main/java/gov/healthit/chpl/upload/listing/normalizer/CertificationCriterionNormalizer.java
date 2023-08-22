@@ -19,9 +19,7 @@ import gov.healthit.chpl.domain.CertificationResultTestStandard;
 import gov.healthit.chpl.domain.CertificationResultTestTool;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
-import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.functionalityTested.CertificationResultFunctionalityTested;
-import gov.healthit.chpl.functionalityTested.CertificationResultTestFunctionality;
 import gov.healthit.chpl.optionalStandard.domain.CertificationResultOptionalStandard;
 import gov.healthit.chpl.svap.domain.CertificationResultSvap;
 import gov.healthit.chpl.util.CertificationResultRules;
@@ -45,27 +43,26 @@ public class CertificationCriterionNormalizer {
     }
 
     private void addEditionCriteriaNotPresentInListing(CertifiedProductSearchDetails listing) {
-        List<CertificationCriterionDTO> all2015Criteria = criterionDao.findByCertificationEditionYear(
+        List<CertificationCriterion> all2015Criteria = criterionDao.findByCertificationEditionYear(
                 CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear());
         if (listing != null && listing.getCertificationResults() != null) {
-            List<CertificationCriterionDTO> criteriaToAdd = all2015Criteria.stream()
-                .filter(criterionDto -> !existsInListing(listing.getCertificationResults(), criterionDto))
+            List<CertificationCriterion> criteriaToAdd = all2015Criteria.stream()
+                .filter(criterion -> !existsInListing(listing.getCertificationResults(), criterion))
                 .collect(Collectors.toList());
             criteriaToAdd.stream()
-                .map(criterionDto -> new CertificationCriterion(criterionDto))
                 .forEach(criterionToAdd -> {
                     listing.getCertificationResults().add(buildCertificationResult(criterionToAdd));
                 });
         }
     }
 
-    private boolean existsInListing(List<CertificationResult> listingCertResults, CertificationCriterionDTO criterionDto) {
+    private boolean existsInListing(List<CertificationResult> listingCertResults, CertificationCriterion criterion) {
         if (listingCertResults == null || listingCertResults.size() == 0) {
             return false;
         }
         return listingCertResults.stream()
                     .filter(certResult -> certResult.getCriterion() != null && certResult.getCriterion().getId() != null
-                        && certResult.getCriterion().getId().equals(criterionDto.getId()))
+                        && certResult.getCriterion().getId().equals(criterion.getId()))
                     .findAny().isPresent();
     }
 
@@ -125,11 +122,9 @@ public class CertificationCriterionNormalizer {
         if (BooleanUtils.isFalse(certResult.isSuccess())
                 && !isFieldAllowed(certResult.getCriterion(), CertificationResultRules.FUNCTIONALITY_TESTED)) {
             certResult.setFunctionalitiesTested(null);
-            certResult.setTestFunctionality(null);
         } else if (isFieldAllowed(certResult.getCriterion(), CertificationResultRules.FUNCTIONALITY_TESTED)
                 && certResult.getFunctionalitiesTested() == null) {
             certResult.setFunctionalitiesTested(new ArrayList<CertificationResultFunctionalityTested>());
-            certResult.setTestFunctionality(new ArrayList<CertificationResultTestFunctionality>());
         }
 
         if (BooleanUtils.isFalse(certResult.isSuccess())

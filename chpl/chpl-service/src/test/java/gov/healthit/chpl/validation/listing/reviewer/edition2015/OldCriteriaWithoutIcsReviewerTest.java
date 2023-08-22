@@ -18,7 +18,6 @@ import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.InheritedCertificationStatus;
-import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.service.CertificationCriterionService.Criteria2015;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -282,21 +281,21 @@ public class OldCriteriaWithoutIcsReviewerTest {
         assertEquals(4, listing.getErrorMessages().size());
     }
 
-    private ArrayList<CertificationCriterionDTO> makeAllCriteria() {
-        ArrayList<CertificationCriterionDTO> criteria = new ArrayList<CertificationCriterionDTO>();
-        criteria.add(CertificationCriterionDTO.builder()
+    private ArrayList<CertificationCriterion> makeAllCriteria() {
+        ArrayList<CertificationCriterion> criteria = new ArrayList<CertificationCriterion>();
+        criteria.add(CertificationCriterion.builder()
                 .id(EDITION_2015_B_3)
                 .number("170.315 (b)(3)")
                 .build());
-        criteria.add(CertificationCriterionDTO.builder()
+        criteria.add(CertificationCriterion.builder()
                 .id(EDITION_2015_D_2)
                 .number("170.315 (d)(2)")
                 .build());
-        criteria.add(CertificationCriterionDTO.builder()
+        criteria.add(CertificationCriterion.builder()
                 .id(EDITION_2015_D_3)
                 .number("170.315 (d)(3)")
                 .build());
-        criteria.add(CertificationCriterionDTO.builder()
+        criteria.add(CertificationCriterion.builder()
                 .id(EDITION_2015_D_10)
                 .number("170.315 (d)(10)")
                 .build());

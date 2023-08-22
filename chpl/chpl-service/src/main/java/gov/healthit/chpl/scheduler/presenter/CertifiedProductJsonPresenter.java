@@ -60,7 +60,6 @@ public class CertifiedProductJsonPresenter implements CertifiedProductPresenter,
                     cr.setAllowedOptionalStandards(null);
                     cr.setAllowedSvaps(null);
                     cr.setAllowedTestTools(null);
-                    cr.setAllowedTestFunctionalities(null);
                 });
         return listing;
     }

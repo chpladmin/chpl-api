@@ -23,8 +23,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
+import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.scheduler.presenter.CertifiedProduct2014CsvPresenter;
@@ -125,11 +125,11 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
         xmlPresenter.open(tempXmlFile);
 
         csvPresenter.setLogger(LOGGER);
-        List<CertificationCriterionDTO> criteria = getCriteriaDao().findByCertificationEditionYear(edition)
+        List<CertificationCriterion> criteria = getCriteriaDao().findByCertificationEditionYear(edition)
                 .stream()
                 .filter(cr -> !cr.getRemoved())
                 .sorted((crA, crB) -> criterionService.sortCriteria(crA, crB))
-                .collect(Collectors.<CertificationCriterionDTO>toList());
+                .collect(Collectors.<CertificationCriterion>toList());
         csvPresenter.setApplicableCriteria(criteria);
         csvPresenter.open(tempCsvFile);
 

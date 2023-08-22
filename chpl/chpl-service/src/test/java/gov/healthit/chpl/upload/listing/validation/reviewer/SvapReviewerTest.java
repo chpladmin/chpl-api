@@ -5,9 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -15,6 +13,7 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
 import gov.healthit.chpl.domain.CertificationCriterion;
+import gov.healthit.chpl.domain.CertificationEdition;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.InheritedCertificationStatus;
@@ -34,9 +33,14 @@ public class SvapReviewerTest {
     private CertificationResultRules certResultRules;
     private ErrorMessageUtil msgUtil;
     private SvapReviewer reviewer;
+    private CertificationEdition edition2015;
 
     @Before
     public void before() throws EntityRetrievalException {
+        edition2015 = CertificationEdition.builder()
+                .id(3L)
+                .name("2015")
+                .build();
         msgUtil = Mockito.mock(ErrorMessageUtil.class);
         certResultRules = Mockito.mock(CertificationResultRules.class);
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.svapsNotApplicable"),
@@ -111,7 +115,7 @@ public class SvapReviewerTest {
                 .svapId(1L)
                 .build());
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .certificationEdition(create2015EditionMap())
+                .edition(edition2015)
                 .certificationResult(CertificationResult.builder()
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
@@ -141,7 +145,7 @@ public class SvapReviewerTest {
                 .svapId(1L)
                 .build());
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .certificationEdition(create2015EditionMap())
+                .edition(edition2015)
                 .certificationResult(CertificationResult.builder()
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
@@ -173,7 +177,7 @@ public class SvapReviewerTest {
                 .build());
 
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .certificationEdition(create2015EditionMap())
+                .edition(edition2015)
                 .certificationResult(CertificationResult.builder()
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
@@ -209,7 +213,7 @@ public class SvapReviewerTest {
                 .build());
 
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .certificationEdition(create2015EditionMap())
+                .edition(edition2015)
                 .certificationResult(CertificationResult.builder()
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
@@ -243,7 +247,7 @@ public class SvapReviewerTest {
                 .build());
 
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .certificationEdition(create2015EditionMap())
+                .edition(edition2015)
                 .certificationResult(CertificationResult.builder()
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
@@ -278,7 +282,7 @@ public class SvapReviewerTest {
                 .build());
 
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .certificationEdition(create2015EditionMap())
+                .edition(edition2015)
                 .certificationResult(CertificationResult.builder()
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
@@ -311,7 +315,7 @@ public class SvapReviewerTest {
                 .build());
 
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .certificationEdition(create2015EditionMap())
+                .edition(edition2015)
                 .certificationResult(CertificationResult.builder()
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
@@ -346,7 +350,7 @@ public class SvapReviewerTest {
                 .build());
 
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .certificationEdition(create2015EditionMap())
+                .edition(edition2015)
                 .certificationResult(CertificationResult.builder()
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
@@ -381,7 +385,7 @@ public class SvapReviewerTest {
                 .build());
 
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .certificationEdition(create2015EditionMap())
+                .edition(edition2015)
                 .certificationResult(CertificationResult.builder()
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
@@ -421,7 +425,7 @@ public class SvapReviewerTest {
                 .build());
 
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .certificationEdition(create2015EditionMap())
+                .edition(edition2015)
                 .certificationResult(CertificationResult.builder()
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
@@ -459,7 +463,7 @@ public class SvapReviewerTest {
                 .build());
 
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .certificationEdition(create2015EditionMap())
+                .edition(edition2015)
                 .certificationResult(CertificationResult.builder()
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
@@ -488,7 +492,7 @@ public class SvapReviewerTest {
                 .build());
 
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .certificationEdition(create2015EditionMap())
+                .edition(edition2015)
                 .certificationResult(CertificationResult.builder()
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
@@ -503,12 +507,5 @@ public class SvapReviewerTest {
 
         assertEquals(0, listing.getWarningMessages().size());
         assertEquals(0, listing.getErrorMessages().size());
-    }
-
-    private Map<String, Object> create2015EditionMap() {
-        Map<String, Object> editionMap = new HashMap<String, Object>();
-        editionMap.put(CertifiedProductSearchDetails.EDITION_ID_KEY, 3L);
-        editionMap.put(CertifiedProductSearchDetails.EDITION_NAME_KEY, "2015");
-        return editionMap;
     }
 }

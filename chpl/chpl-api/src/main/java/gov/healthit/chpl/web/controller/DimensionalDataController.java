@@ -1,8 +1,6 @@
 package gov.healthit.chpl.web.controller;
 
-import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,10 +19,11 @@ import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.domain.KeyValueModelStatuses;
 import gov.healthit.chpl.domain.Measure;
 import gov.healthit.chpl.domain.MeasureType;
+import gov.healthit.chpl.domain.NonconformityType;
 import gov.healthit.chpl.domain.SearchOption;
 import gov.healthit.chpl.domain.TestStandard;
+import gov.healthit.chpl.domain.surveillance.RequirementType;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.functionalityTested.FunctionalityTested;
 import gov.healthit.chpl.functionalityTested.FunctionalityTestedManager;
 import gov.healthit.chpl.manager.DimensionalDataManager;
 import gov.healthit.chpl.optionalStandard.domain.OptionalStandard;
@@ -34,7 +33,6 @@ import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import gov.healthit.chpl.web.controller.annotation.CacheControl;
 import gov.healthit.chpl.web.controller.annotation.CacheMaxAge;
 import gov.healthit.chpl.web.controller.annotation.CachePolicy;
-import gov.healthit.chpl.web.controller.annotation.DeprecatedApi;
 import gov.healthit.chpl.web.controller.annotation.DeprecatedApiResponseFields;
 import gov.healthit.chpl.web.controller.results.CertificationCriterionResults;
 import gov.healthit.chpl.web.controller.results.SvapResults;
@@ -237,26 +235,6 @@ public class DimensionalDataController {
         return result;
     }
 
-    @Deprecated
-    @DeprecatedApi(friendlyUrl = "/data/test_functionality",
-        message = "This endpoint is deprecated and will be removed. Please GET /functionalities-tested for this data.",
-        removalDate = "2023-08-01")
-    @Operation(summary = "Get all possible test functionality options in the CHPL",
-            description = "This is useful for knowing what values one might possibly search for.",
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
-    @RequestMapping(value = "/test_functionality", method = RequestMethod.GET,
-            produces = "application/json; charset=utf-8")
-    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
-    public @ResponseBody SearchOption getTestFunctionality() {
-        List<FunctionalityTested> data = functionalityTestedManager.getFunctionalitiesTested();
-        SearchOption result = new SearchOption();
-        result.setExpandable(false);
-        result.setData(data.stream().collect(Collectors.toSet()));
-        return result;
-    }
-
     @Operation(summary = "Get all possible test procedure options in the CHPL",
             description = "This is useful for knowing what values one might possibly search for.",
             security = {
@@ -301,26 +279,6 @@ public class DimensionalDataController {
         Set<TestStandard> data = dimensionalDataManager.getTestStandards();
         SearchOption result = new SearchOption();
         result.setExpandable(false);
-        result.setData(data);
-        return result;
-    }
-
-    @Deprecated
-    @DeprecatedApi(friendlyUrl = "/data/qms_standards",
-        message = "This endpoint is deprecated and will be removed. Please GET from /qms-standards.",
-        removalDate = "2023-07-31")
-    @Operation(summary = "Get all possible qms standard options in the CHPL",
-            description = "This is useful for knowing what values one might possibly search for.",
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
-    @RequestMapping(value = "/qms_standards", method = RequestMethod.GET,
-            produces = "application/json; charset=utf-8")
-    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
-    public @ResponseBody SearchOption getQmsStandards() {
-        Set<KeyValueModel> data = dimensionalDataManager.getQmsStandards();
-        SearchOption result = new SearchOption();
-        result.setExpandable(true);
         result.setData(data);
         return result;
     }
@@ -437,6 +395,7 @@ public class DimensionalDataController {
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
+    @DeprecatedApiResponseFields(friendlyUrl = "/data/requirement-types", responseClass = RequirementType.class)
     @RequestMapping(value = "/requirement-types", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
@@ -451,6 +410,7 @@ public class DimensionalDataController {
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
+    @DeprecatedApiResponseFields(friendlyUrl = "/data/nonconformity-types/v2", responseClass = NonconformityType.class)
     @RequestMapping(value = "/nonconformity-types/v2", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)

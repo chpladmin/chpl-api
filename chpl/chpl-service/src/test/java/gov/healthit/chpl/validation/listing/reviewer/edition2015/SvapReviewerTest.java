@@ -15,6 +15,7 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
 import gov.healthit.chpl.domain.CertificationCriterion;
+import gov.healthit.chpl.domain.CertificationEdition;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -37,9 +38,15 @@ public class SvapReviewerTest {
     private ValidationUtils validationUtils;
     private ErrorMessageUtil errorMessageUtil;
     private SvapReviewer svapReviewer;
+    private CertificationEdition edition2015;
 
     @Before
     public void before() throws EntityRetrievalException {
+        edition2015 = CertificationEdition.builder()
+                .id(3L)
+                .name("2015")
+                .build();
+
         svapDao = Mockito.mock(SvapDAO.class);
         Mockito.when(svapDao.getAllSvapCriteriaMap())
                 .thenReturn(getSvapCriteriaMaps());
@@ -60,9 +67,6 @@ public class SvapReviewerTest {
 
     @Test
     public void review_validSvapAndValidCriterion_NoErrors() {
-        Map<String, Object> certEdition = new HashMap<String, Object>();
-        certEdition.put(CertifiedProductSearchDetails.EDITION_ID_KEY, 3L);
-        certEdition.put(CertifiedProductSearchDetails.EDITION_NAME_KEY, "2015");
         Mockito.when(validationUtils.isWellFormedUrl(ArgumentMatchers.anyString()))
                 .thenReturn(true);
 
@@ -75,7 +79,7 @@ public class SvapReviewerTest {
                                 .id(1L)
                                 .build())
                         .build())
-                .certificationEdition(certEdition)
+                .edition(edition2015)
                 .build();
 
         CertifiedProductSearchDetails updatedlisting = CertifiedProductSearchDetails.builder()
@@ -92,7 +96,7 @@ public class SvapReviewerTest {
                                 .approvedStandardVersion("ver1")
                                 .build()).collect(Collectors.toList()))
                         .build())
-                .certificationEdition(certEdition)
+                .edition(edition2015)
                 .build();
 
         svapReviewer.review(origlisting, updatedlisting);
@@ -117,7 +121,7 @@ public class SvapReviewerTest {
                                 .id(1L)
                                 .build())
                         .build())
-                .certificationEdition(certEdition)
+                .edition(edition2015)
                 .svapNoticeUrl("http://www.example.com")
                 .build();
 
@@ -135,7 +139,7 @@ public class SvapReviewerTest {
                                 .approvedStandardVersion("ver1")
                                 .build()).collect(Collectors.toList()))
                         .build())
-                .certificationEdition(certEdition)
+                .edition(edition2015)
                 .svapNoticeUrl("bad")
                 .build();
 
@@ -161,7 +165,7 @@ public class SvapReviewerTest {
                                 .id(2L)
                                 .build())
                         .build())
-                .certificationEdition(certEdition)
+                .edition(edition2015)
                 .build();
 
         CertifiedProductSearchDetails updatedListing = CertifiedProductSearchDetails.builder()
@@ -178,7 +182,7 @@ public class SvapReviewerTest {
                                 .approvedStandardVersion("ver1")
                                 .build()).collect(Collectors.toList()))
                         .build())
-                .certificationEdition(certEdition)
+                .edition(edition2015)
                 .build();
 
         svapReviewer.review(origListing, updatedListing);
@@ -188,9 +192,10 @@ public class SvapReviewerTest {
 
     @Test
     public void review_invalidEdition_ErrorMessageExists() {
-        Map<String, Object> certEdition = new HashMap<String, Object>();
-        certEdition.put(CertifiedProductSearchDetails.EDITION_ID_KEY, 2L);
-        certEdition.put(CertifiedProductSearchDetails.EDITION_NAME_KEY, "2014");
+        CertificationEdition edition2014 = CertificationEdition.builder()
+                .id(2L)
+                .name("2014")
+                .build();
         Mockito.when(validationUtils.isWellFormedUrl(ArgumentMatchers.anyString()))
                 .thenReturn(true);
 
@@ -203,7 +208,7 @@ public class SvapReviewerTest {
                                 .id(1L)
                                 .build())
                         .build())
-                .certificationEdition(certEdition)
+                .edition(edition2014)
                 .build();
 
         CertifiedProductSearchDetails updatedListing = CertifiedProductSearchDetails.builder()
@@ -220,7 +225,7 @@ public class SvapReviewerTest {
                                 .approvedStandardVersion("ver1")
                                 .build()).collect(Collectors.toList()))
                         .build())
-                .certificationEdition(certEdition)
+                .edition(edition2014)
                 .build();
 
         svapReviewer.review(origListing, updatedListing);
@@ -245,7 +250,7 @@ public class SvapReviewerTest {
                                 .id(2L)
                                 .build())
                         .build())
-                .certificationEdition(certEdition)
+                .edition(edition2015)
                 .build();
 
         CertifiedProductSearchDetails updatedListing = CertifiedProductSearchDetails.builder()
@@ -262,7 +267,7 @@ public class SvapReviewerTest {
                                 .approvedStandardVersion("ver1")
                                 .build()).collect(Collectors.toList()))
                         .build())
-                .certificationEdition(certEdition)
+                .edition(edition2015)
                 .build();
 
         svapReviewer.review(origListing, updatedListing);

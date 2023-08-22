@@ -3,6 +3,7 @@ package gov.healthit.chpl.dto;
 import java.io.Serializable;
 import java.util.Date;
 
+import gov.healthit.chpl.domain.CertificationEdition;
 import gov.healthit.chpl.domain.CertificationStatus;
 import gov.healthit.chpl.entity.statistics.ListingCountStatisticsEntity;
 import lombok.Data;
@@ -18,7 +19,7 @@ public class ListingCountStatisticsDTO implements Serializable {
     private Long developerCount;
     private Long productCount;
     private Long certificationEditionId;
-    private CertificationEditionDTO certificationEdition;
+    private CertificationEdition certificationEdition;
     private Long certificationStatusId;
     private CertificationStatus certificationStatus;
     private Date creationDate;
@@ -32,7 +33,7 @@ public class ListingCountStatisticsDTO implements Serializable {
         this.productCount = entity.getProductCount();
         this.certificationEditionId = entity.getCertificationEditionId();
         if (entity.getCertificationEdition() != null) {
-            this.certificationEdition = new CertificationEditionDTO(entity.getCertificationEdition());
+            this.certificationEdition = entity.getCertificationEdition().toDomain();
         }
         this.certificationStatusId = entity.getCertificationStatusId();
         if (entity.getCertificationStatus() != null) {
@@ -44,7 +45,7 @@ public class ListingCountStatisticsDTO implements Serializable {
         this.lastModifiedUser = entity.getLastModifiedUser();
     }
 
-    public ListingCountStatisticsDTO(CertificationEditionDTO edition, CertificationStatus status) {
+    public ListingCountStatisticsDTO(CertificationEdition edition, CertificationStatus status) {
         this.developerCount = 0L;
         this.productCount = 0L;
         this.certificationEditionId = edition.getId();

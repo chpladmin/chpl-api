@@ -182,11 +182,15 @@ public class ListingsWithCriterionCSVPresenter {
     }
 
     protected String formatEdition(CertifiedProductSearchDetails listing) {
-        String edition = listing.getCertificationEdition().get(CertifiedProductSearchDetails.EDITION_NAME_KEY).toString();
-        if (listing.getCuresUpdate() != null && listing.getCuresUpdate()) {
-            edition = edition + " Cures Update";
+        if (listing.getEdition() == null) {
+            return "";
+        } else {
+            String edition = listing.getEdition().getName();
+            if (listing.getCuresUpdate() != null && listing.getCuresUpdate()) {
+                edition = edition + " Cures Update";
+            }
+            return edition;
         }
-        return edition;
     }
 
     protected String formatInactiveDate(CertifiedProductSearchDetails listing) {

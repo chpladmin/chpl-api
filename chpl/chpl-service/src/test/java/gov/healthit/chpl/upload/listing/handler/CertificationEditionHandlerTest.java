@@ -12,6 +12,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import gov.healthit.chpl.domain.CertificationEdition;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.upload.listing.ListingUploadHandlerUtil;
 import gov.healthit.chpl.upload.listing.ListingUploadTestUtil;
@@ -39,7 +40,7 @@ public class CertificationEditionHandlerTest {
         List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(LISTING_ROW_BEGIN);
         assertNotNull(listingRecords);
 
-        Map<String, Object> edition = handler.handle(headingRecord, listingRecords);
+        CertificationEdition edition = handler.handle(headingRecord, listingRecords);
         assertNull(edition);
     }
 
@@ -50,11 +51,10 @@ public class CertificationEditionHandlerTest {
         List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(LISTING_ROW_BEGIN + ",2014");
         assertNotNull(listingRecords);
 
-        Map<String, Object> edition = handler.handle(headingRecord, listingRecords);
+        CertificationEdition edition = handler.handle(headingRecord, listingRecords);
         assertNotNull(edition);
-        assertEquals("2014",
-                edition.get(CertifiedProductSearchDetails.EDITION_NAME_KEY).toString());
-        assertNull(edition.get(CertifiedProductSearchDetails.EDITION_ID_KEY));
+        assertEquals("2014", edition.getName());
+        assertNull(edition.getId());
     }
 
     @Test
@@ -64,7 +64,45 @@ public class CertificationEditionHandlerTest {
         List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString("BADNUMBER,2015");
         assertNotNull(listingRecords);
 
-        Map<String, Object> edition = handler.handle(headingRecord, listingRecords);
+        CertificationEdition edition = handler.handle(headingRecord, listingRecords);
+        assertNotNull(edition);
+        assertEquals("2015", edition.getName());
+        assertNull(edition.getId());
+    }
+
+    @Test
+    public void parseEditionDeprecated_NoEditionColumn_ReturnsNull() {
+        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_BEGIN).get(0);
+        assertNotNull(headingRecord);
+        List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(LISTING_ROW_BEGIN);
+        assertNotNull(listingRecords);
+
+        Map<String, Object> edition = handler.handleDeprecated(headingRecord, listingRecords);
+        assertNull(edition);
+    }
+
+    @Test
+    public void parseEditionDeprecated_EditionColumnAndValidChplProductNumber_ReturnsEditionFromColumn() {
+        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_BEGIN + ",CERT_YEAR__C").get(0);
+        assertNotNull(headingRecord);
+        List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString(LISTING_ROW_BEGIN + ",2014");
+        assertNotNull(listingRecords);
+
+        Map<String, Object> edition = handler.handleDeprecated(headingRecord, listingRecords);
+        assertNotNull(edition);
+        assertEquals("2014",
+                edition.get(CertifiedProductSearchDetails.EDITION_NAME_KEY).toString());
+        assertNull(edition.get(CertifiedProductSearchDetails.EDITION_ID_KEY));
+    }
+
+    @Test
+    public void buildListingDeprecated_EditionColumnInvalidChplProductNumber_ReturnsEditionFromColumn() {
+        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(HEADER_ROW_BEGIN + ",CERT_YEAR__C").get(0);
+        assertNotNull(headingRecord);
+        List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString("BADNUMBER,2015");
+        assertNotNull(listingRecords);
+
+        Map<String, Object> edition = handler.handleDeprecated(headingRecord, listingRecords);
         assertNotNull(edition);
         assertEquals("2015",
                 edition.get(CertifiedProductSearchDetails.EDITION_NAME_KEY).toString());

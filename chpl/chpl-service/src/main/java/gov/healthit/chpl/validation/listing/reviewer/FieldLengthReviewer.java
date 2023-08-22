@@ -1,7 +1,6 @@
 package gov.healthit.chpl.validation.listing.reviewer;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
@@ -28,9 +27,8 @@ public class FieldLengthReviewer implements Reviewer {
 
     @Override
     public void review(CertifiedProductSearchDetails listing) {
-        if (MapUtils.getString(listing.getCertificationEdition(), CertifiedProductSearchDetails.EDITION_NAME_KEY) != null) {
-            checkFieldLength(listing, MapUtils.getString(listing.getCertificationEdition(), CertifiedProductSearchDetails.EDITION_NAME_KEY),
-                    "certificationEdition");
+        if (listing.getEdition() != null && !StringUtils.isEmpty(listing.getEdition().getName())) {
+            checkFieldLength(listing, listing.getEdition().getName(), "certificationEdition");
         }
         if (listing.getDeveloper() != null) {
             if (!StringUtils.isEmpty(listing.getDeveloper().getName())) {

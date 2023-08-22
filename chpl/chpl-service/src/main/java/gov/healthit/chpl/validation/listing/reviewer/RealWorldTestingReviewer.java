@@ -57,10 +57,7 @@ public class RealWorldTestingReviewer implements Reviewer {
     private boolean isListing2015Edition(CertifiedProductSearchDetails listing) {
         try {
             CertifiedProductSearchDetails cpsd = certifiedProductDetailsManager.getCertifiedProductDetails(listing.getId());
-            if (cpsd.getCertificationEdition().containsKey(CertifiedProductSearchDetails.EDITION_NAME_KEY)) {
-                return cpsd.getCertificationEdition().get(CertifiedProductSearchDetails.EDITION_NAME_KEY).toString().equals(EDITION_2015);
-            }
-            return false;
+            return cpsd.getEdition() == null || cpsd.getEdition().getName().equals(EDITION_2015);
         } catch (EntityRetrievalException e) {
             LOGGER.error("Could not determine the edition of listing {}", listing.getId(), e);
             return false;

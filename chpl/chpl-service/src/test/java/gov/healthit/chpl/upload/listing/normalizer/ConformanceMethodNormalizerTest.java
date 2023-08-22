@@ -6,9 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -19,6 +17,7 @@ import gov.healthit.chpl.conformanceMethod.domain.CertificationResultConformance
 import gov.healthit.chpl.conformanceMethod.domain.ConformanceMethod;
 import gov.healthit.chpl.conformanceMethod.domain.ConformanceMethodCriteriaMap;
 import gov.healthit.chpl.domain.CertificationCriterion;
+import gov.healthit.chpl.domain.CertificationEdition;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -128,7 +127,7 @@ public class ConformanceMethodNormalizerTest {
                 .build());
 
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .certificationEdition(create2015EditionMap())
+                .edition(create2015Edition())
                 .certificationResult(CertificationResult.builder()
                         .success(true)
                         .criterion(CertificationCriterion.builder()
@@ -157,7 +156,7 @@ public class ConformanceMethodNormalizerTest {
                 .build());
 
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .certificationEdition(create2015EditionMap())
+                .edition(create2015Edition())
                 .certificationResult(CertificationResult.builder()
                         .success(true)
                         .criterion(CertificationCriterion.builder()
@@ -188,7 +187,7 @@ public class ConformanceMethodNormalizerTest {
                 .build());
 
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .certificationEdition(create2015EditionMap())
+                .edition(create2015Edition())
                 .certificationResult(CertificationResult.builder()
                         .success(true)
                         .criterion(CertificationCriterion.builder()
@@ -238,10 +237,10 @@ public class ConformanceMethodNormalizerTest {
         assertEquals(0, listing.getCertificationResults().get(0).getAllowedConformanceMethods().size());
     }
 
-    private Map<String, Object> create2015EditionMap() {
-        Map<String, Object> editionMap = new HashMap<String, Object>();
-        editionMap.put(CertifiedProductSearchDetails.EDITION_ID_KEY, 3L);
-        editionMap.put(CertifiedProductSearchDetails.EDITION_NAME_KEY, "2015");
-        return editionMap;
+    private CertificationEdition create2015Edition() {
+        return CertificationEdition.builder()
+                .id(3L)
+                .name("2015")
+                .build();
     }
 }

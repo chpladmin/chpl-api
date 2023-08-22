@@ -57,16 +57,18 @@ public class ListingCountStatisticsCalculator {
         HashMap<String, HashSet<String>> developers = new HashMap<String, HashSet<String>>();
         HashMap<String, HashSet<String>> products = new HashMap<String, HashSet<String>>();
         for (ListingSearchResult listing : listings) {
-            String devKey = listing.getEdition().getName() + "\u263A" + listing.getDeveloper().getName();
-            String prodKey = listing.getEdition().getName() + "\u263A" + listing.getDeveloper().getName() + "\u263A" + listing.getProduct().getName();
-            if (!developers.containsKey(devKey)) {
-                developers.put(devKey, new HashSet<String>());
+            if (listing.getEdition() != null) {
+                String devKey = listing.getEdition().getName() + "\u263A" + listing.getDeveloper().getName();
+                String prodKey = listing.getEdition().getName() + "\u263A" + listing.getDeveloper().getName() + "\u263A" + listing.getProduct().getName();
+                if (!developers.containsKey(devKey)) {
+                    developers.put(devKey, new HashSet<String>());
+                }
+                if (!products.containsKey(prodKey)) {
+                    products.put(prodKey, new HashSet<String>());
+                }
+                developers.get(devKey).add(listing.getCertificationStatus().getName());
+                products.get(prodKey).add(listing.getCertificationStatus().getName());
             }
-            if (!products.containsKey(prodKey)) {
-                products.put(prodKey, new HashSet<String>());
-            }
-            developers.get(devKey).add(listing.getCertificationStatus().getName());
-            products.get(prodKey).add(listing.getCertificationStatus().getName());
         }
 
         HashMap<String, ListingCountStatisticsDTO> results = new HashMap<String, ListingCountStatisticsDTO>();

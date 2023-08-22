@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import lombok.extern.log4j.Log4j2;
 
@@ -25,19 +26,19 @@ public class ListingValidatorFactory {
     }
 
     public Validator getValidator(final CertifiedProductSearchDetails listing) {
-        String edition = listing.getCertificationEdition().get(CertifiedProductSearchDetails.EDITION_NAME_KEY).toString();
-        if (StringUtils.isEmpty(listing.getChplProductNumber())
-                || StringUtils.isEmpty(edition)) {
+        String edition = listing.getEdition() != null ? listing.getEdition().getName() : null;
+        if (StringUtils.isEmpty(listing.getChplProductNumber())) {
             String errMsg = msgUtil.getMessage("listing.validator.editionOrChplNumberNotFound", listing.getId().toString());
             listing.addBusinessErrorMessage(errMsg);
             LOGGER.error(errMsg);
             return null;
         }
 
-        if (edition.equals("2011") || edition.equals("2014")) {
-            return allowedValidator;
-        } else if (edition.equals("2015")) {
+        if (edition == null || edition.equals(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear())) {
             return edition2015Validator;
+        } else if (edition.equals(CertificationEditionConcept.CERTIFICATION_EDITION_2011.getYear())
+                || edition.equals(CertificationEditionConcept.CERTIFICATION_EDITION_2014.getYear())) {
+            return allowedValidator;
         } else {
             String errMsg = msgUtil.getMessage("listing.validator.certificationEditionNotFound", edition);
             listing.addBusinessErrorMessage(errMsg);
