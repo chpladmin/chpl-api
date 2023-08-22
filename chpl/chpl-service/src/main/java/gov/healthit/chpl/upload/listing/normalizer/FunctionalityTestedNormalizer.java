@@ -132,7 +132,7 @@ public class FunctionalityTestedNormalizer {
         }
         List<FunctionalityTested> functionalityTestedForCriterion = funcTestedMappings.get(criterionId);
         Optional<FunctionalityTested> funcTestedOpt = functionalityTestedForCriterion.stream()
-            .filter(funcTested -> funcTested.getValue().equalsIgnoreCase(functionalityTestedNumber))
+            .filter(funcTested -> funcTested.getRegulatoryTextCitation().equalsIgnoreCase(functionalityTestedNumber))
             .findAny();
         return funcTestedOpt.isPresent() ? funcTestedOpt.get() : null;
     }
