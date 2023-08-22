@@ -130,9 +130,8 @@ public class FunctionalityTestedReviewer {
         reviewFunctionalityTestedName(listing, certResult, functionalityTested);
     }
 
-    private void reviewFunctionalityTestedName(CertifiedProductSearchDetails listing,
-            CertificationResult certResult, CertificationResultFunctionalityTested functionalityTested) {
-        if (StringUtils.isEmpty(functionalityTested.getFunctionalityTested().getValue())) {
+    private void reviewFunctionalityTestedName(CertifiedProductSearchDetails listing, CertificationResult certResult, CertificationResultFunctionalityTested functionalityTested) {
+        if (StringUtils.isEmpty(functionalityTested.getFunctionalityTested().getRegulatoryTextCitation())) {
             listing.addDataErrorMessage(msgUtil.getMessage("listing.criteria.missingFunctionalityTestedName",
                     Util.formatCriteriaNumber(certResult.getCriterion())));
         }

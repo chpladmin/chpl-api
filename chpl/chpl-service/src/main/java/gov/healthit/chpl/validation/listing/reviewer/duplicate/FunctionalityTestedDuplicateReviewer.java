@@ -53,22 +53,19 @@ public class FunctionalityTestedDuplicateReviewer {
         List<String> warnings = new ArrayList<String>();
         for (CertificationResultFunctionalityTested duplicate : duplicates) {
             String warning = errorMessageUtil.getMessage("listing.criteria.duplicateFunctionalityTested",
-                    criteria, duplicate.getFunctionalityTested().getValue());
+                    criteria, duplicate.getFunctionalityTested().getRegulatoryTextCitation());
             warnings.add(warning);
         }
         return warnings;
     }
 
-    private BiPredicate<
-    CertificationResultFunctionalityTested, CertificationResultFunctionalityTested> getPredicate() {
-        return
-                new BiPredicate<
-                CertificationResultFunctionalityTested, CertificationResultFunctionalityTested>() {
+    private BiPredicate<CertificationResultFunctionalityTested, CertificationResultFunctionalityTested> getPredicate() {
+        return new BiPredicate<CertificationResultFunctionalityTested, CertificationResultFunctionalityTested>() {
             @Override
             public boolean test(CertificationResultFunctionalityTested ft1, CertificationResultFunctionalityTested ft2) {
                 return (ObjectUtils.allNotNull(ft1.getFunctionalityTested().getId(), ft2.getFunctionalityTested().getId())
                         && Objects.equals(ft1.getFunctionalityTested().getId(), ft2.getFunctionalityTested().getId()))
-                    || Objects.equals(ft1.getFunctionalityTested().getValue(), ft2.getFunctionalityTested().getValue());
+                    || Objects.equals(ft1.getFunctionalityTested().getRegulatoryTextCitation(), ft2.getFunctionalityTested().getRegulatoryTextCitation());
             }
         };
     }

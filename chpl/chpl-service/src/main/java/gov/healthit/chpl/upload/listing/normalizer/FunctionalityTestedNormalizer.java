@@ -100,9 +100,7 @@ public class FunctionalityTestedNormalizer {
         return new ArrayList<FunctionalityTested>();
     }
 
-    private void populateFunctionalitiesTestedIds(CertifiedProductSearchDetails listing,
-            CertificationResult certResult,
-            List<CertificationResultFunctionalityTested> functionalitiesTested) {
+    private void populateFunctionalitiesTestedIds(CertifiedProductSearchDetails listing, CertificationResult certResult, List<CertificationResultFunctionalityTested> functionalitiesTested) {
         if (functionalitiesTested != null && functionalitiesTested.size() > 0) {
             functionalitiesTested.stream()
                 .filter(functionalityTested -> functionalityTested.getId() == null)
@@ -118,9 +116,7 @@ public class FunctionalityTestedNormalizer {
                     getFunctionalityTested(functionalityTested.getFunctionalityTested().getValue(), certResult.getCriterion().getId());
             if (foundFunctionalityTested != null) {
                 //functionalityTested.setFunctionalityTestedId(foundFunctionalityTested.getId());
-                functionalityTested.setFunctionalityTested(FunctionalityTested.builder()
-                        .id(foundFunctionalityTested.getId())
-                        .build());
+                functionalityTested.setFunctionalityTested(foundFunctionalityTested);
             }
         }
     }
