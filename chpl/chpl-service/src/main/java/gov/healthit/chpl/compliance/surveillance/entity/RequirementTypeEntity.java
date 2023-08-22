@@ -9,10 +9,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-import gov.healthit.chpl.domain.CertificationEdition;
 import gov.healthit.chpl.domain.surveillance.RequirementGroupType;
 import gov.healthit.chpl.domain.surveillance.RequirementType;
-import gov.healthit.chpl.dto.CertificationEditionDTO;
 import gov.healthit.chpl.entity.CertificationEditionEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -57,7 +55,7 @@ public class RequirementTypeEntity {
                 .number(this.number)
                 .title(this.title)
                 .removed(this.removed)
-                .certificationEdition(this.getCertificationEdition() != null ? new CertificationEdition(new CertificationEditionDTO(this.getCertificationEdition())) : null)
+                .certificationEdition(this.getCertificationEdition() != null ? this.getCertificationEdition().toDomain() : null)
                 .requirementGroupType(RequirementGroupType.builder()
                         .id(this.requirementGroupType.getId())
                         .name(this.requirementGroupType.getName())

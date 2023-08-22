@@ -114,62 +114,6 @@ public class ChplNumberFormatReviewerTest {
     }
 
     @Test
-    public void review_editionCodeTooLong_hasError() {
-        Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.badEditionCodeChars"), ArgumentMatchers.any()))
-            .thenAnswer(i -> String.format(BAD_EDITION_CODE, i.getArgument(1), ""));
-
-        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .chplProductNumber("2015.04.04.2526.WEBe.06.00.1.210101")
-                .build();
-        reviewer.review(listing);
-
-        assertEquals(1, listing.getErrorMessages().size());
-        assertTrue(listing.getErrorMessages().contains(String.format(BAD_EDITION_CODE, "2", "")));
-    }
-
-    @Test
-    public void review_editionCodeTooShort_hasError() {
-        Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.badEditionCodeChars"), ArgumentMatchers.any()))
-            .thenAnswer(i -> String.format(BAD_EDITION_CODE, i.getArgument(1), ""));
-
-        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .chplProductNumber("5.04.04.2526.WEBe.06.00.1.210101")
-                .build();
-        reviewer.review(listing);
-
-        assertEquals(1, listing.getErrorMessages().size());
-        assertTrue(listing.getErrorMessages().contains(String.format(BAD_EDITION_CODE, "2", "")));
-    }
-
-    @Test
-    public void review_editionCodeInvalidCharacter_hasError() {
-        Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.badEditionCodeChars"), ArgumentMatchers.any()))
-            .thenAnswer(i -> String.format(BAD_EDITION_CODE, i.getArgument(1), ""));
-
-        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .chplProductNumber("1r.04.04.2526.WErB.06.00.1.210101")
-                .build();
-        reviewer.review(listing);
-
-        assertEquals(1, listing.getErrorMessages().size());
-        assertTrue(listing.getErrorMessages().contains(String.format(BAD_EDITION_CODE, "2", "")));
-    }
-
-    @Test
-    public void review_editionCodeMissing_hasError() {
-        Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.badEditionCodeChars"), ArgumentMatchers.any()))
-            .thenAnswer(i -> String.format(BAD_EDITION_CODE, i.getArgument(1), ""));
-
-        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .chplProductNumber(".04.04.2526.WErB.06.00.1.210101")
-                .build();
-        reviewer.review(listing);
-
-        assertEquals(1, listing.getErrorMessages().size());
-        assertTrue(listing.getErrorMessages().contains(String.format(BAD_EDITION_CODE, "2", "")));
-    }
-
-    @Test
     public void review_atlCodeTooLong_hasError() {
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.badAtlCodeChars"), ArgumentMatchers.any()))
             .thenAnswer(i -> String.format(BAD_ATL_CODE, i.getArgument(1), ""));

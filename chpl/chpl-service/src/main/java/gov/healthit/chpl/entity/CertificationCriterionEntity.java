@@ -38,14 +38,6 @@ public class CertificationCriterionEntity implements Serializable {
     @JoinColumn(name = "certification_criterion_id", nullable = false)
     private Long id;
 
-    @Basic(optional = true)
-    @Column(name = "automated_measure_capable")
-    private Boolean automatedMeasureCapable;
-
-    @Basic(optional = true)
-    @Column(name = "automated_numerator_capable")
-    private Boolean automatedNumeratorCapable;
-
     @Basic(optional = false)
     @Column(name = "certification_edition_id", nullable = false)
     private Long certificationEditionId;
@@ -81,10 +73,6 @@ public class CertificationCriterionEntity implements Serializable {
     private String number;
 
     @Basic(optional = true)
-    @Column(name = "requires_sed")
-    private Boolean requiresSed;
-
-    @Basic(optional = true)
     @Column(length = 250)
     private String title;
 
@@ -93,10 +81,13 @@ public class CertificationCriterionEntity implements Serializable {
     private Boolean removed;
 
     public static CertificationCriterionEntity getNewCertificationCriterionEntity(CertificationCriterion criterion) {
+        CertificationEditionEntity editionEntity = new CertificationEditionEntity();
+        editionEntity.setId(criterion.getCertificationEditionId());
+
         return CertificationCriterionEntity.builder()
                 .id(criterion.getId())
                 .certificationEditionId(criterion.getCertificationEditionId())
-                .certificationEdition(new CertificationEditionEntity(criterion.getCertificationEditionId()))
+                .certificationEdition(editionEntity)
                 .description(criterion.getDescription())
                 .number(criterion.getNumber())
                 .title(criterion.getTitle())

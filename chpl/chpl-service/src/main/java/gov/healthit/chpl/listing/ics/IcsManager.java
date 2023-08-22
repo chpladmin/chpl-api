@@ -11,35 +11,36 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import gov.healthit.chpl.dao.CertifiedProductSearchDAO;
+import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.CertifiedProductManager;
+import gov.healthit.chpl.util.CertifiedProductUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Component
 public class IcsManager {
 
     private CertifiedProductManager cpManager;
-    private CertifiedProductSearchDAO searchDao;
+    private CertifiedProductUtil cpUtil;
     private IcsDao icsDao;
     private ErrorMessageUtil msgUtil;
 
     @Autowired
-    public IcsManager(CertifiedProductManager cpManager, CertifiedProductSearchDAO searchDao,
+    public IcsManager(CertifiedProductManager cpManager, CertifiedProductUtil cpUtil,
             IcsDao icsDao, ErrorMessageUtil msgUtil) {
         this.cpManager = cpManager;
-        this.searchDao = searchDao;
+        this.cpUtil = cpUtil;
         this.icsDao = icsDao;
         this.msgUtil = msgUtil;
     }
 
     @Transactional
     public List<ListingIcsNode> getIcsFamilyTree(String chplProductNumber) throws EntityRetrievalException {
-        Long listingId = searchDao.getListingIdByUniqueChplNumber(chplProductNumber);
-        if (listingId == null) {
+        CertifiedProduct cp = cpUtil.getListing(chplProductNumber);
+        if (cp == null) {
             throw new EntityRetrievalException(msgUtil.getMessage("listing.notFound"));
         }
-        return getIcsFamilyTree(listingId);
+        return getIcsFamilyTree(cp.getId());
     }
 
     @Transactional

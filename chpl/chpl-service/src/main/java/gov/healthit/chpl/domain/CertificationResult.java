@@ -25,7 +25,6 @@ import gov.healthit.chpl.conformanceMethod.domain.CertificationResultConformance
 import gov.healthit.chpl.conformanceMethod.domain.ConformanceMethod;
 import gov.healthit.chpl.criteriaattribute.functionalitytested.CertificationResultFunctionalityTested;
 import gov.healthit.chpl.criteriaattribute.functionalitytested.CertificationResultFunctionalityTestedComparator;
-import gov.healthit.chpl.criteriaattribute.functionalitytested.FunctionalityTested;
 import gov.healthit.chpl.criteriaattribute.testtool.CertificationResultTestTool;
 import gov.healthit.chpl.criteriaattribute.testtool.CertificationResultTestToolComparator;
 import gov.healthit.chpl.criteriaattribute.testtool.TestTool;
@@ -197,12 +196,6 @@ public class CertificationResult implements Serializable {
 
     @XmlTransient
     private List<ConformanceMethod> allowedConformanceMethods;
-
-    @Deprecated
-    @DeprecatedResponseField(message = "This field is deprecated and will be removed. This data can be found via a GET request to the endpoint /fuctionalities-tested.",
-        removalDate = "2023-08-01")
-    @XmlTransient
-    private List<FunctionalityTested> allowedTestFunctionalities;
 
     @XmlTransient
     private List<Svap> allowedSvaps;
@@ -406,7 +399,7 @@ public class CertificationResult implements Serializable {
         this.setServiceBaseUrlList(certResult.getServiceBaseUrlList());
         this.setPrivacySecurityFramework(certResult.getPrivacySecurityFramework());
         if (certResult.getCriterion() != null) {
-            this.criterion = new CertificationCriterion(certResult.getCriterion());
+            this.criterion = certResult.getCriterion();
         }
     }
 
@@ -486,10 +479,7 @@ public class CertificationResult implements Serializable {
         } else {
             this.setPrivacySecurityFramework(certResult.getPrivacySecurityFramework());
         }
-
-        if (certResult.getCriterion() != null) {
-            this.criterion = new CertificationCriterion(certResult.getCriterion());
-        }
+        this.criterion = certResult.getCriterion();
 
         this.setOptionalStandards(getOptionalStandards(certResult, certRules));
         this.setFunctionalitiesTested(getFunctionalitiesTested(certResult, certRules));
@@ -772,16 +762,6 @@ public class CertificationResult implements Serializable {
 
     public void setAllowedConformanceMethods(List<ConformanceMethod> allowedConformanceMethods) {
         this.allowedConformanceMethods = allowedConformanceMethods;
-    }
-
-    @Deprecated
-    public List<FunctionalityTested> getAllowedTestFunctionalities() {
-        return allowedTestFunctionalities;
-    }
-
-    @Deprecated
-    public void setAllowedTestFunctionalities(List<FunctionalityTested> allowedTestFunctionalities) {
-        this.allowedTestFunctionalities = allowedTestFunctionalities;
     }
 
     public CertificationCriterion getCriterion() {

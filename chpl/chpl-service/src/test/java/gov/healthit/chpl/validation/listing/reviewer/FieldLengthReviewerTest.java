@@ -468,10 +468,11 @@ public class FieldLengthReviewerTest {
 
     @Test
     public void review_shortTargetedUserName_noError() {
-        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .targetedUser(CertifiedProductTargetedUser.builder()
+        List<CertifiedProductTargetedUser> targetedUsers = Stream.of(CertifiedProductTargetedUser.builder()
                         .targetedUserName("short name")
-                        .build())
+                        .build()).toList();
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .targetedUsers(targetedUsers)
                 .build();
 
         reviewer.review(listing);
@@ -480,10 +481,12 @@ public class FieldLengthReviewerTest {
 
     @Test
     public void review_longTargetedUserName_hasError() {
+        List<CertifiedProductTargetedUser> targetedUsers = Stream.of(CertifiedProductTargetedUser.builder()
+                .targetedUserName(createStringLongerThan(300, "a"))
+                .build()).toList();
+
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .targetedUser(CertifiedProductTargetedUser.builder()
-                        .targetedUserName(createStringLongerThan(300, "a"))
-                        .build())
+                .targetedUsers(targetedUsers)
                 .build();
 
         reviewer.review(listing);
@@ -493,13 +496,15 @@ public class FieldLengthReviewerTest {
 
     @Test
     public void review_oneShortAndOneLongTargetedUserName_hasError() {
+        List<CertifiedProductTargetedUser> targetedUsers = Stream.of(CertifiedProductTargetedUser.builder()
+                .targetedUserName(createStringLongerThan(300, "a"))
+                .build(),
+                CertifiedProductTargetedUser.builder()
+                .targetedUserName("short name")
+                .build()).toList();
+
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .targetedUser(CertifiedProductTargetedUser.builder()
-                        .targetedUserName(createStringLongerThan(300, "a"))
-                        .build())
-                .targetedUser(CertifiedProductTargetedUser.builder()
-                        .targetedUserName("short name")
-                        .build())
+                .targetedUsers(targetedUsers)
                 .build();
 
         reviewer.review(listing);

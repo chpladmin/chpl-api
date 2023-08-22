@@ -3,10 +3,13 @@ package gov.healthit.chpl.util;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import org.ff4j.FF4j;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.dao.CertifiedProductSearchResultDAO;
 import gov.healthit.chpl.dao.ChplProductNumberDAO;
 
@@ -20,7 +23,9 @@ public class ChplProductNumberUtilTest {
     public void before() {
         certifiedProductSearchResultDao = Mockito.mock(CertifiedProductSearchResultDAO.class);
         chplProductNumberDao = Mockito.mock(ChplProductNumberDAO.class);
-        chplProductNumberUtil = new ChplProductNumberUtil(certifiedProductSearchResultDao, chplProductNumberDao);
+        FF4j ff4j = Mockito.mock(FF4j.class);
+        Mockito.when(ff4j.check(ArgumentMatchers.eq(FeatureList.EDITIONLESS))).thenReturn(false);
+        chplProductNumberUtil = new ChplProductNumberUtil(certifiedProductSearchResultDao, chplProductNumberDao, ff4j);
     }
 
     @Test

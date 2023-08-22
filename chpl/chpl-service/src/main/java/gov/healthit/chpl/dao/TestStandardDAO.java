@@ -1,6 +1,5 @@
 package gov.healthit.chpl.dao;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -10,58 +9,46 @@ import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.TestStandard;
-import gov.healthit.chpl.dto.TestStandardDTO;
 import gov.healthit.chpl.entity.TestStandardEntity;
 
 @Repository("testStandardDAO")
 public class TestStandardDAO extends BaseDAOImpl {
 
-    public TestStandardDTO getById(Long id) {
-        TestStandardDTO dto = null;
+    public TestStandard getById(Long id) {
         TestStandardEntity entity = getEntityById(id);
-
-        if (entity != null) {
-            dto = new TestStandardDTO(entity);
-        }
-        return dto;
+        return entity.toDomain();
     }
 
-    public List<TestStandardDTO> findAll() {
+    public List<TestStandard> findAll() {
         List<TestStandardEntity> entities = getAllEntities();
-        List<TestStandardDTO> dtos = new ArrayList<TestStandardDTO>();
-
-        for (TestStandardEntity entity : entities) {
-            TestStandardDTO dto = new TestStandardDTO(entity);
-            dtos.add(dto);
-        }
-        return dtos;
+        return entities.stream()
+                .map(entity -> entity.toDomain())
+                .collect(Collectors.toList());
     }
 
-    public TestStandardDTO getByNumberAndEdition(String number, Long editionId) {
-        TestStandardDTO dto = null;
+    public TestStandard getByNumberAndEdition(String number, Long editionId) {
         List<TestStandardEntity> entities = getEntitiesByNumberAndYear(number, editionId);
 
         if (entities != null && entities.size() > 0) {
-            dto = new TestStandardDTO(entities.get(0));
+            return entities.get(0).toDomain();
         }
-        return dto;
+        return null;
     }
 
     public List<TestStandard> getAllByNumberAndEdition(String number, Long editionId) {
         List<TestStandardEntity> entities = getEntitiesByNumberAndYear(number, editionId);
 
         return entities.stream()
-                .map(entity -> new TestStandard(entity))
+                .map(entity -> entity.toDomain())
                 .collect(Collectors.toList());
     }
 
-    public TestStandardDTO getByIdAndEdition(Long testStandardId, Long editionId) {
-        TestStandardDTO dto = null;
+    public TestStandard getByIdAndEdition(Long testStandardId, Long editionId) {
         List<TestStandardEntity> entities = getEntitiesByIdAndYear(testStandardId, editionId);
         if (entities != null && entities.size() > 0) {
-            dto = new TestStandardDTO(entities.get(0));
+            return entities.get(0).toDomain();
         }
-        return dto;
+        return null;
     }
 
     private List<TestStandardEntity> getAllEntities() {
@@ -73,8 +60,10 @@ public class TestStandardDAO extends BaseDAOImpl {
     private TestStandardEntity getEntityById(Long id) {
         TestStandardEntity entity = null;
 
-        Query query = entityManager.createQuery("SELECT ts " + "FROM TestStandardEntity ts "
-                + "WHERE (NOT deleted = true) " + "AND (ts.id = :entityid) ", TestStandardEntity.class);
+        Query query = entityManager.createQuery("SELECT ts "
+                + "FROM TestStandardEntity ts "
+                + "WHERE (NOT deleted = true) "
+                + "AND (ts.id = :entityid) ", TestStandardEntity.class);
         query.setParameter("entityid", id);
         List<TestStandardEntity> result = query.getResultList();
 

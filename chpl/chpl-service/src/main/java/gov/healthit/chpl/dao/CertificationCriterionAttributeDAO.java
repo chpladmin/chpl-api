@@ -8,7 +8,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.CertificationCriterion;
-import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.entity.CertificationCriterionAttributeEntity;
 
 @Repository
@@ -16,21 +15,21 @@ public class CertificationCriterionAttributeDAO extends BaseDAOImpl {
     public List<CertificationCriterion> getCriteriaForSvap() {
         return getAllCriteriaAttributeEntities().stream()
                 .filter(att -> att.getSvap())
-                .map(cca -> new CertificationCriterion(new CertificationCriterionDTO(cca.getCriterion())))
+                .map(cca -> cca.getCriterion().toDomain())
                 .collect(Collectors.toList());
     }
 
     public List<CertificationCriterion> getCriteriaForTestTools() {
         return getAllCriteriaAttributeEntities().stream()
                 .filter(att -> att.getTestTool())
-                .map(cca -> new CertificationCriterion(new CertificationCriterionDTO(cca.getCriterion())))
+                .map(cca -> cca.getCriterion().toDomain())
                 .collect(Collectors.toList());
     }
 
     public List<CertificationCriterion> getCriteriaForFunctionalitiesTested() {
         return getAllCriteriaAttributeEntities().stream()
                 .filter(att -> att.getFunctionalityTested())
-                .map(cca -> new CertificationCriterion(new CertificationCriterionDTO(cca.getCriterion())))
+                .map(cca -> cca.getCriterion().toDomain())
                 .collect(Collectors.toList());
     }
 

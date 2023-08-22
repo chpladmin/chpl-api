@@ -1,12 +1,10 @@
 package gov.healthit.chpl.upload.listing.normalizer;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +17,6 @@ import com.fasterxml.jackson.databind.type.CollectionType;
 import gov.healthit.chpl.criteriaattribute.functionalitytested.CertificationResultFunctionalityTested;
 import gov.healthit.chpl.criteriaattribute.functionalitytested.FunctionalityTested;
 import gov.healthit.chpl.criteriaattribute.functionalitytested.FunctionalityTestedDAO;
-import gov.healthit.chpl.criteriaattribute.functionalitytested.FunctionalityTestedManager;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.permissions.ResourcePermissions;
@@ -30,20 +27,16 @@ import lombok.extern.log4j.Log4j2;
 @Component
 @Log4j2
 public class FunctionalityTestedNormalizer {
-    private static final String PRACTICE_TYPE_ID_KEY = "id";
 
     private FunctionalityTestedDAO functionalityTestedDao;
-    private FunctionalityTestedManager functionalityTestedManager;
     private ResourcePermissions resourcePermissions;
     private List<RestrictedCriteriaFunctionalityTested> restrictedCriteriaFunctionalitiesTested;
 
     @Autowired
     public FunctionalityTestedNormalizer(FunctionalityTestedDAO functionalityTestedDao,
-            FunctionalityTestedManager functionalityTestedManager,
             ResourcePermissions resourcePermissions,
             @Value("${functionalitiesTested.restrictions}") String jsonRestrictions) {
         this.functionalityTestedDao = functionalityTestedDao;
-        this.functionalityTestedManager = functionalityTestedManager;
         this.resourcePermissions = resourcePermissions;
         initRestrictedCriteriaFunctionalitiesTested(jsonRestrictions);
     }
@@ -81,23 +74,7 @@ public class FunctionalityTestedNormalizer {
     }
 
     private void fillInFunctionalitiesTestedData(CertifiedProductSearchDetails listing, CertificationResult certResult) {
-        populateAllowedFunctionalitiesTested(listing, certResult);
         populateFunctionalitiesTestedIds(listing, certResult, certResult.getFunctionalitiesTested());
-    }
-
-    @Deprecated
-    private void populateAllowedFunctionalitiesTested(CertifiedProductSearchDetails listing, CertificationResult certResult) {
-        certResult.setAllowedTestFunctionalities(getAvailableFunctionalitiesTested(listing, certResult));
-    }
-
-    @Deprecated
-    private List<FunctionalityTested> getAvailableFunctionalitiesTested(CertifiedProductSearchDetails listing, CertificationResult certResult) {
-        Long practiceTypeId = MapUtils.getLong(listing.getPracticeType(), PRACTICE_TYPE_ID_KEY);
-        if (certResult != null && certResult.getCriterion() != null
-                && certResult.getCriterion().getId() != null) {
-            return functionalityTestedManager.getFunctionalitiesTested(certResult.getCriterion().getId(), practiceTypeId);
-        }
-        return new ArrayList<FunctionalityTested>();
     }
 
     private void populateFunctionalitiesTestedIds(CertifiedProductSearchDetails listing, CertificationResult certResult, List<CertificationResultFunctionalityTested> functionalitiesTested) {

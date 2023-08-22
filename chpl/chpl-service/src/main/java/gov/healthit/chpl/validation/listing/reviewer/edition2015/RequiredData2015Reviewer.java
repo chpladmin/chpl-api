@@ -2,10 +2,13 @@ package gov.healthit.chpl.validation.listing.reviewer.edition2015;
 
 import java.util.List;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.dao.TestDataDAO;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
@@ -20,10 +23,10 @@ import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
 import gov.healthit.chpl.util.ValidationUtils;
-import gov.healthit.chpl.validation.listing.reviewer.RequiredDataReviewer;
+import gov.healthit.chpl.validation.listing.reviewer.PermissionBasedReviewer;
 
 @Component("requiredData2015Reviewer")
-public class RequiredData2015Reviewer extends RequiredDataReviewer {
+public class RequiredData2015Reviewer extends PermissionBasedReviewer {
     private static final String[] UCD_RELATED_CERTS = {
             "170.315 (a)(1)", "170.315 (a)(2)", "170.315 (a)(3)", "170.315 (a)(4)", "170.315 (a)(5)", "170.315 (a)(6)",
             "170.315 (a)(7)", "170.315 (a)(8)", "170.315 (a)(9)", "170.315 (a)(14)", "170.315 (b)(2)", "170.315 (b)(3)"
@@ -33,21 +36,25 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
     private static final String G2_CRITERIA_NUMBER = "170.315 (g)(2)";
     private static final int MINIMUM_TEST_PARTICIPANT_COUNT = 10;
 
+    private CertificationResultRules certRules;
     private TestDataDAO testDataDao;
     private ValidationUtils validationUtils;
+    private FF4j ff4j;
 
     @Autowired
     @SuppressWarnings("checkstyle:parameternumber")
     public RequiredData2015Reviewer(CertificationResultRules certRules, ErrorMessageUtil msgUtil, TestDataDAO testDataDao,
-            ValidationUtils validationUtils, ResourcePermissions resourcePermissions) {
-        super(certRules, msgUtil, resourcePermissions);
+            ValidationUtils validationUtils, ResourcePermissions resourcePermissions, FF4j ff4j) {
+        super(msgUtil, resourcePermissions);
+        this.certRules = certRules;
         this.testDataDao = testDataDao;
         this.validationUtils = validationUtils;
+        this.ff4j = ff4j;
     }
 
     @Override
     public void review(CertifiedProductSearchDetails listing) {
-        super.review(listing);
+        reviewRequiredFieldsCommonToAllListings(listing);
 
         if (listing.getIcs() == null || listing.getIcs().getInherits() == null) {
             listing.addDataErrorMessage(msgUtil.getMessage("listing.missingIcs"));
@@ -307,6 +314,43 @@ public class RequiredData2015Reviewer extends RequiredDataReviewer {
                     listing.addBusinessErrorMessage("Test Data is required for certification "
                             + Util.formatCriteriaNumber(cert.getCriterion()) + ".");
                 }
+            }
+        }
+    }
+
+    private void reviewRequiredFieldsCommonToAllListings(CertifiedProductSearchDetails listing) {
+        if (!ff4j.check(FeatureList.EDITIONLESS)) {
+            if (listing.getEdition() == null
+                    || listing.getEdition().getId() == null) {
+                listing.addBusinessErrorMessage("Certification edition is required but was not found.");
+            }
+        }
+
+        if (StringUtils.isEmpty(listing.getAcbCertificationId())) {
+            listing.addWarningMessage("CHPL certification ID was not found.");
+        }
+        if (listing.getCertificationDate() == null) {
+            listing.addBusinessErrorMessage("Certification date was not found.");
+        }
+        if (listing.getDeveloper() == null) {
+            listing.addBusinessErrorMessage("A developer is required.");
+        }
+        if (listing.getProduct() == null || StringUtils.isEmpty(listing.getProduct().getName())) {
+            listing.addBusinessErrorMessage("A product name is required.");
+        }
+        if (listing.getVersion() == null || StringUtils.isEmpty(listing.getVersion().getVersion())) {
+            listing.addBusinessErrorMessage("A product version is required.");
+        }
+        if (listing.getOldestStatus() == null) {
+            listing.addBusinessErrorMessage(msgUtil.getMessage("listing.noStatusProvided"));
+        }
+
+        for (CertificationResult cert : listing.getCertificationResults()) {
+            if (BooleanUtils.isTrue(cert.isSuccess())
+                    && certRules.hasCertOption(cert.getCriterion().getId(), CertificationResultRules.GAP)
+                    && cert.isGap() == null) {
+                addBusinessCriterionError(listing, cert, "listing.criteria.missingGap",
+                        Util.formatCriteriaNumber(cert.getCriterion()));
             }
         }
     }

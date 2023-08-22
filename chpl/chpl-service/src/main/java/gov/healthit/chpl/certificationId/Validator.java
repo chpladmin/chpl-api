@@ -8,11 +8,11 @@ import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.dto.CQMMetDTO;
-import gov.healthit.chpl.dto.CertificationCriterionDTO;
 
 public abstract class Validator {
-    protected Map<CertificationCriterionDTO, Integer> criteriaMet = new HashMap<CertificationCriterionDTO, Integer>(100);
+    protected Map<CertificationCriterion, Integer> criteriaMet = new HashMap<CertificationCriterion, Integer>(100);
     protected Map<String, Integer> cqmsMet = new HashMap<String, Integer>(100);
     protected Map<String, Integer> domainsMet = new HashMap<String, Integer>(10);
     protected SortedSet<Integer> editionYears = new TreeSet<Integer>();
@@ -39,7 +39,7 @@ public abstract class Validator {
         return this.percents;
     }
 
-    public Map<CertificationCriterionDTO, Integer> getCriteriaMet() {
+    public Map<CertificationCriterion, Integer> getCriteriaMet() {
         return this.criteriaMet;
     }
 
@@ -87,7 +87,7 @@ public abstract class Validator {
     // validate
     //
     // **********************************************************************
-    public boolean validate(List<CertificationCriterionDTO> certDtos, List<CQMMetDTO> cqmDtos, List<Integer> years) {
+    public boolean validate(List<CertificationCriterion> certDtos, List<CQMMetDTO> cqmDtos, List<Integer> years) {
         this.collectMetData(certDtos, cqmDtos, years);
         this.attestationYear = Validator.calculateAttestationYear(this.editionYears);
         this.valid = this.onValidate();
@@ -99,15 +99,15 @@ public abstract class Validator {
     // collectMetData
     //
     // **********************************************************************
-    protected void collectMetData(List<CertificationCriterionDTO> certDtos, List<CQMMetDTO> cqmDtos, List<Integer> years) {
+    protected void collectMetData(List<CertificationCriterion> certDtos, List<CQMMetDTO> cqmDtos, List<Integer> years) {
 
         // Collect the certification years
         editionYears.addAll(years);
 
         // Collect criteria met
         if (null != certDtos) {
-            criteriaMet = new HashMap<CertificationCriterionDTO, Integer>(certDtos.size());
-            for (CertificationCriterionDTO certDetail : certDtos) {
+            criteriaMet = new HashMap<CertificationCriterion, Integer>(certDtos.size());
+            for (CertificationCriterion certDetail : certDtos) {
                 criteriaMet.put(certDetail, 1);
             }
         }
@@ -191,7 +191,7 @@ public abstract class Validator {
 
     protected Boolean criteriaMetContainsCriterion(String criterion) {
         Boolean found = false;
-        for (CertificationCriterionDTO cert : criteriaMet.keySet()) {
+        for (CertificationCriterion cert : criteriaMet.keySet()) {
             if (cert.getNumber().equalsIgnoreCase(criterion)) {
                 found = true;
             }

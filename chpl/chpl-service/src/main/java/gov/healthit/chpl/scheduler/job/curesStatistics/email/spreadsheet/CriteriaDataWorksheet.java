@@ -13,7 +13,6 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.statistics.CuresCriterionChartStatistic;
-import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.scheduler.job.curesStatistics.email.CuresStatisticsChartData;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import lombok.AllArgsConstructor;
@@ -83,7 +82,7 @@ public class CriteriaDataWorksheet {
         Sheet sheet = workbook.getSheet("Criteria Data");
 
         LocalDate reportDate = curesStatisticsChartData.getReportDate();
-        Map<CertificationCriterionDTO, CuresCriterionChartStatistic> dataMap = curesStatisticsChartData.getCuresCriterionChartStatistics(reportDate);
+        Map<CertificationCriterion, CuresCriterionChartStatistic> dataMap = curesStatisticsChartData.getCuresCriterionChartStatistics(reportDate);
 
         criteriaToRowMaps.stream()
                 .forEach(map ->
@@ -94,7 +93,7 @@ public class CriteriaDataWorksheet {
         return workbook;
     }
 
-    private CuresCriterionChartStatistic getCuresCriterionChartStatisticByCriterion(Map<CertificationCriterionDTO, CuresCriterionChartStatistic> dataMap, CertificationCriterion criterion) {
+    private CuresCriterionChartStatistic getCuresCriterionChartStatisticByCriterion(Map<CertificationCriterion, CuresCriterionChartStatistic> dataMap, CertificationCriterion criterion) {
         return dataMap.entrySet().stream()
                 .filter(entry -> entry.getKey().getId().equals(criterion.getId()))
                 .findFirst()

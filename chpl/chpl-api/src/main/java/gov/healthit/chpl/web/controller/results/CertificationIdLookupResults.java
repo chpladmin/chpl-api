@@ -9,7 +9,7 @@ import java.util.Set;
 
 import org.springframework.util.StringUtils;
 
-import gov.healthit.chpl.dto.CertificationCriterionDTO;
+import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import lombok.Data;
 import lombok.Singular;
@@ -23,7 +23,7 @@ public class CertificationIdLookupResults implements Serializable {
     private String ehrCertificationId;
     private String year;
     @Singular
-    private Set<CertificationCriterionDTO> criteria = null;
+    private Set<CertificationCriterion> criteria = null;
     @Singular
     private Set<String> cqms = null;
 

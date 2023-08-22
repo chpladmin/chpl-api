@@ -170,9 +170,19 @@ public class CertifiedProductSearchDetails implements Serializable {
     /**
      * The certification edition. It takes a value of 2011, 2014 or 2015.
      */
+    @Deprecated
+    @DeprecatedResponseField(message = "Please use the 'edition' field.", removalDate = "2024-01-01")
+    @Builder.Default
+    @XmlTransient
     @Schema(description = "The certification edition. It takes a value of 2011, 2014 or 2015.")
-    @XmlElement(required = true)
     private Map<String, Object> certificationEdition = new HashMap<String, Object>();
+
+    /**
+     * The certification edition.
+     */
+    @Schema(description = "The certification edition.")
+    @XmlElement(required = false, nillable = true)
+    private CertificationEdition edition;
 
     /**
      * For 2014 products, the practice setting for which the certified product is designed. It takes value of Ambulatory or Inpatient.
@@ -198,7 +208,7 @@ public class CertifiedProductSearchDetails implements Serializable {
             + "Drummond Group, ICSA Labs, UL LLC, National Technical Systems, SLI Global, CCHIT")
     @XmlElementWrapper(name = "testingLabs", nillable = true, required = false)
     @XmlElement(name = "testingLab")
-    @Singular
+    @Builder.Default
     private List<CertifiedProductTestingLab> testingLabs = new ArrayList<CertifiedProductTestingLab>();
 
     @XmlTransient
@@ -354,7 +364,7 @@ public class CertifiedProductSearchDetails implements Serializable {
             + "only for 2015 Edition, and a string variable that does not take any restrictions on formatting or values.")
     @XmlElementWrapper(name = "targetedUsers", nillable = true, required = false)
     @XmlElement(name = "targetedUser")
-    @Singular
+    @Builder.Default
     private List<CertifiedProductTargetedUser> targetedUsers = new ArrayList<CertifiedProductTargetedUser>();
 
     /**
@@ -418,7 +428,7 @@ public class CertifiedProductSearchDetails implements Serializable {
             + "the CHPL Public User Guide.")
     @XmlElementWrapper(name = "certificationEvents", nillable = true, required = false)
     @XmlElement(name = "certificationEvent")
-    @Singular
+    @Builder.Default
     private List<CertificationStatusEvent> certificationEvents = new ArrayList<CertificationStatusEvent>();
 
     /**
@@ -562,10 +572,20 @@ public class CertifiedProductSearchDetails implements Serializable {
         this.developer = developer;
     }
 
+    public CertificationEdition getEdition() {
+        return edition;
+    }
+
+    public void setEdition(CertificationEdition certEdition) {
+        this.edition = certEdition;
+    }
+
+    @Deprecated
     public Map<String, Object> getCertificationEdition() {
         return certificationEdition;
     }
 
+    @Deprecated
     public void setCertificationEdition(Map<String, Object> certificationEdition) {
         this.certificationEdition = certificationEdition;
     }

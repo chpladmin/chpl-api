@@ -24,9 +24,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.certificationId.Validator;
 import gov.healthit.chpl.certificationId.ValidatorFactory;
+import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
 import gov.healthit.chpl.dto.CQMMetDTO;
-import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.CertificationIdDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.exception.CertificationIdException;
@@ -197,13 +197,13 @@ public class CertificationIdController {
                     Validator validator = this.validatorFactory.getValidator(certDto.getYear());
 
                     // Lookup Criteria for Validating
-                    List<CertificationCriterionDTO> criteriaDtos = certificationIdManager
+                    List<CertificationCriterion> criteria = certificationIdManager
                             .getCriteriaMetByCertifiedProductIds(certProductIds);
 
                     // Lookup CQMs for Validating
                     List<CQMMetDTO> cqmDtos = certificationIdManager.getCqmsMetByCertifiedProductIds(certProductIds);
 
-                    boolean isValid = validator.validate(criteriaDtos, cqmDtos, new ArrayList<Integer>(yearSet));
+                    boolean isValid = validator.validate(criteria, cqmDtos, new ArrayList<Integer>(yearSet));
                     if (isValid) {
                         if (includeCriteria) {
                             results.setCriteria(validator.getCriteriaMet().keySet());
@@ -289,12 +289,12 @@ public class CertificationIdController {
         Validator validator = this.validatorFactory.getValidator(year);
 
         // Lookup Criteria for Validating
-        List<CertificationCriterionDTO> criteriaDtos = certificationIdManager.getCriteriaMetByCertifiedProductIds(productIdList);
+        List<CertificationCriterion> criteria = certificationIdManager.getCriteriaMetByCertifiedProductIds(productIdList);
 
         // Lookup CQMs for Validating
         List<CQMMetDTO> cqmDtos = certificationIdManager.getCqmsMetByCertifiedProductIds(productIdList);
 
-        boolean isValid = validator.validate(criteriaDtos, cqmDtos, new ArrayList<Integer>(yearSet));
+        boolean isValid = validator.validate(criteria, cqmDtos, new ArrayList<Integer>(yearSet));
         results.setValid(isValid);
         results.setMetPercentages(validator.getPercents());
         results.setMetCounts(validator.getCounts());

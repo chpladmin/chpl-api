@@ -15,6 +15,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class SubscriberValidationContext {
     private UUID subscriberId;
+    private Long roleId;
     private SubscriberDao subscriberDao;
     private ErrorMessageUtil errorMessageUtil;
 }

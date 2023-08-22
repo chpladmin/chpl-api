@@ -15,7 +15,6 @@ import org.apache.commons.validator.routines.EmailValidator;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.NonconformityType;
 import gov.healthit.chpl.domain.surveillance.RequirementType;
-import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -100,18 +99,6 @@ public final class Util {
         return result;
     }
 
-    public static boolean isCures(CertificationCriterionDTO criterion) {
-        return criterion.getTitle() != null && criterion.getTitle().contains(CURES_TITLE);
-    }
-
-    public static String formatCriteriaNumber(CertificationCriterionDTO criterion) {
-        String result = criterion.getNumber();
-        if (isCures(criterion)) {
-            result += CURES_SUFFIX;
-        }
-        return result;
-    }
-
     public static <T> List<T> getListFromIterator(Iterator<T> iterator) {
         Iterable<T> iterable = () -> iterator;
 
@@ -131,6 +118,18 @@ public final class Util {
             return list.size() > 1
                     ? String.join(", ", list.subList(0, list.size() - 1))
                         .concat(String.format("%s and ", list.size() > 2 ? "," : ""))
+                        .concat(list.get(list.size() - 1))
+                    : list.get(0);
+        }
+    }
+
+    public static String joinListGrammatically(List<String> list, String finalJoinStr) {
+        if (list == null || list.size() == 0) {
+            return "";
+        } else {
+            return list.size() > 1
+                    ? String.join(", ", list.subList(0, list.size() - 1))
+                        .concat(String.format("%s " + finalJoinStr + " ", list.size() > 2 ? "," : ""))
                         .concat(list.get(list.size() - 1))
                     : list.get(0);
         }

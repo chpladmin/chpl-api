@@ -2,6 +2,9 @@ package gov.healthit.chpl.validation.listing.reviewer.duplicate;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.ArrayList;
+import java.util.stream.Stream;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
@@ -30,18 +33,18 @@ public class IcsSourceDuplicateReviewerTest {
 
     @Test
     public void review_duplicateExists_warningFoundAndDuplicateRemoved() {
-        CertifiedProductSearchDetails listing = new CertifiedProductSearchDetails();
-        listing.setIcs(new InheritedCertificationStatus());
-
-        CertifiedProduct ics1 = new CertifiedProduct();
-        ics1.setChplProductNumber("Chpl1");
-
-        CertifiedProduct ics2 = new CertifiedProduct();
-        ics2.setChplProductNumber("Chpl1");
-
-        listing.getIcs().getParents().add(ics1);
-        listing.getIcs().getParents().add(ics2);
-
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .ics(InheritedCertificationStatus.builder()
+                        .inherits(true)
+                        .parents(Stream.of(
+                                CertifiedProduct.builder()
+                                    .chplProductNumber("Chpl1")
+                                    .build(),
+                                CertifiedProduct.builder()
+                                    .chplProductNumber("Chpl1")
+                                    .build()).toList())
+                        .build())
+                .build();
         reviewer.review(listing);
 
         assertEquals(1, listing.getWarningMessages().size());
@@ -53,18 +56,18 @@ public class IcsSourceDuplicateReviewerTest {
 
     @Test
     public void review_noDuplicates_noWarning() {
-        CertifiedProductSearchDetails listing = new CertifiedProductSearchDetails();
-        listing.setIcs(new InheritedCertificationStatus());
-
-        CertifiedProduct ics1 = new CertifiedProduct();
-        ics1.setChplProductNumber("Chpl1");
-
-        CertifiedProduct ics2 = new CertifiedProduct();
-        ics2.setChplProductNumber("Chpl2");
-
-        listing.getIcs().getParents().add(ics1);
-        listing.getIcs().getParents().add(ics2);
-
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .ics(InheritedCertificationStatus.builder()
+                        .inherits(true)
+                        .parents(Stream.of(
+                                CertifiedProduct.builder()
+                                    .chplProductNumber("Chpl1")
+                                    .build(),
+                                CertifiedProduct.builder()
+                                    .chplProductNumber("Chpl2")
+                                    .build()).toList())
+                        .build())
+                .build();
         reviewer.review(listing);
 
         assertEquals(0, listing.getWarningMessages().size());
@@ -73,9 +76,12 @@ public class IcsSourceDuplicateReviewerTest {
 
     @Test
     public void review_emptyIcsSource_noWarning() {
-        CertifiedProductSearchDetails listing = new CertifiedProductSearchDetails();
-        listing.setIcs(new InheritedCertificationStatus());
-        listing.getIcs().getParents().clear();
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .ics(InheritedCertificationStatus.builder()
+                        .inherits(true)
+                        .parents(new ArrayList<CertifiedProduct>())
+                        .build())
+                .build();
 
         reviewer.review(listing);
 
@@ -85,25 +91,24 @@ public class IcsSourceDuplicateReviewerTest {
 
     @Test
     public void review_duplicateExistsInLargeSet_warningFoundAndDuplicateRemoved() {
-        CertifiedProductSearchDetails listing = new CertifiedProductSearchDetails();
-        listing.setIcs(new InheritedCertificationStatus());
-
-        CertifiedProduct ics1 = new CertifiedProduct();
-        ics1.setChplProductNumber("Chpl1");
-
-        CertifiedProduct ics2 = new CertifiedProduct();
-        ics2.setChplProductNumber("Chpl2");
-
-        CertifiedProduct ics3 = new CertifiedProduct();
-        ics3.setChplProductNumber("Chpl1");
-
-        CertifiedProduct ics4 = new CertifiedProduct();
-        ics4.setChplProductNumber("Chpl4");
-
-        listing.getIcs().getParents().add(ics1);
-        listing.getIcs().getParents().add(ics2);
-        listing.getIcs().getParents().add(ics3);
-        listing.getIcs().getParents().add(ics4);
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .ics(InheritedCertificationStatus.builder()
+                        .inherits(true)
+                        .parents(Stream.of(
+                                CertifiedProduct.builder()
+                                    .chplProductNumber("Chpl1")
+                                    .build(),
+                                CertifiedProduct.builder()
+                                    .chplProductNumber("Chpl2")
+                                    .build(),
+                                CertifiedProduct.builder()
+                                    .chplProductNumber("Chpl1")
+                                    .build(),
+                                CertifiedProduct.builder()
+                                    .chplProductNumber("Chpl4")
+                                    .build()).toList())
+                        .build())
+                .build();
 
         reviewer.review(listing);
 

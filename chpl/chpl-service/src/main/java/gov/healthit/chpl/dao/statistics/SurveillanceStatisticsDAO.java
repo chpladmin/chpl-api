@@ -14,7 +14,6 @@ import gov.healthit.chpl.compliance.surveillance.entity.SurveillanceEntity;
 import gov.healthit.chpl.compliance.surveillance.entity.SurveillanceNonconformityEntity;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.surveillance.NonconformityClassification;
-import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.NonconformityTypeStatisticsDTO;
 import gov.healthit.chpl.scheduler.job.summarystatistics.data.EmailCertificationBodyStatistic;
 import gov.healthit.chpl.service.CertificationCriterionService;
@@ -260,7 +259,7 @@ public class SurveillanceStatisticsDAO extends BaseDAOImpl {
                                 ? ncType.getTitle()
                                 : null)
                         .criterion(ncType.getClassification().equals(NonconformityClassification.CRITERION.toString())
-                                ?  new CertificationCriterionDTO(certificationCriterionService.get(ncType.getId()))
+                                ?  certificationCriterionService.get(ncType.getId())
                                 : null)
                         .build())
             .filter(dto -> !dto.getNonconformityCount().equals(0L))

@@ -11,9 +11,9 @@ import org.springframework.transaction.annotation.Transactional;
 import gov.healthit.chpl.criteriaattribute.testtool.CertificationResultTestTool;
 import gov.healthit.chpl.criteriaattribute.testtool.TestTool;
 import gov.healthit.chpl.criteriaattribute.testtool.TestToolDAO;
+import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -65,7 +65,7 @@ public class TestToolReviewer extends PermissionBasedReviewer {
                 return;
             }
 
-            if (!isTestToolValidForCriteria(new CertificationCriterionDTO(cert.getCriterion()), tt.get())) {
+            if (!isTestToolValidForCriteria(cert.getCriterion(), tt.get())) {
                 listing.addBusinessErrorMessage(msgUtil.getMessage(
                         "listing.criteria.testToolCriterionMismatch",
                         testTool.getTestTool().getValue(),
@@ -86,13 +86,13 @@ public class TestToolReviewer extends PermissionBasedReviewer {
         return testTool != null && testTool.isRetired();
     }
 
-    private Boolean isTestToolValidForCriteria(CertificationCriterionDTO criterion, TestTool testTool) {
+    private Boolean isTestToolValidForCriteria(CertificationCriterion criterion, TestTool testTool) {
         try {
             return testToolDao.getAllTestToolCriteriaMap().stream()
-                    .filter(ttcm -> ttcm.getCriterion().getId().equals(criterion.getId())
-                            && ttcm.getTestTool().getId().equals(testTool.getId()))
-                    .findAny()
-                    .isPresent();
+                .filter(ttcm -> ttcm.getCriterion().getId().equals(criterion.getId())
+                        && ttcm.getTestTool().getId().equals(testTool.getId()))
+                .findAny()
+                .isPresent();
         } catch (EntityRetrievalException e) {
             LOGGER.error("Could not validate Test Tool for {}", criterion.getNumber(), e);
             return false;

@@ -2,14 +2,13 @@ package gov.healthit.chpl.upload.listing.normalizer;
 
 import java.util.HashMap;
 
-import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.dao.CertificationEditionDAO;
+import gov.healthit.chpl.domain.CertificationEdition;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.dto.CertificationEditionDTO;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ValidationUtils;
 import lombok.extern.log4j.Log4j2;
@@ -40,57 +39,59 @@ public class CertificationEditionNormalizer {
     }
 
     private boolean doesListingHaveEditionYear(CertifiedProductSearchDetails listing) {
-        Long editionId = MapUtils.getLong(listing.getCertificationEdition(), CertifiedProductSearchDetails.EDITION_ID_KEY);
-        String year = MapUtils.getString(listing.getCertificationEdition(), CertifiedProductSearchDetails.EDITION_NAME_KEY);
+        Long editionId = listing.getEdition() == null ? null : listing.getEdition().getId();
+        String year = listing.getEdition() == null ? null : listing.getEdition().getName();
         return editionId == null && !StringUtils.isEmpty(year);
     }
 
     private boolean doesListingHaveEditionId(CertifiedProductSearchDetails listing) {
-        Long editionId = MapUtils.getLong(listing.getCertificationEdition(), CertifiedProductSearchDetails.EDITION_ID_KEY);
-        String year = MapUtils.getString(listing.getCertificationEdition(), CertifiedProductSearchDetails.EDITION_NAME_KEY);
+        Long editionId = listing.getEdition() == null ? null : listing.getEdition().getId();
+        String year = listing.getEdition() == null ? null : listing.getEdition().getName();
         return editionId != null && StringUtils.isEmpty(year);
     }
 
     private void updateListingFromEditionYear(CertifiedProductSearchDetails listing) {
-        String year = MapUtils.getString(listing.getCertificationEdition(), CertifiedProductSearchDetails.EDITION_NAME_KEY);
-        CertificationEditionDTO foundEdition = editionDao.getByYear(year);
-        populateListingEditionFromDto(listing, foundEdition);
+        String year = listing.getEdition() == null ? null : listing.getEdition().getName();
+        CertificationEdition foundEdition = editionDao.getByYear(year);
+        populateListingEdition(listing, foundEdition);
     }
 
     private void updateListingFromEditionId(CertifiedProductSearchDetails listing) {
-        Long editionId = MapUtils.getLong(listing.getCertificationEdition(), CertifiedProductSearchDetails.EDITION_ID_KEY);
-        CertificationEditionDTO foundEdition = null;
+        Long editionId = listing.getEdition() == null ? null : listing.getEdition().getId();
+        CertificationEdition foundEdition = null;
         try {
             foundEdition = editionDao.getById(editionId);
         } catch (Exception ex) {
             LOGGER.warn("No certification edition found with ID " + editionId);
         }
-        populateListingEditionFromDto(listing, foundEdition);
+        populateListingEdition(listing, foundEdition);
     }
 
     private boolean isEditionPortionOfChplProductNumberValid(CertifiedProductSearchDetails listing) {
         return !StringUtils.isEmpty(listing.getChplProductNumber())
                 && validationUtils.chplNumberPartIsPresentAndValid(listing.getChplProductNumber(),
                     ChplProductNumberUtil.EDITION_CODE_INDEX,
-                    ChplProductNumberUtil.EDITION_CODE_REGEX);
+                    chplProductNumberUtil.getCertificationEditionCodeRegex());
     }
 
     private void updateEditionFromChplProductNumber(CertifiedProductSearchDetails listing) {
         String editionCodeFromChplProductNumber = chplProductNumberUtil.getCertificationEditionCode(listing.getChplProductNumber());
-        if (!StringUtils.isEmpty(editionCodeFromChplProductNumber)) {
+        if (!StringUtils.isEmpty(editionCodeFromChplProductNumber)
+                && !editionCodeFromChplProductNumber.equals(ChplProductNumberUtil.EDITION_CODE_NONE)) {
             String year = "20" + editionCodeFromChplProductNumber;
-            CertificationEditionDTO foundEdition = editionDao.getByYear(year);
-            populateListingEditionFromDto(listing, foundEdition);
+            CertificationEdition foundEdition = editionDao.getByYear(year);
+            populateListingEdition(listing, foundEdition);
         }
     }
 
-    private void populateListingEditionFromDto(CertifiedProductSearchDetails listing, CertificationEditionDTO editionDto) {
-        if (editionDto != null) {
+    private void populateListingEdition(CertifiedProductSearchDetails listing, CertificationEdition edition) {
+        if (edition != null) {
+            listing.setEdition(edition);
             if (listing.getCertificationEdition() == null) {
                 listing.setCertificationEdition(new HashMap<String, Object>());
             }
-            listing.getCertificationEdition().put(CertifiedProductSearchDetails.EDITION_ID_KEY, editionDto.getId());
-            listing.getCertificationEdition().put(CertifiedProductSearchDetails.EDITION_NAME_KEY, editionDto.getYear());
+            listing.getCertificationEdition().put(CertifiedProductSearchDetails.EDITION_ID_KEY, edition.getId());
+            listing.getCertificationEdition().put(CertifiedProductSearchDetails.EDITION_NAME_KEY, edition.getName());
         }
     }
 }

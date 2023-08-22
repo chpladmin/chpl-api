@@ -78,10 +78,7 @@ public class ListingSearchDao extends BaseDAOImpl {
         return ListingSearchResult.builder()
                 .id(entity.getId())
                 .chplProductNumber(entity.getChplProductNumber())
-                .edition(IdNamePair.builder()
-                        .id(entity.getCertificationEditionId())
-                        .name(entity.getCertificationEditionYear())
-                        .build())
+                .edition(buildEdition(entity))
                 .curesUpdate(entity.getCuresUpdate())
                 .certificationBody(IdNamePair.builder()
                         .id(entity.getCertificationBodyId())
@@ -138,6 +135,16 @@ public class ListingSearchDao extends BaseDAOImpl {
                 .serviceBaseUrlList(convertToCriterionWithStringField(entity.getCriteriaWithServiceBaseUrlList()))
                 .svaps(convertToSetOfCriteriaWithLongFields(entity.getCriteriaWithSvap(), CertifiedProductSearchResult.SMILEY_SPLIT_CHAR))
                 .build();
+    }
+
+    private IdNamePair buildEdition(ListingSearchEntity entity) {
+        if (entity.getCertificationEditionId() == null) {
+            return null;
+        }
+        return IdNamePair.builder()
+            .id(entity.getCertificationEditionId())
+            .name(entity.getCertificationEditionYear())
+            .build();
     }
 
     private PromotingInteroperabilitySearchResult convertToPromotingInteroperability(Long userCount, LocalDate userDate) {

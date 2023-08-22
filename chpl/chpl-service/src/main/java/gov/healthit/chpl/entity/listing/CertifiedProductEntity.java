@@ -64,8 +64,8 @@ public class CertifiedProductEntity implements Serializable {
     @Column(name = "certification_body_id", nullable = false)
     private Long certificationBodyId;
 
-    @Basic(optional = false)
-    @Column(name = "certification_edition_id", nullable = false)
+    @Basic(optional = true)
+    @Column(name = "certification_edition_id", nullable = true)
     private Long certificationEditionId;
 
     @Basic(optional = true)

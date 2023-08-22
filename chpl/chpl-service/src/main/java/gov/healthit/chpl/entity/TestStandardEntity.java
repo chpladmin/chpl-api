@@ -13,8 +13,14 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-import gov.healthit.chpl.util.Util;
+import gov.healthit.chpl.domain.TestStandard;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
+@Getter
+@Setter
+@ToString
 @Entity
 @Table(name = "test_standard")
 public class TestStandardEntity {
@@ -39,10 +45,10 @@ public class TestStandardEntity {
     private CertificationEditionEntity certificationEdition;
 
     @Column(name = "deleted", nullable = false)
-    protected Boolean deleted;
+    private Boolean deleted;
 
     @Column(name = "last_modified_user", nullable = false)
-    protected Long lastModifiedUser;
+    private Long lastModifiedUser;
 
     @Column(name = "creation_date", insertable = false, updatable = false)
     private Date creationDate;
@@ -50,75 +56,12 @@ public class TestStandardEntity {
     @Column(name = "last_modified_date", insertable = false, updatable = false)
     private Date lastModifiedDate;
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(final Long id) {
-        this.id = id;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(final String description) {
-        this.description = description;
-    }
-
-    public Date getCreationDate() {
-        return Util.getNewDate(creationDate);
-    }
-
-    public void setCreationDate(final Date creationDate) {
-        this.creationDate = Util.getNewDate(creationDate);
-    }
-
-    public Boolean getDeleted() {
-        return deleted;
-    }
-
-    public void setDeleted(final Boolean deleted) {
-        this.deleted = deleted;
-    }
-
-    public Date getLastModifiedDate() {
-        return Util.getNewDate(lastModifiedDate);
-    }
-
-    public void setLastModifiedDate(final Date lastModifiedDate) {
-        this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
-    }
-
-    public Long getLastModifiedUser() {
-        return lastModifiedUser;
-    }
-
-    public void setLastModifiedUser(final Long lastModifiedUser) {
-        this.lastModifiedUser = lastModifiedUser;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(final String name) {
-        this.name = name;
-    }
-
-    public Long getCertificationEditionId() {
-        return certificationEditionId;
-    }
-
-    public void setCertificationEditionId(final Long certificationEditionId) {
-        this.certificationEditionId = certificationEditionId;
-    }
-
-    public CertificationEditionEntity getCertificationEdition() {
-        return certificationEdition;
-    }
-
-    public void setCertificationEdition(final CertificationEditionEntity certificationEdition) {
-        this.certificationEdition = certificationEdition;
+    public TestStandard toDomain() {
+        return TestStandard.builder()
+                .id(getId())
+                .description(getDescription())
+                .name(getName())
+                .year(getCertificationEdition().getYear())
+                .build();
     }
 }

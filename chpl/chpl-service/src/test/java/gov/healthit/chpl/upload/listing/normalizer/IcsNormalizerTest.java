@@ -6,30 +6,31 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
-
-import javax.persistence.EntityNotFoundException;
+import java.util.stream.Stream;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
-import gov.healthit.chpl.dao.CertifiedProductSearchDAO;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.InheritedCertificationStatus;
+import gov.healthit.chpl.util.CertifiedProductUtil;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
+import gov.healthit.chpl.util.DateUtil;
 
 public class IcsNormalizerTest {
 
-    private CertifiedProductSearchDAO cpDao;
+    private CertifiedProductUtil cpUtil;
     private IcsNormalizer normalizer;
 
     @Before
     public void setup() {
-        cpDao = Mockito.mock(CertifiedProductSearchDAO.class);
-        normalizer = new IcsNormalizer(cpDao, new ChplProductNumberUtil());
+        cpUtil = Mockito.mock(CertifiedProductUtil.class);
+        normalizer = new IcsNormalizer(cpUtil, new ChplProductNumberUtil());
     }
 
     @Test
@@ -147,9 +148,9 @@ public class IcsNormalizerTest {
     public void normalize_icsParentsHaveIds_noChanges() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .ics(InheritedCertificationStatus.builder()
-                        .parent(CertifiedProduct.builder()
+                        .parents(Stream.of(CertifiedProduct.builder()
                                 .id(1L)
-                                .build())
+                                .build()).toList())
                         .build())
                 .build();
         normalizer.normalize(listing);
@@ -163,15 +164,17 @@ public class IcsNormalizerTest {
     public void normalize_icsParentsMissingIds_getsData() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .ics(InheritedCertificationStatus.builder()
-                        .parent(CertifiedProduct.builder()
+                        .parents(Stream.of(CertifiedProduct.builder()
                                 .chplProductNumber("15.04.04.2526.WEBe.06.00.1.210101")
-                                .build())
+                                .build()).toList())
                         .build())
                 .build();
-        Mockito.when(cpDao.getByChplProductNumber(ArgumentMatchers.anyString()))
+        Mockito.when(cpUtil.getListing(ArgumentMatchers.anyString()))
         .thenReturn(CertifiedProduct.builder()
                 .id(1L)
                 .chplProductNumber("15.04.04.2526.WEBe.06.00.1.210101")
+                .certificationDate(DateUtil.toEpochMillis(LocalDate.parse("2023-06-10")))
+                .certificationStatus("Active")
                  .build());
         normalizer.normalize(listing);
         assertNotNull(listing.getIcs());
@@ -185,13 +188,13 @@ public class IcsNormalizerTest {
     public void normalize_icsParentsMissingIdsNoMatchingChplProductNumber_getsNoData() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .ics(InheritedCertificationStatus.builder()
-                        .parent(CertifiedProduct.builder()
+                        .parents(Stream.of(CertifiedProduct.builder()
                                 .chplProductNumber("15.04.04.2526.WEBe.06.00.1.210101")
-                                .build())
+                                .build()).toList())
                         .build())
                 .build();
-        Mockito.when(cpDao.getByChplProductNumber(ArgumentMatchers.anyString()))
-        .thenThrow(EntityNotFoundException.class);
+        Mockito.when(cpUtil.getListing(ArgumentMatchers.anyString()))
+            .thenReturn(null);
         normalizer.normalize(listing);
         assertNotNull(listing.getIcs());
         assertNotNull(listing.getIcs().getParents());

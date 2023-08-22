@@ -19,6 +19,7 @@ import gov.healthit.chpl.dao.PracticeTypeDAO;
 import gov.healthit.chpl.dao.ProductClassificationTypeDAO;
 import gov.healthit.chpl.dao.ProductDAO;
 import gov.healthit.chpl.domain.CertificationCriterion;
+import gov.healthit.chpl.domain.CertificationEdition;
 import gov.healthit.chpl.domain.CertificationStatus;
 import gov.healthit.chpl.domain.CriteriaSpecificDescriptiveModel;
 import gov.healthit.chpl.domain.DescriptiveModel;
@@ -26,8 +27,6 @@ import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.domain.KeyValueModelStatuses;
 import gov.healthit.chpl.domain.PracticeType;
 import gov.healthit.chpl.dto.CQMCriterionDTO;
-import gov.healthit.chpl.dto.CertificationCriterionDTO;
-import gov.healthit.chpl.dto.CertificationEditionDTO;
 import gov.healthit.chpl.dto.ProductClassificationTypeDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import lombok.extern.log4j.Log4j2;
@@ -82,17 +81,17 @@ public class CacheableDimensionalDataManager {
     @Cacheable(value = CacheNames.EDITION_NAMES)
     public Set<KeyValueModel> getEditionNames(final Boolean simple) {
         LOGGER.debug("Getting all edition names from the database (not cached).");
-        List<CertificationEditionDTO> certificationEditions = certificationEditionDao.findAll();
+        List<CertificationEdition> certificationEditions = certificationEditionDao.findAll();
         Set<KeyValueModel> editionNames = new HashSet<KeyValueModel>();
 
-        for (CertificationEditionDTO dto : certificationEditions) {
+        for (CertificationEdition edition : certificationEditions) {
 
             if (simple) {
-                if (dto.getYear().equals("2011")) {
+                if (edition.getName().equals("2011")) {
                     continue;
                 }
             }
-            editionNames.add(new KeyValueModel(dto.getId(), dto.getYear()));
+            editionNames.add(new KeyValueModel(edition.getId(), edition.getName()));
         }
 
         return editionNames;
@@ -162,12 +161,12 @@ public class CacheableDimensionalDataManager {
     public Set<CriteriaSpecificDescriptiveModel> getCertificationCriterionNumbers() throws EntityRetrievalException {
         LOGGER.debug("Getting all criterion numbers from the database (not cached).");
 
-        List<CertificationCriterionDTO> dtos = this.certificationCriterionDao.findAll();
+        List<CertificationCriterion> criteria = this.certificationCriterionDao.findAll();
         Set<CriteriaSpecificDescriptiveModel> criterionNames = new HashSet<CriteriaSpecificDescriptiveModel>();
 
-        for (CertificationCriterionDTO dto : dtos) {
-            criterionNames.add(new CriteriaSpecificDescriptiveModel(dto.getId(), dto.getNumber(), dto.getTitle(),
-                    new CertificationCriterion(dto)));
+        for (CertificationCriterion criterion : criteria) {
+            criterionNames.add(new CriteriaSpecificDescriptiveModel(criterion.getId(), criterion.getNumber(), criterion.getTitle(),
+                    criterion));
         }
 
         return criterionNames;

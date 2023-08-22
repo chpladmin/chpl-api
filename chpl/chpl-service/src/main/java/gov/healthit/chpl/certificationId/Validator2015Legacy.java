@@ -8,7 +8,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import gov.healthit.chpl.domain.CertificationCriterion;
-import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.service.CertificationCriterionService.Criteria2015;
 import gov.healthit.chpl.util.Util;
@@ -78,7 +77,7 @@ public class Validator2015Legacy extends Validator {
         for (String crit : CURES_REQUIRED_CRITERIA) {
             Boolean foundOriginal = false;
             Boolean foundRevised = false;
-            for (CertificationCriterionDTO cert : criteriaMet.keySet()) {
+            for (CertificationCriterion cert : criteriaMet.keySet()) {
                 if (cert.getNumber().equalsIgnoreCase(crit)) {
                     if (cert.getTitle().contains("Cures Update")) {
                         foundRevised = true;
@@ -113,7 +112,7 @@ public class Validator2015Legacy extends Validator {
 
     protected boolean isAAValid() {
         for (CertificationCriterion crit : aaCriteriaOr) {
-            Optional<CertificationCriterionDTO> metAaCriterion = criteriaMet.keySet().stream()
+            Optional<CertificationCriterion> metAaCriterion = criteriaMet.keySet().stream()
                 .filter(criterionMetDto -> criterionMetDto.getId().equals(crit.getId()))
                 .findAny();
             if (metAaCriterion.isPresent()) {
