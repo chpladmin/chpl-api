@@ -71,14 +71,14 @@ public class FunctionalityTestedDuplicateReviewerTest {
         CertificationResultFunctionalityTested funcTest1 = CertificationResultFunctionalityTested.builder()
                 .functionalityTested(FunctionalityTested.builder()
                         .id(1L)
-                        .value("FuncTest1")
+                        .regulatoryTextCitation("FuncTest1")
                         .build())
                 .build();
 
         CertificationResultFunctionalityTested funcTest2 = CertificationResultFunctionalityTested.builder()
                 .functionalityTested(FunctionalityTested.builder()
                         .id(2L)
-                        .value("FuncTest2")
+                        .regulatoryTextCitation("FuncTest2")
                         .build())
                 .build();
 
@@ -111,28 +111,28 @@ public class FunctionalityTestedDuplicateReviewerTest {
         CertificationResultFunctionalityTested funcTest1 = CertificationResultFunctionalityTested.builder()
                 .functionalityTested(FunctionalityTested.builder()
                         .id(1L)
-                        .value("FuncTest1")
+                        .regulatoryTextCitation("FuncTest1")
                         .build())
                 .build();
 
         CertificationResultFunctionalityTested funcTest2 = CertificationResultFunctionalityTested.builder()
                 .functionalityTested(FunctionalityTested.builder()
                         .id(2L)
-                        .value("FuncTest2")
+                        .regulatoryTextCitation("FuncTest2")
                         .build())
                 .build();
 
         CertificationResultFunctionalityTested funcTest3 = CertificationResultFunctionalityTested.builder()
                 .functionalityTested(FunctionalityTested.builder()
                         .id(1L)
-                        .value("FuncTest1")
+                        .regulatoryTextCitation("FuncTest1")
                         .build())
                 .build();
 
         CertificationResultFunctionalityTested funcTest4 = CertificationResultFunctionalityTested.builder()
                 .functionalityTested(FunctionalityTested.builder()
                         .id(3L)
-                        .value("FuncTest3")
+                        .regulatoryTextCitation("FuncTest3")
                         .build())
                 .build();
 

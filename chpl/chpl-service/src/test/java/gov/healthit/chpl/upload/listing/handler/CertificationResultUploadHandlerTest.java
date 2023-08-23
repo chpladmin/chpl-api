@@ -368,8 +368,8 @@ public class CertificationResultUploadHandlerTest {
         assertEquals(1, certResult.getFunctionalitiesTested().size());
         CertificationResultFunctionalityTested func = certResult.getFunctionalitiesTested().get(0);
         assertNotNull(func);
-        assertNotNull(func.getFunctionalityTested().getValue());
-        assertEquals("func", func.getFunctionalityTested().getValue());
+        assertNotNull(func.getFunctionalityTested().getRegulatoryTextCitation());
+        assertEquals("func", func.getFunctionalityTested().getRegulatoryTextCitation());
     }
 
     @Test
@@ -385,12 +385,12 @@ public class CertificationResultUploadHandlerTest {
         assertEquals(2, certResult.getFunctionalitiesTested().size());
         CertificationResultFunctionalityTested func = certResult.getFunctionalitiesTested().get(0);
         assertNotNull(func);
-        assertNotNull(func.getFunctionalityTested().getValue());
-        assertEquals("func", func.getFunctionalityTested().getValue());
+        assertNotNull(func.getFunctionalityTested().getRegulatoryTextCitation());
+        assertEquals("func", func.getFunctionalityTested().getRegulatoryTextCitation());
         func = certResult.getFunctionalitiesTested().get(1);
         assertNotNull(func);
-        assertNotNull(func.getFunctionalityTested().getValue());
-        assertEquals("func2", func.getFunctionalityTested().getValue());
+        assertNotNull(func.getFunctionalityTested().getRegulatoryTextCitation());
+        assertEquals("func2", func.getFunctionalityTested().getRegulatoryTextCitation());
     }
 
     @Test
@@ -407,8 +407,8 @@ public class CertificationResultUploadHandlerTest {
         assertEquals(1, certResult.getFunctionalitiesTested().size());
         CertificationResultFunctionalityTested func = certResult.getFunctionalitiesTested().get(0);
         assertNotNull(func);
-        assertNotNull(func.getFunctionalityTested().getValue());
-        assertEquals("func", func.getFunctionalityTested().getValue());
+        assertNotNull(func.getFunctionalityTested().getRegulatoryTextCitation());
+        assertEquals("func", func.getFunctionalityTested().getRegulatoryTextCitation());
     }
 
     @Test
