@@ -98,7 +98,7 @@ public class FunctionalityTestedReviewer {
                 functionalitiesTestedIter.remove();
                 listing.addWarningMessage(msgUtil.getMessage("listing.criteria.functionalityTestedCriterionMismatch",
                         Util.formatCriteriaNumber(certResult.getCriterion()),
-                        functionalityTested.getFunctionalityTested().getValue(),
+                        functionalityTested.getFunctionalityTested().getRegulatoryTextCitation(),
                         getDelimitedListOfValidCriteriaNumbers(functionalityTested),
                         Util.formatCriteriaNumber(certResult.getCriterion())));
             }

@@ -31,22 +31,15 @@ public class FunctionalityTestedDuplicateReviewerTest {
         reviewer = new FunctionalityTestedDuplicateReviewer(msgUtil);
     }
 
-    /*
     @Test
     public void review_duplicateExists_warningFoundAndDuplicateRemoved() {
         CertifiedProductSearchDetails listing = new CertifiedProductSearchDetails();
         CertificationResult cert = getCertResult();
 
-        CertificationResultFunctionalityTested funcTest1 = CertificationResultFunctionalityTested.builder()
-                .functionalityTested(FunctionalityTested.builder()
-                        .id(1L)
-                        .value("FuncTest1")
-                        .build())
-                .build();
         CertificationResultFunctionalityTested funcTest2 = CertificationResultFunctionalityTested.builder()
                 .functionalityTested(FunctionalityTested.builder()
                         .id(2L)
-                        .value("FuncTest2")
+                        .regulatoryTextCitation("FuncTest2")
                         .build())
                 .build();
 
@@ -57,11 +50,10 @@ public class FunctionalityTestedDuplicateReviewerTest {
 
         assertEquals(1, listing.getWarningMessages().size());
         assertEquals(1, listing.getWarningMessages().stream()
-                .filter(warning -> warning.equals(String.format(ERR_MSG, CRITERION_NUMBER, "FuncTest1")))
+                .filter(warning -> warning.equals(String.format(ERR_MSG, CRITERION_NUMBER, "FuncTest2")))
                 .count());
         assertEquals(1, cert.getFunctionalitiesTested().size());
     }
-    */
 
     @Test
     public void review_noDuplicates_noWarning() {
