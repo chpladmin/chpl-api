@@ -12,7 +12,6 @@ public class FunctionalityTestedXmlGenerator extends XmlGenerator {
             sw.writeStartElement(rootNodeName);
             createSimpleElement(functionalityTested.getEndDay(), "endDay", sw);
             createSimpleElement(functionalityTested.getId(), "id", sw);
-            PracticeTypeXmlGenerator.add(functionalityTested.getPracticeType(), "practiceType", sw);
             createSimpleElement(functionalityTested.getRegulatoryTextCitation(), "regulatoryTextCitation", sw);
             createSimpleElement(functionalityTested.getRequiredDay(), "requiredDay", sw);
             RuleXmlGenerator.add(functionalityTested.getRule(), "rule", sw);
