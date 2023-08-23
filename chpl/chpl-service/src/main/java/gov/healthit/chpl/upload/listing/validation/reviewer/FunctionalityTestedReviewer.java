@@ -81,7 +81,7 @@ public class FunctionalityTestedReviewer {
                 functionalitiesTestedIter.remove();
                 listing.addWarningMessage(msgUtil.getMessage(
                         "listing.criteria.functionalityTestedNotFoundAndRemoved",
-                        Util.formatCriteriaNumber(certResult.getCriterion()), functionalityTested.getFunctionalityTested().getValue()));
+                        Util.formatCriteriaNumber(certResult.getCriterion()), functionalityTested.getFunctionalityTested().getRegulatoryTextCitation()));
             }
         }
     }

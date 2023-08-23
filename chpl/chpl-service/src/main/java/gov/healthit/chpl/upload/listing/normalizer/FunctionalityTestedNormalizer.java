@@ -74,25 +74,22 @@ public class FunctionalityTestedNormalizer {
     }
 
     private void fillInFunctionalitiesTestedData(CertifiedProductSearchDetails listing, CertificationResult certResult) {
-        populateFunctionalitiesTestedIds(listing, certResult, certResult.getFunctionalitiesTested());
+        populateFunctionalitiesTested(listing, certResult, certResult.getFunctionalitiesTested());
     }
 
-    private void populateFunctionalitiesTestedIds(CertifiedProductSearchDetails listing, CertificationResult certResult, List<CertificationResultFunctionalityTested> functionalitiesTested) {
+    private void populateFunctionalitiesTested(CertifiedProductSearchDetails listing, CertificationResult certResult, List<CertificationResultFunctionalityTested> functionalitiesTested) {
         if (functionalitiesTested != null && functionalitiesTested.size() > 0) {
             functionalitiesTested.stream()
                 .filter(functionalityTested -> functionalityTested.getId() == null)
-                .forEach(functionalityTested -> populateFunctionalityTestedId(listing, certResult, functionalityTested));
+                .forEach(functionalityTested -> populateFunctionalityTested(listing, certResult, functionalityTested));
         }
     }
 
-    private void populateFunctionalityTestedId(CertifiedProductSearchDetails listing,
-            CertificationResult certResult,
-            CertificationResultFunctionalityTested functionalityTested) {
-        if (!StringUtils.isEmpty(functionalityTested.getFunctionalityTested().getValue())) {
+    private void populateFunctionalityTested(CertifiedProductSearchDetails listing, CertificationResult certResult, CertificationResultFunctionalityTested functionalityTested) {
+        if (!StringUtils.isEmpty(functionalityTested.getFunctionalityTested().getRegulatoryTextCitation())) {
             FunctionalityTested foundFunctionalityTested =
-                    getFunctionalityTested(functionalityTested.getFunctionalityTested().getValue(), certResult.getCriterion().getId());
+                    getFunctionalityTested(functionalityTested.getFunctionalityTested().getRegulatoryTextCitation(), certResult.getCriterion().getId());
             if (foundFunctionalityTested != null) {
-                //functionalityTested.setFunctionalityTestedId(foundFunctionalityTested.getId());
                 functionalityTested.setFunctionalityTested(foundFunctionalityTested);
             }
         }
