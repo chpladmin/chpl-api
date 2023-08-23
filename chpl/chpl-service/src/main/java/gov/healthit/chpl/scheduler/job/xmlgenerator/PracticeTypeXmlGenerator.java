@@ -9,8 +9,8 @@ public class PracticeTypeXmlGenerator extends XmlGenerator {
     public static void add(PracticeType practiceType, String rootNodeName, XMLStreamWriter sw) throws XMLStreamException {
         if (practiceType != null) {
             sw.writeStartElement(rootNodeName);
-            createSimpleElement(practiceType.getId(), "id", sw);
             createSimpleElement(practiceType.getDescription(), "description", sw);
+            createSimpleElement(practiceType.getId(), "id", sw);
             createSimpleElement(practiceType.getName(), "name", sw);
             sw.writeEndElement();
         }
