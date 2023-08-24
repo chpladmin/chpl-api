@@ -1,7 +1,31 @@
 package gov.healthit.chpl.upload.listing.normalizer;
 
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Stream;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.ArgumentMatchers;
+import org.mockito.Mockito;
+
+import gov.healthit.chpl.criteriaattribute.functionalitytested.CertificationResultFunctionalityTested;
+import gov.healthit.chpl.criteriaattribute.functionalitytested.FunctionalityTested;
+import gov.healthit.chpl.criteriaattribute.functionalitytested.FunctionalityTestedDAO;
+import gov.healthit.chpl.criteriaattribute.functionalitytested.FunctionalityTestedManager;
+import gov.healthit.chpl.domain.CertificationCriterion;
+import gov.healthit.chpl.domain.CertificationResult;
+import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.permissions.ResourcePermissions;
+
 public class FunctionalityTestedNormalizerTest {
-/*
+
     private static final String RESTRICTED_FUNCTIONALITIES_TESTED_JSON = "[{\"criterionId\":27, \"restrictedFunctionalitiesTested\": "
             + "[{\"functionalityTestedId\":56, \"allowedRoleNames\":[\"ROLE_ADMIN\",\"ROLE_ONC\"]}]}]";
     private static final Long CRITERIA_ID_WITH_RESTRICTIONS = 27L;
@@ -12,11 +36,14 @@ public class FunctionalityTestedNormalizerTest {
     private FunctionalityTestedDAO functionalityTestedDao;
     private ResourcePermissions resourcePermissions;
     private FunctionalityTestedNormalizer normalizer;
+    private FunctionalityTestedManager functionalityTestedManager;
 
     @Before
     public void before() {
         functionalityTestedDao = Mockito.mock(FunctionalityTestedDAO.class);
         resourcePermissions = Mockito.mock(ResourcePermissions.class);
+        functionalityTestedManager = Mockito.mock(FunctionalityTestedManager.class);
+
         normalizer = new FunctionalityTestedNormalizer(functionalityTestedDao,
                 resourcePermissions, RESTRICTED_FUNCTIONALITIES_TESTED_JSON);
     }
@@ -66,7 +93,6 @@ public class FunctionalityTestedNormalizerTest {
             .thenReturn(new HashMap<Long, List<FunctionalityTested>>());
 
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .edition(create2015Edition())
                 .certificationResult(CertificationResult.builder()
                         .success(true)
                         .criterion(CertificationCriterion.builder()
@@ -87,7 +113,7 @@ public class FunctionalityTestedNormalizerTest {
         functionalitiesTested.add(CertificationResultFunctionalityTested.builder()
                 .functionalityTested(FunctionalityTested.builder()
                         .id(null)
-                        .value("valid")
+                        .regulatoryTextCitation("valid")
                         .build())
                 .build());
 
@@ -101,11 +127,11 @@ public class FunctionalityTestedNormalizerTest {
                             .number("170.315 (a)(13)")
                             .build()).toList())
                     .build()));
+
         Mockito.when(functionalityTestedDao.getFunctionalitiesTestedCriteriaMaps())
             .thenReturn(funcTestedMaps);
 
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .edition(create2015Edition())
                 .certificationResult(CertificationResult.builder()
                         .success(true)
                         .criterion(CertificationCriterion.builder()
@@ -116,6 +142,7 @@ public class FunctionalityTestedNormalizerTest {
                         .build())
                 .build();
         normalizer.normalize(listing);
+
         assertEquals(1, listing.getCertificationResults().get(0).getFunctionalitiesTested().size());
         assertEquals(1L, listing.getCertificationResults().get(0).getFunctionalitiesTested().get(0).getFunctionalityTested().getId());
     }
@@ -223,9 +250,7 @@ public class FunctionalityTestedNormalizerTest {
         Mockito.when(functionalityTestedManager.getFunctionalitiesTested(ArgumentMatchers.anyLong(), ArgumentMatchers.nullable(Long.class)))
             .thenReturn(allowedFunctionalitiesTested);
 
-        Map<String, Object> editionMap = create2015EditionMap();
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .certificationEdition(editionMap)
                 .certificationResult(CertificationResult.builder()
                         .success(true)
                         .criterion(CertificationCriterion.builder()
@@ -236,11 +261,4 @@ public class FunctionalityTestedNormalizerTest {
                 .build();
     }
 
-    private CertificationEdition create2015Edition() {
-        return CertificationEdition.builder()
-                .id(3L)
-                .name("2015")
-                .build();
-    }
-*/
 }
