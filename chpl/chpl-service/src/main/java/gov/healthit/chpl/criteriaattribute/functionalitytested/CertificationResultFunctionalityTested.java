@@ -81,8 +81,9 @@ public class CertificationResultFunctionalityTested implements Serializable {
         if (this.getFunctionalityTested().getId() != null && anotherFunc.getFunctionalityTested().getId() != null
                 && this.getFunctionalityTested().getId().longValue() == anotherFunc.getFunctionalityTested().getId().longValue()) {
             result = true;
-        } else if (!StringUtils.isEmpty(this.getFunctionalityTested().getValue()) && !StringUtils.isEmpty(anotherFunc.getFunctionalityTested().getValue())
-                && this.getFunctionalityTested().getValue().equalsIgnoreCase(anotherFunc.getFunctionalityTested().getValue())) {
+        } else if (!StringUtils.isEmpty(this.getFunctionalityTested().getRegulatoryTextCitation())
+                    && !StringUtils.isEmpty(anotherFunc.getFunctionalityTested().getRegulatoryTextCitation())
+                && this.getFunctionalityTested().getRegulatoryTextCitation().equalsIgnoreCase(anotherFunc.getFunctionalityTested().getRegulatoryTextCitation())) {
             result = true;
         }
         return result;
