@@ -121,13 +121,13 @@ public class ListingsWithCriterionCSVPresenter {
             for (int i = 0; i < certResult.getFunctionalitiesTested().size(); i++) {
                 CertificationResultFunctionalityTested functionalityTested = certResult.getFunctionalitiesTested().get(i);
                 if (i == 0) {
-                    certificationResultFirstRow.add(functionalityTested.getFunctionalityTested().getValue());
+                    certificationResultFirstRow.add(functionalityTested.getFunctionalityTested().getRegulatoryTextCitation());
                 } else if (result.size() > i) {
-                    result.get(i).add(functionalityTested.getFunctionalityTested().getValue());
+                    result.get(i).add(functionalityTested.getFunctionalityTested().getRegulatoryTextCitation());
                 } else {
                     List<String> newRow = getSingleValuedCertificationResultData(listing, certResult);
                     newRow.add(""); //blank space for test standards
-                    newRow.add(functionalityTested.getFunctionalityTested().getValue());
+                    newRow.add(functionalityTested.getFunctionalityTested().getRegulatoryTextCitation());
                     result.add(newRow);
                 }
             }
