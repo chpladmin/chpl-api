@@ -175,7 +175,7 @@ public class CertifiedProductSearchBasicDetails implements Serializable {
     /**
      * Decertification day
      */
-    @Schema(description = "Decertification date represented in milliseconds since epoch")
+    @Schema(description = "Decertification day")
     private LocalDate decertificationDay;
 
     /**
