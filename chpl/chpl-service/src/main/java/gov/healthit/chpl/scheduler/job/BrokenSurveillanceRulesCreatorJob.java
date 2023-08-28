@@ -44,6 +44,7 @@ import gov.healthit.chpl.scheduler.surveillance.rules.RuleComplianceCalculator;
 import gov.healthit.chpl.search.dao.ListingSearchDao;
 import gov.healthit.chpl.search.domain.ListingSearchResult;
 import gov.healthit.chpl.service.CertificationCriterionService;
+import gov.healthit.chpl.util.CertificationStatusUtil;
 
 @DisallowConcurrentExecution
 public class BrokenSurveillanceRulesCreatorJob extends QuartzJob {
@@ -117,14 +118,13 @@ public class BrokenSurveillanceRulesCreatorJob extends QuartzJob {
 
     private List<ListingSearchResult> getListingsForReport() {
         return listingSearchDao.getListingSearchResults().stream()
-                .filter(listing -> isEdition2015(listing)
-                        && (isCertificationStatusSuspendedByAcb(listing)
-                                || hasSurveillances(listing)))
+                .filter(listing -> isCertificationStatusSuspendedByAcb(listing)
+                                || (isActive(listing) && hasSurveillances(listing)))
                 .collect(Collectors.toList());
     }
 
-    private boolean isEdition2015(ListingSearchResult listing) {
-        return listing.getEdition() != null && listing.getEdition().getName().equals(EDITION_2015);
+    private boolean isActive(ListingSearchResult listing) {
+        return CertificationStatusUtil.getActiveStatusNames().contains(listing.getCertificationStatus().getName());
     }
 
     private boolean isCertificationStatusSuspendedByAcb(ListingSearchResult listing) {
