@@ -176,7 +176,7 @@ public class CertifiedProductDetailsDTO implements Serializable {
         this.mandatoryDisclosures = entity.getMandatoryDisclosures();
         this.year = entity.getYear();
         this.certificationDate = entity.getCertificationDate();
-        //this.decertificationDate = entity.getDecertificationDate();
+        this.decertificationDate = entity.getDecertificationDate();
         this.decertificationDay = DateUtil.toLocalDate(entity.getDecertificationDate().getTime());
         this.countCqms = entity.getCountCqms();
         this.countCertifications = entity.getCountCertifications();
