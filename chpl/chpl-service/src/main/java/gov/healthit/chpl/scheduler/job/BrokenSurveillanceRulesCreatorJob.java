@@ -49,7 +49,6 @@ import gov.healthit.chpl.util.CertificationStatusUtil;
 @DisallowConcurrentExecution
 public class BrokenSurveillanceRulesCreatorJob extends QuartzJob {
     private static final Logger LOGGER = LogManager.getLogger("brokenSurveillanceRulesCreatorJobLogger");
-    private static final String EDITION_2015 = "2015";
     private DateTimeFormatter dateFormatter;
 
     @Autowired
