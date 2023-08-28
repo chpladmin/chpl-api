@@ -177,7 +177,7 @@ public class CertifiedProductDetailsDTO implements Serializable {
         this.year = entity.getYear();
         this.certificationDate = entity.getCertificationDate();
         this.decertificationDate = entity.getDecertificationDate();
-        this.decertificationDay = DateUtil.toLocalDate(entity.getDecertificationDate().getTime());
+        this.decertificationDay = entity.getDecertificationDate() != null ? DateUtil.toLocalDate(entity.getDecertificationDate().getTime()) : null;
         this.countCqms = entity.getCountCqms();
         this.countCertifications = entity.getCountCertifications();
         this.countSurveillance = entity.getCountSurveillance();
@@ -282,7 +282,7 @@ public class CertifiedProductDetailsDTO implements Serializable {
         this.year = entity.getYear();
         this.certificationDate = entity.getCertificationDate();
         this.decertificationDate = entity.getDecertificationDate();
-        this.decertificationDay = DateUtil.toLocalDate(entity.getDecertificationDate().getTime());
+        this.decertificationDay = entity.getDecertificationDate() != null ? DateUtil.toLocalDate(entity.getDecertificationDate().getTime()) : null;
         this.countCqms = entity.getCountCqms();
         this.countCertifications = entity.getCountCertifications();
         this.countSurveillance = entity.getCountSurveillance();
