@@ -1,6 +1,7 @@
 package gov.healthit.chpl.dao;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -282,6 +283,27 @@ public class CertifiedProductDAO extends BaseDAOImpl {
         List<CertifiedProductDetailsEntitySimple> results = query.getResultList();
         return results.stream()
                 .map(result -> new CertifiedProductDetailsDTO(result))
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<CertifiedProductDetailsDTO> getListingsByStatus(Collection<CertificationStatusType> certificationStatuses) {
+        String hql = "SELECT cpd "
+                + "FROM CertifiedProductDetailsEntity cpd "
+                + "WHERE cpd.certificationStatusName IN (:certificationStatusNames) "
+                + "AND cpd.deleted = false ";
+        Query query = entityManager.createQuery(hql, CertifiedProductDetailsEntity.class);
+        List<String> certificationStatusNames = certificationStatuses.stream()
+                .map(CertificationStatusType::getName)
+                .collect(Collectors.toList());
+        query.setParameter("certificationStatusNames", certificationStatusNames);
+
+        List<CertifiedProductDetailsEntity> queryResults = query.getResultList();
+        if (queryResults == null || queryResults.size() == 0) {
+            return new ArrayList<CertifiedProductDetailsDTO>();
+        }
+        return queryResults.stream()
+                .map(entity -> new CertifiedProductDetailsDTO(entity))
                 .collect(Collectors.toList());
     }
 
