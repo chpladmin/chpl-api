@@ -325,17 +325,6 @@ public class CertifiedProductDAO extends BaseDAOImpl {
     }
 
     @Transactional(readOnly = true)
-    public List<Long> findIdsByEdition(String edition) {
-        Query query = entityManager.createQuery("SELECT cpd.id "
-                + "FROM CertifiedProductDetailsEntity cpd "
-                + "WHERE (NOT deleted = true) "
-                + "AND cpd.year = :edition ", Long.class);
-        query.setParameter("edition", edition.trim());
-        List<Long> ids = query.getResultList();
-        return ids;
-    }
-
-    @Transactional(readOnly = true)
     public List<CertifiedProductDetailsDTO> findWithSurveillance() {
 
         List<CertifiedProductDetailsEntity> entities = entityManager.createQuery("SELECT DISTINCT cp "
