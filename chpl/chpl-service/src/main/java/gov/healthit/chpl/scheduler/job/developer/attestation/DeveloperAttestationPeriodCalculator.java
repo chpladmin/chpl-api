@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -22,7 +21,6 @@ import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.domain.CertificationStatus;
 import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.domain.Developer;
-import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.search.ListingSearchService;
 import gov.healthit.chpl.search.domain.ListingSearchResult;
 import gov.healthit.chpl.search.domain.SearchRequest;
@@ -138,14 +136,14 @@ public class DeveloperAttestationPeriodCalculator {
     }
 
     private Map<Long, List<ListingSearchResult>> getMapOfListingSearchResultsByDeveloper(Logger logger) {
-        return get2015Listing(logger).stream()
+        return getActiveListings(logger).stream()
                 .collect(Collectors.groupingBy(listingSearchResult -> listingSearchResult.getDeveloper().getId()));
     }
 
-    private List<ListingSearchResult> get2015Listing(Logger logger) {
-        logger.info("Getting all listings for 2015 Edition");
+    private List<ListingSearchResult> getActiveListings(Logger logger) {
+        logger.info("Getting all active listings");
         SearchRequest searchRequest = SearchRequest.builder()
-                .certificationEditions(Stream.of(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear()).collect(Collectors.toSet()))
+                .certificationStatuses(CertificationStatusUtil.getActiveStatusNames().stream().collect(Collectors.toSet()))
                 .pageSize(MAX_PAGE_SIZE)
                 .pageNumber(0)
                 .build();
