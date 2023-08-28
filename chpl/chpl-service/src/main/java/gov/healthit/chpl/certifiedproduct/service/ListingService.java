@@ -53,6 +53,7 @@ import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.DimensionalDataManager;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
+import gov.healthit.chpl.util.DateUtil;
 import lombok.extern.log4j.Log4j2;
 
 @Component
@@ -168,6 +169,7 @@ public class ListingService {
                 .acbCertificationId(dto.getAcbCertificationId())
                 .certificationDate(dto.getCertificationDate() != null ? dto.getCertificationDate().getTime() : null)
                 .decertificationDate(dto.getDecertificationDate() != null ? dto.getDecertificationDate().getTime() : null)
+                .decertificationDay(dto.getDecertificationDate() != null ? DateUtil.toLocalDate(dto.getDecertificationDate().getTime()) : null)
                 .curesUpdate(dto.getCuresUpdate())
                 .certificationEdition(getCertificationEditionDeprecated(dto))
                 .edition(getCertificationEdition(dto))

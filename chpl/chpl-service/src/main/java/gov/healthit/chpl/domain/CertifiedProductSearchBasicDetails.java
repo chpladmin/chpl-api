@@ -167,8 +167,16 @@ public class CertifiedProductSearchBasicDetails implements Serializable {
     /**
      * Decertification date represented in milliseconds since epoch
      */
+    @Deprecated
+    @DeprecatedResponseField(message = "Please use the 'decertificationDay' field.", removalDate = "2024-01-01")
     @Schema(description = "Decertification date represented in milliseconds since epoch")
     private Long decertificationDate;
+
+    /**
+     * Decertification day
+     */
+    @Schema(description = "Decertification date represented in milliseconds since epoch")
+    private LocalDate decertificationDay;
 
     /**
      * Number of certification criteria this listing attests to.
