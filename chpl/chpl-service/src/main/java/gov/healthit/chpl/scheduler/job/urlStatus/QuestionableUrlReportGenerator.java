@@ -47,6 +47,7 @@ import gov.healthit.chpl.scheduler.job.urlStatus.data.UrlType;
 import gov.healthit.chpl.scheduler.job.urlStatus.email.FailedUrlCsvFormatter;
 import gov.healthit.chpl.scheduler.job.urlStatus.email.FailedUrlResult;
 import gov.healthit.chpl.scheduler.job.urlStatus.email.QuestionableUrlLookupDao;
+import gov.healthit.chpl.util.CertificationStatusUtil;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2(topic = "questionableUrlReportGeneratorJobLogger")
@@ -89,15 +90,12 @@ public class QuestionableUrlReportGenerator extends QuartzJob {
     private String emailAttachmentName;
 
     private FailedUrlCsvFormatter csvFormatter = new FailedUrlCsvFormatter();
-    private List<CertificationStatusType> activeStatuses = new ArrayList<CertificationStatusType>();
+    private List<CertificationStatusType> activeStatuses = CertificationStatusUtil.getActiveStatuses();
 
     @Override
     public void execute(JobExecutionContext jobContext) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
         LOGGER.info("********* Starting the Questionable URL Report Generator job. *********");
-        activeStatuses.add(CertificationStatusType.Active);
-        activeStatuses.add(CertificationStatusType.SuspendedByAcb);
-        activeStatuses.add(CertificationStatusType.SuspendedByOnc);
 
         try {
             List<FailedUrlResult> questionableUrls = new ArrayList<FailedUrlResult>();

@@ -25,6 +25,7 @@ import gov.healthit.chpl.dto.ActivityDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.util.CertificationStatusUtil;
 import gov.healthit.chpl.util.DateUtil;
 
 // This class *should* only be instantiated by RealWorldTestingServiceFactory, so that the memoization is threadsafe.
@@ -221,9 +222,7 @@ public class RealWorldTestingEligiblityService {
     }
 
     private boolean isActive(String statusName) {
-        return statusName.equals(CertificationStatusType.Active.getName())
-                || statusName.equals(CertificationStatusType.SuspendedByAcb.getName())
-                || statusName.equals(CertificationStatusType.SuspendedByOnc.getName());
+        return CertificationStatusUtil.getActiveStatusNames().contains(statusName);
     }
 
     private Date convertLocalDateToDateUtcAtMidnight(LocalDate localDate) {

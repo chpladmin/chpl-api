@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.persistence.Query;
 
@@ -13,10 +12,10 @@ import org.springframework.stereotype.Repository;
 import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.statistics.ListingCuresStatusStatistic;
-import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.entity.statistics.ListingCuresStatusStatisticEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.util.CertificationStatusUtil;
 
 
 @Repository("listingCuresStatusStatisticsDAO")
@@ -24,10 +23,7 @@ public class ListingCuresStatusStatisticsDAO extends BaseDAOImpl {
     private List<String> activeStatusNames;
 
     public ListingCuresStatusStatisticsDAO() {
-        activeStatusNames = Stream.of(CertificationStatusType.Active.getName(),
-                CertificationStatusType.SuspendedByAcb.getName(),
-                CertificationStatusType.SuspendedByOnc.getName())
-                .collect(Collectors.toList());
+        activeStatusNames = CertificationStatusUtil.getActiveStatusNames();
     }
 
     public LocalDate getDateOfMostRecentStatistics() {

@@ -3,7 +3,6 @@ package gov.healthit.chpl.scheduler.job.urlStatus.data;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.persistence.Query;
 
@@ -14,15 +13,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
-import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.util.CertificationStatusUtil;
 
 @Repository("urlCheckerDao")
 public class UrlCheckerDao extends BaseDAOImpl {
-    private List<String> ACTIVE_STATUSES = Stream.of(CertificationStatusType.Active.getName(),
-            CertificationStatusType.SuspendedByAcb.getName(),
-            CertificationStatusType.SuspendedByOnc.getName()).toList();
+    private List<String> activeStatuses = CertificationStatusUtil.getActiveStatusNames();
 
     @Transactional
     public List<UrlResult> getAllUrlResults() {
@@ -239,7 +236,7 @@ public class UrlCheckerDao extends BaseDAOImpl {
                         + "AND mandatoryDisclosures != '' "
                         + "AND certificationStatusName IN (:activeStatuses) "
                         + "AND deleted = false")
-                .setParameter("activeStatuses", ACTIVE_STATUSES)
+                .setParameter("activeStatuses", activeStatuses)
                 .getResultList();
         return mandatoryDisclosureWebsites.stream()
                 .filter(website -> !StringUtils.isEmpty(website))
@@ -259,7 +256,7 @@ public class UrlCheckerDao extends BaseDAOImpl {
                         + "AND reportFileLocation != '' "
                         + "AND certificationStatusName IN (:activeStatuses) "
                         + "AND deleted = false")
-                .setParameter("activeStatuses", ACTIVE_STATUSES)
+                .setParameter("activeStatuses", activeStatuses)
                 .getResultList();
         return testResultsWebsites.stream()
                 .filter(website -> !StringUtils.isEmpty(website))
@@ -279,7 +276,7 @@ public class UrlCheckerDao extends BaseDAOImpl {
                         + "AND sedReportFileLocation != '' "
                         + "AND certificationStatusName IN (:activeStatuses) "
                         + "AND deleted = false")
-                .setParameter("activeStatuses", ACTIVE_STATUSES)
+                .setParameter("activeStatuses", activeStatuses)
                 .getResultList();
         return fullUsabilityReportWebsites.stream()
                 .filter(website -> !StringUtils.isEmpty(website))
@@ -300,7 +297,7 @@ public class UrlCheckerDao extends BaseDAOImpl {
                         + "AND cre.apiDocumentation != '' "
                         + "AND cpd.certificationStatusName IN (:activeStatuses) "
                         + "AND cre.deleted = false")
-                .setParameter("activeStatuses", ACTIVE_STATUSES)
+                .setParameter("activeStatuses", activeStatuses)
                 .getResultList();
         return apiDocumentationWebsites.stream()
                 .filter(website -> !StringUtils.isEmpty(website))
@@ -321,7 +318,7 @@ public class UrlCheckerDao extends BaseDAOImpl {
                         + "AND cre.exportDocumentation != '' "
                         + "AND cpd.certificationStatusName IN (:activeStatuses) "
                         + "AND cre.deleted = false")
-                .setParameter("activeStatuses", ACTIVE_STATUSES)
+                .setParameter("activeStatuses", activeStatuses)
                 .getResultList();
         return exportDocumentationWebsites.stream()
                 .filter(website -> !StringUtils.isEmpty(website))
@@ -342,7 +339,7 @@ public class UrlCheckerDao extends BaseDAOImpl {
                         + "AND cre.documentationUrl != '' "
                         + "AND cpd.certificationStatusName IN (:activeStatuses) "
                         + "AND cre.deleted = false")
-                .setParameter("activeStatuses", ACTIVE_STATUSES)
+                .setParameter("activeStatuses", activeStatuses)
                 .getResultList();
         return documentationUrlWebsites.stream()
                 .filter(website -> !StringUtils.isEmpty(website))
@@ -363,7 +360,7 @@ public class UrlCheckerDao extends BaseDAOImpl {
                         + "AND cre.useCases != '' "
                         + "AND cpd.certificationStatusName IN (:activeStatuses) "
                         + "AND cre.deleted = false")
-                .setParameter("activeStatuses", ACTIVE_STATUSES)
+                .setParameter("activeStatuses", activeStatuses)
                 .getResultList();
         return useCasesWebsites.stream()
                 .filter(website -> !StringUtils.isEmpty(website))
@@ -384,7 +381,7 @@ public class UrlCheckerDao extends BaseDAOImpl {
                         + "AND cre.serviceBaseUrlList != '' "
                         + "AND cpd.certificationStatusName IN (:activeStatuses) "
                         + "AND cre.deleted = false")
-                .setParameter("activeStatuses", ACTIVE_STATUSES)
+                .setParameter("activeStatuses", activeStatuses)
                 .getResultList();
         return useCasesWebsites.stream()
                 .filter(website -> !StringUtils.isEmpty(website))
@@ -404,7 +401,7 @@ public class UrlCheckerDao extends BaseDAOImpl {
                         + "AND rwtPlansUrl != '' "
                         + "AND certificationStatusName IN (:activeStatuses) "
                         + "AND deleted = false")
-                .setParameter("activeStatuses", ACTIVE_STATUSES)
+                .setParameter("activeStatuses", activeStatuses)
                 .getResultList();
         return rwtPlansWebsites.stream()
                 .filter(website -> !StringUtils.isEmpty(website))
@@ -424,7 +421,7 @@ public class UrlCheckerDao extends BaseDAOImpl {
                         + "AND rwtResultsUrl != '' "
                         + "AND certificationStatusName IN (:activeStatuses) "
                         + "AND deleted = false")
-                .setParameter("activeStatuses", ACTIVE_STATUSES)
+                .setParameter("activeStatuses", activeStatuses)
                 .getResultList();
         return rwtResultsWebsites.stream()
                 .filter(website -> !StringUtils.isEmpty(website))
@@ -444,7 +441,7 @@ public class UrlCheckerDao extends BaseDAOImpl {
                         + "AND svapNoticeUrl != '' "
                         + "AND certificationStatusName IN (:activeStatuses) "
                         + "AND deleted = false")
-                .setParameter("activeStatuses", ACTIVE_STATUSES)
+                .setParameter("activeStatuses", activeStatuses)
                 .getResultList();
         return svapNoticeWebsites.stream()
                 .filter(website -> !StringUtils.isEmpty(website))

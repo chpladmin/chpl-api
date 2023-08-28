@@ -6,7 +6,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +19,7 @@ import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.statistics.CriterionUpgradedToCuresFromOriginalListingStatistic;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.service.CertificationCriterionService;
+import gov.healthit.chpl.util.CertificationStatusUtil;
 import lombok.extern.log4j.Log4j2;
 
 @Component
@@ -43,10 +43,7 @@ public class OriginalCriterionActivityStatisticsCalculator {
         this.certifiedProductDao = certifiedProductDao;
         this.criterionUpgradedToCuresFromOriginalStatisticsDao = criterionUpgradedToCuresFromOriginalStatisticsDao;
         curesEffectiveDate = specialProperties.getEffectiveRuleTimestamp();
-        activeStatuses = Stream.of(CertificationStatusType.Active,
-                CertificationStatusType.SuspendedByAcb,
-                CertificationStatusType.SuspendedByOnc)
-                .collect(Collectors.toList());
+        activeStatuses = CertificationStatusUtil.getActiveStatuses();
     }
 
     @Transactional

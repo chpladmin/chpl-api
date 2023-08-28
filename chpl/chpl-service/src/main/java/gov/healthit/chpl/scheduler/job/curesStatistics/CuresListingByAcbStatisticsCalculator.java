@@ -6,7 +6,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ForkJoinPool;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.transaction.Transactional;
 
@@ -25,10 +24,10 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.domain.statistics.CuresListingStatisticByAcb;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
-import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.service.CertificationCriterionService.Criteria2015;
+import gov.healthit.chpl.util.CertificationStatusUtil;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2(topic = "curesStatisticsCreatorJobLogger")
@@ -55,11 +54,7 @@ public class CuresListingByAcbStatisticsCalculator {
         this.threadCount = threadCount;
 
         populateCuresCriteria(certificationCriterionService);
-
-        activeStatusNames = Stream.of(CertificationStatusType.Active.getName(),
-                CertificationStatusType.SuspendedByAcb.getName(),
-                CertificationStatusType.SuspendedByOnc.getName())
-                .collect(Collectors.toList());
+        activeStatusNames = CertificationStatusUtil.getActiveStatusNames();
     }
 
     @Transactional

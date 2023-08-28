@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.persistence.NoResultException;
 import javax.persistence.Query;
@@ -14,10 +13,10 @@ import org.springframework.stereotype.Repository;
 import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.statistics.CriterionListingCountStatistic;
-import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.entity.statistics.CriterionListingCountStatisticEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.util.CertificationStatusUtil;
 import lombok.extern.log4j.Log4j2;
 
 @Repository("criterionListingStatisticsDAO")
@@ -26,10 +25,7 @@ public class CriterionListingStatisticsDAO extends BaseDAOImpl {
     private List<String> activeStatusNames;
 
     public CriterionListingStatisticsDAO() {
-        activeStatusNames = Stream.of(CertificationStatusType.Active.getName(),
-                CertificationStatusType.SuspendedByAcb.getName(),
-                CertificationStatusType.SuspendedByOnc.getName())
-                .collect(Collectors.toList());
+        activeStatusNames = CertificationStatusUtil.getActiveStatusNames();
     }
 
     public Long getListingCountForCriterion(Long certificationCriterionId) {

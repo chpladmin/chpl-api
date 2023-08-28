@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.transaction.Transactional;
 
@@ -24,6 +23,7 @@ import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.service.CertificationCriterionService;
+import gov.healthit.chpl.util.CertificationStatusUtil;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.extern.log4j.Log4j2;
@@ -55,12 +55,7 @@ public class CuresCriteriaStatisticsByAcbCalculator {
         this.curesStatisticsByAcbDAO = curesStatisticsByAcbDAO;
 
         curesEffectiveDate = specialProperties.getEffectiveRuleDate();
-
-        activeStatuses = Stream.of(CertificationStatusType.Active,
-                CertificationStatusType.SuspendedByAcb,
-                CertificationStatusType.SuspendedByOnc)
-                .collect(Collectors.toList());
-
+        activeStatuses = CertificationStatusUtil.getActiveStatuses();
         curesCriteriaUpdates = certificationCriterionService.getOriginalToCuresCriteriaMap().entrySet().stream()
                 .map(entry -> new CuresCriteriaUpdate(entry.getKey(), entry.getValue()))
                 .collect(Collectors.toList());

@@ -16,8 +16,8 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.exception.ValidationException;
+import gov.healthit.chpl.util.CertificationStatusUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.ValidationUtils;
 import gov.healthit.chpl.validation.listing.reviewer.ComparisonReviewer;
@@ -86,7 +86,7 @@ public class PrivacyAndSecurityCriteriaReviewerPreErdPhase2 implements Compariso
     private boolean isActiveOrSuspendedCertificationStatusType(CertifiedProductSearchDetails listing) throws ValidationException {
         if (listing.getCurrentStatus() != null && listing.getCurrentStatus().getStatus() != null
                 && StringUtils.isNotEmpty(listing.getCurrentStatus().getStatus().getName())) {
-            return CertificationStatusType.getActiveAndSuspendedNames()
+            return CertificationStatusUtil.getActiveStatusNames()
                     .contains(listing.getCurrentStatus().getStatus().getName());
         } else {
             throw new ValidationException("Listing status could not be obtained and thus the listing edit "

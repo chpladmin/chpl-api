@@ -17,10 +17,10 @@ import org.springframework.stereotype.Repository;
 import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.statistics.PrivacyAndSecurityListingStatistic;
-import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.entity.statistics.PrivacyAndSecurityListingStatisticEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.util.CertificationStatusUtil;
 import lombok.extern.log4j.Log4j2;
 
 
@@ -50,10 +50,7 @@ public class PrivacyAndSecurityListingStatisticsDAO extends BaseDAOImpl {
             LOGGER.error("No value found for privacyAndSecurityRequiredCriteria property");
         }
 
-        activeStatusNames = Stream.of(CertificationStatusType.Active.getName(),
-                CertificationStatusType.SuspendedByAcb.getName(),
-                CertificationStatusType.SuspendedByOnc.getName())
-                .collect(Collectors.toList());
+        activeStatusNames = CertificationStatusUtil.getActiveStatusNames();
     }
 
     public LocalDate getDateOfMostRecentStatistics() {

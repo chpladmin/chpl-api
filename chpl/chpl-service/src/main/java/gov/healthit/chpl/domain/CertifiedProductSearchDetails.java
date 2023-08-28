@@ -37,6 +37,7 @@ import gov.healthit.chpl.domain.comparator.CertificationStatusEventComparator;
 import gov.healthit.chpl.domain.compliance.DirectReview;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.entity.CertificationStatusType;
+import gov.healthit.chpl.util.CertificationStatusUtil;
 import gov.healthit.chpl.util.DateUtil;
 import gov.healthit.chpl.util.LocalDateAdapter;
 import gov.healthit.chpl.util.LocalDateDeserializer;
@@ -1064,10 +1065,8 @@ public class CertifiedProductSearchDetails implements Serializable {
 
     @JsonIgnore
     public boolean isCertificateActive() {
-        String currentStatus = NullSafeEvaluator.eval(() -> getCurrentStatus().getStatus().getName(), "");
-        return currentStatus.equalsIgnoreCase(CertificationStatusType.Active.getName())
-                || currentStatus.equalsIgnoreCase(CertificationStatusType.SuspendedByAcb.getName())
-                || currentStatus.equalsIgnoreCase(CertificationStatusType.SuspendedByOnc.getName());
+        String currentStatusName = NullSafeEvaluator.eval(() -> getCurrentStatus().getStatus().getName(), "");
+        return CertificationStatusUtil.getActiveStatusNames().contains(currentStatusName);
     }
 
     public LegacyCertificationStatus getCertificationStatus() {

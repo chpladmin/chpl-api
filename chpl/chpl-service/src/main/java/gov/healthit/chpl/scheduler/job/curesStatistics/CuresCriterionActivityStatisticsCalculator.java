@@ -5,8 +5,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -19,6 +17,7 @@ import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.statistics.CuresCriterionUpgradedWithoutOriginalListingStatistic;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.service.CertificationCriterionService;
+import gov.healthit.chpl.util.CertificationStatusUtil;
 import lombok.extern.log4j.Log4j2;
 
 @Component
@@ -42,10 +41,7 @@ public class CuresCriterionActivityStatisticsCalculator {
         this.certifiedProductDao = certifiedProductDao;
         this.curesCriterionUpgradedWithoutOriginalStatisticDao = curesCriterionUpgradedWithoutOriginalStatisticDao;
         curesEffectiveDate = specialProperties.getEffectiveRuleTimestamp();
-        activeStatuses = Stream.of(CertificationStatusType.Active,
-                CertificationStatusType.SuspendedByAcb,
-                CertificationStatusType.SuspendedByOnc)
-                .collect(Collectors.toList());
+        activeStatuses = CertificationStatusUtil.getActiveStatuses();
     }
 
     @Transactional
