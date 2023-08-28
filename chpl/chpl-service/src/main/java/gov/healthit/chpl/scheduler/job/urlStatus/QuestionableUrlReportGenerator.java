@@ -30,7 +30,6 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.domain.Developer;
-import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
@@ -166,12 +165,12 @@ public class QuestionableUrlReportGenerator extends QuartzJob {
             List<Long> acbIds = getSelectedAcbIds(jobContext);
             return badUrls.stream()
                 .filter(badUrl -> isUrlRelatedToAcbs(badUrl, acbIds))
-                .filter(badUrl -> isNotListingUrl(badUrl) || (isUrlRelatedTo2015Edition(badUrl) && isUrlRelatedToActiveListing(badUrl)))
+                .filter(badUrl -> isNotListingUrl(badUrl) || isUrlRelatedToActiveListing(badUrl))
                 .filter(badUrl -> doesUrlResultMatchAllowedStatusCodes(badUrl, jobContext))
                 .collect(Collectors.toList());
         } else {
             return badUrls.stream()
-                .filter(badUrl -> isNotListingUrl(badUrl) || (isUrlRelatedTo2015Edition(badUrl) && isUrlRelatedToActiveListing(badUrl)))
+                .filter(badUrl -> isNotListingUrl(badUrl) || isUrlRelatedToActiveListing(badUrl))
                 .collect(Collectors.toList());
         }
     }
@@ -199,14 +198,6 @@ public class QuestionableUrlReportGenerator extends QuartzJob {
 
     private boolean isNotListingUrl(FailedUrlResult urlResult) {
         return urlResult.getListing() == null;
-    }
-
-    private boolean isUrlRelatedTo2015Edition(FailedUrlResult urlResult) {
-        if (urlResult.getListing() != null && !StringUtils.isEmpty(urlResult.getListing().getYear())) {
-            return urlResult.getListing().getYear()
-                    .equals(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear());
-        }
-        return false;
     }
 
     private boolean isUrlRelatedToActiveListing(FailedUrlResult urlResult) {
