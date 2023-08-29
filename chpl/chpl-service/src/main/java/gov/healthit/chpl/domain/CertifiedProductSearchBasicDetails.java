@@ -176,6 +176,8 @@ public class CertifiedProductSearchBasicDetails implements Serializable {
      * Decertification day
      */
     @Schema(description = "Decertification day")
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonSerialize(using = LocalDateSerializer.class)
     private LocalDate decertificationDay;
 
     /**
