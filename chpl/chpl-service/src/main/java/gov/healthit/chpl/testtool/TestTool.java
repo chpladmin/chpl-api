@@ -11,6 +11,7 @@ import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
@@ -33,6 +34,7 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class TestTool implements Serializable {
     private static final long serialVersionUID = -3761135258251736516L;
 
@@ -84,15 +86,6 @@ public class TestTool implements Serializable {
     @XmlElement(required = false, nillable = true)
     @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
     private LocalDate endDay;
-
-    /**
-     * A date value representing the date by which the Criteria Attribute is required for selected criteria.
-     */
-    //@JsonDeserialize(using = LocalDateDeserializer.class)
-    //@JsonSerialize(using = LocalDateSerializer.class)
-    //@XmlElement(required = false, nillable = true)
-    //@XmlJavaTypeAdapter(value = LocalDateAdapter.class)
-    //private LocalDate requiredDay;
 
     private List<CertificationCriterion> criteria;
 
@@ -147,14 +140,6 @@ public class TestTool implements Serializable {
     public void setEndDay(LocalDate endDay) {
         this.endDay = endDay;
     }
-
-    //public LocalDate getRequiredDay() {
-    //    return requiredDay;
-    //}
-
-    //public void setRequiredDay(LocalDate requiredDay) {
-    //    this.requiredDay = requiredDay;
-    //}
 
     public List<CertificationCriterion> getCriteria() {
         return criteria;

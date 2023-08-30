@@ -66,8 +66,7 @@ public class TestToolManager {
     @Transactional
     public TestTool create(TestTool testTool) throws EntityRetrievalException, ValidationException {
         testToolValidator.validateForAdd(testTool);
-        addTestTool(testTool);
-        return testToolDAO.getById(testTool.getId());
+        return addTestTool(testTool);
     }
 
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).TEST_TOOL, "
