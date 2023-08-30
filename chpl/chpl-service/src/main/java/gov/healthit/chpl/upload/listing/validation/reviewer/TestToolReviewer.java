@@ -7,12 +7,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.criteriaattribute.testtool.TestToolDAO;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultTestTool;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.testtool.TestToolDAO;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -165,7 +165,7 @@ public class TestToolReviewer {
 
     private Boolean isTestToolValidForCriteria(CertificationCriterion criterion, CertificationResultTestTool certResultTestTool) {
         try {
-            return testToolDao.getAllTestToolCriteriaMap().stream()
+            return testToolDao.getAllTestToolCriteriaMaps().stream()
                     .filter(ttcm -> ttcm.getCriterion().getId().equals(criterion.getId())
                             && ttcm.getTestTool().getId().equals(certResultTestTool.getTestTool().getId()))
                     .findAny()
