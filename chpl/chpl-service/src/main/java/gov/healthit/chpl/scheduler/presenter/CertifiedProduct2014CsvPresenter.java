@@ -3,7 +3,7 @@ package gov.healthit.chpl.scheduler.presenter;
 import java.util.ArrayList;
 import java.util.List;
 
-import gov.healthit.chpl.domain.CertificationCriterion;
+import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 
 public class CertifiedProduct2014CsvPresenter extends CertifiedProductCsvPresenter {

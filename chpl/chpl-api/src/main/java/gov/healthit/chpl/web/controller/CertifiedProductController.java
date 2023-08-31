@@ -383,6 +383,8 @@ public class CertifiedProductController {
         return results;
     }
 
+    @DeprecatedApiResponseFields(friendlyUrl = "/certified_products/{certifiedProductId}/measures",
+            responseClass = MeasureResults.class)
     @Operation(summary = "Get all of the Measures for a specified certified product.",
             description = "Returns all of the Measures in the CHPL related to the specified certified product.",
             security = {
@@ -413,6 +415,8 @@ public class CertifiedProductController {
     @SuppressWarnings({
             "checkstyle:parameternumber"
     })
+    @DeprecatedApiResponseFields(friendlyUrl = "/certified_products/{certifiedProductId}/measures",
+        responseClass = MeasureResults.class)
     @Operation(summary = "Get all of the Measures for a specified certified product.",
             description = "Returns all of the Measures in the CHPL related to the specified certified product.  "
                     + "{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}."
@@ -452,6 +456,8 @@ public class CertifiedProductController {
         return results;
     }
 
+    @DeprecatedApiResponseFields(friendlyUrl = "/certified_products/{certifiedProductId}/measures",
+            responseClass = MeasureResults.class)
     @Operation(summary = "Get all of the Measures for a specified certified product based on a legacy "
             + "CHPL Product Number.",
             description = "Returns all of the Measures in the CHPL related to the specified certified product. "

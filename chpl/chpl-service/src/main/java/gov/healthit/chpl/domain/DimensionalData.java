@@ -3,6 +3,8 @@ package gov.healthit.chpl.domain;
 import java.io.Serializable;
 import java.util.Set;
 
+import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
+
 public class DimensionalData implements Serializable {
     private static final long serialVersionUID = 448737962707746739L;
     private Set<KeyValueModel> productClassifications;

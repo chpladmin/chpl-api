@@ -24,6 +24,7 @@ public class NonconformityTypeStatisticsDAO extends BaseDAOImpl {
                 + "FROM NonconformityTypeStatisticsEntity data "
                 + "LEFT OUTER JOIN FETCH data.certificationCriterionEntity cce "
                 + "LEFT OUTER JOIN FETCH cce.certificationEdition "
+                + "LEFT JOIN FETCH cce.rule "
                 + "WHERE data.deleted = false";
         Query query = entityManager.createQuery(hql, NonconformityTypeStatisticsEntity.class);
 

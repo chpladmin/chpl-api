@@ -62,31 +62,31 @@ public final class ChartDataCreatorJob extends QuartzJob {
         try {
             analyzeSed(listings);
         } catch (Exception e) {
-            LOGGER.error("Problem analyzing sed " + e.getMessage());
+            LOGGER.error("Problem analyzing sed " + e.getMessage(), e);
         }
 
         try {
             analyzeProducts(listings);
         } catch (Exception e) {
-            LOGGER.error("Problem analyzing products " + e.getMessage());
+            LOGGER.error("Problem analyzing products " + e.getMessage(), e);
         }
 
         try {
             analyzeDevelopers(listings);
         } catch (Exception e) {
-            LOGGER.error("Problem analyzing developers " + e.getMessage());
+            LOGGER.error("Problem analyzing developers " + e.getMessage(), e);
         }
 
         try {
             analyzeListingCounts(listings);
         } catch (Exception e) {
-            LOGGER.error("Problem analyzing listing counts " + e.getMessage());
+            LOGGER.error("Problem analyzing listing counts " + e.getMessage(), e);
         }
 
         try {
             analyzeNonconformity();
         } catch (Exception e) {
-            LOGGER.error("Problem analyzing nonconformities " + e.getMessage());
+            LOGGER.error("Problem analyzing nonconformities " + e.getMessage(), e);
         }
         listings = null;
         LOGGER.info("*****Chart Data Generator is done running.*****");

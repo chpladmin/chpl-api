@@ -2,7 +2,7 @@ package gov.healthit.chpl.complaint.domain;
 
 import java.io.Serializable;
 
-import gov.healthit.chpl.domain.CertificationCriterion;
+import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
