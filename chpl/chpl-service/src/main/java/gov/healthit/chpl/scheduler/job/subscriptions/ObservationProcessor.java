@@ -37,6 +37,7 @@ public class ObservationProcessor {
     private String notificationEmailSubject;
     private String notificationEmailIntroduction;
     private String manageSubscriptionsParagraph;
+    private Boolean sendNotificationEmails;
     private ObservationTypeFormatterFactory observationTypeFormatterFactory;
     private ObservationSubjectFormatterFactory observationSubjectFormatterFactory;
     private SubscriptionLookupUtil lookupUtil;
@@ -48,6 +49,7 @@ public class ObservationProcessor {
             @Value("${observation.notification.subject}") String notificationEmailSubject,
             @Value("${observation.notification.introduction}") String notificationEmailIntroduction,
             @Value("${subscriptions.manage}") String manageSubscriptionsParagraph,
+            @Value("${observation.notification.sendEmail}") Boolean sendNotificationEmails,
             ObservationTypeFormatterFactory observationTypeFormatterFactory,
             ObservationSubjectFormatterFactory observationSubjectFormatterFactory,
             SubscriptionLookupUtil lookupUtil) {
@@ -56,6 +58,7 @@ public class ObservationProcessor {
         this.htmlEmailBuilder = htmlEmailBuilder;
         this.notificationEmailSubject = notificationEmailSubject;
         this.notificationEmailIntroduction = notificationEmailIntroduction;
+        this.sendNotificationEmails = sendNotificationEmails;
         this.manageSubscriptionsParagraph = manageSubscriptionsParagraph;
         this.observationTypeFormatterFactory = observationTypeFormatterFactory;
         this.observationSubjectFormatterFactory = observationSubjectFormatterFactory;
@@ -67,11 +70,13 @@ public class ObservationProcessor {
     public void processObservations(Subscriber subscriber, List<SubscriptionObservation> observations) {
         LOGGER.info("Processing obsevations for " + subscriber.getEmail());
         try {
-            chplEmailFactory.emailBuilder()
+            if (sendNotificationEmails) {
+                chplEmailFactory.emailBuilder()
                     .recipients(List.of(subscriber.getEmail()))
                     .subject(notificationEmailSubject)
                     .htmlMessage(buildMessage(observations))
                     .sendEmail();
+            }
             deleteNotifiedObservations(observations);
         } catch (EmailNotSentException msgEx) {
             LOGGER.error("Could not send email about failed listing upload: " + msgEx.getMessage(), msgEx);
