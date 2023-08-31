@@ -17,7 +17,7 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.WhereJoinTable;
 
-import gov.healthit.chpl.entity.CertificationCriterionEntity;
+import gov.healthit.chpl.certificationCriteria.CertificationCriterionEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

@@ -9,7 +9,7 @@ import java.util.Set;
 
 import org.springframework.util.StringUtils;
 
-import gov.healthit.chpl.domain.CertificationCriterion;
+import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import lombok.Data;
 import lombok.Singular;

@@ -43,6 +43,7 @@ public class CuresCriterionUpgradedWithoutOriginalListingStatisticsDAO extends B
                 + "FROM CuresCriterionUpgradedWithoutOriginalListingStatisticEntity stats "
                 + "LEFT OUTER JOIN FETCH stats.certificationCriterion cce "
                 + "LEFT OUTER JOIN FETCH cce.certificationEdition "
+                + "LEFT OUTER JOIN FETCH cce.rule "
                 + "WHERE (stats.deleted = false) "
                 + "AND stats.statisticDate = :statisticDate ",
                 CuresCriterionUpgradedWithoutOriginalListingStatisticEntity.class);
@@ -81,6 +82,7 @@ public class CuresCriterionUpgradedWithoutOriginalListingStatisticsDAO extends B
                 + "FROM CuresCriterionUpgradedWithoutOriginalListingStatisticEntity stats "
                 + "LEFT OUTER JOIN FETCH stats.certificationCriterion cce "
                 + "LEFT OUTER JOIN FETCH cce.certificationEdition "
+                + "LEFT OUTER JOIN FETCH cce.rule "
                 + "WHERE (stats.deleted = false)",
                 CuresCriterionUpgradedWithoutOriginalListingStatisticEntity.class);
         return query.getResultList();
@@ -92,6 +94,7 @@ public class CuresCriterionUpgradedWithoutOriginalListingStatisticsDAO extends B
                 + "FROM CuresCriterionUpgradedWithoutOriginalListingStatisticEntity stats "
                 + "LEFT OUTER JOIN FETCH stats.certificationCriterion cce "
                 + "LEFT OUTER JOIN FETCH cce.certificationEdition "
+                + "LEFT OUTER JOIN FETCH cce.rule "
                 + "WHERE (stats.deleted = false) "
                 + "AND (stats.id = :id)",
                 CuresCriterionUpgradedWithoutOriginalListingStatisticEntity.class);

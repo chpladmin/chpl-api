@@ -74,6 +74,7 @@ public class CriterionListingStatisticsDAO extends BaseDAOImpl {
                 + "FROM CriterionListingCountStatisticEntity stats "
                 + "LEFT OUTER JOIN FETCH stats.certificationCriterion cce "
                 + "LEFT OUTER JOIN FETCH cce.certificationEdition "
+                + "LEFT OUTER JOIN FETCH cce.rule "
                 + "WHERE (stats.deleted = false) "
                 + "AND stats.statisticDate = :statisticDate ",
                 CriterionListingCountStatisticEntity.class);
@@ -112,6 +113,7 @@ public class CriterionListingStatisticsDAO extends BaseDAOImpl {
                 + "FROM CriterionListingCountStatisticEntity stats "
                 + "LEFT OUTER JOIN FETCH stats.certificationCriterion cce "
                 + "LEFT OUTER JOIN FETCH cce.certificationEdition "
+                + "LEFT OUTER JOIN FETCH cce.rule "
                 + "WHERE (stats.deleted = false)",
                 CriterionListingCountStatisticEntity.class);
         return query.getResultList();
@@ -123,6 +125,7 @@ public class CriterionListingStatisticsDAO extends BaseDAOImpl {
                 + "FROM CriterionListingCountStatisticEntity stats "
                 + "LEFT OUTER JOIN FETCH stats.certificationCriterion cce "
                 + "LEFT OUTER JOIN FETCH cce.certificationEdition "
+                + "LEFT OUTER JOIN FETCH cce.rule "
                 + "WHERE (stats.deleted = false) "
                 + "AND (stats.id = :id)",
                 CriterionListingCountStatisticEntity.class);

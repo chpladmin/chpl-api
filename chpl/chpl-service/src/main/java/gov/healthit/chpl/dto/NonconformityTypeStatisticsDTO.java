@@ -2,8 +2,8 @@ package gov.healthit.chpl.dto;
 
 import java.util.Date;
 
+import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.compliance.surveillance.entity.NonconformityTypeStatisticsEntity;
-import gov.healthit.chpl.domain.CertificationCriterion;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

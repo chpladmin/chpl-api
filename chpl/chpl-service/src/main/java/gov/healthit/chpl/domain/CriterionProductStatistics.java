@@ -3,6 +3,7 @@ package gov.healthit.chpl.domain;
 import java.io.Serializable;
 import java.util.Date;
 
+import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.dto.CriterionProductStatisticsDTO;
 import gov.healthit.chpl.util.Util;
 

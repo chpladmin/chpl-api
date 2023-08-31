@@ -1,6 +1,6 @@
 package gov.healthit.chpl.criteriaattribute;
 
-import gov.healthit.chpl.domain.CertificationCriterion;
+import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import lombok.Builder;
 import lombok.Data;
 

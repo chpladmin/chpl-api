@@ -25,12 +25,12 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
 import gov.healthit.chpl.complaint.ComplaintManager;
 import gov.healthit.chpl.complaint.domain.Complaint;
 import gov.healthit.chpl.complaint.domain.ComplaintCriterionMap;
 import gov.healthit.chpl.complaint.domain.ComplaintListingMap;
-import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.ComplaintSurveillanceMap;
 import gov.healthit.chpl.domain.surveillance.SurveillanceBasic;

@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import gov.healthit.chpl.domain.comparator.CertificationCriterionComparator;
+import gov.healthit.chpl.certificationCriteria.CertificationCriterionComparator;
 
 @Service
 @Transactional

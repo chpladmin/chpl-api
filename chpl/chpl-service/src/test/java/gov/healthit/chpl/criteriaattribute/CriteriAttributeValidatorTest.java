@@ -13,9 +13,9 @@ import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
+import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.criteriaattribute.rule.RuleDAO;
 import gov.healthit.chpl.criteriaattribute.rule.RuleEntity;
-import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;

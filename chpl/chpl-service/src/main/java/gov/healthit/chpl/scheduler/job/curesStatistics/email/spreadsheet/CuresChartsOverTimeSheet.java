@@ -14,7 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.domain.CertificationCriterion;
+import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.domain.statistics.CuresCriterionChartStatistic;
 import gov.healthit.chpl.scheduler.job.curesStatistics.email.CuresStatisticsChartData;
 import lombok.extern.log4j.Log4j2;

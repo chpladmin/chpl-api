@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.junit.Before;
@@ -14,7 +15,7 @@ import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
-import gov.healthit.chpl.domain.CertificationCriterion;
+import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationEdition;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
@@ -118,7 +119,7 @@ public class FunctionalityTestedNormalizerTest {
                 .criteria(Stream.of(CertificationCriterion.builder()
                         .id(CRITERIA_ID_WITHOUT_RESTRICTIONS)
                         .number("170.315 (a)(13)")
-                        .build()).toList())
+                        .build()).collect(Collectors.toList()))
                 .build()).toList());
         Mockito.when(functionalityTestedDao.getFunctionalitiesTestedCriteriaMaps())
             .thenReturn(funcTestedMaps);
