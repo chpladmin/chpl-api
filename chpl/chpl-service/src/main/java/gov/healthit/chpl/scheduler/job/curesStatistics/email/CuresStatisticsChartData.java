@@ -15,12 +15,10 @@ import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.dao.statistics.CriterionListingStatisticsDAO;
 import gov.healthit.chpl.dao.statistics.CriterionUpgradedToCuresFromOriginalListingStatisticsDAO;
 import gov.healthit.chpl.dao.statistics.CuresCriterionUpgradedWithoutOriginalListingStatisticsDAO;
-import gov.healthit.chpl.dao.statistics.PrivacyAndSecurityListingStatisticsDAO;
 import gov.healthit.chpl.domain.statistics.CriterionListingCountStatistic;
 import gov.healthit.chpl.domain.statistics.CriterionUpgradedToCuresFromOriginalListingStatistic;
 import gov.healthit.chpl.domain.statistics.CuresCriterionChartStatistic;
 import gov.healthit.chpl.domain.statistics.CuresCriterionUpgradedWithoutOriginalListingStatistic;
-import gov.healthit.chpl.domain.statistics.PrivacyAndSecurityListingStatistic;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import lombok.extern.log4j.Log4j2;
 
@@ -31,7 +29,6 @@ public class CuresStatisticsChartData {
     private CriterionUpgradedToCuresFromOriginalListingStatisticsDAO criterionUpgradedToCuresFromOriginalListingStatisticsDAO;
     private CriterionListingStatisticsDAO criterionListingStatisticsDAO;
     private CertificationCriterionService certificationCriterionService;
-    private PrivacyAndSecurityListingStatisticsDAO privacyAndSecurityStatisticsDAO;
 
     private List<CertificationCriterion> curesCriteria = new ArrayList<CertificationCriterion>();
 
@@ -39,13 +36,11 @@ public class CuresStatisticsChartData {
     public CuresStatisticsChartData(
             CuresCriterionUpgradedWithoutOriginalListingStatisticsDAO curesCriterionUpgradedWithoutOriginalListingStatisticsDAO,
             CriterionUpgradedToCuresFromOriginalListingStatisticsDAO criterionUpgradedToCuresFromOriginalListingStatisticsDAO,
-            CriterionListingStatisticsDAO criterionListingStatisticsDAO, CertificationCriterionService certificationCriterionService,
-            PrivacyAndSecurityListingStatisticsDAO privacyAndSecurityStatisticsDAO) {
+            CriterionListingStatisticsDAO criterionListingStatisticsDAO, CertificationCriterionService certificationCriterionService) {
         this.curesCriterionUpgradedWithoutOriginalListingStatisticsDAO = curesCriterionUpgradedWithoutOriginalListingStatisticsDAO;
         this.criterionUpgradedToCuresFromOriginalListingStatisticsDAO = criterionUpgradedToCuresFromOriginalListingStatisticsDAO;
         this.criterionListingStatisticsDAO = criterionListingStatisticsDAO;
         this.certificationCriterionService = certificationCriterionService;
-        this.privacyAndSecurityStatisticsDAO = privacyAndSecurityStatisticsDAO;
 
         //Create list of cures criteria used in charts
         curesCriteria.add(certificationCriterionService.get(CertificationCriterionService.Criteria2015.B_1_CURES));
@@ -66,10 +61,6 @@ public class CuresStatisticsChartData {
         curesCriteria.add(certificationCriterionService.get(CertificationCriterionService.Criteria2015.G_10));
     }
 
-    public LocalDate getReportDate() {
-        return curesCriterionUpgradedWithoutOriginalListingStatisticsDAO.getDateOfMostRecentStatistics();
-    }
-
     public Map<CertificationCriterion, CuresCriterionChartStatistic> getCuresCriterionChartStatistics(LocalDate reportDate) {
         Map<CertificationCriterion, CuresCriterionChartStatistic> curesCriterionChartStatistics
                 = new HashMap<CertificationCriterion, CuresCriterionChartStatistic>();
@@ -86,25 +77,7 @@ public class CuresStatisticsChartData {
                         listingCounts))
                 .collect(Collectors.toMap(CuresCriterionChartStatistic::getCriterion, item -> item));
 
-        // Handle d12 and d13 completely different (Privacy & Security)
-        CertificationCriterion d12Criterion = certificationCriterionService.get(CertificationCriterionService.Criteria2015.D_12);
-        curesCriterionChartStatistics.put(d12Criterion, getCuresCriterionChartStatisticForPrivacyAndSecurityCriteria(d12Criterion, reportDate));
-
-        CertificationCriterion d13Criterion = certificationCriterionService.get(CertificationCriterionService.Criteria2015.D_13);
-        curesCriterionChartStatistics.put(d13Criterion, getCuresCriterionChartStatisticForPrivacyAndSecurityCriteria(d13Criterion, reportDate));
-
         return curesCriterionChartStatistics;
-    }
-
-    private CuresCriterionChartStatistic getCuresCriterionChartStatisticForPrivacyAndSecurityCriteria(CertificationCriterion criterion, LocalDate reportDate) {
-
-        return  CuresCriterionChartStatistic.builder()
-                .criterion(criterion)
-                .existingCertificationCount(0L)
-                .newCertificationCount(getListingsWithPrivacyAndSecurityCount(reportDate))
-                .requiresUpdateCount(getListingsRequiringPrivacyAndSecurityCount(reportDate))
-                .listingCount(getListingsWithPrivacyAndSecurityCount(reportDate))
-                .build();
     }
 
     private CuresCriterionChartStatistic getCuresCriterionChartStatisticForCriteria(CertificationCriterion criterion,
@@ -145,28 +118,6 @@ public class CuresStatisticsChartData {
         CertificationCriterion criterionFromMap = getMatchingCriterionFromSet(listingCounts.keySet(), criterion);
         if (listingCounts.containsKey(criterionFromMap)) {
             return listingCounts.get(criterionFromMap);
-        } else {
-            return null;
-        }
-    }
-
-    private Long getListingsRequiringPrivacyAndSecurityCount(LocalDate reportDate) {
-        List<PrivacyAndSecurityListingStatistic> privacyAndSecurityListingStatistic =
-            privacyAndSecurityStatisticsDAO.getStatisticsForDate(reportDate);
-
-        if (privacyAndSecurityListingStatistic != null && privacyAndSecurityListingStatistic.size() > 0) {
-            return privacyAndSecurityListingStatistic.get(0).getListingsRequiringPrivacyAndSecurityCount();
-        } else {
-            return null;
-        }
-    }
-
-    private Long getListingsWithPrivacyAndSecurityCount(LocalDate reportDate) {
-        List<PrivacyAndSecurityListingStatistic> privacyAndSecurityListingStatistic =
-            privacyAndSecurityStatisticsDAO.getStatisticsForDate(reportDate);
-
-        if (privacyAndSecurityListingStatistic != null && privacyAndSecurityListingStatistic.size() > 0) {
-            return privacyAndSecurityListingStatistic.get(0).getListingsWithPrivacyAndSecurityCount();
         } else {
             return null;
         }
