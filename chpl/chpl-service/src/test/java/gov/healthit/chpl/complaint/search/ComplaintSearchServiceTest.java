@@ -13,13 +13,13 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.complaint.ComplaintDAO;
 import gov.healthit.chpl.complaint.domain.ComplainantType;
 import gov.healthit.chpl.complaint.domain.Complaint;
 import gov.healthit.chpl.complaint.domain.ComplaintCriterionMap;
 import gov.healthit.chpl.complaint.domain.ComplaintListingMap;
 import gov.healthit.chpl.domain.CertificationBody;
-import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.ComplaintSurveillanceMap;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.permissions.ResourcePermissions;

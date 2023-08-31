@@ -1,6 +1,6 @@
 package gov.healthit.chpl.activity.history.query;
 
-import gov.healthit.chpl.domain.CertificationCriterion;
+import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.svap.domain.Svap;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

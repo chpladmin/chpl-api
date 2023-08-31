@@ -2,7 +2,7 @@ package gov.healthit.chpl.domain.statistics;
 
 import java.time.LocalDate;
 
-import gov.healthit.chpl.domain.CertificationCriterion;
+import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

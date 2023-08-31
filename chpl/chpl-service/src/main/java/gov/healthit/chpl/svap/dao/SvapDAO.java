@@ -7,10 +7,10 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
+import gov.healthit.chpl.certificationCriteria.CertificationCriterionComparator;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
-import gov.healthit.chpl.domain.CertificationCriterion;
-import gov.healthit.chpl.domain.comparator.CertificationCriterionComparator;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.entity.listing.CertificationResultEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -163,7 +163,8 @@ public class SvapDAO extends BaseDAOImpl {
         return entityManager.createQuery("SELECT DISTINCT scm "
                         + "FROM SvapCriteriaMapEntity scm "
                         + "JOIN FETCH scm.criteria c "
-                        + "JOIN FETCH c.certificationEdition "
+                        + "LEFT JOIN FETCH c.certificationEdition "
+                        + "LEFT JOIN FETCH c.rule "
                         + "JOIN FETCH scm.svap s "
                         + "LEFT JOIN FETCH s.criteria c "
                         + "WHERE scm.deleted <> true "
@@ -186,7 +187,8 @@ public class SvapDAO extends BaseDAOImpl {
         List<SvapCriteriaMapEntity> result = entityManager.createQuery("SELECT DISTINCT scm "
                         + "FROM SvapCriteriaMapEntity scm "
                         + "JOIN FETCH scm.criteria c "
-                        + "JOIN FETCH c.certificationEdition "
+                        + "LEFT JOIN FETCH c.certificationEdition "
+                        + "LEFT JOIN FETCH c.rule "
                         + "JOIN FETCH scm.svap s "
                         + "LEFT JOIN FETCH s.criteria c "
                         + "WHERE scm.svapId = :svapId "

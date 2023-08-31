@@ -18,17 +18,14 @@ import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.PracticeTypeDAO;
 import gov.healthit.chpl.dao.ProductClassificationTypeDAO;
 import gov.healthit.chpl.dao.ProductDAO;
-import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationEdition;
 import gov.healthit.chpl.domain.CertificationStatus;
-import gov.healthit.chpl.domain.CriteriaSpecificDescriptiveModel;
 import gov.healthit.chpl.domain.DescriptiveModel;
 import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.domain.KeyValueModelStatuses;
 import gov.healthit.chpl.dto.CQMCriterionDTO;
 import gov.healthit.chpl.dto.PracticeTypeDTO;
 import gov.healthit.chpl.dto.ProductClassificationTypeDTO;
-import gov.healthit.chpl.exception.EntityRetrievalException;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -154,23 +151,6 @@ public class CacheableDimensionalDataManager {
             criterionNames.add(new DescriptiveModel(dto.getId(), idNumber, dto.getTitle()));
         }
         return criterionNames;
-    }
-
-    @Transactional
-    @Cacheable(value = CacheNames.CERTIFICATION_CRITERION_NUMBERS)
-    public Set<CriteriaSpecificDescriptiveModel> getCertificationCriterionNumbers() throws EntityRetrievalException {
-        LOGGER.debug("Getting all criterion numbers from the database (not cached).");
-
-        List<CertificationCriterion> criteria = this.certificationCriterionDao.findAll();
-        Set<CriteriaSpecificDescriptiveModel> criterionNames = new HashSet<CriteriaSpecificDescriptiveModel>();
-
-        for (CertificationCriterion criterion : criteria) {
-            criterionNames.add(new CriteriaSpecificDescriptiveModel(criterion.getId(), criterion.getNumber(), criterion.getTitle(),
-                    criterion));
-        }
-
-        return criterionNames;
-
     }
 
     @Transactional

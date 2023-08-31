@@ -2,7 +2,6 @@ package gov.healthit.chpl.scheduler.job.curesStatistics.email;
 
 import java.io.File;
 import java.io.IOException;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,19 +17,13 @@ import gov.healthit.chpl.email.footer.AdminFooter;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.scheduler.job.QuartzJob;
 import gov.healthit.chpl.scheduler.job.curesStatistics.email.spreadsheet.CuresChartsOverTimeSpreadheet;
-import gov.healthit.chpl.scheduler.job.curesStatistics.email.spreadsheet.CuresStatisticsChartSpreadsheet;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2(topic = "curesStatisticsEmailJobLogger")
 public class CuresStatisticsEmailJob  extends QuartzJob {
-    @Autowired
-    private CuresStatisticsChartSpreadsheet curesStatisticsChartSpreadsheet;
 
     @Autowired
     private CuresChartsOverTimeSpreadheet curesChartsOverTimeSpreadsheet;
-
-    @Autowired
-    private CuresStatisticsChartData curesStatisticsChartData;
 
     @Autowired
     private ChplHtmlEmailBuilder chplHtmlEmailBuilder;
@@ -47,8 +40,6 @@ public class CuresStatisticsEmailJob  extends QuartzJob {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
         List<File> attachments = new ArrayList<File>();
         try {
-            LocalDate reportDate = curesStatisticsChartData.getReportDate();
-            attachments.add(curesStatisticsChartSpreadsheet.generateSpreadsheet(reportDate));
             attachments.add(curesChartsOverTimeSpreadsheet.generateSpreadsheet());
             sendEmail(context, attachments);
         } catch (IOException ex) {

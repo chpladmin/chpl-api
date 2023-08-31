@@ -14,7 +14,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-import gov.healthit.chpl.entity.CertificationCriterionEntity;
+import gov.healthit.chpl.certificationCriteria.CertificationCriterionEntity;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;

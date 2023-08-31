@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.caching.CacheNames;
+import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.compliance.surveillance.SurveillanceDAO;
 import gov.healthit.chpl.dao.AgeRangeDAO;
 import gov.healthit.chpl.dao.CQMCriterionDAO;
@@ -28,7 +29,6 @@ import gov.healthit.chpl.dao.TestProcedureDAO;
 import gov.healthit.chpl.dao.TestStandardDAO;
 import gov.healthit.chpl.domain.CQMCriterion;
 import gov.healthit.chpl.domain.CertificationBody;
-import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationEdition;
 import gov.healthit.chpl.domain.CriteriaSpecificDescriptiveModel;
 import gov.healthit.chpl.domain.DescriptiveModel;
@@ -305,15 +305,6 @@ public class DimensionalDataManager {
     }
 
     @Transactional
-    @Cacheable(value = CacheNames.CERTIFICATION_CRITERION_WITH_EDITIONS)
-    public Set<CertificationCriterion> getCertificationCriterion() {
-        LOGGER.debug("Getting all criterion with editions from the database (not cached).");
-
-        return this.certificationCriterionDao.findAll().stream()
-                .collect(Collectors.toSet());
-    }
-
-    @Transactional
     @Cacheable(value = CacheNames.CQM_CRITERION)
     public List<CQMCriterion> getCQMCriteria() {
         List<CQMCriterion> result = new ArrayList<CQMCriterion>();
@@ -397,10 +388,6 @@ public class DimensionalDataManager {
     @Transactional
     public Set<KeyValueModelStatuses> getDevelopers() {
         return cacheableDimensionalDataManager.getDevelopers();
-    }
-
-    public Set<CriteriaSpecificDescriptiveModel> getCertificationCriterionNumbers() throws EntityRetrievalException {
-        return cacheableDimensionalDataManager.getCertificationCriterionNumbers();
     }
 
     public Set<DescriptiveModel> getCQMCriterionNumbers(final Boolean simple) {

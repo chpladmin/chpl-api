@@ -4,6 +4,8 @@ import java.io.Serializable;
 
 import org.springframework.util.StringUtils;
 
+import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
+
 public class CriteriaSpecificDescriptiveModel extends DescriptiveModel implements Serializable {
     private static final long serialVersionUID = -1921571129798114254L;
     private CertificationCriterion criteria;
