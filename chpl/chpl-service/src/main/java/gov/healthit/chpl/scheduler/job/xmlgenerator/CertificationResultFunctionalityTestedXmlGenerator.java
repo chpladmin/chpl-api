@@ -5,7 +5,7 @@ import java.util.List;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-import gov.healthit.chpl.criteriaattribute.functionalitytested.CertificationResultFunctionalityTested;
+import gov.healthit.chpl.functionalitytested.CertificationResultFunctionalityTested;
 
 public class CertificationResultFunctionalityTestedXmlGenerator extends XmlGenerator {
     public static void add(List<CertificationResultFunctionalityTested> tests, String rootNodeName, XMLStreamWriter sw) throws XMLStreamException {

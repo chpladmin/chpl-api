@@ -1,4 +1,4 @@
-package gov.healthit.chpl.criteriaattribute.functionalitytested;
+package gov.healthit.chpl.functionalitytested;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -15,9 +15,6 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.caching.CacheNames;
-import gov.healthit.chpl.criteriaattribute.CriteriaAttribute;
-import gov.healthit.chpl.criteriaattribute.CriteriaAttributeCriteriaMap;
-import gov.healthit.chpl.criteriaattribute.CriteriaAttributeDAO;
 import gov.healthit.chpl.criteriaattribute.rule.RuleDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.PracticeTypeDAO;
@@ -32,7 +29,7 @@ import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 @Repository("functionalityTestedDAO")
-public class FunctionalityTestedDAO extends BaseDAOImpl implements CriteriaAttributeDAO {
+public class FunctionalityTestedDAO extends BaseDAOImpl {
 
     private RuleDAO ruleDAO;
     private CertifiedProductDAO certifiedProductDAO;
@@ -59,24 +56,22 @@ public class FunctionalityTestedDAO extends BaseDAOImpl implements CriteriaAttri
         }
     }
 
-    @Override
-    public CriteriaAttribute add(CriteriaAttribute criteriaAttribute) {
-        FunctionalityTested ft = (FunctionalityTested) criteriaAttribute;
+    public FunctionalityTested add(FunctionalityTested functionalityTested) {
 
         FunctionalityTestedEntity entity = FunctionalityTestedEntity.builder()
-                .name(criteriaAttribute.getValue()) //TODO: OCD-4288 - Remove when column is removed
-                .number(criteriaAttribute.getRegulatoryTextCitation()) //TODO: OCD-4288 - Remove when column is removed
-                .value(criteriaAttribute.getValue())
-                .regulatoryTextCitation(criteriaAttribute.getRegulatoryTextCitation())
-                .additionalInformation(ft.getAdditionalInformation())
-                .startDay(criteriaAttribute.getStartDay())
-                .endDay(criteriaAttribute.getEndDay())
-                .requiredDay(criteriaAttribute.getRequiredDay())
-                .rule(criteriaAttribute.getRule() != null && criteriaAttribute.getRule().getId() != null
-                        ? ruleDAO.getRuleEntityById(criteriaAttribute.getRule().getId())
+                .name(functionalityTested.getValue()) //TODO: OCD-4288 - Remove when column is removed
+                .number(functionalityTested.getRegulatoryTextCitation()) //TODO: OCD-4288 - Remove when column is removed
+                .value(functionalityTested.getValue())
+                .regulatoryTextCitation(functionalityTested.getRegulatoryTextCitation())
+                .additionalInformation(functionalityTested.getAdditionalInformation())
+                .startDay(functionalityTested.getStartDay())
+                .endDay(functionalityTested.getEndDay())
+                .requiredDay(functionalityTested.getRequiredDay())
+                .rule(functionalityTested.getRule() != null && functionalityTested.getRule().getId() != null
+                        ? ruleDAO.getRuleEntityById(functionalityTested.getRule().getId())
                         : null)
-                .practiceType(ft.getPracticeType() != null && ft.getPracticeType().getId() != null
-                        ? getPracticeTypeEntity(ft.getPracticeType().getId())
+                .practiceType(functionalityTested.getPracticeType() != null && functionalityTested.getPracticeType().getId() != null
+                        ? getPracticeTypeEntity(functionalityTested.getPracticeType().getId())
                         : null)
                 .creationDate(new Date())
                 .lastModifiedDate(new Date())
@@ -89,62 +84,51 @@ public class FunctionalityTestedDAO extends BaseDAOImpl implements CriteriaAttri
         return getById(entity.getId());
     }
 
-    @Override
-    public CriteriaAttribute getCriteriaAttributeById(Long id) {
-        return getById(id);
-    }
+//    public List<FunctionalityTestedCriteriaMap> getAllAssociatedCriteriaMaps() throws EntityRetrievalException {
+//        return getAllFunctionalityTestedCriteriaMap().stream()
+//                .map(map -> FunctionalityTestedCriteriaMap.builder()
+//                        .criterion(map.getCriterion())
+//                        .criteriaAttribute(map.getFunctionalityTested())
+//                        .build())
+//                .toList();
+//    }
 
-
-    @Override
-    public List<CriteriaAttributeCriteriaMap> getAllAssociatedCriteriaMaps() throws EntityRetrievalException {
-        return getAllFunctionalityTestedCriteriaMap().stream()
-                .map(map -> CriteriaAttributeCriteriaMap.builder()
-                        .criterion(map.getCriterion())
-                        .criteriaAttribute(map.getFunctionalityTested())
-                        .build())
-                .toList();
-    }
-
-    @Override
-    public List<CertifiedProductDetailsDTO> getCertifiedProductsByCriteriaAttributeAndCriteria(CriteriaAttribute criteriaAttribute, CertificationCriterion criterion)
+    public List<CertifiedProductDetailsDTO> getCertifiedProductsByFunctionalityTestedAndCriteria(FunctionalityTested functionalityTested, CertificationCriterion criterion)
             throws EntityRetrievalException {
-        List<Long> certifiedProductIds = getCertifiedProductIdsUsingFunctionalityTestedIdWithCriterion(criteriaAttribute.getId(), criterion.getId());
+        List<Long> certifiedProductIds = getCertifiedProductIdsUsingFunctionalityTestedIdWithCriterion(functionalityTested.getId(), criterion.getId());
         return certifiedProductDAO.getDetailsByIds(certifiedProductIds);
     }
 
-    @Override
-    public void update(CriteriaAttribute criteriaAttribute) throws EntityRetrievalException {
-        FunctionalityTestedEntity entity = getEntityById(criteriaAttribute.getId());
+    public void update(FunctionalityTested functionalityTested) throws EntityRetrievalException {
+        FunctionalityTestedEntity entity = getEntityById(functionalityTested.getId());
 
-        entity.setValue(criteriaAttribute.getValue());
-        entity.setRegulatoryTextCitation(criteriaAttribute.getRegulatoryTextCitation());
-        entity.setStartDay(criteriaAttribute.getStartDay());
-        entity.setEndDay(criteriaAttribute.getEndDay());
-        entity.setRequiredDay(criteriaAttribute.getRequiredDay());
-        if (criteriaAttribute.getRule() != null) {
-            entity.setRule(ruleDAO.getRuleEntityById(criteriaAttribute.getRule().getId()));
+        entity.setValue(functionalityTested.getValue());
+        entity.setRegulatoryTextCitation(functionalityTested.getRegulatoryTextCitation());
+        entity.setStartDay(functionalityTested.getStartDay());
+        entity.setEndDay(functionalityTested.getEndDay());
+        entity.setRequiredDay(functionalityTested.getRequiredDay());
+        if (functionalityTested.getRule() != null) {
+            entity.setRule(ruleDAO.getRuleEntityById(functionalityTested.getRule().getId()));
         } else {
             entity.setRule(null);
         }
 
-        FunctionalityTested ft = (FunctionalityTested) criteriaAttribute;
-        if (ft.getPracticeType() != null && ft.getPracticeType().getId() != null) {
-            entity.setPracticeType(practiceTypeDAO.getEntityById(ft.getPracticeType().getId()));
+        if (functionalityTested.getPracticeType() != null && functionalityTested.getPracticeType().getId() != null) {
+            entity.setPracticeType(practiceTypeDAO.getEntityById(functionalityTested.getPracticeType().getId()));
         } else {
             entity.setPracticeType(null);
         }
-        entity.setAdditionalInformation(ft.getAdditionalInformation());
+        entity.setAdditionalInformation(functionalityTested.getAdditionalInformation());
         entity.setLastModifiedUser(AuthUtil.getAuditId());
         entity.setLastModifiedDate(new Date());
 
         update(entity);
     }
 
-    @Override
-    public void addCriteriaAttributeCriteriaMap(CriteriaAttribute criteriaAttribute, CertificationCriterion criterion) {
+    public void addFunctionalityTestedCriteriaMap(FunctionalityTested functionalityTested, CertificationCriterion criterion) {
         FunctionalityTestedCriteriaMapEntity entity = FunctionalityTestedCriteriaMapEntity.builder()
                 .certificationCriterionId(criterion.getId())
-                .functionalityTestedId(criteriaAttribute.getId())
+                .functionalityTestedId(functionalityTested.getId())
                 .creationDate(new Date())
                 .lastModifiedDate(new Date())
                 .lastModifiedUser(AuthUtil.getAuditId())
@@ -154,10 +138,9 @@ public class FunctionalityTestedDAO extends BaseDAOImpl implements CriteriaAttri
         create(entity);
     }
 
-    @Override
-    public void removeCriteriaAttributeCriteriaMap(CriteriaAttribute criteriaAttribute, CertificationCriterion criterion) {
+    public void removeFunctionalityTestedCriteriaMap(FunctionalityTested functionalityTested, CertificationCriterion criterion) {
         try {
-            FunctionalityTestedCriteriaMapEntity entity = getFunctionalityTestedCriteriaMapByTestToolAndCriterionEntity(criteriaAttribute.getId(), criterion.getId());
+            FunctionalityTestedCriteriaMapEntity entity = getFunctionalityTestedCriteriaMapByTestToolAndCriterionEntity(functionalityTested.getId(), criterion.getId());
             entity.setDeleted(true);
             entity.setLastModifiedDate(new Date());
             entity.setLastModifiedUser(AuthUtil.getAuditId());
@@ -169,15 +152,13 @@ public class FunctionalityTestedDAO extends BaseDAOImpl implements CriteriaAttri
         }
     }
 
-    @Override
-    public List<CertifiedProductDetailsDTO> getCertifiedProductsByCriteriaAttribute(CriteriaAttribute criteriaAttribute) throws EntityRetrievalException {
-        List<Long> certifiedProductIds = getCertifiedProductIdsUsingFunctionalityTestedId(criteriaAttribute.getId());
+    public List<CertifiedProductDetailsDTO> getCertifiedProductsByFunctionalityTested(FunctionalityTested functionalityTested) throws EntityRetrievalException {
+        List<Long> certifiedProductIds = getCertifiedProductIdsUsingFunctionalityTestedId(functionalityTested.getId());
         return certifiedProductDAO.getDetailsByIds(certifiedProductIds);
     }
 
-    @Override
-    public void remove(CriteriaAttribute criteriaAttribute) throws EntityRetrievalException {
-        FunctionalityTestedEntity entity = getEntityById(criteriaAttribute.getId());
+    public void remove(FunctionalityTested functionalityTested) throws EntityRetrievalException {
+        FunctionalityTestedEntity entity = getEntityById(functionalityTested.getId());
         entity.setDeleted(true);
         entity.setLastModifiedUser(AuthUtil.getAuditId());
         entity.setLastModifiedDate(new Date());

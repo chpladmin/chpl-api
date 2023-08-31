@@ -12,13 +12,13 @@ import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import gov.healthit.chpl.criteriaattribute.functionalitytested.CertificationResultFunctionalityTested;
-import gov.healthit.chpl.criteriaattribute.functionalitytested.FunctionalityTested;
-import gov.healthit.chpl.criteriaattribute.functionalitytested.FunctionalityTestedDAO;
-import gov.healthit.chpl.criteriaattribute.functionalitytested.FunctionalityTestedManager;
 import gov.healthit.chpl.dao.CertificationEditionDAO;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.functionalitytested.CertificationResultFunctionalityTested;
+import gov.healthit.chpl.functionalitytested.FunctionalityTested;
+import gov.healthit.chpl.functionalitytested.FunctionalityTestedDAO;
+import gov.healthit.chpl.functionalitytested.FunctionalityTestedManager;
 import gov.healthit.chpl.manager.DimensionalDataManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.ErrorMessageUtil;

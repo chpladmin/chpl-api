@@ -19,13 +19,13 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import gov.healthit.chpl.criteriaattribute.functionalitytested.CertificationResultFunctionalityTested;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultTestProcedure;
 import gov.healthit.chpl.domain.CertificationResultTestStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.entity.CertificationStatusType;
+import gov.healthit.chpl.functionalitytested.CertificationResultFunctionalityTested;
 
 public class ListingsWithCriterionCSVPresenter {
     private static final String UNKNOWN_VALUE = "?";

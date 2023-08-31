@@ -7,11 +7,11 @@ import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
-import gov.healthit.chpl.criteriaattribute.functionalitytested.CertificationResultFunctionalityTested;
-import gov.healthit.chpl.criteriaattribute.functionalitytested.FunctionalityTested;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.functionalitytested.CertificationResultFunctionalityTested;
+import gov.healthit.chpl.functionalitytested.FunctionalityTested;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 public class FunctionalityTestedDuplicateReviewerTest {

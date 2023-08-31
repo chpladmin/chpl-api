@@ -23,8 +23,6 @@ import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseField;
 import gov.healthit.chpl.conformanceMethod.CertificationResultConformanceMethodComparator;
 import gov.healthit.chpl.conformanceMethod.domain.CertificationResultConformanceMethod;
 import gov.healthit.chpl.conformanceMethod.domain.ConformanceMethod;
-import gov.healthit.chpl.criteriaattribute.functionalitytested.CertificationResultFunctionalityTested;
-import gov.healthit.chpl.criteriaattribute.functionalitytested.CertificationResultFunctionalityTestedComparator;
 import gov.healthit.chpl.criteriaattribute.testtool.CertificationResultTestTool;
 import gov.healthit.chpl.criteriaattribute.testtool.CertificationResultTestToolComparator;
 import gov.healthit.chpl.criteriaattribute.testtool.TestTool;
@@ -33,6 +31,8 @@ import gov.healthit.chpl.domain.comparator.CertificationResultTestDataComparator
 import gov.healthit.chpl.domain.comparator.CertificationResultTestProcedureComparator;
 import gov.healthit.chpl.domain.comparator.CertificationResultTestStandardComparator;
 import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
+import gov.healthit.chpl.functionalitytested.CertificationResultFunctionalityTested;
+import gov.healthit.chpl.functionalitytested.CertificationResultFunctionalityTestedComparator;
 import gov.healthit.chpl.optionalStandard.CertificationResultOptionalStandardComparator;
 import gov.healthit.chpl.optionalStandard.domain.CertificationResultOptionalStandard;
 import gov.healthit.chpl.optionalStandard.domain.OptionalStandard;

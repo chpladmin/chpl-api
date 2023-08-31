@@ -11,11 +11,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import gov.healthit.chpl.criteriaattribute.functionalitytested.FunctionalityTested;
-import gov.healthit.chpl.criteriaattribute.functionalitytested.FunctionalityTestedManager;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
+import gov.healthit.chpl.functionalitytested.FunctionalityTested;
+import gov.healthit.chpl.functionalitytested.FunctionalityTestedManager;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;

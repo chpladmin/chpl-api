@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.conformanceMethod.domain.CertificationResultConformanceMethod;
-import gov.healthit.chpl.criteriaattribute.functionalitytested.CertificationResultFunctionalityTested;
 import gov.healthit.chpl.criteriaattribute.testtool.CertificationResultTestTool;
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.domain.CertificationCriterion;
@@ -20,6 +19,7 @@ import gov.healthit.chpl.domain.CertificationResultTestProcedure;
 import gov.healthit.chpl.domain.CertificationResultTestStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
+import gov.healthit.chpl.functionalitytested.CertificationResultFunctionalityTested;
 import gov.healthit.chpl.optionalStandard.domain.CertificationResultOptionalStandard;
 import gov.healthit.chpl.svap.domain.CertificationResultSvap;
 import gov.healthit.chpl.util.CertificationResultRules;

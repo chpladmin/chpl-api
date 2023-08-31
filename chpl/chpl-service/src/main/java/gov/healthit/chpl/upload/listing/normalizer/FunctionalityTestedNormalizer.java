@@ -14,11 +14,11 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.CollectionType;
 
-import gov.healthit.chpl.criteriaattribute.functionalitytested.CertificationResultFunctionalityTested;
-import gov.healthit.chpl.criteriaattribute.functionalitytested.FunctionalityTested;
-import gov.healthit.chpl.criteriaattribute.functionalitytested.FunctionalityTestedDAO;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.functionalitytested.CertificationResultFunctionalityTested;
+import gov.healthit.chpl.functionalitytested.FunctionalityTested;
+import gov.healthit.chpl.functionalitytested.FunctionalityTestedDAO;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import lombok.Data;
 import lombok.ToString;

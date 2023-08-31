@@ -14,8 +14,8 @@ import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
-import gov.healthit.chpl.criteriaattribute.functionalitytested.CertificationResultFunctionalityTested;
 import gov.healthit.chpl.domain.CertificationResult;
+import gov.healthit.chpl.functionalitytested.CertificationResultFunctionalityTested;
 import gov.healthit.chpl.optionalStandard.domain.CertificationResultOptionalStandard;
 import gov.healthit.chpl.svap.domain.CertificationResultSvap;
 import gov.healthit.chpl.upload.listing.ListingUploadHandlerUtil;

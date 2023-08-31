@@ -17,9 +17,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.conformanceMethod.domain.CertificationResultConformanceMethod;
-import gov.healthit.chpl.criteriaattribute.functionalitytested.CertificationResultFunctionalityTestedDAO;
-import gov.healthit.chpl.criteriaattribute.functionalitytested.CertificationResultFunctionalityTestedService;
-import gov.healthit.chpl.criteriaattribute.functionalitytested.FunctionalityTestedDAO;
 import gov.healthit.chpl.criteriaattribute.testtool.CertificationResultTestToolService;
 import gov.healthit.chpl.dao.AgeRangeDAO;
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
@@ -55,6 +52,9 @@ import gov.healthit.chpl.entity.listing.CertificationResultConformanceMethodEnti
 import gov.healthit.chpl.entity.listing.CertificationResultOptionalStandardEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.functionalitytested.CertificationResultFunctionalityTestedDAO;
+import gov.healthit.chpl.functionalitytested.CertificationResultFunctionalityTestedService;
+import gov.healthit.chpl.functionalitytested.FunctionalityTestedDAO;
 import gov.healthit.chpl.manager.impl.SecuredManager;
 import gov.healthit.chpl.optionalStandard.domain.CertificationResultOptionalStandard;
 import gov.healthit.chpl.svap.domain.CertificationResultSvap;

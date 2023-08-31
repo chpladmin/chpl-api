@@ -3,7 +3,7 @@ package gov.healthit.chpl.scheduler.job.xmlgenerator;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-import gov.healthit.chpl.criteriaattribute.functionalitytested.FunctionalityTested;
+import gov.healthit.chpl.functionalitytested.FunctionalityTested;
 
 public class FunctionalityTestedXmlGenerator extends XmlGenerator {
     public static void add(FunctionalityTested functionalityTested, String rootNodeName, XMLStreamWriter sw) throws XMLStreamException {

@@ -1,4 +1,4 @@
-package gov.healthit.chpl.criteriaattribute.functionalitytested;
+package gov.healthit.chpl.functionalitytested;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,11 +9,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import gov.healthit.chpl.criteriaattribute.CriteriaAttribute;
-import gov.healthit.chpl.criteriaattribute.CriteriaAttributeSaveContext;
-import gov.healthit.chpl.criteriaattribute.CriteriaAttributeService;
-import gov.healthit.chpl.criteriaattribute.CriteriaAttributeValidationContext;
-import gov.healthit.chpl.criteriaattribute.CriteriaAttributeValidator;
 import gov.healthit.chpl.dao.CertificationCriterionAttributeDAO;
 import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.comparator.CertificationCriterionComparator;
@@ -25,8 +20,8 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Component
 public class FunctionalityTestedManager {
-    private CriteriaAttributeValidator criteriaAttributeValidator;
-    private CriteriaAttributeService criteriaAttributeService;
+    private FunctionalityTestedValidator functionalityTestedValidator;
+    private FunctionalityTestedService functionalityTestedService;
     private FunctionalityTestedDAO functionalityTestedDAO;
     private CertificationCriterionAttributeDAO certificationCriterionAttributeDAO;
     private ErrorMessageUtil errorMessageUtil;
@@ -34,13 +29,13 @@ public class FunctionalityTestedManager {
     private FunctionalityTestedComparator funcTestedComparator;
 
     @Autowired
-    public FunctionalityTestedManager(FunctionalityTestedDAO functionalityTestedDAO, CriteriaAttributeValidator criteriaAttributeValidator,
-            CriteriaAttributeService criteriaAttributeService, CertificationCriterionAttributeDAO certificationCriterionAttributeDAO,
+    public FunctionalityTestedManager(FunctionalityTestedDAO functionalityTestedDAO, FunctionalityTestedValidator functionalityTestedValidator,
+            FunctionalityTestedService functionalityTestedService, CertificationCriterionAttributeDAO certificationCriterionAttributeDAO,
             ErrorMessageUtil errorMessageUtil, CertificationCriterionComparator criteriaComparator) {
 
         this.functionalityTestedDAO = functionalityTestedDAO;
-        this.criteriaAttributeValidator = criteriaAttributeValidator;
-        this.criteriaAttributeService = criteriaAttributeService;
+        this.functionalityTestedValidator = functionalityTestedValidator;
+        this.functionalityTestedService = functionalityTestedService;
         this.certificationCriterionAttributeDAO = certificationCriterionAttributeDAO;
         this.errorMessageUtil = errorMessageUtil;
         this.criteriaComparator = criteriaComparator;
@@ -63,19 +58,8 @@ public class FunctionalityTestedManager {
     @Transactional
     @ListingStoreRemove(removeBy = RemoveBy.ALL)
     public FunctionalityTested update(FunctionalityTested functionalityTested) throws EntityRetrievalException, ValidationException {
-        criteriaAttributeValidator.validateForEdit(CriteriaAttributeValidationContext.builder()
-                .criteriaAttribute(functionalityTested)
-                .criteriaAttributeDAO(functionalityTestedDAO)
-                .isRegulatoryTextCitationRequired(true)
-                .name("Functionality Tested")
-                .build());
-
-        criteriaAttributeService.update(CriteriaAttributeSaveContext.builder()
-                .criteriaAttribute(functionalityTested)
-                .criteriaAttributeDAO(functionalityTestedDAO)
-                .name("Functionality Tested")
-                .build());
-
+        functionalityTestedValidator.validateForEdit(functionalityTested);
+        functionalityTestedService.update(functionalityTested);
         return functionalityTestedDAO.getById(functionalityTested.getId());
     }
 
@@ -83,20 +67,8 @@ public class FunctionalityTestedManager {
             + "T(gov.healthit.chpl.permissions.domains.FunctionalityTestedDomainPermissions).CREATE)")
     @Transactional
     public FunctionalityTested create(FunctionalityTested functionalityTested) throws EntityRetrievalException, ValidationException {
-        criteriaAttributeValidator.validateForAdd(CriteriaAttributeValidationContext.builder()
-                .criteriaAttribute(functionalityTested)
-                .criteriaAttributeDAO(functionalityTestedDAO)
-                .isRegulatoryTextCitationRequired(true)
-                .name("Functionality Tested")
-                .build());
-
-        CriteriaAttribute criteriaAttribute = criteriaAttributeService.add(CriteriaAttributeSaveContext.builder()
-                .criteriaAttribute(functionalityTested)
-                .criteriaAttributeDAO(functionalityTestedDAO)
-                .name("Functionality Tested")
-                .build());
-
-        return functionalityTestedDAO.getById(criteriaAttribute.getId());
+        functionalityTestedValidator.validateForAdd(functionalityTested);
+        return functionalityTestedService.add(functionalityTested);
     }
 
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).FUNCTIONALITY_TESTED, "
@@ -108,17 +80,9 @@ public class FunctionalityTestedManager {
             ValidationException e = new ValidationException(errorMessageUtil.getMessage("testTool.notFound"));
             throw e;
         }
-        criteriaAttributeValidator.validateForDelete(CriteriaAttributeValidationContext.builder()
-                .criteriaAttribute(functionalityTested)
-                .criteriaAttributeDAO(functionalityTestedDAO)
-                .name("Functionality Tested")
-                .build());
 
-        criteriaAttributeService.delete(CriteriaAttributeSaveContext.builder()
-                .criteriaAttribute(functionalityTested)
-                .criteriaAttributeDAO(functionalityTestedDAO)
-                .name("Functionality Tested")
-                .build());
+        functionalityTestedValidator.validateForDelete(functionalityTested);
+        functionalityTestedService.delete(functionalityTested);
     }
 
     public List<FunctionalityTested> getFunctionalitiesTested(Long criteriaId, Long practiceTypeId) {
