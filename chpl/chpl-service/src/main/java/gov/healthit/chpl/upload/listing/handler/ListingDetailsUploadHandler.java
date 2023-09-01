@@ -10,9 +10,11 @@ import java.util.Map;
 import javax.validation.ValidationException;
 
 import org.apache.commons.csv.CSVRecord;
+import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductTestingLab;
@@ -37,6 +39,7 @@ public class ListingDetailsUploadHandler {
     private SedUploadHandler sedUploadHandler;
     private CertificationResultUploadHandler certResultHandler;
     private ListingUploadHandlerUtil uploadUtil;
+    private FF4j ff4j;
 
     @Autowired
     @SuppressWarnings("checkstyle:parameternumber")
@@ -48,7 +51,8 @@ public class ListingDetailsUploadHandler {
             QmsUploadHandler qmsHandler, IcsUploadHandler icsHandler,
             CqmUploadHandler cqmHandler, MeasuresUploadHandler measuresUploadHandler,
             SedUploadHandler sedUploadHandler, CertificationResultUploadHandler certResultHandler,
-            ListingUploadHandlerUtil uploadUtil) {
+            ListingUploadHandlerUtil uploadUtil,
+            FF4j ff4j) {
         this.editionHandler = editionHandler;
         this.certDateHandler = certDateHandler;
         this.devDetailsUploadHandler = devDetailsUploadHandler;
@@ -61,6 +65,7 @@ public class ListingDetailsUploadHandler {
         this.sedUploadHandler = sedUploadHandler;
         this.certResultHandler = certResultHandler;
         this.uploadUtil = uploadUtil;
+        this.ff4j = ff4j;
     }
 
     public CertifiedProductSearchDetails parseAsListing(CSVRecord headingRecord, List<CSVRecord> listingRecords)
@@ -78,8 +83,6 @@ public class ListingDetailsUploadHandler {
                 .developer(devDetailsUploadHandler.handle(headingRecord, listingRecords))
                 .product(parseProduct(headingRecord, listingRecords))
                 .version(parseVersion(headingRecord, listingRecords))
-                .certificationEdition(editionHandler.handleDeprecated(headingRecord, listingRecords))
-                .edition(editionHandler.handle(headingRecord, listingRecords))
                 .mandatoryDisclosures(parseMandatoryDisclosures(headingRecord, listingRecords))
                 .targetedUsers(targetedUserUploadHandler.handle(headingRecord, listingRecords))
                 .accessibilityStandards(accessibilityStandardsHandler.handle(headingRecord, listingRecords))
@@ -94,6 +97,11 @@ public class ListingDetailsUploadHandler {
                 .sedTestingEndDateStr(parseSedTestingDayStr(headingRecord, listingRecords))
                 .sed(sedUploadHandler.parseAsSed(headingRecord, listingRecords))
             .build();
+
+        if (!ff4j.check(FeatureList.EDITIONLESS)) {
+            listing.setEdition(editionHandler.handle(headingRecord, listingRecords));
+            listing.setCertificationEdition(editionHandler.handleDeprecated(headingRecord, listingRecords));
+        }
 
         //add cert result data
         List<CertificationResult> certResultList = new ArrayList<CertificationResult>();

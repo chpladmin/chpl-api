@@ -3,13 +3,11 @@ package gov.healthit.chpl.upload.listing.normalizer;
 import static org.junit.Assert.assertNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.ff4j.FF4j;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
-import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.dao.CertificationEditionDAO;
 import gov.healthit.chpl.dao.CertifiedProductSearchResultDAO;
 import gov.healthit.chpl.dao.ChplProductNumberDAO;
@@ -38,12 +36,9 @@ public class CertificationEditionNormalizerTest {
                 .build();
 
         editionDao = Mockito.mock(CertificationEditionDAO.class);
-        FF4j ff4j = Mockito.mock(FF4j.class);
-        Mockito.when(ff4j.check(ArgumentMatchers.eq(FeatureList.EDITIONLESS))).thenReturn(false);
         ChplProductNumberUtil chplProductNumberUtil = new ChplProductNumberUtil(
                 Mockito.mock(CertifiedProductSearchResultDAO.class),
-                Mockito.mock(ChplProductNumberDAO.class),
-                ff4j);
+                Mockito.mock(ChplProductNumberDAO.class));
         normalizer = new CertificationEditionNormalizer(editionDao, new ValidationUtils(), chplProductNumberUtil);
     }
 
@@ -199,9 +194,9 @@ public class CertificationEditionNormalizerTest {
     }
 
     @Test
-    public void normalize_editionMissingNoEditionCodeInChplProductNumber_editionNull() throws EntityRetrievalException {
+    public void normalize_editionMissingDefaultEditionCodeInChplProductNumber_editionNull() throws EntityRetrievalException {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .chplProductNumber(ChplProductNumberUtil.EDITION_CODE_NONE + ".07.04.2663.ABCD.R2.01.0.200511")
+                .chplProductNumber(ChplProductNumberUtil.EDITION_CODE_DEFAULT + ".07.04.2663.ABCD.R2.01.0.200511")
                 .build();
 
         normalizer.normalize(listing);
