@@ -83,6 +83,8 @@ public class ListingDetailsUploadHandler {
                 .developer(devDetailsUploadHandler.handle(headingRecord, listingRecords))
                 .product(parseProduct(headingRecord, listingRecords))
                 .version(parseVersion(headingRecord, listingRecords))
+                .certificationEdition(null)
+                .edition(null)
                 .mandatoryDisclosures(parseMandatoryDisclosures(headingRecord, listingRecords))
                 .targetedUsers(targetedUserUploadHandler.handle(headingRecord, listingRecords))
                 .accessibilityStandards(accessibilityStandardsHandler.handle(headingRecord, listingRecords))
