@@ -17,8 +17,7 @@ public final class CacheNames {
     public static final String MEASURE_TYPES = "measureTypes";
     public static final String CQM_CRITERION = "cqmCriterion";
     public static final String CQM_CRITERION_NUMBERS = "cqmCriterionNumbers";
-    public static final String CERTIFICATION_CRITERION_NUMBERS = "certificationCriterionNumbers";
-    public static final String CERTIFICATION_CRITERION_WITH_EDITIONS = "certificationCriterionWithEditions";
+    public static final String CERTIFICATION_CRITERIA = "certificationCriteria";
     public static final String GET_DECERTIFIED_DEVELOPERS = "getDecertifiedDevelopers";
     public static final String GET_ALL_UNRESTRICTED_APIKEYS = "getAllUnrestrictedApiKeys";
     public static final String FIND_SURVEILLANCE_REQ_TYPE = "findSurveillanceRequirementType";

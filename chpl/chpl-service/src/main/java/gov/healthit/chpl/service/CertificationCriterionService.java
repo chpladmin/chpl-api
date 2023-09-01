@@ -16,8 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
-import gov.healthit.chpl.domain.CertificationCriterion;
 import lombok.extern.log4j.Log4j2;
 
 @Component

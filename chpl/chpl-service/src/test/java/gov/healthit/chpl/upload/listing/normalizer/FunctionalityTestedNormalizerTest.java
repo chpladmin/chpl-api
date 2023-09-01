@@ -8,14 +8,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Stream;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
-import gov.healthit.chpl.domain.CertificationCriterion;
+import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.functionalitytested.CertificationResultFunctionalityTested;
@@ -122,10 +121,10 @@ public class FunctionalityTestedNormalizerTest {
                     .id(1L)
                     .value("valid")
                     .regulatoryTextCitation("valid")
-                    .criteria(Stream.of(CertificationCriterion.builder()
+                    .criteria(List.of(CertificationCriterion.builder()
                             .id(CRITERIA_ID_WITHOUT_RESTRICTIONS)
                             .number("170.315 (a)(13)")
-                            .build()).toList())
+                            .build()))
                     .build()));
 
         Mockito.when(functionalityTestedDao.getFunctionalitiesTestedCriteriaMaps())
@@ -232,19 +231,19 @@ public class FunctionalityTestedNormalizerTest {
                 .value("TF1")
                 .regulatoryTextCitation("tf1 desc")
                 .id(1L)
-                .criteria(Stream.of(CertificationCriterion.builder()
+                .criteria(List.of(CertificationCriterion.builder()
                                 .id(CRITERIA_ID_WITHOUT_RESTRICTIONS)
                                 .number("170.315 (a)(13)")
-                                .build()).toList())
+                                .build()))
                 .build());
         allowedFunctionalitiesTested.add(FunctionalityTested.builder()
                 .value("TF2")
                 .regulatoryTextCitation("tf2 desc")
                 .id(2L)
-                .criteria(Stream.of(CertificationCriterion.builder()
+                .criteria(List.of(CertificationCriterion.builder()
                         .id(CRITERIA_ID_WITHOUT_RESTRICTIONS)
                         .number("170.315 (a)(13)")
-                        .build()).toList())
+                        .build()))
                 .build());
 
         Mockito.when(functionalityTestedManager.getFunctionalitiesTested(ArgumentMatchers.anyLong(), ArgumentMatchers.nullable(Long.class)))

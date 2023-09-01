@@ -1,6 +1,6 @@
 package gov.healthit.chpl.svap.domain;
 
-import gov.healthit.chpl.domain.CertificationCriterion;
+import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.svap.entity.SvapCriteriaMapEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

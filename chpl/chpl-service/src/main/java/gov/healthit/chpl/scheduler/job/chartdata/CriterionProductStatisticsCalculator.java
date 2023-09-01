@@ -12,9 +12,9 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
+import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.dao.CriterionProductStatisticsDAO;
-import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.dto.CriterionProductStatisticsDTO;
 import gov.healthit.chpl.entity.statistics.CriterionProductStatisticsEntity;
 import gov.healthit.chpl.exception.EntityCreationException;

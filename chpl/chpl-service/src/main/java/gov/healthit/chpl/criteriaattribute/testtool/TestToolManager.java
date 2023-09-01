@@ -7,13 +7,13 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.criteriaattribute.CriteriaAttribute;
 import gov.healthit.chpl.criteriaattribute.CriteriaAttributeSaveContext;
 import gov.healthit.chpl.criteriaattribute.CriteriaAttributeService;
 import gov.healthit.chpl.criteriaattribute.CriteriaAttributeValidationContext;
 import gov.healthit.chpl.criteriaattribute.CriteriaAttributeValidator;
 import gov.healthit.chpl.dao.CertificationCriterionAttributeDAO;
-import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.sharedstore.listing.ListingStoreRemove;
