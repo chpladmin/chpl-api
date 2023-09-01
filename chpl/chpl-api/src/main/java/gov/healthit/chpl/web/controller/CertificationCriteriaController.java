@@ -3,6 +3,7 @@ package gov.healthit.chpl.web.controller;
 import java.time.LocalDate;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,22 +35,23 @@ public class CertificationCriteriaController {
     @DeprecatedApiResponseFields(friendlyUrl = "/certification-criteria", responseClass = CertificationCriterionWithAttributes.class)
     @Operation(summary = "Retrieve all current Certification Criteria.",
             description = "Returns all of the Certification Criteria that are currently in the CHPL. "
-                    + "If the optional start and end day parameters are provided, the criteria that were "
-                    + "active between those dates are returned.",
+                    + "If any of the optional parameters are provided then only criteria that match the parameters are returned.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<CertificationCriterionWithAttributes> getAll(
+            @RequestParam(name = "certificationEdition", defaultValue = "", required = false)
+            String certificationEdition,
             @RequestParam(name = "activeStartDay", defaultValue = "", required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate activeStartDay,
             @RequestParam(name = "activeEndDay", defaultValue = "", required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate activeEndDay) {
         List<CertificationCriterionWithAttributes> criteria = certificationCriteriaManager.getAllWithAttributes();
-        if (activeStartDay == null && activeEndDay == null) {
+        if (StringUtils.isEmpty(certificationEdition) && activeStartDay == null && activeEndDay == null) {
             criteria = certificationCriteriaManager.getAllWithAttributes();
         } else {
-            criteria = certificationCriteriaManager.getActiveWithAttributes(activeStartDay, activeEndDay);
+            criteria = certificationCriteriaManager.getActiveWithAttributes(certificationEdition, activeStartDay, activeEndDay);
         }
         return criteria;
     }
