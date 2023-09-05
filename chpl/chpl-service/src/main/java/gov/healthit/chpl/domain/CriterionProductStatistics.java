@@ -3,6 +3,7 @@ package gov.healthit.chpl.domain;
 import java.io.Serializable;
 import java.util.Date;
 
+import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.dto.CriterionProductStatisticsDTO;
 import gov.healthit.chpl.util.Util;
 
@@ -38,7 +39,7 @@ public class CriterionProductStatistics implements Serializable {
         this.id = dto.getId();
         this.productCount = dto.getProductCount();
         this.certificationCriterionId = dto.getCertificationCriterionId();
-        this.criterion = new CertificationCriterion(dto.getCriteria());
+        this.criterion = dto.getCriteria();
         this.deleted = dto.getDeleted();
         this.lastModifiedDate = dto.getLastModifiedDate();
         this.lastModifiedUser = dto.getLastModifiedUser();

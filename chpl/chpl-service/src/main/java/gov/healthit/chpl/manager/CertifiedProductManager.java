@@ -3,10 +3,7 @@ package gov.healthit.chpl.manager;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Objects;
 
 import javax.persistence.EntityNotFoundException;
@@ -30,6 +27,7 @@ import gov.healthit.chpl.accessibilityStandard.AccessibilityStandard;
 import gov.healthit.chpl.accessibilityStandard.AccessibilityStandardDAO;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.caching.ListingSearchCacheRefresh;
+import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
 import gov.healthit.chpl.dao.CQMCriterionDAO;
 import gov.healthit.chpl.dao.CQMResultDAO;
@@ -40,7 +38,6 @@ import gov.healthit.chpl.dao.CertificationStatusEventDAO;
 import gov.healthit.chpl.dao.CertifiedProductAccessibilityStandardDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.CertifiedProductQmsStandardDAO;
-import gov.healthit.chpl.dao.CertifiedProductSearchDAO;
 import gov.healthit.chpl.dao.CertifiedProductSearchResultDAO;
 import gov.healthit.chpl.dao.CertifiedProductTargetedUserDAO;
 import gov.healthit.chpl.dao.CertifiedProductTestingLabDAO;
@@ -53,7 +50,6 @@ import gov.healthit.chpl.dao.TargetedUserDAO;
 import gov.healthit.chpl.dao.TestingLabDAO;
 import gov.healthit.chpl.domain.CQMResultCertification;
 import gov.healthit.chpl.domain.CQMResultDetails;
-import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationStatus;
 import gov.healthit.chpl.domain.CertificationStatusEvent;
@@ -66,7 +62,6 @@ import gov.healthit.chpl.domain.CertifiedProductTestingLab;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.DeveloperStatus;
 import gov.healthit.chpl.domain.DeveloperStatusEvent;
-import gov.healthit.chpl.domain.IcsFamilyTreeNode;
 import gov.healthit.chpl.domain.InheritedCertificationStatus;
 import gov.healthit.chpl.domain.ListingMeasure;
 import gov.healthit.chpl.domain.ListingUpdateRequest;
@@ -79,7 +74,6 @@ import gov.healthit.chpl.dto.CQMCriterionDTO;
 import gov.healthit.chpl.dto.CQMResultCriteriaDTO;
 import gov.healthit.chpl.dto.CQMResultDTO;
 import gov.healthit.chpl.dto.CQMResultDetailsDTO;
-import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.CertifiedProductAccessibilityStandardDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
@@ -124,7 +118,6 @@ import lombok.extern.log4j.Log4j2;
 public class CertifiedProductManager extends SecuredManager {
     private ErrorMessageUtil msgUtil;
     private CertifiedProductDAO cpDao;
-    private CertifiedProductSearchDAO searchDao;
     private CertificationCriterionDAO certCriterionDao;
     private QmsStandardDAO qmsDao;
     private TargetedUserDAO targetedUserDao;
@@ -169,7 +162,7 @@ public class CertifiedProductManager extends SecuredManager {
     })
     @Autowired
     public CertifiedProductManager(ErrorMessageUtil msgUtil,
-            CertifiedProductDAO cpDao, CertifiedProductSearchDAO searchDao,
+            CertifiedProductDAO cpDao,
             CertificationResultDAO certDao, CertificationCriterionDAO certCriterionDao,
             QmsStandardDAO qmsDao, TargetedUserDAO targetedUserDao,
             AccessibilityStandardDAO asDao, CertifiedProductQmsStandardDAO cpQmsDao,
@@ -196,7 +189,6 @@ public class CertifiedProductManager extends SecuredManager {
 
         this.msgUtil = msgUtil;
         this.cpDao = cpDao;
-        this.searchDao = searchDao;
         this.certCriterionDao = certCriterionDao;
         this.qmsDao = qmsDao;
         this.targetedUserDao = targetedUserDao;
@@ -241,12 +233,6 @@ public class CertifiedProductManager extends SecuredManager {
     }
 
     @Transactional(readOnly = true)
-    public CertifiedProductDTO getByChplProductNumber(String chplProductNumber) throws EntityRetrievalException {
-        CertifiedProductDTO result = cpDao.getByChplNumber(chplProductNumber);
-        return result;
-    }
-
-    @Transactional(readOnly = true)
     public List<CertifiedProductDetailsDTO> getByDeveloperId(Long developerId) throws EntityRetrievalException {
         return cpDao.findByDeveloperId(developerId);
     }
@@ -276,73 +262,6 @@ public class CertifiedProductManager extends SecuredManager {
     public List<CertifiedProductDetailsDTO> getByProduct(Long productId) throws EntityRetrievalException {
         productManager.getById(productId); // throws 404 if bad id
         return cpDao.getDetailsByProductId(productId);
-    }
-
-    @Transactional(readOnly = true)
-    public List<CertifiedProduct> getByVersionWithEditPermission(Long versionId)
-            throws EntityRetrievalException {
-        versionManager.getById(versionId); // throws 404 if bad id
-        List<CertificationBody> userAcbs = resourcePermissions.getAllAcbsForCurrentUser();
-        if (userAcbs == null || userAcbs.size() == 0) {
-            return new ArrayList<CertifiedProduct>();
-        }
-        List<Long> acbIdList = new ArrayList<Long>(userAcbs.size());
-        for (CertificationBody dto : userAcbs) {
-            acbIdList.add(dto.getId());
-        }
-        return cpDao.getDetailsByVersionAndAcbIds(versionId, acbIdList);
-    }
-
-    @Deprecated
-    @Transactional
-    public List<IcsFamilyTreeNode> getIcsFamilyTree(String chplProductNumber) throws EntityRetrievalException {
-        CertifiedProductDetailsDTO dto = getCertifiedProductDetailsDtoByChplProductNumber(chplProductNumber);
-        return getIcsFamilyTree(dto.getId());
-    }
-
-    @Deprecated
-    @Transactional
-    public List<IcsFamilyTreeNode> getIcsFamilyTree(Long certifiedProductId) throws EntityRetrievalException {
-        getById(certifiedProductId); // sends back 404 if bad id
-
-        List<IcsFamilyTreeNode> familyTree = new ArrayList<IcsFamilyTreeNode>();
-        Map<Long, Boolean> queue = new HashMap<Long, Boolean>();
-        List<Long> toAdd = new ArrayList<Long>();
-
-        // add first element to processing queue
-        queue.put(certifiedProductId, false);
-
-        // while queue contains elements that need processing
-        while (queue.containsValue(false)) {
-            for (Entry<Long, Boolean> cp : queue.entrySet()) {
-                Boolean isProcessed = cp.getValue();
-                Long cpId = cp.getKey();
-                if (!isProcessed) {
-                    IcsFamilyTreeNode node = searchDao.getICSFamilyTree(cpId);
-                    // add family to array that will be used to add to
-                    // processing array
-                    familyTree.add(node);
-                    // done processing node - set processed to true
-                    for (CertifiedProduct certProd : node.getChildren()) {
-                        toAdd.add(certProd.getId());
-                    }
-                    for (CertifiedProduct certProd : node.getParents()) {
-                        toAdd.add(certProd.getId());
-                    }
-                    queue.put(cpId, true);
-                }
-            }
-            // add elements from toAdd array to queue if they are not already
-            // there
-            for (Long id : toAdd) {
-                if (!queue.containsKey(id)) {
-                    queue.put(id, false);
-                }
-            }
-            toAdd.clear();
-        }
-
-        return familyTree;
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")
@@ -1576,7 +1495,7 @@ public class CertifiedProductManager extends SecuredManager {
             return cqm.getCriterion().getId();
         } else if (cqm.getCriterion() != null && !StringUtils.isEmpty(cqm.getCriterion().getNumber())
                 && !StringUtils.isEmpty(cqm.getCriterion().getTitle())) {
-            CertificationCriterionDTO cert = certCriterionDao.getByNumberAndTitle(
+            CertificationCriterion cert = certCriterionDao.getByNumberAndTitle(
                     cqm.getCriterion().getNumber(), cqm.getCriterion().getTitle());
             if (cert != null) {
                 return cert.getId();
@@ -1608,10 +1527,10 @@ public class CertifiedProductManager extends SecuredManager {
                         CQMResultCriteriaDTO cqmdto = new CQMResultCriteriaDTO();
                         cqmdto.setId(criteria.getId());
                         cqmdto.setCriterionId(criteria.getCertificationId());
-                        CertificationCriterionDTO certDto = new CertificationCriterionDTO();
-                        certDto.setId(criteria.getCertificationId());
-                        certDto.setNumber(criteria.getCertificationNumber());
-                        cqmdto.setCriterion(certDto);
+                        CertificationCriterion cert = new CertificationCriterion();
+                        cert.setId(criteria.getCertificationId());
+                        cert.setNumber(criteria.getCertificationNumber());
+                        cqmdto.setCriterion(cert);
                         dto.getCriteria().add(cqmdto);
                     }
                 }

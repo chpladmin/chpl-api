@@ -8,6 +8,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
+import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.dto.CQMResultCriteriaDTO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -49,13 +50,12 @@ public class CQMResultCertification implements Serializable {
     private CertificationCriterion criterion;
 
     public CQMResultCertification() {
-
     }
 
     public CQMResultCertification(CQMResultCriteriaDTO dto) {
         this.id = dto.getId();
         this.certificationId = dto.getCriterionId();
-        this.criterion = new CertificationCriterion(dto.getCriterion());
+        this.criterion = dto.getCriterion();
         if (dto.getCriterion() != null) {
             this.certificationNumber = dto.getCriterion().getNumber();
         }

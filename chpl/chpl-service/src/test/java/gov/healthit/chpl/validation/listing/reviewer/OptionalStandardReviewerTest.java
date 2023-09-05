@@ -3,9 +3,7 @@ package gov.healthit.chpl.validation.listing.reviewer;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -14,7 +12,8 @@ import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
-import gov.healthit.chpl.domain.CertificationCriterion;
+import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
+import gov.healthit.chpl.domain.CertificationEdition;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -33,9 +32,14 @@ public class OptionalStandardReviewerTest {
     private ErrorMessageUtil errorMessageUtil;
     private OptionalStandardReviewer optionalStandardReviewer;
     private ResourcePermissions resourcePermissions;
+    private CertificationEdition edition2015;
 
     @Before
     public void before() throws EntityRetrievalException {
+        edition2015 = CertificationEdition.builder()
+                .id(3L)
+                .name("2015")
+                .build();
         optionalStandardDAO = Mockito.mock(OptionalStandardDAO.class);
         Mockito.when(optionalStandardDAO.getAllOptionalStandardCriteriaMap())
                 .thenReturn(getOptionalStandardCriteriaMaps());
@@ -53,10 +57,6 @@ public class OptionalStandardReviewerTest {
 
     @Test
     public void review_validOptionalStandardAndValidCriterion_NoErrors() {
-        Map<String, Object> certEdition = new HashMap<String, Object>();
-        certEdition.put(CertifiedProductSearchDetails.EDITION_ID_KEY, 3L);
-        certEdition.put(CertifiedProductSearchDetails.EDITION_NAME_KEY, "2015");
-
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .certificationResult(CertificationResult.builder()
                         .id(1L)
@@ -70,7 +70,7 @@ public class OptionalStandardReviewerTest {
                                 .citation("std1")
                                 .build()).collect(Collectors.toList()))
                         .build())
-                .certificationEdition(certEdition)
+                .edition(edition2015)
                 .build();
 
         optionalStandardReviewer.review(listing);
@@ -80,10 +80,6 @@ public class OptionalStandardReviewerTest {
 
     @Test
     public void review_invalidOptionalStandardCriterionCombination_ErrorMessageExists() {
-        Map<String, Object> certEdition = new HashMap<String, Object>();
-        certEdition.put(CertifiedProductSearchDetails.EDITION_ID_KEY, 3L);
-        certEdition.put(CertifiedProductSearchDetails.EDITION_NAME_KEY, "2015");
-
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .certificationResult(CertificationResult.builder()
                         .id(1L)
@@ -97,7 +93,7 @@ public class OptionalStandardReviewerTest {
                                 .citation("bad std1")
                                 .build()).collect(Collectors.toList()))
                         .build())
-                .certificationEdition(certEdition)
+                .edition(edition2015)
                 .build();
 
         optionalStandardReviewer.review(listing);
@@ -111,10 +107,6 @@ public class OptionalStandardReviewerTest {
         Mockito.when(resourcePermissions.isUserRoleOnc()).thenReturn(false);
         Mockito.when(resourcePermissions.isUserRoleAcbAdmin()).thenReturn(true);
 
-        Map<String, Object> certEdition = new HashMap<String, Object>();
-        certEdition.put(CertifiedProductSearchDetails.EDITION_ID_KEY, 3L);
-        certEdition.put(CertifiedProductSearchDetails.EDITION_NAME_KEY, "2015");
-
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .certificationResult(CertificationResult.builder()
                         .id(1L)
@@ -129,7 +121,7 @@ public class OptionalStandardReviewerTest {
                                 .citation("bad std1")
                                 .build()).collect(Collectors.toList()))
                         .build())
-                .certificationEdition(certEdition)
+                .edition(edition2015)
                 .build();
 
         optionalStandardReviewer.review(listing);
@@ -143,11 +135,6 @@ public class OptionalStandardReviewerTest {
         Mockito.when(resourcePermissions.isUserRoleAdmin()).thenReturn(true);
         Mockito.when(resourcePermissions.isUserRoleOnc()).thenReturn(false);
         Mockito.when(resourcePermissions.isUserRoleAcbAdmin()).thenReturn(false);
-
-        Map<String, Object> certEdition = new HashMap<String, Object>();
-        certEdition.put(CertifiedProductSearchDetails.EDITION_ID_KEY, 3L);
-        certEdition.put(CertifiedProductSearchDetails.EDITION_NAME_KEY, "2015");
-
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .certificationResult(CertificationResult.builder()
                         .id(1L)
@@ -162,7 +149,7 @@ public class OptionalStandardReviewerTest {
                                 .citation("bad std1")
                                 .build()).collect(Collectors.toList()))
                         .build())
-                .certificationEdition(certEdition)
+                .edition(edition2015)
                 .build();
 
         optionalStandardReviewer.review(listing);

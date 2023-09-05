@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -20,10 +19,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
-import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductSearchBasicDetails;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.domain.IcsFamilyTreeNode;
 import gov.healthit.chpl.domain.ListingUpdateRequest;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.exception.CertifiedProductUpdateException;
@@ -46,7 +43,6 @@ import gov.healthit.chpl.validation.listing.Validator;
 import gov.healthit.chpl.web.controller.annotation.CacheControl;
 import gov.healthit.chpl.web.controller.annotation.CacheMaxAge;
 import gov.healthit.chpl.web.controller.annotation.CachePolicy;
-import gov.healthit.chpl.web.controller.annotation.DeprecatedApi;
 import gov.healthit.chpl.web.controller.annotation.DeprecatedApiResponseFields;
 import gov.healthit.chpl.web.controller.results.CQMResultDetailResults;
 import gov.healthit.chpl.web.controller.results.CertificationResults;
@@ -88,33 +84,6 @@ public class CertifiedProductController {
         this.activityManager = activityManager;
         this.validatorFactory = validatorFactory;
         this.chplProductNumberUtil = chplProductNumberUtil;
-    }
-
-    @Operation(summary = "List all certified products",
-            description = "Default behavior is to return all certified products in the system. "
-                    + " The required 'versionId' parameter filters the certified products to those"
-                    + " assigned to that version. The 'editable' parameter will return only those"
-                    + " certified products that the logged in user has permission to edit as "
-                    + " determined by ACB roles and authorities. Not all information about "
-                    + " every certified product is returned. Call the /details service for more information.",
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
-    @DeprecatedApiResponseFields(friendlyUrl = "/certified_products", httpMethod = "GET", responseClass = CertifiedProduct.class)
-    @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public @ResponseBody List<CertifiedProduct> getCertifiedProductsByVersion(
-            @RequestParam(required = true) Long versionId,
-            @RequestParam(required = false, defaultValue = "false") boolean editable)
-            throws EntityRetrievalException {
-        List<CertifiedProduct> certifiedProductList = null;
-
-        if (editable) {
-            certifiedProductList = cpManager.getByVersionWithEditPermission(versionId);
-        } else {
-            certifiedProductList = cpManager.getByVersion(versionId);
-        }
-
-        return certifiedProductList;
     }
 
     @Operation(summary = "Get all details for a specified certified product.",
@@ -414,6 +383,8 @@ public class CertifiedProductController {
         return results;
     }
 
+    @DeprecatedApiResponseFields(friendlyUrl = "/certified_products/{certifiedProductId}/measures",
+            responseClass = MeasureResults.class)
     @Operation(summary = "Get all of the Measures for a specified certified product.",
             description = "Returns all of the Measures in the CHPL related to the specified certified product.",
             security = {
@@ -444,6 +415,8 @@ public class CertifiedProductController {
     @SuppressWarnings({
             "checkstyle:parameternumber"
     })
+    @DeprecatedApiResponseFields(friendlyUrl = "/certified_products/{certifiedProductId}/measures",
+        responseClass = MeasureResults.class)
     @Operation(summary = "Get all of the Measures for a specified certified product.",
             description = "Returns all of the Measures in the CHPL related to the specified certified product.  "
                     + "{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}."
@@ -483,6 +456,8 @@ public class CertifiedProductController {
         return results;
     }
 
+    @DeprecatedApiResponseFields(friendlyUrl = "/certified_products/{certifiedProductId}/measures",
+            responseClass = MeasureResults.class)
     @Operation(summary = "Get all of the Measures for a specified certified product based on a legacy "
             + "CHPL Product Number.",
             description = "Returns all of the Measures in the CHPL related to the specified certified product. "
@@ -667,85 +642,6 @@ public class CertifiedProductController {
         return icsManager.getIcsFamilyTree(chplProductNumber);
     }
 
-    @Deprecated
-    @DeprecatedApi(friendlyUrl = "/certified_products/{certifiedProductId}/ics_relationships",
-            message = "This endpoint is deprecated and will be removed. Please use /certified_products/{certifiedProductId}/ics-relationships.",
-            removalDate = "2023-07-15")
-    @Operation(summary = "Get the ICS family tree for the specified certified product.",
-            description = "Returns all members of the family tree connected to the specified certified product.",
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
-    @RequestMapping(value = "/{certifiedProductId:^-?\\d+$}/ics_relationships", method = RequestMethod.GET,
-            produces = "application/json; charset=utf-8")
-    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
-    public @ResponseBody List<IcsFamilyTreeNode> getIcsFamilyTreeById(
-            @PathVariable("certifiedProductId") Long certifiedProductId) throws EntityRetrievalException {
-        List<IcsFamilyTreeNode> familyTree = cpManager.getIcsFamilyTree(certifiedProductId);
-        return familyTree;
-    }
-
-    @SuppressWarnings({
-            "checkstyle:parameternumber"
-    })
-    @Deprecated
-    @DeprecatedApi(friendlyUrl = "/certified_products/{chplProductNumber}/ics_relationships",
-            message = "This endpoint is deprecated and will be removed. Please use /certified_products/{certifiedProductId}/ics-relationships.",
-            removalDate = "2023-07-15")
-    @Operation(summary = "Get the ICS family tree for the specified certified product based on a CHPL Product Number.",
-            description = "{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}."
-                    + "{addlSoftwareCode}.{certDateCode} represents a valid CHPL Product Number.  A valid call to this "
-                    + "service would look like /certified_products/YY.99.99.9999.XXXX.99.99.9."
-                    + "YYMMDD/ics_relationships.",
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
-    @RequestMapping(value = "/{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}.{addlSoftwareCode}.{certDateCode}/ics_relationships",
-            method = RequestMethod.GET,
-            produces = "application/json; charset=utf-8")
-    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
-    public @ResponseBody List<IcsFamilyTreeNode> getIcsFamilyTreeByChplProductNumber(
-            @PathVariable("year") String year,
-            @PathVariable("testingLab") String testingLab,
-            @PathVariable("certBody") String certBody,
-            @PathVariable("vendorCode") String vendorCode,
-            @PathVariable("productCode") String productCode,
-            @PathVariable("versionCode") String versionCode,
-            @PathVariable("icsCode") String icsCode,
-            @PathVariable("addlSoftwareCode") String addlSoftwareCode,
-            @PathVariable("certDateCode") String certDateCode) throws EntityRetrievalException {
-
-        String chplProductNumber = chplProductNumberUtil.getChplProductNumber(year, testingLab, certBody, vendorCode, productCode,
-                versionCode, icsCode, addlSoftwareCode, certDateCode);
-
-        List<IcsFamilyTreeNode> familyTree = cpManager.getIcsFamilyTree(chplProductNumber);
-
-        return familyTree;
-    }
-
-    @Deprecated
-    @DeprecatedApi(friendlyUrl = "/certified_products/{chplProductNumber}/ics_relationships",
-            message = "This endpoint is deprecated and will be removed. Please use /certified_products/{certifiedProductId}/ics-relationships.",
-            removalDate = "2023-07-15")
-    @Operation(summary = "Get the ICS family tree for the specified certified product based on a legacy CHPL Product Number",
-            description = "{chplPrefix}-{identifier} represents a valid legacy CHPL Product Number.  A valid call to this "
-                    + "service would look like /certified_products/CHP-999999/ics_relationships.",
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
-    @RequestMapping(value = "/{chplPrefix}-{identifier}/ics_relationships", method = RequestMethod.GET,
-            produces = "application/json; charset=utf-8")
-    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
-    public @ResponseBody List<IcsFamilyTreeNode> getIcsFamilyTreeByChplProductNumber(
-            @PathVariable("chplPrefix") String chplPrefix,
-            @PathVariable("identifier") String identifier) throws EntityRetrievalException {
-
-        String chplProductNumber = chplProductNumberUtil.getChplProductNumber(chplPrefix, identifier);
-        List<IcsFamilyTreeNode> familyTree = cpManager.getIcsFamilyTree(chplProductNumber);
-
-        return familyTree;
-    }
-
     @Operation(summary = "Update an existing certified product.",
             description = "Updates the certified product after first validating the request. If a different "
                     + "ACB is passed in as part of the request, an ownership change will take place.  "
@@ -817,6 +713,7 @@ public class CertifiedProductController {
                 .accessibilityStandards(e.getAccessibilityStandards())
                 .certificationDate(e.getCertificationDate())
                 .certificationEdition(e.getCertificationEdition())
+                .edition(e.getEdition())
                 .certificationEvents(e.getCertificationEvents())
                 .certificationStatus(e.getCertificationStatus())
                 .certifyingBody(e.getCertifyingBody())

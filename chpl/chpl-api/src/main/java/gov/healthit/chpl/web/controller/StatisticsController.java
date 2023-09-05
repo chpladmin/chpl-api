@@ -15,6 +15,7 @@ import gov.healthit.chpl.dto.SedParticipantStatisticsCountDTO;
 import gov.healthit.chpl.manager.StatisticsManager;
 import gov.healthit.chpl.scheduler.job.chartdata.ExperienceType;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
+import gov.healthit.chpl.web.controller.annotation.DeprecatedApiResponseFields;
 import gov.healthit.chpl.web.controller.results.CriterionProductStatisticsResult;
 import gov.healthit.chpl.web.controller.results.IncumbentDevelopersStatisticsResult;
 import gov.healthit.chpl.web.controller.results.ListingCountStatisticsResult;
@@ -35,6 +36,8 @@ public class StatisticsController {
     @Autowired
     private StatisticsManager statisticsManager;
 
+    @DeprecatedApiResponseFields(friendlyUrl = "/statistics/nonconformity_criteria_count",
+            responseClass = NonconformityTypeStatisticsResult.class)
     @Operation(summary = "Get count of non-conformities by criteria.",
             description = "Retrieves and returns the counts.",
             security = {
@@ -53,6 +56,7 @@ public class StatisticsController {
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
+    @DeprecatedApiResponseFields(friendlyUrl = "/statistics/listing_count", responseClass = ListingCountStatisticsResult.class)
     @RequestMapping(value = "/listing_count", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public ListingCountStatisticsResult getListingCountStatistics() {
         ListingCountStatisticsResult response = new ListingCountStatisticsResult();
@@ -60,6 +64,8 @@ public class StatisticsController {
         return response;
     }
 
+    @DeprecatedApiResponseFields(friendlyUrl = "/statistics/criterion_product",
+            responseClass = CriterionProductStatisticsResult.class)
     @Operation(summary = "Get count of Criteria certified to by unique Product.",
             description = "Retrieves and returns the Criterion/Product counts.",
             security = {
@@ -78,6 +84,7 @@ public class StatisticsController {
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
+    @DeprecatedApiResponseFields(friendlyUrl = "/statistics/incumbent_developers", responseClass = IncumbentDevelopersStatisticsResult.class)
     @RequestMapping(value = "incumbent_developers", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     public @ResponseBody IncumbentDevelopersStatisticsResult getIncumbentDevelopersStatistics() {

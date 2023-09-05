@@ -6,8 +6,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import gov.healthit.chpl.domain.CertificationCriterion;
-import gov.healthit.chpl.dto.CertificationCriterionDTO;
+import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.service.CertificationCriterionService.Criteria2015;
 import gov.healthit.chpl.util.Util;
@@ -65,7 +64,7 @@ public class Validator2015 extends Validator {
         this.counts.put("criteriaRequired", requiredCriteria.size() + CURES_REQUIRED_CRITERIA.size());
         boolean criteriaValid = true;
         for (CertificationCriterion crit : requiredCriteria) {
-            Optional<CertificationCriterionDTO> metRequiredCriterion = criteriaMet.keySet().stream()
+            Optional<CertificationCriterion> metRequiredCriterion = criteriaMet.keySet().stream()
                     .filter(criterionDtoMet -> criterionDtoMet.getId().equals(crit.getId()))
                     .findAny();
 
@@ -78,7 +77,7 @@ public class Validator2015 extends Validator {
         }
         for (String crit : CURES_REQUIRED_CRITERIA) {
             Boolean foundRevised = false;
-            for (CertificationCriterionDTO cert : criteriaMet.keySet()) {
+            for (CertificationCriterion cert : criteriaMet.keySet()) {
                 if (cert.getNumber().equalsIgnoreCase(crit)) {
                     if (cert.getTitle().contains("Cures Update")) {
                         foundRevised = true;

@@ -34,10 +34,10 @@ public class IncumbentDevelopersStatistics implements Serializable {
         this.setNewCount(dto.getNewCount());
         this.setIncumbentCount(dto.getIncumbentCount());
         if (dto.getOldCertificationEdition() != null) {
-            this.oldCertificationEdition = new CertificationEdition(dto.getOldCertificationEdition());
+            this.oldCertificationEdition = dto.getOldCertificationEdition();
         }
         if (dto.getNewCertificationEdition() != null) {
-            this.newCertificationEdition = new CertificationEdition(dto.getNewCertificationEdition());
+            this.newCertificationEdition = dto.getNewCertificationEdition();
         }
 
     }
@@ -87,8 +87,8 @@ public class IncumbentDevelopersStatistics implements Serializable {
         return "Incumbent Developers Statistics Domain object ["
                 + "[New: " + this.newCount + "]"
                 + "[Incumbent: " + this.incumbentCount + "]"
-                + "[Old Edition: " + this.oldCertificationEdition.getYear() + "]"
-                + "[New Edition: " + this.newCertificationEdition.getYear() + "]"
+                + "[Old Edition: " + this.oldCertificationEdition.getName() + "]"
+                + "[New Edition: " + this.newCertificationEdition.getName() + "]"
                 + "]";
     }
 }

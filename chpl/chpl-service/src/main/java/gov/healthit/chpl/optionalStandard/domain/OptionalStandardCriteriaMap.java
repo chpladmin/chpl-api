@@ -1,7 +1,6 @@
 package gov.healthit.chpl.optionalStandard.domain;
 
-import gov.healthit.chpl.domain.CertificationCriterion;
-import gov.healthit.chpl.dto.CertificationCriterionDTO;
+import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.optionalStandard.entity.OptionalStandardCriteriaMapEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,7 +22,7 @@ public class OptionalStandardCriteriaMap {
             this.optionalStandard = new OptionalStandard(entity.getOptionalStandard());
         }
         if (entity.getCriteria() != null) {
-            this.criterion = new CertificationCriterion(new CertificationCriterionDTO(entity.getCriteria()));
+            this.criterion = entity.getCriteria().toDomain();
         }
     }
 }

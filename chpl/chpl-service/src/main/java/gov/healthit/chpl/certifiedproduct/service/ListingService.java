@@ -9,12 +9,12 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.certificationCriteria.CertificationCriterionComparator;
 import gov.healthit.chpl.compliance.directreview.DirectReviewComparator;
 import gov.healthit.chpl.compliance.directreview.DirectReviewSearchService;
 import gov.healthit.chpl.compliance.surveillance.SurveillanceManager;
@@ -38,7 +38,6 @@ import gov.healthit.chpl.domain.CertifiedProductTestingLab;
 import gov.healthit.chpl.domain.InheritedCertificationStatus;
 import gov.healthit.chpl.domain.ProductVersion;
 import gov.healthit.chpl.domain.PromotingInteroperabilityUser;
-import gov.healthit.chpl.domain.comparator.CertificationCriterionComparator;
 import gov.healthit.chpl.domain.comparator.CertifiedProductAccessibilityStandardComparator;
 import gov.healthit.chpl.domain.comparator.CertifiedProductComparator;
 import gov.healthit.chpl.domain.comparator.CertifiedProductQmsStandardComparator;
@@ -170,7 +169,8 @@ public class ListingService {
                 .certificationDate(dto.getCertificationDate() != null ? dto.getCertificationDate().getTime() : null)
                 .decertificationDate(dto.getDecertificationDate() != null ? dto.getDecertificationDate().getTime() : null)
                 .curesUpdate(dto.getCuresUpdate())
-                .certificationEdition(getCertificationEdition(dto))
+                .certificationEdition(getCertificationEditionDeprecated(dto))
+                .edition(getCertificationEdition(dto))
                 .chplProductNumber(getChplProductNumber(dto))
                 .certifyingBody(getCertifyingBody(dto))
                 .classificationType(getClassificationType(dto))
@@ -258,7 +258,7 @@ public class ListingService {
         if (listing.getDeveloper() != null && listing.getDeveloper().getId() != null) {
             drs = drService.getDirectReviewsRelatedToListing(listing.getId(),
                     listing.getDeveloper().getId(),
-                    MapUtils.getString(listing.getCertificationEdition(), CertifiedProductSearchDetails.EDITION_NAME_KEY),
+                    listing.getEdition() != null ?listing.getEdition().getName() : null,
                     listing.getCertificationEvents(), LOGGER);
         }
         listing.setDirectReviews(drs.stream()
@@ -292,7 +292,7 @@ public class ListingService {
         cp.setLastModifiedDate(dto.getLastModifiedDate() != null ? dto.getLastModifiedDate().getTime() : null);
         CertificationEdition edition = getEdition(dto.getCertificationEditionId());
         if (edition != null) {
-            cp.setEdition(edition.getYear());
+            cp.setEdition(edition.getName());
         }
         CertificationStatusEvent cse = certificationStatusEventsService.getInitialCertificationEvent(dto.getId());
         if (cse != null) {
@@ -304,8 +304,11 @@ public class ListingService {
     }
 
     private CertificationEdition getEdition(Long editionId) {
+        if (editionId == null) {
+            return null;
+        }
         Optional<CertificationEdition> certEdition = dimensionalDataManager.getCertificationEditions().stream()
-                .filter(ed -> ed.getCertificationEditionId().equals(editionId))
+                .filter(ed -> ed.getId().equals(editionId))
                 .findAny();
 
         return certEdition.orElse(null);
@@ -319,7 +322,23 @@ public class ListingService {
         }
     }
 
-    private Map<String, Object> getCertificationEdition(CertifiedProductDetailsDTO dto) {
+    private CertificationEdition getCertificationEdition(CertifiedProductDetailsDTO dto) {
+        if (dto.getCertificationEditionId() == null) {
+            return null;
+        }
+        return CertificationEdition.builder()
+                .id(dto.getCertificationEditionId())
+                .certificationEditionId(dto.getCertificationEditionId())
+                .name(dto.getYear())
+                .year(dto.getYear())
+                .build();
+    }
+
+    @Deprecated
+    private Map<String, Object> getCertificationEditionDeprecated(CertifiedProductDetailsDTO dto) {
+        if (dto.getCertificationEditionId() == null) {
+            return null;
+        }
         Map<String, Object> certificationEdition = new HashMap<String, Object>();
         certificationEdition.put("id", dto.getCertificationEditionId());
         certificationEdition.put("name", dto.getYear());

@@ -33,7 +33,6 @@ import gov.healthit.chpl.dao.CertificationStatusEventDAO;
 import gov.healthit.chpl.dao.CertifiedProductAccessibilityStandardDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.CertifiedProductQmsStandardDAO;
-import gov.healthit.chpl.dao.CertifiedProductSearchDAO;
 import gov.healthit.chpl.dao.CertifiedProductSearchResultDAO;
 import gov.healthit.chpl.dao.CertifiedProductTargetedUserDAO;
 import gov.healthit.chpl.dao.CertifiedProductTestingLabDAO;
@@ -46,6 +45,7 @@ import gov.healthit.chpl.dao.TargetedUserDAO;
 import gov.healthit.chpl.dao.TestingLabDAO;
 import gov.healthit.chpl.domain.Address;
 import gov.healthit.chpl.domain.CQMResultDetails;
+import gov.healthit.chpl.domain.CertificationEdition;
 import gov.healthit.chpl.domain.CertificationStatus;
 import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
@@ -78,12 +78,10 @@ import gov.healthit.chpl.validation.listing.Validator;
 
 
 public class CertifiedProductManagerTest {
-    private static final long EDITION_2015_ID = 3L;
     private static final long DRUMMOND_ACB_ID = 3L;
 
     private ErrorMessageUtil msgUtil;
     private CertifiedProductDAO cpDao;
-    private CertifiedProductSearchDAO searchDao;
     private CertificationResultDAO certDao;
     private CertificationCriterionDAO certCriterionDao;
     private QmsStandardDAO qmsDao;
@@ -121,7 +119,6 @@ public class CertifiedProductManagerTest {
     public void before() {
         msgUtil = Mockito.mock(ErrorMessageUtil.class);
         cpDao = Mockito.mock(CertifiedProductDAO.class);
-        searchDao = Mockito.mock(CertifiedProductSearchDAO.class);
         certDao = Mockito.mock(CertificationResultDAO.class);
         certCriterionDao = Mockito.mock(CertificationCriterionDAO.class);
         qmsDao = Mockito.mock(QmsStandardDAO.class);
@@ -153,7 +150,7 @@ public class CertifiedProductManagerTest {
         validatorFactory = Mockito.mock(ListingValidatorFactory.class);
         curesUpdateService = Mockito.mock(CuresUpdateService.class);
 
-        certifiedProductManager = new  CertifiedProductManager(msgUtil, cpDao,  searchDao, certDao,
+        certifiedProductManager = new  CertifiedProductManager(msgUtil, cpDao, certDao,
                 certCriterionDao, qmsDao,  targetedUserDao, asDao,  cpQmsDao, cpMeasureDao, cpTestingLabDao,
                 cpTargetedUserDao, cpAccStdDao,  cqmResultDAO, cqmCriterionDao,  atlDao,
                 developerDao,  devStatusDao, developerManager,  productManager, versionManager,
@@ -250,7 +247,7 @@ public class CertifiedProductManagerTest {
         return CertifiedProductSearchDetails.builder()
                 .id(1L)
                 .certificationDate(cal1.getTime().getTime())
-                .certificationEdition(getCertificationEdition())
+                .edition(CertificationEdition.builder().id(3L).name("2015").build())
                 .certificationEvents(Stream.of(CertificationStatusEvent.builder()
                         .eventDate(cal1.getTime().getTime())
                         .id(1L)
@@ -307,13 +304,6 @@ public class CertifiedProductManagerTest {
                         .version("11.3")
                         .build())
                 .build();
-    }
-
-    private Map<String, Object> getCertificationEdition() {
-        Map<String, Object> edition = new HashMap<String, Object>();
-        edition.put("name", "2015");
-        edition.put("id", EDITION_2015_ID);
-        return edition;
     }
 
     private Map<String, Object> getCertifyingBody() {

@@ -12,9 +12,9 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
+import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.dao.CriterionProductStatisticsDAO;
-import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.CriterionProductStatisticsDTO;
 import gov.healthit.chpl.entity.statistics.CriterionProductStatisticsEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
@@ -98,7 +98,7 @@ public class CriterionProductStatisticsCalculator {
             Map<Long, Long> productCounts) throws NumberFormatException, EntityRetrievalException {
         List<CriterionProductStatisticsEntity> entities = new ArrayList<CriterionProductStatisticsEntity>();
         for (Entry<Long, Long> entry : productCounts.entrySet()) {
-            CertificationCriterionDTO criterion = certificationCriterionDAO.getById(entry.getKey());
+            CertificationCriterion criterion = certificationCriterionDAO.getById(entry.getKey());
             if (!criterion.getRemoved()) {
                 CriterionProductStatisticsEntity entity = new CriterionProductStatisticsEntity();
                 entity.setProductCount(entry.getValue());

@@ -45,13 +45,6 @@ public class ChplNumberFormatReviewer implements Reviewer {
         }
 
         if (!validationUtils.chplNumberPartIsValid(listing.getChplProductNumber(),
-                ChplProductNumberUtil.EDITION_CODE_INDEX,
-                ChplProductNumberUtil.EDITION_CODE_REGEX)) {
-            listing.addDataErrorMessage(
-                    msgUtil.getMessage("listing.badEditionCodeChars", ChplProductNumberUtil.EDITION_CODE_LENGTH));
-        }
-
-        if (!validationUtils.chplNumberPartIsValid(listing.getChplProductNumber(),
                 ChplProductNumberUtil.ATL_CODE_INDEX,
                 ChplProductNumberUtil.ATL_CODE_REGEX)) {
             listing.addDataErrorMessage(

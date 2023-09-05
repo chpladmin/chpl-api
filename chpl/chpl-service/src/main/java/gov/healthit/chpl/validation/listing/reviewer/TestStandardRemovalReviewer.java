@@ -36,7 +36,9 @@ public class TestStandardRemovalReviewer extends PermissionBasedReviewer {
         String message = msgUtil.getMessage("listing.criteria.testStandardNotAllowed",
                 Util.formatCriteriaNumber(certResult.getCriterion()),
                 testStandardName);
-        if ((certResult.getOptionalStandards() != null && certResult.getOptionalStandards().size() > 0) || isListing2015Edition(listing)) {
+        if ((certResult.getOptionalStandards() != null && certResult.getOptionalStandards().size() > 0)
+                || listing.getEdition() == null
+                || isListing2015Edition(listing)) {
             addBusinessCriterionError(listing, certResult, message);
         } else {
             listing.addWarningMessage(message);
@@ -48,8 +50,8 @@ public class TestStandardRemovalReviewer extends PermissionBasedReviewer {
     }
 
     private String getListingEdition(CertifiedProductSearchDetails listing) {
-        return listing.getCertificationEdition().containsKey(CertifiedProductSearchDetails.EDITION_NAME_KEY)
-                ? listing.getCertificationEdition().get(CertifiedProductSearchDetails.EDITION_NAME_KEY).toString()
+        return listing.getEdition() != null
+                ? listing.getEdition().getName()
                 : "";
     }
 }

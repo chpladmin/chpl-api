@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.dao.CertificationIdDAO;
 import gov.healthit.chpl.domain.SimpleCertificationId;
 import gov.healthit.chpl.domain.SimpleCertificationIdWithProducts;
@@ -22,7 +23,6 @@ import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.domain.schedule.ChplJob;
 import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
 import gov.healthit.chpl.dto.CQMMetDTO;
-import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.CertificationIdAndCertifiedProductDTO;
 import gov.healthit.chpl.dto.CertificationIdDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
@@ -74,7 +74,7 @@ public class CertificationIdManager {
     }
 
     @Transactional(readOnly = true)
-    public List<CertificationCriterionDTO> getCriteriaMetByCertifiedProductIds(List<Long> productIds) {
+    public List<CertificationCriterion> getCriteriaMetByCertifiedProductIds(List<Long> productIds) {
         return certificationIdDao.getCriteriaMetByCertifiedProductIds(productIds);
     }
 

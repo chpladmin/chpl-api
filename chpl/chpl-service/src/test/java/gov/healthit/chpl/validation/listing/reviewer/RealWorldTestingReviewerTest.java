@@ -12,6 +12,7 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
 import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
+import gov.healthit.chpl.domain.CertificationEdition;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -29,7 +30,7 @@ public class RealWorldTestingReviewerTest {
         certifiedProductDetailsManager = Mockito.mock(CertifiedProductDetailsManager.class);
 
         CertifiedProductSearchDetails listing = new CertifiedProductSearchDetails();
-        listing.getCertificationEdition().put(CertifiedProductSearchDetails.EDITION_NAME_KEY, "2015");
+        listing.setEdition(CertificationEdition.builder().name("2015").build());
         Mockito.when(certifiedProductDetailsManager.getCertifiedProductDetails(ArgumentMatchers.anyLong()))
                 .thenReturn(listing);
 
@@ -47,7 +48,7 @@ public class RealWorldTestingReviewerTest {
 
         CertifiedProductSearchDetails updated = new CertifiedProductSearchDetails();
         updated.setId(1l);
-        updated.getCertificationEdition().put(CertifiedProductSearchDetails.EDITION_NAME_KEY, "2015");
+        updated.setEdition(CertificationEdition.builder().name("2015").build());
         updated.setRwtPlansUrl("");
         updated.setRwtPlansCheckDate(LocalDate.parse("2020-08-08"));
 
@@ -66,7 +67,7 @@ public class RealWorldTestingReviewerTest {
 
         CertifiedProductSearchDetails updated = new CertifiedProductSearchDetails();
         updated.setId(1l);
-        updated.getCertificationEdition().put(CertifiedProductSearchDetails.EDITION_NAME_KEY, "2015");
+        updated.setEdition(CertificationEdition.builder().name("2015").build());
         updated.setRwtPlansUrl("not a valid URL");
         updated.setRwtPlansCheckDate(LocalDate.parse("2020-08-08"));
 
@@ -85,7 +86,7 @@ public class RealWorldTestingReviewerTest {
 
         CertifiedProductSearchDetails updated = new CertifiedProductSearchDetails();
         updated.setId(1l);
-        updated.getCertificationEdition().put(CertifiedProductSearchDetails.EDITION_NAME_KEY, "2015");
+        updated.setEdition(CertificationEdition.builder().name("2015").build());
         updated.setRwtPlansUrl("http://www.abc.com");
         updated.setRwtPlansCheckDate(null);
 
@@ -104,7 +105,7 @@ public class RealWorldTestingReviewerTest {
 
         CertifiedProductSearchDetails updated = new CertifiedProductSearchDetails();
         updated.setId(1l);
-        updated.getCertificationEdition().put(CertifiedProductSearchDetails.EDITION_NAME_KEY, "2015");
+        updated.setEdition(CertificationEdition.builder().name("2015").build());
         updated.setRwtResultsUrl("");
         updated.setRwtResultsCheckDate(LocalDate.parse("2022-01-08"));
 
@@ -123,7 +124,7 @@ public class RealWorldTestingReviewerTest {
 
         CertifiedProductSearchDetails updated = new CertifiedProductSearchDetails();
         updated.setId(1l);
-        updated.getCertificationEdition().put(CertifiedProductSearchDetails.EDITION_NAME_KEY, "2015");
+        updated.setEdition(CertificationEdition.builder().name("2015").build());
         updated.setRwtResultsUrl("not a valid URL");
         updated.setRwtResultsCheckDate(LocalDate.parse("2022-01-08"));
 
@@ -142,7 +143,7 @@ public class RealWorldTestingReviewerTest {
 
         CertifiedProductSearchDetails updated = new CertifiedProductSearchDetails();
         updated.setId(1l);
-        updated.getCertificationEdition().put(CertifiedProductSearchDetails.EDITION_NAME_KEY, "2015");
+        updated.setEdition(CertificationEdition.builder().name("2015").build());
         updated.setRwtResultsUrl("http://www.abc.com");
         updated.setRwtResultsCheckDate(null);
 

@@ -7,7 +7,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -407,11 +406,8 @@ public abstract class ActivitiesAndOutcomesWorksheetBuilder {
             if (determineIfSurveillanceHappenedDuringQuarter("Q4", quarterlyReports, surv)) {
                 addDataCell(workbook, row, COL_Q4, "X");
             }
-            String edition = listing.getCertificationEdition().get("name").toString();
-            if (listing.getCuresUpdate() != null && listing.getCuresUpdate()) {
-                edition += CertificationEdition.CURES_SUFFIX;
-            }
-            addDataCell(workbook, row, COL_CERT_EDITION, edition);
+
+            addDataCell(workbook, row, COL_CERT_EDITION, listing.getEdition() != null ? listing.getEdition().getName() : "");
             addDataCell(workbook, row, COL_DEVELOPER_NAME, listing.getDeveloper().getName());
             addDataCell(workbook, row, COL_PRODUCT_NAME, listing.getProduct().getName());
             addDataCell(workbook, row, COL_PRODUCT_VERSION, listing.getVersion().getVersion());
@@ -510,13 +506,18 @@ public abstract class ActivitiesAndOutcomesWorksheetBuilder {
             completeListingDetails.setId(listingDetails.getId());
             completeListingDetails.setChplProductNumber(listingDetails.getChplProductNumber());
             String edition = listingDetails.getYear();
-            if (listingDetails.getCuresUpdate() != null && listingDetails.getCuresUpdate()) {
-                edition += CertificationEdition.CURES_SUFFIX;
+            if (StringUtils.isEmpty(edition)) {
+                completeListingDetails.setEdition(null);
+            } else {
+                if (listingDetails.getCuresUpdate() != null && listingDetails.getCuresUpdate()) {
+                    edition += CertificationEdition.CURES_SUFFIX;
+                }
+
+                completeListingDetails.setEdition(CertificationEdition.builder()
+                    .id(listingDetails.getCertificationEditionId())
+                    .name(edition)
+                    .build());
             }
-            Map<String, Object> editionMap = new HashMap<String, Object>();
-            editionMap.put("id", listingDetails.getCertificationEditionId());
-            editionMap.put("name",  edition);
-            completeListingDetails.setCertificationEdition(editionMap);
             Developer dev = new Developer();
             dev.setId(listingDetails.getDeveloper().getId());
             dev.setName(listingDetails.getDeveloper().getName());

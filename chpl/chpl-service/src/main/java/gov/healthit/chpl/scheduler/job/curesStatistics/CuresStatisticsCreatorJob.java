@@ -16,28 +16,10 @@ public class CuresStatisticsCreatorJob  extends QuartzJob {
     private static final int ONE_DAY = 1;
 
     @Autowired
-    private CriterionListingStatisticsCalculator criterionListingStatisticsCalculator;
-
-    @Autowired
     private OriginalCriterionActivityStatisticsCalculator originalCriterionActivityStatisticsCalculator;
 
     @Autowired
     private CuresCriterionActivityStatisticsCalculator curesCriterionActivityStatisticsCalculator;
-
-    @Autowired
-    private ListingCuresStatusStatisticsCalculator listingCuresStatusStatisticsCalculator;
-
-    @Autowired
-    private PrivacyAndSecurityListingStatisticsCalculator privacyAndSecurityListingStatisticsCalculator;
-
-    @Autowired
-    private ListingCriterionForCuresAchievementStatisticsCalculator listingCriterionForCuresAchievementStatisticsCalculator;
-
-    @Autowired
-    private CuresCriteriaStatisticsByAcbCalculator curesCrieriaStatisticsByAcbCalculator;
-
-    @Autowired
-    private CuresListingByAcbStatisticsCalculator curesListingStatisticsCalculator;
 
     @Override
     public void execute(JobExecutionContext arg0) throws JobExecutionException {
@@ -48,14 +30,8 @@ public class CuresStatisticsCreatorJob  extends QuartzJob {
         LocalDate yesterday = today.minus(Period.ofDays(ONE_DAY));
         LOGGER.info("Calculating statistics for " + yesterday);
 
-        criterionListingStatisticsCalculator.setCriterionListingCountStatisticsForDate(yesterday);
         originalCriterionActivityStatisticsCalculator.setOriginalCriterionActivityStatisticsForDate(yesterday);
         curesCriterionActivityStatisticsCalculator.setCuresCriterionActivityStatisticsForDate(yesterday);
-        listingCuresStatusStatisticsCalculator.setListingCuresStatusStatisticsForDate(yesterday);
-        privacyAndSecurityListingStatisticsCalculator.setPrivacyAndSecurityListingStatisticsForDate(yesterday);
-        listingCriterionForCuresAchievementStatisticsCalculator.setCriteriaNeededToAchieveCuresStatisticsForDate(yesterday);
-        curesCrieriaStatisticsByAcbCalculator.setCuresStatisticsByAcbForDate(yesterday);
-        curesListingStatisticsCalculator.setCuresListingStatisticsForDate(yesterday);
 
         LOGGER.info("*****Cures Reporting Statistics Job is complete.*****");
     }

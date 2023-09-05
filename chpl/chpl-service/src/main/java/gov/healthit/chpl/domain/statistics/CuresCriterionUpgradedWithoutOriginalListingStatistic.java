@@ -2,7 +2,7 @@ package gov.healthit.chpl.domain.statistics;
 
 import java.time.LocalDate;
 
-import gov.healthit.chpl.dto.CertificationCriterionDTO;
+import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,6 +15,6 @@ import lombok.NoArgsConstructor;
 public class CuresCriterionUpgradedWithoutOriginalListingStatistic {
     private Long id;
     private LocalDate statisticDate;
-    private CertificationCriterionDTO curesCriterion;
+    private CertificationCriterion curesCriterion;
     private Long listingsUpgradedWithoutAttestingToOriginalCount;
 }

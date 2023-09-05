@@ -1,9 +1,11 @@
 package gov.healthit.chpl.upload.listing.validation;
 
+import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.ListingUpload;
 import gov.healthit.chpl.upload.listing.validation.reviewer.AccessibilityStandardReviewer;
@@ -69,6 +71,8 @@ public class ListingUploadValidator {
     private CqmResultReviewer cqmResultReviewer;
     private SedReviewer sedReviewer;
 
+    private FF4j ff4j;
+
     @Autowired
     @SuppressWarnings("checkstyle:parameternumber")
     public ListingUploadValidator(CSVHeaderReviewer csvHeaderReviewer,
@@ -99,7 +103,8 @@ public class ListingUploadValidator {
             UnsupportedCharacterReviewer unsupportedCharacterReviewer,
             CertificationResultReviewer certResultReviewer,
             CqmResultReviewer cqmResultReviewer,
-            SedReviewer sedReviewer) {
+            SedReviewer sedReviewer,
+            FF4j ff4j) {
         this.csvHeaderReviewer = csvHeaderReviewer;
         this.chplNumberFormatReviewer = chplNumberFormatReviewer;
         this.editionCodeReviewer = editionCodeReviewer;
@@ -129,6 +134,7 @@ public class ListingUploadValidator {
         this.certResultReviewer = certResultReviewer;
         this.cqmResultReviewer = cqmResultReviewer;
         this.sedReviewer = sedReviewer;
+        this.ff4j = ff4j;
     }
 
     public void review(ListingUpload uploadedMetadata, CertifiedProductSearchDetails listing) {
@@ -140,7 +146,9 @@ public class ListingUploadValidator {
         chplNumberFormatReviewer.review(listing);
         chplNumberUniqueReviewer.review(listing);
         editionCodeReviewer.review(listing);
-        editionReviewer.review(listing);
+        if (!ff4j.check(FeatureList.EDITIONLESS)) {
+            editionReviewer.review(listing);
+        }
         atlCodeReviewer.review(listing);
         atlReviewer.review(listing);
         acbCodeReviewer.review(listing);

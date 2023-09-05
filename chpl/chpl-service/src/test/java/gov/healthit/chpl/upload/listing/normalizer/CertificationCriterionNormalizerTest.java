@@ -15,12 +15,11 @@ import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
+import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
-import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultAdditionalSoftware;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.util.CertificationResultRules;
 
 public class CertificationCriterionNormalizerTest {
@@ -1503,8 +1502,8 @@ public class CertificationCriterionNormalizerTest {
         }
     }
 
-    private CertificationCriterionDTO buildCriterionDto(Long id, String number, String title) {
-        return CertificationCriterionDTO.builder()
+    private CertificationCriterion buildCriterionDto(Long id, String number, String title) {
+        return CertificationCriterion.builder()
                 .id(id)
                 .number(number)
                 .title(title)

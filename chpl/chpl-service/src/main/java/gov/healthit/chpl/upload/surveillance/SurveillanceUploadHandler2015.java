@@ -15,7 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
 import gov.healthit.chpl.compliance.surveillance.SurveillanceDAO;
-import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.NonconformityType;
@@ -25,10 +24,9 @@ import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformity;
 import gov.healthit.chpl.domain.surveillance.SurveillanceRequirement;
 import gov.healthit.chpl.domain.surveillance.SurveillanceResultType;
 import gov.healthit.chpl.domain.surveillance.SurveillanceType;
-import gov.healthit.chpl.dto.CertifiedProductDTO;
-import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
+import gov.healthit.chpl.util.CertifiedProductUtil;
 import gov.healthit.chpl.util.NullSafeEvaluator;
 
 @Component("surveillanceUploadHandler2015")
@@ -39,7 +37,7 @@ public class SurveillanceUploadHandler2015 implements SurveillanceUploadHandler 
     private static final String FIRST_ROW_REGEX = "^NEW|UPDATE$";
     private static final String SUBSEQUENT_ROW = "SUBELEMENT";
 
-    private CertifiedProductDAO cpDao;
+    private CertifiedProductUtil cpUtil;
     private SurveillanceDAO survDao;
     private CertifiedProductDetailsManager certifiedProductDetailsManager;
 
@@ -52,9 +50,9 @@ public class SurveillanceUploadHandler2015 implements SurveillanceUploadHandler 
     private int lastDataIndex;
 
     @Autowired
-    public SurveillanceUploadHandler2015(CertifiedProductDAO cpDao, SurveillanceDAO survDao,
+    public SurveillanceUploadHandler2015(CertifiedProductUtil cpUtil, SurveillanceDAO survDao,
             CertifiedProductDetailsManager certifiedProductDetailsManager) {
-        this.cpDao = cpDao;
+        this.cpUtil = cpUtil;
         this.survDao = survDao;
         this.certifiedProductDetailsManager = certifiedProductDetailsManager;
         dateFormatter = DateTimeFormatter.ofPattern(DATE_FORMAT);
@@ -104,39 +102,16 @@ public class SurveillanceUploadHandler2015 implements SurveillanceUploadHandler 
         int colIndex = 1;
 
         // find the chpl product this surveillance will be attached to
-        String chplId = record.get(colIndex++).trim();
-        if (chplId.startsWith("CHP-")) {
-            try {
-                CertifiedProductDTO chplProduct = cpDao.getByChplNumber(chplId);
-                if (chplProduct != null) {
-                    CertifiedProductDetailsDTO chplProductDetails = cpDao.getDetailsById(chplProduct.getId());
-                    if (chplProductDetails != null) {
-                        surv.setCertifiedProduct(new CertifiedProduct(chplProductDetails));
-                    } else {
-                        LOGGER.error("Found chpl product with product id '" + chplId
-                                + "' but could not find certified product with id '" + chplProduct.getId() + "'.");
-                    }
-                } else {
-                    LOGGER.error("Could not find chpl product with product id '" + chplId + "'.");
-                }
-            } catch (final EntityRetrievalException ex) {
-                LOGGER.error("Exception looking up CHPL product details for '" + chplId + "'.");
-            }
+        String chplProductNumber = record.get(colIndex++).trim();
+        CertifiedProduct listing = cpUtil.getListing(chplProductNumber);
+        if (listing != null) {
+            surv.setCertifiedProduct(listing);
         } else {
-            try {
-                CertifiedProductDetailsDTO chplProductDetails = cpDao.getByChplUniqueId(chplId);
-                if (chplProductDetails != null) {
-                    surv.setCertifiedProduct(new CertifiedProduct(chplProductDetails));
-                } else {
-                    LOGGER.error("Could not find chpl product with unique id '" + chplId + "'.");
-                }
-            } catch (final EntityRetrievalException ex) {
-                LOGGER.error("Exception looking up " + chplId, ex);
-            }
+            LOGGER.error("Could not find chpl product with unique id '" + chplProductNumber + "'.");
         }
 
         if (surv.getCertifiedProduct() == null || surv.getCertifiedProduct().getId() == null) {
-            surv.getErrorMessages().add("Could not find Certified Product with unique id " + chplId);
+            surv.getErrorMessages().add("Could not find Certified Product with unique id " + chplProductNumber);
             return;
         }
 
@@ -145,7 +120,7 @@ public class SurveillanceUploadHandler2015 implements SurveillanceUploadHandler 
         if (isUpdate && StringUtils.isEmpty(survFriendlyId)) {
             LOGGER.error("Surveillance UPDATE specified but no surveillance ID was found");
             surv.getErrorMessages()
-                    .add("No surveillance ID was specified for surveillance update on certified product " + chplId);
+                    .add("No surveillance ID was specified for surveillance update on certified product " + chplProductNumber);
             return;
         } else if (isUpdate
                 && survDao.getSurveillanceByCertifiedProductAndFriendlyId(surv.getCertifiedProduct().getId(),

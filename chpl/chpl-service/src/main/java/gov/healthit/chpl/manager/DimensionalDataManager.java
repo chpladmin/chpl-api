@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.caching.CacheNames;
+import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.compliance.surveillance.SurveillanceDAO;
 import gov.healthit.chpl.dao.AgeRangeDAO;
 import gov.healthit.chpl.dao.CQMCriterionDAO;
@@ -28,7 +29,6 @@ import gov.healthit.chpl.dao.TestProcedureDAO;
 import gov.healthit.chpl.dao.TestStandardDAO;
 import gov.healthit.chpl.domain.CQMCriterion;
 import gov.healthit.chpl.domain.CertificationBody;
-import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationEdition;
 import gov.healthit.chpl.domain.CriteriaSpecificDescriptiveModel;
 import gov.healthit.chpl.domain.DescriptiveModel;
@@ -48,21 +48,16 @@ import gov.healthit.chpl.domain.surveillance.SurveillanceResultType;
 import gov.healthit.chpl.domain.surveillance.SurveillanceType;
 import gov.healthit.chpl.dto.AgeRangeDTO;
 import gov.healthit.chpl.dto.CQMCriterionDTO;
-import gov.healthit.chpl.dto.CertificationCriterionDTO;
-import gov.healthit.chpl.dto.CertificationEditionDTO;
 import gov.healthit.chpl.dto.EducationTypeDTO;
 import gov.healthit.chpl.dto.TargetedUserDTO;
 import gov.healthit.chpl.dto.TestDataCriteriaMapDTO;
 import gov.healthit.chpl.dto.TestProcedureCriteriaMapDTO;
-import gov.healthit.chpl.dto.TestStandardDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.listing.measure.ListingMeasureDAO;
 import gov.healthit.chpl.listing.measure.MeasureDAO;
 import gov.healthit.chpl.optionalStandard.dao.OptionalStandardDAO;
 import gov.healthit.chpl.optionalStandard.domain.OptionalStandard;
 import gov.healthit.chpl.optionalStandard.entity.OptionalStandardEntity;
-import gov.healthit.chpl.qmsStandard.QmsStandard;
-import gov.healthit.chpl.qmsStandard.QmsStandardDAO;
 import gov.healthit.chpl.surveillance.report.QuarterDAO;
 import gov.healthit.chpl.surveillance.report.domain.Quarter;
 import lombok.extern.log4j.Log4j2;
@@ -79,7 +74,6 @@ public class DimensionalDataManager {
     private TestStandardDAO testStandardDao;
     private TestProcedureDAO testProcedureDao;
     private TestDataDAO testDataDao;
-    private QmsStandardDAO qmsDao;
     private TargetedUserDAO tuDao;
     private DeveloperStatusDAO devStatusDao;
     private SurveillanceDAO survDao;
@@ -98,7 +92,7 @@ public class DimensionalDataManager {
                                   EducationTypeDAO educationTypeDao, AgeRangeDAO ageRangeDao,
                                   TestStandardDAO testStandardDao, TestProcedureDAO testProcedureDao,
                                   TestDataDAO testDataDao,
-                                  QmsStandardDAO qmsDao, TargetedUserDAO tuDao, DeveloperStatusDAO devStatusDao,
+                                  TargetedUserDAO tuDao, DeveloperStatusDAO devStatusDao,
                                   SurveillanceDAO survDao, QuarterDAO quarterDao,
                                   ProductDAO productDao, DeveloperDAO devDao, MeasureDAO measureDao,
                                   ListingMeasureDAO listingMeasureDao, CQMCriterionDAO cqmCriterionDao,
@@ -112,7 +106,6 @@ public class DimensionalDataManager {
         this.testStandardDao = testStandardDao;
         this.testProcedureDao = testProcedureDao;
         this.testDataDao = testDataDao;
-        this.qmsDao = qmsDao;
         this.tuDao = tuDao;
         this.devStatusDao = devStatusDao;
         this.survDao = survDao;
@@ -199,16 +192,6 @@ public class DimensionalDataManager {
         return statuses;
     }
 
-    @Deprecated
-    public Set<KeyValueModel> getQmsStandards() {
-        LOGGER.debug("Getting all qms standards from the database (not cached).");
-
-        List<QmsStandard> qmsStandards = this.qmsDao.getAll();
-        return qmsStandards.stream()
-            .map(qms -> new KeyValueModel(qms.getId(), qms.getName()))
-            .collect(Collectors.toSet());
-    }
-
     public Set<KeyValueModel> getTargetedUesrs() {
         List<TargetedUserDTO> dtos = this.tuDao.findAll();
         Set<KeyValueModel> standards = new HashSet<KeyValueModel>();
@@ -222,15 +205,8 @@ public class DimensionalDataManager {
     @Transactional
     public Set<TestStandard> getTestStandards() {
         LOGGER.debug("Getting all test standards from the database (not cached).");
-
-        List<TestStandardDTO> dtos = this.testStandardDao.findAll();
-        Set<TestStandard> testStds = new HashSet<TestStandard>();
-
-        for (TestStandardDTO dto : dtos) {
-            testStds.add(new TestStandard(dto));
-        }
-
-        return testStds;
+        return this.testStandardDao.findAll().stream()
+                .collect(Collectors.toSet());
     }
 
     public Set<KeyValueModel> getSurveillanceTypes() {
@@ -307,7 +283,7 @@ public class DimensionalDataManager {
         for (TestProcedureCriteriaMapDTO dto : testProcedureDtos) {
             testProcedures.add(new CriteriaSpecificDescriptiveModel(
                     dto.getTestProcedureId(), dto.getTestProcedure().getName(), null,
-                    null, new CertificationCriterion(dto.getCriteria())));
+                    null, dto.getCriteria()));
         }
         return testProcedures;
     }
@@ -323,24 +299,9 @@ public class DimensionalDataManager {
         for (TestDataCriteriaMapDTO dto : testDataDtos) {
             testData.add(new CriteriaSpecificDescriptiveModel(
                     dto.getTestDataId(), dto.getTestData().getName(), null,
-                    null, new CertificationCriterion(dto.getCriteria())));
+                    null, dto.getCriteria()));
         }
         return testData;
-    }
-
-    @Transactional
-    @Cacheable(value = CacheNames.CERTIFICATION_CRITERION_WITH_EDITIONS)
-    public Set<CertificationCriterion> getCertificationCriterion() {
-        LOGGER.debug("Getting all criterion with editions from the database (not cached).");
-
-        List<CertificationCriterionDTO> dtos = this.certificationCriterionDao.findAll();
-        Set<CertificationCriterion> criterion = new HashSet<CertificationCriterion>();
-
-        for (CertificationCriterionDTO dto : dtos) {
-            criterion.add(new CertificationCriterion(dto));
-        }
-
-        return criterion;
     }
 
     @Transactional
@@ -368,13 +329,7 @@ public class DimensionalDataManager {
     @Transactional
     @Cacheable(value = CacheNames.EDITIONS)
     public List<CertificationEdition> getCertificationEditions() {
-        List<CertificationEdition> result = new ArrayList<CertificationEdition>();
-        List<CertificationEditionDTO> dtos = certEditionDao.findAll();
-        for (CertificationEditionDTO dto : dtos) {
-            CertificationEdition edition = new CertificationEdition(dto);
-            result.add(edition);
-        }
-        return result;
+        return certEditionDao.findAll();
     }
 
     public DimensionalData getDimensionalData(final Boolean simple) throws EntityRetrievalException {
@@ -394,13 +349,9 @@ public class DimensionalDataManager {
         }
         result.setDevelopers(developerNames);
 
-        List<CertificationCriterionDTO> dtos = this.certificationCriterionDao.findAll();
-        Set<CertificationCriterion> criteria = new HashSet<CertificationCriterion>();
-        for (CertificationCriterionDTO dto : dtos) {
-            criteria.add(new CertificationCriterion(dto));
-        }
+        Set<CertificationCriterion> criteria = this.certificationCriterionDao.findAll().stream()
+                .collect(Collectors.toSet());
         result.setCertificationCriteria(criteria);
-
         result.setAcbs(getAllAcbs());
         result.setEditions(getEditionNames(simple));
         result.setCertificationStatuses(getCertificationStatuses());
@@ -437,10 +388,6 @@ public class DimensionalDataManager {
     @Transactional
     public Set<KeyValueModelStatuses> getDevelopers() {
         return cacheableDimensionalDataManager.getDevelopers();
-    }
-
-    public Set<CriteriaSpecificDescriptiveModel> getCertificationCriterionNumbers() throws EntityRetrievalException {
-        return cacheableDimensionalDataManager.getCertificationCriterionNumbers();
     }
 
     public Set<DescriptiveModel> getCQMCriterionNumbers(final Boolean simple) {

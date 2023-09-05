@@ -27,7 +27,8 @@ public class ListingCountDataFilter {
     public List<ListingSearchResult> filterData(List<ListingSearchResult> certifiedProducts) {
         List<ListingSearchResult> results = new ArrayList<ListingSearchResult>();
         for (ListingSearchResult result : certifiedProducts) {
-            if (result.getEdition().getName().equalsIgnoreCase(EDITION_2015)
+            if (result.getEdition() != null
+                    && result.getEdition().getName().equalsIgnoreCase(EDITION_2015)
                     && !result.getCertificationStatus().getName().equalsIgnoreCase(BAD_STATUS)) {
                 results.add(result);
             }

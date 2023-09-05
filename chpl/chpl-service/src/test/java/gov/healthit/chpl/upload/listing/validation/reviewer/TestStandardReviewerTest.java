@@ -5,16 +5,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
-import gov.healthit.chpl.domain.CertificationCriterion;
+import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
+import gov.healthit.chpl.domain.CertificationEdition;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultTestStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
@@ -30,9 +29,14 @@ public class TestStandardReviewerTest {
     private CertificationResultRules certResultRules;
     private ErrorMessageUtil msgUtil;
     private TestStandardReviewer reviewer;
+    private CertificationEdition edition2015;
 
     @Before
     public void before() throws EntityRetrievalException {
+        edition2015 = CertificationEdition.builder()
+                .id(3L)
+                .name("2015")
+                .build();
         certResultRules = Mockito.mock(CertificationResultRules.class);
         msgUtil = Mockito.mock(ErrorMessageUtil.class);
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.testStandardsNotApplicable"),
@@ -92,7 +96,7 @@ public class TestStandardReviewerTest {
                 .testStandardId(1L)
                 .build());
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .certificationEdition(create2015EditionMap())
+                .edition(edition2015)
                 .certificationResult(CertificationResult.builder()
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
@@ -123,7 +127,7 @@ public class TestStandardReviewerTest {
                 .testStandardId(1L)
                 .build());
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .certificationEdition(create2015EditionMap())
+                .edition(edition2015)
                 .certificationResult(CertificationResult.builder()
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
@@ -151,7 +155,7 @@ public class TestStandardReviewerTest {
                 .testStandardId(null)
                 .build());
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .certificationEdition(create2015EditionMap())
+                .edition(edition2015)
                 .certificationResult(CertificationResult.builder()
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
@@ -182,7 +186,7 @@ public class TestStandardReviewerTest {
                 .testStandardId(null)
                 .build());
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .certificationEdition(create2015EditionMap())
+                .edition(edition2015)
                 .certificationResult(CertificationResult.builder()
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
@@ -197,12 +201,5 @@ public class TestStandardReviewerTest {
 
         assertEquals(0, listing.getWarningMessages().size());
         assertEquals(0, listing.getErrorMessages().size());
-    }
-
-    private Map<String, Object> create2015EditionMap() {
-        Map<String, Object> editionMap = new HashMap<String, Object>();
-        editionMap.put(CertifiedProductSearchDetails.EDITION_ID_KEY, 3L);
-        editionMap.put(CertifiedProductSearchDetails.EDITION_NAME_KEY, "2015");
-        return editionMap;
     }
 }

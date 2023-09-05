@@ -22,11 +22,11 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.FeatureList;
+import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.certificationId.Validator;
 import gov.healthit.chpl.certificationId.ValidatorFactory;
 import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
 import gov.healthit.chpl.dto.CQMMetDTO;
-import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.CertificationIdDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.exception.CertificationIdException;
@@ -37,6 +37,7 @@ import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.CertificationIdManager;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
+import gov.healthit.chpl.web.controller.annotation.DeprecatedApiResponseFields;
 import gov.healthit.chpl.web.controller.results.CertificationIdLookupResults;
 import gov.healthit.chpl.web.controller.results.CertificationIdResults;
 import gov.healthit.chpl.web.controller.results.CertificationIdVerifyResults;
@@ -116,6 +117,7 @@ public class CertificationIdController {
         return this.findCertificationByProductIds(ids, true);
     }
 
+    @DeprecatedApiResponseFields(friendlyUrl = "/certification_ids/{id}", responseClass = CertificationIdLookupResults.class)
     @Operation(summary = "Get information about a specific EHR Certification ID.",
             description = "Retrieves detailed information about a specific EHR Certification ID including the list of "
                     + "products that make it up.  This method can be used when verfying a small number of"
@@ -197,13 +199,13 @@ public class CertificationIdController {
                     Validator validator = this.validatorFactory.getValidator(certDto.getYear());
 
                     // Lookup Criteria for Validating
-                    List<CertificationCriterionDTO> criteriaDtos = certificationIdManager
+                    List<CertificationCriterion> criteria = certificationIdManager
                             .getCriteriaMetByCertifiedProductIds(certProductIds);
 
                     // Lookup CQMs for Validating
                     List<CQMMetDTO> cqmDtos = certificationIdManager.getCqmsMetByCertifiedProductIds(certProductIds);
 
-                    boolean isValid = validator.validate(criteriaDtos, cqmDtos, new ArrayList<Integer>(yearSet));
+                    boolean isValid = validator.validate(criteria, cqmDtos, new ArrayList<Integer>(yearSet));
                     if (isValid) {
                         if (includeCriteria) {
                             results.setCriteria(validator.getCriteriaMet().keySet());
@@ -289,12 +291,12 @@ public class CertificationIdController {
         Validator validator = this.validatorFactory.getValidator(year);
 
         // Lookup Criteria for Validating
-        List<CertificationCriterionDTO> criteriaDtos = certificationIdManager.getCriteriaMetByCertifiedProductIds(productIdList);
+        List<CertificationCriterion> criteria = certificationIdManager.getCriteriaMetByCertifiedProductIds(productIdList);
 
         // Lookup CQMs for Validating
         List<CQMMetDTO> cqmDtos = certificationIdManager.getCqmsMetByCertifiedProductIds(productIdList);
 
-        boolean isValid = validator.validate(criteriaDtos, cqmDtos, new ArrayList<Integer>(yearSet));
+        boolean isValid = validator.validate(criteria, cqmDtos, new ArrayList<Integer>(yearSet));
         results.setValid(isValid);
         results.setMetPercentages(validator.getPercents());
         results.setMetCounts(validator.getCounts());

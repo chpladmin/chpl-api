@@ -14,9 +14,9 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
+import gov.healthit.chpl.certificationCriteria.CertificationCriterionEntity;
 import gov.healthit.chpl.domain.statistics.CriterionListingCountStatistic;
-import gov.healthit.chpl.dto.CertificationCriterionDTO;
-import gov.healthit.chpl.entity.CertificationCriterionEntity;
 import lombok.Data;
 
 @Entity
@@ -64,7 +64,7 @@ public class CriterionListingCountStatisticEntity {
     public CriterionListingCountStatistic toDomain() {
         return CriterionListingCountStatistic.builder()
                 .id(this.getId())
-                .criterion(CertificationCriterionDTO.builder()
+                .criterion(CertificationCriterion.builder()
                         .id(this.getCertificationCriterionId())
                         .number(this.getCertificationCriterion() != null ? this.getCertificationCriterion().getNumber() : null)
                         .title(this.getCertificationCriterion() != null ? this.getCertificationCriterion().getTitle() : null)

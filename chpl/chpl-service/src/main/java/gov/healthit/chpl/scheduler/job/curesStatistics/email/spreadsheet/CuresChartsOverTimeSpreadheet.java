@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import lombok.extern.log4j.Log4j2;
 
@@ -36,7 +35,7 @@ public final class CuresChartsOverTimeSpreadheet extends CuresSpreadsheet {
         Workbook workbook = getWorkbook(newFile);
 
         curesChartsOverTimeSheet.populate(workbook.getSheet("(b)(10)"),
-                new CertificationCriterionDTO(certificationCriteriaService.get(CertificationCriterionService.Criteria2015.B_10)));
+                certificationCriteriaService.get(CertificationCriterionService.Criteria2015.B_10));
 
         XSSFFormulaEvaluator.evaluateAllFormulaCells(workbook);
         return writeFileToDisk(workbook, newFile);

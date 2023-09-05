@@ -3,8 +3,8 @@ package gov.healthit.chpl.scheduler.presenter;
 import java.util.ArrayList;
 import java.util.List;
 
+import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.dto.CertificationCriterionDTO;
 
 public class CertifiedProduct2014CsvPresenter extends CertifiedProductCsvPresenter {
     @Override
@@ -40,7 +40,7 @@ public class CertifiedProduct2014CsvPresenter extends CertifiedProductCsvPresent
         result.add("Total Surveillance Non-conformities");
         result.add("Open Surveillance Non-conformities");
         if (getApplicableCriteria() != null) {
-            for (CertificationCriterionDTO criteria : getApplicableCriteria()) {
+            for (CertificationCriterion criteria : getApplicableCriteria()) {
                 result.add(criteria.getNumber() + ": " + criteria.getTitle());
             }
         }

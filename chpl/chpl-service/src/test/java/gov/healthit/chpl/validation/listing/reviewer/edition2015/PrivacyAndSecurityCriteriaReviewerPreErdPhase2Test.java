@@ -13,13 +13,12 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.springframework.core.env.Environment;
 
+import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
-import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationStatus;
 import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.service.CertificationCriterionService;
@@ -36,10 +35,10 @@ public class PrivacyAndSecurityCriteriaReviewerPreErdPhase2Test {
     @Before
     public void before() throws EntityRetrievalException {
         certificationCriterionDao = Mockito.mock(CertificationCriterionDAO.class);
-        Mockito.when(certificationCriterionDao.getById(1L)).thenReturn(getCriterionDTO(1l, "170.315 (a)(1)", false));
-        Mockito.when(certificationCriterionDao.getById(2L)).thenReturn(getCriterionDTO(2l, "170.315 (a)(2)", false));
-        Mockito.when(certificationCriterionDao.getById(166L)).thenReturn(getCriterionDTO(166l, "170.315 (d)(12)", false));
-        Mockito.when(certificationCriterionDao.getById(167L)).thenReturn(getCriterionDTO(167l, "170.315 (d)(13)", false));
+        Mockito.when(certificationCriterionDao.getById(1L)).thenReturn(getCriterion(1l, "170.315 (a)(1)", false));
+        Mockito.when(certificationCriterionDao.getById(2L)).thenReturn(getCriterion(2l, "170.315 (a)(2)", false));
+        Mockito.when(certificationCriterionDao.getById(166L)).thenReturn(getCriterion(166l, "170.315 (d)(12)", false));
+        Mockito.when(certificationCriterionDao.getById(167L)).thenReturn(getCriterion(167l, "170.315 (d)(13)", false));
 
         env = Mockito.mock(Environment.class);
         Mockito.when(env.getProperty("privacyAndSecurityCriteria")).thenReturn("1,2");
@@ -290,8 +289,8 @@ public class PrivacyAndSecurityCriteriaReviewerPreErdPhase2Test {
         return criterion;
     }
 
-    private CertificationCriterionDTO getCriterionDTO(Long id, String number, boolean removed) {
-        return CertificationCriterionDTO.builder()
+    private CertificationCriterion getCriterion(Long id, String number, boolean removed) {
+        return CertificationCriterion.builder()
                 .id(id)
                 .number(number)
                 .removed(removed)

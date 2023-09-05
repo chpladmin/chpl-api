@@ -170,9 +170,19 @@ public class CertifiedProductSearchDetails implements Serializable {
     /**
      * The certification edition. It takes a value of 2011, 2014 or 2015.
      */
+    @Deprecated
+    @DeprecatedResponseField(message = "Please use the 'edition' field.", removalDate = "2024-01-01")
+    @Builder.Default
+    @XmlTransient
     @Schema(description = "The certification edition. It takes a value of 2011, 2014 or 2015.")
-    @XmlElement(required = true)
     private Map<String, Object> certificationEdition = new HashMap<String, Object>();
+
+    /**
+     * The certification edition.
+     */
+    @Schema(description = "The certification edition.")
+    @XmlElement(required = false, nillable = true)
+    private CertificationEdition edition;
 
     /**
      * For 2014 products, the practice setting for which the certified product is designed. It takes value of Ambulatory or Inpatient.
@@ -562,10 +572,20 @@ public class CertifiedProductSearchDetails implements Serializable {
         this.developer = developer;
     }
 
+    public CertificationEdition getEdition() {
+        return edition;
+    }
+
+    public void setEdition(CertificationEdition certEdition) {
+        this.edition = certEdition;
+    }
+
+    @Deprecated
     public Map<String, Object> getCertificationEdition() {
         return certificationEdition;
     }
 
+    @Deprecated
     public void setCertificationEdition(Map<String, Object> certificationEdition) {
         this.certificationEdition = certificationEdition;
     }

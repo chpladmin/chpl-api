@@ -19,7 +19,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import gov.healthit.chpl.domain.CertificationCriterion;
+import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultTestProcedure;
 import gov.healthit.chpl.domain.CertificationResultTestStandard;
@@ -182,11 +182,15 @@ public class ListingsWithCriterionCSVPresenter {
     }
 
     protected String formatEdition(CertifiedProductSearchDetails listing) {
-        String edition = listing.getCertificationEdition().get(CertifiedProductSearchDetails.EDITION_NAME_KEY).toString();
-        if (listing.getCuresUpdate() != null && listing.getCuresUpdate()) {
-            edition = edition + " Cures Update";
+        if (listing.getEdition() == null) {
+            return "";
+        } else {
+            String edition = listing.getEdition().getName();
+            if (listing.getCuresUpdate() != null && listing.getCuresUpdate()) {
+                edition = edition + " Cures Update";
+            }
+            return edition;
         }
-        return edition;
     }
 
     protected String formatInactiveDate(CertifiedProductSearchDetails listing) {

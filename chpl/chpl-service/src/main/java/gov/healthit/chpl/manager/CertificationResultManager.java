@@ -18,28 +18,28 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.conformanceMethod.domain.CertificationResultConformanceMethod;
 import gov.healthit.chpl.criteriaattribute.testtool.CertificationResultTestToolService;
 import gov.healthit.chpl.dao.AgeRangeDAO;
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.dao.CertificationResultDAO;
-import gov.healthit.chpl.dao.CertifiedProductSearchDAO;
 import gov.healthit.chpl.dao.EducationTypeDAO;
 import gov.healthit.chpl.dao.TestParticipantDAO;
 import gov.healthit.chpl.dao.TestStandardDAO;
 import gov.healthit.chpl.dao.TestTaskDAO;
-import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultAdditionalSoftware;
 import gov.healthit.chpl.domain.CertificationResultTestData;
 import gov.healthit.chpl.domain.CertificationResultTestProcedure;
 import gov.healthit.chpl.domain.CertificationResultTestStandard;
+import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductUcdProcess;
 import gov.healthit.chpl.domain.TestParticipant;
+import gov.healthit.chpl.domain.TestStandard;
 import gov.healthit.chpl.domain.TestTask;
 import gov.healthit.chpl.dto.AgeRangeDTO;
-import gov.healthit.chpl.dto.CertificationCriterionDTO;
 import gov.healthit.chpl.dto.CertificationResultAdditionalSoftwareDTO;
 import gov.healthit.chpl.dto.CertificationResultDTO;
 import gov.healthit.chpl.dto.CertificationResultTestDataDTO;
@@ -49,7 +49,6 @@ import gov.healthit.chpl.dto.CertificationResultTestTaskDTO;
 import gov.healthit.chpl.dto.CertificationResultUcdProcessDTO;
 import gov.healthit.chpl.dto.EducationTypeDTO;
 import gov.healthit.chpl.dto.TestParticipantDTO;
-import gov.healthit.chpl.dto.TestStandardDTO;
 import gov.healthit.chpl.dto.TestTaskDTO;
 import gov.healthit.chpl.entity.listing.CertificationResultConformanceMethodEntity;
 import gov.healthit.chpl.entity.listing.CertificationResultOptionalStandardEntity;
@@ -62,13 +61,14 @@ import gov.healthit.chpl.functionalityTested.FunctionalityTestedDAO;
 import gov.healthit.chpl.manager.impl.SecuredManager;
 import gov.healthit.chpl.optionalStandard.domain.CertificationResultOptionalStandard;
 import gov.healthit.chpl.svap.domain.CertificationResultSvap;
+import gov.healthit.chpl.util.CertifiedProductUtil;
 import gov.healthit.chpl.util.Util;
 import lombok.extern.log4j.Log4j2;
 
 @Service
 @Log4j2
 public class CertificationResultManager extends SecuredManager {
-    private CertifiedProductSearchDAO cpDao;
+    private CertifiedProductUtil cpUtil;
     private CertificationCriterionDAO criteriaDao;
     private CertificationResultDAO certResultDAO;
     private CertificationResultFunctionalityTestedDAO certResultFuncTestedDao;
@@ -82,11 +82,11 @@ public class CertificationResultManager extends SecuredManager {
 
     @SuppressWarnings("checkstyle:parameternumber")
     @Autowired
-    public CertificationResultManager(CertifiedProductSearchDAO cpDao, CertificationCriterionDAO criteriaDao,
+    public CertificationResultManager(CertifiedProductUtil cpUtil, CertificationCriterionDAO criteriaDao,
             CertificationResultDAO certResultDAO, CertificationResultFunctionalityTestedDAO certResultFuncTestedDao,
             TestStandardDAO testStandardDAO, FunctionalityTestedDAO functionalityTestedDao, TestParticipantDAO testParticipantDAO,
             AgeRangeDAO ageDao, EducationTypeDAO educDao, TestTaskDAO testTaskDAO, CertificationResultTestToolService certResultTestToolService) {
-        this.cpDao = cpDao;
+        this.cpUtil = cpUtil;
         this.criteriaDao = criteriaDao;
         this.certResultDAO = certResultDAO;
         this.certResultFuncTestedDao = certResultFuncTestedDao;
@@ -130,7 +130,7 @@ public class CertificationResultManager extends SecuredManager {
             CertificationResultDTO toUpdate = new CertificationResultDTO();
             toUpdate.setId(orig.getId());
             toUpdate.setCertifiedProductId(updatedListing.getId());
-            CertificationCriterionDTO criteria = criteriaDao.getById(orig.getCriterion().getId());
+            CertificationCriterion criteria = criteriaDao.getById(orig.getCriterion().getId());
             if (criteria == null || criteria.getId() == null) {
                 throw new EntityCreationException(
                         "Cannot add certification result mapping for unknown criteria " + orig.getCriterion().getNumber());
@@ -345,8 +345,10 @@ public class CertificationResultManager extends SecuredManager {
             for (CertificationResultAdditionalSoftware updatedItem : updatedAdditionalSoftware) {
                 if (updatedItem.getCertifiedProductId() == null
                         && !StringUtils.isEmpty(updatedItem.getCertifiedProductNumber())) {
-                    Long cpId = cpDao.getListingIdByUniqueChplNumber(updatedItem.getCertifiedProductNumber());
-                    updatedItem.setCertifiedProductId(cpId);
+                    CertifiedProduct cp = cpUtil.getListing(updatedItem.getCertifiedProductNumber());
+                    if (cp != null) {
+                        updatedItem.setCertifiedProductId(cp.getId());
+                    }
                 }
             }
 
@@ -623,7 +625,7 @@ public class CertificationResultManager extends SecuredManager {
             List<CertificationResultTestStandard> existingTestStandards,
             List<CertificationResultTestStandard> updatedTestStandards) throws EntityCreationException {
         int numChanges = 0;
-        String editionIdString = listing.getCertificationEdition().get(CertifiedProductSearchDetails.EDITION_ID_KEY).toString();
+        Long editionId = listing.getEdition() != null ? listing.getEdition().getId() : null;
         List<CertificationResultTestStandardDTO> testStandardsToAdd = new ArrayList<CertificationResultTestStandardDTO>();
         List<Long> idsToRemove = new ArrayList<Long>();
 
@@ -633,8 +635,7 @@ public class CertificationResultManager extends SecuredManager {
             for (CertificationResultTestStandard updatedItem : updatedTestStandards) {
                 if (updatedItem.getTestStandardId() == null
                         && !StringUtils.isEmpty(updatedItem.getTestStandardName())) {
-                    TestStandardDTO foundStd = testStandardDAO.getByNumberAndEdition(updatedItem.getTestStandardName(),
-                            Long.valueOf(editionIdString));
+                    TestStandard foundStd = testStandardDAO.getByNumberAndEdition(updatedItem.getTestStandardName(), editionId);
                     if (foundStd == null) {
                         LOGGER.error("Could not find test standard " + updatedItem.getTestStandardName()
                                 + "; will not be adding this as a test standard to certification result id "
