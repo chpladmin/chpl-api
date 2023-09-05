@@ -194,12 +194,21 @@ public class CertificationResult implements Serializable {
     @XmlElement(required = false, nillable = true)
     private String privacySecurityFramework;
 
+    @Deprecated
+    @DeprecatedResponseField(message = "This field is deprecated and will be removed. This data can be found via a GET request to the endpoint /conformance-methods.",
+        removalDate = "2024-01-01")
     @XmlTransient
     private List<ConformanceMethod> allowedConformanceMethods;
 
+    @Deprecated
+    @DeprecatedResponseField(message = "This field is deprecated and will be removed. This data can be found via a GET request to the endpoint /svaps.",
+        removalDate = "2024-01-01")
     @XmlTransient
     private List<Svap> allowedSvaps;
 
+    @Deprecated
+    @DeprecatedResponseField(message = "This field is deprecated and will be removed. This data can be found via a GET request to the endpoint /optional-standards.",
+        removalDate = "2024-01-01")
     @XmlTransient
     private List<OptionalStandard> allowedOptionalStandards;
 
@@ -756,10 +765,12 @@ public class CertificationResult implements Serializable {
         this.privacySecurityFramework = privacySecurityFramework;
     }
 
+    @Deprecated
     public List<ConformanceMethod> getAllowedConformanceMethods() {
         return allowedConformanceMethods;
     }
 
+    @Deprecated
     public void setAllowedConformanceMethods(List<ConformanceMethod> allowedConformanceMethods) {
         this.allowedConformanceMethods = allowedConformanceMethods;
     }
@@ -821,26 +832,32 @@ public class CertificationResult implements Serializable {
         this.successStr = successStr;
     }
 
+    @Deprecated
     public List<OptionalStandard> getAllowedOptionalStandards() {
         return allowedOptionalStandards;
     }
 
+    @Deprecated
     public void setAllowedOptionalStandards(List<OptionalStandard> allowedOptionalStandards) {
         this.allowedOptionalStandards = allowedOptionalStandards;
     }
 
+    @Deprecated
     public List<Svap> getAllowedSvaps() {
         return allowedSvaps;
     }
 
+    @Deprecated
     public void setAllowedSvaps(List<Svap> allowedSvaps) {
         this.allowedSvaps = allowedSvaps;
     }
 
+    @Deprecated
     public List<TestTool> getAllowedTestTools() {
         return allowedTestTools;
     }
 
+    @Deprecated
     public void setAllowedTestTools(List<TestTool> allowedTestTools) {
         this.allowedTestTools = allowedTestTools;
     }
