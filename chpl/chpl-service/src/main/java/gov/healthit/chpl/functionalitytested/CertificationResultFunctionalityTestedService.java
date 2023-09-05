@@ -38,8 +38,6 @@ public class CertificationResultFunctionalityTestedService {
                     })
                     .toList();
 
-            updatedFunctionalitiesTested.forEach(x -> LOGGER.info("Updated Functionality Tested: {}", x.getFunctionalityTested().getValue()));
-
             updatedFunctionalitiesTested.forEach(updatedFunctionalityTested -> certResultTestFunctionalityDAO.updateFunctionalityTestedMapping(
                     getMatchingItemInList(updatedFunctionalityTested, certResultFunctionalitiesTestedFromDb).get().getId(),
                     updatedFunctionalityTested));
@@ -51,8 +49,6 @@ public class CertificationResultFunctionalityTestedService {
                     .filter(crtt -> getMatchingItemInList(crtt, certResultFunctionalitiesTestedFromDb).isEmpty())
                     .toList();
 
-            addedFunctionalitiesTested.forEach(x -> LOGGER.info("Added Functionality Tested: {}", x.getFunctionalityTested().getValue()));
-
             addedFunctionalitiesTested.forEach(addedFunctionalityTested -> addCertificationResultFunctionalityTested(addedFunctionalityTested, certResult.getId()));
         }
 
@@ -61,8 +57,6 @@ public class CertificationResultFunctionalityTestedService {
             removedFunctionalitiesTested = certResultFunctionalitiesTestedFromDb.stream()
                     .filter(crtt -> getMatchingItemInList(crtt, certResultFunctionalitiesTested).isEmpty())
                     .toList();
-
-            removedFunctionalitiesTested.forEach(x -> LOGGER.info("Removed Functionality Tested: {}", x.getFunctionalityTested().getValue()));
 
             removedFunctionalitiesTested.forEach(removedFunctionalityTested -> certResultTestFunctionalityDAO.deleteFunctionalityTestedMapping(
                     getMatchingItemInList(removedFunctionalityTested, certResultFunctionalitiesTestedFromDb).get().getId()));
