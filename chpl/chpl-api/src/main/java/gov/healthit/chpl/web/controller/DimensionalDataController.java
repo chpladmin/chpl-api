@@ -221,6 +221,9 @@ public class DimensionalDataController {
         return result;
     }
 
+    @DeprecatedApi(friendlyUrl = "/data/optional-standards", message = "This endpoint is being replaced with a GET from /optional-standards.",
+            removalDate = "2024-01-01")
+    @Deprecated
     @Operation(summary = "Get all possible optional standard options in the CHPL",
             description = "This is useful for knowing what values one might possibly search for.",
             security = {

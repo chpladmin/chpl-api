@@ -1,8 +1,10 @@
 package gov.healthit.chpl.optionalStandard.domain;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
-import gov.healthit.chpl.optionalStandard.entity.OptionalStandardEntity;
+import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,9 +20,6 @@ public class OptionalStandard implements Serializable {
     private String citation;
     private String description;
 
-    public OptionalStandard(OptionalStandardEntity entity) {
-        this.id = entity.getId();
-        this.citation = entity.getCitation();
-        this.description = entity.getDescription();
-    }
+    @Builder.Default
+    private List<CertificationCriterion> criteria = new ArrayList<CertificationCriterion>();
 }

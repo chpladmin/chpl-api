@@ -14,6 +14,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterionEntity;
+import gov.healthit.chpl.optionalStandard.domain.OptionalStandardCriteriaMap;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -64,4 +65,12 @@ public class OptionalStandardCriteriaMapEntity {
     @Basic(optional = false)
     @Column(name = "last_modified_user", nullable = false)
     private Long lastModifiedUser;
+
+    public OptionalStandardCriteriaMap toDomain() {
+        return OptionalStandardCriteriaMap.builder()
+                .id(this.getId())
+                .optionalStandard(this.getOptionalStandard().toDomain())
+                .criterion(this.getCriteria().toDomain())
+                .build();
+    }
 }

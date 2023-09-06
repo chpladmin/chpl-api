@@ -30,7 +30,7 @@ import gov.healthit.chpl.functionalityTested.FunctionalityTestedComparator;
 import gov.healthit.chpl.functionalityTested.FunctionalityTestedManager;
 import gov.healthit.chpl.manager.CertificationResultManager;
 import gov.healthit.chpl.optionalStandard.OptionalStandardComparator;
-import gov.healthit.chpl.optionalStandard.dao.OptionalStandardDAO;
+import gov.healthit.chpl.optionalStandard.OptionalStandardDAO;
 import gov.healthit.chpl.optionalStandard.domain.OptionalStandard;
 import gov.healthit.chpl.optionalStandard.domain.OptionalStandardCriteriaMap;
 import gov.healthit.chpl.svap.dao.SvapDAO;
