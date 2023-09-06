@@ -120,7 +120,6 @@ public class FunctionalityTestedAllowedByCriteriaReviewer extends PermissionBase
         return funcTestedOpt.isPresent() ? funcTestedOpt.get() : null;
     }
 
-    //TODO OCD-4288 - Is functionalityTestedNumber being handled correctly
     private FunctionalityTested getFunctionalityTested(String functionalityTestedNumber, Long criterionId) {
         Map<Long, List<FunctionalityTested>> funcTestedMappings = functionalityTestedDao.getFunctionalitiesTestedCriteriaMaps();
         if (!funcTestedMappings.containsKey(criterionId)) {
