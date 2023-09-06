@@ -1,5 +1,27 @@
 # Release Notes
 
+## Version 42.0.0
+_5 September 2023_
+
+### Breaking Changes
+* Remove /data/test_functionality and /data/qms_standards
+* Remove allowedTestFunctionalities, testFunctionality fields
+* Remove ics_relationships endpoints
+* Remove /certified_products?versionId=<id> call
+
+### Features
+* Remove unused code related to the Cures Statistics Report
+* Add endpoint to GET /certification-criteria
+* Add startDate, endDate, and rule to criterion objects
+* Deprecate certificationEdition in favor of edition in listing details
+* Deprecate ceritficationEditionId and year of edition object
+* Allow edition to be null in listing search results
+
+### Flagged Features
+* Allow upload, confirm, and get of listing without edition
+
+---
+
 ## Version 41.2.0
 _21 August 2023_
 
