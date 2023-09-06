@@ -62,4 +62,8 @@ public class ConformanceMethod implements Serializable {
 
     @Builder.Default
     private List<CertificationCriterion> criteria = new ArrayList<CertificationCriterion>();
+
+    public Boolean getRemoved() {
+        return this.removalDate != null;
+    }
 }
