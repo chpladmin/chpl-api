@@ -60,6 +60,7 @@ public class FunctionalityTestedDAO extends BaseDAOImpl {
                             + "LEFT OUTER JOIN FETCH ft.mappedCriteria criteriaMapping "
                             + "LEFT OUTER JOIN FETCH criteriaMapping.criterion criterion "
                             + "LEFT OUTER JOIN FETCH criterion.certificationEdition "
+                            + "LEFT JOIN FETCH criterion.rule "
                             + "WHERE (NOT ft.deleted = true) ", FunctionalityTestedEntity.class)
                 .getResultList();
     }
@@ -74,6 +75,7 @@ public class FunctionalityTestedDAO extends BaseDAOImpl {
                         + "LEFT OUTER JOIN FETCH ft.mappedCriteria criteriaMapping "
                         + "LEFT OUTER JOIN FETCH criteriaMapping.criterion criterion "
                         + "LEFT OUTER JOIN FETCH criterion.certificationEdition "
+                        + "LEFT JOIN FETCH criterion.rule "
                         + "WHERE (NOT ft.deleted = true) "
                         + "AND (ft.id = :entityid) ",
                         FunctionalityTestedEntity.class);

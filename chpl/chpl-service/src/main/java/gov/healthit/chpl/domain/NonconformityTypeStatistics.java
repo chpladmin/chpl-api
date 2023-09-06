@@ -2,6 +2,7 @@ package gov.healthit.chpl.domain;
 
 import java.util.Date;
 
+import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.dto.NonconformityTypeStatisticsDTO;
 import gov.healthit.chpl.util.Util;
 

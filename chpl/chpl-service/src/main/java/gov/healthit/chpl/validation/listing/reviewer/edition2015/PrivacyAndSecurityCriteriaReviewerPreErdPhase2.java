@@ -13,8 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
-import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.exception.ValidationException;

@@ -20,7 +20,8 @@ public class MeasureDAO extends BaseDAOImpl {
             + "LEFT JOIN FETCH measure.domain "
             + "LEFT JOIN FETCH measure.allowedCriteria ac "
             + "LEFT JOIN FETCH ac.criterion cc "
-            + "LEFT JOIN FETCH cc.certificationEdition ";
+            + "LEFT JOIN FETCH cc.certificationEdition "
+            + "LEFT JOIN FETCH cc.rule ";
 
     public Measure getById(Long id) {
         Query query = entityManager.createQuery(

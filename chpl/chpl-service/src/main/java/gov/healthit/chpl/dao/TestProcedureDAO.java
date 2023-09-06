@@ -51,6 +51,7 @@ public class TestProcedureDAO extends BaseDAOImpl {
                         + "LEFT JOIN FETCH tpMap.testProcedure tp "
                         + "LEFT JOIN FETCH tpMap.certificationCriterion cce "
                         + "LEFT JOIN FETCH cce.certificationEdition "
+                        + "LEFT JOIN FETCH cce.rule "
                         + "WHERE tpMap.deleted <> true "
                         + "AND tp.deleted <> true ",
                         TestProcedureCriteriaMapEntity.class).getResultList();
@@ -67,7 +68,8 @@ public class TestProcedureDAO extends BaseDAOImpl {
                 + "FROM TestProcedureCriteriaMapEntity tpMap "
                 + "JOIN FETCH tpMap.testProcedure tp "
                 + "JOIN FETCH tpMap.certificationCriterion cce "
-                + "JOIN FETCH cce.certificationEdition "
+                + "LEFT JOIN FETCH cce.certificationEdition "
+                + "LEFT JOIN FETCH cce.rule "
                 + "WHERE tpMap.deleted <> true "
                 + "AND tp.deleted <> true "
                 + "AND cce.id = :criterionId",
@@ -88,7 +90,8 @@ public class TestProcedureDAO extends BaseDAOImpl {
                 + "FROM TestProcedureCriteriaMapEntity tpMap "
                 + "JOIN FETCH tpMap.testProcedure tp "
                 + "JOIN FETCH tpMap.certificationCriterion cce "
-                + "JOIN FETCH cce.certificationEdition "
+                + "LEFT JOIN FETCH cce.certificationEdition "
+                + "LEFT JOIN FETCH cce.rule "
                 + "WHERE tpMap.deleted <> true "
                 + "AND tp.deleted <> true "
                 + "AND cce.id = :criterionId "

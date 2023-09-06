@@ -15,8 +15,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.dao.CertificationIdDAO;
-import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.SimpleCertificationId;
 import gov.healthit.chpl.domain.SimpleCertificationIdWithProducts;
 import gov.healthit.chpl.domain.activity.ActivityConcept;

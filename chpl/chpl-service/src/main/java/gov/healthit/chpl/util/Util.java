@@ -12,7 +12,7 @@ import java.util.stream.StreamSupport;
 
 import org.apache.commons.validator.routines.EmailValidator;
 
-import gov.healthit.chpl.domain.CertificationCriterion;
+import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.domain.NonconformityType;
 import gov.healthit.chpl.domain.surveillance.RequirementType;
 import lombok.extern.log4j.Log4j2;

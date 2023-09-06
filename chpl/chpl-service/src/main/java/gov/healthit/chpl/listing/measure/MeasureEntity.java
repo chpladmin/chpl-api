@@ -18,7 +18,7 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.Where;
 
-import gov.healthit.chpl.domain.CertificationCriterion;
+import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.domain.Measure;
 import lombok.Data;
 

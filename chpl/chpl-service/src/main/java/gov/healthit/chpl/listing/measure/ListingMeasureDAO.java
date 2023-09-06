@@ -11,8 +11,8 @@ import javax.persistence.Query;
 
 import org.springframework.stereotype.Repository;
 
+import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
-import gov.healthit.chpl.domain.CertificationCriterion;
 import gov.healthit.chpl.domain.ListingMeasure;
 import gov.healthit.chpl.domain.MeasureType;
 import gov.healthit.chpl.exception.EntityCreationException;
@@ -29,11 +29,13 @@ public class ListingMeasureDAO extends BaseDAOImpl {
             + "LEFT JOIN FETCH listingMeasureMap.associatedCriteria assocCCMap "
             + "LEFT JOIN FETCH assocCCMap.criterion assocCC "
             + "LEFT JOIN FETCH assocCC.certificationEdition "
+            + "LEFT JOIN FETCH assocCC.rule "
             + "JOIN FETCH listingMeasureMap.measure mm "
             + "JOIN FETCH mm.domain "
             + "JOIN FETCH mm.allowedCriteria ac "
             + "JOIN FETCH ac.criterion allowedCC "
-            + "JOIN FETCH allowedCC.certificationEdition "
+            + "LEFT JOIN FETCH allowedCC.certificationEdition "
+            + "LEFT JOIN FETCH allowedCC.rule "
             + "WHERE listingMeasureMap.deleted = false ";
 
     public void createCertifiedProductMeasureMapping(Long listingId, ListingMeasure mm) throws EntityCreationException {

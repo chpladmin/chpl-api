@@ -5,7 +5,7 @@ import java.util.Set;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-import gov.healthit.chpl.domain.CertificationCriterion;
+import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 
 public class CertificationCriterionXmlGenerator extends XmlGenerator {
     public static void add(Set<CertificationCriterion> criterionList, String rootNodeName, XMLStreamWriter sw)

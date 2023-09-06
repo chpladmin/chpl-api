@@ -1,6 +1,6 @@
 package gov.healthit.chpl.optionalStandard.domain;
 
-import gov.healthit.chpl.domain.CertificationCriterion;
+import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.optionalStandard.entity.OptionalStandardCriteriaMapEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

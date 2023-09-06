@@ -1,6 +1,7 @@
-package gov.healthit.chpl.entity;
+package gov.healthit.chpl.certificationCriteria;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.Date;
 
 import javax.persistence.Basic;
@@ -14,7 +15,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-import gov.healthit.chpl.domain.CertificationCriterion;
+import gov.healthit.chpl.criteriaattribute.rule.RuleEntity;
+import gov.healthit.chpl.entity.CertificationEditionEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -27,8 +29,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Table(name = "certification_criterion")
 public class CertificationCriterionEntity implements Serializable {
-
-    /** Serial Version UID. */
     private static final long serialVersionUID = 5366674516357955978L;
 
     @Id
@@ -38,7 +38,7 @@ public class CertificationCriterionEntity implements Serializable {
     @JoinColumn(name = "certification_criterion_id", nullable = false)
     private Long id;
 
-    @Basic(optional = false)
+    @Basic(optional = true)
     @Column(name = "certification_edition_id", nullable = false)
     private Long certificationEditionId;
 
@@ -47,6 +47,23 @@ public class CertificationCriterionEntity implements Serializable {
     @JoinColumn(name = "certification_edition_id", unique = true, nullable = true, insertable = false,
             updatable = false)
     private CertificationEditionEntity certificationEdition;
+
+    @Basic(optional = true)
+    @Column(name = "start_day")
+    private LocalDate startDay;
+
+    @Basic(optional = true)
+    @Column(name = "end_day")
+    private LocalDate endDay;
+
+    @Basic(optional = true)
+    @Column(name = "rule_id", nullable = false)
+    private Long ruleId;
+
+    @Basic(optional = true)
+    @OneToOne(optional = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "rule_id", unique = true, nullable = true, insertable = false, updatable = false)
+    private RuleEntity rule;
 
     @Basic(optional = false)
     @Column(name = "creation_date", nullable = false)
@@ -76,6 +93,7 @@ public class CertificationCriterionEntity implements Serializable {
     @Column(length = 250)
     private String title;
 
+    @Deprecated
     @Basic(optional = true)
     @Column(name = "removed")
     private Boolean removed;
@@ -88,6 +106,9 @@ public class CertificationCriterionEntity implements Serializable {
                 .id(criterion.getId())
                 .certificationEditionId(criterion.getCertificationEditionId())
                 .certificationEdition(editionEntity)
+                .startDay(criterion.getStartDay())
+                .endDay(criterion.getEndDay())
+                .ruleId(criterion.getRule() != null ? criterion.getRule().getId() : null)
                 .description(criterion.getDescription())
                 .number(criterion.getNumber())
                 .title(criterion.getTitle())
@@ -100,6 +121,9 @@ public class CertificationCriterionEntity implements Serializable {
                 .id(this.getId())
                 .certificationEdition(this.getCertificationEdition() == null ? null : this.getCertificationEdition().getYear())
                 .certificationEditionId(this.getCertificationEditionId())
+                .startDay(this.getStartDay())
+                .endDay(this.getEndDay())
+                .rule(rule != null ? rule.toDomain() : null)
                 .description(this.getDescription())
                 .number(this.getNumber())
                 .removed(this.getRemoved())

@@ -40,6 +40,7 @@ public class ComplaintDAO extends BaseDAOImpl {
             + "LEFT JOIN FETCH c.criteria criteria "
             + "LEFT JOIN FETCH criteria.certificationCriterion criterion "
             + "LEFT JOIN FETCH criterion.certificationEdition "
+            + "LEFT JOIN FETCH criterion.rule "
             + "JOIN FETCH c.certificationBody acb "
             + "LEFT JOIN FETCH acb.address "
             + "JOIN FETCH c.complainantType "
@@ -441,6 +442,7 @@ public class ComplaintDAO extends BaseDAOImpl {
                 + "FROM ComplaintCriterionMapEntity c "
                 + "LEFT JOIN FETCH c.certificationCriterion criterion "
                 + "LEFT JOIN FETCH criterion.certificationEdition "
+                + "LEFT JOIN FETCH criterion.rule "
                 + "WHERE c.deleted = false "
                 + "AND c.id = :complaintCriterionMapId",
                 ComplaintCriterionMapEntity.class);
@@ -460,6 +462,7 @@ public class ComplaintDAO extends BaseDAOImpl {
                 + "FROM ComplaintCriterionMapEntity c "
                 + "LEFT JOIN FETCH c.certificationCriterion criterion "
                 + "LEFT JOIN FETCH criterion.certificationEdition "
+                + "LEFT JOIN FETCH criterion.rule "
                 + "WHERE c.deleted = false "
                 + "AND c.complaintId = :complaintId",
                 ComplaintCriterionMapEntity.class);

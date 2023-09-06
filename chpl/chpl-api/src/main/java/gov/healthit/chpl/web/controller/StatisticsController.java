@@ -36,6 +36,8 @@ public class StatisticsController {
     @Autowired
     private StatisticsManager statisticsManager;
 
+    @DeprecatedApiResponseFields(friendlyUrl = "/statistics/nonconformity_criteria_count",
+            responseClass = NonconformityTypeStatisticsResult.class)
     @Operation(summary = "Get count of non-conformities by criteria.",
             description = "Retrieves and returns the counts.",
             security = {
@@ -62,6 +64,8 @@ public class StatisticsController {
         return response;
     }
 
+    @DeprecatedApiResponseFields(friendlyUrl = "/statistics/criterion_product",
+            responseClass = CriterionProductStatisticsResult.class)
     @Operation(summary = "Get count of Criteria certified to by unique Product.",
             description = "Retrieves and returns the Criterion/Product counts.",
             security = {

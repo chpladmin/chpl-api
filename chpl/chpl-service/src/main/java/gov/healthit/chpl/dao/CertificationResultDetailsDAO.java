@@ -26,6 +26,7 @@ public class CertificationResultDetailsDAO extends BaseDAOImpl {
             + "FROM CertificationResultDetailsEntity crd "
             + "LEFT OUTER JOIN FETCH crd.certificationCriterion cc "
             + "LEFT OUTER JOIN FETCH cc.certificationEdition ed "
+            + "LEFT JOIN FETCH cc.rule "
             + "LEFT OUTER JOIN FETCH crd.certificationResultTestData crtd "
             + "LEFT OUTER JOIN FETCH crtd.testData td "
             + "LEFT OUTER JOIN FETCH crd.certificationResultFunctionalitiesTested crft "

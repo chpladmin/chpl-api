@@ -1,7 +1,7 @@
 package gov.healthit.chpl.conformanceMethod.domain;
 
+import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.conformanceMethod.entity.ConformanceMethodCriteriaMapEntity;
-import gov.healthit.chpl.domain.CertificationCriterion;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

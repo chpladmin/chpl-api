@@ -8,9 +8,9 @@ import javax.persistence.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
+import gov.healthit.chpl.certificationCriteria.CertificationCriterionEntity;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
-import gov.healthit.chpl.domain.CertificationCriterion;
-import gov.healthit.chpl.entity.CertificationCriterionEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.util.AuthUtil;
@@ -24,6 +24,9 @@ public class CertificationCriterionDAO extends BaseDAOImpl {
         CertificationCriterionEntity entity = this.getEntityById(criterion.getId());
         entity.setCertificationEditionId(criterion.getCertificationEditionId());
         entity.setDescription(criterion.getDescription());
+        entity.setStartDay(criterion.getStartDay());
+        entity.setEndDay(criterion.getEndDay());
+        entity.setRuleId(criterion.getRule() != null ? criterion.getRule().getId() : null);
         entity.setId(criterion.getId());
         entity.setLastModifiedUser(AuthUtil.getAuditId());
         entity.setNumber(criterion.getNumber());
@@ -71,7 +74,8 @@ public class CertificationCriterionDAO extends BaseDAOImpl {
                 .createQuery(
                         "SELECT cce "
                                 + "FROM CertificationCriterionEntity cce "
-                                + "JOIN FETCH cce.certificationEdition "
+                                + "LEFT JOIN FETCH cce.certificationEdition "
+                                + "LEFT JOIN FETCH cce.rule "
                                 + "WHERE cce.deleted = false",
                                 CertificationCriterionEntity.class);
         @SuppressWarnings("unchecked") List<CertificationCriterionEntity> result = query.getResultList();
@@ -84,6 +88,7 @@ public class CertificationCriterionDAO extends BaseDAOImpl {
         Query query = entityManager.createQuery("SELECT cce "
                 + "FROM CertificationCriterionEntity cce "
                 + "JOIN FETCH cce.certificationEdition edition "
+                + "LEFT JOIN FETCH cce.rule "
                 + "WHERE (NOT cce.deleted = true) "
                 + "AND (edition.year = :year)", CertificationCriterionEntity.class);
         query.setParameter("year", year);
@@ -94,7 +99,8 @@ public class CertificationCriterionDAO extends BaseDAOImpl {
     public List<CertificationCriterionEntity> getEntitiesByNumber(String number) {
         Query query = entityManager.createQuery("SELECT cce "
                 + "FROM CertificationCriterionEntity cce "
-                + "JOIN FETCH cce.certificationEdition "
+                + "LEFT JOIN FETCH cce.certificationEdition "
+                + "LEFT JOIN FETCH cce.rule "
                 + "WHERE (NOT cce.deleted = true) "
                 + "AND (cce.number = :number)", CertificationCriterionEntity.class);
         query.setParameter("number", number);
@@ -107,7 +113,8 @@ public class CertificationCriterionDAO extends BaseDAOImpl {
             Query query = entityManager.createQuery(
                     "SELECT cce "
                             + "FROM CertificationCriterionEntity cce "
-                            + "JOIN FETCH cce.certificationEdition "
+                            + "LEFT JOIN FETCH cce.certificationEdition "
+                            + "LEFT JOIN FETCH cce.rule "
                             + "WHERE (cce.deleted <> true) AND (cce.id = :entityid) ",
                             CertificationCriterionEntity.class);
             query.setParameter("entityid", id);
@@ -129,7 +136,8 @@ public class CertificationCriterionDAO extends BaseDAOImpl {
         Query query = entityManager
                 .createQuery(
                         "SELECT cce " + "FROM CertificationCriterionEntity cce "
-                                + "JOIN FETCH cce.certificationEdition "
+                                + "LEFT JOIN FETCH cce.certificationEdition "
+                                + "LEFT JOIN FETCH cce.rule "
                                 + "WHERE (NOT cce.deleted = true) "
                                 + "AND (cce.number = :number) "
                                 + "AND (cce.title = :title) ",
