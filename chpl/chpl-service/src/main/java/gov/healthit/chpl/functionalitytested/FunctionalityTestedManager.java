@@ -74,8 +74,8 @@ public class FunctionalityTestedManager {
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).FUNCTIONALITY_TESTED, "
             + "T(gov.healthit.chpl.permissions.domains.FunctionalityTestedDomainPermissions).DELETE)")
     @Transactional
-    public void delete(Long testToolId) throws EntityRetrievalException, ValidationException {
-        FunctionalityTested functionalityTested = functionalityTestedDAO.getById(testToolId);
+    public void delete(Long functionalityTestedId) throws EntityRetrievalException, ValidationException {
+        FunctionalityTested functionalityTested = functionalityTestedDAO.getById(functionalityTestedId);
         if (functionalityTested == null) {
             ValidationException e = new ValidationException(errorMessageUtil.getMessage("testTool.notFound"));
             throw e;
