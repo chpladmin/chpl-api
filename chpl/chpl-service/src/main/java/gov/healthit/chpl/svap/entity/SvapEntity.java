@@ -50,7 +50,6 @@ public class SvapEntity {
     @WhereJoinTable(clause = "deleted <> true")
     private List<CertificationCriterionEntity> criteria;
 
-
     @Column(name = "replaced", nullable = false)
     private Boolean replaced;
 

@@ -1,4 +1,4 @@
-package gov.healthit.chpl.conformanceMethod.dao;
+package gov.healthit.chpl.conformanceMethod;
 
 import java.util.HashSet;
 import java.util.List;
@@ -7,8 +7,10 @@ import java.util.stream.Collectors;
 
 import javax.persistence.Query;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import gov.healthit.chpl.certificationCriteria.CertificationCriterionComparator;
 import gov.healthit.chpl.conformanceMethod.domain.ConformanceMethod;
 import gov.healthit.chpl.conformanceMethod.domain.ConformanceMethodCriteriaMap;
 import gov.healthit.chpl.conformanceMethod.entity.ConformanceMethodCriteriaMapEntity;
@@ -19,20 +21,25 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 @Repository("conformanceMethodDAO")
 public class ConformanceMethodDAO extends BaseDAOImpl {
 
-    public List<ConformanceMethod> getAll() {
-        Query query = entityManager.createQuery("SELECT cm "
-                + "FROM ConformanceMethodEntity cm "
-                + "WHERE cm.deleted = false", ConformanceMethodEntity.class);
-        List<ConformanceMethodEntity> results = query.getResultList();
-        return results.stream()
-                .map(result -> result.toDomain())
-                .collect(Collectors.toList());
+    private CertificationCriterionComparator criteriaComparator;
+
+    @Autowired
+    public ConformanceMethodDAO(CertificationCriterionComparator criteriaComparator) {
+        this.criteriaComparator = criteriaComparator;
     }
 
-    public List<ConformanceMethod> getByCriterionId(Long criterionId) {
-        Set<ConformanceMethodEntity> entities = getConformanceMethodByCertificationCriteria(criterionId);
+    public List<ConformanceMethod> getAllWithCriteria() {
+        Query query = entityManager.createQuery("SELECT DISTINCT cm "
+                + "FROM ConformanceMethodEntity cm "
+                + "LEFT JOIN FETCH cm.criteria crit "
+                + "LEFT JOIN FETCH crit.certificationEdition "
+                + "LEFT JOIN FETCH crit.rule "
+                + "WHERE cm.deleted <> true ",
+                ConformanceMethodEntity.class);
+        List<ConformanceMethodEntity> entities = query.getResultList();
         return entities.stream()
                 .map(entity -> entity.toDomain())
+                .peek(cm -> cm.getCriteria().sort(criteriaComparator))
                 .collect(Collectors.toList());
     }
 
@@ -58,21 +65,22 @@ public class ConformanceMethodDAO extends BaseDAOImpl {
     }
 
     public List<ConformanceMethodCriteriaMap> getAllConformanceMethodCriteriaMap() throws EntityRetrievalException {
-        return getAllConformanceMethodCriteriaMapEntities().stream()
-                .map(e -> new ConformanceMethodCriteriaMap(e))
-                .collect(Collectors.toList());
-    }
+        List<ConformanceMethodCriteriaMapEntity> entities = entityManager.createQuery("SELECT DISTINCT mapping "
+                + "FROM ConformanceMethodCriteriaMapEntity mapping "
+                + "JOIN FETCH mapping.certificationCriterion mappingCrit "
+                + "LEFT JOIN FETCH mappingCrit.certificationEdition "
+                + "LEFT JOIN FETCH mappingCrit.rule "
+                + "JOIN FETCH mapping.conformanceMethod mappingCm "
+                + "JOIN FETCH mappingCm.criteria mappingCmCrit "
+                + "LEFT JOIN FETCH mappingCmCrit.certificationEdition "
+                + "LEFT JOIN FETCH mappingCmCrit.rule "
+                + "WHERE mapping.deleted <> true "
+                + "AND mappingCm.deleted <> true ",
+                ConformanceMethodCriteriaMapEntity.class)
+        .getResultList();
 
-    private List<ConformanceMethodCriteriaMapEntity> getAllConformanceMethodCriteriaMapEntities() throws EntityRetrievalException {
-        return entityManager.createQuery("SELECT DISTINCT cmcm "
-                        + "FROM ConformanceMethodCriteriaMapEntity cmcm "
-                        + "JOIN FETCH cmcm.certificationCriterion c "
-                        + "LEFT JOIN FETCH c.certificationEdition "
-                        + "LEFT JOIN FETCH c.rule "
-                        + "JOIN FETCH cmcm.conformanceMethod cm "
-                        + "WHERE cmcm.deleted <> true "
-                        + "AND cm.deleted <> true ",
-                        ConformanceMethodCriteriaMapEntity.class)
-                .getResultList();
+        return entities.stream()
+                .map(e -> e.toDomain())
+                .collect(Collectors.toList());
     }
 }

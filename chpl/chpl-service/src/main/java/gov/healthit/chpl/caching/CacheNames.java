@@ -33,4 +33,5 @@ public final class CacheNames {
     public static final String UPLOADED_LISTING_DETAILS = "uploadedListingDetails";
     public static final String LISTING_SEARCH_CACHE_REFRESH_STATUS = "listingSearchCacheRefreshStatus";
     public static final String QUESTIONABLE_ACTIVITIES = "questionableActivities";
+    public static final String CONFORMANCE_METHODS = "conformanceMethods";
 }
