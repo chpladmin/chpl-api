@@ -74,7 +74,7 @@ public class CertifiedProductSearchDetailsXmlGenerator extends XmlGenerator {
             createSimpleElement(cp.getCountSurveillance(), "countSurveillance", sw);
             CqmResultDetailsXmlGenerator.add(cp.getCqmResults(), "cqmResults", sw);
             createSimpleElement(cp.getCuresUpdate() == null ? false : cp.getCuresUpdate(), "curesUpdate", sw);
-            createSimpleElement(cp.getDecertificationDate(), "decertificationDate", sw);
+            createSimpleElement(cp.getDecertificationDay(), "decertificationDay", sw);
             DeveloperXmlGenerator.addDeveloper(cp.getDeveloper(), "developer", sw);
             DirectReviewXmlGenerator.add(cp.getDirectReviews(), "directReviews", sw);
             CertificationEditionXmlGenerator.add(cp.getEdition(), "edition", sw);
