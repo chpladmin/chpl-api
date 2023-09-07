@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -15,7 +16,6 @@ import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.search.ListingSearchService;
@@ -23,6 +23,7 @@ import gov.healthit.chpl.search.domain.ListingSearchResult;
 import gov.healthit.chpl.search.domain.SearchRequest;
 import gov.healthit.chpl.search.domain.SearchSetOperator;
 import gov.healthit.chpl.service.CertificationCriterionService;
+import gov.healthit.chpl.util.CertificationStatusUtil;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2(topic = "serviceBaseUrlListUptimeCreatorJobLogger")
@@ -82,9 +83,7 @@ public class ServiceBaseUrlListService {
 
     private List<ListingSearchResult> findAllListingsWithG10Criteria() throws ValidationException {
         SearchRequest request = SearchRequest.builder()
-                .certificationStatuses(Set.of(CertificationStatusType.Active.getName(),
-                        CertificationStatusType.SuspendedByAcb.getName(),
-                        CertificationStatusType.SuspendedByOnc.getName()))
+                .certificationStatuses(CertificationStatusUtil.getActiveStatusNames().stream().collect(Collectors.toSet()))
                 .certificationCriteriaIds(Set.of(getG10Criteria().getId()))
                 .certificationCriteriaOperator(SearchSetOperator.OR)
                 .build();

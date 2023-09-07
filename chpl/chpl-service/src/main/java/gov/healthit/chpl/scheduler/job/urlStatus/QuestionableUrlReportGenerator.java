@@ -30,7 +30,6 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.domain.Developer;
-import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
@@ -47,6 +46,7 @@ import gov.healthit.chpl.scheduler.job.urlStatus.data.UrlType;
 import gov.healthit.chpl.scheduler.job.urlStatus.email.FailedUrlCsvFormatter;
 import gov.healthit.chpl.scheduler.job.urlStatus.email.FailedUrlResult;
 import gov.healthit.chpl.scheduler.job.urlStatus.email.QuestionableUrlLookupDao;
+import gov.healthit.chpl.util.CertificationStatusUtil;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2(topic = "questionableUrlReportGeneratorJobLogger")
@@ -89,15 +89,12 @@ public class QuestionableUrlReportGenerator extends QuartzJob {
     private String emailAttachmentName;
 
     private FailedUrlCsvFormatter csvFormatter = new FailedUrlCsvFormatter();
-    private List<CertificationStatusType> activeStatuses = new ArrayList<CertificationStatusType>();
+    private List<CertificationStatusType> activeStatuses = CertificationStatusUtil.getActiveStatuses();
 
     @Override
     public void execute(JobExecutionContext jobContext) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
         LOGGER.info("********* Starting the Questionable URL Report Generator job. *********");
-        activeStatuses.add(CertificationStatusType.Active);
-        activeStatuses.add(CertificationStatusType.SuspendedByAcb);
-        activeStatuses.add(CertificationStatusType.SuspendedByOnc);
 
         try {
             List<FailedUrlResult> questionableUrls = new ArrayList<FailedUrlResult>();
@@ -168,12 +165,12 @@ public class QuestionableUrlReportGenerator extends QuartzJob {
             List<Long> acbIds = getSelectedAcbIds(jobContext);
             return badUrls.stream()
                 .filter(badUrl -> isUrlRelatedToAcbs(badUrl, acbIds))
-                .filter(badUrl -> isNotListingUrl(badUrl) || (isUrlRelatedTo2015Edition(badUrl) && isUrlRelatedToActiveListing(badUrl)))
+                .filter(badUrl -> isNotListingUrl(badUrl) || isUrlRelatedToActiveListing(badUrl))
                 .filter(badUrl -> doesUrlResultMatchAllowedStatusCodes(badUrl, jobContext))
                 .collect(Collectors.toList());
         } else {
             return badUrls.stream()
-                .filter(badUrl -> isNotListingUrl(badUrl) || (isUrlRelatedTo2015Edition(badUrl) && isUrlRelatedToActiveListing(badUrl)))
+                .filter(badUrl -> isNotListingUrl(badUrl) || isUrlRelatedToActiveListing(badUrl))
                 .collect(Collectors.toList());
         }
     }
@@ -201,14 +198,6 @@ public class QuestionableUrlReportGenerator extends QuartzJob {
 
     private boolean isNotListingUrl(FailedUrlResult urlResult) {
         return urlResult.getListing() == null;
-    }
-
-    private boolean isUrlRelatedTo2015Edition(FailedUrlResult urlResult) {
-        if (urlResult.getListing() != null && !StringUtils.isEmpty(urlResult.getListing().getYear())) {
-            return urlResult.getListing().getYear()
-                    .equals(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear());
-        }
-        return false;
     }
 
     private boolean isUrlRelatedToActiveListing(FailedUrlResult urlResult) {

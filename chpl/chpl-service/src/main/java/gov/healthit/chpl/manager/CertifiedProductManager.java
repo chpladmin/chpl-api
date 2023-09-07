@@ -106,6 +106,7 @@ import gov.healthit.chpl.sharedstore.listing.ListingStoreRemove;
 import gov.healthit.chpl.sharedstore.listing.RemoveBy;
 import gov.healthit.chpl.upload.listing.normalizer.ListingDetailsNormalizer;
 import gov.healthit.chpl.util.AuthUtil;
+import gov.healthit.chpl.util.CertificationStatusUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.validation.listing.ListingValidatorFactory;
 import gov.healthit.chpl.validation.listing.Validator;
@@ -1169,10 +1170,8 @@ public class CertifiedProductManager extends SecuredManager {
     private int updateCuresUpdateEvents(Long listingId, Boolean existingCuresUpdate,
             CertifiedProductSearchDetails updatedListing) throws EntityCreationException, EntityRetrievalException {
         int numChanges = 0;
-        String currentStatus = updatedListing.getCurrentStatus().getStatus().getName();
-        if (currentStatus.equalsIgnoreCase(CertificationStatusType.Active.getName())
-                || currentStatus.equalsIgnoreCase(CertificationStatusType.SuspendedByAcb.getName())
-                || currentStatus.equalsIgnoreCase(CertificationStatusType.SuspendedByOnc.getName())) {
+        String currentStatusName = updatedListing.getCurrentStatus().getStatus().getName();
+        if (CertificationStatusUtil.getActiveStatusNames().contains(currentStatusName)) {
             Boolean isCuresUpdate = curesUpdateService.isCuresUpdate(updatedListing);
             if (existingCuresUpdate != isCuresUpdate) {
                 CuresUpdateEventDTO curesEvent = new CuresUpdateEventDTO();

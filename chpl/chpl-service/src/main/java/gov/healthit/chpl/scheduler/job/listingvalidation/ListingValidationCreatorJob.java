@@ -25,10 +25,10 @@ import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.upload.listing.normalizer.ListingDetailsNormalizer;
+import gov.healthit.chpl.util.CertificationStatusUtil;
 import gov.healthit.chpl.validation.listing.ListingValidatorFactory;
 import gov.healthit.chpl.validation.listing.Validator;
 import lombok.extern.log4j.Log4j2;
@@ -98,18 +98,18 @@ public class ListingValidationCreatorJob implements Job {
     }
 
     private List<CertifiedProductSearchDetails> getListingsWithErrors() {
-        return getAll2015CertifiedProducts().parallelStream()
+        return getAllActiveCertifiedProducts().parallelStream()
                 .map(listing -> getCertifiedProductSearchDetails(listing.getId()))
                 .map(detail -> validateListing(detail))
                 .filter(detail -> doValidationErrorsExist(detail))
                 .collect(Collectors.toList());
     }
 
-    private List<CertifiedProductDetailsDTO> getAll2015CertifiedProducts() {
-        LOGGER.info("Retrieving all 2015 listings");
-        List<CertifiedProductDetailsDTO> listings = certifiedProductDAO.findByEdition(
-                CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear());
-        LOGGER.info("Completed retreiving all 2015 listings");
+    private List<CertifiedProductDetailsDTO> getAllActiveCertifiedProducts() {
+        LOGGER.info("Retrieving all active listings");
+        List<CertifiedProductDetailsDTO> listings = certifiedProductDAO.getListingsByStatus(
+                CertificationStatusUtil.getActiveStatuses());
+        LOGGER.info("Completed retreiving all active listings");
         return listings.stream()
                 .collect(Collectors.toList());
     }
