@@ -2,9 +2,7 @@ package gov.healthit.chpl.scheduler.job.developer.attestation;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
@@ -19,8 +17,6 @@ import gov.healthit.chpl.compliance.directreview.DirectReviewSearchService;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.compliance.DirectReviewNonConformity;
-import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
-import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.form.Form;
 import gov.healthit.chpl.search.ListingSearchService;
@@ -28,6 +24,7 @@ import gov.healthit.chpl.search.domain.ListingSearchResult;
 import gov.healthit.chpl.search.domain.SearchRequest;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.service.realworldtesting.RealWorldTestingCriteriaService;
+import gov.healthit.chpl.util.CertificationStatusUtil;
 import lombok.extern.log4j.Log4j2;
 
 @Component
@@ -42,12 +39,7 @@ public class CheckInReportDataCollector {
     private DirectReviewSearchService directReviewSearchService;
     private CheckInReportSourceService checkInReportSourceService;
     private CheckInReportValidation checkInReportValidation;
-
-    private Set<String> activeStatuses = Stream.of(
-            CertificationStatusType.Active.getName(),
-            CertificationStatusType.SuspendedByAcb.getName(),
-            CertificationStatusType.SuspendedByOnc.getName())
-            .collect(Collectors.toSet());
+    private List<String> activeStatuses = CertificationStatusUtil.getActiveStatusNames();
 
     public CheckInReportDataCollector(AttestationManager attestationManager,
             DeveloperAttestationPeriodCalculator developerAttestationPeriodCalculator,
@@ -247,15 +239,14 @@ public class CheckInReportDataCollector {
     }
 
     private Map<Long, List<ListingSearchResult>> getMapOfActiveListingSearchResultsByDeveloper() {
-        return get2015ActiveListing().stream()
+        return getActiveListings().stream()
                 .collect(Collectors.groupingBy(listingSearchResult -> listingSearchResult.getDeveloper().getId()));
     }
 
-    private List<ListingSearchResult> get2015ActiveListing() {
-        LOGGER.info("Getting all active listings for 2015 Edition");
+    private List<ListingSearchResult> getActiveListings() {
+        LOGGER.info("Getting all active listings");
         SearchRequest searchRequest = SearchRequest.builder()
-                .certificationEditions(Stream.of(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear()).collect(Collectors.toSet()))
-                .certificationStatuses(activeStatuses)
+                .certificationStatuses(activeStatuses.stream().collect(Collectors.toSet()))
                 .pageSize(MAX_PAGE_SIZE)
                 .pageNumber(0)
                 .build();
