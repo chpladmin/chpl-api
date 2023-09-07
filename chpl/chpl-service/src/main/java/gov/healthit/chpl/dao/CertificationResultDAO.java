@@ -548,6 +548,9 @@ public class CertificationResultDAO extends BaseDAOImpl {
                 + "JOIN cp.certificationResults certResults "
                 + "JOIN certResults.certificationResultConformanceMethods crcm "
                 + "JOIN FETCH crcm.conformanceMethod cm "
+                + "LEFT JOIN FETCH cm.criteria crit "
+                + "LEFT JOIN FETCH crit.certificationEdition "
+                + "LEFT JOIN FETCH crit.rule "
                 + "WHERE certResults.certificationCriterionId = :criterionId "
                 + "AND cp.id = :listingId "
                 + "AND crcm.deleted = false ",
@@ -605,8 +608,13 @@ public class CertificationResultDAO extends BaseDAOImpl {
         CertificationResultConformanceMethodEntity entity = null;
 
         Query query = entityManager.createQuery(
-                "SELECT cm FROM CertificationResultConformanceMethodEntity cm "
-                        + "LEFT OUTER JOIN FETCH cm.conformanceMethod " + "where (NOT cm.deleted = true) AND (cm.id = :id) ",
+                "SELECT cm FROM CertificationResultConformanceMethodEntity crcm "
+                        + "LEFT OUTER JOIN FETCH crcm.conformanceMethod cm "
+                        + "LEFT JOIN FETCH cm.criteria crit "
+                        + "LEFT JOIN FETCH crit.certificationEdition "
+                        + "LEFT JOIN FETCH crit.rule "
+                        + "WHERE (NOT crcm.deleted = true) "
+                        + "AND (crcm.id = :id) ",
                         CertificationResultConformanceMethodEntity.class);
         query.setParameter("id", id);
         List<CertificationResultConformanceMethodEntity> result = query.getResultList();
