@@ -7,14 +7,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.jfree.data.time.DateRange;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.CacheManager;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.attestation.domain.AttestationPeriod;
@@ -23,11 +21,10 @@ import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.domain.CertificationStatus;
 import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.domain.Developer;
-import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
-import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.search.ListingSearchService;
 import gov.healthit.chpl.search.domain.ListingSearchResult;
 import gov.healthit.chpl.search.domain.SearchRequest;
+import gov.healthit.chpl.util.CertificationStatusUtil;
 import gov.healthit.chpl.util.DateUtil;
 
 @Component
@@ -37,23 +34,15 @@ public class DeveloperAttestationPeriodCalculator {
     private DeveloperDAO developerDao;
     private AttestationPeriodService attestationPeriodService;
     private ListingSearchService listingSearchService;
-
-    private CacheManager cacheManager;
-
-    private List<String> activeStatuses = Stream.of(CertificationStatusType.Active.getName(),
-            CertificationStatusType.SuspendedByAcb.getName(),
-            CertificationStatusType.SuspendedByOnc.getName())
-            .collect(Collectors.toList());
+    private List<String> activeStatuses = CertificationStatusUtil.getActiveStatusNames();
 
     @Autowired
     public DeveloperAttestationPeriodCalculator(DeveloperDAO developerDao,
             AttestationPeriodService attestationPeriodService,
-            ListingSearchService listingSearchService,
-            CacheManager cacheManager) {
+            ListingSearchService listingSearchService) {
         this.developerDao = developerDao;
         this.attestationPeriodService = attestationPeriodService;
         this.listingSearchService = listingSearchService;
-        this.cacheManager = cacheManager;
     }
 
     public List<Developer> getDevelopersWithActiveListingsDuringMostRecentPastAttestationPeriod(Logger logger) {
@@ -147,14 +136,14 @@ public class DeveloperAttestationPeriodCalculator {
     }
 
     private Map<Long, List<ListingSearchResult>> getMapOfListingSearchResultsByDeveloper(Logger logger) {
-        return get2015Listing(logger).stream()
+        return getActiveListings(logger).stream()
                 .collect(Collectors.groupingBy(listingSearchResult -> listingSearchResult.getDeveloper().getId()));
     }
 
-    private List<ListingSearchResult> get2015Listing(Logger logger) {
-        logger.info("Getting all listings for 2015 Edition");
+    private List<ListingSearchResult> getActiveListings(Logger logger) {
+        logger.info("Getting all active listings");
         SearchRequest searchRequest = SearchRequest.builder()
-                .certificationEditions(Stream.of(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear()).collect(Collectors.toSet()))
+                .certificationStatuses(CertificationStatusUtil.getActiveStatusNames().stream().collect(Collectors.toSet()))
                 .pageSize(MAX_PAGE_SIZE)
                 .pageNumber(0)
                 .build();

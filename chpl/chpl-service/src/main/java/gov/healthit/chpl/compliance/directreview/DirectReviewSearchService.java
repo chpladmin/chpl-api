@@ -24,7 +24,7 @@ import gov.healthit.chpl.domain.compliance.DirectReview;
 import gov.healthit.chpl.domain.compliance.DirectReviewContainer;
 import gov.healthit.chpl.domain.compliance.DirectReviewNonConformity;
 import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
-import gov.healthit.chpl.entity.CertificationStatusType;
+import gov.healthit.chpl.util.CertificationStatusUtil;
 import gov.healthit.chpl.util.RedisUtil;
 import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -161,15 +161,12 @@ public class DirectReviewSearchService {
     }
 
     private List<DateRange> getDateRangesWithActiveStatus(List<CertificationStatusEvent> listingStatusEvents) {
-        List<String> activeStatuses = Stream.of(CertificationStatusType.Active.getName(),
-                CertificationStatusType.SuspendedByAcb.getName(),
-                CertificationStatusType.SuspendedByOnc.getName())
-                .collect(Collectors.toList());
+        List<String> activeStatusNames = CertificationStatusUtil.getActiveStatusNames();
         listingStatusEvents.sort(new CertificationStatusEventComparator());
         return IntStream.range(0, listingStatusEvents.size())
             .filter(i -> listingStatusEvents.get(i) != null && listingStatusEvents.get(i).getStatus() != null
                 && !StringUtils.isEmpty(listingStatusEvents.get(i).getStatus().getName()))
-            .filter(i -> activeStatuses.contains(listingStatusEvents.get(i).getStatus().getName()))
+            .filter(i -> activeStatusNames.contains(listingStatusEvents.get(i).getStatus().getName()))
             .mapToObj(i -> new DateRange(new Date(listingStatusEvents.get(i).getEventDate()),
                     i < (listingStatusEvents.size() - 1) ? new Date(listingStatusEvents.get(i + 1).getEventDate())
                             //Math.max here to handle the case where status is a future date

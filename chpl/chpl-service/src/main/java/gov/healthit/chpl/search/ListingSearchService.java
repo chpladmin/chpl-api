@@ -23,7 +23,6 @@ import gov.healthit.chpl.compliance.directreview.DirectReviewSearchService;
 import gov.healthit.chpl.domain.CertificationEdition;
 import gov.healthit.chpl.domain.IdNamePair;
 import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
-import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.search.domain.ComplianceSearchFilter;
@@ -37,6 +36,7 @@ import gov.healthit.chpl.search.domain.OrderByOption;
 import gov.healthit.chpl.search.domain.RwtSearchOptions;
 import gov.healthit.chpl.search.domain.SearchRequest;
 import gov.healthit.chpl.search.domain.SearchSetOperator;
+import gov.healthit.chpl.util.CertificationStatusUtil;
 import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
@@ -51,12 +51,7 @@ public class ListingSearchService {
     private ListingSearchManager listingSearchManager;
     private DirectReviewSearchService drService;
     private DateTimeFormatter dateFormatter;
-
-    private Set<String> activeStatuses = Stream.of(
-            CertificationStatusType.Active.getName(),
-            CertificationStatusType.SuspendedByAcb.getName(),
-            CertificationStatusType.SuspendedByOnc.getName())
-            .collect(Collectors.toSet());
+    private Set<String> activeStatuses = CertificationStatusUtil.getActiveStatusNames().stream().collect(Collectors.toSet());
 
     @Autowired
     public ListingSearchService(SearchRequestValidator searchRequestValidator,

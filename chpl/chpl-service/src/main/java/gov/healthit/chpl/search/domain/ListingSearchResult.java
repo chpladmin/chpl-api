@@ -17,7 +17,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import gov.healthit.chpl.domain.CertificationEdition;
 import gov.healthit.chpl.domain.IdNamePair;
-import gov.healthit.chpl.entity.CertificationStatusType;
+import gov.healthit.chpl.util.CertificationStatusUtil;
 import gov.healthit.chpl.util.LocalDateDeserializer;
 import gov.healthit.chpl.util.LocalDateSerializer;
 import gov.healthit.chpl.util.NullSafeEvaluator;
@@ -223,10 +223,8 @@ public class ListingSearchResult implements Serializable {
 
     @JsonIgnore
     public boolean isCertificateActive() {
-        String currentStatus = NullSafeEvaluator.eval(() -> certificationStatus.getName(), "");
-        return  currentStatus.equalsIgnoreCase(CertificationStatusType.Active.getName())
-                || currentStatus.equalsIgnoreCase(CertificationStatusType.SuspendedByAcb.getName())
-                || currentStatus.equalsIgnoreCase(CertificationStatusType.SuspendedByOnc.getName());
+        String currentStatusName = NullSafeEvaluator.eval(() -> certificationStatus.getName(), "");
+        return  CertificationStatusUtil.getActiveStatusNames().contains(currentStatusName);
     }
 
 }

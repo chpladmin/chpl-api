@@ -20,7 +20,6 @@ import gov.healthit.chpl.domain.CertificationStatus;
 import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
-import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.CertificationBodyManager;
@@ -28,6 +27,7 @@ import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.search.ListingSearchService;
 import gov.healthit.chpl.search.domain.ListingSearchResult;
 import gov.healthit.chpl.search.domain.SearchRequest;
+import gov.healthit.chpl.util.CertificationStatusUtil;
 import gov.healthit.chpl.util.DateUtil;
 import lombok.extern.log4j.Log4j2;
 
@@ -40,11 +40,7 @@ public class AttestationCertificationBodyService {
     private AttestationPeriodService attestationPeriodService;
     private DeveloperManager developerManager;
     private CertificationBodyManager certificationBodyManager;
-
-    private List<String> activeStatuses = Stream.of(CertificationStatusType.Active.getName(),
-            CertificationStatusType.SuspendedByAcb.getName(),
-            CertificationStatusType.SuspendedByOnc.getName())
-            .collect(Collectors.toList());
+    private List<String> activeStatusNames = CertificationStatusUtil.getActiveStatusNames();
 
     @Autowired
     public AttestationCertificationBodyService(ListingSearchService listingSearchService, AttestationPeriodService attestationPeriodService,
@@ -113,7 +109,7 @@ public class AttestationCertificationBodyService {
         return IntStream.range(0, listingStatusEvents.size())
             .filter(i -> listingStatusEvents.get(i) != null && listingStatusEvents.get(i).getStatus() != null
                 && !StringUtils.isEmpty(listingStatusEvents.get(i).getStatus().getName()))
-            .filter(i -> activeStatuses.contains(listingStatusEvents.get(i).getStatus().getName()))
+            .filter(i -> activeStatusNames.contains(listingStatusEvents.get(i).getStatus().getName()))
             .mapToObj(i -> new DateRange(new Date(listingStatusEvents.get(i).getEventDate()),
                     i < (listingStatusEvents.size() - 1) ? new Date(listingStatusEvents.get(i + 1).getEventDate())
                             //Math.max here to handle the case where status is a future date

@@ -41,6 +41,7 @@ import gov.healthit.chpl.entity.auth.UserContactEntity;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.SchedulerManager;
+import gov.healthit.chpl.util.CertificationStatusUtil;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -169,12 +170,9 @@ public class DeveloperAccessReport extends QuartzJob {
         List<Long> acbIds = acbs.stream()
                 .map(CertificationBody::getId)
                 .collect(Collectors.toList());
-        List<CertificationStatusType> activeStatuses = new ArrayList<CertificationStatusType>();
-        activeStatuses.add(CertificationStatusType.Active);
-        activeStatuses.add(CertificationStatusType.SuspendedByAcb);
-        activeStatuses.add(CertificationStatusType.SuspendedByOnc);
 
-        return developerAccessDao.getDevelopersWithListingsInStatusForAcbs(activeStatuses, acbIds);
+        return developerAccessDao.getDevelopersWithListingsInStatusForAcbs(
+                CertificationStatusUtil.getActiveStatuses(), acbIds);
     }
 
     private void putDeveloperAccessActivityInRow(DeveloperAcbMap devAcbMap,

@@ -14,6 +14,7 @@ import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.contact.PointOfContact;
 import gov.healthit.chpl.entity.listing.CertifiedProductDetailsEntity;
 import gov.healthit.chpl.entity.listing.CertifiedProductDetailsEntitySimple;
+import gov.healthit.chpl.util.DateUtil;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -60,7 +61,11 @@ public class CertifiedProductDetailsDTO implements Serializable {
     private ProductVersionDTO version;
     private Date creationDate;
     private Date certificationDate;
+
+    @Deprecated
     private Date decertificationDate;
+
+    private LocalDate decertificationDay;
     private Integer countCertifications;
     private Integer countCqms;
     private Integer countSurveillance;
@@ -172,6 +177,7 @@ public class CertifiedProductDetailsDTO implements Serializable {
         this.year = entity.getYear();
         this.certificationDate = entity.getCertificationDate();
         this.decertificationDate = entity.getDecertificationDate();
+        this.decertificationDay = entity.getDecertificationDate() != null ? DateUtil.toLocalDate(entity.getDecertificationDate().getTime()) : null;
         this.countCqms = entity.getCountCqms();
         this.countCertifications = entity.getCountCertifications();
         this.countSurveillance = entity.getCountSurveillance();
@@ -276,6 +282,7 @@ public class CertifiedProductDetailsDTO implements Serializable {
         this.year = entity.getYear();
         this.certificationDate = entity.getCertificationDate();
         this.decertificationDate = entity.getDecertificationDate();
+        this.decertificationDay = entity.getDecertificationDate() != null ? DateUtil.toLocalDate(entity.getDecertificationDate().getTime()) : null;
         this.countCqms = entity.getCountCqms();
         this.countCertifications = entity.getCountCertifications();
         this.countSurveillance = entity.getCountSurveillance();
