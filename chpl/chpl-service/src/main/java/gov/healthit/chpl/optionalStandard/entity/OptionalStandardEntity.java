@@ -20,6 +20,7 @@ import org.hibernate.annotations.WhereJoinTable;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterionEntity;
 import gov.healthit.chpl.optionalStandard.domain.OptionalStandard;
+import gov.healthit.chpl.optionalStandard.domain.OptionalStandardWithCriteria;
 import lombok.Data;
 
 @Entity
@@ -60,6 +61,14 @@ public class OptionalStandardEntity {
 
     public OptionalStandard toDomain() {
         return OptionalStandard.builder()
+                .id(this.getId())
+                .citation(this.getCitation())
+                .description(this.getDescription())
+                .build();
+    }
+
+    public OptionalStandardWithCriteria toDomainWithCriteria() {
+        return OptionalStandardWithCriteria.builder()
                 .id(this.getId())
                 .citation(this.getCitation())
                 .description(this.getDescription())

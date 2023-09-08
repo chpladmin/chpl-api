@@ -13,6 +13,7 @@ import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.optionalStandard.domain.OptionalStandard;
 import gov.healthit.chpl.optionalStandard.domain.OptionalStandardCriteriaMap;
+import gov.healthit.chpl.optionalStandard.domain.OptionalStandardWithCriteria;
 import gov.healthit.chpl.optionalStandard.entity.OptionalStandardCriteriaMapEntity;
 import gov.healthit.chpl.optionalStandard.entity.OptionalStandardEntity;
 
@@ -26,7 +27,7 @@ public class OptionalStandardDAO extends BaseDAOImpl {
         this.criteriaComparator = criteriaComparator;
     }
 
-    public List<OptionalStandard> getAll() {
+    public List<OptionalStandardWithCriteria> getAll() {
         List<OptionalStandardEntity> entities = entityManager
                 .createQuery("SELECT DISTINCT os "
                         + "FROM OptionalStandardEntity os "
@@ -36,7 +37,7 @@ public class OptionalStandardDAO extends BaseDAOImpl {
                         + "WHERE (NOT os.deleted = true) ", OptionalStandardEntity.class)
                 .getResultList();
         return entities.stream()
-                .map(e -> e.toDomain())
+                .map(e -> e.toDomainWithCriteria())
                 .peek(os -> os.getCriteria().sort(criteriaComparator))
                 .collect(Collectors.toList());
     }
@@ -44,7 +45,6 @@ public class OptionalStandardDAO extends BaseDAOImpl {
     public List<OptionalStandardCriteriaMap> getAllOptionalStandardCriteriaMap() throws EntityRetrievalException {
         return getAllOptionalStandardCriteriaMapEntities().stream()
                 .map(e -> e.toDomain())
-                .peek(map -> map.getOptionalStandard().getCriteria().sort(criteriaComparator))
                 .collect(Collectors.toList());
     }
 
@@ -53,7 +53,6 @@ public class OptionalStandardDAO extends BaseDAOImpl {
         OptionalStandard obj = null;
         if (entities != null && entities.size() > 0) {
             obj = entities.get(0).toDomain();
-            obj.getCriteria().sort(criteriaComparator);
         }
         return obj;
     }
@@ -61,9 +60,6 @@ public class OptionalStandardDAO extends BaseDAOImpl {
     private List<OptionalStandardEntity> getEntitiesByCitation(String citation) {
         String osQuery = "SELECT DISTINCT os "
                 + "FROM OptionalStandardEntity os "
-                + "LEFT JOIN FETCH os.criteria crit "
-                + "LEFT JOIN FETCH crit.certificationEdition "
-                + "LEFT JOIN FETCH crit.rule "
                 + "WHERE os.deleted <> true "
                 + "AND UPPER(os.citation) = :citation ";
         Query query = entityManager.createQuery(osQuery, OptionalStandardEntity.class);
@@ -88,9 +84,6 @@ public class OptionalStandardDAO extends BaseDAOImpl {
                         + "LEFT JOIN FETCH mappingCrit.certificationEdition "
                         + "LEFT JOIN FETCH mappingCrit.rule "
                         + "JOIN FETCH mapping.optionalStandard os "
-                        + "LEFT JOIN FETCH os.criteria osCrit "
-                        + "LEFT JOIN FETCH osCrit.certificationEdition "
-                        + "LEFT JOIN FETCH osCrit.rule "
                         + "WHERE mapping.deleted <> true "
                         + "AND os.deleted <> true ",
                         OptionalStandardCriteriaMapEntity.class)

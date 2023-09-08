@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import gov.healthit.chpl.conformanceMethod.ConformanceMethodManager;
-import gov.healthit.chpl.conformanceMethod.domain.ConformanceMethod;
+import gov.healthit.chpl.conformanceMethod.domain.ConformanceMethodWithCriteria;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -33,7 +33,7 @@ public class ConformanceMethodController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public @ResponseBody List<ConformanceMethod> getAll() {
+    public @ResponseBody List<ConformanceMethodWithCriteria> getAll() {
         return cmManager.getAll();
     }
 }
