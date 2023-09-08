@@ -9,13 +9,13 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
-import gov.healthit.chpl.criteriaattribute.testtool.TestTool;
-import gov.healthit.chpl.criteriaattribute.testtool.TestToolDAO;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultTestTool;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.testtool.TestTool;
+import gov.healthit.chpl.testtool.TestToolDAO;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
 import lombok.extern.log4j.Log4j2;
@@ -88,7 +88,7 @@ public class TestToolReviewer extends PermissionBasedReviewer {
 
     private Boolean isTestToolValidForCriteria(CertificationCriterion criterion, TestTool testTool) {
         try {
-            return testToolDao.getAllTestToolCriteriaMap().stream()
+            return testToolDao.getAllTestToolCriteriaMaps().stream()
                 .filter(ttcm -> ttcm.getCriterion().getId().equals(criterion.getId())
                         && ttcm.getTestTool().getId().equals(testTool.getId()))
                 .findAny()
