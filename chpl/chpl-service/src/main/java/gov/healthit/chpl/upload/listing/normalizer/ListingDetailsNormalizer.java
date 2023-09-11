@@ -1,9 +1,11 @@
 package gov.healthit.chpl.upload.listing.normalizer;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 
 @Component
@@ -21,6 +23,7 @@ public class ListingDetailsNormalizer {
     private CqmNormalizer cqmNormalizer;
     private MeasureNormalizer measureNormalizer;
     private SedNormalizer sedNormalizer;
+    private FF4j ff4j;
 
     @SuppressWarnings("checkstyle:parameternumber")
     @Autowired
@@ -36,7 +39,8 @@ public class ListingDetailsNormalizer {
             CertificationResultNormalizer certResultNormalizer,
             CqmNormalizer cqmNormalizer,
             MeasureNormalizer measureNormalizer,
-            SedNormalizer sedNormalizer) {
+            SedNormalizer sedNormalizer,
+            FF4j ff4j) {
         this.editionNormalizer = editionNormalizer;
         this.acbNormalizer = acbNormalizer;
         this.atlNormalizer = atlNormalizer;
@@ -50,6 +54,7 @@ public class ListingDetailsNormalizer {
         this.cqmNormalizer = cqmNormalizer;
         this.measureNormalizer = measureNormalizer;
         this.sedNormalizer = sedNormalizer;
+        this.ff4j = ff4j;
     }
 
     public void normalize(CertifiedProductSearchDetails listing) {
@@ -60,7 +65,9 @@ public class ListingDetailsNormalizer {
             listing.clearAllWarningMessages();;
         }
 
-        this.editionNormalizer.normalize(listing);
+        if (!ff4j.check(FeatureList.EDITIONLESS)) {
+            this.editionNormalizer.normalize(listing);
+        }
         this.acbNormalizer.normalize(listing);
         this.atlNormalizer.normalize(listing);
         this.developerNormalizer.normalize(listing);

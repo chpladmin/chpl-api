@@ -60,7 +60,7 @@ public class EditionCodeReviewer implements Reviewer {
         String editionYear = listing.getEdition() == null ? null : listing.getEdition().getName();
 
         if (StringUtils.isEmpty(editionYear)
-                && !editionCode.equals(ChplProductNumberUtil.EDITION_CODE_NONE)) {
+                && !editionCode.equals(ChplProductNumberUtil.EDITION_CODE_DEFAULT)) {
             listing.addDataErrorMessage(
                     msgUtil.getMessage("listing.certificationEditionMismatch", editionCode, "<none>"));
         } else if (isValidEditionCode(listing.getChplProductNumber())
