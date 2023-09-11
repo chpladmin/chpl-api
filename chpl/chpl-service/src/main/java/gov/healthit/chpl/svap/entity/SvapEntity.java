@@ -2,6 +2,7 @@ package gov.healthit.chpl.svap.entity;
 
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -18,6 +19,7 @@ import javax.persistence.Table;
 import org.hibernate.annotations.WhereJoinTable;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterionEntity;
+import gov.healthit.chpl.svap.domain.Svap;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -68,5 +70,26 @@ public class SvapEntity {
     @Basic(optional = false)
     @Column(name = "last_modified_date", insertable = false, updatable = false)
     private Date lastModifiedDate;
+
+    public Svap toDomain() {
+        return Svap.builder()
+                .svapId(this.getSvapId())
+                .approvedStandardVersion(this.getApprovedStandardVersion())
+                .regulatoryTextCitation(this.getRegulatoryTextCitation())
+                .replaced(this.getReplaced())
+                .build();
+    }
+
+    public Svap toDomainWithCriteria() {
+        return Svap.builder()
+                .svapId(this.getSvapId())
+                .approvedStandardVersion(this.getApprovedStandardVersion())
+                .regulatoryTextCitation(this.getRegulatoryTextCitation())
+                .replaced(this.getReplaced())
+                .criteria(this.getCriteria().stream()
+                        .map(crit -> crit.toDomain())
+                        .collect(Collectors.toList()))
+                .build();
+    }
 
 }
