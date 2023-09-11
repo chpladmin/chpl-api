@@ -4,12 +4,10 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
-import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.dao.CertifiedProductSearchResultDAO;
 import gov.healthit.chpl.dao.ChplProductNumberDAO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
@@ -25,9 +23,8 @@ public class ChplProductNumberUtil {
     public static final String CHPL_PRODUCT_NUMBER_SEARCH_REGEX = "(\\d{2}\\.){3}\\d{4}\\.(\\w{4}\\.(\\w{2}\\.(\\d{2}\\.(\\d\\.(\\d{6})?)?)?)?)?";
 
     public static final int EDITION_CODE_INDEX = 0;
-    public static final String EDITION_CODE_NONE = "XX";
-    private static final String EDITION_CODE_REGEX = "^" + EDITION_CODE_NONE + "|[0-9]{" + ChplProductNumberUtil.EDITION_CODE_LENGTH + "}$";
-    private static final String EDITION_CODE_REGEX_WITH_YEAR = "^[0-9]{" + ChplProductNumberUtil.EDITION_CODE_LENGTH + "}$";
+    public static final String EDITION_CODE_DEFAULT = "15";
+    private static final String EDITION_CODE_REGEX = "^[0-9]{" + ChplProductNumberUtil.EDITION_CODE_LENGTH + "}$";
     public static final int EDITION_CODE_LENGTH = 2;
     public static final int ATL_CODE_INDEX = 1;
     public static final String ATL_CODE_REGEX = "^[0-9]{" + ChplProductNumberUtil.ATL_CODE_LENGTH + "}$";
@@ -59,15 +56,12 @@ public class ChplProductNumberUtil {
 
     private CertifiedProductSearchResultDAO certifiedProductSearchResultDAO;
     private ChplProductNumberDAO chplProductNumberDAO;
-    private FF4j ff4j;
 
     @Autowired
     public ChplProductNumberUtil(CertifiedProductSearchResultDAO certifiedProductSearchResultDAO,
-            ChplProductNumberDAO chplProductNumberDAO,
-            FF4j ff4j) {
+            ChplProductNumberDAO chplProductNumberDAO) {
         this.certifiedProductSearchResultDAO = certifiedProductSearchResultDAO;
         this.chplProductNumberDAO = chplProductNumberDAO;
-        this.ff4j = ff4j;
     }
 
     /**
@@ -244,17 +238,11 @@ public class ChplProductNumberUtil {
     }
 
     public String getCertificationEditionCodeRegex() {
-        if (!ff4j.check(FeatureList.EDITIONLESS)) {
-            return EDITION_CODE_REGEX_WITH_YEAR;
-        }
         return EDITION_CODE_REGEX;
     }
 
     public List<String> getAllowedEditionCodes() {
-        if (!ff4j.check(FeatureList.EDITIONLESS)) {
-            return Stream.of("15").toList();
-        }
-        return Stream.of("15", EDITION_CODE_NONE).toList();
+        return Stream.of("15").toList();
     }
 
     private String[] splitUniqueIdParts(final String uniqueId) {
