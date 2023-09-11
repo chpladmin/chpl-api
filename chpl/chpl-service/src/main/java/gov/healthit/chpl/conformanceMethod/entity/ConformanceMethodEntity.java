@@ -21,7 +21,6 @@ import org.hibernate.annotations.WhereJoinTable;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterionEntity;
 import gov.healthit.chpl.conformanceMethod.domain.ConformanceMethod;
-import gov.healthit.chpl.conformanceMethod.domain.ConformanceMethodWithCriteria;
 import lombok.Data;
 
 @Entity
@@ -69,8 +68,8 @@ public class ConformanceMethodEntity {
                 .build();
     }
 
-    public ConformanceMethodWithCriteria toDomainWithCriteria() {
-        return ConformanceMethodWithCriteria.builder()
+    public ConformanceMethod toDomainWithCriteria() {
+        return ConformanceMethod.builder()
                 .id(this.getId())
                 .name(this.getName())
                 .removalDate(this.getRemovalDate())

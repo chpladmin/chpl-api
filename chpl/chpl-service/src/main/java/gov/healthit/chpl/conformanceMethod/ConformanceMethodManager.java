@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.caching.CacheNames;
-import gov.healthit.chpl.conformanceMethod.domain.ConformanceMethodWithCriteria;
+import gov.healthit.chpl.conformanceMethod.domain.ConformanceMethod;
 
 @Component("conformanceMethodManager")
 public class ConformanceMethodManager {
@@ -22,7 +22,7 @@ public class ConformanceMethodManager {
 
     @Transactional
     @Cacheable(value = CacheNames.CONFORMANCE_METHODS)
-    public List<ConformanceMethodWithCriteria> getAll() {
+    public List<ConformanceMethod> getAll() {
         return conformanceMethodDao.getAllWithCriteria();
     }
 }

@@ -9,8 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterionComparator;
+import gov.healthit.chpl.conformanceMethod.domain.ConformanceMethod;
 import gov.healthit.chpl.conformanceMethod.domain.ConformanceMethodCriteriaMap;
-import gov.healthit.chpl.conformanceMethod.domain.ConformanceMethodWithCriteria;
 import gov.healthit.chpl.conformanceMethod.entity.ConformanceMethodCriteriaMapEntity;
 import gov.healthit.chpl.conformanceMethod.entity.ConformanceMethodEntity;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
@@ -26,7 +26,7 @@ public class ConformanceMethodDAO extends BaseDAOImpl {
         this.criteriaComparator = criteriaComparator;
     }
 
-    public List<ConformanceMethodWithCriteria> getAllWithCriteria() {
+    public List<ConformanceMethod> getAllWithCriteria() {
         Query query = entityManager.createQuery("SELECT DISTINCT cm "
                 + "FROM ConformanceMethodEntity cm "
                 + "LEFT JOIN FETCH cm.criteria crit "
