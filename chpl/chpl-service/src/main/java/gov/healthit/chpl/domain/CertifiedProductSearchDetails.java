@@ -222,9 +222,21 @@ public class CertifiedProductSearchDetails implements Serializable {
     /**
      * Decertification date represented in milliseconds since epoch
      */
+    @Deprecated
+    @DeprecatedResponseField(message = "Please use the 'decertificationDay' field.", removalDate = "2024-01-01")
     @Schema(description = "Decertification date represented in milliseconds since epoch")
-    @XmlElement(required = false, nillable = true)
+    @XmlTransient
     private Long decertificationDate;
+
+    /**
+     * Decertification day
+     */
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonSerialize(using = LocalDateSerializer.class)
+    @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
+    @Schema(description = "Decertification day")
+    @XmlElement(required = false, nillable = true)
+    private LocalDate decertificationDay;
 
     /**
      * Number of certification criteria this listing attests to.
@@ -939,14 +951,23 @@ public class CertifiedProductSearchDetails implements Serializable {
         this.countClosedNonconformities = countClosedNonconformities;
     }
 
+    @Deprecated
     public Long getDecertificationDate() {
         return decertificationDate;
     }
 
+    @Deprecated
     public void setDecertificationDate(Long decertificationDate) {
         this.decertificationDate = decertificationDate;
     }
 
+    public LocalDate getDecertificationDay() {
+        return decertificationDay;
+    }
+
+    public void setDecertificationDay(LocalDate decertificationDay) {
+        this.decertificationDay = decertificationDay;
+    }
     public CertifiedProductSed getSed() {
         return sed;
     }

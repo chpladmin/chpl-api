@@ -168,6 +168,7 @@ public class ListingService {
                 .acbCertificationId(dto.getAcbCertificationId())
                 .certificationDate(dto.getCertificationDate() != null ? dto.getCertificationDate().getTime() : null)
                 .decertificationDate(dto.getDecertificationDate() != null ? dto.getDecertificationDate().getTime() : null)
+                .decertificationDay(dto.getDecertificationDay() != null ? dto.getDecertificationDay() : null)
                 .curesUpdate(dto.getCuresUpdate())
                 .certificationEdition(getCertificationEditionDeprecated(dto))
                 .edition(getCertificationEdition(dto))

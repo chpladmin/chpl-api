@@ -1,4 +1,4 @@
-package gov.healthit.chpl.criteriaattribute.testtool;
+package gov.healthit.chpl.testtool;
 
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -64,10 +64,6 @@ public class TestToolEntity implements Serializable {
     @Column(name = "end_day")
     private LocalDate endDay;
 
-    @Basic(optional = true)
-    @Column(name = "required_day")
-    private LocalDate requiredDay;
-
     @OneToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "test_tool_criteria_map",
         joinColumns = {@JoinColumn(name = "test_tool_id", referencedColumnName = "test_tool_id")},
@@ -104,7 +100,6 @@ public class TestToolEntity implements Serializable {
                 .regulatoryTextCitation(regulatoryTextCitation)
                 .startDay(startDay)
                 .endDay(endDay)
-                .requiredDay(requiredDay)
                 .criteria(criteria == null ? null : criteria.stream().map(crit -> crit.toDomain()).toList())
                 .rule(rule != null ? rule.toDomain() : null)
                 .build();
