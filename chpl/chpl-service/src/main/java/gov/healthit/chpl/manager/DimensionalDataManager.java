@@ -56,7 +56,7 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.listing.measure.ListingMeasureDAO;
 import gov.healthit.chpl.listing.measure.MeasureDAO;
 import gov.healthit.chpl.optionalStandard.OptionalStandardDAO;
-import gov.healthit.chpl.optionalStandard.domain.OptionalStandardWithCriteria;
+import gov.healthit.chpl.optionalStandard.domain.OptionalStandard;
 import gov.healthit.chpl.surveillance.report.QuarterDAO;
 import gov.healthit.chpl.surveillance.report.domain.Quarter;
 import lombok.extern.log4j.Log4j2;
@@ -166,7 +166,7 @@ public class DimensionalDataManager {
 
     @Deprecated
     @Transactional
-    public Set<OptionalStandardWithCriteria> getOptionalStandards() {
+    public Set<OptionalStandard> getOptionalStandards() {
         LOGGER.debug("Getting all optional standards from the database (not cached).");
         return this.optionalStandardDao.getAll().stream()
                 .collect(Collectors.toSet());

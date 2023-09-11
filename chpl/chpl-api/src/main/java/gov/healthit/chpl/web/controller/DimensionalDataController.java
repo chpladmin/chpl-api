@@ -27,7 +27,7 @@ import gov.healthit.chpl.domain.TestStandard;
 import gov.healthit.chpl.domain.surveillance.RequirementType;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.DimensionalDataManager;
-import gov.healthit.chpl.optionalStandard.domain.OptionalStandardWithCriteria;
+import gov.healthit.chpl.optionalStandard.domain.OptionalStandard;
 import gov.healthit.chpl.surveillance.report.SurveillanceReportManager;
 import gov.healthit.chpl.svap.manager.SvapManager;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
@@ -233,7 +233,7 @@ public class DimensionalDataController {
             produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody SearchOption getOptionalStandards() {
-        Set<OptionalStandardWithCriteria> data = dimensionalDataManager.getOptionalStandards();
+        Set<OptionalStandard> data = dimensionalDataManager.getOptionalStandards();
         SearchOption result = new SearchOption();
         result.setExpandable(false);
         result.setData(data);

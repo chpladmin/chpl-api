@@ -13,7 +13,6 @@ import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.optionalStandard.domain.OptionalStandard;
 import gov.healthit.chpl.optionalStandard.domain.OptionalStandardCriteriaMap;
-import gov.healthit.chpl.optionalStandard.domain.OptionalStandardWithCriteria;
 import gov.healthit.chpl.optionalStandard.entity.OptionalStandardCriteriaMapEntity;
 import gov.healthit.chpl.optionalStandard.entity.OptionalStandardEntity;
 
@@ -27,7 +26,7 @@ public class OptionalStandardDAO extends BaseDAOImpl {
         this.criteriaComparator = criteriaComparator;
     }
 
-    public List<OptionalStandardWithCriteria> getAll() {
+    public List<OptionalStandard> getAll() {
         List<OptionalStandardEntity> entities = entityManager
                 .createQuery("SELECT DISTINCT os "
                         + "FROM OptionalStandardEntity os "
