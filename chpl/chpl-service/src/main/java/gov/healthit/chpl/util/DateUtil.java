@@ -35,16 +35,11 @@ public final class DateUtil {
         if (dateRange2 == null || (dateRange2.getLeft() == null && dateRange2.getRight() == null)) {
             return true;
         } else if (dateRange2.getLeft() == null && dateRange2.getRight() != null) {
-            // criteria is active any time before 'endDay'
             return dateRange1.getLeft().isEqual(dateRange2.getRight()) || dateRange1.getLeft().isBefore(dateRange2.getRight());
         } else if (dateRange2.getLeft() != null && dateRange2.getRight() == null) {
-            // criteria is active any time after 'startDay'
             return dateRange1.getRight() == null
                     || (dateRange1.getRight().isEqual(dateRange2.getLeft()) || dateRange1.getRight().isAfter(dateRange2.getLeft()));
         } else {
-            //criteria is active between 'startDay' and 'endDay'
-            // is criterionStartDay (equal or before) endDay parameter
-            // and is criterionEndDay null or (equal or after) startDay parameter
             return (dateRange1.getLeft().isEqual(dateRange2.getRight())
                         || dateRange1.getLeft().isBefore(dateRange2.getRight()))
                         && (dateRange1.getRight() == null

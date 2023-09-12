@@ -80,6 +80,14 @@ public class RequirementType {
         return end.isBefore(LocalDate.now());
     }
 
+    public LocalDate getEndDay() {
+        return endDay;
+    }
+
+    public void setEndDay(LocalDate endDay) {
+        this.endDay = endDay;
+    }
+
     public Long getId() {
         return id;
     }
@@ -94,6 +102,14 @@ public class RequirementType {
 
     public void setNumber(String number) {
         this.number = number;
+    }
+
+    public LocalDate getStartDay() {
+        return startDay;
+    }
+
+    public void setStartDay(LocalDate startDay) {
+        this.startDay = startDay;
     }
 
     public String getTitle() {

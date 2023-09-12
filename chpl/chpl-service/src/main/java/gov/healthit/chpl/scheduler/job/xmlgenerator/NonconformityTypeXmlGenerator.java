@@ -10,9 +10,10 @@ public class NonconformityTypeXmlGenerator extends XmlGenerator {
         if (nct != null) {
             sw.writeStartElement(rootNodeName);
             createSimpleElement(nct.getEdition(), "edition", sw);
+            createSimpleElement(nct.getEndDay(), "endDay", sw);
             createSimpleElement(nct.getId(), "id", sw);
             createSimpleElement(nct.getNumber(), "number", sw);
-            createSimpleElement(nct.getRemoved(), "removed", sw);
+            createSimpleElement(nct.getStartDay(), "startDay", sw);
             createSimpleElement(nct.getTitle(), "title", sw);
             sw.writeEndElement();
         }

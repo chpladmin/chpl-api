@@ -9,6 +9,7 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorOrder;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
@@ -16,7 +17,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseField;
 import gov.healthit.chpl.criteriaattribute.rule.Rule;
 import gov.healthit.chpl.util.LocalDateAdapter;
 import gov.healthit.chpl.util.LocalDateDeserializer;
@@ -77,21 +77,21 @@ public class CertificationCriterion implements Serializable {
     @XmlElement(required = false, nillable = true)
     private String description;
 
-    @Deprecated
-    @DeprecatedResponseField(message = "This property will be removed. It can be derived based on the endDay.",
-        removalDate = "2024-01-01")
-    @XmlElement(required = true, nillable = false)
-    private Boolean removed;
-
     /**
      * The rule which this criterion is associated with.
      */
     @XmlElement(required = false, nillable = true)
     private Rule rule;
 
+    @XmlTransient
+    public Boolean isRemoved() {
+        LocalDate end = endDay != null ? endDay : LocalDate.MAX;
+        return end.isBefore(LocalDate.now());
+    }
+
     @Override
     public int hashCode() {
-        return Objects.hash(certificationEdition, certificationEditionId, description, id, number, removed, title);
+        return Objects.hash(certificationEdition, certificationEditionId, description, endDay, id, number, rule, startDay, title);
     }
 
     @Override
@@ -108,8 +108,12 @@ public class CertificationCriterion implements Serializable {
         CertificationCriterion other = (CertificationCriterion) obj;
         return Objects.equals(certificationEdition, other.certificationEdition)
                 && Objects.equals(certificationEditionId, other.certificationEditionId)
-                && Objects.equals(description, other.description) && Objects.equals(id, other.id)
-                && Objects.equals(number, other.number) && Objects.equals(removed, other.removed)
+                && Objects.equals(description, other.description)
+                && Objects.equals(endDay, other.endDay)
+                && Objects.equals(id, other.id)
+                && Objects.equals(number, other.number)
+                && Objects.equals(rule, other.rule)
+                && Objects.equals(startDay, other.startDay)
                 && Objects.equals(title, other.title);
     }
 }

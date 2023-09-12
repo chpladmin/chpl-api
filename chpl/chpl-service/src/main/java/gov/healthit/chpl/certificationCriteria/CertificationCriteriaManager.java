@@ -77,7 +77,6 @@ public class CertificationCriteriaManager {
                 .description(criterion.getDescription())
                 .endDay(criterion.getEndDay())
                 .number(criterion.getNumber())
-                .removed(criterion.getRemoved())
                 .rule(criterion.getRule())
                 .startDay(criterion.getStartDay())
                 .title(criterion.getTitle())

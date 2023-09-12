@@ -90,12 +90,28 @@ public class NonconformityType implements Serializable {
         this.certificationEdition = certificationEdition;
     }
 
+    public LocalDate getEndDay() {
+        return endDay;
+    }
+
+    public void setEndDay(LocalDate endDay) {
+        this.endDay = endDay;
+    }
+
     public String getNumber() {
         return number;
     }
 
     public void setNumber(String number) {
         this.number = number;
+    }
+
+    public LocalDate getStartDay() {
+        return startDay;
+    }
+
+    public void setStartDay(LocalDate startDay) {
+        this.startDay = startDay;
     }
 
     public String getTitle() {

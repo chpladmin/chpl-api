@@ -33,16 +33,16 @@ public class SedG32015Reviewer extends PermissionBasedReviewer {
         List<CertificationResult> presentCriteriaWithSed = listing.getCertificationResults().stream()
                 .filter(certResult -> BooleanUtils.isTrue(certResult.isSuccess())
                         && certResult.isSed() != null && certResult.isSed().equals(Boolean.TRUE)
-                        && certResult.getCriterion().getRemoved() != null
-                        && certResult.getCriterion().getRemoved().equals(Boolean.FALSE))
-                .collect(Collectors.<CertificationResult> toList());
+                        && certResult.getCriterion().isRemoved() != null
+                        && certResult.getCriterion().isRemoved().equals(Boolean.FALSE))
+                .collect(Collectors.<CertificationResult>toList());
 
         List<CertificationResult> removedCriteriaWithSed = listing.getCertificationResults().stream()
                 .filter(certResult -> BooleanUtils.isTrue(certResult.isSuccess())
                         && certResult.isSed() != null && certResult.isSed().equals(Boolean.TRUE)
-                        && certResult.getCriterion().getRemoved() != null
-                        && certResult.getCriterion().getRemoved().equals(Boolean.TRUE))
-                .collect(Collectors.<CertificationResult> toList());
+                        && certResult.getCriterion().isRemoved() != null
+                        && certResult.getCriterion().isRemoved().equals(Boolean.TRUE))
+                .collect(Collectors.<CertificationResult>toList());
 
         Optional<CertificationResult> g3CertificationResult = listing.getCertificationResults().stream()
                 .filter(certResult -> certResult.getCriterion() != null

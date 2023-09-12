@@ -67,15 +67,15 @@ public class RemovedCriteriaComparisonReviewer implements ComparisonReviewer {
     private boolean isRemovedCertAdded(CertificationResult existingCert, CertificationResult updatedCert) {
         return (existingCert.isSuccess() == null || !existingCert.isSuccess())
                 && (updatedCert.isSuccess() != null && updatedCert.isSuccess()
-                        && updatedCert.getCriterion().getRemoved() != null
-                        && updatedCert.getCriterion().getRemoved().booleanValue());
+                        && updatedCert.getCriterion().isRemoved() != null
+                        && updatedCert.getCriterion().isRemoved().booleanValue());
     }
 
     private boolean isRemovedCertEdited(CertificationResult existingCert, CertificationResult updatedCert) {
         return existingCert.isSuccess() != null && existingCert.isSuccess()
                 && updatedCert.isSuccess() != null && updatedCert.isSuccess()
-                && updatedCert.getCriterion().getRemoved() != null
-                && updatedCert.getCriterion().getRemoved().booleanValue();
+                && updatedCert.getCriterion().isRemoved() != null
+                && updatedCert.getCriterion().isRemoved().booleanValue();
     }
 
     private void addErrorsForCertEdits(CertifiedProductSearchDetails updatedListing,

@@ -116,7 +116,8 @@ public class MeasureNormalizer {
             criterion.setCertificationEdition(matchingCriterion.getCertificationEdition());
             criterion.setCertificationEditionId(matchingCriterion.getCertificationEditionId());
             criterion.setDescription(matchingCriterion.getDescription());
-            criterion.setRemoved(matchingCriterion.getRemoved());
+            criterion.setStartDay(matchingCriterion.getStartDay());
+            criterion.setEndDay(matchingCriterion.getEndDay());
             criterion.setTitle(matchingCriterion.getTitle());
         }
     }

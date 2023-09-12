@@ -137,7 +137,7 @@ public class ConformanceMethodReviewer extends PermissionBasedReviewer {
             // conformance method but we have to tell the user that we did it.
             // This code can't go in the reviewer otherwise during Test Procedure -> Conformance Method conversion
             // a default CM gets added to the listing and may make the converter think that the listing already has a CM.
-            if (BooleanUtils.isFalse(certResult.getCriterion().getRemoved())) {
+            if (BooleanUtils.isFalse(certResult.getCriterion().isRemoved())) {
                 listing.addWarningMessage(msgUtil.getMessage("listing.criteria.conformanceMethod.addedDefaultForCriterion",
                         Util.formatCriteriaNumber(certResult.getCriterion()),
                         defaultConformanceMethod.getName()));

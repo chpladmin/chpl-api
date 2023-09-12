@@ -64,14 +64,14 @@ public class TestTaskReviewer {
                     .filter(testTask -> !CollectionUtils.isEmpty(testTask.getCriteria()))
                     .flatMap(testTask -> testTask.getCriteria().stream())
                     .filter(testTaskCriterion -> !certResultRules.hasCertOption(testTaskCriterion.getId(), CertificationResultRules.SED))
-                    .filter(testTaskCriterion -> BooleanUtils.isFalse(testTaskCriterion.getRemoved()))
+                    .filter(testTaskCriterion -> BooleanUtils.isFalse(testTaskCriterion.isRemoved()))
                     .forEach(notAllowedTestTaskCriterion -> listing.addDataErrorMessage(msgUtil.getMessage("listing.criteria.testTasksNotApplicable", Util.formatCriteriaNumber(notAllowedTestTaskCriterion))));
 
             listing.getSed().getTestTasks().stream()
                     .filter(testTask -> !CollectionUtils.isEmpty(testTask.getCriteria()))
                     .flatMap(testTask -> testTask.getCriteria().stream())
                     .filter(testTaskCriterion -> !doesListingAttestToCriterion(listing, testTaskCriterion))
-                    .filter(testTaskCriterion -> BooleanUtils.isFalse(testTaskCriterion.getRemoved()))
+                    .filter(testTaskCriterion -> BooleanUtils.isFalse(testTaskCriterion.isRemoved()))
                     .forEach(notAllowedTestTaskCriterion -> listing.addDataErrorMessage(msgUtil.getMessage("listing.criteria.testTasksNotApplicable", Util.formatCriteriaNumber(notAllowedTestTaskCriterion))));
         }
     }
@@ -142,7 +142,7 @@ public class TestTaskReviewer {
         }
 
         return testTask.getCriteria().stream()
-                .filter(criterion -> BooleanUtils.isFalse(criterion.getRemoved()))
+                .filter(criterion -> BooleanUtils.isFalse(criterion.isRemoved()))
                 .findAny().isPresent();
     }
 
@@ -421,7 +421,7 @@ public class TestTaskReviewer {
             return DEFAULT_TASK_CRITERIA;
         }
         return testTask.getCriteria().stream()
-                .filter(criterion -> BooleanUtils.isFalse(criterion.getRemoved()))
+                .filter(criterion -> BooleanUtils.isFalse(criterion.isRemoved()))
                 .map(criterion -> Util.formatCriteriaNumber(criterion))
                 .collect(Collectors.joining(","));
     }

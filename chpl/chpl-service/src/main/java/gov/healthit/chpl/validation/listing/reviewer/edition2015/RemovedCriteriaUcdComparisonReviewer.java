@@ -49,8 +49,8 @@ public class RemovedCriteriaUcdComparisonReviewer implements ComparisonReviewer 
                     Set<CertificationCriterion> addedCriteria = getAddedCriteria(existingUcd.getCriteria(),
                             updatedUcd.getCriteria());
                     for (CertificationCriterion addedCriterion : addedCriteria) {
-                        if (addedCriterion.getRemoved() != null
-                                && addedCriterion.getRemoved().booleanValue()) {
+                        if (addedCriterion.isRemoved() != null
+                                && addedCriterion.isRemoved().booleanValue()) {
                             updatedListing.addBusinessErrorMessage(
                                     msgUtil.getMessage("listing.ucd.removedCriteriaNotAllowed",
                                             Util.formatCriteriaNumber(addedCriterion), updatedUcd.getName()));
@@ -61,7 +61,7 @@ public class RemovedCriteriaUcdComparisonReviewer implements ComparisonReviewer 
             if (!existsInOriginal) {
                 // check all the criteria for this newly added UCD process to see if any are removed
                 for (CertificationCriterion criterion : updatedUcd.getCriteria()) {
-                    if (criterion.getRemoved() != null && criterion.getRemoved().booleanValue()) {
+                    if (criterion.isRemoved() != null && criterion.isRemoved().booleanValue()) {
                         updatedListing.addBusinessErrorMessage(
                                 msgUtil.getMessage("listing.ucd.removedCriteriaNotAllowed",
                                         Util.formatCriteriaNumber(criterion), updatedUcd.getName()));

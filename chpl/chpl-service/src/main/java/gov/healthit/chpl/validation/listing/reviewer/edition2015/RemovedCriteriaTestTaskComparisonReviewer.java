@@ -48,8 +48,8 @@ public class RemovedCriteriaTestTaskComparisonReviewer implements ComparisonRevi
                     Set<CertificationCriterion> addedCriteria = getAddedCriteria(existingTestTask.getCriteria(),
                             updatedTestTask.getCriteria());
                     for (CertificationCriterion addedCriterion : addedCriteria) {
-                        if (addedCriterion.getRemoved() != null
-                                && addedCriterion.getRemoved().booleanValue()) {
+                        if (addedCriterion.isRemoved() != null
+                                && addedCriterion.isRemoved().booleanValue()) {
                             updatedListing.addBusinessErrorMessage(
                                     msgUtil.getMessage("listing.testTask.removedCriteriaNotAllowed",
                                             Util.formatCriteriaNumber(addedCriterion), updatedTestTask.getDescription()));
@@ -60,7 +60,7 @@ public class RemovedCriteriaTestTaskComparisonReviewer implements ComparisonRevi
             if (!existsInOriginal) {
                 // check all the criteria for this newly added test task to see if any are removed
                 for (CertificationCriterion criterion : updatedTestTask.getCriteria()) {
-                    if (criterion.getRemoved() != null && criterion.getRemoved().booleanValue()) {
+                    if (criterion.isRemoved() != null && criterion.isRemoved().booleanValue()) {
                         updatedListing.addBusinessErrorMessage(
                                 msgUtil.getMessage("listing.testTask.removedCriteriaNotAllowed",
                                         Util.formatCriteriaNumber(criterion), updatedTestTask.getDescription()));

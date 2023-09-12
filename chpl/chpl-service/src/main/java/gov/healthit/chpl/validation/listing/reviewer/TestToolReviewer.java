@@ -36,7 +36,7 @@ public class TestToolReviewer extends PermissionBasedReviewer {
     public void review(CertifiedProductSearchDetails listing) {
         listing.getCertificationResults().stream()
                 .filter(cr -> isCertificationResultAttestedTo(cr)
-                        && BooleanUtils.isFalse(cr.getCriterion().getRemoved())
+                        && BooleanUtils.isFalse(cr.getCriterion().isRemoved())
                         && doesCertificationResultHaveTestTools(cr))
                 .forEach(cr -> validateTestTools(listing, cr));
     }

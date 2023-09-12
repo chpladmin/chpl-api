@@ -32,6 +32,6 @@ public class RemovedCriteriaReviewer {
     private boolean attestedCriterionIsRemoved(CertificationResult certResult) {
         return BooleanUtils.isTrue(certResult.isSuccess())
                 && certResult.getCriterion() != null
-                && BooleanUtils.isTrue(certResult.getCriterion().getRemoved());
+                && BooleanUtils.isTrue(certResult.getCriterion().isRemoved());
     }
 }
