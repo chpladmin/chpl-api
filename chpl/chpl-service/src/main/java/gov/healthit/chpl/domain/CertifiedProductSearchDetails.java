@@ -37,6 +37,7 @@ import gov.healthit.chpl.domain.comparator.CertificationStatusEventComparator;
 import gov.healthit.chpl.domain.compliance.DirectReview;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.entity.CertificationStatusType;
+import gov.healthit.chpl.util.CertificationStatusUtil;
 import gov.healthit.chpl.util.DateUtil;
 import gov.healthit.chpl.util.LocalDateAdapter;
 import gov.healthit.chpl.util.LocalDateDeserializer;
@@ -221,9 +222,21 @@ public class CertifiedProductSearchDetails implements Serializable {
     /**
      * Decertification date represented in milliseconds since epoch
      */
+    @Deprecated
+    @DeprecatedResponseField(message = "Please use the 'decertificationDay' field.", removalDate = "2024-01-01")
     @Schema(description = "Decertification date represented in milliseconds since epoch")
-    @XmlElement(required = false, nillable = true)
+    @XmlTransient
     private Long decertificationDate;
+
+    /**
+     * Decertification day
+     */
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonSerialize(using = LocalDateSerializer.class)
+    @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
+    @Schema(description = "Decertification day")
+    @XmlElement(required = false, nillable = true)
+    private LocalDate decertificationDay;
 
     /**
      * Number of certification criteria this listing attests to.
@@ -938,14 +951,23 @@ public class CertifiedProductSearchDetails implements Serializable {
         this.countClosedNonconformities = countClosedNonconformities;
     }
 
+    @Deprecated
     public Long getDecertificationDate() {
         return decertificationDate;
     }
 
+    @Deprecated
     public void setDecertificationDate(Long decertificationDate) {
         this.decertificationDate = decertificationDate;
     }
 
+    public LocalDate getDecertificationDay() {
+        return decertificationDay;
+    }
+
+    public void setDecertificationDay(LocalDate decertificationDay) {
+        this.decertificationDay = decertificationDay;
+    }
     public CertifiedProductSed getSed() {
         return sed;
     }
@@ -1064,10 +1086,8 @@ public class CertifiedProductSearchDetails implements Serializable {
 
     @JsonIgnore
     public boolean isCertificateActive() {
-        String currentStatus = NullSafeEvaluator.eval(() -> getCurrentStatus().getStatus().getName(), "");
-        return currentStatus.equalsIgnoreCase(CertificationStatusType.Active.getName())
-                || currentStatus.equalsIgnoreCase(CertificationStatusType.SuspendedByAcb.getName())
-                || currentStatus.equalsIgnoreCase(CertificationStatusType.SuspendedByOnc.getName());
+        String currentStatusName = NullSafeEvaluator.eval(() -> getCurrentStatus().getStatus().getName(), "");
+        return CertificationStatusUtil.getActiveStatusNames().contains(currentStatusName);
     }
 
     public LegacyCertificationStatus getCertificationStatus() {

@@ -10,11 +10,13 @@ import java.util.Calendar;
 import java.util.List;
 
 import org.apache.commons.csv.CSVRecord;
+import org.ff4j.FF4j;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductTestingLab;
 import gov.healthit.chpl.upload.listing.ListingUploadHandlerUtil;
@@ -49,6 +51,8 @@ public class ListingDetailsUploadHandlerTest {
         DeveloperDetailsUploadHandler devHandler = new DeveloperDetailsUploadHandler(handlerUtil);
         certDateHandler = Mockito.mock(CertificationDateHandler.class);
         editionHandler = Mockito.mock(CertificationEditionHandler.class);
+        FF4j ff4j = Mockito.mock(FF4j.class);
+        Mockito.when(ff4j.check(ArgumentMatchers.eq(FeatureList.EDITIONLESS))).thenReturn(false);
         handler = new ListingDetailsUploadHandler(editionHandler,
                 certDateHandler,
                 devHandler,
@@ -59,7 +63,7 @@ public class ListingDetailsUploadHandlerTest {
                 Mockito.mock(MeasuresUploadHandler.class),
                 Mockito.mock(SedUploadHandler.class),
                 Mockito.mock(CertificationResultUploadHandler.class),
-                handlerUtil);
+                handlerUtil, ff4j);
     }
 
     @Test

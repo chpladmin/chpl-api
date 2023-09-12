@@ -18,7 +18,6 @@ import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.UserDeveloperMapDAO;
 import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.domain.Developer;
-import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.UserDeveloperMapDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
@@ -30,6 +29,7 @@ import gov.healthit.chpl.service.realworldtesting.RealWorldTestingEligibility;
 import gov.healthit.chpl.service.realworldtesting.RealWorldTestingEligiblityReason;
 import gov.healthit.chpl.service.realworldtesting.RealWorldTestingEligiblityService;
 import gov.healthit.chpl.service.realworldtesting.RealWorldTestingEligiblityServiceFactory;
+import gov.healthit.chpl.util.CertificationStatusUtil;
 import gov.healthit.chpl.util.DateUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
@@ -69,7 +69,7 @@ public class RealWorldTestingReportService {
         try {
             RealWorldTestingEligiblityService rwtEligservice = rwtEligServiceFactory.getInstance();
 
-            reports = getListingWith2015Edition(logger).stream()
+            reports = getActiveListings(logger).stream()
                     .filter(listing -> isInListOfAcbs(listing, acbIds))
                     .map(listing -> getRealWorldTestingReport(listing, rwtEligservice, logger))
                     .filter(report -> report.getRwtEligibilityYear() != null
@@ -84,10 +84,10 @@ public class RealWorldTestingReportService {
         return reports;
     }
 
-    private List<CertifiedProductDetailsDTO> getListingWith2015Edition(Logger logger) {
-        logger.info("Retrieving 2015 Listings");
-        List<CertifiedProductDetailsDTO> listings = certifiedProductDAO.findByEdition(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear());
-        logger.info("Completed Retreiving 2015 Listings");
+    private List<CertifiedProductDetailsDTO> getActiveListings(Logger logger) {
+        logger.info("Retrieving active Listings");
+        List<CertifiedProductDetailsDTO> listings = certifiedProductDAO.getListingsByStatus(CertificationStatusUtil.getActiveStatuses());
+        logger.info("Completed Retreiving active Listings");
         return listings;
     }
 

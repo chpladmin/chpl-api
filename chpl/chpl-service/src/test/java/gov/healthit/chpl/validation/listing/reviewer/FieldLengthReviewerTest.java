@@ -15,8 +15,6 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.springframework.context.MessageSource;
 
-import gov.healthit.chpl.criteriaattribute.testtool.CertificationResultTestTool;
-import gov.healthit.chpl.criteriaattribute.testtool.TestTool;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultTestData;
 import gov.healthit.chpl.domain.CertificationResultTestProcedure;
@@ -32,6 +30,8 @@ import gov.healthit.chpl.domain.TestData;
 import gov.healthit.chpl.domain.TestParticipant;
 import gov.healthit.chpl.domain.TestProcedure;
 import gov.healthit.chpl.domain.TestTask;
+import gov.healthit.chpl.testtool.CertificationResultTestTool;
+import gov.healthit.chpl.testtool.TestTool;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @SuppressWarnings("checkstyle:magicnumber")
