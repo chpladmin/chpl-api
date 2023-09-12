@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.text.ParseException;
+import java.time.LocalDate;
 import java.util.List;
 
 import org.junit.Before;
@@ -2132,11 +2133,19 @@ public class RequiredAndRelatedCriteriaReviewerTest {
     }
 
     private CertificationCriterion getCriterion(Long id, String number, String title, boolean removed) {
+        if (removed) {
+            return CertificationCriterion.builder()
+                    .id(id)
+                    .number(number)
+                    .startDay(LocalDate.parse("2023-01-01"))
+                    .endDay(LocalDate.parse("2023-01-02"))
+                    .build();
+        }
         return CertificationCriterion.builder()
                 .number(number)
                 .title(title)
                 .id(id)
-                .removed(removed)
+                .startDay(LocalDate.parse("2023-01-01"))
                 .build();
     }
 }

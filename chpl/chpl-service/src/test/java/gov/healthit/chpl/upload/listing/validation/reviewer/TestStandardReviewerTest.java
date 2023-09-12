@@ -4,6 +4,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,7 +55,7 @@ public class TestStandardReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
                                 .number("170.315 (a)(1)")
-                                .removed(false)
+                                .startDay(LocalDate.parse("2023-01-01"))
                                 .build())
                         .success(true)
                         .build())
@@ -73,7 +74,7 @@ public class TestStandardReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
                                 .number("170.315 (a)(1)")
-                                .removed(false)
+                                .startDay(LocalDate.parse("2023-01-01"))
                                 .build())
                         .success(true)
                         .testStandards(new ArrayList<CertificationResultTestStandard>())
@@ -101,7 +102,7 @@ public class TestStandardReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
                                 .number("170.315 (a)(1)")
-                                .removed(false)
+                                .startDay(LocalDate.parse("2023-01-01"))
                                 .build())
                         .success(true)
                         .testStandards(testStandards)
@@ -132,7 +133,8 @@ public class TestStandardReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
                                 .number("170.315 (a)(1)")
-                                .removed(true)
+                                .startDay(LocalDate.parse("2023-01-01"))
+                                .endDay(LocalDate.parse("2023-01-02"))
                                 .build())
                         .success(true)
                         .testStandards(testStandards)
@@ -160,7 +162,7 @@ public class TestStandardReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
                                 .number("170.315 (a)(1)")
-                                .removed(false)
+                                .startDay(LocalDate.parse("2023-01-01"))
                                 .build())
                         .success(true)
                         .testStandards(testStandards)
@@ -191,7 +193,8 @@ public class TestStandardReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
                                 .number("170.315 (a)(1)")
-                                .removed(true)
+                                .startDay(LocalDate.parse("2023-01-01"))
+                                .endDay(LocalDate.parse("2023-01-02"))
                                 .build())
                         .success(true)
                         .testStandards(testStandards)

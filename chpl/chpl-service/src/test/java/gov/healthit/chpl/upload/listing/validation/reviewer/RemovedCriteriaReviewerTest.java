@@ -3,6 +3,8 @@ package gov.healthit.chpl.upload.listing.validation.reviewer;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.time.LocalDate;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
@@ -46,7 +48,8 @@ public class RemovedCriteriaReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
                                 .number("170.315 (a)(1)")
-                                .removed(true)
+                                .startDay(LocalDate.parse("2023-01-01"))
+                                .endDay(LocalDate.parse("2023-01-02"))
                                 .build())
                         .success(true)
                         .build())
@@ -66,7 +69,7 @@ public class RemovedCriteriaReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
                                 .number("170.315 (a)(1)")
-                                .removed(false)
+                                .startDay(LocalDate.parse("2023-01-01"))
                                 .build())
                         .success(true)
                         .build())

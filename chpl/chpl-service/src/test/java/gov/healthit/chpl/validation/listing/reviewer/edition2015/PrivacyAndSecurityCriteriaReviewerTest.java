@@ -3,6 +3,7 @@ package gov.healthit.chpl.validation.listing.reviewer.edition2015;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
@@ -144,10 +145,18 @@ public class PrivacyAndSecurityCriteriaReviewerTest {
     }
 
     private CertificationCriterion getCriterion(Long id, String number, boolean removed) {
+        if (removed) {
+            return CertificationCriterion.builder()
+                    .id(id)
+                    .number(number)
+                    .startDay(LocalDate.parse("2023-01-01"))
+                    .endDay(LocalDate.parse("2023-01-02"))
+                    .build();
+        }
         return CertificationCriterion.builder()
                 .id(id)
                 .number(number)
-                .removed(removed)
+                .startDay(LocalDate.parse("2023-01-01"))
                 .build();
     }
 

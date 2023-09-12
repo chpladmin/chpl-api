@@ -3,6 +3,7 @@ package gov.healthit.chpl.upload.listing.validation.reviewer;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.time.LocalDate;
 import java.util.LinkedHashSet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -53,10 +54,31 @@ public class UcdProcessReviewerTest {
             .thenAnswer(i -> String.format(FUZZY_MATCH_REPLACEMENT, i.getArgument(1), i.getArgument(2), i.getArgument(3)));
 
         criteriaService = Mockito.mock(CertificationCriterionService.class);
-        a1 = CertificationCriterion.builder().id(1L).number("170.315 (a)(1)").title("a1").removed(false).build();
-        a2 = CertificationCriterion.builder().id(2L).number("170.315 (a)(2)").title("a2").removed(false).build();
-        a3 = CertificationCriterion.builder().id(3L).number("170.315 (a)(3)").title("a3").removed(false).build();
-        a6 = CertificationCriterion.builder().id(6L).number("170.315 (a)(6)").title("a6").removed(true).build();
+        a1 = CertificationCriterion.builder()
+                .id(1L)
+                .number("170.315 (a)(1)")
+                .title("a1")
+                .startDay(LocalDate.parse("2023-01-01"))
+                .build();
+        a2 = CertificationCriterion.builder()
+                .id(2L)
+                .number("170.315 (a)(2)")
+                .title("a2")
+                .startDay(LocalDate.parse("2023-01-01"))
+                .build();
+        a3 = CertificationCriterion.builder()
+                .id(3L)
+                .number("170.315 (a)(3)")
+                .title("a3")
+                .startDay(LocalDate.parse("2023-01-01"))
+                .build();
+        a6 = CertificationCriterion.builder()
+                .id(6L)
+                .number("170.315 (a)(6)")
+                .title("a6")
+                .startDay(LocalDate.parse("2023-01-01"))
+                .endDay(LocalDate.parse("2023-01-02"))
+                .build();
         Mockito.when(criteriaService.get(ArgumentMatchers.eq(a1.getId()))).thenReturn(a1);
         Mockito.when(criteriaService.get(ArgumentMatchers.eq(a2.getId()))).thenReturn(a2);
         Mockito.when(criteriaService.get(ArgumentMatchers.eq(a3.getId()))).thenReturn(a3);
