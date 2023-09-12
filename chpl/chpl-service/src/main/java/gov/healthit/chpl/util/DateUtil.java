@@ -8,6 +8,8 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
+import org.apache.commons.lang3.tuple.Pair;
+
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -21,6 +23,34 @@ public final class DateUtil {
     private static final int NANOSECOND_MAX = 999999999;
 
     private DateUtil() {
+    }
+
+    public static boolean datesOverlap(LocalDate startDate1, LocalDate endDate1, LocalDate startDate2, LocalDate endDate2) {
+        Pair<LocalDate, LocalDate> dateRange1 = Pair.of(startDate1, endDate1);
+        Pair<LocalDate, LocalDate> dateRange2 = Pair.of(startDate2, endDate2);
+        return datesOverlap(dateRange1, dateRange2);
+    }
+
+    public static boolean datesOverlap(Pair<LocalDate, LocalDate> dateRange1, Pair<LocalDate, LocalDate> dateRange2) {
+        if (dateRange2 == null || (dateRange2.getLeft() == null && dateRange2.getRight() == null)) {
+            return true;
+        } else if (dateRange2.getLeft() == null && dateRange2.getRight() != null) {
+            // criteria is active any time before 'endDay'
+            return dateRange1.getLeft().isEqual(dateRange2.getRight()) || dateRange1.getLeft().isBefore(dateRange2.getRight());
+        } else if (dateRange2.getLeft() != null && dateRange2.getRight() == null) {
+            // criteria is active any time after 'startDay'
+            return dateRange1.getRight() == null
+                    || (dateRange1.getRight().isEqual(dateRange2.getLeft()) || dateRange1.getRight().isAfter(dateRange2.getLeft()));
+        } else {
+            //criteria is active between 'startDay' and 'endDay'
+            // is criterionStartDay (equal or before) endDay parameter
+            // and is criterionEndDay null or (equal or after) startDay parameter
+            return (dateRange1.getLeft().isEqual(dateRange2.getRight())
+                        || dateRange1.getLeft().isBefore(dateRange2.getRight()))
+                        && (dateRange1.getRight() == null
+                        || (dateRange1.getRight().isEqual(dateRange2.getLeft())
+                        || dateRange1.getRight().isAfter(dateRange2.getLeft())));
+        }
     }
 
     public static String formatInEasternTime(ZonedDateTime date) {
