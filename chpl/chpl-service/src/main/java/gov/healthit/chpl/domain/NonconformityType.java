@@ -1,17 +1,25 @@
 package gov.healthit.chpl.domain;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import gov.healthit.chpl.domain.surveillance.NonconformityClassification;
+import gov.healthit.chpl.util.LocalDateAdapter;
+import gov.healthit.chpl.util.LocalDateDeserializer;
+import gov.healthit.chpl.util.LocalDateSerializer;
 import gov.healthit.chpl.util.NullSafeEvaluator;
 import gov.healthit.chpl.util.Util;
 import lombok.AllArgsConstructor;
@@ -37,11 +45,34 @@ public class NonconformityType implements Serializable {
 
     private String number;
     private String title;
-    private Boolean removed;
+
+    /**
+     * A date value representing the date by which the Non-Conformity Type became available.
+     */
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonSerialize(using = LocalDateSerializer.class)
+    @XmlElement(required = false, nillable = true)
+    @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
+    private LocalDate startDay;
+
+    /**
+     * A date value representing the date by which the Non-Conformity Type can no longer be used.
+     */
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonSerialize(using = LocalDateSerializer.class)
+    @XmlElement(required = false, nillable = true)
+    @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
+    private LocalDate endDay;
 
     @JsonIgnore
     @XmlTransient
     private NonconformityClassification classification;
+
+    @XmlTransient
+    public Boolean isRemoved() {
+        LocalDate end = endDay != null ? endDay : LocalDate.MAX;
+        return end.isBefore(LocalDate.now());
+    }
 
     public Long getId() {
         return id;
@@ -73,14 +104,6 @@ public class NonconformityType implements Serializable {
 
     public void setTitle(String title) {
         this.title = title;
-    }
-
-    public Boolean getRemoved() {
-        return removed;
-    }
-
-    public void setRemoved(Boolean removed) {
-        this.removed = removed;
     }
 
     public NonconformityClassification getClassification() {

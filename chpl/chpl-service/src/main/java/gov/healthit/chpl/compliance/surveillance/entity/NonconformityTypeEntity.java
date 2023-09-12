@@ -1,7 +1,9 @@
 package gov.healthit.chpl.compliance.surveillance.entity;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 
+import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -46,8 +48,13 @@ public class NonconformityTypeEntity implements Serializable {
     @Column(name = "title")
     private String title;
 
-    @Column(name = "removed")
-    private Boolean removed;
+    @Basic(optional = true)
+    @Column(name = "start_day")
+    private LocalDate startDay;
+
+    @Basic(optional = true)
+    @Column(name = "end_day")
+    private LocalDate endDay;
 
     @Column(name = "classification")
     private String classification;
@@ -57,7 +64,8 @@ public class NonconformityTypeEntity implements Serializable {
                 .id(this.getId())
                 .certificationEdition(this.getCertificationEdition() != null ? this.getCertificationEdition().toDomain() : null)
                 .number(this.getNumber())
-                .removed(this.getRemoved())
+                .startDay(this.getStartDay())
+                .endDay(this.getEndDay())
                 .title(this.getTitle())
                 .classification(NonconformityClassification.valueOf(this.classification))
                 .build();
