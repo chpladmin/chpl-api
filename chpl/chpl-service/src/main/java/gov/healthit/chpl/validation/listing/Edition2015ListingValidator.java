@@ -49,14 +49,14 @@ import gov.healthit.chpl.validation.listing.reviewer.edition2015.MeasureValidity
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.OldCriteriaWithoutIcsReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.PrivacyAndSecurityCriteriaReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.PrivacyAndSecurityCriteriaReviewerPreErdPhase2;
-import gov.healthit.chpl.validation.listing.reviewer.edition2015.RemovedCriteriaComparisonReviewer;
-import gov.healthit.chpl.validation.listing.reviewer.edition2015.RemovedCriteriaTestTaskComparisonReviewer;
-import gov.healthit.chpl.validation.listing.reviewer.edition2015.RemovedCriteriaUcdComparisonReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.RequiredAndRelatedCriteriaErdPhase2GracePeriodReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.RequiredAndRelatedCriteriaReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.RequiredData2015Reviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.SedG32015Reviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.TestTool2015Reviewer;
+import gov.healthit.chpl.validation.listing.reviewer.edition2015.UnavailableCriteriaComparisonReviewer;
+import gov.healthit.chpl.validation.listing.reviewer.edition2015.UnavailableCriteriaTestTaskComparisonReviewer;
+import gov.healthit.chpl.validation.listing.reviewer.edition2015.UnavailableCriteriaUcdComparisonReviewer;
 import lombok.extern.log4j.Log4j2;
 
 @Component
@@ -167,16 +167,16 @@ public class Edition2015ListingValidator extends Validator {
     private OldCriteriaWithoutIcsReviewer oldCriteriaWithoutIcsReviewer;
 
     @Autowired
-    @Qualifier("removedCriteriaComparisonReviewer")
-    private RemovedCriteriaComparisonReviewer criteriaComparisonReviewer;
+    @Qualifier("unavailableCriteriaComparisonReviewer")
+    private UnavailableCriteriaComparisonReviewer unavailableCriteriaComparisonReviewer;
 
     @Autowired
-    @Qualifier("removedCriteriaTestTaskComparisonReviewer")
-    private RemovedCriteriaTestTaskComparisonReviewer testTaskCriteriaComparisonReviewer;
+    @Qualifier("unavailableCriteriaTestTaskComparisonReviewer")
+    private UnavailableCriteriaTestTaskComparisonReviewer unavailableCriteriaTestTaskComparisonReviewer;
 
     @Autowired
-    @Qualifier("removedCriteriaUcdComparisonReviewer")
-    private RemovedCriteriaUcdComparisonReviewer ucdCriteriaComparisonReviewer;
+    @Qualifier("unavailableCriteriaUcdComparisonReviewer")
+    private UnavailableCriteriaUcdComparisonReviewer unavailableCriteriaUcdComparisonReviewer;
 
     @Autowired
     @Qualifier("privacyAndSecurityCriteriaReviewerPreErdPhase2")
@@ -301,9 +301,9 @@ public class Edition2015ListingValidator extends Validator {
         comparisonReviewers.add(chplNumberComparisonReviewer);
         comparisonReviewers.add(devBanComparisonReviewer);
         comparisonReviewers.add(measureComparisonReviewer);
-        comparisonReviewers.add(criteriaComparisonReviewer);
-        comparisonReviewers.add(testTaskCriteriaComparisonReviewer);
-        comparisonReviewers.add(ucdCriteriaComparisonReviewer);
+        comparisonReviewers.add(unavailableCriteriaComparisonReviewer);
+        comparisonReviewers.add(unavailableCriteriaTestTaskComparisonReviewer);
+        comparisonReviewers.add(unavailableCriteriaUcdComparisonReviewer);
         comparisonReviewers.add(functionalityTestedAllowedByRoleReviewer);
         comparisonReviewers.add(listingStatusAndUserRoleReviewer);
         //during the grace period the comparison reviewer should be included

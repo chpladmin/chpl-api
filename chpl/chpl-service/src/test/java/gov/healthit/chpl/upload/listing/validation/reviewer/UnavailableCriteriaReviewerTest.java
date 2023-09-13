@@ -14,21 +14,22 @@ import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.util.DateUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
-public class RemovedCriteriaReviewerTest {
-    private static final String REMOVED_CRITERIA_NOT_ALLOWED = "The criterion %s has been removed and may not be added to the listing.";
+public class UnavailableCriteriaReviewerTest {
+    private static final String REMOVED_CRITERIA_NOT_ALLOWED = "The criterion %s was active between %s and %s and may not be added to the listing.";
 
     private ErrorMessageUtil msgUtil;
-    private RemovedCriteriaReviewer reviewer;
+    private UnavailableCriteriaReviewer reviewer;
 
     @Before
     public void before() throws EntityRetrievalException {
         msgUtil = Mockito.mock(ErrorMessageUtil.class);
-        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.removedCriteriaAddNotAllowed"),
-                ArgumentMatchers.anyString()))
-            .thenAnswer(i -> String.format(REMOVED_CRITERIA_NOT_ALLOWED, i.getArgument(1), ""));
-        reviewer = new RemovedCriteriaReviewer(msgUtil);
+        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.unavailableCriteriaAddNotAllowed"),
+                ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
+            .thenAnswer(i -> String.format(REMOVED_CRITERIA_NOT_ALLOWED, i.getArgument(1), i.getArgument(2), i.getArgument(3)));
+        reviewer = new UnavailableCriteriaReviewer(msgUtil);
     }
 
     @Test
@@ -44,6 +45,8 @@ public class RemovedCriteriaReviewerTest {
     @Test
     public void review_criteriaRemoved_hasError() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationDate(DateUtil.toEpochMillis(LocalDate.parse("2023-02-01")))
+                .decertificationDay(LocalDate.parse("2023-03-02"))
                 .certificationResult(CertificationResult.builder()
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
@@ -59,7 +62,7 @@ public class RemovedCriteriaReviewerTest {
         assertEquals(0, listing.getWarningMessages().size());
         assertEquals(1, listing.getErrorMessages().size());
         assertTrue(listing.getErrorMessages().contains(
-                String.format(REMOVED_CRITERIA_NOT_ALLOWED, "170.315 (a)(1)")));
+                String.format(REMOVED_CRITERIA_NOT_ALLOWED, "170.315 (a)(1)", "2023-01-01", "2023-01-02")));
     }
 
     @Test

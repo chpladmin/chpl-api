@@ -2,9 +2,12 @@ package gov.healthit.chpl.validation.listing.reviewer.edition2015;
 
 import java.util.Objects;
 
+import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.conformanceMethod.domain.CertificationResultConformanceMethod;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultAdditionalSoftware;
 import gov.healthit.chpl.domain.CertificationResultTestData;
@@ -13,26 +16,23 @@ import gov.healthit.chpl.domain.CertificationResultTestStandard;
 import gov.healthit.chpl.domain.CertificationResultTestTool;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.functionalityTested.CertificationResultFunctionalityTested;
+import gov.healthit.chpl.optionalStandard.domain.CertificationResultOptionalStandard;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.svap.domain.CertificationResultSvap;
 import gov.healthit.chpl.util.CertificationResultRules;
+import gov.healthit.chpl.util.DateUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
 import gov.healthit.chpl.validation.listing.reviewer.ComparisonReviewer;
 
-/**
- * This reviewer confirms that an ACB user does not attempt to add a 'removed' criteria to a listing or edit an existing 'removed' criteria in a listing.
- *
- * @author kekey
- *
- */
-@Component("removedCriteriaComparisonReviewer")
-public class RemovedCriteriaComparisonReviewer implements ComparisonReviewer {
+@Component("unavailableCriteriaComparisonReviewer")
+public class UnavailableCriteriaComparisonReviewer implements ComparisonReviewer {
     private CertificationResultRules certResultRules;
     private ResourcePermissions resourcePermissions;
     private ErrorMessageUtil msgUtil;
 
     @Autowired
-    public RemovedCriteriaComparisonReviewer(CertificationResultRules certResultRules,
+    public UnavailableCriteriaComparisonReviewer(CertificationResultRules certResultRules,
             ResourcePermissions resourcePermissions, ErrorMessageUtil msgUtil) {
         this.certResultRules = certResultRules;
         this.resourcePermissions = resourcePermissions;
@@ -52,11 +52,15 @@ public class RemovedCriteriaComparisonReviewer implements ComparisonReviewer {
                 // find matching criteria in existing/updated listings
                 if (updatedCert.getCriterion().getId() != null && existingCert.getCriterion().getId() != null
                         && updatedCert.getCriterion().getId().equals(existingCert.getCriterion().getId())) {
-                    if (isRemovedCertAdded(existingCert, updatedCert)) {
+                    if (isCriteriaAdded(updatedCert, existingCert)
+                            && !isCriterionAttestedAndAvailable(updatedListing, updatedCert)) {
                         updatedListing.addBusinessErrorMessage(
-                                msgUtil.getMessage("listing.removedCriteriaAddNotAllowed",
-                                        Util.formatCriteriaNumber(updatedCert.getCriterion())));
-                    } else if (isRemovedCertEdited(existingCert, updatedCert)) {
+                                msgUtil.getMessage("listing.unavailableCriteriaAddNotAllowed",
+                                        Util.formatCriteriaNumber(updatedCert.getCriterion()),
+                                        DateUtil.format(updatedCert.getCriterion().getStartDay()),
+                                        DateUtil.format(updatedCert.getCriterion().getEndDay())));
+                    } else if (isCriteriaEdited(updatedCert, existingCert)
+                            && !isCriterionAttestedAndAvailable(updatedListing, updatedCert)) {
                         addErrorsForCertEdits(updatedListing, existingCert, updatedCert);
                     }
                 }
@@ -64,81 +68,145 @@ public class RemovedCriteriaComparisonReviewer implements ComparisonReviewer {
         }
     }
 
-    private boolean isRemovedCertAdded(CertificationResult existingCert, CertificationResult updatedCert) {
-        return (existingCert.isSuccess() == null || !existingCert.isSuccess())
-                && (updatedCert.isSuccess() != null && updatedCert.isSuccess()
-                        && updatedCert.getCriterion().isRemoved() != null
-                        && updatedCert.getCriterion().isRemoved().booleanValue());
+    private boolean isCriteriaAdded(CertificationResult updatedCert, CertificationResult existingCert) {
+        return updatedCert.isSuccess() && !existingCert.isSuccess();
     }
 
-    private boolean isRemovedCertEdited(CertificationResult existingCert, CertificationResult updatedCert) {
+    private boolean isCriteriaEdited(CertificationResult updatedCert, CertificationResult existingCert) {
         return existingCert.isSuccess() != null && existingCert.isSuccess()
-                && updatedCert.isSuccess() != null && updatedCert.isSuccess()
-                && updatedCert.getCriterion().isRemoved() != null
-                && updatedCert.getCriterion().isRemoved().booleanValue();
+                && updatedCert.isSuccess() != null && updatedCert.isSuccess();
+    }
+
+    private boolean isCriterionAttestedAndAvailable(CertifiedProductSearchDetails listing,
+            CertificationResult certResult) {
+
+        return BooleanUtils.isTrue(certResult.isSuccess())
+                && certResult.getCriterion() != null
+                && DateUtil.datesOverlap(Pair.of(listing.getCertificationDay(), listing.getDecertificationDay()),
+                        Pair.of(certResult.getCriterion().getStartDay(), certResult.getCriterion().getEndDay()));
     }
 
     private void addErrorsForCertEdits(CertifiedProductSearchDetails updatedListing,
             CertificationResult existingCert, CertificationResult updatedCert) {
         if (isGapChanged(existingCert, updatedCert)) {
             updatedListing.addBusinessErrorMessage(
-                    msgUtil.getMessage("listing.removedCriteriaEditNotAllowed",
-                            Util.formatCriteriaNumber(updatedCert.getCriterion()), "Gap"));
+                    msgUtil.getMessage("listing.unavailableCriteriaEditNotAllowed",
+                            Util.formatCriteriaNumber(updatedCert.getCriterion()),
+                            DateUtil.format(updatedCert.getCriterion().getStartDay()),
+                            DateUtil.format(updatedCert.getCriterion().getEndDay()),
+                            "Gap"));
         }
         if (isG1SuccessChanged(existingCert, updatedCert)) {
             updatedListing.addBusinessErrorMessage(
-                    msgUtil.getMessage("listing.removedCriteriaEditNotAllowed",
-                            Util.formatCriteriaNumber(updatedCert.getCriterion()), "G1 Success"));
+                    msgUtil.getMessage("listing.unavailableCriteriaEditNotAllowed",
+                            Util.formatCriteriaNumber(updatedCert.getCriterion()),
+                            DateUtil.format(updatedCert.getCriterion().getStartDay()),
+                            DateUtil.format(updatedCert.getCriterion().getEndDay()),
+                            "G1 Success"));
         }
         if (isG2SuccessChanged(existingCert, updatedCert)) {
             updatedListing.addBusinessErrorMessage(
-                    msgUtil.getMessage("listing.removedCriteriaEditNotAllowed",
-                            Util.formatCriteriaNumber(updatedCert.getCriterion()), "G2 Success"));
+                    msgUtil.getMessage("listing.unavailableCriteriaEditNotAllowed",
+                            Util.formatCriteriaNumber(updatedCert.getCriterion()),
+                            DateUtil.format(updatedCert.getCriterion().getStartDay()),
+                            DateUtil.format(updatedCert.getCriterion().getEndDay()),
+                            "G2 Success"));
         }
         if (isAdditionalSoftwareChanged(existingCert, updatedCert)) {
             updatedListing.addBusinessErrorMessage(
-                    msgUtil.getMessage("listing.removedCriteriaEditNotAllowed",
-                            Util.formatCriteriaNumber(updatedCert.getCriterion()), "Additional Software"));
+                    msgUtil.getMessage("listing.unavailableCriteriaEditNotAllowed",
+                            Util.formatCriteriaNumber(updatedCert.getCriterion()),
+                            DateUtil.format(updatedCert.getCriterion().getStartDay()),
+                            DateUtil.format(updatedCert.getCriterion().getEndDay()),
+                            "Additional Software"));
+        }
+        if (isConformanceMethodsChanged(existingCert, updatedCert)) {
+            updatedListing.addBusinessErrorMessage(
+                    msgUtil.getMessage("listing.unavailableCriteriaEditNotAllowed",
+                            Util.formatCriteriaNumber(updatedCert.getCriterion()),
+                            DateUtil.format(updatedCert.getCriterion().getStartDay()),
+                            DateUtil.format(updatedCert.getCriterion().getEndDay()),
+                            "Conformance Methods"));
         }
         if (isFunctionalityTestedChanged(existingCert, updatedCert)) {
             updatedListing.addBusinessErrorMessage(
-                    msgUtil.getMessage("listing.removedCriteriaEditNotAllowed",
-                            Util.formatCriteriaNumber(updatedCert.getCriterion()), "Functionality Tested"));
+                    msgUtil.getMessage("listing.unavailableCriteriaEditNotAllowed",
+                            Util.formatCriteriaNumber(updatedCert.getCriterion()),
+                            DateUtil.format(updatedCert.getCriterion().getStartDay()),
+                            DateUtil.format(updatedCert.getCriterion().getEndDay()),
+                            "Functionality Tested"));
+        }
+        if (isOptionalStandardsChanged(existingCert, updatedCert)) {
+            updatedListing.addBusinessErrorMessage(
+                    msgUtil.getMessage("listing.unavailableCriteriaEditNotAllowed",
+                            Util.formatCriteriaNumber(updatedCert.getCriterion()),
+                            DateUtil.format(updatedCert.getCriterion().getStartDay()),
+                            DateUtil.format(updatedCert.getCriterion().getEndDay()),
+                            "Optional Standards"));
+        }
+        if (isSvapsChanged(existingCert, updatedCert)) {
+            updatedListing.addBusinessErrorMessage(
+                    msgUtil.getMessage("listing.unavailableCriteriaEditNotAllowed",
+                            Util.formatCriteriaNumber(updatedCert.getCriterion()),
+                            DateUtil.format(updatedCert.getCriterion().getStartDay()),
+                            DateUtil.format(updatedCert.getCriterion().getEndDay()),
+                            "SVAPs"));
         }
         if (isTestStandardsChanged(existingCert, updatedCert)) {
             updatedListing.addBusinessErrorMessage(
-                    msgUtil.getMessage("listing.removedCriteriaEditNotAllowed",
-                            Util.formatCriteriaNumber(updatedCert.getCriterion()), "Test Standards"));
+                    msgUtil.getMessage("listing.unavailableCriteriaEditNotAllowed",
+                            Util.formatCriteriaNumber(updatedCert.getCriterion()),
+                            DateUtil.format(updatedCert.getCriterion().getStartDay()),
+                            DateUtil.format(updatedCert.getCriterion().getEndDay()),
+                            "Test Standards"));
         }
         if (isTestDataChanged(existingCert, updatedCert)) {
             updatedListing.addBusinessErrorMessage(
-                    msgUtil.getMessage("listing.removedCriteriaEditNotAllowed",
-                            Util.formatCriteriaNumber(updatedCert.getCriterion()), "Test Data"));
+                    msgUtil.getMessage("listing.unavailableCriteriaEditNotAllowed",
+                            Util.formatCriteriaNumber(updatedCert.getCriterion()),
+                            DateUtil.format(updatedCert.getCriterion().getStartDay()),
+                            DateUtil.format(updatedCert.getCriterion().getEndDay()),
+                            "Test Data"));
         }
         if (isTestProceduresChanged(existingCert, updatedCert)) {
             updatedListing.addBusinessErrorMessage(
-                    msgUtil.getMessage("listing.removedCriteriaEditNotAllowed",
-                            Util.formatCriteriaNumber(updatedCert.getCriterion()), "Test Procedures"));
+                    msgUtil.getMessage("listing.unavailableCriteriaEditNotAllowed",
+                            Util.formatCriteriaNumber(updatedCert.getCriterion()),
+                            DateUtil.format(updatedCert.getCriterion().getStartDay()),
+                            DateUtil.format(updatedCert.getCriterion().getEndDay()),
+                            "Test Procedures"));
         }
         if (isTestToolsChanged(existingCert, updatedCert)) {
             updatedListing.addBusinessErrorMessage(
-                    msgUtil.getMessage("listing.removedCriteriaEditNotAllowed",
-                            Util.formatCriteriaNumber(updatedCert.getCriterion()), "Test Tools"));
+                    msgUtil.getMessage("listing.unavailableCriteriaEditNotAllowed",
+                            Util.formatCriteriaNumber(updatedCert.getCriterion()),
+                            DateUtil.format(updatedCert.getCriterion().getStartDay()),
+                            DateUtil.format(updatedCert.getCriterion().getEndDay()),
+                            "Test Tools"));
         }
         if (isApiDocumentationChanged(existingCert, updatedCert)) {
             updatedListing.addBusinessErrorMessage(
-                    msgUtil.getMessage("listing.removedCriteriaEditNotAllowed",
-                            Util.formatCriteriaNumber(updatedCert.getCriterion()), "API Documentation"));
+                    msgUtil.getMessage("listing.unavailableCriteriaEditNotAllowed",
+                            Util.formatCriteriaNumber(updatedCert.getCriterion()),
+                            DateUtil.format(updatedCert.getCriterion().getStartDay()),
+                            DateUtil.format(updatedCert.getCriterion().getEndDay()),
+                            "API Documentation"));
         }
         if (isPrivacySecurityFrameworkChanged(existingCert, updatedCert)) {
             updatedListing.addBusinessErrorMessage(
-                    msgUtil.getMessage("listing.removedCriteriaEditNotAllowed",
-                            Util.formatCriteriaNumber(updatedCert.getCriterion()), "Privacy and Security Framework"));
+                    msgUtil.getMessage("listing.unavailableCriteriaEditNotAllowed",
+                            Util.formatCriteriaNumber(updatedCert.getCriterion()),
+                            DateUtil.format(updatedCert.getCriterion().getStartDay()),
+                            DateUtil.format(updatedCert.getCriterion().getEndDay()),
+                            "Privacy and Security Framework"));
         }
         if (isSedChanged(existingCert, updatedCert)) {
             updatedListing.addBusinessErrorMessage(
-                    msgUtil.getMessage("listing.removedCriteriaEditNotAllowed",
-                            Util.formatCriteriaNumber(updatedCert.getCriterion()), "SED"));
+                    msgUtil.getMessage("listing.unavailableCriteriaEditNotAllowed",
+                            Util.formatCriteriaNumber(updatedCert.getCriterion()),
+                            DateUtil.format(updatedCert.getCriterion().getStartDay()),
+                            DateUtil.format(updatedCert.getCriterion().getEndDay()),
+                            "SED"));
         }
     }
 
@@ -205,6 +273,27 @@ public class RemovedCriteriaComparisonReviewer implements ComparisonReviewer {
         return false;
     }
 
+    private boolean isConformanceMethodsChanged(CertificationResult existingCert, CertificationResult updatedCert) {
+        if (certResultRules.hasCertOption(updatedCert.getCriterion().getId(), CertificationResultRules.CONFORMANCE_METHOD)) {
+            for (CertificationResultConformanceMethod updatedConformanceMethod : updatedCert.getConformanceMethods()) {
+                boolean isInExistingCert = existingCert.getConformanceMethods().stream()
+                        .anyMatch(existingConformanceMethod -> existingConformanceMethod.matches(updatedConformanceMethod));
+                if (!isInExistingCert) {
+                    return true;
+                }
+            }
+
+            for (CertificationResultConformanceMethod existingConformanceMethod : existingCert.getConformanceMethods()) {
+                boolean isInUpdatedCert = updatedCert.getConformanceMethods().stream()
+                        .anyMatch(updatedConformanceMethod -> updatedConformanceMethod.matches(existingConformanceMethod));
+                if (!isInUpdatedCert) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     private boolean isTestStandardsChanged(CertificationResult existingCert, CertificationResult updatedCert) {
         if (certResultRules.hasCertOption(updatedCert.getCriterion().getId(), CertificationResultRules.STANDARDS_TESTED)) {
             for (CertificationResultTestStandard updatedTestStandard : updatedCert.getTestStandards()) {
@@ -218,6 +307,27 @@ public class RemovedCriteriaComparisonReviewer implements ComparisonReviewer {
             for (CertificationResultTestStandard existingTestStandard : existingCert.getTestStandards()) {
                 boolean isInUpdatedCert = updatedCert.getTestStandards().stream()
                         .anyMatch(updatedTestStandard -> updatedTestStandard.matches(existingTestStandard));
+                if (!isInUpdatedCert) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean isOptionalStandardsChanged(CertificationResult existingCert, CertificationResult updatedCert) {
+        if (certResultRules.hasCertOption(updatedCert.getCriterion().getId(), CertificationResultRules.OPTIONAL_STANDARD)) {
+            for (CertificationResultOptionalStandard updatedOptionalStandard : updatedCert.getOptionalStandards()) {
+                boolean isInExistingCert = existingCert.getOptionalStandards().stream()
+                        .anyMatch(existingOptionalStandard -> existingOptionalStandard.matches(updatedOptionalStandard));
+                if (!isInExistingCert) {
+                    return true;
+                }
+            }
+
+            for (CertificationResultOptionalStandard existingOptionalStandard : existingCert.getOptionalStandards()) {
+                boolean isInUpdatedCert = updatedCert.getOptionalStandards().stream()
+                        .anyMatch(updatedOptionalStandard -> updatedOptionalStandard.matches(existingOptionalStandard));
                 if (!isInUpdatedCert) {
                     return true;
                 }
@@ -281,6 +391,27 @@ public class RemovedCriteriaComparisonReviewer implements ComparisonReviewer {
             for (CertificationResultTestTool existingTestTool : existingCert.getTestToolsUsed()) {
                 boolean isInUpdatedCert = updatedCert.getTestToolsUsed().stream()
                         .anyMatch(updatedTestTool -> updatedTestTool.matches(existingTestTool));
+                if (!isInUpdatedCert) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean isSvapsChanged(CertificationResult existingCert, CertificationResult updatedCert) {
+        if (certResultRules.hasCertOption(updatedCert.getCriterion().getId(), CertificationResultRules.SVAP)) {
+            for (CertificationResultSvap updatedSvap : updatedCert.getSvaps()) {
+                boolean isInExistingCert = existingCert.getSvaps().stream()
+                        .anyMatch(existingSvap -> existingSvap.matches(updatedSvap));
+                if (!isInExistingCert) {
+                    return true;
+                }
+            }
+
+            for (CertificationResultSvap existingSvap : existingCert.getSvaps()) {
+                boolean isInUpdatedCert = updatedCert.getSvaps().stream()
+                        .anyMatch(updatedSvap -> updatedSvap.matches(existingSvap));
                 if (!isInUpdatedCert) {
                     return true;
                 }

@@ -58,6 +58,22 @@ public class DateUtilTest {
     }
 
     @Test
+    public void dateRange1EndNullAndDateRange2EndNull_range2StartsAfterRange1_returnsTrue() {
+        Pair<LocalDate, LocalDate> dateRange1 = Pair.of(LocalDate.parse("2023-05-01"), null);
+        Pair<LocalDate, LocalDate> dateRange2 = Pair.of(LocalDate.parse("2023-05-15"), null);
+
+        assertTrue(DateUtil.datesOverlap(dateRange1, dateRange2));
+    }
+
+    @Test
+    public void dateRange1EndNullAndDateRange2EndNull_range1StartsAfterRange2_returnsTrue() {
+        Pair<LocalDate, LocalDate> dateRange1 = Pair.of(LocalDate.parse("2023-05-15"), null);
+        Pair<LocalDate, LocalDate> dateRange2 = Pair.of(LocalDate.parse("2023-05-01"), null);
+
+        assertTrue(DateUtil.datesOverlap(dateRange1, dateRange2));
+    }
+
+    @Test
     public void dateRange1EndBeforeDateRange2Start_returnsFalse() {
         Pair<LocalDate, LocalDate> dateRange1 = Pair.of(LocalDate.parse("2023-04-01"), LocalDate.parse("2023-04-29"));
         Pair<LocalDate, LocalDate> dateRange2 = Pair.of(LocalDate.parse("2023-04-30"), LocalDate.parse("2023-05-31"));
