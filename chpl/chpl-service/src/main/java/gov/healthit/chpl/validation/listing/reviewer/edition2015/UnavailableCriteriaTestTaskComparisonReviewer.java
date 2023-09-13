@@ -48,8 +48,6 @@ public class UnavailableCriteriaTestTaskComparisonReviewer implements Comparison
                             updatedListing.addBusinessErrorMessage(
                                     msgUtil.getMessage("listing.testTask.unavailableCriteriaNotAllowed",
                                             Util.formatCriteriaNumber(addedCriterion),
-                                            DateUtil.format(addedCriterion.getStartDay()),
-                                            DateUtil.format(addedCriterion.getEndDay()),
                                             updatedTestTask.getDescription()));
                         }
                     }
@@ -62,8 +60,6 @@ public class UnavailableCriteriaTestTaskComparisonReviewer implements Comparison
                         updatedListing.addBusinessErrorMessage(
                                 msgUtil.getMessage("listing.testTask.unavailableCriteriaNotAllowed",
                                         Util.formatCriteriaNumber(criterion),
-                                        DateUtil.format(criterion.getStartDay()),
-                                        DateUtil.format(criterion.getEndDay()),
                                         updatedTestTask.getDescription()));
                     }
                 }

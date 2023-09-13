@@ -25,19 +25,20 @@ public class UnavailableCriteriaReviewer {
             return;
         }
 
-        if (!isCriterionAttestedAndUnavailable(listing, certResult)) {
+        if (isCriterionAttested(certResult)
+                && !isCriterionAvailable(listing, certResult)) {
             listing.addBusinessErrorMessage(msgUtil.getMessage("listing.unavailableCriteriaAddNotAllowed",
-                    Util.formatCriteriaNumber(certResult.getCriterion()),
-                    DateUtil.format(certResult.getCriterion().getStartDay()),
-                    DateUtil.format(certResult.getCriterion().getEndDay())));
+                    Util.formatCriteriaNumber(certResult.getCriterion())));
         }
     }
 
-    private boolean isCriterionAttestedAndUnavailable(CertifiedProductSearchDetails listing,
-            CertificationResult certResult) {
+    private boolean isCriterionAttested(CertificationResult certResult) {
+        return BooleanUtils.isTrue(certResult.isSuccess());
+    }
 
-        return BooleanUtils.isTrue(certResult.isSuccess())
-                && certResult.getCriterion() != null
+    private boolean isCriterionAvailable(CertifiedProductSearchDetails listing, CertificationResult certResult) {
+
+        return certResult.getCriterion() != null
                 && DateUtil.datesOverlap(Pair.of(listing.getCertificationDay(), listing.getDecertificationDay()),
                         Pair.of(certResult.getCriterion().getStartDay(), certResult.getCriterion().getEndDay()));
     }

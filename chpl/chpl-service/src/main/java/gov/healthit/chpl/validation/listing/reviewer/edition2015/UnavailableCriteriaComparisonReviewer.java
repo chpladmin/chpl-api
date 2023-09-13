@@ -57,8 +57,7 @@ public class UnavailableCriteriaComparisonReviewer implements ComparisonReviewer
                         updatedListing.addBusinessErrorMessage(
                                 msgUtil.getMessage("listing.unavailableCriteriaAddNotAllowed",
                                         Util.formatCriteriaNumber(updatedCert.getCriterion()),
-                                        DateUtil.format(updatedCert.getCriterion().getStartDay()),
-                                        DateUtil.format(updatedCert.getCriterion().getEndDay())));
+                                        DateUtil.format(updatedCert.getCriterion().getStartDay())));
                     } else if (isCriteriaEdited(updatedCert, existingCert)
                             && !isCriterionAttestedAndAvailable(updatedListing, updatedCert)) {
                         addErrorsForCertEdits(updatedListing, existingCert, updatedCert);
@@ -92,120 +91,90 @@ public class UnavailableCriteriaComparisonReviewer implements ComparisonReviewer
             updatedListing.addBusinessErrorMessage(
                     msgUtil.getMessage("listing.unavailableCriteriaEditNotAllowed",
                             Util.formatCriteriaNumber(updatedCert.getCriterion()),
-                            DateUtil.format(updatedCert.getCriterion().getStartDay()),
-                            DateUtil.format(updatedCert.getCriterion().getEndDay()),
                             "Gap"));
         }
         if (isG1SuccessChanged(existingCert, updatedCert)) {
             updatedListing.addBusinessErrorMessage(
                     msgUtil.getMessage("listing.unavailableCriteriaEditNotAllowed",
                             Util.formatCriteriaNumber(updatedCert.getCriterion()),
-                            DateUtil.format(updatedCert.getCriterion().getStartDay()),
-                            DateUtil.format(updatedCert.getCriterion().getEndDay()),
                             "G1 Success"));
         }
         if (isG2SuccessChanged(existingCert, updatedCert)) {
             updatedListing.addBusinessErrorMessage(
                     msgUtil.getMessage("listing.unavailableCriteriaEditNotAllowed",
                             Util.formatCriteriaNumber(updatedCert.getCriterion()),
-                            DateUtil.format(updatedCert.getCriterion().getStartDay()),
-                            DateUtil.format(updatedCert.getCriterion().getEndDay()),
                             "G2 Success"));
         }
         if (isAdditionalSoftwareChanged(existingCert, updatedCert)) {
             updatedListing.addBusinessErrorMessage(
                     msgUtil.getMessage("listing.unavailableCriteriaEditNotAllowed",
                             Util.formatCriteriaNumber(updatedCert.getCriterion()),
-                            DateUtil.format(updatedCert.getCriterion().getStartDay()),
-                            DateUtil.format(updatedCert.getCriterion().getEndDay()),
                             "Additional Software"));
         }
         if (isConformanceMethodsChanged(existingCert, updatedCert)) {
             updatedListing.addBusinessErrorMessage(
                     msgUtil.getMessage("listing.unavailableCriteriaEditNotAllowed",
                             Util.formatCriteriaNumber(updatedCert.getCriterion()),
-                            DateUtil.format(updatedCert.getCriterion().getStartDay()),
-                            DateUtil.format(updatedCert.getCriterion().getEndDay()),
                             "Conformance Methods"));
         }
         if (isFunctionalityTestedChanged(existingCert, updatedCert)) {
             updatedListing.addBusinessErrorMessage(
                     msgUtil.getMessage("listing.unavailableCriteriaEditNotAllowed",
                             Util.formatCriteriaNumber(updatedCert.getCriterion()),
-                            DateUtil.format(updatedCert.getCriterion().getStartDay()),
-                            DateUtil.format(updatedCert.getCriterion().getEndDay()),
                             "Functionality Tested"));
         }
         if (isOptionalStandardsChanged(existingCert, updatedCert)) {
             updatedListing.addBusinessErrorMessage(
                     msgUtil.getMessage("listing.unavailableCriteriaEditNotAllowed",
                             Util.formatCriteriaNumber(updatedCert.getCriterion()),
-                            DateUtil.format(updatedCert.getCriterion().getStartDay()),
-                            DateUtil.format(updatedCert.getCriterion().getEndDay()),
                             "Optional Standards"));
         }
         if (isSvapsChanged(existingCert, updatedCert)) {
             updatedListing.addBusinessErrorMessage(
                     msgUtil.getMessage("listing.unavailableCriteriaEditNotAllowed",
                             Util.formatCriteriaNumber(updatedCert.getCriterion()),
-                            DateUtil.format(updatedCert.getCriterion().getStartDay()),
-                            DateUtil.format(updatedCert.getCriterion().getEndDay()),
                             "SVAPs"));
         }
         if (isTestStandardsChanged(existingCert, updatedCert)) {
             updatedListing.addBusinessErrorMessage(
                     msgUtil.getMessage("listing.unavailableCriteriaEditNotAllowed",
                             Util.formatCriteriaNumber(updatedCert.getCriterion()),
-                            DateUtil.format(updatedCert.getCriterion().getStartDay()),
-                            DateUtil.format(updatedCert.getCriterion().getEndDay()),
                             "Test Standards"));
         }
         if (isTestDataChanged(existingCert, updatedCert)) {
             updatedListing.addBusinessErrorMessage(
                     msgUtil.getMessage("listing.unavailableCriteriaEditNotAllowed",
                             Util.formatCriteriaNumber(updatedCert.getCriterion()),
-                            DateUtil.format(updatedCert.getCriterion().getStartDay()),
-                            DateUtil.format(updatedCert.getCriterion().getEndDay()),
                             "Test Data"));
         }
         if (isTestProceduresChanged(existingCert, updatedCert)) {
             updatedListing.addBusinessErrorMessage(
                     msgUtil.getMessage("listing.unavailableCriteriaEditNotAllowed",
                             Util.formatCriteriaNumber(updatedCert.getCriterion()),
-                            DateUtil.format(updatedCert.getCriterion().getStartDay()),
-                            DateUtil.format(updatedCert.getCriterion().getEndDay()),
                             "Test Procedures"));
         }
         if (isTestToolsChanged(existingCert, updatedCert)) {
             updatedListing.addBusinessErrorMessage(
                     msgUtil.getMessage("listing.unavailableCriteriaEditNotAllowed",
                             Util.formatCriteriaNumber(updatedCert.getCriterion()),
-                            DateUtil.format(updatedCert.getCriterion().getStartDay()),
-                            DateUtil.format(updatedCert.getCriterion().getEndDay()),
                             "Test Tools"));
         }
         if (isApiDocumentationChanged(existingCert, updatedCert)) {
             updatedListing.addBusinessErrorMessage(
                     msgUtil.getMessage("listing.unavailableCriteriaEditNotAllowed",
                             Util.formatCriteriaNumber(updatedCert.getCriterion()),
-                            DateUtil.format(updatedCert.getCriterion().getStartDay()),
-                            DateUtil.format(updatedCert.getCriterion().getEndDay()),
                             "API Documentation"));
         }
         if (isPrivacySecurityFrameworkChanged(existingCert, updatedCert)) {
             updatedListing.addBusinessErrorMessage(
                     msgUtil.getMessage("listing.unavailableCriteriaEditNotAllowed",
                             Util.formatCriteriaNumber(updatedCert.getCriterion()),
-                            DateUtil.format(updatedCert.getCriterion().getStartDay()),
-                            DateUtil.format(updatedCert.getCriterion().getEndDay()),
                             "Privacy and Security Framework"));
         }
         if (isSedChanged(existingCert, updatedCert)) {
             updatedListing.addBusinessErrorMessage(
                     msgUtil.getMessage("listing.unavailableCriteriaEditNotAllowed",
                             Util.formatCriteriaNumber(updatedCert.getCriterion()),
-                            DateUtil.format(updatedCert.getCriterion().getStartDay()),
-                            DateUtil.format(updatedCert.getCriterion().getEndDay()),
                             "SED"));
         }
     }

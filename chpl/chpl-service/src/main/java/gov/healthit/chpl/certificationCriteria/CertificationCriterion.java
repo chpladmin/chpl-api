@@ -13,11 +13,15 @@ import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import org.apache.commons.lang3.tuple.Pair;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import gov.healthit.chpl.criteriaattribute.rule.Rule;
+import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.util.DateUtil;
 import gov.healthit.chpl.util.LocalDateAdapter;
 import gov.healthit.chpl.util.LocalDateDeserializer;
 import gov.healthit.chpl.util.LocalDateSerializer;
@@ -87,6 +91,11 @@ public class CertificationCriterion implements Serializable {
     public Boolean isRemoved() {
         LocalDate end = endDay != null ? endDay : LocalDate.MAX;
         return end.isBefore(LocalDate.now());
+    }
+
+    public boolean isAvailableToListing(CertifiedProductSearchDetails listing) {
+        return DateUtil.datesOverlap(Pair.of(listing.getCertificationDay(), listing.getDecertificationDay()),
+                Pair.of(getStartDay(), getEndDay()));
     }
 
     @Override

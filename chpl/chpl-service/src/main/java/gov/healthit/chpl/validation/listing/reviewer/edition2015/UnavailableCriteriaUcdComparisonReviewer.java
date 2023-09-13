@@ -49,8 +49,6 @@ public class UnavailableCriteriaUcdComparisonReviewer implements ComparisonRevie
                             updatedListing.addBusinessErrorMessage(
                                     msgUtil.getMessage("listing.ucd.unavailableCriteriaNotAllowed",
                                             Util.formatCriteriaNumber(addedCriterion),
-                                            DateUtil.format(addedCriterion.getStartDay()),
-                                            DateUtil.format(addedCriterion.getEndDay()),
                                             updatedUcd.getName()));
                         }
                     }
@@ -63,8 +61,6 @@ public class UnavailableCriteriaUcdComparisonReviewer implements ComparisonRevie
                         updatedListing.addBusinessErrorMessage(
                                 msgUtil.getMessage("listing.ucd.unavailableCriteriaNotAllowed",
                                         Util.formatCriteriaNumber(criterion),
-                                        DateUtil.format(criterion.getStartDay()),
-                                        DateUtil.format(criterion.getEndDay()),
                                         updatedUcd.getName()));
                     }
                 }

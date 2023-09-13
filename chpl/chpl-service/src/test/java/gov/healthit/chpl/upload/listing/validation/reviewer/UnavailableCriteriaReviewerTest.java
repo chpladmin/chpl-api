@@ -18,7 +18,7 @@ import gov.healthit.chpl.util.DateUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 public class UnavailableCriteriaReviewerTest {
-    private static final String REMOVED_CRITERIA_NOT_ALLOWED = "The criterion %s was active between %s and %s and may not be added to the listing.";
+    private static final String UNAVAILABLE_CRITERIA_NOT_ALLOWED = "The criterion %s is unavailable for this listing.";
 
     private ErrorMessageUtil msgUtil;
     private UnavailableCriteriaReviewer reviewer;
@@ -27,8 +27,8 @@ public class UnavailableCriteriaReviewerTest {
     public void before() throws EntityRetrievalException {
         msgUtil = Mockito.mock(ErrorMessageUtil.class);
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.unavailableCriteriaAddNotAllowed"),
-                ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
-            .thenAnswer(i -> String.format(REMOVED_CRITERIA_NOT_ALLOWED, i.getArgument(1), i.getArgument(2), i.getArgument(3)));
+                ArgumentMatchers.anyString()))
+            .thenAnswer(i -> String.format(UNAVAILABLE_CRITERIA_NOT_ALLOWED, i.getArgument(1), ""));
         reviewer = new UnavailableCriteriaReviewer(msgUtil);
     }
 
@@ -62,7 +62,7 @@ public class UnavailableCriteriaReviewerTest {
         assertEquals(0, listing.getWarningMessages().size());
         assertEquals(1, listing.getErrorMessages().size());
         assertTrue(listing.getErrorMessages().contains(
-                String.format(REMOVED_CRITERIA_NOT_ALLOWED, "170.315 (a)(1)", "2023-01-01", "2023-01-02")));
+                String.format(UNAVAILABLE_CRITERIA_NOT_ALLOWED, "170.315 (a)(1)", "")));
     }
 
     @Test
