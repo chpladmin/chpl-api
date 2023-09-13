@@ -18,10 +18,10 @@ public class ServiceBaseUrlList {
         if (url == null) {
             return null;
         }
-        String[] splitUrl = url.split(":");
+        String[] splitUrl = url.split("://");
         StringBuffer updateUrl = new StringBuffer();
         return updateUrl.append(splitUrl[0].toLowerCase())
-                .append(":")
+                .append("://")
                 .append(Arrays.stream(splitUrl, 1, splitUrl.length).collect(Collectors.joining()))
                 .toString();
     }
