@@ -1,10 +1,9 @@
-package gov.healthit.chpl.domain.comparator;
+package gov.healthit.chpl.testtool;
 
 import java.util.Comparator;
 
 import org.apache.commons.lang3.builder.CompareToBuilder;
 
-import gov.healthit.chpl.domain.CertificationResultTestTool;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor

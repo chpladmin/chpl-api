@@ -19,6 +19,7 @@ import gov.healthit.chpl.permissions.domains.ComplaintDomainPermissions;
 import gov.healthit.chpl.permissions.domains.CorrectiveActionPlanDomainPermissions;
 import gov.healthit.chpl.permissions.domains.DeveloperDomainPermissions;
 import gov.healthit.chpl.permissions.domains.DomainPermissions;
+import gov.healthit.chpl.permissions.domains.FunctionalityTestedDomainPermissions;
 import gov.healthit.chpl.permissions.domains.InvitationDomainPermissions;
 import gov.healthit.chpl.permissions.domains.ListingUploadDomainPerissions;
 import gov.healthit.chpl.permissions.domains.ProductDomainPermissions;
@@ -68,6 +69,7 @@ public class Permissions {
     public static final String ATTESTATION = "ATTESTATION";
     public static final String QUESTIONABLE_ACTIVITY = "QUESTIONABLE_ACTIVITY";
     public static final String TEST_TOOL = "TEST_TOOL";
+    public static final String FUNCTIONALITY_TESTED = "FUNCTIONALITY_TESTED";
 
     private Map<String, DomainPermissions> domainPermissions = new HashMap<String, DomainPermissions>();
 
@@ -100,7 +102,8 @@ public class Permissions {
             QmsStandardDomainPermissions qmsStandardDomainPermissions,
             AttestationDomainPermissions attestationDomainPermissions,
             QuestionableActivityDomainPermissions qaDomainPermissions,
-            TestToolDomainPermissions testToolDomainPermissions) {
+            TestToolDomainPermissions testToolDomainPermissions,
+            FunctionalityTestedDomainPermissions functionalityTestedDomainPermissions) {
 
         domainPermissions.put(CERTIFICATION_RESULTS, certificationResultsDomainPermissions);
         domainPermissions.put(CERTIFIED_PRODUCT, certifiedProductDomainPermissions);
@@ -130,6 +133,7 @@ public class Permissions {
         domainPermissions.put(ATTESTATION, attestationDomainPermissions);
         domainPermissions.put(QUESTIONABLE_ACTIVITY, qaDomainPermissions);
         domainPermissions.put(TEST_TOOL, testToolDomainPermissions);
+        domainPermissions.put(FUNCTIONALITY_TESTED, functionalityTestedDomainPermissions);
     }
 
     public boolean hasAccess(final String domain, final String action) {

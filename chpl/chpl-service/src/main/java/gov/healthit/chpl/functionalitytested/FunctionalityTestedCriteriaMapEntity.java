@@ -1,4 +1,4 @@
-package gov.healthit.chpl.functionalityTested;
+package gov.healthit.chpl.functionalitytested;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -15,7 +15,10 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterionEntity;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
@@ -23,6 +26,9 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "functionality_tested_criteria_map")
 public class FunctionalityTestedCriteriaMapEntity implements Serializable {
     private static final long serialVersionUID = 6446486138564063907L;
@@ -45,6 +51,11 @@ public class FunctionalityTestedCriteriaMapEntity implements Serializable {
     private Long functionalityTestedId;
 
     @Basic(optional = false)
+    @OneToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "functionality_tested_id", insertable = false, updatable = false)
+    private FunctionalityTestedEntity functionalityTested;
+
+    @Basic(optional = false)
     @Column(name = "creation_date", nullable = false, insertable = false, updatable = false)
     private Date creationDate;
 
@@ -59,4 +70,12 @@ public class FunctionalityTestedCriteriaMapEntity implements Serializable {
     @Basic(optional = false)
     @Column(name = "last_modified_user", nullable = false)
     private Long lastModifiedUser;
+
+    public FunctionalityTestedCriteriaMap toDomain() {
+        return FunctionalityTestedCriteriaMap.builder()
+                .id(id)
+                .criterion(criterion.toDomain())
+                .functionalityTested(functionalityTested.toDomain())
+                .build();
+    }
 }

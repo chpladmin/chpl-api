@@ -23,8 +23,8 @@ import gov.healthit.chpl.domain.CertificationStatus;
 import gov.healthit.chpl.domain.DescriptiveModel;
 import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.domain.KeyValueModelStatuses;
+import gov.healthit.chpl.domain.PracticeType;
 import gov.healthit.chpl.dto.CQMCriterionDTO;
-import gov.healthit.chpl.dto.PracticeTypeDTO;
 import gov.healthit.chpl.dto.ProductClassificationTypeDTO;
 import lombok.extern.log4j.Log4j2;
 
@@ -112,11 +112,11 @@ public class CacheableDimensionalDataManager {
     @Cacheable(value = CacheNames.PRACTICE_TYPE_NAMES)
     public Set<KeyValueModel> getPracticeTypeNames() {
         LOGGER.debug("Getting all practice type names from the database (not cached).");
-        List<PracticeTypeDTO> practiceTypeDTOs = practiceTypeDao.findAll();
+        List<PracticeType> practiceTypes = practiceTypeDao.findAll();
         Set<KeyValueModel> practiceTypeNames = new HashSet<KeyValueModel>();
 
-        for (PracticeTypeDTO dto : practiceTypeDTOs) {
-            practiceTypeNames.add(new KeyValueModel(dto.getId(), dto.getName()));
+        for (PracticeType practiceType : practiceTypes) {
+            practiceTypeNames.add(new KeyValueModel(practiceType.getId(), practiceType.getName()));
         }
 
         return practiceTypeNames;

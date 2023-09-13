@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.functionalityTested.CertificationResultFunctionalityTested;
+import gov.healthit.chpl.functionalitytested.CertificationResultFunctionalityTested;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
 import gov.healthit.chpl.validation.DuplicateReviewResult;
@@ -53,22 +53,19 @@ public class FunctionalityTestedDuplicateReviewer {
         List<String> warnings = new ArrayList<String>();
         for (CertificationResultFunctionalityTested duplicate : duplicates) {
             String warning = errorMessageUtil.getMessage("listing.criteria.duplicateFunctionalityTested",
-                    criteria, duplicate.getName());
+                    criteria, duplicate.getFunctionalityTested().getRegulatoryTextCitation());
             warnings.add(warning);
         }
         return warnings;
     }
 
-    private BiPredicate<
-    CertificationResultFunctionalityTested, CertificationResultFunctionalityTested> getPredicate() {
-        return
-                new BiPredicate<
-                CertificationResultFunctionalityTested, CertificationResultFunctionalityTested>() {
+    private BiPredicate<CertificationResultFunctionalityTested, CertificationResultFunctionalityTested> getPredicate() {
+        return new BiPredicate<CertificationResultFunctionalityTested, CertificationResultFunctionalityTested>() {
             @Override
             public boolean test(CertificationResultFunctionalityTested ft1, CertificationResultFunctionalityTested ft2) {
-                return (ObjectUtils.allNotNull(ft1.getFunctionalityTestedId(), ft2.getFunctionalityTestedId())
-                        && Objects.equals(ft1.getFunctionalityTestedId(), ft2.getFunctionalityTestedId()))
-                    || Objects.equals(ft1.getName(), ft2.getName());
+                return (ObjectUtils.allNotNull(ft1.getFunctionalityTested().getId(), ft2.getFunctionalityTested().getId())
+                        && Objects.equals(ft1.getFunctionalityTested().getId(), ft2.getFunctionalityTested().getId()))
+                    || Objects.equals(ft1.getFunctionalityTested().getRegulatoryTextCitation(), ft2.getFunctionalityTested().getRegulatoryTextCitation());
             }
         };
     }

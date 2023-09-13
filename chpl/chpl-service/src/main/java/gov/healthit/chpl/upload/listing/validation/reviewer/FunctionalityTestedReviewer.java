@@ -11,10 +11,9 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.functionalityTested.CertificationResultFunctionalityTested;
-import gov.healthit.chpl.functionalityTested.FunctionalityTested;
-import gov.healthit.chpl.functionalityTested.FunctionalityTestedDAO;
+import gov.healthit.chpl.functionalitytested.CertificationResultFunctionalityTested;
+import gov.healthit.chpl.functionalitytested.FunctionalityTested;
+import gov.healthit.chpl.functionalitytested.FunctionalityTestedDAO;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
@@ -78,11 +77,11 @@ public class FunctionalityTestedReviewer {
         Iterator<CertificationResultFunctionalityTested> functionalitiesTestedIter = certResult.getFunctionalitiesTested().iterator();
         while (functionalitiesTestedIter.hasNext()) {
             CertificationResultFunctionalityTested functionalityTested = functionalitiesTestedIter.next();
-            if (functionalityTested.getFunctionalityTestedId() == null) {
+            if (functionalityTested.getFunctionalityTested().getId() == null) {
                 functionalitiesTestedIter.remove();
                 listing.addWarningMessage(msgUtil.getMessage(
                         "listing.criteria.functionalityTestedNotFoundAndRemoved",
-                        Util.formatCriteriaNumber(certResult.getCriterion()), functionalityTested.getName()));
+                        Util.formatCriteriaNumber(certResult.getCriterion()), functionalityTested.getFunctionalityTested().getRegulatoryTextCitation()));
             }
         }
     }
@@ -95,11 +94,11 @@ public class FunctionalityTestedReviewer {
         while (functionalitiesTestedIter.hasNext()) {
             CertificationResultFunctionalityTested functionalityTested = functionalitiesTestedIter.next();
             if (!isFunctionalityTestedCritierionValid(certResult.getCriterion().getId(),
-                    functionalityTested.getFunctionalityTestedId())) {
+                    functionalityTested.getFunctionalityTested().getId())) {
                 functionalitiesTestedIter.remove();
                 listing.addWarningMessage(msgUtil.getMessage("listing.criteria.functionalityTestedCriterionMismatch",
                         Util.formatCriteriaNumber(certResult.getCriterion()),
-                        functionalityTested.getName(),
+                        functionalityTested.getFunctionalityTested().getRegulatoryTextCitation(),
                         getDelimitedListOfValidCriteriaNumbers(functionalityTested),
                         Util.formatCriteriaNumber(certResult.getCriterion())));
             }
@@ -117,11 +116,8 @@ public class FunctionalityTestedReviewer {
 
     private String getDelimitedListOfValidCriteriaNumbers(CertificationResultFunctionalityTested crft) {
         FunctionalityTested functionalityTested = null;
-        try {
-            functionalityTested = functionalityTestedDao.getById(crft.getFunctionalityTestedId());
-        } catch (EntityRetrievalException ex) {
-            return "";
-        }
+        functionalityTested = functionalityTestedDao.getById(crft.getFunctionalityTested().getId());
+
         List<String> criteriaNumbers = functionalityTested.getCriteria().stream()
                 .map(criterion -> Util.formatCriteriaNumber(criterion))
                 .collect(Collectors.toList());
@@ -133,9 +129,8 @@ public class FunctionalityTestedReviewer {
         reviewFunctionalityTestedName(listing, certResult, functionalityTested);
     }
 
-    private void reviewFunctionalityTestedName(CertifiedProductSearchDetails listing,
-            CertificationResult certResult, CertificationResultFunctionalityTested functionalityTested) {
-        if (StringUtils.isEmpty(functionalityTested.getName())) {
+    private void reviewFunctionalityTestedName(CertifiedProductSearchDetails listing, CertificationResult certResult, CertificationResultFunctionalityTested functionalityTested) {
+        if (StringUtils.isEmpty(functionalityTested.getFunctionalityTested().getRegulatoryTextCitation())) {
             listing.addDataErrorMessage(msgUtil.getMessage("listing.criteria.missingFunctionalityTestedName",
                     Util.formatCriteriaNumber(certResult.getCriterion())));
         }

@@ -1,4 +1,4 @@
-package gov.healthit.chpl.functionalityTested;
+package gov.healthit.chpl.functionalitytested;
 
 import java.util.Date;
 
@@ -59,9 +59,11 @@ public class CertificationResultFunctionalityTestedEntity {
     public CertificationResultFunctionalityTested toDomain() {
         return CertificationResultFunctionalityTested.builder()
                 .id(this.getId())
-                .functionalityTestedId(this.getFunctionalityTestedId())
-                .name(this.getFunctionalityTested() != null ? this.getFunctionalityTested().getNumber() : null)
-                .description(this.getFunctionalityTested() != null ? this.getFunctionalityTested().getName() : null)
+                .certificationResultId(certificationResultId)
+                .functionalityTested(this.functionalityTested.toDomain())
+                .functionalityTestedId(this.getFunctionalityTested() != null ? this.getFunctionalityTested().getId() : null)
+                .name(this.getFunctionalityTested() != null ? this.getFunctionalityTested().getRegulatoryTextCitation() : null)
+                .description(this.getFunctionalityTested() != null ? this.getFunctionalityTested().getValue() : null)
                 .build();
     }
 }

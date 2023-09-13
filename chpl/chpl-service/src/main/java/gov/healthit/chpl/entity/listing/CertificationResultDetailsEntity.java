@@ -16,8 +16,9 @@ import org.hibernate.annotations.Immutable;
 import org.hibernate.annotations.Where;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterionEntity;
-import gov.healthit.chpl.functionalityTested.CertificationResultFunctionalityTestedEntity;
+import gov.healthit.chpl.functionalitytested.CertificationResultFunctionalityTestedEntity;
 import gov.healthit.chpl.svap.entity.CertificationResultSvapEntity;
+import gov.healthit.chpl.testtool.CertificationResultTestToolEntity;
 import lombok.Data;
 
 @Data
