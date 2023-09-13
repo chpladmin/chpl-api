@@ -18,13 +18,12 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
-import gov.healthit.chpl.domain.CertificationEdition;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.functionalityTested.CertificationResultFunctionalityTested;
-import gov.healthit.chpl.functionalityTested.FunctionalityTested;
-import gov.healthit.chpl.functionalityTested.FunctionalityTestedDAO;
+import gov.healthit.chpl.functionalitytested.CertificationResultFunctionalityTested;
+import gov.healthit.chpl.functionalitytested.FunctionalityTested;
+import gov.healthit.chpl.functionalitytested.FunctionalityTestedDAO;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -117,11 +116,12 @@ public class FunctionalityTestedReviewerTest {
             .thenReturn(false);
         List<CertificationResultFunctionalityTested> functionalitiesTested = new ArrayList<CertificationResultFunctionalityTested>();
         functionalitiesTested.add(CertificationResultFunctionalityTested.builder()
-                .functionalityTestedId(1L)
-                .name("func tested")
+                .functionalityTested(FunctionalityTested.builder()
+                        .id(1L)
+                        .regulatoryTextCitation("func tested")
+                        .build())
                 .build());
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .edition(create2015Edition())
                 .certificationResult(CertificationResult.builder()
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
@@ -148,11 +148,12 @@ public class FunctionalityTestedReviewerTest {
             .thenReturn(false);
         List<CertificationResultFunctionalityTested> functionalitiesTested = new ArrayList<CertificationResultFunctionalityTested>();
         functionalitiesTested.add(CertificationResultFunctionalityTested.builder()
-                .functionalityTestedId(1L)
-                .name("func tested")
+                .functionalityTested(FunctionalityTested.builder()
+                        .id(1L)
+                        .regulatoryTextCitation("func tested")
+                        .build())
                 .build());
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .edition(create2015Edition())
                 .certificationResult(CertificationResult.builder()
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
@@ -177,15 +178,18 @@ public class FunctionalityTestedReviewerTest {
 
         List<CertificationResultFunctionalityTested> functionalitiesTested = new ArrayList<CertificationResultFunctionalityTested>();
         functionalitiesTested.add(CertificationResultFunctionalityTested.builder()
-                .functionalityTestedId(1L)
-                .name("func tested")
+                .functionalityTested(FunctionalityTested.builder()
+                        .id(1L)
+                        .regulatoryTextCitation("func tested")
+                        .build())
                 .build());
         functionalitiesTested.add(CertificationResultFunctionalityTested.builder()
-                .name("bad name")
+                .functionalityTested(FunctionalityTested.builder()
+                        .regulatoryTextCitation("bad name")
+                        .build())
                 .build());
 
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .edition(create2015Edition())
                 .certificationResult(CertificationResult.builder()
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
@@ -212,15 +216,18 @@ public class FunctionalityTestedReviewerTest {
 
         List<CertificationResultFunctionalityTested> functionalitiesTested = new ArrayList<CertificationResultFunctionalityTested>();
         functionalitiesTested.add(CertificationResultFunctionalityTested.builder()
-                .functionalityTestedId(1L)
-                .name("func tested")
+                .functionalityTested(FunctionalityTested.builder()
+                        .id(1L)
+                        .regulatoryTextCitation("func tested")
+                        .build())
                 .build());
         functionalitiesTested.add(CertificationResultFunctionalityTested.builder()
-                .name("bad name")
+                .functionalityTested(FunctionalityTested.builder()
+                        .regulatoryTextCitation("bad name")
+                        .build())
                 .build());
 
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .edition(create2015Edition())
                 .certificationResult(CertificationResult.builder()
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
@@ -245,15 +252,18 @@ public class FunctionalityTestedReviewerTest {
 
         List<CertificationResultFunctionalityTested> functionalitiesTested = new ArrayList<CertificationResultFunctionalityTested>();
         functionalitiesTested.add(CertificationResultFunctionalityTested.builder()
-                .functionalityTestedId(1L)
-                .name("func tested")
+                .functionalityTested(FunctionalityTested.builder()
+                        .id(1L)
+                        .regulatoryTextCitation("func tested")
+                        .build())
                 .build());
         functionalitiesTested.add(CertificationResultFunctionalityTested.builder()
-                .functionalityTestedId(null)
-                .name("")
+                .functionalityTested(FunctionalityTested.builder()
+                        .id(null)
+                        .regulatoryTextCitation("")
+                        .build())
                 .build());
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .edition(create2015Edition())
                 .certificationResult(CertificationResult.builder()
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
@@ -280,15 +290,18 @@ public class FunctionalityTestedReviewerTest {
 
         List<CertificationResultFunctionalityTested> functionalitiesTested = new ArrayList<CertificationResultFunctionalityTested>();
         functionalitiesTested.add(CertificationResultFunctionalityTested.builder()
-                .functionalityTestedId(1L)
-                .name("func tested")
+                .functionalityTested(FunctionalityTested.builder()
+                        .id(1L)
+                        .regulatoryTextCitation("func tested")
+                        .build())
                 .build());
         functionalitiesTested.add(CertificationResultFunctionalityTested.builder()
-                .functionalityTestedId(null)
-                .name("")
+                .functionalityTested(FunctionalityTested.builder()
+                        .id(null)
+                        .regulatoryTextCitation("")
+                        .build())
                 .build());
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .edition(create2015Edition())
                 .certificationResult(CertificationResult.builder()
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
@@ -313,15 +326,18 @@ public class FunctionalityTestedReviewerTest {
 
         List<CertificationResultFunctionalityTested> functionalitiesTested = new ArrayList<CertificationResultFunctionalityTested>();
         functionalitiesTested.add(CertificationResultFunctionalityTested.builder()
-                .functionalityTestedId(1L)
-                .name("func tested")
+                .functionalityTested(FunctionalityTested.builder()
+                        .id(1L)
+                        .regulatoryTextCitation("func tested")
+                        .build())
                 .build());
         functionalitiesTested.add(CertificationResultFunctionalityTested.builder()
-                .functionalityTestedId(2L)
-                .name("")
+                .functionalityTested(FunctionalityTested.builder()
+                        .id(2L)
+                        .regulatoryTextCitation("")
+                        .build())
                 .build());
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .edition(create2015Edition())
                 .certificationResult(CertificationResult.builder()
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
@@ -348,15 +364,18 @@ public class FunctionalityTestedReviewerTest {
 
         List<CertificationResultFunctionalityTested> functionalitiesTested = new ArrayList<CertificationResultFunctionalityTested>();
         functionalitiesTested.add(CertificationResultFunctionalityTested.builder()
-                .functionalityTestedId(1L)
-                .name("func tested")
+                .functionalityTested(FunctionalityTested.builder()
+                        .id(1L)
+                        .regulatoryTextCitation("func tested")
+                        .build())
                 .build());
         functionalitiesTested.add(CertificationResultFunctionalityTested.builder()
-                .functionalityTestedId(2L)
-                .name("")
+                .functionalityTested(FunctionalityTested.builder()
+                        .id(2L)
+                        .regulatoryTextCitation("")
+                        .build())
                 .build());
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .edition(create2015Edition())
                 .certificationResult(CertificationResult.builder()
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
@@ -381,8 +400,8 @@ public class FunctionalityTestedReviewerTest {
         Mockito.when(functionalityTestedDao.getById(ArgumentMatchers.anyLong()))
             .thenReturn(FunctionalityTested.builder()
                     .id(3L)
-                    .name("mismatch")
-                    .description("mismatch")
+                    .regulatoryTextCitation("mismatch")
+                    .value("mismatch")
                     .criteria(Stream.of(CertificationCriterion.builder()
                             .id(2L)
                             .number("170.315 (a)(2)")
@@ -392,16 +411,19 @@ public class FunctionalityTestedReviewerTest {
                     .build());
         List<CertificationResultFunctionalityTested> functionalitiesTested = new ArrayList<CertificationResultFunctionalityTested>();
         functionalitiesTested.add(CertificationResultFunctionalityTested.builder()
-                .functionalityTestedId(1L)
-                .name("valid func")
+                .functionalityTested(FunctionalityTested.builder()
+                        .id(1L)
+                        .regulatoryTextCitation("valid func")
+                        .build())
                 .build());
         functionalitiesTested.add(CertificationResultFunctionalityTested.builder()
-                .functionalityTestedId(3L)
-                .name("mismatch")
+                .functionalityTested(FunctionalityTested.builder()
+                        .id(3L)
+                        .regulatoryTextCitation("mismatch")
+                        .build())
                 .build());
 
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                    .edition(create2015Edition())
                 .certificationResult(CertificationResult.builder()
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
@@ -429,16 +451,19 @@ public class FunctionalityTestedReviewerTest {
 
         List<CertificationResultFunctionalityTested> functionalitiesTested = new ArrayList<CertificationResultFunctionalityTested>();
         functionalitiesTested.add(CertificationResultFunctionalityTested.builder()
-                .functionalityTestedId(1L)
-                .name("valid func")
+                .functionalityTested(FunctionalityTested.builder()
+                        .id(1L)
+                        .regulatoryTextCitation("func tested")
+                        .build())
                 .build());
         functionalitiesTested.add(CertificationResultFunctionalityTested.builder()
-                .functionalityTestedId(3L)
-                .name("mismatch")
+                .functionalityTested(FunctionalityTested.builder()
+                        .id(3L)
+                        .regulatoryTextCitation("mismatch")
+                        .build())
                 .build());
 
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                    .edition(create2015Edition())
                 .certificationResult(CertificationResult.builder()
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
@@ -463,15 +488,18 @@ public class FunctionalityTestedReviewerTest {
 
         List<CertificationResultFunctionalityTested> functionalitiesTested = new ArrayList<CertificationResultFunctionalityTested>();
         functionalitiesTested.add(CertificationResultFunctionalityTested.builder()
-                .functionalityTestedId(1L)
-                .name("valid func")
+                .functionalityTested(FunctionalityTested.builder()
+                        .id(1L)
+                        .regulatoryTextCitation("valid func")
+                        .build())
                 .build());
         functionalitiesTested.add(CertificationResultFunctionalityTested.builder()
-                .functionalityTestedId(4L)
-                .name("another func tested")
+                .functionalityTested(FunctionalityTested.builder()
+                        .id(4L)
+                        .regulatoryTextCitation("another func tested")
+                        .build())
                 .build());
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                    .edition(create2015Edition())
                 .certificationResult(CertificationResult.builder()
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
@@ -495,8 +523,8 @@ public class FunctionalityTestedReviewerTest {
         List<FunctionalityTested> a2FunctionalityTested = new ArrayList<FunctionalityTested>();
         a1FunctionalityTested.add(FunctionalityTested.builder()
                 .id(1L)
-                .name("func tested")
-                .description("func tested")
+                .regulatoryTextCitation("func tested")
+                .value("func tested")
                 .criteria(Stream.of(CertificationCriterion.builder()
                         .id(1L)
                         .number("170.315 (a)(1)")
@@ -506,8 +534,8 @@ public class FunctionalityTestedReviewerTest {
                 .build());
         a1FunctionalityTested.add(FunctionalityTested.builder()
                 .id(2L)
-                .name("")
-                .description("")
+                .regulatoryTextCitation("")
+                .value("")
                 .criteria(Stream.of(CertificationCriterion.builder()
                         .id(1L)
                         .number("170.315 (a)(1)")
@@ -517,8 +545,8 @@ public class FunctionalityTestedReviewerTest {
                 .build());
         a1FunctionalityTested.add(FunctionalityTested.builder()
                 .id(4L)
-                .name("another func tested")
-                .description("another func tested")
+                .regulatoryTextCitation("another func tested")
+                .value("another func tested")
                 .criteria(Stream.of(CertificationCriterion.builder()
                         .id(1L)
                         .number("170.315 (a)(1)")
@@ -528,8 +556,8 @@ public class FunctionalityTestedReviewerTest {
                 .build());
         a2FunctionalityTested.add(FunctionalityTested.builder()
                 .id(3L)
-                .name("mismatch")
-                .description("mismatch")
+                .regulatoryTextCitation("mismatch")
+                .value("mismatch")
                 .criteria(Stream.of(CertificationCriterion.builder()
                         .id(2L)
                         .number("170.315 (a)(2)")
@@ -541,12 +569,5 @@ public class FunctionalityTestedReviewerTest {
         maps.put(1L, a1FunctionalityTested);
         maps.put(2L, a2FunctionalityTested);
         return maps;
-    }
-
-    private CertificationEdition create2015Edition() {
-        return CertificationEdition.builder()
-                .id(3L)
-                .name("2015")
-                .build();
     }
 }

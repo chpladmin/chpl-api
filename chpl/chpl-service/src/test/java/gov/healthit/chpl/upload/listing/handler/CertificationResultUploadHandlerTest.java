@@ -15,7 +15,7 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
 import gov.healthit.chpl.domain.CertificationResult;
-import gov.healthit.chpl.functionalityTested.CertificationResultFunctionalityTested;
+import gov.healthit.chpl.functionalitytested.CertificationResultFunctionalityTested;
 import gov.healthit.chpl.optionalStandard.domain.CertificationResultOptionalStandard;
 import gov.healthit.chpl.svap.domain.CertificationResultSvap;
 import gov.healthit.chpl.upload.listing.ListingUploadHandlerUtil;
@@ -368,8 +368,8 @@ public class CertificationResultUploadHandlerTest {
         assertEquals(1, certResult.getFunctionalitiesTested().size());
         CertificationResultFunctionalityTested func = certResult.getFunctionalitiesTested().get(0);
         assertNotNull(func);
-        assertNotNull(func.getName());
-        assertEquals("func", func.getName());
+        assertNotNull(func.getFunctionalityTested().getRegulatoryTextCitation());
+        assertEquals("func", func.getFunctionalityTested().getRegulatoryTextCitation());
     }
 
     @Test
@@ -385,12 +385,12 @@ public class CertificationResultUploadHandlerTest {
         assertEquals(2, certResult.getFunctionalitiesTested().size());
         CertificationResultFunctionalityTested func = certResult.getFunctionalitiesTested().get(0);
         assertNotNull(func);
-        assertNotNull(func.getName());
-        assertEquals("func", func.getName());
+        assertNotNull(func.getFunctionalityTested().getRegulatoryTextCitation());
+        assertEquals("func", func.getFunctionalityTested().getRegulatoryTextCitation());
         func = certResult.getFunctionalitiesTested().get(1);
         assertNotNull(func);
-        assertNotNull(func.getName());
-        assertEquals("func2", func.getName());
+        assertNotNull(func.getFunctionalityTested().getRegulatoryTextCitation());
+        assertEquals("func2", func.getFunctionalityTested().getRegulatoryTextCitation());
     }
 
     @Test
@@ -407,8 +407,8 @@ public class CertificationResultUploadHandlerTest {
         assertEquals(1, certResult.getFunctionalitiesTested().size());
         CertificationResultFunctionalityTested func = certResult.getFunctionalitiesTested().get(0);
         assertNotNull(func);
-        assertNotNull(func.getName());
-        assertEquals("func", func.getName());
+        assertNotNull(func.getFunctionalityTested().getRegulatoryTextCitation());
+        assertEquals("func", func.getFunctionalityTested().getRegulatoryTextCitation());
     }
 
     @Test

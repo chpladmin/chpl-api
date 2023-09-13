@@ -6,9 +6,9 @@ import java.util.Date;
 import java.util.List;
 
 import gov.healthit.chpl.domain.CertificationResult;
-import gov.healthit.chpl.domain.CertificationResultTestTool;
 import gov.healthit.chpl.entity.listing.CertificationResultEntity;
-import gov.healthit.chpl.functionalityTested.CertificationResultFunctionalityTested;
+import gov.healthit.chpl.functionalitytested.CertificationResultFunctionalityTested;
+import gov.healthit.chpl.testtool.CertificationResultTestTool;
 import lombok.Data;
 
 @Data

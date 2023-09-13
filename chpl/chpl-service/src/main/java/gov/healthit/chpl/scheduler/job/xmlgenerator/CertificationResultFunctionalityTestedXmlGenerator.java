@@ -5,7 +5,7 @@ import java.util.List;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-import gov.healthit.chpl.functionalityTested.CertificationResultFunctionalityTested;
+import gov.healthit.chpl.functionalitytested.CertificationResultFunctionalityTested;
 
 public class CertificationResultFunctionalityTestedXmlGenerator extends XmlGenerator {
     public static void add(List<CertificationResultFunctionalityTested> tests, String rootNodeName, XMLStreamWriter sw) throws XMLStreamException {
@@ -18,13 +18,11 @@ public class CertificationResultFunctionalityTestedXmlGenerator extends XmlGener
         }
     }
 
-    public static void add(CertificationResultFunctionalityTested test, String rootNodeName, XMLStreamWriter sw) throws XMLStreamException {
-        if (test != null) {
+    public static void add(CertificationResultFunctionalityTested crft, String rootNodeName, XMLStreamWriter sw) throws XMLStreamException {
+        if (crft != null) {
             sw.writeStartElement(rootNodeName);
-            createSimpleElement(test.getDescription(), "description", sw);
-            createSimpleElement(test.getFunctionalityTestedId(), "functionalityTestedId", sw);
-            createSimpleElement(test.getId(), "id", sw);
-            createSimpleElement(test.getName(), "name", sw);
+            FunctionalityTestedXmlGenerator.add(crft.getFunctionalityTested(), "functionalityTested", sw);
+            createSimpleElement(crft.getId(), "id", sw);
             sw.writeEndElement();
         }
     }

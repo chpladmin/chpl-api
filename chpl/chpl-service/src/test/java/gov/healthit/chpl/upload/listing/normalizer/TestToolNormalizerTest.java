@@ -16,10 +16,10 @@ import org.mockito.Mockito;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
-import gov.healthit.chpl.domain.CertificationResultTestTool;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.TestToolCriteriaMap;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.testtool.CertificationResultTestTool;
 import gov.healthit.chpl.testtool.TestTool;
 import gov.healthit.chpl.testtool.TestToolDAO;
 
