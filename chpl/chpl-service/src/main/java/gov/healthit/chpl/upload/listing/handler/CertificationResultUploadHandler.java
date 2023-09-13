@@ -11,7 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.CertificationResult;
-import gov.healthit.chpl.functionalityTested.CertificationResultFunctionalityTested;
+import gov.healthit.chpl.functionalitytested.CertificationResultFunctionalityTested;
+import gov.healthit.chpl.functionalitytested.FunctionalityTested;
 import gov.healthit.chpl.optionalStandard.domain.CertificationResultOptionalStandard;
 import gov.healthit.chpl.svap.domain.CertificationResultSvap;
 import gov.healthit.chpl.upload.listing.Headings;
@@ -149,15 +150,16 @@ public class CertificationResultUploadHandler {
         return uploadUtil.parseSingleRowField(Headings.API_DOCUMENTATION_LINK, certHeadingRecord, certResultRecords);
     }
 
-    private List<CertificationResultFunctionalityTested> parseFunctionalitiesTested(
-            CSVRecord certHeadingRecord, List<CSVRecord> certResultRecords) {
+    private List<CertificationResultFunctionalityTested> parseFunctionalitiesTested(CSVRecord certHeadingRecord, List<CSVRecord> certResultRecords) {
         List<CertificationResultFunctionalityTested> functionalitiesTested = new ArrayList<CertificationResultFunctionalityTested>();
         List<String> functionalitiesTestedNames = uploadUtil.parseMultiRowFieldWithoutEmptyValues(
                 Headings.FUNCTIONALITIES_TESTED, certHeadingRecord, certResultRecords);
         if (functionalitiesTestedNames != null && functionalitiesTestedNames.size() > 0) {
             functionalitiesTestedNames.stream().forEach(functionalityTestedName -> {
                 CertificationResultFunctionalityTested functionalityTested = CertificationResultFunctionalityTested.builder()
-                        .name(functionalityTestedName)
+                        .functionalityTested(FunctionalityTested.builder()
+                                .regulatoryTextCitation(functionalityTestedName)
+                                .build())
                         .build();
                 functionalitiesTested.add(functionalityTested);
             });

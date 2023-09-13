@@ -36,7 +36,6 @@ public class TestToolDAO extends BaseDAOImpl {
 
     public TestTool add(TestTool testTool) {
         TestToolEntity entity = TestToolEntity.builder()
-                .name(testTool.getValue())
                 .value(testTool.getValue())
                 .regulatoryTextCitation(testTool.getRegulatoryTextCitation())
                 .startDay(testTool.getStartDay())
@@ -177,7 +176,7 @@ public class TestToolDAO extends BaseDAOImpl {
                 + "LEFT JOIN FETCH c.certificationEdition "
                 + "LEFT JOIN FETCH c.rule "
                 + "WHERE (NOT tt.deleted = true) "
-                + "AND (UPPER(tt.name) = :name) ", TestToolEntity.class);
+                + "AND (UPPER(tt.value) = :name) ", TestToolEntity.class);
         query.setParameter("name", name.toUpperCase());
         List<TestToolEntity> result = query.getResultList();
 

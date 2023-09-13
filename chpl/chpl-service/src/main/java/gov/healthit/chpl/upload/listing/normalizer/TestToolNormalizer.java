@@ -12,10 +12,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.domain.CertificationResult;
-import gov.healthit.chpl.domain.CertificationResultTestTool;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.TestToolCriteriaMap;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.testtool.CertificationResultTestTool;
 import gov.healthit.chpl.testtool.TestTool;
 import gov.healthit.chpl.testtool.TestToolDAO;
 import lombok.extern.log4j.Log4j2;
