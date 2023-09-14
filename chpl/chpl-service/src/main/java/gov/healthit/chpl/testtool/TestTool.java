@@ -2,6 +2,7 @@ package gov.healthit.chpl.testtool;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessOrder;
@@ -14,6 +15,8 @@ import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
@@ -24,6 +27,7 @@ import gov.healthit.chpl.util.LocalDateAdapter;
 import gov.healthit.chpl.util.LocalDateDeserializer;
 import gov.healthit.chpl.util.LocalDateSerializer;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -90,7 +94,12 @@ public class TestTool implements Serializable {
     @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
     private LocalDate endDay;
 
-    private List<CertificationCriterion> criteria;
+    // Do not include this property if the value is "empty". It will be empty when generating listing details
+    // and will be non-empty (this included) when doing CRUD operations on test tools
+    @JsonInclude(value = Include.NON_EMPTY)
+    @XmlTransient
+    @Builder.Default
+    private List<CertificationCriterion> criteria = new ArrayList<CertificationCriterion>();
 
     /**
      * The rule which this Criteria Attrbute is associated with.

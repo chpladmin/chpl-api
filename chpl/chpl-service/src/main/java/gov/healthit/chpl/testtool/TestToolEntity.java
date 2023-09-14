@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -96,7 +97,20 @@ public class TestToolEntity implements Serializable {
                 .regulatoryTextCitation(regulatoryTextCitation)
                 .startDay(startDay)
                 .endDay(endDay)
-                .criteria(criteria == null ? null : criteria.stream().map(crit -> crit.toDomain()).toList())
+                .rule(rule != null ? rule.toDomain() : null)
+                .build();
+    }
+
+    public TestTool toDomainWithCriteria() {
+        return TestTool.builder()
+                .id(id)
+                .value(value)
+                .name(value)
+                .description(null)
+                .regulatoryTextCitation(regulatoryTextCitation)
+                .startDay(startDay)
+                .endDay(endDay)
+                .criteria(criteria == null ? null : criteria.stream().map(crit -> crit.toDomain()).collect(Collectors.toList()))
                 .rule(rule != null ? rule.toDomain() : null)
                 .build();
     }

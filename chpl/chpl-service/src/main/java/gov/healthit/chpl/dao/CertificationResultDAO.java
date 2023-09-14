@@ -891,7 +891,6 @@ public class CertificationResultDAO extends BaseDAOImpl {
         Query query = entityManager.createQuery("SELECT crtt "
                 + "FROM CertificationResultTestToolEntity crtt "
                 + "JOIN FETCH crtt.testTool tt "
-                + "JOIN FETCH tt.criteria "
                 + "LEFT OUTER JOIN FETCH tt.rule "
                 + "WHERE (NOT crtt.deleted = true) "
                 + "AND (crtt.id = :id) ",
