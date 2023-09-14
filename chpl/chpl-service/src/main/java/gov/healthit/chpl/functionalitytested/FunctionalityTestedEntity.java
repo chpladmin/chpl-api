@@ -116,6 +116,22 @@ public class FunctionalityTestedEntity implements Serializable {
                 .requiredDay(this.requiredDay)
                 .rule(this.rule != null ? this.rule.toDomain() : null)
                 .practiceType(this.getPracticeType() != null ? this.getPracticeType().toDomain() : null)
+                .build();
+    }
+
+    public FunctionalityTested toDomainWithCriteria() {
+        return FunctionalityTested.builder()
+                .id(this.getId())
+                .description(this.getName())
+                .name(this.getNumber())
+                .value(this.getValue())
+                .regulatoryTextCitation(this.regulatoryTextCitation)
+                .additionalInformation(additionalInformation)
+                .startDay(this.startDay)
+                .endDay(this.endDay)
+                .requiredDay(this.requiredDay)
+                .rule(this.rule != null ? this.rule.toDomain() : null)
+                .practiceType(this.getPracticeType() != null ? this.getPracticeType().toDomain() : null)
                 .criteria(this.getMappedCriteria() != null ? this.getMappedCriteria().stream()
                         .map(mappedCriterion -> mappedCriterion.getCriterion().toDomain())
                         .collect(Collectors.toList()) : null)
