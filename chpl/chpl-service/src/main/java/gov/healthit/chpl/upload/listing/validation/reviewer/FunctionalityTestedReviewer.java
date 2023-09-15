@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -15,6 +16,7 @@ import gov.healthit.chpl.functionalitytested.CertificationResultFunctionalityTes
 import gov.healthit.chpl.functionalitytested.FunctionalityTested;
 import gov.healthit.chpl.functionalitytested.FunctionalityTestedDAO;
 import gov.healthit.chpl.util.CertificationResultRules;
+import gov.healthit.chpl.util.DateUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
 import gov.healthit.chpl.util.ValidationUtils;
@@ -127,11 +129,22 @@ public class FunctionalityTestedReviewer {
     private void reviewFunctionalityTestedFields(CertifiedProductSearchDetails listing,
             CertificationResult certResult, CertificationResultFunctionalityTested functionalityTested) {
         reviewFunctionalityTestedName(listing, certResult, functionalityTested);
+        reviewFunctionlalityTestedAvailabilityByDate(listing, certResult, functionalityTested);
     }
 
     private void reviewFunctionalityTestedName(CertifiedProductSearchDetails listing, CertificationResult certResult, CertificationResultFunctionalityTested functionalityTested) {
         if (StringUtils.isEmpty(functionalityTested.getFunctionalityTested().getRegulatoryTextCitation())) {
             listing.addDataErrorMessage(msgUtil.getMessage("listing.criteria.missingFunctionalityTestedName",
+                    Util.formatCriteriaNumber(certResult.getCriterion())));
+        }
+    }
+
+    private void reviewFunctionlalityTestedAvailabilityByDate(CertifiedProductSearchDetails listing, CertificationResult certResult, CertificationResultFunctionalityTested functionalityTested) {
+        if (!DateUtil.datesOverlap(Pair.of(listing.getCertificationDay(), listing.getDecertificationDay()),
+                Pair.of(functionalityTested.getFunctionalityTested().getStartDay(),
+                        functionalityTested.getFunctionalityTested().getEndDay()))) {
+            listing.addBusinessErrorMessage(msgUtil.getMessage("listing.criteria.functionalityTestedUnavailable",
+                    functionalityTested.getFunctionalityTested().getRegulatoryTextCitation(),
                     Util.formatCriteriaNumber(certResult.getCriterion())));
         }
     }

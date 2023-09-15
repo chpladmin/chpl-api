@@ -27,7 +27,6 @@ public class TestToolReviewer {
     private ValidationUtils validationUtils;
     private ErrorMessageUtil msgUtil;
     private ChplProductNumberUtil chplProductNumberUtil;
-    //private List<TestToolCriteriaMap> testToolCriteriaMaps;
     private TestToolDAO testToolDao;
 
     @Autowired

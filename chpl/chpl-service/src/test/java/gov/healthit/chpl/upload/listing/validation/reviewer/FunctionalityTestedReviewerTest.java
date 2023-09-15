@@ -26,6 +26,7 @@ import gov.healthit.chpl.functionalitytested.FunctionalityTested;
 import gov.healthit.chpl.functionalitytested.FunctionalityTestedDAO;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.util.CertificationResultRules;
+import gov.healthit.chpl.util.DateUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.ValidationUtils;
 
@@ -34,6 +35,8 @@ public class FunctionalityTestedReviewerTest {
     private static final String FUNCTIONALITIES_TESTED_NOT_FOUND_REMOVED = "Criteria %s contains an invalid Functionality Tested '%s'. It has been removed from the pending listing.";
     private static final String MISSING_FUNCTIONALITY_TESTED_NAME = "There was no Functionality Tested name found for certification criteria %s.";
     private static final String FUNCTIONALITY_TESTED_CRITERION_MISMATCH = "In Criteria %s, Functionality Tested %s is for Criteria %s and is not valid for Criteria %s. The invalid Functionality Tested has been removed.";
+    private static final String FUNCTIONALITY_TESTED_UNAVAILABLE = "The functionality tested %s on the criterion %s is unavailable for this listing.";
+
 
     private ErrorMessageUtil msgUtil;
     private CertificationResultRules certResultRules;
@@ -62,6 +65,9 @@ public class FunctionalityTestedReviewerTest {
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.functionalityTestedCriterionMismatch"),
                 ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(FUNCTIONALITY_TESTED_CRITERION_MISMATCH, i.getArgument(1), i.getArgument(2), i.getArgument(3), i.getArgument(4)));
+        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.functionalityTestedUnavailable"),
+                ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
+            .thenAnswer(i -> String.format(FUNCTIONALITY_TESTED_UNAVAILABLE, i.getArgument(1), i.getArgument(2)));
         reviewer = new FunctionalityTestedReviewer(certResultRules,
                 new ValidationUtils(Mockito.mock(CertificationCriterionService.class)),
                 functionalityTestedDao, msgUtil);
@@ -391,6 +397,147 @@ public class FunctionalityTestedReviewerTest {
 
         assertEquals(0, listing.getWarningMessages().size());
         assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_functionalityTestedDatesEarlierThanDecertifiedListingDates_hasError() throws EntityRetrievalException {
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.FUNCTIONALITY_TESTED)))
+            .thenReturn(true);
+        CertificationCriterion a1 = CertificationCriterion.builder()
+                .id(1L)
+                .number("170.315 (a)(1)")
+                .title("a1")
+                .startDay(LocalDate.parse("2022-01-01"))
+                .build();
+        FunctionalityTested removedFunctionalityTested = FunctionalityTested.builder()
+                .id(3L)
+                .regulatoryTextCitation("mismatch")
+                .value("mismatch")
+                .startDay(LocalDate.parse("2021-01-01"))
+                .endDay(LocalDate.parse("2021-02-01"))
+                .criteria(Stream.of(a1).collect(Collectors.toList()))
+                .build();
+
+        Mockito.when(functionalityTestedDao.getById(ArgumentMatchers.anyLong()))
+            .thenReturn(removedFunctionalityTested);
+        Map<Long, List<FunctionalityTested>> a1FuncTestedCriteriaMap = new HashMap<Long, List<FunctionalityTested>>();
+        a1FuncTestedCriteriaMap.put(1L, Stream.of(removedFunctionalityTested).toList());
+        Mockito.when(functionalityTestedDao.getFunctionalitiesTestedCriteriaMaps())
+            .thenReturn(a1FuncTestedCriteriaMap);
+        List<CertificationResultFunctionalityTested> functionalitiesTested = new ArrayList<CertificationResultFunctionalityTested>();
+        functionalitiesTested.add(CertificationResultFunctionalityTested.builder()
+                .functionalityTested(removedFunctionalityTested)
+                .build());
+
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationDate(DateUtil.toEpochMillis(LocalDate.parse("2022-01-01")))
+                .decertificationDay(LocalDate.parse("2022-05-01"))
+                .certificationResult(CertificationResult.builder()
+                        .criterion(a1)
+                        .success(true)
+                        .functionalitiesTested(functionalitiesTested)
+                        .build())
+                .build();
+        reviewer.review(listing);
+
+        assertEquals(1, listing.getCertificationResults().get(0).getFunctionalitiesTested().size());
+        assertEquals(1, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(
+                String.format(FUNCTIONALITY_TESTED_UNAVAILABLE, "mismatch", "170.315 (a)(1)")));
+    }
+
+    @Test
+    public void review_functionalityTestedDatesEarlierThanActiveListingDate_hasError() throws EntityRetrievalException {
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.FUNCTIONALITY_TESTED)))
+            .thenReturn(true);
+        CertificationCriterion a1 = CertificationCriterion.builder()
+                .id(1L)
+                .number("170.315 (a)(1)")
+                .title("a1")
+                .startDay(LocalDate.parse("2022-01-01"))
+                .build();
+        FunctionalityTested removedFunctionalityTested = FunctionalityTested.builder()
+                .id(3L)
+                .regulatoryTextCitation("mismatch")
+                .value("mismatch")
+                .startDay(LocalDate.parse("2021-01-01"))
+                .endDay(LocalDate.parse("2021-02-01"))
+                .criteria(Stream.of(a1).collect(Collectors.toList()))
+                .build();
+
+        Mockito.when(functionalityTestedDao.getById(ArgumentMatchers.anyLong()))
+            .thenReturn(removedFunctionalityTested);
+        Map<Long, List<FunctionalityTested>> a1FuncTestedCriteriaMap = new HashMap<Long, List<FunctionalityTested>>();
+        a1FuncTestedCriteriaMap.put(1L, Stream.of(removedFunctionalityTested).toList());
+        Mockito.when(functionalityTestedDao.getFunctionalitiesTestedCriteriaMaps())
+            .thenReturn(a1FuncTestedCriteriaMap);
+        List<CertificationResultFunctionalityTested> functionalitiesTested = new ArrayList<CertificationResultFunctionalityTested>();
+        functionalitiesTested.add(CertificationResultFunctionalityTested.builder()
+                .functionalityTested(removedFunctionalityTested)
+                .build());
+
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationDate(DateUtil.toEpochMillis(LocalDate.parse("2022-01-01")))
+                .certificationResult(CertificationResult.builder()
+                        .criterion(a1)
+                        .success(true)
+                        .functionalitiesTested(functionalitiesTested)
+                        .build())
+                .build();
+        reviewer.review(listing);
+
+        assertEquals(1, listing.getCertificationResults().get(0).getFunctionalitiesTested().size());
+        assertEquals(1, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(
+                String.format(FUNCTIONALITY_TESTED_UNAVAILABLE, "mismatch", "170.315 (a)(1)")));
+    }
+
+
+    @Test
+    public void review_functionalityTestedDatesLaterThanListingDates_hasError() throws EntityRetrievalException {
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.FUNCTIONALITY_TESTED)))
+            .thenReturn(true);
+        CertificationCriterion a1 = CertificationCriterion.builder()
+                .id(1L)
+                .number("170.315 (a)(1)")
+                .title("a1")
+                .startDay(LocalDate.parse("2022-01-01"))
+                .build();
+        FunctionalityTested removedFunctionalityTested = FunctionalityTested.builder()
+                .id(3L)
+                .regulatoryTextCitation("mismatch")
+                .value("mismatch")
+                .startDay(LocalDate.parse("2023-01-01"))
+                .endDay(LocalDate.parse("2023-02-01"))
+                .criteria(Stream.of(a1).collect(Collectors.toList()))
+                .build();
+
+        Mockito.when(functionalityTestedDao.getById(ArgumentMatchers.anyLong()))
+            .thenReturn(removedFunctionalityTested);
+        Map<Long, List<FunctionalityTested>> a1FuncTestedCriteriaMap = new HashMap<Long, List<FunctionalityTested>>();
+        a1FuncTestedCriteriaMap.put(1L, Stream.of(removedFunctionalityTested).toList());
+        Mockito.when(functionalityTestedDao.getFunctionalitiesTestedCriteriaMaps())
+            .thenReturn(a1FuncTestedCriteriaMap);
+        List<CertificationResultFunctionalityTested> functionalitiesTested = new ArrayList<CertificationResultFunctionalityTested>();
+        functionalitiesTested.add(CertificationResultFunctionalityTested.builder()
+                .functionalityTested(removedFunctionalityTested)
+                .build());
+
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationDate(DateUtil.toEpochMillis(LocalDate.parse("2022-01-01")))
+                .decertificationDay(LocalDate.parse("2022-05-01"))
+                .certificationResult(CertificationResult.builder()
+                        .criterion(a1)
+                        .success(true)
+                        .functionalitiesTested(functionalitiesTested)
+                        .build())
+                .build();
+        reviewer.review(listing);
+
+        assertEquals(1, listing.getCertificationResults().get(0).getFunctionalitiesTested().size());
+        assertEquals(1, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(
+                String.format(FUNCTIONALITY_TESTED_UNAVAILABLE, "mismatch", "170.315 (a)(1)")));
     }
 
     @Test
