@@ -8,6 +8,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Stream;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -16,6 +17,7 @@ import org.mockito.Mockito;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
+import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.InheritedCertificationStatus;
 import gov.healthit.chpl.domain.TestToolCriteriaMap;
@@ -26,6 +28,7 @@ import gov.healthit.chpl.testtool.TestTool;
 import gov.healthit.chpl.testtool.TestToolDAO;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
+import gov.healthit.chpl.util.DateUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.ValidationUtils;
 
@@ -37,6 +40,7 @@ public class TestToolReviewerTest {
     private static final String MISSING_TEST_TOOL_VERSION = "There was no version found for test tool %s and certification %s.";
     private static final String RETIRED_TEST_TOOL_NOT_ALLOWED = "Test Tool '%s' can not be used for criteria '%s', as it is a retired tool, and this Certified Product does not carry ICS.";
     private static final String TEST_TOOL_CRITERIA_MISMATCH = "Test Tool '%s' is not valid for criteria %s.";
+    private static final String TEST_TOOL_UNAVAILABLE = "The Test Tool %s on the criterion %s is unavailable for this listing.";
 
     private CertificationResultRules certResultRules;
     private ErrorMessageUtil msgUtil;
@@ -72,6 +76,9 @@ public class TestToolReviewerTest {
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.testToolCriterionMismatch"),
                 ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(TEST_TOOL_CRITERIA_MISMATCH, i.getArgument(1), i.getArgument(2)));
+        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.testToolUnavailable"),
+                ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
+            .thenAnswer(i -> String.format(TEST_TOOL_UNAVAILABLE, i.getArgument(1), i.getArgument(2)));
         Mockito.when(testToolDAO.getAllTestToolCriteriaMaps()).thenReturn(getTestToolCriteriaMap());
 
         reviewer = new TestToolReviewer(certResultRules,
@@ -643,8 +650,8 @@ public class TestToolReviewerTest {
                 .testTool(TestTool.builder()
                         .id(2L)
                         .value("retired tool")
-                        .startDay(LocalDate.MIN)
-                        .endDay(LocalDate.MIN.plusDays(1))
+                        .startDay(LocalDate.parse("2021-01-01"))
+                        .endDay(LocalDate.parse("2021-01-02"))
                         .build())
                 .version("1")
                 .build());
@@ -657,6 +664,7 @@ public class TestToolReviewerTest {
                 .build());
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .chplProductNumber("15.04.04.2526.WErB.06.00.1.123456")
+                .certificationDate(DateUtil.toEpochMillis(LocalDate.parse("2021-01-01")))
                 .certificationResult(CertificationResult.builder()
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
@@ -734,8 +742,8 @@ public class TestToolReviewerTest {
                 .testTool(TestTool.builder()
                         .id(2L)
                         .value("retired tool")
-                        .startDay(LocalDate.MIN)
-                        .endDay(LocalDate.MIN.plusDays(1))
+                        .startDay(LocalDate.parse("2021-01-01"))
+                        .endDay(LocalDate.parse("2021-01-02"))
                         .build())
                 .version("1")
                 .build());
@@ -748,6 +756,7 @@ public class TestToolReviewerTest {
                 .build());
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .chplProductNumber("15.04.04.2526.WErB.06.01.1.123456")
+                .certificationDate(DateUtil.toEpochMillis(LocalDate.parse("2021-01-01")))
                 .certificationResult(CertificationResult.builder()
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
@@ -769,9 +778,8 @@ public class TestToolReviewerTest {
         assertEquals(0, listing.getErrorMessages().size());
     }
 
-    /*
     @Test
-    public void review_retiredTestToolsWithAllData_noError() {
+    public void review_testToolDatesEarlierThanDecertifiedListingDates_hasError() {
         Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
             .thenReturn(false);
         Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.TEST_TOOLS_USED)))
@@ -779,19 +787,25 @@ public class TestToolReviewerTest {
 
         List<CertificationResultTestTool> testTools = new ArrayList<CertificationResultTestTool>();
         testTools.add(CertificationResultTestTool.builder()
-                .testToolId(2L)
-                .testToolName("retired tool")
-                .testToolVersion("1")
-                .build());
-        testTools.add(CertificationResultTestTool.builder()
                 .testTool(TestTool.builder()
                         .id(1L)
-                        .value("good name")
+                        .value("tt")
+                        .regulatoryTextCitation("testtool")
+                        .startDay(LocalDate.parse("2021-01-01"))
+                        .endDay(LocalDate.parse("2021-02-01"))
                         .build())
                 .version("1")
                 .build());
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .chplProductNumber("15.04.04.2526.WErB.06.00.1.123456")
+                .chplProductNumber("15.04.04.2526.WErB.06.01.1.123456")
+                .certificationDate(DateUtil.toEpochMillis(LocalDate.parse("2022-01-01")))
+                .decertificationDay(LocalDate.parse("2022-02-01"))
+                .ics(InheritedCertificationStatus.builder()
+                        .inherits(true)
+                        .parents(Stream.of(CertifiedProduct.builder()
+                                .id(1L)
+                                .build()).toList())
+                        .build())
                 .certificationResult(CertificationResult.builder()
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
@@ -805,11 +819,97 @@ public class TestToolReviewerTest {
                 .build();
         reviewer.review(listing);
 
-        assertEquals(2, listing.getCertificationResults().get(0).getTestToolsUsed().size());
+        assertEquals(1, listing.getCertificationResults().get(0).getTestToolsUsed().size());
         assertEquals(0, listing.getWarningMessages().size());
-        assertEquals(0, listing.getErrorMessages().size());
+        assertEquals(1, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(String.format(TEST_TOOL_UNAVAILABLE, "testtool", "170.315 (a)(1)")));
     }
-*/
+
+    @Test
+    public void review_testToolDatesEarlierThanActiveListingDates_hasError() {
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
+            .thenReturn(false);
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.TEST_TOOLS_USED)))
+            .thenReturn(true);
+
+        List<CertificationResultTestTool> testTools = new ArrayList<CertificationResultTestTool>();
+        testTools.add(CertificationResultTestTool.builder()
+                .testTool(TestTool.builder()
+                        .id(1L)
+                        .value("tt")
+                        .regulatoryTextCitation("testtool")
+                        .startDay(LocalDate.parse("2021-01-01"))
+                        .endDay(LocalDate.parse("2021-02-01"))
+                        .build())
+                .version("1")
+                .build());
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .chplProductNumber("15.04.04.2526.WErB.06.01.1.123456")
+                .certificationDate(DateUtil.toEpochMillis(LocalDate.parse("2022-01-01")))
+                .ics(InheritedCertificationStatus.builder()
+                        .inherits(true)
+                        .parents(Stream.of(CertifiedProduct.builder()
+                                .id(1L)
+                                .build()).toList())
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .criterion(CertificationCriterion.builder()
+                                .id(1L)
+                                .number("170.315 (a)(1)")
+                                .startDay(LocalDate.parse("2023-01-01"))
+                                .build())
+                        .gap(false)
+                        .success(true)
+                        .testToolsUsed(testTools)
+                        .build())
+                .build();
+        reviewer.review(listing);
+
+        assertEquals(1, listing.getCertificationResults().get(0).getTestToolsUsed().size());
+        assertEquals(0, listing.getWarningMessages().size());
+        assertEquals(1, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(String.format(TEST_TOOL_UNAVAILABLE, "testtool", "170.315 (a)(1)")));
+    }
+
+    @Test
+    public void review_testToolDatesLaterThanDecertifiedListingDates_hasError() {
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.GAP)))
+            .thenReturn(false);
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.TEST_TOOLS_USED)))
+            .thenReturn(true);
+
+        List<CertificationResultTestTool> testTools = new ArrayList<CertificationResultTestTool>();
+        testTools.add(CertificationResultTestTool.builder()
+                .testTool(TestTool.builder()
+                        .id(1L)
+                        .value("tt")
+                        .regulatoryTextCitation("testtool")
+                        .startDay(LocalDate.parse("2023-01-01"))
+                        .build())
+                .version("1")
+                .build());
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .chplProductNumber("15.04.04.2526.WErB.06.00.1.123456")
+                .certificationDate(DateUtil.toEpochMillis(LocalDate.parse("2022-01-01")))
+                .decertificationDay(LocalDate.parse("2022-02-01"))
+                .certificationResult(CertificationResult.builder()
+                        .criterion(CertificationCriterion.builder()
+                                .id(1L)
+                                .number("170.315 (a)(1)")
+                                .startDay(LocalDate.parse("2023-01-01"))
+                                .build())
+                        .gap(false)
+                        .success(true)
+                        .testToolsUsed(testTools)
+                        .build())
+                .build();
+        reviewer.review(listing);
+
+        assertEquals(1, listing.getCertificationResults().get(0).getTestToolsUsed().size());
+        assertEquals(0, listing.getWarningMessages().size());
+        assertEquals(1, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(String.format(TEST_TOOL_UNAVAILABLE, "testtool", "170.315 (a)(1)")));
+    }
 
     @Test
     public void review_testToolsNotApplicableForCriteria_hasError() {

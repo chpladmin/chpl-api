@@ -4,6 +4,7 @@ import java.util.Iterator;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -15,6 +16,7 @@ import gov.healthit.chpl.testtool.CertificationResultTestTool;
 import gov.healthit.chpl.testtool.TestToolDAO;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
+import gov.healthit.chpl.util.DateUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
 import gov.healthit.chpl.util.ValidationUtils;
@@ -114,6 +116,7 @@ public class TestToolReviewer {
         reviewNameAndVersionRequired(listing, certResult, testTool);
         reviewTestToolNotRetiredUnlessIcs(listing, certResult, testTool);
         reviewTestToolValidForCriteria(listing, certResult, testTool);
+        reviewTestToolAvailabilityByDate(listing, certResult, testTool);
     }
 
     private void reviewNameAndVersionRequired(CertifiedProductSearchDetails listing,
@@ -172,6 +175,16 @@ public class TestToolReviewer {
         } catch (EntityRetrievalException e) {
             LOGGER.error("Could not validate Test Tool: {}", certResultTestTool.getTestTool().getValue());
             return false;
+        }
+    }
+
+    private void reviewTestToolAvailabilityByDate(CertifiedProductSearchDetails listing, CertificationResult certResult, CertificationResultTestTool testTool) {
+        if (!DateUtil.datesOverlap(Pair.of(listing.getCertificationDay(), listing.getDecertificationDay()),
+                Pair.of(testTool.getTestTool().getStartDay(),
+                        testTool.getTestTool().getEndDay()))) {
+            listing.addBusinessErrorMessage(msgUtil.getMessage("listing.criteria.testToolUnavailable",
+                    testTool.getTestTool().getRegulatoryTextCitation(),
+                    Util.formatCriteriaNumber(certResult.getCriterion())));
         }
     }
 }
