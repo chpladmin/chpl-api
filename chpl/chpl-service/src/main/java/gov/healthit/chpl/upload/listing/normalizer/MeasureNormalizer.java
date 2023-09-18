@@ -119,6 +119,7 @@ public class MeasureNormalizer {
             criterion.setStartDay(matchingCriterion.getStartDay());
             criterion.setEndDay(matchingCriterion.getEndDay());
             criterion.setTitle(matchingCriterion.getTitle());
+            criterion.setRule(matchingCriterion.getRule());
         }
     }
 
