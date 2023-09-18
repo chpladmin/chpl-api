@@ -1,7 +1,7 @@
 package gov.healthit.chpl.domain;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
-import gov.healthit.chpl.criteriaattribute.testtool.TestTool;
+import gov.healthit.chpl.testtool.TestTool;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

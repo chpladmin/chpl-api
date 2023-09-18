@@ -1,6 +1,7 @@
 package gov.healthit.chpl.dao;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -286,6 +287,27 @@ public class CertifiedProductDAO extends BaseDAOImpl {
     }
 
     @Transactional(readOnly = true)
+    public List<CertifiedProductDetailsDTO> getListingsByStatus(Collection<CertificationStatusType> certificationStatuses) {
+        String hql = "SELECT cpd "
+                + "FROM CertifiedProductDetailsEntity cpd "
+                + "WHERE cpd.certificationStatusName IN (:certificationStatusNames) "
+                + "AND cpd.deleted = false ";
+        Query query = entityManager.createQuery(hql, CertifiedProductDetailsEntity.class);
+        List<String> certificationStatusNames = certificationStatuses.stream()
+                .map(CertificationStatusType::getName)
+                .collect(Collectors.toList());
+        query.setParameter("certificationStatusNames", certificationStatusNames);
+
+        List<CertifiedProductDetailsEntity> queryResults = query.getResultList();
+        if (queryResults == null || queryResults.size() == 0) {
+            return new ArrayList<CertifiedProductDetailsDTO>();
+        }
+        return queryResults.stream()
+                .map(entity -> new CertifiedProductDetailsDTO(entity))
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
     public List<CertifiedProductDetailsDTO> findByEdition(final String edition) {
         Query query = entityManager.createQuery("SELECT cpd "
                 + "FROM CertifiedProductDetailsEntity cpd "
@@ -300,17 +322,6 @@ public class CertifiedProductDAO extends BaseDAOImpl {
             products.add(product);
         }
         return products;
-    }
-
-    @Transactional(readOnly = true)
-    public List<Long> findIdsByEdition(String edition) {
-        Query query = entityManager.createQuery("SELECT cpd.id "
-                + "FROM CertifiedProductDetailsEntity cpd "
-                + "WHERE (NOT deleted = true) "
-                + "AND cpd.year = :edition ", Long.class);
-        query.setParameter("edition", edition.trim());
-        List<Long> ids = query.getResultList();
-        return ids;
     }
 
     @Transactional(readOnly = true)

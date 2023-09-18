@@ -1,4 +1,4 @@
-package gov.healthit.chpl.functionalityTested;
+package gov.healthit.chpl.functionalitytested;
 
 import java.io.Serializable;
 
@@ -15,9 +15,11 @@ import org.apache.commons.lang3.StringUtils;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseField;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 /**
@@ -31,6 +33,7 @@ import lombok.ToString;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlAccessorOrder(value = XmlAccessOrder.ALPHABETICAL)
 @JsonIgnoreProperties(ignoreUnknown = true)
+@NoArgsConstructor
 @AllArgsConstructor
 @ToString
 @Builder
@@ -45,40 +48,42 @@ public class CertificationResultFunctionalityTested implements Serializable {
     private Long id;
 
     /**
-     * Functionality tested internal ID
+     * Functionality Tested
      */
     @Schema(description = "Functionality tested internal ID")
     @XmlElement(required = true)
+    private FunctionalityTested functionalityTested;
+
+    @Deprecated
+    @DeprecatedResponseField(message = "This field is deprecated and will be removed. This data can be found functionalityTested.id",
+            removalDate = "2024-01-01")
+    @XmlTransient
     private Long functionalityTestedId;
 
-    /**
-     * Description of functionality tested
-     */
-    @Schema(description = "Description of functionality tested")
-    @XmlElement(required = false, nillable = true)
+    @Deprecated
+    @DeprecatedResponseField(message = "This field is deprecated and will be removed. This data can be found functionalityTested.value",
+            removalDate = "2024-01-01")
+    @XmlTransient
     private String description;
 
-    /**
-     * Name of functionality tested
-     */
-    @Schema(description = "Name of functionality tested")
-    @XmlElement(required = true)
+    @Deprecated
+    @DeprecatedResponseField(message = "This field is deprecated and will be removed. This data can be found functionalityTested.regulatoryTextCitation",
+            removalDate = "2024-01-01")
+    @XmlTransient
     private String name;
 
     @XmlTransient
     @JsonIgnore
     private Long certificationResultId;
 
-    public CertificationResultFunctionalityTested() {
-    }
-
     public boolean matches(CertificationResultFunctionalityTested anotherFunc) {
         boolean result = false;
-        if (this.getFunctionalityTestedId() != null && anotherFunc.getFunctionalityTestedId() != null
-                && this.getFunctionalityTestedId().longValue() == anotherFunc.getFunctionalityTestedId().longValue()) {
+        if (this.getFunctionalityTested().getId() != null && anotherFunc.getFunctionalityTested().getId() != null
+                && this.getFunctionalityTested().getId().longValue() == anotherFunc.getFunctionalityTested().getId().longValue()) {
             result = true;
-        } else if (!StringUtils.isEmpty(this.getName()) && !StringUtils.isEmpty(anotherFunc.getName())
-                && this.getName().equalsIgnoreCase(anotherFunc.getName())) {
+        } else if (!StringUtils.isEmpty(this.getFunctionalityTested().getRegulatoryTextCitation())
+                    && !StringUtils.isEmpty(anotherFunc.getFunctionalityTested().getRegulatoryTextCitation())
+                && this.getFunctionalityTested().getRegulatoryTextCitation().equalsIgnoreCase(anotherFunc.getFunctionalityTested().getRegulatoryTextCitation())) {
             result = true;
         }
         return result;
@@ -92,26 +97,32 @@ public class CertificationResultFunctionalityTested implements Serializable {
         this.id = id;
     }
 
+    @Deprecated
     public Long getFunctionalityTestedId() {
         return functionalityTestedId;
     }
 
+    @Deprecated
     public void setFunctionalityTestedId(Long functionalityTestedId) {
         this.functionalityTestedId = functionalityTestedId;
     }
 
+    @Deprecated
     public String getDescription() {
         return description;
     }
 
+    @Deprecated
     public void setDescription(final String description) {
         this.description = description;
     }
 
+    @Deprecated
     public String getName() {
         return name;
     }
 
+    @Deprecated
     public void setName(final String name) {
         this.name = name;
     }
@@ -122,6 +133,14 @@ public class CertificationResultFunctionalityTested implements Serializable {
 
     public void setCertificationResultId(Long certificationResultId) {
         this.certificationResultId = certificationResultId;
+    }
+
+    public FunctionalityTested getFunctionalityTested() {
+        return functionalityTested;
+    }
+
+    public void setFunctionalityTested(FunctionalityTested functionalityTested) {
+        this.functionalityTested = functionalityTested;
     }
 
 }

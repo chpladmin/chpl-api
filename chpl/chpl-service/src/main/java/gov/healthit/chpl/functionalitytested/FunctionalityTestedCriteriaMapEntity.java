@@ -1,5 +1,6 @@
-package gov.healthit.chpl.criteriaattribute.testtool;
+package gov.healthit.chpl.functionalitytested;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import javax.persistence.Basic;
@@ -14,19 +15,23 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterionEntity;
-import gov.healthit.chpl.domain.TestToolCriteriaMap;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 @Entity
-@Table(name = "test_tool_criteria_map")
-@Data
+@Getter
+@Setter
+@ToString
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor
-public class TestToolCriteriaMapEntity {
+@AllArgsConstructor
+@Table(name = "functionality_tested_criteria_map")
+public class FunctionalityTestedCriteriaMapEntity implements Serializable {
+    private static final long serialVersionUID = 6446486138564063907L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,21 +39,21 @@ public class TestToolCriteriaMapEntity {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @Column(name = "certification_criterion_id")
+    @Column(name = "criteria_id")
     private Long certificationCriterionId;
 
     @Basic(optional = false)
     @OneToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "certification_criterion_id", insertable = false, updatable = false)
-    private CertificationCriterionEntity criteria;
+    @JoinColumn(name = "criteria_id", insertable = false, updatable = false)
+    private CertificationCriterionEntity criterion;
 
-    @Column(name = "test_tool_id")
-    private Long testToolId;
+    @Column(name = "functionality_tested_id")
+    private Long functionalityTestedId;
 
     @Basic(optional = false)
     @OneToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "test_tool_id", insertable = false, updatable = false)
-    private TestToolEntity testTool;
+    @JoinColumn(name = "functionality_tested_id", insertable = false, updatable = false)
+    private FunctionalityTestedEntity functionalityTested;
 
     @Basic(optional = false)
     @Column(name = "creation_date", nullable = false, insertable = false, updatable = false)
@@ -66,11 +71,11 @@ public class TestToolCriteriaMapEntity {
     @Column(name = "last_modified_user", nullable = false)
     private Long lastModifiedUser;
 
-    public TestToolCriteriaMap toDomain() {
-        return TestToolCriteriaMap.builder()
+    public FunctionalityTestedCriteriaMap toDomain() {
+        return FunctionalityTestedCriteriaMap.builder()
                 .id(id)
-                .criterion(criteria.toDomain())
-                .testTool(testTool.toDomain())
+                .criterion(criterion.toDomain())
+                .functionalityTested(functionalityTested.toDomain())
                 .build();
     }
 }

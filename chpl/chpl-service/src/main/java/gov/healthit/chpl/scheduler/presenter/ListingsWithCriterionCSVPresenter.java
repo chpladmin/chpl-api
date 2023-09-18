@@ -25,7 +25,7 @@ import gov.healthit.chpl.domain.CertificationResultTestProcedure;
 import gov.healthit.chpl.domain.CertificationResultTestStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.entity.CertificationStatusType;
-import gov.healthit.chpl.functionalityTested.CertificationResultFunctionalityTested;
+import gov.healthit.chpl.functionalitytested.CertificationResultFunctionalityTested;
 
 public class ListingsWithCriterionCSVPresenter {
     private static final String UNKNOWN_VALUE = "?";
@@ -121,13 +121,13 @@ public class ListingsWithCriterionCSVPresenter {
             for (int i = 0; i < certResult.getFunctionalitiesTested().size(); i++) {
                 CertificationResultFunctionalityTested functionalityTested = certResult.getFunctionalitiesTested().get(i);
                 if (i == 0) {
-                    certificationResultFirstRow.add(functionalityTested.getName());
+                    certificationResultFirstRow.add(functionalityTested.getFunctionalityTested().getRegulatoryTextCitation());
                 } else if (result.size() > i) {
-                    result.get(i).add(functionalityTested.getName());
+                    result.get(i).add(functionalityTested.getFunctionalityTested().getRegulatoryTextCitation());
                 } else {
                     List<String> newRow = getSingleValuedCertificationResultData(listing, certResult);
                     newRow.add(""); //blank space for test standards
-                    newRow.add(functionalityTested.getName());
+                    newRow.add(functionalityTested.getFunctionalityTested().getRegulatoryTextCitation());
                     result.add(newRow);
                 }
             }

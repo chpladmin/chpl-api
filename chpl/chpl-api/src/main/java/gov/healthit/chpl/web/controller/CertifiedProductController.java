@@ -727,6 +727,7 @@ public class CertifiedProductController {
                 .countOpenSurveillance(e.getCountOpenSurveillance())
                 .countSurveillance(e.getCountSurveillance())
                 .decertificationDate(e.getDecertificationDate())
+                .decertificationDay(e.getDecertificationDay())
                 .developer(e.getDeveloper())
                 .directReviews(e.getDirectReviews())
                 .directReviewsAvailable(e.isDirectReviewsAvailable())

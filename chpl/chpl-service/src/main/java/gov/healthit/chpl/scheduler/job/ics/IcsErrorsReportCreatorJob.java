@@ -6,7 +6,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -32,12 +31,12 @@ import gov.healthit.chpl.scheduler.job.QuartzJob;
 import gov.healthit.chpl.search.ListingSearchService;
 import gov.healthit.chpl.search.domain.ListingSearchResult;
 import gov.healthit.chpl.search.domain.SearchRequest;
+import gov.healthit.chpl.util.CertificationStatusUtil;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2(topic = "icsErrorsReportCreatorJobLogger")
 @DisallowConcurrentExecution
 public class IcsErrorsReportCreatorJob extends QuartzJob {
-    private static final String EDITION_2015 = "2015";
 
     @Autowired
     private ListingSearchService listingSearchService;
@@ -74,7 +73,7 @@ public class IcsErrorsReportCreatorJob extends QuartzJob {
         List<ListingSearchResult> relevantListings = new ArrayList<ListingSearchResult>();
         try {
             relevantListings = listingSearchService.getAllPagesOfSearchResults(SearchRequest.builder()
-                .certificationEditions(Stream.of(EDITION_2015).collect(Collectors.toSet()))
+                .certificationStatuses(CertificationStatusUtil.getActiveStatusNames().stream().collect(Collectors.toSet()))
                 .build());
         } catch (ValidationException ex) {
             LOGGER.fatal("Invalid search request provided.", ex);

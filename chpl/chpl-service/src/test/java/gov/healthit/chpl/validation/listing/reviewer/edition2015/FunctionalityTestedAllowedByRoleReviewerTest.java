@@ -13,7 +13,8 @@ import org.mockito.Mockito;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.functionalityTested.CertificationResultFunctionalityTested;
+import gov.healthit.chpl.functionalitytested.CertificationResultFunctionalityTested;
+import gov.healthit.chpl.functionalitytested.FunctionalityTested;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
@@ -47,8 +48,10 @@ public class FunctionalityTestedAllowedByRoleReviewerTest {
         // Setup
         List<CertificationResultFunctionalityTested> functionalitiesTested = new ArrayList<CertificationResultFunctionalityTested>();
         functionalitiesTested.add(CertificationResultFunctionalityTested.builder()
-                .name("(b)(2)(i)(E)")
-                .functionalityTestedId(FUNCTIONALITY_TESTED_ID_RANDOM)
+                .functionalityTested(FunctionalityTested.builder()
+                        .id(FUNCTIONALITY_TESTED_ID_RANDOM)
+                        .value("(b)(2)(i)(E)")
+                        .build())
                 .build());
 
         CertifiedProductSearchDetails existingListing = CertifiedProductSearchDetails.builder()
@@ -91,8 +94,10 @@ public class FunctionalityTestedAllowedByRoleReviewerTest {
         // Setup
         List<CertificationResultFunctionalityTested> functionalitiesTested = new ArrayList<CertificationResultFunctionalityTested>();
         functionalitiesTested.add(CertificationResultFunctionalityTested.builder()
-                .name("(b)(2)(i)(E)")
-                .functionalityTestedId(FUNCTIONALITY_TESTED_ID_RANDOM)
+                .functionalityTested(FunctionalityTested.builder()
+                        .id(FUNCTIONALITY_TESTED_ID_RANDOM)
+                        .value("(b)(2)(i)(E)")
+                        .build())
                 .build());
         CertifiedProductSearchDetails existingListing = CertifiedProductSearchDetails.builder().build();
 
@@ -121,8 +126,10 @@ public class FunctionalityTestedAllowedByRoleReviewerTest {
         // Setup
         List<CertificationResultFunctionalityTested> functionalitiesTested = new ArrayList<CertificationResultFunctionalityTested>();
         functionalitiesTested.add(CertificationResultFunctionalityTested.builder()
-                .name("(b)(2)(i)(E)")
-                .functionalityTestedId(FUNCTIONALITY_TESTED_ID_RANDOM)
+                .functionalityTested(FunctionalityTested.builder()
+                        .id(FUNCTIONALITY_TESTED_ID_RANDOM)
+                        .value("(b)(2)(i)(E)")
+                        .build())
                 .build());
 
         CertifiedProductSearchDetails existingListing = CertifiedProductSearchDetails.builder()
@@ -152,8 +159,10 @@ public class FunctionalityTestedAllowedByRoleReviewerTest {
         // Setup
         List<CertificationResultFunctionalityTested> functionalitiesTested = new ArrayList<CertificationResultFunctionalityTested>();
         functionalitiesTested.add(CertificationResultFunctionalityTested.builder()
-                .name("(c)(3)(ii)")
-                .functionalityTestedId(FUNCTIONALITY_TESTED_CIII)
+                .functionalityTested(FunctionalityTested.builder()
+                        .id(FUNCTIONALITY_TESTED_CIII)
+                        .value("(c)(3)(ii)")
+                        .build())
                 .build());
 
         CertifiedProductSearchDetails existingListing = CertifiedProductSearchDetails.builder()
@@ -195,8 +204,10 @@ public class FunctionalityTestedAllowedByRoleReviewerTest {
         // Setup
         List<CertificationResultFunctionalityTested> functionalitiesTested = new ArrayList<CertificationResultFunctionalityTested>();
         functionalitiesTested.add(CertificationResultFunctionalityTested.builder()
-                .name("(c)(3)(ii)")
-                .functionalityTestedId(FUNCTIONALITY_TESTED_CIII)
+                .functionalityTested(FunctionalityTested.builder()
+                        .id(FUNCTIONALITY_TESTED_CIII)
+                        .value("(c)(3)(ii)")
+                        .build())
                 .build());
 
         CertifiedProductSearchDetails existingListing = CertifiedProductSearchDetails.builder()
@@ -239,8 +250,10 @@ public class FunctionalityTestedAllowedByRoleReviewerTest {
         Mockito.when(permissions.doesUserHaveRole(ArgumentMatchers.anyList())).thenReturn(false);
         List<CertificationResultFunctionalityTested> functionalitiesTested = new ArrayList<CertificationResultFunctionalityTested>();
         functionalitiesTested.add(CertificationResultFunctionalityTested.builder()
-                .name("(b)(2)(i)(E)")
-                .functionalityTestedId(FUNCTIONALITY_TESTED_ID_RANDOM)
+                .functionalityTested(FunctionalityTested.builder()
+                        .id(FUNCTIONALITY_TESTED_ID_RANDOM)
+                        .value("(b)(2)(i)(E)")
+                        .build())
                 .build());
 
         CertifiedProductSearchDetails existingListing = CertifiedProductSearchDetails.builder().build();
@@ -271,8 +284,10 @@ public class FunctionalityTestedAllowedByRoleReviewerTest {
         Mockito.when(permissions.doesUserHaveRole(ArgumentMatchers.anyList())).thenReturn(false);
         List<CertificationResultFunctionalityTested> functionalitiesTested = new ArrayList<CertificationResultFunctionalityTested>();
         functionalitiesTested.add(CertificationResultFunctionalityTested.builder()
-                .name("(b)(2)(i)(E)")
-                .functionalityTestedId(FUNCTIONALITY_TESTED_ID_RANDOM)
+                .functionalityTested(FunctionalityTested.builder()
+                        .id(FUNCTIONALITY_TESTED_ID_RANDOM)
+                        .value("(b)(2)(i)(E)")
+                        .build())
                 .build());
 
         CertifiedProductSearchDetails existingListing = CertifiedProductSearchDetails.builder()
@@ -303,8 +318,10 @@ public class FunctionalityTestedAllowedByRoleReviewerTest {
         Mockito.when(permissions.doesUserHaveRole(ArgumentMatchers.anyList())).thenReturn(false);
         List<CertificationResultFunctionalityTested> functionalitiesTested = new ArrayList<CertificationResultFunctionalityTested>();
         functionalitiesTested.add(CertificationResultFunctionalityTested.builder()
-                .name("(c)(3)(ii)")
-                .functionalityTestedId(FUNCTIONALITY_TESTED_CIII)
+                .functionalityTested(FunctionalityTested.builder()
+                        .id(FUNCTIONALITY_TESTED_CIII)
+                        .value("(c)(3)(ii)")
+                        .build())
                 .build());
 
         CertifiedProductSearchDetails existingListing = CertifiedProductSearchDetails.builder()
@@ -347,8 +364,10 @@ public class FunctionalityTestedAllowedByRoleReviewerTest {
         Mockito.when(permissions.doesUserHaveRole(ArgumentMatchers.anyList())).thenReturn(false);
         List<CertificationResultFunctionalityTested> functionalitiesTested = new ArrayList<CertificationResultFunctionalityTested>();
         functionalitiesTested.add(CertificationResultFunctionalityTested.builder()
-                .name("(c)(3)(ii)")
-                .functionalityTestedId(FUNCTIONALITY_TESTED_CIII)
+                .functionalityTested(FunctionalityTested.builder()
+                        .id(FUNCTIONALITY_TESTED_CIII)
+                        .value("(c)(3)(ii)")
+                        .build())
                 .build());
 
         CertifiedProductSearchDetails existingListing = CertifiedProductSearchDetails.builder()
@@ -391,8 +410,10 @@ public class FunctionalityTestedAllowedByRoleReviewerTest {
         Mockito.when(permissions.doesUserHaveRole(ArgumentMatchers.anyList())).thenReturn(false);
         List<CertificationResultFunctionalityTested> functionalitiesTested = new ArrayList<CertificationResultFunctionalityTested>();
         functionalitiesTested.add(CertificationResultFunctionalityTested.builder()
-                .name("(c)(3)(ii)")
-                .functionalityTestedId(FUNCTIONALITY_TESTED_CIII)
+                .functionalityTested(FunctionalityTested.builder()
+                        .id(FUNCTIONALITY_TESTED_CIII)
+                        .value("(c)(3)(ii)")
+                        .build())
                 .build());
 
         CertifiedProductSearchDetails existingListing = CertifiedProductSearchDetails.builder()

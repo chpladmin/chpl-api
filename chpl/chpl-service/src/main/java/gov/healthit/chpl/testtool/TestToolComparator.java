@@ -1,10 +1,9 @@
-package gov.healthit.chpl.domain.comparator;
+package gov.healthit.chpl.testtool;
 
 import java.util.Comparator;
 
 import org.apache.commons.lang3.StringUtils;
 
-import gov.healthit.chpl.criteriaattribute.testtool.TestTool;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor

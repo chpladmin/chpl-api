@@ -17,7 +17,7 @@ import com.fasterxml.jackson.databind.type.CollectionType;
 
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.functionalityTested.CertificationResultFunctionalityTested;
+import gov.healthit.chpl.functionalitytested.CertificationResultFunctionalityTested;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
@@ -64,9 +64,9 @@ public class FunctionalityTestedAllowedByRoleReviewer implements ComparisonRevie
 
                 allEditedCrtfs.stream()
                         .forEach(crtf -> {
-                            if (!isFunctionalityTestedChangeAllowedBasedOnRole(updatedCr.getCriterion().getId(), crtf.getFunctionalityTestedId())) {
+                            if (!isFunctionalityTestedChangeAllowedBasedOnRole(updatedCr.getCriterion().getId(), crtf.getFunctionalityTested().getId())) {
                                 updatedListing.addBusinessErrorMessage(errorMessages.getMessage("listing.criteria.functionalityTestedPermissionError",
-                                        crtf.getName(), Util.formatCriteriaNumber(updatedCr.getCriterion())));
+                                        crtf.getFunctionalityTested().getValue(), Util.formatCriteriaNumber(updatedCr.getCriterion())));
                             }
                         });
             }

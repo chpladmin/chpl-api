@@ -1,4 +1,4 @@
-package gov.healthit.chpl.criteriaattribute.testtool;
+package gov.healthit.chpl.testtool;
 
 import java.util.Date;
 import java.util.List;
@@ -12,9 +12,6 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
-import gov.healthit.chpl.criteriaattribute.CriteriaAttribute;
-import gov.healthit.chpl.criteriaattribute.CriteriaAttributeCriteriaMap;
-import gov.healthit.chpl.criteriaattribute.CriteriaAttributeDAO;
 import gov.healthit.chpl.criteriaattribute.rule.RuleDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
@@ -27,7 +24,7 @@ import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 @Repository("testToolDAO")
-public class TestToolDAO extends BaseDAOImpl implements CriteriaAttributeDAO {
+public class TestToolDAO extends BaseDAOImpl {
     private CertifiedProductDAO certifiedProductDAO;
     private RuleDAO ruleDAO;
 
@@ -37,16 +34,13 @@ public class TestToolDAO extends BaseDAOImpl implements CriteriaAttributeDAO {
         this.ruleDAO = ruleDAO;
     }
 
-    @Override
-    public CriteriaAttribute add(CriteriaAttribute criteriaAttribute) {
+    public TestTool add(TestTool testTool) {
         TestToolEntity entity = TestToolEntity.builder()
-                .name(criteriaAttribute.getValue())
-                .value(criteriaAttribute.getValue())
-                .regulatoryTextCitation(criteriaAttribute.getRegulatoryTextCitation())
-                .startDay(criteriaAttribute.getStartDay())
-                .endDay(criteriaAttribute.getEndDay())
-                .requiredDay(criteriaAttribute.getRequiredDay())
-                .rule(criteriaAttribute.getRule() != null ? ruleDAO.getRuleEntityById(criteriaAttribute.getRule().getId()) : null)
+                .value(testTool.getValue())
+                .regulatoryTextCitation(testTool.getRegulatoryTextCitation())
+                .startDay(testTool.getStartDay())
+                .endDay(testTool.getEndDay())
+                .rule(testTool.getRule() != null ? ruleDAO.getRuleEntityById(testTool.getRule().getId()) : null)
                 .creationDate(new Date())
                 .lastModifiedDate(new Date())
                 .lastModifiedUser(AuthUtil.getAuditId())
@@ -55,11 +49,6 @@ public class TestToolDAO extends BaseDAOImpl implements CriteriaAttributeDAO {
         create(entity);
 
         return getById(entity.getId());
-    }
-
-    @Override
-    public CriteriaAttribute getCriteriaAttributeById(Long id) {
-        return getById(id);
     }
 
     public List<TestTool> getAll() {
@@ -85,41 +74,37 @@ public class TestToolDAO extends BaseDAOImpl implements CriteriaAttributeDAO {
         return entities.get(0).toDomain();
     }
 
-    @Override
-    public List<CriteriaAttributeCriteriaMap> getAllAssociatedCriteriaMaps() throws EntityRetrievalException {
-        return getAllTestToolCriteriaMap().stream()
-                .map(map -> CriteriaAttributeCriteriaMap.builder()
-                        .criterion(map.getCriterion())
-                        .criteriaAttribute(map.getTestTool())
-                        .build())
-                .toList();
-    }
+//    public List<TestToolCriteriaMap> getAllAssociatedTestTools() throws EntityRetrievalException {
+//        return getAllTestToolCriteriaMap().stream()
+//                .map(map -> TestTooleCriteriaMap.builder()
+//                        .criterion(map.getCriterion())
+//                        .criteriaAttribute(map.getTestTool())
+//                        .build())
+//                .toList();
+//    }
 
     @Transactional
-    public List<TestToolCriteriaMap> getAllTestToolCriteriaMap() throws EntityRetrievalException {
+    public List<TestToolCriteriaMap> getAllTestToolCriteriaMaps() throws EntityRetrievalException {
         return getAllTestToolCriteriaMapEntities().stream()
                 .map(e -> e.toDomain())
                 .collect(Collectors.toList());
     }
 
-    @Override
-    public List<CertifiedProductDetailsDTO> getCertifiedProductsByCriteriaAttributeAndCriteria(CriteriaAttribute criteriaAttribute, CertificationCriterion criterion)
+    public List<CertifiedProductDetailsDTO> getCertifiedProductsByTestToolAndCriteria(TestTool testTool, CertificationCriterion criterion)
             throws EntityRetrievalException {
-        List<Long> certifiedProductIds = getCertifiedProductIdsUsingTestToolIdWithCriterion(criteriaAttribute.getId(), criterion.getId());
+        List<Long> certifiedProductIds = getCertifiedProductIdsUsingTestToolIdWithCriterion(testTool.getId(), criterion.getId());
         return certifiedProductDAO.getDetailsByIds(certifiedProductIds);
     }
 
-    @Override
-    public void update(CriteriaAttribute criteriaAttribute) throws EntityRetrievalException {
-        TestToolEntity entity = getEntityById(criteriaAttribute.getId());
+    public void update(TestTool testTool) throws EntityRetrievalException {
+        TestToolEntity entity = getEntityById(testTool.getId());
 
-        entity.setValue(criteriaAttribute.getValue());
-        entity.setRegulatoryTextCitation(criteriaAttribute.getRegulatoryTextCitation());
-        entity.setStartDay(criteriaAttribute.getStartDay());
-        entity.setEndDay(criteriaAttribute.getEndDay());
-        entity.setRequiredDay(criteriaAttribute.getRequiredDay());
-        if (criteriaAttribute.getRule() != null) {
-            entity.setRule(ruleDAO.getRuleEntityById(criteriaAttribute.getRule().getId()));
+        entity.setValue(testTool.getValue());
+        entity.setRegulatoryTextCitation(testTool.getRegulatoryTextCitation());
+        entity.setStartDay(testTool.getStartDay());
+        entity.setEndDay(testTool.getEndDay());
+        if (testTool.getRule() != null) {
+            entity.setRule(ruleDAO.getRuleEntityById(testTool.getRule().getId()));
         } else {
             entity.setRule(null);
         }
@@ -130,11 +115,10 @@ public class TestToolDAO extends BaseDAOImpl implements CriteriaAttributeDAO {
         update(entity);
     }
 
-    @Override
-    public void addCriteriaAttributeCriteriaMap(CriteriaAttribute criteriaAttribute, CertificationCriterion criterion) {
+    public void addTestToolCriteriaMap(TestTool testTool, CertificationCriterion criterion) {
         TestToolCriteriaMapEntity entity = TestToolCriteriaMapEntity.builder()
                 .certificationCriterionId(criterion.getId())
-                .testToolId(criteriaAttribute.getId())
+                .testToolId(testTool.getId())
                 .creationDate(new Date())
                 .lastModifiedDate(new Date())
                 .lastModifiedUser(AuthUtil.getAuditId())
@@ -144,10 +128,9 @@ public class TestToolDAO extends BaseDAOImpl implements CriteriaAttributeDAO {
         create(entity);
     }
 
-    @Override
-    public void removeCriteriaAttributeCriteriaMap(CriteriaAttribute criteriaAttribute, CertificationCriterion criterion) {
+    public void removeCriteriaAttributeCriteriaMap(TestTool testTool, CertificationCriterion criterion) {
         try {
-            TestToolCriteriaMapEntity entity = getTestToolCriteriaMapByTestToolAndCriterionEntity(criteriaAttribute.getId(), criterion.getId());
+            TestToolCriteriaMapEntity entity = getTestToolCriteriaMapByTestToolAndCriterionEntity(testTool.getId(), criterion.getId());
             entity.setDeleted(true);
             entity.setLastModifiedDate(new Date());
             entity.setLastModifiedUser(AuthUtil.getAuditId());
@@ -159,15 +142,13 @@ public class TestToolDAO extends BaseDAOImpl implements CriteriaAttributeDAO {
         }
     }
 
-    @Override
-    public List<CertifiedProductDetailsDTO> getCertifiedProductsByCriteriaAttribute(CriteriaAttribute criteriaAttribute) throws EntityRetrievalException {
-        List<Long> certifiedProductIds = getCertifiedProductIdsUsingTestToolId(criteriaAttribute.getId());
+    public List<CertifiedProductDetailsDTO> getCertifiedProductsByTestTool(TestTool testTool) throws EntityRetrievalException {
+        List<Long> certifiedProductIds = getCertifiedProductIdsUsingTestToolId(testTool.getId());
         return certifiedProductDAO.getDetailsByIds(certifiedProductIds);
     }
 
-    @Override
-    public void remove(CriteriaAttribute criteriaAttribute) throws EntityRetrievalException {
-        TestToolEntity entity = getEntityById(criteriaAttribute.getId());
+    public void remove(TestTool testTool) throws EntityRetrievalException {
+        TestToolEntity entity = getEntityById(testTool.getId());
         entity.setDeleted(true);
         entity.setLastModifiedUser(AuthUtil.getAuditId());
         entity.setLastModifiedDate(new Date());
@@ -195,7 +176,7 @@ public class TestToolDAO extends BaseDAOImpl implements CriteriaAttributeDAO {
                 + "LEFT JOIN FETCH c.certificationEdition "
                 + "LEFT JOIN FETCH c.rule "
                 + "WHERE (NOT tt.deleted = true) "
-                + "AND (UPPER(tt.name) = :name) ", TestToolEntity.class);
+                + "AND (UPPER(tt.value) = :name) ", TestToolEntity.class);
         query.setParameter("name", name.toUpperCase());
         List<TestToolEntity> result = query.getResultList();
 

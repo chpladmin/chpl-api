@@ -1,6 +1,5 @@
 package gov.healthit.chpl.validation.listing.reviewer;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -11,8 +10,8 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.util.CertificationStatusUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Component("listingStatusAndUserRoleReviewer")
@@ -45,11 +44,7 @@ public class ListingStatusAndUserRoleReviewer implements ComparisonReviewer {
     }
 
     private boolean isListingCurrentStatusConsideredActive(CertifiedProductSearchDetails listing) {
-        List<CertificationStatusType> activeStatuses = Arrays.asList(CertificationStatusType.Active,
-                CertificationStatusType.SuspendedByAcb, CertificationStatusType.SuspendedByOnc);
-
-        return activeStatuses.stream()
-                .anyMatch(status -> status.getName().equals(listing.getCurrentStatus().getStatus().getName()));
+        return CertificationStatusUtil.getActiveStatusNames().contains(listing.getCurrentStatus().getStatus().getName());
     }
 
     private boolean haveCriteriaBeenRemoved(CertifiedProductSearchDetails existingListing,

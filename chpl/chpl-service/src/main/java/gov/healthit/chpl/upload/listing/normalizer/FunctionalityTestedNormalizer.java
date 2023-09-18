@@ -16,9 +16,9 @@ import com.fasterxml.jackson.databind.type.CollectionType;
 
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.functionalityTested.CertificationResultFunctionalityTested;
-import gov.healthit.chpl.functionalityTested.FunctionalityTested;
-import gov.healthit.chpl.functionalityTested.FunctionalityTestedDAO;
+import gov.healthit.chpl.functionalitytested.CertificationResultFunctionalityTested;
+import gov.healthit.chpl.functionalitytested.FunctionalityTested;
+import gov.healthit.chpl.functionalitytested.FunctionalityTestedDAO;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import lombok.Data;
 import lombok.ToString;
@@ -74,27 +74,23 @@ public class FunctionalityTestedNormalizer {
     }
 
     private void fillInFunctionalitiesTestedData(CertifiedProductSearchDetails listing, CertificationResult certResult) {
-        populateFunctionalitiesTestedIds(listing, certResult, certResult.getFunctionalitiesTested());
+        populateFunctionalitiesTested(listing, certResult, certResult.getFunctionalitiesTested());
     }
 
-    private void populateFunctionalitiesTestedIds(CertifiedProductSearchDetails listing,
-            CertificationResult certResult,
-            List<CertificationResultFunctionalityTested> functionalitiesTested) {
+    private void populateFunctionalitiesTested(CertifiedProductSearchDetails listing, CertificationResult certResult, List<CertificationResultFunctionalityTested> functionalitiesTested) {
         if (functionalitiesTested != null && functionalitiesTested.size() > 0) {
             functionalitiesTested.stream()
                 .filter(functionalityTested -> functionalityTested.getId() == null)
-                .forEach(functionalityTested -> populateFunctionalityTestedId(listing, certResult, functionalityTested));
+                .forEach(functionalityTested -> populateFunctionalityTested(listing, certResult, functionalityTested));
         }
     }
 
-    private void populateFunctionalityTestedId(CertifiedProductSearchDetails listing,
-            CertificationResult certResult,
-            CertificationResultFunctionalityTested functionalityTested) {
-        if (!StringUtils.isEmpty(functionalityTested.getName())) {
+    private void populateFunctionalityTested(CertifiedProductSearchDetails listing, CertificationResult certResult, CertificationResultFunctionalityTested functionalityTested) {
+        if (!StringUtils.isEmpty(functionalityTested.getFunctionalityTested().getRegulatoryTextCitation())) {
             FunctionalityTested foundFunctionalityTested =
-                    getFunctionalityTested(functionalityTested.getName(), certResult.getCriterion().getId());
+                    getFunctionalityTested(functionalityTested.getFunctionalityTested().getRegulatoryTextCitation(), certResult.getCriterion().getId());
             if (foundFunctionalityTested != null) {
-                functionalityTested.setFunctionalityTestedId(foundFunctionalityTested.getId());
+                functionalityTested.setFunctionalityTested(foundFunctionalityTested);
             }
         }
     }
@@ -106,7 +102,7 @@ public class FunctionalityTestedNormalizer {
         }
         List<FunctionalityTested> functionalityTestedForCriterion = funcTestedMappings.get(criterionId);
         Optional<FunctionalityTested> funcTestedOpt = functionalityTestedForCriterion.stream()
-            .filter(funcTested -> funcTested.getName().equalsIgnoreCase(functionalityTestedNumber))
+            .filter(funcTested -> funcTested.getRegulatoryTextCitation().equalsIgnoreCase(functionalityTestedNumber))
             .findAny();
         return funcTestedOpt.isPresent() ? funcTestedOpt.get() : null;
     }
@@ -115,9 +111,9 @@ public class FunctionalityTestedNormalizer {
         Iterator<CertificationResultFunctionalityTested> functionalityTestedIter = certResult.getFunctionalitiesTested().listIterator();
         while (functionalityTestedIter.hasNext()) {
             CertificationResultFunctionalityTested currFunctionalityTested = functionalityTestedIter.next();
-            if (currFunctionalityTested.getFunctionalityTestedId() != null) {
+            if (currFunctionalityTested.getFunctionalityTested().getId() != null) {
                 Optional<RestrictedFunctionalityTested> restrictedFunctionalityTested
-                    = findRestrictedFunctionalityTested(certResult.getCriterion().getId(), currFunctionalityTested.getFunctionalityTestedId());
+                    = findRestrictedFunctionalityTested(certResult.getCriterion().getId(), currFunctionalityTested.getFunctionalityTested().getId());
                 if (restrictedFunctionalityTested.isPresent()) {
                     functionalityTestedIter.remove();
                 }

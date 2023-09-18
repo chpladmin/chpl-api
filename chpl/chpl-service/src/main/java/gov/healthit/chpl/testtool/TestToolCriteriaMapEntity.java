@@ -1,6 +1,5 @@
-package gov.healthit.chpl.functionalityTested;
+package gov.healthit.chpl.testtool;
 
-import java.io.Serializable;
 import java.util.Date;
 
 import javax.persistence.Basic;
@@ -15,17 +14,19 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterionEntity;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import gov.healthit.chpl.domain.TestToolCriteriaMap;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
-@Getter
-@Setter
-@ToString
-@Table(name = "functionality_tested_criteria_map")
-public class FunctionalityTestedCriteriaMapEntity implements Serializable {
-    private static final long serialVersionUID = 6446486138564063907L;
+@Table(name = "test_tool_criteria_map")
+@Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+public class TestToolCriteriaMapEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,16 +34,21 @@ public class FunctionalityTestedCriteriaMapEntity implements Serializable {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @Column(name = "criteria_id")
+    @Column(name = "certification_criterion_id")
     private Long certificationCriterionId;
 
     @Basic(optional = false)
     @OneToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "criteria_id", insertable = false, updatable = false)
-    private CertificationCriterionEntity criterion;
+    @JoinColumn(name = "certification_criterion_id", insertable = false, updatable = false)
+    private CertificationCriterionEntity criteria;
 
-    @Column(name = "functionality_tested_id")
-    private Long functionalityTestedId;
+    @Column(name = "test_tool_id")
+    private Long testToolId;
+
+    @Basic(optional = false)
+    @OneToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "test_tool_id", insertable = false, updatable = false)
+    private TestToolEntity testTool;
 
     @Basic(optional = false)
     @Column(name = "creation_date", nullable = false, insertable = false, updatable = false)
@@ -59,4 +65,12 @@ public class FunctionalityTestedCriteriaMapEntity implements Serializable {
     @Basic(optional = false)
     @Column(name = "last_modified_user", nullable = false)
     private Long lastModifiedUser;
+
+    public TestToolCriteriaMap toDomain() {
+        return TestToolCriteriaMap.builder()
+                .id(id)
+                .criterion(criteria.toDomain())
+                .testTool(testTool.toDomain())
+                .build();
+    }
 }

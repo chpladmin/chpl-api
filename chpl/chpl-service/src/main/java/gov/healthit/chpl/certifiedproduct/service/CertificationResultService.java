@@ -11,8 +11,6 @@ import gov.healthit.chpl.conformanceMethod.ConformanceMethodComparator;
 import gov.healthit.chpl.conformanceMethod.dao.ConformanceMethodDAO;
 import gov.healthit.chpl.conformanceMethod.domain.ConformanceMethod;
 import gov.healthit.chpl.conformanceMethod.domain.ConformanceMethodCriteriaMap;
-import gov.healthit.chpl.criteriaattribute.testtool.TestTool;
-import gov.healthit.chpl.criteriaattribute.testtool.TestToolDAO;
 import gov.healthit.chpl.dao.CertificationResultDetailsDAO;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
@@ -20,14 +18,13 @@ import gov.healthit.chpl.domain.CertifiedProductUcdProcess;
 import gov.healthit.chpl.domain.TestTask;
 import gov.healthit.chpl.domain.TestToolCriteriaMap;
 import gov.healthit.chpl.domain.comparator.CertificationResultComparator;
-import gov.healthit.chpl.domain.comparator.TestToolComparator;
 import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
 import gov.healthit.chpl.dto.CertificationResultTestTaskDTO;
 import gov.healthit.chpl.dto.CertificationResultUcdProcessDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.functionalityTested.FunctionalityTested;
-import gov.healthit.chpl.functionalityTested.FunctionalityTestedComparator;
-import gov.healthit.chpl.functionalityTested.FunctionalityTestedManager;
+import gov.healthit.chpl.functionalitytested.FunctionalityTested;
+import gov.healthit.chpl.functionalitytested.FunctionalityTestedComparator;
+import gov.healthit.chpl.functionalitytested.FunctionalityTestedManager;
 import gov.healthit.chpl.manager.CertificationResultManager;
 import gov.healthit.chpl.optionalStandard.OptionalStandardComparator;
 import gov.healthit.chpl.optionalStandard.dao.OptionalStandardDAO;
@@ -37,6 +34,9 @@ import gov.healthit.chpl.svap.dao.SvapDAO;
 import gov.healthit.chpl.svap.domain.Svap;
 import gov.healthit.chpl.svap.domain.SvapComparator;
 import gov.healthit.chpl.svap.domain.SvapCriteriaMap;
+import gov.healthit.chpl.testtool.TestTool;
+import gov.healthit.chpl.testtool.TestToolComparator;
+import gov.healthit.chpl.testtool.TestToolDAO;
 import gov.healthit.chpl.util.CertificationResultRules;
 
 @Component
@@ -83,7 +83,7 @@ public class CertificationResultService {
     public List<CertificationResult> getCertificationResults(CertifiedProductSearchDetails searchDetails) throws EntityRetrievalException {
         List<SvapCriteriaMap> svapCriteriaMap = svapDao.getAllSvapCriteriaMap();
         List<OptionalStandardCriteriaMap> optionalStandardCriteriaMap = optionalStandardDAO.getAllOptionalStandardCriteriaMap();
-        List<TestToolCriteriaMap> testToolCriteriaMap = testToolDAO.getAllTestToolCriteriaMap();
+        List<TestToolCriteriaMap> testToolCriteriaMap = testToolDAO.getAllTestToolCriteriaMaps();
         List<ConformanceMethodCriteriaMap> conformanceMethodCriteriaMap = conformanceMethodDAO.getAllConformanceMethodCriteriaMap();
 
         return getCertificationResultDetailsDTOs(searchDetails.getId()).stream()
@@ -100,7 +100,7 @@ public class CertificationResultService {
 
 
     public List<TestTool> getAvailableTestToolForCriteria(CertificationResult result) throws EntityRetrievalException {
-        return getAvailableTestToolForCriteria(result, testToolDAO.getAllTestToolCriteriaMap());
+        return getAvailableTestToolForCriteria(result, testToolDAO.getAllTestToolCriteriaMaps());
     }
 
     private CertificationResult getCertificationResult(CertificationResultDetailsDTO certResult,
