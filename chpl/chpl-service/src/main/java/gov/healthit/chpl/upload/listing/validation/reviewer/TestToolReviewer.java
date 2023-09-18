@@ -183,7 +183,7 @@ public class TestToolReviewer {
                 Pair.of(testTool.getTestTool().getStartDay(),
                         testTool.getTestTool().getEndDay()))) {
             listing.addBusinessErrorMessage(msgUtil.getMessage("listing.criteria.testToolUnavailable",
-                    testTool.getTestTool().getRegulatoryTextCitation(),
+                    testTool.getTestTool().getValue(),
                     Util.formatCriteriaNumber(certResult.getCriterion())));
         }
     }
