@@ -1,5 +1,26 @@
 # Release Notes
 
+## Version 42.1.0
+_18 September 2023_
+
+### Features
+* Create admin tool to manage Functionality Tested for new HTI-1 rule
+* Remove required date from Test Tools
+* Deprecate decertificationDate, replace with decertificationDay
+* Use '15' as default edition code always
+* Add start/end date params for criteria active during range
+* RWT Report Service looks at Active listings vs 2015 edition
+* Consider active listings in ICS Errors Report, not edition
+* Consider active listings vs 2015 edition in broken surv report
+* Only consider listing status (not edition) in Bad URL Report
+* Only consider active status in attestation report calculator
+* Listing validation report includes all active listings
+
+### Bug Fixes
+* Fix how Service based URL List urls with colon is sent to Datadog
+
+---
+
 ## Version 42.0.0
 _5 September 2023_
 
