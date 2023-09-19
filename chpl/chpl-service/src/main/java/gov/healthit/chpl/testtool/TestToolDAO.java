@@ -8,9 +8,12 @@ import javax.persistence.Query;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.criteriaattribute.rule.RuleDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
@@ -34,6 +37,7 @@ public class TestToolDAO extends BaseDAOImpl {
         this.ruleDAO = ruleDAO;
     }
 
+    @CacheEvict(value = CacheNames.TEST_TOOL_MAPS, allEntries = true)
     public TestTool add(TestTool testTool) {
         TestToolEntity entity = TestToolEntity.builder()
                 .value(testTool.getValue())
@@ -74,16 +78,8 @@ public class TestToolDAO extends BaseDAOImpl {
         return entities.get(0).toDomain();
     }
 
-//    public List<TestToolCriteriaMap> getAllAssociatedTestTools() throws EntityRetrievalException {
-//        return getAllTestToolCriteriaMap().stream()
-//                .map(map -> TestTooleCriteriaMap.builder()
-//                        .criterion(map.getCriterion())
-//                        .criteriaAttribute(map.getTestTool())
-//                        .build())
-//                .toList();
-//    }
-
     @Transactional
+    @Cacheable(CacheNames.TEST_TOOL_MAPS)
     public List<TestToolCriteriaMap> getAllTestToolCriteriaMaps() throws EntityRetrievalException {
         return getAllTestToolCriteriaMapEntities().stream()
                 .map(e -> e.toDomain())
@@ -96,6 +92,7 @@ public class TestToolDAO extends BaseDAOImpl {
         return certifiedProductDAO.getDetailsByIds(certifiedProductIds);
     }
 
+    @CacheEvict(value = CacheNames.TEST_TOOL_MAPS, allEntries = true)
     public void update(TestTool testTool) throws EntityRetrievalException {
         TestToolEntity entity = getEntityById(testTool.getId());
 
@@ -115,6 +112,7 @@ public class TestToolDAO extends BaseDAOImpl {
         update(entity);
     }
 
+    @CacheEvict(value = CacheNames.TEST_TOOL_MAPS, allEntries = true)
     public void addTestToolCriteriaMap(TestTool testTool, CertificationCriterion criterion) {
         TestToolCriteriaMapEntity entity = TestToolCriteriaMapEntity.builder()
                 .certificationCriterionId(criterion.getId())
@@ -128,6 +126,7 @@ public class TestToolDAO extends BaseDAOImpl {
         create(entity);
     }
 
+    @CacheEvict(value = CacheNames.TEST_TOOL_MAPS, allEntries = true)
     public void removeCriteriaAttributeCriteriaMap(TestTool testTool, CertificationCriterion criterion) {
         try {
             TestToolCriteriaMapEntity entity = getTestToolCriteriaMapByTestToolAndCriterionEntity(testTool.getId(), criterion.getId());
@@ -147,6 +146,7 @@ public class TestToolDAO extends BaseDAOImpl {
         return certifiedProductDAO.getDetailsByIds(certifiedProductIds);
     }
 
+    @CacheEvict(value = CacheNames.TEST_TOOL_MAPS, allEntries = true)
     public void remove(TestTool testTool) throws EntityRetrievalException {
         TestToolEntity entity = getEntityById(testTool.getId());
         entity.setDeleted(true);
