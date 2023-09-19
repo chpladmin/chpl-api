@@ -1,4 +1,4 @@
-package gov.healthit.chpl.scheduler.job;
+package gov.healthit.chpl.scheduler.job.downloadfile;
 
 import java.io.File;
 import java.io.IOException;
@@ -38,6 +38,7 @@ import gov.healthit.chpl.service.CertificationCriterionService;
 public class CertifiedProductDownloadableResourceCreatorJob extends DownloadableResourceCreatorJob {
     private static final Logger LOGGER = LogManager.getLogger("certifiedProductDownloadableResourceCreatorJobLogger");
     private static final int MILLIS_PER_SECOND = 1000;
+
     private String edition;
     private File tempDirectory, tempCsvFile, tempXmlFile, tempJsonFile;
     private ExecutorService executorService;

@@ -1,4 +1,4 @@
-package gov.healthit.chpl.scheduler.job;
+package gov.healthit.chpl.scheduler.job.downloadfile;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -23,6 +23,7 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.scheduler.SchedulerCertifiedProductSearchDetailsAsync;
+import gov.healthit.chpl.scheduler.job.QuartzJob;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
