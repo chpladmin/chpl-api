@@ -41,6 +41,7 @@ public class SedG32015ReviewerTest {
                 .number("170.315 (g)(3)")
                 .title("g3 original")
                 .startDay(LocalDate.parse("2023-01-01"))
+                .certificationEdition("2015")
                 .build();
         Mockito.when(criteriaService.get(ArgumentMatchers.eq("criterion.170_315_g_3"))).thenReturn(g3);
         reviewer = new SedG32015Reviewer(criteriaService, msgUtil, resourcePermissions);
@@ -69,6 +70,7 @@ public class SedG32015ReviewerTest {
                                 .id(2L)
                                 .number("170.315 (a)(2)")
                                 .startDay(LocalDate.parse("2023-01-01"))
+                                .certificationEdition("2015")
                                 .build())
                         .build())
                 .build();
@@ -91,6 +93,7 @@ public class SedG32015ReviewerTest {
                                 .id(2L)
                                 .number("170.315 (a)(1)")
                                 .startDay(LocalDate.parse("2023-01-01"))
+                                .certificationEdition("2015")
                                 .build())
                         .build())
                 .build();
@@ -119,6 +122,7 @@ public class SedG32015ReviewerTest {
                                 .number("170.315 (a)(1)")
                                 .startDay(LocalDate.parse("2023-01-01"))
                                 .endDay(LocalDate.parse("2023-01-02"))
+                                .certificationEdition("2015")
                                 .build())
                         .build())
                 .build();
@@ -146,6 +150,7 @@ public class SedG32015ReviewerTest {
                                 .number("170.315 (a)(1)")
                                 .startDay(LocalDate.parse("2023-01-01"))
                                 .endDay(LocalDate.parse("2023-01-02"))
+                                .certificationEdition("2015")
                                 .build())
                         .build())
                 .build();
@@ -173,6 +178,7 @@ public class SedG32015ReviewerTest {
                                 .number("170.315 (a)(1)")
                                 .startDay(LocalDate.parse("2023-01-01"))
                                 .endDay(LocalDate.parse("2023-01-02"))
+                                .certificationEdition("2015")
                                 .build())
                         .build())
                 .build();
@@ -195,6 +201,7 @@ public class SedG32015ReviewerTest {
                                 .id(2L)
                                 .number("170.315 (a)(1)")
                                 .startDay(LocalDate.parse("2023-01-01"))
+                                .certificationEdition("2015")
                                 .build())
                         .build())
                 .build();
@@ -223,6 +230,7 @@ public class SedG32015ReviewerTest {
                                 .number("170.315 (a)(1)")
                                 .startDay(LocalDate.parse("2023-01-01"))
                                 .endDay(LocalDate.parse("2023-01-02"))
+                                .certificationEdition("2015")
                                 .build())
                         .build())
                 .build();
@@ -250,6 +258,7 @@ public class SedG32015ReviewerTest {
                                 .number("170.315 (a)(1)")
                                 .startDay(LocalDate.parse("2023-01-01"))
                                 .endDay(LocalDate.parse("2023-01-02"))
+                                .certificationEdition("2015")
                                 .build())
                         .build())
                 .build();
@@ -277,6 +286,7 @@ public class SedG32015ReviewerTest {
                                 .number("170.315 (a)(1)")
                                 .startDay(LocalDate.parse("2023-01-01"))
                                 .endDay(LocalDate.parse("2023-01-02"))
+                                .certificationEdition("2015")
                                 .build())
                         .build())
                 .build();

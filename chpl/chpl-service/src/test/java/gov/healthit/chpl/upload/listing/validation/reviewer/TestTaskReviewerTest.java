@@ -58,18 +58,21 @@ public class TestTaskReviewerTest {
                 .number("170.315 (a)(1)")
                 .title("a1")
                 .startDay(LocalDate.parse("2023-01-01"))
+                .certificationEdition("2015")
                 .build();
         a2 = CertificationCriterion.builder()
                 .id(2L)
                 .number("170.315 (a)(2)")
                 .title("a2")
                 .startDay(LocalDate.parse("2023-01-01"))
+                .certificationEdition("2015")
                 .build();
         a3 = CertificationCriterion.builder()
                 .id(3L)
                 .number("170.315 (a)(3)")
                 .title("a3")
                 .startDay(LocalDate.parse("2023-01-01"))
+                .certificationEdition("2015")
                 .build();
         a6 = CertificationCriterion.builder()
                 .id(6L)
@@ -77,6 +80,7 @@ public class TestTaskReviewerTest {
                 .title("a6")
                 .startDay(LocalDate.parse("2023-01-01"))
                 .endDay(LocalDate.parse("2023-01-02"))
+                .certificationEdition("2015")
                 .build();
         a7 = CertificationCriterion.builder()
                 .id(7L)
@@ -84,6 +88,7 @@ public class TestTaskReviewerTest {
                 .title("a7")
                 .startDay(LocalDate.parse("2023-01-01"))
                 .endDay(LocalDate.parse("2023-01-02"))
+                .certificationEdition("2015")
                 .build();
 
         Mockito.when(criteriaService.get(ArgumentMatchers.eq(a1.getId()))).thenReturn(a1);

@@ -40,6 +40,7 @@ public class TestParticipantReviewerTest {
                 .number("170.315 (a)(1)")
                 .title("a1")
                 .startDay(LocalDate.parse("2023-01-01"))
+                .certificationEdition("2015")
                 .build();
         a6 = CertificationCriterion.builder()
                 .id(6L)
@@ -47,6 +48,7 @@ public class TestParticipantReviewerTest {
                 .title("a6")
                 .startDay(LocalDate.parse("2023-01-01"))
                 .endDay(LocalDate.parse("2023-01-02"))
+                .certificationEdition("2015")
                 .build();
 
         reviewer = new TestParticipantReviewer(errorMessageUtil);

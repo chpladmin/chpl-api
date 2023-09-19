@@ -161,6 +161,7 @@ public class SedRelatedCriteriaReviewerTest {
                     .title(title)
                     .startDay(LocalDate.parse("2023-01-01"))
                     .endDay(LocalDate.parse("2023-01-02"))
+                    .certificationEdition("2015")
                     .build();
         }
         return CertificationCriterion.builder()
@@ -168,6 +169,7 @@ public class SedRelatedCriteriaReviewerTest {
                 .number(number)
                 .title(title)
                 .startDay(LocalDate.parse("2023-01-01"))
+                .certificationEdition("2015")
                 .build();
     }
 }
