@@ -73,6 +73,7 @@ public class NonconformityType implements Serializable {
     @XmlTransient
     private NonconformityClassification classification;
 
+    @JsonProperty(access = Access.READ_ONLY)
     @XmlElement(required = true, nillable = false)
     @XmlJavaTypeAdapter(value = CriterionStatusAdapter.class)
     public CriterionStatus getStatus() {

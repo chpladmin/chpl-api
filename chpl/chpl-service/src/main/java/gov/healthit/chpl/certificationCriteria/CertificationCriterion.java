@@ -98,6 +98,7 @@ public class CertificationCriterion implements Serializable {
     @XmlTransient
     private Boolean removed;
 
+    @JsonProperty(access = Access.READ_ONLY)
     @XmlElement(required = true, nillable = false)
     @XmlJavaTypeAdapter(value = CriterionStatusAdapter.class)
     public CriterionStatus getStatus() {

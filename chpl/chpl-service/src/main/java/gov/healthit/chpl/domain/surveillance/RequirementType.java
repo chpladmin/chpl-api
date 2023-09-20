@@ -79,6 +79,7 @@ public class RequirementType {
         }
     }
 
+    @JsonProperty(access = Access.READ_ONLY)
     @XmlElement(required = true, nillable = false)
     @XmlJavaTypeAdapter(value = CriterionStatusAdapter.class)
     public CriterionStatus getStatus() {
