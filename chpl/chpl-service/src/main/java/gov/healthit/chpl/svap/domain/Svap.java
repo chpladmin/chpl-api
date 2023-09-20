@@ -2,10 +2,8 @@ package gov.healthit.chpl.svap.domain;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
-import gov.healthit.chpl.svap.entity.SvapEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -26,14 +24,4 @@ public class Svap implements Serializable {
 
     @Singular(value = "criterion")
     private List<CertificationCriterion> criteria;
-
-    public Svap(SvapEntity entity) {
-        this.svapId = entity.getSvapId();
-        this.regulatoryTextCitation = entity.getRegulatoryTextCitation();
-        this.approvedStandardVersion = entity.getApprovedStandardVersion();
-        this.replaced = entity.getReplaced();
-        this.criteria = entity.getCriteria().stream()
-                .map(crit -> crit.toDomain())
-                .collect(Collectors.toList());
-    }
 }

@@ -11,18 +11,15 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.dao.CertificationResultDAO;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.exception.EntityCreationException;
-import gov.healthit.chpl.upload.listing.normalizer.TestToolNormalizer;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 @Component
 public class CertificationResultTestToolService {
-    private TestToolNormalizer testToolNormalizer;
     private CertificationResultDAO certResultDAO;
 
     @Autowired
-    public CertificationResultTestToolService(TestToolNormalizer testToolNormalizer, CertificationResultDAO certResultDAO) {
-        this.testToolNormalizer = testToolNormalizer;
+    public CertificationResultTestToolService(CertificationResultDAO certResultDAO) {
         this.certResultDAO = certResultDAO;
     }
 

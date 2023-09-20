@@ -14,6 +14,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterionEntity;
+import gov.healthit.chpl.svap.domain.SvapCriteriaMap;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -64,4 +65,12 @@ public class SvapCriteriaMapEntity {
     @Basic(optional = false)
     @Column(name = "last_modified_user", nullable = false)
     private Long lastModifiedUser;
+
+    public SvapCriteriaMap toDomain() {
+        return SvapCriteriaMap.builder()
+                .id(this.getId())
+                .svap(this.getSvap().toDomain())
+                .criterion(this.getCriteria().toDomain())
+                .build();
+    }
 }
