@@ -30,6 +30,7 @@ public class CertificationCriterionXmlGenerator extends XmlGenerator {
             createSimpleElement(criterion.getNumber(), "number", sw);
             RuleXmlGenerator.add(criterion.getRule(), "rule", sw);
             createSimpleElement(criterion.getStartDay(), "startDay", sw);
+            createSimpleElement(criterion.getStatus().name(), "status", sw);
             createSimpleElement(criterion.getTitle(), "title", sw);
             sw.writeEndElement();
         }

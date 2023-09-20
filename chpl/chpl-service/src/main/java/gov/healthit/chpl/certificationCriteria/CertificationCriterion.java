@@ -24,6 +24,7 @@ import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseField;
 import gov.healthit.chpl.criteriaattribute.rule.Rule;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
+import gov.healthit.chpl.util.CriterionStatusAdapter;
 import gov.healthit.chpl.util.DateUtil;
 import gov.healthit.chpl.util.LocalDateAdapter;
 import gov.healthit.chpl.util.LocalDateDeserializer;
@@ -97,6 +98,7 @@ public class CertificationCriterion implements Serializable {
     private Boolean removed;
 
     @XmlElement(required = true, nillable = false)
+    @XmlJavaTypeAdapter(value = CriterionStatusAdapter.class)
     public CriterionStatus getStatus() {
         if (certificationEdition != null
                 && (certificationEdition.equals(CertificationEditionConcept.CERTIFICATION_EDITION_2011.getYear())
