@@ -12,6 +12,7 @@ import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.upload.listing.validation.reviewer.AccessibilityStandardReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.QmsStandardReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.UcdProcessReviewer;
+import gov.healthit.chpl.upload.listing.validation.reviewer.UnavailableCriteriaReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.CertificationDateReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.CertificationStatusReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.ChplNumberComparisonReviewer;
@@ -89,6 +90,9 @@ public class Edition2015ListingValidator extends Validator {
     @Autowired
     @Qualifier("requiredAndRelatedCriteriaReviewer")
     private RequiredAndRelatedCriteriaReviewer requiredAndRelatedCriteriaReviewer;
+
+    @Autowired
+    private UnavailableCriteriaReviewer unavailableCriteriaReviewer;
 
     @Autowired
     @Qualifier("edition20142015testingLabReviewer")
@@ -262,6 +266,7 @@ public class Edition2015ListingValidator extends Validator {
             //use this reviewer after the grace period ends
             reviewers.add(requiredAndRelatedCriteriaReviewer);
         }
+        reviewers.add(unavailableCriteriaReviewer);
         reviewers.add(testingLabReviewer);
         reviewers.add(validDataReviewer);
         reviewers.add(sedG3Reviewer);

@@ -10,14 +10,22 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.util.DateUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
+import gov.healthit.chpl.validation.listing.reviewer.Reviewer;
 
 @Component("listingUploadUnavailableCriteriaReviewer")
-public class UnavailableCriteriaReviewer {
+public class UnavailableCriteriaReviewer implements Reviewer {
     private ErrorMessageUtil msgUtil;
 
     @Autowired
     public UnavailableCriteriaReviewer(ErrorMessageUtil msgUtil) {
         this.msgUtil = msgUtil;
+    }
+
+    @Override
+    public void review(CertifiedProductSearchDetails listing) {
+        listing.getCertificationResults().stream()
+            .filter(certResult -> BooleanUtils.isTrue(certResult.isSuccess()))
+            .forEach(certResult -> review(listing, certResult));
     }
 
     public void review(CertifiedProductSearchDetails listing, CertificationResult certResult) {
