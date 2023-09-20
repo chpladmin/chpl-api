@@ -15,8 +15,9 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.apache.commons.lang3.tuple.Pair;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
@@ -94,7 +95,7 @@ public class CertificationCriterion implements Serializable {
     @Deprecated
     @DeprecatedResponseField(message = "This property will be removed. It can be derived based on the endDay.",
         removalDate = "2024-01-01")
-    @XmlElement(required = true, nillable = false)
+    @XmlTransient
     private Boolean removed;
 
     @XmlElement(required = true, nillable = false)
@@ -113,8 +114,8 @@ public class CertificationCriterion implements Serializable {
         }
     }
 
+    @JsonProperty(access = Access.READ_ONLY)
     @XmlTransient
-    @JsonIgnore
     public Boolean isRemoved() {
         return getStatus().equals(CriterionStatus.REMOVED);
     }
