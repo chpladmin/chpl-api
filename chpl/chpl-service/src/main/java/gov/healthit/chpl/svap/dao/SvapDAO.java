@@ -36,14 +36,14 @@ public class SvapDAO extends BaseDAOImpl {
     public Svap getById(Long id) throws EntityRetrievalException {
         SvapEntity entity = getSvapEntityById(id);
         if (entity != null) {
-            return new Svap(entity);
+            return entity.toDomainWithCriteria();
         }
         return null;
     }
 
     public List<SvapCriteriaMap> getAllSvapCriteriaMap() throws EntityRetrievalException {
         List<SvapCriteriaMap> svapCriteriaMaps = getAllSvapCriteriaMapEntities().stream()
-                .map(e -> new SvapCriteriaMap(e))
+                .map(e -> e.toDomain())
                 .collect(Collectors.toList());
 
         //sort criteria for each svap
@@ -56,7 +56,7 @@ public class SvapDAO extends BaseDAOImpl {
 
     public List<Svap> getAll() {
         return getAllEntities().stream()
-                .map(entity -> new Svap(entity))
+                .map(entity -> entity.toDomainWithCriteria())
                 .collect(Collectors.toList());
     }
 
@@ -143,7 +143,9 @@ public class SvapDAO extends BaseDAOImpl {
     private SvapEntity getSvapEntityById(Long id) throws EntityRetrievalException {
         List<SvapEntity> result = entityManager.createQuery("SELECT DISTINCT s "
                         + "FROM SvapEntity s "
-                        + "LEFT JOIN FETCH s.criteria "
+                        + "LEFT JOIN FETCH s.criteria crit "
+                        + "LEFT JOIN FETCH crit.certificationEdition "
+                        + "LEFT JOIN FETCH crit.rule "
                         + "WHERE s.deleted <> true "
                         + "AND s.svapId = :entityid ",
                         SvapEntity.class)
@@ -177,7 +179,9 @@ public class SvapDAO extends BaseDAOImpl {
     private List<SvapEntity> getAllEntities() {
         return entityManager.createQuery("SELECT DISTINCT svap "
                 + "FROM SvapEntity svap "
-                + "LEFT JOIN FETCH svap.criteria "
+                + "LEFT JOIN FETCH svap.criteria crit "
+                + "LEFT JOIN FETCH crit.certificationEdition "
+                + "LEFT JOIN FETCH crit.rule "
                 + "WHERE svap.deleted <> true ",
                 SvapEntity.class)
         .getResultList();

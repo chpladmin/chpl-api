@@ -55,9 +55,8 @@ import gov.healthit.chpl.dto.TestProcedureCriteriaMapDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.listing.measure.ListingMeasureDAO;
 import gov.healthit.chpl.listing.measure.MeasureDAO;
-import gov.healthit.chpl.optionalStandard.dao.OptionalStandardDAO;
+import gov.healthit.chpl.optionalStandard.OptionalStandardDAO;
 import gov.healthit.chpl.optionalStandard.domain.OptionalStandard;
-import gov.healthit.chpl.optionalStandard.entity.OptionalStandardEntity;
 import gov.healthit.chpl.surveillance.report.QuarterDAO;
 import gov.healthit.chpl.surveillance.report.domain.Quarter;
 import lombok.extern.log4j.Log4j2;
@@ -165,18 +164,12 @@ public class DimensionalDataManager {
         return ageRanges;
     }
 
+    @Deprecated
     @Transactional
     public Set<OptionalStandard> getOptionalStandards() {
         LOGGER.debug("Getting all optional standards from the database (not cached).");
-
-        List<OptionalStandardEntity> entities = this.optionalStandardDao.findAll();
-        Set<OptionalStandard> optionalStds = new HashSet<OptionalStandard>();
-
-        for (OptionalStandardEntity entity : entities) {
-            optionalStds.add(new OptionalStandard(entity));
-        }
-
-        return optionalStds;
+        return this.optionalStandardDao.getAll().stream()
+                .collect(Collectors.toSet());
     }
 
     @Transactional

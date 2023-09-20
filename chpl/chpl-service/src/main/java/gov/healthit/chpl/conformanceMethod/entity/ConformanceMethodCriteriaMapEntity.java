@@ -14,6 +14,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterionEntity;
+import gov.healthit.chpl.conformanceMethod.domain.ConformanceMethodCriteriaMap;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -58,4 +59,12 @@ public class ConformanceMethodCriteriaMapEntity {
 
     @Column(name = "last_modified_user", nullable = false)
     private Long lastModifiedUser;
+
+    public ConformanceMethodCriteriaMap toDomain() {
+        return ConformanceMethodCriteriaMap.builder()
+                .id(this.getId())
+                .conformanceMethod(this.getConformanceMethod().toDomain())
+                .criterion(this.getCertificationCriterion().toDomain())
+                .build();
+    }
 }
