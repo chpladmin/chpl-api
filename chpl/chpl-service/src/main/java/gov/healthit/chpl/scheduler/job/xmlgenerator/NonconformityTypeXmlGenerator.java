@@ -14,6 +14,7 @@ public class NonconformityTypeXmlGenerator extends XmlGenerator {
             createSimpleElement(nct.getId(), "id", sw);
             createSimpleElement(nct.getNumber(), "number", sw);
             createSimpleElement(nct.getStartDay(), "startDay", sw);
+            createSimpleElement(nct.getStatus().name(), "status", sw);
             createSimpleElement(nct.getTitle(), "title", sw);
             sw.writeEndElement();
         }

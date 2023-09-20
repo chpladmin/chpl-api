@@ -18,7 +18,10 @@ import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
+import gov.healthit.chpl.certificationCriteria.CriterionStatus;
+import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.domain.surveillance.NonconformityClassification;
+import gov.healthit.chpl.util.CriterionStatusAdapter;
 import gov.healthit.chpl.util.LocalDateAdapter;
 import gov.healthit.chpl.util.LocalDateDeserializer;
 import gov.healthit.chpl.util.LocalDateSerializer;
@@ -70,11 +73,26 @@ public class NonconformityType implements Serializable {
     @XmlTransient
     private NonconformityClassification classification;
 
+    @XmlElement(required = true, nillable = false)
+    @XmlJavaTypeAdapter(value = CriterionStatusAdapter.class)
+    public CriterionStatus getStatus() {
+        if (certificationEdition != null && certificationEdition.getName() != null
+                && (certificationEdition.getName().equals(CertificationEditionConcept.CERTIFICATION_EDITION_2011.getYear())
+                        || certificationEdition.getName().equals(CertificationEditionConcept.CERTIFICATION_EDITION_2014.getYear()))) {
+            return CriterionStatus.RETIRED;
+        } else {
+            LocalDate end = endDay != null ? endDay : LocalDate.MAX;
+            if (end.isBefore(LocalDate.now())) {
+                return CriterionStatus.REMOVED;
+            }
+            return CriterionStatus.ACTIVE;
+        }
+    }
+
     @JsonProperty(access = Access.READ_ONLY)
     @XmlTransient
     public Boolean isRemoved() {
-        LocalDate end = endDay != null ? endDay : LocalDate.MAX;
-        return end.isBefore(LocalDate.now());
+        return getStatus().equals(CriterionStatus.REMOVED);
     }
 
     public Long getId() {

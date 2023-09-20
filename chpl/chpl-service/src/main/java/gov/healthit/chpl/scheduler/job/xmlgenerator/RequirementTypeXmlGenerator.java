@@ -15,6 +15,7 @@ public class RequirementTypeXmlGenerator extends XmlGenerator {
             createSimpleElement(rdt.getNumber(), "number", sw);
             RequirementGroupTypeXmlGenerator.addRequirementGroupType(rdt.getRequirementGroupType(), "requirementGroupType", sw);
             createSimpleElement(rdt.getStartDay(), "startDay", sw);
+            createSimpleElement(rdt.getStatus().name(), "status", sw);
             createSimpleElement(rdt.getTitle(), "title", sw);
             sw.writeEndElement();
         }
