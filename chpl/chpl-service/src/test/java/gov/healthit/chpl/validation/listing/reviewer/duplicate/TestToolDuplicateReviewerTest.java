@@ -51,6 +51,22 @@ public class TestToolDuplicateReviewerTest {
     }
 
     @Test
+    public void review_duplicateNameExists_noErrorFound() {
+        CertifiedProductSearchDetails listing = new CertifiedProductSearchDetails();
+        CertificationResult cert = getCertResult();
+        CertificationResultTestTool testTool1 = getTestTool(1L, "Test Tool 1", "v1");
+        CertificationResultTestTool testTool2 = getTestTool(1L, "Test Tool 1", "v2");
+        cert.getTestToolsUsed().add(testTool1);
+        cert.getTestToolsUsed().add(testTool2);
+
+        reviewer.review(listing, cert);
+
+        assertEquals(0, listing.getWarningMessages().size());
+        assertEquals(0, listing.getErrorMessages().size());
+        assertEquals(2, cert.getTestToolsUsed().size());
+    }
+
+    @Test
     public void review_noDuplicateIds_noWarning() {
         CertifiedProductSearchDetails listing = new CertifiedProductSearchDetails();
         CertificationResult cert = getCertResult();
