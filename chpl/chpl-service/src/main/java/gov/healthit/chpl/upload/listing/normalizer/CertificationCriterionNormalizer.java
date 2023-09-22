@@ -1,8 +1,6 @@
 package gov.healthit.chpl.upload.listing.normalizer;
 
 import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,14 +8,12 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.conformanceMethod.domain.CertificationResultConformanceMethod;
-import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultAdditionalSoftware;
 import gov.healthit.chpl.domain.CertificationResultTestData;
 import gov.healthit.chpl.domain.CertificationResultTestProcedure;
 import gov.healthit.chpl.domain.CertificationResultTestStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.functionalitytested.CertificationResultFunctionalityTested;
 import gov.healthit.chpl.optionalStandard.domain.CertificationResultOptionalStandard;
 import gov.healthit.chpl.svap.domain.CertificationResultSvap;
@@ -27,50 +23,15 @@ import gov.healthit.chpl.util.CertificationResultRules;
 @Component
 public class CertificationCriterionNormalizer {
 
-    private CertificationCriterionDAO criterionDao;
     private CertificationResultRules certResultRules;
 
     @Autowired
-    public CertificationCriterionNormalizer(CertificationCriterionDAO criterionDao,
-            CertificationResultRules certResultRules) {
-        this.criterionDao = criterionDao;
+    public CertificationCriterionNormalizer(CertificationResultRules certResultRules) {
         this.certResultRules = certResultRules;
     }
 
     public void normalize(CertifiedProductSearchDetails listing) {
-        addEditionCriteriaNotPresentInListing(listing);
         nullifyNotApplicableFieldsInCertificationResults(listing);
-    }
-
-    private void addEditionCriteriaNotPresentInListing(CertifiedProductSearchDetails listing) {
-        List<CertificationCriterion> all2015Criteria = criterionDao.findByCertificationEditionYear(
-                CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear());
-        if (listing != null && listing.getCertificationResults() != null) {
-            List<CertificationCriterion> criteriaToAdd = all2015Criteria.stream()
-                .filter(criterion -> !existsInListing(listing.getCertificationResults(), criterion))
-                .collect(Collectors.toList());
-            criteriaToAdd.stream()
-                .forEach(criterionToAdd -> {
-                    listing.getCertificationResults().add(buildCertificationResult(criterionToAdd));
-                });
-        }
-    }
-
-    private boolean existsInListing(List<CertificationResult> listingCertResults, CertificationCriterion criterion) {
-        if (listingCertResults == null || listingCertResults.size() == 0) {
-            return false;
-        }
-        return listingCertResults.stream()
-                    .filter(certResult -> certResult.getCriterion() != null && certResult.getCriterion().getId() != null
-                        && certResult.getCriterion().getId().equals(criterion.getId()))
-                    .findAny().isPresent();
-    }
-
-    private CertificationResult buildCertificationResult(CertificationCriterion criterion) {
-        return CertificationResult.builder()
-            .criterion(criterion)
-            .success(Boolean.FALSE)
-        .build();
     }
 
     private void nullifyNotApplicableFieldsInCertificationResults(CertifiedProductSearchDetails listing) {
