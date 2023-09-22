@@ -7,6 +7,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.ff4j.FF4j;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,6 +52,7 @@ import lombok.extern.log4j.Log4j2;
 @RequestMapping("/certification_ids")
 @Log4j2
 public class CertificationIdController {
+    private static final String DEFAULT_YEAR = "2015";
 
     private CertifiedProductManager certifiedProductManager;
     private CertificationIdManager certificationIdManager;
@@ -189,6 +191,9 @@ public class CertificationIdController {
                 // Add product data to results
                 List<CertificationIdLookupResults.Product> productList = results.getProducts();
                 for (CertifiedProductDetailsDTO dto : productDtos) {
+                    if (StringUtils.isEmpty(dto.getYear())) {
+                        dto.setYear(DEFAULT_YEAR);
+                    }
                     productList.add(new CertificationIdLookupResults.Product(dto));
                     yearSet.add(Integer.valueOf(dto.getYear()));
                     certProductIds.add(dto.getId());
@@ -272,6 +277,10 @@ public class CertificationIdController {
         SortedSet<Integer> yearSet = new TreeSet<Integer>();
         List<CertificationIdResults.Product> resultProducts = new ArrayList<CertificationIdResults.Product>();
         for (CertifiedProductDetailsDTO dto : productDtos) {
+            if (StringUtils.isEmpty(dto.getYear())) {
+                dto.setYear(DEFAULT_YEAR);
+            }
+
             if (create) {
                 if (!ff4j.check(FeatureList.CANNOT_GENERATE_15E) && !dto.getYear().equalsIgnoreCase("2015")) {
                     throw new InvalidArgumentsException("New Certification IDs can only be created using 2015 Edition Listings");
