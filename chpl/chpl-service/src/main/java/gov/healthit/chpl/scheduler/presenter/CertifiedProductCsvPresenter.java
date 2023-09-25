@@ -175,7 +175,7 @@ public class CertifiedProductCsvPresenter implements CertifiedProductPresenter, 
                 }
             }
             if (!criteriaMatch) {
-                result.add(UNKNOWN_VALUE);
+                result.add(Boolean.FALSE.toString());
             }
         }
         return result;
