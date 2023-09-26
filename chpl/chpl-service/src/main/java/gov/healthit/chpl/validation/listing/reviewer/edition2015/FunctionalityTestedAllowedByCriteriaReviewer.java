@@ -7,20 +7,20 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import gov.healthit.chpl.dao.CertificationEditionDAO;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.functionalitytested.CertificationResultFunctionalityTested;
 import gov.healthit.chpl.functionalitytested.FunctionalityTested;
 import gov.healthit.chpl.functionalitytested.FunctionalityTestedDAO;
 import gov.healthit.chpl.functionalitytested.FunctionalityTestedManager;
-import gov.healthit.chpl.manager.DimensionalDataManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.util.DateUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
 import gov.healthit.chpl.validation.listing.reviewer.PermissionBasedReviewer;
@@ -31,18 +31,14 @@ import gov.healthit.chpl.validation.listing.reviewer.PermissionBasedReviewer;
 public class FunctionalityTestedAllowedByCriteriaReviewer extends PermissionBasedReviewer {
     private FunctionalityTestedDAO functionalityTestedDao;
     private FunctionalityTestedManager functionalityTestedManager;
-    private DimensionalDataManager dimensionalDataManager;
 
     @Autowired
     public FunctionalityTestedAllowedByCriteriaReviewer(FunctionalityTestedManager functionalityTestedManager,
             FunctionalityTestedDAO functionalityTestedDao,
-            CertificationEditionDAO editionDAO,
-            DimensionalDataManager dimensionalDataManager,
             ErrorMessageUtil msgUtil, ResourcePermissions resourcePermissions) {
         super(msgUtil, resourcePermissions);
         this.functionalityTestedManager = functionalityTestedManager;
         this.functionalityTestedDao = functionalityTestedDao;
-        this.dimensionalDataManager = dimensionalDataManager;
     }
 
     @Override
@@ -72,6 +68,7 @@ public class FunctionalityTestedAllowedByCriteriaReviewer extends PermissionBase
                 addFunctionalitiesTestedCriterionErrorMessage(crft, cr, listing);
             }
         }
+        reviewFunctionlalityTestedAvailabilityByDate(listing, cr, crft);
     }
 
     private Boolean isFunctionalityTestedCritierionValid(Long criteriaId, FunctionalityTested functionalityTested) {
@@ -137,5 +134,15 @@ public class FunctionalityTestedAllowedByCriteriaReviewer extends PermissionBase
                 .map(criterion -> Util.formatCriteriaNumber(criterion))
                 .collect(Collectors.toList());
         return Util.joinListGrammatically(criteriaNumbers);
+    }
+
+    private void reviewFunctionlalityTestedAvailabilityByDate(CertifiedProductSearchDetails listing, CertificationResult certResult, CertificationResultFunctionalityTested functionalityTested) {
+        if (!DateUtil.datesOverlap(Pair.of(listing.getCertificationDay(), listing.getDecertificationDay()),
+                Pair.of(functionalityTested.getFunctionalityTested().getStartDay(),
+                        functionalityTested.getFunctionalityTested().getEndDay()))) {
+            listing.addBusinessErrorMessage(msgUtil.getMessage("listing.criteria.functionalityTestedUnavailable",
+                    functionalityTested.getFunctionalityTested().getRegulatoryTextCitation(),
+                    Util.formatCriteriaNumber(certResult.getCriterion())));
+        }
     }
 }
