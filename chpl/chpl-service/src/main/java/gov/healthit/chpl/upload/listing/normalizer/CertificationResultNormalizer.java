@@ -52,6 +52,8 @@ public class CertificationResultNormalizer {
     }
 
     public void normalize(CertifiedProductSearchDetails listing) {
+        removeCertificationResultsWithNullCriterion(listing);
+
         this.criterionNormalizer.normalize(listing);
         this.additionalSoftwareNormalizer.normalize(listing);
         this.testDataNormalizer.normalize(listing);
@@ -62,7 +64,6 @@ public class CertificationResultNormalizer {
         this.svapNormalizer.normalize(listing);
 
         setSedTrueIfApplicableToCriteria(listing);
-        removeCertificationResultsWithNullCriterion(listing);
         listing.getCertificationResults().sort(new CertificationResultComparator());
     }
 
