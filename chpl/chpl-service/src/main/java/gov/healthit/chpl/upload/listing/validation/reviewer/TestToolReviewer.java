@@ -118,7 +118,6 @@ public class TestToolReviewer implements Reviewer {
         reviewNameAndVersionRequired(listing, certResult, testTool);
         reviewTestToolNotRetiredUnlessIcs(listing, certResult, testTool);
         reviewTestToolValidForCriteria(listing, certResult, testTool);
-        reviewTestToolAvailabilityByDate(listing, certResult, testTool);
     }
 
     private void reviewNameAndVersionRequired(CertifiedProductSearchDetails listing,
@@ -136,7 +135,8 @@ public class TestToolReviewer implements Reviewer {
 
     private void reviewTestToolNotRetiredUnlessIcs(CertifiedProductSearchDetails listing,
             CertificationResult certResult, CertificationResultTestTool testTool) {
-        if (testTool.getTestTool().getId() != null && testTool.getTestTool().isRetired()
+        if (testTool.getTestTool().getId() != null
+                && !isTestToolAvailabileForListingDates(listing, certResult, testTool)
                 && (!hasIcs(listing) || hasIcsMismatch(listing))) {
             listing.addDataErrorMessage(msgUtil.getMessage(
                     "listing.criteria.retiredTestToolNoIcsNotAllowed",
@@ -180,13 +180,9 @@ public class TestToolReviewer implements Reviewer {
         }
     }
 
-    private void reviewTestToolAvailabilityByDate(CertifiedProductSearchDetails listing, CertificationResult certResult, CertificationResultTestTool testTool) {
-        if (!DateUtil.datesOverlap(Pair.of(listing.getCertificationDay(), listing.getDecertificationDay()),
+    private boolean isTestToolAvailabileForListingDates(CertifiedProductSearchDetails listing, CertificationResult certResult, CertificationResultTestTool testTool) {
+        return DateUtil.datesOverlap(Pair.of(listing.getCertificationDay(), listing.getDecertificationDay()),
                 Pair.of(testTool.getTestTool().getStartDay(),
-                        testTool.getTestTool().getEndDay()))) {
-            listing.addBusinessErrorMessage(msgUtil.getMessage("listing.criteria.testToolUnavailable",
-                    testTool.getTestTool().getValue(),
-                    Util.formatCriteriaNumber(certResult.getCriterion())));
-        }
+                        testTool.getTestTool().getEndDay()));
     }
 }
