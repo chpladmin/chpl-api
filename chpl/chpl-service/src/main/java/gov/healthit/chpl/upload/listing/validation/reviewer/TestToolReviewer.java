@@ -196,7 +196,7 @@ public class TestToolReviewer implements Reviewer {
     }
 
     private boolean isTestToolActiveAfterListingActiveDates(CertifiedProductSearchDetails listing, TestTool testTool) {
-        LocalDate listingEndDay = listing.getDecertificationDay() == null ? LocalDate.MAX : listing.getDecertificationDay();
+        LocalDate listingEndDay = listing.getDecertificationDay() == null ? LocalDate.now() : listing.getDecertificationDay();
         LocalDate testToolStartDay = testTool.getStartDay() == null ? LocalDate.MIN : testTool.getStartDay();
         return testToolStartDay.isAfter(listingEndDay);
     }
