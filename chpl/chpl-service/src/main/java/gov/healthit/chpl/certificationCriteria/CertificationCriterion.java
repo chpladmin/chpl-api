@@ -129,7 +129,8 @@ public class CertificationCriterion implements Serializable {
     @XmlTransient
     public boolean isEditable() {
         LocalDate today = LocalDate.now();
-        return (this.startDay.isEqual(today) || this.startDay.isBefore(today))
+        LocalDate startDayLocal = (this.startDay == null ? LocalDate.MIN : this.startDay);
+        return (startDayLocal.isEqual(today) || startDayLocal.isBefore(today))
                 && (this.endDay == null ? true : this.endDay.plusYears(1).isAfter(LocalDate.now()));
     }
 
