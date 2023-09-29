@@ -126,6 +126,11 @@ public class CertificationCriterion implements Serializable {
                 Pair.of(getStartDay(), getEndDay()));
     }
 
+    @XmlTransient
+    public boolean isEditable() {
+        return this.endDay == null ? true : this.endDay.plusYears(1).isAfter(LocalDate.now());
+    }
+
     @Override
     public int hashCode() {
         return Objects.hash(certificationEdition, certificationEditionId, description, endDay, id, number, rule, startDay, title);
