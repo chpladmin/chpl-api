@@ -52,13 +52,13 @@ public class UnavailableCriteriaComparisonReviewer implements ComparisonReviewer
                 if (updatedCert.getCriterion().getId() != null && existingCert.getCriterion().getId() != null
                         && updatedCert.getCriterion().getId().equals(existingCert.getCriterion().getId())) {
                     if (isCriteriaAdded(updatedCert, existingCert)
-                            && !isCriterionAttestedAndAvailable(updatedListing, updatedCert)) {
+                            && !isCriterionAttestedAndEditable(updatedListing, updatedCert)) {
                         updatedListing.addBusinessErrorMessage(
                                 msgUtil.getMessage("listing.unavailableCriteriaAddNotAllowed",
                                         Util.formatCriteriaNumber(updatedCert.getCriterion()),
                                         DateUtil.format(updatedCert.getCriterion().getStartDay())));
                     } else if (isCriteriaEdited(updatedCert, existingCert)
-                            && !isCriterionAttestedAndAvailable(updatedListing, updatedCert)) {
+                            && !isCriterionAttestedAndEditable(updatedListing, updatedCert)) {
                         addErrorsForCertEdits(updatedListing, existingCert, updatedCert);
                     }
                 }
@@ -75,7 +75,7 @@ public class UnavailableCriteriaComparisonReviewer implements ComparisonReviewer
                 && updatedCert.isSuccess() != null && updatedCert.isSuccess();
     }
 
-    private boolean isCriterionAttestedAndAvailable(CertifiedProductSearchDetails listing,
+    private boolean isCriterionAttestedAndEditable(CertifiedProductSearchDetails listing,
             CertificationResult certResult) {
 
         return BooleanUtils.isTrue(certResult.isSuccess())
