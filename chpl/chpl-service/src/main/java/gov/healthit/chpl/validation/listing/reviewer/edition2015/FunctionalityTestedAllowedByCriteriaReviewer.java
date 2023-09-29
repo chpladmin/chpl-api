@@ -1,5 +1,6 @@
 package gov.healthit.chpl.validation.listing.reviewer.edition2015;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -7,7 +8,6 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
@@ -20,7 +20,6 @@ import gov.healthit.chpl.functionalitytested.FunctionalityTested;
 import gov.healthit.chpl.functionalitytested.FunctionalityTestedDAO;
 import gov.healthit.chpl.functionalitytested.FunctionalityTestedManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
-import gov.healthit.chpl.util.DateUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
 import gov.healthit.chpl.validation.listing.reviewer.PermissionBasedReviewer;
@@ -68,7 +67,8 @@ public class FunctionalityTestedAllowedByCriteriaReviewer extends PermissionBase
                 addFunctionalitiesTestedCriterionErrorMessage(crft, cr, listing);
             }
         }
-        reviewFunctionlalityTestedAvailabilityByDate(listing, cr, crft);
+        reviewFunctionalityTestedRetiredBeforeListingActiveDates(listing, cr, crft);
+        reviewFunctionalityTestedAvailabilityAfterListingActiveDates(listing, cr, crft);
     }
 
     private Boolean isFunctionalityTestedCritierionValid(Long criteriaId, FunctionalityTested functionalityTested) {
@@ -136,13 +136,33 @@ public class FunctionalityTestedAllowedByCriteriaReviewer extends PermissionBase
         return Util.joinListGrammatically(criteriaNumbers);
     }
 
-    private void reviewFunctionlalityTestedAvailabilityByDate(CertifiedProductSearchDetails listing, CertificationResult certResult, CertificationResultFunctionalityTested functionalityTested) {
-        if (!DateUtil.datesOverlap(Pair.of(listing.getCertificationDay(), listing.getDecertificationDay()),
-                Pair.of(functionalityTested.getFunctionalityTested().getStartDay(),
-                        functionalityTested.getFunctionalityTested().getEndDay()))) {
+    private void reviewFunctionalityTestedRetiredBeforeListingActiveDates(CertifiedProductSearchDetails listing,
+            CertificationResult certResult, CertificationResultFunctionalityTested functionalityTested) {
+        if (isFunctionalityTestedRetiredBeforeListingActiveDates(listing, functionalityTested.getFunctionalityTested())) {
             listing.addBusinessErrorMessage(msgUtil.getMessage("listing.criteria.functionalityTestedUnavailable",
-                    functionalityTested.getFunctionalityTested().getRegulatoryTextCitation(),
+                    functionalityTested.getFunctionalityTested().getValue(),
                     Util.formatCriteriaNumber(certResult.getCriterion())));
         }
+    }
+
+    private void reviewFunctionalityTestedAvailabilityAfterListingActiveDates(CertifiedProductSearchDetails listing,
+            CertificationResult certResult, CertificationResultFunctionalityTested functionalityTested) {
+        if (isFunctionalityTestedActiveAfterListingActiveDates(listing, functionalityTested.getFunctionalityTested())) {
+            listing.addBusinessErrorMessage(msgUtil.getMessage("listing.criteria.functionalityTestedUnavailable",
+                    functionalityTested.getFunctionalityTested().getValue(),
+                    Util.formatCriteriaNumber(certResult.getCriterion())));
+        }
+    }
+
+    private boolean isFunctionalityTestedRetiredBeforeListingActiveDates(CertifiedProductSearchDetails listing, FunctionalityTested functionalityTested) {
+        LocalDate listingStartDay = listing.getCertificationDay();
+        LocalDate funcTestedEndDay = functionalityTested.getEndDay() == null ? LocalDate.MAX : functionalityTested.getEndDay();
+        return funcTestedEndDay.isBefore(listingStartDay);
+    }
+
+    private boolean isFunctionalityTestedActiveAfterListingActiveDates(CertifiedProductSearchDetails listing, FunctionalityTested functionalityTested) {
+        LocalDate listingEndDay = listing.getDecertificationDay() == null ? LocalDate.now() : listing.getDecertificationDay();
+        LocalDate funcTestedStartDay = functionalityTested.getStartDay() == null ? LocalDate.MIN : functionalityTested.getStartDay();
+        return funcTestedStartDay.isAfter(listingEndDay);
     }
 }
