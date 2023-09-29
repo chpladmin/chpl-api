@@ -3,7 +3,6 @@ package gov.healthit.chpl.validation.listing.reviewer.edition2015;
 import java.util.Objects;
 
 import org.apache.commons.lang3.BooleanUtils;
-import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -81,8 +80,7 @@ public class UnavailableCriteriaComparisonReviewer implements ComparisonReviewer
 
         return BooleanUtils.isTrue(certResult.isSuccess())
                 && certResult.getCriterion() != null
-                && DateUtil.datesOverlap(Pair.of(listing.getCertificationDay(), listing.getDecertificationDay()),
-                        Pair.of(certResult.getCriterion().getStartDay(), certResult.getCriterion().getEndDay()));
+                && certResult.getCriterion().isEditable();
     }
 
     private void addErrorsForCertEdits(CertifiedProductSearchDetails updatedListing,
