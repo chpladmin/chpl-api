@@ -75,7 +75,7 @@ public class FunctionalityTestedCriteriaMapEntity implements Serializable {
         return FunctionalityTestedCriteriaMap.builder()
                 .id(id)
                 .criterion(criterion.toDomain())
-                .functionalityTested(functionalityTested.toDomain())
+                .functionalityTested(functionalityTested.toDomainWithCriteria())
                 .build();
     }
 }

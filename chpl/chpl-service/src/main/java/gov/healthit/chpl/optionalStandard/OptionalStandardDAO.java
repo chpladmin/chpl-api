@@ -1,12 +1,14 @@
-package gov.healthit.chpl.optionalStandard.dao;
+package gov.healthit.chpl.optionalStandard;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.persistence.Query;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import gov.healthit.chpl.certificationCriteria.CertificationCriterionComparator;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.optionalStandard.domain.OptionalStandard;
@@ -17,19 +19,31 @@ import gov.healthit.chpl.optionalStandard.entity.OptionalStandardEntity;
 @Repository("optionalStandardDAO")
 public class OptionalStandardDAO extends BaseDAOImpl {
 
-    public OptionalStandardEntity getById(Long id) {
-        OptionalStandardEntity entity = getEntityById(id);
-        return entity;
+    private CertificationCriterionComparator criteriaComparator;
+
+    @Autowired
+    public OptionalStandardDAO(CertificationCriterionComparator criteriaComparator) {
+        this.criteriaComparator = criteriaComparator;
     }
 
-    public List<OptionalStandardEntity> findAll() {
-        List<OptionalStandardEntity> entities = getAllEntities();
-        return entities;
+    public List<OptionalStandard> getAll() {
+        List<OptionalStandardEntity> entities = entityManager
+                .createQuery("SELECT DISTINCT os "
+                        + "FROM OptionalStandardEntity os "
+                        + "LEFT JOIN FETCH os.criteria crit "
+                        + "LEFT JOIN FETCH crit.certificationEdition "
+                        + "LEFT JOIN FETCH crit.rule "
+                        + "WHERE (NOT os.deleted = true) ", OptionalStandardEntity.class)
+                .getResultList();
+        return entities.stream()
+                .map(e -> e.toDomainWithCriteria())
+                .peek(os -> os.getCriteria().sort(criteriaComparator))
+                .collect(Collectors.toList());
     }
 
     public List<OptionalStandardCriteriaMap> getAllOptionalStandardCriteriaMap() throws EntityRetrievalException {
         return getAllOptionalStandardCriteriaMapEntities().stream()
-                .map(e -> new OptionalStandardCriteriaMap(e))
+                .map(e -> e.toDomain())
                 .collect(Collectors.toList());
     }
 
@@ -37,35 +51,13 @@ public class OptionalStandardDAO extends BaseDAOImpl {
         List<OptionalStandardEntity> entities = getEntitiesByCitation(citation);
         OptionalStandard obj = null;
         if (entities != null && entities.size() > 0) {
-            obj = new OptionalStandard(entities.get(0));
+            obj = entities.get(0).toDomain();
         }
         return obj;
     }
 
-    private List<OptionalStandardEntity> getAllEntities() {
-        return entityManager
-                .createQuery("from OptionalStandardEntity where (NOT deleted = true) ", OptionalStandardEntity.class)
-                .getResultList();
-    }
-
-    private OptionalStandardEntity getEntityById(Long id) {
-        OptionalStandardEntity entity = null;
-
-        Query query = entityManager.createQuery("SELECT os "
-                + "FROM OptionalStandardEntity os "
-                + "WHERE (NOT deleted = true) "
-                + "AND (os.id = :entityid) ", OptionalStandardEntity.class);
-        query.setParameter("entityid", id);
-        List<OptionalStandardEntity> result = query.getResultList();
-
-        if (result.size() > 0) {
-            entity = result.get(0);
-        }
-        return entity;
-    }
-
     private List<OptionalStandardEntity> getEntitiesByCitation(String citation) {
-        String osQuery = "SELECT os "
+        String osQuery = "SELECT DISTINCT os "
                 + "FROM OptionalStandardEntity os "
                 + "WHERE os.deleted <> true "
                 + "AND UPPER(os.citation) = :citation ";
@@ -85,13 +77,13 @@ public class OptionalStandardDAO extends BaseDAOImpl {
     }
 
     private List<OptionalStandardCriteriaMapEntity> getAllOptionalStandardCriteriaMapEntities() throws EntityRetrievalException {
-        return entityManager.createQuery("SELECT DISTINCT osm "
-                        + "FROM OptionalStandardCriteriaMapEntity osm "
-                        + "JOIN FETCH osm.criteria c "
-                        + "LEFT JOIN FETCH c.certificationEdition "
-                        + "LEFT JOIN FETCH c.rule "
-                        + "JOIN FETCH osm.optionalStandard os "
-                        + "WHERE osm.deleted <> true "
+        return entityManager.createQuery("SELECT DISTINCT mapping "
+                        + "FROM OptionalStandardCriteriaMapEntity mapping "
+                        + "JOIN FETCH mapping.criteria mappingCrit "
+                        + "LEFT JOIN FETCH mappingCrit.certificationEdition "
+                        + "LEFT JOIN FETCH mappingCrit.rule "
+                        + "JOIN FETCH mapping.optionalStandard os "
+                        + "WHERE mapping.deleted <> true "
                         + "AND os.deleted <> true ",
                         OptionalStandardCriteriaMapEntity.class)
                 .getResultList();

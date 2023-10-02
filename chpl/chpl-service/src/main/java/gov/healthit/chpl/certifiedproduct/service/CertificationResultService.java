@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.conformanceMethod.ConformanceMethodComparator;
-import gov.healthit.chpl.conformanceMethod.dao.ConformanceMethodDAO;
+import gov.healthit.chpl.conformanceMethod.ConformanceMethodDAO;
 import gov.healthit.chpl.conformanceMethod.domain.ConformanceMethod;
 import gov.healthit.chpl.conformanceMethod.domain.ConformanceMethodCriteriaMap;
 import gov.healthit.chpl.dao.CertificationResultDetailsDAO;
@@ -27,7 +27,7 @@ import gov.healthit.chpl.functionalitytested.FunctionalityTestedComparator;
 import gov.healthit.chpl.functionalitytested.FunctionalityTestedManager;
 import gov.healthit.chpl.manager.CertificationResultManager;
 import gov.healthit.chpl.optionalStandard.OptionalStandardComparator;
-import gov.healthit.chpl.optionalStandard.dao.OptionalStandardDAO;
+import gov.healthit.chpl.optionalStandard.OptionalStandardDAO;
 import gov.healthit.chpl.optionalStandard.domain.OptionalStandard;
 import gov.healthit.chpl.optionalStandard.domain.OptionalStandardCriteriaMap;
 import gov.healthit.chpl.svap.dao.SvapDAO;
