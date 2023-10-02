@@ -37,8 +37,8 @@ public class UnavailableCriteriaReviewer implements Reviewer {
         }
 
         if (isCriterionAttested(certResult)
-                && (!doCriterionDatesOverlapCertificationDay(listing, certResult)
-                        || !isCriterionEditableByUser(listing, certResult))) {
+                && !(doCriterionDatesOverlapCertificationDay(listing, certResult)
+                        || isCriterionEditableByUser(listing, certResult))) {
             listing.addBusinessErrorMessage(msgUtil.getMessage("listing.unavailableCriteriaAddNotAllowed",
                     Util.formatCriteriaNumber(certResult.getCriterion())));
         }
