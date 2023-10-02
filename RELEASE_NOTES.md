@@ -1,5 +1,15 @@
 # Release Notes
 
+## Version 42.2.0
+_2 October 2023_
+
+### Features
+* Add GET optional-standards endpoint
+* Add GET conformance-methods endpoint
+* Deprecate allowed* fields of a certification result
+
+---
+
 ## Version 42.1.0
 _18 September 2023_
 
