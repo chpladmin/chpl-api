@@ -10,6 +10,7 @@ import javax.transaction.Transactional;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
+import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.caching.ListingSearchCacheRefresh;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
@@ -74,6 +76,7 @@ public class ListingConfirmationManager {
     private CuresUpdateService curesUpdateService;
     private ActivityManager activityManager;
     private CertifiedProductDetailsManager cpDetailsManager;
+    private FF4j ff4j;
 
     private CertificationStatus activeStatus;
 
@@ -91,7 +94,8 @@ public class ListingConfirmationManager {
             CertificationStatusDAO certStatusDao,  CertificationStatusEventDAO statusEventDao,
             CuresUpdateEventDAO curesUpdateDao,
             CertifiedProductDetailsManager cpDetailsManager, CuresUpdateService curesUpdateService,
-            ActivityManager activityManager) {
+            ActivityManager activityManager,
+            FF4j ff4j) {
         this.developerManager = developerManager;
         this.productManager = productManager;
         this.versionManager = versionManager;
@@ -110,6 +114,7 @@ public class ListingConfirmationManager {
         this.cpDetailsManager = cpDetailsManager;
         this.curesUpdateService = curesUpdateService;
         this.activityManager = activityManager;
+        this.ff4j = ff4j;
 
         activeStatus = certStatusDao.getByStatusName(CertificationStatusType.Active.toString());
     }
@@ -153,7 +158,9 @@ public class ListingConfirmationManager {
         saveSed(listing);
         saveCqms(listing);
         saveInitialCertificationEvent(listing);
-        saveInitialCuresUpdateEvent(listing);
+        if (!ff4j.check(FeatureList.EDITIONLESS)) {
+            saveInitialCuresUpdateEvent(listing);
+        }
         CertifiedProductSearchDetails confirmedListing = cpDetailsManager.getCertifiedProductDetails(listing.getId());
         try {
             logCertifiedProductCreateActivity(confirmedListing);
