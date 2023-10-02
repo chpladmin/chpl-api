@@ -8,7 +8,6 @@ import java.util.TreeSet;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.ff4j.FF4j;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -25,6 +24,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.certificationId.Validator;
 import gov.healthit.chpl.certificationId.ValidatorFactory;
+import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
 import gov.healthit.chpl.dto.CQMMetDTO;
 import gov.healthit.chpl.dto.CertificationIdDTO;
@@ -56,16 +56,13 @@ public class CertificationIdController {
     private CertifiedProductManager certifiedProductManager;
     private CertificationIdManager certificationIdManager;
     private ValidatorFactory validatorFactory;
-    private FF4j ff4j;
 
     @Autowired
     public CertificationIdController(CertifiedProductManager certifiedProductManager,
-            CertificationIdManager certificationIdManager, ValidatorFactory validatorFactory,
-            FF4j ff4j) {
+            CertificationIdManager certificationIdManager, ValidatorFactory validatorFactory) {
         this.certifiedProductManager = certifiedProductManager;
         this.certificationIdManager = certificationIdManager;
         this.validatorFactory = validatorFactory;
-        this.ff4j = ff4j;
     }
 
     @Operation(summary = "Generate the CMS EHR Certification ID Report and email the results to the logged-in user.",
@@ -276,14 +273,14 @@ public class CertificationIdController {
         SortedSet<Integer> yearSet = new TreeSet<Integer>();
         List<CertificationIdResults.Product> resultProducts = new ArrayList<CertificationIdResults.Product>();
         for (CertifiedProductDetailsDTO dto : productDtos) {
-            if (StringUtils.isEmpty(dto.getYear())) {
-                dto.setYear(DEFAULT_YEAR);
-            }
-
             if (create) {
-                if (!dto.getYear().equalsIgnoreCase("2015") || BooleanUtils.isNotTrue(dto.getCuresUpdate())) {
+                if (!isEditionlessOrCuresUpdate(dto)) {
                     throw new InvalidArgumentsException("New Certification IDs can only be created using 2015 Cures Update Listings");
                 }
+            }
+
+            if (StringUtils.isEmpty(dto.getYear())) {
+                dto.setYear(DEFAULT_YEAR);
             }
             CertificationIdResults.Product p = new CertificationIdResults.Product(dto);
             resultProducts.add(p);
@@ -334,5 +331,13 @@ public class CertificationIdController {
             }
         }
         return results;
+    }
+
+    private boolean isEditionlessOrCuresUpdate(CertifiedProductDetailsDTO listing) {
+        if (StringUtils.isEmpty(listing.getYear()) && listing.getCuresUpdate() == null) {
+            return true;
+        }
+        return listing.getYear().equals(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear())
+                && BooleanUtils.isTrue(listing.getCuresUpdate());
     }
 }
