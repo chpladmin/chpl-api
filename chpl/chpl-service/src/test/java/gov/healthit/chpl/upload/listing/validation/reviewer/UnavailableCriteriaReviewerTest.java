@@ -49,16 +49,41 @@ public class UnavailableCriteriaReviewerTest {
     }
 
     @Test
-    public void review_criteriaRemoved_hasError() {
+    public void review_criteriaRemovedLessThan1YearAgo_noError() {
+        LocalDate sixMonthsAgo = LocalDate.now().minusMonths(6);
+
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .certificationDate(DateUtil.toEpochMillis(LocalDate.parse("2023-02-01")))
-                .decertificationDay(LocalDate.parse("2023-03-02"))
+                .certificationDate(DateUtil.toEpochMillis(sixMonthsAgo))
                 .certificationResult(CertificationResult.builder()
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
                                 .number("170.315 (a)(1)")
-                                .startDay(LocalDate.parse("2023-01-01"))
-                                .endDay(LocalDate.parse("2023-01-02"))
+                                .startDay(sixMonthsAgo)
+                                .endDay(sixMonthsAgo.plusDays(2))
+                                .build())
+                        .success(true)
+                        .build())
+                .build();
+        reviewer.review(listing, listing.getCertificationResults().get(0));
+
+        assertEquals(0, listing.getWarningMessages().size());
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_criteriaRemovedMoreThan1YearAgo_hasError() {
+        LocalDate sixMonthsAgo = LocalDate.now().minusMonths(6);
+        LocalDate eighteenMonthsAgo = LocalDate.now().minusMonths(18);
+
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationDate(DateUtil.toEpochMillis(sixMonthsAgo))
+                .decertificationDay(sixMonthsAgo.plusDays(5))
+                .certificationResult(CertificationResult.builder()
+                        .criterion(CertificationCriterion.builder()
+                                .id(1L)
+                                .number("170.315 (a)(1)")
+                                .startDay(eighteenMonthsAgo)
+                                .endDay(eighteenMonthsAgo.plusDays(2))
                                 .build())
                         .success(true)
                         .build())
