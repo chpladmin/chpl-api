@@ -3,6 +3,8 @@ package gov.healthit.chpl.upload.listing.validation.reviewer;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.time.LocalDate;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
@@ -12,21 +14,22 @@ import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.util.DateUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
-public class RemovedCriteriaReviewerTest {
-    private static final String REMOVED_CRITERIA_NOT_ALLOWED = "The criterion %s has been removed and may not be added to the listing.";
+public class UnavailableCriteriaReviewerTest {
+    private static final String UNAVAILABLE_CRITERIA_NOT_ALLOWED = "The criterion %s is unavailable for this listing.";
 
     private ErrorMessageUtil msgUtil;
-    private RemovedCriteriaReviewer reviewer;
+    private UnavailableCriteriaReviewer reviewer;
 
     @Before
     public void before() throws EntityRetrievalException {
         msgUtil = Mockito.mock(ErrorMessageUtil.class);
-        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.removedCriteriaAddNotAllowed"),
+        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.unavailableCriteriaAddNotAllowed"),
                 ArgumentMatchers.anyString()))
-            .thenAnswer(i -> String.format(REMOVED_CRITERIA_NOT_ALLOWED, i.getArgument(1), ""));
-        reviewer = new RemovedCriteriaReviewer(msgUtil);
+            .thenAnswer(i -> String.format(UNAVAILABLE_CRITERIA_NOT_ALLOWED, i.getArgument(1), ""));
+        reviewer = new UnavailableCriteriaReviewer(msgUtil);
     }
 
     @Test
@@ -42,11 +45,14 @@ public class RemovedCriteriaReviewerTest {
     @Test
     public void review_criteriaRemoved_hasError() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationDate(DateUtil.toEpochMillis(LocalDate.parse("2023-02-01")))
+                .decertificationDay(LocalDate.parse("2023-03-02"))
                 .certificationResult(CertificationResult.builder()
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
                                 .number("170.315 (a)(1)")
-                                .removed(true)
+                                .startDay(LocalDate.parse("2023-01-01"))
+                                .endDay(LocalDate.parse("2023-01-02"))
                                 .build())
                         .success(true)
                         .build())
@@ -56,7 +62,7 @@ public class RemovedCriteriaReviewerTest {
         assertEquals(0, listing.getWarningMessages().size());
         assertEquals(1, listing.getErrorMessages().size());
         assertTrue(listing.getErrorMessages().contains(
-                String.format(REMOVED_CRITERIA_NOT_ALLOWED, "170.315 (a)(1)")));
+                String.format(UNAVAILABLE_CRITERIA_NOT_ALLOWED, "170.315 (a)(1)", "")));
     }
 
     @Test
@@ -66,7 +72,7 @@ public class RemovedCriteriaReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
                                 .number("170.315 (a)(1)")
-                                .removed(false)
+                                .startDay(LocalDate.parse("2023-01-01"))
                                 .build())
                         .success(true)
                         .build())

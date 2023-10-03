@@ -3,6 +3,8 @@ package gov.healthit.chpl.validation.listing.reviewer.edition2015;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.time.LocalDate;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
@@ -34,7 +36,13 @@ public class SedG32015ReviewerTest {
             .thenReturn(HAS_G3_NO_SED);
         resourcePermissions = Mockito.mock(ResourcePermissions.class);
         CertificationCriterionService criteriaService = Mockito.mock(CertificationCriterionService.class);
-        g3 = getCriterion(52L, "170.315 (g)(3)", "g3 original", false);
+        g3 = CertificationCriterion.builder()
+                .id(52L)
+                .number("170.315 (g)(3)")
+                .title("g3 original")
+                .startDay(LocalDate.parse("2023-01-01"))
+                .certificationEdition("2015")
+                .build();
         Mockito.when(criteriaService.get(ArgumentMatchers.eq("criterion.170_315_g_3"))).thenReturn(g3);
         reviewer = new SedG32015Reviewer(criteriaService, msgUtil, resourcePermissions);
     }
@@ -61,7 +69,8 @@ public class SedG32015ReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(2L)
                                 .number("170.315 (a)(2)")
-                                .removed(false)
+                                .startDay(LocalDate.parse("2023-01-01"))
+                                .certificationEdition("2015")
                                 .build())
                         .build())
                 .build();
@@ -83,7 +92,8 @@ public class SedG32015ReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(2L)
                                 .number("170.315 (a)(1)")
-                                .removed(false)
+                                .startDay(LocalDate.parse("2023-01-01"))
+                                .certificationEdition("2015")
                                 .build())
                         .build())
                 .build();
@@ -110,7 +120,9 @@ public class SedG32015ReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(2L)
                                 .number("170.315 (a)(1)")
-                                .removed(true)
+                                .startDay(LocalDate.parse("2023-01-01"))
+                                .endDay(LocalDate.parse("2023-01-02"))
+                                .certificationEdition("2015")
                                 .build())
                         .build())
                 .build();
@@ -136,7 +148,9 @@ public class SedG32015ReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(2L)
                                 .number("170.315 (a)(1)")
-                                .removed(true)
+                                .startDay(LocalDate.parse("2023-01-01"))
+                                .endDay(LocalDate.parse("2023-01-02"))
+                                .certificationEdition("2015")
                                 .build())
                         .build())
                 .build();
@@ -162,7 +176,9 @@ public class SedG32015ReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(2L)
                                 .number("170.315 (a)(1)")
-                                .removed(true)
+                                .startDay(LocalDate.parse("2023-01-01"))
+                                .endDay(LocalDate.parse("2023-01-02"))
+                                .certificationEdition("2015")
                                 .build())
                         .build())
                 .build();
@@ -184,7 +200,8 @@ public class SedG32015ReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(2L)
                                 .number("170.315 (a)(1)")
-                                .removed(false)
+                                .startDay(LocalDate.parse("2023-01-01"))
+                                .certificationEdition("2015")
                                 .build())
                         .build())
                 .build();
@@ -211,7 +228,9 @@ public class SedG32015ReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(2L)
                                 .number("170.315 (a)(1)")
-                                .removed(true)
+                                .startDay(LocalDate.parse("2023-01-01"))
+                                .endDay(LocalDate.parse("2023-01-02"))
+                                .certificationEdition("2015")
                                 .build())
                         .build())
                 .build();
@@ -237,7 +256,9 @@ public class SedG32015ReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(2L)
                                 .number("170.315 (a)(1)")
-                                .removed(true)
+                                .startDay(LocalDate.parse("2023-01-01"))
+                                .endDay(LocalDate.parse("2023-01-02"))
+                                .certificationEdition("2015")
                                 .build())
                         .build())
                 .build();
@@ -263,21 +284,14 @@ public class SedG32015ReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(2L)
                                 .number("170.315 (a)(1)")
-                                .removed(true)
+                                .startDay(LocalDate.parse("2023-01-01"))
+                                .endDay(LocalDate.parse("2023-01-02"))
+                                .certificationEdition("2015")
                                 .build())
                         .build())
                 .build();
         reviewer.review(listing);
         assertEquals(0, listing.getErrorMessages().size());
         assertEquals(0, listing.getWarningMessages().size());
-    }
-
-    private CertificationCriterion getCriterion(Long id, String number, String title, boolean removed) {
-        return CertificationCriterion.builder()
-                .id(id)
-                .number(number)
-                .title(title)
-                .removed(removed)
-                .build();
     }
 }

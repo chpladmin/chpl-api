@@ -2,6 +2,7 @@ package gov.healthit.chpl.validation.listing.reviewer;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -114,7 +115,8 @@ public class OptionalStandardReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .number("170.315 (a)(13)")
                                 .id(1L)
-                                .removed(true)
+                                .startDay(LocalDate.parse("2023-01-01"))
+                                .endDay(LocalDate.parse("2023-01-02"))
                                 .build())
                         .optionalStandards(Stream.of(CertificationResultOptionalStandard.builder()
                                 .optionalStandardId(2L)
@@ -142,7 +144,8 @@ public class OptionalStandardReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .number("170.315 (a)(13)")
                                 .id(1L)
-                                .removed(true)
+                                .startDay(LocalDate.parse("2023-01-01"))
+                                .endDay(LocalDate.parse("2023-01-02"))
                                 .build())
                         .optionalStandards(Stream.of(CertificationResultOptionalStandard.builder()
                                 .optionalStandardId(2L)
@@ -167,7 +170,7 @@ public class OptionalStandardReviewerTest {
                         .certificationEdition("2015")
                         .certificationEditionId(3L)
                         .number("170.315 (a)(6)")
-                        .removed(false)
+                        .startDay(LocalDate.parse("2023-01-01"))
                         .build())
                 .optionalStandard(OptionalStandard.builder()
                         .id(1L)

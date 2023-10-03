@@ -1,17 +1,30 @@
 package gov.healthit.chpl.domain;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
+import gov.healthit.chpl.certificationCriteria.CriterionStatus;
+import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.domain.surveillance.NonconformityClassification;
+import gov.healthit.chpl.util.CriterionStatusAdapter;
+import gov.healthit.chpl.util.LocalDateAdapter;
+import gov.healthit.chpl.util.LocalDateDeserializer;
+import gov.healthit.chpl.util.LocalDateSerializer;
 import gov.healthit.chpl.util.NullSafeEvaluator;
 import gov.healthit.chpl.util.Util;
 import lombok.AllArgsConstructor;
@@ -37,11 +50,51 @@ public class NonconformityType implements Serializable {
 
     private String number;
     private String title;
-    private Boolean removed;
+
+    /**
+     * A date value representing the date by which the Non-Conformity Type became available.
+     */
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonSerialize(using = LocalDateSerializer.class)
+    @XmlElement(required = false, nillable = true)
+    @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
+    private LocalDate startDay;
+
+    /**
+     * A date value representing the date by which the Non-Conformity Type can no longer be used.
+     */
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonSerialize(using = LocalDateSerializer.class)
+    @XmlElement(required = false, nillable = true)
+    @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
+    private LocalDate endDay;
 
     @JsonIgnore
     @XmlTransient
     private NonconformityClassification classification;
+
+    @JsonProperty(access = Access.READ_ONLY)
+    @XmlElement(required = true, nillable = false)
+    @XmlJavaTypeAdapter(value = CriterionStatusAdapter.class)
+    public CriterionStatus getStatus() {
+        if (certificationEdition != null && certificationEdition.getName() != null
+                && (certificationEdition.getName().equals(CertificationEditionConcept.CERTIFICATION_EDITION_2011.getYear())
+                        || certificationEdition.getName().equals(CertificationEditionConcept.CERTIFICATION_EDITION_2014.getYear()))) {
+            return CriterionStatus.RETIRED;
+        } else {
+            LocalDate end = endDay != null ? endDay : LocalDate.MAX;
+            if (end.isBefore(LocalDate.now())) {
+                return CriterionStatus.REMOVED;
+            }
+            return CriterionStatus.ACTIVE;
+        }
+    }
+
+    @JsonProperty(access = Access.READ_ONLY)
+    @XmlTransient
+    public Boolean isRemoved() {
+        return getStatus().equals(CriterionStatus.REMOVED);
+    }
 
     public Long getId() {
         return id;
@@ -59,6 +112,14 @@ public class NonconformityType implements Serializable {
         this.certificationEdition = certificationEdition;
     }
 
+    public LocalDate getEndDay() {
+        return endDay;
+    }
+
+    public void setEndDay(LocalDate endDay) {
+        this.endDay = endDay;
+    }
+
     public String getNumber() {
         return number;
     }
@@ -67,20 +128,20 @@ public class NonconformityType implements Serializable {
         this.number = number;
     }
 
+    public LocalDate getStartDay() {
+        return startDay;
+    }
+
+    public void setStartDay(LocalDate startDay) {
+        this.startDay = startDay;
+    }
+
     public String getTitle() {
         return title;
     }
 
     public void setTitle(String title) {
         this.title = title;
-    }
-
-    public Boolean getRemoved() {
-        return removed;
-    }
-
-    public void setRemoved(Boolean removed) {
-        this.removed = removed;
     }
 
     public NonconformityClassification getClassification() {
