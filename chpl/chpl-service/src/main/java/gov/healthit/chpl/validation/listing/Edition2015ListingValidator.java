@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.upload.listing.validation.reviewer.AccessibilityStandardReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.QmsStandardReviewer;
+import gov.healthit.chpl.upload.listing.validation.reviewer.TestToolReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.UcdProcessReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.UnavailableCriteriaReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.CertificationDateReviewer;
@@ -34,7 +35,6 @@ import gov.healthit.chpl.validation.listing.reviewer.SvapReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.TestProcedureReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.TestStandardRemovalReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.TestStandardReviewer;
-import gov.healthit.chpl.validation.listing.reviewer.TestToolReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.TestingLabReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.UnsupportedCharacterReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.UrlReviewer;
@@ -54,7 +54,6 @@ import gov.healthit.chpl.validation.listing.reviewer.edition2015.RequiredAndRela
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.RequiredAndRelatedCriteriaReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.RequiredData2015Reviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.SedG32015Reviewer;
-import gov.healthit.chpl.validation.listing.reviewer.edition2015.TestTool2015Reviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.UnavailableCriteriaComparisonReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.UnavailableCriteriaTestTaskComparisonReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.UnavailableCriteriaUcdComparisonReviewer;
@@ -127,12 +126,8 @@ public class Edition2015ListingValidator extends Validator {
     private TestProcedureReviewer tpReviewer;
 
     @Autowired
-    @Qualifier("testToolReviewer")
+    @Qualifier("listingUploadTestToolReviewer")
     private TestToolReviewer ttReviewer;
-
-    @Autowired
-    @Qualifier("testTool2015Reviewer")
-    private TestTool2015Reviewer tt2015Reviewer;
 
     @Autowired
     @Qualifier("inheritanceReviewer")
@@ -281,7 +276,6 @@ public class Edition2015ListingValidator extends Validator {
         reviewers.add(tpReviewer);
         reviewers.add(inheritanceReviewer);
         reviewers.add(ttReviewer);
-        reviewers.add(tt2015Reviewer);
         reviewers.add(urlReviewer);
         reviewers.add(functionalityTestedReviewer);
         reviewers.add(invalidCriteriaCombinationReviewer);

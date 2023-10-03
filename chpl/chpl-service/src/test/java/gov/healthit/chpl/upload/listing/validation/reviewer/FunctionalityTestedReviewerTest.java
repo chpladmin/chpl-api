@@ -191,6 +191,7 @@ public class FunctionalityTestedReviewerTest {
                 .functionalityTested(FunctionalityTested.builder()
                         .id(1L)
                         .regulatoryTextCitation("func tested")
+                        .startDay(LocalDate.parse("2022-01-01"))
                         .build())
                 .build());
         functionalitiesTested.add(CertificationResultFunctionalityTested.builder()
@@ -200,6 +201,7 @@ public class FunctionalityTestedReviewerTest {
                 .build());
 
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationDate(DateUtil.toEpochMillis(LocalDate.parse("2022-01-02")))
                 .certificationResult(CertificationResult.builder()
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
@@ -267,6 +269,7 @@ public class FunctionalityTestedReviewerTest {
                 .functionalityTested(FunctionalityTested.builder()
                         .id(1L)
                         .regulatoryTextCitation("func tested")
+                        .startDay(LocalDate.parse("2022-01-01"))
                         .build())
                 .build());
         functionalitiesTested.add(CertificationResultFunctionalityTested.builder()
@@ -276,6 +279,7 @@ public class FunctionalityTestedReviewerTest {
                         .build())
                 .build());
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationDate(DateUtil.toEpochMillis(LocalDate.parse("2022-01-02")))
                 .certificationResult(CertificationResult.builder()
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
@@ -343,15 +347,18 @@ public class FunctionalityTestedReviewerTest {
                 .functionalityTested(FunctionalityTested.builder()
                         .id(1L)
                         .regulatoryTextCitation("func tested")
+                        .startDay(LocalDate.parse("2022-01-01"))
                         .build())
                 .build());
         functionalitiesTested.add(CertificationResultFunctionalityTested.builder()
                 .functionalityTested(FunctionalityTested.builder()
                         .id(2L)
                         .regulatoryTextCitation("")
+                        .startDay(LocalDate.parse("2022-01-01"))
                         .build())
                 .build());
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationDate(DateUtil.toEpochMillis(LocalDate.parse("2023-01-01")))
                 .certificationResult(CertificationResult.builder()
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
@@ -575,16 +582,19 @@ public class FunctionalityTestedReviewerTest {
                 .functionalityTested(FunctionalityTested.builder()
                         .id(1L)
                         .regulatoryTextCitation("valid func")
+                        .startDay(LocalDate.parse("2022-01-01"))
                         .build())
                 .build());
         functionalitiesTested.add(CertificationResultFunctionalityTested.builder()
                 .functionalityTested(FunctionalityTested.builder()
                         .id(3L)
                         .regulatoryTextCitation("mismatch")
+                        .startDay(LocalDate.parse("2022-01-01"))
                         .build())
                 .build());
 
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationDate(DateUtil.toEpochMillis(LocalDate.parse("2022-02-02")))
                 .certificationResult(CertificationResult.builder()
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
@@ -654,15 +664,18 @@ public class FunctionalityTestedReviewerTest {
                 .functionalityTested(FunctionalityTested.builder()
                         .id(1L)
                         .regulatoryTextCitation("valid func")
+                        .startDay(LocalDate.parse("2022-01-01"))
                         .build())
                 .build());
         functionalitiesTested.add(CertificationResultFunctionalityTested.builder()
                 .functionalityTested(FunctionalityTested.builder()
                         .id(4L)
                         .regulatoryTextCitation("another func tested")
+                        .startDay(LocalDate.parse("2022-01-01"))
                         .build())
                 .build());
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationDate(DateUtil.toEpochMillis(LocalDate.parse("2022-06-01")))
                 .certificationResult(CertificationResult.builder()
                         .criterion(CertificationCriterion.builder()
                                 .id(1L)
