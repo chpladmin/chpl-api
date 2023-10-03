@@ -128,7 +128,7 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
         csvPresenter.setLogger(LOGGER);
         List<CertificationCriterion> criteria = getCriteriaDao().findByCertificationEditionYear(edition)
                 .stream()
-                .filter(cr -> !cr.getRemoved())
+                .filter(cr -> !cr.isRemoved())
                 .sorted((crA, crB) -> criterionService.sortCriteria(crA, crB))
                 .collect(Collectors.<CertificationCriterion>toList());
         csvPresenter.setApplicableCriteria(criteria);

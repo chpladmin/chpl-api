@@ -604,10 +604,12 @@ public class CertificationResultDAO extends BaseDAOImpl {
     private CertificationResultConformanceMethodEntity getCertificationResultConformanceMethodById(Long id) {
         CertificationResultConformanceMethodEntity entity = null;
 
-        Query query = entityManager.createQuery(
-                "SELECT cm FROM CertificationResultConformanceMethodEntity cm "
-                        + "LEFT OUTER JOIN FETCH cm.conformanceMethod " + "where (NOT cm.deleted = true) AND (cm.id = :id) ",
-                        CertificationResultConformanceMethodEntity.class);
+        Query query = entityManager.createQuery("SELECT crcm "
+                + "FROM CertificationResultConformanceMethodEntity crcm "
+                + "LEFT JOIN FETCH crcm.conformanceMethod cm "
+                + "WHERE (NOT crcm.deleted = true) "
+                + "AND (crcm.id = :id) ",
+                CertificationResultConformanceMethodEntity.class);
         query.setParameter("id", id);
         List<CertificationResultConformanceMethodEntity> result = query.getResultList();
 
@@ -676,8 +678,10 @@ public class CertificationResultDAO extends BaseDAOImpl {
 
     public CertificationResultOptionalStandard lookupOptionalStandardMapping(Long certificationResultId,
             Long optionalStandardId) {
-        Query query = entityManager.createQuery("SELECT os " + "FROM CertificationResultOptionalStandardEntity os "
-                + "LEFT OUTER JOIN FETCH os.optionalStandard " + "where (NOT os.deleted = true) "
+        Query query = entityManager.createQuery("SELECT os "
+                + "FROM CertificationResultOptionalStandardEntity os "
+                + "LEFT OUTER JOIN FETCH os.optionalStandard "
+                + "where (NOT os.deleted = true) "
                 + "AND (os.certificationResultId = :certificationResultId) "
                 + "AND (os.optionalStandardId = :optionalStandardId)", CertificationResultOptionalStandardEntity.class);
         query.setParameter("certificationResultId", certificationResultId);
@@ -696,8 +700,10 @@ public class CertificationResultDAO extends BaseDAOImpl {
         CertificationResultOptionalStandardEntity entity = null;
 
         Query query = entityManager.createQuery(
-                "SELECT os " + "FROM CertificationResultOptionalStandardEntity os "
-                        + "LEFT OUTER JOIN FETCH os.optionalStandard " + "where (NOT os.deleted = true) AND (os.id = :id) ",
+                "SELECT os "
+                        + "FROM CertificationResultOptionalStandardEntity os "
+                        + "LEFT OUTER JOIN FETCH os.optionalStandard "
+                        + "where (NOT os.deleted = true) AND (os.id = :id) ",
                 CertificationResultOptionalStandardEntity.class);
         query.setParameter("id", id);
         List<CertificationResultOptionalStandardEntity> result = query.getResultList();
@@ -885,7 +891,6 @@ public class CertificationResultDAO extends BaseDAOImpl {
         Query query = entityManager.createQuery("SELECT crtt "
                 + "FROM CertificationResultTestToolEntity crtt "
                 + "JOIN FETCH crtt.testTool tt "
-                + "JOIN FETCH tt.criteria "
                 + "LEFT OUTER JOIN FETCH tt.rule "
                 + "WHERE (NOT crtt.deleted = true) "
                 + "AND (crtt.id = :id) ",

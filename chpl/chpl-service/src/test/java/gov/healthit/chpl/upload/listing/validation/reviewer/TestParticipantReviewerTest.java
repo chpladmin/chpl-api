@@ -3,6 +3,7 @@ package gov.healthit.chpl.upload.listing.validation.reviewer;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.time.LocalDate;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -34,8 +35,21 @@ public class TestParticipantReviewerTest {
                 ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
         .thenAnswer(i -> String.format(TEST_PARTICIPANT_FIELD_ROUNDED, i.getArgument(1), i.getArgument(2), i.getArgument(3), i.getArgument(4)));
 
-        a1 = CertificationCriterion.builder().id(1L).number("170.315 (a)(1)").title("a1").removed(false).build();
-        a6 = CertificationCriterion.builder().id(6L).number("170.315 (a)(6)").title("a6").removed(true).build();
+        a1 = CertificationCriterion.builder()
+                .id(1L)
+                .number("170.315 (a)(1)")
+                .title("a1")
+                .startDay(LocalDate.parse("2023-01-01"))
+                .certificationEdition("2015")
+                .build();
+        a6 = CertificationCriterion.builder()
+                .id(6L)
+                .number("170.315 (a)(6)")
+                .title("a6")
+                .startDay(LocalDate.parse("2023-01-01"))
+                .endDay(LocalDate.parse("2023-01-02"))
+                .certificationEdition("2015")
+                .build();
 
         reviewer = new TestParticipantReviewer(errorMessageUtil);
     }

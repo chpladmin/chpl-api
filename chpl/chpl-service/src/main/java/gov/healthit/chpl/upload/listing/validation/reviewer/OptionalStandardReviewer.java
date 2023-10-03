@@ -12,7 +12,7 @@ import org.springframework.util.StringUtils;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.optionalStandard.dao.OptionalStandardDAO;
+import gov.healthit.chpl.optionalStandard.OptionalStandardDAO;
 import gov.healthit.chpl.optionalStandard.domain.CertificationResultOptionalStandard;
 import gov.healthit.chpl.optionalStandard.domain.OptionalStandardCriteriaMap;
 import gov.healthit.chpl.util.CertificationResultRules;

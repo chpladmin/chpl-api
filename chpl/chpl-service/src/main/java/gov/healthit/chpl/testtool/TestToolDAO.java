@@ -57,7 +57,7 @@ public class TestToolDAO extends BaseDAOImpl {
 
     public List<TestTool> getAll() {
         return getAllEntities().stream()
-                .map(entity -> entity.toDomain())
+                .map(entity -> entity.toDomainWithCriteria())
                 .toList();
     }
 
@@ -66,7 +66,7 @@ public class TestToolDAO extends BaseDAOImpl {
         if (entity == null) {
             return null;
         }
-        return entity.toDomain();
+        return entity.toDomainWithCriteria();
     }
 
 
@@ -75,7 +75,7 @@ public class TestToolDAO extends BaseDAOImpl {
         if (CollectionUtils.isEmpty(entities)) {
             return null;
         }
-        return entities.get(0).toDomain();
+        return entities.get(0).toDomainWithCriteria();
     }
 
     @Transactional
@@ -95,7 +95,6 @@ public class TestToolDAO extends BaseDAOImpl {
     @CacheEvict(value = CacheNames.TEST_TOOL_MAPS, allEntries = true)
     public void update(TestTool testTool) throws EntityRetrievalException {
         TestToolEntity entity = getEntityById(testTool.getId());
-
         entity.setValue(testTool.getValue());
         entity.setRegulatoryTextCitation(testTool.getRegulatoryTextCitation());
         entity.setStartDay(testTool.getStartDay());
@@ -157,10 +156,13 @@ public class TestToolDAO extends BaseDAOImpl {
 
     public TestToolEntity getEntityById(Long id) {
         TestToolEntity entity = null;
-        Query query = entityManager.createQuery(
-                "FROM TestToolEntity "
-                + "WHERE (NOT deleted = true) "
-                + "AND (test_tool_id = :entityid) ", TestToolEntity.class);
+        Query query = entityManager.createQuery("SELECT DISTINCT tt "
+                + "FROM TestToolEntity tt "
+                + "LEFT JOIN FETCH tt.criteria crit "
+                + "LEFT JOIN FETCH crit.certificationEdition "
+                + "LEFT JOIN FETCH crit.rule "
+                + "WHERE (NOT tt.deleted = true) "
+                + "AND (tt.id = :entityid) ", TestToolEntity.class);
         query.setParameter("entityid", id);
         List<TestToolEntity> result = query.getResultList();
         if (result.size() > 0) {
@@ -170,8 +172,8 @@ public class TestToolDAO extends BaseDAOImpl {
     }
 
     private List<TestToolEntity> getEntitiesByName(String name) {
-        Query query = entityManager.createQuery(
-                "FROM TestToolEntity tt "
+        Query query = entityManager.createQuery("SELECT DISTINCT tt "
+                + "FROM TestToolEntity tt "
                 + "INNER JOIN FETCH tt.criteria c "
                 + "LEFT JOIN FETCH c.certificationEdition "
                 + "LEFT JOIN FETCH c.rule "
@@ -199,7 +201,9 @@ public class TestToolDAO extends BaseDAOImpl {
     private List<TestToolEntity> getAllEntities() {
         return entityManager.createQuery("SELECT DISTINCT tt "
                 + "FROM TestToolEntity tt "
-                + "LEFT JOIN FETCH tt.criteria "
+                + "LEFT JOIN FETCH tt.criteria crit "
+                + "LEFT JOIN FETCH crit.certificationEdition "
+                + "LEFT JOIN FETCH crit.rule "
                 + "WHERE tt.deleted <> true ", TestToolEntity.class)
                 .getResultList();
     }

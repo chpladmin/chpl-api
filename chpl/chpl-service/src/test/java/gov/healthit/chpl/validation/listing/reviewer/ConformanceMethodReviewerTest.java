@@ -17,7 +17,7 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
-import gov.healthit.chpl.conformanceMethod.dao.ConformanceMethodDAO;
+import gov.healthit.chpl.conformanceMethod.ConformanceMethodDAO;
 import gov.healthit.chpl.conformanceMethod.domain.CertificationResultConformanceMethod;
 import gov.healthit.chpl.conformanceMethod.domain.ConformanceMethod;
 import gov.healthit.chpl.conformanceMethod.domain.ConformanceMethodCriteriaMap;
@@ -122,7 +122,8 @@ public class ConformanceMethodReviewerTest {
                         .criterion(CertificationCriterion.builder()
                             .number("170.315 (a)(9)")
                             .id(100L)
-                            .removed(true)
+                            .startDay(LocalDate.parse("2023-01-01"))
+                            .endDay(LocalDate.parse("2023-01-02"))
                             .build())
                         .conformanceMethod(ConformanceMethod.builder()
                             .id(1L)
@@ -355,7 +356,7 @@ public class ConformanceMethodReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .number("170.315 (a)(1)")
                                 .id(1L)
-                                .removed(false)
+                                .startDay(LocalDate.parse("2023-01-01"))
                                 .build())
                         .conformanceMethods(crcms)
                         .build())
@@ -1138,7 +1139,7 @@ public class ConformanceMethodReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(2L)
                                 .number("170.315 (a)(2)")
-                                .removed(false)
+                                .startDay(LocalDate.parse("2023-01-01"))
                                 .build())
                         .conformanceMethods(new ArrayList<CertificationResultConformanceMethod>())
                         .build())
@@ -1158,7 +1159,8 @@ public class ConformanceMethodReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(100L)
                                 .number("170.315 (a)(9)")
-                                .removed(true)
+                                .startDay(LocalDate.parse("2023-01-01"))
+                                .endDay(LocalDate.parse("2023-01-02"))
                                 .build())
                         .conformanceMethods(new ArrayList<CertificationResultConformanceMethod>())
                         .build())

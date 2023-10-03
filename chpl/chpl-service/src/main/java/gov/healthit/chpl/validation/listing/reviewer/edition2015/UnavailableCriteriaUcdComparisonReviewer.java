@@ -3,6 +3,7 @@ package gov.healthit.chpl.validation.listing.reviewer.edition2015;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -10,23 +11,18 @@ import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductUcdProcess;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.util.DateUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
 import gov.healthit.chpl.validation.listing.reviewer.ComparisonReviewer;
 
-/**
- * This reviewer confirms that an ACB user does not attempt to associate a removed criteria with a UCD Process.
- *
- * @author kekey
- *
- */
-@Component("removedCriteriaUcdComparisonReviewer")
-public class RemovedCriteriaUcdComparisonReviewer implements ComparisonReviewer {
+@Component("unavailableCriteriaUcdComparisonReviewer")
+public class UnavailableCriteriaUcdComparisonReviewer implements ComparisonReviewer {
     private ResourcePermissions resourcePermissions;
     private ErrorMessageUtil msgUtil;
 
     @Autowired
-    public RemovedCriteriaUcdComparisonReviewer(ResourcePermissions resourcePermissions,
+    public UnavailableCriteriaUcdComparisonReviewer(ResourcePermissions resourcePermissions,
             ErrorMessageUtil msgUtil) {
         this.resourcePermissions = resourcePermissions;
         this.msgUtil = msgUtil;
@@ -49,22 +45,23 @@ public class RemovedCriteriaUcdComparisonReviewer implements ComparisonReviewer 
                     Set<CertificationCriterion> addedCriteria = getAddedCriteria(existingUcd.getCriteria(),
                             updatedUcd.getCriteria());
                     for (CertificationCriterion addedCriterion : addedCriteria) {
-                        if (addedCriterion.getRemoved() != null
-                                && addedCriterion.getRemoved().booleanValue()) {
+                        if (!isCriterionAvailable(updatedListing, addedCriterion)) {
                             updatedListing.addBusinessErrorMessage(
-                                    msgUtil.getMessage("listing.ucd.removedCriteriaNotAllowed",
-                                            Util.formatCriteriaNumber(addedCriterion), updatedUcd.getName()));
+                                    msgUtil.getMessage("listing.ucd.unavailableCriteriaNotAllowed",
+                                            Util.formatCriteriaNumber(addedCriterion),
+                                            updatedUcd.getName()));
                         }
                     }
                 }
             }
             if (!existsInOriginal) {
-                // check all the criteria for this newly added UCD process to see if any are removed
+                // check all the criteria for this newly added UCD process to see if any are not applicable to the listing
                 for (CertificationCriterion criterion : updatedUcd.getCriteria()) {
-                    if (criterion.getRemoved() != null && criterion.getRemoved().booleanValue()) {
+                    if (!isCriterionAvailable(updatedListing, criterion)) {
                         updatedListing.addBusinessErrorMessage(
-                                msgUtil.getMessage("listing.ucd.removedCriteriaNotAllowed",
-                                        Util.formatCriteriaNumber(criterion), updatedUcd.getName()));
+                                msgUtil.getMessage("listing.ucd.unavailableCriteriaNotAllowed",
+                                        Util.formatCriteriaNumber(criterion),
+                                        updatedUcd.getName()));
                     }
                 }
             }
@@ -90,5 +87,12 @@ public class RemovedCriteriaUcdComparisonReviewer implements ComparisonReviewer 
             }
         }
         return newCriteria;
+    }
+
+    private boolean isCriterionAvailable(CertifiedProductSearchDetails listing,
+            CertificationCriterion criterion) {
+
+        return DateUtil.datesOverlap(Pair.of(listing.getCertificationDay(), listing.getDecertificationDay()),
+                        Pair.of(criterion.getStartDay(), criterion.getEndDay()));
     }
 }

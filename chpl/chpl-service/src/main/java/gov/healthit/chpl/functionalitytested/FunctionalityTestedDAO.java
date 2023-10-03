@@ -47,7 +47,7 @@ public class FunctionalityTestedDAO extends BaseDAOImpl {
         try {
             FunctionalityTestedEntity entity = getEntityById(id);
             if (entity != null) {
-                return entity.toDomain();
+                return entity.toDomainWithCriteria();
             } else {
                 return null;
             }
@@ -135,7 +135,7 @@ public class FunctionalityTestedDAO extends BaseDAOImpl {
     @CacheEvict(value = CacheNames.FUNCTIONALITY_TESTED_MAPS, allEntries = true)
     public void removeFunctionalityTestedCriteriaMap(FunctionalityTested functionalityTested, CertificationCriterion criterion) {
         try {
-            FunctionalityTestedCriteriaMapEntity entity = getFunctionalityTestedCriteriaMapByTestToolAndCriterionEntity(functionalityTested.getId(), criterion.getId());
+            FunctionalityTestedCriteriaMapEntity entity = getFunctionalityTestedCriteriaMapByFunctionalityTestedAndCriterion(functionalityTested.getId(), criterion.getId());
             entity.setDeleted(true);
             entity.setLastModifiedDate(new Date());
             entity.setLastModifiedUser(AuthUtil.getAuditId());
@@ -164,7 +164,7 @@ public class FunctionalityTestedDAO extends BaseDAOImpl {
     public List<FunctionalityTested> findAll() {
         List<FunctionalityTestedEntity> entities = getAllEntities();
         return entities.stream()
-                .map(entity -> entity.toDomain())
+                .map(entity -> entity.toDomainWithCriteria())
                 .collect(Collectors.toList());
     }
 
@@ -203,6 +203,7 @@ public class FunctionalityTestedDAO extends BaseDAOImpl {
                             + "LEFT OUTER JOIN FETCH ft.mappedCriteria criteriaMapping "
                             + "LEFT OUTER JOIN FETCH criteriaMapping.criterion criterion "
                             + "LEFT OUTER JOIN FETCH criterion.certificationEdition "
+                            + "LEFT JOIN FETCH criterion.rule "
                             + "WHERE (NOT ft.deleted = true) ", FunctionalityTestedEntity.class)
                 .getResultList();
     }
@@ -217,6 +218,7 @@ public class FunctionalityTestedDAO extends BaseDAOImpl {
                         + "LEFT OUTER JOIN FETCH ft.mappedCriteria criteriaMapping "
                         + "LEFT OUTER JOIN FETCH criteriaMapping.criterion criterion "
                         + "LEFT OUTER JOIN FETCH criterion.certificationEdition "
+                        + "LEFT JOIN FETCH criterion.rule "
                         + "WHERE (NOT ft.deleted = true) "
                         + "AND (ft.id = :entityid) ",
                         FunctionalityTestedEntity.class);
@@ -239,6 +241,7 @@ public class FunctionalityTestedDAO extends BaseDAOImpl {
                         + "FROM FunctionalityTestedCriteriaMapEntity ftcm "
                         + "JOIN FETCH ftcm.criterion c "
                         + "JOIN FETCH c.certificationEdition "
+                        + "JOIN FETCH c.rule "
                         + "JOIN FETCH ftcm.functionalityTested ft "
                         + "WHERE ftcm.deleted <> true "
                         + "AND ft.deleted <> true ",
@@ -266,7 +269,7 @@ public class FunctionalityTestedDAO extends BaseDAOImpl {
                 .collect(Collectors.toList());
     }
 
-    private FunctionalityTestedCriteriaMapEntity getFunctionalityTestedCriteriaMapByTestToolAndCriterionEntity(Long functionalityTestedId, Long certificationCriterionId) throws EntityRetrievalException {
+    private FunctionalityTestedCriteriaMapEntity getFunctionalityTestedCriteriaMapByFunctionalityTestedAndCriterion(Long functionalityTestedId, Long certificationCriterionId) throws EntityRetrievalException {
         List<FunctionalityTestedCriteriaMapEntity> result = entityManager.createQuery("SELECT DISTINCT ftcm "
                         + "FROM FunctionalityTestedCriteriaMapEntity ftcm "
                         + "JOIN FETCH ftcm.criterion c "

@@ -11,7 +11,9 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.upload.listing.validation.reviewer.AccessibilityStandardReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.QmsStandardReviewer;
+import gov.healthit.chpl.upload.listing.validation.reviewer.TestToolReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.UcdProcessReviewer;
+import gov.healthit.chpl.upload.listing.validation.reviewer.UnavailableCriteriaReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.CertificationDateReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.CertificationStatusReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.ChplNumberComparisonReviewer;
@@ -33,7 +35,6 @@ import gov.healthit.chpl.validation.listing.reviewer.SvapReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.TestProcedureReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.TestStandardRemovalReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.TestStandardReviewer;
-import gov.healthit.chpl.validation.listing.reviewer.TestToolReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.TestingLabReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.UnsupportedCharacterReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.UrlReviewer;
@@ -49,14 +50,13 @@ import gov.healthit.chpl.validation.listing.reviewer.edition2015.MeasureValidity
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.OldCriteriaWithoutIcsReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.PrivacyAndSecurityCriteriaReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.PrivacyAndSecurityCriteriaReviewerPreErdPhase2;
-import gov.healthit.chpl.validation.listing.reviewer.edition2015.RemovedCriteriaComparisonReviewer;
-import gov.healthit.chpl.validation.listing.reviewer.edition2015.RemovedCriteriaTestTaskComparisonReviewer;
-import gov.healthit.chpl.validation.listing.reviewer.edition2015.RemovedCriteriaUcdComparisonReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.RequiredAndRelatedCriteriaErdPhase2GracePeriodReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.RequiredAndRelatedCriteriaReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.RequiredData2015Reviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.SedG32015Reviewer;
-import gov.healthit.chpl.validation.listing.reviewer.edition2015.TestTool2015Reviewer;
+import gov.healthit.chpl.validation.listing.reviewer.edition2015.UnavailableCriteriaComparisonReviewer;
+import gov.healthit.chpl.validation.listing.reviewer.edition2015.UnavailableCriteriaTestTaskComparisonReviewer;
+import gov.healthit.chpl.validation.listing.reviewer.edition2015.UnavailableCriteriaUcdComparisonReviewer;
 import lombok.extern.log4j.Log4j2;
 
 @Component
@@ -91,6 +91,9 @@ public class Edition2015ListingValidator extends Validator {
     private RequiredAndRelatedCriteriaReviewer requiredAndRelatedCriteriaReviewer;
 
     @Autowired
+    private UnavailableCriteriaReviewer unavailableCriteriaReviewer;
+
+    @Autowired
     @Qualifier("edition20142015testingLabReviewer")
     private TestingLabReviewer testingLabReviewer;
 
@@ -123,12 +126,8 @@ public class Edition2015ListingValidator extends Validator {
     private TestProcedureReviewer tpReviewer;
 
     @Autowired
-    @Qualifier("testToolReviewer")
+    @Qualifier("listingUploadTestToolReviewer")
     private TestToolReviewer ttReviewer;
-
-    @Autowired
-    @Qualifier("testTool2015Reviewer")
-    private TestTool2015Reviewer tt2015Reviewer;
 
     @Autowired
     @Qualifier("inheritanceReviewer")
@@ -167,16 +166,16 @@ public class Edition2015ListingValidator extends Validator {
     private OldCriteriaWithoutIcsReviewer oldCriteriaWithoutIcsReviewer;
 
     @Autowired
-    @Qualifier("removedCriteriaComparisonReviewer")
-    private RemovedCriteriaComparisonReviewer criteriaComparisonReviewer;
+    @Qualifier("unavailableCriteriaComparisonReviewer")
+    private UnavailableCriteriaComparisonReviewer unavailableCriteriaComparisonReviewer;
 
     @Autowired
-    @Qualifier("removedCriteriaTestTaskComparisonReviewer")
-    private RemovedCriteriaTestTaskComparisonReviewer testTaskCriteriaComparisonReviewer;
+    @Qualifier("unavailableCriteriaTestTaskComparisonReviewer")
+    private UnavailableCriteriaTestTaskComparisonReviewer unavailableCriteriaTestTaskComparisonReviewer;
 
     @Autowired
-    @Qualifier("removedCriteriaUcdComparisonReviewer")
-    private RemovedCriteriaUcdComparisonReviewer ucdCriteriaComparisonReviewer;
+    @Qualifier("unavailableCriteriaUcdComparisonReviewer")
+    private UnavailableCriteriaUcdComparisonReviewer unavailableCriteriaUcdComparisonReviewer;
 
     @Autowired
     @Qualifier("privacyAndSecurityCriteriaReviewerPreErdPhase2")
@@ -262,6 +261,7 @@ public class Edition2015ListingValidator extends Validator {
             //use this reviewer after the grace period ends
             reviewers.add(requiredAndRelatedCriteriaReviewer);
         }
+        reviewers.add(unavailableCriteriaReviewer);
         reviewers.add(testingLabReviewer);
         reviewers.add(validDataReviewer);
         reviewers.add(sedG3Reviewer);
@@ -276,7 +276,6 @@ public class Edition2015ListingValidator extends Validator {
         reviewers.add(tpReviewer);
         reviewers.add(inheritanceReviewer);
         reviewers.add(ttReviewer);
-        reviewers.add(tt2015Reviewer);
         reviewers.add(urlReviewer);
         reviewers.add(functionalityTestedReviewer);
         reviewers.add(invalidCriteriaCombinationReviewer);
@@ -301,9 +300,9 @@ public class Edition2015ListingValidator extends Validator {
         comparisonReviewers.add(chplNumberComparisonReviewer);
         comparisonReviewers.add(devBanComparisonReviewer);
         comparisonReviewers.add(measureComparisonReviewer);
-        comparisonReviewers.add(criteriaComparisonReviewer);
-        comparisonReviewers.add(testTaskCriteriaComparisonReviewer);
-        comparisonReviewers.add(ucdCriteriaComparisonReviewer);
+        comparisonReviewers.add(unavailableCriteriaComparisonReviewer);
+        comparisonReviewers.add(unavailableCriteriaTestTaskComparisonReviewer);
+        comparisonReviewers.add(unavailableCriteriaUcdComparisonReviewer);
         comparisonReviewers.add(functionalityTestedAllowedByRoleReviewer);
         comparisonReviewers.add(listingStatusAndUserRoleReviewer);
         //during the grace period the comparison reviewer should be included

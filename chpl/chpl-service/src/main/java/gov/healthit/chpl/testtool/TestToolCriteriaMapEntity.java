@@ -70,7 +70,7 @@ public class TestToolCriteriaMapEntity {
         return TestToolCriteriaMap.builder()
                 .id(id)
                 .criterion(criteria.toDomain())
-                .testTool(testTool.toDomain())
+                .testTool(testTool.toDomainWithCriteria())
                 .build();
     }
 }

@@ -14,7 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
-import gov.healthit.chpl.conformanceMethod.dao.ConformanceMethodDAO;
+import gov.healthit.chpl.conformanceMethod.ConformanceMethodDAO;
 import gov.healthit.chpl.conformanceMethod.domain.CertificationResultConformanceMethod;
 import gov.healthit.chpl.conformanceMethod.domain.ConformanceMethod;
 import gov.healthit.chpl.conformanceMethod.domain.ConformanceMethodCriteriaMap;
@@ -137,7 +137,7 @@ public class ConformanceMethodReviewer extends PermissionBasedReviewer {
             // conformance method but we have to tell the user that we did it.
             // This code can't go in the reviewer otherwise during Test Procedure -> Conformance Method conversion
             // a default CM gets added to the listing and may make the converter think that the listing already has a CM.
-            if (BooleanUtils.isFalse(certResult.getCriterion().getRemoved())) {
+            if (BooleanUtils.isFalse(certResult.getCriterion().isRemoved())) {
                 listing.addWarningMessage(msgUtil.getMessage("listing.criteria.conformanceMethod.addedDefaultForCriterion",
                         Util.formatCriteriaNumber(certResult.getCriterion()),
                         defaultConformanceMethod.getName()));

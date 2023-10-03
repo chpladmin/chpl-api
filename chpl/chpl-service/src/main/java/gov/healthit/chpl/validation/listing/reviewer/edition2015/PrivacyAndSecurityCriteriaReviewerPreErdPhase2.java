@@ -38,7 +38,7 @@ public class PrivacyAndSecurityCriteriaReviewerPreErdPhase2 implements Compariso
     public void postConstruct() {
         privacyAndSecurityCriteria = Arrays.asList(env.getProperty("privacyAndSecurityCriteria").split(",")).stream()
                 .map(id -> getCertificationCriterion(Long.parseLong(id)))
-                .filter(criteria -> BooleanUtils.isFalse(criteria.getRemoved()))
+                .filter(criteria -> BooleanUtils.isFalse(criteria.isRemoved()))
                 .collect(Collectors.toList());
 
         privacyAndSecurityRequiredCriteria = Arrays

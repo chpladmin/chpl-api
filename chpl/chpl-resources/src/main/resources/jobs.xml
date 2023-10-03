@@ -32,6 +32,10 @@
             <name>directReviewDownloadFileGeneration</name>
             <group>systemJobs</group>
         </delete-job>
+        <delete-job>
+            <name>removeCriteriaJob</name>
+            <group>systemJobs</group>
+        </delete-job>
         <!-- END remove after PROD push -->
     </pre-processing-commands>
     <processing-directives>
@@ -730,16 +734,6 @@
             <group>systemJobs</group>
             <description>Sends emails to any registered API Keys that have accessed deprecated endpoints.</description>
             <job-class>gov.healthit.chpl.scheduler.job.deprecatedApiUsage.DeprecatedApiUsageEmailJob</job-class>
-            <durability>true</durability>
-            <recover>false</recover>
-        </job>
-
-        <!-- One time job to remove 3 criteria -->
-        <job>
-            <name>removeCriteriaJob</name>
-            <group>systemJobs</group>
-            <description>One time job to remove specific criteria</description>
-            <job-class>gov.healthit.chpl.scheduler.job.onetime.criteriaremoval.RemoveCriteriaJob</job-class>
             <durability>true</durability>
             <recover>false</recover>
         </job>
