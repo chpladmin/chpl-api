@@ -1,5 +1,6 @@
 package gov.healthit.chpl.upload.listing.validation.reviewer;
 
+import java.time.LocalDate;
 import java.util.Iterator;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -12,22 +13,23 @@ import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.testtool.CertificationResultTestTool;
+import gov.healthit.chpl.testtool.TestTool;
 import gov.healthit.chpl.testtool.TestToolDAO;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
 import gov.healthit.chpl.util.ValidationUtils;
+import gov.healthit.chpl.validation.listing.reviewer.Reviewer;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 @Component("listingUploadTestToolReviewer")
-public class TestToolReviewer {
+public class TestToolReviewer implements Reviewer {
     private CertificationResultRules certResultRules;
     private ValidationUtils validationUtils;
     private ErrorMessageUtil msgUtil;
     private ChplProductNumberUtil chplProductNumberUtil;
-    //private List<TestToolCriteriaMap> testToolCriteriaMaps;
     private TestToolDAO testToolDao;
 
     @Autowired
@@ -42,6 +44,7 @@ public class TestToolReviewer {
         this.testToolDao = testToolDAO;
     }
 
+    @Override
     public void review(CertifiedProductSearchDetails listing) {
         listing.getCertificationResults().stream()
                 .filter(certResult -> validationUtils.isEligibleForErrors(certResult))
@@ -113,7 +116,8 @@ public class TestToolReviewer {
     private void reviewTestToolFields(CertifiedProductSearchDetails listing,
             CertificationResult certResult, CertificationResultTestTool testTool) {
         reviewNameAndVersionRequired(listing, certResult, testTool);
-        reviewTestToolNotRetiredUnlessIcs(listing, certResult, testTool);
+        reviewTestToolRetiredBeforeListingActiveDatesUnlessIcs(listing, certResult, testTool);
+        reviewTestToolAvailabilityAfterListingActiveDates(listing, certResult, testTool);
         reviewTestToolValidForCriteria(listing, certResult, testTool);
     }
 
@@ -130,9 +134,10 @@ public class TestToolReviewer {
         }
     }
 
-    private void reviewTestToolNotRetiredUnlessIcs(CertifiedProductSearchDetails listing,
+    private void reviewTestToolRetiredBeforeListingActiveDatesUnlessIcs(CertifiedProductSearchDetails listing,
             CertificationResult certResult, CertificationResultTestTool testTool) {
-        if (testTool.getTestTool().getId() != null && testTool.getTestTool().isRetired()
+        if (testTool.getTestTool().getId() != null
+                && isTestToolRetiredBeforeListingActiveDates(listing, testTool.getTestTool())
                 && (!hasIcs(listing) || hasIcsMismatch(listing))) {
             listing.addDataErrorMessage(msgUtil.getMessage(
                     "listing.criteria.retiredTestToolNoIcsNotAllowed",
@@ -174,5 +179,25 @@ public class TestToolReviewer {
             LOGGER.error("Could not validate Test Tool: {}", certResultTestTool.getTestTool().getValue());
             return false;
         }
+    }
+
+    private void reviewTestToolAvailabilityAfterListingActiveDates(CertifiedProductSearchDetails listing, CertificationResult certResult, CertificationResultTestTool testTool) {
+        if (isTestToolActiveAfterListingActiveDates(listing, testTool.getTestTool())) {
+            listing.addBusinessErrorMessage(msgUtil.getMessage("listing.criteria.testToolUnavailable",
+                    testTool.getTestTool().getValue(),
+                    Util.formatCriteriaNumber(certResult.getCriterion())));
+        }
+    }
+
+    private boolean isTestToolRetiredBeforeListingActiveDates(CertifiedProductSearchDetails listing, TestTool testTool) {
+        LocalDate listingStartDay = listing.getCertificationDay();
+        LocalDate testToolEndDay = testTool.getEndDay() == null ? LocalDate.MAX : testTool.getEndDay();
+        return testToolEndDay.isBefore(listingStartDay);
+    }
+
+    private boolean isTestToolActiveAfterListingActiveDates(CertifiedProductSearchDetails listing, TestTool testTool) {
+        LocalDate listingEndDay = listing.getDecertificationDay() == null ? LocalDate.now() : listing.getDecertificationDay();
+        LocalDate testToolStartDay = testTool.getStartDay() == null ? LocalDate.MIN : testTool.getStartDay();
+        return testToolStartDay.isAfter(listingEndDay);
     }
 }

@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -13,6 +14,7 @@ import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterionWithAttributes.AllowedAttributes;
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.util.CertificationResultRules;
+import gov.healthit.chpl.util.DateUtil;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -61,27 +63,10 @@ public class CertificationCriteriaManager {
     @Transactional
     public List<CertificationCriterion> getActiveBetween(LocalDate startDay, LocalDate endDay) {
         return this.certificationCriterionDao.findAll().stream()
-                .filter(criterion -> isCriterionActiveWithinRange(criterion, startDay, endDay))
+                .filter(criterion -> DateUtil.datesOverlap(
+                        Pair.of(criterion.getStartDay(), criterion.getEndDay()),
+                        Pair.of(startDay, endDay)))
                 .collect(Collectors.toList());
-    }
-
-    private boolean isCriterionActiveWithinRange(CertificationCriterion criterion, LocalDate startDay, LocalDate endDay) {
-        if (startDay == null && endDay == null) {
-            return true;
-        } else if (startDay == null && endDay != null) {
-            // criteria is active any time before 'endDay'
-            return criterion.getStartDay().isEqual(endDay) || criterion.getStartDay().isBefore(endDay);
-        } else if (startDay != null && endDay == null) {
-            // criteria is active any time after 'startDay'
-            return criterion.getEndDay() == null
-                    || (criterion.getEndDay().isEqual(startDay) || criterion.getEndDay().isAfter(startDay));
-        } else {
-            //criteria is active between 'startDay' and 'endDay'
-            // is criterionStartDay (equal or before) endDay parameter
-            // and is criterionEndDay null or (equal or after) startDay parameter
-            return (criterion.getStartDay().isEqual(startDay) || criterion.getStartDay().isEqual(endDay) || criterion.getStartDay().isBefore(endDay))
-                    && (criterion.getEndDay() == null || (criterion.getEndDay().isEqual(startDay) || criterion.getEndDay().isAfter(startDay)));
-        }
     }
 
     private CertificationCriterionWithAttributes buildCertificationCriterionWithAttributes(CertificationCriterion criterion) {
@@ -92,7 +77,6 @@ public class CertificationCriteriaManager {
                 .description(criterion.getDescription())
                 .endDay(criterion.getEndDay())
                 .number(criterion.getNumber())
-                .removed(criterion.getRemoved())
                 .rule(criterion.getRule())
                 .startDay(criterion.getStartDay())
                 .title(criterion.getTitle())

@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.text.ParseException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -163,7 +164,7 @@ public class RequiredAndRelatedCriteriaErdPhase2GracePeriodReviewerTest {
                         List<CertificationCriterion> criteriaWithNumber = new ArrayList<CertificationCriterion>();
                         criteriaWithNumber.add(CertificationCriterion.builder()
                                 .number(args[0].toString())
-                                .removed(false)
+                                .startDay(LocalDate.parse("2023-01-01"))
                                 .build());
                         return criteriaWithNumber;
                     }
@@ -2640,11 +2641,21 @@ public class RequiredAndRelatedCriteriaErdPhase2GracePeriodReviewerTest {
     }
 
     private CertificationCriterion getCriterion(Long id, String number, String title, boolean removed) {
+        if (removed) {
+            return CertificationCriterion.builder()
+                    .id(id)
+                    .number(number)
+                    .startDay(LocalDate.parse("2023-01-01"))
+                    .endDay(LocalDate.parse("2023-01-02"))
+                    .certificationEdition("2015")
+                    .build();
+        }
         return CertificationCriterion.builder()
                 .number(number)
                 .title(title)
                 .id(id)
-                .removed(removed)
+                .startDay(LocalDate.parse("2023-01-01"))
+                .certificationEdition("2015")
                 .build();
     }
 }

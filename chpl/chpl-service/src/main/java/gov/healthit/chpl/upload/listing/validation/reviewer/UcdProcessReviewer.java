@@ -87,7 +87,7 @@ public class UcdProcessReviewer implements Reviewer {
                     .filter(ucdProcess -> !CollectionUtils.isEmpty(ucdProcess.getCriteria()))
                     .flatMap(ucdProcess -> ucdProcess.getCriteria().stream())
                     .filter(ucdCriterion -> !certResultRules.hasCertOption(ucdCriterion.getId(), CertificationResultRules.SED))
-                    .filter(ucdCriterion -> BooleanUtils.isFalse(ucdCriterion.getRemoved()))
+                    .filter(ucdCriterion -> BooleanUtils.isFalse(ucdCriterion.isRemoved()))
                     .forEach(notAllowedUcdCriterion -> addUcdProcessNotApplicableErrorMessage(listing, notAllowedUcdCriterion));
         }
     }
@@ -112,7 +112,7 @@ public class UcdProcessReviewer implements Reviewer {
         }
 
         return ucdProcess.getCriteria().stream()
-                .filter(criterion -> BooleanUtils.isFalse(criterion.getRemoved()))
+                .filter(criterion -> BooleanUtils.isFalse(criterion.isRemoved()))
                 .findAny().isPresent();
     }
 

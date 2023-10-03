@@ -86,13 +86,13 @@ public class RequiredAndRelatedCriteriaReviewer extends PermissionBasedReviewer 
                 .collect(Collectors.toList());
 
         boolean hasAnyNonRemovedACriteria = attestedCriteria.stream()
-                .filter(attestedCriterion -> BooleanUtils.isFalse(attestedCriterion.getRemoved()))
+                .filter(attestedCriterion -> BooleanUtils.isFalse(attestedCriterion.isRemoved()))
                 .filter(attestedCriterion -> isInList(attestedCriterion, aCriteria))
                 .findAny().isPresent();
 
         if (hasAnyNonRemovedACriteria) {
             requiredByACriteria.stream()
-                    .filter(requiredCriterion -> BooleanUtils.isFalse(requiredCriterion.getRemoved()))
+                    .filter(requiredCriterion -> BooleanUtils.isFalse(requiredCriterion.isRemoved()))
                     .filter(requiredCriterion -> !isInList(requiredCriterion, attestedCriteria))
                     .forEach(missingRequiredCriterion -> listing.addBusinessErrorMessage(
                             msgUtil.getMessage("listing.criteria.complementaryCriteriaRequired", "170.315 (a)(*)", Util.formatCriteriaNumber(missingRequiredCriterion))));
@@ -114,13 +114,13 @@ public class RequiredAndRelatedCriteriaReviewer extends PermissionBasedReviewer 
                 .collect(Collectors.toList());
 
         boolean hasAnyACriteriaWithExceptions = attestedCriteria.stream()
-                .filter(attestedCriterion -> BooleanUtils.isFalse(attestedCriterion.getRemoved()))
+                .filter(attestedCriterion -> BooleanUtils.isFalse(attestedCriterion.isRemoved()))
                 .filter(attestedCriterion -> isInList(attestedCriterion, aCriteriaWithExceptions))
                 .findAny().isPresent();
 
         if (hasAnyACriteriaWithExceptions) {
             requiredByACriteria.stream()
-                    .filter(requiredCriterion -> BooleanUtils.isFalse(requiredCriterion.getRemoved()))
+                    .filter(requiredCriterion -> BooleanUtils.isFalse(requiredCriterion.isRemoved()))
                     .filter(requiredCriterion -> !isInList(requiredCriterion, attestedCriteria))
                     .forEach(missingRequiredCriterion -> listing.addBusinessErrorMessage(
                             msgUtil.getMessage("listing.criteria.complementaryCriteriaRequired", "170.315 (a)(*)", Util.formatCriteriaNumber(missingRequiredCriterion))));
@@ -148,13 +148,13 @@ public class RequiredAndRelatedCriteriaReviewer extends PermissionBasedReviewer 
                 .collect(Collectors.toList());
 
         boolean hasAnyNonRemovedBCriteria = attestedCriteria.stream()
-                .filter(attestedCriterion -> BooleanUtils.isFalse(attestedCriterion.getRemoved()))
+                .filter(attestedCriterion -> BooleanUtils.isFalse(attestedCriterion.isRemoved()))
                 .filter(attestedCriterion -> isInList(attestedCriterion, bCriteria))
                 .findAny().isPresent();
 
         if (hasAnyNonRemovedBCriteria) {
             requiredByBCriteria.stream()
-                    .filter(requiredCriterion -> BooleanUtils.isFalse(requiredCriterion.getRemoved()))
+                    .filter(requiredCriterion -> BooleanUtils.isFalse(requiredCriterion.isRemoved()))
                     .filter(requiredCriterion -> !isInList(requiredCriterion, attestedCriteria))
                     .forEach(missingRequiredCriterion -> listing.addBusinessErrorMessage(
                             msgUtil.getMessage("listing.criteria.complementaryCriteriaRequired", "170.315 (b)(*)", Util.formatCriteriaNumber(missingRequiredCriterion))));
@@ -177,13 +177,13 @@ public class RequiredAndRelatedCriteriaReviewer extends PermissionBasedReviewer 
                 .collect(Collectors.toList());
 
         boolean hasAnyNonRemovedCCriteria = attestedCriteria.stream()
-                .filter(attestedCriterion -> BooleanUtils.isFalse(attestedCriterion.getRemoved()))
+                .filter(attestedCriterion -> BooleanUtils.isFalse(attestedCriterion.isRemoved()))
                 .filter(attestedCriterion -> isInList(attestedCriterion, cCriteria))
                 .findAny().isPresent();
 
         if (hasAnyNonRemovedCCriteria) {
             requiredByCCriteria.stream()
-                    .filter(requiredCriterion -> BooleanUtils.isFalse(requiredCriterion.getRemoved()))
+                    .filter(requiredCriterion -> BooleanUtils.isFalse(requiredCriterion.isRemoved()))
                     .filter(requiredCriterion -> !isInList(requiredCriterion, attestedCriteria))
                     .forEach(missingRequiredCriterion -> listing.addBusinessErrorMessage(
                             msgUtil.getMessage("listing.criteria.complementaryCriteriaRequired", "170.315 (c)(*)", Util.formatCriteriaNumber(missingRequiredCriterion))));
@@ -202,13 +202,13 @@ public class RequiredAndRelatedCriteriaReviewer extends PermissionBasedReviewer 
         CertificationCriterion e1Cures = criterionService.get(Criteria2015.E_1_CURES);
 
         boolean hasE1Cures = attestedCriteria.stream()
-                .filter(attestedCriterion -> BooleanUtils.isFalse(attestedCriterion.getRemoved()))
+                .filter(attestedCriterion -> BooleanUtils.isFalse(attestedCriterion.isRemoved()))
                 .filter(attestedCriterion -> attestedCriterion.getId().equals(e1Cures.getId()))
                 .findAny().isPresent();
 
         if (hasE1Cures) {
             requiredByE1Criteria.stream()
-                    .filter(requiredCriterion -> BooleanUtils.isFalse(requiredCriterion.getRemoved()))
+                    .filter(requiredCriterion -> BooleanUtils.isFalse(requiredCriterion.isRemoved()))
                     .filter(requiredCriterion -> !isInList(requiredCriterion, attestedCriteria))
                     .forEach(missingRequiredCriterion -> listing.addBusinessErrorMessage(
                             msgUtil.getMessage("listing.criteria.complementaryCriteriaRequired", Util.formatCriteriaNumber(e1Cures), Util.formatCriteriaNumber(missingRequiredCriterion))));
@@ -226,13 +226,13 @@ public class RequiredAndRelatedCriteriaReviewer extends PermissionBasedReviewer 
         CertificationCriterion e3 = criterionService.get(Criteria2015.E_3);
 
         boolean hasE3Criteria = attestedCriteria.stream()
-                .filter(attestedCriterion -> BooleanUtils.isFalse(attestedCriterion.getRemoved()))
+                .filter(attestedCriterion -> BooleanUtils.isFalse(attestedCriterion.isRemoved()))
                 .filter(attestedCriterion -> attestedCriterion.getId().equals(e3.getId()))
                 .findAny().isPresent();
 
         if (hasE3Criteria) {
             requiredByE3Criterion.stream()
-                    .filter(requiredCriterion -> BooleanUtils.isFalse(requiredCriterion.getRemoved()))
+                    .filter(requiredCriterion -> BooleanUtils.isFalse(requiredCriterion.isRemoved()))
                     .filter(requiredCriterion -> !isInList(requiredCriterion, attestedCriteria))
                     .forEach(missingRequiredCriterion -> listing.addBusinessErrorMessage(
                             msgUtil.getMessage("listing.criteria.complementaryCriteriaRequired", Util.formatCriteriaNumber(e3), Util.formatCriteriaNumber(missingRequiredCriterion))));
@@ -258,13 +258,13 @@ public class RequiredAndRelatedCriteriaReviewer extends PermissionBasedReviewer 
                 .collect(Collectors.toList());
 
         boolean hasAnyNonRemovedFCriteria = attestedCriteria.stream()
-                .filter(attestedCriterion -> BooleanUtils.isFalse(attestedCriterion.getRemoved()))
+                .filter(attestedCriterion -> BooleanUtils.isFalse(attestedCriterion.isRemoved()))
                 .filter(attestedCriterion -> isInList(attestedCriterion, fCriteria))
                 .findAny().isPresent();
 
         if (hasAnyNonRemovedFCriteria) {
             requiredByFCriteria.stream()
-                    .filter(requiredCriterion -> BooleanUtils.isFalse(requiredCriterion.getRemoved()))
+                    .filter(requiredCriterion -> BooleanUtils.isFalse(requiredCriterion.isRemoved()))
                     .filter(requiredCriterion -> !isInList(requiredCriterion, attestedCriteria))
                     .forEach(missingRequiredCriterion -> listing.addBusinessErrorMessage(
                             msgUtil.getMessage("listing.criteria.complementaryCriteriaRequired", "170.315 (f)(*)", Util.formatCriteriaNumber(missingRequiredCriterion))));
@@ -289,11 +289,11 @@ public class RequiredAndRelatedCriteriaReviewer extends PermissionBasedReviewer 
                 .collect(Collectors.toList());
 
         List<CertificationCriterion> presentAttestedG6Criteria = attestedCriteria.stream()
-                .filter(cert -> cert.getRemoved() == null || cert.getRemoved().equals(Boolean.FALSE))
+                .filter(cert -> cert.isRemoved() == null || cert.isRemoved().equals(Boolean.FALSE))
                 .filter(cert -> isInList(cert, criteriaRequiringG6))
                 .collect(Collectors.<CertificationCriterion> toList());
         List<CertificationCriterion> removedAttestedG6Criteria = attestedCriteria.stream()
-                .filter(cert -> cert.getRemoved() != null && cert.getRemoved().equals(Boolean.TRUE))
+                .filter(cert -> cert.isRemoved() != null && cert.isRemoved().equals(Boolean.TRUE))
                 .filter(cert -> isInList(cert, criteriaRequiringG6))
                 .collect(Collectors.<CertificationCriterion> toList());
         boolean hasG6 = isInList(g6, attestedCriteria);
@@ -324,7 +324,7 @@ public class RequiredAndRelatedCriteriaReviewer extends PermissionBasedReviewer 
                 .collect(Collectors.toList());
 
         boolean hasAnyNonRemovedG7G9G10Criteria = attestedCriteria.stream()
-                .filter(attestedCriterion -> BooleanUtils.isFalse(attestedCriterion.getRemoved()))
+                .filter(attestedCriterion -> BooleanUtils.isFalse(attestedCriterion.isRemoved()))
                 .filter(attestedCriterion -> isInList(attestedCriterion, g7g9g10Criteria))
                 .findAny().isPresent();
 
@@ -333,7 +333,7 @@ public class RequiredAndRelatedCriteriaReviewer extends PermissionBasedReviewer 
                     .map(criterion -> Util.formatCriteriaNumber(criterion))
                     .collect(Collectors.joining(" or "));
             d1AndD9Criteria.stream()
-                    .filter(requiredCriterion -> BooleanUtils.isFalse(requiredCriterion.getRemoved()))
+                    .filter(requiredCriterion -> BooleanUtils.isFalse(requiredCriterion.isRemoved()))
                     .filter(requiredCriterion -> !isInList(requiredCriterion, attestedCriteria))
                     .forEach(missingRequiredCriterion -> listing.addBusinessErrorMessage(
                             msgUtil.getMessage("listing.criteria.complementaryCriteriaRequired", g7G9G10, Util.formatCriteriaNumber(missingRequiredCriterion))));
@@ -359,13 +359,13 @@ public class RequiredAndRelatedCriteriaReviewer extends PermissionBasedReviewer 
                 .collect(Collectors.toList());
 
         boolean hasAnyNonRemovedHCriteria = attestedCriteria.stream()
-                .filter(attestedCriterion -> BooleanUtils.isFalse(attestedCriterion.getRemoved()))
+                .filter(attestedCriterion -> BooleanUtils.isFalse(attestedCriterion.isRemoved()))
                 .filter(attestedCriterion -> isInList(attestedCriterion, hCriteria))
                 .findAny().isPresent();
 
         if (hasAnyNonRemovedHCriteria) {
             requiredByHCriteria.stream()
-                    .filter(requiredCriterion -> BooleanUtils.isFalse(requiredCriterion.getRemoved()))
+                    .filter(requiredCriterion -> BooleanUtils.isFalse(requiredCriterion.isRemoved()))
                     .filter(requiredCriterion -> !isInList(requiredCriterion, attestedCriteria))
                     .forEach(missingRequiredCriterion -> listing.addBusinessErrorMessage(
                             msgUtil.getMessage("listing.criteria.complementaryCriteriaRequired", "170.315 (h)(*)", Util.formatCriteriaNumber(missingRequiredCriterion))));

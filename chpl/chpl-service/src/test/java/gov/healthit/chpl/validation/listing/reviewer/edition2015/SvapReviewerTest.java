@@ -2,6 +2,7 @@ package gov.healthit.chpl.validation.listing.reviewer.edition2015;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -286,7 +287,7 @@ public class SvapReviewerTest {
                         .certificationEdition("2015")
                         .certificationEditionId(3L)
                         .number("170.315 (a)(1)")
-                        .removed(false)
+                        .startDay(LocalDate.parse("2023-01-01"))
                         .build())
                 .svap(Svap.builder()
                         .svapId(1L)
@@ -303,7 +304,7 @@ public class SvapReviewerTest {
                         .certificationEdition("2015")
                         .certificationEditionId(3L)
                         .number("170.315 (a)(1)")
-                        .removed(false)
+                        .startDay(LocalDate.parse("2023-01-01"))
                         .build())
                 .svap(Svap.builder()
                         .svapId(2L)
@@ -320,7 +321,7 @@ public class SvapReviewerTest {
                         .certificationEdition("2015")
                         .certificationEditionId(3L)
                         .number("170.315 (a)(2)")
-                        .removed(false)
+                        .startDay(LocalDate.parse("2023-01-01"))
                         .build())
                 .svap(Svap.builder()
                         .svapId(2L)

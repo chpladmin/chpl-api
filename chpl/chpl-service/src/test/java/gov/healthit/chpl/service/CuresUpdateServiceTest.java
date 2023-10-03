@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.LocalDate;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
@@ -32,8 +33,8 @@ public class CuresUpdateServiceTest {
     @Before
     public void setup() {
         CertificationCriterionService ccs = Mockito.mock(CertificationCriterionService.class);
-        b1Old = buildCriterion(16L, "170.315 (b)(1)", "B1", true);
-        b1Cures = buildCriterion(165L, "170.315 (b)(1)", "b1 title (Cures Update)", false);
+        b1Old = buildRemovedCriterion(16L, "170.315 (b)(1)", "B1");
+        b1Cures = buildCriterion(165L, "170.315 (b)(1)", "b1 title (Cures Update)");
         d12 = buildCriterion(176L, "170.315 (d)(12)", "D12 (Cures Update)");
         d13 = buildCriterion(177L, "170.315 (d)(13)", "D13 (Cures Update)");
         g4 = buildCriterion(53L, "170.315 (g)(4)", "G4");
@@ -297,16 +298,17 @@ public class CuresUpdateServiceTest {
                 .id(id)
                 .number(number)
                 .title(title)
-                .removed(false)
+                .startDay(LocalDate.parse("2023-01-01"))
                 .build();
     }
 
-    private CertificationCriterion buildCriterion(Long id, String number, String title, boolean removed) {
+    private CertificationCriterion buildRemovedCriterion(Long id, String number, String title) {
         return CertificationCriterion.builder()
                 .id(id)
                 .number(number)
                 .title(title)
-                .removed(removed)
+                .startDay(LocalDate.parse("2023-01-01"))
+                .endDay(LocalDate.parse("2023-01-02"))
                 .build();
     }
 }
