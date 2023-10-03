@@ -9,15 +9,24 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorOrder;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import org.apache.commons.lang3.tuple.Pair;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseField;
 import gov.healthit.chpl.criteriaattribute.rule.Rule;
+import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
+import gov.healthit.chpl.util.CriterionStatusAdapter;
+import gov.healthit.chpl.util.DateUtil;
 import gov.healthit.chpl.util.LocalDateAdapter;
 import gov.healthit.chpl.util.LocalDateDeserializer;
 import gov.healthit.chpl.util.LocalDateSerializer;
@@ -77,21 +86,49 @@ public class CertificationCriterion implements Serializable {
     @XmlElement(required = false, nillable = true)
     private String description;
 
-    @Deprecated
-    @DeprecatedResponseField(message = "This property will be removed. It can be derived based on the endDay.",
-        removalDate = "2024-01-01")
-    @XmlElement(required = true, nillable = false)
-    private Boolean removed;
-
     /**
      * The rule which this criterion is associated with.
      */
     @XmlElement(required = false, nillable = true)
     private Rule rule;
 
+    @Deprecated
+    @DeprecatedResponseField(message = "This property will be removed. It can be derived based on the endDay.",
+        removalDate = "2024-01-01")
+    @XmlTransient
+    private Boolean removed;
+
+    @JsonProperty(access = Access.READ_ONLY)
+    @XmlElement(required = true, nillable = false)
+    @XmlJavaTypeAdapter(value = CriterionStatusAdapter.class)
+    public CriterionStatus getStatus() {
+        if (certificationEdition != null
+                && (certificationEdition.equals(CertificationEditionConcept.CERTIFICATION_EDITION_2011.getYear())
+                        || certificationEdition.equals(CertificationEditionConcept.CERTIFICATION_EDITION_2014.getYear()))) {
+            return CriterionStatus.RETIRED;
+        } else {
+            LocalDate end = endDay != null ? endDay : LocalDate.MAX;
+            if (end.isBefore(LocalDate.now())) {
+                return CriterionStatus.REMOVED;
+            }
+            return CriterionStatus.ACTIVE;
+        }
+    }
+
+    @JsonProperty(access = Access.READ_ONLY)
+    @XmlTransient
+    public Boolean isRemoved() {
+        return getStatus().equals(CriterionStatus.REMOVED);
+    }
+
+    public boolean isAvailableToListing(CertifiedProductSearchDetails listing) {
+        return DateUtil.datesOverlap(Pair.of(listing.getCertificationDay(), listing.getDecertificationDay()),
+                Pair.of(getStartDay(), getEndDay()));
+    }
+
     @Override
     public int hashCode() {
-        return Objects.hash(certificationEdition, certificationEditionId, description, id, number, removed, title);
+        return Objects.hash(certificationEdition, certificationEditionId, description, endDay, id, number, rule, startDay, title);
     }
 
     @Override
@@ -108,8 +145,12 @@ public class CertificationCriterion implements Serializable {
         CertificationCriterion other = (CertificationCriterion) obj;
         return Objects.equals(certificationEdition, other.certificationEdition)
                 && Objects.equals(certificationEditionId, other.certificationEditionId)
-                && Objects.equals(description, other.description) && Objects.equals(id, other.id)
-                && Objects.equals(number, other.number) && Objects.equals(removed, other.removed)
+                && Objects.equals(description, other.description)
+                && Objects.equals(endDay, other.endDay)
+                && Objects.equals(id, other.id)
+                && Objects.equals(number, other.number)
+                && Objects.equals(rule, other.rule)
+                && Objects.equals(startDay, other.startDay)
                 && Objects.equals(title, other.title);
     }
 }

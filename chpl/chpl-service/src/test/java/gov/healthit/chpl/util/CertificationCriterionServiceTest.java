@@ -4,6 +4,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 
 import org.junit.Before;
@@ -144,7 +145,7 @@ public class CertificationCriterionServiceTest {
         final String expectedResult = "170.315(b)(2)";
         criterion.setNumber(expectedResult);
         criterion.setTitle(expectedResult);
-        final String formattedResult = service.formatCriteriaNumber(criterion);
+        final String formattedResult = CertificationCriterionService.formatCriteriaNumber(criterion);
         assertEquals(expectedResult, formattedResult);
     }
 
@@ -152,7 +153,8 @@ public class CertificationCriterionServiceTest {
     public void formatCriteriaNumber_WantToFormatForRemovedAndCriteriaIsRemoved_ResultStartsWithRemoved() {
         criterion = CertificationCriterion.builder()
                 .number("170.315(a)(6)")
-                .removed(true)
+                .startDay(LocalDate.parse("2023-01-01"))
+                .endDay(LocalDate.parse("2023-01-02"))
                 .build();
 
         String result = CertificationCriterionService.formatCriteriaNumber(criterion, true);
@@ -164,7 +166,7 @@ public class CertificationCriterionServiceTest {
     public void formatCriteriaNumber_WantToFormatForRemovedAndCriteriaIsNotRemoved_ResultDoesNotStartWithRemoved() {
         criterion = CertificationCriterion.builder()
                 .number("170.315(a)(6)")
-                .removed(false)
+                .startDay(LocalDate.parse("2023-01-01"))
                 .build();
 
         String result = CertificationCriterionService.formatCriteriaNumber(criterion, true);
@@ -176,7 +178,8 @@ public class CertificationCriterionServiceTest {
     public void formatCriteriaNumber_DoNotWantToFormatForRemovedAndCriteriaIsRemoved_ResultDoesNotStartWithRemoved() {
         criterion = CertificationCriterion.builder()
                 .number("170.315(a)(6)")
-                .removed(true)
+                .startDay(LocalDate.parse("2023-01-01"))
+                .endDay(LocalDate.parse("2023-01-02"))
                 .build();
 
         String result = CertificationCriterionService.formatCriteriaNumber(criterion, false);
@@ -188,7 +191,7 @@ public class CertificationCriterionServiceTest {
     public void formatCriteriaNumber_DoNotWantToFormatForRemovedAndCriteriaIsNotRemoved_ResultDoesNotStartWithRemoved() {
         criterion = CertificationCriterion.builder()
                 .number("170.315(a)(6)")
-                .removed(false)
+                .startDay(LocalDate.parse("2023-01-01"))
                 .build();
 
         String result = CertificationCriterionService.formatCriteriaNumber(criterion, false);

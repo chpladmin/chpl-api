@@ -1,6 +1,7 @@
 package gov.healthit.chpl.svap.domain;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -65,6 +66,20 @@ public class CertificationResultSvap implements Serializable {
     @Schema(description = "Indicates if the SVAP has been replaced")
     @XmlElement(required = true)
     private boolean replaced;
+
+    public boolean matches(CertificationResultSvap anotherSvap) {
+        boolean result = false;
+        if (this.getSvapId() != null && anotherSvap.getSvapId() != null
+                && Objects.equals(this.getSvapId(), anotherSvap.getSvapId())) {
+            result = true;
+        } else if ((this.getSvapId() == null || anotherSvap.getSvapId() == null)
+                && Objects.equals(this.getApprovedStandardVersion(), anotherSvap.getApprovedStandardVersion())
+                && Objects.equals(this.getRegulatoryTextCitation(), anotherSvap.getRegulatoryTextCitation())
+                && Objects.equals(this.getReplaced(), anotherSvap.getReplaced())) {
+            result = true;
+        }
+        return result;
+    }
 
     public CertificationResultSvap() { }
 

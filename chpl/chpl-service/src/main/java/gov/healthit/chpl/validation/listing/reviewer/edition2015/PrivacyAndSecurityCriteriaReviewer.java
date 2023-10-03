@@ -36,7 +36,7 @@ public class PrivacyAndSecurityCriteriaReviewer implements Reviewer {
 
         this.privacyAndSecurityCriteria = Arrays.asList(privacyAndSecurityCriteria.split(",")).stream()
                 .map(id -> criterionService.get(Long.parseLong(id)))
-                .filter(criteria -> BooleanUtils.isFalse(criteria.getRemoved()))
+                .filter(criteria -> BooleanUtils.isFalse(criteria.isRemoved()))
                 .collect(Collectors.toList());
 
         this.privacyAndSecurityRequiredCriteria = Arrays

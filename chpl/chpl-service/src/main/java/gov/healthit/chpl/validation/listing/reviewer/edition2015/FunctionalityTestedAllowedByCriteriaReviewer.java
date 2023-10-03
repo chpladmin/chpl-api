@@ -1,5 +1,6 @@
 package gov.healthit.chpl.validation.listing.reviewer.edition2015;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -12,14 +13,12 @@ import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import gov.healthit.chpl.dao.CertificationEditionDAO;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.functionalitytested.CertificationResultFunctionalityTested;
 import gov.healthit.chpl.functionalitytested.FunctionalityTested;
 import gov.healthit.chpl.functionalitytested.FunctionalityTestedDAO;
 import gov.healthit.chpl.functionalitytested.FunctionalityTestedManager;
-import gov.healthit.chpl.manager.DimensionalDataManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
@@ -31,18 +30,14 @@ import gov.healthit.chpl.validation.listing.reviewer.PermissionBasedReviewer;
 public class FunctionalityTestedAllowedByCriteriaReviewer extends PermissionBasedReviewer {
     private FunctionalityTestedDAO functionalityTestedDao;
     private FunctionalityTestedManager functionalityTestedManager;
-    private DimensionalDataManager dimensionalDataManager;
 
     @Autowired
     public FunctionalityTestedAllowedByCriteriaReviewer(FunctionalityTestedManager functionalityTestedManager,
             FunctionalityTestedDAO functionalityTestedDao,
-            CertificationEditionDAO editionDAO,
-            DimensionalDataManager dimensionalDataManager,
             ErrorMessageUtil msgUtil, ResourcePermissions resourcePermissions) {
         super(msgUtil, resourcePermissions);
         this.functionalityTestedManager = functionalityTestedManager;
         this.functionalityTestedDao = functionalityTestedDao;
-        this.dimensionalDataManager = dimensionalDataManager;
     }
 
     @Override
@@ -72,6 +67,8 @@ public class FunctionalityTestedAllowedByCriteriaReviewer extends PermissionBase
                 addFunctionalitiesTestedCriterionErrorMessage(crft, cr, listing);
             }
         }
+        reviewFunctionalityTestedRetiredBeforeListingActiveDates(listing, cr, crft);
+        reviewFunctionalityTestedAvailabilityAfterListingActiveDates(listing, cr, crft);
     }
 
     private Boolean isFunctionalityTestedCritierionValid(Long criteriaId, FunctionalityTested functionalityTested) {
@@ -137,5 +134,35 @@ public class FunctionalityTestedAllowedByCriteriaReviewer extends PermissionBase
                 .map(criterion -> Util.formatCriteriaNumber(criterion))
                 .collect(Collectors.toList());
         return Util.joinListGrammatically(criteriaNumbers);
+    }
+
+    private void reviewFunctionalityTestedRetiredBeforeListingActiveDates(CertifiedProductSearchDetails listing,
+            CertificationResult certResult, CertificationResultFunctionalityTested functionalityTested) {
+        if (isFunctionalityTestedRetiredBeforeListingActiveDates(listing, functionalityTested.getFunctionalityTested())) {
+            listing.addBusinessErrorMessage(msgUtil.getMessage("listing.criteria.functionalityTestedUnavailable",
+                    functionalityTested.getFunctionalityTested().getValue(),
+                    Util.formatCriteriaNumber(certResult.getCriterion())));
+        }
+    }
+
+    private void reviewFunctionalityTestedAvailabilityAfterListingActiveDates(CertifiedProductSearchDetails listing,
+            CertificationResult certResult, CertificationResultFunctionalityTested functionalityTested) {
+        if (isFunctionalityTestedActiveAfterListingActiveDates(listing, functionalityTested.getFunctionalityTested())) {
+            listing.addBusinessErrorMessage(msgUtil.getMessage("listing.criteria.functionalityTestedUnavailable",
+                    functionalityTested.getFunctionalityTested().getValue(),
+                    Util.formatCriteriaNumber(certResult.getCriterion())));
+        }
+    }
+
+    private boolean isFunctionalityTestedRetiredBeforeListingActiveDates(CertifiedProductSearchDetails listing, FunctionalityTested functionalityTested) {
+        LocalDate listingStartDay = listing.getCertificationDay();
+        LocalDate funcTestedEndDay = functionalityTested.getEndDay() == null ? LocalDate.MAX : functionalityTested.getEndDay();
+        return funcTestedEndDay.isBefore(listingStartDay);
+    }
+
+    private boolean isFunctionalityTestedActiveAfterListingActiveDates(CertifiedProductSearchDetails listing, FunctionalityTested functionalityTested) {
+        LocalDate listingEndDay = listing.getDecertificationDay() == null ? LocalDate.now() : listing.getDecertificationDay();
+        LocalDate funcTestedStartDay = functionalityTested.getStartDay() == null ? LocalDate.MIN : functionalityTested.getStartDay();
+        return funcTestedStartDay.isAfter(listingEndDay);
     }
 }

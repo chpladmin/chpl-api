@@ -1,5 +1,6 @@
 package gov.healthit.chpl.upload.listing.validation.reviewer;
 
+import java.time.LocalDate;
 import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -127,6 +128,8 @@ public class FunctionalityTestedReviewer {
     private void reviewFunctionalityTestedFields(CertifiedProductSearchDetails listing,
             CertificationResult certResult, CertificationResultFunctionalityTested functionalityTested) {
         reviewFunctionalityTestedName(listing, certResult, functionalityTested);
+        reviewFunctionalityTestedRetiredBeforeListingActiveDates(listing, certResult, functionalityTested);
+        reviewFunctionalityTestedAvailabilityAfterListingActiveDates(listing, certResult, functionalityTested);
     }
 
     private void reviewFunctionalityTestedName(CertifiedProductSearchDetails listing, CertificationResult certResult, CertificationResultFunctionalityTested functionalityTested) {
@@ -134,5 +137,35 @@ public class FunctionalityTestedReviewer {
             listing.addDataErrorMessage(msgUtil.getMessage("listing.criteria.missingFunctionalityTestedName",
                     Util.formatCriteriaNumber(certResult.getCriterion())));
         }
+    }
+
+    private void reviewFunctionalityTestedRetiredBeforeListingActiveDates(CertifiedProductSearchDetails listing,
+            CertificationResult certResult, CertificationResultFunctionalityTested functionalityTested) {
+        if (isFunctionalityTestedRetiredBeforeListingActiveDates(listing, functionalityTested.getFunctionalityTested())) {
+            listing.addBusinessErrorMessage(msgUtil.getMessage("listing.criteria.functionalityTestedUnavailable",
+                    functionalityTested.getFunctionalityTested().getValue(),
+                    Util.formatCriteriaNumber(certResult.getCriterion())));
+        }
+    }
+
+    private void reviewFunctionalityTestedAvailabilityAfterListingActiveDates(CertifiedProductSearchDetails listing,
+            CertificationResult certResult, CertificationResultFunctionalityTested functionalityTested) {
+        if (isFunctionalityTestedActiveAfterListingActiveDates(listing, functionalityTested.getFunctionalityTested())) {
+            listing.addBusinessErrorMessage(msgUtil.getMessage("listing.criteria.functionalityTestedUnavailable",
+                    functionalityTested.getFunctionalityTested().getValue(),
+                    Util.formatCriteriaNumber(certResult.getCriterion())));
+        }
+    }
+
+    private boolean isFunctionalityTestedRetiredBeforeListingActiveDates(CertifiedProductSearchDetails listing, FunctionalityTested functionalityTested) {
+        LocalDate listingStartDay = listing.getCertificationDay();
+        LocalDate funcTestedEndDay = functionalityTested.getEndDay() == null ? LocalDate.MAX : functionalityTested.getEndDay();
+        return funcTestedEndDay.isBefore(listingStartDay);
+    }
+
+    private boolean isFunctionalityTestedActiveAfterListingActiveDates(CertifiedProductSearchDetails listing, FunctionalityTested functionalityTested) {
+        LocalDate listingEndDay = listing.getDecertificationDay() == null ? LocalDate.now() : listing.getDecertificationDay();
+        LocalDate funcTestedStartDay = functionalityTested.getStartDay() == null ? LocalDate.MIN : functionalityTested.getStartDay();
+        return funcTestedStartDay.isAfter(listingEndDay);
     }
 }
