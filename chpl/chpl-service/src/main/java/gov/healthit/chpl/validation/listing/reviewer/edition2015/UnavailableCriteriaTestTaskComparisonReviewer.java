@@ -3,6 +3,7 @@ package gov.healthit.chpl.validation.listing.reviewer.edition2015;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -10,23 +11,18 @@ import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.TestTask;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.util.DateUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
 import gov.healthit.chpl.validation.listing.reviewer.ComparisonReviewer;
 
-/**
- * This reviewer confirms that an ACB user does not attempt to associate a removed criteria with a Test Task.
- *
- * @author kekey
- *
- */
-@Component("removedCriteriaTestTaskComparisonReviewer")
-public class RemovedCriteriaTestTaskComparisonReviewer implements ComparisonReviewer {
+@Component("unavailableCriteriaTestTaskComparisonReviewer")
+public class UnavailableCriteriaTestTaskComparisonReviewer implements ComparisonReviewer {
     private ResourcePermissions resourcePermissions;
     private ErrorMessageUtil msgUtil;
 
     @Autowired
-    public RemovedCriteriaTestTaskComparisonReviewer(ResourcePermissions resourcePermissions,
+    public UnavailableCriteriaTestTaskComparisonReviewer(ResourcePermissions resourcePermissions,
             ErrorMessageUtil msgUtil) {
         this.resourcePermissions = resourcePermissions;
         this.msgUtil = msgUtil;
@@ -48,22 +44,23 @@ public class RemovedCriteriaTestTaskComparisonReviewer implements ComparisonRevi
                     Set<CertificationCriterion> addedCriteria = getAddedCriteria(existingTestTask.getCriteria(),
                             updatedTestTask.getCriteria());
                     for (CertificationCriterion addedCriterion : addedCriteria) {
-                        if (addedCriterion.getRemoved() != null
-                                && addedCriterion.getRemoved().booleanValue()) {
+                        if (!isCriterionAvailable(updatedListing, addedCriterion)) {
                             updatedListing.addBusinessErrorMessage(
-                                    msgUtil.getMessage("listing.testTask.removedCriteriaNotAllowed",
-                                            Util.formatCriteriaNumber(addedCriterion), updatedTestTask.getDescription()));
+                                    msgUtil.getMessage("listing.testTask.unavailableCriteriaNotAllowed",
+                                            Util.formatCriteriaNumber(addedCriterion),
+                                            updatedTestTask.getDescription()));
                         }
                     }
                 }
             }
             if (!existsInOriginal) {
-                // check all the criteria for this newly added test task to see if any are removed
+                // check all the criteria for this newly added test task to see if any are not applicable to the listing
                 for (CertificationCriterion criterion : updatedTestTask.getCriteria()) {
-                    if (criterion.getRemoved() != null && criterion.getRemoved().booleanValue()) {
+                    if (!isCriterionAvailable(updatedListing, criterion)) {
                         updatedListing.addBusinessErrorMessage(
-                                msgUtil.getMessage("listing.testTask.removedCriteriaNotAllowed",
-                                        Util.formatCriteriaNumber(criterion), updatedTestTask.getDescription()));
+                                msgUtil.getMessage("listing.testTask.unavailableCriteriaNotAllowed",
+                                        Util.formatCriteriaNumber(criterion),
+                                        updatedTestTask.getDescription()));
                     }
                 }
             }
@@ -89,5 +86,12 @@ public class RemovedCriteriaTestTaskComparisonReviewer implements ComparisonRevi
             }
         }
         return newCriteria;
+    }
+
+    private boolean isCriterionAvailable(CertifiedProductSearchDetails listing,
+            CertificationCriterion criterion) {
+
+        return DateUtil.datesOverlap(Pair.of(listing.getCertificationDay(), listing.getDecertificationDay()),
+                        Pair.of(criterion.getStartDay(), criterion.getEndDay()));
     }
 }

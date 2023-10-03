@@ -31,7 +31,6 @@ public class CertificationCriterionDAO extends BaseDAOImpl {
         entity.setLastModifiedUser(AuthUtil.getAuditId());
         entity.setNumber(criterion.getNumber());
         entity.setTitle(criterion.getTitle());
-        entity.setRemoved(criterion.getRemoved());
         update(entity);
 
         return entity.toDomain();
