@@ -256,13 +256,13 @@ public class RequiredAndRelatedCriteriaErdPhase2GracePeriodReviewer extends Perm
                 .collect(Collectors.toList());
 
         List<CertificationCriterion> presentAttestedG6Criteria = attestedCriteria.stream()
-                .filter(cert -> cert.getRemoved() == null || cert.getRemoved().equals(Boolean.FALSE))
+                .filter(cert -> cert.isRemoved() == null || cert.isRemoved().equals(Boolean.FALSE))
                 .filter(cert -> validationUtils.hasCriterion(cert, criteriaRequiringG6))
-                .collect(Collectors.<CertificationCriterion> toList());
+                .collect(Collectors.<CertificationCriterion>toList());
         List<CertificationCriterion> removedAttestedG6Criteria = attestedCriteria.stream()
-                .filter(cert -> cert.getRemoved() != null && cert.getRemoved().equals(Boolean.TRUE))
+                .filter(cert -> cert.isRemoved() != null && cert.isRemoved().equals(Boolean.TRUE))
                 .filter(cert -> validationUtils.hasCriterion(cert, criteriaRequiringG6))
-                .collect(Collectors.<CertificationCriterion> toList());
+                .collect(Collectors.<CertificationCriterion>toList());
         boolean hasG6 = validationUtils.hasAnyCriteria(g6Criteria, attestedCriteria);
 
         if (presentAttestedG6Criteria != null && presentAttestedG6Criteria.size() > 0 && !hasG6) {

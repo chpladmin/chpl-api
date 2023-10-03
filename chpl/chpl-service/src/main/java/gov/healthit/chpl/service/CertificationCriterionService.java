@@ -117,7 +117,7 @@ public class CertificationCriterionService {
 
     public static String formatCriteriaNumber(CertificationCriterion criterion, boolean formatForRemoved) {
         String result = formatCriteriaNumber(criterion);
-        if (formatForRemoved && Objects.nonNull(criterion.getRemoved()) && criterion.getRemoved()) {
+        if (formatForRemoved && Objects.nonNull(criterion.isRemoved()) && criterion.isRemoved()) {
             result = "Removed | " + result;
         }
         return result;

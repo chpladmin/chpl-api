@@ -173,10 +173,10 @@ public class ValidationUtils {
         List<String> errors = new ArrayList<String>();
 
         criterionToCheck = criterionToCheck.stream()
-                .filter(crit -> !crit.getRemoved())
+                .filter(crit -> !crit.isRemoved())
                 .collect(Collectors.toList());
         complementaryCriteria = complementaryCriteria.stream()
-                .filter(crit -> !crit.getRemoved())
+                .filter(crit -> !crit.isRemoved())
                 .collect(Collectors.toList());
 
         if (hasAnyCriteria(criterionToCheck, allCriteriaMet)) {
@@ -268,7 +268,7 @@ public class ValidationUtils {
         List<String> errors = new ArrayList<String>();
         boolean hasAnyCriteria = hasAnyCriteria(
                 criteriaToCheck.stream()
-                        .filter(crit -> !crit.getRemoved())
+                        .filter(crit -> !crit.isRemoved())
                         .collect(Collectors.toList()),
                 allCriteriaMet);
         if (hasAnyCriteria) {
@@ -376,7 +376,7 @@ public class ValidationUtils {
         List<String> errors = new ArrayList<String>();
         List<CertificationCriterion> presentAttestedCriteriaInClass = allCriteriaMet.stream()
                 .filter(certResult -> certResult.getNumber().startsWith(criterionNumberStart)
-                        && (certResult.getRemoved() == null || certResult.getRemoved().equals(Boolean.FALSE))
+                        && (certResult.isRemoved() == null || certResult.isRemoved().equals(Boolean.FALSE))
                         && !excludedCertNumbers.contains(certResult.getNumber()))
                 .collect(Collectors.<CertificationCriterion>toList());
 
@@ -425,12 +425,12 @@ public class ValidationUtils {
         List<String> warnings = new ArrayList<String>();
         List<CertificationCriterion> removedAttestedCriteriaInClass = allCriteriaMet.stream()
                 .filter(certResult -> certResult.getNumber().startsWith(criterionNumberStart)
-                        && (certResult.getRemoved() == null || certResult.getRemoved().equals(Boolean.TRUE))
+                        && (certResult.isRemoved() == null || certResult.isRemoved().equals(Boolean.TRUE))
                         && !excludedCertNumbers.contains(certResult.getNumber()))
                 .collect(Collectors.<CertificationCriterion>toList());
         List<CertificationCriterion> presentAttestedCriteriaInClass = allCriteriaMet.stream()
                 .filter(certResult -> certResult.getNumber().startsWith(criterionNumberStart)
-                        && (certResult.getRemoved() == null || certResult.getRemoved().equals(Boolean.FALSE))
+                        && (certResult.isRemoved() == null || certResult.isRemoved().equals(Boolean.FALSE))
                         && !excludedCertNumbers.contains(certResult.getNumber()))
                 .collect(Collectors.<CertificationCriterion>toList());
 
@@ -493,7 +493,7 @@ public class ValidationUtils {
     public String getAllCriteriaWithNumber(String criterionNumber) {
         List<CertificationCriterion> allCriteriaWithNumber = criteriaService.getByNumber(criterionNumber);
         List<String> allCriteriaNumbers = allCriteriaWithNumber.stream()
-                .filter(criterion -> BooleanUtils.isFalse(criterion.getRemoved()))
+                .filter(criterion -> BooleanUtils.isFalse(criterion.isRemoved()))
                 .map(criterion -> Util.formatCriteriaNumber(criterion)).collect(Collectors.toList());
         return allCriteriaNumbers.stream().collect(Collectors.joining(" or "));
     }
@@ -507,7 +507,7 @@ public class ValidationUtils {
 
     public boolean isEligibleForErrors(CertificationResult certResult) {
         return certResult.getCriterion() != null
-                && BooleanUtils.isNotTrue(certResult.getCriterion().getRemoved())
+                && BooleanUtils.isNotTrue(certResult.getCriterion().isRemoved())
                 && BooleanUtils.isTrue(certResult.isSuccess());
     }
 }

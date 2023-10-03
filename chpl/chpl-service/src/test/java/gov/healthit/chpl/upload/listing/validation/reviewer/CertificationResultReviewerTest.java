@@ -34,7 +34,7 @@ public class CertificationResultReviewerTest {
         Mockito.when(msgUtil.getMessage("listing.missingCertificationResults"))
             .thenReturn(MISSING_CERT_RESULTS);
 
-        reviewer = new CertificationResultReviewer(Mockito.mock(RemovedCriteriaReviewer.class),
+        reviewer = new CertificationResultReviewer(Mockito.mock(UnavailableCriteriaReviewer.class),
                 Mockito.mock(CriteriaReviewer.class),
                 Mockito.mock(PrivacyAndSecurityFrameworkReviewer.class),
                 Mockito.mock(AdditionalSoftwareReviewer.class),

@@ -56,16 +56,6 @@ public class MeasureCriterionMapEntity {
         if (getCriterion() == null) {
             return null;
         }
-        CertificationCriterionEntity ccEntity = getCriterion();
-        CertificationCriterion cert = new CertificationCriterion();
-        cert.setId(getCertificationCriterionId());
-        cert.setNumber(ccEntity.getNumber());
-        cert.setRemoved(ccEntity.getRemoved());
-        cert.setTitle(ccEntity.getTitle());
-        cert.setCertificationEditionId(ccEntity.getCertificationEditionId());
-        if (ccEntity.getCertificationEdition() != null) {
-            cert.setCertificationEdition(ccEntity.getCertificationEdition().getYear());
-        }
-        return cert;
+        return getCriterion().toDomain();
     }
 }

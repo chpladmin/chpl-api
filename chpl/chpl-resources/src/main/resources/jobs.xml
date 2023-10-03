@@ -9,20 +9,8 @@
         <delete-triggers-in-group>interruptJob</delete-triggers-in-group>
         <!-- BEGIN REMOVE after PROD push -->
         <delete-job>
-            <name>urlUptimeCreatorJob</name>
+            <name>removeCriteriaJob</name>
             <group>systemJobs</group>
-        </delete-job>
-        <delete-job>
-            <name>CHPL URL Uptime Report</name>
-            <group>chplJobs</group>
-        </delete-job>
-        <delete-job>
-            <name>serviceBasedUrlUptimeCreatorJob</name>
-            <group>systemJobs</group>
-        </delete-job>
-        <delete-job>
-            <name>Service Based URL Uptime Report</name>
-            <group>chplJobs</group>
         </delete-job>
         <!-- END remove after PROD push -->
     </pre-processing-commands>
@@ -722,16 +710,6 @@
             <group>systemJobs</group>
             <description>Sends emails to any registered API Keys that have accessed deprecated endpoints.</description>
             <job-class>gov.healthit.chpl.scheduler.job.deprecatedApiUsage.DeprecatedApiUsageEmailJob</job-class>
-            <durability>true</durability>
-            <recover>false</recover>
-        </job>
-
-        <!-- One time job to remove 3 criteria -->
-        <job>
-            <name>removeCriteriaJob</name>
-            <group>systemJobs</group>
-            <description>One time job to remove specific criteria</description>
-            <job-class>gov.healthit.chpl.scheduler.job.onetime.criteriaremoval.RemoveCriteriaJob</job-class>
             <durability>true</durability>
             <recover>false</recover>
         </job>

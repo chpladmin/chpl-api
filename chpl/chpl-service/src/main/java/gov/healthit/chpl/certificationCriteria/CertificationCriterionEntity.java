@@ -93,11 +93,6 @@ public class CertificationCriterionEntity implements Serializable {
     @Column(length = 250)
     private String title;
 
-    @Deprecated
-    @Basic(optional = true)
-    @Column(name = "removed")
-    private Boolean removed;
-
     public static CertificationCriterionEntity getNewCertificationCriterionEntity(CertificationCriterion criterion) {
         CertificationEditionEntity editionEntity = new CertificationEditionEntity();
         editionEntity.setId(criterion.getCertificationEditionId());
@@ -112,7 +107,6 @@ public class CertificationCriterionEntity implements Serializable {
                 .description(criterion.getDescription())
                 .number(criterion.getNumber())
                 .title(criterion.getTitle())
-                .removed(criterion.getRemoved())
                 .build();
     }
 
@@ -126,7 +120,6 @@ public class CertificationCriterionEntity implements Serializable {
                 .rule(rule != null ? rule.toDomain() : null)
                 .description(this.getDescription())
                 .number(this.getNumber())
-                .removed(this.getRemoved())
                 .title(this.getTitle())
                 .build();
     }
