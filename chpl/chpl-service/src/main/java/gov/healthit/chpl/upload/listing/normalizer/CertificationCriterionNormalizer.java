@@ -14,6 +14,7 @@ import gov.healthit.chpl.domain.CertificationResultTestData;
 import gov.healthit.chpl.domain.CertificationResultTestProcedure;
 import gov.healthit.chpl.domain.CertificationResultTestStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.functionalitytested.CertificationResultFunctionalityTested;
 import gov.healthit.chpl.optionalStandard.domain.CertificationResultOptionalStandard;
 import gov.healthit.chpl.svap.domain.CertificationResultSvap;
@@ -31,8 +32,23 @@ public class CertificationCriterionNormalizer {
     }
 
     public void normalize(CertifiedProductSearchDetails listing) {
-        listing.getCertificationResults().removeIf(cr -> cr.isSuccess() == null || !cr.isSuccess());
+        removeUnattestedToCriteria(listing);
         nullifyNotApplicableFieldsInCertificationResults(listing);
+    }
+
+    private void removeUnattestedToCriteria(CertifiedProductSearchDetails listing) {
+        //There is a business case for not removing unattested to criteria for 2011 & 2014 listings.  Unattested to
+        //criteria can still g1_success and g2_success values.
+        if (!isListing2011Or2014Edition(listing)) {
+            listing.getCertificationResults().removeIf(cr -> cr.isSuccess() == null || !cr.isSuccess());
+        }
+    }
+
+    private Boolean isListing2011Or2014Edition(CertifiedProductSearchDetails listing) {
+        return listing.getEdition() != null
+                && listing.getEdition().getName() != null
+                && (listing.getEdition().getName().equals(CertificationEditionConcept.CERTIFICATION_EDITION_2011.getYear())
+                        || listing.getEdition().getName().equals(CertificationEditionConcept.CERTIFICATION_EDITION_2014.getYear()));
     }
 
     private void nullifyNotApplicableFieldsInCertificationResults(CertifiedProductSearchDetails listing) {
