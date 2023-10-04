@@ -20,7 +20,6 @@ import org.apache.commons.csv.CSVPrinter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import gov.healthit.chpl.domain.CertificationEdition;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.scheduler.job.svap.ListingSvapActivity;
 import gov.healthit.chpl.svap.domain.Svap;
@@ -79,7 +78,6 @@ public class SvapActivityPresenter implements AutoCloseable {
 
     protected List<String> generateHeaderValues() {
         return Stream.of(
-                "Certification Edition",
                 "CHPL ID",
                 "Listing Database ID",
                 "ONC-ACB Certification ID",
@@ -104,7 +102,7 @@ public class SvapActivityPresenter implements AutoCloseable {
 
     @SuppressWarnings("checkstyle:linelength")
     protected List<String> generateRowValue(ListingSvapActivity svapActivity) {
-        return Stream.of(formatEdition(svapActivity.getListing()),
+        return Stream.of(
                 svapActivity.getListing().getChplProductNumber(),
                 svapActivity.getListing().getId().toString(),
                 svapActivity.getListing().getAcbCertificationId(),
@@ -126,18 +124,6 @@ public class SvapActivityPresenter implements AutoCloseable {
                 formatSvapNewOrUpdated(svapActivity),
                 formatReplaced(svapActivity.getCriterionSvap()))
                 .collect(Collectors.toList());
-    }
-
-    private String formatEdition(CertifiedProductSearchDetails listing) {
-        if (listing.getEdition() == null) {
-            return "";
-        } else {
-            String edition = listing.getEdition().getName();
-            if (listing.getCuresUpdate() != null && listing.getCuresUpdate()) {
-                edition = edition + CertificationEdition.CURES_SUFFIX;
-            }
-            return edition;
-        }
     }
 
     private String formatReplaced(Svap svap) {

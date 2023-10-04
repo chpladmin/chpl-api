@@ -259,7 +259,7 @@ public class ListingService {
         if (listing.getDeveloper() != null && listing.getDeveloper().getId() != null) {
             drs = drService.getDirectReviewsRelatedToListing(listing.getId(),
                     listing.getDeveloper().getId(),
-                    listing.getEdition() != null ?listing.getEdition().getName() : null,
+                    listing.getEdition() != null ? listing.getEdition().getName() : null,
                     listing.getCertificationEvents(), LOGGER);
         }
         listing.setDirectReviews(drs.stream()

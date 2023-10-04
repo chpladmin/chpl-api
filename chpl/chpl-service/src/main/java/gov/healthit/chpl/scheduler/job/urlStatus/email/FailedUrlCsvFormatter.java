@@ -28,16 +28,15 @@ public class FailedUrlCsvFormatter {
     private static final int INDEX_PRODUCT_NAME = 11;
     private static final int INDEX_VERSION = 12;
     private static final int INDEX_CHPL_PRODUCT_NUMBER = 13;
-    private static final int INDEX_EDITION = 14;
-    private static final int INDEX_CERTIFICATION_DATE = 15;
-    private static final int INDEX_CERTIFICATION_STATUS = 16;
-    private static final int INDEX_CRITERION = 17;
-    private static final int INDEX_LAST_CHECKED_DATE = 18;
+    private static final int INDEX_CERTIFICATION_DATE = 14;
+    private static final int INDEX_CERTIFICATION_STATUS = 15;
+    private static final int INDEX_CRITERION = 16;
+    private static final int INDEX_LAST_CHECKED_DATE = 17;
 
     private static final String[] CSV_HEADER = {
             "URL", "Status Code", "Status Name", "Error Message", "URL Type", "ONC-ATL", "ONC-ACB", "Developer",
             "Developer Contact Name", "Developer Contact Email", "Developer Contact Phone Number", "Product", "Version",
-            "CHPL Product Number", "Edition", "Certification Date", "Certification Status", "Criteria",
+            "CHPL Product Number", "Certification Date", "Certification Status", "Criteria",
             "Date Last Checked"
     };
 
@@ -71,7 +70,6 @@ public class FailedUrlCsvFormatter {
         }
         if (listing != null) {
             row.set(INDEX_CHPL_PRODUCT_NUMBER, listing.getChplProductNumber());
-            row.set(INDEX_EDITION, listing.getYear());
             row.set(INDEX_CERTIFICATION_DATE, getDateFormatter().format(listing.getCertificationDate()));
             row.set(INDEX_CERTIFICATION_STATUS, listing.getCertificationStatus());
         }
