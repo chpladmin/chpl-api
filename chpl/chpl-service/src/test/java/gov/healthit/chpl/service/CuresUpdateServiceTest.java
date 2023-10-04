@@ -20,6 +20,7 @@ import org.mockito.Mockito;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
+import gov.healthit.chpl.domain.CertificationEdition;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.service.CertificationCriterionService.Criteria2015;
@@ -210,6 +211,9 @@ public class CuresUpdateServiceTest {
     @Test
     public void listingWithB1Removed_ReturnsNotCuresUpdate() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .edition(CertificationEdition.builder()
+                        .name("2015")
+                        .build())
                 .certificationResult(CertificationResult.builder()
                         .success(true)
                         .criterion(b1Old)
@@ -221,6 +225,9 @@ public class CuresUpdateServiceTest {
     @Test
     public void listingWithB1Cures_ReturnsNotCuresUpdate() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .edition(CertificationEdition.builder()
+                        .name("2015")
+                        .build())
                 .certificationResult(CertificationResult.builder()
                         .success(true)
                         .criterion(b1Cures)
@@ -232,6 +239,9 @@ public class CuresUpdateServiceTest {
     @Test
     public void listingWithB1CuresD12_ReturnsNotCuresUpdate() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .edition(CertificationEdition.builder()
+                        .name("2015")
+                        .build())
                 .certificationResult(CertificationResult.builder()
                         .success(true)
                         .criterion(b1Cures)
@@ -247,6 +257,9 @@ public class CuresUpdateServiceTest {
     @Test
     public void listingWithB1CuresD13_ReturnsNotCuresUpdate() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .edition(CertificationEdition.builder()
+                        .name("2015")
+                        .build())
                 .certificationResult(CertificationResult.builder()
                         .success(true)
                         .criterion(b1Cures)
@@ -262,6 +275,9 @@ public class CuresUpdateServiceTest {
     @Test
     public void listingWithB1CuresD12D13_ReturnsCuresUpdate() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .edition(CertificationEdition.builder()
+                        .name("2015")
+                        .build())
                 .certificationResult(CertificationResult.builder()
                         .success(true)
                         .criterion(b1Cures)
@@ -281,6 +297,9 @@ public class CuresUpdateServiceTest {
     @Test
     public void listingHasDependentCriteriaG4G5_ReturnsCuresUpdate() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .edition(CertificationEdition.builder()
+                        .name("2015")
+                        .build())
                 .certificationResult(CertificationResult.builder()
                         .success(true)
                         .criterion(g4)
