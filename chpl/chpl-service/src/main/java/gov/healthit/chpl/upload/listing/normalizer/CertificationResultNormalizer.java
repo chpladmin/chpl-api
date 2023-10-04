@@ -92,7 +92,7 @@ public class CertificationResultNormalizer {
         while (certResultIter.hasNext()) {
             CertificationResult certResult = certResultIter.next();
             if (BooleanUtils.isFalse(certResult.isSuccess())
-                    && isCriteriaAttestedInAnotherCertResult(listing.getCertificationResults(), certResult)) {
+                    && isCriteriaInAnotherCertResult(listing.getCertificationResults(), certResult)) {
                 certResultIter.remove();
             }
         }
@@ -108,6 +108,13 @@ public class CertificationResultNormalizer {
                         Util.formatCriteriaNumber(certResult.getCriterion())));
             }
         }
+    }
+
+    private boolean isCriteriaInAnotherCertResult(List<CertificationResult> certResults, CertificationResult unattestedCertResult) {
+        return certResults.stream()
+            .filter(certResult -> certResult != unattestedCertResult)
+            .filter(certResult -> certResult.getCriterion().getId().equals(unattestedCertResult.getCriterion().getId()))
+            .findAny().isPresent();
     }
 
     private boolean isCriteriaAttestedInAnotherCertResult(List<CertificationResult> certResults, CertificationResult unattestedCertResult) {
