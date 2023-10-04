@@ -1,23 +1,18 @@
 package gov.healthit.chpl.certificationId;
 
-import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.service.CertificationCriterionService;
 
 @Component
 public class ValidatorFactory {
 
     private CertificationCriterionService certificationCriterionService;
-    private FF4j ff4j;
 
     @Autowired
-    public ValidatorFactory(CertificationCriterionService certificationCriterionService,
-            FF4j ff4j) {
+    public ValidatorFactory(CertificationCriterionService certificationCriterionService) {
         this.certificationCriterionService = certificationCriterionService;
-        this.ff4j = ff4j;
     }
 
     /**
@@ -31,11 +26,7 @@ public class ValidatorFactory {
         if ("2014".equals(attYear)) {
             val = new Validator2014();
         } else if ("2015".equals(attYear)) {
-            if (this.ff4j.check(FeatureList.CANNOT_GENERATE_15E)) {
-                val = new Validator2015(certificationCriterionService);
-            } else {
-                val = new Validator2015Legacy(certificationCriterionService);
-            }
+            val = new Validator2015(certificationCriterionService);
         } else if ("2014/2015".equals(attYear)) {
             val = new Validator20142015();
         } else {
