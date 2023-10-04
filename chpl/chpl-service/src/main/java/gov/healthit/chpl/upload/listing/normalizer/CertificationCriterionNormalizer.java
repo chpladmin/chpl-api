@@ -31,6 +31,7 @@ public class CertificationCriterionNormalizer {
     }
 
     public void normalize(CertifiedProductSearchDetails listing) {
+        listing.getCertificationResults().removeIf(cr -> cr.isSuccess() == null || !cr.isSuccess());
         nullifyNotApplicableFieldsInCertificationResults(listing);
     }
 
