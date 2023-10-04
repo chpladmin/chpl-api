@@ -1,8 +1,9 @@
 package gov.healthit.chpl.validation.listing.reviewer.edition2015;
 
+import java.time.LocalDate;
 import java.util.Objects;
 
-import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -15,7 +16,6 @@ import gov.healthit.chpl.domain.CertificationResultTestStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.functionalitytested.CertificationResultFunctionalityTested;
 import gov.healthit.chpl.optionalStandard.domain.CertificationResultOptionalStandard;
-import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.svap.domain.CertificationResultSvap;
 import gov.healthit.chpl.testtool.CertificationResultTestTool;
 import gov.healthit.chpl.util.CertificationResultRules;
@@ -27,43 +27,55 @@ import gov.healthit.chpl.validation.listing.reviewer.ComparisonReviewer;
 @Component("unavailableCriteriaComparisonReviewer")
 public class UnavailableCriteriaComparisonReviewer implements ComparisonReviewer {
     private CertificationResultRules certResultRules;
-    private ResourcePermissions resourcePermissions;
     private ErrorMessageUtil msgUtil;
 
     @Autowired
     public UnavailableCriteriaComparisonReviewer(CertificationResultRules certResultRules,
-            ResourcePermissions resourcePermissions, ErrorMessageUtil msgUtil) {
+            ErrorMessageUtil msgUtil) {
         this.certResultRules = certResultRules;
-        this.resourcePermissions = resourcePermissions;
         this.msgUtil = msgUtil;
     }
 
     @Override
     public void review(CertifiedProductSearchDetails existingListing, CertifiedProductSearchDetails updatedListing) {
-        // checking for the addition of a removed criteria
-        // this is only disallowed if the user is not ADMIN/ONC, so first check the permissions
-        if (resourcePermissions.isUserRoleAdmin() || resourcePermissions.isUserRoleOnc()) {
-            return;
-        }
-
         for (CertificationResult updatedCert : updatedListing.getCertificationResults()) {
             for (CertificationResult existingCert : existingListing.getCertificationResults()) {
                 // find matching criteria in existing/updated listings
                 if (updatedCert.getCriterion().getId() != null && existingCert.getCriterion().getId() != null
                         && updatedCert.getCriterion().getId().equals(existingCert.getCriterion().getId())) {
-                    if (isCriteriaAdded(updatedCert, existingCert)
-                            && !isCriterionAttestedAndEditable(updatedListing, updatedCert)) {
-                        updatedListing.addBusinessErrorMessage(
-                                msgUtil.getMessage("listing.unavailableCriteriaAddNotAllowed",
-                                        Util.formatCriteriaNumber(updatedCert.getCriterion()),
-                                        DateUtil.format(updatedCert.getCriterion().getStartDay())));
-                    } else if (isCriteriaEdited(updatedCert, existingCert)
-                            && !isCriterionAttestedAndEditable(updatedListing, updatedCert)) {
-                        addErrorsForCertEdits(updatedListing, existingCert, updatedCert);
+                    if (isCriteriaAdded(updatedCert, existingCert)) {
+                        reviewCriterionAvailableAndAddable(updatedListing, updatedCert);
+                    } else if (isCriteriaEdited(updatedCert, existingCert)) {
+                        reviewCriterionAvailableAndEditable(updatedListing, existingCert, updatedCert);
                     }
                 }
             }
         }
+    }
+
+    private void reviewCriterionAvailableAndAddable(CertifiedProductSearchDetails listing, CertificationResult certResult) {
+        if (!doCriterionDatesOverlapCertificationDay(listing, certResult)) {
+            listing.addBusinessErrorMessage(msgUtil.getMessage("listing.unavailableCriteriaAddNotAllowed",
+                    Util.formatCriteriaNumber(certResult.getCriterion())));
+        } else if (!certResult.getCriterion().isEditable()) {
+            listing.addBusinessErrorMessage(msgUtil.getMessage("listing.unavailableCriteriaRemovedTooLongAgo",
+                    Util.formatCriteriaNumber(certResult.getCriterion())));
+        }
+    }
+
+    private void reviewCriterionAvailableAndEditable(CertifiedProductSearchDetails updatedListing, CertificationResult existingCert,
+            CertificationResult updatedCert) {
+        if (!doCriterionDatesOverlapCertificationDay(updatedListing, updatedCert)
+                || !updatedCert.getCriterion().isEditable()) {
+            addErrorsForCertEdits(updatedListing, existingCert, updatedCert);
+        }
+    }
+
+    private boolean doCriterionDatesOverlapCertificationDay(CertifiedProductSearchDetails listing, CertificationResult certResult) {
+        LocalDate listingEndDay = listing.getDecertificationDay() != null ? listing.getDecertificationDay() : LocalDate.now();
+        return certResult.getCriterion() != null
+                && DateUtil.datesOverlap(Pair.of(listing.getCertificationDay(), listingEndDay),
+                        Pair.of(certResult.getCriterion().getStartDay(), certResult.getCriterion().getEndDay()));
     }
 
     private boolean isCriteriaAdded(CertificationResult updatedCert, CertificationResult existingCert) {
@@ -73,14 +85,6 @@ public class UnavailableCriteriaComparisonReviewer implements ComparisonReviewer
     private boolean isCriteriaEdited(CertificationResult updatedCert, CertificationResult existingCert) {
         return existingCert.isSuccess() != null && existingCert.isSuccess()
                 && updatedCert.isSuccess() != null && updatedCert.isSuccess();
-    }
-
-    private boolean isCriterionAttestedAndEditable(CertifiedProductSearchDetails listing,
-            CertificationResult certResult) {
-
-        return BooleanUtils.isTrue(certResult.isSuccess())
-                && certResult.getCriterion() != null
-                && certResult.getCriterion().isEditable();
     }
 
     private void addErrorsForCertEdits(CertifiedProductSearchDetails updatedListing,
