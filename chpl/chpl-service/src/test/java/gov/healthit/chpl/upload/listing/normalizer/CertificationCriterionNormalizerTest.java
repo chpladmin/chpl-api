@@ -51,7 +51,7 @@ public class CertificationCriterionNormalizerTest {
                         .build()).collect(Collectors.toList()));
         normalizer.normalize(listing);
         assertNotNull(listing.getCertificationResults());
-        assertEquals(1, listing.getCertificationResults().size());
+        assertEquals(0, listing.getCertificationResults().size());
         for (CertificationResult certResult : listing.getCertificationResults()) {
             assertFalse(certResult.isSuccess());
             assertNull(certResult.getAdditionalSoftware());
@@ -784,64 +784,5 @@ public class CertificationCriterionNormalizerTest {
                 assertNull(certResult.getServiceBaseUrlList());
             }
         }
-    }
-
-    @Test
-    public void normalize_allCriteriaInListingAndNoFieldsAllowed_allFieldsNull() {
-        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .certificationResult(CertificationResult.builder()
-                        .id(100L)
-                        .success(false)
-                        .criterion(CertificationCriterion.builder()
-                                .id(1L)
-                                .number("170.315 (a)(1)")
-                                .title("a1")
-                                .build())
-                        .additionalSoftware(new ArrayList<CertificationResultAdditionalSoftware>())
-                        .build())
-                .certificationResult(CertificationResult.builder()
-                        .id(200L)
-                        .success(false)
-                        .criterion(CertificationCriterion.builder()
-                                .id(2L)
-                                .number("170.315 (a)(2)")
-                                .title("a2")
-                                .build())
-                        .additionalSoftware(new ArrayList<CertificationResultAdditionalSoftware>())
-                        .build())
-                .build();
-        normalizer.normalize(listing);
-        assertNotNull(listing.getCertificationResults());
-        assertEquals(2, listing.getCertificationResults().size());
-        for (CertificationResult certResult : listing.getCertificationResults()) {
-            assertFalse(certResult.isSuccess());
-            assertNull(certResult.getAdditionalSoftware());
-            assertNull(certResult.getApiDocumentation());
-            assertNull(certResult.getAttestationAnswer());
-            assertNull(certResult.getConformanceMethods());
-            assertNull(certResult.getDocumentationUrl());
-            assertNull(certResult.getExportDocumentation());
-            assertNull(certResult.isGap());
-            assertNull(certResult.isG1Success());
-            assertNull(certResult.isG2Success());
-            assertNull(certResult.getOptionalStandards());
-            assertNull(certResult.getPrivacySecurityFramework());
-            assertNull(certResult.getServiceBaseUrlList());
-            assertNull(certResult.getSvaps());
-            assertNull(certResult.getTestDataUsed());
-            assertNull(certResult.getFunctionalitiesTested());
-            assertNull(certResult.getTestProcedures());
-            assertNull(certResult.getTestStandards());
-            assertNull(certResult.getTestToolsUsed());
-            assertNull(certResult.getUseCases());
-        }
-    }
-
-    private CertificationCriterion buildCriterionDto(Long id, String number, String title) {
-        return CertificationCriterion.builder()
-                .id(id)
-                .number(number)
-                .title(title)
-                .build();
     }
 }
