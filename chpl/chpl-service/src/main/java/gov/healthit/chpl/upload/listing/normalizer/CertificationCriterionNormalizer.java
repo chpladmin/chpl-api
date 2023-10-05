@@ -37,18 +37,16 @@ public class CertificationCriterionNormalizer {
     }
 
     private void removeUnattestedToCriteria(CertifiedProductSearchDetails listing) {
-        //There is a business case for not removing unattested to criteria for 2011 & 2014 listings.  Unattested to
-        //criteria can still g1_success and g2_success values.
-        if (!isListing2011Or2014Edition(listing)) {
-            listing.getCertificationResults().removeIf(cr -> cr.isSuccess() == null || !cr.isSuccess());
-        }
+        listing.getCertificationResults().removeIf(cr -> (cr.isSuccess() == null || !cr.isSuccess()) && !isUnattestedCriteriaAllowed(cr));
     }
 
-    private Boolean isListing2011Or2014Edition(CertifiedProductSearchDetails listing) {
-        return listing.getEdition() != null
-                && listing.getEdition().getName() != null
-                && (listing.getEdition().getName().equals(CertificationEditionConcept.CERTIFICATION_EDITION_2011.getYear())
-                        || listing.getEdition().getName().equals(CertificationEditionConcept.CERTIFICATION_EDITION_2014.getYear()));
+    private Boolean isUnattestedCriteriaAllowed(CertificationResult cr) {
+        //There is a business case for not removing unattested to criteria for 2014 listings.  Unattested to
+        //criteria can still g1_success and g2_success values.
+        return cr.getCriterion().getCertificationEdition() != null
+                && cr.getCriterion().getCertificationEdition().equals(CertificationEditionConcept.CERTIFICATION_EDITION_2011.getYear())
+                && (cr.isG1Success()
+                        || cr.isG2Success());
     }
 
     private void nullifyNotApplicableFieldsInCertificationResults(CertifiedProductSearchDetails listing) {
