@@ -73,12 +73,8 @@ public class CertificationCriterionUploadHandler {
         return criterionOpt.get();
     }
 
-    private CertificationCriterion getActiveCriterion(String criterionNumber, LocalDate activeOnDate) {
-        if (activeOnDate == null) {
-            LOGGER.warn("Cannot determine active criteria for the listing because the certification date is null");
-            return null;
-        }
-
+    private CertificationCriterion getActiveCriterion(String criterionNumber, LocalDate listingCertificationDate) {
+        LocalDate criteriaActiveOnDate = (listingCertificationDate != null ? listingCertificationDate : LocalDate.now());
         List<CertificationCriterion> criteriaWithNumber = criteriaDao.getAllByNumber(criterionNumber);
         if (criteriaWithNumber == null || criteriaWithNumber.size() == 0) {
             LOGGER.warn("Could not find a certification criterion matching " + criterionNumber);
@@ -90,23 +86,23 @@ public class CertificationCriterionUploadHandler {
             criterionOpt = Optional.of(criteriaWithNumber.get(0));
         } else  {
             criterionOpt = criteriaWithNumber.stream()
-                    .filter(criterion -> (criterion.getStartDay().isBefore(activeOnDate)
-                            || criterion.getStartDay().isEqual(activeOnDate))
+                    .filter(criterion -> (criterion.getStartDay().isBefore(criteriaActiveOnDate)
+                            || criterion.getStartDay().isEqual(criteriaActiveOnDate))
                             && (criterion.getEndDay() == null
-                            || criterion.getEndDay().isEqual(activeOnDate)
-                            || criterion.getEndDay().isAfter(activeOnDate)))
+                            || criterion.getEndDay().isEqual(criteriaActiveOnDate)
+                            || criterion.getEndDay().isAfter(criteriaActiveOnDate)))
                     .findFirst();
             //if there was no active criteria, print out a message and just choose the first criteria
             //the user will get an error about it during validation since the criteria dates
             //won't overlap the listing certification date
             if (criterionOpt == null || !criterionOpt.isPresent()) {
-                LOGGER.warn("Could not find a certification criteria active on " + activeOnDate + " matching " + criterionNumber);
+                LOGGER.warn("Could not find a certification criteria active on " + criteriaActiveOnDate + " matching " + criterionNumber);
                 criterionOpt = Optional.of(criteriaWithNumber.get(0));
             }
         }
 
         if (criterionOpt == null || !criterionOpt.isPresent()) {
-            LOGGER.warn("Could not find a certification criterion " + activeOnDate + " matching " + criterionNumber);
+            LOGGER.warn("Could not find a certification criterion " + criteriaActiveOnDate + " matching " + criterionNumber);
             return null;
         }
         return criterionOpt.get();
