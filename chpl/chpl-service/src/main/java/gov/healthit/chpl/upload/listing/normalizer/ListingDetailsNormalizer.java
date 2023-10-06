@@ -1,6 +1,7 @@
 package gov.healthit.chpl.upload.listing.normalizer;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -62,9 +63,10 @@ public class ListingDetailsNormalizer {
             listing.clearAllErrorMessages();
         }
         if (CollectionUtils.isNotEmpty(listing.getWarningMessages().castToCollection())) {
-            listing.clearAllWarningMessages();;
+            listing.clearAllWarningMessages();
         }
 
+        setEmptyStringFieldsToNull(listing);
         if (!ff4j.check(FeatureList.EDITIONLESS)) {
             this.editionNormalizer.normalize(listing);
         }
@@ -82,4 +84,30 @@ public class ListingDetailsNormalizer {
         this.sedNormalizer.normalize(listing);
     }
 
+    private void setEmptyStringFieldsToNull(CertifiedProductSearchDetails listing) {
+        if (StringUtils.isEmpty(listing.getSvapNoticeUrl())) {
+            listing.setSvapNoticeUrl(null);
+        }
+        if (StringUtils.isEmpty(listing.getAcbCertificationId())) {
+            listing.setAcbCertificationId(null);
+        }
+        if (StringUtils.isEmpty(listing.getMandatoryDisclosures())) {
+            listing.setMandatoryDisclosures(null);
+        }
+        if (StringUtils.isEmpty(listing.getReportFileLocation())) {
+            listing.setReportFileLocation(null);
+        }
+        if (StringUtils.isEmpty(listing.getRwtPlansUrl())) {
+            listing.setRwtPlansUrl(null);
+        }
+        if (StringUtils.isEmpty(listing.getRwtResultsUrl())) {
+            listing.setRwtResultsUrl(null);
+        }
+        if (StringUtils.isEmpty(listing.getSedReportFileLocation())) {
+            listing.setSedReportFileLocation(null);
+        }
+        if (StringUtils.isEmpty(listing.getSedIntendedUserDescription())) {
+            listing.setSedIntendedUserDescription(null);
+        }
+    }
 }
