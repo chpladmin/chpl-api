@@ -66,7 +66,6 @@ import gov.healthit.chpl.domain.InheritedCertificationStatus;
 import gov.healthit.chpl.domain.ListingMeasure;
 import gov.healthit.chpl.domain.ListingUpdateRequest;
 import gov.healthit.chpl.domain.PromotingInteroperabilityUser;
-import gov.healthit.chpl.domain.TestingLab;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.domain.schedule.ChplJob;
 import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
@@ -79,7 +78,6 @@ import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.CertifiedProductQmsStandardDTO;
 import gov.healthit.chpl.dto.CertifiedProductTargetedUserDTO;
-import gov.healthit.chpl.dto.CertifiedProductTestingLabDTO;
 import gov.healthit.chpl.dto.CuresUpdateEventDTO;
 import gov.healthit.chpl.dto.ListingToListingMapDTO;
 import gov.healthit.chpl.dto.TargetedUserDTO;
@@ -535,13 +533,7 @@ public class CertifiedProductManager extends SecuredManager {
 
         numChanges = tlsToAdd.size() + idsToRemove.size();
         for (CertifiedProductTestingLab toAdd : tlsToAdd) {
-            TestingLab item = atlDao.getByName(toAdd.getTestingLabName());
-            CertifiedProductTestingLabDTO tlDto = new CertifiedProductTestingLabDTO();
-            tlDto.setTestingLabId(item.getId());
-            tlDto.setTestingLabName(item.getName());
-            tlDto.setTestingLabCode(item.getAtlCode());
-            tlDto.setCertifiedProductId(listingId);
-            cpTestingLabDao.createCertifiedProductTestingLab(tlDto);
+            cpTestingLabDao.createCertifiedProductTestingLab(toAdd, listingId);
         }
 
         for (Long idToRemove : idsToRemove) {

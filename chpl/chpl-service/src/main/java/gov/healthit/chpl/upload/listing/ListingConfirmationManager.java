@@ -173,7 +173,7 @@ public class ListingConfirmationManager {
     private void saveListingTestingLabMappings(CertifiedProductSearchDetails listing) throws EntityCreationException {
         if (!CollectionUtils.isEmpty(listing.getTestingLabs())) {
             listing.getTestingLabs().stream()
-                .forEach(rethrowConsumer(atl -> cpTestingLabDao.createListingTestingLabMapping(listing.getId(), atl.getTestingLabId())));
+                .forEach(rethrowConsumer(atl -> cpTestingLabDao.createListingTestingLabMapping(listing.getId(), atl.getTestingLab().getId())));
         }
     }
 

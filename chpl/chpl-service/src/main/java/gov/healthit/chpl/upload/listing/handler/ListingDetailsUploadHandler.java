@@ -20,6 +20,7 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductTestingLab;
 import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.ProductVersion;
+import gov.healthit.chpl.domain.TestingLab;
 import gov.healthit.chpl.upload.listing.Headings;
 import gov.healthit.chpl.upload.listing.ListingUploadHandlerUtil;
 
@@ -212,7 +213,9 @@ public class ListingDetailsUploadHandler {
         if (atlNames != null && atlNames.size() > 0) {
             atlNames.stream().forEach(atlName -> {
                 CertifiedProductTestingLab atl = CertifiedProductTestingLab.builder()
-                        .testingLabName(atlName)
+                        .testingLab(TestingLab.builder()
+                                .name(atlName)
+                                .build())
                         .build();
                 atls.add(atl);
             });

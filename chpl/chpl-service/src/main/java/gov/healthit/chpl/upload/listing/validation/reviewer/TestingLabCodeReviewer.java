@@ -60,9 +60,9 @@ public class TestingLabCodeReviewer implements Reviewer {
                 listing.addDataErrorMessage(msgUtil.getMessage("atl.shouldNotBe99"));
             } else if (isValidAtlCode(chplProductNumber) && testingLabs.size() == 1) {
                 CertifiedProductTestingLab atl = testingLabs.get(0);
-                if (!StringUtils.isEmpty(atl.getTestingLabCode())
-                        && !atl.getTestingLabCode().equals(atlCode)) {
-                    listing.addDataErrorMessage(msgUtil.getMessage("listing.testingLabMismatch", atlCode, atl.getTestingLabCode()));
+                if (!StringUtils.isEmpty(atl.getTestingLab().getAtlCode())
+                        && !atl.getTestingLab().getAtlCode().equals(atlCode)) {
+                    listing.addDataErrorMessage(msgUtil.getMessage("listing.testingLabMismatch", atlCode, atl.getTestingLab().getAtlCode()));
                 }
             } else if (testingLabs.size() == 0 && isValidAtlCode(chplProductNumber)) {
                 listing.addDataErrorMessage(msgUtil.getMessage("listing.invalidTestingLabCode", atlCode));

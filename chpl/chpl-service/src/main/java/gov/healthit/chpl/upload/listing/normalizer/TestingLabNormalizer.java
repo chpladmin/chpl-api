@@ -56,9 +56,7 @@ public class TestingLabNormalizer {
 
         if (testingLab != null) {
             CertifiedProductTestingLab cpTestingLab = CertifiedProductTestingLab.builder()
-                    .testingLabId(testingLab.getId())
-                    .testingLabName(testingLab.getName())
-                    .testingLabCode(testingLab.getAtlCode())
+                    .testingLab(testingLab)
                     .build();
             listing.setTestingLabs(Stream.of(cpTestingLab).collect(Collectors.toList()));
         }
@@ -77,47 +75,44 @@ public class TestingLabNormalizer {
     }
 
     private Boolean doesTestingLabNameExist(CertifiedProductTestingLab testingLab) {
-        return testingLab.getTestingLabId() == null && !StringUtils.isEmpty(testingLab.getTestingLabName());
+        return testingLab.getTestingLab().getId() == null && !StringUtils.isEmpty(testingLab.getTestingLab().getName());
     }
 
     private Boolean doesTestingLabCodeExist(CertifiedProductTestingLab testingLab) {
-        return testingLab.getTestingLabId() == null && !StringUtils.isEmpty(testingLab.getTestingLabCode());
+        return testingLab.getTestingLab().getId() == null && !StringUtils.isEmpty(testingLab.getTestingLab().getAtlCode());
     }
 
     private Boolean doesTestingLabIdExist(CertifiedProductTestingLab testingLab) {
-        return testingLab.getTestingLabId() != null
-                && (StringUtils.isEmpty(testingLab.getTestingLabName())
-                        || StringUtils.isEmpty(testingLab.getTestingLabCode()));
+        return testingLab.getTestingLab().getId() != null
+                && (StringUtils.isEmpty(testingLab.getTestingLab().getName())
+                        || StringUtils.isEmpty(testingLab.getTestingLab().getAtlCode()));
     }
 
     private void updateTestingLabBasedOnName(CertifiedProductTestingLab cpTestingLab) {
-        TestingLab testingLab = atlDao.getByName(cpTestingLab.getTestingLabName());
+        TestingLab testingLab = atlDao.getByName(cpTestingLab.getTestingLab().getName());
         updateTestingLabBasedOnTestingLab(cpTestingLab, testingLab);
     }
 
     private void updateTestingLabBasedOnCode(CertifiedProductTestingLab cpTestingLab) {
-        TestingLab testingLab = atlDao.getByCode(cpTestingLab.getTestingLabCode());
+        TestingLab testingLab = atlDao.getByCode(cpTestingLab.getTestingLab().getAtlCode());
         updateTestingLabBasedOnTestingLab(cpTestingLab, testingLab);
     }
 
     private void updateTestingLabBasedOnId(CertifiedProductTestingLab cpTestingLab) {
         TestingLab testingLab = null;
         try {
-            testingLab = atlDao.getById(cpTestingLab.getTestingLabId());
+            testingLab = atlDao.getById(cpTestingLab.getTestingLab().getId());
         } catch (Exception ex) {
-            LOGGER.warn("Could not find Testing Lab with ID " + cpTestingLab.getTestingLabId());
+            LOGGER.warn("Could not find Testing Lab with ID " + cpTestingLab.getTestingLab().getId());
         }
         if (testingLab != null) {
-            cpTestingLab.setTestingLabName(testingLab.getName());
-            cpTestingLab.setTestingLabCode(testingLab.getAtlCode());
+            cpTestingLab.setTestingLab(testingLab);
         }
     }
 
     private void updateTestingLabBasedOnTestingLab(CertifiedProductTestingLab cpTestingLab, TestingLab testingLab) {
         if (testingLab != null) {
-            cpTestingLab.setTestingLabId(testingLab.getId());
-            cpTestingLab.setTestingLabName(testingLab.getName());
-            cpTestingLab.setTestingLabCode(testingLab.getAtlCode());
+            cpTestingLab.setTestingLab(testingLab);
         }
     }
 

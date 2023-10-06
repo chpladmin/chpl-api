@@ -9,7 +9,7 @@ import javax.xml.bind.annotation.XmlType;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import gov.healthit.chpl.dto.CertifiedProductTestingLabDTO;
+import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseField;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -34,10 +34,19 @@ public class CertifiedProductTestingLab implements Serializable {
     private Long id;
 
 
-    //TODO: OCD-4242 - Is this the correct definition?  maybe "external"?
+    /**
+     * Testing Lab
+     */
+    @Schema(description = "Testing Lab")
+    @XmlElement(required = true)
+    private TestingLab testingLab;
+
+
     /**
      * Testing Lab internal ID
      */
+    @Deprecated
+    @DeprecatedResponseField(removalDate = "2024-04-01", message = "Replaced by testingLab.id")
     @Schema(description = "Testing Lab internal ID")
     @XmlElement(required = true)
     private Long testingLabId;
@@ -45,6 +54,8 @@ public class CertifiedProductTestingLab implements Serializable {
     /**
      * The Testing Lab's public name
      */
+    @Deprecated
+    @DeprecatedResponseField(removalDate = "2024-04-01", message = "Replaced by testingLab.name")
     @Schema(description = "The Testing Lab's public name")
     @XmlElement(required = true)
     private String testingLabName;
@@ -52,6 +63,8 @@ public class CertifiedProductTestingLab implements Serializable {
     /**
      * The Testing Lab's Code
      */
+    @Deprecated
+    @DeprecatedResponseField(removalDate = "2024-04-01", message = "Replaced by testingLab.atlCode")
     @Schema(description = "The Testing Lab's Code")
     @XmlElement(required = true)
     private String testingLabCode;
@@ -63,16 +76,6 @@ public class CertifiedProductTestingLab implements Serializable {
         super();
     }
 
-    /**
-     * Constructor from DTO.
-     * @param dto the DTO
-     */
-    public CertifiedProductTestingLab(final CertifiedProductTestingLabDTO dto) {
-        this.id = dto.getId();
-        this.testingLabId = dto.getTestingLabId();
-        this.testingLabName = dto.getTestingLabName();
-        this.testingLabCode = dto.getTestingLabCode();
-    }
 
     /**
      * Does this match another one.
@@ -81,11 +84,11 @@ public class CertifiedProductTestingLab implements Serializable {
      */
     public boolean matches(final CertifiedProductTestingLab other) {
         boolean result = false;
-        if (this.getTestingLabId() != null && other.getTestingLabId() != null
-                && this.getTestingLabId().longValue() == other.getTestingLabId().longValue()) {
+        if (this.getTestingLab().getId() != null && other.getTestingLab().getId() != null
+                && this.getTestingLab().getId().longValue() == other.getTestingLab().getId().longValue()) {
             result = true;
-        } else if (this.getTestingLabName() != null && other.getTestingLabName() != null
-                && this.getTestingLabName().equalsIgnoreCase(other.getTestingLabName())) {
+        } else if (this.getTestingLab().getName() != null && other.getTestingLab().getName() != null
+                && this.getTestingLab().getName().equalsIgnoreCase(other.getTestingLab().getName())) {
             result = true;
         }
         return result;
@@ -99,26 +102,40 @@ public class CertifiedProductTestingLab implements Serializable {
         this.id = id;
     }
 
+    public TestingLab getTestingLab() {
+        return testingLab;
+    }
+
+    public void setTestingLab(TestingLab testingLab) {
+        this.testingLab = testingLab;
+    }
+
+    @Deprecated
     public Long getTestingLabId() {
         return testingLabId;
     }
 
+    @Deprecated
     public void setTestingLabId(final Long testingLabId) {
         this.testingLabId = testingLabId;
     }
 
+    @Deprecated
     public String getTestingLabName() {
         return testingLabName;
     }
 
+    @Deprecated
     public void setTestingLabName(final String testingLabName) {
         this.testingLabName = testingLabName;
     }
 
+    @Deprecated
     public String getTestingLabCode() {
         return testingLabCode;
     }
 
+    @Deprecated
     public void setTestingLabCode(final String testingLabCode) {
         this.testingLabCode = testingLabCode;
     }
