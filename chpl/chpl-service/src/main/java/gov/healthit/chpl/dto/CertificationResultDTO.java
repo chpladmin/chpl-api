@@ -30,6 +30,7 @@ public class CertificationResultDTO implements Serializable {
     private String documentationUrl;
     private String useCases;
     private String serviceBaseUrlList;
+    private String riskManagementSummaryInformation;
     private String privacySecurityFramework;
     private Date lastModifiedDate;
     private Long lastModifiedUser;
@@ -70,6 +71,7 @@ public class CertificationResultDTO implements Serializable {
         this.documentationUrl = entity.getDocumentationUrl();
         this.useCases = entity.getUseCases();
         this.serviceBaseUrlList = entity.getServiceBaseUrlList();
+        this.riskManagementSummaryInformation = getRiskManagementSummaryInformation();
         this.privacySecurityFramework = entity.getPrivacySecurityFramework();
         this.successful = entity.getSuccess();
         this.deleted = entity.getDeleted();
@@ -89,6 +91,7 @@ public class CertificationResultDTO implements Serializable {
         this.documentationUrl = domain.getDocumentationUrl();
         this.useCases = domain.getUseCases();
         this.serviceBaseUrlList = domain.getServiceBaseUrlList();
+        this.riskManagementSummaryInformation = domain.getRiskManagementSummaryInformation();
         this.privacySecurityFramework = domain.getPrivacySecurityFramework();
         this.successful = domain.isSuccess();
     }

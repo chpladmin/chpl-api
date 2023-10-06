@@ -247,6 +247,12 @@ public class RequiredData2015Reviewer extends PermissionBasedReviewer {
                             Util.formatCriteriaNumber(cert.getCriterion()));
                 }
 
+                if (certRules.hasCertOption(cert.getCriterion().getId(), CertificationResultRules.RISK_MANAGEMENT_SUMMARY_INFORMATION)
+                        && StringUtils.isEmpty(cert.getRiskManagementSummaryInformation())) {
+                    addBusinessCriterionError(listing, cert, "listing.criteria.missingRiskManagementSummaryInformation",
+                            Util.formatCriteriaNumber(cert.getCriterion()));
+                }
+
                 // require at least one test procedure where gap does not exist
                 // or is false, and criteria cannot have Conformance Methods
                 if (!gapEligibleAndTrue

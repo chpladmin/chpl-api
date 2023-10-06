@@ -113,6 +113,7 @@ public class FieldLengthReviewer implements Reviewer {
                     checkFieldLength(listing, certResult.getDocumentationUrl(), "documentationUrlLink");
                     checkFieldLength(listing, certResult.getUseCases(), "useCasesLink");
                     checkFieldLength(listing, certResult.getServiceBaseUrlList(), "serviceBaseUrlListLink");
+                    checkFieldLength(listing, certResult.getRiskManagementSummaryInformation(), "riskManagementSummaryInformationLink");
                     checkTestToolFields(listing, certResult);
                     checkTestDataFields(listing, certResult);
                     checkTestProcedureFields(listing, certResult);
