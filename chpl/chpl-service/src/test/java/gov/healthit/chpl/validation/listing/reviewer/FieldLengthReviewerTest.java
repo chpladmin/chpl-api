@@ -112,6 +112,11 @@ public class FieldLengthReviewerTest {
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.serviceBaseUrlListLink.maxlength"),
                 ArgumentMatchers.any(), ArgumentMatchers.any()))
                 .thenReturn(String.format(FIELD_TOO_LONG, "1024", "service base url list link", "placeholder"));
+        Mockito.when(messageSource.getMessage(ArgumentMatchers.eq("maxLength.riskManagementSummaryInformationLink"), ArgumentMatchers.isNull(), ArgumentMatchers.any()))
+            .thenReturn("1024");
+        Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.riskManagementSummaryInformationLink.maxlength"),
+            ArgumentMatchers.any(), ArgumentMatchers.any()))
+            .thenReturn(String.format(FIELD_TOO_LONG, "1024", "risk management summary information link", "placeholder"));
         Mockito.when(messageSource.getMessage(ArgumentMatchers.eq("maxLength.testToolVersion"), ArgumentMatchers.isNull(), ArgumentMatchers.any()))
             .thenReturn("20");
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.testToolVersion.maxlength"),
