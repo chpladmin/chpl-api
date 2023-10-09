@@ -490,7 +490,7 @@ public class CertifiedProductManager extends SecuredManager {
         testingLabsToAdd.removeIf(tl -> tl.getId() != null);
 
         List<CertifiedProductTestingLab> testingLabsToRemove = new ArrayList<CertifiedProductTestingLab>(existingTestingLabs);
-        testingLabsToRemove.removeIf(tl -> !doesCertifiedProductTestingLabExistInList(tl, updatedTestingLabs));
+        testingLabsToRemove.removeIf(tl -> doesCertifiedProductTestingLabExistInList(tl, updatedTestingLabs));
 
         numChanges = testingLabsToAdd.size() + testingLabsToRemove.size();
 
