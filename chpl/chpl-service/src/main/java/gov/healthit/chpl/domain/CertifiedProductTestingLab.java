@@ -48,7 +48,6 @@ public class CertifiedProductTestingLab implements Serializable {
     @Deprecated
     @DeprecatedResponseField(removalDate = "2024-04-01", message = "Replaced by testingLab.id")
     @Schema(description = "Testing Lab internal ID")
-    @XmlElement(required = true)
     private Long testingLabId;
 
     /**
@@ -57,7 +56,6 @@ public class CertifiedProductTestingLab implements Serializable {
     @Deprecated
     @DeprecatedResponseField(removalDate = "2024-04-01", message = "Replaced by testingLab.name")
     @Schema(description = "The Testing Lab's public name")
-    @XmlElement(required = true)
     private String testingLabName;
 
     /**
@@ -66,7 +64,6 @@ public class CertifiedProductTestingLab implements Serializable {
     @Deprecated
     @DeprecatedResponseField(removalDate = "2024-04-01", message = "Replaced by testingLab.atlCode")
     @Schema(description = "The Testing Lab's Code")
-    @XmlElement(required = true)
     private String testingLabCode;
 
     /**
