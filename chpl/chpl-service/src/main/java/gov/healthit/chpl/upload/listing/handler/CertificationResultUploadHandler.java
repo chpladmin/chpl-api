@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.CertificationResult;
+import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.functionalitytested.CertificationResultFunctionalityTested;
 import gov.healthit.chpl.functionalitytested.FunctionalityTested;
 import gov.healthit.chpl.optionalStandard.domain.CertificationResultOptionalStandard;
@@ -42,10 +43,11 @@ public class CertificationResultUploadHandler {
         this.uploadUtil = uploadUtil;
     }
 
-    public CertificationResult parseAsCertificationResult(CSVRecord certHeadingRecord, List<CSVRecord> certResultRecords)
+    public CertificationResult parseAsCertificationResult(CSVRecord certHeadingRecord, List<CSVRecord> certResultRecords,
+            CertifiedProductSearchDetails listing)
         throws ValidationException {
         CertificationResult certResult = CertificationResult.builder()
-                .criterion(criterionHandler.handle(certHeadingRecord))
+                .criterion(criterionHandler.handle(certHeadingRecord, listing))
                 .successStr(parseSuccessStr(certHeadingRecord, certResultRecords))
                 .success(parseSuccess(certHeadingRecord, certResultRecords))
                 .gap(parseGap(certHeadingRecord, certResultRecords))

@@ -5,6 +5,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.apache.commons.csv.CSVRecord;
@@ -14,11 +15,13 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
+import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductSed;
 import gov.healthit.chpl.domain.TestParticipant;
 import gov.healthit.chpl.domain.TestTask;
 import gov.healthit.chpl.upload.listing.ListingUploadHandlerUtil;
 import gov.healthit.chpl.upload.listing.ListingUploadTestUtil;
+import gov.healthit.chpl.util.DateUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 public class SedUploadHandlerTest {
@@ -37,14 +40,18 @@ public class SedUploadHandlerTest {
             + "\"Enable a user to electronically record, change, and access the following order types (i) "
             + "Medications; (ii)Laboratory; and (iii) Radiology/imaging.\","
             + "90.24,6,7,5,80,10,16,14,17,3,Likert,3.2,2";
+    private CertifiedProductSearchDetails listing;
     private SedUploadHandler handler;
 
     @Before
     public void setup() {
+        listing = CertifiedProductSearchDetails.builder()
+                .certificationDate(DateUtil.toEpochMillis(LocalDate.parse("2020-01-01")))
+                .build();
         ErrorMessageUtil msgUtil = Mockito.mock(ErrorMessageUtil.class);
         ListingUploadHandlerUtil handlerUtil = new ListingUploadHandlerUtil(msgUtil);
         CertificationCriterionUploadHandler criterionHandler = Mockito.mock(CertificationCriterionUploadHandler.class);
-        Mockito.when(criterionHandler.handle(ArgumentMatchers.any()))
+        Mockito.when(criterionHandler.handle(ArgumentMatchers.any(), ArgumentMatchers.any()))
             .thenReturn(buildCriterion(1L, "170.315 (a)(1)", "a title"));
         TestTaskUploadHandler testTaskHandler = new TestTaskUploadHandler(handlerUtil);
         TestParticipantsUploadHandler participantHandler = new TestParticipantsUploadHandler(handlerUtil);
@@ -63,7 +70,7 @@ public class SedUploadHandlerTest {
         List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString("14.05.05");
         assertNotNull(listingRecords);
 
-        CertifiedProductSed parsedSed = handler.parseAsSed(headingRecord, listingRecords);
+        CertifiedProductSed parsedSed = handler.parseAsSed(headingRecord, listingRecords, listing);
         assertNotNull(parsedSed);
         assertNotNull(parsedSed.getTestTasks());
         assertEquals(0, parsedSed.getTestTasks().size());
@@ -78,7 +85,7 @@ public class SedUploadHandlerTest {
         List<CSVRecord> listingRecords = ListingUploadTestUtil.getRecordsFromString("14.05.05,1");
         assertNotNull(listingRecords);
 
-        CertifiedProductSed parsedSed = handler.parseAsSed(headingRecord, listingRecords);
+        CertifiedProductSed parsedSed = handler.parseAsSed(headingRecord, listingRecords, listing);
         assertNotNull(parsedSed);
         assertNotNull(parsedSed.getTestTasks());
         assertEquals(0, parsedSed.getTestTasks().size());
@@ -95,7 +102,7 @@ public class SedUploadHandlerTest {
                 "14.05.05,1,A1.1,B2");
         assertNotNull(listingRecords);
 
-        CertifiedProductSed parsedSed = handler.parseAsSed(headingRecord, listingRecords);
+        CertifiedProductSed parsedSed = handler.parseAsSed(headingRecord, listingRecords, listing);
         assertNotNull(parsedSed);
         assertNotNull(parsedSed.getTestTasks());
         assertEquals(1, parsedSed.getTestTasks().size());
@@ -118,7 +125,7 @@ public class SedUploadHandlerTest {
                 "14.05.05,1,A1.1,B2;B3;B4");
         assertNotNull(listingRecords);
 
-        CertifiedProductSed parsedSed = handler.parseAsSed(headingRecord, listingRecords);
+        CertifiedProductSed parsedSed = handler.parseAsSed(headingRecord, listingRecords, listing);
         assertNotNull(parsedSed);
         assertNotNull(parsedSed.getTestTasks());
         assertEquals(1, parsedSed.getTestTasks().size());
@@ -145,7 +152,7 @@ public class SedUploadHandlerTest {
                 "14.05.05," + TEST_TASK_A1 + ",1,A1.1,B2");
         assertNotNull(listingRecords);
 
-        CertifiedProductSed parsedSed = handler.parseAsSed(headingRecord, listingRecords);
+        CertifiedProductSed parsedSed = handler.parseAsSed(headingRecord, listingRecords, listing);
         assertNotNull(parsedSed);
         assertNotNull(parsedSed.getTestTasks());
         assertEquals(1, parsedSed.getTestTasks().size());
@@ -184,7 +191,7 @@ public class SedUploadHandlerTest {
                 "14.05.05,A1,A1.1,1,,A1.1");
         assertNotNull(listingRecords);
 
-        CertifiedProductSed parsedSed = handler.parseAsSed(headingRecord, listingRecords);
+        CertifiedProductSed parsedSed = handler.parseAsSed(headingRecord, listingRecords, listing);
         assertNotNull(parsedSed);
         assertNotNull(parsedSed.getTestTasks());
         assertEquals(1, parsedSed.getTestTasks().size());
@@ -201,7 +208,7 @@ public class SedUploadHandlerTest {
                 "14.05.05," + TEST_PARTICIPANT_B2 + ",1,A1.1,B2");
         assertNotNull(listingRecords);
 
-        CertifiedProductSed parsedSed = handler.parseAsSed(headingRecord, listingRecords);
+        CertifiedProductSed parsedSed = handler.parseAsSed(headingRecord, listingRecords, listing);
         assertNotNull(parsedSed);
         assertNotNull(parsedSed.getTestTasks());
         assertEquals(1, parsedSed.getTestTasks().size());
@@ -230,6 +237,7 @@ public class SedUploadHandlerTest {
                 .id(id)
                 .number(number)
                 .title(title)
+                .startDay(LocalDate.parse("2016-01-01"))
           .build();
     }
 }
