@@ -63,7 +63,7 @@ public class TestingLabNormalizer {
     }
 
     private void populateTestingLab(CertifiedProductTestingLab testingLab) {
-        if (testingLab == null) {
+        if (testingLab == null || testingLab.getTestingLab() == null) {
             return;
         } else if (doesTestingLabNameExist(testingLab)) {
             updateTestingLabBasedOnName(testingLab);

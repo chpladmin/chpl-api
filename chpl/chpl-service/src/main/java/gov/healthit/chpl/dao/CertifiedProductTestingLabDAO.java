@@ -31,7 +31,7 @@ public class CertifiedProductTestingLabDAO extends BaseDAOImpl {
         }
     }
 
-    public CertifiedProductTestingLab createCertifiedProductTestingLab(CertifiedProductTestingLab toCreate, Long certifiedProductId)
+    public void createCertifiedProductTestingLab(CertifiedProductTestingLab toCreate, Long certifiedProductId)
             throws EntityCreationException {
 
         CertifiedProductTestingLabMapEntity toCreateEntity = new CertifiedProductTestingLabMapEntity();
@@ -42,11 +42,9 @@ public class CertifiedProductTestingLabDAO extends BaseDAOImpl {
         toCreateEntity.setCreationDate(new Date());
         toCreateEntity.setDeleted(false);
         create(toCreateEntity);
-
-        return toCreateEntity.toDomain();
     }
 
-    public CertifiedProductTestingLab deleteCertifiedProductTestingLab(Long id) throws EntityRetrievalException {
+    public void deleteCertifiedProductTestingLab(Long id) throws EntityRetrievalException {
         CertifiedProductTestingLabMapEntity curr = getEntityById(id);
         if (curr == null) {
             throw new EntityRetrievalException("Could not find mapping with id " + id);
@@ -55,8 +53,6 @@ public class CertifiedProductTestingLabDAO extends BaseDAOImpl {
         curr.setLastModifiedDate(new Date());
         curr.setLastModifiedUser(AuthUtil.getAuditId());
         update(curr);
-
-        return curr.toDomain();
     }
 
     public List<CertifiedProductTestingLab> getTestingLabsByCertifiedProductId(Long certifiedProductId) throws EntityRetrievalException {
