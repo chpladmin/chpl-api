@@ -26,6 +26,7 @@ import gov.healthit.chpl.util.LocalDateDeserializer;
 import gov.healthit.chpl.util.LocalDateSerializer;
 import gov.healthit.chpl.util.NullSafeEvaluator;
 import gov.healthit.chpl.util.Util;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
@@ -41,8 +42,9 @@ public class RequirementType {
     private String title;
 
     /**
-     * A date value representing the date by which the Non-Conformity Type became available.
+     * A date value representing the date by which the Requirement Type became available.
      */
+    @Schema(description = "A date value representing the date by which the Requirement Type became available.")
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
     @XmlElement(required = false, nillable = true)
@@ -50,8 +52,9 @@ public class RequirementType {
     private LocalDate startDay;
 
     /**
-     * A date value representing the date by which the Non-Conformity Type can no longer be used.
+     * A date value representing the date by which the Requirement Type can no longer be used.
      */
+    @Schema(description = "A date value representing the date by which the Requirement Type can no longer be used.")
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
     @XmlElement(required = false, nillable = true)

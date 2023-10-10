@@ -18,8 +18,6 @@ public class TestToolDuplicateReviewerTest {
     private static final String CRITERION_NUMBER = "170.315 (a)(1)";
     private static final String DUPLICATE_NAME_AND_VERSION =
             "Certification %s contains duplicate Test Tool: Name '%s', Version '%s'. The duplicates have been removed.";
-    private static final String DUPLICATE_NAME =
-            "Certification %s contains duplicate Test Tool: Name '%s'.";
 
     private ErrorMessageUtil msgUtil;
     private TestToolDuplicateReviewer reviewer;
@@ -30,9 +28,6 @@ public class TestToolDuplicateReviewerTest {
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.duplicateTestToolNameAndVersion"),
                 ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
                 .thenAnswer(i -> String.format(DUPLICATE_NAME_AND_VERSION, i.getArgument(1), i.getArgument(2), i.getArgument(3)));
-        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.duplicateTestToolName"),
-                ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
-                .thenAnswer(i -> String.format(DUPLICATE_NAME, i.getArgument(1), i.getArgument(2)));
         reviewer = new TestToolDuplicateReviewer(msgUtil);
     }
 
@@ -56,7 +51,7 @@ public class TestToolDuplicateReviewerTest {
     }
 
     @Test
-    public void review_duplicateNameExists_errorFound() {
+    public void review_duplicateNameExists_noErrorFound() {
         CertifiedProductSearchDetails listing = new CertifiedProductSearchDetails();
         CertificationResult cert = getCertResult();
         CertificationResultTestTool testTool1 = getTestTool(1L, "Test Tool 1", "v1");
@@ -67,10 +62,7 @@ public class TestToolDuplicateReviewerTest {
         reviewer.review(listing, cert);
 
         assertEquals(0, listing.getWarningMessages().size());
-        assertEquals(1, listing.getErrorMessages().size());
-        assertEquals(1, listing.getErrorMessages().stream()
-                .filter(error -> error.equals(String.format(DUPLICATE_NAME, CRITERION_NUMBER, "Test Tool 1")))
-                .count());
+        assertEquals(0, listing.getErrorMessages().size());
         assertEquals(2, cert.getTestToolsUsed().size());
     }
 
