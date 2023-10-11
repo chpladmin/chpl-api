@@ -18,8 +18,6 @@ public class TestDataDuplicateReviewerTest {
     private static final String CRITERION_NUMBER = "170.315 (a)(1)";
     private static final String DUPLICATE_NAME_AND_VERSION =
             "Certification %s contains duplicate Test Data: Name '%s', Version '%s'. The duplicates have been removed.";
-    private static final String DUPLICATE_NAME =
-            "Certification %s contains duplicate Test Data: Name '%s'.";
 
     private ErrorMessageUtil msgUtil;
     private TestDataDuplicateReviewer reviewer;
@@ -30,9 +28,6 @@ public class TestDataDuplicateReviewerTest {
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.duplicateTestDataNameAndVersion"),
                 ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
                 .thenAnswer(i -> String.format(DUPLICATE_NAME_AND_VERSION, i.getArgument(1), i.getArgument(2), i.getArgument(3)));
-        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.duplicateTestDataName"),
-                ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
-                .thenAnswer(i -> String.format(DUPLICATE_NAME, i.getArgument(1), i.getArgument(2)));
         reviewer = new TestDataDuplicateReviewer(msgUtil);
     }
 
@@ -56,7 +51,7 @@ public class TestDataDuplicateReviewerTest {
     }
 
     @Test
-    public void review_duplicateNameExists_errorFound() {
+    public void review_duplicateNameExists_noErrorFound() {
         CertifiedProductSearchDetails listing = new CertifiedProductSearchDetails();
         CertificationResult cert = getCertResult();
         CertificationResultTestData testData1 = getTestData(1L, "TestData1", "v1");
@@ -67,10 +62,7 @@ public class TestDataDuplicateReviewerTest {
         reviewer.review(listing, cert);
 
         assertEquals(0, listing.getWarningMessages().size());
-        assertEquals(1, listing.getErrorMessages().size());
-        assertEquals(1, listing.getErrorMessages().stream()
-                .filter(error -> error.equals(String.format(DUPLICATE_NAME, CRITERION_NUMBER, "TestData1")))
-                .count());
+        assertEquals(0, listing.getErrorMessages().size());
         assertEquals(2, cert.getTestDataUsed().size());
     }
 

@@ -1,13 +1,12 @@
 package gov.healthit.chpl.domain;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
-
-import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -93,10 +92,8 @@ public class CertificationResultTestData implements Serializable {
         if (this.getTestData() != null && anotherTestData.getTestData() != null
                 && this.getTestData().getId() != null && anotherTestData.getTestData().getId() != null
                 && this.getTestData().getId().longValue() == anotherTestData.getTestData().getId().longValue()
-                && !StringUtils.isEmpty(this.getVersion()) && !StringUtils.isEmpty(anotherTestData.getVersion())
-                && this.getVersion().equals(anotherTestData.getVersion())
-                && ((StringUtils.isEmpty(this.getAlteration()) && StringUtils.isEmpty(anotherTestData.getAlteration()))
-                        || this.getAlteration().equals(anotherTestData.getAlteration()))) {
+                && Objects.equals(this.getVersion(), anotherTestData.getVersion())
+                && Objects.equals(this.getAlteration(), anotherTestData.getAlteration())) {
             result = true;
         }
         return result;

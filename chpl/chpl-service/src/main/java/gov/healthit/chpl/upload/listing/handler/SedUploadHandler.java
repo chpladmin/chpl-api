@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
+import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductSed;
 import gov.healthit.chpl.domain.CertifiedProductUcdProcess;
 import gov.healthit.chpl.domain.TestParticipant;
@@ -50,7 +51,8 @@ public class SedUploadHandler {
         this.uploadUtil = uploadUtil;
     }
 
-    public CertifiedProductSed parseAsSed(CSVRecord headingRecord, List<CSVRecord> listingRecords)
+    public CertifiedProductSed parseAsSed(CSVRecord headingRecord, List<CSVRecord> listingRecords,
+            CertifiedProductSearchDetails listing)
         throws ValidationException {
         List<TestTask> availableTestTasks = testTaskHandler.handle(headingRecord, listingRecords);
         List<TestParticipant> availableTestParticipants = testParticipantHandler.handle(headingRecord, listingRecords);
@@ -63,7 +65,7 @@ public class SedUploadHandler {
             List<CSVRecord> parsedCertResultRecords = uploadUtil.getCertificationResultRecordsFromIndex(
                     nextCertResultIndex, headingRecord, listingRecords);
             CSVRecord certHeadingRecord = uploadUtil.getHeadingRecord(parsedCertResultRecords);
-            CertificationCriterion criterion = criterionHandler.handle(certHeadingRecord);
+            CertificationCriterion criterion = criterionHandler.handle(certHeadingRecord, listing);
             if (criterion != null) {
                 List<CertifiedProductUcdProcess> certResultUcdProcesses = ucdHandler.handle(certHeadingRecord,
                         parsedCertResultRecords.subList(1, parsedCertResultRecords.size()));

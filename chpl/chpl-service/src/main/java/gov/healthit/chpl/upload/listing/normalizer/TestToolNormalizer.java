@@ -1,6 +1,5 @@
 package gov.healthit.chpl.upload.listing.normalizer;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,17 +23,10 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 public class TestToolNormalizer {
     private TestToolDAO testToolDao;
-    private List<TestToolCriteriaMap> testToolCriteriaMap = new ArrayList<TestToolCriteriaMap>();
-
 
     @Autowired
     public TestToolNormalizer(TestToolDAO testToolDao) {
         this.testToolDao = testToolDao;
-        try {
-            testToolCriteriaMap = testToolDao.getAllTestToolCriteriaMaps();
-        } catch (EntityRetrievalException ex) {
-            LOGGER.error("Could not initialize test tool criteria map for flexible upload.", ex);
-        }
     }
 
     @Transactional
@@ -69,7 +61,7 @@ public class TestToolNormalizer {
     private void populateAllowedTestTools(CertificationResult certResult) {
         if (certResult != null && certResult.getCriterion() != null
                 && certResult.getCriterion().getId() != null) {
-            List<TestTool> allowedTestTools = testToolCriteriaMap.stream()
+            List<TestTool> allowedTestTools = getTestToolCriteriaMaps().stream()
                 .filter(ttcm -> ttcm.getCriterion().getId().equals(certResult.getCriterion().getId()))
                 .map(ttm -> ttm.getTestTool())
                 .collect(Collectors.toList());
@@ -91,6 +83,15 @@ public class TestToolNormalizer {
             if (testToolFromDb != null) {
                 testTool.setTestTool(testToolFromDb);
             }
+        }
+    }
+
+    private List<TestToolCriteriaMap> getTestToolCriteriaMaps() {
+        try {
+            return testToolDao.getAllTestToolCriteriaMaps();
+        } catch (EntityRetrievalException e) {
+            LOGGER.error("Could not retrieve TestToolCriteriaMaps", e);
+            return List.of();
         }
     }
 }

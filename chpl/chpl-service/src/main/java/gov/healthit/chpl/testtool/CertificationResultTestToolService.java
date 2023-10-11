@@ -2,6 +2,7 @@ package gov.healthit.chpl.testtool;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -26,26 +27,8 @@ public class CertificationResultTestToolService {
     public int synchronizeTestTools(CertificationResult certResult, List<CertificationResultTestTool> certResultTestToolsFromDb,
             List<CertificationResultTestTool> certResultTestTools) throws EntityCreationException {
 
-        List<CertificationResultTestTool> updatedTestTools = new ArrayList<CertificationResultTestTool>();
         List<CertificationResultTestTool> addedTestTools = new ArrayList<CertificationResultTestTool>();
         List<CertificationResultTestTool> removedTestTools = new ArrayList<CertificationResultTestTool>();
-
-        //Find the updated Test Tools (version)
-        if (!CollectionUtils.isEmpty(certResultTestTools)) {
-            updatedTestTools = certResultTestTools.stream()
-                    .filter(crtt -> {
-                        Optional<CertificationResultTestTool> found = getMatchingItemInList(crtt, certResultTestToolsFromDb);
-                        return found.isPresent()
-                                && !found.get().getVersion().equals(crtt.getVersion());
-                    })
-                    .toList();
-
-            updatedTestTools.forEach(x -> LOGGER.info("Updated Test Tool/Version: {}/{}", x.getTestTool().getValue(), x.getVersion()));
-
-            updatedTestTools.forEach(updatedTestTool -> certResultDAO.updateTestToolMapping(
-                    getMatchingItemInList(updatedTestTool, certResultTestToolsFromDb).get().getId(),
-                    updatedTestTool));
-        }
 
         //Find the added Test Tools
         if (!CollectionUtils.isEmpty(certResultTestTools)) {
@@ -70,7 +53,8 @@ public class CertificationResultTestToolService {
                     getMatchingItemInList(removedTestTool, certResultTestToolsFromDb).get().getId()));
         }
 
-        return updatedTestTools.size() + addedTestTools.size() + removedTestTools.size();
+        return //updatedTestTools.size() +
+                addedTestTools.size() + removedTestTools.size();
     }
 
     private CertificationResultTestTool addCertificationResultTestTool(CertificationResultTestTool crtt, Long certificationResultId) {
@@ -96,7 +80,10 @@ public class CertificationResultTestToolService {
         }
         return certificationResultTestTools.stream()
                 .filter(certificationResultTestTool ->
-                        certificationResultTestTool != null ? certificationResultTestTool.getTestTool().getId().equals(crtt.getTestTool().getId()) : false)
+                        certificationResultTestTool != null
+                            ? certificationResultTestTool.getTestTool().getId().equals(crtt.getTestTool().getId())
+                                    && Objects.equals(certificationResultTestTool.getVersion(), crtt.getVersion())
+                            : false)
                 .findAny();
     }
 }
