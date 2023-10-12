@@ -49,7 +49,9 @@ public class CertificationCriteriaManager {
             LocalDate startDay, LocalDate endDay) {
         List<CertificationCriterion> activeCriteria = getActiveBetween(startDay, endDay);
         return activeCriteria.stream()
-                .filter(criterion -> StringUtils.isEmpty(certificationEdition) ? true : criterion.getCertificationEdition().equals(certificationEdition))
+                .filter(criterion -> StringUtils.isEmpty(certificationEdition)
+                        ? true
+                        : criterion.getCertificationEdition() != null && criterion.getCertificationEdition().equals(certificationEdition))
                 .map(criterion -> buildCertificationCriterionWithAttributes(criterion))
                 .sorted(criterionComparator)
                 .collect(Collectors.toList());

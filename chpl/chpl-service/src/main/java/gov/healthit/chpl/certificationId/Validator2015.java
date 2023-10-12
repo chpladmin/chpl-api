@@ -1,10 +1,14 @@
 package gov.healthit.chpl.certificationId;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import org.springframework.util.CollectionUtils;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.service.CertificationCriterionService;
@@ -18,7 +22,8 @@ import gov.healthit.chpl.util.Util;
  */
 public class Validator2015 extends Validator {
 
-    protected List<CertificationCriterion> requiredCriteria;
+    private List<CertificationCriterion> requiredCriteria;
+    private List<CertificationCriterion> baseRequiredCriteriaOr;
 
     protected static final List<String> CURES_REQUIRED_CRITERIA = new ArrayList<String>(Arrays.asList("170.315 (b)(1)",
             "170.315 (g)(9)"));
@@ -29,16 +34,29 @@ public class Validator2015 extends Validator {
     protected static final List<String> DP_CRITERIA_OR = new ArrayList<String>(Arrays.asList("170.315 (h)(1)",
             "170.315 (h)(2)"));
 
-    /**
-     * Starting data for validator.
-     */
+
     public Validator2015(CertificationCriterionService certificationCriterionService) {
         requiredCriteria = Stream.of(certificationCriterionService.get(Criteria2015.A_5),
-                certificationCriterionService.get(Criteria2015.A_9),
                 certificationCriterionService.get(Criteria2015.A_14),
                 certificationCriterionService.get(Criteria2015.C_1),
                 certificationCriterionService.get(Criteria2015.G_7),
-                certificationCriterionService.get(Criteria2015.G_10)).toList();
+                certificationCriterionService.get(Criteria2015.G_10)).collect(Collectors.toCollection(ArrayList::new));
+
+        CertificationCriterion a9 = certificationCriterionService.get(Criteria2015.A_9);
+        CertificationCriterion b11 = certificationCriterionService.get(Criteria2015.B_11);
+        LocalDate today = LocalDate.now();
+        if (b11.getStartDay().isEqual(today) || b11.getStartDay().isBefore(today)) {
+            baseRequiredCriteriaOr = new ArrayList<CertificationCriterion>();
+            baseRequiredCriteriaOr.add(a9);
+            baseRequiredCriteriaOr.add(b11);
+            this.counts.put("criteriaBaseRequired", 1);
+            this.counts.put("criteriaBaseRequiredMet", 0);
+        } else {
+            requiredCriteria.add(a9);
+            baseRequiredCriteriaOr = new ArrayList<CertificationCriterion>();
+            this.counts.put("criteriaBaseRequired", 0);
+            this.counts.put("criteriaBaseRequiredMet", 0);
+        }
 
         this.counts.put("criteriaRequired", requiredCriteria.size() + CURES_REQUIRED_CRITERIA.size());
         this.counts.put("criteriaRequiredMet", 0);
@@ -65,7 +83,7 @@ public class Validator2015 extends Validator {
         boolean criteriaValid = true;
         for (CertificationCriterion crit : requiredCriteria) {
             Optional<CertificationCriterion> metRequiredCriterion = criteriaMet.keySet().stream()
-                    .filter(criterionDtoMet -> criterionDtoMet.getId().equals(crit.getId()))
+                    .filter(criterionMet -> criterionMet.getId().equals(crit.getId()))
                     .findAny();
 
             if (metRequiredCriterion.isPresent()) {
@@ -91,19 +109,39 @@ public class Validator2015 extends Validator {
                 criteriaValid = false;
             }
         }
+        boolean isBaseValid = isBaseValid();
         boolean cpoeValid = isCPOEValid();
         boolean dpValid = isDPValid();
 
-        this.counts.put(
-                "criteriaRequired",
+        this.counts.put("criteriaRequired",
                 this.counts.get("criteriaRequired")
-                + this.counts.get("criteriaCpoeRequired") + this.counts.get("criteriaDpRequired"));
-        this.counts.put(
-                "criteriaRequiredMet",
+                + this.counts.get("criteriaCpoeRequired")
+                + this.counts.get("criteriaDpRequired")
+                + this.counts.get("criteriaBaseRequired"));
+        this.counts.put("criteriaRequiredMet",
                 this.counts.get("criteriaRequiredMet")
-                + this.counts.get("criteriaCpoeRequiredMet") + this.counts.get("criteriaDpRequiredMet"));
+                + this.counts.get("criteriaCpoeRequiredMet")
+                + this.counts.get("criteriaDpRequiredMet")
+                + this.counts.get("criteriaBaseRequiredMet"));
 
-        return (criteriaValid && cpoeValid && dpValid);
+        return (criteriaValid && cpoeValid && dpValid && isBaseValid);
+    }
+
+    protected boolean isBaseValid() {
+        if (CollectionUtils.isEmpty(baseRequiredCriteriaOr)) {
+            return true;
+        } else {
+            for (CertificationCriterion crit : baseRequiredCriteriaOr) {
+                if (criteriaMetContainsCriterion(crit)) {
+                    this.counts.put("criteriaBaseRequiredMet", 1);
+                    return true;
+                }
+            }
+            missingOr.add(baseRequiredCriteriaOr.stream()
+                    .map(crit -> Util.formatCriteriaNumber(crit))
+                    .collect(Collectors.toCollection(ArrayList::new)));
+            return false;
+        }
     }
 
     protected boolean isCPOEValid() {
