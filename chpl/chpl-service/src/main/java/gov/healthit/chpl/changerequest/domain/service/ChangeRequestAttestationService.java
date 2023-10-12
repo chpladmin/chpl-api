@@ -69,7 +69,7 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
             UserDeveloperMapDAO userDeveloperMapDAO, AttestationManager attestationManager,
             AttestationPeriodService attestationPeriodService, UserDAO userDAO, DeveloperDAO developerDAO,
             ActivityManager activityManager, FormService formService, FormValidator formValidator,
-            AttestationEmails attestationEmails, AttestationCertificationBodyService atttesAttestationCertificationBodyService) {
+            AttestationEmails attestationEmails, AttestationCertificationBodyService attestationCertificationBodyService) {
         super(userDeveloperMapDAO);
         this.crDAO = crDAO;
         this.crAttestationDAO = crAttestationDAO;
@@ -78,7 +78,7 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
         this.userDAO = userDAO;
         this.developerDAO = developerDAO;
         this.activityManager = activityManager;
-        this.attestationCertificationBodyService = atttesAttestationCertificationBodyService;
+        this.attestationCertificationBodyService = attestationCertificationBodyService;
         this.formService = formService;
         this.formValidator = formValidator;
         this.attestationEmails = attestationEmails;
