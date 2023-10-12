@@ -44,15 +44,24 @@ public class Validator2015 extends Validator {
 
         CertificationCriterion a9 = certificationCriterionService.get(Criteria2015.A_9);
         CertificationCriterion b11 = certificationCriterionService.get(Criteria2015.B_11);
-        LocalDate today = LocalDate.now();
-        if (b11.getStartDay().isEqual(today) || b11.getStartDay().isBefore(today)) {
+        if (isCriteriaAvailable(b11) && isCriteriaAvailable(a9)) {
             baseRequiredCriteriaOr = new ArrayList<CertificationCriterion>();
             baseRequiredCriteriaOr.add(a9);
             baseRequiredCriteriaOr.add(b11);
             this.counts.put("criteriaBaseRequired", 1);
             this.counts.put("criteriaBaseRequiredMet", 0);
-        } else {
+        } else if (!isCriteriaAvailable(b11) && isCriteriaAvailable(a9)) {
             requiredCriteria.add(a9);
+            baseRequiredCriteriaOr = new ArrayList<CertificationCriterion>();
+            this.counts.put("criteriaBaseRequired", 0);
+            this.counts.put("criteriaBaseRequiredMet", 0);
+        } else if (isCriteriaAvailable(b11) && !isCriteriaAvailable(a9)) {
+            requiredCriteria.add(b11);
+            baseRequiredCriteriaOr = new ArrayList<CertificationCriterion>();
+            this.counts.put("criteriaBaseRequired", 0);
+            this.counts.put("criteriaBaseRequiredMet", 0);
+        } else {
+            //neither are available
             baseRequiredCriteriaOr = new ArrayList<CertificationCriterion>();
             this.counts.put("criteriaBaseRequired", 0);
             this.counts.put("criteriaBaseRequiredMet", 0);
@@ -172,5 +181,12 @@ public class Validator2015 extends Validator {
 
     protected boolean isDomainsValid() {
         return true;
+    }
+
+    private boolean isCriteriaAvailable(CertificationCriterion criterion) {
+        LocalDate today = LocalDate.now();
+        return (criterion.getStartDay() != null
+                    && (criterion.getStartDay().isEqual(today) || criterion.getStartDay().isBefore(today)))
+                && (criterion.getEndDay() == null || criterion.getEndDay().isAfter(today));
     }
 }
