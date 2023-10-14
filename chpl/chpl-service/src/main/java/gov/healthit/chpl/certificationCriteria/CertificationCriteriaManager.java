@@ -69,6 +69,16 @@ public class CertificationCriteriaManager {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
+    public List<CertificationCriterion> getActiveToday() {
+        LocalDate today = LocalDate.now();
+        return this.certificationCriterionDao.findAll().stream()
+                .filter(criterion -> DateUtil.datesOverlap(
+                        Pair.of(criterion.getStartDay(), criterion.getEndDay()),
+                        Pair.of(today, today)))
+                .collect(Collectors.toList());
+    }
+
     private CertificationCriterionWithAttributes buildCertificationCriterionWithAttributes(CertificationCriterion criterion) {
         return CertificationCriterionWithAttributes.builder()
                 .id(criterion.getId())

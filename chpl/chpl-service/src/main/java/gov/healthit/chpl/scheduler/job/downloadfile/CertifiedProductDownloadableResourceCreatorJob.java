@@ -13,7 +13,10 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.quartz.DisallowConcurrentExecution;
@@ -25,46 +28,47 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
+import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.scheduler.presenter.CertifiedProduct2014CsvPresenter;
 import gov.healthit.chpl.scheduler.presenter.CertifiedProductCsvPresenter;
 import gov.healthit.chpl.scheduler.presenter.CertifiedProductJsonPresenter;
 import gov.healthit.chpl.scheduler.presenter.CertifiedProductPresenter;
 import gov.healthit.chpl.scheduler.presenter.CertifiedProductXmlPresenter;
-import gov.healthit.chpl.service.CertificationCriterionService;
+import gov.healthit.chpl.util.Util;
 
 @DisallowConcurrentExecution
 public class CertifiedProductDownloadableResourceCreatorJob extends DownloadableResourceCreatorJob {
     private static final Logger LOGGER = LogManager.getLogger("certifiedProductDownloadableResourceCreatorJobLogger");
     private static final int MILLIS_PER_SECOND = 1000;
 
-    private String edition;
+    private CertificationEditionConcept edition;
+    private List<CertificationStatusType> certificationStatuses;
     private File tempDirectory, tempCsvFile, tempXmlFile, tempJsonFile;
     private ExecutorService executorService;
-
-    @Autowired
-    private CertificationCriterionService criterionService;
 
     @Autowired
     private Environment env;
 
     public CertifiedProductDownloadableResourceCreatorJob() throws Exception {
         super(LOGGER);
-        edition = "";
+        edition = null;
     }
 
     @Override
     public void execute(JobExecutionContext jobContext) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
-        edition = jobContext.getMergedJobDataMap().getString("edition");
+        initializeEdition(jobContext);
+        initializeCertificationStatuses(jobContext);
 
-        LOGGER.info("********* Starting the Certified Product Downloadable Resource Creator job for {}. *********", edition);
+        LOGGER.info("********* Starting the Certified Product Downloadable Resource Creator job for {}. *********", getDownloadFileType());
         try (CertifiedProductXmlPresenter xmlPresenter = new CertifiedProductXmlPresenter();
                 CertifiedProductCsvPresenter csvPresenter = getCsvPresenter();
                 CertifiedProductJsonPresenter jsonPresenter = new CertifiedProductJsonPresenter()) {
             initializeTempFiles();
-            if (tempCsvFile != null && tempXmlFile != null) {
+            if (tempCsvFile != null && tempXmlFile != null && tempJsonFile != null) {
                 initializeWritingToFiles(xmlPresenter, csvPresenter, jsonPresenter);
                 initializeExecutorService();
 
@@ -122,35 +126,71 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
 
     private void initializeWritingToFiles(CertifiedProductXmlPresenter xmlPresenter, CertifiedProductCsvPresenter csvPresenter, CertifiedProductJsonPresenter jsonPresenter)
             throws IOException {
+        initializeXmlFiles(xmlPresenter);
+        initializeCsvFiles(csvPresenter);
+        initializeJsonFiles(jsonPresenter);
+    }
+
+    private void initializeXmlFiles(CertifiedProductXmlPresenter xmlPresenter) throws IOException  {
         xmlPresenter.setLogger(LOGGER);
         xmlPresenter.open(tempXmlFile);
+    }
 
+    private void initializeCsvFiles(CertifiedProductCsvPresenter csvPresenter) throws IOException  {
         csvPresenter.setLogger(LOGGER);
-        List<CertificationCriterion> criteria = getCriteriaDao().findByCertificationEditionYear(edition)
-                .stream()
-                .filter(cr -> !cr.isRemoved())
-                .sorted((crA, crB) -> criterionService.sortCriteria(crA, crB))
+        List<CertificationCriterion> criteria = new ArrayList<CertificationCriterion>();
+        if (edition != null) {
+            //include all criteria from that edition
+            criteria = getCriteriaManager().getAll().stream()
+                .filter(criterion -> criterion.getCertificationEdition() != null
+                    && criterion.getCertificationEdition().equals(edition.getYear()))
+                .sorted((crA, crB) -> getCriteriaService().sortCriteria(crA, crB))
                 .collect(Collectors.<CertificationCriterion>toList());
+        } else if (!CollectionUtils.isEmpty(certificationStatuses)) {
+            //include all of today's active criteria
+            criteria = getCriteriaManager().getActiveToday().stream()
+                    .sorted((crA, crB) -> getCriteriaService().sortCriteria(crA, crB))
+                    .collect(Collectors.<CertificationCriterion>toList());
+        } else {
+            LOGGER.warn("Either an edition or certification status(es) must be provided. No applicable criteria found for CSV file.");
+        }
         csvPresenter.setApplicableCriteria(criteria);
         csvPresenter.open(tempCsvFile);
+    }
 
+    private void initializeJsonFiles(CertifiedProductJsonPresenter jsonPresenter) throws IOException  {
         jsonPresenter.setLogger(LOGGER);
         jsonPresenter.open(tempJsonFile);
     }
 
     private List<CertifiedProductDetailsDTO> getRelevantListings() throws EntityRetrievalException {
-        LOGGER.info("Finding all listings for edition " + edition + ".");
-        Date start = new Date();
-        List<CertifiedProductDetailsDTO> listingsForEdition = getCertifiedProductDao().findByEdition(edition);
-        Date end = new Date();
-        LOGGER.info("Found the " + listingsForEdition.size() + " listings from " + edition + " in "
-                + ((end.getTime() - start.getTime()) / MILLIS_PER_SECOND) + " seconds");
-        return listingsForEdition;
+        List<CertifiedProductDetailsDTO> relevantListings = new ArrayList<CertifiedProductDetailsDTO>();
+        if (edition != null) {
+            LOGGER.info("Finding all listings for edition " + edition.getYear() + ".");
+            Date start = new Date();
+            relevantListings = getCertifiedProductDao().findByEdition(edition.getYear());
+            Date end = new Date();
+            LOGGER.info("Found the " + relevantListings.size() + " listings from " + edition.getYear() + " in "
+                    + ((end.getTime() - start.getTime()) / MILLIS_PER_SECOND) + " seconds");
+        } else if (!CollectionUtils.isEmpty(certificationStatuses)) {
+            LOGGER.info("Finding all listings with status(es) "
+                    + Util.joinListGrammatically(certificationStatuses.stream().map(status -> status.getName()).collect(Collectors.toList()))
+                    + ".");
+            Date start = new Date();
+            relevantListings = getCertifiedProductDao().getListingsByStatus(certificationStatuses);
+            Date end = new Date();
+            LOGGER.info("Found the " + relevantListings.size() + " listings with status(es) "
+                    + Util.joinListGrammatically(certificationStatuses.stream().map(status -> status.getName()).collect(Collectors.toList()))
+                    + " in " + ((end.getTime() - start.getTime()) / MILLIS_PER_SECOND) + " seconds");
+        } else {
+            LOGGER.warn("Either an edition or certification status(es) must be provided. No relevant listings found.");
+        }
+        return relevantListings;
     }
 
     private CertifiedProductCsvPresenter getCsvPresenter() {
         CertifiedProductCsvPresenter presenter = null;
-        if (edition.equals("2014")) {
+        if (edition.equals(CertificationEditionConcept.CERTIFICATION_EDITION_2014)) {
             presenter = new CertifiedProduct2014CsvPresenter();
         } else {
             presenter = new CertifiedProductCsvPresenter();
@@ -251,5 +291,48 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
 
     private void initializeExecutorService() {
         executorService = Executors.newFixedThreadPool(getThreadCountForJob());
+    }
+
+    private void initializeEdition(JobExecutionContext jobContext) {
+        String editionYear = jobContext.getMergedJobDataMap().getString("edition");
+        if (!StringUtils.isEmpty(editionYear)) {
+            edition = CertificationEditionConcept.getByYear(editionYear);
+        }
+    }
+
+    private void initializeCertificationStatuses(JobExecutionContext jobContext) {
+        String certificationStatusesDelimited = jobContext.getMergedJobDataMap().getString("certificationStatuses");
+        if (!StringUtils.isEmpty(certificationStatusesDelimited)) {
+            String[] certificationStatusesSplit = certificationStatusesDelimited.split(",");
+            if (certificationStatusesSplit != null && certificationStatusesSplit.length > 0) {
+                Stream.of(certificationStatusesSplit)
+                    .forEach(status -> {
+                        CertificationStatusType certificationStatus = CertificationStatusType.getValue(status);
+                        if (certificationStatus == null) {
+                            LOGGER.warn("No matching certification status found for " + status);
+                        } else {
+                            certificationStatuses.add(certificationStatus);
+                        }
+                    });
+            }
+        }
+    }
+
+    private String getDownloadFileType() {
+        String type = "";
+        if (edition != null) {
+            type += " edition " + edition.getYear();
+        }
+        if (!CollectionUtils.isEmpty(certificationStatuses)) {
+            type += " certification statuses "
+                    + Util.joinListGrammatically(certificationStatuses.stream()
+                                .map(status -> status.getName())
+                                .collect(Collectors.toList()));
+        }
+
+        if (StringUtils.isEmpty(type)) {
+            type = "?";
+        }
+        return type;
     }
 }
