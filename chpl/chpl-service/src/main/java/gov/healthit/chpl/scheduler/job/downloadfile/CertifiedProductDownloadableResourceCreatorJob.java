@@ -321,16 +321,13 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
     private String getDownloadFileType() {
         String type = "";
         if (edition != null) {
-            type += " edition " + edition.getYear();
-        }
-        if (!CollectionUtils.isEmpty(certificationStatuses)) {
-            type += " certification statuses "
+            type += "edition " + edition.getYear();
+        } else if (!CollectionUtils.isEmpty(certificationStatuses)) {
+            type += "certification statuses "
                     + Util.joinListGrammatically(certificationStatuses.stream()
                                 .map(status -> status.getName())
                                 .collect(Collectors.toList()));
-        }
-
-        if (StringUtils.isEmpty(type)) {
+        } else {
             type = "?";
         }
         return type;
