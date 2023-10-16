@@ -98,13 +98,14 @@ public class ListingDetailsUploadHandler {
                 .sedIntendedUserDescription(parseSedIntendedUserDescription(headingRecord, listingRecords))
                 .sedTestingEndDay(parseSedTestingDay(headingRecord, listingRecords))
                 .sedTestingEndDateStr(parseSedTestingDayStr(headingRecord, listingRecords))
-                .sed(sedUploadHandler.parseAsSed(headingRecord, listingRecords))
             .build();
 
         if (!ff4j.check(FeatureList.EDITIONLESS)) {
             listing.setEdition(editionHandler.handle(headingRecord, listingRecords));
             listing.setCertificationEdition(editionHandler.handleDeprecated(headingRecord, listingRecords));
         }
+
+        listing.setSed(sedUploadHandler.parseAsSed(headingRecord, listingRecords, listing));
 
         //add cert result data
         List<CertificationResult> certResultList = new ArrayList<CertificationResult>();
@@ -116,7 +117,7 @@ public class ListingDetailsUploadHandler {
             CSVRecord certHeadingRecord = uploadUtil.getHeadingRecord(parsedCertResultRecords);
 
             CertificationResult certResult = certResultHandler.parseAsCertificationResult(certHeadingRecord,
-                    parsedCertResultRecords.subList(1, parsedCertResultRecords.size()));
+                    parsedCertResultRecords.subList(1, parsedCertResultRecords.size()), listing);
             certResultList.add(certResult);
 
             prevCertResultIndex = nextCertResultIndex;

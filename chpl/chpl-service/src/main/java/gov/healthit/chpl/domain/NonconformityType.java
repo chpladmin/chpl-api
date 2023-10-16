@@ -27,6 +27,7 @@ import gov.healthit.chpl.util.LocalDateDeserializer;
 import gov.healthit.chpl.util.LocalDateSerializer;
 import gov.healthit.chpl.util.NullSafeEvaluator;
 import gov.healthit.chpl.util.Util;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
@@ -54,6 +55,7 @@ public class NonconformityType implements Serializable {
     /**
      * A date value representing the date by which the Non-Conformity Type became available.
      */
+    @Schema(description = "A date value representing the date by which the Non-Conformity Type became available.")
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
     @XmlElement(required = false, nillable = true)
@@ -63,6 +65,7 @@ public class NonconformityType implements Serializable {
     /**
      * A date value representing the date by which the Non-Conformity Type can no longer be used.
      */
+    @Schema(description = "A date value representing the date by which the Non-Conformity Type can no longer be used.")
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
     @XmlElement(required = false, nillable = true)
