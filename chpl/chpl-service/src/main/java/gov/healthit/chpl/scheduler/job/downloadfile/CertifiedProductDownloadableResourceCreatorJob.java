@@ -17,8 +17,6 @@ import java.util.stream.Stream;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -32,16 +30,17 @@ import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.scheduler.presenter.CertifiedProduct2014CsvPresenter;
+import gov.healthit.chpl.scheduler.presenter.CertifiedProduct2011And2014CsvPresenter;
 import gov.healthit.chpl.scheduler.presenter.CertifiedProductCsvPresenter;
 import gov.healthit.chpl.scheduler.presenter.CertifiedProductJsonPresenter;
 import gov.healthit.chpl.scheduler.presenter.CertifiedProductPresenter;
 import gov.healthit.chpl.scheduler.presenter.CertifiedProductXmlPresenter;
 import gov.healthit.chpl.util.Util;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2(topic = "certifiedProductDownloadableResourceCreatorJobLogger")
 @DisallowConcurrentExecution
 public class CertifiedProductDownloadableResourceCreatorJob extends DownloadableResourceCreatorJob {
-    private static final Logger LOGGER = LogManager.getLogger("certifiedProductDownloadableResourceCreatorJobLogger");
     private static final int MILLIS_PER_SECOND = 1000;
 
     private CertificationEditionConcept edition;
@@ -65,14 +64,14 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
 
         LOGGER.info("********* Starting the Certified Product Downloadable Resource Creator job for {}. *********", getDownloadFileType());
         try (CertifiedProductXmlPresenter xmlPresenter = new CertifiedProductXmlPresenter();
-                CertifiedProductCsvPresenter csvPresenter = getCsvPresenter();
-                CertifiedProductJsonPresenter jsonPresenter = new CertifiedProductJsonPresenter()) {
+                CertifiedProductJsonPresenter jsonPresenter = new CertifiedProductJsonPresenter();
+                CertifiedProductCsvPresenter csvPresenter = getCsvPresenter();) {
             initializeTempFiles();
-            if (tempCsvFile != null && tempXmlFile != null && tempJsonFile != null) {
-                initializeWritingToFiles(xmlPresenter, csvPresenter, jsonPresenter);
+            if (tempXmlFile != null && tempJsonFile != null && tempCsvFile != null) {
+                initializeWritingToFiles(xmlPresenter, jsonPresenter, csvPresenter);
                 initializeExecutorService();
 
-                List<CertifiedProductPresenter> presenters = List.of(xmlPresenter, csvPresenter, jsonPresenter);
+                List<CertifiedProductPresenter> presenters = List.of(xmlPresenter, jsonPresenter, csvPresenter);
                 List<CompletableFuture<Void>> futures = getCertifiedProductSearchFutures(getRelevantListings(), presenters);
                 CompletableFuture<Void> combinedFutures = CompletableFuture
                         .allOf(futures.toArray(new CompletableFuture[futures.size()]));
@@ -97,7 +96,7 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
         } finally {
             cleanupTempFiles();
             executorService.shutdown();
-            LOGGER.info("********* Completed the Certified Product Downloadable Resource Creator job for {}. *********", edition);
+            LOGGER.info("********* Completed the Certified Product Downloadable Resource Creator job for {}. *********",  getDownloadFileType());
         }
     }
 
@@ -124,11 +123,11 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
                 });
     }
 
-    private void initializeWritingToFiles(CertifiedProductXmlPresenter xmlPresenter, CertifiedProductCsvPresenter csvPresenter, CertifiedProductJsonPresenter jsonPresenter)
+    private void initializeWritingToFiles(CertifiedProductXmlPresenter xmlPresenter, CertifiedProductJsonPresenter jsonPresenter, CertifiedProductCsvPresenter csvPresenter)
             throws IOException {
         initializeXmlFiles(xmlPresenter);
-        initializeCsvFiles(csvPresenter);
         initializeJsonFiles(jsonPresenter);
+        initializeCsvFiles(csvPresenter);
     }
 
     private void initializeXmlFiles(CertifiedProductXmlPresenter xmlPresenter) throws IOException  {
@@ -136,21 +135,18 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
         xmlPresenter.open(tempXmlFile);
     }
 
+    private void initializeJsonFiles(CertifiedProductJsonPresenter jsonPresenter) throws IOException  {
+        jsonPresenter.setLogger(LOGGER);
+        jsonPresenter.open(tempJsonFile);
+    }
+
     private void initializeCsvFiles(CertifiedProductCsvPresenter csvPresenter) throws IOException  {
         csvPresenter.setLogger(LOGGER);
         List<CertificationCriterion> criteria = new ArrayList<CertificationCriterion>();
         if (edition != null) {
-            //include all criteria from that edition
-            criteria = getCriteriaManager().getAll().stream()
-                .filter(criterion -> criterion.getCertificationEdition() != null
-                    && criterion.getCertificationEdition().equals(edition.getYear()))
-                .sorted((crA, crB) -> getCriteriaService().sortCriteria(crA, crB))
-                .collect(Collectors.<CertificationCriterion>toList());
+            criteria = getCriteriaByEdition();
         } else if (!CollectionUtils.isEmpty(certificationStatuses)) {
-            //include all of today's active criteria
-            criteria = getCriteriaManager().getActiveToday().stream()
-                    .sorted((crA, crB) -> getCriteriaService().sortCriteria(crA, crB))
-                    .collect(Collectors.<CertificationCriterion>toList());
+            criteria = getActiveCriteriaToday();
         } else {
             LOGGER.warn("Either an edition or certification status(es) must be provided. No applicable criteria found for CSV file.");
         }
@@ -158,40 +154,65 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
         csvPresenter.open(tempCsvFile);
     }
 
-    private void initializeJsonFiles(CertifiedProductJsonPresenter jsonPresenter) throws IOException  {
-        jsonPresenter.setLogger(LOGGER);
-        jsonPresenter.open(tempJsonFile);
+    private List<CertificationCriterion> getCriteriaByEdition() {
+        return getCriteriaManager().getAll().stream()
+            .filter(criterion -> criterion.getCertificationEdition() != null
+                && criterion.getCertificationEdition().equals(edition.getYear()))
+            .sorted((crA, crB) -> getCriteriaService().sortCriteria(crA, crB))
+            .collect(Collectors.<CertificationCriterion>toList());
+    }
+
+    private List<CertificationCriterion> getActiveCriteriaToday() {
+        return getCriteriaManager().getActiveToday().stream()
+                .sorted((crA, crB) -> getCriteriaService().sortCriteria(crA, crB))
+                .collect(Collectors.<CertificationCriterion>toList());
     }
 
     private List<CertifiedProductDetailsDTO> getRelevantListings() throws EntityRetrievalException {
         List<CertifiedProductDetailsDTO> relevantListings = new ArrayList<CertifiedProductDetailsDTO>();
         if (edition != null) {
-            LOGGER.info("Finding all listings for edition " + edition.getYear() + ".");
-            Date start = new Date();
-            relevantListings = getCertifiedProductDao().findByEdition(edition.getYear());
-            Date end = new Date();
-            LOGGER.info("Found the " + relevantListings.size() + " listings from " + edition.getYear() + " in "
-                    + ((end.getTime() - start.getTime()) / MILLIS_PER_SECOND) + " seconds");
+            relevantListings = getListingsByEdition();
         } else if (!CollectionUtils.isEmpty(certificationStatuses)) {
-            LOGGER.info("Finding all listings with status(es) "
-                    + Util.joinListGrammatically(certificationStatuses.stream().map(status -> status.getName()).collect(Collectors.toList()))
-                    + ".");
-            Date start = new Date();
-            relevantListings = getCertifiedProductDao().getListingsByStatus(certificationStatuses);
-            Date end = new Date();
-            LOGGER.info("Found the " + relevantListings.size() + " listings with status(es) "
-                    + Util.joinListGrammatically(certificationStatuses.stream().map(status -> status.getName()).collect(Collectors.toList()))
-                    + " in " + ((end.getTime() - start.getTime()) / MILLIS_PER_SECOND) + " seconds");
+            relevantListings = getListingsByStatus();
         } else {
             LOGGER.warn("Either an edition or certification status(es) must be provided. No relevant listings found.");
         }
         return relevantListings;
     }
 
+    private List<CertifiedProductDetailsDTO> getListingsByEdition() throws EntityRetrievalException {
+        List<CertifiedProductDetailsDTO> relevantListings = null;
+        LOGGER.info("Finding all listings for edition " + edition.getYear() + ".");
+        Date start = new Date();
+        relevantListings = getCertifiedProductDao().findByEdition(edition.getYear());
+        Date end = new Date();
+        LOGGER.info("Found the " + relevantListings.size() + " listings from " + edition.getYear() + " in "
+                + ((end.getTime() - start.getTime()) / MILLIS_PER_SECOND) + " seconds");
+        return relevantListings;
+    }
+
+    private List<CertifiedProductDetailsDTO> getListingsByStatus() throws EntityRetrievalException {
+        List<CertifiedProductDetailsDTO> relevantListings = null;
+        LOGGER.info("Finding all listings with status(es) "
+                + Util.joinListGrammatically(certificationStatuses.stream().map(status -> status.getName()).collect(Collectors.toList()))
+                + ".");
+        Date start = new Date();
+        relevantListings = getCertifiedProductDao().getListingsByStatusExcludingEdition(certificationStatuses,
+                Stream.of(CertificationEditionConcept.CERTIFICATION_EDITION_2011,
+                         CertificationEditionConcept.CERTIFICATION_EDITION_2014).toList());
+        Date end = new Date();
+        LOGGER.info("Found the " + relevantListings.size() + " listings with status(es) "
+                + Util.joinListGrammatically(certificationStatuses.stream().map(status -> status.getName()).collect(Collectors.toList()))
+                + " in " + ((end.getTime() - start.getTime()) / MILLIS_PER_SECOND) + " seconds");
+        return relevantListings;
+    }
+
     private CertifiedProductCsvPresenter getCsvPresenter() {
         CertifiedProductCsvPresenter presenter = null;
-        if (edition.equals(CertificationEditionConcept.CERTIFICATION_EDITION_2014)) {
-            presenter = new CertifiedProduct2014CsvPresenter();
+        if (edition != null
+                && (edition.equals(CertificationEditionConcept.CERTIFICATION_EDITION_2014)
+                        || edition.equals(CertificationEditionConcept.CERTIFICATION_EDITION_2011))) {
+            presenter = new CertifiedProduct2011And2014CsvPresenter();
         } else {
             presenter = new CertifiedProductCsvPresenter();
         }
@@ -203,31 +224,19 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
         Path tempDirBasePath = Paths.get(downloadFolder.getAbsolutePath());
         Path tempDir = Files.createTempDirectory(tempDirBasePath, TEMP_DIR_NAME);
         this.tempDirectory = tempDir.toFile();
+        String filenamePart = getFilenamePart();
 
-        Path csvPath = Files.createTempFile(tempDir, "chpl-" + edition, ".csv");
-        tempCsvFile = csvPath.toFile();
-
-        Path xmlPath = Files.createTempFile(tempDir, "chpl-" + edition, ".xml");
+        Path xmlPath = Files.createTempFile(tempDir, "chpl-" + filenamePart, ".xml");
         tempXmlFile = xmlPath.toFile();
-        Path jsonPath = Files.createTempFile(tempDir, "chpl-" + edition, ".json");
+        Path jsonPath = Files.createTempFile(tempDir, "chpl-" + filenamePart, ".json");
         tempJsonFile = jsonPath.toFile();
+        Path csvPath = Files.createTempFile(tempDir, "chpl-" + filenamePart, ".csv");
+        tempCsvFile = csvPath.toFile();
     }
 
     private void swapFiles() throws IOException {
         LOGGER.info("Swapping temporary files.");
         File downloadFolder = getDownloadFolder();
-
-        if (tempCsvFile != null) {
-            String csvFilename = getFileName(downloadFolder.getAbsolutePath(),
-                    getFilenameTimestampFormat().format(new Date()), "csv");
-            LOGGER.info("Moving " + tempCsvFile.getAbsolutePath() + " to " + csvFilename);
-            Path targetFile = Files.move(tempCsvFile.toPath(), Paths.get(csvFilename), StandardCopyOption.ATOMIC_MOVE);
-            if (targetFile == null) {
-                LOGGER.warn("CSV file move may not have succeeded. Check file system.");
-            }
-        } else {
-            LOGGER.warn("Temp CSV File was null and could not be moved.");
-        }
 
         if (tempXmlFile != null) {
             String xmlFilename = getFileName(downloadFolder.getAbsolutePath(),
@@ -252,16 +261,22 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
         } else {
             LOGGER.warn("Temp JSON File was null and could not be moved.");
         }
+
+        if (tempCsvFile != null) {
+            String csvFilename = getFileName(downloadFolder.getAbsolutePath(),
+                    getFilenameTimestampFormat().format(new Date()), "csv");
+            LOGGER.info("Moving " + tempCsvFile.getAbsolutePath() + " to " + csvFilename);
+            Path targetFile = Files.move(tempCsvFile.toPath(), Paths.get(csvFilename), StandardCopyOption.ATOMIC_MOVE);
+            if (targetFile == null) {
+                LOGGER.warn("CSV file move may not have succeeded. Check file system.");
+            }
+        } else {
+            LOGGER.warn("Temp CSV File was null and could not be moved.");
+        }
     }
 
     private void cleanupTempFiles() {
         LOGGER.info("Deleting temporary files.");
-        if (tempCsvFile != null && tempCsvFile.exists()) {
-            tempCsvFile.delete();
-        } else {
-            LOGGER.warn("Temp CSV File was null and could not be deleted.");
-        }
-
         if (tempXmlFile != null && tempXmlFile.exists()) {
             tempXmlFile.delete();
         } else {
@@ -274,6 +289,12 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
             LOGGER.warn("Temp JSON File was null and could not be deleted.");
         }
 
+        if (tempCsvFile != null && tempCsvFile.exists()) {
+            tempCsvFile.delete();
+        } else {
+            LOGGER.warn("Temp CSV File was null and could not be deleted.");
+        }
+
         if (tempDirectory != null && tempDirectory.exists()) {
             tempDirectory.delete();
         } else {
@@ -282,7 +303,21 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
     }
 
     private String getFileName(String path, String timeStamp, String extension) {
-        return path + File.separator + "chpl-" + edition + "-" + timeStamp + "." + extension;
+        return path + File.separator + "chpl-" + getFilenamePart() + "-" + timeStamp + "." + extension;
+    }
+
+    private String getFilenamePart() {
+        String filenamePart = "";
+        if (edition != null) {
+            filenamePart = edition.getYear();
+        } else if (!CollectionUtils.isEmpty(certificationStatuses)) {
+            if (certificationStatuses.contains(CertificationStatusType.Active)) {
+                filenamePart = "active";
+            } else {
+                filenamePart = "inactive";
+            }
+        }
+        return filenamePart;
     }
 
     private Integer getThreadCountForJob() throws NumberFormatException {
@@ -305,6 +340,7 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
         if (!StringUtils.isEmpty(certificationStatusesDelimited)) {
             String[] certificationStatusesSplit = certificationStatusesDelimited.split(",");
             if (certificationStatusesSplit != null && certificationStatusesSplit.length > 0) {
+                this.certificationStatuses = new ArrayList<CertificationStatusType>();
                 Stream.of(certificationStatusesSplit)
                     .forEach(status -> {
                         CertificationStatusType certificationStatus = CertificationStatusType.getValue(status);

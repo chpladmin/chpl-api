@@ -6,7 +6,7 @@ import java.util.List;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 
-public class CertifiedProduct2014CsvPresenter extends CertifiedProductCsvPresenter {
+public class CertifiedProduct2011And2014CsvPresenter extends CertifiedProductCsvPresenter {
     @Override
     protected List<String> generateHeaderValues() {
         List<String> result = new ArrayList<String>();

@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.CertifiedProductSummaryDTO;
@@ -297,6 +298,31 @@ public class CertifiedProductDAO extends BaseDAOImpl {
                 .map(CertificationStatusType::getName)
                 .collect(Collectors.toList());
         query.setParameter("certificationStatusNames", certificationStatusNames);
+
+        List<CertifiedProductDetailsEntity> queryResults = query.getResultList();
+        if (queryResults == null || queryResults.size() == 0) {
+            return new ArrayList<CertifiedProductDetailsDTO>();
+        }
+        return queryResults.stream()
+                .map(entity -> new CertifiedProductDetailsDTO(entity))
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<CertifiedProductDetailsDTO> getListingsByStatusExcludingEdition(
+            Collection<CertificationStatusType> certificationStatuses,
+            List<CertificationEditionConcept> editionsToExclude) {
+        String hql = "SELECT cpd "
+                + "FROM CertifiedProductDetailsEntity cpd "
+                + "WHERE cpd.certificationStatusName IN (:certificationStatusNames) "
+                + "AND cpd.year NOT IN (:editionsToExclude) "
+                + "AND cpd.deleted = false ";
+        Query query = entityManager.createQuery(hql, CertifiedProductDetailsEntity.class);
+        List<String> certificationStatusNames = certificationStatuses.stream()
+                .map(CertificationStatusType::getName)
+                .collect(Collectors.toList());
+        query.setParameter("certificationStatusNames", certificationStatusNames);
+        query.setParameter("editionsToExclude", editionsToExclude.stream().map(ed -> ed.getYear()).toList());
 
         List<CertifiedProductDetailsEntity> queryResults = query.getResultList();
         if (queryResults == null || queryResults.size() == 0) {
