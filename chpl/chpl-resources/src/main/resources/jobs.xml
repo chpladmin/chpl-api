@@ -9,20 +9,32 @@
         <delete-triggers-in-group>interruptJob</delete-triggers-in-group>
         <!-- BEGIN REMOVE after PROD push -->
         <delete-job>
-            <name>urlUptimeCreatorJob</name>
+            <name>downloadFileJob2015</name>
             <group>systemJobs</group>
         </delete-job>
         <delete-job>
-            <name>CHPL URL Uptime Report</name>
-            <group>chplJobs</group>
-        </delete-job>
-        <delete-job>
-            <name>serviceBasedUrlUptimeCreatorJob</name>
+            <name>downloadFileJob2014</name>
             <group>systemJobs</group>
         </delete-job>
         <delete-job>
-            <name>Service Based URL Uptime Report</name>
-            <group>chplJobs</group>
+            <name>downloadFileJob2011</name>
+            <group>systemJobs</group>
+        </delete-job>
+        <delete-job>
+            <name>g3Sed2015DownloadFileJob</name>
+            <group>systemJobs</group>
+        </delete-job>
+        <delete-job>
+            <name>surveillanceDownloadFileJob</name>
+            <group>systemJobs</group>
+        </delete-job>
+        <delete-job>
+            <name>directReviewDownloadFileGeneration</name>
+            <group>systemJobs</group>
+        </delete-job>
+        <delete-job>
+            <name>removeCriteriaJob</name>
+            <group>systemJobs</group>
         </delete-job>
         <!-- END remove after PROD push -->
     </pre-processing-commands>
@@ -44,7 +56,7 @@
             <name>downloadFileJob2015</name>
             <group>systemJobs</group>
             <description>Generate download files for 2015.</description>
-            <job-class>gov.healthit.chpl.scheduler.job.CertifiedProductDownloadableResourceCreatorJob</job-class>
+            <job-class>gov.healthit.chpl.scheduler.job.downloadfile.CertifiedProductDownloadableResourceCreatorJob</job-class>
             <durability>true</durability>
             <recover>false</recover>
             <job-data-map>
@@ -59,7 +71,7 @@
             <name>downloadFileJob2014</name>
             <group>systemJobs</group>
             <description>Generate download files for 2014.</description>
-            <job-class>gov.healthit.chpl.scheduler.job.CertifiedProductDownloadableResourceCreatorJob</job-class>
+            <job-class>gov.healthit.chpl.scheduler.job.downloadfile.CertifiedProductDownloadableResourceCreatorJob</job-class>
             <durability>true</durability>
             <recover>false</recover>
             <job-data-map>
@@ -74,7 +86,7 @@
             <name>downloadFileJob2011</name>
             <group>systemJobs</group>
             <description>Generate download files for 2011.</description>
-            <job-class>gov.healthit.chpl.scheduler.job.CertifiedProductDownloadableResourceCreatorJob</job-class>
+            <job-class>gov.healthit.chpl.scheduler.job.downloadfile.CertifiedProductDownloadableResourceCreatorJob</job-class>
             <durability>true</durability>
             <recover>true</recover>
             <job-data-map>
@@ -90,7 +102,7 @@
             <name>g3Sed2015DownloadFileJob</name>
             <group>systemJobs</group>
             <description>Generate SED download files for 2015 listings with G3.</description>
-            <job-class>gov.healthit.chpl.scheduler.job.G3Sed2015DownloadableResourceCreatorJob</job-class>
+            <job-class>gov.healthit.chpl.scheduler.job.downloadfile.G3Sed2015DownloadableResourceCreatorJob</job-class>
             <durability>true</durability>
             <recover>false</recover>
         </job>
@@ -100,7 +112,7 @@
             <name>surveillanceDownloadFileJob</name>
             <group>systemJobs</group>
             <description>Generate Surveillance download files.</description>
-            <job-class>gov.healthit.chpl.scheduler.job.SurveillanceDownloadableResourceCreatorJob</job-class>
+            <job-class>gov.healthit.chpl.scheduler.job.downloadfile.SurveillanceDownloadableResourceCreatorJob</job-class>
             <durability>true</durability>
             <recover>false</recover>
         </job>
@@ -110,7 +122,7 @@
             <name>directReviewDownloadFileGeneration</name>
             <group>systemJobs</group>
             <description>Generate direct review download file</description>
-            <job-class>gov.healthit.chpl.scheduler.job.DirectReviewDownloadableResourceCreatorJob</job-class>
+            <job-class>gov.healthit.chpl.scheduler.job.downloadfile.DirectReviewDownloadableResourceCreatorJob</job-class>
             <durability>true</durability>
             <recover>false</recover>
         </job>
@@ -722,16 +734,6 @@
             <group>systemJobs</group>
             <description>Sends emails to any registered API Keys that have accessed deprecated endpoints.</description>
             <job-class>gov.healthit.chpl.scheduler.job.deprecatedApiUsage.DeprecatedApiUsageEmailJob</job-class>
-            <durability>true</durability>
-            <recover>false</recover>
-        </job>
-
-        <!-- One time job to remove 3 criteria -->
-        <job>
-            <name>removeCriteriaJob</name>
-            <group>systemJobs</group>
-            <description>One time job to remove specific criteria</description>
-            <job-class>gov.healthit.chpl.scheduler.job.onetime.criteriaremoval.RemoveCriteriaJob</job-class>
             <durability>true</durability>
             <recover>false</recover>
         </job>

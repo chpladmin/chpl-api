@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Loggers>
+    <Logger name="com.amazonaws.request" level="INFO" additivity="false">
+        <AppenderRef ref="STDOUT" />
+        <AppenderRef ref="chplServiceJsonLog" />
+    </Logger>
+    <Logger name="org.apache.http.wire" level="INFO" additivity="false">
+        <AppenderRef ref="STDOUT" />
+        <AppenderRef ref="chplServiceJsonLog" />
+    </Logger>
     <Logger name="net.sf.ehcache" level="INFO" additivity="false">
         <AppenderRef ref="cacheListenerActivity" />
         <AppenderRef ref="cacheListenerActivity" />

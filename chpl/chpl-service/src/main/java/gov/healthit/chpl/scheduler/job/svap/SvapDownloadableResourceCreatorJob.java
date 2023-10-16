@@ -36,7 +36,7 @@ import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.ActivityDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.scheduler.job.DownloadableResourceCreatorJob;
+import gov.healthit.chpl.scheduler.job.downloadfile.DownloadableResourceCreatorJob;
 import gov.healthit.chpl.scheduler.presenter.SvapActivityPresenter;
 import gov.healthit.chpl.svap.domain.Svap;
 import gov.healthit.chpl.util.DateUtil;

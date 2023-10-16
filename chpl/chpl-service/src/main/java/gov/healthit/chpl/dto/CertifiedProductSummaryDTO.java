@@ -30,7 +30,6 @@ public class CertifiedProductSummaryDTO implements Serializable {
     private static final long serialVersionUID = 6196943224875685772L;
     private Long id;
     private String chplProductNumber;
-    private String year;
     private String certificationStatus;
     private Date certificationDate;
     private Boolean curesUpdate;
@@ -61,7 +60,6 @@ public class CertifiedProductSummaryDTO implements Serializable {
         this.certificationStatus = entity.getCertificationStatus();
         this.certificationDate = entity.getCertificationDate();
         this.curesUpdate = entity.getCuresUpdate();
-        this.year = entity.getYear();
         this.acb = CertificationBody.builder()
                 .id(entity.getCertificationBodyId())
                 .name(entity.getCertificationBodyName())
@@ -97,7 +95,6 @@ public class CertifiedProductSummaryDTO implements Serializable {
         this.certificationStatus = entity.getCertificationStatusName();
         this.certificationDate = entity.getCertificationDate();
         this.curesUpdate = entity.getCuresUpdate();
-        this.year = entity.getYear();
         this.acb = CertificationBody.builder()
                 .id(entity.getCertificationBodyId())
                 .name(entity.getCertificationBodyName())

@@ -99,7 +99,7 @@ public class CriterionProductStatisticsCalculator {
         List<CriterionProductStatisticsEntity> entities = new ArrayList<CriterionProductStatisticsEntity>();
         for (Entry<Long, Long> entry : productCounts.entrySet()) {
             CertificationCriterion criterion = certificationCriterionDAO.getById(entry.getKey());
-            if (!criterion.getRemoved()) {
+            if (!criterion.isRemoved()) {
                 CriterionProductStatisticsEntity entity = new CriterionProductStatisticsEntity();
                 entity.setProductCount(entry.getValue());
                 entity.setCertificationCriterionId(criterion.getId());

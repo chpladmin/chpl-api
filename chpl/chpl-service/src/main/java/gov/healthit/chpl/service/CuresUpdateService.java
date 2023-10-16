@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.service.CertificationCriterionService.Criteria2015;
 
 @Component
@@ -116,6 +117,11 @@ public class CuresUpdateService {
     }
 
     public Boolean isCuresUpdate(CertifiedProductSearchDetails listing) {
+        if (listing.getEdition() == null
+                || !listing.getEdition().getName().equals(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear())) {
+            return null;
+        }
+
         List<Long> criteriaIds = listing.getCertificationResults().stream()
                 .filter(criterion -> BooleanUtils.isTrue(criterion.isSuccess()))
                 .map(criterion -> criterion.getCriterion().getId())

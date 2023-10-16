@@ -2,6 +2,7 @@ package gov.healthit.chpl.upload.listing.normalizer;
 
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.List;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -13,6 +14,8 @@ import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.util.CertificationResultRules;
+import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.util.Util;
 import lombok.NoArgsConstructor;
 
 @Component
@@ -27,6 +30,7 @@ public class CertificationResultNormalizer {
     private SvapNormalizer svapNormalizer;
     private CertificationResultRules certResultRules;
     private CertificationCriterionService criterionService;
+    private ErrorMessageUtil msgUtil;
 
     @Autowired
     public CertificationResultNormalizer(CertificationCriterionNormalizer criterionNormalizer,
@@ -38,7 +42,8 @@ public class CertificationResultNormalizer {
         TestToolNormalizer testToolNormalizer,
         SvapNormalizer svapNormalizer,
         CertificationResultRules certResultRules,
-        CertificationCriterionService criterionService) {
+        CertificationCriterionService criterionService,
+        ErrorMessageUtil msgUtil) {
         this.criterionNormalizer = criterionNormalizer;
         this.additionalSoftwareNormalizer = additionalSoftwareNormalizer;
         this.testDataNormalizer = testDataNormalizer;
@@ -49,9 +54,13 @@ public class CertificationResultNormalizer {
         this.svapNormalizer = svapNormalizer;
         this.certResultRules = certResultRules;
         this.criterionService = criterionService;
+        this.msgUtil = msgUtil;
     }
 
     public void normalize(CertifiedProductSearchDetails listing) {
+        removeCertificationResultsWithNullCriterion(listing);
+        removeCertificationResultsForDuplicateCriteria(listing);
+
         this.criterionNormalizer.normalize(listing);
         this.additionalSoftwareNormalizer.normalize(listing);
         this.testDataNormalizer.normalize(listing);
@@ -62,16 +71,7 @@ public class CertificationResultNormalizer {
         this.svapNormalizer.normalize(listing);
 
         setSedTrueIfApplicableToCriteria(listing);
-        removeCertificationResultsWithNullCriterion(listing);
         listing.getCertificationResults().sort(new CertificationResultComparator());
-    }
-
-    private void setSedTrueIfApplicableToCriteria(CertifiedProductSearchDetails listing) {
-        listing.getCertificationResults().stream()
-            .filter(certResult -> certResult.getCriterion() != null
-                    && BooleanUtils.isTrue(certResult.isSuccess())
-                    && certResultRules.hasCertOption(certResult.getCriterion().getId(), CertificationResultRules.SED))
-            .forEach(certResult -> certResult.setSed(true));
     }
 
     private void removeCertificationResultsWithNullCriterion(CertifiedProductSearchDetails listing) {
@@ -83,6 +83,54 @@ public class CertificationResultNormalizer {
                 certResultIter.remove();
             }
         }
+    }
+
+    private void removeCertificationResultsForDuplicateCriteria(CertifiedProductSearchDetails listing) {
+        //more than 1 column header can map to the same criteria in the case of cures + original
+        //so we need this code to ensure we only have one copy of the criteria in the final listing
+        Iterator<CertificationResult> certResultIter = listing.getCertificationResults().iterator();
+        while (certResultIter.hasNext()) {
+            CertificationResult certResult = certResultIter.next();
+            if (BooleanUtils.isFalse(certResult.isSuccess())
+                    && isCriteriaInAnotherCertResult(listing.getCertificationResults(), certResult)) {
+                certResultIter.remove();
+            }
+        }
+
+        //now if there are still multiple cert results for the same criteria that are attested to (any unattested duplicates
+        //were removed above) we will just pick the last one and give a warning
+        certResultIter = listing.getCertificationResults().iterator();
+        while (certResultIter.hasNext()) {
+            CertificationResult certResult = certResultIter.next();
+            if (isCriteriaAttestedInAnotherCertResult(listing.getCertificationResults(), certResult)) {
+                certResultIter.remove();
+                listing.addWarningMessage(msgUtil.getMessage("listing.upload.duplicateAttestedCriteria",
+                        Util.formatCriteriaNumber(certResult.getCriterion())));
+            }
+        }
+    }
+
+    private boolean isCriteriaInAnotherCertResult(List<CertificationResult> certResults, CertificationResult unattestedCertResult) {
+        return certResults.stream()
+            .filter(certResult -> certResult != unattestedCertResult)
+            .filter(certResult -> certResult.getCriterion().getId().equals(unattestedCertResult.getCriterion().getId()))
+            .findAny().isPresent();
+    }
+
+    private boolean isCriteriaAttestedInAnotherCertResult(List<CertificationResult> certResults, CertificationResult unattestedCertResult) {
+        return certResults.stream()
+            .filter(certResult -> certResult != unattestedCertResult)
+            .filter(certResult -> BooleanUtils.isTrue(certResult.isSuccess())
+                    && certResult.getCriterion().getId().equals(unattestedCertResult.getCriterion().getId()))
+            .findAny().isPresent();
+    }
+
+    private void setSedTrueIfApplicableToCriteria(CertifiedProductSearchDetails listing) {
+        listing.getCertificationResults().stream()
+            .filter(certResult -> certResult.getCriterion() != null
+                    && BooleanUtils.isTrue(certResult.isSuccess())
+                    && certResultRules.hasCertOption(certResult.getCriterion().getId(), CertificationResultRules.SED))
+            .forEach(certResult -> certResult.setSed(true));
     }
 
     @NoArgsConstructor

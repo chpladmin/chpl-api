@@ -14,6 +14,7 @@ public class CertificationResultTestToolComparator implements Comparator<Certifi
         return new CompareToBuilder()
                 .append(tt1.getTestTool().getValue(), tt2.getTestTool().getValue())
                 .append(tt1.getVersion(), tt2.getVersion())
+                .append(tt1.getId(), tt2.getId())
                 .toComparison();
     }
 }

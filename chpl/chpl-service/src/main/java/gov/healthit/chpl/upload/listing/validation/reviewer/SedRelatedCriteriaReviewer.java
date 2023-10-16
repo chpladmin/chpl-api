@@ -54,7 +54,7 @@ public class SedRelatedCriteriaReviewer {
     private void reviewG3IsPresentIfRequired(CertifiedProductSearchDetails listing) {
         List<CertificationCriterion> attestedCriteria = validationUtils.getAttestedCriteria(listing);
         List<CertificationCriterion> presentAttestedSedCriteria = attestedCriteria.stream()
-                .filter(criterion -> criterion.getRemoved() == null || criterion.getRemoved().equals(Boolean.FALSE))
+                .filter(criterion -> criterion.isRemoved() == null || criterion.isRemoved().equals(Boolean.FALSE))
                 .filter(criterion -> certIdIsInCertList(criterion, sedRelatedCriteria.stream().map(sedCriterion -> sedCriterion.getId()).collect(Collectors.toList())))
                 .collect(Collectors.<CertificationCriterion> toList());
         boolean hasG3 = validationUtils.hasCriterion(g3, attestedCriteria);
@@ -67,7 +67,7 @@ public class SedRelatedCriteriaReviewer {
     private void reviewG3IsNotPresentIfNotAllowed(CertifiedProductSearchDetails listing) {
         List<CertificationCriterion> attestedCriteria = validationUtils.getAttestedCriteria(listing);
         List<CertificationCriterion> presentAttestedSedCriteria = attestedCriteria.stream()
-                .filter(criterion -> criterion.getRemoved() == null || criterion.getRemoved().equals(Boolean.FALSE))
+                .filter(criterion -> criterion.isRemoved() == null || criterion.isRemoved().equals(Boolean.FALSE))
                 .filter(criterion -> certIdIsInCertList(criterion, sedRelatedCriteria.stream().map(sedCriterion -> sedCriterion.getId()).collect(Collectors.toList())))
                 .collect(Collectors.<CertificationCriterion> toList());
         boolean hasG3 = validationUtils.hasCriterion(g3, attestedCriteria);

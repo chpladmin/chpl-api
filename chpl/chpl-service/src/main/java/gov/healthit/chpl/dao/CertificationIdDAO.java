@@ -13,19 +13,14 @@ import java.util.stream.Collectors;
 import javax.persistence.Query;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.BooleanUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.ff4j.FF4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterionEntity;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
-import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.dto.CQMMetDTO;
 import gov.healthit.chpl.dto.CertificationIdAndCertifiedProductDTO;
 import gov.healthit.chpl.dto.CertificationIdDTO;
@@ -54,13 +49,6 @@ public class CertificationIdDAO extends BaseDAOImpl {
     private static final String CERT_ID_15C_BEGIN = "0015C";
     private static final long MODIFIED_USER_ID = -4L;
     private static final int MAX_COUNT_ALPHAS = 3;
-
-    private FF4j ff4j;
-
-    @Autowired
-    public CertificationIdDAO(FF4j ff4j) {
-        this.ff4j = ff4j;
-    }
 
     @Transactional
     public CertificationIdDTO create(List<CertifiedProductDetailsDTO> listings, String year) throws EntityCreationException {
@@ -307,28 +295,9 @@ public class CertificationIdDAO extends BaseDAOImpl {
         query.setParameter("year", year);
         List<CertificationIdEntity> results = query.getResultList();
         if (!CollectionUtils.isEmpty(results)) {
-            if (ff4j.check(FeatureList.CAN_GENERATE_15C)
-                    && ff4j.check(FeatureList.CANNOT_GENERATE_15E)) {
-                //the eventual future state
-                //there could be more than one cert ID that matches for this set of products (15E and 15C)
-                //if there is a 15C cert ID available, that is the one we want
-                entity = get15CCertIdEntity(results);
-            } else if (!ff4j.check(FeatureList.CAN_GENERATE_15C)
-                    && !ff4j.check(FeatureList.CANNOT_GENERATE_15E)) {
-                entity = getLegacyCertIdEntity(results);
-            } else if (ff4j.check(FeatureList.CAN_GENERATE_15C)
-                    && !ff4j.check(FeatureList.CANNOT_GENERATE_15E)) {
-                //if it could be either C or E based on flag state then use C iff all listings are cures update, otherwise use legacy logic
-                if (areAllListings2015CuresUpdate(listings)) {
-                    entity = get15CCertIdEntity(results);
-                } else {
-                    entity = getLegacyCertIdEntity(results);
-                }
-            } else if (!ff4j.check(FeatureList.CAN_GENERATE_15C)
-                    && ff4j.check(FeatureList.CANNOT_GENERATE_15E)) {
-                LOGGER.error("Invalid flag state.");
-                entity = null;
-            }
+            //there could be more than one cert ID that matches for this set of products (15E and 15C)
+            //if there is a 15C cert ID available, that is the one we want
+            entity = get15CCertIdEntity(results);
         }
         return entity;
     }
@@ -341,16 +310,6 @@ public class CertificationIdDAO extends BaseDAOImpl {
             return null;
         }
         return entityWith15CCertId.get();
-    }
-
-    private CertificationIdEntity getLegacyCertIdEntity(List<CertificationIdEntity> entities) {
-        Optional<CertificationIdEntity> entityWithLegacyCertId = entities.stream()
-            .filter(entity -> !entity.getCertificationId().startsWith(CERT_ID_15C_BEGIN))
-            .findFirst();
-        if (entityWithLegacyCertId.isEmpty()) {
-            return null;
-        }
-        return entityWithLegacyCertId.get();
     }
 
     private List<CertificationIdAndCertifiedProductEntity> getAllCertificationIdsWithProductsEntities() {
@@ -367,27 +326,7 @@ public class CertificationIdDAO extends BaseDAOImpl {
         // would represent the highest (current) year number...
         StringBuffer newId = new StringBuffer("00");
         newId.append(year.substring(year.length() - 2));
-
-        if (ff4j.check(FeatureList.CAN_GENERATE_15C)
-                && ff4j.check(FeatureList.CANNOT_GENERATE_15E)) {
-            //the eventual future state
-            newId.append("C");
-        } else if (!ff4j.check(FeatureList.CAN_GENERATE_15C)
-                && !ff4j.check(FeatureList.CANNOT_GENERATE_15E)) {
-            appendLegacyCertIdEditionCharacter(newId, year);
-        } else if (ff4j.check(FeatureList.CAN_GENERATE_15C)
-                && !ff4j.check(FeatureList.CANNOT_GENERATE_15E)) {
-            //if it could be either C or E based on flag state then use C iff all listings are cures update, otherwise use legacy logic
-            if (areAllListings2015CuresUpdate(listings)) {
-                newId.append("C");
-            } else {
-                appendLegacyCertIdEditionCharacter(newId, year);
-            }
-        } else if (!ff4j.check(FeatureList.CAN_GENERATE_15C)
-                && ff4j.check(FeatureList.CANNOT_GENERATE_15E)) {
-            //can't generate E or C - invalid flag state.
-            throw new EntityCreationException("Invalid flag state. Cannot generate 'C', 'E', or 'H' certification ID.");
-        }
+        newId.append("C");
 
         int suffixLength = (CERT_ID_LENGTH - newId.length());
         // Generate the remainder of the ID
@@ -424,21 +363,5 @@ public class CertificationIdDAO extends BaseDAOImpl {
         }
 
         return newId.toString();
-    }
-
-    private void appendLegacyCertIdEditionCharacter(StringBuffer newId, String year) {
-        // ...Decide if it's a hybrid year or not and attach the "E" or "H".
-        if (-1 == year.indexOf("/")) {
-            newId.append("E");
-        } else {
-            newId.append("H");
-        }
-    }
-
-    private boolean areAllListings2015CuresUpdate(List<CertifiedProductDetailsDTO> listings) {
-        return listings.stream()
-                .filter(listing -> listing.getYear().equals(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear()))
-                .filter(listing -> BooleanUtils.isTrue(listing.getCuresUpdate()))
-                .count() == listings.size();
     }
 }

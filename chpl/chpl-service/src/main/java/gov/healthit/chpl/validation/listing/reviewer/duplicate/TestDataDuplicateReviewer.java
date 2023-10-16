@@ -1,10 +1,8 @@
 package gov.healthit.chpl.validation.listing.reviewer.duplicate;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 import java.util.function.BiPredicate;
 import java.util.stream.Collectors;
 
@@ -43,28 +41,6 @@ public class TestDataDuplicateReviewer {
                     .collect(Collectors.toSet()));
             certificationResult.setTestDataUsed(testDataDuplicateResults.getUniqueList());
         }
-
-        DuplicateReviewResult<CertificationResultTestData> testDataDuplicateIdResults = new DuplicateReviewResult<CertificationResultTestData>(duplicateIdPredicate());
-        if (certificationResult.getTestDataUsed() != null) {
-            for (CertificationResultTestData dto : certificationResult.getTestDataUsed()) {
-                testDataDuplicateIdResults.addObject(dto);
-            }
-        }
-        if (testDataDuplicateIdResults.duplicatesExist()) {
-            listing.addAllBusinessErrorMessages(
-                    getErrors(testDataDuplicateIdResults.getDuplicateList(),
-                            Util.formatCriteriaNumber(certificationResult.getCriterion())));
-        }
-    }
-
-    private Set<String> getErrors(List<CertificationResultTestData> duplicates, String criteria) {
-        Set<String> errors = new HashSet<String>();
-        for (CertificationResultTestData duplicate : duplicates) {
-            String error = errorMessageUtil.getMessage("listing.criteria.duplicateTestDataName",
-                    criteria, duplicate.getTestData().getName());
-            errors.add(error);
-        }
-        return errors;
     }
 
     private List<String> getWarnings(List<CertificationResultTestData> duplicates, String criteria) {
@@ -87,19 +63,6 @@ public class TestDataDuplicateReviewer {
                         td2.getTestData(), td2.getTestData().getId())
                         && Objects.equals(td1.getTestData().getId(), td2.getTestData().getId())
                         && Objects.equals(td1.getVersion(), td2.getVersion());
-            }
-        };
-    }
-
-    private BiPredicate<CertificationResultTestData, CertificationResultTestData> duplicateIdPredicate() {
-        return new BiPredicate<CertificationResultTestData, CertificationResultTestData>() {
-            @Override
-            public boolean test(CertificationResultTestData td1,
-                    CertificationResultTestData td2) {
-                return ObjectUtils.allNotNull(td1.getTestData(), td1.getTestData().getId(),
-                        td2.getTestData(), td2.getTestData().getId())
-                        && Objects.equals(td1.getTestData().getId(), td2.getTestData().getId())
-                        && !Objects.equals(td1.getVersion(), td2.getVersion());
             }
         };
     }

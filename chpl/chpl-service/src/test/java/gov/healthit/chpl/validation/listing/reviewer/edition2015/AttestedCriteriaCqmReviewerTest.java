@@ -5,6 +5,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.time.LocalDate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -308,11 +309,22 @@ public class AttestedCriteriaCqmReviewerTest {
     }
 
     private CertificationCriterion buildCriterion(Long id, String number, String title, boolean removed) {
+        if (removed) {
+            return CertificationCriterion.builder()
+                    .id(id)
+                    .number(number)
+                    .title(title)
+                    .startDay(LocalDate.parse("2023-01-01"))
+                    .endDay(LocalDate.parse("2023-01-02"))
+                    .certificationEdition("2015")
+                    .build();
+        }
         return CertificationCriterion.builder()
                 .id(id)
                 .number(number)
                 .title(title)
-                .removed(removed)
+                .startDay(LocalDate.parse("2023-01-01"))
+                .certificationEdition("2015")
                 .build();
     }
 }
