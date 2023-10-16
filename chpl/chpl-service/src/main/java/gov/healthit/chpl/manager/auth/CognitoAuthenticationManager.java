@@ -34,19 +34,22 @@ public class CognitoAuthenticationManager {
 
     private String clientId;
     private String userPoolId;
+    private String userPoolClientSecret;
     private CognitoIdentityProviderClient cognitoClient;
 
     @Autowired
     public CognitoAuthenticationManager(@Value("${cognito.accessKey}") String accessKey, @Value("${cognito.secretKey}") String secretKey,
-            @Value("${cognito.region}") String region, @Value("${cognito.clientId}") String clientId, @Value("${cognito.userPoolId}") String userPoolId) {
+            @Value("${cognito.region}") String region, @Value("${cognito.clientId}") String clientId, @Value("${cognito.userPoolId}") String userPoolId,
+            @Value("${cognito.userPoolClientSecret}") String userPoolClientSecret) {
 
         cognitoClient = createCognitoClient(accessKey, secretKey, region);
         this.clientId = clientId;
         this.userPoolId = userPoolId;
+        this.userPoolClientSecret = userPoolClientSecret;
     }
 
     public String authenticate(LoginCredentials credentials) {
-        String secretHash = CognitoSecretHash.calculateSecretHash(clientId, "7ap2or3qt6f8nfdgqt3haljaob8eeq7ui0hj2gb4sj8q1h2js49", credentials.getUserName());
+        String secretHash = CognitoSecretHash.calculateSecretHash(clientId, userPoolClientSecret, credentials.getUserName());
 
         Map<String, String> authParams = new LinkedHashMap<String, String>();
         authParams.put("USERNAME", credentials.getUserName());
@@ -104,8 +107,6 @@ public class CognitoAuthenticationManager {
         user.setLastLoggedInDate(new Date());
         user.setRole("ROLE_ADMIN");
         //user.organizations(null);
-
-        LOGGER.info("User: {}", user.toString());
 
         return user;
     }
