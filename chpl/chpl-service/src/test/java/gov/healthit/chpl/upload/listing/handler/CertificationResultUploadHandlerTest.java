@@ -15,6 +15,7 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
 import gov.healthit.chpl.domain.CertificationResult;
+import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.functionalitytested.CertificationResultFunctionalityTested;
 import gov.healthit.chpl.optionalStandard.domain.CertificationResultOptionalStandard;
 import gov.healthit.chpl.svap.domain.CertificationResultSvap;
@@ -28,10 +29,13 @@ public class CertificationResultUploadHandlerTest {
     private ErrorMessageUtil msgUtil;
     private ListingUploadHandlerUtil handlerUtil;
     private CertificationResultUploadHandler handler;
+    private CertifiedProductSearchDetails listing;
 
     @Before
     public void setup() {
         msgUtil = Mockito.mock(ErrorMessageUtil.class);
+        listing = CertifiedProductSearchDetails.builder()
+                .build();
 
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("certResult.upload.invalidBoolean"),
                 ArgumentMatchers.anyString()))
@@ -54,7 +58,7 @@ public class CertificationResultUploadHandlerTest {
         List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString(" ");
         assertNotNull(certResultRecords);
 
-        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
+        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords, listing);
         assertNotNull(certResult);
         assertNotNull(certResult.isSuccess());
         assertFalse(certResult.isSuccess());
@@ -67,7 +71,7 @@ public class CertificationResultUploadHandlerTest {
         List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1");
         assertNotNull(certResultRecords);
 
-        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
+        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords, listing);
         assertNotNull(certResult);
         assertNotNull(certResult.isSuccess());
         assertTrue(certResult.isSuccess());
@@ -80,7 +84,7 @@ public class CertificationResultUploadHandlerTest {
         List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("0");
         assertNotNull(certResultRecords);
 
-        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
+        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords, listing);
         assertNotNull(certResult);
         assertNotNull(certResult.isSuccess());
         assertFalse(certResult.isSuccess());
@@ -93,7 +97,7 @@ public class CertificationResultUploadHandlerTest {
         List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("0,1");
         assertNotNull(certResultRecords);
 
-        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
+        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords, listing);
         assertNotNull(certResult);
         assertNotNull(certResult.isSuccess());
         assertFalse(certResult.isSuccess());
@@ -105,7 +109,7 @@ public class CertificationResultUploadHandlerTest {
         assertNotNull(headingRecord);
         List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("JUNK");
         assertNotNull(certResultRecords);
-        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
+        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords, listing);
         assertNull(certResult.isSuccess());
         assertNotNull(certResult.getSuccessStr());
         assertEquals("JUNK", certResult.getSuccessStr());
@@ -118,7 +122,7 @@ public class CertificationResultUploadHandlerTest {
         List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1");
         assertNotNull(certResultRecords);
 
-        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
+        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords, listing);
         assertNotNull(certResult);
         assertNull(certResult.isGap());
     }
@@ -131,7 +135,7 @@ public class CertificationResultUploadHandlerTest {
         List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,0");
         assertNotNull(certResultRecords);
 
-        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
+        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords, listing);
         assertNotNull(certResult);
         assertNotNull(certResult.isGap());
         assertFalse(certResult.isGap());
@@ -145,7 +149,7 @@ public class CertificationResultUploadHandlerTest {
         List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,1");
         assertNotNull(certResultRecords);
 
-        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
+        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords, listing);
         assertNotNull(certResult);
         assertNotNull(certResult.isGap());
         assertTrue(certResult.isGap());
@@ -159,7 +163,7 @@ public class CertificationResultUploadHandlerTest {
         List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,No");
         assertNotNull(certResultRecords);
 
-        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
+        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords, listing);
         assertNotNull(certResult);
         assertNotNull(certResult.isGap());
         assertFalse(certResult.isGap());
@@ -173,7 +177,7 @@ public class CertificationResultUploadHandlerTest {
         List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,Yes");
         assertNotNull(certResultRecords);
 
-        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
+        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords, listing);
         assertNotNull(certResult);
         assertNotNull(certResult.isGap());
         assertTrue(certResult.isGap());
@@ -187,7 +191,7 @@ public class CertificationResultUploadHandlerTest {
         List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,Yes,0");
         assertNotNull(certResultRecords);
 
-        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
+        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords, listing);
         assertNotNull(certResult);
         assertNotNull(certResult.isGap());
         assertTrue(certResult.isGap());
@@ -201,7 +205,7 @@ public class CertificationResultUploadHandlerTest {
         List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,");
         assertNotNull(certResultRecords);
 
-        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
+        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords, listing);
         assertNotNull(certResult);
         assertNotNull(certResult.isGap());
         assertFalse(certResult.isGap());
@@ -214,7 +218,7 @@ public class CertificationResultUploadHandlerTest {
         assertNotNull(headingRecord);
         List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,JUNK");
         assertNotNull(certResultRecords);
-        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
+        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords, listing);
         assertNull(certResult.isGap());
         assertNotNull(certResult.getGapStr());
         assertEquals("JUNK", certResult.getGapStr());
@@ -227,7 +231,7 @@ public class CertificationResultUploadHandlerTest {
         List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1");
         assertNotNull(certResultRecords);
 
-        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
+        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords, listing);
         assertNotNull(certResult);
         assertNull(certResult.getHasAdditionalSoftware());
     }
@@ -240,7 +244,7 @@ public class CertificationResultUploadHandlerTest {
         List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,0");
         assertNotNull(certResultRecords);
 
-        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
+        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords, listing);
         assertNotNull(certResult);
         assertNotNull(certResult.getHasAdditionalSoftware());
         assertFalse(certResult.getHasAdditionalSoftware());
@@ -254,7 +258,7 @@ public class CertificationResultUploadHandlerTest {
         List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,1");
         assertNotNull(certResultRecords);
 
-        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
+        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords, listing);
         assertNotNull(certResult);
         assertNotNull(certResult.getHasAdditionalSoftware());
         assertTrue(certResult.getHasAdditionalSoftware());
@@ -268,7 +272,7 @@ public class CertificationResultUploadHandlerTest {
         List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,No");
         assertNotNull(certResultRecords);
 
-        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
+        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords, listing);
         assertNotNull(certResult);
         assertNotNull(certResult.getHasAdditionalSoftware());
         assertFalse(certResult.getHasAdditionalSoftware());
@@ -282,7 +286,7 @@ public class CertificationResultUploadHandlerTest {
         List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,Yes");
         assertNotNull(certResultRecords);
 
-        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
+        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords, listing);
         assertNotNull(certResult);
         assertNotNull(certResult.getHasAdditionalSoftware());
         assertTrue(certResult.getHasAdditionalSoftware());
@@ -296,7 +300,7 @@ public class CertificationResultUploadHandlerTest {
         List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,Yes,0");
         assertNotNull(certResultRecords);
 
-        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
+        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords, listing);
         assertNotNull(certResult);
         assertNotNull(certResult.getHasAdditionalSoftware());
         assertTrue(certResult.getHasAdditionalSoftware());
@@ -310,7 +314,7 @@ public class CertificationResultUploadHandlerTest {
         List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,");
         assertNotNull(certResultRecords);
 
-        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
+        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords, listing);
         assertNotNull(certResult);
         assertNotNull(certResult.getHasAdditionalSoftware());
         assertFalse(certResult.getHasAdditionalSoftware());
@@ -323,7 +327,7 @@ public class CertificationResultUploadHandlerTest {
         assertNotNull(headingRecord);
         List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,JUNK");
         assertNotNull(certResultRecords);
-        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
+        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords, listing);
         assertNull(certResult.getHasAdditionalSoftware());
         assertNotNull(certResult.getHasAdditionalSoftwareStr());
         assertEquals("JUNK", certResult.getHasAdditionalSoftwareStr());
@@ -336,7 +340,7 @@ public class CertificationResultUploadHandlerTest {
         List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1");
         assertNotNull(certResultRecords);
 
-        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
+        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords, listing);
         assertNotNull(certResult);
         assertNotNull(certResult.getFunctionalitiesTested());
         assertEquals(0, certResult.getFunctionalitiesTested().size());
@@ -349,7 +353,7 @@ public class CertificationResultUploadHandlerTest {
         List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,");
         assertNotNull(certResultRecords);
 
-        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
+        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords, listing);
         assertNotNull(certResult);
         assertNotNull(certResult.getFunctionalitiesTested());
         assertEquals(0, certResult.getFunctionalitiesTested().size());
@@ -362,7 +366,7 @@ public class CertificationResultUploadHandlerTest {
         List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,func");
         assertNotNull(certResultRecords);
 
-        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
+        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords, listing);
         assertNotNull(certResult);
         assertNotNull(certResult.getFunctionalitiesTested());
         assertEquals(1, certResult.getFunctionalitiesTested().size());
@@ -379,7 +383,7 @@ public class CertificationResultUploadHandlerTest {
         List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,func\n,func2");
         assertNotNull(certResultRecords);
 
-        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
+        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords, listing);
         assertNotNull(certResult);
         assertNotNull(certResult.getFunctionalitiesTested());
         assertEquals(2, certResult.getFunctionalitiesTested().size());
@@ -401,7 +405,7 @@ public class CertificationResultUploadHandlerTest {
         List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,func,func2");
         assertNotNull(certResultRecords);
 
-        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
+        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords, listing);
         assertNotNull(certResult);
         assertNotNull(certResult.getFunctionalitiesTested());
         assertEquals(1, certResult.getFunctionalitiesTested().size());
@@ -418,7 +422,7 @@ public class CertificationResultUploadHandlerTest {
         List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1");
         assertNotNull(certResultRecords);
 
-        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
+        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords, listing);
         assertNotNull(certResult);
         assertNotNull(certResult.getTestStandards());
         assertEquals(0, certResult.getTestStandards().size());
@@ -432,7 +436,7 @@ public class CertificationResultUploadHandlerTest {
         List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,");
         assertNotNull(certResultRecords);
 
-        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
+        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords, listing);
         assertNotNull(certResult);
         assertNotNull(certResult.getTestStandards());
         assertEquals(0, certResult.getTestStandards().size());
@@ -448,7 +452,7 @@ public class CertificationResultUploadHandlerTest {
         List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,std");
         assertNotNull(certResultRecords);
 
-        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
+        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords, listing);
         assertNotNull(certResult);
         assertNotNull(certResult.getTestStandards());
         assertEquals(0, certResult.getTestStandards().size());
@@ -468,7 +472,7 @@ public class CertificationResultUploadHandlerTest {
         List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,std,std2");
         assertNotNull(certResultRecords);
 
-        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
+        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords, listing);
         assertNotNull(certResult);
         assertNotNull(certResult.getTestStandards());
         assertEquals(0, certResult.getTestStandards().size());
@@ -487,7 +491,7 @@ public class CertificationResultUploadHandlerTest {
         List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,std\n,std2");
         assertNotNull(certResultRecords);
 
-        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
+        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords, listing);
         assertNotNull(certResult);
         assertNotNull(certResult.getTestStandards());
         assertEquals(0, certResult.getTestStandards().size());
@@ -511,7 +515,7 @@ public class CertificationResultUploadHandlerTest {
         List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,");
         assertNotNull(certResultRecords);
 
-        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
+        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords, listing);
         assertNotNull(certResult);
         assertNotNull(certResult.getOptionalStandards());
         assertEquals(0, certResult.getOptionalStandards().size());
@@ -527,7 +531,7 @@ public class CertificationResultUploadHandlerTest {
         List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,std");
         assertNotNull(certResultRecords);
 
-        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
+        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords, listing);
         assertNotNull(certResult);
         assertNotNull(certResult.getTestStandards());
         assertEquals(0, certResult.getTestStandards().size());
@@ -547,7 +551,7 @@ public class CertificationResultUploadHandlerTest {
         List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,std,std2");
         assertNotNull(certResultRecords);
 
-        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
+        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords, listing);
         assertNotNull(certResult);
         assertNotNull(certResult.getTestStandards());
         assertEquals(0, certResult.getTestStandards().size());
@@ -566,7 +570,7 @@ public class CertificationResultUploadHandlerTest {
         List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,std\n,std2");
         assertNotNull(certResultRecords);
 
-        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
+        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords, listing);
         assertNotNull(certResult);
         assertNotNull(certResult.getTestStandards());
         assertEquals(0, certResult.getTestStandards().size());
@@ -590,7 +594,7 @@ public class CertificationResultUploadHandlerTest {
         List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,");
         assertNotNull(certResultRecords);
 
-        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
+        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords, listing);
         assertNotNull(certResult);
         assertNotNull(certResult.getSvaps());
         assertEquals(0, certResult.getSvaps().size());
@@ -604,7 +608,7 @@ public class CertificationResultUploadHandlerTest {
         List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,svap1");
         assertNotNull(certResultRecords);
 
-        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
+        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords, listing);
         assertNotNull(certResult);
         assertNotNull(certResult.getSvaps());
         assertEquals(1, certResult.getSvaps().size());
@@ -622,7 +626,7 @@ public class CertificationResultUploadHandlerTest {
         List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,svap1,svap2");
         assertNotNull(certResultRecords);
 
-        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
+        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords, listing);
         assertNotNull(certResult);
         assertNotNull(certResult.getSvaps());
         assertEquals(1, certResult.getSvaps().size());
@@ -640,7 +644,7 @@ public class CertificationResultUploadHandlerTest {
         List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,svap1\n,svap2");
         assertNotNull(certResultRecords);
 
-        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
+        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords, listing);
         assertNotNull(certResult);
         assertNotNull(certResult.getSvaps());
         assertEquals(2, certResult.getSvaps().size());
@@ -661,7 +665,7 @@ public class CertificationResultUploadHandlerTest {
         List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1");
         assertNotNull(certResultRecords);
 
-        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
+        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords, listing);
         assertNotNull(certResult);
         assertNull(certResult.getPrivacySecurityFramework());
     }
@@ -674,7 +678,7 @@ public class CertificationResultUploadHandlerTest {
         List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,");
         assertNotNull(certResultRecords);
 
-        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
+        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords, listing);
         assertNotNull(certResult);
         assertNotNull(certResult.getPrivacySecurityFramework());
         assertEquals("", certResult.getPrivacySecurityFramework());
@@ -688,7 +692,7 @@ public class CertificationResultUploadHandlerTest {
         List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,Approach 1");
         assertNotNull(certResultRecords);
 
-        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
+        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords, listing);
         assertNotNull(certResult);
         assertNotNull(certResult.getPrivacySecurityFramework());
         assertEquals("Approach 1", certResult.getPrivacySecurityFramework());
@@ -702,7 +706,7 @@ public class CertificationResultUploadHandlerTest {
         List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,Approach 1,Approach 2");
         assertNotNull(certResultRecords);
 
-        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
+        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords, listing);
         assertNotNull(certResult);
         assertNotNull(certResult.getPrivacySecurityFramework());
         assertEquals("Approach 1", certResult.getPrivacySecurityFramework());
@@ -716,7 +720,7 @@ public class CertificationResultUploadHandlerTest {
         List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,  Approach 1 ");
         assertNotNull(certResultRecords);
 
-        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
+        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords, listing);
         assertNotNull(certResult);
         assertNotNull(certResult.getPrivacySecurityFramework());
         assertEquals("Approach 1", certResult.getPrivacySecurityFramework());
@@ -729,7 +733,7 @@ public class CertificationResultUploadHandlerTest {
         List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1");
         assertNotNull(certResultRecords);
 
-        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
+        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords, listing);
         assertNotNull(certResult);
         assertNull(certResult.getExportDocumentation());
     }
@@ -742,7 +746,7 @@ public class CertificationResultUploadHandlerTest {
         List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,");
         assertNotNull(certResultRecords);
 
-        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
+        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords, listing);
         assertNotNull(certResult);
         assertNotNull(certResult.getExportDocumentation());
         assertEquals("", certResult.getExportDocumentation());
@@ -756,7 +760,7 @@ public class CertificationResultUploadHandlerTest {
         List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,Something");
         assertNotNull(certResultRecords);
 
-        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
+        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords, listing);
         assertNotNull(certResult);
         assertNotNull(certResult.getExportDocumentation());
         assertEquals("Something", certResult.getExportDocumentation());
@@ -770,7 +774,7 @@ public class CertificationResultUploadHandlerTest {
         List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,Something,Something2");
         assertNotNull(certResultRecords);
 
-        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
+        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords, listing);
         assertNotNull(certResult);
         assertNotNull(certResult.getExportDocumentation());
         assertEquals("Something", certResult.getExportDocumentation());
@@ -784,7 +788,7 @@ public class CertificationResultUploadHandlerTest {
         List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,  Something ");
         assertNotNull(certResultRecords);
 
-        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
+        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords, listing);
         assertNotNull(certResult);
         assertNotNull(certResult.getExportDocumentation());
         assertEquals("Something", certResult.getExportDocumentation());
@@ -797,7 +801,7 @@ public class CertificationResultUploadHandlerTest {
         List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1");
         assertNotNull(certResultRecords);
 
-        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
+        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords, listing);
         assertNotNull(certResult);
         assertNull(certResult.getDocumentationUrl());
     }
@@ -810,7 +814,7 @@ public class CertificationResultUploadHandlerTest {
         List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,");
         assertNotNull(certResultRecords);
 
-        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
+        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords, listing);
         assertNotNull(certResult);
         assertNotNull(certResult.getDocumentationUrl());
         assertEquals("", certResult.getDocumentationUrl());
@@ -824,7 +828,7 @@ public class CertificationResultUploadHandlerTest {
         List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,Something");
         assertNotNull(certResultRecords);
 
-        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
+        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords, listing);
         assertNotNull(certResult);
         assertNotNull(certResult.getDocumentationUrl());
         assertEquals("Something", certResult.getDocumentationUrl());
@@ -838,7 +842,7 @@ public class CertificationResultUploadHandlerTest {
         List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,Something,Something2");
         assertNotNull(certResultRecords);
 
-        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
+        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords, listing);
         assertNotNull(certResult);
         assertNotNull(certResult.getDocumentationUrl());
         assertEquals("Something", certResult.getDocumentationUrl());
@@ -852,7 +856,7 @@ public class CertificationResultUploadHandlerTest {
         List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,  Something ");
         assertNotNull(certResultRecords);
 
-        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
+        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords, listing);
         assertNotNull(certResult);
         assertNotNull(certResult.getDocumentationUrl());
         assertEquals("Something", certResult.getDocumentationUrl());
@@ -865,7 +869,7 @@ public class CertificationResultUploadHandlerTest {
         List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1");
         assertNotNull(certResultRecords);
 
-        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
+        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords, listing);
         assertNotNull(certResult);
         assertNull(certResult.getUseCases());
     }
@@ -877,7 +881,7 @@ public class CertificationResultUploadHandlerTest {
         List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,");
         assertNotNull(certResultRecords);
 
-        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
+        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords, listing);
         assertNotNull(certResult);
         assertNotNull(certResult.getUseCases());
         assertEquals("", certResult.getUseCases());
@@ -890,7 +894,7 @@ public class CertificationResultUploadHandlerTest {
         List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,Something");
         assertNotNull(certResultRecords);
 
-        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
+        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords, listing);
         assertNotNull(certResult);
         assertNotNull(certResult.getUseCases());
         assertEquals("Something", certResult.getUseCases());
@@ -904,7 +908,7 @@ public class CertificationResultUploadHandlerTest {
         List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,Something,Something2");
         assertNotNull(certResultRecords);
 
-        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
+        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords, listing);
         assertNotNull(certResult);
         assertNotNull(certResult.getUseCases());
         assertEquals("Something", certResult.getUseCases());
@@ -917,7 +921,7 @@ public class CertificationResultUploadHandlerTest {
         List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,  Something ");
         assertNotNull(certResultRecords);
 
-        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
+        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords, listing);
         assertNotNull(certResult);
         assertNotNull(certResult.getUseCases());
         assertEquals("Something", certResult.getUseCases());
@@ -930,7 +934,7 @@ public class CertificationResultUploadHandlerTest {
         List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1");
         assertNotNull(certResultRecords);
 
-        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
+        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords, listing);
         assertNotNull(certResult);
         assertNull(certResult.getApiDocumentation());
     }
@@ -942,7 +946,7 @@ public class CertificationResultUploadHandlerTest {
         List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,");
         assertNotNull(certResultRecords);
 
-        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
+        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords, listing);
         assertNotNull(certResult);
         assertNotNull(certResult.getApiDocumentation());
         assertEquals("", certResult.getApiDocumentation());
@@ -955,7 +959,7 @@ public class CertificationResultUploadHandlerTest {
         List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,Something");
         assertNotNull(certResultRecords);
 
-        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
+        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords, listing);
         assertNotNull(certResult);
         assertNotNull(certResult.getApiDocumentation());
         assertEquals("Something", certResult.getApiDocumentation());
@@ -969,7 +973,7 @@ public class CertificationResultUploadHandlerTest {
         List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,Something,Something2");
         assertNotNull(certResultRecords);
 
-        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
+        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords, listing);
         assertNotNull(certResult);
         assertNotNull(certResult.getApiDocumentation());
         assertEquals("Something", certResult.getApiDocumentation());
@@ -982,7 +986,7 @@ public class CertificationResultUploadHandlerTest {
         List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,  Something ");
         assertNotNull(certResultRecords);
 
-        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
+        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords, listing);
         assertNotNull(certResult);
         assertNotNull(certResult.getApiDocumentation());
         assertEquals("Something", certResult.getApiDocumentation());
@@ -995,7 +999,7 @@ public class CertificationResultUploadHandlerTest {
         List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1");
         assertNotNull(certResultRecords);
 
-        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
+        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords, listing);
         assertNotNull(certResult);
         assertNull(certResult.getServiceBaseUrlList());
     }
@@ -1008,7 +1012,7 @@ public class CertificationResultUploadHandlerTest {
         List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,");
         assertNotNull(certResultRecords);
 
-        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
+        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords, listing);
         assertNotNull(certResult);
         assertNotNull(certResult.getServiceBaseUrlList());
         assertEquals("", certResult.getServiceBaseUrlList());
@@ -1022,7 +1026,7 @@ public class CertificationResultUploadHandlerTest {
         List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,Something");
         assertNotNull(certResultRecords);
 
-        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
+        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords, listing);
         assertNotNull(certResult);
         assertNotNull(certResult.getServiceBaseUrlList());
         assertEquals("Something", certResult.getServiceBaseUrlList());
@@ -1036,7 +1040,7 @@ public class CertificationResultUploadHandlerTest {
         List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,Something,Something2");
         assertNotNull(certResultRecords);
 
-        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
+        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords, listing);
         assertNotNull(certResult);
         assertNotNull(certResult.getServiceBaseUrlList());
         assertEquals("Something", certResult.getServiceBaseUrlList());
@@ -1050,7 +1054,7 @@ public class CertificationResultUploadHandlerTest {
         List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,  Something ");
         assertNotNull(certResultRecords);
 
-        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
+        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords, listing);
         assertNotNull(certResult);
         assertNotNull(certResult.getServiceBaseUrlList());
         assertEquals("Something", certResult.getServiceBaseUrlList());
@@ -1063,7 +1067,7 @@ public class CertificationResultUploadHandlerTest {
         List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1");
         assertNotNull(certResultRecords);
 
-        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
+        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords, listing);
         assertNotNull(certResult);
         assertNull(certResult.getAttestationAnswer());
     }
@@ -1076,7 +1080,7 @@ public class CertificationResultUploadHandlerTest {
         List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,0");
         assertNotNull(certResultRecords);
 
-        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
+        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords, listing);
         assertNotNull(certResult);
         assertNotNull(certResult.getAttestationAnswer());
         assertFalse(certResult.getAttestationAnswer());
@@ -1090,7 +1094,7 @@ public class CertificationResultUploadHandlerTest {
         List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,1");
         assertNotNull(certResultRecords);
 
-        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
+        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords, listing);
         assertNotNull(certResult);
         assertNotNull(certResult.getAttestationAnswer());
         assertTrue(certResult.getAttestationAnswer());
@@ -1104,7 +1108,7 @@ public class CertificationResultUploadHandlerTest {
         List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,No");
         assertNotNull(certResultRecords);
 
-        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
+        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords, listing);
         assertNotNull(certResult);
         assertNotNull(certResult.getAttestationAnswer());
         assertFalse(certResult.getAttestationAnswer());
@@ -1118,7 +1122,7 @@ public class CertificationResultUploadHandlerTest {
         List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,Yes");
         assertNotNull(certResultRecords);
 
-        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
+        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords, listing);
         assertNotNull(certResult);
         assertNotNull(certResult.getAttestationAnswer());
         assertTrue(certResult.getAttestationAnswer());
@@ -1132,7 +1136,7 @@ public class CertificationResultUploadHandlerTest {
         List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,Yes,No");
         assertNotNull(certResultRecords);
 
-        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
+        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords, listing);
         assertNotNull(certResult);
         assertNotNull(certResult.getAttestationAnswer());
         assertTrue(certResult.getAttestationAnswer());
@@ -1146,7 +1150,7 @@ public class CertificationResultUploadHandlerTest {
         List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,");
         assertNotNull(certResultRecords);
 
-        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
+        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords, listing);
         assertNotNull(certResult);
         assertNotNull(certResult.getAttestationAnswer());
         assertFalse(certResult.getAttestationAnswer());
@@ -1159,7 +1163,7 @@ public class CertificationResultUploadHandlerTest {
         assertNotNull(headingRecord);
         List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,JUNK");
         assertNotNull(certResultRecords);
-        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords);
+        CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords, listing);
         assertNull(certResult.getAttestationAnswer());
         assertNotNull(certResult.getAttestationAnswerStr());
         assertEquals("JUNK", certResult.getAttestationAnswerStr());

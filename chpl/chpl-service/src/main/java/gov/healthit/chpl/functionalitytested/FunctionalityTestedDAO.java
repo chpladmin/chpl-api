@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import javax.persistence.Query;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -56,8 +57,8 @@ public class FunctionalityTestedDAO extends BaseDAOImpl {
         }
     }
 
+    @CacheEvict(value = CacheNames.FUNCTIONALITY_TESTED_MAPS, allEntries = true)
     public FunctionalityTested add(FunctionalityTested functionalityTested) {
-
         FunctionalityTestedEntity entity = FunctionalityTestedEntity.builder()
                 .name(functionalityTested.getValue()) //TODO: OCD-4288 - Remove when column is removed
                 .number(functionalityTested.getRegulatoryTextCitation()) //TODO: OCD-4288 - Remove when column is removed
@@ -90,6 +91,7 @@ public class FunctionalityTestedDAO extends BaseDAOImpl {
         return certifiedProductDAO.getDetailsByIds(certifiedProductIds);
     }
 
+    @CacheEvict(value = CacheNames.FUNCTIONALITY_TESTED_MAPS, allEntries = true)
     public void update(FunctionalityTested functionalityTested) throws EntityRetrievalException {
         FunctionalityTestedEntity entity = getEntityById(functionalityTested.getId());
 
@@ -116,6 +118,7 @@ public class FunctionalityTestedDAO extends BaseDAOImpl {
         update(entity);
     }
 
+    @CacheEvict(value = CacheNames.FUNCTIONALITY_TESTED_MAPS, allEntries = true)
     public void addFunctionalityTestedCriteriaMap(FunctionalityTested functionalityTested, CertificationCriterion criterion) {
         FunctionalityTestedCriteriaMapEntity entity = FunctionalityTestedCriteriaMapEntity.builder()
                 .certificationCriterionId(criterion.getId())
@@ -129,6 +132,7 @@ public class FunctionalityTestedDAO extends BaseDAOImpl {
         create(entity);
     }
 
+    @CacheEvict(value = CacheNames.FUNCTIONALITY_TESTED_MAPS, allEntries = true)
     public void removeFunctionalityTestedCriteriaMap(FunctionalityTested functionalityTested, CertificationCriterion criterion) {
         try {
             FunctionalityTestedCriteriaMapEntity entity = getFunctionalityTestedCriteriaMapByFunctionalityTestedAndCriterion(functionalityTested.getId(), criterion.getId());
@@ -148,6 +152,7 @@ public class FunctionalityTestedDAO extends BaseDAOImpl {
         return certifiedProductDAO.getDetailsByIds(certifiedProductIds);
     }
 
+    @CacheEvict(value = CacheNames.FUNCTIONALITY_TESTED_MAPS, allEntries = true)
     public void remove(FunctionalityTested functionalityTested) throws EntityRetrievalException {
         FunctionalityTestedEntity entity = getEntityById(functionalityTested.getId());
         entity.setDeleted(true);
