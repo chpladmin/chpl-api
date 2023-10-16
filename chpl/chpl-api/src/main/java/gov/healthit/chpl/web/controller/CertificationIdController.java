@@ -7,7 +7,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.apache.commons.lang3.BooleanUtils;
-import org.ff4j.FF4j;
+import org.apache.commons.lang3.StringUtils;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -21,10 +21,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.certificationId.Validator;
 import gov.healthit.chpl.certificationId.ValidatorFactory;
+import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
 import gov.healthit.chpl.dto.CQMMetDTO;
 import gov.healthit.chpl.dto.CertificationIdDTO;
@@ -51,20 +51,18 @@ import lombok.extern.log4j.Log4j2;
 @RequestMapping("/certification_ids")
 @Log4j2
 public class CertificationIdController {
+    private static final String DEFAULT_YEAR = "2015";
 
     private CertifiedProductManager certifiedProductManager;
     private CertificationIdManager certificationIdManager;
     private ValidatorFactory validatorFactory;
-    private FF4j ff4j;
 
     @Autowired
     public CertificationIdController(CertifiedProductManager certifiedProductManager,
-            CertificationIdManager certificationIdManager, ValidatorFactory validatorFactory,
-            FF4j ff4j) {
+            CertificationIdManager certificationIdManager, ValidatorFactory validatorFactory) {
         this.certifiedProductManager = certifiedProductManager;
         this.certificationIdManager = certificationIdManager;
         this.validatorFactory = validatorFactory;
-        this.ff4j = ff4j;
     }
 
     @Operation(summary = "Generate the CMS EHR Certification ID Report and email the results to the logged-in user.",
@@ -189,6 +187,9 @@ public class CertificationIdController {
                 // Add product data to results
                 List<CertificationIdLookupResults.Product> productList = results.getProducts();
                 for (CertifiedProductDetailsDTO dto : productDtos) {
+                    if (StringUtils.isEmpty(dto.getYear())) {
+                        dto.setYear(DEFAULT_YEAR);
+                    }
                     productList.add(new CertificationIdLookupResults.Product(dto));
                     yearSet.add(Integer.valueOf(dto.getYear()));
                     certProductIds.add(dto.getId());
@@ -273,11 +274,13 @@ public class CertificationIdController {
         List<CertificationIdResults.Product> resultProducts = new ArrayList<CertificationIdResults.Product>();
         for (CertifiedProductDetailsDTO dto : productDtos) {
             if (create) {
-                if (!ff4j.check(FeatureList.CANNOT_GENERATE_15E) && !dto.getYear().equalsIgnoreCase("2015")) {
-                    throw new InvalidArgumentsException("New Certification IDs can only be created using 2015 Edition Listings");
-                } else if (ff4j.check(FeatureList.CANNOT_GENERATE_15E) && BooleanUtils.isNotTrue(dto.getCuresUpdate())) {
+                if (!isEditionlessOrCuresUpdate(dto)) {
                     throw new InvalidArgumentsException("New Certification IDs can only be created using 2015 Cures Update Listings");
                 }
+            }
+
+            if (StringUtils.isEmpty(dto.getYear())) {
+                dto.setYear(DEFAULT_YEAR);
             }
             CertificationIdResults.Product p = new CertificationIdResults.Product(dto);
             resultProducts.add(p);
@@ -328,5 +331,13 @@ public class CertificationIdController {
             }
         }
         return results;
+    }
+
+    private boolean isEditionlessOrCuresUpdate(CertifiedProductDetailsDTO listing) {
+        if (StringUtils.isEmpty(listing.getYear()) && listing.getCuresUpdate() == null) {
+            return true;
+        }
+        return listing.getYear().equals(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear())
+                && BooleanUtils.isTrue(listing.getCuresUpdate());
     }
 }

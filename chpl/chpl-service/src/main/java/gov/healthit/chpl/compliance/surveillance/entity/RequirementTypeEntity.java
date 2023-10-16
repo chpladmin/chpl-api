@@ -1,5 +1,8 @@
 package gov.healthit.chpl.compliance.surveillance.entity;
 
+import java.time.LocalDate;
+
+import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -38,8 +41,13 @@ public class RequirementTypeEntity {
     @Column(name = "title")
     private String title;
 
-    @Column(name = "removed")
-    private Boolean removed;
+    @Basic(optional = true)
+    @Column(name = "start_day")
+    private LocalDate startDay;
+
+    @Basic(optional = true)
+    @Column(name = "end_day")
+    private LocalDate endDay;
 
     @OneToOne(optional = true)
     @JoinColumn(name = "certification_edition_id", insertable = false, updatable = false)
@@ -54,7 +62,8 @@ public class RequirementTypeEntity {
                 .id(this.id)
                 .number(this.number)
                 .title(this.title)
-                .removed(this.removed)
+                .startDay(this.getStartDay())
+                .endDay(this.getEndDay())
                 .certificationEdition(this.getCertificationEdition() != null ? this.getCertificationEdition().toDomain() : null)
                 .requirementGroupType(RequirementGroupType.builder()
                         .id(this.requirementGroupType.getId())

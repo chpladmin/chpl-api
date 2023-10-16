@@ -38,7 +38,7 @@ public class TestParticipantReviewer {
         }
 
         return testTask.getCriteria().stream()
-                .filter(criterion -> BooleanUtils.isFalse(criterion.getRemoved()))
+                .filter(criterion -> BooleanUtils.isFalse(criterion.isRemoved()))
                 .findAny().isPresent();
     }
 

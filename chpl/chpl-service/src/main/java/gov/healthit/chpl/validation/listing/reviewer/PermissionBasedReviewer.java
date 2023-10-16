@@ -51,8 +51,8 @@ public abstract class PermissionBasedReviewer implements Reviewer {
     public void addBusinessCriterionError(
             CertifiedProductSearchDetails listing, CertificationResult certResult,
             String message) {
-        if (certResult.getCriterion() != null && (certResult.getCriterion().getRemoved() == null
-                || certResult.getCriterion().getRemoved().equals(Boolean.FALSE))) {
+        if (certResult.getCriterion() != null && (certResult.getCriterion().isRemoved() == null
+                || certResult.getCriterion().isRemoved().equals(Boolean.FALSE))) {
             listing.addBusinessErrorMessage(message);
         }
     }
@@ -67,8 +67,8 @@ public abstract class PermissionBasedReviewer implements Reviewer {
     public void addDataCriterionError(
             CertifiedProductSearchDetails listing, CertificationResult certResult,
             String message) {
-        if (certResult.getCriterion() != null && (certResult.getCriterion().getRemoved() == null
-                || certResult.getCriterion().getRemoved().equals(Boolean.FALSE))) {
+        if (certResult.getCriterion() != null && (certResult.getCriterion().isRemoved() == null
+                || certResult.getCriterion().isRemoved().equals(Boolean.FALSE))) {
             listing.addDataErrorMessage(message);
         }
     }

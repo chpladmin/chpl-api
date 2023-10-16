@@ -18,7 +18,7 @@ import gov.healthit.chpl.validation.listing.reviewer.edition2015.SedG32015Review
 
 @Component
 public class CertificationResultReviewer {
-    private RemovedCriteriaReviewer removedCriteriaReviewer;
+    private UnavailableCriteriaReviewer unavailableCriteriaReviewer;
     private CriteriaReviewer criteriaReviewer;
     private PrivacyAndSecurityFrameworkReviewer privacyAndSecurityFrameworkReviewer;
     private AdditionalSoftwareReviewer additionalSoftwareReviewer;
@@ -38,7 +38,7 @@ public class CertificationResultReviewer {
 
     @Autowired
     @SuppressWarnings("checkstyle:parameternumber")
-    public CertificationResultReviewer(@Qualifier("listingUploadRemovedCriteriaReviewer") RemovedCriteriaReviewer removedCriteriaReviewer,
+    public CertificationResultReviewer(@Qualifier("listingUploadUnavailableCriteriaReviewer") UnavailableCriteriaReviewer unavailableCriteriaReviewer,
             @Qualifier("listingUploadCriteriaReviewer") CriteriaReviewer criteriaReviewer,
             @Qualifier("listingUploadPrivacyAndSecurityFrameworkReviewer") PrivacyAndSecurityFrameworkReviewer privacyAndSecurityFrameworkReviewer,
             @Qualifier("listingUploadAdditionalSoftwareFrameworkReviewer") AdditionalSoftwareReviewer additionalSoftwareReviewer,
@@ -53,7 +53,7 @@ public class CertificationResultReviewer {
             @Qualifier("uploadedListingUnattestedCriteriaWithDataReviewer") UnattestedCriteriaWithDataReviewer unattestedCriteriaWithDataReviewer,
             @Qualifier("sedG32015Reviewer") SedG32015Reviewer sedG3Reviewer,
             CertificationResultRules certResultRules, ValidationUtils validationUtils, ErrorMessageUtil msgUtil) {
-        this.removedCriteriaReviewer = removedCriteriaReviewer;
+        this.unavailableCriteriaReviewer = unavailableCriteriaReviewer;
         this.criteriaReviewer = criteriaReviewer;
         this.privacyAndSecurityFrameworkReviewer = privacyAndSecurityFrameworkReviewer;
         this.additionalSoftwareReviewer = additionalSoftwareReviewer;
@@ -107,7 +107,7 @@ public class CertificationResultReviewer {
     }
 
     private void reviewUnconditionalFields(CertifiedProductSearchDetails listing, CertificationResult certResult) {
-        removedCriteriaReviewer.review(listing, certResult);
+        unavailableCriteriaReviewer.review(listing, certResult);
         reviewSuccessField(listing, certResult);
     }
 
