@@ -15,6 +15,8 @@ import gov.healthit.chpl.criteriaattribute.CriteriaAttributeService;
 import gov.healthit.chpl.dao.CertificationCriterionAttributeDAO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
+import gov.healthit.chpl.scheduler.job.downloadfile.GenerateListingDownloadFile;
+import gov.healthit.chpl.scheduler.job.downloadfile.ListingSet;
 import gov.healthit.chpl.sharedstore.listing.ListingStoreRemove;
 import gov.healthit.chpl.sharedstore.listing.RemoveBy;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -55,6 +57,7 @@ public class TestToolManager {
             + "T(gov.healthit.chpl.permissions.domains.TestToolDomainPermissions).UPDATE)")
     @Transactional
     @ListingStoreRemove(removeBy = RemoveBy.ALL)
+    @GenerateListingDownloadFile(listingSet = {ListingSet.EDITION_2011, ListingSet.EDITION_2014})
     public TestTool update(TestTool testTool) throws EntityRetrievalException, ValidationException {
         testToolValidator.validateForEdit(testTool);
         updateTestTool(testTool);

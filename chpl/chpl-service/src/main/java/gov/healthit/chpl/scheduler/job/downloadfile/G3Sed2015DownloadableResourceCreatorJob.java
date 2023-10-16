@@ -1,4 +1,4 @@
-package gov.healthit.chpl.scheduler.job;
+package gov.healthit.chpl.scheduler.job.downloadfile;
 
 import java.io.File;
 import java.io.IOException;

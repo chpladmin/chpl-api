@@ -32,7 +32,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
 import gov.healthit.chpl.compliance.surveillance.SurveillanceManager;
-import gov.healthit.chpl.domain.CertificationEdition;
 import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.Developer;
@@ -62,32 +61,31 @@ public abstract class ActivitiesAndOutcomesWorksheetBuilder {
     private static final int COL_Q2 = 6;
     private static final int COL_Q3 = 7;
     private static final int COL_Q4 = 8;
-    private static final int COL_CERT_EDITION = 9;
-    private static final int COL_DEVELOPER_NAME = 10;
-    private static final int COL_PRODUCT_NAME = 11;
-    private static final int COL_PRODUCT_VERSION = 12;
-    private static final int COL_K1_REVIEWED = 13;
-    private static final int COL_SURV_TYPE = 14;
-    private static final int COL_SURV_LOCATION_COUNT = 15;
-    private static final int COL_SURV_BEGIN = 16;
-    private static final int COL_SURV_END = 17;
-    private static final int COL_SURV_OUTCOME = 18;
-    private static final int COL_SURV_OUTCOME_OTHER = 19;
-    private static final int COL_NONCONFORMITY_TYPES_RESULTANT = 20;
-    private static final int COL_CERT_STATUS_RESULTANT = 21;
-    private static final int COL_SUSPENDED = 22;
-    private static final int COL_SURV_PROCESS_TYPE = 23;
-    private static final int COL_SURV_PROCESS_TYPE_OTHER = 24;
-    private static final int COL_SURV_GROUNDS = 25;
-    private static final int COL_NONCONFORMITY_CAUSES = 26;
-    private static final int COL_NONCONFORMITY_NATURES = 27;
-    private static final int COL_SURV_STEPS = 28;
-    private static final int COL_ENGAGEMENT_STEPS = 29;
-    private static final int COL_ADDITIONAL_COSTS = 30;
-    private static final int COL_LIMITATIONS_EVAL = 31;
-    private static final int COL_NONDISCLOSURE_EVAL = 32;
-    private static final int COL_DEV_RESOLUTION = 33;
-    private static final int COL_COMPLETED_CAP = 34;
+    private static final int COL_DEVELOPER_NAME = 9;
+    private static final int COL_PRODUCT_NAME = 10;
+    private static final int COL_PRODUCT_VERSION = 11;
+    private static final int COL_K1_REVIEWED = 12;
+    private static final int COL_SURV_TYPE = 13;
+    private static final int COL_SURV_LOCATION_COUNT = 14;
+    private static final int COL_SURV_BEGIN = 15;
+    private static final int COL_SURV_END = 16;
+    private static final int COL_SURV_OUTCOME = 17;
+    private static final int COL_SURV_OUTCOME_OTHER = 18;
+    private static final int COL_NONCONFORMITY_TYPES_RESULTANT = 19;
+    private static final int COL_CERT_STATUS_RESULTANT = 20;
+    private static final int COL_SUSPENDED = 21;
+    private static final int COL_SURV_PROCESS_TYPE = 22;
+    private static final int COL_SURV_PROCESS_TYPE_OTHER = 23;
+    private static final int COL_SURV_GROUNDS = 24;
+    private static final int COL_NONCONFORMITY_CAUSES = 25;
+    private static final int COL_NONCONFORMITY_NATURES = 26;
+    private static final int COL_SURV_STEPS = 27;
+    private static final int COL_ENGAGEMENT_STEPS = 28;
+    private static final int COL_ADDITIONAL_COSTS = 29;
+    private static final int COL_LIMITATIONS_EVAL = 30;
+    private static final int COL_NONDISCLOSURE_EVAL = 31;
+    private static final int COL_DEV_RESOLUTION = 32;
+    private static final int COL_COMPLETED_CAP = 33;
     private static final int[] HIDDEN_COLS =
         {COL_SURV_ACTIVITY_TRACKER, COL_RELATED_COMPLAINT, COL_Q1, COL_Q2, COL_Q3, COL_Q4};
 
@@ -152,7 +150,6 @@ public abstract class ActivitiesAndOutcomesWorksheetBuilder {
         sheet.setColumnWidth(COL_Q2, quarterColWidth);
         sheet.setColumnWidth(COL_Q3, quarterColWidth);
         sheet.setColumnWidth(COL_Q4, quarterColWidth);
-        sheet.setColumnWidth(COL_CERT_EDITION, sharedColWidth);
         sheet.setColumnWidth(COL_DEVELOPER_NAME, sharedColWidth);
         sheet.setColumnWidth(COL_PRODUCT_NAME, sharedColWidth);
         sheet.setColumnWidth(COL_PRODUCT_VERSION, sharedColWidth);
@@ -277,7 +274,6 @@ public abstract class ActivitiesAndOutcomesWorksheetBuilder {
         addHeadingCell(workbook, row, COL_Q2, "Q2");
         addHeadingCell(workbook, row, COL_Q3, "Q3");
         addHeadingCell(workbook, row, COL_Q4, "Q4");
-        addHeadingCell(workbook, row, COL_CERT_EDITION, "Certification Edition");
         addHeadingCell(workbook, row, COL_DEVELOPER_NAME, "Developer Name");
         addHeadingCell(workbook, row, COL_PRODUCT_NAME, "Product Name");
         addHeadingCell(workbook, row, COL_PRODUCT_VERSION, "Product Version");
@@ -407,7 +403,6 @@ public abstract class ActivitiesAndOutcomesWorksheetBuilder {
                 addDataCell(workbook, row, COL_Q4, "X");
             }
 
-            addDataCell(workbook, row, COL_CERT_EDITION, listing.getEdition() != null ? listing.getEdition().getName() : "");
             addDataCell(workbook, row, COL_DEVELOPER_NAME, listing.getDeveloper().getName());
             addDataCell(workbook, row, COL_PRODUCT_NAME, listing.getProduct().getName());
             addDataCell(workbook, row, COL_PRODUCT_VERSION, listing.getVersion().getVersion());
@@ -505,19 +500,6 @@ public abstract class ActivitiesAndOutcomesWorksheetBuilder {
             CertifiedProductSearchDetails completeListingDetails = new CertifiedProductSearchDetails();
             completeListingDetails.setId(listingDetails.getId());
             completeListingDetails.setChplProductNumber(listingDetails.getChplProductNumber());
-            String edition = listingDetails.getYear();
-            if (StringUtils.isEmpty(edition)) {
-                completeListingDetails.setEdition(null);
-            } else {
-                if (listingDetails.getCuresUpdate() != null && listingDetails.getCuresUpdate()) {
-                    edition += CertificationEdition.CURES_SUFFIX;
-                }
-
-                completeListingDetails.setEdition(CertificationEdition.builder()
-                    .id(listingDetails.getCertificationEditionId())
-                    .name(edition)
-                    .build());
-            }
             Developer dev = new Developer();
             dev.setId(listingDetails.getDeveloper().getId());
             dev.setName(listingDetails.getDeveloper().getName());
