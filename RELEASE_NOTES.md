@@ -1,5 +1,22 @@
 # Release Notes
 
+<<<<<<< HEAD
+=======
+## Version 42.3.0
+_16 October 2023_
+
+### Features
+* Correctly handle cached Test Tools and Functionalities Tested when modified
+* Remove edition from quartz reports where possible
+* Parse criteria from upload file based on active date
+* Allow duplicate test data with different versions
+* Allow test tools with same name and different versions
+* Add 'status' field to criterion for retired, active, removed
+* Add business error if func tested is unavailable by date
+
+---
+
+>>>>>>> staging
 ## Version 42.2.0
 _2 October 2023_
 
