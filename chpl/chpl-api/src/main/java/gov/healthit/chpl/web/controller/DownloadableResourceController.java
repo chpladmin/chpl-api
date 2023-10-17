@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.compliance.surveillance.SurveillanceManager;
 import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -65,60 +64,14 @@ public class DownloadableResourceController {
         this.ff4j = ff4j;
     }
 
-    @Operation(summary = "Download all listings from the given edition in the specified format.",
-            description = "Valid values for 'year' are 2011 and 2014. Listings from 2015 edition and "
-                    + "beyond can be found in either the Active or Inactive files available for download "
-                    + "at '/download/status/{status}.' Valid values for 'format' are csv, xml, and json.",
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
-    @RequestMapping(value = "/download/edition/{year}", method = RequestMethod.GET, produces = "application/xml")
-    public void downloadListingsFromEdition(@PathVariable(value = "year", required = true) String editionInput,
-            @RequestParam(value = "format", defaultValue = "xml", required = false) String formatInput,
-            @RequestParam(value = "definition", defaultValue = "false", required = false) Boolean isDefinition,
-            HttpServletRequest request, HttpServletResponse response) throws IOException, InvalidArgumentsException {
-        String edition = normalizeEdition(editionInput);
-        if (!edition.equals(CertificationEditionConcept.CERTIFICATION_EDITION_2011.getYear())
-                && !edition.equals(CertificationEditionConcept.CERTIFICATION_EDITION_2014.getYear())) {
-            throw new InvalidArgumentsException("Edition must be 2011 or 2014.");
-        }
-        String format = normalizeFormat(formatInput);
-        if (!format.equals("xml") && !format.equals("csv") && !format.equals("json")) {
-            throw new InvalidArgumentsException("Format must be XML, CSV, or JSON");
-        }
-        String responseType = getResponseType(format);
-
-        File toDownload = null;
-        if (BooleanUtils.isTrue(isDefinition)) {
-            toDownload = getDefinitionDownloadFile(edition, format);
-            if (!toDownload.exists()) {
-                response.getWriter()
-                        .write(msgUtil.getMessage("resources.schemaFileNotFound", toDownload.getAbsolutePath()));
-                return;
-            }
-        } else {
-            File newestFileWithFormat = fileUtils.getNewestFileMatchingName("^chpl-" + edition + "-.+\\." + format + "$");
-            if (newestFileWithFormat != null) {
-                toDownload = newestFileWithFormat;
-            } else {
-                response.getWriter()
-                        .write(msgUtil.getMessage("resources.fileWithEditionAndFormatNotFound", edition, format));
-                return;
-            }
-        }
-
-        LOGGER.info("Downloading " + toDownload.getName());
-        fileUtils.streamFileAsResponse(toDownload, responseType, response);
-    }
-
-    @Operation(summary = "Download all active or inactive listings in the CHPL.",
-            description = "Valid values for 'status' are active and inactive. "
+    @Operation(summary = "Download all listings of a given type in the specified format.",
+            description = "Valid values for 'listingType' are active, inactive, 2011 and 2014."
                     + "Valid values for 'format' are csv, xml, and json.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
-    @RequestMapping(value = "/download/{status:active|inactive}", method = RequestMethod.GET, produces = "application/xml")
-    public void downloadListingsByStatus(@PathVariable(value = "status", required = true) String status,
+    @RequestMapping(value = "/download/{listingType:2011|2014|active|inactive}", method = RequestMethod.GET, produces = "application/xml")
+    public void downloadListings(@PathVariable(value = "listingType", required = true) String listingType,
             @RequestParam(value = "format", defaultValue = "xml", required = false) String formatInput,
             @RequestParam(value = "definition", defaultValue = "false", required = false) Boolean isDefinition,
             HttpServletRequest request, HttpServletResponse response) throws IOException, InvalidArgumentsException {
@@ -130,37 +83,25 @@ public class DownloadableResourceController {
 
         File toDownload = null;
         if (BooleanUtils.isTrue(isDefinition)) {
-            toDownload = getDefinitionDownloadFile(null, format);
+            toDownload = getDefinitionDownloadFile(listingType, format);
             if (!toDownload.exists()) {
                 response.getWriter()
                         .write(msgUtil.getMessage("resources.schemaFileNotFound", toDownload.getAbsolutePath()));
                 return;
             }
         } else {
-            File newestFileWithFormat = fileUtils.getNewestFileMatchingName("^chpl-" + status + "-.+\\." + format + "$");
+            File newestFileWithFormat = fileUtils.getNewestFileMatchingName("^chpl-" + listingType + "-.+\\." + format + "$");
             if (newestFileWithFormat != null) {
                 toDownload = newestFileWithFormat;
             } else {
                 response.getWriter()
-                        .write(msgUtil.getMessage("resources.fileWithEditionAndFormatNotFound", status, format));
+                        .write(msgUtil.getMessage("resources.fileWithEditionAndFormatNotFound", listingType, format));
                 return;
             }
         }
 
         LOGGER.info("Downloading " + toDownload.getName());
         fileUtils.streamFileAsResponse(toDownload, responseType, response);
-    }
-
-    private String normalizeEdition(String editionInput) {
-        String edition = editionInput;
-        if (!StringUtils.isEmpty(edition)) {
-            // make sure it's a 4 character year
-            edition = edition.trim();
-            if (!edition.startsWith("20")) {
-                edition = "20" + edition;
-            }
-        }
-        return edition;
     }
 
     private String normalizeFormat(String formatInput) {
@@ -187,13 +128,13 @@ public class DownloadableResourceController {
         return responseType;
     }
 
-    private File getDefinitionDownloadFile(String edition, String format) throws IOException {
+    private File getDefinitionDownloadFile(String listingType, String format) throws IOException {
         File toDownload = null;
         if (format.equals("xml")) {
             toDownload = fileUtils.getDownloadFile(env.getProperty("schemaXmlName"));
-        } else if (!StringUtils.isEmpty(edition) && edition.equals("2011")) {
+        } else if (listingType.equals(CertificationEditionConcept.CERTIFICATION_EDITION_2011.getYear())) {
             toDownload = fileUtils.getDownloadFile(env.getProperty("schemaCsv2011Name"));
-        } else if (!StringUtils.isEmpty(edition) && edition.equals("2014")) {
+        } else if (listingType.equals(CertificationEditionConcept.CERTIFICATION_EDITION_2014.getYear())) {
             toDownload = fileUtils.getDownloadFile(env.getProperty("schemaCsv2014Name"));
         } else {
             toDownload = fileUtils.getDownloadFile(env.getProperty("schemaCsvListingName"));
@@ -203,8 +144,7 @@ public class DownloadableResourceController {
 
     @Deprecated
     @DeprecatedApi(friendlyUrl = "/download", removalDate = "2024-01-01",
-        message = "The endpoint is deprecated and will be removed. Please GET from /download/edition/{year} "
-                + "or /download/status/{status}.")
+        message = "The endpoint is deprecated and will be removed. Please GET from /download/{listingType}.")
     @Operation(summary = "Download the entire CHPL in the specified format.",
             description = "Once per day, the entire certified product listing is "
                     + "written out to JSON and CSV files on the CHPL servers. There are files for the retired "
@@ -233,8 +173,11 @@ public class DownloadableResourceController {
             if (!edition.startsWith("20")) {
                 edition = "20" + edition;
             }
+            if (edition.equals("2015")) {
+                edition = "active";
+            }
         } else {
-            edition = "all";
+            edition = "active";
         }
 
         if (!StringUtils.isEmpty(format) && format.equalsIgnoreCase("csv")) {
@@ -254,12 +197,8 @@ public class DownloadableResourceController {
                 toDownload = fileUtils.getDownloadFile(env.getProperty("schemaXmlName"));
             } else if (edition.equals("2014")) {
                 toDownload = fileUtils.getDownloadFile(env.getProperty("schemaCsv2014Name"));
-            } else if (edition.equals("2015")) {
-                if (ff4j.check(FeatureList.ERD_PHASE_3)) {
-                    toDownload = fileUtils.getDownloadFile(env.getProperty("schemaCsv2015Name.postErdPhase3"));
-                } else {
-                    toDownload = fileUtils.getDownloadFile(env.getProperty("schemaCsv2015Name"));
-                }
+            } else if (edition.equals("2015") || edition.equals("active")) {
+                toDownload = fileUtils.getDownloadFile(env.getProperty("schemaCsvListingName"));
             }
 
             if (!toDownload.exists()) {
