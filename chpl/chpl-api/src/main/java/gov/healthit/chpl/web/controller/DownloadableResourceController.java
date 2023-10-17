@@ -6,11 +6,13 @@ import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -18,11 +20,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.compliance.surveillance.SurveillanceManager;
+import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.svap.manager.SvapManager;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.FileUtils;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
+import gov.healthit.chpl.web.controller.annotation.DeprecatedApi;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -60,14 +65,155 @@ public class DownloadableResourceController {
         this.ff4j = ff4j;
     }
 
-    @Operation(summary = "Download the entire CHPL as XML.",
+    @Operation(summary = "Download all listings from the given edition in the specified format.",
+            description = "Valid values for 'year' are 2011 and 2014. Listings from 2015 edition and "
+                    + "beyond can be found in either the Active or Inactive files available for download "
+                    + "at '/download/status/{status}.' Valid values for 'format' are csv, xml, and json.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
+    @RequestMapping(value = "/download/edition/{year}", method = RequestMethod.GET, produces = "application/xml")
+    public void downloadListingsFromEdition(@PathVariable(value = "year", required = true) String editionInput,
+            @RequestParam(value = "format", defaultValue = "xml", required = false) String formatInput,
+            @RequestParam(value = "definition", defaultValue = "false", required = false) Boolean isDefinition,
+            HttpServletRequest request, HttpServletResponse response) throws IOException, InvalidArgumentsException {
+        String edition = normalizeEdition(editionInput);
+        if (!edition.equals(CertificationEditionConcept.CERTIFICATION_EDITION_2011.getYear())
+                && !edition.equals(CertificationEditionConcept.CERTIFICATION_EDITION_2014.getYear())) {
+            throw new InvalidArgumentsException("Edition must be 2011 or 2014.");
+        }
+        String format = normalizeFormat(formatInput);
+        if (!format.equals("xml") && !format.equals("csv") && !format.equals("json")) {
+            throw new InvalidArgumentsException("Format must be XML, CSV, or JSON");
+        }
+        String responseType = getResponseType(format);
+
+        File toDownload = null;
+        if (BooleanUtils.isTrue(isDefinition)) {
+            toDownload = getDefinitionDownloadFile(edition, format);
+            if (!toDownload.exists()) {
+                response.getWriter()
+                        .write(msgUtil.getMessage("resources.schemaFileNotFound", toDownload.getAbsolutePath()));
+                return;
+            }
+        } else {
+            File newestFileWithFormat = fileUtils.getNewestFileMatchingName("^chpl-" + edition + "-.+\\." + format + "$");
+            if (newestFileWithFormat != null) {
+                toDownload = newestFileWithFormat;
+            } else {
+                response.getWriter()
+                        .write(msgUtil.getMessage("resources.fileWithEditionAndFormatNotFound", edition, format));
+                return;
+            }
+        }
+
+        LOGGER.info("Downloading " + toDownload.getName());
+        fileUtils.streamFileAsResponse(toDownload, responseType, response);
+    }
+
+    @Operation(summary = "Download all active or inactive listings in the CHPL.",
+            description = "Valid values for 'status' are active and inactive. "
+                    + "Valid values for 'format' are csv, xml, and json.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
+    @RequestMapping(value = "/download/{status:active|inactive}", method = RequestMethod.GET, produces = "application/xml")
+    public void downloadListingsByStatus(@PathVariable(value = "status", required = true) String status,
+            @RequestParam(value = "format", defaultValue = "xml", required = false) String formatInput,
+            @RequestParam(value = "definition", defaultValue = "false", required = false) Boolean isDefinition,
+            HttpServletRequest request, HttpServletResponse response) throws IOException, InvalidArgumentsException {
+        String format = normalizeFormat(formatInput);
+        if (!format.equals("xml") && !format.equals("csv") && !format.equals("json")) {
+            throw new InvalidArgumentsException("Format must be XML, CSV, or JSON");
+        }
+        String responseType = getResponseType(format);
+
+        File toDownload = null;
+        if (BooleanUtils.isTrue(isDefinition)) {
+            toDownload = getDefinitionDownloadFile(null, format);
+            if (!toDownload.exists()) {
+                response.getWriter()
+                        .write(msgUtil.getMessage("resources.schemaFileNotFound", toDownload.getAbsolutePath()));
+                return;
+            }
+        } else {
+            File newestFileWithFormat = fileUtils.getNewestFileMatchingName("^chpl-" + status + "-.+\\." + format + "$");
+            if (newestFileWithFormat != null) {
+                toDownload = newestFileWithFormat;
+            } else {
+                response.getWriter()
+                        .write(msgUtil.getMessage("resources.fileWithEditionAndFormatNotFound", status, format));
+                return;
+            }
+        }
+
+        LOGGER.info("Downloading " + toDownload.getName());
+        fileUtils.streamFileAsResponse(toDownload, responseType, response);
+    }
+
+    private String normalizeEdition(String editionInput) {
+        String edition = editionInput;
+        if (!StringUtils.isEmpty(edition)) {
+            // make sure it's a 4 character year
+            edition = edition.trim();
+            if (!edition.startsWith("20")) {
+                edition = "20" + edition;
+            }
+        }
+        return edition;
+    }
+
+    private String normalizeFormat(String formatInput) {
+        String format = formatInput;
+        if (!StringUtils.isEmpty(format) && format.equalsIgnoreCase("csv")) {
+            format = "csv";
+        } else if (!StringUtils.isEmpty(format) && format.equalsIgnoreCase("xml")) {
+            format = "xml";
+        } else {
+            format = "json";
+        }
+        return format;
+    }
+
+    private String getResponseType(String format) {
+        String responseType = "text/plain";
+        if (!StringUtils.isEmpty(format) && format.equalsIgnoreCase("csv")) {
+            responseType = "text/csv";
+        } else if (!StringUtils.isEmpty(format) && format.equalsIgnoreCase("xml")) {
+            responseType = "application/xml";
+        } else {
+            responseType = "application/json";
+        }
+        return responseType;
+    }
+
+    private File getDefinitionDownloadFile(String edition, String format) throws IOException {
+        File toDownload = null;
+        if (format.equals("xml")) {
+            toDownload = fileUtils.getDownloadFile(env.getProperty("schemaXmlName"));
+        } else if (!StringUtils.isEmpty(edition) && edition.equals("2011")) {
+            toDownload = fileUtils.getDownloadFile(env.getProperty("schemaCsv2011Name"));
+        } else if (!StringUtils.isEmpty(edition) && edition.equals("2014")) {
+            toDownload = fileUtils.getDownloadFile(env.getProperty("schemaCsv2014Name"));
+        } else {
+            toDownload = fileUtils.getDownloadFile(env.getProperty("schemaCsvListingName"));
+        }
+        return toDownload;
+    }
+
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/download", removalDate = "2024-01-01",
+        message = "The endpoint is deprecated and will be removed. Please GET from /download/edition/{year} "
+                + "or /download/status/{status}.")
+    @Operation(summary = "Download the entire CHPL in the specified format.",
             description = "Once per day, the entire certified product listing is "
-                    + "written out to XML files on the CHPL servers, one for each "
-                    + "certification edition. This method allows any user to download "
-                    + "that XML file. It is formatted in such a way that users may import "
-                    + "it into Microsoft Excel or any other XML tool of their choosing. To download "
-                    + "any one of the XML files, append ‘&edition=year’ to the end of the query string "
-                    + "(e.g., &edition=2015). A separate query is required to download each of the XML files.",
+                    + "written out to JSON and CSV files on the CHPL servers. There are files for the retired "
+                    + "2011 and 2014 certification editions, as well as a file with Inactive listings and "
+                    + "a file with Active listings. This method allows any user to download "
+                    + "one of those files. The CSV file is formatted in such a way that users may import "
+                    + "it into Microsoft Excel. The JSON file may be imported into any JSON tool of their choosing."
+                    + "To download any one of the files, append ‘&edition=year’ to the end of the query string "
+                    + "(e.g., &edition=2014). A separate query is required to download each file.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
