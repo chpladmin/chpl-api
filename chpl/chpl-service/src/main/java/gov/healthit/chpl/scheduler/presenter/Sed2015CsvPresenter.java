@@ -19,7 +19,7 @@ import gov.healthit.chpl.domain.TestParticipant;
 import gov.healthit.chpl.domain.TestTask;
 import gov.healthit.chpl.service.CertificationCriterionService;
 
-public class Sed2015CsvPresenter implements CertifiedProductPresenter, AutoCloseable {
+public class Sed2015CsvPresenter extends CertifiedProductPresenter implements AutoCloseable {
     private Logger logger;
     private OutputStreamWriter writer = null;
     private CSVPrinter csvPrinter = null;

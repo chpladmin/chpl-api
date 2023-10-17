@@ -21,7 +21,9 @@ import org.quartz.DisallowConcurrentExecution;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
+import org.springframework.core.io.Resource;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
@@ -41,12 +43,24 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2(topic = "certifiedProductDownloadableResourceCreatorJobLogger")
 @DisallowConcurrentExecution
 public class CertifiedProductDownloadableResourceCreatorJob extends DownloadableResourceCreatorJob {
+    private static final String CSV_SCHEMA_2011_FILENAME = "2011 Listing CSV Data Dictionary Base.csv";
+    private static final String CSV_SCHEMA_2014_FILENAME = "2014 Listing CSV Data Dictionary Base.csv";
+    private static final String CSV_SCHEMA_FILENAME = "Listing CSV Data Dictionary Base.csv";
     private static final int MILLIS_PER_SECOND = 1000;
 
     private CertificationEditionConcept edition;
     private List<CertificationStatusType> certificationStatuses;
-    private File tempDirectory, tempCsvFile, tempXmlFile, tempJsonFile;
+    private File tempDirectory, tempCsvDataFile, tempCsvDefinitionFile, tempXmlFile, tempJsonFile;
     private ExecutorService executorService;
+
+    @Value("classpath:" + CSV_SCHEMA_2011_FILENAME)
+    private Resource csvSchema2011;
+
+    @Value("classpath:" + CSV_SCHEMA_2014_FILENAME)
+    private Resource csvSchema2014;
+
+    @Value("classpath:" + CSV_SCHEMA_FILENAME)
+    private Resource csvSchema;
 
     @Autowired
     private Environment env;
@@ -67,7 +81,7 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
                 CertifiedProductJsonPresenter jsonPresenter = new CertifiedProductJsonPresenter();
                 CertifiedProductCsvPresenter csvPresenter = getCsvPresenter();) {
             initializeTempFiles();
-            if (tempXmlFile != null && tempJsonFile != null && tempCsvFile != null) {
+            if (tempXmlFile != null && tempJsonFile != null && tempCsvDataFile != null) {
                 initializeWritingToFiles(xmlPresenter, jsonPresenter, csvPresenter);
                 initializeExecutorService();
 
@@ -125,17 +139,17 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
 
     private void initializeWritingToFiles(CertifiedProductXmlPresenter xmlPresenter, CertifiedProductJsonPresenter jsonPresenter, CertifiedProductCsvPresenter csvPresenter)
             throws IOException {
-        initializeXmlFiles(xmlPresenter);
-        initializeJsonFiles(jsonPresenter);
+        initializeXmlFile(xmlPresenter);
+        initializeJsonFile(jsonPresenter);
         initializeCsvFiles(csvPresenter);
     }
 
-    private void initializeXmlFiles(CertifiedProductXmlPresenter xmlPresenter) throws IOException  {
+    private void initializeXmlFile(CertifiedProductXmlPresenter xmlPresenter) throws IOException  {
         xmlPresenter.setLogger(LOGGER);
         xmlPresenter.open(tempXmlFile);
     }
 
-    private void initializeJsonFiles(CertifiedProductJsonPresenter jsonPresenter) throws IOException  {
+    private void initializeJsonFile(CertifiedProductJsonPresenter jsonPresenter) throws IOException  {
         jsonPresenter.setLogger(LOGGER);
         jsonPresenter.open(tempJsonFile);
     }
@@ -151,7 +165,15 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
             LOGGER.warn("Either an edition or certification status(es) must be provided. No applicable criteria found for CSV file.");
         }
         csvPresenter.setApplicableCriteria(criteria);
-        csvPresenter.open(tempCsvFile);
+        csvPresenter.open(tempCsvDataFile, tempCsvDefinitionFile);
+
+        if (edition != null && edition.equals(CertificationEditionConcept.CERTIFICATION_EDITION_2011)) {
+            csvPresenter.generateDefinitionFile(csvSchema2011);
+        } else if (edition != null && edition.equals(CertificationEditionConcept.CERTIFICATION_EDITION_2014)) {
+            csvPresenter.generateDefinitionFile(csvSchema2014);
+        } else {
+            csvPresenter.generateDefinitionFile(csvSchema);
+        }
     }
 
     private List<CertificationCriterion> getCriteriaByEdition() {
@@ -177,7 +199,8 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
         } else {
             LOGGER.warn("Either an edition or certification status(es) must be provided. No relevant listings found.");
         }
-        return relevantListings;
+        //TODO remove this
+        return relevantListings.subList(0, 1);
     }
 
     private List<CertifiedProductDetailsDTO> getListingsByEdition() throws EntityRetrievalException {
@@ -230,8 +253,10 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
         tempXmlFile = xmlPath.toFile();
         Path jsonPath = Files.createTempFile(tempDir, "chpl-" + filenamePart, ".json");
         tempJsonFile = jsonPath.toFile();
-        Path csvPath = Files.createTempFile(tempDir, "chpl-" + filenamePart, ".csv");
-        tempCsvFile = csvPath.toFile();
+        Path csvDataPath = Files.createTempFile(tempDir, "chpl-" + filenamePart, ".csv");
+        tempCsvDataFile = csvDataPath.toFile();
+        Path csvDefinitionPath = Files.createTempFile(tempDir, "chpl-" + filenamePart + "-definition", ".csv");
+        tempCsvDefinitionFile = csvDefinitionPath.toFile();
     }
 
     private void swapFiles() throws IOException {
@@ -262,16 +287,27 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
             LOGGER.warn("Temp JSON File was null and could not be moved.");
         }
 
-        if (tempCsvFile != null) {
+        if (tempCsvDataFile != null) {
             String csvFilename = getFileName(downloadFolder.getAbsolutePath(),
                     getFilenameTimestampFormat().format(new Date()), "csv");
-            LOGGER.info("Moving " + tempCsvFile.getAbsolutePath() + " to " + csvFilename);
-            Path targetFile = Files.move(tempCsvFile.toPath(), Paths.get(csvFilename), StandardCopyOption.ATOMIC_MOVE);
+            LOGGER.info("Moving " + tempCsvDataFile.getAbsolutePath() + " to " + csvFilename);
+            Path targetFile = Files.move(tempCsvDataFile.toPath(), Paths.get(csvFilename), StandardCopyOption.ATOMIC_MOVE);
             if (targetFile == null) {
                 LOGGER.warn("CSV file move may not have succeeded. Check file system.");
             }
         } else {
             LOGGER.warn("Temp CSV File was null and could not be moved.");
+        }
+
+        if (tempCsvDefinitionFile != null) {
+            String csvFilename = getDefinitionFileName(downloadFolder.getAbsolutePath(), "csv");
+            LOGGER.info("Moving " + tempCsvDefinitionFile.getAbsolutePath() + " to " + csvFilename);
+            Path targetFile = Files.move(tempCsvDefinitionFile.toPath(), Paths.get(csvFilename), StandardCopyOption.ATOMIC_MOVE);
+            if (targetFile == null) {
+                LOGGER.warn("CSV definition file move may not have succeeded. Check file system.");
+            }
+        } else {
+            LOGGER.warn("Temp CSV definition File was null and could not be moved.");
         }
     }
 
@@ -289,10 +325,16 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
             LOGGER.warn("Temp JSON File was null and could not be deleted.");
         }
 
-        if (tempCsvFile != null && tempCsvFile.exists()) {
-            tempCsvFile.delete();
+        if (tempCsvDataFile != null && tempCsvDataFile.exists()) {
+            tempCsvDataFile.delete();
         } else {
-            LOGGER.warn("Temp CSV File was null and could not be deleted.");
+            LOGGER.warn("Temp CSV Data File was null and could not be deleted.");
+        }
+
+        if (tempCsvDefinitionFile != null && tempCsvDefinitionFile.exists()) {
+            tempCsvDefinitionFile.delete();
+        } else {
+            LOGGER.warn("Temp CSV Definition File was null and could not be deleted.");
         }
 
         if (tempDirectory != null && tempDirectory.exists()) {
@@ -318,6 +360,14 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
             }
         }
         return filenamePart;
+    }
+
+    private String getDefinitionFileName(String path, String extension) {
+        String definitionFilenamePart = "";
+        if (edition != null) {
+            definitionFilenamePart = edition.getYear() + " ";
+        }
+        return path + File.separator + definitionFilenamePart + "Listing CSV Data Dictionary." + extension;
     }
 
     private Integer getThreadCountForJob() throws NumberFormatException {

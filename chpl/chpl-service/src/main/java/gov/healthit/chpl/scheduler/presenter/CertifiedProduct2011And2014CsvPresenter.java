@@ -7,8 +7,9 @@ import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 
 public class CertifiedProduct2011And2014CsvPresenter extends CertifiedProductCsvPresenter {
+
     @Override
-    protected List<String> generateHeaderValues() {
+    protected List<String> generateDataHeaderValues() {
         List<String> result = new ArrayList<String>();
         result.add("Certification Edition");
         result.add("CHPL ID");
