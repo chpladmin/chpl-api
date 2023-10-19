@@ -5,14 +5,10 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.dao.CertificationResultDetailsDAO;
-import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformity;
 import gov.healthit.chpl.domain.surveillance.SurveillanceRequirement;
 import gov.healthit.chpl.domain.surveillance.SurveillanceResultType;
-import gov.healthit.chpl.manager.DimensionalDataManager;
-import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.util.DateUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.NullSafeEvaluator;
@@ -24,9 +20,7 @@ public class SurveillanceNonconformityReviewer implements Reviewer {
     private ErrorMessageUtil msgUtil;
 
     @Autowired
-    public SurveillanceNonconformityReviewer(CertificationResultDetailsDAO certResultDetailsDao,
-            ErrorMessageUtil msgUtil, CertificationCriterionService criterionService, DimensionalDataManager dimensionalDataManager,
-            CertifiedProductDAO certifiedProductDAO) {
+    public SurveillanceNonconformityReviewer(ErrorMessageUtil msgUtil) {
         this.msgUtil = msgUtil;
     }
 
@@ -204,15 +198,8 @@ public class SurveillanceNonconformityReviewer implements Reviewer {
     }
 
     private void checkNonconformityValidForSurveillanceStartDate(Surveillance surv, SurveillanceRequirement req, SurveillanceNonconformity nc) {
-        if (isAddingNewSurveillance(surv)
-                && !DateUtil.isDateBetweenInclusive(Pair.of(nc.getType().getStartDay(), nc.getType().getEndDay()), surv.getStartDay())) {
-
+        if (!DateUtil.isDateBetweenInclusive(Pair.of(nc.getType().getStartDay(), nc.getType().getEndDay()), surv.getStartDay())) {
                 surv.getErrorMessages().add(msgUtil.getMessage("surveillance.nonConformityType.notValid", nc.getType().getFormattedTitle()));
-            }
-
-    }
-
-    private boolean isAddingNewSurveillance(Surveillance surv) {
-        return surv.getId() == null;
+        }
     }
 }
