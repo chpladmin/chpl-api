@@ -36,6 +36,36 @@ public class SurveillanceNonconformityReviewerTest {
 
     @Test
     public void review_nonConformityNotCriteriaRelatedIsValid_noErrorMessages() {
+        Surveillance surveillance = Surveillance.builder()
+                .id(1L)
+                .startDay(LocalDate.of(2022, 10, 18))
+                .requirements(new LinkedHashSet<SurveillanceRequirement>(Collections.singleton(SurveillanceRequirement.builder()
+                        .id(1L)
+                        .result(getNonConformityResultType())
+                        .requirementType(getRequirementType())
+                        .nonconformities(List.of(SurveillanceNonconformity.builder()
+                                .id(1L)
+                                .capApprovalDay(LocalDate.now())
+                                .capMustCompleteDay(LocalDate.now())
+                                .dateOfDeterminationDay(LocalDate.now())
+                                .summary("Summary")
+                                .findings("Findings")
+                                .type(NonconformityType.builder()
+                                        .id(1L)
+                                        .startDay(null)
+                                        .endDay(null)
+                                        .title("Annual Real World Testing Plan")
+                                        .number(null)
+                                        .build())
+                                .build()))
+                        .build())))
+                .build();
+
+        SurveillanceNonconformityReviewer reviewer = new SurveillanceNonconformityReviewer(errorMessageUtil);
+
+        reviewer.review(surveillance);
+
+        assertEquals(0, surveillance.getErrorMessages().size());
 
     }
 
