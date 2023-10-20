@@ -87,7 +87,8 @@ public class SurveillanceRequirementReviewer implements Reviewer {
     }
 
     private void checkRequirementValidForSurveillanceStartDate(Surveillance surv, SurveillanceRequirement req) {
-        if (!DateUtil.isDateBetweenInclusive(Pair.of(req.getRequirementType().getStartDay(), req.getRequirementType().getEndDay()), surv.getStartDay())) {
+        if (req.getRequirementType() != null
+                && !DateUtil.isDateBetweenInclusive(Pair.of(req.getRequirementType().getStartDay(), req.getRequirementType().getEndDay()), surv.getStartDay())) {
             surv.getErrorMessages().add(msgUtil.getMessage("surveillance.nonConformityType.notValid", req.getRequirementType().getFormattedTitle()));
         }
     }
