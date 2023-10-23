@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.persistence.Query;
 
@@ -309,9 +310,11 @@ public class CertifiedProductDAO extends BaseDAOImpl {
     }
 
     @Transactional(readOnly = true)
-    public List<CertifiedProductDetailsDTO> getListingsByStatusExcludingEdition(
-            Collection<CertificationStatusType> certificationStatuses,
-            List<CertificationEditionConcept> editionsToExclude) {
+    public List<CertifiedProductDetailsDTO> getListingsByStatusExcludingRetiredEditions(
+            Collection<CertificationStatusType> certificationStatuses) {
+        List<CertificationEditionConcept> retiredEditions =
+                Stream.of(CertificationEditionConcept.CERTIFICATION_EDITION_2011,
+                        CertificationEditionConcept.CERTIFICATION_EDITION_2014).toList();
         String hql = "SELECT cpd "
                 + "FROM CertifiedProductDetailsEntity cpd "
                 + "WHERE cpd.certificationStatusName IN (:certificationStatusNames) "
@@ -322,7 +325,7 @@ public class CertifiedProductDAO extends BaseDAOImpl {
                 .map(CertificationStatusType::getName)
                 .collect(Collectors.toList());
         query.setParameter("certificationStatusNames", certificationStatusNames);
-        query.setParameter("editionsToExclude", editionsToExclude.stream().map(ed -> ed.getYear()).toList());
+        query.setParameter("editionsToExclude", retiredEditions.stream().map(ed -> ed.getYear()).toList());
 
         List<CertifiedProductDetailsEntity> queryResults = query.getResultList();
         if (queryResults == null || queryResults.size() == 0) {

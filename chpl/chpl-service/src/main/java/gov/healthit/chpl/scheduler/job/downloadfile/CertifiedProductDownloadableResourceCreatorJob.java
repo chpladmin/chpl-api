@@ -219,9 +219,7 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
                 + Util.joinListGrammatically(certificationStatuses.stream().map(status -> status.getName()).collect(Collectors.toList()))
                 + ".");
         Date start = new Date();
-        relevantListings = getCertifiedProductDao().getListingsByStatusExcludingEdition(certificationStatuses,
-                Stream.of(CertificationEditionConcept.CERTIFICATION_EDITION_2011,
-                         CertificationEditionConcept.CERTIFICATION_EDITION_2014).toList());
+        relevantListings = getCertifiedProductDao().getListingsByStatusExcludingRetiredEditions(certificationStatuses);
         Date end = new Date();
         LOGGER.info("Found the " + relevantListings.size() + " listings with status(es) "
                 + Util.joinListGrammatically(certificationStatuses.stream().map(status -> status.getName()).collect(Collectors.toList()))
