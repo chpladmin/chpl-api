@@ -35,7 +35,7 @@ public class TestingLabNormalizer {
             //Update each ATL in the listing with valid data
             listing.getTestingLabs().stream()
                 .forEach(testingLab -> populateTestingLab(testingLab));
-        } else if (isTestingLabPortionOfChplProductNumberValid(listing)) {
+        } else if (isCreating(listing) && isTestingLabPortionOfChplProductNumberValid(listing)) {
             updateTestingLabFromChplProductNumber(listing);
         }
     }
@@ -116,4 +116,7 @@ public class TestingLabNormalizer {
         }
     }
 
+    private boolean isCreating(CertifiedProductSearchDetails listing) {
+        return listing.getId() == null;
+    }
 }
