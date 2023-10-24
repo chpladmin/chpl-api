@@ -23,8 +23,6 @@ import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.entity.listing.CertificationResultEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.functionalitytested.FunctionalityTested;
-import gov.healthit.chpl.functionalitytested.FunctionalityTestedCriteriaMapEntity;
 import gov.healthit.chpl.util.AuthUtil;
 import lombok.extern.log4j.Log4j2;
 
@@ -106,11 +104,11 @@ public class StandardDAO extends BaseDAOImpl {
         update(entity);
     }
 
-    @CacheEvict(value = CacheNames.FUNCTIONALITY_TESTED_MAPS, allEntries = true)
-    public void addFunctionalityTestedCriteriaMap(FunctionalityTested functionalityTested, CertificationCriterion criterion) {
-        FunctionalityTestedCriteriaMapEntity entity = FunctionalityTestedCriteriaMapEntity.builder()
+    @CacheEvict(value = CacheNames.STANDARDS, allEntries = true)
+    public void addStandardCriteriaMap(Standard standard, CertificationCriterion criterion) {
+        StandardCriteriaMapEntity entity = StandardCriteriaMapEntity.builder()
                 .certificationCriterionId(criterion.getId())
-                .functionalityTestedId(functionalityTested.getId())
+                .standardId(standard.getId())
                 .creationDate(new Date())
                 .lastModifiedDate(new Date())
                 .lastModifiedUser(AuthUtil.getAuditId())
