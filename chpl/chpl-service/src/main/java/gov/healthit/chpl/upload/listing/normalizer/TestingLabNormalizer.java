@@ -12,6 +12,7 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductTestingLab;
 import gov.healthit.chpl.domain.TestingLab;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
+import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.ValidationUtils;
 import lombok.extern.log4j.Log4j2;
 
@@ -21,13 +22,15 @@ public class TestingLabNormalizer {
     private TestingLabDAO atlDao;
     private ChplProductNumberUtil chplProductNumberUtil;
     private ValidationUtils validationUtils;
+    private ErrorMessageUtil errorMessageUtil;
 
     @Autowired
     public TestingLabNormalizer(TestingLabDAO atlDao, ChplProductNumberUtil chplProductNumberUtil,
-            ValidationUtils validationUtils) {
+            ValidationUtils validationUtils, ErrorMessageUtil errorMessageUtil) {
         this.atlDao = atlDao;
         this.chplProductNumberUtil = chplProductNumberUtil;
         this.validationUtils = validationUtils;
+        this.errorMessageUtil = errorMessageUtil;
     }
 
     public void normalize(CertifiedProductSearchDetails listing) {
@@ -35,7 +38,7 @@ public class TestingLabNormalizer {
             //Update each ATL in the listing with valid data
             listing.getTestingLabs().stream()
                 .forEach(testingLab -> populateTestingLab(testingLab));
-        } else if (isCreating(listing) && isTestingLabPortionOfChplProductNumberValid(listing)) {
+        } else if (isTestingLabPortionOfChplProductNumberValid(listing)) {
             updateTestingLabFromChplProductNumber(listing);
         }
     }
@@ -59,6 +62,7 @@ public class TestingLabNormalizer {
                     .testingLab(testingLab)
                     .build();
             listing.setTestingLabs(Stream.of(cpTestingLab).collect(Collectors.toList()));
+            listing.addWarningMessage(errorMessageUtil.getMessage("listing.testingLabInferred", cpTestingLab.getTestingLab().getName()));
         }
     }
 
@@ -114,9 +118,5 @@ public class TestingLabNormalizer {
         if (testingLab != null) {
             cpTestingLab.setTestingLab(testingLab);
         }
-    }
-
-    private boolean isCreating(CertifiedProductSearchDetails listing) {
-        return listing.getId() == null;
     }
 }
