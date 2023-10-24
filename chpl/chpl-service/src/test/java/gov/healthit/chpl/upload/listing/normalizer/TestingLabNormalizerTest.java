@@ -18,17 +18,24 @@ import gov.healthit.chpl.domain.CertifiedProductTestingLab;
 import gov.healthit.chpl.domain.TestingLab;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
+import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.ValidationUtils;
 
 public class TestingLabNormalizerTest {
 
     private TestingLabDAO atlDao;
     private TestingLabNormalizer normalizer;
+    private ErrorMessageUtil errorMessageUtil;
 
     @Before
     public void setup() {
         atlDao = Mockito.mock(TestingLabDAO.class);
-        normalizer = new TestingLabNormalizer(atlDao, new ChplProductNumberUtil(), new ValidationUtils());
+        errorMessageUtil = Mockito.mock(ErrorMessageUtil.class);
+
+        Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
+            .thenReturn("Error Message");
+
+        normalizer = new TestingLabNormalizer(atlDao, new ChplProductNumberUtil(), new ValidationUtils(), errorMessageUtil);
     }
 
     @Test
