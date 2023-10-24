@@ -105,16 +105,16 @@ public class CertificationResultManager extends SecuredManager {
             throws EntityCreationException, EntityRetrievalException {
 
         int numChanges = 0;
-        if ((orig == null || BooleanUtils.isFalse(orig.isSuccess()))
-                && updated != null
-                && BooleanUtils.isTrue(updated.isSuccess())) {
+        if ((orig == null || orig.getId() == null || BooleanUtils.isFalse(orig.isSuccess()))
+                && updated != null) {
             //this is a new cert result we are adding
             long addedCertResultId = certResultDAO.create(updatedListing.getId(), updated);
             updated.setId(addedCertResultId);
             numChanges++;
         } else {
             boolean hasChanged = false;
-            if (!StringUtils.equals(orig.getApiDocumentation(), updated.getApiDocumentation())
+            if (!Objects.equals(orig.isSuccess(), updated.isSuccess())
+                    || !StringUtils.equals(orig.getApiDocumentation(), updated.getApiDocumentation())
                     || !StringUtils.equals(orig.getPrivacySecurityFramework(), updated.getPrivacySecurityFramework())
                     || !Objects.equals(orig.isG1Success(), updated.isG1Success())
                     || !Objects.equals(orig.isG2Success(), updated.isG2Success())
