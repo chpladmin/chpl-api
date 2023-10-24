@@ -6,7 +6,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jfree.data.time.DateRange;
@@ -19,7 +18,6 @@ import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.CertificationStatus;
 import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.domain.Developer;
-import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.CertificationBodyManager;
@@ -75,7 +73,7 @@ public class AttestationCertificationBodyService {
 
     private List<ListingSearchResult> getListingDataForDeveloper(Developer developer) throws ValidationException {
         SearchRequest request = SearchRequest.builder()
-                .certificationEditions(Stream.of(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear()).collect(Collectors.toSet()))
+                .certificationStatuses(activeStatusNames.stream().collect(Collectors.toSet()))
                 .developer(developer.getName())
                 .pageSize(MAX_PAGE_SIZE)
                 .build();
