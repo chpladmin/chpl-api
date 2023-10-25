@@ -87,7 +87,7 @@ public abstract class ActivitiesAndOutcomesWorksheetBuilder {
     private static final int COL_DEV_RESOLUTION = 32;
     private static final int COL_COMPLETED_CAP = 33;
     private static final int[] HIDDEN_COLS =
-        {COL_SURV_ACTIVITY_TRACKER, COL_RELATED_COMPLAINT, COL_Q1, COL_Q2, COL_Q3, COL_Q4};
+        {COL_SURV_ACTIVITY_TRACKER, COL_Q1, COL_Q2, COL_Q3, COL_Q4};
 
     private SurveillanceReportManager reportManager;
     private CertifiedProductDetailsManager detailsManager;
