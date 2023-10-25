@@ -66,7 +66,7 @@ public abstract class ActivitiesAndOutcomesWorksheetBuilder {
     private static final int COL_PRODUCT_VERSION = 11;
     private static final int COL_K1_REVIEWED = 12;
     private static final int COL_SURV_TYPE = 13;
-    private static final int COL_SURV_LOCATION_COUNT = 14;
+    private static final int COL_SURV_RANDOMIZED_SITES_USED = 14;
     private static final int COL_SURV_BEGIN = 15;
     private static final int COL_SURV_END = 16;
     private static final int COL_SURV_OUTCOME = 17;
@@ -155,7 +155,7 @@ public abstract class ActivitiesAndOutcomesWorksheetBuilder {
         sheet.setColumnWidth(COL_PRODUCT_VERSION, sharedColWidth);
         sheet.setColumnWidth(COL_K1_REVIEWED, sharedColWidth);
         sheet.setColumnWidth(COL_SURV_TYPE, workbook.getColumnWidth(13.67));
-        sheet.setColumnWidth(COL_SURV_LOCATION_COUNT, sharedColWidth);
+        sheet.setColumnWidth(COL_SURV_RANDOMIZED_SITES_USED, sharedColWidth);
         sheet.setColumnWidth(COL_SURV_BEGIN, sharedColWidth);
         sheet.setColumnWidth(COL_SURV_END, sharedColWidth);
         sheet.setColumnWidth(COL_SURV_OUTCOME, workbook.getColumnWidth(51.44));
@@ -279,7 +279,7 @@ public abstract class ActivitiesAndOutcomesWorksheetBuilder {
         addHeadingCell(workbook, row, COL_PRODUCT_VERSION, "Product Version");
         addHeadingCell(workbook, row, COL_K1_REVIEWED, "§170.523(k)(1) Reviewed");
         addHeadingCell(workbook, row, COL_SURV_TYPE, "Type of Surveillance");
-        addHeadingCell(workbook, row, COL_SURV_LOCATION_COUNT, "Number of Locations Surveilled");
+        addHeadingCell(workbook, row, COL_SURV_RANDOMIZED_SITES_USED, "Randomized Sites Used");
         addHeadingCell(workbook, row, COL_SURV_BEGIN, "Surveillance Began");
         addHeadingCell(workbook, row, COL_SURV_END, "Surveillance Ended");
         addHeadingCell(workbook, row, COL_SURV_OUTCOME, "Outcome of Surveillance");
@@ -409,7 +409,7 @@ public abstract class ActivitiesAndOutcomesWorksheetBuilder {
             //user has to enter this field
             addDataCell(workbook, row, COL_K1_REVIEWED, generateK1ReviewedValue(quarterlyReports, privilegedSurvQuarterlyData));
             addDataCell(workbook, row, COL_SURV_TYPE, surv.getType().getName());
-            addDataCell(workbook, row, COL_SURV_LOCATION_COUNT,
+            addDataCell(workbook, row, COL_SURV_RANDOMIZED_SITES_USED,
                     surv.getRandomizedSitesUsed() == null ? "" : surv.getRandomizedSitesUsed().toString());
             addDataCell(workbook, row, COL_SURV_BEGIN, dateFormatter.format(surv.getStartDay()));
             addDataCell(workbook, row, COL_SURV_END, surv.getEndDay() == null ? "" : dateFormatter.format(surv.getEndDay()));
