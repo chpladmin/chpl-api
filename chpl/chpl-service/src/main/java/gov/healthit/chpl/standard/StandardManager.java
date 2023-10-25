@@ -3,6 +3,7 @@ package gov.healthit.chpl.standard;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -52,8 +53,8 @@ public class StandardManager {
     }
 
 
-//    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).FUNCTIONALITY_TESTED, "
-//            + "T(gov.healthit.chpl.permissions.domains.StandardDomainPermissions).UPDATE)")
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).STANDARD, "
+            + "T(gov.healthit.chpl.permissions.domains.StandardDomainPermissions).UPDATE)")
     @Transactional
     @ListingStoreRemove(removeBy = RemoveBy.ALL)
     @GenerateListingDownloadFile(listingSet = {ListingSet.EDITION_2011, ListingSet.EDITION_2014})
@@ -63,16 +64,16 @@ public class StandardManager {
         return standardDAO.getById(standard.getId());
     }
 
-//    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).FUNCTIONALITY_TESTED, "
-//            + "T(gov.healthit.chpl.permissions.domains.StandardDomainPermissions).CREATE)")
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).STANDARD, "
+            + "T(gov.healthit.chpl.permissions.domains.StandardDomainPermissions).CREATE)")
     @Transactional
     public Standard create(Standard standard) throws EntityRetrievalException, ValidationException {
         standardValidator.validateForAdd(standard);
         return standardService.add(standard);
     }
 
-//    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).FUNCTIONALITY_TESTED, "
-//            + "T(gov.healthit.chpl.permissions.domains.StandardDomainPermissions).DELETE)")
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).STANDARD, "
+            + "T(gov.healthit.chpl.permissions.domains.StandardDomainPermissions).DELETE)")
     @Transactional
     public void delete(Long standardId) throws EntityRetrievalException, ValidationException {
         Standard standard = standardDAO.getById(standardId);
