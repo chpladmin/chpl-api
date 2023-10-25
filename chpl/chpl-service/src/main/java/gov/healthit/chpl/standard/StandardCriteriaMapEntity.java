@@ -39,12 +39,12 @@ public class StandardCriteriaMapEntity implements Serializable {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @Column(name = "criteria_id")
+    @Column(name = "certification_criterion_id")
     private Long certificationCriterionId;
 
     @Basic(optional = false)
     @OneToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "criteria_id", insertable = false, updatable = false)
+    @JoinColumn(name = "certification_criterion_id", insertable = false, updatable = false)
     private CertificationCriterionEntity criterion;
 
     @Column(name = "standard_id")

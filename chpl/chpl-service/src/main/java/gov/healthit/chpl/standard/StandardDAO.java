@@ -189,7 +189,7 @@ public class StandardDAO extends BaseDAOImpl {
                             + "LEFT OUTER JOIN FETCH criteriaMapping.criterion criterion "
                             + "LEFT OUTER JOIN FETCH criterion.certificationEdition "
                             + "LEFT JOIN FETCH criterion.rule "
-                            + "WHERE (NOT s.deleted = true) ",StandardEntity.class)
+                            + "WHERE (NOT s.deleted = true) ", StandardEntity.class)
                 .getResultList();
     }
 
@@ -228,7 +228,7 @@ public class StandardDAO extends BaseDAOImpl {
                         + "JOIN FETCH c.rule "
                         + "JOIN FETCH scm.standard ft "
                         + "WHERE scm.deleted <> true "
-                        + "AND s.deleted <> true ",
+                        + "AND c.deleted <> true ",
                         StandardCriteriaMapEntity.class)
                 .getResultList();
     }

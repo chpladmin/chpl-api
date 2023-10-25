@@ -17,14 +17,13 @@ import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.standard.Standard;
 import gov.healthit.chpl.standard.StandardManager;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
-import gov.healthit.chpl.web.controller.annotation.DeprecatedApiResponseFields;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @Tag(name = "standard", description = "Endpoints related to Standards.")
 @RestController
-@RequestMapping("/standard")
+@RequestMapping("/standards")
 public class StandardController {
     private StandardManager standardManager;
 
@@ -33,8 +32,6 @@ public class StandardController {
         this.standardManager = standardManager;
     }
 
-    @DeprecatedApiResponseFields(friendlyUrl = "/standard",
-            responseClass = Standard.class)
     @Operation(summary = "Retrieve all Standards. ",
             description = "Returns all of the Standards that are currently in the CHPL.",
             security = {
