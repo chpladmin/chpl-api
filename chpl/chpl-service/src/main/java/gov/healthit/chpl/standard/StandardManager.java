@@ -48,7 +48,7 @@ public class StandardManager {
     }
 
     @Transactional
-    public List<CertificationCriterion> getCertificationCriteriaForFunctionalitiesTested() {
+    public List<CertificationCriterion> getCertificationCriteriaForStandards() {
         return certificationCriterionAttributeDAO.getCriteriaForFunctionalitiesTested();
     }
 
