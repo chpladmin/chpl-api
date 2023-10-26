@@ -282,7 +282,7 @@ public class StandardDAO extends BaseDAOImpl {
                 entityManager.createQuery("SELECT cr "
                         + "FROM CertificationResultStandardEntity crs, CertificationResultEntity cr "
                         + "WHERE crs.certificationResultId = cr.id "
-                        + "AND crs.stanadrd.dd = :standardId "
+                        + "AND crs.standard.id = :standardId "
                         + "AND crs.deleted <> true "
                         + "AND cr.deleted <> true ",
                         CertificationResultEntity.class)
