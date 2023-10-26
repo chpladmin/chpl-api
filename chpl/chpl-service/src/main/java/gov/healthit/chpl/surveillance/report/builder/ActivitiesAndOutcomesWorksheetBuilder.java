@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.BorderExtent;
 import org.apache.poi.ss.usermodel.BorderStyle;
@@ -31,6 +32,8 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
+import gov.healthit.chpl.complaint.ComplaintDAO;
+import gov.healthit.chpl.complaint.domain.Complaint;
 import gov.healthit.chpl.compliance.surveillance.SurveillanceManager;
 import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
@@ -107,6 +110,7 @@ public abstract class ActivitiesAndOutcomesWorksheetBuilder {
     private CertifiedProductDetailsManager detailsManager;
     private SurveillanceManager survManager;
     private PrivilegedSurveillanceDAO privilegedSurvDao;
+    private ComplaintDAO complaintDao;
     private int lastDataRow;
     private DateTimeFormatter dateFormatter;
     private PropertyTemplate pt;
@@ -114,11 +118,13 @@ public abstract class ActivitiesAndOutcomesWorksheetBuilder {
     @Autowired
     public ActivitiesAndOutcomesWorksheetBuilder(SurveillanceReportManager reportManager,
             CertifiedProductDetailsManager detailsManager,
-            SurveillanceManager survManager, PrivilegedSurveillanceDAO privilegedSurvDao) {
+            SurveillanceManager survManager, PrivilegedSurveillanceDAO privilegedSurvDao,
+            ComplaintDAO complaintDao) {
         this.reportManager = reportManager;
         this.detailsManager = detailsManager;
         this.survManager = survManager;
         this.privilegedSurvDao = privilegedSurvDao;
+        this.complaintDao = complaintDao;
         dateFormatter = DateTimeFormatter.ofPattern("MM/dd/uuuu");
     }
 
@@ -586,7 +592,7 @@ public abstract class ActivitiesAndOutcomesWorksheetBuilder {
         addDataCell(workbook, row, COL_SURV_ID, surv.getFriendlyId());
         addDataCell(workbook, row, COL_SURV_ACTIVITY_TRACKER, listing.getChplProductNumber() + surv.getFriendlyId());
         //chpl generated i think once we associate a complaint with surveillance?
-        addDataCell(workbook, row, COL_RELATED_COMPLAINT, "");
+        addDataCell(workbook, row, COL_RELATED_COMPLAINT, getComplaintsForSurveillance(surv));
         if (determineIfSurveillanceHappenedDuringQuarter("Q1", quarterlyReports, surv)) {
             addDataCell(workbook, row, COL_Q1, "X");
         }
@@ -642,6 +648,16 @@ public abstract class ActivitiesAndOutcomesWorksheetBuilder {
                 generateDeveloperResolutionValue(quarterlyReports, privilegedSurvQuarterlyData));
         addDataCell(workbook, row, COL_COMPLETED_CAP,
                 generateCompletedCapValue(quarterlyReports, privilegedSurvQuarterlyData));
+    }
+
+    private String getComplaintsForSurveillance(Surveillance surv) {
+        List<Complaint> relatedComplaints = complaintDao.getComplaintsForSurveillance(surv.getId());
+        if (CollectionUtils.isEmpty(relatedComplaints)) {
+            return "";
+        }
+        return relatedComplaints.stream()
+                .map(complaint -> complaint.getAcbComplaintId())
+                .collect(Collectors.joining(", "));
     }
 
     private boolean determineIfSurveillanceHappenedDuringQuarter(String quarterName,
