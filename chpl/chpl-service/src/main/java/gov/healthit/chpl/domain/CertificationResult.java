@@ -34,6 +34,7 @@ import gov.healthit.chpl.functionalitytested.CertificationResultFunctionalityTes
 import gov.healthit.chpl.optionalStandard.CertificationResultOptionalStandardComparator;
 import gov.healthit.chpl.optionalStandard.domain.CertificationResultOptionalStandard;
 import gov.healthit.chpl.optionalStandard.domain.OptionalStandard;
+import gov.healthit.chpl.standard.CertificationResultStandard;
 import gov.healthit.chpl.svap.domain.CertificationResultSvap;
 import gov.healthit.chpl.svap.domain.CertificationResultSvapComparator;
 import gov.healthit.chpl.svap.domain.Svap;
@@ -333,6 +334,16 @@ public class CertificationResult implements Serializable {
     @XmlElement(name = "svap")
     @Builder.Default
     private List<CertificationResultSvap> svaps = new ArrayList<CertificationResultSvap>();
+
+    // TODO - Need this text for OCD-4333
+    @Schema(description = "ONC has established the Standards Version Advancement Process (SVAP) to enable health IT developers’ "
+            + "ability to incorporate newer versions of Secretary-adopted standards and implementation specifications, "
+            + "as part of the \"Real World Testing\" Condition and Maintenance of Certification requirement (§170.405) "
+            + "of the 21st Century Cures Act")
+    @XmlElementWrapper(name = "standards", nillable = true, required = false)
+    @XmlElement(name = "standard")
+    @Builder.Default
+    private List<CertificationResultStandard> standards = new ArrayList<CertificationResultStandard>();
 
     /**
      * Detailed information about the relevant certification criterion.
@@ -708,6 +719,14 @@ public class CertificationResult implements Serializable {
 
     public void setFunctionalitiesTested(List<CertificationResultFunctionalityTested> functionalitiesTested) {
         this.functionalitiesTested = functionalitiesTested;
+    }
+
+    public List<CertificationResultStandard> getStandards() {
+        return standards;
+    }
+
+    public void setStandards(List<CertificationResultStandard> standards) {
+        this.standards = standards;
     }
 
     public String getApiDocumentation() {
