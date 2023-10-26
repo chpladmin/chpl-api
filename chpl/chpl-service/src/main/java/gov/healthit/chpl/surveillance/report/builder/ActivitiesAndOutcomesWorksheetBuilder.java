@@ -64,43 +64,44 @@ public abstract class ActivitiesAndOutcomesWorksheetBuilder {
     private static final int COL_CHPL_ID = 1;
     private static final int COL_SURV_ID = 2;
     private static final int COL_SURV_ACTIVITY_TRACKER = 3;
-    private static final int COL_RELATED_COMPLAINT = 4;
-    private static final int COL_Q1 = 5;
-    private static final int COL_Q2 = 6;
-    private static final int COL_Q3 = 7;
-    private static final int COL_Q4 = 8;
-    private static final int COL_DEVELOPER_NAME = 9;
-    private static final int COL_PRODUCT_NAME = 10;
-    private static final int COL_PRODUCT_VERSION = 11;
-    private static final int COL_K1_REVIEWED = 12;
-    private static final int COL_SURV_TYPE = 13;
-    private static final int COL_SURV_RANDOMIZED_SITES_USED = 14;
-    private static final int COL_SURV_BEGIN = 15;
-    private static final int COL_SURV_END = 16;
-    private static final int COL_SURV_OUTCOME = 17;
-    private static final int COL_SURV_OUTCOME_OTHER = 18;
-    private static final int COL_NC_SURVEILLED_REQ_TYPE = 19;
-    private static final int COL_NC_SURVEILLED_REQ = 20;
-    private static final int COL_NC_TYPE = 21;
-    private static final int COL_NC_CLOSE_DATE = 22;
-    private static final int COL_NC_CAP_APPROVAL_DATE = 23;
-    private static final int COL_NC_CAP_MUST_COMPLETE_DATE = 24;
-    private static final int COL_NC_CAP_WAS_COMPLETE_DATE = 25;
-    private static final int COL_NC_FINDINGS = 26;
-    private static final int COL_CERT_STATUS_RESULTANT = 27;
-    private static final int COL_SUSPENDED = 28;
-    private static final int COL_SURV_PROCESS_TYPE = 29;
-    private static final int COL_SURV_PROCESS_TYPE_OTHER = 30;
-    private static final int COL_SURV_GROUNDS = 31;
-    private static final int COL_NONCONFORMITY_CAUSES = 32;
-    private static final int COL_NONCONFORMITY_NATURES = 33;
-    private static final int COL_SURV_STEPS = 34;
-    private static final int COL_ENGAGEMENT_STEPS = 35;
-    private static final int COL_ADDITIONAL_COSTS = 36;
-    private static final int COL_LIMITATIONS_EVAL = 37;
-    private static final int COL_NONDISCLOSURE_EVAL = 38;
-    private static final int COL_DEV_RESOLUTION = 39;
-    private static final int COL_COMPLETED_CAP = 40;
+    private static final int COL_RELATED_COMPLAINT_ACB_ID = 4;
+    private static final int COL_RELATED_COMPLAINT_ONC_ID = 5;
+    private static final int COL_Q1 = 6;
+    private static final int COL_Q2 = 7;
+    private static final int COL_Q3 = 8;
+    private static final int COL_Q4 = 9;
+    private static final int COL_DEVELOPER_NAME = 10;
+    private static final int COL_PRODUCT_NAME = 11;
+    private static final int COL_PRODUCT_VERSION = 12;
+    private static final int COL_K1_REVIEWED = 13;
+    private static final int COL_SURV_TYPE = 14;
+    private static final int COL_SURV_RANDOMIZED_SITES_USED = 15;
+    private static final int COL_SURV_BEGIN = 16;
+    private static final int COL_SURV_END = 17;
+    private static final int COL_SURV_OUTCOME = 18;
+    private static final int COL_SURV_OUTCOME_OTHER = 19;
+    private static final int COL_NC_SURVEILLED_REQ_TYPE = 20;
+    private static final int COL_NC_SURVEILLED_REQ = 21;
+    private static final int COL_NC_TYPE = 22;
+    private static final int COL_NC_CLOSE_DATE = 23;
+    private static final int COL_NC_CAP_APPROVAL_DATE = 24;
+    private static final int COL_NC_CAP_MUST_COMPLETE_DATE = 25;
+    private static final int COL_NC_CAP_WAS_COMPLETE_DATE = 26;
+    private static final int COL_NC_FINDINGS = 27;
+    private static final int COL_CERT_STATUS_RESULTANT = 28;
+    private static final int COL_SUSPENDED = 29;
+    private static final int COL_SURV_PROCESS_TYPE = 30;
+    private static final int COL_SURV_PROCESS_TYPE_OTHER = 31;
+    private static final int COL_SURV_GROUNDS = 32;
+    private static final int COL_NONCONFORMITY_CAUSES = 33;
+    private static final int COL_NONCONFORMITY_NATURES = 34;
+    private static final int COL_SURV_STEPS = 35;
+    private static final int COL_ENGAGEMENT_STEPS = 36;
+    private static final int COL_ADDITIONAL_COSTS = 37;
+    private static final int COL_LIMITATIONS_EVAL = 38;
+    private static final int COL_NONDISCLOSURE_EVAL = 39;
+    private static final int COL_DEV_RESOLUTION = 40;
+    private static final int COL_COMPLETED_CAP = 41;
     private static final int[] HIDDEN_COLS =
         {COL_SURV_ACTIVITY_TRACKER, COL_Q1, COL_Q2, COL_Q3, COL_Q4, COL_NONCONFORMITY_NATURES,
                 COL_SURV_STEPS, COL_ENGAGEMENT_STEPS, COL_ADDITIONAL_COSTS, COL_LIMITATIONS_EVAL,
@@ -164,7 +165,8 @@ public abstract class ActivitiesAndOutcomesWorksheetBuilder {
         sheet.setColumnWidth(COL_CHPL_ID, sharedColWidth);
         sheet.setColumnWidth(COL_SURV_ID,  sharedColWidth);
         sheet.setColumnWidth(COL_SURV_ACTIVITY_TRACKER, sharedColWidth);
-        sheet.setColumnWidth(COL_RELATED_COMPLAINT, sharedColWidth);
+        sheet.setColumnWidth(COL_RELATED_COMPLAINT_ACB_ID, sharedColWidth);
+        sheet.setColumnWidth(COL_RELATED_COMPLAINT_ONC_ID, sharedColWidth);
         int quarterColWidth = workbook.getColumnWidth(2.22);
         sheet.setColumnWidth(COL_Q1, quarterColWidth);
         sheet.setColumnWidth(COL_Q2, quarterColWidth);
@@ -296,7 +298,8 @@ public abstract class ActivitiesAndOutcomesWorksheetBuilder {
         addHeadingCell(workbook, row, COL_CHPL_ID, "CHPL ID");
         addHeadingCell(workbook, row, COL_SURV_ID, "Surveillance ID");
         addHeadingCell(workbook, row, COL_SURV_ACTIVITY_TRACKER, "Surveillance Activity Tracker");
-        addHeadingCell(workbook, row, COL_RELATED_COMPLAINT, "Related Complaint (both if possible)");
+        addHeadingCell(workbook, row, COL_RELATED_COMPLAINT_ACB_ID, "ONC-ACB Complaint ID");
+        addHeadingCell(workbook, row, COL_RELATED_COMPLAINT_ONC_ID, "ONC Complaint ID (if applicable)");
         addHeadingCell(workbook, row, COL_Q1, "Q1");
         addHeadingCell(workbook, row, COL_Q2, "Q2");
         addHeadingCell(workbook, row, COL_Q3, "Q3");
@@ -591,7 +594,9 @@ public abstract class ActivitiesAndOutcomesWorksheetBuilder {
         addDataCell(workbook, row, COL_CHPL_ID, listing.getChplProductNumber());
         addDataCell(workbook, row, COL_SURV_ID, surv.getFriendlyId());
         addDataCell(workbook, row, COL_SURV_ACTIVITY_TRACKER, listing.getChplProductNumber() + surv.getFriendlyId());
-        addDataCell(workbook, row, COL_RELATED_COMPLAINT, getComplaintsForSurveillance(surv));
+        List<Complaint> relatedComplaints = complaintDao.getComplaintsForSurveillance(surv.getId());
+        addDataCell(workbook, row, COL_RELATED_COMPLAINT_ACB_ID, getAcbComplaintIds(relatedComplaints));
+        addDataCell(workbook, row, COL_RELATED_COMPLAINT_ONC_ID, getOncComplaintIds(relatedComplaints));
         if (determineIfSurveillanceHappenedDuringQuarter("Q1", quarterlyReports, surv)) {
             addDataCell(workbook, row, COL_Q1, "X");
         }
@@ -649,13 +654,23 @@ public abstract class ActivitiesAndOutcomesWorksheetBuilder {
                 generateCompletedCapValue(quarterlyReports, privilegedSurvQuarterlyData));
     }
 
-    private String getComplaintsForSurveillance(Surveillance surv) {
-        List<Complaint> relatedComplaints = complaintDao.getComplaintsForSurveillance(surv.getId());
-        if (CollectionUtils.isEmpty(relatedComplaints)) {
+    private String getAcbComplaintIds(List<Complaint> complaints) {
+        if (CollectionUtils.isEmpty(complaints)) {
             return "";
         }
-        return relatedComplaints.stream()
+        return complaints.stream()
+                .filter(complaint -> !StringUtils.isEmpty(complaint.getAcbComplaintId()))
                 .map(complaint -> complaint.getAcbComplaintId())
+                .collect(Collectors.joining(", "));
+    }
+
+    private String getOncComplaintIds(List<Complaint> complaints) {
+        if (CollectionUtils.isEmpty(complaints)) {
+            return "";
+        }
+        return complaints.stream()
+                .filter(complaint -> !StringUtils.isEmpty(complaint.getOncComplaintId()))
+                .map(complaint -> complaint.getOncComplaintId())
                 .collect(Collectors.joining(", "));
     }
 
