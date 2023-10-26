@@ -427,18 +427,18 @@ public abstract class ActivitiesAndOutcomesWorksheetBuilder {
             addedRows++;
 
             for (SurveillanceRequirement req : surv.getRequirements()) {
+                //there should be one row for this surveillance per nonconformity
+                //and the data in the subsequent rows should be blank except for the nonconformity values
+                if (!isFirstRowForSurveillance) {
+                    row = workbook.getRow(sheet, rowNum++);
+                    addedRows++;
+                }
+                addDataCell(workbook, row, COL_NC_SURVEILLED_REQ_TYPE, getRequirementGroupType(req));
+                addDataCell(workbook, row, COL_NC_SURVEILLED_REQ, getRequirementType(req));
+
                 if (req.getResult() != null
                         && req.getResult().getName().equals(SurveillanceResultType.NON_CONFORMITY)) {
                     for (SurveillanceNonconformity nc : req.getNonconformities()) {
-                        //there should be one row for this surveillance per nonconformity
-                        //and the data in the subsequent rows should be blank except for the nonconformity values
-                        if (!isFirstRowForSurveillance) {
-                            row = workbook.getRow(sheet, rowNum++);
-                            addedRows++;
-                        }
-
-                        addDataCell(workbook, row, COL_NC_SURVEILLED_REQ_TYPE, getRequirementGroupType(req));
-                        addDataCell(workbook, row, COL_NC_SURVEILLED_REQ, getRequirementType(req));
                         addDataCell(workbook, row, COL_NC_TYPE, nc.getType().getFormattedTitle());
                         addDataCell(workbook, row, COL_NC_CLOSE_DATE,
                                 nc.getNonconformityCloseDay() != null ? dateFormatter.format(nc.getNonconformityCloseDay()) : "");
@@ -449,11 +449,11 @@ public abstract class ActivitiesAndOutcomesWorksheetBuilder {
                         addDataCell(workbook, row, COL_NC_CAP_WAS_COMPLETE_DATE,
                                 nc.getCapEndDay() != null ? dateFormatter.format(nc.getCapEndDay()) : "");
                         addDataCell(workbook, row, COL_NC_FINDINGS, nc.getFindings());
-                        pt.drawBorders(new CellRangeAddress(row.getRowNum(), row.getRowNum(), 1, LAST_DATA_COLUMN - 1),
-                                BorderStyle.HAIR, BorderExtent.HORIZONTAL);
-                        isFirstRowForSurveillance = false;
                     }
                 }
+                pt.drawBorders(new CellRangeAddress(row.getRowNum(), row.getRowNum(), 1, LAST_DATA_COLUMN - 1),
+                        BorderStyle.HAIR, BorderExtent.HORIZONTAL);
+                isFirstRowForSurveillance = false;
             }
         }
         return addedRows;
@@ -591,7 +591,6 @@ public abstract class ActivitiesAndOutcomesWorksheetBuilder {
         addDataCell(workbook, row, COL_CHPL_ID, listing.getChplProductNumber());
         addDataCell(workbook, row, COL_SURV_ID, surv.getFriendlyId());
         addDataCell(workbook, row, COL_SURV_ACTIVITY_TRACKER, listing.getChplProductNumber() + surv.getFriendlyId());
-        //chpl generated i think once we associate a complaint with surveillance?
         addDataCell(workbook, row, COL_RELATED_COMPLAINT, getComplaintsForSurveillance(surv));
         if (determineIfSurveillanceHappenedDuringQuarter("Q1", quarterlyReports, surv)) {
             addDataCell(workbook, row, COL_Q1, "X");
