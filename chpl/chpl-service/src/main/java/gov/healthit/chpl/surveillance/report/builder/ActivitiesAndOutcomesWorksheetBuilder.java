@@ -434,6 +434,7 @@ public abstract class ActivitiesAndOutcomesWorksheetBuilder {
                 //and the data in the subsequent rows should be blank except for the nonconformity values
                 if (!isFirstRowForSurveillance) {
                     row = workbook.getRow(sheet, rowNum++);
+                    addSurveillanceData(workbook, row, quarterlyReports, surv, privilegedSurvQuarterlyData, listing);
                     addedRows++;
                 }
                 addDataCell(workbook, row, COL_NC_SURVEILLED_REQ_TYPE, getRequirementGroupType(req));
