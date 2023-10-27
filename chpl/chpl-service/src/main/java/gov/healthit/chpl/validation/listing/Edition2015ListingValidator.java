@@ -54,6 +54,7 @@ import gov.healthit.chpl.validation.listing.reviewer.edition2015.RequiredAndRela
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.RequiredAndRelatedCriteriaReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.RequiredData2015Reviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.SedG32015Reviewer;
+import gov.healthit.chpl.validation.listing.reviewer.edition2015.StandardAllowedByCriteriaReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.UnavailableCriteriaComparisonReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.UnavailableCriteriaTestTaskComparisonReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.UnavailableCriteriaUcdComparisonReviewer;
@@ -240,6 +241,9 @@ public class Edition2015ListingValidator extends Validator {
     private QmsStandardReviewer qmsStandardReviewer;
 
     @Autowired
+    private StandardAllowedByCriteriaReviewer standardAllowedByCriteriaReviewer;
+
+    @Autowired
     @Qualifier("deprecatedFieldReviewer")
     private DeprecatedFieldReviewer deprecatedFieldReviewer;
 
@@ -278,6 +282,7 @@ public class Edition2015ListingValidator extends Validator {
         reviewers.add(ttReviewer);
         reviewers.add(urlReviewer);
         reviewers.add(functionalityTestedReviewer);
+        reviewers.add(standardAllowedByCriteriaReviewer);
         reviewers.add(invalidCriteriaCombinationReviewer);
         reviewers.add(attestedCriteriaCqmReviewer);
         reviewers.add(cqmAttestedCriteriaReviewer);
