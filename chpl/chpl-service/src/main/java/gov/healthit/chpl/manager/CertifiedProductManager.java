@@ -29,10 +29,10 @@ import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.caching.ListingSearchCacheRefresh;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
+import gov.healthit.chpl.certifiedproduct.service.CertificationResultSynchronizationService;
 import gov.healthit.chpl.dao.CQMCriterionDAO;
 import gov.healthit.chpl.dao.CQMResultDAO;
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
-import gov.healthit.chpl.dao.CertificationResultDAO;
 import gov.healthit.chpl.dao.CertificationStatusDAO;
 import gov.healthit.chpl.dao.CertificationStatusEventDAO;
 import gov.healthit.chpl.dao.CertifiedProductAccessibilityStandardDAO;
@@ -139,7 +139,7 @@ public class CertifiedProductManager extends SecuredManager {
     private CertificationStatusEventDAO statusEventDao;
     private CuresUpdateEventDAO curesUpdateDao;
     private PromotingInteroperabilityUserDAO piuDao;
-    private CertificationResultManager certResultManager;
+    private CertificationResultSynchronizationService certResultService;
     private CertificationStatusDAO certStatusDao;
     private ListingGraphDAO listingGraphDao;
     private ResourcePermissions resourcePermissions;
@@ -164,7 +164,7 @@ public class CertifiedProductManager extends SecuredManager {
     @Autowired
     public CertifiedProductManager(ErrorMessageUtil msgUtil,
             CertifiedProductDAO cpDao,
-            CertificationResultDAO certDao, CertificationCriterionDAO certCriterionDao,
+            CertificationCriterionDAO certCriterionDao,
             QmsStandardDAO qmsDao, TargetedUserDAO targetedUserDao,
             AccessibilityStandardDAO asDao, CertifiedProductQmsStandardDAO cpQmsDao,
             ListingMeasureDAO cpMeasureDao,
@@ -176,7 +176,7 @@ public class CertifiedProductManager extends SecuredManager {
             @Lazy DeveloperManager developerManager, ProductManager productManager,
             ProductVersionManager versionManager, CertificationStatusEventDAO statusEventDao,
             CuresUpdateEventDAO curesUpdateDao,
-            PromotingInteroperabilityUserDAO piuDao, CertificationResultManager certResultManager,
+            PromotingInteroperabilityUserDAO piuDao, CertificationResultSynchronizationService certResultService,
             CertificationStatusDAO certStatusDao, ListingGraphDAO listingGraphDao,
             ResourcePermissions resourcePermissions,
             CertifiedProductSearchResultDAO certifiedProductSearchResultDAO,
@@ -210,7 +210,7 @@ public class CertifiedProductManager extends SecuredManager {
         this.statusEventDao = statusEventDao;
         this.curesUpdateDao = curesUpdateDao;
         this.piuDao = piuDao;
-        this.certResultManager = certResultManager;
+        this.certResultService = certResultService;
         this.certStatusDao = certStatusDao;
         this.listingGraphDao = listingGraphDao;
         this.resourcePermissions = resourcePermissions;
@@ -1270,24 +1270,15 @@ public class CertifiedProductManager extends SecuredManager {
     private int updateCertifications(CertifiedProductSearchDetails existingListing,
             CertifiedProductSearchDetails updatedListing, List<CertificationResult> existingCertifications,
             List<CertificationResult> updatedCertifications)
-            throws EntityCreationException, EntityRetrievalException, JsonProcessingException, IOException {
-
+            throws EntityCreationException, EntityRetrievalException {
         int numChanges = 0;
-
-        // replace the value of the result. we shouldn't have to add or delete any cert results
-        // because for certification criteria, all results are always there whether they were
-        // successful or not
-
-        for (CertificationResult updatedItem : updatedCertifications) {
-            for (CertificationResult existingItem : existingCertifications) {
-                if (updatedItem.getCriterion() != null && existingItem.getCriterion() != null
-                        && updatedItem.getCriterion().getId().equals(existingItem.getCriterion().getId())) {
-                    numChanges += certResultManager.update(existingListing, updatedListing, existingItem,
-                            updatedItem);
-                }
-            }
+        try {
+            numChanges = certResultService.synchronizeCertificationResults(
+                    existingListing, updatedListing, existingCertifications, updatedCertifications);
+        } catch (Exception ex) {
+            LOGGER.error("Exception synchronizing certification results for listing " + existingListing.getId(), ex);
+            throw new EntityCreationException("Exception synchronizing certification results for listing " + existingListing.getId());
         }
-
         return numChanges;
     }
 
