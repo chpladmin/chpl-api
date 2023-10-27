@@ -1,7 +1,9 @@
 package gov.healthit.chpl.validation.listing.reviewer.edition2015;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,20 +40,36 @@ public class UnavailableCriteriaComparisonReviewer implements ComparisonReviewer
 
     @Override
     public void review(CertifiedProductSearchDetails existingListing, CertifiedProductSearchDetails updatedListing) {
+        //added criteria are the ones present in updatedListing but not in existingListing
+        List<CertificationResult> addedCertificationResults = getAddedCertificationResults(existingListing, updatedListing);
+        addedCertificationResults.stream()
+            .forEach(addedCertResult -> reviewCriterionAvailableAndAddable(updatedListing, addedCertResult));
+
+        //check possibly updated criteria to make sure if there was a change then the criteria was editable
         for (CertificationResult updatedCert : updatedListing.getCertificationResults()) {
             for (CertificationResult existingCert : existingListing.getCertificationResults()) {
                 // find matching criteria in existing/updated listings
                 if (updatedCert.getCriterion().getId() != null && existingCert.getCriterion().getId() != null
-                        && updatedCert.getCriterion().getId().equals(existingCert.getCriterion().getId())) {
-                    if (isCriteriaAdded(updatedCert, existingCert)) {
-                        reviewCriterionAvailableAndAddable(updatedListing, updatedCert);
-                    } else if (isCriteriaEdited(updatedCert, existingCert)) {
+                        && updatedCert.getCriterion().getId().equals(existingCert.getCriterion().getId())
+                        && isCriteriaEdited(updatedCert, existingCert)) {
                         reviewCriterionAvailableAndEditable(updatedListing, existingCert, updatedCert);
-                    }
                 }
             }
         }
     }
+
+    private List<CertificationResult> getAddedCertificationResults(CertifiedProductSearchDetails existingListing, CertifiedProductSearchDetails updatedListing) {
+        return updatedListing.getCertificationResults().stream()
+            .filter(updatedCertResult -> !isCriterionAttested(existingListing, updatedCertResult.getCriterion().getId()))
+            .collect(Collectors.toList());
+    }
+
+    private boolean isCriterionAttested(CertifiedProductSearchDetails listing, Long criterionId) {
+        return listing.getCertificationResults().stream()
+                .filter(certResult -> certResult.getCriterion().getId().equals(criterionId))
+                .findAny().isPresent();
+    }
+
 
     private void reviewCriterionAvailableAndAddable(CertifiedProductSearchDetails listing, CertificationResult certResult) {
         if (!doCriterionDatesOverlapCertificationDay(listing, certResult)) {
@@ -76,10 +94,6 @@ public class UnavailableCriteriaComparisonReviewer implements ComparisonReviewer
         return certResult.getCriterion() != null
                 && DateUtil.datesOverlap(Pair.of(listing.getCertificationDay(), listingEndDay),
                         Pair.of(certResult.getCriterion().getStartDay(), certResult.getCriterion().getEndDay()));
-    }
-
-    private boolean isCriteriaAdded(CertificationResult updatedCert, CertificationResult existingCert) {
-        return updatedCert.isSuccess() && !existingCert.isSuccess();
     }
 
     private boolean isCriteriaEdited(CertificationResult updatedCert, CertificationResult existingCert) {

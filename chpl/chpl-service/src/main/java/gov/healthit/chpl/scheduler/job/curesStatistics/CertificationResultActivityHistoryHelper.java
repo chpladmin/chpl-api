@@ -2,6 +2,7 @@ package gov.healthit.chpl.scheduler.job.curesStatistics;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -35,15 +36,15 @@ public class CertificationResultActivityHistoryHelper {
             CertifiedProductSearchDetails originalListingInActivity = activityUtil.getListing(listingActivity.getOriginalData());
             CertifiedProductSearchDetails updatedListingInActivity = activityUtil.getListing(listingActivity.getNewData());
             if (originalListingInActivity != null && updatedListingInActivity != null) {
-                CertificationResult originalListingCertResultForCriterion
+                Optional<CertificationResult> originalListingCertResultForCriterion
                     = originalListingInActivity.getCertificationResults().stream()
                         .filter(certResult -> certResult.getCriterion() != null && certResult.getCriterion().getId().equals(criterion.getId()))
-                        .findAny().get();
-                CertificationResult updatedListingCertResultForCriterion
+                        .findAny();
+                Optional<CertificationResult> updatedListingCertResultForCriterion
                     = updatedListingInActivity.getCertificationResults().stream()
                         .filter(certResult -> certResult.getCriterion() != null && certResult.getCriterion().getId().equals(criterion.getId()))
-                        .findAny().get();
-                if (originalListingCertResultForCriterion.isSuccess() && !updatedListingCertResultForCriterion.isSuccess()) {
+                        .findAny();
+                if (isCertResultAttestedTo(originalListingCertResultForCriterion) && !isCertResultAttestedTo(updatedListingCertResultForCriterion)) {
                     LOGGER.info("Listing ID " + listingId + " unattested to criterion " + criterion.getId() +  " on " + listingActivity.getActivityDate());
                     return true;
                 }
@@ -51,5 +52,9 @@ public class CertificationResultActivityHistoryHelper {
         }
         LOGGER.info("Listing ID " + listingId + " never unattested to criterion " + criterion.getId() +  " during the dates specified.");
         return false;
+    }
+
+    private Boolean isCertResultAttestedTo(Optional<CertificationResult> result) {
+        return result.isPresent() && result.get().isSuccess();
     }
 }

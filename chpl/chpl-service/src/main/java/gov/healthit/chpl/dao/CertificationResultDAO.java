@@ -106,51 +106,6 @@ public class CertificationResultDAO extends BaseDAOImpl {
         return entity.getId();
     }
 
-    public CertificationResultDTO create(CertificationResultDTO result) throws EntityCreationException {
-        CertificationResultEntity entity = null;
-        try {
-            if (result.getId() != null) {
-                entity = this.getEntityById(result.getId());
-            }
-        } catch (final EntityRetrievalException e) {
-            throw new EntityCreationException(e);
-        }
-
-        if (entity != null) {
-            throw new EntityCreationException("An entity with this ID already exists.");
-        } else {
-
-            entity = new CertificationResultEntity();
-            entity.setCertificationCriterionId(result.getCertificationCriterionId());
-            entity.setCertifiedProductId(result.getCertifiedProductId());
-            entity.setGap(result.getGap());
-            entity.setSed(result.getSed());
-            entity.setG1Success(result.getG1Success());
-            entity.setG2Success(result.getG2Success());
-            entity.setAttestationAnswer(result.getAttestationAnswer());
-            entity.setSuccess(result.getSuccessful());
-            entity.setApiDocumentation(result.getApiDocumentation());
-            entity.setExportDocumentation(result.getExportDocumentation());
-            entity.setDocumentationUrl(result.getDocumentationUrl());
-            entity.setUseCases(result.getUseCases());
-            entity.setServiceBaseUrlList(result.getServiceBaseUrlList());
-            entity.setRiskManagementSummaryInformation(result.getRiskManagementSummaryInformation());
-            entity.setPrivacySecurityFramework(result.getPrivacySecurityFramework());
-            entity.setLastModifiedUser(AuthUtil.getAuditId());
-
-            try {
-                create(entity);
-            } catch (Exception ex) {
-                String msg = msgUtil.getMessage("listing.badCriteriaData",
-                        result.getCertificationCriterionId(), ex.getMessage());
-                LOGGER.error(msg, ex);
-                throw new EntityCreationException(msg);
-            }
-        }
-        return new CertificationResultDTO(entity);
-
-    }
-
     public CertificationResultDTO update(CertificationResultDTO toUpdate) throws EntityRetrievalException {
         CertificationResultEntity entity = getEntityById(toUpdate.getId());
         entity.setCertificationCriterionId(toUpdate.getCertificationCriterionId());
@@ -182,8 +137,6 @@ public class CertificationResultDAO extends BaseDAOImpl {
     }
 
     public void delete(Long resultId) {
-
-        // TODO: How to delete this without leaving orphans
         Query query = entityManager.createQuery(
                 "UPDATE CertificationResultEntity SET deleted = true WHERE certification_result_id = :resultid");
         query.setParameter("resultid", resultId);
@@ -192,8 +145,6 @@ public class CertificationResultDAO extends BaseDAOImpl {
     }
 
     public void deleteByCertifiedProductId(Long certifiedProductId) {
-
-        // TODO: How to delete this without leaving orphans
         Query query = entityManager.createQuery(
                 "UPDATE CertificationResultEntity SET deleted = true WHERE certified_product_id = :certifiedProductId");
         query.setParameter("certifiedProductId", certifiedProductId);
