@@ -55,25 +55,25 @@ public class CertificationCriteriaAddedFormatter extends ObservationSubjectForma
         return formattedObservations;
     }
 
-    private List<CertificationCriterion> getNewlyAttestedCriteria(CertifiedProductSearchDetails originalListing,
-            CertifiedProductSearchDetails newListing) {
+    private List<CertificationCriterion> getNewlyAttestedCriteria(CertifiedProductSearchDetails originalListing, CertifiedProductSearchDetails newListing) {
         List<Pair<CertificationResult, CertificationResult>> origAndNewCertResultPairs
-            = originalListing.getCertificationResults().stream()
-                .map(origCertResult -> createCertResultPair(origCertResult, newListing.getCertificationResults()))
+            = newListing.getCertificationResults().stream()
+                .map(newCertResult -> createCertResultPair(originalListing.getCertificationResults(), newCertResult))
                 .collect(Collectors.toList());
         return origAndNewCertResultPairs.stream()
-            .filter(pair -> BooleanUtils.isFalse(pair.getLeft().isSuccess()) && BooleanUtils.isTrue(pair.getRight().isSuccess()))
+            .filter(pair -> (pair.getLeft() == null || BooleanUtils.isFalse(pair.getLeft().isSuccess()))
+                                    && (pair.getRight() != null && BooleanUtils.isTrue(pair.getRight().isSuccess())))
             .map(pair -> pair.getRight().getCriterion())
             .collect(Collectors.toList());
     }
 
-    private Pair<CertificationResult, CertificationResult> createCertResultPair(CertificationResult origCertResult, List<CertificationResult> newCertResults) {
-        Optional<CertificationResult> newCertResult = newCertResults.stream()
-                .filter(newCr -> newCr.getCriterion().getId().equals(origCertResult.getCriterion().getId()))
+    private Pair<CertificationResult, CertificationResult> createCertResultPair(List<CertificationResult> origCertResults, CertificationResult newCertResult) {
+        Optional<CertificationResult> origCertResult = origCertResults.stream()
+                .filter(origCr -> origCr.getCriterion().getId().equals(newCertResult.getCriterion().getId()))
                 .findAny();
-        if (newCertResult.isEmpty()) {
-            return Pair.of(origCertResult, null);
+        if (origCertResult.isEmpty()) {
+            return Pair.of(null, newCertResult);
         }
-        return Pair.of(origCertResult, newCertResult.get());
+        return Pair.of(origCertResult.get(), newCertResult);
     }
 }
