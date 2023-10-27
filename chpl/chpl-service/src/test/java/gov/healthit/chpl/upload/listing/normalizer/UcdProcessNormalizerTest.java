@@ -21,6 +21,7 @@ import gov.healthit.chpl.fuzzyMatching.FuzzyChoicesManager;
 import gov.healthit.chpl.fuzzyMatching.FuzzyType;
 import gov.healthit.chpl.ucdProcess.UcdProcess;
 import gov.healthit.chpl.ucdProcess.UcdProcessDAO;
+import gov.healthit.chpl.util.ErrorMessageUtil;
 
 public class UcdProcessNormalizerTest {
 
@@ -32,7 +33,7 @@ public class UcdProcessNormalizerTest {
     public void setup() {
         ucdProcessDao = Mockito.mock(UcdProcessDAO.class);
         fuzzyChoicesManager = Mockito.mock(FuzzyChoicesManager.class);
-        normalizer = new UcdProcessNormalizer(ucdProcessDao, fuzzyChoicesManager);
+        normalizer = new UcdProcessNormalizer(ucdProcessDao, fuzzyChoicesManager, Mockito.mock(ErrorMessageUtil.class));
     }
 
     @Test
