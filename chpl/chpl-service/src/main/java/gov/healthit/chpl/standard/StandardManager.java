@@ -1,6 +1,8 @@
 package gov.healthit.chpl.standard;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -86,24 +88,21 @@ public class StandardManager {
         standardService.delete(standard);
     }
 
-//    public List<Standard> getFunctionalitiesTested(Long criteriaId, Long practiceTypeId) {
-//        List<Standard> functionalitiesTestedForCriterion = new ArrayList<Standard>();
-//        Map<Long, List<Standard>> functionalitiesTestedByCriteria = standardDAO.getFunctionalitiesTestedCriteriaMaps();
-//        if (functionalitiesTestedByCriteria.containsKey(criteriaId)) {
-//            functionalitiesTestedForCriterion = functionalitiesTestedByCriteria.get(criteriaId);
-//            if (practiceTypeId != null) {
-//                functionalitiesTestedForCriterion = functionalitiesTestedForCriterion.stream()
-//                        .filter(funcTest -> funcTest.getPracticeType() == null || funcTest.getPracticeType().getId().equals(practiceTypeId))
-//                        .toList();
-//            }
-//        }
-//        functionalitiesTestedForCriterion.stream()
-//            .forEach(funcTested -> funcTested.setCriteria(funcTested.getCriteria().stream()
-//                .sorted(criteriaComparator)
-//                .toList()));
-//        return functionalitiesTestedForCriterion.stream()
-//                .sorted(standardComparator)
-//                .toList();
-//    }
+    public List<Standard> getStandardsByCriteria(Long criteriaId) {
+        List<Standard> standardsForCriterion = new ArrayList<Standard>();
+        Map<Long, List<Standard>> standardsByCriteria = standardDAO.getStandardCriteriaMaps();
+        if (standardsByCriteria.containsKey(criteriaId)) {
+            standardsForCriterion = standardsByCriteria.get(criteriaId);
+        }
+
+        standardsForCriterion.stream()
+            .forEach(standard -> standard.setCriteria(standard.getCriteria().stream()
+                .sorted(criteriaComparator)
+                .toList()));
+
+        return standardsForCriterion.stream()
+                .sorted(standardComparator)
+                .toList();
+    }
 
 }
