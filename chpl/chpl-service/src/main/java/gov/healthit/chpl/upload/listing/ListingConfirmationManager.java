@@ -4,6 +4,7 @@ import static gov.healthit.chpl.util.LambdaExceptionUtil.rethrowConsumer;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
@@ -312,6 +313,7 @@ public class ListingConfirmationManager {
     private void saveUcdProcess(CertifiedProductSearchDetails listing, CertifiedProductUcdProcess ucdProcess) throws EntityCreationException {
         List<Long> certResultIds = ucdProcess.getCriteria().stream()
             .map(criterion -> getCertificationResultId(listing, criterion))
+            .filter(crId -> crId != null)
             .collect(Collectors.toList());
         certResultIds.stream()
             .forEach(rethrowConsumer(certResultId -> certResultDao.createUcdProcessMapping(certResultId, ucdProcess)));
@@ -320,15 +322,20 @@ public class ListingConfirmationManager {
     private void saveTestTask(CertifiedProductSearchDetails listing, TestTask testTask, List<TestTask> allTestTasks) throws EntityCreationException {
         List<Long> certResultIds = testTask.getCriteria().stream()
                 .map(criterion -> getCertificationResultId(listing, criterion))
+                .filter(crId -> crId != null)
                 .collect(Collectors.toList());
             certResultIds.stream()
                 .forEach(rethrowConsumer(certResultId -> certResultDao.createTestTaskMapping(certResultId, testTask, allTestTasks)));
     }
 
     private Long getCertificationResultId(CertifiedProductSearchDetails listing, CertificationCriterion criterion) {
-        return listing.getCertificationResults().stream()
-                .filter(certResult -> certResult.getCriterion().getId().equals(criterion.getId()))
-                .findAny().get().getId();
+        Optional<CertificationResult> certResult = listing.getCertificationResults().stream()
+                .filter(cr -> cr.getCriterion().getId().equals(criterion.getId()))
+                .findAny();
+        if (certResult.isPresent()) {
+            return certResult.get().getId();
+        }
+        return null;
     }
 
     private void saveCqms(CertifiedProductSearchDetails listing) throws EntityCreationException {

@@ -265,7 +265,7 @@ public class CertifiedProductCsvPresenter extends CertifiedProductPresenter impl
                 }
             }
             if (!criteriaMatch) {
-                result.add(UNKNOWN_VALUE);
+                result.add(Boolean.FALSE.toString());
             }
         }
         return result;

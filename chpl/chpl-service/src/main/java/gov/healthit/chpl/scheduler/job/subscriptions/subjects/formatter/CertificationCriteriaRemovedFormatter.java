@@ -55,15 +55,15 @@ public class CertificationCriteriaRemovedFormatter extends ObservationSubjectFor
         return formattedObservations;
     }
 
-    private List<CertificationCriterion> getRemovedCriteria(CertifiedProductSearchDetails originalListing,
-            CertifiedProductSearchDetails newListing) {
+    private List<CertificationCriterion> getRemovedCriteria(CertifiedProductSearchDetails originalListing, CertifiedProductSearchDetails newListing) {
         List<Pair<CertificationResult, CertificationResult>> origAndNewCertResultPairs
             = originalListing.getCertificationResults().stream()
                 .map(origCertResult -> createCertResultPair(origCertResult, newListing.getCertificationResults()))
                 .collect(Collectors.toList());
         return origAndNewCertResultPairs.stream()
-            .filter(pair -> BooleanUtils.isTrue(pair.getLeft().isSuccess()) && BooleanUtils.isFalse(pair.getRight().isSuccess()))
-            .map(pair -> pair.getRight().getCriterion())
+            .filter(pair -> (pair.getLeft() != null && BooleanUtils.isTrue(pair.getLeft().isSuccess()))
+                                && (pair.getRight() == null || BooleanUtils.isFalse(pair.getRight().isSuccess())))
+            .map(pair -> pair.getLeft().getCriterion())
             .collect(Collectors.toList());
     }
 

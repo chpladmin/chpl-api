@@ -1,4 +1,4 @@
-package gov.healthit.chpl.upload.listing.validation.reviewer;
+package gov.healthit.chpl.validation.listing.reviewer;
 
 import java.time.LocalDate;
 
@@ -13,8 +13,8 @@ import gov.healthit.chpl.util.DateUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
 
-@Component("listingUploadUnavailableCriteriaReviewer")
-public class UnavailableCriteriaReviewer {
+@Component("listingUnavailableCriteriaReviewer")
+public class UnavailableCriteriaReviewer implements Reviewer {
     private ErrorMessageUtil msgUtil;
 
     @Autowired
@@ -22,11 +22,18 @@ public class UnavailableCriteriaReviewer {
         this.msgUtil = msgUtil;
     }
 
-    //When uploading a listing, there should be an error for any attested criteria
+    @Override
+    public void review(CertifiedProductSearchDetails listing) {
+        listing.getCertificationResults().stream()
+            .filter(certResult -> BooleanUtils.isTrue(certResult.isSuccess()))
+            .forEach(certResult -> review(listing, certResult));
+    }
+
+    //When viewing/editing a listing, there should be an error for any attested criteria
     //with active date range outside of the listing active date range.
-    //There should be an additional check on upload that any criteria being attested to, if it's removed,
-    //was removed less than 1 year ago.
-    public void review(CertifiedProductSearchDetails listing, CertificationResult certResult) {
+    //It is allowed for an existing listing to attest to (unchanged) criteria removed
+    //more than 1 year ago.
+    private void review(CertifiedProductSearchDetails listing, CertificationResult certResult) {
         if (listing == null || certResult == null) {
             return;
         }
@@ -34,10 +41,6 @@ public class UnavailableCriteriaReviewer {
         if (isCriterionAttested(certResult)
                 && !doCriterionDatesOverlapCertificationDay(listing, certResult)) {
             listing.addBusinessErrorMessage(msgUtil.getMessage("listing.unavailableCriteriaAddNotAllowed",
-                    Util.formatCriteriaNumber(certResult.getCriterion())));
-        } else if (isCriterionAttested(certResult)
-                && !certResult.getCriterion().isEditable()) {
-            listing.addBusinessErrorMessage(msgUtil.getMessage("listing.unavailableCriteriaRemovedTooLongAgo",
                     Util.formatCriteriaNumber(certResult.getCriterion())));
         }
     }
