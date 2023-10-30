@@ -1,10 +1,9 @@
 package gov.healthit.chpl.upload.listing.normalizer;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -16,17 +15,22 @@ import gov.healthit.chpl.fuzzyMatching.FuzzyChoicesManager;
 import gov.healthit.chpl.fuzzyMatching.FuzzyType;
 import gov.healthit.chpl.ucdProcess.UcdProcess;
 import gov.healthit.chpl.ucdProcess.UcdProcessDAO;
+import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.util.Util;
 
 @Component
 public class UcdProcessNormalizer {
     private UcdProcessDAO ucdDao;
     private FuzzyChoicesManager fuzzyChoicesManager;
+    private ErrorMessageUtil msgUtil;
 
     @Autowired
     public UcdProcessNormalizer(UcdProcessDAO ucdDao,
-            FuzzyChoicesManager fuzzyChoicesManager) {
+            FuzzyChoicesManager fuzzyChoicesManager,
+            ErrorMessageUtil msgUtil) {
         this.ucdDao = ucdDao;
         this.fuzzyChoicesManager = fuzzyChoicesManager;
+        this.msgUtil = msgUtil;
     }
 
     public void normalize(CertifiedProductSearchDetails listing) {
@@ -44,23 +48,29 @@ public class UcdProcessNormalizer {
     }
 
     private void clearDataForUnattestedCriteria(CertifiedProductSearchDetails listing) {
-        List<Long> unattestedCriteriaIds = listing.getCertificationResults().stream()
-                .filter(certResult -> certResult.isSuccess() == null || BooleanUtils.isFalse(certResult.isSuccess()))
-                .map(unattestedCertResult -> unattestedCertResult.getCriterion().getId())
+        List<Long> attestedCriteriaIds = listing.getCertificationResults().stream()
+                .map(attestedCertResult -> attestedCertResult.getCriterion().getId())
                 .toList();
 
         listing.getSed().getUcdProcesses().stream()
-            .forEach(ucdProcess -> removeUnattestedCriteriaFromUcdProcess(unattestedCriteriaIds, ucdProcess));
+            .forEach(ucdProcess -> clearUnattestedCriteriaInUcdProcess(listing, attestedCriteriaIds, ucdProcess));
     }
 
-    private void removeUnattestedCriteriaFromUcdProcess(List<Long> unattestedCriteriaIds, CertifiedProductUcdProcess ucdProcess) {
-        List<CertificationCriterion> ucdProcessCriteria = ucdProcess.getCriteria().stream().toList();
-        List<CertificationCriterion> ucdCriteriaToRemove = new ArrayList<CertificationCriterion>();
-        ucdProcessCriteria.stream()
-            .filter(criterion -> unattestedCriteriaIds.contains(criterion.getId()))
-            .forEach(unattestedCriterion -> ucdCriteriaToRemove.add(unattestedCriterion));
+    private void clearUnattestedCriteriaInUcdProcess(CertifiedProductSearchDetails listing, List<Long> attestedCriteriaIds,
+            CertifiedProductUcdProcess ucdProcess) {
+        List<CertificationCriterion> unattestedCriteriaInUcdProcess = getUnattestedCriteriaForUcdProcess(attestedCriteriaIds, ucdProcess);
+        unattestedCriteriaInUcdProcess.stream()
+            .forEach(criterionToRemove -> listing.addWarningMessage(
+                msgUtil.getMessage("listing.ucdProcess.unattestedCriterionRemoved",
+                        Util.formatCriteriaNumber(criterionToRemove))));
+        ucdProcess.getCriteria().removeAll(unattestedCriteriaInUcdProcess);
+    }
 
-        ucdProcess.getCriteria().removeAll(ucdCriteriaToRemove);
+    private List<CertificationCriterion> getUnattestedCriteriaForUcdProcess(List<Long> attestedCriteriaIds, CertifiedProductUcdProcess ucdProcess) {
+        List<CertificationCriterion> ucdProcessCriteria = ucdProcess.getCriteria().stream().toList();
+        return ucdProcessCriteria.stream()
+                .filter(ucdCriterion -> !attestedCriteriaIds.contains(ucdCriterion.getId()))
+                .collect(Collectors.toList());
     }
 
     private List<CertifiedProductUcdProcess> getHopelessUcdProcesses(List<CertifiedProductUcdProcess> ucdProcesses) {

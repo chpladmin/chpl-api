@@ -19,6 +19,8 @@ import javax.persistence.Table;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
+import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.annotations.SelectBeforeUpdate;
 import org.hibernate.annotations.Type;
 
 import gov.healthit.chpl.domain.CertificationBody;
@@ -27,6 +29,8 @@ import gov.healthit.chpl.entity.CertificationBodyEntity;
 import lombok.Data;
 import lombok.extern.log4j.Log4j2;
 
+@SelectBeforeUpdate
+@DynamicUpdate
 @Entity
 @Log4j2
 @Table(name = "certified_product_upload")
