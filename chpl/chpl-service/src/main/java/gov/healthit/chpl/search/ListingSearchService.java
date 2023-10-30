@@ -79,7 +79,6 @@ public class ListingSearchService {
     public List<ListingSearchResult> findActiveListingsForDeveloper(Long developerId) {
         try {
             SearchRequest searchRequest = SearchRequest.builder()
-                    .certificationEditions(Stream.of(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear()).collect(Collectors.toSet()))
                     .developerId(developerId)
                     .certificationStatuses(activeStatuses)
                     .pageSize(MAX_PAGE_SIZE)

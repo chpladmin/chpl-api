@@ -1,6 +1,5 @@
 package gov.healthit.chpl.manager;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -10,6 +9,7 @@ import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -100,229 +100,183 @@ public class CertificationResultManager extends SecuredManager {
     @Transactional(rollbackFor = {
             EntityRetrievalException.class, EntityCreationException.class
     })
-    public int update(CertifiedProductSearchDetails existingListing, CertifiedProductSearchDetails updatedListing,
+    public int createOrUpdate(CertifiedProductSearchDetails existingListing, CertifiedProductSearchDetails updatedListing,
             CertificationResult orig, CertificationResult updated)
-            throws EntityCreationException, EntityRetrievalException, IOException {
+            throws EntityCreationException, EntityRetrievalException {
 
         int numChanges = 0;
-        // does the cert result need updated?
-        boolean hasChanged = false;
-        if (!StringUtils.equals(orig.getApiDocumentation(), updated.getApiDocumentation())
-                || !StringUtils.equals(orig.getPrivacySecurityFramework(), updated.getPrivacySecurityFramework())
-                || !Objects.equals(orig.isG1Success(), updated.isG1Success())
-                || !Objects.equals(orig.isG2Success(), updated.isG2Success())
-                || !Objects.equals(orig.isGap(), updated.isGap())
-                || !Objects.equals(orig.isSed(), updated.isSed())
-                || !Objects.equals(orig.isSuccess(), updated.isSuccess())
-                || !Objects.equals(orig.getAttestationAnswer(), updated.getAttestationAnswer())
-                || !Objects.equals(orig.getDocumentationUrl(), updated.getDocumentationUrl())
-                || !Objects.equals(orig.getExportDocumentation(), updated.getExportDocumentation())
-                || !Objects.equals(orig.getUseCases(), updated.getUseCases())
-                || !Objects.equals(orig.getServiceBaseUrlList(), updated.getServiceBaseUrlList())) {
-            hasChanged = true;
-        }
-        if (hasChanged) {
-            CertificationResultDTO toUpdate = new CertificationResultDTO();
-            toUpdate.setId(orig.getId());
-            toUpdate.setCertifiedProductId(updatedListing.getId());
-            CertificationCriterion criteria = criteriaDao.getById(orig.getCriterion().getId());
-            if (criteria == null || criteria.getId() == null) {
-                throw new EntityCreationException(
-                        "Cannot add certification result mapping for unknown criteria " + orig.getCriterion().getNumber());
-            } else {
-                toUpdate.setCertificationCriterionId(criteria.getId());
-            }
-            toUpdate.setSuccessful(updated.isSuccess());
-            toUpdate.setG1Success(updated.isG1Success());
-            toUpdate.setG2Success(updated.isG2Success());
-
-            if (toUpdate.getSuccessful() != null && toUpdate.getSuccessful().booleanValue()) {
-                toUpdate.setApiDocumentation(updated.getApiDocumentation());
-                toUpdate.setPrivacySecurityFramework(updated.getPrivacySecurityFramework());
-                toUpdate.setGap(updated.isGap());
-                toUpdate.setSed(updated.isSed());
-                toUpdate.setAttestationAnswer(updated.getAttestationAnswer());
-                toUpdate.setDocumentationUrl(updated.getDocumentationUrl());
-                toUpdate.setExportDocumentation(updated.getExportDocumentation());
-                toUpdate.setUseCases(updated.getUseCases());
-                toUpdate.setServiceBaseUrlList(updated.getServiceBaseUrlList());
-            } else {
-                toUpdate.setApiDocumentation(null);
-                toUpdate.setPrivacySecurityFramework(null);
-                toUpdate.setGap(null);
-                toUpdate.setSed(null);
-                toUpdate.setAttestationAnswer(null);
-                toUpdate.setDocumentationUrl(null);
-                toUpdate.setExportDocumentation(null);
-                toUpdate.setUseCases(null);
-                toUpdate.setServiceBaseUrlList(null);
-            }
-
-            certResultDAO.update(toUpdate);
+        if ((orig == null || orig.getId() == null || BooleanUtils.isFalse(orig.isSuccess()))
+                && updated != null) {
+            //this is a new cert result we are adding
+            long addedCertResultId = certResultDAO.create(updatedListing.getId(), updated);
+            updated.setId(addedCertResultId);
             numChanges++;
+        } else {
+            boolean hasChanged = false;
+            if (!Objects.equals(orig.isSuccess(), updated.isSuccess())
+                    || !StringUtils.equals(orig.getApiDocumentation(), updated.getApiDocumentation())
+                    || !StringUtils.equals(orig.getPrivacySecurityFramework(), updated.getPrivacySecurityFramework())
+                    || !Objects.equals(orig.isG1Success(), updated.isG1Success())
+                    || !Objects.equals(orig.isG2Success(), updated.isG2Success())
+                    || !Objects.equals(orig.isGap(), updated.isGap())
+                    || !Objects.equals(orig.isSed(), updated.isSed())
+                    || !Objects.equals(orig.getAttestationAnswer(), updated.getAttestationAnswer())
+                    || !Objects.equals(orig.getDocumentationUrl(), updated.getDocumentationUrl())
+                    || !Objects.equals(orig.getExportDocumentation(), updated.getExportDocumentation())
+                    || !Objects.equals(orig.getUseCases(), updated.getUseCases())
+                    || !Objects.equals(orig.getServiceBaseUrlList(), updated.getServiceBaseUrlList())) {
+                hasChanged = true;
+            }
+            if (hasChanged) {
+                updateCertResultBasicData(existingListing.getId(), orig, updated);
+                numChanges++;
+            }
         }
 
-        if (updated.isSuccess() == null || !updated.isSuccess()) {
-            // similar to delete - remove all related items
-            numChanges += updateAdditionalSoftware(updated, orig.getAdditionalSoftware(), null);
-            numChanges += updateConformanceMethods(updatedListing, updated, orig.getConformanceMethods(), null);
-            numChanges += updateOptionalStandards(updatedListing, updated, orig.getOptionalStandards(), null);
-            numChanges += updateTestStandards(updatedListing, updated, orig.getTestStandards(), null);
-            numChanges += certResultTestToolService.synchronizeTestTools(updated, orig.getTestToolsUsed(), null);
-            numChanges += updateTestData(updated, orig.getTestDataUsed(), null);
-            numChanges += updateTestProcedures(updated, orig.getTestProcedures(), null);
-            numChanges += certResultFunctionalityTestedService.synchronizeFunctionalitiesTested(updated,  orig.getFunctionalitiesTested(), null);
-            numChanges += updateSvap(updated, orig.getSvaps(), null);
+        // update all related attributes
+        numChanges += updateAdditionalSoftware(updated, orig.getAdditionalSoftware(), updated.getAdditionalSoftware());
+        numChanges += updateConformanceMethods(updatedListing, updated, orig.getConformanceMethods(), updated.getConformanceMethods());
+        numChanges += updateOptionalStandards(updatedListing, updated, orig.getOptionalStandards(), updated.getOptionalStandards());
+        numChanges += updateTestStandards(updatedListing, updated, orig.getTestStandards(), updated.getTestStandards());
+        numChanges += certResultTestToolService.synchronizeTestTools(updated, orig.getTestToolsUsed(), updated.getTestToolsUsed());
+        numChanges += updateTestData(updated, orig.getTestDataUsed(), updated.getTestDataUsed());
+        numChanges += updateTestProcedures(updated, orig.getTestProcedures(), updated.getTestProcedures());
+        numChanges += certResultFunctionalityTestedService.synchronizeFunctionalitiesTested(updated, orig.getFunctionalitiesTested(), updated.getFunctionalitiesTested());
+        numChanges += updateSvap(updated, orig.getSvaps(), updated.getSvaps());
 
-            if (existingListing.getSed() != null && existingListing.getSed().getUcdProcesses() != null
-                    && existingListing.getSed().getUcdProcesses().size() > 0) {
-                List<CertifiedProductUcdProcess> origUcdsForCriteria = new ArrayList<CertifiedProductUcdProcess>();
-                for (CertifiedProductUcdProcess existingUcd : existingListing.getSed().getUcdProcesses()) {
-                    boolean ucdMeetsCriteria = false;
-                    for (CertificationCriterion ucdCriteria : existingUcd.getCriteria()) {
-                        if (ucdCriteria.getId().equals(updated.getCriterion().getId())) {
-                            ucdMeetsCriteria = true;
-                        }
-                    }
-                    if (ucdMeetsCriteria) {
-                        origUcdsForCriteria.add(existingUcd);
+        List<CertifiedProductUcdProcess> origUcdsForCriteria = new ArrayList<CertifiedProductUcdProcess>();
+        List<CertifiedProductUcdProcess> updatedUcdsForCriteria = new ArrayList<CertifiedProductUcdProcess>();
+        if (existingListing.getSed() != null && existingListing.getSed().getUcdProcesses() != null
+                && existingListing.getSed().getUcdProcesses().size() > 0) {
+            for (CertifiedProductUcdProcess existingUcd : existingListing.getSed().getUcdProcesses()) {
+                boolean ucdMeetsCriteria = false;
+                for (CertificationCriterion ucdCriteria : existingUcd.getCriteria()) {
+                    if (ucdCriteria.getId().equals(updated.getCriterion().getId())
+                            && orig.isSed() != null && orig.isSed()) {
+                        ucdMeetsCriteria = true;
                     }
                 }
-                numChanges += updateUcdProcesses(updated, origUcdsForCriteria, null);
+                if (ucdMeetsCriteria) {
+                    origUcdsForCriteria.add(existingUcd);
+                }
             }
+        }
+        if (updatedListing.getSed() != null && updatedListing.getSed().getUcdProcesses() != null
+                && updatedListing.getSed().getUcdProcesses().size() > 0) {
+            for (CertifiedProductUcdProcess updatedUcd : updatedListing.getSed().getUcdProcesses()) {
+                boolean ucdMeetsCriteria = false;
+                for (CertificationCriterion ucdCriteria : updatedUcd.getCriteria()) {
+                    if (ucdCriteria.getId().equals(updated.getCriterion().getId())
+                            && updated.isSed() != null && updated.isSed()) {
+                        ucdMeetsCriteria = true;
+                    }
+                }
+                if (ucdMeetsCriteria) {
+                    updatedUcdsForCriteria.add(updatedUcd);
+                }
+            }
+        }
+        numChanges += updateUcdProcesses(updated, origUcdsForCriteria, updatedUcdsForCriteria);
 
-            if (existingListing.getSed() != null && existingListing.getSed().getTestTasks() != null
-                    && existingListing.getSed().getTestTasks().size() > 0) {
-                List<TestTask> origTestTasksForCriteria = new ArrayList<TestTask>();
-                for (TestTask existingTestTask : existingListing.getSed().getTestTasks()) {
-                    boolean taskMeetsCriteria = false;
-                    for (CertificationCriterion taskCriteria : existingTestTask.getCriteria()) {
-                        if (taskCriteria.getId().equals(updated.getCriterion().getId())) {
-                            taskMeetsCriteria = true;
-                        }
-                    }
-                    if (taskMeetsCriteria) {
-                        origTestTasksForCriteria.add(existingTestTask);
+        List<TestTask> origTestTasksForCriteria = new ArrayList<TestTask>();
+        List<TestTask> updatedTestTasksForCriteria = new ArrayList<TestTask>();
+        if (existingListing.getSed() != null && existingListing.getSed().getTestTasks() != null
+                && existingListing.getSed().getTestTasks().size() > 0) {
+            for (TestTask existingTask : existingListing.getSed().getTestTasks()) {
+                boolean taskMeetsCriteria = false;
+                for (CertificationCriterion taskCriteria : existingTask.getCriteria()) {
+                    if (taskCriteria.getId().equals(updated.getCriterion().getId())
+                            && orig.isSed() != null && orig.isSed()) {
+                        taskMeetsCriteria = true;
                     }
                 }
-                numChanges += updateTestTasks(updated, origTestTasksForCriteria, null);
+                if (taskMeetsCriteria) {
+                    origTestTasksForCriteria.add(existingTask);
+                }
             }
-        } else {
-            // create/update all related items
-            numChanges += updateAdditionalSoftware(updated, orig.getAdditionalSoftware(), updated.getAdditionalSoftware());
-            numChanges += updateConformanceMethods(updatedListing, updated, orig.getConformanceMethods(), updated.getConformanceMethods());
-            numChanges += updateOptionalStandards(updatedListing, updated, orig.getOptionalStandards(), updated.getOptionalStandards());
-            numChanges += updateTestStandards(updatedListing, updated, orig.getTestStandards(), updated.getTestStandards());
-            numChanges += certResultTestToolService.synchronizeTestTools(updated, orig.getTestToolsUsed(), updated.getTestToolsUsed());
-            numChanges += updateTestData(updated, orig.getTestDataUsed(), updated.getTestDataUsed());
-            numChanges += updateTestProcedures(updated, orig.getTestProcedures(), updated.getTestProcedures());
-            numChanges += certResultFunctionalityTestedService.synchronizeFunctionalitiesTested(updated, orig.getFunctionalitiesTested(), updated.getFunctionalitiesTested());
-            numChanges += updateSvap(updated, orig.getSvaps(), updated.getSvaps());
+        }
+        if (updatedListing.getSed() != null && updatedListing.getSed().getTestTasks() != null
+                && updatedListing.getSed().getTestTasks().size() > 0) {
+            // Go through all the updated test tasks and participants.
+            // Any with a negative ID are new and need to be added and the
+            // negative ID could be repeated so a task/participant with a
+            // negative id
+            // needs to be added once and then that ID needs to be replaced
+            // with
+            // the created item's ID anywhere else that it is found
+            for (TestTask task : updatedListing.getSed().getTestTasks()) {
+                if (task.getId() < 0) {
+                    long prevId = task.getId();
+                    TestTaskDTO createdTask = testTaskDAO.create(convert(task));
+                    for (TestTask otherTask : updatedListing.getSed().getTestTasks()) {
+                        if (otherTask.getId().longValue() == prevId) {
+                            otherTask.setId(createdTask.getId());
+                        }
+                    }
+                }
 
-            List<CertifiedProductUcdProcess> origUcdsForCriteria = new ArrayList<CertifiedProductUcdProcess>();
-            List<CertifiedProductUcdProcess> updatedUcdsForCriteria = new ArrayList<CertifiedProductUcdProcess>();
-            if (existingListing.getSed() != null && existingListing.getSed().getUcdProcesses() != null
-                    && existingListing.getSed().getUcdProcesses().size() > 0) {
-                for (CertifiedProductUcdProcess existingUcd : existingListing.getSed().getUcdProcesses()) {
-                    boolean ucdMeetsCriteria = false;
-                    for (CertificationCriterion ucdCriteria : existingUcd.getCriteria()) {
-                        if (ucdCriteria.getId().equals(updated.getCriterion().getId())
-                                && orig.isSed() != null && orig.isSed()) {
-                            ucdMeetsCriteria = true;
-                        }
-                    }
-                    if (ucdMeetsCriteria) {
-                        origUcdsForCriteria.add(existingUcd);
-                    }
-                }
-            }
-            if (updatedListing.getSed() != null && updatedListing.getSed().getUcdProcesses() != null
-                    && updatedListing.getSed().getUcdProcesses().size() > 0) {
-                for (CertifiedProductUcdProcess updatedUcd : updatedListing.getSed().getUcdProcesses()) {
-                    boolean ucdMeetsCriteria = false;
-                    for (CertificationCriterion ucdCriteria : updatedUcd.getCriteria()) {
-                        if (ucdCriteria.getId().equals(updated.getCriterion().getId())
-                                && updated.isSed() != null && updated.isSed()) {
-                            ucdMeetsCriteria = true;
-                        }
-                    }
-                    if (ucdMeetsCriteria) {
-                        updatedUcdsForCriteria.add(updatedUcd);
-                    }
-                }
-            }
-            numChanges += updateUcdProcesses(updated, origUcdsForCriteria, updatedUcdsForCriteria);
-
-            List<TestTask> origTestTasksForCriteria = new ArrayList<TestTask>();
-            List<TestTask> updatedTestTasksForCriteria = new ArrayList<TestTask>();
-            if (existingListing.getSed() != null && existingListing.getSed().getTestTasks() != null
-                    && existingListing.getSed().getTestTasks().size() > 0) {
-                for (TestTask existingTask : existingListing.getSed().getTestTasks()) {
-                    boolean taskMeetsCriteria = false;
-                    for (CertificationCriterion taskCriteria : existingTask.getCriteria()) {
-                        if (taskCriteria.getId().equals(updated.getCriterion().getId())
-                                && orig.isSed() != null && orig.isSed()) {
-                            taskMeetsCriteria = true;
-                        }
-                    }
-                    if (taskMeetsCriteria) {
-                        origTestTasksForCriteria.add(existingTask);
-                    }
-                }
-            }
-            if (updatedListing.getSed() != null && updatedListing.getSed().getTestTasks() != null
-                    && updatedListing.getSed().getTestTasks().size() > 0) {
-                // Go through all the updated test tasks and participants.
-                // Any with a negative ID are new and need to be added and the
-                // negative ID could be repeated so a task/participant with a
-                // negative id
-                // needs to be added once and then that ID needs to be replaced
-                // with
-                // the created item's ID anywhere else that it is found
-                for (TestTask task : updatedListing.getSed().getTestTasks()) {
-                    if (task.getId() < 0) {
-                        long prevId = task.getId();
-                        TestTaskDTO createdTask = testTaskDAO.create(convert(task));
+                for (TestParticipant participant : task.getTestParticipants()) {
+                    if (participant.getId() < 0) {
+                        long prevId = participant.getId();
+                        TestParticipantDTO createdParticipant = testParticipantDAO.create(convert(participant));
                         for (TestTask otherTask : updatedListing.getSed().getTestTasks()) {
-                            if (otherTask.getId().longValue() == prevId) {
-                                otherTask.setId(createdTask.getId());
-                            }
-                        }
-                    }
-
-                    for (TestParticipant participant : task.getTestParticipants()) {
-                        if (participant.getId() < 0) {
-                            long prevId = participant.getId();
-                            TestParticipantDTO createdParticipant = testParticipantDAO.create(convert(participant));
-                            for (TestTask otherTask : updatedListing.getSed().getTestTasks()) {
-                                for (TestParticipant otherParticipant : otherTask.getTestParticipants()) {
-                                    if (otherParticipant.getId().longValue() == prevId) {
-                                        otherParticipant.setId(createdParticipant.getId());
-                                    }
+                            for (TestParticipant otherParticipant : otherTask.getTestParticipants()) {
+                                if (otherParticipant.getId().longValue() == prevId) {
+                                    otherParticipant.setId(createdParticipant.getId());
                                 }
                             }
                         }
                     }
                 }
+            }
 
-                // now find appropriate test tasks for this certification result
-                for (TestTask updatedTask : updatedListing.getSed().getTestTasks()) {
-                    boolean taskMeetsCriteria = false;
-                    for (CertificationCriterion taskCriteria : updatedTask.getCriteria()) {
-                        if (taskCriteria.getId().equals(updated.getCriterion().getId())
-                                && updated.isSed() != null && updated.isSed()) {
-                            taskMeetsCriteria = true;
-                        }
+            // now find appropriate test tasks for this certification result
+            for (TestTask updatedTask : updatedListing.getSed().getTestTasks()) {
+                boolean taskMeetsCriteria = false;
+                for (CertificationCriterion taskCriteria : updatedTask.getCriteria()) {
+                    if (taskCriteria.getId().equals(updated.getCriterion().getId())
+                            && updated.isSed() != null && updated.isSed()) {
+                        taskMeetsCriteria = true;
                     }
-                    if (taskMeetsCriteria) {
-                        updatedTestTasksForCriteria.add(updatedTask);
-                    }
+                }
+                if (taskMeetsCriteria) {
+                    updatedTestTasksForCriteria.add(updatedTask);
                 }
             }
             numChanges += updateTestTasks(updated, origTestTasksForCriteria, updatedTestTasksForCriteria);
         }
 
         return numChanges;
+    }
+
+    private void updateCertResultBasicData(Long listingId, CertificationResult origCertResult, CertificationResult updatedCertResult)
+        throws EntityCreationException, EntityRetrievalException {
+        CertificationResultDTO toUpdate = new CertificationResultDTO();
+        toUpdate.setId(origCertResult.getId());
+        toUpdate.setCertifiedProductId(listingId);
+        CertificationCriterion criteria = criteriaDao.getById(origCertResult.getCriterion().getId());
+        if (criteria == null || criteria.getId() == null) {
+            throw new EntityCreationException(
+                    "Cannot add certification result mapping for unknown criteria " + origCertResult.getCriterion().getNumber());
+        } else {
+            toUpdate.setCertificationCriterionId(criteria.getId());
+        }
+        toUpdate.setSuccessful(updatedCertResult.isSuccess());
+        toUpdate.setG1Success(updatedCertResult.isG1Success());
+        toUpdate.setG2Success(updatedCertResult.isG2Success());
+
+        if (toUpdate.getSuccessful() != null && toUpdate.getSuccessful().booleanValue()) {
+            toUpdate.setApiDocumentation(updatedCertResult.getApiDocumentation());
+            toUpdate.setPrivacySecurityFramework(updatedCertResult.getPrivacySecurityFramework());
+            toUpdate.setGap(updatedCertResult.isGap());
+            toUpdate.setSed(updatedCertResult.isSed());
+            toUpdate.setAttestationAnswer(updatedCertResult.getAttestationAnswer());
+            toUpdate.setDocumentationUrl(updatedCertResult.getDocumentationUrl());
+            toUpdate.setExportDocumentation(updatedCertResult.getExportDocumentation());
+            toUpdate.setUseCases(updatedCertResult.getUseCases());
+            toUpdate.setServiceBaseUrlList(updatedCertResult.getServiceBaseUrlList());
+        }
+        certResultDAO.update(toUpdate);
     }
 
     private int updateAdditionalSoftware(CertificationResult certResult,
@@ -426,7 +380,7 @@ public class CertificationResultManager extends SecuredManager {
 
     private int updateUcdProcesses(CertificationResult certResult, List<CertifiedProductUcdProcess> existingUcdProcesses,
             List<CertifiedProductUcdProcess> updatedUcdProcesses)
-            throws EntityCreationException, EntityRetrievalException, IOException {
+            throws EntityCreationException, EntityRetrievalException {
         int numChanges = 0;
         List<CertifiedProductUcdProcess> ucdToAdd = new ArrayList<CertifiedProductUcdProcess>();
         List<CertificationResultUcdProcessPair> ucdToUpdate = new ArrayList<CertificationResultUcdProcessPair>();

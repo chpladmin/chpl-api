@@ -24,10 +24,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.accessibilityStandard.AccessibilityStandardDAO;
 import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
+import gov.healthit.chpl.certifiedproduct.service.CertificationResultSynchronizationService;
 import gov.healthit.chpl.dao.CQMCriterionDAO;
 import gov.healthit.chpl.dao.CQMResultDAO;
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
-import gov.healthit.chpl.dao.CertificationResultDAO;
 import gov.healthit.chpl.dao.CertificationStatusDAO;
 import gov.healthit.chpl.dao.CertificationStatusEventDAO;
 import gov.healthit.chpl.dao.CertifiedProductAccessibilityStandardDAO;
@@ -83,7 +83,7 @@ public class CertifiedProductManagerTest {
 
     private ErrorMessageUtil msgUtil;
     private CertifiedProductDAO cpDao;
-    private CertificationResultDAO certDao;
+    private CertificationResultSynchronizationService certResultService;
     private CertificationCriterionDAO certCriterionDao;
     private QmsStandardDAO qmsDao;
     private TargetedUserDAO targetedUserDao;
@@ -120,7 +120,7 @@ public class CertifiedProductManagerTest {
     public void before() {
         msgUtil = Mockito.mock(ErrorMessageUtil.class);
         cpDao = Mockito.mock(CertifiedProductDAO.class);
-        certDao = Mockito.mock(CertificationResultDAO.class);
+        certResultService = Mockito.mock(CertificationResultSynchronizationService.class);
         certCriterionDao = Mockito.mock(CertificationCriterionDAO.class);
         qmsDao = Mockito.mock(QmsStandardDAO.class);
         targetedUserDao = Mockito.mock(TargetedUserDAO.class);
@@ -151,11 +151,11 @@ public class CertifiedProductManagerTest {
         validatorFactory = Mockito.mock(ListingValidatorFactory.class);
         curesUpdateService = Mockito.mock(CuresUpdateService.class);
 
-        certifiedProductManager = new  CertifiedProductManager(msgUtil, cpDao, certDao,
+        certifiedProductManager = new  CertifiedProductManager(msgUtil, cpDao,
                 certCriterionDao, qmsDao,  targetedUserDao, asDao,  cpQmsDao, cpMeasureDao, cpTestingLabDao,
                 cpTargetedUserDao, cpAccStdDao,  cqmResultDAO, cqmCriterionDao,  atlDao,
                 developerDao,  devStatusDao, developerManager,  productManager, versionManager,
-                statusEventDao, curesUpdateDao, piuDao,  certResultManager, certStatusDao,
+                statusEventDao, curesUpdateDao, piuDao, certResultService, certStatusDao,
                 listingGraphDao, resourcePermissions, certifiedProductSearchResultDAO,
                 certifiedProductDetailsManager,
                 Mockito.mock(SchedulerManager.class),
