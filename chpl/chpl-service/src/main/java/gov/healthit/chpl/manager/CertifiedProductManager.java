@@ -502,7 +502,7 @@ public class CertifiedProductManager extends SecuredManager {
 
     private Boolean doesCertifiedProductTestingLabExistInList(CertifiedProductTestingLab toFind, List<CertifiedProductTestingLab> list) {
         return list.stream()
-                .filter(item -> item.getId() == null || item.getId().equals(toFind.getId()))
+                .filter(item -> item.matches(toFind))
                 .findAny()
                 .isPresent();
     }
