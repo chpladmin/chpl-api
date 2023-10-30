@@ -77,7 +77,6 @@ public class CertifiedProductCsvPresenter extends CertifiedProductPresenter impl
         definitionWriter = new OutputStreamWriter(new FileOutputStream(definitionFile), StandardCharsets.UTF_8);
         definitionWriter.write('\ufeff');
         definitionPrinter = new CSVPrinter(definitionWriter, CSVFormat.EXCEL);
-        definitionPrinter.printRecord(generateDefinitionHeaderValues());
         definitionPrinter.flush();
     }
 
@@ -151,10 +150,6 @@ public class CertifiedProductCsvPresenter extends CertifiedProductPresenter impl
             }
         }
         return result;
-    }
-
-    protected List<String> generateDefinitionHeaderValues() {
-        return Stream.of("Column Name", "Required?", "Allowed Values", "Description").toList();
     }
 
     public void generateDefinitionFile(Resource baseDefinitionFile) {
