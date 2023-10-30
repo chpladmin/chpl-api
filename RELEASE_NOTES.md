@@ -1,5 +1,7 @@
 # Release Notes
 
+<<<<<<< HEAD
+=======
 ## Version 42.3.0
 _16 October 2023_
 
@@ -14,6 +16,7 @@ _16 October 2023_
 
 ---
 
+>>>>>>> staging
 ## Version 42.2.0
 _2 October 2023_
 
