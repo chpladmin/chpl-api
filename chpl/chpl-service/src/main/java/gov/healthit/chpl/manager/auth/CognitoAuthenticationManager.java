@@ -23,6 +23,8 @@ import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminGetUse
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminGetUserResponse;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminInitiateAuthRequest;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminInitiateAuthResponse;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminListGroupsForUserRequest;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminListGroupsForUserResponse;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AttributeType;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AuthFlowType;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AuthenticationResultType;
@@ -104,8 +106,13 @@ public class CognitoAuthenticationManager {
         user.setCredentialsExpired(false);
         user.setPasswordResetRequired(userResponse.userStatus().equals(UserStatusType.RESET_REQUIRED));
         user.setLastLoggedInDate(new Date());
-        user.setRole("ROLE_ADMIN");
-        //user.organizations(null);
+
+        AdminListGroupsForUserRequest groupsRequest = AdminListGroupsForUserRequest.builder()
+                .userPoolId(userPoolId)
+                .username(userName)
+                .build();
+        AdminListGroupsForUserResponse groupsResponse = cognitoClient.adminListGroupsForUser(groupsRequest);
+        user.setRole(groupsResponse.groups().get(0).groupName());
 
         return user;
     }
