@@ -79,7 +79,6 @@ public class CognitoAuthenticationManager {
         }
     }
 
-    //@Transactional
     //@PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SECURED_USER, "
     //        + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).GET_BY_USER_NAME)")
     //@PostAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SECURED_USER, "
@@ -95,7 +94,7 @@ public class CognitoAuthenticationManager {
                 .forEach(att -> LOGGER.info("User Attribute {} | {}", att.name(), att.value()));
 
         User user = new User();
-        user.setUserId(Long.valueOf(getUserAttribute(userResponse.userAttributes(), "custom:chpl_user_id").value()));
+        user.setUserId(-99L);
         user.setSubjectName(getUserAttribute(userResponse.userAttributes(), "email").value());
         user.setFriendlyName(getUserAttribute(userResponse.userAttributes(), "name").value());
         user.setFullName(getUserAttribute(userResponse.userAttributes(), "name").value());
@@ -111,7 +110,7 @@ public class CognitoAuthenticationManager {
         return user;
     }
 
-    private AttributeType getUserAttribute(List<AttributeType> attributes, String name) {
+     private AttributeType getUserAttribute(List<AttributeType> attributes, String name) {
         return attributes.stream()
             .filter(att -> att.name().equals(name))
             .findAny()
