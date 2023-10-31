@@ -29,7 +29,7 @@ public class CertificationCriterionService {
     private Map<Long, CertificationCriterion> criteriaByIdMap = new HashMap<Long, CertificationCriterion>();
     private Map<String, List<CertificationCriterion>> criteriaByNumberMap = new HashMap<String, List<CertificationCriterion>>();
     private Map<CertificationCriterion, CertificationCriterion> originalToCuresCriteriaMap = new HashMap<CertificationCriterion, CertificationCriterion>();
-    private List<String> referenceSortingCriteriaList = new ArrayList<String>();
+    private List<Long> referenceSortingCriteriaList = new ArrayList<Long>();
 
     @Autowired
     public CertificationCriterionService(CertificationCriterionDAO certificationCriterionDAO, Environment environment) {
@@ -87,9 +87,7 @@ public class CertificationCriterionService {
     }
 
     public int sortCriteria(CertificationCriterion c1, CertificationCriterion c2) {
-        String valueA = formatCriteriaNumber(c1);
-        String valueB = formatCriteriaNumber(c2);
-        return getCertificationResultSortIndex(valueA) - getCertificationResultSortIndex(valueB);
+        return getCertificationResultSortIndex(c1.getId()) - getCertificationResultSortIndex(c2.getId());
     }
 
     public static String formatCriteriaNumber(String number) {
@@ -154,18 +152,19 @@ public class CertificationCriterionService {
         return input;
     }
 
-    private Integer getCertificationResultSortIndex(String criteriaNumber) {
-        Integer index = referenceSortingCriteriaList.indexOf(criteriaNumber);
+    private Integer getCertificationResultSortIndex(Long criterionId) {
+        Integer index = referenceSortingCriteriaList.indexOf(criterionId);
         if (index.equals(-1)) {
-            // This is case when the criteria number is not in the array, just make it last...
+            // This is case when the criteria ID is not in the array, just make it last...
             index = Integer.MAX_VALUE;
         }
         return index;
     }
 
-    private List<String> getReferenceSortingCriteriaList() {
+    private List<Long> getReferenceSortingCriteriaList() {
         String commaDelimitedProperyValue = environment.getProperty("criteria.sortOrder");
         return Stream.of(commaDelimitedProperyValue.split(","))
+                .map(idAsString -> Long.parseLong(idAsString))
                 .collect(Collectors.toList());
     }
 
