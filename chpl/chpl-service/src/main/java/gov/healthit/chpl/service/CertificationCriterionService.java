@@ -23,9 +23,6 @@ import lombok.extern.log4j.Log4j2;
 @Component
 @Log4j2
 public class CertificationCriterionService {
-    private static final String CURES_TITLE = "Cures Update";
-    public static final String CURES_SUFFIX = " (" + CURES_TITLE + ")";
-
     private CertificationCriterionDAO certificationCriterionDAO;
     private Environment environment;
 
@@ -95,24 +92,12 @@ public class CertificationCriterionService {
         return getCertificationResultSortIndex(valueA) - getCertificationResultSortIndex(valueB);
     }
 
-    public static boolean hasCuresInTitle(String title) {
-        return title != null && title.contains(CURES_TITLE);
-    }
-
-    public static boolean hasCuresInTitle(CertificationCriterion criterion) {
-        return hasCuresInTitle(criterion.getTitle());
-    }
-
-    public static String formatCriteriaNumber(String number, String title) {
-        String result = number;
-        if (hasCuresInTitle(title)) {
-            result += CURES_SUFFIX;
-        }
-        return result;
+    public static String formatCriteriaNumber(String number) {
+        return number;
     }
 
     public static String formatCriteriaNumber(CertificationCriterion criterion) {
-        return formatCriteriaNumber(criterion.getNumber(), criterion.getTitle());
+        return formatCriteriaNumber(criterion.getNumber());
     }
 
     public static String formatCriteriaNumber(CertificationCriterion criterion, boolean formatForRemoved) {
