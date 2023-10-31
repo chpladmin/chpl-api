@@ -199,7 +199,7 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
         } else {
             LOGGER.warn("Either an edition or certification status(es) must be provided. No relevant listings found.");
         }
-        return relevantListings.subList(0, 1);
+        return relevantListings;
     }
 
     private List<CertifiedProductDetailsDTO> getListingsByEdition() throws EntityRetrievalException {
