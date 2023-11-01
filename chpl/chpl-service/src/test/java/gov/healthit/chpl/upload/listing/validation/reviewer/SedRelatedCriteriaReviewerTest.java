@@ -46,9 +46,9 @@ public class SedRelatedCriteriaReviewerTest {
         Mockito.when(criteriaService.get(ArgumentMatchers.eq("criterion.170_315_a_9"))).thenReturn(getCriterion(9L, "170.315 (a)(9)", "a9 original", false));
         Mockito.when(criteriaService.get(ArgumentMatchers.eq("criterion.170_315_a_14"))).thenReturn(getCriterion(14L, "170.315 (a)(14)", "a14 original", false));
         Mockito.when(criteriaService.get(ArgumentMatchers.eq("criterion.170_315_b_2_old"))).thenReturn(getCriterion(17L, "170.315 (b)(2)", "b2 original", false));
-        Mockito.when(criteriaService.get(ArgumentMatchers.eq("criterion.170_315_b_2_cures"))).thenReturn(getCriterion(166L, "170.315 (b)(2)", "b2 (Cures Update)", false));
+        Mockito.when(criteriaService.get(ArgumentMatchers.eq("criterion.170_315_b_2_cures"))).thenReturn(getCriterion(166L, "170.315 (b)(2)", "b2", false));
         Mockito.when(criteriaService.get(ArgumentMatchers.eq("criterion.170_315_b_3_old"))).thenReturn(getCriterion(18L, "170.315 (b)(3)", "b3 original", false));
-        Mockito.when(criteriaService.get(ArgumentMatchers.eq("criterion.170_315_b_3_cures"))).thenReturn(getCriterion(167L, "170.315 (b)(3)", "b3 (Cures Update)", false));
+        Mockito.when(criteriaService.get(ArgumentMatchers.eq("criterion.170_315_b_3_cures"))).thenReturn(getCriterion(167L, "170.315 (b)(3)", "b3", false));
         g3 = getCriterion(52L, "170.315 (g)(3)", "g3 original", false);
         Mockito.when(criteriaService.get(ArgumentMatchers.eq("criterion.170_315_g_3"))).thenReturn(g3);
 

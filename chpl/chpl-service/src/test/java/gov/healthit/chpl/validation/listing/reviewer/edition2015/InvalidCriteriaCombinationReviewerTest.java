@@ -3,6 +3,8 @@ package gov.healthit.chpl.validation.listing.reviewer.edition2015;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.time.LocalDate;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
@@ -50,7 +52,9 @@ public class InvalidCriteriaCombinationReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(2L)
                                 .number("170.315 (b)(1)")
-                                .title("Criteria B1 Original")
+                                .title("Criteria B1")
+                                .startDay(LocalDate.parse("2015-01-01"))
+                                .endDay(LocalDate.parse("2020-06-29"))
                                 .build())
                         .build())
                 .certificationResult(CertificationResult.builder()
@@ -58,7 +62,8 @@ public class InvalidCriteriaCombinationReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(3L)
                                 .number("170.315 (b)(1)")
-                                .title("Criteria B1 (Cures Update)")
+                                .title("Criteria B1")
+                                .startDay(LocalDate.parse("2020-06-30"))
                                 .build())
                         .build())
                 .build();
@@ -74,7 +79,9 @@ public class InvalidCriteriaCombinationReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(2L)
                                 .number("170.315 (b)(1)")
-                                .title("Criteria B1 Original")
+                                .title("Criteria B1")
+                                .startDay(LocalDate.parse("2015-01-01"))
+                                .endDay(LocalDate.parse("2020-06-29"))
                                 .build())
                         .build())
                 .certificationResult(CertificationResult.builder()
@@ -82,7 +89,8 @@ public class InvalidCriteriaCombinationReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(3L)
                                 .number("170.315 (b)(1)")
-                                .title("Criteria B1 (Cures Update)")
+                                .title("Criteria B1")
+                                .startDay(LocalDate.parse("2020-06-30"))
                                 .build())
                         .build())
                 .build();
@@ -98,7 +106,9 @@ public class InvalidCriteriaCombinationReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(2L)
                                 .number("170.315 (b)(1)")
-                                .title("Criteria B1 Original")
+                                .title("Criteria B1")
+                                .startDay(LocalDate.parse("2015-01-01"))
+                                .endDay(LocalDate.parse("2020-06-29"))
                                 .build())
                         .build())
                 .certificationResult(CertificationResult.builder()
@@ -106,7 +116,8 @@ public class InvalidCriteriaCombinationReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(3L)
                                 .number("170.315 (b)(1)")
-                                .title("Criteria B1 (Cures Update)")
+                                .title("Criteria B1")
+                                .startDay(LocalDate.parse("2020-06-30"))
                                 .build())
                         .build())
                 .build();
@@ -122,7 +133,9 @@ public class InvalidCriteriaCombinationReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(2L)
                                 .number("170.315 (b)(1)")
-                                .title("Criteria B1 Original")
+                                .title("Criteria B1")
+                                .startDay(LocalDate.parse("2015-01-01"))
+                                .endDay(LocalDate.parse("2020-06-29"))
                                 .build())
                         .build())
                 .certificationResult(CertificationResult.builder()
@@ -130,7 +143,8 @@ public class InvalidCriteriaCombinationReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(3L)
                                 .number("170.315 (b)(1)")
-                                .title("Criteria B1 (Cures Update)")
+                                .title("Criteria B1")
+                                .startDay(LocalDate.parse("2020-06-30"))
                                 .build())
                         .build())
                 .build();
@@ -146,7 +160,9 @@ public class InvalidCriteriaCombinationReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(2L)
                                 .number("170.315 (b)(1)")
-                                .title("Criteria B1 Original")
+                                .title("Criteria B1")
+                                .startDay(LocalDate.parse("2015-01-01"))
+                                .endDay(LocalDate.parse("2020-06-29"))
                                 .build())
                         .build())
                 .certificationResult(CertificationResult.builder()
@@ -154,13 +170,14 @@ public class InvalidCriteriaCombinationReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(3L)
                                 .number("170.315 (b)(1)")
-                                .title("Criteria B1 (Cures Update)")
+                                .title("Criteria B1")
+                                .startDay(LocalDate.parse("2020-06-30"))
                                 .build())
                         .build())
                 .build();
         reviewer.review(listing);
         assertEquals(1, listing.getErrorMessages().size());
-        assertTrue(listing.getErrorMessages().contains(String.format(INVALID_COMBINATION, "170.315 (b)(1)", "170.315 (b)(1) (Cures Update)")));
+        assertTrue(listing.getErrorMessages().contains(String.format(INVALID_COMBINATION, "170.315 (b)(1)", "170.315 (b)(1)")));
     }
 
     @Test
@@ -171,7 +188,9 @@ public class InvalidCriteriaCombinationReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(4L)
                                 .number("170.315 (b)(2)")
-                                .title("Criteria B2 Original")
+                                .title("Criteria B2")
+                                .startDay(LocalDate.parse("2015-01-01"))
+                                .endDay(LocalDate.parse("2020-06-29"))
                                 .build())
                         .build())
                 .certificationResult(CertificationResult.builder()
@@ -179,13 +198,14 @@ public class InvalidCriteriaCombinationReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(5L)
                                 .number("170.315 (b)(2)")
-                                .title("Criteria B2 (Cures Update)")
+                                .title("Criteria B2")
+                                .startDay(LocalDate.parse("2020-06-30"))
                                 .build())
                         .build())
                 .build();
         reviewer.review(listing);
         assertEquals(1, listing.getErrorMessages().size());
-        assertTrue(listing.getErrorMessages().contains(String.format(INVALID_COMBINATION, "170.315 (b)(2)", "170.315 (b)(2) (Cures Update)")));
+        assertTrue(listing.getErrorMessages().contains(String.format(INVALID_COMBINATION, "170.315 (b)(2)", "170.315 (b)(2)")));
     }
 
     @Test
@@ -196,7 +216,9 @@ public class InvalidCriteriaCombinationReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(6L)
                                 .number("170.315 (b)(3)")
-                                .title("Criteria B3 Original")
+                                .title("Criteria B3")
+                                .startDay(LocalDate.parse("2015-01-01"))
+                                .endDay(LocalDate.parse("2020-06-29"))
                                 .build())
                         .build())
                 .certificationResult(CertificationResult.builder()
@@ -204,13 +226,14 @@ public class InvalidCriteriaCombinationReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(7L)
                                 .number("170.315 (b)(3)")
-                                .title("Criteria B3 (Cures Update)")
+                                .title("Criteria B3")
+                                .startDay(LocalDate.parse("2020-06-30"))
                                 .build())
                         .build())
                 .build();
         reviewer.review(listing);
         assertEquals(1, listing.getErrorMessages().size());
-        assertTrue(listing.getErrorMessages().contains(String.format(INVALID_COMBINATION, "170.315 (b)(3)", "170.315 (b)(3) (Cures Update)")));
+        assertTrue(listing.getErrorMessages().contains(String.format(INVALID_COMBINATION, "170.315 (b)(3)", "170.315 (b)(3)")));
     }
 
     @Test
@@ -246,7 +269,9 @@ public class InvalidCriteriaCombinationReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(9L)
                                 .number("170.315 (b)(7)")
-                                .title("Criteria B7 Original")
+                                .title("Criteria B7")
+                                .startDay(LocalDate.parse("2015-01-01"))
+                                .endDay(LocalDate.parse("2020-06-29"))
                                 .build())
                         .build())
                 .certificationResult(CertificationResult.builder()
@@ -254,13 +279,14 @@ public class InvalidCriteriaCombinationReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(10L)
                                 .number("170.315 (b)(7)")
-                                .title("Criteria B7 (Cures Update)")
+                                .title("Criteria B7")
+                                .startDay(LocalDate.parse("2020-06-30"))
                                 .build())
                         .build())
                 .build();
         reviewer.review(listing);
         assertEquals(1, listing.getErrorMessages().size());
-        assertTrue(listing.getErrorMessages().contains(String.format(INVALID_COMBINATION, "170.315 (b)(7)", "170.315 (b)(7) (Cures Update)")));
+        assertTrue(listing.getErrorMessages().contains(String.format(INVALID_COMBINATION, "170.315 (b)(7)", "170.315 (b)(7)")));
     }
 
     @Test
@@ -271,7 +297,9 @@ public class InvalidCriteriaCombinationReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(11L)
                                 .number("170.315 (b)(8)")
-                                .title("Criteria B8 Original")
+                                .title("Criteria B8")
+                                .startDay(LocalDate.parse("2015-01-01"))
+                                .endDay(LocalDate.parse("2020-06-29"))
                                 .build())
                         .build())
                 .certificationResult(CertificationResult.builder()
@@ -279,13 +307,14 @@ public class InvalidCriteriaCombinationReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(12L)
                                 .number("170.315 (b)(8)")
-                                .title("Criteria B8 (Cures Update)")
+                                .title("Criteria B8")
+                                .startDay(LocalDate.parse("2020-06-30"))
                                 .build())
                         .build())
                 .build();
         reviewer.review(listing);
         assertEquals(1, listing.getErrorMessages().size());
-        assertTrue(listing.getErrorMessages().contains(String.format(INVALID_COMBINATION, "170.315 (b)(8)", "170.315 (b)(8) (Cures Update)")));
+        assertTrue(listing.getErrorMessages().contains(String.format(INVALID_COMBINATION, "170.315 (b)(8)", "170.315 (b)(8)")));
     }
 
     @Test
@@ -296,7 +325,9 @@ public class InvalidCriteriaCombinationReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(13L)
                                 .number("170.315 (b)(9)")
-                                .title("Criteria B9 Original")
+                                .title("Criteria B9")
+                                .startDay(LocalDate.parse("2015-01-01"))
+                                .endDay(LocalDate.parse("2020-06-29"))
                                 .build())
                         .build())
                 .certificationResult(CertificationResult.builder()
@@ -304,13 +335,14 @@ public class InvalidCriteriaCombinationReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(14L)
                                 .number("170.315 (b)(9)")
-                                .title("Criteria B9 (Cures Update)")
+                                .title("Criteria B9")
+                                .startDay(LocalDate.parse("2020-06-30"))
                                 .build())
                         .build())
                 .build();
         reviewer.review(listing);
         assertEquals(1, listing.getErrorMessages().size());
-        assertTrue(listing.getErrorMessages().contains(String.format(INVALID_COMBINATION, "170.315 (b)(9)", "170.315 (b)(9) (Cures Update)")));
+        assertTrue(listing.getErrorMessages().contains(String.format(INVALID_COMBINATION, "170.315 (b)(9)", "170.315 (b)(9)")));
     }
 
     @Test
@@ -321,7 +353,9 @@ public class InvalidCriteriaCombinationReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(17L)
                                 .number("170.315 (c)(3)")
-                                .title("Criteria C3 Original")
+                                .title("Criteria C3")
+                                .startDay(LocalDate.parse("2015-01-01"))
+                                .endDay(LocalDate.parse("2020-06-29"))
                                 .build())
                         .build())
                 .certificationResult(CertificationResult.builder()
@@ -329,13 +363,14 @@ public class InvalidCriteriaCombinationReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(18L)
                                 .number("170.315 (c)(3)")
-                                .title("Criteria C3 (Cures Update)")
+                                .title("Criteria C3")
+                                .startDay(LocalDate.parse("2020-06-30"))
                                 .build())
                         .build())
                 .build();
         reviewer.review(listing);
         assertEquals(1, listing.getErrorMessages().size());
-        assertTrue(listing.getErrorMessages().contains(String.format(INVALID_COMBINATION, "170.315 (c)(3)", "170.315 (c)(3) (Cures Update)")));
+        assertTrue(listing.getErrorMessages().contains(String.format(INVALID_COMBINATION, "170.315 (c)(3)", "170.315 (c)(3)")));
     }
 
     @Test
@@ -346,7 +381,9 @@ public class InvalidCriteriaCombinationReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(19L)
                                 .number("170.315 (d)(2)")
-                                .title("Criteria D2 Original")
+                                .title("Criteria D2")
+                                .startDay(LocalDate.parse("2015-01-01"))
+                                .endDay(LocalDate.parse("2020-06-29"))
                                 .build())
                         .build())
                 .certificationResult(CertificationResult.builder()
@@ -354,13 +391,14 @@ public class InvalidCriteriaCombinationReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(20L)
                                 .number("170.315 (d)(2)")
-                                .title("Criteria D2 (Cures Update)")
+                                .title("Criteria D2")
+                                .startDay(LocalDate.parse("2020-06-30"))
                                 .build())
                         .build())
                 .build();
         reviewer.review(listing);
         assertEquals(1, listing.getErrorMessages().size());
-        assertTrue(listing.getErrorMessages().contains(String.format(INVALID_COMBINATION, "170.315 (d)(2)", "170.315 (d)(2) (Cures Update)")));
+        assertTrue(listing.getErrorMessages().contains(String.format(INVALID_COMBINATION, "170.315 (d)(2)", "170.315 (d)(2)")));
     }
 
     @Test
@@ -371,7 +409,9 @@ public class InvalidCriteriaCombinationReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(21L)
                                 .number("170.315 (d)(3)")
-                                .title("Criteria D3 Original")
+                                .title("Criteria D3")
+                                .startDay(LocalDate.parse("2015-01-01"))
+                                .endDay(LocalDate.parse("2020-06-29"))
                                 .build())
                         .build())
                 .certificationResult(CertificationResult.builder()
@@ -379,13 +419,14 @@ public class InvalidCriteriaCombinationReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(22L)
                                 .number("170.315 (d)(3)")
-                                .title("Criteria D3 (Cures Update)")
+                                .title("Criteria D3")
+                                .startDay(LocalDate.parse("2020-06-30"))
                                 .build())
                         .build())
                 .build();
         reviewer.review(listing);
         assertEquals(1, listing.getErrorMessages().size());
-        assertTrue(listing.getErrorMessages().contains(String.format(INVALID_COMBINATION, "170.315 (d)(3)", "170.315 (d)(3) (Cures Update)")));
+        assertTrue(listing.getErrorMessages().contains(String.format(INVALID_COMBINATION, "170.315 (d)(3)", "170.315 (d)(3)")));
     }
 
     @Test
@@ -396,7 +437,9 @@ public class InvalidCriteriaCombinationReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(23L)
                                 .number("170.315 (d)(10)")
-                                .title("Criteria D10 Original")
+                                .title("Criteria D10")
+                                .startDay(LocalDate.parse("2015-01-01"))
+                                .endDay(LocalDate.parse("2020-06-29"))
                                 .build())
                         .build())
                 .certificationResult(CertificationResult.builder()
@@ -404,13 +447,14 @@ public class InvalidCriteriaCombinationReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(24L)
                                 .number("170.315 (d)(10)")
-                                .title("Criteria D10 (Cures Update)")
+                                .title("Criteria D10")
+                                .startDay(LocalDate.parse("2020-06-30"))
                                 .build())
                         .build())
                 .build();
         reviewer.review(listing);
         assertEquals(1, listing.getErrorMessages().size());
-        assertTrue(listing.getErrorMessages().contains(String.format(INVALID_COMBINATION, "170.315 (d)(10)", "170.315 (d)(10) (Cures Update)")));
+        assertTrue(listing.getErrorMessages().contains(String.format(INVALID_COMBINATION, "170.315 (d)(10)", "170.315 (d)(10)")));
     }
 
     @Test
@@ -421,7 +465,9 @@ public class InvalidCriteriaCombinationReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(25L)
                                 .number("170.315 (e)(1)")
-                                .title("Criteria E1 Original")
+                                .title("Criteria E1")
+                                .startDay(LocalDate.parse("2015-01-01"))
+                                .endDay(LocalDate.parse("2020-06-29"))
                                 .build())
                         .build())
                 .certificationResult(CertificationResult.builder()
@@ -429,13 +475,14 @@ public class InvalidCriteriaCombinationReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(26L)
                                 .number("170.315 (e)(1)")
-                                .title("Criteria E1 (Cures Update)")
+                                .title("Criteria E1")
+                                .startDay(LocalDate.parse("2020-06-30"))
                                 .build())
                         .build())
                 .build();
         reviewer.review(listing);
         assertEquals(1, listing.getErrorMessages().size());
-        assertTrue(listing.getErrorMessages().contains(String.format(INVALID_COMBINATION, "170.315 (e)(1)", "170.315 (e)(1) (Cures Update)")));
+        assertTrue(listing.getErrorMessages().contains(String.format(INVALID_COMBINATION, "170.315 (e)(1)", "170.315 (e)(1)")));
     }
 
     @Test
@@ -446,7 +493,9 @@ public class InvalidCriteriaCombinationReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(27L)
                                 .number("170.315 (f)(5)")
-                                .title("Criteria F5 Original")
+                                .title("Criteria F5")
+                                .startDay(LocalDate.parse("2015-01-01"))
+                                .endDay(LocalDate.parse("2020-06-29"))
                                 .build())
                         .build())
                 .certificationResult(CertificationResult.builder()
@@ -454,13 +503,14 @@ public class InvalidCriteriaCombinationReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(28L)
                                 .number("170.315 (f)(5)")
-                                .title("Criteria F5 (Cures Update)")
+                                .title("Criteria F5")
+                                .startDay(LocalDate.parse("2020-06-30"))
                                 .build())
                         .build())
                 .build();
         reviewer.review(listing);
         assertEquals(1, listing.getErrorMessages().size());
-        assertTrue(listing.getErrorMessages().contains(String.format(INVALID_COMBINATION, "170.315 (f)(5)", "170.315 (f)(5) (Cures Update)")));
+        assertTrue(listing.getErrorMessages().contains(String.format(INVALID_COMBINATION, "170.315 (f)(5)", "170.315 (f)(5)")));
     }
 
     @Test
@@ -471,7 +521,9 @@ public class InvalidCriteriaCombinationReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(29L)
                                 .number("170.315 (g)(6)")
-                                .title("Criteria G6 Original")
+                                .title("Criteria G6")
+                                .startDay(LocalDate.parse("2015-01-01"))
+                                .endDay(LocalDate.parse("2020-06-29"))
                                 .build())
                         .build())
                 .certificationResult(CertificationResult.builder()
@@ -479,13 +531,14 @@ public class InvalidCriteriaCombinationReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(30L)
                                 .number("170.315 (g)(6)")
-                                .title("Criteria G6 (Cures Update)")
+                                .title("Criteria G6")
+                                .startDay(LocalDate.parse("2020-06-30"))
                                 .build())
                         .build())
                 .build();
         reviewer.review(listing);
         assertEquals(1, listing.getErrorMessages().size());
-        assertTrue(listing.getErrorMessages().contains(String.format(INVALID_COMBINATION, "170.315 (g)(6)", "170.315 (g)(6) (Cures Update)")));
+        assertTrue(listing.getErrorMessages().contains(String.format(INVALID_COMBINATION, "170.315 (g)(6)", "170.315 (g)(6)")));
     }
 
     @Test
@@ -496,7 +549,9 @@ public class InvalidCriteriaCombinationReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(31L)
                                 .number("170.315 (g)(8)")
-                                .title("Criteria G8 Original")
+                                .title("Criteria G8")
+                                .startDay(LocalDate.parse("2015-01-01"))
+                                .endDay(LocalDate.parse("2020-06-29"))
                                 .build())
                         .build())
                 .certificationResult(CertificationResult.builder()
@@ -521,7 +576,9 @@ public class InvalidCriteriaCombinationReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(32L)
                                 .number("170.315 (g)(9)")
-                                .title("Criteria G9 Original")
+                                .title("Criteria G9")
+                                .startDay(LocalDate.parse("2015-01-01"))
+                                .endDay(LocalDate.parse("2020-06-29"))
                                 .build())
                         .build())
                 .certificationResult(CertificationResult.builder()
@@ -529,13 +586,14 @@ public class InvalidCriteriaCombinationReviewerTest {
                         .criterion(CertificationCriterion.builder()
                                 .id(33L)
                                 .number("170.315 (g)(9)")
-                                .title("Criteria G9 (Cures Update)")
+                                .title("Criteria G9")
+                                .startDay(LocalDate.parse("2020-06-30"))
                                 .build())
                         .build())
                 .build();
         reviewer.review(listing);
         assertEquals(1, listing.getErrorMessages().size());
-        assertTrue(listing.getErrorMessages().contains(String.format(INVALID_COMBINATION, "170.315 (g)(9)", "170.315 (g)(9) (Cures Update)")));
+        assertTrue(listing.getErrorMessages().contains(String.format(INVALID_COMBINATION, "170.315 (g)(9)", "170.315 (g)(9)")));
     }
 
     @Test

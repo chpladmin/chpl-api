@@ -213,12 +213,12 @@ public class SvapManagerTest {
                 .criterion(CertificationCriterion.builder()
                         .id(1L)
                         .number("170.315(a)(1)")
-                        .title("Cures Update")
+                        .title("170.315(a)(1)")
                         .build())
                 .criterion(CertificationCriterion.builder()
                         .id(2L)
                         .number("170.315(a)(2)")
-                        .title("Cures Update")
+                        .title("170.315(a)(2)")
                         .build())
                 .build();
 
@@ -334,12 +334,12 @@ public class SvapManagerTest {
                 .criterion(CertificationCriterion.builder()
                         .id(1L)
                         .number("170.315(a)(1)")
-                        .title("Cures Update")
+                        .title("170.315(a)(1)")
                         .build())
                 .criterion(CertificationCriterion.builder()
                         .id(2L)
                         .number("170.315(a)(2)")
-                        .title("Cures Update")
+                        .title("170.315(a)(2)")
                         .build())
                 .build();
 
@@ -361,12 +361,12 @@ public class SvapManagerTest {
                 .criterion(CertificationCriterion.builder()
                         .id(1L)
                         .number("170.315(a)(1)")
-                        .title("Cures Update")
+                        .title("170.315(a)(1)")
                         .build())
                 .criterion(CertificationCriterion.builder()
                         .id(2L)
                         .number("170.315(a)(2)")
-                        .title("Cures Update")
+                        .title("170.315(a)(2)")
                         .build())
                 .build();
 
