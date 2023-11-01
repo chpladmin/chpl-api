@@ -35,6 +35,7 @@ public class CertificationResultRules {
     public static final String SED = "sed";
     public static final String SERVICE_BASE_URL_LIST = "serviceBaseUrlList";
     public static final String SVAP = "svap";
+    public static final String STANDARD = "standard";
 
     private CertificationCriterionAttributeDAO certificationCriterionAttributeDao;
     private Map<Long, List<CertificationResultOption>> rules = new HashMap<Long, List<CertificationResultOption>>();
@@ -151,6 +152,11 @@ public class CertificationResultRules {
                 CertificationResultOption.builder()
                     .canHaveOption(attribute.getUseCases())
                     .optionName(USE_CASES)
+                .build());
+            rules.get(attribute.getCriterion().getId()).add(
+                CertificationResultOption.builder()
+                    .canHaveOption(attribute.getStandard())
+                    .optionName(STANDARD)
                 .build());
         }
     }

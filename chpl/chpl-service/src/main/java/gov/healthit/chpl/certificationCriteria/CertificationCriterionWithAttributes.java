@@ -55,5 +55,6 @@ public class CertificationCriterionWithAttributes extends CertificationCriterion
         private boolean sed;
         private boolean serviceBaseUrlList;
         private boolean svap;
+        private boolean standard;
     }
 }

@@ -102,6 +102,7 @@ public class CertificationCriteriaManager {
                         .testProcedure(rules.hasCertOption(criterion.getId(), CertificationResultRules.TEST_PROCEDURE))
                         .testTool(rules.hasCertOption(criterion.getId(), CertificationResultRules.TEST_TOOLS_USED))
                         .useCases(rules.hasCertOption(criterion.getId(), CertificationResultRules.USE_CASES))
+                        .standard(rules.hasCertOption(criterion.getId(), CertificationResultRules.STANDARD))
                         .build())
                 .build();
     }

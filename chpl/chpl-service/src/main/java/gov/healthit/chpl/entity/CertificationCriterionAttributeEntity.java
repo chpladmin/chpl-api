@@ -98,6 +98,9 @@ public class CertificationCriterionAttributeEntity {
     @Column(name = "use_cases")
     private Boolean useCases;
 
+    @Column(name = "standard")
+    private Boolean standard;
+
     @Basic(optional = false)
     @Column(name = "creation_date", nullable = false, insertable = false, updatable = false)
     private Date creationDate;
