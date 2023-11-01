@@ -19,6 +19,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.PropertySources;
 import org.springframework.context.support.ResourceBundleMessageSource;
@@ -40,9 +41,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.introspect.AnnotatedMember;
 import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
 
+import gov.healthit.chpl.api.dao.ApiKeyDAO;
 import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseField;
 import gov.healthit.chpl.filter.APIKeyAuthenticationFilter;
 import gov.healthit.chpl.registration.RateLimitingInterceptor;
+import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import gov.healthit.chpl.web.controller.annotation.CacheControlHandlerInterceptor;
 import io.swagger.v3.oas.models.Components;
@@ -85,6 +88,17 @@ public class CHPLConfig implements WebMvcConfigurer, EnvironmentAware {
     @Autowired
     private Environment env;
 
+    @Lazy
+    @Autowired
+    private ApiKeyDAO apiKeyDAO;
+
+    @Lazy
+    @Autowired
+    private ErrorMessageUtil errorUtil;
+
+    private Integer rateLimitRequestCount;
+    private Integer rateLimitTimePeriod;
+
     @Override
     public void setEnvironment(Environment e) {
         this.chplServiceUrl = e.getProperty("chplUrlBegin") + e.getProperty("basePath");
@@ -93,6 +107,9 @@ public class CHPLConfig implements WebMvcConfigurer, EnvironmentAware {
         this.apiDescriptionHtml = e.getProperty("api.description");
         this.feedbackFormUrl = e.getProperty("contact.publicUrl");
         this.tryItOutEnabled = BooleanUtils.toBooleanObject(e.getProperty("api.tryItOutEnabled"));
+
+        this.rateLimitRequestCount = Integer.parseInt(e.getProperty("rateLimitRequestCount"));
+        this.rateLimitTimePeriod = Integer.parseInt(e.getProperty("rateLimitTimePeriod"));
     }
 
     @Autowired
@@ -163,7 +180,7 @@ public class CHPLConfig implements WebMvcConfigurer, EnvironmentAware {
 
     @Bean
     public RateLimitingInterceptor rateLimitingInterceptor() {
-        RateLimitingInterceptor interceptor = new RateLimitingInterceptor();
+        RateLimitingInterceptor interceptor = new RateLimitingInterceptor(apiKeyDAO, errorUtil, rateLimitRequestCount, rateLimitTimePeriod);
         return interceptor;
     }
 

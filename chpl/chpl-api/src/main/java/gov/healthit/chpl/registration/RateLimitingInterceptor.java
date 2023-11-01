@@ -1,117 +1,83 @@
 package gov.healthit.chpl.registration;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.EnvironmentAware;
-import org.springframework.core.env.Environment;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
-import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
+import org.springframework.web.servlet.HandlerInterceptor;
 
 import gov.healthit.chpl.api.dao.ApiKeyDAO;
-import gov.healthit.chpl.api.domain.ApiKey;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import io.github.bucket4j.Bandwidth;
+import io.github.bucket4j.Bucket;
+import io.github.bucket4j.Refill;
+import lombok.extern.log4j.Log4j2;
 
-@Component
-public class RateLimitingInterceptor extends HandlerInterceptorAdapter implements EnvironmentAware {
+@Log4j2
+public class RateLimitingInterceptor implements HandlerInterceptor {
 
-    private static final Logger LOGGER = LogManager.getLogger(RateLimitingInterceptor.class);
-
-    @Autowired
-    private Environment env;
-
-    @Autowired
-    private ApiKeyDAO apiKeyDao;
-
-    @Autowired
+    private Integer rateLimitRequestCount;
+    private Integer rateLimitTimePeriod;
     private ErrorMessageUtil errorUtil;
 
-    private String timeUnit;
-
-    private int limit;
-
-    private Map<String, SimpleRateLimiter> limiters = new ConcurrentHashMap<>();
-
+    private Bucket rateLimitingBucket;
     private List<String> unrestrictedApiKeys = new ArrayList<String>();
 
-    /** Default constructor. */
-    public RateLimitingInterceptor() {
-    }
+    public RateLimitingInterceptor(ApiKeyDAO apiKeyDAO, ErrorMessageUtil errorUtil, Integer rateLimitRequestCount, Integer rateLimitTimePeriod) {
+        apiKeyDAO.findAllUnrestricted().forEach(apiKey -> unrestrictedApiKeys.add(apiKey.getKey()));
 
-    @Override
-    public void setEnvironment(final Environment environment) {
-        LOGGER.info("setEnvironment");
-        this.env = environment;
-        this.timeUnit = this.env.getProperty("rateLimitTimeUnit");
-        this.limit = Integer.parseInt(this.env.getProperty("rateTokenLimit"));
+        rateLimitingBucket = Bucket.builder()
+                .addLimit(Bandwidth.classic(rateLimitRequestCount, Refill.intervally(rateLimitRequestCount, Duration.ofSeconds(rateLimitTimePeriod))))
+                .build();
+
+        this.errorUtil = errorUtil;
+        this.rateLimitRequestCount = rateLimitRequestCount;
+        this.rateLimitTimePeriod = rateLimitTimePeriod;
     }
 
     @Override
     public boolean preHandle(final HttpServletRequest request,
             final HttpServletResponse response, final Object handler) throws Exception {
-        String key = null;
+
+        LOGGER.info("Rate Limit: {} per {} secs", rateLimitRequestCount, rateLimitTimePeriod);
+
+        String apiKey = getRequestApiKey(request);
+        if (apiKey == null) {
+            return false;
+        }
+
+        // let non-API requests pass
+        if (unrestrictedApiKeys.contains(apiKey)) {
+            return true;
+        }
+
+        Boolean allowRequest = rateLimitingBucket.tryConsume(1);
+
+        if (!allowRequest) {
+            response.sendError(HttpStatus.TOO_MANY_REQUESTS.value(), "Need to determine this txt...");
+                    //errorUtil.getMessage("apikey.limit", String.valueOf(limit), timeUnit));
+            LOGGER.info("Client with API KEY: {} went over API KEY limit of {} per {} second(s).", apiKey, rateLimitRequestCount, rateLimitTimePeriod);
+        }
+        //ToDo: Need to determine if this is necessary and if so, what do we put in here??
+        response.addHeader("X-RateLimit-Limit", "One call every 2 seconds");
+        return allowRequest;
+    }
+
+    private String getRequestApiKey(HttpServletRequest request) {
         String clientIdParam = request.getParameter("api_key");
         String clientIdHeader = request.getHeader("API-Key");
 
         if (!StringUtils.isEmpty(clientIdParam)) {
-            key = clientIdParam;
+            return clientIdParam;
         } else if (!StringUtils.isEmpty(clientIdHeader)) {
-            key = clientIdHeader;
+            return clientIdHeader;
         } else {
-            return false;
+            return null;
         }
-
-        List<ApiKey> apiKeys = apiKeyDao.findAllUnrestricted();
-        for (ApiKey apiKey : apiKeys) {
-            unrestrictedApiKeys.add(apiKey.getKey());
-        }
-
-        // let non-API requests pass
-        if (unrestrictedApiKeys.contains(key)) {
-            return true;
-        }
-        SimpleRateLimiter rateLimiter = getRateLimiter(key);
-        boolean allowRequest = rateLimiter.tryAcquire();
-
-        if (!allowRequest) {
-            response.sendError(HttpStatus.TOO_MANY_REQUESTS.value(),
-                    errorUtil.getMessage("apikey.limit", String.valueOf(limit), timeUnit));
-            LOGGER.info("Client with API KEY: " + key + " went over API KEY limit of " + limit + ".");
-        }
-        response.addHeader("X-RateLimit-Limit", String.valueOf(limit));
-        return allowRequest;
-    }
-
-    private SimpleRateLimiter getRateLimiter(final String clientId) {
-
-        if (limiters.containsKey(clientId)) {
-            return limiters.get(clientId);
-        } else {
-            SimpleRateLimiter srl = new SimpleRateLimiter(limit, parseTimeUnit(timeUnit));
-            limiters.put(clientId, srl);
-            return srl;
-        }
-    }
-
-    private TimeUnit parseTimeUnit(final String unit) {
-        if (unit.equals("second")) {
-            return TimeUnit.SECONDS;
-        } else if (unit.equals("minute")) {
-            return TimeUnit.MINUTES;
-        } else if (unit.equals("hour")) {
-            return TimeUnit.HOURS;
-        }
-        return null;
     }
 }
