@@ -42,8 +42,6 @@ public class RateLimitingInterceptor implements HandlerInterceptor {
     public boolean preHandle(final HttpServletRequest request,
             final HttpServletResponse response, final Object handler) throws Exception {
 
-        LOGGER.info("Rate Limit: {} per {} secs", rateLimitRequestCount, rateLimitTimePeriod);
-
         String apiKey = getRequestApiKey(request);
         if (apiKey == null) {
             return false;
