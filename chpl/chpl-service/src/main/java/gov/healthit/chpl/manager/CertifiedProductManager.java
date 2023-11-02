@@ -66,7 +66,6 @@ import gov.healthit.chpl.domain.InheritedCertificationStatus;
 import gov.healthit.chpl.domain.ListingMeasure;
 import gov.healthit.chpl.domain.ListingUpdateRequest;
 import gov.healthit.chpl.domain.PromotingInteroperabilityUser;
-import gov.healthit.chpl.domain.TestingLab;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.domain.schedule.ChplJob;
 import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
@@ -79,7 +78,6 @@ import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.CertifiedProductQmsStandardDTO;
 import gov.healthit.chpl.dto.CertifiedProductTargetedUserDTO;
-import gov.healthit.chpl.dto.CertifiedProductTestingLabDTO;
 import gov.healthit.chpl.dto.CuresUpdateEventDTO;
 import gov.healthit.chpl.dto.ListingToListingMapDTO;
 import gov.healthit.chpl.dto.TargetedUserDTO;
@@ -487,67 +485,42 @@ public class CertifiedProductManager extends SecuredManager {
             throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
 
         int numChanges = 0;
-        List<CertifiedProductTestingLab> tlsToAdd = new ArrayList<CertifiedProductTestingLab>();
-        List<Long> idsToRemove = new ArrayList<Long>();
 
-        // figure out which testing labs to add
-        if (updatedTestingLabs != null && updatedTestingLabs.size() > 0) {
-            if (existingTestingLabs == null || existingTestingLabs.size() == 0) {
-                // existing listing has none, add all from the update
-                for (CertifiedProductTestingLab updatedItem : updatedTestingLabs) {
-                    tlsToAdd.add(updatedItem);
-                }
-            } else if (existingTestingLabs.size() > 0) {
-                // existing listing has some, compare to the update to see if
-                // any are different
-                for (CertifiedProductTestingLab updatedItem : updatedTestingLabs) {
-                    boolean inExistingListing = false;
-                    for (CertifiedProductTestingLab existingItem : existingTestingLabs) {
-                        inExistingListing = !inExistingListing ? updatedItem.matches(existingItem) : inExistingListing;
-                    }
+        List<CertifiedProductTestingLab> testingLabsToAdd = new ArrayList<CertifiedProductTestingLab>(updatedTestingLabs);
+        testingLabsToAdd.removeIf(tl -> doesCertifiedProductTestingLabExistInList(tl, existingTestingLabs));
 
-                    if (!inExistingListing) {
-                        tlsToAdd.add(updatedItem);
-                    }
-                }
-            }
-        }
+        List<CertifiedProductTestingLab> testingLabsToRemove = new ArrayList<CertifiedProductTestingLab>(existingTestingLabs);
+        testingLabsToRemove.removeIf(tl -> doesCertifiedProductTestingLabExistInList(tl, updatedTestingLabs));
 
-        // figure out which testing labs to remove
-        if (existingTestingLabs != null && existingTestingLabs.size() > 0) {
-            // if the updated listing has none, remove them all from existing
-            if (updatedTestingLabs == null || updatedTestingLabs.size() == 0) {
-                for (CertifiedProductTestingLab existingItem : existingTestingLabs) {
-                    idsToRemove.add(existingItem.getId());
-                }
-            } else if (updatedTestingLabs.size() > 0) {
-                for (CertifiedProductTestingLab existingItem : existingTestingLabs) {
-                    boolean inUpdatedListing = false;
-                    for (CertifiedProductTestingLab updatedItem : updatedTestingLabs) {
-                        inUpdatedListing = !inUpdatedListing ? existingItem.matches(updatedItem) : inUpdatedListing;
-                    }
-                    if (!inUpdatedListing) {
-                        idsToRemove.add(existingItem.getId());
-                    }
-                }
-            }
-        }
+        numChanges = testingLabsToAdd.size() + testingLabsToRemove.size();
 
-        numChanges = tlsToAdd.size() + idsToRemove.size();
-        for (CertifiedProductTestingLab toAdd : tlsToAdd) {
-            TestingLab item = atlDao.getByName(toAdd.getTestingLabName());
-            CertifiedProductTestingLabDTO tlDto = new CertifiedProductTestingLabDTO();
-            tlDto.setTestingLabId(item.getId());
-            tlDto.setTestingLabName(item.getName());
-            tlDto.setTestingLabCode(item.getAtlCode());
-            tlDto.setCertifiedProductId(listingId);
-            cpTestingLabDao.createCertifiedProductTestingLab(tlDto);
-        }
+        testingLabsToAdd.forEach(tl -> addCertifiedProductTestingLab(tl, listingId));
+        testingLabsToRemove.forEach(tl -> deleteCertifiedProductTestingLab(tl));
 
-        for (Long idToRemove : idsToRemove) {
-            cpTestingLabDao.deleteCertifiedProductTestingLab(idToRemove);
-        }
         return numChanges;
+    }
+
+    private Boolean doesCertifiedProductTestingLabExistInList(CertifiedProductTestingLab toFind, List<CertifiedProductTestingLab> list) {
+        return list.stream()
+                .filter(item -> item.matches(toFind))
+                .findAny()
+                .isPresent();
+    }
+
+    private void deleteCertifiedProductTestingLab(CertifiedProductTestingLab toDelete) {
+        try {
+            cpTestingLabDao.deleteCertifiedProductTestingLab(toDelete.getId());
+        } catch (Exception e) {
+            LOGGER.info("Could not delete CertifiedProductTestingLab with Id: {}, {}", toDelete.getId(), e.getMessage(), e);
+        }
+    }
+
+    private void addCertifiedProductTestingLab(CertifiedProductTestingLab toAdd, Long listingId) {
+        try {
+            cpTestingLabDao.createCertifiedProductTestingLab(toAdd, listingId);
+        } catch (Exception e) {
+            LOGGER.info("Could not add CertifiedProductTestingLab with Id: {}, for Listing: {}, {}", toAdd.getTestingLab().getId(), listingId, e.getMessage(), e);
+        }
     }
 
     /**
