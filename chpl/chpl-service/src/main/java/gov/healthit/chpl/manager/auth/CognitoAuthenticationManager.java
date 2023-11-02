@@ -88,6 +88,7 @@ public class CognitoAuthenticationManager {
         }
     }
 
+    //TODO OCD-4203 - this will need to be uncommented when we implement more of the Cognito security server side
     //@PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SECURED_USER, "
     //        + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).GET_BY_USER_NAME)")
     //@PostAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SECURED_USER, "
