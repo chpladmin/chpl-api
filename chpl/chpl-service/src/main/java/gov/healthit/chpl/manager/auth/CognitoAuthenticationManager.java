@@ -5,11 +5,14 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.NotImplementedException;
+import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.CognitoSecretHash;
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.domain.auth.LoginCredentials;
 import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.exception.UserRetrievalException;
@@ -38,12 +41,13 @@ public class CognitoAuthenticationManager {
     private String userPoolId;
     private String userPoolClientSecret;
     private CognitoIdentityProviderClient cognitoClient;
-
+    private FF4j ff4j;
     @Autowired
-    public CognitoAuthenticationManager(@Value("${cognito.accessKey}") String accessKey, @Value("${cognito.secretKey}") String secretKey,
+    public CognitoAuthenticationManager(FF4j ff4j, @Value("${cognito.accessKey}") String accessKey, @Value("${cognito.secretKey}") String secretKey,
             @Value("${cognito.region}") String region, @Value("${cognito.clientId}") String clientId, @Value("${cognito.userPoolId}") String userPoolId,
             @Value("${cognito.userPoolClientSecret}") String userPoolClientSecret) {
 
+        this.ff4j = ff4j;
         cognitoClient = createCognitoClient(accessKey, secretKey, region);
         this.clientId = clientId;
         this.userPoolId = userPoolId;
@@ -51,6 +55,9 @@ public class CognitoAuthenticationManager {
     }
 
     public String authenticate(LoginCredentials credentials) {
+        if (!ff4j.check(FeatureList.SSO)) {
+            throw new NotImplementedException("This feature has not been implemented");
+        }
         String secretHash = CognitoSecretHash.calculateSecretHash(clientId, userPoolClientSecret, credentials.getUserName());
 
         Map<String, String> authParams = new LinkedHashMap<String, String>();
@@ -86,6 +93,10 @@ public class CognitoAuthenticationManager {
     //@PostAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SECURED_USER, "
     //        + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).GET_BY_USER_NAME, returnObject)")
     public User getUserInfo(String userName) throws UserRetrievalException {
+        if (!ff4j.check(FeatureList.SSO)) {
+            throw new NotImplementedException("This feature has not been implemented");
+        }
+
         AdminGetUserRequest userRequest = AdminGetUserRequest.builder()
                 .userPoolId(userPoolId)
                 .username(userName)
