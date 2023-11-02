@@ -318,7 +318,7 @@ public class CertifiedProductDAO extends BaseDAOImpl {
         String hql = "SELECT cpd "
                 + "FROM CertifiedProductDetailsEntity cpd "
                 + "WHERE cpd.certificationStatusName IN (:certificationStatusNames) "
-                + "AND cpd.year NOT IN (:editionsToExclude) "
+                + "AND (cpd.year IS NULL OR cpd.year NOT IN (:editionsToExclude)) "
                 + "AND cpd.deleted = false ";
         Query query = entityManager.createQuery(hql, CertifiedProductDetailsEntity.class);
         List<String> certificationStatusNames = certificationStatuses.stream()
