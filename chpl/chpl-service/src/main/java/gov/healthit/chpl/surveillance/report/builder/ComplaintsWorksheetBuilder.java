@@ -47,7 +47,7 @@ import lombok.extern.log4j.Log4j2;
 @Component
 @Log4j2
 public class ComplaintsWorksheetBuilder {
-    private static final int LAST_DATA_COLUMN = 21;
+    private static final int LAST_DATA_COLUMN = 24;
 
     private static final String BOOLEAN_YES = "Yes";
     private static final String BOOLEAN_NO = "No";
