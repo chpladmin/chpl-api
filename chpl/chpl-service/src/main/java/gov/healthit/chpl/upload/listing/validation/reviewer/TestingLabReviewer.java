@@ -43,12 +43,12 @@ public class TestingLabReviewer implements Reviewer {
     }
 
     private void reviewValidTestingLab(CertifiedProductSearchDetails listing, CertifiedProductTestingLab atl) {
-        if (StringUtils.isEmpty(atl.getTestingLabName())) {
+        if (StringUtils.isEmpty(atl.getTestingLab().getName())) {
             listing.addDataErrorMessage(msgUtil.getMessage("listing.missingTestingLabName"));
         }
 
-        if (atl.getTestingLabId() == null && !StringUtils.isEmpty(atl.getTestingLabName())) {
-            listing.addDataErrorMessage(msgUtil.getMessage("listing.invalidTestingLab", atl.getTestingLabName()));
+        if (atl.getTestingLab().getId() == null && !StringUtils.isEmpty(atl.getTestingLab().getName())) {
+            listing.addDataErrorMessage(msgUtil.getMessage("listing.invalidTestingLab", atl.getTestingLab().getName()));
         }
     }
 }

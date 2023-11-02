@@ -348,7 +348,7 @@ public class RequiredData2015Reviewer extends PermissionBasedReviewer {
             listing.addBusinessErrorMessage("A product version is required.");
         }
         if (listing.getOldestStatus() == null) {
-            listing.addBusinessErrorMessage(msgUtil.getMessage("listing.noStatusProvided"));
+            listing.addDataErrorMessage(msgUtil.getMessage("listing.noStatusProvided"));
         }
 
         for (CertificationResult cert : listing.getCertificationResults()) {

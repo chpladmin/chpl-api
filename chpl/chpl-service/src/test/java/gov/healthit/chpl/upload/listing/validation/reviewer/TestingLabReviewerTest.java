@@ -13,6 +13,7 @@ import org.mockito.Mockito;
 
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductTestingLab;
+import gov.healthit.chpl.domain.TestingLab;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
@@ -64,7 +65,9 @@ public class TestingLabReviewerTest {
     @Test
     public void review_atlObjectWithNullValues_hasErrors() {
         List<CertifiedProductTestingLab> testingLabs = new ArrayList<CertifiedProductTestingLab>();
-        CertifiedProductTestingLab atl = new CertifiedProductTestingLab();
+        CertifiedProductTestingLab atl = CertifiedProductTestingLab.builder()
+                .testingLab(TestingLab.builder().build())
+                .build();
         testingLabs.add(atl);
 
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
@@ -81,8 +84,10 @@ public class TestingLabReviewerTest {
     public void review_atlObjectWithEmptyValues_hasErrors() {
         List<CertifiedProductTestingLab> testingLabs = new ArrayList<CertifiedProductTestingLab>();
         CertifiedProductTestingLab atl = CertifiedProductTestingLab.builder()
-                .testingLabCode("")
-                .testingLabName("")
+                .testingLab(TestingLab.builder()
+                        .atlCode("")
+                        .name("")
+                        .build())
                 .build();
         testingLabs.add(atl);
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
@@ -99,9 +104,11 @@ public class TestingLabReviewerTest {
     public void review_atlObjectWithNullNameValidId_hasError() {
         List<CertifiedProductTestingLab> testingLabs = new ArrayList<CertifiedProductTestingLab>();
         CertifiedProductTestingLab atl = CertifiedProductTestingLab.builder()
-                .testingLabCode("04")
-                .testingLabName("")
-                .testingLabId(1L)
+                .testingLab(TestingLab.builder()
+                        .atlCode("04")
+                        .name("")
+                        .id(1L)
+                        .build())
                 .build();
         testingLabs.add(atl);
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
@@ -118,9 +125,11 @@ public class TestingLabReviewerTest {
     public void review_atlObjectWithValidNameNullId_hasError() {
         List<CertifiedProductTestingLab> testingLabs = new ArrayList<CertifiedProductTestingLab>();
         CertifiedProductTestingLab atl = CertifiedProductTestingLab.builder()
-                .testingLabCode("05")
-                .testingLabName("My ATL")
-                .testingLabId(null)
+                .testingLab(TestingLab.builder()
+                        .atlCode("05")
+                        .name("My ATL")
+                        .id(null)
+                        .build())
                 .build();
         testingLabs.add(atl);
 
@@ -138,9 +147,11 @@ public class TestingLabReviewerTest {
     public void review_atlObjectWithValidNameAndId_noErrors() {
         List<CertifiedProductTestingLab> testingLabs = new ArrayList<CertifiedProductTestingLab>();
         CertifiedProductTestingLab atl = CertifiedProductTestingLab.builder()
-                .testingLabCode("05")
-                .testingLabName("My ATL")
-                .testingLabId(2L)
+                .testingLab(TestingLab.builder()
+                        .atlCode("05")
+                        .name("My ATL")
+                        .id(2L)
+                        .build())
                 .build();
         testingLabs.add(atl);
 
