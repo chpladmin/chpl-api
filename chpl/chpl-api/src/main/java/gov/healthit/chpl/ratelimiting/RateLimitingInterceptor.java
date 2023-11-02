@@ -1,8 +1,10 @@
-package gov.healthit.chpl.registration;
+package gov.healthit.chpl.ratelimiting;
 
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -25,15 +27,11 @@ public class RateLimitingInterceptor implements HandlerInterceptor {
     private Integer rateLimitTimePeriod;
     private ErrorMessageUtil errorUtil;
 
-    private Bucket rateLimitingBucket;
+    private Map<String, Bucket> rateLimitingBuckets = new HashMap<String, Bucket>();
     private List<String> unrestrictedApiKeys = new ArrayList<String>();
 
     public RateLimitingInterceptor(ApiKeyDAO apiKeyDAO, ErrorMessageUtil errorUtil, Integer rateLimitRequestCount, Integer rateLimitTimePeriod) {
         apiKeyDAO.findAllUnrestricted().forEach(apiKey -> unrestrictedApiKeys.add(apiKey.getKey()));
-
-        rateLimitingBucket = Bucket.builder()
-                .addLimit(Bandwidth.classic(rateLimitRequestCount, Refill.intervally(rateLimitRequestCount, Duration.ofSeconds(rateLimitTimePeriod))))
-                .build();
 
         this.errorUtil = errorUtil;
         this.rateLimitRequestCount = rateLimitRequestCount;
@@ -56,16 +54,27 @@ public class RateLimitingInterceptor implements HandlerInterceptor {
             return true;
         }
 
-        Boolean allowRequest = rateLimitingBucket.tryConsume(1);
+        Boolean allowRequest = getBucketForApiKey(apiKey).tryConsume(1);
 
         if (!allowRequest) {
             response.sendError(HttpStatus.TOO_MANY_REQUESTS.value(), "Need to determine this txt...");
                     //errorUtil.getMessage("apikey.limit", String.valueOf(limit), timeUnit));
             LOGGER.info("Client with API KEY: {} went over API KEY limit of {} per {} second(s).", apiKey, rateLimitRequestCount, rateLimitTimePeriod);
         }
+
         //ToDo: Need to determine if this is necessary and if so, what do we put in here??
         response.addHeader("X-RateLimit-Limit", "One call every 2 seconds");
         return allowRequest;
+    }
+
+    private Bucket getBucketForApiKey(String apiKey) {
+        if (!rateLimitingBuckets.containsKey(apiKey)) {
+            rateLimitingBuckets.put(apiKey, Bucket.builder()
+                    .addLimit(Bandwidth.classic(rateLimitRequestCount,
+                            Refill.intervally(rateLimitRequestCount, Duration.ofSeconds(rateLimitTimePeriod))))
+            .build());
+        }
+        return rateLimitingBuckets.get(apiKey);
     }
 
     private String getRequestApiKey(HttpServletRequest request) {

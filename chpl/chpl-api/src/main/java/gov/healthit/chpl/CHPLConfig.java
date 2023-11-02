@@ -44,7 +44,7 @@ import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
 import gov.healthit.chpl.api.dao.ApiKeyDAO;
 import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseField;
 import gov.healthit.chpl.filter.APIKeyAuthenticationFilter;
-import gov.healthit.chpl.registration.RateLimitingInterceptor;
+import gov.healthit.chpl.ratelimiting.RateLimitingInterceptor;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import gov.healthit.chpl.web.controller.annotation.CacheControlHandlerInterceptor;
