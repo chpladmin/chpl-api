@@ -14,6 +14,7 @@ import org.mockito.Mockito;
 
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductTestingLab;
+import gov.healthit.chpl.domain.TestingLab;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.ValidationUtils;
@@ -88,8 +89,11 @@ public class TestingLabCodeReviewerTest {
 
     @Test
     public void review_legacyChplProductNumberWithAtl_noError() {
-        CertifiedProductTestingLab atl = new CertifiedProductTestingLab();
-        atl.setTestingLabCode(null);
+        CertifiedProductTestingLab atl = CertifiedProductTestingLab.builder()
+                .testingLab(TestingLab.builder()
+                        .atlCode(null)
+                        .build())
+                .build();
         List<CertifiedProductTestingLab> atls = new ArrayList<CertifiedProductTestingLab>();
         atls.add(atl);
 
@@ -117,8 +121,11 @@ public class TestingLabCodeReviewerTest {
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("atl.shouldNotBe99")))
             .thenReturn(ATL_NOT_99);
 
-        CertifiedProductTestingLab atl = new CertifiedProductTestingLab();
-        atl.setTestingLabCode("01");
+        CertifiedProductTestingLab atl = CertifiedProductTestingLab.builder()
+                .testingLab(TestingLab.builder()
+                        .atlCode("01")
+                        .build())
+                .build();
         List<CertifiedProductTestingLab> atls = new ArrayList<CertifiedProductTestingLab>();
         atls.add(atl);
 
@@ -153,10 +160,16 @@ public class TestingLabCodeReviewerTest {
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.atl.codeIsNotForMultiple")))
             .thenReturn(ATL_99);
 
-        CertifiedProductTestingLab atl = new CertifiedProductTestingLab();
-        atl.setTestingLabCode("01");
-        CertifiedProductTestingLab atl2 = new CertifiedProductTestingLab();
-        atl2.setTestingLabCode("05");
+        CertifiedProductTestingLab atl = CertifiedProductTestingLab.builder()
+                .testingLab(TestingLab.builder()
+                        .atlCode("01")
+                        .build())
+                .build();
+        CertifiedProductTestingLab atl2 = CertifiedProductTestingLab.builder()
+                .testingLab(TestingLab.builder()
+                        .atlCode("05")
+                        .build())
+                .build();
         List<CertifiedProductTestingLab> atls = new ArrayList<CertifiedProductTestingLab>();
         atls.add(atl);
         atls.add(atl2);
@@ -177,8 +190,11 @@ public class TestingLabCodeReviewerTest {
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.testingLabMismatch"), ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(ATL_MISMATCH, i.getArgument(1), i.getArgument(2)));
 
-        CertifiedProductTestingLab atl = new CertifiedProductTestingLab();
-        atl.setTestingLabCode("01");
+        CertifiedProductTestingLab atl = CertifiedProductTestingLab.builder()
+        .testingLab(TestingLab.builder()
+                .atlCode("01")
+                .build())
+        .build();
         List<CertifiedProductTestingLab> atls = new ArrayList<CertifiedProductTestingLab>();
         atls.add(atl);
 
@@ -195,8 +211,11 @@ public class TestingLabCodeReviewerTest {
 
     @Test
     public void review_mismatchedAtlCodeInvalidChplProductNumber_noError() {
-        CertifiedProductTestingLab atl = new CertifiedProductTestingLab();
-        atl.setTestingLabCode("01");
+        CertifiedProductTestingLab atl = CertifiedProductTestingLab.builder()
+                .testingLab(TestingLab.builder()
+                        .atlCode("01")
+                        .build())
+                .build();
         List<CertifiedProductTestingLab> atls = new ArrayList<CertifiedProductTestingLab>();
         atls.add(atl);
 
@@ -212,8 +231,11 @@ public class TestingLabCodeReviewerTest {
 
     @Test
     public void review_validAtlCodeWithMatchingSingleAtl_noError() {
-        CertifiedProductTestingLab atl = new CertifiedProductTestingLab();
-        atl.setTestingLabCode("04");
+        CertifiedProductTestingLab atl = CertifiedProductTestingLab.builder()
+                .testingLab(TestingLab.builder()
+                        .atlCode("04")
+                        .build())
+                .build();
         List<CertifiedProductTestingLab> atls = new ArrayList<CertifiedProductTestingLab>();
         atls.add(atl);
 
@@ -228,10 +250,16 @@ public class TestingLabCodeReviewerTest {
 
     @Test
     public void review_99AtlCodeWithMultipleAtls_noError() {
-        CertifiedProductTestingLab atl = new CertifiedProductTestingLab();
-        atl.setTestingLabCode("01");
-        CertifiedProductTestingLab atl2 = new CertifiedProductTestingLab();
-        atl2.setTestingLabCode("05");
+        CertifiedProductTestingLab atl = CertifiedProductTestingLab.builder()
+                .testingLab(TestingLab.builder()
+                        .atlCode("01")
+                        .build())
+                .build();
+        CertifiedProductTestingLab atl2 = CertifiedProductTestingLab.builder()
+                .testingLab(TestingLab.builder()
+                        .atlCode("05")
+                        .build())
+                .build();
         List<CertifiedProductTestingLab> atls = new ArrayList<CertifiedProductTestingLab>();
         atls.add(atl);
         atls.add(atl2);

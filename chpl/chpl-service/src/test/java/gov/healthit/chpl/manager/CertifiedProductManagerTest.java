@@ -56,6 +56,7 @@ import gov.healthit.chpl.domain.DeveloperStatusEvent;
 import gov.healthit.chpl.domain.ListingUpdateRequest;
 import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.ProductVersion;
+import gov.healthit.chpl.domain.TestingLab;
 import gov.healthit.chpl.domain.contact.PointOfContact;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
@@ -295,9 +296,11 @@ public class CertifiedProductManagerTest {
                         .build())
                 .testingLabs(Stream.of(CertifiedProductTestingLab.builder()
                         .id(1L)
-                        .testingLabCode("04")
-                        .testingLabId(1L)
-                        .testingLabName("Drummond Group")
+                        .testingLab(TestingLab.builder()
+                                .id(1L)
+                                .atlCode("04")
+                                .name("Drummond Group")
+                                .build())
                         .build()).toList())
                 .version(ProductVersion.builder()
                         .id(1L)
