@@ -30,8 +30,6 @@ import gov.healthit.chpl.questionableactivity.listing.NonActiveCertificateEdited
 import gov.healthit.chpl.questionableactivity.listing.RwtPlansUpdatedOutsideNormalPeriod;
 import gov.healthit.chpl.questionableactivity.listing.RwtResultsUpdatedOutsideNormalPeriod;
 import gov.healthit.chpl.questionableactivity.listing.UpdateCurrentCertificationStatusActivity;
-import gov.healthit.chpl.questionableactivity.listing.Updated2011EditionListingActivity;
-import gov.healthit.chpl.questionableactivity.listing.Updated2014EditionListingActivity;
 import gov.healthit.chpl.questionableactivity.listing.UpdatedCertificationDateActivity;
 import gov.healthit.chpl.questionableactivity.listing.UpdatedCertificationStatusHistoryActivity;
 import gov.healthit.chpl.questionableactivity.listing.UpdatedCertificationStatusWithdrawnByDeveloperUnderReviewActivity;
@@ -64,10 +62,6 @@ public class ListingQuestionableActivityService {
 
     public void processQuestionableActivity(CertifiedProductSearchDetails origListing,  CertifiedProductSearchDetails newListing,
             ActivityDTO activity, String activityReason) {
-        if (processListingActivity(Updated2011EditionListingActivity.class.getName(), origListing, newListing, activity, activityReason) > 0) {
-            return;
-        }
-        processListingActivity(Updated2014EditionListingActivity.class.getName(), origListing, newListing, activity, activityReason);
         processListingActivity(UpdatedCertificationStatusWithdrawnByDeveloperUnderReviewActivity.class.getName(), origListing, newListing, activity, activityReason);
         processListingActivity(UpdatedCertificationStatusHistoryActivity.class.getName(), origListing, newListing, activity, activityReason);
         processListingActivity(UpdatedTestingLabActivity.class.getName(), origListing, newListing, activity, activityReason);

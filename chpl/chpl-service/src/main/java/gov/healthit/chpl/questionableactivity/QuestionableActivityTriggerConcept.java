@@ -11,8 +11,6 @@ public enum QuestionableActivityTriggerConcept implements Serializable {
     MEASURE_REMOVED("G1/G2 Removed"),
     GAP_EDITED("GAP Status Edited"),
     SURVEILLANCE_REMOVED("Surveillance Removed"),
-    EDITION_2011_EDITED("2011 Listing Edited"),
-    EDITION_2014_EDITED("2014 Listing Edited"),
     CERTIFICATION_DATE_EDITED("Certification Date Edited"),
     CERTIFICATION_STATUS_EDITED_CURRENT("Current Certification Status Edited"),
     CERTIFICATION_STATUS_EDITED_HISTORY("Historical Certification Status Edited"),
@@ -38,6 +36,8 @@ public enum QuestionableActivityTriggerConcept implements Serializable {
     CURES_UPDATE_REMOVED("Cures Update Designation Removed"),
 
     //These are no longer being detected but there may be existing older questionable activities
+    EDITION_2011_EDITED("2011 Listing Edited"),
+    EDITION_2014_EDITED("2014 Listing Edited"),
     CERTIFICATION_STATUS_DATE_EDITED_CURRENT("Current Certification Status Date Edited");
 
     private final String name;
