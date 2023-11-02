@@ -1,6 +1,5 @@
 package gov.healthit.chpl.dao;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -9,7 +8,7 @@ import javax.persistence.Query;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
-import gov.healthit.chpl.dto.CertifiedProductTestingLabDTO;
+import gov.healthit.chpl.domain.CertifiedProductTestingLab;
 import gov.healthit.chpl.entity.listing.CertifiedProductTargetedUserEntity;
 import gov.healthit.chpl.entity.listing.CertifiedProductTestingLabMapEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
@@ -32,24 +31,20 @@ public class CertifiedProductTestingLabDAO extends BaseDAOImpl {
         }
     }
 
-    public CertifiedProductTestingLabDTO createCertifiedProductTestingLab(CertifiedProductTestingLabDTO toCreate)
+    public void createCertifiedProductTestingLab(CertifiedProductTestingLab toCreate, Long certifiedProductId)
             throws EntityCreationException {
 
         CertifiedProductTestingLabMapEntity toCreateEntity = new CertifiedProductTestingLabMapEntity();
-        toCreateEntity.setCertifiedProductId(toCreate.getCertifiedProductId());
-        toCreateEntity.setTestingLabId(toCreate.getTestingLabId());
+        toCreateEntity.setCertifiedProductId(certifiedProductId);
+        toCreateEntity.setTestingLabId(toCreate.getTestingLab().getId());
         toCreateEntity.setLastModifiedDate(new Date());
         toCreateEntity.setLastModifiedUser(AuthUtil.getAuditId());
         toCreateEntity.setCreationDate(new Date());
         toCreateEntity.setDeleted(false);
         create(toCreateEntity);
-
-        return new CertifiedProductTestingLabDTO(toCreateEntity);
     }
 
-    public CertifiedProductTestingLabDTO deleteCertifiedProductTestingLab(Long id)
-            throws EntityRetrievalException {
-
+    public void deleteCertifiedProductTestingLab(Long id) throws EntityRetrievalException {
         CertifiedProductTestingLabMapEntity curr = getEntityById(id);
         if (curr == null) {
             throw new EntityRetrievalException("Could not find mapping with id " + id);
@@ -58,28 +53,21 @@ public class CertifiedProductTestingLabDAO extends BaseDAOImpl {
         curr.setLastModifiedDate(new Date());
         curr.setLastModifiedUser(AuthUtil.getAuditId());
         update(curr);
-
-        return new CertifiedProductTestingLabDTO(curr);
     }
 
-    public List<CertifiedProductTestingLabDTO> getTestingLabsByCertifiedProductId(Long certifiedProductId)
-            throws EntityRetrievalException {
-        List<CertifiedProductTestingLabMapEntity> entities = getEntitiesByCertifiedProductId(certifiedProductId);
-        List<CertifiedProductTestingLabDTO> dtos = new ArrayList<CertifiedProductTestingLabDTO>();
-
-        for (CertifiedProductTestingLabMapEntity entity : entities) {
-            dtos.add(new CertifiedProductTestingLabDTO(entity));
-        }
-        return dtos;
+    public List<CertifiedProductTestingLab> getTestingLabsByCertifiedProductId(Long certifiedProductId) throws EntityRetrievalException {
+        return getEntitiesByCertifiedProductId(certifiedProductId).stream()
+                .map(entity -> entity.toDomain())
+                .toList();
     }
 
-    public CertifiedProductTestingLabDTO lookupMapping(Long certifiedProductId, Long tlId)
+    public CertifiedProductTestingLab lookupMapping(Long certifiedProductId, Long tlId)
             throws EntityRetrievalException {
         List<CertifiedProductTestingLabMapEntity> entities = findSpecificMapping(certifiedProductId, tlId);
 
-        CertifiedProductTestingLabDTO result = null;
+        CertifiedProductTestingLab result = null;
         if (entities != null && entities.size() > 0) {
-            result = new CertifiedProductTestingLabDTO(entities.get(0));
+            result = entities.get(0).toDomain();
         }
         return result;
     }

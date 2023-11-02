@@ -16,7 +16,7 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 @Component("edition20142015testingLabReviewer")
 public class TestingLabReviewer implements Reviewer {
     @Autowired
-    protected ErrorMessageUtil msgUtil;
+    private ErrorMessageUtil msgUtil;
 
     @Override
     public void review(CertifiedProductSearchDetails listing) {

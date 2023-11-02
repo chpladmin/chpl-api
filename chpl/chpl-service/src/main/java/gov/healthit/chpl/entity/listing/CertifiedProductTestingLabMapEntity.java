@@ -13,6 +13,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import gov.healthit.chpl.domain.CertifiedProductTestingLab;
 import gov.healthit.chpl.entity.TestingLabEntity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -57,4 +58,14 @@ public class CertifiedProductTestingLabMapEntity {
 
     @Column(name = "last_modified_date", insertable = false, updatable = false)
     private Date lastModifiedDate;
+
+    public CertifiedProductTestingLab toDomain() {
+        return CertifiedProductTestingLab.builder()
+                .id(id)
+                .testingLabId(testingLabId)
+                .testingLabName(testingLab.getName())
+                .testingLabCode(testingLab.getTestingLabCode())
+                .testingLab(testingLab.toDomain())
+                .build();
+    }
 }

@@ -26,23 +26,23 @@ public class UpdatedTestingLabActivity implements ListingActivity {
         for (CertifiedProductTestingLab oa : origAtls) {
             found = false;
             for (CertifiedProductTestingLab na : newAtls) {
-                if (oa.getTestingLabName().equalsIgnoreCase(na.getTestingLabName())) {
+                if (oa.getTestingLab().getName().equalsIgnoreCase(na.getTestingLab().getName())) {
                     found = true;
                 }
             }
             if (!found) {
-                removedAtls.add(oa.getTestingLabName());
+                removedAtls.add(oa.getTestingLab().getName());
             }
         }
         for (CertifiedProductTestingLab na : newAtls) {
             found = false;
             for (CertifiedProductTestingLab oa : origAtls) {
-                if (oa.getTestingLabName().equalsIgnoreCase(na.getTestingLabName())) {
+                if (oa.getTestingLab().getName().equalsIgnoreCase(na.getTestingLab().getName())) {
                     found = true;
                 }
             }
             if (!found) {
-                addedAtls.add(na.getTestingLabName());
+                addedAtls.add(na.getTestingLab().getName());
             }
         }
         if (!addedAtls.isEmpty() || !removedAtls.isEmpty()) {
