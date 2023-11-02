@@ -21,7 +21,7 @@ public class CertificationStatusEventXmlGenerator extends XmlGenerator {
     public static void add(CertificationStatusEvent event, String rootNodeName, XMLStreamWriter sw) throws XMLStreamException {
         if (event != null) {
             sw.writeStartElement(rootNodeName);
-            createSimpleElement(event.getEventDate(), "eventDate", sw);
+            createSimpleElement(event.getEventDay(), "eventDay", sw);
             createSimpleElement(event.getId(), "id", sw);
             CertificationStatusXmlGenerator.addCertificationStatus(event.getStatus(), "status", sw);
             sw.writeEndElement();

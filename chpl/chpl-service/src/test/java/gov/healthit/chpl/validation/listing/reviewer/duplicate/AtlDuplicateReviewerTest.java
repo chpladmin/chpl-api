@@ -9,6 +9,7 @@ import org.mockito.Mockito;
 
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductTestingLab;
+import gov.healthit.chpl.domain.TestingLab;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 public class AtlDuplicateReviewerTest {
@@ -31,14 +32,18 @@ public class AtlDuplicateReviewerTest {
     public void review_duplicateExists_warningFoundAndDuplicateRemoved() {
         CertifiedProductSearchDetails listing = new CertifiedProductSearchDetails();
 
-        CertifiedProductTestingLab atl1 = new CertifiedProductTestingLab();
-        atl1.setTestingLabId(1L);
-        atl1.setTestingLabName("Atl1");
-
-        CertifiedProductTestingLab atl2 = new CertifiedProductTestingLab();
-        atl2.setTestingLabId(1L);
-        atl2.setTestingLabName("Atl1");
-
+        CertifiedProductTestingLab atl1 = CertifiedProductTestingLab.builder()
+                .testingLab(TestingLab.builder()
+                        .id(1L)
+                        .name("Atl1")
+                        .build())
+                .build();
+        CertifiedProductTestingLab atl2 = CertifiedProductTestingLab.builder()
+                .testingLab(TestingLab.builder()
+                        .id(1L)
+                        .name("Atl1")
+                        .build())
+                .build();
         listing.getTestingLabs().add(atl1);
         listing.getTestingLabs().add(atl2);
 
@@ -55,13 +60,19 @@ public class AtlDuplicateReviewerTest {
     public void review_noDuplicates_noWarning() {
         CertifiedProductSearchDetails listing = new CertifiedProductSearchDetails();
 
-        CertifiedProductTestingLab atl1 = new CertifiedProductTestingLab();
-        atl1.setTestingLabId(1L);
-        atl1.setTestingLabName("Atl1");
+        CertifiedProductTestingLab atl1 = CertifiedProductTestingLab.builder()
+                .testingLab(TestingLab.builder()
+                        .id(1L)
+                        .name("Atl1")
+                        .build())
+                .build();
 
-        CertifiedProductTestingLab atl2 = new CertifiedProductTestingLab();
-        atl2.setTestingLabId(2L);
-        atl2.setTestingLabName("Atl2");
+        CertifiedProductTestingLab atl2 = CertifiedProductTestingLab.builder()
+                .testingLab(TestingLab.builder()
+                        .id(2L)
+                        .name("Atl2")
+                        .build())
+                .build();
 
         listing.getTestingLabs().add(atl1);
         listing.getTestingLabs().add(atl2);
@@ -87,21 +98,33 @@ public class AtlDuplicateReviewerTest {
     public void review_duplicateExistsInLargeSet_warningFoundAndDuplicateRemoved() {
         CertifiedProductSearchDetails listing = new CertifiedProductSearchDetails();
 
-        CertifiedProductTestingLab atl1 = new CertifiedProductTestingLab();
-        atl1.setTestingLabId(1L);
-        atl1.setTestingLabName("Atl1");
+        CertifiedProductTestingLab atl1 = CertifiedProductTestingLab.builder()
+                .testingLab(TestingLab.builder()
+                        .id(1L)
+                        .name("Atl1")
+                        .build())
+                .build();
 
-        CertifiedProductTestingLab atl2 = new CertifiedProductTestingLab();
-        atl2.setTestingLabId(2L);
-        atl2.setTestingLabName("Atl2");
+        CertifiedProductTestingLab atl2 = CertifiedProductTestingLab.builder()
+                .testingLab(TestingLab.builder()
+                        .id(2L)
+                        .name("Atl2")
+                        .build())
+                .build();
 
-        CertifiedProductTestingLab atl3 = new CertifiedProductTestingLab();
-        atl3.setTestingLabId(1L);
-        atl3.setTestingLabName("Atl1");
+        CertifiedProductTestingLab atl3 = CertifiedProductTestingLab.builder()
+                .testingLab(TestingLab.builder()
+                        .id(1L)
+                        .name("Atl1")
+                        .build())
+                .build();
 
-        CertifiedProductTestingLab atl4 = new CertifiedProductTestingLab();
-        atl4.setTestingLabId(3L);
-        atl4.setTestingLabName("Atl3");
+        CertifiedProductTestingLab atl4 = CertifiedProductTestingLab.builder()
+                .testingLab(TestingLab.builder()
+                        .id(3L)
+                        .name("Atl3")
+                        .build())
+                .build();
 
         listing.getTestingLabs().add(atl1);
         listing.getTestingLabs().add(atl2);

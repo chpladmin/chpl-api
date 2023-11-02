@@ -486,8 +486,8 @@ public class ListingDetailsUploadHandlerTest {
         assertNotNull(listing.getTestingLabs());
         assertEquals(1, listing.getTestingLabs().size());
         CertifiedProductTestingLab parsedAtl = listing.getTestingLabs().get(0);
-        assertNull(parsedAtl.getTestingLabId());
-        assertEquals("Drummond Group", parsedAtl.getTestingLabName());
+        assertNull(parsedAtl.getTestingLab().getId());
+        assertEquals("Drummond Group", parsedAtl.getTestingLab().getName());
     }
 
     @Test
@@ -503,8 +503,8 @@ public class ListingDetailsUploadHandlerTest {
         assertNotNull(listing.getTestingLabs());
         assertEquals(2, listing.getTestingLabs().size());
         listing.getTestingLabs().stream().forEach(parsedAtl -> {
-            assertNull(parsedAtl.getTestingLabId());
-            assertNotNull(parsedAtl.getTestingLabName());
+            assertNull(parsedAtl.getTestingLab().getId());
+            assertNotNull(parsedAtl.getTestingLab().getName());
         });
     }
 
