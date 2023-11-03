@@ -55,13 +55,12 @@ public class RateLimitingInterceptor implements HandlerInterceptor {
         Boolean allowRequest = getBucketForApiKey(apiKey).tryConsume(1);
 
         if (!allowRequest) {
-            response.sendError(HttpStatus.TOO_MANY_REQUESTS.value(), "Need to determine this txt...");
-                    //errorUtil.getMessage("apikey.limit", String.valueOf(limit), timeUnit));
+            response.sendError(HttpStatus.TOO_MANY_REQUESTS.value(),
+                    errorUtil.getMessage("apikey.limit", rateLimitRequestCount, rateLimitTimePeriod));
             LOGGER.info("Client with API KEY: {} went over API KEY limit of {} per {} second(s).", apiKey, rateLimitRequestCount, rateLimitTimePeriod);
         }
 
-        //ToDo: Need to determine if this is necessary and if so, what do we put in here??
-        response.addHeader("X-RateLimit-Limit", "One call every 2 seconds");
+        response.addHeader("X-RateLimit-Limit", rateLimitRequestCount +" call(s) every " + rateLimitTimePeriod + " second(s)");
         return allowRequest;
     }
 
