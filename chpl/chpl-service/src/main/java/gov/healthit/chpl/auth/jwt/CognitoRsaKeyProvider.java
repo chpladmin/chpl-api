@@ -14,8 +14,8 @@ public class CognitoRsaKeyProvider implements RSAKeyProvider {
     private final URL awsKidStoreUrl;
     private final JwkProvider provider;
 
-    public CognitoRsaKeyProvider(String awsCognitoRegion, String awsUserPoolId) {
-        String url = String.format("https://cognito-idp.%s.amazonaws.com/%s/.well-known/jwks.json", awsCognitoRegion, awsUserPoolId);
+    public CognitoRsaKeyProvider(String awsCognitoRegion, String awsUserPoolId, String tokenizezRsaKeyUrl) {
+        String url = String.format(tokenizezRsaKeyUrl, awsCognitoRegion, awsUserPoolId);
         try {
             awsKidStoreUrl = new URL(url);
         } catch (MalformedURLException e) {

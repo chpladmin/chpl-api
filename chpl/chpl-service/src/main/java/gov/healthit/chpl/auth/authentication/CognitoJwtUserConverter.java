@@ -23,13 +23,14 @@ public class CognitoJwtUserConverter {
     private String region;
     private String userPoolId;
     private String clientId;
-
+    private String tokenizezRsaKeyUrl;
 
     public CognitoJwtUserConverter(@Value("${cognito.region}") String region, @Value("${cognito.userPoolId}") String userPoolId,
-            @Value("${cognito.clientId}") String clientId) {
+            @Value("${cognito.clientId}") String clientId, @Value("${cognito.tokenizezRsaKeyUrl}") String tokenizezRsaKeyUrl) {
         this.region = region;
         this.userPoolId = userPoolId;
         this.clientId = clientId;
+        this.tokenizezRsaKeyUrl = tokenizezRsaKeyUrl;
     }
 
     public User getAuthenticatedUser(String jwt) throws JWTValidationException, MultipleUserAccountsException {
@@ -48,7 +49,7 @@ public class CognitoJwtUserConverter {
     }
 
     private DecodedJWT decodeJwt(String jwt) {
-        RSAKeyProvider keyProvider = new CognitoRsaKeyProvider(region, userPoolId);
+        RSAKeyProvider keyProvider = new CognitoRsaKeyProvider(region, userPoolId, tokenizezRsaKeyUrl);
         Algorithm algorithm = Algorithm.RSA256(keyProvider);
         JWTVerifier jwtVerifier = JWT.require(algorithm)
             .withAudience(clientId)
