@@ -23,7 +23,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.auth.ChplAccountEmailNotConfirmedException;
 import gov.healthit.chpl.auth.ChplAccountStatusException;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
@@ -357,11 +356,7 @@ public class UserManagementController {
     public @ResponseBody User getUser(@PathVariable("id") Long id)
             throws UserRetrievalException {
 
-        if (ff4j.check(FeatureList.SSO)) {
-            return cognitoAuthenticationManager.getUserInfo("tmy1313@gmail.com");
-        } else {
-            return userManager.getUserInfo(id);
-        }
+        return userManager.getUserInfo(id);
     }
 
     private class DeletedUser {
