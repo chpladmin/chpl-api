@@ -44,9 +44,6 @@ public class CognitoJwtUserConverter {
         decodeJwt.getClaim("cognito:groups").asList(String.class).stream()
                 .forEach(role -> user.addPermission(new GrantedPermission(role)));
 
-        //decodeJwt.getClaims().entrySet().stream()
-        //        .forEach(entrySet -> LOGGER.info("{} | {}", entrySet.getKey(), entrySet.getValue().asString()));
-
         return user;
     }
 
@@ -58,8 +55,6 @@ public class CognitoJwtUserConverter {
             .build();
 
         DecodedJWT decodedJwt = jwtVerifier.verify(jwt);
-
-        //LOGGER.info("decodedJwt = {}", decodedJwt.toString());
 
         return decodedJwt;
     }
