@@ -856,5 +856,14 @@
             </job-data-map>
         </job>
 
+        <job>
+            <name>backfillMissingCuresStatisticsDataJob</name>
+            <group>systemJobs</group>
+            <description>Backfill Cures Statistics Data (one-time)</description>
+            <job-class>gov.healthit.chpl.scheduler.job.onetime.BackfillMissingCuresStatisticsDataJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+        </job>
+
     </schedule>
 </job-scheduling-data>
