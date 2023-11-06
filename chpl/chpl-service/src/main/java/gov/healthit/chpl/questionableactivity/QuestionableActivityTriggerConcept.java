@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 public enum QuestionableActivityTriggerConcept implements Serializable {
     CRITERIA_REMOVED("Certification Criteria Removed"),
+    REMOVED_CRITERIA_ADDED("Attested to Removed Certification Criteria"),
     CQM_ADDED("CQM Added"),
     CQM_REMOVED("CQM Removed"),
     G1_SUCCESS_EDITED("Measure Successfully Tested for 170.314 (g)(1) Edited"),
