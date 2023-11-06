@@ -15,6 +15,7 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.questionableactivity.QuestionableActivityTriggerConcept;
 import gov.healthit.chpl.questionableactivity.domain.QuestionableActivityListing;
 import gov.healthit.chpl.service.CertificationCriterionService;
+import gov.healthit.chpl.util.CertificationStatusUtil;
 
 @Component
 public class AttestRemovedCriteriaActivity implements ListingActivity {
@@ -22,7 +23,8 @@ public class AttestRemovedCriteriaActivity implements ListingActivity {
     @Override
      public List<QuestionableActivityListing> check(CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing) {
         List<QuestionableActivityListing> certAddedActivities = new ArrayList<QuestionableActivityListing>();
-        if (origListing.getCertificationResults() != null && origListing.getCertificationResults().size() > 0
+        if (CertificationStatusUtil.isActive(origListing)
+                && origListing.getCertificationResults() != null && origListing.getCertificationResults().size() > 0
                 && newListing.getCertificationResults() != null && newListing.getCertificationResults().size() > 0) {
             List<CertificationCriterion> addedCriteria = getAddedCriteria(origListing, newListing);
             addedCriteria.stream()
