@@ -13,7 +13,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 
-public class CertifiedProductJsonPresenter implements CertifiedProductPresenter, AutoCloseable {
+public class CertifiedProductJsonPresenter extends CertifiedProductPresenter implements AutoCloseable {
     private Logger logger;
 
     private JsonFactory jfactory = new JsonFactory();

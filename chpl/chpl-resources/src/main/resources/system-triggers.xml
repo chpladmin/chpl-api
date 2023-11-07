@@ -7,12 +7,32 @@
     <schedule>
         <trigger>
             <cron>
-                <name>generate2015</name>
-                <group>downloadFileTrigger</group>
-                <job-name>downloadFileJob2015</job-name>
+                <name>generateServiceBaseUrlListUptime</name>
+                <group>generateServiceBaseUrlListUptimeTrigger</group>
+                <job-name>serviceBaseUrlListUptimeCreatorJob</job-name>
                 <job-group>systemJobs</job-group>
                 <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
-                <cron-expression>0 0 7 * * ?</cron-expression> <!-- At 0700 UTC every day -->
+                <cron-expression>0 0 9 * * ?</cron-expression> <!-- At 0500 UTC every day -->
+            </cron>
+        </trigger>
+        <trigger>
+            <cron>
+                <name>generateActive</name>
+                <group>downloadFileTrigger</group>
+                <job-name>downloadFileJobActive</job-name>
+                <job-group>systemJobs</job-group>
+                <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
+                <cron-expression>0 50 6 * * ?</cron-expression> <!-- At 0650 UTC every day -->
+            </cron>
+        </trigger>
+        <trigger>
+            <cron>
+                <name>generateInactive</name>
+                <group>downloadFileTrigger</group>
+                <job-name>downloadFileJobInactive</job-name>
+                <job-group>systemJobs</job-group>
+                <misfire-instruction>MISFIRE_INSTRUCTION_FIRE_ONCE_NOW</misfire-instruction>
+                <cron-expression>0 15 7 * * ?</cron-expression> <!-- At 0715 UTC every day -->
             </cron>
         </trigger>
         <trigger>
@@ -205,16 +225,6 @@
                 <job-group>systemJobs</job-group>
                 <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
                 <cron-expression>0 45 10 ? * 7#2</cron-expression> <!-- At 1045 UTC on the second Saturday of the month -->
-            </cron>
-        </trigger>
-        <trigger>
-            <cron>
-                <name>generateServiceBaseUrlListUptime</name>
-                <group>generateServiceBaseUrlListUptimeTrigger</group>
-                <job-name>serviceBaseUrlListUptimeCreatorJob</job-name>
-                <job-group>systemJobs</job-group>
-                <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
-                <cron-expression>0 0 9 * * ?</cron-expression> <!-- At 0500 UTC every day -->
             </cron>
         </trigger>
     </schedule>
