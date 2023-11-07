@@ -1,12 +1,12 @@
 [
 	{
 		"certifiedProductId": 4609,
-		"newChplProductNumber": "15.04.04.2694.BICl.18.04.0.181114",
+		"newChplProductNumber": "15.02.05.1026.ASPM.01.01.0.220203",
 		"oldChplProductNumber": "CHP-028396"
 	},
 	{
-		"certifiedProductId": 10471,
-		"newChplProductNumber": "15.04.04.2694.BICL.21.07.0.201020",
+		"certifiedProductId": 10832,
+		"newChplProductNumber": "15.02.05.1384.PHOE.01.01.0.220217",
 		"oldChplProductNumber": "CHP-022218"
 	}
 ]

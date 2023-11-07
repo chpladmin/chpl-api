@@ -4,7 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -34,25 +37,29 @@ public class DeletedCertificationsActivity implements ListingActivity {
         List<QuestionableActivityListing> certRemovedActivities = new ArrayList<QuestionableActivityListing>();
         if (origListing.getCertificationResults() != null && origListing.getCertificationResults().size() > 0
                 && newListing.getCertificationResults() != null && newListing.getCertificationResults().size() > 0) {
-            // all cert results are in the details so find the same one in the orig and new objects
-            // based on number and compare the success boolean to see if one was removed
-            for (CertificationResult origCertResult : origListing.getCertificationResults()) {
-                for (CertificationResult newCertResult : newListing.getCertificationResults()) {
-                    if (origCertResult.getCriterion().getId().equals(newCertResult.getCriterion().getId())) {
-                        if (origCertResult.isSuccess() && !newCertResult.isSuccess()
-                                && !wasCuresCriteriaSwappedForOriginal(newCertResult.getCriterion(), origListing, newListing)) {
-                            // orig did have this cert result but new does not so it was removed
-                            QuestionableActivityListing activity = new QuestionableActivityListing();
-                            activity.setBefore(CertificationCriterionService.formatCriteriaNumber(origCertResult.getCriterion()));
-                            activity.setAfter(null);
-                            certRemovedActivities.add(activity);
-                        }
-                        break;
-                    }
-                }
-            }
+            List<CertificationCriterion> removedCriteria = getRemovedCriteria(origListing, newListing);
+            removedCriteria.stream()
+                .filter(removedCriterion -> !wasCuresCriteriaSwappedForOriginal(removedCriterion, origListing, newListing))
+                .forEach(removedCriterionWithoutCuresAdded -> {
+                    QuestionableActivityListing activity = new QuestionableActivityListing();
+                    activity.setBefore(CertificationCriterionService.formatCriteriaNumber(removedCriterionWithoutCuresAdded));
+                    activity.setAfter(null);
+                    certRemovedActivities.add(activity);
+                });
         }
         return certRemovedActivities;
+    }
+
+    private List<CertificationCriterion> getRemovedCriteria(CertifiedProductSearchDetails originalListing, CertifiedProductSearchDetails newListing) {
+        List<Pair<CertificationResult, CertificationResult>> origAndNewCertResultPairs
+            = originalListing.getCertificationResults().stream()
+                .map(origCertResult -> createCertResultPair(origCertResult, newListing.getCertificationResults()))
+                .collect(Collectors.toList());
+        return origAndNewCertResultPairs.stream()
+            .filter(pair -> (pair.getLeft() != null && BooleanUtils.isTrue(pair.getLeft().isSuccess()))
+                                && (pair.getRight() == null || BooleanUtils.isFalse(pair.getRight().isSuccess())))
+            .map(pair -> pair.getLeft().getCriterion())
+            .collect(Collectors.toList());
     }
 
     private boolean wasCuresCriteriaSwappedForOriginal(CertificationCriterion removedCriterion,
@@ -68,14 +75,43 @@ public class DeletedCertificationsActivity implements ListingActivity {
         if (curesCounterpart == null) {
             return false;
         }
-        Optional<CertificationResult> origCertResultOpt = origListing.getCertificationResults().stream()
-            .filter(certResult -> certResult.getCriterion().getId().equals(curesCounterpart.getId()))
-            .findAny();
-        Optional<CertificationResult> newCertResultOpt = newListing.getCertificationResults().stream()
-                .filter(certResult -> certResult.getCriterion().getId().equals(curesCounterpart.getId()))
+        List<CertificationCriterion> newlyAttestedCriteria = getNewlyAttestedCriteria(origListing, newListing);
+        return newlyAttestedCriteria.stream()
+                .filter(crit -> crit.getId().equals(curesCounterpart.getId()))
+                .findAny()
+                .isPresent();
+    }
+
+    private List<CertificationCriterion> getNewlyAttestedCriteria(CertifiedProductSearchDetails originalListing, CertifiedProductSearchDetails newListing) {
+        List<Pair<CertificationResult, CertificationResult>> origAndNewCertResultPairs
+            = newListing.getCertificationResults().stream()
+                .map(newCertResult -> createCertResultPair(originalListing.getCertificationResults(), newCertResult))
+                .collect(Collectors.toList());
+        return origAndNewCertResultPairs.stream()
+            .filter(pair -> (pair.getLeft() == null || BooleanUtils.isFalse(pair.getLeft().isSuccess()))
+                                    && (pair.getRight() != null && BooleanUtils.isTrue(pair.getRight().isSuccess())))
+            .map(pair -> pair.getRight().getCriterion())
+            .collect(Collectors.toList());
+    }
+
+    private Pair<CertificationResult, CertificationResult> createCertResultPair(CertificationResult origCertResult, List<CertificationResult> newCertResults) {
+        Optional<CertificationResult> newCertResult = newCertResults.stream()
+                .filter(newCr -> newCr.getCriterion().getId().equals(origCertResult.getCriterion().getId()))
                 .findAny();
-        return origCertResultOpt.isPresent() && newCertResultOpt.isPresent()
-                && !origCertResultOpt.get().isSuccess() && newCertResultOpt.get().isSuccess();
+        if (newCertResult.isEmpty()) {
+            return Pair.of(origCertResult, null);
+        }
+        return Pair.of(origCertResult, newCertResult.get());
+    }
+
+    private Pair<CertificationResult, CertificationResult> createCertResultPair(List<CertificationResult> origCertResults, CertificationResult newCertResult) {
+        Optional<CertificationResult> origCertResult = origCertResults.stream()
+                .filter(origCr -> origCr.getCriterion().getId().equals(newCertResult.getCriterion().getId()))
+                .findAny();
+        if (origCertResult.isEmpty()) {
+            return Pair.of(null, newCertResult);
+        }
+        return Pair.of(origCertResult.get(), newCertResult);
     }
 
     @Override

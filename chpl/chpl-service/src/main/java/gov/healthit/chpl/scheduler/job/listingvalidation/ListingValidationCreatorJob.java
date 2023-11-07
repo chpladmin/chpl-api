@@ -98,14 +98,14 @@ public class ListingValidationCreatorJob implements Job {
     }
 
     private List<CertifiedProductSearchDetails> getListingsWithErrors() {
-        return getAllActiveCertifiedProducts().parallelStream()
+        return getAllActiveListings().parallelStream()
                 .map(listing -> getCertifiedProductSearchDetails(listing.getId()))
                 .map(detail -> validateListing(detail))
                 .filter(detail -> doValidationErrorsExist(detail))
                 .collect(Collectors.toList());
     }
 
-    private List<CertifiedProductDetailsDTO> getAllActiveCertifiedProducts() {
+    private List<CertifiedProductDetailsDTO> getAllActiveListings() {
         LOGGER.info("Retrieving all active listings");
         List<CertifiedProductDetailsDTO> listings = certifiedProductDAO.getListingsByStatus(
                 CertificationStatusUtil.getActiveStatuses());

@@ -21,6 +21,9 @@ public class CuresStatisticsCreatorJob  extends QuartzJob {
     @Autowired
     private CuresCriterionActivityStatisticsCalculator curesCriterionActivityStatisticsCalculator;
 
+    @Autowired
+    private CriterionListingStatisticsCalculator cureCriterionListingStatisticsCalculator;
+
     @Override
     public void execute(JobExecutionContext arg0) throws JobExecutionException {
         LOGGER.info("*****Cures Reporting Statistics Job is starting.*****");
@@ -32,6 +35,7 @@ public class CuresStatisticsCreatorJob  extends QuartzJob {
 
         originalCriterionActivityStatisticsCalculator.setOriginalCriterionActivityStatisticsForDate(yesterday);
         curesCriterionActivityStatisticsCalculator.setCuresCriterionActivityStatisticsForDate(yesterday);
+        cureCriterionListingStatisticsCalculator.setCriterionListingCountStatisticsForDate(yesterday);
 
         LOGGER.info("*****Cures Reporting Statistics Job is complete.*****");
     }
