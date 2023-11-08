@@ -13,12 +13,11 @@ import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.dto.ActivityDTO;
 import gov.healthit.chpl.dto.ProductVersionDTO;
-import gov.healthit.chpl.questionableactivity.domain.QuestionableActivityCertificationResult;
 import gov.healthit.chpl.questionableactivity.domain.QuestionableActivityDeveloper;
 import gov.healthit.chpl.questionableactivity.domain.QuestionableActivityProduct;
 import gov.healthit.chpl.questionableactivity.domain.QuestionableActivityTrigger;
 import gov.healthit.chpl.questionableactivity.domain.QuestionableActivityVersion;
-import gov.healthit.chpl.questionableactivity.service.CertificationResultQuestionableActivityProvider;
+import gov.healthit.chpl.questionableactivity.service.CertificationResultQuestionableActivityService;
 import gov.healthit.chpl.questionableactivity.service.DeveloperQuestionableActivityProvider;
 import gov.healthit.chpl.questionableactivity.service.ListingQuestionableActivityService;
 import gov.healthit.chpl.questionableactivity.service.ProductQuestionableActivityProvider;
@@ -34,7 +33,7 @@ public class QuestionableActivityManager {
     private ProductQuestionableActivityProvider productQuestionableActivityProvider;
     private VersionQuestionableActivityProvider versionQuestionableActivityProvider;
     private ListingQuestionableActivityService listingQuestionableActivityService;
-    private CertificationResultQuestionableActivityProvider certResultQuestionableActivityProvider;
+    private CertificationResultQuestionableActivityService certResultQuestionableActivityService;
     private CertificationResultRules certResultRules;
     private QuestionableActivityDAO questionableActivityDao;
 
@@ -45,7 +44,7 @@ public class QuestionableActivityManager {
             ProductQuestionableActivityProvider productQuestionableActivityProvider,
             VersionQuestionableActivityProvider versionQuestionableActivityProvider,
             ListingQuestionableActivityService listingQuestionableActivityService,
-            CertificationResultQuestionableActivityProvider certResultQuestionableActivityProvider,
+            CertificationResultQuestionableActivityService certResultQuestionableActivityService,
             CertificationResultRules certResultRules,
             QuestionableActivityDAO questionableActivityDao) {
 
@@ -53,7 +52,7 @@ public class QuestionableActivityManager {
         this.productQuestionableActivityProvider = productQuestionableActivityProvider;
         this.versionQuestionableActivityProvider = versionQuestionableActivityProvider;
         this.listingQuestionableActivityService = listingQuestionableActivityService;
-        this.certResultQuestionableActivityProvider = certResultQuestionableActivityProvider;
+        this.certResultQuestionableActivityService = certResultQuestionableActivityService;
         this.certResultRules = certResultRules;
         this.questionableActivityDao = questionableActivityDao;
         triggerTypes = questionableActivityDao.getAllTriggers();
@@ -153,52 +152,7 @@ public class QuestionableActivityManager {
 
     public void checkCertificationResultQuestionableActivity(CertificationResult origCertResult,
             CertificationResult newCertResult, ActivityDTO activity, String activityReason) {
-        QuestionableActivityCertificationResult certActivity = null;
-
-        if (certResultRules.hasCertOption(origCertResult.getCriterion().getId(), CertificationResultRules.G1_SUCCESS)) {
-            certActivity = certResultQuestionableActivityProvider.checkG1SuccessUpdated(origCertResult, newCertResult);
-            if (certActivity != null) {
-                createCertificationActivity(certActivity, origCertResult.getId(), activity,
-                        QuestionableActivityTriggerConcept.G1_SUCCESS_EDITED, activityReason);
-            }
-        }
-        if (certResultRules.hasCertOption(origCertResult.getCriterion().getId(), CertificationResultRules.G2_SUCCESS)) {
-            certActivity = certResultQuestionableActivityProvider.checkG2SuccessUpdated(origCertResult, newCertResult);
-            if (certActivity != null) {
-                createCertificationActivity(certActivity, origCertResult.getId(), activity,
-                        QuestionableActivityTriggerConcept.G2_SUCCESS_EDITED, activityReason);
-            }
-        }
-        if (certResultRules.hasCertOption(origCertResult.getCriterion().getId(), CertificationResultRules.GAP)) {
-            certActivity = certResultQuestionableActivityProvider.checkGapUpdated(origCertResult, newCertResult);
-            if (certActivity != null) {
-                createCertificationActivity(certActivity, origCertResult.getId(), activity,
-                        QuestionableActivityTriggerConcept.GAP_EDITED, activityReason);
-            }
-        }
-        if (isSvapAllowedForCriteria(origCertResult)) {
-            certResultQuestionableActivityProvider.checkReplacedSvapAdded(origCertResult, newCertResult).stream()
-                    .forEach(dto -> createCertificationActivity(dto, origCertResult.getId(), activity,
-                            QuestionableActivityTriggerConcept.REPLACED_SVAP_ADDED, activityReason));
-        }
-
-    }
-
-    private boolean isSvapAllowedForCriteria(CertificationResult certResult) {
-        return certResult.getAllowedSvaps() != null && certResult.getAllowedSvaps().size() > 0;
-    }
-
-    private void createCertificationActivity(QuestionableActivityCertificationResult questionableActivity,
-            Long certResultId, ActivityDTO activity, QuestionableActivityTriggerConcept triggerConcept,
-            String activityReason) {
-        questionableActivity.setActivityId(activity.getId());
-        questionableActivity.setCertResultId(certResultId);
-        questionableActivity.setActivityDate(activity.getActivityDate());
-        questionableActivity.setUserId(activity.getUser().getId());
-        questionableActivity.setReason(activityReason);
-        QuestionableActivityTrigger trigger = getTrigger(triggerConcept);
-        questionableActivity.setTrigger(trigger);
-        questionableActivityDao.create(questionableActivity);
+        certResultQuestionableActivityService.processQuestionableActivity(origCertResult, newCertResult, activity, activityReason);
     }
 
     private void createDeveloperActivity(QuestionableActivityDeveloper questionableActivity, Long developerId,
