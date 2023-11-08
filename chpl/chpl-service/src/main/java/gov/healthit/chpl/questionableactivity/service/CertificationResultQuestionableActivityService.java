@@ -33,8 +33,10 @@ public class CertificationResultQuestionableActivityService {
     private List<QuestionableActivityTrigger> triggerTypes;
 
     @Autowired
-    CertificationResultQuestionableActivityService(QuestionableActivityDAO questionableActivityDao) {
+    CertificationResultQuestionableActivityService(QuestionableActivityDAO questionableActivityDao,
+            List<CertificationResultActivity> certResultActivities) {
         this.questionableActivityDao = questionableActivityDao;
+        this.certResultActivities = certResultActivities;
         triggerTypes = questionableActivityDao.getAllTriggers();
     }
 
