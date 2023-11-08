@@ -67,18 +67,19 @@ public class QuestionableActivityListener implements EnvironmentAware {
     private void checkQuestionableActivityForListingEdit(ActivityDTO activity,
             CertifiedProductSearchDetails originalData, CertifiedProductSearchDetails newData, String reason) {
 
-        if (originalData == null || newData == null || AuthUtil.getCurrentUser() == null) {
+        if (newData == null || AuthUtil.getCurrentUser() == null) {
             return;
         }
 
         // look for any of the listing questionable activity
-        questionableActivityManager.checkListingQuestionableActivityOnEdit(originalData, newData, activity, reason);
+        questionableActivityManager.checkListingQuestionableActivity(originalData, newData, activity, reason);
 
         // check for cert result questionable activity
         // outside of the acceptable activity threshold
         // get confirm date of the listing to check against the threshold
-        Date confirmDate = listingDao.getConfirmDate(originalData.getId());
-        if (confirmDate != null && activity.getActivityDate() != null
+        Date confirmDate = listingDao.getConfirmDate(newData.getId());
+        if (originalData != null &&
+                confirmDate != null && activity.getActivityDate() != null
                 && (activity.getActivityDate().getTime() - confirmDate.getTime() > listingActivityThresholdMillis)) {
 
             // look for certification result questionable activity

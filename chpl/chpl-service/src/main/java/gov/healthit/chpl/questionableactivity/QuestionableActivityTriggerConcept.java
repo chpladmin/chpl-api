@@ -36,6 +36,7 @@ public enum QuestionableActivityTriggerConcept implements Serializable {
     PROMOTING_INTEROPERABILITY_UPDATED_BY_ACB("Promoting Interoperability Updated by ONC-ACB"),
     RWT_PLANS_UPDATED_OUTSIDE_NORMAL_PERIOD("Real World Testing Plans URL or Check Date updated outside normal update period"),
     RWT_RESULTS_UPDATED_OUTSIDE_NORMAL_PERIOD("Real World Testing Results URL or Check Date updated outside normal update period"),
+    UPLOADED_AFTER_CERTIFICATION_DATE("Uploaded After Certification Date"),
     NON_ACTIVE_CERTIFIFCATE_EDITED("Non Active Certificate Edited"),
 
     //These are no longer being detected but there may be existing older questionable activities

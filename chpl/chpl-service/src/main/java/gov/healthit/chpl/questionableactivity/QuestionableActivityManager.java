@@ -145,7 +145,7 @@ public class QuestionableActivityManager {
         }
     }
 
-    public void checkListingQuestionableActivityOnEdit(CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing,
+    public void checkListingQuestionableActivity(CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing,
             ActivityDTO activity, String activityReason) {
         listingQuestionableActivityService.processQuestionableActivity(origListing, newListing, activity, activityReason);
     }
