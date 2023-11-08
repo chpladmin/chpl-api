@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
+import gov.healthit.chpl.complaint.ComplaintDAO;
 import gov.healthit.chpl.compliance.surveillance.SurveillanceManager;
 import gov.healthit.chpl.surveillance.report.PrivilegedSurveillanceDAO;
 import gov.healthit.chpl.surveillance.report.SurveillanceReportManager;
@@ -15,8 +16,9 @@ public class ActivitiesAndOutcomesWorksheetBuilder2019 extends ActivitiesAndOutc
     @Autowired
     public ActivitiesAndOutcomesWorksheetBuilder2019(SurveillanceReportManager reportManager,
             CertifiedProductDetailsManager detailsManager,
-            SurveillanceManager survManager, PrivilegedSurveillanceDAO privilegedSurvDao) {
-        super(reportManager, detailsManager, survManager, privilegedSurvDao);
+            SurveillanceManager survManager, PrivilegedSurveillanceDAO privilegedSurvDao,
+            ComplaintDAO complaintDao) {
+        super(reportManager, detailsManager, survManager, privilegedSurvDao, complaintDao);
     }
 
     @Override
