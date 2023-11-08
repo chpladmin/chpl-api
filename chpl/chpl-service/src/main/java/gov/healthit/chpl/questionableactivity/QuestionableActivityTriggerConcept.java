@@ -30,6 +30,7 @@ public enum QuestionableActivityTriggerConcept implements Serializable {
     REAL_WORLD_TESTING_REMOVED("Real World Testing Removed"),
     REAL_WORLD_TESTING_ADDED("Real World Testing Added To Ineligible Listing"),
     REMOVED_FUNCTIONALITY_TESTED_ADDED("Removed Functionality Tested Added"),
+    REMOVED_STANDARD_ADDED("Removed Standard Added"),
     REMOVED_TEST_TOOL_ADDED("Removed Test Tool Added"),
     REPLACED_SVAP_ADDED("Replaced SVAP Added"),
     PROMOTING_INTEROPERABILITY_UPDATED_BY_ACB("Promoting Interoperability Updated by ONC-ACB"),
