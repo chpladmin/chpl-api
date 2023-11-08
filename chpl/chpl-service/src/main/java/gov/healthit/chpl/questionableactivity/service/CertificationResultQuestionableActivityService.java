@@ -11,6 +11,7 @@ import gov.healthit.chpl.dto.ActivityDTO;
 import gov.healthit.chpl.questionableactivity.QuestionableActivityDAO;
 import gov.healthit.chpl.questionableactivity.QuestionableActivityTriggerConcept;
 import gov.healthit.chpl.questionableactivity.certificationResult.CertificationResultActivity;
+import gov.healthit.chpl.questionableactivity.certificationResult.RemovedFunctionalityTestedAddedActivity;
 import gov.healthit.chpl.questionableactivity.certificationResult.RemovedTestToolAddedActivity;
 import gov.healthit.chpl.questionableactivity.certificationResult.ReplacedSvapAddedActivity;
 import gov.healthit.chpl.questionableactivity.certificationResult.UpdatedG1SuccessActivity;
@@ -32,10 +33,8 @@ public class CertificationResultQuestionableActivityService {
     private List<QuestionableActivityTrigger> triggerTypes;
 
     @Autowired
-    CertificationResultQuestionableActivityService(QuestionableActivityDAO questionableActivityDao,
-            List<CertificationResultActivity> certResultActivities) {
+    CertificationResultQuestionableActivityService(QuestionableActivityDAO questionableActivityDao) {
         this.questionableActivityDao = questionableActivityDao;
-        this.certResultActivities = certResultActivities;
         triggerTypes = questionableActivityDao.getAllTriggers();
     }
 
@@ -47,6 +46,8 @@ public class CertificationResultQuestionableActivityService {
         processCertificationResultActivity(UpdatedGapActivity.class.getName(), origCertResult, newCertResult, activity, activityReason);
         processCertificationResultActivity(ReplacedSvapAddedActivity.class.getName(), origCertResult, newCertResult, activity, activityReason);
         processCertificationResultActivity(RemovedTestToolAddedActivity.class.getName(), origCertResult, newCertResult, activity, activityReason);
+        processCertificationResultActivity(RemovedFunctionalityTestedAddedActivity.class.getName(), origCertResult, newCertResult, activity, activityReason);
+        //TODO: Add activity to detect removed Standard added with OCD-4333
     }
 
     private Integer processCertificationResultActivity(String className, CertificationResult origCertResult,

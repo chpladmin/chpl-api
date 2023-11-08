@@ -44,7 +44,7 @@ public class RemovedTestToolAddedActivity implements CertificationResultActivity
 
     @Override
     public QuestionableActivityTriggerConcept getTriggerType() {
-        return QuestionableActivityTriggerConcept.REPLACED_SVAP_ADDED;
+        return QuestionableActivityTriggerConcept.REMOVED_TEST_TOOL_ADDED;
     }
 
 }
