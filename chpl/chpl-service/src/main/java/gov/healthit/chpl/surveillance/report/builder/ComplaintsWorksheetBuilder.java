@@ -9,6 +9,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.BorderExtent;
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
@@ -31,9 +33,10 @@ import gov.healthit.chpl.complaint.ComplaintManager;
 import gov.healthit.chpl.complaint.domain.Complaint;
 import gov.healthit.chpl.complaint.domain.ComplaintCriterionMap;
 import gov.healthit.chpl.complaint.domain.ComplaintListingMap;
+import gov.healthit.chpl.compliance.surveillance.SurveillanceManager;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.ComplaintSurveillanceMap;
-import gov.healthit.chpl.domain.surveillance.SurveillanceBasic;
+import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.surveillance.report.PrivilegedSurveillanceDAO;
@@ -44,47 +47,53 @@ import lombok.extern.log4j.Log4j2;
 @Component
 @Log4j2
 public class ComplaintsWorksheetBuilder {
-    private static final int LAST_DATA_COLUMN = 21;
+    private static final int LAST_DATA_COLUMN = 24;
 
     private static final String BOOLEAN_YES = "Yes";
     private static final String BOOLEAN_NO = "No";
 
     private static final int COL_COMPLAINT_DATE = 1;
-    private static final int COL_ACB_COMPLAINT_ID = 2;
-    private static final int COL_ONC_COMPLAINT_ID = 3;
-    private static final int COL_SUMMARY = 4;
-    private static final int COL_ACTIONS_RESPONSE = 5;
-    private static final int COL_COMPLAINANT_TYPE = 6;
-    private static final int COL_COMPLAINANT_TYPE_OTHER = 7;
-    private static final int COL_CRITERIA_ID = 8;
-    private static final int COL_CHPL_ID = 9;
-    private static final int COL_SURV_ID = 10;
-    private static final int COL_DEVELOPER = 11;
-    private static final int COL_PRODUCT = 12;
-    private static final int COL_VERSION = 13;
-    private static final int COL_SURV_OUTCOME = 14;
-    private static final int COL_COMPLAINANT_CONTACTED = 15;
-    private static final int COL_DEVELOPER_CONTACTED = 16;
-    private static final int COL_ATL_CONTACTED = 17;
-    private static final int COL_FLAGGED_FOR_ONC = 18;
-    private static final int COL_COMPLAINT_STATUS = 19;
+    private static final int COL_COMPLAINT_CLOSED_DATE = 2;
+    private static final int COL_ACB_COMPLAINT_ID = 3;
+    private static final int COL_ONC_COMPLAINT_ID = 4;
+    private static final int COL_SUMMARY = 5;
+    private static final int COL_ACTIONS_RESPONSE = 6;
+    private static final int COL_COMPLAINANT_TYPE = 7;
+    private static final int COL_COMPLAINANT_TYPE_OTHER = 8;
+    private static final int COL_CRITERIA_ID = 9;
+    private static final int COL_CHPL_ID = 10;
+    private static final int COL_SURV_ID = 11;
+    private static final int COL_DEVELOPER = 12;
+    private static final int COL_PRODUCT = 13;
+    private static final int COL_VERSION = 14;
+    private static final int COL_SURV_NONCONFORMITY_COUNT = 15;
+    private static final int COL_SURV_NONCONFORMITY_TYPE = 16;
+    private static final int COL_SURV_OUTCOME = 17;
+    private static final int COL_COMPLAINANT_CONTACTED = 18;
+    private static final int COL_DEVELOPER_CONTACTED = 19;
+    private static final int COL_ATL_CONTACTED = 20;
+    private static final int COL_FLAGGED_FOR_ONC = 21;
+    private static final int COL_COMPLAINT_STATUS = 22;
     private static final int[] HIDDEN_COLS = {
             COL_DEVELOPER, COL_PRODUCT, COL_VERSION
     };
 
     private ComplaintManager complaintManager;
     private CertifiedProductDetailsManager cpdManager;
-    private PrivilegedSurveillanceDAO survDao;
+    private PrivilegedSurveillanceDAO privilegedSurvDao;
+    private SurveillanceManager survManager;
     private int lastDataRow;
     private DateTimeFormatter dateFormatter;
     private PropertyTemplate pt;
 
     @Autowired
     public ComplaintsWorksheetBuilder(ComplaintManager complaintManager,
-            CertifiedProductDetailsManager cpdManager, PrivilegedSurveillanceDAO survDao) {
+            CertifiedProductDetailsManager cpdManager, PrivilegedSurveillanceDAO privilegedSurvDao,
+            SurveillanceManager survManager) {
         this.complaintManager = complaintManager;
         this.cpdManager = cpdManager;
-        this.survDao = survDao;
+        this.privilegedSurvDao = privilegedSurvDao;
+        this.survManager = survManager;
         dateFormatter = DateTimeFormatter.ofPattern("d MMMM yyyy");
     }
 
@@ -116,6 +125,7 @@ public class ComplaintsWorksheetBuilder {
         // all columns need a certain width to match the document format
         int sharedColWidth = workbook.getColumnWidth(11.78);
         sheet.setColumnWidth(COL_COMPLAINT_DATE, sharedColWidth);
+        sheet.setColumnWidth(COL_COMPLAINT_CLOSED_DATE, sharedColWidth);
         sheet.setColumnWidth(COL_ACB_COMPLAINT_ID, sharedColWidth);
         sheet.setColumnWidth(COL_ONC_COMPLAINT_ID, sharedColWidth);
         sheet.setColumnWidth(COL_SUMMARY, workbook.getColumnWidth(36.78));
@@ -128,6 +138,8 @@ public class ComplaintsWorksheetBuilder {
         sheet.setColumnWidth(COL_DEVELOPER, sharedColWidth);
         sheet.setColumnWidth(COL_PRODUCT, sharedColWidth);
         sheet.setColumnWidth(COL_VERSION, sharedColWidth);
+        sheet.setColumnWidth(COL_SURV_NONCONFORMITY_COUNT, sharedColWidth);
+        sheet.setColumnWidth(COL_SURV_NONCONFORMITY_TYPE, sharedColWidth);
         sheet.setColumnWidth(COL_SURV_OUTCOME, sharedColWidth);
         sheet.setColumnWidth(COL_COMPLAINANT_CONTACTED, sharedColWidth);
         sheet.setColumnWidth(COL_DEVELOPER_CONTACTED, sharedColWidth);
@@ -220,6 +232,7 @@ public class ComplaintsWorksheetBuilder {
         row.setHeightInPoints(3 * sheet.getDefaultRowHeightInPoints());
 
         addHeadingCell(workbook, row, COL_COMPLAINT_DATE, "Date Complaint Received");
+        addHeadingCell(workbook, row, COL_COMPLAINT_CLOSED_DATE, "Date Complaint Closed");
         addHeadingCell(workbook, row, COL_ACB_COMPLAINT_ID, "ONC-ACB Complaint ID");
         addHeadingCell(workbook, row, COL_ONC_COMPLAINT_ID, "ONC Complaint ID (if applicable)");
         addHeadingCell(workbook, row, COL_SUMMARY, "Complaint Summary");
@@ -232,6 +245,8 @@ public class ComplaintsWorksheetBuilder {
         addHeadingCell(workbook, row, COL_DEVELOPER, "Developer");
         addHeadingCell(workbook, row, COL_PRODUCT, "Product");
         addHeadingCell(workbook, row, COL_VERSION, "Version");
+        addHeadingCell(workbook, row, COL_SURV_NONCONFORMITY_COUNT, "Count of Non-Conformities");
+        addHeadingCell(workbook, row, COL_SURV_NONCONFORMITY_TYPE, "Non-Conformity Type");
         addHeadingCell(workbook, row, COL_SURV_OUTCOME, "Outcome of Surveillance");
         addHeadingCell(workbook, row, COL_COMPLAINANT_CONTACTED, "Complainant Contacted");
         addHeadingCell(workbook, row, COL_DEVELOPER_CONTACTED, "Developer Contacted");
@@ -303,28 +318,36 @@ public class ComplaintsWorksheetBuilder {
                 }
             });
             // sort the surveillances by chpl number + friendly surveillance id to keep data in consistent order
-            List<SurveillanceBasic> orderedSurveillances = new ArrayList<SurveillanceBasic>();
+            List<Surveillance> orderedSurveillances = new ArrayList<Surveillance>();
             for (ComplaintSurveillanceMap survMap : complaint.getSurveillances()) {
-                orderedSurveillances.add(survMap.getSurveillance());
+                Surveillance surv = null;
+                try {
+                    surv = survManager.getById(survMap.getSurveillanceId());
+                } catch (Exception ex) {
+                    LOGGER.error("Could not get surveillance by ID " + survMap.getSurveillanceId());
+                }
+                if (surv != null) {
+                    orderedSurveillances.add(surv);
+                }
             }
-            orderedSurveillances.sort(new Comparator<SurveillanceBasic>() {
+            orderedSurveillances.sort(new Comparator<Surveillance>() {
                 @Override
-                public int compare(final SurveillanceBasic o1, final SurveillanceBasic o2) {
-                    String o1CompareStr = o1.getChplProductNumber() + o1.getFriendlyId();
-                    String o2CompareStr = o2.getChplProductNumber() + o2.getFriendlyId();
+                public int compare(final Surveillance o1, final Surveillance o2) {
+                    String o1CompareStr = o1.getCertifiedProduct().getChplProductNumber() + o1.getFriendlyId();
+                    String o2CompareStr = o2.getCertifiedProduct().getChplProductNumber() + o2.getFriendlyId();
                     return o1CompareStr.compareTo(o2CompareStr);
                 }
             });
 
             // we need the dev, product, and version for each listing associated with surveillance
             // but in case listings are duplicated get the details only once
-            for (SurveillanceBasic surv : orderedSurveillances) {
-                if (listingDetailsCache.get(surv.getCertifiedProductId()) == null) {
+            for (Surveillance surv : orderedSurveillances) {
+                if (listingDetailsCache.get(surv.getCertifiedProduct().getId()) == null) {
                     try {
-                        listingDetailsCache.put(surv.getCertifiedProductId(),
-                                cpdManager.getCertifiedProductDetailsBasic(surv.getCertifiedProductId()));
+                        listingDetailsCache.put(surv.getCertifiedProduct().getId(),
+                                cpdManager.getCertifiedProductDetailsBasic(surv.getCertifiedProduct().getId()));
                     } catch (EntityRetrievalException ex) {
-                        LOGGER.error("Could not find basic details for listing " + surv.getCertifiedProductId(), ex);
+                        LOGGER.error("Could not find basic details for listing " + surv.getCertifiedProduct().getId(), ex);
                     }
                 }
             }
@@ -347,6 +370,8 @@ public class ComplaintsWorksheetBuilder {
                 addDataCell(workbook, row, COL_DEVELOPER, "");
                 addDataCell(workbook, row, COL_PRODUCT, "");
                 addDataCell(workbook, row, COL_VERSION, "");
+                addDataCell(workbook, row, COL_SURV_NONCONFORMITY_COUNT, "");
+                addDataCell(workbook, row, COL_SURV_NONCONFORMITY_TYPE, "");
                 addDataCell(workbook, row, COL_SURV_OUTCOME, "");
                 pt.drawBorders(new CellRangeAddress(row.getRowNum(), row.getRowNum(), 1, LAST_DATA_COLUMN - 1),
                         BorderStyle.HAIR, BorderExtent.HORIZONTAL);
@@ -368,22 +393,24 @@ public class ComplaintsWorksheetBuilder {
                 addDataCell(workbook, row, COL_VERSION, listing.getVersion().getVersion());
                 // nothing in surveillance outcome because this complaint is only
                 // associated at the listing level
+                addDataCell(workbook, row, COL_SURV_NONCONFORMITY_COUNT, "");
+                addDataCell(workbook, row, COL_SURV_NONCONFORMITY_TYPE, "");
                 addDataCell(workbook, row, COL_SURV_OUTCOME, "");
                 pt.drawBorders(new CellRangeAddress(row.getRowNum(), row.getRowNum(), 1, LAST_DATA_COLUMN - 1),
                         BorderStyle.HAIR, BorderExtent.HORIZONTAL);
                 isFirstRowForComplaint = false;
             }
 
-            for (SurveillanceBasic surv : orderedSurveillances) {
+            for (Surveillance surv : orderedSurveillances) {
                 if (!isFirstRowForComplaint) {
                     row = workbook.getRow(sheet, rowNum++);
                     addedRows++;
                 }
                 addDataCell(workbook, row, COL_CRITERIA_ID, "");
-                addDataCell(workbook, row, COL_CHPL_ID, surv.getChplProductNumber());
+                addDataCell(workbook, row, COL_CHPL_ID, surv.getCertifiedProduct().getChplProductNumber());
                 addDataCell(workbook, row, COL_SURV_ID, surv.getFriendlyId());
                 // if we have the listing details print them out, otherwise print an error
-                CertifiedProductSearchDetails cpd = listingDetailsCache.get(surv.getCertifiedProductId());
+                CertifiedProductSearchDetails cpd = listingDetailsCache.get(surv.getCertifiedProduct().getId());
                 if (cpd != null) {
                     addDataCell(workbook, row, COL_DEVELOPER, cpd.getDeveloper().getName());
                     addDataCell(workbook, row, COL_PRODUCT, cpd.getProduct().getName());
@@ -393,6 +420,9 @@ public class ComplaintsWorksheetBuilder {
                     addDataCell(workbook, row, COL_PRODUCT, "?");
                     addDataCell(workbook, row, COL_VERSION, "?");
                 }
+
+                addDataCell(workbook, row, COL_SURV_NONCONFORMITY_COUNT, getNonconformityCount(surv) + "");
+                addDataCell(workbook, row, COL_SURV_NONCONFORMITY_TYPE, getNonconformityTypes(surv));
                 addDataCell(workbook, row, COL_SURV_OUTCOME, getSurveillanceOutcome(quarterlyReports, surv.getId()));
                 pt.drawBorders(new CellRangeAddress(row.getRowNum(), row.getRowNum(), 1, LAST_DATA_COLUMN - 1),
                         BorderStyle.HAIR, BorderExtent.HORIZONTAL);
@@ -402,13 +432,41 @@ public class ComplaintsWorksheetBuilder {
         return addedRows;
     }
 
+    private long getNonconformityCount(Surveillance surv) {
+        if (surv != null && !CollectionUtils.isEmpty(surv.getRequirements())) {
+            return surv.getRequirements().stream()
+                .flatMap(req -> req.getNonconformities().stream())
+                .count();
+
+        }
+        return 0;
+    }
+
+    private String getNonconformityTypes(Surveillance surv) {
+        StringBuffer result = new StringBuffer();
+        if (surv != null && !CollectionUtils.isEmpty(surv.getRequirements())) {
+            final String survFriendlyId = surv.getFriendlyId();
+            surv.getRequirements().stream()
+                .flatMap(req -> req.getNonconformities().stream())
+                .forEach(nc -> {
+                    if (StringUtils.isEmpty(result)) {
+                        result.append(survFriendlyId + ":" + nc.getType().getFormattedTitle());
+                    } else {
+                        result.append("; " + survFriendlyId + ":" + nc.getType().getFormattedTitle());
+                    }
+                });
+
+        }
+        return result.toString();
+    }
+
     private String getSurveillanceOutcome(List<QuarterlyReportDTO> reports, Long survId) {
         List<Long> reportIds = new ArrayList<Long>();
         for (QuarterlyReportDTO report : reports) {
             reportIds.add(report.getId());
         }
         String result = "";
-        List<PrivilegedSurveillanceDTO> privSurvs = survDao.getByReportsAndSurveillance(reportIds, survId);
+        List<PrivilegedSurveillanceDTO> privSurvs = privilegedSurvDao.getByReportsAndSurveillance(reportIds, survId);
         if (reportIds.size() == 1 && privSurvs.size() > 0) {
             PrivilegedSurveillanceDTO privSurv = privSurvs.get(0);
             result = (privSurv.getSurveillanceOutcome() != null
@@ -435,6 +493,7 @@ public class ComplaintsWorksheetBuilder {
 
     private void addComplaintData(SurveillanceReportWorkbookWrapper workbook, Row row, Complaint complaint) {
         addDataCell(workbook, row, COL_COMPLAINT_DATE, dateFormatter.format(complaint.getReceivedDate()));
+        addDataCell(workbook, row, COL_COMPLAINT_CLOSED_DATE, complaint.getClosedDate() != null ? dateFormatter.format(complaint.getClosedDate()) : "");
         addDataCell(workbook, row, COL_ACB_COMPLAINT_ID, complaint.getAcbComplaintId());
         addDataCell(workbook, row, COL_ONC_COMPLAINT_ID, complaint.getOncComplaintId());
         addDataCell(workbook, row, COL_SUMMARY, complaint.getSummary());

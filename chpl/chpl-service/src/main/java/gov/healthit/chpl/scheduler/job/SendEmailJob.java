@@ -249,18 +249,20 @@ public class SendEmailJob implements Job {
         //It can take time to appear there.
         //If this turns out to be a problem, like if Sent Items fills up or something,
         //we can adjust the code here to to wait, to retry a configurable number of times, or schedule a separate job to retry.
-        LOGGER.info("Deleting message with ID " + message.id);
         try {
+            LOGGER.info("Deleting message with ID " + message.id);
             appClient.users(azureUser).messages(message.id)
                 .buildRequest()
             .delete();
         } catch (Exception ex) {
-            LOGGER.warn("Error deleting" + (message.isDraft ? " draft " : " ")
+            if (message != null) {
+                LOGGER.warn("Error deleting" + (message.isDraft ? " draft " : " ")
                     + "message with ID '" + message.id + "'. Message had subject '"
                     + message.subject + "' and is addressed to "
                     + message.toRecipients.stream()
                         .map(recip -> recip.emailAddress.address)
                         .collect(Collectors.joining(",")));
+            }
             LOGGER.catching(ex);
         }
     }
