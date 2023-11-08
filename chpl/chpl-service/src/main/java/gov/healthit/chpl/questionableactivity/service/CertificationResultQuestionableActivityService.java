@@ -11,6 +11,7 @@ import gov.healthit.chpl.dto.ActivityDTO;
 import gov.healthit.chpl.questionableactivity.QuestionableActivityDAO;
 import gov.healthit.chpl.questionableactivity.QuestionableActivityTriggerConcept;
 import gov.healthit.chpl.questionableactivity.certificationResult.CertificationResultActivity;
+import gov.healthit.chpl.questionableactivity.certificationResult.RemovedTestToolAddedActivity;
 import gov.healthit.chpl.questionableactivity.certificationResult.ReplacedSvapAddedActivity;
 import gov.healthit.chpl.questionableactivity.certificationResult.UpdatedG1SuccessActivity;
 import gov.healthit.chpl.questionableactivity.certificationResult.UpdatedG2SuccessActivity;
@@ -45,6 +46,7 @@ public class CertificationResultQuestionableActivityService {
         processCertificationResultActivity(UpdatedG2SuccessActivity.class.getName(), origCertResult, newCertResult, activity, activityReason);
         processCertificationResultActivity(UpdatedGapActivity.class.getName(), origCertResult, newCertResult, activity, activityReason);
         processCertificationResultActivity(ReplacedSvapAddedActivity.class.getName(), origCertResult, newCertResult, activity, activityReason);
+        processCertificationResultActivity(RemovedTestToolAddedActivity.class.getName(), origCertResult, newCertResult, activity, activityReason);
     }
 
     private Integer processCertificationResultActivity(String className, CertificationResult origCertResult,
