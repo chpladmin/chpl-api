@@ -13,7 +13,7 @@ import gov.healthit.chpl.questionableactivity.domain.QuestionableActivityCertifi
 import gov.healthit.chpl.testtool.CertificationResultTestTool;
 
 @Component
-public class RemovedTestToolAddedActivity implements CertificationResultActivity {
+public class ExpiredTestToolAddedActivity implements CertificationResultActivity {
 
     @Override
      public List<QuestionableActivityCertificationResult> check(CertificationResult origCertResult, CertificationResult newCertResult) {
@@ -44,7 +44,7 @@ public class RemovedTestToolAddedActivity implements CertificationResultActivity
 
     @Override
     public QuestionableActivityTriggerConcept getTriggerType() {
-        return QuestionableActivityTriggerConcept.REMOVED_TEST_TOOL_ADDED;
+        return QuestionableActivityTriggerConcept.EXPIRED_TEST_TOOL_ADDED;
     }
 
 }

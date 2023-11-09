@@ -11,8 +11,8 @@ import gov.healthit.chpl.dto.ActivityDTO;
 import gov.healthit.chpl.questionableactivity.QuestionableActivityDAO;
 import gov.healthit.chpl.questionableactivity.QuestionableActivityTriggerConcept;
 import gov.healthit.chpl.questionableactivity.certificationResult.CertificationResultActivity;
-import gov.healthit.chpl.questionableactivity.certificationResult.RemovedFunctionalityTestedAddedActivity;
-import gov.healthit.chpl.questionableactivity.certificationResult.RemovedTestToolAddedActivity;
+import gov.healthit.chpl.questionableactivity.certificationResult.ExpiredFunctionalityTestedAddedActivity;
+import gov.healthit.chpl.questionableactivity.certificationResult.ExpiredTestToolAddedActivity;
 import gov.healthit.chpl.questionableactivity.certificationResult.ReplacedSvapAddedActivity;
 import gov.healthit.chpl.questionableactivity.certificationResult.UpdatedG1SuccessActivity;
 import gov.healthit.chpl.questionableactivity.certificationResult.UpdatedG2SuccessActivity;
@@ -47,8 +47,8 @@ public class CertificationResultQuestionableActivityService {
         processCertificationResultActivity(UpdatedG2SuccessActivity.class.getName(), origCertResult, newCertResult, activity, activityReason);
         processCertificationResultActivity(UpdatedGapActivity.class.getName(), origCertResult, newCertResult, activity, activityReason);
         processCertificationResultActivity(ReplacedSvapAddedActivity.class.getName(), origCertResult, newCertResult, activity, activityReason);
-        processCertificationResultActivity(RemovedTestToolAddedActivity.class.getName(), origCertResult, newCertResult, activity, activityReason);
-        processCertificationResultActivity(RemovedFunctionalityTestedAddedActivity.class.getName(), origCertResult, newCertResult, activity, activityReason);
+        processCertificationResultActivity(ExpiredTestToolAddedActivity.class.getName(), origCertResult, newCertResult, activity, activityReason);
+        processCertificationResultActivity(ExpiredFunctionalityTestedAddedActivity.class.getName(), origCertResult, newCertResult, activity, activityReason);
         //TODO: Add activity to detect removed Standard added with OCD-4333
     }
 

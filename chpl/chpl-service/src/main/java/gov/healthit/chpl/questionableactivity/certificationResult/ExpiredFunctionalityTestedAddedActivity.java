@@ -13,7 +13,7 @@ import gov.healthit.chpl.questionableactivity.QuestionableActivityTriggerConcept
 import gov.healthit.chpl.questionableactivity.domain.QuestionableActivityCertificationResult;
 
 @Component
-public class RemovedFunctionalityTestedAddedActivity implements CertificationResultActivity {
+public class ExpiredFunctionalityTestedAddedActivity implements CertificationResultActivity {
 
     @Override
      public List<QuestionableActivityCertificationResult> check(CertificationResult origCertResult, CertificationResult newCertResult) {
@@ -44,7 +44,7 @@ public class RemovedFunctionalityTestedAddedActivity implements CertificationRes
 
     @Override
     public QuestionableActivityTriggerConcept getTriggerType() {
-        return QuestionableActivityTriggerConcept.REMOVED_FUNCTIONALITY_TESTED_ADDED;
+        return QuestionableActivityTriggerConcept.EXPIRED_FUNCTIONALITY_TESTED_ADDED;
     }
 
 }
