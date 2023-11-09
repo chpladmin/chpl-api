@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.BorderExtent;
 import org.apache.poi.ss.usermodel.BorderStyle;
@@ -31,13 +32,18 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
+import gov.healthit.chpl.complaint.ComplaintDAO;
+import gov.healthit.chpl.complaint.domain.Complaint;
 import gov.healthit.chpl.compliance.surveillance.SurveillanceManager;
 import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.ProductVersion;
+import gov.healthit.chpl.domain.surveillance.RequirementGroupType;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
+import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformity;
+import gov.healthit.chpl.domain.surveillance.SurveillanceRequirement;
 import gov.healthit.chpl.domain.surveillance.SurveillanceResultType;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -47,6 +53,8 @@ import gov.healthit.chpl.surveillance.report.dto.PrivilegedSurveillanceDTO;
 import gov.healthit.chpl.surveillance.report.dto.QuarterlyReportDTO;
 import gov.healthit.chpl.surveillance.report.dto.QuarterlyReportRelevantListingDTO;
 import gov.healthit.chpl.util.DateUtil;
+import gov.healthit.chpl.util.NullSafeEvaluator;
+import gov.healthit.chpl.util.Util;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -56,43 +64,54 @@ public abstract class ActivitiesAndOutcomesWorksheetBuilder {
     private static final int COL_CHPL_ID = 1;
     private static final int COL_SURV_ID = 2;
     private static final int COL_SURV_ACTIVITY_TRACKER = 3;
-    private static final int COL_RELATED_COMPLAINT = 4;
-    private static final int COL_Q1 = 5;
-    private static final int COL_Q2 = 6;
-    private static final int COL_Q3 = 7;
-    private static final int COL_Q4 = 8;
-    private static final int COL_DEVELOPER_NAME = 9;
-    private static final int COL_PRODUCT_NAME = 10;
-    private static final int COL_PRODUCT_VERSION = 11;
-    private static final int COL_K1_REVIEWED = 12;
-    private static final int COL_SURV_TYPE = 13;
-    private static final int COL_SURV_LOCATION_COUNT = 14;
-    private static final int COL_SURV_BEGIN = 15;
-    private static final int COL_SURV_END = 16;
-    private static final int COL_SURV_OUTCOME = 17;
-    private static final int COL_SURV_OUTCOME_OTHER = 18;
-    private static final int COL_NONCONFORMITY_TYPES_RESULTANT = 19;
-    private static final int COL_CERT_STATUS_RESULTANT = 20;
-    private static final int COL_SUSPENDED = 21;
-    private static final int COL_SURV_PROCESS_TYPE = 22;
-    private static final int COL_SURV_PROCESS_TYPE_OTHER = 23;
-    private static final int COL_SURV_GROUNDS = 24;
-    private static final int COL_NONCONFORMITY_CAUSES = 25;
-    private static final int COL_NONCONFORMITY_NATURES = 26;
-    private static final int COL_SURV_STEPS = 27;
-    private static final int COL_ENGAGEMENT_STEPS = 28;
-    private static final int COL_ADDITIONAL_COSTS = 29;
-    private static final int COL_LIMITATIONS_EVAL = 30;
-    private static final int COL_NONDISCLOSURE_EVAL = 31;
-    private static final int COL_DEV_RESOLUTION = 32;
-    private static final int COL_COMPLETED_CAP = 33;
+    private static final int COL_RELATED_COMPLAINT_ACB_ID = 4;
+    private static final int COL_RELATED_COMPLAINT_ONC_ID = 5;
+    private static final int COL_Q1 = 6;
+    private static final int COL_Q2 = 7;
+    private static final int COL_Q3 = 8;
+    private static final int COL_Q4 = 9;
+    private static final int COL_DEVELOPER_NAME = 10;
+    private static final int COL_PRODUCT_NAME = 11;
+    private static final int COL_PRODUCT_VERSION = 12;
+    private static final int COL_K1_REVIEWED = 13;
+    private static final int COL_SURV_TYPE = 14;
+    private static final int COL_SURV_RANDOMIZED_SITES_USED = 15;
+    private static final int COL_SURV_BEGIN = 16;
+    private static final int COL_SURV_END = 17;
+    private static final int COL_SURV_OUTCOME = 18;
+    private static final int COL_SURV_OUTCOME_OTHER = 19;
+    private static final int COL_NC_SURVEILLED_REQ_TYPE = 20;
+    private static final int COL_NC_SURVEILLED_REQ = 21;
+    private static final int COL_NC_TYPE = 22;
+    private static final int COL_NC_CLOSE_DATE = 23;
+    private static final int COL_NC_CAP_APPROVAL_DATE = 24;
+    private static final int COL_NC_CAP_MUST_COMPLETE_DATE = 25;
+    private static final int COL_NC_CAP_WAS_COMPLETE_DATE = 26;
+    private static final int COL_NC_FINDINGS = 27;
+    private static final int COL_CERT_STATUS_RESULTANT = 28;
+    private static final int COL_SUSPENDED = 29;
+    private static final int COL_SURV_PROCESS_TYPE = 30;
+    private static final int COL_SURV_PROCESS_TYPE_OTHER = 31;
+    private static final int COL_SURV_GROUNDS = 32;
+    private static final int COL_NONCONFORMITY_CAUSES = 33;
+    private static final int COL_NONCONFORMITY_NATURES = 34;
+    private static final int COL_SURV_STEPS = 35;
+    private static final int COL_ENGAGEMENT_STEPS = 36;
+    private static final int COL_ADDITIONAL_COSTS = 37;
+    private static final int COL_LIMITATIONS_EVAL = 38;
+    private static final int COL_NONDISCLOSURE_EVAL = 39;
+    private static final int COL_DEV_RESOLUTION = 40;
+    private static final int COL_COMPLETED_CAP = 41;
     private static final int[] HIDDEN_COLS =
-        {COL_SURV_ACTIVITY_TRACKER, COL_RELATED_COMPLAINT, COL_Q1, COL_Q2, COL_Q3, COL_Q4};
+        {COL_SURV_ACTIVITY_TRACKER, COL_Q1, COL_Q2, COL_Q3, COL_Q4, COL_NONCONFORMITY_NATURES,
+                COL_SURV_STEPS, COL_ENGAGEMENT_STEPS, COL_ADDITIONAL_COSTS, COL_LIMITATIONS_EVAL,
+                COL_NONDISCLOSURE_EVAL, COL_DEV_RESOLUTION};
 
     private SurveillanceReportManager reportManager;
     private CertifiedProductDetailsManager detailsManager;
     private SurveillanceManager survManager;
     private PrivilegedSurveillanceDAO privilegedSurvDao;
+    private ComplaintDAO complaintDao;
     private int lastDataRow;
     private DateTimeFormatter dateFormatter;
     private PropertyTemplate pt;
@@ -100,11 +119,13 @@ public abstract class ActivitiesAndOutcomesWorksheetBuilder {
     @Autowired
     public ActivitiesAndOutcomesWorksheetBuilder(SurveillanceReportManager reportManager,
             CertifiedProductDetailsManager detailsManager,
-            SurveillanceManager survManager, PrivilegedSurveillanceDAO privilegedSurvDao) {
+            SurveillanceManager survManager, PrivilegedSurveillanceDAO privilegedSurvDao,
+            ComplaintDAO complaintDao) {
         this.reportManager = reportManager;
         this.detailsManager = detailsManager;
         this.survManager = survManager;
         this.privilegedSurvDao = privilegedSurvDao;
+        this.complaintDao = complaintDao;
         dateFormatter = DateTimeFormatter.ofPattern("MM/dd/uuuu");
     }
 
@@ -144,7 +165,8 @@ public abstract class ActivitiesAndOutcomesWorksheetBuilder {
         sheet.setColumnWidth(COL_CHPL_ID, sharedColWidth);
         sheet.setColumnWidth(COL_SURV_ID,  sharedColWidth);
         sheet.setColumnWidth(COL_SURV_ACTIVITY_TRACKER, sharedColWidth);
-        sheet.setColumnWidth(COL_RELATED_COMPLAINT, sharedColWidth);
+        sheet.setColumnWidth(COL_RELATED_COMPLAINT_ACB_ID, sharedColWidth);
+        sheet.setColumnWidth(COL_RELATED_COMPLAINT_ONC_ID, sharedColWidth);
         int quarterColWidth = workbook.getColumnWidth(2.22);
         sheet.setColumnWidth(COL_Q1, quarterColWidth);
         sheet.setColumnWidth(COL_Q2, quarterColWidth);
@@ -155,17 +177,24 @@ public abstract class ActivitiesAndOutcomesWorksheetBuilder {
         sheet.setColumnWidth(COL_PRODUCT_VERSION, sharedColWidth);
         sheet.setColumnWidth(COL_K1_REVIEWED, sharedColWidth);
         sheet.setColumnWidth(COL_SURV_TYPE, workbook.getColumnWidth(13.67));
-        sheet.setColumnWidth(COL_SURV_LOCATION_COUNT, sharedColWidth);
+        sheet.setColumnWidth(COL_SURV_RANDOMIZED_SITES_USED, sharedColWidth);
         sheet.setColumnWidth(COL_SURV_BEGIN, sharedColWidth);
         sheet.setColumnWidth(COL_SURV_END, sharedColWidth);
         sheet.setColumnWidth(COL_SURV_OUTCOME, workbook.getColumnWidth(51.44));
         sheet.setColumnWidth(COL_SURV_OUTCOME_OTHER, workbook.getColumnWidth(51.44));
-        sheet.setColumnWidth(COL_NONCONFORMITY_TYPES_RESULTANT, workbook.getColumnWidth(27));
+        sheet.setColumnWidth(COL_NC_SURVEILLED_REQ_TYPE, workbook.getColumnWidth(27));
+        sheet.setColumnWidth(COL_NC_SURVEILLED_REQ, workbook.getColumnWidth(27));
+        sheet.setColumnWidth(COL_NC_TYPE, workbook.getColumnWidth(27));
+        sheet.setColumnWidth(COL_NC_CLOSE_DATE, sharedColWidth);
+        sheet.setColumnWidth(COL_NC_CAP_APPROVAL_DATE, sharedColWidth);
+        sheet.setColumnWidth(COL_NC_CAP_MUST_COMPLETE_DATE, sharedColWidth);
+        sheet.setColumnWidth(COL_NC_CAP_WAS_COMPLETE_DATE, sharedColWidth);
+        int longTextColWidth = workbook.getColumnWidth(59.44);
+        sheet.setColumnWidth(COL_NC_FINDINGS, longTextColWidth);
         sheet.setColumnWidth(COL_CERT_STATUS_RESULTANT, workbook.getColumnWidth(17.78));
         sheet.setColumnWidth(COL_SUSPENDED, workbook.getColumnWidth(17.78));
         sheet.setColumnWidth(COL_SURV_PROCESS_TYPE, workbook.getColumnWidth(30.67));
         sheet.setColumnWidth(COL_SURV_PROCESS_TYPE_OTHER, workbook.getColumnWidth(30.67));
-        int longTextColWidth = workbook.getColumnWidth(59.44);
         sheet.setColumnWidth(COL_SURV_GROUNDS, longTextColWidth);
         sheet.setColumnWidth(COL_NONCONFORMITY_CAUSES, longTextColWidth);
         sheet.setColumnWidth(COL_NONCONFORMITY_NATURES, longTextColWidth);
@@ -269,7 +298,8 @@ public abstract class ActivitiesAndOutcomesWorksheetBuilder {
         addHeadingCell(workbook, row, COL_CHPL_ID, "CHPL ID");
         addHeadingCell(workbook, row, COL_SURV_ID, "Surveillance ID");
         addHeadingCell(workbook, row, COL_SURV_ACTIVITY_TRACKER, "Surveillance Activity Tracker");
-        addHeadingCell(workbook, row, COL_RELATED_COMPLAINT, "Related Complaint (both if possible)");
+        addHeadingCell(workbook, row, COL_RELATED_COMPLAINT_ACB_ID, "ONC-ACB Complaint ID");
+        addHeadingCell(workbook, row, COL_RELATED_COMPLAINT_ONC_ID, "ONC Complaint ID (if applicable)");
         addHeadingCell(workbook, row, COL_Q1, "Q1");
         addHeadingCell(workbook, row, COL_Q2, "Q2");
         addHeadingCell(workbook, row, COL_Q3, "Q3");
@@ -279,13 +309,19 @@ public abstract class ActivitiesAndOutcomesWorksheetBuilder {
         addHeadingCell(workbook, row, COL_PRODUCT_VERSION, "Product Version");
         addHeadingCell(workbook, row, COL_K1_REVIEWED, "§170.523(k)(1) Reviewed");
         addHeadingCell(workbook, row, COL_SURV_TYPE, "Type of Surveillance");
-        addHeadingCell(workbook, row, COL_SURV_LOCATION_COUNT, "Number of Locations Surveilled");
+        addHeadingCell(workbook, row, COL_SURV_RANDOMIZED_SITES_USED, "Randomized Sites Used");
         addHeadingCell(workbook, row, COL_SURV_BEGIN, "Surveillance Began");
         addHeadingCell(workbook, row, COL_SURV_END, "Surveillance Ended");
         addHeadingCell(workbook, row, COL_SURV_OUTCOME, "Outcome of Surveillance");
         addHeadingCell(workbook, row, COL_SURV_OUTCOME_OTHER, "Outcome of Surveillance - Other Explanation");
-        addHeadingCell(workbook, row, COL_NONCONFORMITY_TYPES_RESULTANT,
-                "Non-Conformity Type(s) Resultant of Surveillance (i.e. \"170.xxx (x)(x)\")");
+        addHeadingCell(workbook, row, COL_NC_SURVEILLED_REQ_TYPE, "Surveilled Requirement Type");
+        addHeadingCell(workbook, row, COL_NC_SURVEILLED_REQ, "Surveilled Requirement");
+        addHeadingCell(workbook, row, COL_NC_TYPE, "Non-Conformity Type");
+        addHeadingCell(workbook, row, COL_NC_CLOSE_DATE, "Non-Conformity Close Date");
+        addHeadingCell(workbook, row, COL_NC_CAP_APPROVAL_DATE, "CAP Approval Date");
+        addHeadingCell(workbook, row, COL_NC_CAP_MUST_COMPLETE_DATE, "Must Complete Date");
+        addHeadingCell(workbook, row, COL_NC_CAP_WAS_COMPLETE_DATE, "Was Complete Date");
+        addHeadingCell(workbook, row, COL_NC_FINDINGS, "Non-Conformity Findings");
         addHeadingCell(workbook, row, COL_CERT_STATUS_RESULTANT, "Certification Status Resultant of Surveillance");
         addHeadingCell(workbook, row, COL_SUSPENDED, "Suspended During Surveillance?");
         addHeadingCell(workbook, row, COL_SURV_PROCESS_TYPE, "Surveillance Process Type");
@@ -372,86 +408,77 @@ public abstract class ActivitiesAndOutcomesWorksheetBuilder {
                 }
             }
         });
+
+
         for (Surveillance surv : relevantSuveillances) {
+            boolean isFirstRowForSurveillance = true;
+            Row row = workbook.getRow(sheet, rowNum++);
+
             CertifiedProductSearchDetails listing = null;
             for (CertifiedProductSearchDetails currListing : relevantListings) {
                 if (surv.getCertifiedProduct().getId().equals(currListing.getId())) {
                     listing = currListing;
                 }
             }
-            //get the privileged data for this surveillance
-            //it may be different across quarters
-            List<PrivilegedSurveillanceDTO> privilegedSurvQuarterlyData =
-                    privilegedSurvDao.getBySurveillance(surv.getId());
+            //get the privileged data for this surveillance; it may be different across quarters
+            List<PrivilegedSurveillanceDTO> privilegedSurvQuarterlyData = privilegedSurvDao.getBySurveillance(surv.getId());
 
-            Row row = workbook.getRow(sheet, rowNum);
-            addDataCell(workbook, row, COL_CHPL_ID, listing.getChplProductNumber());
-            addDataCell(workbook, row, COL_SURV_ID, surv.getFriendlyId());
-            addDataCell(workbook, row, COL_SURV_ACTIVITY_TRACKER, listing.getChplProductNumber() + surv.getFriendlyId());
-            //chpl generated i think once we associate a complaint with surveillance?
-            addDataCell(workbook, row, COL_RELATED_COMPLAINT, "");
-            if (determineIfSurveillanceHappenedDuringQuarter("Q1", quarterlyReports, surv)) {
-                addDataCell(workbook, row, COL_Q1, "X");
-            }
-            if (determineIfSurveillanceHappenedDuringQuarter("Q2", quarterlyReports, surv)) {
-                addDataCell(workbook, row, COL_Q2, "X");
-            }
-            if (determineIfSurveillanceHappenedDuringQuarter("Q3", quarterlyReports, surv)) {
-                addDataCell(workbook, row, COL_Q3, "X");
-            }
-            if (determineIfSurveillanceHappenedDuringQuarter("Q4", quarterlyReports, surv)) {
-                addDataCell(workbook, row, COL_Q4, "X");
-            }
-
-            addDataCell(workbook, row, COL_DEVELOPER_NAME, listing.getDeveloper().getName());
-            addDataCell(workbook, row, COL_PRODUCT_NAME, listing.getProduct().getName());
-            addDataCell(workbook, row, COL_PRODUCT_VERSION, listing.getVersion().getVersion());
-            //user has to enter this field
-            addDataCell(workbook, row, COL_K1_REVIEWED, generateK1ReviewedValue(quarterlyReports, privilegedSurvQuarterlyData));
-            addDataCell(workbook, row, COL_SURV_TYPE, surv.getType().getName());
-            addDataCell(workbook, row, COL_SURV_LOCATION_COUNT,
-                    surv.getRandomizedSitesUsed() == null ? "" : surv.getRandomizedSitesUsed().toString());
-            addDataCell(workbook, row, COL_SURV_BEGIN, dateFormatter.format(surv.getStartDay()));
-            addDataCell(workbook, row, COL_SURV_END, surv.getEndDay() == null ? "" : dateFormatter.format(surv.getEndDay()));
-            //user has to enter this field
-            addDataCell(workbook, row, COL_SURV_OUTCOME,
-                    generateSurveillanceOutcomeValue(quarterlyReports, privilegedSurvQuarterlyData));
-            addDataCell(workbook, row, COL_SURV_OUTCOME_OTHER,
-                    generateSurveillanceOutcomeOtherValue(quarterlyReports, privilegedSurvQuarterlyData));
-            addDataCell(workbook, row, COL_NONCONFORMITY_TYPES_RESULTANT, determineNonconformityTypes(surv));
-            addDataCell(workbook, row, COL_CERT_STATUS_RESULTANT, determineResultantCertificationStatus(listing, surv));
-            addDataCell(workbook, row, COL_SUSPENDED, determineSuspendedStatus(listing, surv));
-            //user has to enter this field
-            addDataCell(workbook, row, COL_SURV_PROCESS_TYPE,
-                    generateSurveillanceProcessTypeValue(quarterlyReports, privilegedSurvQuarterlyData));
-            addDataCell(workbook, row, COL_SURV_PROCESS_TYPE_OTHER,
-                    generateSurveillanceProcessTypeOtherValue(quarterlyReports, privilegedSurvQuarterlyData));
-            addDataCell(workbook, row, COL_SURV_GROUNDS,
-                    generateGroundsForInitiatingValue(quarterlyReports, privilegedSurvQuarterlyData));
-            addDataCell(workbook, row, COL_NONCONFORMITY_CAUSES,
-                    generateNonconformityCausesValue(quarterlyReports, privilegedSurvQuarterlyData));
-            addDataCell(workbook, row, COL_NONCONFORMITY_NATURES,
-                    generateNonconformityNatureValue(quarterlyReports, privilegedSurvQuarterlyData));
-            addDataCell(workbook, row, COL_SURV_STEPS,
-                    generateStepsToSurveilValue(quarterlyReports, privilegedSurvQuarterlyData));
-            addDataCell(workbook, row, COL_ENGAGEMENT_STEPS,
-                    generateStepsToEngageValue(quarterlyReports, privilegedSurvQuarterlyData));
-            addDataCell(workbook, row, COL_ADDITIONAL_COSTS,
-                    generateAdditionalCostsValue(quarterlyReports, privilegedSurvQuarterlyData));
-            addDataCell(workbook, row, COL_LIMITATIONS_EVAL,
-                    generateLimitationsValue(quarterlyReports, privilegedSurvQuarterlyData));
-            addDataCell(workbook, row, COL_NONDISCLOSURE_EVAL,
-                    generateNondisclosureValue(quarterlyReports, privilegedSurvQuarterlyData));
-            addDataCell(workbook, row, COL_DEV_RESOLUTION,
-                    generateDeveloperResolutionValue(quarterlyReports, privilegedSurvQuarterlyData));
-            addDataCell(workbook, row, COL_COMPLETED_CAP,
-                    generateCompletedCapValue(quarterlyReports, privilegedSurvQuarterlyData));
-            pt.drawBorders(new CellRangeAddress(rowNum, rowNum, 1, LAST_DATA_COLUMN - 1),
+            //add all the base surveillance data for the first row of this surveillance entry
+            addSurveillanceData(workbook, row, quarterlyReports, surv, privilegedSurvQuarterlyData, listing);
+            pt.drawBorders(new CellRangeAddress(row.getRowNum(), row.getRowNum(), 1, LAST_DATA_COLUMN - 1),
                     BorderStyle.HAIR, BorderExtent.HORIZONTAL);
             addedRows++;
-            rowNum++;
+
+            for (SurveillanceRequirement req : surv.getRequirements()) {
+                //there should be one row for this surveillance per nonconformity
+                //and the data in the subsequent rows should be blank except for the nonconformity values
+                if (!isFirstRowForSurveillance) {
+                    row = workbook.getRow(sheet, rowNum++);
+                    addSurveillanceData(workbook, row, quarterlyReports, surv, privilegedSurvQuarterlyData, listing);
+                    addedRows++;
+                }
+                addDataCell(workbook, row, COL_NC_SURVEILLED_REQ_TYPE, getRequirementGroupType(req));
+                addDataCell(workbook, row, COL_NC_SURVEILLED_REQ, getRequirementType(req));
+
+                if (req.getResult() != null
+                        && req.getResult().getName().equals(SurveillanceResultType.NON_CONFORMITY)) {
+                    for (SurveillanceNonconformity nc : req.getNonconformities()) {
+                        addDataCell(workbook, row, COL_NC_TYPE, nc.getType().getFormattedTitle());
+                        addDataCell(workbook, row, COL_NC_CLOSE_DATE,
+                                nc.getNonconformityCloseDay() != null ? dateFormatter.format(nc.getNonconformityCloseDay()) : "");
+                        addDataCell(workbook, row, COL_NC_CAP_APPROVAL_DATE,
+                                nc.getCapApprovalDay() != null ? dateFormatter.format(nc.getCapApprovalDay()) : "");
+                        addDataCell(workbook, row, COL_NC_CAP_MUST_COMPLETE_DATE,
+                                nc.getCapMustCompleteDay() != null ? dateFormatter.format(nc.getCapMustCompleteDay()) : "");
+                        addDataCell(workbook, row, COL_NC_CAP_WAS_COMPLETE_DATE,
+                                nc.getCapEndDay() != null ? dateFormatter.format(nc.getCapEndDay()) : "");
+                        addDataCell(workbook, row, COL_NC_FINDINGS, nc.getFindings());
+                    }
+                }
+                pt.drawBorders(new CellRangeAddress(row.getRowNum(), row.getRowNum(), 1, LAST_DATA_COLUMN - 1),
+                        BorderStyle.HAIR, BorderExtent.HORIZONTAL);
+                isFirstRowForSurveillance = false;
+            }
         }
         return addedRows;
+    }
+
+    private String getRequirementGroupType(SurveillanceRequirement req) {
+        if (req.getRequirementType() == null) {
+            return RequirementGroupType.OTHER.toString();
+        } else {
+            return NullSafeEvaluator.eval(() -> req.getRequirementType().getRequirementGroupType().getName(), "");
+        }
+    }
+
+    private String getRequirementType(SurveillanceRequirement req) {
+        if (req.getRequirementType() == null) {
+            return NullSafeEvaluator.eval(() -> req.getRequirementTypeOther(), "");
+        } else if (req.getRequirementType().getRequirementGroupType().getId().equals(RequirementGroupType.CERTIFIED_CAPABILITY_ID)) {
+            return Util.formatCriteriaNumber(req.getRequirementType());
+        } else {
+            return req.getRequirementType().getTitle();
+        }
     }
 
     private List<CertifiedProductSearchDetails> getRelevantListingsDetails(List<QuarterlyReportDTO> quarterlyReports) {
@@ -558,6 +585,94 @@ public abstract class ActivitiesAndOutcomesWorksheetBuilder {
         return surv.getStartDay().compareTo(quarterlyReport.getEndDate()) <= 0
                 && (surv.getEndDay() == null
                     || surv.getEndDay().compareTo(quarterlyReport.getStartDate()) >= 0);
+    }
+
+    private void addSurveillanceData(SurveillanceReportWorkbookWrapper workbook,
+            Row row, List<QuarterlyReportDTO> quarterlyReports,
+            Surveillance surv,
+            List<PrivilegedSurveillanceDTO> privilegedSurvQuarterlyData,
+            CertifiedProductSearchDetails listing) {
+        addDataCell(workbook, row, COL_CHPL_ID, listing.getChplProductNumber());
+        addDataCell(workbook, row, COL_SURV_ID, surv.getFriendlyId());
+        addDataCell(workbook, row, COL_SURV_ACTIVITY_TRACKER, listing.getChplProductNumber() + surv.getFriendlyId());
+        List<Complaint> relatedComplaints = complaintDao.getComplaintsForSurveillance(surv.getId());
+        addDataCell(workbook, row, COL_RELATED_COMPLAINT_ACB_ID, getAcbComplaintIds(relatedComplaints));
+        addDataCell(workbook, row, COL_RELATED_COMPLAINT_ONC_ID, getOncComplaintIds(relatedComplaints));
+        if (determineIfSurveillanceHappenedDuringQuarter("Q1", quarterlyReports, surv)) {
+            addDataCell(workbook, row, COL_Q1, "X");
+        }
+        if (determineIfSurveillanceHappenedDuringQuarter("Q2", quarterlyReports, surv)) {
+            addDataCell(workbook, row, COL_Q2, "X");
+        }
+        if (determineIfSurveillanceHappenedDuringQuarter("Q3", quarterlyReports, surv)) {
+            addDataCell(workbook, row, COL_Q3, "X");
+        }
+        if (determineIfSurveillanceHappenedDuringQuarter("Q4", quarterlyReports, surv)) {
+            addDataCell(workbook, row, COL_Q4, "X");
+        }
+
+        addDataCell(workbook, row, COL_DEVELOPER_NAME, listing.getDeveloper().getName());
+        addDataCell(workbook, row, COL_PRODUCT_NAME, listing.getProduct().getName());
+        addDataCell(workbook, row, COL_PRODUCT_VERSION, listing.getVersion().getVersion());
+        //user has to enter this field
+        addDataCell(workbook, row, COL_K1_REVIEWED, generateK1ReviewedValue(quarterlyReports, privilegedSurvQuarterlyData));
+        addDataCell(workbook, row, COL_SURV_TYPE, surv.getType().getName());
+        addDataCell(workbook, row, COL_SURV_RANDOMIZED_SITES_USED,
+                surv.getRandomizedSitesUsed() == null ? "" : surv.getRandomizedSitesUsed().toString());
+        addDataCell(workbook, row, COL_SURV_BEGIN, dateFormatter.format(surv.getStartDay()));
+        addDataCell(workbook, row, COL_SURV_END, surv.getEndDay() == null ? "" : dateFormatter.format(surv.getEndDay()));
+        //user has to enter this field
+        addDataCell(workbook, row, COL_SURV_OUTCOME,
+                generateSurveillanceOutcomeValue(quarterlyReports, privilegedSurvQuarterlyData));
+        addDataCell(workbook, row, COL_SURV_OUTCOME_OTHER,
+                generateSurveillanceOutcomeOtherValue(quarterlyReports, privilegedSurvQuarterlyData));
+        addDataCell(workbook, row, COL_CERT_STATUS_RESULTANT, determineResultantCertificationStatus(listing, surv));
+        addDataCell(workbook, row, COL_SUSPENDED, determineSuspendedStatus(listing, surv));
+        //user has to enter this field
+        addDataCell(workbook, row, COL_SURV_PROCESS_TYPE,
+                generateSurveillanceProcessTypeValue(quarterlyReports, privilegedSurvQuarterlyData));
+        addDataCell(workbook, row, COL_SURV_PROCESS_TYPE_OTHER,
+                generateSurveillanceProcessTypeOtherValue(quarterlyReports, privilegedSurvQuarterlyData));
+        addDataCell(workbook, row, COL_SURV_GROUNDS,
+                generateGroundsForInitiatingValue(quarterlyReports, privilegedSurvQuarterlyData));
+        addDataCell(workbook, row, COL_NONCONFORMITY_CAUSES,
+                generateNonconformityCausesValue(quarterlyReports, privilegedSurvQuarterlyData));
+        addDataCell(workbook, row, COL_NONCONFORMITY_NATURES,
+                generateNonconformityNatureValue(quarterlyReports, privilegedSurvQuarterlyData));
+        addDataCell(workbook, row, COL_SURV_STEPS,
+                generateStepsToSurveilValue(quarterlyReports, privilegedSurvQuarterlyData));
+        addDataCell(workbook, row, COL_ENGAGEMENT_STEPS,
+                generateStepsToEngageValue(quarterlyReports, privilegedSurvQuarterlyData));
+        addDataCell(workbook, row, COL_ADDITIONAL_COSTS,
+                generateAdditionalCostsValue(quarterlyReports, privilegedSurvQuarterlyData));
+        addDataCell(workbook, row, COL_LIMITATIONS_EVAL,
+                generateLimitationsValue(quarterlyReports, privilegedSurvQuarterlyData));
+        addDataCell(workbook, row, COL_NONDISCLOSURE_EVAL,
+                generateNondisclosureValue(quarterlyReports, privilegedSurvQuarterlyData));
+        addDataCell(workbook, row, COL_DEV_RESOLUTION,
+                generateDeveloperResolutionValue(quarterlyReports, privilegedSurvQuarterlyData));
+        addDataCell(workbook, row, COL_COMPLETED_CAP,
+                generateCompletedCapValue(quarterlyReports, privilegedSurvQuarterlyData));
+    }
+
+    private String getAcbComplaintIds(List<Complaint> complaints) {
+        if (CollectionUtils.isEmpty(complaints)) {
+            return "";
+        }
+        return complaints.stream()
+                .filter(complaint -> !StringUtils.isEmpty(complaint.getAcbComplaintId()))
+                .map(complaint -> complaint.getAcbComplaintId())
+                .collect(Collectors.joining(", "));
+    }
+
+    private String getOncComplaintIds(List<Complaint> complaints) {
+        if (CollectionUtils.isEmpty(complaints)) {
+            return "";
+        }
+        return complaints.stream()
+                .filter(complaint -> !StringUtils.isEmpty(complaint.getOncComplaintId()))
+                .map(complaint -> complaint.getOncComplaintId())
+                .collect(Collectors.joining(", "));
     }
 
     private boolean determineIfSurveillanceHappenedDuringQuarter(String quarterName,

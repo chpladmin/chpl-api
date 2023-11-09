@@ -5,23 +5,12 @@ import java.io.IOException;
 
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 
-/**
- * Interface for presenting certified products as a file.
- * @author alarned
- *
- */
-public interface CertifiedProductPresenter {
-    /**
-     * Opens and initializes a file for Certified Products to be written to
-     * @param file - The file where the data will be written
-     * @throws IOException - Error opening or initializing the file
-     */
-    void open(File file) throws IOException;
+public abstract class CertifiedProductPresenter {
 
-    /**
-     * Writes a Certified Product to the open file
-     * @param cp - CertifiedProductSearchDetails
-     * @throws IOException - Error writing to the open file
-     */
-    void add(CertifiedProductSearchDetails cp) throws IOException;
+    public void open(File dataFile, File definitionFile) throws IOException {
+        open(dataFile);
+    }
+
+    public abstract void open(File file) throws IOException;
+    public abstract void add(CertifiedProductSearchDetails cp) throws IOException;
 }

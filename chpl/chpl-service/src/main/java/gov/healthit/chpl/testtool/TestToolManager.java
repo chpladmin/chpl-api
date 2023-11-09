@@ -57,7 +57,7 @@ public class TestToolManager {
             + "T(gov.healthit.chpl.permissions.domains.TestToolDomainPermissions).UPDATE)")
     @Transactional
     @ListingStoreRemove(removeBy = RemoveBy.ALL)
-    @GenerateListingDownloadFile(listingSet = {ListingSet.EDITION_2011, ListingSet.EDITION_2014})
+    @GenerateListingDownloadFile(listingSet = {ListingSet.EDITION_2011, ListingSet.EDITION_2014, ListingSet.INACTIVE})
     public TestTool update(TestTool testTool) throws EntityRetrievalException, ValidationException {
         testToolValidator.validateForEdit(testTool);
         updateTestTool(testTool);

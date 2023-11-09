@@ -35,7 +35,8 @@ import lombok.extern.log4j.Log4j2;
 public class GenerateListingDownloadFilesAspect {
     private static final String DOWNLOAD_FILE_JOB_2011 = "downloadFileJob2011";
     private static final String DOWNLOAD_FILE_JOB_2014 = "downloadFileJob2014";
-    private static final String DOWNLOAD_FILE_JOB_2015 = "downloadFileJob2015";
+    private static final String DOWNLOAD_FILE_JOB_INACTIVE = "downloadFileJobInactive";
+    private static final String DOWNLOAD_FILE_JOB_ACTIVE = "downloadFileJobActive";
 
     private SchedulerManager schedulerManager;
 
@@ -47,7 +48,8 @@ public class GenerateListingDownloadFilesAspect {
 
         listingSetToJobNameMap.put(ListingSet.EDITION_2011, new DownloadJobRunInformation(DOWNLOAD_FILE_JOB_2011, env));
         listingSetToJobNameMap.put(ListingSet.EDITION_2014, new DownloadJobRunInformation(DOWNLOAD_FILE_JOB_2014, env));
-        listingSetToJobNameMap.put(ListingSet.EDITION_2015, new DownloadJobRunInformation(DOWNLOAD_FILE_JOB_2015, env));
+        listingSetToJobNameMap.put(ListingSet.INACTIVE, new DownloadJobRunInformation(DOWNLOAD_FILE_JOB_INACTIVE, env));
+        listingSetToJobNameMap.put(ListingSet.ACTIVE, new DownloadJobRunInformation(DOWNLOAD_FILE_JOB_ACTIVE, env));
     }
 
     @AfterReturning("execution(* *.*(..)) && @annotation(generateListingDownloadFile)")
@@ -62,8 +64,8 @@ public class GenerateListingDownloadFilesAspect {
 
         if (!isJobAlreadyScheduled(info)) {
             ChplOneTimeTrigger downloadFileTrigger = new ChplOneTimeTrigger();
-            ChplJob joinDevelopersJob = getDownloadFileJob(listingSetToJobNameMap.get(listingSet).jobName);
-            downloadFileTrigger.setJob(joinDevelopersJob);
+            ChplJob downloadFileJob = getDownloadFileJob(listingSetToJobNameMap.get(listingSet).jobName);
+            downloadFileTrigger.setJob(downloadFileJob);
             downloadFileTrigger.setRunDateMillis(listingSetToJobNameMap.get(listingSet).getRunDateTime().toInstant().toEpochMilli());
             downloadFileTrigger = addTriggerToScheduler(downloadFileTrigger);
 
@@ -128,17 +130,21 @@ public class GenerateListingDownloadFilesAspect {
             Integer minute = 0;
 
             switch (jobName) {
-            case "downloadFileJob2011" :
+            case DOWNLOAD_FILE_JOB_2011 :
                 hour = Integer.valueOf(env.getProperty("download2011Hour"));
                 minute = Integer.valueOf(env.getProperty("download2011Minute"));
                 break;
-            case "downloadFileJob2014" :
+            case DOWNLOAD_FILE_JOB_2014 :
                 hour = Integer.valueOf(env.getProperty("download2014Hour"));
                 minute = Integer.valueOf(env.getProperty("download2014Minute"));
                 break;
-            case "downloadFileJob2015" :
-                hour = Integer.valueOf(env.getProperty("download2015Hour"));
-                minute = Integer.valueOf(env.getProperty("download2015Minute"));
+            case DOWNLOAD_FILE_JOB_INACTIVE :
+                hour = Integer.valueOf(env.getProperty("downloadInactiveHour"));
+                minute = Integer.valueOf(env.getProperty("downloadInactiveMinute"));
+                break;
+            case DOWNLOAD_FILE_JOB_ACTIVE :
+                hour = Integer.valueOf(env.getProperty("downloadActiveHour"));
+                minute = Integer.valueOf(env.getProperty("downloadActiveMinute"));
                 break;
             default:
             }

@@ -11,6 +11,7 @@ import javax.persistence.EntityNotFoundException;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.ff4j.FF4j;
 import org.quartz.JobDataMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
@@ -23,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.accessibilityStandard.AccessibilityStandard;
 import gov.healthit.chpl.accessibilityStandard.AccessibilityStandardDAO;
 import gov.healthit.chpl.caching.CacheNames;
@@ -152,6 +154,7 @@ public class CertifiedProductManager extends SecuredManager {
     private ChplTeamNotifier chplTeamNotifier;
     private Environment env;
     private ChplHtmlEmailBuilder chplHtmlEmailBuilder;
+    private FF4j ff4j;
 
     public CertifiedProductManager() {
     }
@@ -160,31 +163,18 @@ public class CertifiedProductManager extends SecuredManager {
             "checkstyle:parameternumber"
     })
     @Autowired
-    public CertifiedProductManager(ErrorMessageUtil msgUtil,
-            CertifiedProductDAO cpDao,
-            CertificationCriterionDAO certCriterionDao,
-            QmsStandardDAO qmsDao, TargetedUserDAO targetedUserDao,
-            AccessibilityStandardDAO asDao, CertifiedProductQmsStandardDAO cpQmsDao,
-            ListingMeasureDAO cpMeasureDao,
-            CertifiedProductTestingLabDAO cpTestingLabDao,
-            CertifiedProductTargetedUserDAO cpTargetedUserDao,
-            CertifiedProductAccessibilityStandardDAO cpAccStdDao, CQMResultDAO cqmResultDAO,
-            CQMCriterionDAO cqmCriterionDao, TestingLabDAO atlDao,
-            DeveloperDAO developerDao, DeveloperStatusDAO devStatusDao,
-            @Lazy DeveloperManager developerManager, ProductManager productManager,
-            ProductVersionManager versionManager, CertificationStatusEventDAO statusEventDao,
-            CuresUpdateEventDAO curesUpdateDao,
-            PromotingInteroperabilityUserDAO piuDao, CertificationResultSynchronizationService certResultService,
-            CertificationStatusDAO certStatusDao, ListingGraphDAO listingGraphDao,
-            ResourcePermissions resourcePermissions,
-            CertifiedProductSearchResultDAO certifiedProductSearchResultDAO,
-            CertifiedProductDetailsManager certifiedProductDetailsManager,
-            SchedulerManager schedulerManager,
-            ActivityManager activityManager, ListingDetailsNormalizer listingNormalizer,
-            ListingValidatorFactory validatorFactory,
-            CuresUpdateService curesUpdateService,
-            @Lazy ListingIcsSharedStoreHandler icsSharedStoreHandler,
-            ChplTeamNotifier chplteamNotifier, Environment env, ChplHtmlEmailBuilder chplHtmlEmailBuilder) {
+    public CertifiedProductManager(ErrorMessageUtil msgUtil, CertifiedProductDAO cpDao, CertificationCriterionDAO certCriterionDao,
+            QmsStandardDAO qmsDao, TargetedUserDAO targetedUserDao, AccessibilityStandardDAO asDao, CertifiedProductQmsStandardDAO cpQmsDao,
+            ListingMeasureDAO cpMeasureDao, CertifiedProductTestingLabDAO cpTestingLabDao, CertifiedProductTargetedUserDAO cpTargetedUserDao,
+            CertifiedProductAccessibilityStandardDAO cpAccStdDao, CQMResultDAO cqmResultDAO, CQMCriterionDAO cqmCriterionDao,
+            TestingLabDAO atlDao, DeveloperDAO developerDao, DeveloperStatusDAO devStatusDao, @Lazy DeveloperManager developerManager,
+            ProductManager productManager, ProductVersionManager versionManager, CertificationStatusEventDAO statusEventDao,
+            CuresUpdateEventDAO curesUpdateDao, PromotingInteroperabilityUserDAO piuDao, CertificationResultSynchronizationService certResultService,
+            CertificationStatusDAO certStatusDao, ListingGraphDAO listingGraphDao, ResourcePermissions resourcePermissions,
+            CertifiedProductSearchResultDAO certifiedProductSearchResultDAO, CertifiedProductDetailsManager certifiedProductDetailsManager,
+            SchedulerManager schedulerManager, ActivityManager activityManager, ListingDetailsNormalizer listingNormalizer,
+            ListingValidatorFactory validatorFactory, CuresUpdateService curesUpdateService, @Lazy ListingIcsSharedStoreHandler icsSharedStoreHandler,
+            ChplTeamNotifier chplteamNotifier, Environment env, ChplHtmlEmailBuilder chplHtmlEmailBuilder, FF4j ff4j) {
 
         this.msgUtil = msgUtil;
         this.cpDao = cpDao;
@@ -223,6 +213,7 @@ public class CertifiedProductManager extends SecuredManager {
         this.chplTeamNotifier = chplteamNotifier;
         this.env = env;
         this.chplHtmlEmailBuilder = chplHtmlEmailBuilder;
+        this.ff4j = ff4j;
     }
 
     @Transactional(readOnly = true)
@@ -375,8 +366,11 @@ public class CertifiedProductManager extends SecuredManager {
                 new Date(updatedListing.getCertificationDate()));
         updateCertificationStatusEvents(updatedListing.getId(), existingListing.getCertificationEvents(),
                 updatedListing.getCertificationEvents());
-        updateCuresUpdateEvents(updatedListing.getId(), existingListing.getCuresUpdate(),
-                updatedListing);
+
+        if (!ff4j.check(FeatureList.EDITIONLESS)) {
+            updateCuresUpdateEvents(updatedListing.getId(), existingListing.getCuresUpdate(), updatedListing);
+        }
+
         updatePromotingInteroperabilityUserHistory(updatedListing.getId(), existingListing.getPromotingInteroperabilityUserHistory(),
                 updatedListing.getPromotingInteroperabilityUserHistory());
         updateCertifications(existingListing, updatedListing,

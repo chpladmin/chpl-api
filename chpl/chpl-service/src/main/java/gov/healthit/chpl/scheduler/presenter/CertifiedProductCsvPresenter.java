@@ -3,6 +3,7 @@ package gov.healthit.chpl.scheduler.presenter;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
@@ -11,14 +12,18 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.core.io.Resource;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationEdition;
@@ -27,43 +32,69 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.compliance.DirectReviewNonConformity;
 import gov.healthit.chpl.entity.CertificationStatusType;
 
-public class CertifiedProductCsvPresenter implements CertifiedProductPresenter, AutoCloseable {
+public class CertifiedProductCsvPresenter extends CertifiedProductPresenter implements AutoCloseable {
     private static final String OPEN_STATUS = "open";
     private static final String UNKNOWN_VALUE = "?";
 
     private Logger logger;
     private List<CertificationCriterion> applicableCriteria = new ArrayList<CertificationCriterion>();
-    private OutputStreamWriter writer = null;
-    private CSVPrinter csvPrinter = null;
+    private OutputStreamWriter dataWriter = null;
+    private OutputStreamWriter definitionWriter = null;
+    private CSVPrinter dataPrinter = null;
+    private CSVPrinter definitionPrinter = null;
 
     /**
      * Required to setCriteriaNames before calling this function.
      */
     @Override
-    public void open(final File file) throws IOException {
-        getLogger().info("Opening file, initializing CSV doc.");
-        writer = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8);
-        writer.write('\ufeff');
-        csvPrinter = new CSVPrinter(writer, CSVFormat.EXCEL);
-        csvPrinter.printRecord(generateHeaderValues());
-        csvPrinter.flush();
+    public void open(final File dataFile) throws IOException {
+        open(dataFile, null);
     }
 
+    /**
+     * Required to setCriteriaNames before calling this function.
+     */
     @Override
-    public synchronized void add(final CertifiedProductSearchDetails data) throws IOException {
-        getLogger().info("Adding CP to CSV file: " + data.getId());
-        List<String> rowValue = generateRowValue(data);
-        if (rowValue != null) { // a subclass could return null to skip a row
-            csvPrinter.printRecord(rowValue);
-            csvPrinter.flush();
+    public void open(final File dataFile, final File definitionFile) throws IOException {
+        getLogger().info("Opening file, initializing CSV doc.");
+        if (dataFile != null) {
+            openDataFile(dataFile);
         }
+        if (definitionFile != null) {
+            openDefinitionFile(definitionFile);
+        }
+    }
+
+    private void openDataFile(File dataFile) throws IOException {
+        dataWriter = new OutputStreamWriter(new FileOutputStream(dataFile), StandardCharsets.UTF_8);
+        dataWriter.write('\ufeff');
+        dataPrinter = new CSVPrinter(dataWriter, CSVFormat.EXCEL);
+        dataPrinter.printRecord(generateDataHeaderValues());
+        dataPrinter.flush();
+    }
+
+    private void openDefinitionFile(File definitionFile) throws IOException {
+        definitionWriter = new OutputStreamWriter(new FileOutputStream(definitionFile), StandardCharsets.UTF_8);
+        definitionWriter.write('\ufeff');
+        definitionPrinter = new CSVPrinter(definitionWriter, CSVFormat.EXCEL);
+        definitionPrinter.flush();
     }
 
     @Override
     public void close() throws IOException {
         getLogger().info("Closing the CSV file.");
-        csvPrinter.close();
-        writer.close();
+        if (dataPrinter != null) {
+            dataPrinter.close();
+        }
+        if (dataWriter != null) {
+            dataWriter.close();
+        }
+        if (definitionPrinter != null) {
+            definitionPrinter.close();
+        }
+        if (definitionWriter != null) {
+            definitionWriter.close();
+        }
     }
 
     public void setLogger(final Logger logger) {
@@ -77,7 +108,7 @@ public class CertifiedProductCsvPresenter implements CertifiedProductPresenter, 
         return logger;
     }
 
-    protected List<String> generateHeaderValues() {
+    protected List<String> generateDataHeaderValues() {
         List<String> result = new ArrayList<String>();
         result.add("Certification Edition");
         result.add("CHPL ID");
@@ -119,6 +150,60 @@ public class CertifiedProductCsvPresenter implements CertifiedProductPresenter, 
             }
         }
         return result;
+    }
+
+    public void generateDefinitionFile(Resource baseDefinitionFile) {
+        List<List<String>> rows = getRowsFromBaseFile(baseDefinitionFile);
+        populateCriteriaRows(rows);
+        try {
+            definitionPrinter.printRecords(rows);
+            definitionPrinter.flush();
+        } catch (IOException ex) {
+            getLogger().error("Error creating definition file.", ex);
+        }
+    }
+
+    private List<List<String>> getRowsFromBaseFile(Resource baseDefinitionFile) {
+        List<List<String>> baseRecords = new ArrayList<List<String>>();
+        InputStream inputStream = null;
+        CSVParser csvParser = null;
+        try {
+            inputStream = baseDefinitionFile.getInputStream();
+            csvParser = CSVParser.parse(inputStream, StandardCharsets.UTF_8, CSVFormat.EXCEL);
+            baseRecords = csvParser.getRecords().stream()
+                    .map(rec -> rec.toList())
+                    .collect(Collectors.toCollection(ArrayList::new));
+        } catch (IOException ex) {
+            getLogger().error("Error reading file " + baseDefinitionFile, ex);
+        } finally {
+            if (inputStream != null) {
+                try {
+                    inputStream.close();
+                } catch (Exception ex) { }
+            }
+            if (csvParser != null) {
+                try {
+                    csvParser.close();
+                } catch (Exception ex) { }
+            }
+        }
+        return baseRecords;
+    }
+
+    private void populateCriteriaRows(List<List<String>> baseRows) {
+        applicableCriteria.stream()
+            .forEach(criterion -> baseRows.add(Stream.of(criterion.getNumber() + ": " + criterion.getTitle(),
+                        "Yes", "TRUE; FALSE", criterion.getTitle()).toList()));
+    }
+
+    @Override
+    public synchronized void add(final CertifiedProductSearchDetails data) throws IOException {
+        getLogger().info("Adding CP to CSV file: " + data.getId());
+        List<String> rowValue = generateRowValue(data);
+        if (rowValue != null) { // a subclass could return null to skip a row
+            dataPrinter.printRecord(rowValue);
+            dataPrinter.flush();
+        }
     }
 
     @SuppressWarnings("checkstyle:linelength")
@@ -194,22 +279,22 @@ public class CertifiedProductCsvPresenter implements CertifiedProductPresenter, 
     }
 
     protected String formatInactiveDate(CertifiedProductSearchDetails listing) {
-        if (listing.getDecertificationDate() != null && listing.getCurrentStatus().getStatus().getName()
+        if (listing.getDecertificationDay() != null && listing.getCurrentStatus().getStatus().getName()
                     .equals(CertificationStatusType.WithdrawnByDeveloper.getName())) {
-            return formatDate(listing.getDecertificationDate());
+            return DateTimeFormatter.ISO_LOCAL_DATE.format(listing.getDecertificationDay());
         }
         return "";
     }
 
     protected String formatDecertificationDate(CertifiedProductSearchDetails listing) {
-        if (listing.getDecertificationDate() != null
+        if (listing.getDecertificationDay() != null
                 && (listing.getCurrentStatus().getStatus().getName()
                         .equals(CertificationStatusType.WithdrawnByDeveloperUnderReview.getName())
                     || listing.getCurrentStatus().getStatus().getName()
                         .equals(CertificationStatusType.WithdrawnByAcb.getName())
                     || listing.getCurrentStatus().getStatus().getName()
                         .equals(CertificationStatusType.TerminatedByOnc.getName()))) {
-                return formatDate(listing.getDecertificationDate());
+                return DateTimeFormatter.ISO_LOCAL_DATE.format(listing.getDecertificationDay());
         }
         return "";
     }
