@@ -47,7 +47,7 @@ public class AttestRemovedCriteriaActivity implements ListingActivity {
         return origAndNewCertResultPairs.stream()
             .filter(pair -> (pair.getRight() != null && BooleanUtils.isTrue(pair.getRight().isSuccess()))
                                 && (pair.getLeft() == null || BooleanUtils.isFalse(pair.getLeft().isSuccess())))
-            .map(pair -> pair.getLeft().getCriterion())
+            .map(pair -> pair.getRight().getCriterion())
             .collect(Collectors.toList());
     }
 
