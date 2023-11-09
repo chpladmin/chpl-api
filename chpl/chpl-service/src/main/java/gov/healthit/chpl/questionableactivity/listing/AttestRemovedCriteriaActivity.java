@@ -41,8 +41,8 @@ public class AttestRemovedCriteriaActivity implements ListingActivity {
 
     private List<CertificationCriterion> getAddedCriteria(CertifiedProductSearchDetails originalListing, CertifiedProductSearchDetails newListing) {
         List<Pair<CertificationResult, CertificationResult>> origAndNewCertResultPairs
-            = originalListing.getCertificationResults().stream()
-                .map(origCertResult -> createCertResultPair(origCertResult, newListing.getCertificationResults()))
+            = newListing.getCertificationResults().stream()
+                .map(newCertResult -> createCertResultPair(newCertResult, originalListing.getCertificationResults()))
                 .collect(Collectors.toList());
         return origAndNewCertResultPairs.stream()
             .filter(pair -> (pair.getRight() != null && BooleanUtils.isTrue(pair.getRight().isSuccess()))
@@ -51,14 +51,14 @@ public class AttestRemovedCriteriaActivity implements ListingActivity {
             .collect(Collectors.toList());
     }
 
-    private Pair<CertificationResult, CertificationResult> createCertResultPair(CertificationResult origCertResult, List<CertificationResult> newCertResults) {
-        Optional<CertificationResult> newCertResult = newCertResults.stream()
-                .filter(newCr -> newCr.getCriterion().getId().equals(origCertResult.getCriterion().getId()))
+    private Pair<CertificationResult, CertificationResult> createCertResultPair(CertificationResult newCertResult, List<CertificationResult> origCertResults) {
+        Optional<CertificationResult> origCertResult = origCertResults.stream()
+                .filter(origCr -> origCr.getCriterion().getId().equals(newCertResult.getCriterion().getId()))
                 .findAny();
-        if (newCertResult.isEmpty()) {
-            return Pair.of(origCertResult, null);
+        if (origCertResult.isEmpty()) {
+            return Pair.of(null, newCertResult);
         }
-        return Pair.of(origCertResult, newCertResult.get());
+        return Pair.of(origCertResult.get(), newCertResult);
     }
 
     @Override
