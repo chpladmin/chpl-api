@@ -1,5 +1,24 @@
 # Release Notes
 
+## Version 42.4.0
+_13 November 2023_
+
+### Features
+* Update structure of CertificationStatusEvent and CertifiedProductTestingLab objects
+* Remove "unattested criteria" from Listings in data
+* Add new download endpoints to download by edition or status
+* Download file creation broken down by Active, Inactive, 2014, 2011
+* Include all active listings in attestation warnings calculation
+* Add "Editable" attribute to Criteria
+
+### Flagged Feature
+* When editing a listing, stop calculating Cures status events
+
+### Bug Fixes
+* Cures Update Report not generating data past August
+
+---
+
 ## Version 42.3.0
 _16 October 2023_
 
