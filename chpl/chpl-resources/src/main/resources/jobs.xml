@@ -20,22 +20,6 @@
             <name>downloadFileJob2011</name>
             <group>systemJobs</group>
         </delete-job>
-        <delete-job>
-            <name>g3Sed2015DownloadFileJob</name>
-            <group>systemJobs</group>
-        </delete-job>
-        <delete-job>
-            <name>surveillanceDownloadFileJob</name>
-            <group>systemJobs</group>
-        </delete-job>
-        <delete-job>
-            <name>directReviewDownloadFileGeneration</name>
-            <group>systemJobs</group>
-        </delete-job>
-        <delete-job>
-            <name>removeCriteriaJob</name>
-            <group>systemJobs</group>
-        </delete-job>
         <!-- END remove after PROD push -->
     </pre-processing-commands>
     <processing-directives>
@@ -51,18 +35,33 @@
             <durability>true</durability>
             <recover>false</recover>
         </job>
-        <!-- Download file generation: 2015, 2014, 2011 -->
+        <!-- Download file generation: Active, Inactive, 2014, 2011 -->
         <job>
-            <name>downloadFileJob2015</name>
+            <name>downloadFileJobActive</name>
             <group>systemJobs</group>
-            <description>Generate download files for 2015.</description>
+            <description>Generate download files for all active listings.</description>
             <job-class>gov.healthit.chpl.scheduler.job.downloadfile.CertifiedProductDownloadableResourceCreatorJob</job-class>
             <durability>true</durability>
             <recover>false</recover>
             <job-data-map>
                 <entry>
-                    <key>edition</key>
-                    <value>2015</value>
+                    <key>certificationStatuses</key>
+                    <value>Active,Suspended by ONC-ACB,Suspended by ONC</value>
+                </entry>
+            </job-data-map>
+        </job>
+
+        <job>
+            <name>downloadFileJobInactive</name>
+            <group>systemJobs</group>
+            <description>Generate download files for all inactive listings, not 2011 or 2014 edition.</description>
+            <job-class>gov.healthit.chpl.scheduler.job.downloadfile.CertifiedProductDownloadableResourceCreatorJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+            <job-data-map>
+                <entry>
+                    <key>certificationStatuses</key>
+                    <value>Retired,Withdrawn by Developer,Withdrawn by ONC-ACB,Terminated by ONC,Withdrawn by Developer Under Surveillance/Review</value>
                 </entry>
             </job-data-map>
         </job>
@@ -854,6 +853,15 @@
                     <value>ROLE_ADMIN;ROLE_ONC;ROLE_ACB</value>
                 </entry>
             </job-data-map>
+        </job>
+
+        <job>
+            <name>backfillMissingCuresStatisticsDataJob</name>
+            <group>systemJobs</group>
+            <description>Backfill Cures Statistics Data (one-time)</description>
+            <job-class>gov.healthit.chpl.scheduler.job.onetime.BackfillMissingCuresStatisticsDataJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
         </job>
 
     </schedule>

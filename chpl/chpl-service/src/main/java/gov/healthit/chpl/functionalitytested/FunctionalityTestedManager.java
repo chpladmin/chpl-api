@@ -59,7 +59,7 @@ public class FunctionalityTestedManager {
             + "T(gov.healthit.chpl.permissions.domains.FunctionalityTestedDomainPermissions).UPDATE)")
     @Transactional
     @ListingStoreRemove(removeBy = RemoveBy.ALL)
-    @GenerateListingDownloadFile(listingSet = {ListingSet.EDITION_2011, ListingSet.EDITION_2014})
+    @GenerateListingDownloadFile(listingSet = {ListingSet.EDITION_2011, ListingSet.EDITION_2014, ListingSet.INACTIVE})
     public FunctionalityTested update(FunctionalityTested functionalityTested) throws EntityRetrievalException, ValidationException {
         functionalityTestedValidator.validateForEdit(functionalityTested);
         functionalityTestedService.update(functionalityTested);

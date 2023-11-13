@@ -12,10 +12,10 @@ public class CertifiedProductTestingLabComparator implements Comparator<Certifie
 
     @Override
     public int compare(CertifiedProductTestingLab atl1, CertifiedProductTestingLab atl2) {
-        if (!StringUtils.isEmpty(atl1.getTestingLabName()) && !StringUtils.isEmpty(atl2.getTestingLabName())) {
-            return atl1.getTestingLabName().compareTo(atl2.getTestingLabName());
-        } else if (atl1.getTestingLabId() != null && atl2.getTestingLabId() != null) {
-            return atl1.getTestingLabId().compareTo(atl2.getTestingLabId());
+        if (!StringUtils.isEmpty(atl1.getTestingLab().getName()) && !StringUtils.isEmpty(atl2.getTestingLab().getName())) {
+            return atl1.getTestingLab().getName().compareTo(atl2.getTestingLab().getName());
+        } else if (atl1.getTestingLab().getId() != null && atl2.getTestingLab().getId() != null) {
+            return atl1.getTestingLab().getId().compareTo(atl2.getTestingLab().getId());
         }
         return 0;
     }

@@ -1,11 +1,13 @@
 package gov.healthit.chpl.complaint;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.persistence.Query;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections4.IterableUtils;
 import org.apache.commons.collections4.Predicate;
 import org.springframework.cache.annotation.Cacheable;
@@ -63,6 +65,21 @@ public class ComplaintDAO extends BaseDAOImpl {
     public Complaint getComplaint(Long complaintId) throws EntityRetrievalException {
         ComplaintEntity entity = getEntityById(complaintId);
         return entity.buildComplaint();
+    }
+
+    public List<Complaint> getComplaintsForSurveillance(Long surveillanceId) {
+        Query query = entityManager.createQuery(GET_COMPLAINTS_HQL
+                + " AND surv.id = :surveillanceId ",
+                ComplaintEntity.class);
+        query.setParameter("surveillanceId", surveillanceId);
+        List<ComplaintEntity> result = query.getResultList();
+
+        if (!CollectionUtils.isEmpty(result)) {
+            return result.stream()
+                    .map(entity -> entity.buildComplaint())
+                    .collect(Collectors.toList());
+        }
+        return new ArrayList<Complaint>();
     }
 
     public Complaint create(Complaint complaint) throws EntityRetrievalException {
