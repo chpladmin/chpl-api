@@ -44,7 +44,7 @@ public class AtlDuplicateReviewer {
     private List<String> getWarnings(List<CertifiedProductTestingLab> duplicates) {
         List<String> warnings = new ArrayList<String>();
         for (CertifiedProductTestingLab duplicate : duplicates) {
-            String warning = errorMessageUtil.getMessage("listing.duplicateTestingLab", duplicate.getTestingLabName());
+            String warning = errorMessageUtil.getMessage("listing.duplicateTestingLab", duplicate.getTestingLab().getName());
             warnings.add(warning);
         }
         return warnings;
@@ -55,7 +55,7 @@ public class AtlDuplicateReviewer {
             @Override
             public boolean test(CertifiedProductTestingLab dto1,
                     CertifiedProductTestingLab dto2) {
-                return Objects.equals(dto1.getTestingLabId(), dto2.getTestingLabId());
+                return Objects.equals(dto1.getTestingLab().getId(), dto2.getTestingLab().getId());
             }
         };
     }

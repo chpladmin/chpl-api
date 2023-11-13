@@ -34,6 +34,7 @@ import gov.healthit.chpl.validation.listing.reviewer.SvapReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.TestProcedureReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.TestStandardRemovalReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.TestStandardReviewer;
+import gov.healthit.chpl.validation.listing.reviewer.TestingLabComparisonReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.TestingLabReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.UnavailableCriteriaReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.UnsupportedCharacterReviewer;
@@ -249,6 +250,8 @@ public class Edition2015ListingValidator extends Validator {
     private DeprecatedFieldReviewer deprecatedFieldReviewer;
 
     @Autowired
+    private TestingLabComparisonReviewer testingLabComparisonReviewer;
+    @Autowired
     private FF4j ff4j;
 
     @Override
@@ -318,6 +321,7 @@ public class Edition2015ListingValidator extends Validator {
         comparisonReviewers.add(svapReviewer);
         comparisonReviewers.add(inheritanceComparisonReviewer);
         comparisonReviewers.add(deprecatedFieldReviewer);
+        comparisonReviewers.add(testingLabComparisonReviewer);
         return comparisonReviewers;
     }
 }

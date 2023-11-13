@@ -248,10 +248,7 @@ public class ListingService {
     }
 
     private List<CertifiedProductTestingLab> getTestingLabs(Long listingId) throws EntityRetrievalException {
-        return certifiedProductTestingLabDao.getTestingLabsByCertifiedProductId(listingId).stream()
-                .map(dto -> new CertifiedProductTestingLab(dto))
-                .sorted(atlComparator)
-                .collect(Collectors.toList());
+        return certifiedProductTestingLabDao.getTestingLabsByCertifiedProductId(listingId);
     }
 
     private void populateDirectReviews(CertifiedProductSearchDetails listing) {

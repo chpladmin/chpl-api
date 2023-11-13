@@ -22,7 +22,7 @@ import gov.healthit.chpl.scheduler.job.xmlgenerator.CertifiedProductSearchDetail
  * @author alarned
  *
  */
-public class CertifiedProductXmlPresenter implements CertifiedProductPresenter, AutoCloseable {
+public class CertifiedProductXmlPresenter extends CertifiedProductPresenter implements AutoCloseable {
     private Logger logger;
 
     private Writer writer = null;

@@ -243,7 +243,6 @@ public class AnnualReportGenerationJob implements Job {
                             .footer(AdminFooter.class)
                             .build())
                     .fileAttachments(attachments)
-                    .acbAtlHtmlFooter()
                     .sendEmail();
         } catch (EmailNotSentException ex) {
             LOGGER.error("Could not send email to " + recipientEmail, ex);

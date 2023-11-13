@@ -18,17 +18,24 @@ import gov.healthit.chpl.domain.CertifiedProductTestingLab;
 import gov.healthit.chpl.domain.TestingLab;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
+import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.ValidationUtils;
 
 public class TestingLabNormalizerTest {
 
     private TestingLabDAO atlDao;
     private TestingLabNormalizer normalizer;
+    private ErrorMessageUtil errorMessageUtil;
 
     @Before
     public void setup() {
         atlDao = Mockito.mock(TestingLabDAO.class);
-        normalizer = new TestingLabNormalizer(atlDao, new ChplProductNumberUtil(), new ValidationUtils());
+        errorMessageUtil = Mockito.mock(ErrorMessageUtil.class);
+
+        Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
+            .thenReturn("Error Message");
+
+        normalizer = new TestingLabNormalizer(atlDao, new ChplProductNumberUtil(), new ValidationUtils(), errorMessageUtil);
     }
 
     @Test
@@ -53,9 +60,11 @@ public class TestingLabNormalizerTest {
     public void normalize_testingLabIdNameCodeExist_noLookup() {
         List<CertifiedProductTestingLab> atls = new ArrayList<CertifiedProductTestingLab>();
         atls.add(CertifiedProductTestingLab.builder()
-                .testingLabId(1L)
-                .testingLabName("ICSA")
-                .testingLabCode("TL")
+                    .testingLab(TestingLab.builder()
+                            .id(1L)
+                            .name("ICSA")
+                            .atlCode("TL")
+                            .build())
                 .build());
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .chplProductNumber("15.07.04.2663.ABCD.R2.01.0.200511")
@@ -64,19 +73,21 @@ public class TestingLabNormalizerTest {
         normalizer.normalize(listing);
 
         assertEquals(1, listing.getTestingLabs().size());
-        assertEquals(1L, listing.getTestingLabs().get(0).getTestingLabId());
-        assertEquals("ICSA", listing.getTestingLabs().get(0).getTestingLabName());
-        assertEquals("TL", listing.getTestingLabs().get(0).getTestingLabCode());
+        assertEquals(1L, listing.getTestingLabs().get(0).getTestingLab().getId());
+        assertEquals("ICSA", listing.getTestingLabs().get(0).getTestingLab().getName());
+        assertEquals("TL", listing.getTestingLabs().get(0).getTestingLab().getAtlCode());
     }
 
     @Test
     public void normalize_testingLabIdNameCodeExistLegacyChplProductNumber_noLookup() {
         List<CertifiedProductTestingLab> atls = new ArrayList<CertifiedProductTestingLab>();
         atls.add(CertifiedProductTestingLab.builder()
-                .testingLabId(1L)
-                .testingLabName("ICSA")
-                .testingLabCode("TL")
-                .build());
+                .testingLab(TestingLab.builder()
+                        .id(1L)
+                        .name("ICSA")
+                        .atlCode("TL")
+                        .build())
+            .build());
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .chplProductNumber("CHP-123456")
                 .testingLabs(atls)
@@ -84,18 +95,20 @@ public class TestingLabNormalizerTest {
         normalizer.normalize(listing);
 
         assertEquals(1, listing.getTestingLabs().size());
-        assertEquals(1L, listing.getTestingLabs().get(0).getTestingLabId());
-        assertEquals("ICSA", listing.getTestingLabs().get(0).getTestingLabName());
-        assertEquals("TL", listing.getTestingLabs().get(0).getTestingLabCode());
+        assertEquals(1L, listing.getTestingLabs().get(0).getTestingLab().getId());
+        assertEquals("ICSA", listing.getTestingLabs().get(0).getTestingLab().getName());
+        assertEquals("TL", listing.getTestingLabs().get(0).getTestingLab().getAtlCode());
     }
 
     @Test
     public void normalize_testingLabCodeMissing_lookupById() throws EntityRetrievalException {
         List<CertifiedProductTestingLab> atls = new ArrayList<CertifiedProductTestingLab>();
         atls.add(CertifiedProductTestingLab.builder()
-                .testingLabId(1L)
-                .testingLabName("ICSA")
-                .build());
+                .testingLab(TestingLab.builder()
+                        .id(1L)
+                        .name("ICSA")
+                        .build())
+            .build());
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .testingLabs(atls)
                 .build();
@@ -109,18 +122,20 @@ public class TestingLabNormalizerTest {
         normalizer.normalize(listing);
 
         assertEquals(1, listing.getTestingLabs().size());
-        assertEquals(1L, listing.getTestingLabs().get(0).getTestingLabId());
-        assertEquals("ICSA", listing.getTestingLabs().get(0).getTestingLabName());
-        assertEquals("01", listing.getTestingLabs().get(0).getTestingLabCode());
+        assertEquals(1L, listing.getTestingLabs().get(0).getTestingLab().getId());
+        assertEquals("ICSA", listing.getTestingLabs().get(0).getTestingLab().getName());
+        assertEquals("01", listing.getTestingLabs().get(0).getTestingLab().getAtlCode());
     }
 
     @Test
     public void normalize_testingLabNameMissing_lookupById() throws EntityRetrievalException {
         List<CertifiedProductTestingLab> atls = new ArrayList<CertifiedProductTestingLab>();
         atls.add(CertifiedProductTestingLab.builder()
-                .testingLabId(1L)
-                .testingLabCode("01")
-                .build());
+                .testingLab(TestingLab.builder()
+                        .id(1L)
+                        .atlCode("TL")
+                        .build())
+            .build());
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .testingLabs(atls)
                 .build();
@@ -134,17 +149,19 @@ public class TestingLabNormalizerTest {
         normalizer.normalize(listing);
 
         assertEquals(1, listing.getTestingLabs().size());
-        assertEquals(1L, listing.getTestingLabs().get(0).getTestingLabId());
-        assertEquals("ICSA", listing.getTestingLabs().get(0).getTestingLabName());
-        assertEquals("01", listing.getTestingLabs().get(0).getTestingLabCode());
+        assertEquals(1L, listing.getTestingLabs().get(0).getTestingLab().getId());
+        assertEquals("ICSA", listing.getTestingLabs().get(0).getTestingLab().getName());
+        assertEquals("01", listing.getTestingLabs().get(0).getTestingLab().getAtlCode());
     }
 
     @Test
     public void normalize_testingLabCodeMissing_lookupByIdNotFound() throws EntityRetrievalException {
         List<CertifiedProductTestingLab> atls = new ArrayList<CertifiedProductTestingLab>();
         atls.add(CertifiedProductTestingLab.builder()
-                .testingLabId(1L)
-                .testingLabName("ICSA")
+                .testingLab(TestingLab.builder()
+                        .id(1L)
+                        .name("ICSA")
+                        .build())
                 .build());
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .testingLabs(atls)
@@ -155,19 +172,21 @@ public class TestingLabNormalizerTest {
         normalizer.normalize(listing);
 
         assertEquals(1, listing.getTestingLabs().size());
-        assertEquals(1L, listing.getTestingLabs().get(0).getTestingLabId());
-        assertEquals("ICSA", listing.getTestingLabs().get(0).getTestingLabName());
-        assertNull(listing.getTestingLabs().get(0).getTestingLabCode());
+        assertEquals(1L, listing.getTestingLabs().get(0).getTestingLab().getId());
+        assertEquals("ICSA", listing.getTestingLabs().get(0).getTestingLab().getName());
+        assertNull(listing.getTestingLabs().get(0).getTestingLab().getAtlCode());
     }
 
     @Test
     public void normalize_testingLabIdMissing_lookupByName() {
         List<CertifiedProductTestingLab> atls = new ArrayList<CertifiedProductTestingLab>();
         atls.add(CertifiedProductTestingLab.builder()
-                .testingLabId(null)
-                .testingLabName("ICSA")
-                .testingLabCode("01")
-                .build());
+                .testingLab(TestingLab.builder()
+                        .id(null)
+                        .name("ICSA")
+                        .atlCode("TL")
+                        .build())
+            .build());
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .testingLabs(atls)
                 .build();
@@ -181,19 +200,21 @@ public class TestingLabNormalizerTest {
         normalizer.normalize(listing);
 
         assertEquals(1, listing.getTestingLabs().size());
-        assertEquals(1L, listing.getTestingLabs().get(0).getTestingLabId());
-        assertEquals("ICSA", listing.getTestingLabs().get(0).getTestingLabName());
-        assertEquals("01", listing.getTestingLabs().get(0).getTestingLabCode());
+        assertEquals(1L, listing.getTestingLabs().get(0).getTestingLab().getId());
+        assertEquals("ICSA", listing.getTestingLabs().get(0).getTestingLab().getName());
+        assertEquals("01", listing.getTestingLabs().get(0).getTestingLab().getAtlCode());
     }
 
     @Test
     public void normalize_testingLabIdMissing_lookupByNameNotFound() {
         List<CertifiedProductTestingLab> atls = new ArrayList<CertifiedProductTestingLab>();
         atls.add(CertifiedProductTestingLab.builder()
-                .testingLabId(null)
-                .testingLabName("ICSA")
-                .testingLabCode("01")
-                .build());
+            .testingLab(TestingLab.builder()
+                    .id(null)
+                    .name("ICSA")
+                    .atlCode("01")
+                    .build())
+            .build());
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .testingLabs(atls)
                 .build();
@@ -203,17 +224,19 @@ public class TestingLabNormalizerTest {
         normalizer.normalize(listing);
 
         assertEquals(1, listing.getTestingLabs().size());
-        assertNull(listing.getTestingLabs().get(0).getTestingLabId());
-        assertEquals("ICSA", listing.getTestingLabs().get(0).getTestingLabName());
-        assertEquals("01", listing.getTestingLabs().get(0).getTestingLabCode());
+        assertNull(listing.getTestingLabs().get(0).getTestingLab().getId());
+        assertEquals("ICSA", listing.getTestingLabs().get(0).getTestingLab().getName());
+        assertEquals("01", listing.getTestingLabs().get(0).getTestingLab().getAtlCode());
     }
 
     public void normalize_testingLabIdAndNameMissing_lookupByCode() {
         List<CertifiedProductTestingLab> atls = new ArrayList<CertifiedProductTestingLab>();
         atls.add(CertifiedProductTestingLab.builder()
-                .testingLabId(null)
-                .testingLabName("")
-                .testingLabCode("01")
+                .testingLab(TestingLab.builder()
+                        .id(null)
+                        .name("")
+                        .atlCode("01")
+                        .build())
                 .build());
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .testingLabs(atls)
@@ -228,18 +251,21 @@ public class TestingLabNormalizerTest {
         normalizer.normalize(listing);
 
         assertEquals(1, listing.getTestingLabs().size());
-        assertEquals(1L, listing.getTestingLabs().get(0).getTestingLabId());
-        assertEquals("ICSA", listing.getTestingLabs().get(0).getTestingLabName());
-        assertEquals("01", listing.getTestingLabs().get(0).getTestingLabCode());
+        assertEquals(1L, listing.getTestingLabs().get(0).getTestingLab().getId());
+        assertEquals("ICSA", listing.getTestingLabs().get(0).getTestingLab().getName());
+        assertEquals("01", listing.getTestingLabs().get(0).getTestingLab().getAtlCode());
     }
 
     public void normalize_testingLabIdAndNameMissing_lookupByCodeNotFound() {
         List<CertifiedProductTestingLab> atls = new ArrayList<CertifiedProductTestingLab>();
         atls.add(CertifiedProductTestingLab.builder()
-                .testingLabId(null)
-                .testingLabName("")
-                .testingLabCode("01")
+                .testingLab(TestingLab.builder()
+                        .id(null)
+                        .name("")
+                        .atlCode("01")
+                        .build())
                 .build());
+
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .testingLabs(atls)
                 .build();
@@ -249,9 +275,9 @@ public class TestingLabNormalizerTest {
         normalizer.normalize(listing);
 
         assertEquals(1, listing.getTestingLabs().size());
-        assertNull(listing.getTestingLabs().get(0).getTestingLabId());
-        assertEquals("", listing.getTestingLabs().get(0).getTestingLabName());
-        assertEquals("01", listing.getTestingLabs().get(0).getTestingLabCode());
+        assertNull(listing.getTestingLabs().get(0).getTestingLab().getId());
+        assertEquals("", listing.getTestingLabs().get(0).getTestingLab().getName());
+        assertEquals("01", listing.getTestingLabs().get(0).getTestingLab().getAtlCode());
     }
 
     @Test
@@ -271,9 +297,9 @@ public class TestingLabNormalizerTest {
         normalizer.normalize(listing);
 
         assertEquals(1, listing.getTestingLabs().size());
-        assertEquals(1L, listing.getTestingLabs().get(0).getTestingLabId());
-        assertEquals("ICSA", listing.getTestingLabs().get(0).getTestingLabName());
-        assertEquals("07", listing.getTestingLabs().get(0).getTestingLabCode());
+        assertEquals(1L, listing.getTestingLabs().get(0).getTestingLab().getId());
+        assertEquals("ICSA", listing.getTestingLabs().get(0).getTestingLab().getName());
+        assertEquals("07", listing.getTestingLabs().get(0).getTestingLab().getAtlCode());
     }
 
     @Test
