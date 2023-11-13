@@ -14,7 +14,7 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Component
 public class CertificationStatusReviewer implements Reviewer {
-    ErrorMessageUtil msgUtil;
+    private ErrorMessageUtil msgUtil;
 
     @Autowired
     public CertificationStatusReviewer(ErrorMessageUtil msgUtil) {
