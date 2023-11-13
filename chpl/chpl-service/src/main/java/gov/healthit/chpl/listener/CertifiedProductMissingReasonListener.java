@@ -96,14 +96,16 @@ public class CertifiedProductMissingReasonListener {
                     .getMessage("listing.reasonRequired", "removing a Certification Criteria"));
         }
 
-        activities = updatedCurrentCertificationStatusActivity.check(origListing, newListing);
-        if (doActivitiesExist(activities)
-                && newListing.getCurrentStatus().getStatus().getName().toUpperCase(Locale.ENGLISH).equals(
-                        CertificationStatusType.Active.getName().toUpperCase(Locale.ENGLISH))
-                && StringUtils.isEmpty(updateRequest.getReason())
-                && !updateRequest.isAcknowledgeBusinessErrors()) {
-            throw new MissingReasonException(errorMessageUtil
-                    .getMessage("listing.reasonRequired", "changing Certification Status from anything to \"Active\""));
+        if (newListing.getCertificationEvents() != null && newListing.getCertificationEvents().size() != 0) {
+            activities = updatedCurrentCertificationStatusActivity.check(origListing, newListing);
+            if (doActivitiesExist(activities)
+                    && (newListing.getCurrentStatus().getStatus().getName().toUpperCase(Locale.ENGLISH).equals(
+                            CertificationStatusType.Active.getName().toUpperCase(Locale.ENGLISH)))
+                    && StringUtils.isEmpty(updateRequest.getReason())
+                    && !updateRequest.isAcknowledgeBusinessErrors()) {
+                throw new MissingReasonException(errorMessageUtil
+                        .getMessage("listing.reasonRequired", "changing Certification Status from anything to \"Active\""));
+            }
         }
     }
 

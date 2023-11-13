@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
@@ -48,7 +49,7 @@ public class CertificationCriteriaManager {
             LocalDate startDay, LocalDate endDay) {
         List<CertificationCriterion> activeCriteria = getActiveBetween(startDay, endDay);
         return activeCriteria.stream()
-                .filter(criterion -> criterion.getCertificationEdition().equals(certificationEdition))
+                .filter(criterion -> StringUtils.isEmpty(certificationEdition) ? true : criterion.getCertificationEdition().equals(certificationEdition))
                 .map(criterion -> buildCertificationCriterionWithAttributes(criterion))
                 .sorted(criterionComparator)
                 .collect(Collectors.toList());
@@ -66,6 +67,16 @@ public class CertificationCriteriaManager {
                 .filter(criterion -> DateUtil.datesOverlap(
                         Pair.of(criterion.getStartDay(), criterion.getEndDay()),
                         Pair.of(startDay, endDay)))
+                .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public List<CertificationCriterion> getActiveToday() {
+        LocalDate today = LocalDate.now();
+        return this.certificationCriterionDao.findAll().stream()
+                .filter(criterion -> DateUtil.datesOverlap(
+                        Pair.of(criterion.getStartDay(), criterion.getEndDay()),
+                        Pair.of(today, today)))
                 .collect(Collectors.toList());
     }
 

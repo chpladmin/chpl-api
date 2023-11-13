@@ -11,6 +11,7 @@ import javax.persistence.EntityNotFoundException;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.ff4j.FF4j;
 import org.quartz.JobDataMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
@@ -23,16 +24,17 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.accessibilityStandard.AccessibilityStandard;
 import gov.healthit.chpl.accessibilityStandard.AccessibilityStandardDAO;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.caching.ListingSearchCacheRefresh;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
+import gov.healthit.chpl.certifiedproduct.service.CertificationResultSynchronizationService;
 import gov.healthit.chpl.dao.CQMCriterionDAO;
 import gov.healthit.chpl.dao.CQMResultDAO;
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
-import gov.healthit.chpl.dao.CertificationResultDAO;
 import gov.healthit.chpl.dao.CertificationStatusDAO;
 import gov.healthit.chpl.dao.CertificationStatusEventDAO;
 import gov.healthit.chpl.dao.CertifiedProductAccessibilityStandardDAO;
@@ -66,7 +68,6 @@ import gov.healthit.chpl.domain.InheritedCertificationStatus;
 import gov.healthit.chpl.domain.ListingMeasure;
 import gov.healthit.chpl.domain.ListingUpdateRequest;
 import gov.healthit.chpl.domain.PromotingInteroperabilityUser;
-import gov.healthit.chpl.domain.TestingLab;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.domain.schedule.ChplJob;
 import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
@@ -79,7 +80,6 @@ import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.CertifiedProductQmsStandardDTO;
 import gov.healthit.chpl.dto.CertifiedProductTargetedUserDTO;
-import gov.healthit.chpl.dto.CertifiedProductTestingLabDTO;
 import gov.healthit.chpl.dto.CuresUpdateEventDTO;
 import gov.healthit.chpl.dto.ListingToListingMapDTO;
 import gov.healthit.chpl.dto.TargetedUserDTO;
@@ -139,7 +139,7 @@ public class CertifiedProductManager extends SecuredManager {
     private CertificationStatusEventDAO statusEventDao;
     private CuresUpdateEventDAO curesUpdateDao;
     private PromotingInteroperabilityUserDAO piuDao;
-    private CertificationResultManager certResultManager;
+    private CertificationResultSynchronizationService certResultService;
     private CertificationStatusDAO certStatusDao;
     private ListingGraphDAO listingGraphDao;
     private ResourcePermissions resourcePermissions;
@@ -154,6 +154,7 @@ public class CertifiedProductManager extends SecuredManager {
     private ChplTeamNotifier chplTeamNotifier;
     private Environment env;
     private ChplHtmlEmailBuilder chplHtmlEmailBuilder;
+    private FF4j ff4j;
 
     public CertifiedProductManager() {
     }
@@ -162,31 +163,18 @@ public class CertifiedProductManager extends SecuredManager {
             "checkstyle:parameternumber"
     })
     @Autowired
-    public CertifiedProductManager(ErrorMessageUtil msgUtil,
-            CertifiedProductDAO cpDao,
-            CertificationResultDAO certDao, CertificationCriterionDAO certCriterionDao,
-            QmsStandardDAO qmsDao, TargetedUserDAO targetedUserDao,
-            AccessibilityStandardDAO asDao, CertifiedProductQmsStandardDAO cpQmsDao,
-            ListingMeasureDAO cpMeasureDao,
-            CertifiedProductTestingLabDAO cpTestingLabDao,
-            CertifiedProductTargetedUserDAO cpTargetedUserDao,
-            CertifiedProductAccessibilityStandardDAO cpAccStdDao, CQMResultDAO cqmResultDAO,
-            CQMCriterionDAO cqmCriterionDao, TestingLabDAO atlDao,
-            DeveloperDAO developerDao, DeveloperStatusDAO devStatusDao,
-            @Lazy DeveloperManager developerManager, ProductManager productManager,
-            ProductVersionManager versionManager, CertificationStatusEventDAO statusEventDao,
-            CuresUpdateEventDAO curesUpdateDao,
-            PromotingInteroperabilityUserDAO piuDao, CertificationResultManager certResultManager,
-            CertificationStatusDAO certStatusDao, ListingGraphDAO listingGraphDao,
-            ResourcePermissions resourcePermissions,
-            CertifiedProductSearchResultDAO certifiedProductSearchResultDAO,
-            CertifiedProductDetailsManager certifiedProductDetailsManager,
-            SchedulerManager schedulerManager,
-            ActivityManager activityManager, ListingDetailsNormalizer listingNormalizer,
-            ListingValidatorFactory validatorFactory,
-            CuresUpdateService curesUpdateService,
-            @Lazy ListingIcsSharedStoreHandler icsSharedStoreHandler,
-            ChplTeamNotifier chplteamNotifier, Environment env, ChplHtmlEmailBuilder chplHtmlEmailBuilder) {
+    public CertifiedProductManager(ErrorMessageUtil msgUtil, CertifiedProductDAO cpDao, CertificationCriterionDAO certCriterionDao,
+            QmsStandardDAO qmsDao, TargetedUserDAO targetedUserDao, AccessibilityStandardDAO asDao, CertifiedProductQmsStandardDAO cpQmsDao,
+            ListingMeasureDAO cpMeasureDao, CertifiedProductTestingLabDAO cpTestingLabDao, CertifiedProductTargetedUserDAO cpTargetedUserDao,
+            CertifiedProductAccessibilityStandardDAO cpAccStdDao, CQMResultDAO cqmResultDAO, CQMCriterionDAO cqmCriterionDao,
+            TestingLabDAO atlDao, DeveloperDAO developerDao, DeveloperStatusDAO devStatusDao, @Lazy DeveloperManager developerManager,
+            ProductManager productManager, ProductVersionManager versionManager, CertificationStatusEventDAO statusEventDao,
+            CuresUpdateEventDAO curesUpdateDao, PromotingInteroperabilityUserDAO piuDao, CertificationResultSynchronizationService certResultService,
+            CertificationStatusDAO certStatusDao, ListingGraphDAO listingGraphDao, ResourcePermissions resourcePermissions,
+            CertifiedProductSearchResultDAO certifiedProductSearchResultDAO, CertifiedProductDetailsManager certifiedProductDetailsManager,
+            SchedulerManager schedulerManager, ActivityManager activityManager, ListingDetailsNormalizer listingNormalizer,
+            ListingValidatorFactory validatorFactory, CuresUpdateService curesUpdateService, @Lazy ListingIcsSharedStoreHandler icsSharedStoreHandler,
+            ChplTeamNotifier chplteamNotifier, Environment env, ChplHtmlEmailBuilder chplHtmlEmailBuilder, FF4j ff4j) {
 
         this.msgUtil = msgUtil;
         this.cpDao = cpDao;
@@ -210,7 +198,7 @@ public class CertifiedProductManager extends SecuredManager {
         this.statusEventDao = statusEventDao;
         this.curesUpdateDao = curesUpdateDao;
         this.piuDao = piuDao;
-        this.certResultManager = certResultManager;
+        this.certResultService = certResultService;
         this.certStatusDao = certStatusDao;
         this.listingGraphDao = listingGraphDao;
         this.resourcePermissions = resourcePermissions;
@@ -225,6 +213,7 @@ public class CertifiedProductManager extends SecuredManager {
         this.chplTeamNotifier = chplteamNotifier;
         this.env = env;
         this.chplHtmlEmailBuilder = chplHtmlEmailBuilder;
+        this.ff4j = ff4j;
     }
 
     @Transactional(readOnly = true)
@@ -377,8 +366,11 @@ public class CertifiedProductManager extends SecuredManager {
                 new Date(updatedListing.getCertificationDate()));
         updateCertificationStatusEvents(updatedListing.getId(), existingListing.getCertificationEvents(),
                 updatedListing.getCertificationEvents());
-        updateCuresUpdateEvents(updatedListing.getId(), existingListing.getCuresUpdate(),
-                updatedListing);
+
+        if (!ff4j.check(FeatureList.EDITIONLESS)) {
+            updateCuresUpdateEvents(updatedListing.getId(), existingListing.getCuresUpdate(), updatedListing);
+        }
+
         updatePromotingInteroperabilityUserHistory(updatedListing.getId(), existingListing.getPromotingInteroperabilityUserHistory(),
                 updatedListing.getPromotingInteroperabilityUserHistory());
         updateCertifications(existingListing, updatedListing,
@@ -487,67 +479,42 @@ public class CertifiedProductManager extends SecuredManager {
             throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
 
         int numChanges = 0;
-        List<CertifiedProductTestingLab> tlsToAdd = new ArrayList<CertifiedProductTestingLab>();
-        List<Long> idsToRemove = new ArrayList<Long>();
 
-        // figure out which testing labs to add
-        if (updatedTestingLabs != null && updatedTestingLabs.size() > 0) {
-            if (existingTestingLabs == null || existingTestingLabs.size() == 0) {
-                // existing listing has none, add all from the update
-                for (CertifiedProductTestingLab updatedItem : updatedTestingLabs) {
-                    tlsToAdd.add(updatedItem);
-                }
-            } else if (existingTestingLabs.size() > 0) {
-                // existing listing has some, compare to the update to see if
-                // any are different
-                for (CertifiedProductTestingLab updatedItem : updatedTestingLabs) {
-                    boolean inExistingListing = false;
-                    for (CertifiedProductTestingLab existingItem : existingTestingLabs) {
-                        inExistingListing = !inExistingListing ? updatedItem.matches(existingItem) : inExistingListing;
-                    }
+        List<CertifiedProductTestingLab> testingLabsToAdd = new ArrayList<CertifiedProductTestingLab>(updatedTestingLabs);
+        testingLabsToAdd.removeIf(tl -> doesCertifiedProductTestingLabExistInList(tl, existingTestingLabs));
 
-                    if (!inExistingListing) {
-                        tlsToAdd.add(updatedItem);
-                    }
-                }
-            }
-        }
+        List<CertifiedProductTestingLab> testingLabsToRemove = new ArrayList<CertifiedProductTestingLab>(existingTestingLabs);
+        testingLabsToRemove.removeIf(tl -> doesCertifiedProductTestingLabExistInList(tl, updatedTestingLabs));
 
-        // figure out which testing labs to remove
-        if (existingTestingLabs != null && existingTestingLabs.size() > 0) {
-            // if the updated listing has none, remove them all from existing
-            if (updatedTestingLabs == null || updatedTestingLabs.size() == 0) {
-                for (CertifiedProductTestingLab existingItem : existingTestingLabs) {
-                    idsToRemove.add(existingItem.getId());
-                }
-            } else if (updatedTestingLabs.size() > 0) {
-                for (CertifiedProductTestingLab existingItem : existingTestingLabs) {
-                    boolean inUpdatedListing = false;
-                    for (CertifiedProductTestingLab updatedItem : updatedTestingLabs) {
-                        inUpdatedListing = !inUpdatedListing ? existingItem.matches(updatedItem) : inUpdatedListing;
-                    }
-                    if (!inUpdatedListing) {
-                        idsToRemove.add(existingItem.getId());
-                    }
-                }
-            }
-        }
+        numChanges = testingLabsToAdd.size() + testingLabsToRemove.size();
 
-        numChanges = tlsToAdd.size() + idsToRemove.size();
-        for (CertifiedProductTestingLab toAdd : tlsToAdd) {
-            TestingLab item = atlDao.getByName(toAdd.getTestingLabName());
-            CertifiedProductTestingLabDTO tlDto = new CertifiedProductTestingLabDTO();
-            tlDto.setTestingLabId(item.getId());
-            tlDto.setTestingLabName(item.getName());
-            tlDto.setTestingLabCode(item.getAtlCode());
-            tlDto.setCertifiedProductId(listingId);
-            cpTestingLabDao.createCertifiedProductTestingLab(tlDto);
-        }
+        testingLabsToAdd.forEach(tl -> addCertifiedProductTestingLab(tl, listingId));
+        testingLabsToRemove.forEach(tl -> deleteCertifiedProductTestingLab(tl));
 
-        for (Long idToRemove : idsToRemove) {
-            cpTestingLabDao.deleteCertifiedProductTestingLab(idToRemove);
-        }
         return numChanges;
+    }
+
+    private Boolean doesCertifiedProductTestingLabExistInList(CertifiedProductTestingLab toFind, List<CertifiedProductTestingLab> list) {
+        return list.stream()
+                .filter(item -> item.matches(toFind))
+                .findAny()
+                .isPresent();
+    }
+
+    private void deleteCertifiedProductTestingLab(CertifiedProductTestingLab toDelete) {
+        try {
+            cpTestingLabDao.deleteCertifiedProductTestingLab(toDelete.getId());
+        } catch (Exception e) {
+            LOGGER.info("Could not delete CertifiedProductTestingLab with Id: {}, {}", toDelete.getId(), e.getMessage(), e);
+        }
+    }
+
+    private void addCertifiedProductTestingLab(CertifiedProductTestingLab toAdd, Long listingId) {
+        try {
+            cpTestingLabDao.createCertifiedProductTestingLab(toAdd, listingId);
+        } catch (Exception e) {
+            LOGGER.info("Could not add CertifiedProductTestingLab with Id: {}, for Listing: {}, {}", toAdd.getTestingLab().getId(), listingId, e.getMessage(), e);
+        }
     }
 
     /**
@@ -1270,24 +1237,15 @@ public class CertifiedProductManager extends SecuredManager {
     private int updateCertifications(CertifiedProductSearchDetails existingListing,
             CertifiedProductSearchDetails updatedListing, List<CertificationResult> existingCertifications,
             List<CertificationResult> updatedCertifications)
-            throws EntityCreationException, EntityRetrievalException, JsonProcessingException, IOException {
-
+            throws EntityCreationException, EntityRetrievalException {
         int numChanges = 0;
-
-        // replace the value of the result. we shouldn't have to add or delete any cert results
-        // because for certification criteria, all results are always there whether they were
-        // successful or not
-
-        for (CertificationResult updatedItem : updatedCertifications) {
-            for (CertificationResult existingItem : existingCertifications) {
-                if (updatedItem.getCriterion() != null && existingItem.getCriterion() != null
-                        && updatedItem.getCriterion().getId().equals(existingItem.getCriterion().getId())) {
-                    numChanges += certResultManager.update(existingListing, updatedListing, existingItem,
-                            updatedItem);
-                }
-            }
+        try {
+            numChanges = certResultService.synchronizeCertificationResults(
+                    existingListing, updatedListing, existingCertifications, updatedCertifications);
+        } catch (Exception ex) {
+            LOGGER.error("Exception synchronizing certification results for listing " + existingListing.getId(), ex);
+            throw new EntityCreationException("Exception synchronizing certification results for listing " + existingListing.getId());
         }
-
         return numChanges;
     }
 
