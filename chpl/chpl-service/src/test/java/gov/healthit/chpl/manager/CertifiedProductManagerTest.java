@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.ff4j.FF4j;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
@@ -22,6 +23,7 @@ import org.springframework.security.access.AccessDeniedException;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.accessibilityStandard.AccessibilityStandardDAO;
 import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
 import gov.healthit.chpl.certifiedproduct.service.CertificationResultSynchronizationService;
@@ -113,6 +115,7 @@ public class CertifiedProductManagerTest {
     private ActivityManager activityManager;
     private ListingValidatorFactory validatorFactory;
     private CuresUpdateService curesUpdateService;
+    private FF4j ff4j;
 
     private CertifiedProductManager certifiedProductManager;
 
@@ -150,6 +153,9 @@ public class CertifiedProductManagerTest {
         activityManager = Mockito.mock(ActivityManager.class);
         validatorFactory = Mockito.mock(ListingValidatorFactory.class);
         curesUpdateService = Mockito.mock(CuresUpdateService.class);
+        ff4j = Mockito.mock(FF4j.class);
+
+        Mockito.when(ff4j.check(FeatureList.EDITIONLESS)).thenReturn(false);
 
         certifiedProductManager = new  CertifiedProductManager(msgUtil, cpDao,
                 certCriterionDao, qmsDao,  targetedUserDao, asDao,  cpQmsDao, cpMeasureDao, cpTestingLabDao,
@@ -164,7 +170,7 @@ public class CertifiedProductManagerTest {
                 Mockito.mock(ListingIcsSharedStoreHandler.class),
                 Mockito.mock(ChplTeamNotifier.class),
                 Mockito.mock(Environment.class),
-                Mockito.mock(ChplHtmlEmailBuilder.class));
+                Mockito.mock(ChplHtmlEmailBuilder.class), ff4j);
     }
 
     @Test(expected = ValidationException.class)
