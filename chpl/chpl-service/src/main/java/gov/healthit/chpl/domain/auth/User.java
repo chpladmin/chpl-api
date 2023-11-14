@@ -9,6 +9,7 @@ import gov.healthit.chpl.domain.Organization;
 import gov.healthit.chpl.domain.contact.Person;
 import gov.healthit.chpl.dto.OrganizationDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -16,6 +17,7 @@ import lombok.NoArgsConstructor;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
+@AllArgsConstructor
 public class User extends Person implements Serializable {
     private static final long serialVersionUID = 8408154701107113148L;
 

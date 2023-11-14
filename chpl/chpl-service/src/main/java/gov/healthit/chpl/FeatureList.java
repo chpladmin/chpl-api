@@ -9,4 +9,5 @@ public final class FeatureList {
     public static final String ERD_PHASE_2_GRACE_PERIOD_END = "erd-phase-2-grace-period-end";
     public static final String ERD_PHASE_3 = "erd-phase-3";
     public static final String SUBSCRIPTIONS = "subscriptions";
+    public static final String SSO = "sso";
 }

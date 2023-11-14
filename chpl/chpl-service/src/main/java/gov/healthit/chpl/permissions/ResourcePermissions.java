@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.Predicate;
+import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
@@ -13,6 +14,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
@@ -44,13 +46,12 @@ public class ResourcePermissions {
     private TestingLabDAO atlDAO;
     private UserDAO userDAO;
     private DeveloperDAO developerDAO;
+    private FF4j ff4j;
 
     @SuppressWarnings({"checkstyle:parameternumber"})
     @Autowired
-    public ResourcePermissions(UserCertificationBodyMapDAO userCertificationBodyMapDAO,
-            UserDeveloperMapDAO userDeveloperMapDAO, CertificationBodyDAO acbDAO,
-            TestingLabDAO atlDAO,
-            ErrorMessageUtil errorMessageUtil, UserDAO userDAO, DeveloperDAO developerDAO) {
+    public ResourcePermissions(UserCertificationBodyMapDAO userCertificationBodyMapDAO, UserDeveloperMapDAO userDeveloperMapDAO, CertificationBodyDAO acbDAO,
+            TestingLabDAO atlDAO, ErrorMessageUtil errorMessageUtil, UserDAO userDAO, DeveloperDAO developerDAO, FF4j ff4j) {
         this.userCertificationBodyMapDAO = userCertificationBodyMapDAO;
         this.acbDAO = acbDAO;
         this.atlDAO = atlDAO;
@@ -58,6 +59,7 @@ public class ResourcePermissions {
         this.userDAO = userDAO;
         this.developerDAO = developerDAO;
         this.userDeveloperMapDAO = userDeveloperMapDAO;
+        this.ff4j = ff4j;
     }
 
     @Transactional(readOnly = true)
@@ -365,11 +367,18 @@ public class ResourcePermissions {
             return false;
         }
 
-        UserPermission role = getRoleByUserId(user.getId());
-        if (role == null) {
-            return false;
+        if (ff4j.check(FeatureList.SSO)) {
+            return user.getPermissions().stream()
+                    .filter(permission -> permission.getAuthority().equals(authority))
+                    .findAny()
+                    .isPresent();
+        } else {
+            UserPermission role = getRoleByUserId(user.getId());
+            if (role == null) {
+                return false;
+            }
+            return role.getAuthority().equalsIgnoreCase(authority);
         }
-        return role.getAuthority().equalsIgnoreCase(authority);
     }
 
     public boolean doesAuditUserHaveRole(String authority) {
