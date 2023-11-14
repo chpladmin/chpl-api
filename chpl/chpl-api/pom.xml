@@ -105,6 +105,7 @@
               </exclusion>
             </exclusions>
         </dependency>
+
         <!-- provided dependencies -->
         <dependency>
             <groupId>org.projectlombok</groupId>
