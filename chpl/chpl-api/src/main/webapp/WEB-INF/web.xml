@@ -40,16 +40,6 @@
         <url-pattern>/static/*</url-pattern>
     </servlet-mapping>
 
-    <!-- JavaMelody config -->
-    <filter>
-        <filter-name>javamelody</filter-name>
-        <filter-class>net.bull.javamelody.MonitoringFilter</filter-class>
-        <init-param>
-            <param-name>authorized-users</param-name>
-            <param-value>${javaMelodyUser}:${javaMelodyPwd}</param-value>
-        </init-param>
-    </filter>
-
     <!-- Quartz config -->
     <context-param>
         <param-name>quartz:config-file</param-name>

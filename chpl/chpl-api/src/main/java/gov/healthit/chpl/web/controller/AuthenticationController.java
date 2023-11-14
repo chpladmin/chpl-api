@@ -1,5 +1,6 @@
 package gov.healthit.chpl.web.controller;
 
+import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AccountStatusException;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.nulabinc.zxcvbn.Strength;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.auth.ChplAccountEmailNotConfirmedException;
 import gov.healthit.chpl.auth.ChplAccountStatusException;
 import gov.healthit.chpl.auth.authentication.JWTUserConverter;
@@ -34,6 +36,7 @@ import gov.healthit.chpl.exception.MultipleUserAccountsException;
 import gov.healthit.chpl.exception.UserManagementException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.manager.auth.AuthenticationManager;
+import gov.healthit.chpl.manager.auth.CognitoAuthenticationManager;
 import gov.healthit.chpl.manager.auth.UserManager;
 import gov.healthit.chpl.service.UserAccountUpdateEmailer;
 import gov.healthit.chpl.util.AuthUtil;
@@ -58,18 +61,23 @@ public class AuthenticationController {
     private UserManager userManager;
     private JWTUserConverter userConverter;
     private ErrorMessageUtil msgUtil;
+    private CognitoAuthenticationManager cognitoAuthenticationManager;
+    private FF4j ff4j;
 
     @Autowired
     public AuthenticationController(AuthenticationManager authenticationManager,
             UserAccountUpdateEmailer userAccountUpdateEmailer,
             BCryptPasswordEncoder bCryptPasswordEncoder,
-            UserManager userManager, JWTUserConverter userConverter, ErrorMessageUtil msgUtil) {
+            UserManager userManager, JWTUserConverter userConverter, ErrorMessageUtil msgUtil,
+            FF4j ff4j, CognitoAuthenticationManager cognitoAuthenticationManager) {
         this.authenticationManager = authenticationManager;
         this.userAccountUpdateEmailer = userAccountUpdateEmailer;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.userManager = userManager;
         this.userConverter = userConverter;
         this.msgUtil = msgUtil;
+        this.ff4j = ff4j;
+        this.cognitoAuthenticationManager = cognitoAuthenticationManager;
     }
 
     @Operation(summary = "Log in.",
@@ -86,8 +94,14 @@ public class AuthenticationController {
     public AuthenticationResponse authenticateJSON(@RequestBody LoginCredentials credentials)
             throws JWTCreationException, UserRetrievalException, MultipleUserAccountsException,
             ChplAccountEmailNotConfirmedException {
+        String jwt = "";
 
-        String jwt = authenticationManager.authenticate(credentials);
+        if (ff4j.check(FeatureList.SSO)) {
+            jwt = cognitoAuthenticationManager.authenticate(credentials);
+        } else {
+            jwt = authenticationManager.authenticate(credentials);
+        }
+
         if (jwt == null) {
             throw new ChplAccountStatusException(msgUtil.getMessage("auth.loginNotAllowed"));
         }
