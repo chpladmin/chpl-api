@@ -2,7 +2,6 @@ package gov.healthit.chpl.functionalitytested;
 
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -22,19 +21,22 @@ import javax.persistence.Table;
 import org.hibernate.annotations.Where;
 
 import gov.healthit.chpl.criteriaattribute.rule.RuleEntity;
+import gov.healthit.chpl.entity.EntityAudit;
 import gov.healthit.chpl.entity.PracticeTypeEntity;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
-@Builder
+@Data
+@SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
+@EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "functionality_tested")
-@Data
-public class FunctionalityTestedEntity implements Serializable {
+public class FunctionalityTestedEntity extends EntityAudit implements Serializable {
     private static final long serialVersionUID = 2662883108826795645L;
 
     @Id
@@ -87,21 +89,6 @@ public class FunctionalityTestedEntity implements Serializable {
     @JoinColumn(name = "rule_id")
     private RuleEntity rule;
 
-    @Basic(optional = false)
-    @Column(name = "creation_date", nullable = false)
-    private Date creationDate;
-
-    @Basic(optional = false)
-    @Column(nullable = false)
-    private Boolean deleted;
-
-    @Basic(optional = false)
-    @Column(name = "last_modified_date", nullable = false)
-    private Date lastModifiedDate;
-
-    @Basic(optional = false)
-    @Column(name = "last_modified_user", nullable = false)
-    private Long lastModifiedUser;
 
     public FunctionalityTested toDomain() {
         return FunctionalityTested.builder()

@@ -1,7 +1,6 @@
 package gov.healthit.chpl.attestation.entity;
 
 import java.time.LocalDate;
-import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -14,23 +13,23 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import gov.healthit.chpl.attestation.domain.AttestationPeriod;
+import gov.healthit.chpl.entity.EntityAudit;
 import gov.healthit.chpl.form.entity.FormEntity;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 
+@Data
+@SuperBuilder
+@AllArgsConstructor
+@NoArgsConstructor
+@EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "attestation_period")
-@Getter
-@Setter
-@ToString
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-public class AttestationPeriodEntity {
+public class AttestationPeriodEntity extends EntityAudit {
+    private static final long serialVersionUID = -3165977425400423424L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -55,18 +54,6 @@ public class AttestationPeriodEntity {
 
     @Column(name = "description")
     private String description;
-
-    @Column(name = "last_modified_user", nullable = false)
-    private Long lastModifiedUser;
-
-    @Column(name = "deleted", nullable = false)
-    private Boolean deleted;
-
-    @Column(name = "creation_date", nullable = false, insertable = false, updatable = false)
-    private Date creationDate;
-
-    @Column(name = "last_modified_date", nullable = false, insertable = false, updatable = false)
-    private Date lastModifiedDate;
 
     public AttestationPeriod toDomain() {
         return AttestationPeriod.builder()

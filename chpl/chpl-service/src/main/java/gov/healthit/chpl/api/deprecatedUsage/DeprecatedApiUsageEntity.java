@@ -3,7 +3,6 @@ package gov.healthit.chpl.api.deprecatedUsage;
 import java.time.LocalDate;
 import java.util.Date;
 
-import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -17,12 +16,22 @@ import javax.persistence.Table;
 import org.hibernate.annotations.Where;
 
 import gov.healthit.chpl.api.entity.ApiKeyEntity;
+import gov.healthit.chpl.entity.EntityAudit;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
-@Entity
 @Data
+@SuperBuilder
+@AllArgsConstructor
+@NoArgsConstructor
+@EqualsAndHashCode(callSuper = true)
+@Entity
 @Table(name = "deprecated_api_usage")
-public class DeprecatedApiUsageEntity {
+public class DeprecatedApiUsageEntity extends EntityAudit {
+    private static final long serialVersionUID = -3667640013723601658L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -60,22 +69,6 @@ public class DeprecatedApiUsageEntity {
 
     @Column(name = "notification_sent")
     private Date notificationSent;
-
-    @Basic(optional = false)
-    @Column(name = "last_modified_user", nullable = false)
-    private Long lastModifiedUser;
-
-    @Basic(optional = false)
-    @Column(name = "deleted", nullable = false)
-    private Boolean deleted;
-
-    @Basic(optional = false)
-    @Column(name = "creation_date", nullable = false, insertable = false, updatable = false)
-    private Date creationDate;
-
-    @Basic(optional = false)
-    @Column(name = "last_modified_date", nullable = false, insertable = false, updatable = false)
-    private Date lastModifiedDate;
 
     public DeprecatedApiUsage toDomain() {
         return DeprecatedApiUsage.builder()

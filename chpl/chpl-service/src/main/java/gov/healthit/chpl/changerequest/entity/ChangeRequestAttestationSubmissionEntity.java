@@ -1,6 +1,5 @@
 package gov.healthit.chpl.changerequest.entity;
 
-import java.util.Date;
 import java.util.Set;
 
 import javax.persistence.Column;
@@ -18,22 +17,23 @@ import org.hibernate.annotations.Where;
 
 import gov.healthit.chpl.attestation.entity.AttestationPeriodEntity;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestAttestationSubmission;
+import gov.healthit.chpl.entity.EntityAudit;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 
-@Entity
-@Table(name = "change_request_attestation_submission")
-@Getter
-@Setter
-@ToString
-@Builder
+@Data
+@SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ChangeRequestAttestationSubmissionEntity {
+@EqualsAndHashCode(callSuper = true)
+@Entity
+@Table(name = "change_request_attestation_submission")
+public class ChangeRequestAttestationSubmissionEntity extends EntityAudit {
+    private static final long serialVersionUID = -7206763442336137951L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
@@ -58,18 +58,6 @@ public class ChangeRequestAttestationSubmissionEntity {
 
     @Column(name = "signature_email", nullable = false)
     private String signatureEmail;
-
-    @Column(name = "last_modified_user", nullable = false)
-    private Long lastModifiedUser;
-
-    @Column(name = "deleted", nullable = false)
-    private Boolean deleted;
-
-    @Column(name = "creation_date", nullable = false, insertable = false, updatable = false)
-    private Date creationDate;
-
-    @Column(name = "last_modified_date", nullable = false, insertable = false, updatable = false)
-    private Date lastModifiedDate;
 
     public ChangeRequestAttestationSubmission toDomain() {
         return ChangeRequestAttestationSubmission.builder()

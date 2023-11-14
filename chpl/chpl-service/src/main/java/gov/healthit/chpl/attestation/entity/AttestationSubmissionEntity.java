@@ -1,6 +1,5 @@
 package gov.healthit.chpl.attestation.entity;
 
-import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Column;
@@ -15,23 +14,24 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import gov.healthit.chpl.attestation.domain.AttestationSubmission;
+import gov.healthit.chpl.entity.EntityAudit;
 import gov.healthit.chpl.util.DateUtil;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 
+@Data
+@SuperBuilder
+@AllArgsConstructor
+@NoArgsConstructor
+@EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "attestation_submission")
-@Getter
-@Setter
-@ToString
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-public class AttestationSubmissionEntity {
+public class AttestationSubmissionEntity extends EntityAudit{
+    private static final long serialVersionUID = -7242508236937180150L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
@@ -54,18 +54,6 @@ public class AttestationSubmissionEntity {
     @Column(name = "signature_email", nullable = false)
     private String signatureEmail;
 
-    @Column(name = "last_modified_user", nullable = false)
-    private Long lastModifiedUser;
-
-    @Column(name = "deleted", nullable = false)
-    private Boolean deleted;
-
-    @Column(name = "creation_date", nullable = false, insertable = false, updatable = false)
-    private Date creationDate;
-
-    @Column(name = "last_modified_date", nullable = false, insertable = false, updatable = false)
-    private Date lastModifiedDate;
-
     public AttestationSubmission toDomain() {
         return AttestationSubmission.builder()
                 .id(id)
@@ -73,7 +61,7 @@ public class AttestationSubmissionEntity {
                 .attestationPeriod(attestationPeriod.toDomain())
                 .signature(signature)
                 .signatureEmail(signatureEmail)
-                .datePublished(DateUtil.toLocalDate(lastModifiedDate.getTime()))
+                .datePublished(DateUtil.toLocalDate(getLastModifiedDate().getTime()))
                 .build();
     }
 }
