@@ -60,7 +60,7 @@ public class RateLimitingInterceptor implements HandlerInterceptor {
             LOGGER.info("Client with API KEY: {} went over API KEY limit of {} per {} second(s).", apiKey, rateLimitRequestCount, rateLimitTimePeriod);
         }
 
-        response.addHeader("X-RateLimit-Limit", rateLimitRequestCount +" call(s) every " + rateLimitTimePeriod + " second(s)");
+        response.addHeader("X-RateLimit-Limit", rateLimitRequestCount + " call(s) every " + rateLimitTimePeriod + " second(s)");
         return allowRequest;
     }
 
