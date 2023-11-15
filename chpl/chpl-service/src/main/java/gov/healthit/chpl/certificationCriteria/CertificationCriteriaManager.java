@@ -51,7 +51,7 @@ public class CertificationCriteriaManager {
         return activeCriteria.stream()
                 .filter(criterion -> StringUtils.isEmpty(certificationEdition)
                         ? true
-                        : criterion.getCertificationEdition() != null && criterion.getCertificationEdition().equals(certificationEdition))
+                        : criterion.getCertificationEdition() == null || criterion.getCertificationEdition().equals(certificationEdition))
                 .map(criterion -> buildCertificationCriterionWithAttributes(criterion))
                 .sorted(criterionComparator)
                 .collect(Collectors.toList());
