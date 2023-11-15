@@ -38,6 +38,7 @@ public class CertificationResultDetailsDTO implements Serializable {
     private String documentationUrl;
     private String useCases;
     private String serviceBaseUrlList;
+    private String riskManagementSummaryInformation;
     private String privacySecurityFramework;
     private CertificationCriterion criterion;
 
@@ -68,6 +69,7 @@ public class CertificationResultDetailsDTO implements Serializable {
         this.documentationUrl = entity.getDocumentationUrl();
         this.useCases = entity.getUseCases();
         this.serviceBaseUrlList = entity.getServiceBaseUrlList();
+        this.riskManagementSummaryInformation = entity.getRiskManagementSummaryInformation();
         this.privacySecurityFramework = entity.getPrivacySecurityFramework();
         if (entity.getCertificationCriterion() != null) {
             this.criterion = entity.getCertificationCriterion().toDomain();

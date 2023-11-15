@@ -484,6 +484,13 @@ public class CertificationResult implements Serializable {
         } else {
             this.setUseCases(certResult.getUseCases());
         }
+        if (!certRules.hasCertOption(certResult.getCertificationCriterionId(), CertificationResultRules.RISK_MANAGEMENT_SUMMARY_INFORMATION)) {
+            this.setRiskManagementSummaryInformation(null);
+        } else if (certResult.getRiskManagementSummaryInformation() == null) {
+            this.setRiskManagementSummaryInformation("");
+        } else {
+            this.setRiskManagementSummaryInformation(certResult.getRiskManagementSummaryInformation());
+        }
         if (!certRules.hasCertOption(certResult.getCertificationCriterionId(), CertificationResultRules.SERVICE_BASE_URL_LIST)) {
             this.setServiceBaseUrlList(null);
         } else if (certResult.getServiceBaseUrlList() == null) {

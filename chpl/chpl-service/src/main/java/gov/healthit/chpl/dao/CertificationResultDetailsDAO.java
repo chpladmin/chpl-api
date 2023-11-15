@@ -86,7 +86,7 @@ public class CertificationResultDetailsDAO extends BaseDAOImpl {
             queryStr += "AND crd.useCases = :url";
             break;
         case RISK_MANAGEMENT_SUMMARY_INFORMATION:
-            queryStr += "AND crd.risk_management_summary_information = :url";
+            queryStr += "AND crd.riskManagementSummaryInformation = :url";
             break;
         case SERVICE_BASE_URL_LIST:
             queryStr += "AND crd.serviceBaseUrlList = :url";
