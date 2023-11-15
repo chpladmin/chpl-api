@@ -34,6 +34,7 @@ public class CertificationResultRules {
     public static final String TEST_DATA = "testData";
     public static final String SED = "sed";
     public static final String SERVICE_BASE_URL_LIST = "serviceBaseUrlList";
+    public static final String RISK_MANAGEMENT_SUMMARY_INFORMATION = "riskManagementSummaryInformation";
     public static final String SVAP = "svap";
     public static final String STANDARD = "standard";
 
@@ -123,6 +124,11 @@ public class CertificationResultRules {
                     .canHaveOption(attribute.getServiceBaseUrlList())
                     .optionName(SERVICE_BASE_URL_LIST)
                 .build());
+            rules.get(attribute.getCriterion().getId()).add(
+                    CertificationResultOption.builder()
+                        .canHaveOption(attribute.getRiskManagementSummaryInformation())
+                        .optionName(RISK_MANAGEMENT_SUMMARY_INFORMATION)
+                    .build());
             rules.get(attribute.getCriterion().getId()).add(
                 CertificationResultOption.builder()
                     .canHaveOption(attribute.getTestStandard())

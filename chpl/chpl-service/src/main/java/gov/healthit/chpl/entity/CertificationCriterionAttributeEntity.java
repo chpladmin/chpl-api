@@ -80,6 +80,9 @@ public class CertificationCriterionAttributeEntity {
     @Column(name = "service_base_url_list")
     private Boolean serviceBaseUrlList;
 
+    @Column(name = "risk_management_summary_information")
+    private Boolean riskManagementSummaryInformation;
+
     @Column(name = "svap")
     private Boolean svap;
 

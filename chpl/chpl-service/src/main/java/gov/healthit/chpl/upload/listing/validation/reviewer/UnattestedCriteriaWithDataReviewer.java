@@ -2,9 +2,9 @@ package gov.healthit.chpl.upload.listing.validation.reviewer;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
@@ -63,6 +63,11 @@ public class UnattestedCriteriaWithDataReviewer {
             listing.addWarningMessage(
                     msgUtil.getMessage("listing.criteria.falseCriteriaHasData",
                             Util.formatCriteriaNumber(certResult.getCriterion()), "Service Base URL List"));
+        }
+        if (!StringUtils.isEmpty(certResult.getRiskManagementSummaryInformation())) {
+            listing.addWarningMessage(
+                    msgUtil.getMessage("listing.criteria.falseCriteriaHasData",
+                            Util.formatCriteriaNumber(certResult.getCriterion()), "Risk Management Summary Information"));
         }
         if (!StringUtils.isEmpty(certResult.getExportDocumentation())) {
             listing.addWarningMessage(
