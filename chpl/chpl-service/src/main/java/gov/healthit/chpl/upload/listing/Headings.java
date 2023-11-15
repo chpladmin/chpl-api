@@ -101,6 +101,7 @@ public enum Headings {
     UCD_PROCESS_DETAILS("UCD Process Details"),
     SVAP_REG_TEXT("SVAP Reg Text Citation", "Regulatory Text Citation", "SVAP_REG_TEXT"),
     RISK_MANAGEMENT_SUMMARY_INFORMATION("Risk Management Summary Information"),
+    STANDARD("Standard"),
 
     //all below included so we don't give errors of unrecognized col; should not used anywhere
     CRITERIA_170_315_A_1("CRITERIA_170_315_A_1__C"),
