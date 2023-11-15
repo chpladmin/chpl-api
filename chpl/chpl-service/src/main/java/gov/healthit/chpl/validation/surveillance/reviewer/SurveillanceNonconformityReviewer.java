@@ -1,23 +1,15 @@
 package gov.healthit.chpl.validation.surveillance.reviewer;
 
-import java.util.List;
-
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.dao.CertificationResultDetailsDAO;
-import gov.healthit.chpl.dao.CertifiedProductDAO;
-import gov.healthit.chpl.domain.NonconformityType;
-import gov.healthit.chpl.domain.surveillance.NonconformityClassification;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformity;
 import gov.healthit.chpl.domain.surveillance.SurveillanceRequirement;
 import gov.healthit.chpl.domain.surveillance.SurveillanceResultType;
-import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
-import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.manager.DimensionalDataManager;
-import gov.healthit.chpl.service.CertificationCriterionService;
+import gov.healthit.chpl.util.DateUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.NullSafeEvaluator;
 import lombok.extern.log4j.Log4j2;
@@ -25,23 +17,11 @@ import lombok.extern.log4j.Log4j2;
 @Component
 @Log4j2
 public class SurveillanceNonconformityReviewer implements Reviewer {
-    private static final Long NOT_FOUND = -1L;
-
-    private CertificationResultDetailsDAO certResultDetailsDao;
     private ErrorMessageUtil msgUtil;
-    private CertificationCriterionService criterionService;
-    private DimensionalDataManager dimensionalDataManager;
-    private CertifiedProductDAO certifiedProductDAO;
 
     @Autowired
-    public SurveillanceNonconformityReviewer(CertificationResultDetailsDAO certResultDetailsDao,
-            ErrorMessageUtil msgUtil, CertificationCriterionService criterionService, DimensionalDataManager dimensionalDataManager,
-            CertifiedProductDAO certifiedProductDAO) {
-        this.certResultDetailsDao = certResultDetailsDao;
+    public SurveillanceNonconformityReviewer(ErrorMessageUtil msgUtil) {
         this.msgUtil = msgUtil;
-        this.criterionService = criterionService;
-        this.dimensionalDataManager = dimensionalDataManager;
-        this.certifiedProductDAO = certifiedProductDAO;
     }
 
     @Override
@@ -49,8 +29,6 @@ public class SurveillanceNonconformityReviewer implements Reviewer {
         if (surv.getRequirements() == null) {
             return;
         }
-        List<CertificationResultDetailsDTO> certResults = certResultDetailsDao
-                .getCertificationResultsForSurveillanceListing(surv);
 
         // assume surveillance requires a close date until proven otherwise
         for (SurveillanceRequirement req : surv.getRequirements()) {
@@ -70,7 +48,7 @@ public class SurveillanceNonconformityReviewer implements Reviewer {
                         checkSiteCountsValidityForRandomizedSurveillance(surv, req, nc);
                         checkSiteCountsValidityForNonRandomizedSurveillance(surv, req, nc);
                         checkResolution(surv, req, nc);
-                        checkCriteriaEditionMatchesListingEdition(surv, req, nc);
+                        checkNonconformityValidForSurveillanceStartDate(surv, req, nc);
                     }
                 }
             } else {
@@ -219,43 +197,9 @@ public class SurveillanceNonconformityReviewer implements Reviewer {
         }
     }
 
-    private void checkCriteriaEditionMatchesListingEdition(Surveillance surv, SurveillanceRequirement req, SurveillanceNonconformity nc) {
-        if (isNonconformityTypeCertifiedCapability(nc.getType().getId())) {
-            Long nonconformityCriteriaEdition = getCertificationEditionIdFromNonconformityType(nc.getType().getId());
-            if (!nonconformityCriteriaEdition.equals(NOT_FOUND)) {
-                Long listingEdition = getCertificationEditionIdFromListing(surv.getCertifiedProduct().getId());
-                if (!nonconformityCriteriaEdition.equals(listingEdition)) {
-                    surv.getErrorMessages().add(msgUtil.getMessage("surveillance.nonconformityTypeEditionMismatch",
-                            getNonConformityType(nc.getType().getId()).getFormattedTitle()));
-                }
-            }
-        }
-    }
-
-    private Long getCertificationEditionIdFromNonconformityType(Long nonconformityTypeId) {
-        return NullSafeEvaluator.eval(() -> criterionService.get(nonconformityTypeId).getCertificationEditionId(), NOT_FOUND);
-    }
-
-    private boolean isNonconformityTypeCertifiedCapability(Long nonconformtiyTypeId) {
-        NonconformityType nonconformityTypFromDb = getNonConformityType(nonconformtiyTypeId);
-        return nonconformityTypFromDb != null
-                ? nonconformityTypFromDb.getClassification().equals(NonconformityClassification.CRITERION)
-                : false;
-    }
-
-    private NonconformityType getNonConformityType(Long id) {
-        return dimensionalDataManager.getNonconformityTypes().stream()
-                .filter(nc -> nc.getId().equals(id))
-                .findAny()
-                .orElse(null);
-    }
-
-    private Long getCertificationEditionIdFromListing(Long id) {
-        try {
-            return certifiedProductDAO.getById(id).getCertificationEditionId();
-        } catch (EntityRetrievalException e) {
-            LOGGER.error("Could not retrieve listing", e);
-            return NOT_FOUND;
+    private void checkNonconformityValidForSurveillanceStartDate(Surveillance surv, SurveillanceRequirement req, SurveillanceNonconformity nc) {
+        if (!DateUtil.isDateBetweenInclusive(Pair.of(nc.getType().getStartDay(), nc.getType().getEndDay()), surv.getStartDay())) {
+                surv.getErrorMessages().add(msgUtil.getMessage("surveillance.nonConformityType.notValid", nc.getType().getFormattedTitle()));
         }
     }
 }

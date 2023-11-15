@@ -148,6 +148,14 @@ public class CertificationCriterionNormalizer {
         }
 
         if (BooleanUtils.isFalse(certResult.isSuccess())
+                && !isFieldAllowed(certResult.getCriterion(), CertificationResultRules.RISK_MANAGEMENT_SUMMARY_INFORMATION)) {
+            certResult.setRiskManagementSummaryInformation(null);
+        } else if (isFieldAllowed(certResult.getCriterion(), CertificationResultRules.RISK_MANAGEMENT_SUMMARY_INFORMATION)
+                && certResult.getRiskManagementSummaryInformation() == null) {
+            certResult.setRiskManagementSummaryInformation("");
+        }
+
+        if (BooleanUtils.isFalse(certResult.isSuccess())
                 && !isFieldAllowed(certResult.getCriterion(), CertificationResultRules.STANDARDS_TESTED)) {
             certResult.setTestStandards(null);
         } else if (isFieldAllowed(certResult.getCriterion(), CertificationResultRules.STANDARDS_TESTED)

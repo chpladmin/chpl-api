@@ -48,6 +48,21 @@ public final class DateUtil {
         }
     }
 
+    public static boolean isDateBetweenInclusive(Pair<LocalDate, LocalDate> dateRange, LocalDate dateToCheck) {
+        Pair<LocalDate, LocalDate> modifiedDateRange = Pair.of(dateRange);
+        if (modifiedDateRange.getLeft() == null) {
+            modifiedDateRange = Pair.of(LocalDate.MIN, modifiedDateRange.getRight());
+        }
+        if (modifiedDateRange.getRight() == null) {
+            modifiedDateRange = Pair.of(modifiedDateRange.getLeft(), LocalDate.MAX);
+        }
+
+        return (modifiedDateRange.getLeft().equals(dateToCheck)
+                || modifiedDateRange.getRight().equals(dateToCheck)
+                || (modifiedDateRange.getLeft().isBefore(dateToCheck)
+                        && modifiedDateRange.getRight().isAfter(dateToCheck)));
+    }
+
     public static String formatInEasternTime(ZonedDateTime date) {
         ZonedDateTime dateWithCorrectZone = date.withZoneSameInstant(ZoneId.of(ET_ZONE_ID));
         return DateTimeFormatter.ofPattern("MMM d, yyyy, h:mm:ss a").format(dateWithCorrectZone) + ET_SUFFIX;
