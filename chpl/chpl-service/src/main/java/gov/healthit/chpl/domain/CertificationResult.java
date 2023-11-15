@@ -35,6 +35,7 @@ import gov.healthit.chpl.optionalStandard.CertificationResultOptionalStandardCom
 import gov.healthit.chpl.optionalStandard.domain.CertificationResultOptionalStandard;
 import gov.healthit.chpl.optionalStandard.domain.OptionalStandard;
 import gov.healthit.chpl.standard.CertificationResultStandard;
+import gov.healthit.chpl.standard.CertificationResultStandardComparator;
 import gov.healthit.chpl.svap.domain.CertificationResultSvap;
 import gov.healthit.chpl.svap.domain.CertificationResultSvapComparator;
 import gov.healthit.chpl.svap.domain.Svap;
@@ -364,6 +365,8 @@ public class CertificationResult implements Serializable {
     private String number;
 
     @XmlTransient
+    private CertificationResultStandardComparator standardComparator;
+    @XmlTransient
     private CertificationResultSvapComparator svapComparator;
     @XmlTransient
     private CertificationResultOptionalStandardComparator osComparator;
@@ -393,6 +396,7 @@ public class CertificationResult implements Serializable {
         this.testProcedures = new ArrayList<CertificationResultTestProcedure>();
         this.svaps = new ArrayList<CertificationResultSvap>();
 
+        this.standardComparator = new CertificationResultStandardComparator();
         this.svapComparator = new CertificationResultSvapComparator();
         this.osComparator = new CertificationResultOptionalStandardComparator();
         this.cmComparator = new CertificationResultConformanceMethodComparator();
@@ -511,6 +515,18 @@ public class CertificationResult implements Serializable {
         this.setTestStandards(getTestStandards(certResult, certRules));
         this.setAdditionalSoftware(getAdditionalSoftware(certResult, certRules));
         this.setSvaps(getSvaps(certResult, certRules));
+        this.setStandards(getStandards(certResult, certRules));
+    }
+
+
+    private List<CertificationResultStandard> getStandards(CertificationResultDetailsDTO certResult, CertificationResultRules certRules) {
+        if (certRules.hasCertOption(certResult.getCertificationCriterionId(), CertificationResultRules.STANDARD)) {
+            return certResult.getStandards().stream()
+                    .sorted(standardComparator)
+                    .collect(Collectors.toList());
+        } else {
+            return null;
+        }
     }
 
     private List<CertificationResultSvap> getSvaps(CertificationResultDetailsDTO certResult, CertificationResultRules certRules) {

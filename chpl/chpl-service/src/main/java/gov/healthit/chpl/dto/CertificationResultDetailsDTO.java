@@ -9,6 +9,7 @@ import gov.healthit.chpl.entity.listing.CertificationResultConformanceMethodEnti
 import gov.healthit.chpl.entity.listing.CertificationResultDetailsEntity;
 import gov.healthit.chpl.functionalitytested.CertificationResultFunctionalityTested;
 import gov.healthit.chpl.optionalStandard.domain.CertificationResultOptionalStandard;
+import gov.healthit.chpl.standard.CertificationResultStandard;
 import gov.healthit.chpl.svap.domain.CertificationResultSvap;
 import gov.healthit.chpl.testtool.CertificationResultTestTool;
 import lombok.AllArgsConstructor;
@@ -50,6 +51,7 @@ public class CertificationResultDetailsDTO implements Serializable {
     private List<CertificationResultTestStandardDTO> testStandards;
     private List<CertificationResultAdditionalSoftwareDTO> additionalSoftware;
     private List<CertificationResultSvap> svaps;
+    private List<CertificationResultStandard> standards;
 
     public CertificationResultDetailsDTO(final CertificationResultDetailsEntity entity) {
         this.id = entity.getId();
@@ -123,6 +125,12 @@ public class CertificationResultDetailsDTO implements Serializable {
         if (entity.getCertificationResultSvaps() != null) {
             this.svaps = entity.getCertificationResultSvaps().stream()
                     .map(e -> new CertificationResultSvap(e))
+                    .collect(Collectors.toList());
+        }
+
+        if (entity.getCertificationResultStandards() != null) {
+            this.standards = entity.getCertificationResultStandards().stream()
+                    .map(e -> e.toDomain())
                     .collect(Collectors.toList());
         }
     }

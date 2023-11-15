@@ -146,7 +146,7 @@ public class CertificationResultManager extends SecuredManager {
         numChanges += updateTestData(updated, orig.getTestDataUsed(), updated.getTestDataUsed());
         numChanges += updateTestProcedures(updated, orig.getTestProcedures(), updated.getTestProcedures());
         numChanges += certResultFunctionalityTestedService.synchronizeFunctionalitiesTested(updated, orig.getFunctionalitiesTested(), updated.getFunctionalitiesTested());
-        numChanges += certResultStandardService.synchronizeStandards(updated,  orig.getStandards(), null);
+        numChanges += certResultStandardService.synchronizeStandards(updated,  orig.getStandards(), updated.getStandards());
         numChanges += updateSvap(updated, orig.getSvaps(), updated.getSvaps());
 
         List<CertifiedProductUcdProcess> origUcdsForCriteria = new ArrayList<CertifiedProductUcdProcess>();
