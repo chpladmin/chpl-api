@@ -1,6 +1,5 @@
 package gov.healthit.chpl.functionalitytested;
 
-import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
@@ -24,19 +23,21 @@ import gov.healthit.chpl.criteriaattribute.rule.RuleEntity;
 import gov.healthit.chpl.entity.EntityAudit;
 import gov.healthit.chpl.entity.PracticeTypeEntity;
 import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
-@Data
+@Getter
+@Setter
+@ToString
 @SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "functionality_tested")
-public class FunctionalityTestedEntity extends EntityAudit implements Serializable {
+public class FunctionalityTestedEntity extends EntityAudit {
     private static final long serialVersionUID = 2662883108826795645L;
 
     @Id

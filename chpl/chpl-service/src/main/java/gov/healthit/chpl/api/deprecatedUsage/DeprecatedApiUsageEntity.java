@@ -18,16 +18,18 @@ import org.hibernate.annotations.Where;
 import gov.healthit.chpl.api.entity.ApiKeyEntity;
 import gov.healthit.chpl.entity.EntityAudit;
 import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
-@Data
+@Getter
+@Setter
+@ToString
 @SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "deprecated_api_usage")
 public class DeprecatedApiUsageEntity extends EntityAudit {

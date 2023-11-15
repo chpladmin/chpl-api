@@ -14,12 +14,24 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import gov.healthit.chpl.entity.CertificationBodyEntity;
-import lombok.Data;
+import gov.healthit.chpl.entity.EntityAudit;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 
+@Getter
+@Setter
+@ToString
+@SuperBuilder
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "broken_surveillance_rules")
-@Data
-public class BrokenSurveillanceRulesEntity {
+public class BrokenSurveillanceRulesEntity extends EntityAudit {
+    private static final long serialVersionUID = 2870697375846146076L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -163,11 +175,4 @@ public class BrokenSurveillanceRulesEntity {
     @Column(name = "difference_from_cap_completed_and_cap_must_be_completed")
     private long differenceFromCapCompletedAndCapMustBeCompleted;
 
-    @Basic(optional = false)
-    @Column(name = "deleted")
-    private Boolean deleted;
-
-    @Basic(optional = false)
-    @Column(name = "last_modified_user")
-    private Long lastModifiedUser;
 }

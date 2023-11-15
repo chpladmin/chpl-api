@@ -17,16 +17,18 @@ import gov.healthit.chpl.attestation.domain.AttestationSubmission;
 import gov.healthit.chpl.entity.EntityAudit;
 import gov.healthit.chpl.util.DateUtil;
 import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
-@Data
+@Getter
+@Setter
+@ToString
 @SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "attestation_submission")
 public class AttestationSubmissionEntity extends EntityAudit{

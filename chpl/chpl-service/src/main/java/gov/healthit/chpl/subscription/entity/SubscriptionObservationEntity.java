@@ -1,7 +1,5 @@
 package gov.healthit.chpl.subscription.entity;
 
-import java.util.Date;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -15,19 +13,27 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.Where;
 
+import gov.healthit.chpl.entity.EntityAudit;
 import gov.healthit.chpl.subscription.domain.Subscription;
 import gov.healthit.chpl.subscription.domain.SubscriptionObservation;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 
 @Getter
 @Setter
+@ToString
+@SuperBuilder
+@AllArgsConstructor
 @NoArgsConstructor
 @Entity
 @Table(name = "subscription_observation")
 @Where(clause = "deleted <> 'true'")
-public class SubscriptionObservationEntity {
+public class SubscriptionObservationEntity extends EntityAudit {
+    private static final long serialVersionUID = 1444100672673955734L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "subscription_observation_id_seq")
@@ -44,18 +50,6 @@ public class SubscriptionObservationEntity {
 
     @Column(name = "activity_id", nullable = false)
     private Long activityId;
-
-    @Column(name = "last_modified_user", nullable = false)
-    private Long lastModifiedUser;
-
-    @Column(name = "deleted", nullable = false, insertable = false)
-    private Boolean deleted;
-
-    @Column(name = "creation_date", nullable = false, insertable = false, updatable = false)
-    private Date creationDate;
-
-    @Column(name = "last_modified_date", nullable = false, insertable = false, updatable = false)
-    private Date lastModifiedDate;
 
     public SubscriptionObservation toDomain() {
         return SubscriptionObservation.builder()

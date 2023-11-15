@@ -1,6 +1,5 @@
 package gov.healthit.chpl.entity.listing;
 
-import java.io.Serializable;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -10,24 +9,23 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import gov.healthit.chpl.util.Util;
-import lombok.AccessLevel;
+import gov.healthit.chpl.entity.EntityAudit;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 
+@Getter
+@Setter
+@ToString
+@SuperBuilder
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "cures_update_event")
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
-@Data
-public class CuresUpdateEventEntity implements Serializable {
-
-    /** Serial Version UID. */
+public class CuresUpdateEventEntity extends EntityAudit {
     private static final long serialVersionUID = 4174889617079658144L;
 
     @Id
@@ -42,40 +40,6 @@ public class CuresUpdateEventEntity implements Serializable {
     private Boolean curesUpdate;
 
     @Column(name = "event_date")
-    @Setter(AccessLevel.NONE)
-    @Getter(AccessLevel.NONE)
     private Date eventDate;
 
-    @Column(name = "deleted")
-    private Boolean deleted;
-
-    @Column(name = "last_modified_user")
-    private Long lastModifiedUser;
-
-    @Column(name = "last_modified_date", insertable = false, updatable = false)
-    @Setter(AccessLevel.NONE)
-    @Getter(AccessLevel.NONE)
-    private Date lastModifiedDate;
-
-    @Column(name = "creation_date", insertable = false, updatable = false)
-    @Setter(AccessLevel.NONE)
-    @Getter(AccessLevel.NONE)
-    private Date creationDate;
-
-    public Date getEventDate() {
-        return Util.getNewDate(eventDate);
-    }
-
-    public void setEventDate(final Date eventDate) {
-        this.eventDate = Util.getNewDate(eventDate);
-    }
-
-    public Date getCreationDate() {
-        return Util.getNewDate(creationDate);
-    }
-
-
-    public Date getLastModifiedDate() {
-        return Util.getNewDate(lastModifiedDate);
-    }
 }

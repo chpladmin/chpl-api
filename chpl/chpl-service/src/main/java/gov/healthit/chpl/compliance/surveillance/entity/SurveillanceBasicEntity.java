@@ -1,7 +1,6 @@
 package gov.healthit.chpl.compliance.surveillance.entity;
 
 import java.time.LocalDate;
-import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -14,12 +13,24 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import gov.healthit.chpl.domain.surveillance.SurveillanceBasic;
-import lombok.Data;
+import gov.healthit.chpl.entity.EntityAudit;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 
+@Getter
+@Setter
+@ToString
+@SuperBuilder
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
-@Data
 @Table(name = "surveillance_basic")
-public class SurveillanceBasicEntity {
+public class SurveillanceBasicEntity extends EntityAudit {
+    private static final long serialVersionUID = -1249518324870434198L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -56,18 +67,6 @@ public class SurveillanceBasicEntity {
 
     @Column(name = "closed_nonconformity_count")
     private Integer numClosedNonconformities;
-
-    @Column(name = "deleted")
-    private Boolean deleted;
-
-    @Column(name = "last_modified_user")
-    private Long lastModifiedUser;
-
-    @Column(name = "creation_date", insertable = false, updatable = false)
-    private Date creationDate;
-
-    @Column(name = "last_modified_date", insertable = false, updatable = false)
-    private Date lastModifiedDate;
 
     public SurveillanceBasic buildSurveillanceBasic() {
         return SurveillanceBasic.builder()

@@ -1,7 +1,6 @@
 package gov.healthit.chpl.compliance.surveillance.entity;
 
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -25,23 +24,27 @@ import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.domain.surveillance.SurveillanceType;
+import gov.healthit.chpl.entity.EntityAudit;
 import gov.healthit.chpl.entity.listing.CertifiedProductEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 
-@Entity
-@Table(name = "surveillance")
 @Getter
 @Setter
-@Builder
+@ToString
+@SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
-public class SurveillanceEntity {
+@Entity
+@Table(name = "surveillance")
+public class SurveillanceEntity extends EntityAudit {
+    private static final long serialVersionUID = -7440112475434169829L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -73,18 +76,6 @@ public class SurveillanceEntity {
 
     @Column(name = "randomized_sites_used")
     private Integer numRandomizedSites;
-
-    @Column(name = "deleted")
-    private Boolean deleted;
-
-    @Column(name = "last_modified_user")
-    private Long lastModifiedUser;
-
-    @Column(name = "creation_date", insertable = false, updatable = false)
-    private Date creationDate;
-
-    @Column(name = "last_modified_date", insertable = false, updatable = false)
-    private Date lastModifiedDate;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "surveillanceId")
     @Basic(optional = false)

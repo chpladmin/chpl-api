@@ -1,7 +1,6 @@
 package gov.healthit.chpl.entity.statistics;
 
 import java.time.LocalDate;
-import java.util.Date;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -17,12 +16,25 @@ import javax.persistence.Table;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterionEntity;
 import gov.healthit.chpl.domain.statistics.CriterionUpgradedToCuresFromOriginalListingStatistic;
-import lombok.Data;
+import gov.healthit.chpl.entity.EntityAudit;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 
+@Getter
+@Setter
+@ToString
+@SuperBuilder
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
-@Data
 @Table(name = "criterion_upgraded_from_original_listing_statistic")
-public class CriterionUpgradedToCuresFromOriginalListingStatisticEntity {
+public class CriterionUpgradedToCuresFromOriginalListingStatisticEntity extends EntityAudit {
+    private static final long serialVersionUID = -4175214624438005611L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
@@ -44,22 +56,6 @@ public class CriterionUpgradedToCuresFromOriginalListingStatisticEntity {
     @Basic(optional = false)
     @Column(name = "statistic_date", nullable = false)
     private LocalDate statisticDate;
-
-    @Basic(optional = false)
-    @Column(name = "creation_date", nullable = false)
-    private Date creationDate;
-
-    @Basic(optional = false)
-    @Column(name = "deleted", nullable = false)
-    private Boolean deleted;
-
-    @Basic(optional = false)
-    @Column(name = "last_modified_date", nullable = false)
-    private Date lastModifiedDate;
-
-    @Basic(optional = false)
-    @Column(name = "last_modified_user", nullable = false)
-    private Long lastModifiedUser;
 
     public CriterionUpgradedToCuresFromOriginalListingStatistic toDomain() {
         return CriterionUpgradedToCuresFromOriginalListingStatistic.builder()

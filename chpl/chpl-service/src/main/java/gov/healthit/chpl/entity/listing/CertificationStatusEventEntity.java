@@ -1,6 +1,5 @@
 package gov.healthit.chpl.entity.listing;
 
-import java.io.Serializable;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -16,14 +15,23 @@ import javax.persistence.Table;
 import gov.healthit.chpl.domain.CertificationStatus;
 import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.entity.CertificationStatusEntity;
-import lombok.Data;
+import gov.healthit.chpl.entity.EntityAudit;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 
+@Getter
+@Setter
+@ToString
+@SuperBuilder
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
-@Data
 @Table(name = "certification_status_event")
-public class CertificationStatusEventEntity implements Serializable {
-
-    /** Serial Version UID. */
+public class CertificationStatusEventEntity extends EntityAudit {
     private static final long serialVersionUID = 4174889617079658144L;
 
     @Id
@@ -46,18 +54,6 @@ public class CertificationStatusEventEntity implements Serializable {
 
     @Column(name = "reason")
     private String reason;
-
-    @Column(name = "deleted")
-    private Boolean deleted;
-
-    @Column(name = "last_modified_user")
-    private Long lastModifiedUser;
-
-    @Column(name = "last_modified_date", insertable = false, updatable = false)
-    private Date lastModifiedDate;
-
-    @Column(name = "creation_date", insertable = false, updatable = false)
-    private Date creationDate;
 
     public CertificationStatusEvent toDomain() {
         CertificationStatus status = null;

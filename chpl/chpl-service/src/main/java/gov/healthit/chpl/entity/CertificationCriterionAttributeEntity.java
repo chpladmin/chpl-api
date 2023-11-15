@@ -1,7 +1,5 @@
 package gov.healthit.chpl.entity;
 
-import java.util.Date;
-
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -15,17 +13,22 @@ import javax.persistence.Table;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterionEntity;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 
-@Entity
-@Table(name = "certification_criterion_attribute")
-@Data
-@Builder
+@Getter
+@Setter
+@ToString
+@SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
-public class CertificationCriterionAttributeEntity {
+@Entity
+@Table(name = "certification_criterion_attribute")
+public class CertificationCriterionAttributeEntity extends EntityAudit {
+    private static final long serialVersionUID = 8715943799930831350L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -98,19 +101,4 @@ public class CertificationCriterionAttributeEntity {
     @Column(name = "use_cases")
     private Boolean useCases;
 
-    @Basic(optional = false)
-    @Column(name = "creation_date", nullable = false, insertable = false, updatable = false)
-    private Date creationDate;
-
-    @Basic(optional = false)
-    @Column(name = "last_modified_date", nullable = false, insertable = false, updatable = false)
-    private Date lastModifiedDate;
-
-    @Basic(optional = false)
-    @Column(name = "deleted", nullable = false)
-    private Boolean deleted;
-
-    @Basic(optional = false)
-    @Column(name = "last_modified_user", nullable = false)
-    private Long lastModifiedUser;
 }

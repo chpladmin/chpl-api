@@ -14,16 +14,18 @@ import gov.healthit.chpl.api.domain.ApiKey;
 import gov.healthit.chpl.entity.EntityAudit;
 import gov.healthit.chpl.util.Util;
 import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
-@Data
+@Getter
+@Setter
+@ToString
 @SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "api_key")
 public class ApiKeyEntity extends EntityAudit {
