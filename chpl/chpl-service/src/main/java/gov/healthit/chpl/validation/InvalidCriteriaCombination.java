@@ -18,7 +18,8 @@ public class InvalidCriteriaCombination {
 
     @Autowired
     @SuppressWarnings("checkstyle:parameternumber")
-    public InvalidCriteriaCombination(@Value("${criterion.170_315_b_1_old}") Integer criteriaB1Id,
+    public InvalidCriteriaCombination(@Value("${criterion.170_315_a_9}") Integer criteriaA9Id,
+            @Value("${criterion.170_315_b_1_old}") Integer criteriaB1Id,
             @Value("${criterion.170_315_b_1_cures}") Integer criteriaB1RevisedId,
             @Value("${criterion.170_315_b_2_old}") Integer criteriaB2Id,
             @Value("${criterion.170_315_b_2_cures}") Integer criteriaB2RevisedId,
@@ -32,6 +33,7 @@ public class InvalidCriteriaCombination {
             @Value("${criterion.170_315_b_9_old}") Integer criteriaB9Id,
             @Value("${criterion.170_315_b_9_cures}") Integer criteriaB9RevisedId,
             @Value("${criterion.170_315_b_10}") Integer criteriaB10Id,
+            @Value("${criterion.170_315_b_11}") Integer criteriaB11Id,
             @Value("${criterion.170_315_c_3_old}") Integer criteriaC3Id,
             @Value("${criterion.170_315_c_3_cures}") Integer criteriaC3RevisedId,
             @Value("${criterion.170_315_d_2_old}") Integer criteriaD2Id,
@@ -50,6 +52,7 @@ public class InvalidCriteriaCombination {
             @Value("${criterion.170_315_g_9_old}") Integer criteriaG9Id,
             @Value("${criterion.170_315_g_9_cures}") Integer criteriaG9RevisedId,
             @Value("${criterion.170_315_g_10}") Integer criteriaG10Id) {
+        final Pair<Integer, Integer> a9Pair = Pair.of(criteriaA9Id, criteriaB11Id);
         final Pair<Integer, Integer> b1Pair = Pair.of(criteriaB1Id, criteriaB1RevisedId);
         final Pair<Integer, Integer> b2Pair = Pair.of(criteriaB2Id, criteriaB2RevisedId);
         final Pair<Integer, Integer> b3Pair = Pair.of(criteriaB3Id, criteriaB3RevisedId);
@@ -67,7 +70,7 @@ public class InvalidCriteriaCombination {
         final Pair<Integer, Integer> d3Pair = Pair.of(criteriaD3Id, criteriaD3RevisedId);
         final Pair<Integer, Integer> d10Pair = Pair.of(criteriaD10Id, criteriaD10RevisedId);
         oldAndNewcriteriaIdPairs = new LinkedHashSet<Pair<Integer, Integer>>(
-                Arrays.asList(b1Pair, b2Pair, b3Pair, b6Pair, b7Pair, b8Pair, b9Pair,
+                Arrays.asList(a9Pair, b1Pair, b2Pair, b3Pair, b6Pair, b7Pair, b8Pair, b9Pair,
                         c3Pair, e1Pair, f5Pair, g6Pair, g8Pair, g9Pair, d2Pair, d3Pair, d10Pair));
     }
 }

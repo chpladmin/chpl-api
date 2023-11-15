@@ -227,6 +227,7 @@ public class CertificationCriterionService {
         public static final String B_9_OLD = "criterion.170_315_b_9_old";
         public static final String B_9_CURES = "criterion.170_315_b_9_cures";
         public static final String B_10 = "criterion.170_315_b_10";
+        public static final String B_11 = "criterion.170_315_b_11";
         public static final String C_1 = "criterion.170_315_c_1";
         public static final String C_2 = "criterion.170_315_c_2";
         public static final String C_3_OLD = "criterion.170_315_c_3_old";
@@ -248,6 +249,7 @@ public class CertificationCriterionService {
         public static final String D_11 = "criterion.170_315_d_11";
         public static final String D_12 = "criterion.170_315_d_12";
         public static final String D_13 = "criterion.170_315_d_13";
+        public static final String D_14 = "criterion.170_315_d_14";
         public static final String E_1_OLD = "criterion.170_315_e_1_old";
         public static final String E_1_CURES = "criterion.170_315_e_1_cures";
         public static final String E_2 = "criterion.170_315_e_2";

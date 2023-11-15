@@ -7,6 +7,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
+import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.search.domain.ListingSearchResult;
 
 /**
@@ -17,7 +18,6 @@ import gov.healthit.chpl.search.domain.ListingSearchResult;
  */
 public class ListingCountDataFilter {
     private static final Logger LOGGER = LogManager.getLogger("chartDataCreatorJobLogger");
-    private static final String EDITION_2015 = "2015";
     private static final String BAD_STATUS = "Retired";
 
     public ListingCountDataFilter() {
@@ -27,8 +27,8 @@ public class ListingCountDataFilter {
     public List<ListingSearchResult> filterData(List<ListingSearchResult> certifiedProducts) {
         List<ListingSearchResult> results = new ArrayList<ListingSearchResult>();
         for (ListingSearchResult result : certifiedProducts) {
-            if (result.getEdition() != null
-                    && result.getEdition().getName().equalsIgnoreCase(EDITION_2015)
+            if ((result.getEdition() == null
+                    || result.getEdition().getName().equalsIgnoreCase(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear()))
                     && !result.getCertificationStatus().getName().equalsIgnoreCase(BAD_STATUS)) {
                 results.add(result);
             }

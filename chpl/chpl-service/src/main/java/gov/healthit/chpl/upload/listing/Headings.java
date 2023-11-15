@@ -100,6 +100,7 @@ public enum Headings {
     UCD_PROCESS("UCD Process Selected"),
     UCD_PROCESS_DETAILS("UCD Process Details"),
     SVAP_REG_TEXT("SVAP Reg Text Citation", "Regulatory Text Citation", "SVAP_REG_TEXT"),
+    RISK_MANAGEMENT_SUMMARY_INFORMATION("Risk Management Summary Information"),
 
     //all below included so we don't give errors of unrecognized col; should not used anywhere
     CRITERIA_170_315_A_1("CRITERIA_170_315_A_1__C"),
@@ -155,6 +156,7 @@ public enum Headings {
     CRITERIA_170_315_D_11("CRITERIA_170_315_D_11__C"),
     CRITERIA_170_315_D_12("CRITERIA_170_315_D_12__C", "CRITERIA_170_315_D_12_Cures__C"),
     CRITERIA_170_315_D_13("CRITERIA_170_315_D_13__C", "CRITERIA_170_315_D_13_Cures__C"),
+    CRITERIA_170_315_D_14("CRITERIA_170_315_D_14__C"),
     CRITERIA_170_315_E_1("CRITERIA_170_315_E_1__C"),
     CRITERIA_170_315_E_1_CURES("CRITERIA_170_315_E_1_Cures__C"),
     CRITERIA_170_315_E_2("CRITERIA_170_315_E_2__C"),
@@ -184,7 +186,7 @@ public enum Headings {
 
     private List<String> colNames;
 
-    Headings(String...csvColNames) {
+    Headings(String... csvColNames) {
         colNames = new ArrayList<String>();
         for (String csvColName : csvColNames) {
             colNames.add(csvColName);

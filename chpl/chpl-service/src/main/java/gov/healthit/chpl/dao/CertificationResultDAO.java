@@ -93,6 +93,7 @@ public class CertificationResultDAO extends BaseDAOImpl {
             entity.setDocumentationUrl(isCertified ? certificationResult.getDocumentationUrl() : null);
             entity.setUseCases(isCertified ? certificationResult.getUseCases() : null);
             entity.setServiceBaseUrlList(isCertified ? certificationResult.getServiceBaseUrlList() : null);
+            entity.setRiskManagementSummaryInformation(isCertified ? certificationResult.getRiskManagementSummaryInformation() : null);
             entity.setPrivacySecurityFramework(isCertified ? certificationResult.getPrivacySecurityFramework() : null);
             entity.setLastModifiedUser(AuthUtil.getAuditId());
             create(entity);
@@ -120,6 +121,7 @@ public class CertificationResultDAO extends BaseDAOImpl {
         entity.setDocumentationUrl(toUpdate.getDocumentationUrl());
         entity.setUseCases(toUpdate.getUseCases());
         entity.setServiceBaseUrlList(toUpdate.getServiceBaseUrlList());
+        entity.setRiskManagementSummaryInformation(toUpdate.getRiskManagementSummaryInformation());
         entity.setPrivacySecurityFramework(toUpdate.getPrivacySecurityFramework());
         entity.setLastModifiedUser(AuthUtil.getAuditId());
 
