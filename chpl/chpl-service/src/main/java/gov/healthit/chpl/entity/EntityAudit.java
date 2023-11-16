@@ -9,9 +9,14 @@ import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
+import javax.persistence.Transient;
 
-import gov.healthit.chpl.auth.user.CognitoJWTAuthenticatedUser;
-import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
+import org.ff4j.FF4j;
+
+import gov.healthit.chpl.FeatureList;
+import gov.healthit.chpl.SpringContext;
+import gov.healthit.chpl.auth.user.CognitoSystemUsers;
+import gov.healthit.chpl.auth.user.SystemUsers;
 import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.util.AuthUtil;
 import lombok.AllArgsConstructor;
@@ -28,6 +33,15 @@ import lombok.experimental.SuperBuilder;
 @MappedSuperclass
 public abstract class EntityAudit implements Serializable {
     private static final long serialVersionUID = 4636811643343798730L;
+
+    @Transient
+    private Boolean useSystemUserIdForAuditUser = false;
+
+    @Transient
+    private Boolean useAdminUserIdForAuditUser = false;
+
+    @Transient
+    private Boolean useDefaulUserIdForAuditUser = false;
 
     @Basic(optional = false)
     @Column(name = "creation_date", nullable = false)
@@ -63,16 +77,42 @@ public abstract class EntityAudit implements Serializable {
     }
 
     private void setLastModifiedUser() {
+        boolean isSsoFeatueOn = isSsoFeatureOn();
+
         //TODO - OCD-4333 Does this work with impersonated users???
         User user = AuthUtil.getCurrentUser();
 
-        if (user instanceof CognitoJWTAuthenticatedUser) {
+        if (isSsoFeatueOn) {
             lastModifiedUser = null;
-            lastModifiedSsoUser = user.getSsoId();
-        } else if (user instanceof JWTAuthenticatedUser ){
-            lastModifiedUser = user.getId();
+            if (useSystemUserIdForAuditUser) {
+                lastModifiedSsoUser = CognitoSystemUsers.SYSTEM_USER_ID;
+            } else if (useAdminUserIdForAuditUser) {
+                lastModifiedSsoUser = CognitoSystemUsers.ADMIN_USER_ID;
+            } else if (useDefaulUserIdForAuditUser) {
+                lastModifiedSsoUser = CognitoSystemUsers.DEFAULT_USER_ID;
+            } else if (user.getSsoId() != null) {
+                lastModifiedSsoUser = user.getSsoId();
+            } else {
+                throw new RuntimeException("Could not determine the Audit User.");
+            }
+        } else {
             lastModifiedSsoUser = null;
+            if (useSystemUserIdForAuditUser) {
+                lastModifiedUser = SystemUsers.SYSTEM_USER_ID;
+            } else if (useAdminUserIdForAuditUser) {
+                lastModifiedUser = SystemUsers.ADMIN_USER_ID;
+            } else if (useDefaulUserIdForAuditUser) {
+                lastModifiedUser = SystemUsers.DEFAULT_USER_ID;
+            } else if (user.getId() != null) {
+                lastModifiedUser = user.getId();
+            } else {
+                throw new RuntimeException("Could not determine the Audit User.");
+            }
         }
+    }
 
+    private boolean isSsoFeatureOn() {
+        FF4j ff4j = SpringContext.getBean(FF4j.class);
+        return ff4j.check(FeatureList.SSO);
     }
 }

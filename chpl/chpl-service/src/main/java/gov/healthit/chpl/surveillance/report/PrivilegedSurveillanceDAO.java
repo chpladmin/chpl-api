@@ -1,7 +1,6 @@
 package gov.healthit.chpl.surveillance.report;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Query;
@@ -18,7 +17,6 @@ import gov.healthit.chpl.surveillance.report.dto.SurveillanceProcessTypeDTO;
 import gov.healthit.chpl.surveillance.report.entity.QuarterlyReportSurveillanceMapEntity;
 import gov.healthit.chpl.surveillance.report.entity.SurveillanceOutcomeEntity;
 import gov.healthit.chpl.surveillance.report.entity.SurveillanceProcessTypeEntity;
-import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import lombok.extern.log4j.Log4j2;
 
@@ -181,10 +179,7 @@ public class PrivilegedSurveillanceDAO extends BaseDAOImpl {
         entity.setNondisclosureEvaluation(toCreate.getNondisclosureEvaluation());
         entity.setDirectionDeveloperResolution(toCreate.getDirectionDeveloperResolution());
         entity.setCompletedCapVerification(toCreate.getCompletedCapVerification());
-        entity.setLastModifiedDate(new Date());
-        entity.setCreationDate(new Date());
         entity.setDeleted(false);
-        entity.setLastModifiedUser(AuthUtil.getAuditId());
         create(entity);
 
         PrivilegedSurveillanceDTO result = null;
@@ -224,8 +219,6 @@ public class PrivilegedSurveillanceDAO extends BaseDAOImpl {
         entity.setNondisclosureEvaluation(toUpdate.getNondisclosureEvaluation());
         entity.setDirectionDeveloperResolution(toUpdate.getDirectionDeveloperResolution());
         entity.setCompletedCapVerification(toUpdate.getCompletedCapVerification());
-        entity.setLastModifiedDate(new Date());
-        entity.setLastModifiedUser(AuthUtil.getAuditId());
         update(entity);
 
         PrivilegedSurveillanceDTO result = null;
@@ -239,9 +232,7 @@ public class PrivilegedSurveillanceDAO extends BaseDAOImpl {
 
     public void delete(Long idToDelete) throws EntityRetrievalException {
         QuarterlyReportSurveillanceMapEntity entity = getEntityById(idToDelete);
-        entity.setLastModifiedDate(new Date());
         entity.setDeleted(true);
-        entity.setLastModifiedUser(AuthUtil.getAuditId());
         update(entity);
     }
 

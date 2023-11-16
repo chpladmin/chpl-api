@@ -38,7 +38,6 @@ public class UserCertificationBodyMapDAO extends BaseDAOImpl {
     public void delete(UserCertificationBodyMapDTO dto) throws EntityRetrievalException {
         UserCertificationBodyMapEntity entity = getEntityById(dto.getId());
         entity.setDeleted(true);
-        entity.setLastModifiedUser(getUserId(User.SYSTEM_USER_ID));
         update(entity);
     }
 
@@ -119,7 +118,7 @@ public class UserCertificationBodyMapDAO extends BaseDAOImpl {
         if (result.size() == 0) {
             return null;
         }
-        return (UserCertificationBodyMapEntity) result.get(0);
+        return result.get(0);
     }
 
     private UserCertificationBodyMapEntity create(UserCertificationBodyMapEntity entity) {

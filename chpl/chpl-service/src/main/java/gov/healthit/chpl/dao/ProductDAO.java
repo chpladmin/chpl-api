@@ -23,7 +23,6 @@ import gov.healthit.chpl.entity.ProductEntitySimple;
 import gov.healthit.chpl.entity.ProductInsertableOwnerEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.util.AuthUtil;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -39,7 +38,6 @@ public class ProductDAO extends BaseDAOImpl {
             entity.setName(product.getName());
             entity.setReportFileLocation(product.getReportFileLocation());
             entity.setDeveloperId(developerId);
-            entity.setLastModifiedUser(AuthUtil.getAuditId());
 
             if (product.getContact() != null) {
                 Long contactId = contactDao.create(product.getContact());
@@ -63,7 +61,6 @@ public class ProductDAO extends BaseDAOImpl {
         ProductInsertableOwnerEntity entityToAdd = new ProductInsertableOwnerEntity();
         entityToAdd.setProductId(productId);
         entityToAdd.setDeleted(false);
-        entityToAdd.setLastModifiedUser(AuthUtil.getAuditId());
         if (owner.getDeveloper() != null) {
             entityToAdd.setDeveloperId(owner.getDeveloper().getId());
         }
@@ -77,7 +74,6 @@ public class ProductDAO extends BaseDAOImpl {
         entity.setReportFileLocation(product.getReportFileLocation());
         entity.setName(product.getName());
         entity.setDeveloperId(product.getOwner().getId());
-        entity.setLastModifiedUser(AuthUtil.getAuditId());
         if (product.getContact() != null) {
             if (product.getContact().getContactId() == null) {
                 // if there is not contact id then it must not exist - create it
@@ -107,7 +103,6 @@ public class ProductDAO extends BaseDAOImpl {
             if (entity.getOwnerHistory() != null && entity.getOwnerHistory().size() > 0) {
                 for (ProductActiveOwnerEntity existingPrevOwner : entity.getOwnerHistory()) {
                     existingPrevOwner.setDeleted(true);
-                    existingPrevOwner.setLastModifiedUser(AuthUtil.getAuditId());
                     update(existingPrevOwner);
                 }
             }
@@ -147,7 +142,6 @@ public class ProductDAO extends BaseDAOImpl {
                 }
                 if (!isInUpdate) {
                     existingPrevOwner.setDeleted(true);
-                    existingPrevOwner.setLastModifiedUser(AuthUtil.getAuditId());
                     update(existingPrevOwner);
                 }
             }
@@ -180,7 +174,6 @@ public class ProductDAO extends BaseDAOImpl {
             throw new EntityRetrievalException("Could not find product with id " + id + " for deletion.");
         }
         toDelete.setDeleted(true);
-        toDelete.setLastModifiedUser(AuthUtil.getAuditId());
         update(toDelete);
     }
 
@@ -190,7 +183,6 @@ public class ProductDAO extends BaseDAOImpl {
             throw new EntityRetrievalException("Could not find previous ownership with id " + previousOwnershipId);
         }
         toDelete.setDeleted(true);
-        toDelete.setLastModifiedUser(AuthUtil.getAuditId());
         update(toDelete);
     }
 

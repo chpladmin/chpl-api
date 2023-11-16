@@ -1,6 +1,5 @@
 package gov.healthit.chpl.dao.auth;
 
-import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Query;
@@ -12,7 +11,6 @@ import gov.healthit.chpl.domain.auth.UserInvitation;
 import gov.healthit.chpl.entity.auth.InvitationEntity;
 import gov.healthit.chpl.exception.UserCreationException;
 import gov.healthit.chpl.exception.UserRetrievalException;
-import gov.healthit.chpl.util.AuthUtil;
 import lombok.extern.log4j.Log4j2;
 
 @Repository(value = "invitationDAO")
@@ -25,7 +23,6 @@ public class InvitationDAO extends BaseDAOImpl {
         toCreate.setEmailAddress(invitation.getEmailAddress());
         toCreate.setInviteToken(invitation.getHash());
         toCreate.setDeleted(false);
-        toCreate.setLastModifiedUser(AuthUtil.getAuditId());
         super.create(toCreate);
         return toCreate.getId();
     }
@@ -39,19 +36,14 @@ public class InvitationDAO extends BaseDAOImpl {
         toUpdate.setConfirmToken(invitation.getConfirmationToken());
         toUpdate.setInviteToken(invitation.getInvitationToken());
         toUpdate.setCreatedUserId(invitation.getCreatedUserId());
-        toUpdate.setLastModifiedDate(new Date());
-        toUpdate.setLastModifiedUser(AuthUtil.getAuditId());
         super.update(toUpdate);
         return toUpdate.toDomain();
     }
 
     public void delete(Long id) throws UserRetrievalException {
-        Date currentDate = new Date();
         InvitationEntity toDelete = getEntityById(id);
         if (toDelete != null) {
             toDelete.setDeleted(true);
-            toDelete.setLastModifiedDate(currentDate);
-            toDelete.setLastModifiedUser(AuthUtil.getAuditId());
             super.update(toDelete);
         } else {
             LOGGER.error("Unable to mark user invitation with id '" + id + "' as deleted.");

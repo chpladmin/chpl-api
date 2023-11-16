@@ -1,7 +1,6 @@
 package gov.healthit.chpl.dao;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -60,9 +59,6 @@ public class CertificationIdDAO extends BaseDAOImpl {
         entity = new CertificationIdEntity();
         entity.setCertificationId(this.generateCertificationIdString(listings, year));
         entity.setYear(year);
-        entity.setLastModifiedDate(new Date());
-        entity.setCreationDate(new Date());
-        entity.setLastModifiedUser(MODIFIED_USER_ID);
         entity.setPracticeTypeId(null);
 
         // Store the map entities
@@ -74,9 +70,6 @@ public class CertificationIdDAO extends BaseDAOImpl {
             CertificationIdProductMapEntity mapEntity = new CertificationIdProductMapEntity();
             mapEntity.setCertifiedProductId(prodId);
             mapEntity.setCertificationIdId(newDto.getId());
-            mapEntity.setLastModifiedDate(new Date());
-            mapEntity.setCreationDate(new Date());
-            mapEntity.setLastModifiedUser(MODIFIED_USER_ID);
             entityManager.persist(mapEntity);
         }
 

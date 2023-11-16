@@ -1,6 +1,5 @@
 package gov.healthit.chpl.scheduler.job.urluptime;
 
-import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Query;
@@ -28,9 +27,7 @@ public class UrlUptimeMonitorDAO extends BaseDAOImpl {
         UrlUptimeMonitorEntity entity = UrlUptimeMonitorEntity.builder()
                 .developer(getSimpleDeveloperById(datadogMonitor.getDeveloper().getId(), false))
                 .url(datadogMonitor.getUrl())
-                .creationDate(new Date())
                 .lastModifiedUser(User.SYSTEM_USER_ID)
-                .lastModifiedDate(new Date())
                 .deleted(false)
                 .build();
 

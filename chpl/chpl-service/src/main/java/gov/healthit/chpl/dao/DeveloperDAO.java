@@ -34,7 +34,6 @@ import gov.healthit.chpl.entity.developer.DeveloperStatusType;
 import gov.healthit.chpl.entity.listing.CertifiedProductDetailsEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import lombok.extern.log4j.Log4j2;
 
@@ -90,7 +89,6 @@ public class DeveloperDAO extends BaseDAOImpl {
             developerEntity.setName(developer.getName());
             developerEntity.setWebsite(developer.getWebsite());
             developerEntity.setSelfDeveloper(developer.getSelfDeveloper());
-            developerEntity.setLastModifiedUser(AuthUtil.getAuditId());
             create(developerEntity);
 
             if (CollectionUtils.isEmpty(developer.getStatusEvents())) {
@@ -99,7 +97,6 @@ public class DeveloperDAO extends BaseDAOImpl {
                 DeveloperStatusEntity defaultStatus = getStatusByName(DEFAULT_STATUS.toString());
                 initialStatusEntity.setDeveloperStatusId(defaultStatus.getId());
                 initialStatusEntity.setStatusDate(new Date());
-                initialStatusEntity.setLastModifiedUser(AuthUtil.getAuditId());
                 create(initialStatusEntity);
             } else {
                 for (DeveloperStatusEvent providedDeveloperStatusEvent : developer.getStatusEvents()) {
@@ -113,7 +110,6 @@ public class DeveloperDAO extends BaseDAOImpl {
                         if (defaultStatus != null) {
                             currDevStatus.setDeveloperStatusId(defaultStatus.getId());
                             currDevStatus.setStatusDate(providedDeveloperStatusEvent.getStatusDate());
-                            currDevStatus.setLastModifiedUser(AuthUtil.getAuditId());
                             create(currDevStatus);
                         } else {
                             String msg = "Could not find status with name "
@@ -175,7 +171,6 @@ public class DeveloperDAO extends BaseDAOImpl {
         entity.setSelfDeveloper(developer.getSelfDeveloper() == null ? false : developer.getSelfDeveloper());
         entity.setName(developer.getName());
         entity.setDeleted(false);
-        entity.setLastModifiedUser(AuthUtil.getAuditId());
         update(entity);
     }
 
@@ -190,7 +185,6 @@ public class DeveloperDAO extends BaseDAOImpl {
                 statusEventEntity.setDeveloperStatusId(defaultStatus.getId());
                 statusEventEntity.setReason(statusEvent.getReason());
                 statusEventEntity.setStatusDate(statusEvent.getStatusDate());
-                statusEventEntity.setLastModifiedUser(AuthUtil.getAuditId());
                 statusEventEntity.setDeleted(Boolean.FALSE);
                 create(statusEventEntity);
             } else {
@@ -236,7 +230,6 @@ public class DeveloperDAO extends BaseDAOImpl {
             throw new EntityRetrievalException(msg);
         } else {
             statusEventEntity.setDeleted(Boolean.TRUE);
-            statusEventEntity.setLastModifiedUser(AuthUtil.getAuditId());
             update(statusEventEntity);
         }
     }
@@ -247,7 +240,6 @@ public class DeveloperDAO extends BaseDAOImpl {
 
         if (toDelete != null) {
             toDelete.setDeleted(true);
-            toDelete.setLastModifiedUser(AuthUtil.getAuditId());
             update(toDelete);
         }
     }

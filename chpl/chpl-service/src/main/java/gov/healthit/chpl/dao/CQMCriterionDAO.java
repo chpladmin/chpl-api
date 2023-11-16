@@ -13,7 +13,6 @@ import gov.healthit.chpl.entity.CQMCriterionEntity;
 import gov.healthit.chpl.entity.CQMVersionEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.util.AuthUtil;
 
 @Repository(value = "cqmCriterionDAO")
 public class CQMCriterionDAO extends BaseDAOImpl {
@@ -37,12 +36,8 @@ public class CQMCriterionDAO extends BaseDAOImpl {
             entity.setCqmCriterionTypeId(dto.getCqmCriterionTypeId());
             entity.setCqmDomain(dto.getCqmDomain());
             entity.setCqmVersionId(dto.getCqmVersionId());
-            entity.setCreationDate(dto.getCreationDate());
             entity.setDeleted(dto.getDeleted());
             entity.setDescription(dto.getDescription());
-            // entity.setId(dto.getId());
-            entity.setLastModifiedDate(dto.getLastModifiedDate());
-            entity.setLastModifiedUser(AuthUtil.getAuditId());
             entity.setNqfNumber(dto.getNqfNumber());
             entity.setNumber(dto.getNumber());
             entity.setTitle(dto.getTitle());
@@ -66,12 +61,8 @@ public class CQMCriterionDAO extends BaseDAOImpl {
         entity.setCqmCriterionTypeId(dto.getCqmCriterionTypeId());
         entity.setCqmDomain(dto.getCqmDomain());
         entity.setCqmVersionId(dto.getCqmVersionId());
-        entity.setCreationDate(dto.getCreationDate());
         entity.setDeleted(dto.getDeleted());
         entity.setDescription(dto.getDescription());
-        // entity.setId(dto.getId());
-        entity.setLastModifiedDate(dto.getLastModifiedDate());
-        entity.setLastModifiedUser(AuthUtil.getAuditId());
         entity.setNqfNumber(dto.getNqfNumber());
         entity.setNumber(dto.getNumber());
         entity.setTitle(dto.getTitle());

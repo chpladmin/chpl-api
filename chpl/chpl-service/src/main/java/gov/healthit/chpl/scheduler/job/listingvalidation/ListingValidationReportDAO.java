@@ -1,6 +1,5 @@
 package gov.healthit.chpl.scheduler.job.listingvalidation;
 
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,9 +23,7 @@ public class ListingValidationReportDAO extends BaseDAOImpl {
                 .certificationStatusName(lvr.getCertificationStatusName())
                 .errorMessage(lvr.getErrorMessage())
                 .reportDate(lvr.getReportDate())
-                .creationDate(new Date())
                 .lastModifiedUser(User.SYSTEM_USER_ID)
-                .lastModifiedDate(new Date())
                 .deleted(false)
                 .build();
 

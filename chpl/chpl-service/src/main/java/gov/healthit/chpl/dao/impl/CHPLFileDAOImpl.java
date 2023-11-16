@@ -31,7 +31,6 @@ public class CHPLFileDAOImpl extends BaseDAOImpl implements CHPLFileDAO {
         insert.setFileName(dto.getFileName());
         insert.setContentType(dto.getContentType());
         insert.setAssociatedDate(dto.getAssociatedDate());
-        insert.setCreationDate(new Date());
         insert.setLastModifiedDate(new Date());
         insert.setDeleted(false);
         if (dto.getLastModifiedUser() != null) {

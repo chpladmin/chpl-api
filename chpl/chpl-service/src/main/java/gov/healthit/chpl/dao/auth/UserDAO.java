@@ -1,7 +1,6 @@
 package gov.healthit.chpl.dao.auth;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Query;
@@ -18,7 +17,6 @@ import gov.healthit.chpl.entity.auth.UserPermissionEntity;
 import gov.healthit.chpl.exception.MultipleUserAccountsException;
 import gov.healthit.chpl.exception.UserCreationException;
 import gov.healthit.chpl.exception.UserRetrievalException;
-import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.UserMapper;
 
 @Repository(value = "userDAO")
@@ -57,8 +55,6 @@ public class UserDAO extends BaseDAOImpl {
             userEntity.setAccountLocked(user.isAccountLocked());
             userEntity.setCredentialsExpired(!user.isCredentialsNonExpired());
             userEntity.setPasswordResetRequired(user.isPasswordResetRequired());
-            userEntity.setLastModifiedUser(AuthUtil.getAuditId());
-            userEntity.setLastModifiedDate(new Date());
             userEntity.setDeleted(false);
 
             UserContactEntity contact = new UserContactEntity();
@@ -67,8 +63,6 @@ public class UserDAO extends BaseDAOImpl {
             contact.setFriendlyName(user.getFriendlyName());
             contact.setPhoneNumber(user.getPhoneNumber());
             contact.setTitle(user.getTitle());
-            contact.setLastModifiedUser(AuthUtil.getAuditId());
-            contact.setLastModifiedDate(new Date());
             contact.setDeleted(false);
             contact.setSignatureDate(null); // null for new user, must confirm
             // email to get it filled in
@@ -96,8 +90,6 @@ public class UserDAO extends BaseDAOImpl {
         userEntity.setCredentialsExpired(!user.isCredentialsNonExpired());
         userEntity.setPasswordResetRequired(user.isPasswordResetRequired());
         userEntity.setLastLoggedInDate(user.getLastLoggedInDate());
-        userEntity.setLastModifiedUser(AuthUtil.getAuditId());
-        userEntity.getContact().setLastModifiedUser(AuthUtil.getAuditId());
 
         super.update(userEntity);
         return userMapper.from(userEntity);
@@ -114,8 +106,6 @@ public class UserDAO extends BaseDAOImpl {
 
     private void delete(UserEntity toDelete) {
         // things related to the user are deleted via triggers
-        toDelete.setLastModifiedUser(AuthUtil.getAuditId());
-        toDelete.setLastModifiedDate(new Date());
         toDelete.setDeleted(true);
         super.update(toDelete);
     }

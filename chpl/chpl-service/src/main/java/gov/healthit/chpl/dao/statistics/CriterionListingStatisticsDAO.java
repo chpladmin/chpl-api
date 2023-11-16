@@ -1,7 +1,6 @@
 package gov.healthit.chpl.dao.statistics;
 
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -101,8 +100,6 @@ public class CriterionListingStatisticsDAO extends BaseDAOImpl {
         entity.setCertificationCriterionId(dto.getCriterion().getId());
         entity.setStatisticDate(dto.getStatisticDate());
         entity.setLastModifiedUser(getUserId(User.SYSTEM_USER_ID));
-        entity.setLastModifiedDate(new Date());
-        entity.setCreationDate(new Date());
         entity.setDeleted(false);
 
         create(entity);

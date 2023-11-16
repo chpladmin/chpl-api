@@ -1,7 +1,6 @@
 package gov.healthit.chpl.dao.statistics;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Query;
@@ -47,11 +46,6 @@ public class NonconformityTypeStatisticsDAO extends BaseDAOImpl {
         entity.setNonconformityType(dto.getNonconformityType());
         if (dto.getCriterion() != null) {
             entity.setCertificationCriterionId(dto.getCriterion().getId());
-        }
-        if (dto.getLastModifiedDate() == null) {
-            entity.setLastModifiedDate(new Date());
-        } else {
-            entity.setLastModifiedDate(dto.getLastModifiedDate());
         }
 
         if (dto.getLastModifiedUser() == null) {

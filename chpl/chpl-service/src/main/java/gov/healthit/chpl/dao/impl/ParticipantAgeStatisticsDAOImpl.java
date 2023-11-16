@@ -1,7 +1,6 @@
 package gov.healthit.chpl.dao.impl;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Query;
@@ -64,16 +63,6 @@ public class ParticipantAgeStatisticsDAOImpl extends BaseDAOImpl implements Part
             entity.setLastModifiedUser(dto.getLastModifiedUser());
         } else {
             entity.setLastModifiedUser(getUserId(User.SYSTEM_USER_ID));
-        }
-        if (dto.getLastModifiedDate() != null) {
-            entity.setLastModifiedDate(dto.getLastModifiedDate());
-        } else {
-            entity.setLastModifiedDate(new Date());
-        }
-        if (dto.getCreationDate() != null) {
-            entity.setCreationDate(dto.getCreationDate());
-        } else {
-            entity.setCreationDate(new Date());
         }
 
         entityManager.persist(entity);
