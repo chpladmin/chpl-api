@@ -15,7 +15,7 @@ import gov.healthit.chpl.util.DateUtil;
 @Component
 public class UploadedAfterCertificationDateActivity implements ListingActivity {
 
-    private int numDaysAllowedAfterCertificationDate = 1;
+    private int numDaysAllowedAfterCertificationDate;
 
     @Autowired
     public UploadedAfterCertificationDateActivity(
