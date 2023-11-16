@@ -38,7 +38,7 @@ public class CognitoJwtUserConverter {
         DecodedJWT decodeJwt = decodeJwt(jwt);
 
         user.setAuthenticated(true);
-        user.setId(decodeJwt.getClaim("id").asLong());
+        user.setId(null);
         user.setFullName(decodeJwt.getClaim("name").asString());
         user.setSubjectName(decodeJwt.getClaim("email").asString());
 

@@ -3,6 +3,7 @@ package gov.healthit.chpl.util;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -50,6 +51,25 @@ public class AuthUtil {
             }
         }
         return User.DEFAULT_USER_ID;
+    }
+
+
+    //TODO - OCD-4377 - Need to figure out how to get this
+    public static UUID getAuditSsoUser() {
+        //JWTAuthenticatedUser user = null;
+        //Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+        //if (auth instanceof JWTAuthenticatedUser) {
+        //    user = (JWTAuthenticatedUser) auth;
+        //    if (user.getImpersonatingUser() != null) {
+        //        return user.getImpersonatingUser().getId();
+        //    } else {
+        //        return user.getId();
+        //    }
+        //}
+        //return User.DEFAULT_USER_ID;
+
+        return UUID.fromString("c5fcfa4d-5557-405d-a9e6-1ba73a469bc3");
     }
 
     public static Authentication getCurrentAuthentication() {

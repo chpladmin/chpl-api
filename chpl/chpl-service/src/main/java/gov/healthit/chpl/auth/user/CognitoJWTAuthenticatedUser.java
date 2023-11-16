@@ -12,10 +12,11 @@ import gov.healthit.chpl.dto.auth.UserDTO;
 import lombok.Data;
 
 @Data
-public class JWTAuthenticatedUser implements User {
+public class CognitoJWTAuthenticatedUser implements User {
+    private static final long serialVersionUID = 2847351904166625725L;
 
-    private static final long serialVersionUID = 1L;
     private Long id;
+    private UUID ssoId;
     private String email;
     private String fullName;
     private String friendlyName;
@@ -29,7 +30,7 @@ public class JWTAuthenticatedUser implements User {
     private UserDTO impersonatingUser;
 
     /** Default constructor. */
-    public JWTAuthenticatedUser() {
+    public CognitoJWTAuthenticatedUser() {
         this.email = null;
     }
 
@@ -128,8 +129,4 @@ public class JWTAuthenticatedUser implements User {
         this.email = subject;
     }
 
-    @Override
-    public UUID getSsoId() {
-        return null;
-    }
 }
