@@ -78,8 +78,8 @@ public class QuestionableActivityListener implements EnvironmentAware {
         // outside of the acceptable activity threshold
         // get confirm date of the listing to check against the threshold
         Date confirmDate = listingDao.getConfirmDate(newData.getId());
-        if (originalData != null &&
-                confirmDate != null && activity.getActivityDate() != null
+        if (originalData != null
+                && confirmDate != null && activity.getActivityDate() != null
                 && (activity.getActivityDate().getTime() - confirmDate.getTime() > listingActivityThresholdMillis)) {
 
             // look for certification result questionable activity
