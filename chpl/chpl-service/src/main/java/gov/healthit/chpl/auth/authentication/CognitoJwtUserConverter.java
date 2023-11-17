@@ -1,5 +1,7 @@
 package gov.healthit.chpl.auth.authentication;
 
+import java.util.UUID;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -11,7 +13,7 @@ import com.auth0.jwt.interfaces.RSAKeyProvider;
 
 import gov.healthit.chpl.auth.jwt.CognitoRsaKeyProvider;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
-import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
+import gov.healthit.chpl.auth.user.CognitoJWTAuthenticatedUser;
 import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.exception.JWTValidationException;
 import gov.healthit.chpl.exception.MultipleUserAccountsException;
@@ -34,11 +36,11 @@ public class CognitoJwtUserConverter {
     }
 
     public User getAuthenticatedUser(String jwt) throws JWTValidationException, MultipleUserAccountsException {
-        JWTAuthenticatedUser user = new JWTAuthenticatedUser();
+        CognitoJWTAuthenticatedUser user = new CognitoJWTAuthenticatedUser();
         DecodedJWT decodeJwt = decodeJwt(jwt);
 
         user.setAuthenticated(true);
-        user.setId(null);
+        user.setSsoId(UUID.fromString(decodeJwt.getSubject()));
         user.setFullName(decodeJwt.getClaim("name").asString());
         user.setSubjectName(decodeJwt.getClaim("email").asString());
 
