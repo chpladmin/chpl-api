@@ -20,7 +20,9 @@ import gov.healthit.chpl.subscription.entity.SubscriptionConsolidationMethodEnti
 import gov.healthit.chpl.subscription.entity.SubscriptionEntity;
 import gov.healthit.chpl.subscription.entity.SubscriptionObjectTypeEntity;
 import gov.healthit.chpl.subscription.entity.SubscriptionSubjectEntity;
+import gov.healthit.chpl.subscription.search.SubscriptionSearchResult;
 import gov.healthit.chpl.subscription.service.SubscriptionLookupUtil;
+import gov.healthit.chpl.util.DateUtil;
 import lombok.extern.log4j.Log4j2;
 
 @Repository
@@ -216,5 +218,37 @@ public class SubscriptionDao extends BaseDAOImpl {
         return results.stream()
             .map(result -> result.getId())
             .collect(Collectors.toList());
+    }
+
+    public List<SubscriptionSearchResult> getAllSubscriptions() {
+        Query query = entityManager.createQuery("SELECT subscription "
+                + "FROM SubscriptionEntity subscription "
+                + "JOIN FETCH subscription.subscriptionSubject subject "
+                + "JOIN FETCH subject.subscriptionObjectType "
+                + "JOIN FETCH subscription.subscriptionConsolidationMethod "
+                + "JOIN FETCH subscription.subscriber subscriber "
+                + "JOIN FETCH subscriber.subscriberStatus "
+                + "JOIN FETCH subscriber.subscriberRole ",
+                SubscriptionEntity.class);
+
+        List<SubscriptionEntity> results = query.getResultList();
+        return results.stream()
+            .map(result -> toSearchResult(result))
+            .collect(Collectors.toList());
+    }
+
+    private SubscriptionSearchResult toSearchResult(SubscriptionEntity entity) {
+        return SubscriptionSearchResult.builder()
+                .id(entity.getId())
+                .creationDate(DateUtil.toLocalDateTime(entity.getCreationDate().getTime()))
+                .subscribedObjectId(entity.getSubscribedObjectId())
+                .subscribedObjectName("TBD") //TODO: Figure out how to pull the listing/developer/etc and put it here
+                .subscriberEmail(entity.getSubscriber().getEmail())
+                .subscriberId(entity.getSubscriberId())
+                .subscriberRole(entity.getSubscriber().getSubscriberRole().getName())
+                .subscriberStatus(entity.getSubscriber().getSubscriberStatus().getName())
+                .subscriptionObjectType(entity.getSubscriptionSubject().getSubscriptionObjectType().getName())
+                .subscriptionSubject(entity.getSubscriptionSubject().getSubject())
+                .build();
     }
 }
