@@ -1,6 +1,6 @@
 package gov.healthit.chpl.subscription.search;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
@@ -47,122 +47,139 @@ public class SubscriptionSearchService {
         searchRequestValidator.validate(searchRequest);
 
         List<SubscriptionSearchResult> searchResults = subscriptionDao.getAllSubscriptions();
-        LOGGER.debug("Total developers: " + developers.size());
-        List<SubscriptionSearchResult> matchedDevelopers = developers.stream()
-            .filter(dev -> matchesSearchTerm(dev, searchRequest.getSearchTerm()))
-            .filter(dev -> matchesDeveloperName(dev, searchRequest.getDeveloperName()))
-            .filter(dev -> matchesDeveloperCode(dev, searchRequest.getDeveloperCode()))
-            .filter(dev -> matchesAcbNames(dev, searchRequest.getCertificationBodies()))
-            .filter(dev -> matchesStatuses(dev, searchRequest.getStatuses()))
-            .filter(dev -> matchesDecertificationDateRange(dev, searchRequest.getDecertificationDateStart(), searchRequest.getDecertificationDateEnd()))
+        LOGGER.debug("Total subscriptions: " + searchResults.size());
+        List<SubscriptionSearchResult> matchedSubscriptions = searchResults.stream()
+            .filter(sub -> matchesSearchTerm(sub, searchRequest.getSearchTerm()))
+            .filter(sub -> matchesSubscriptionSubjects(sub, searchRequest.getSubscriptionSubjects()))
+            .filter(sub -> matchesSubscriptionObjectTypes(sub, searchRequest.getSubscriptionObjectTypes()))
+            .filter(sub -> matchesSubscriberRoles(sub, searchRequest.getSubscriberRoles()))
+            .filter(sub -> matchesSubscriberStatuses(sub, searchRequest.getSubscriberStatuses()))
+            .filter(dev -> matchesCreationDateRange(dev, searchRequest.getCreationDateTimeStart(), searchRequest.getCreationDateTimeEnd()))
             .collect(Collectors.toList());
-        LOGGER.debug("Total matched developers: " + matchedDevelopers.size());
+        LOGGER.debug("Total matched subscriptions: " + searchResults.size());
 
         SubscriptionSearchResponse response = new SubscriptionSearchResponse();
-        response.setRecordCount(matchedDevelopers.size());
+        response.setRecordCount(searchResults.size());
         response.setPageNumber(searchRequest.getPageNumber());
         response.setPageSize(searchRequest.getPageSize());
 
-        sort(matchedDevelopers, searchRequest.getOrderBy(), searchRequest.getSortDescending());
-        List<SubscriptionSearchResult> pageOfDevelopers
-            = getPage(matchedDevelopers, getBeginIndex(searchRequest), getEndIndex(searchRequest));
-        response.setResults(pageOfDevelopers);
+        sort(searchResults, searchRequest.getOrderBy(), searchRequest.getSortDescending());
+        List<SubscriptionSearchResult> pageOfSubscriptions
+            = getPage(matchedSubscriptions, getBeginIndex(searchRequest), getEndIndex(searchRequest));
+        response.setResults(pageOfSubscriptions);
         return response;
     }
 
-    private boolean matchesSearchTerm(SubscriptionSearchResult developer, String searchTerm) {
-        return matchesDeveloperName(developer, searchTerm)
-                || matchesDeveloperCode(developer, searchTerm);
+    private boolean matchesSearchTerm(SubscriptionSearchResult subscription, String searchTerm) {
+        return matchesSubscribedObjectName(subscription, searchTerm)
+                || matchesSubscriberEmail(subscription, searchTerm);
     }
 
-    private boolean matchesDeveloperName(SubscriptionSearchResult developer, String developerName) {
-        if (StringUtils.isEmpty(developerName)) {
+    private boolean matchesSubscribedObjectName(SubscriptionSearchResult subscription, String subscribedObjectName) {
+        if (StringUtils.isEmpty(subscribedObjectName)) {
             return true;
         }
 
-        return !StringUtils.isEmpty(developer.getName())
-                && developer.getName().toUpperCase().contains(developerName.toUpperCase());
+        return !StringUtils.isEmpty(subscription.getSubscribedObjectName())
+                && subscription.getSubscribedObjectName().toUpperCase().contains(subscribedObjectName.toUpperCase());
     }
 
-    private boolean matchesDeveloperCode(SubscriptionSearchResult developer, String developerCode) {
-        if (StringUtils.isEmpty(developerCode)) {
+    private boolean matchesSubscriberEmail(SubscriptionSearchResult subscription, String subscriberEmail) {
+        if (StringUtils.isEmpty(subscriberEmail)) {
             return true;
         }
 
-        return !StringUtils.isEmpty(developer.getCode())
-                && developer.getCode().toUpperCase().contains(developerCode.toUpperCase());
+        return !StringUtils.isEmpty(subscription.getSubscriberEmail())
+                && subscription.getSubscriberEmail().toUpperCase().contains(subscriberEmail.toUpperCase());
     }
 
-    private boolean matchesAcbNames(SubscriptionSearchResult developer, Set<String> acbNames) {
-        if (CollectionUtils.isEmpty(acbNames)) {
+    private boolean matchesSubscriptionSubjects(SubscriptionSearchResult subscription, Set<String> subjectNames) {
+        if (CollectionUtils.isEmpty(subjectNames)) {
             return true;
         }
 
-        List<String> acbNamesUpperCase = acbNames.stream().map(acbName -> acbName.toUpperCase()).collect(Collectors.toList());
-        if (CollectionUtils.isEmpty(developer.getAssociatedAcbs())) {
-            return false;
-        }
-        Set<String> developerAcbNamesUpperCase = developer.getAssociatedAcbs().stream()
-                .map(acb -> acb.getName().toUpperCase())
-                .collect(Collectors.toSet());
-        developerAcbNamesUpperCase.retainAll(acbNamesUpperCase);
-        return !CollectionUtils.isEmpty(developerAcbNamesUpperCase);
+        List<String> subjectNamesUpperCase = subjectNames.stream().map(name -> name.toUpperCase()).collect(Collectors.toList());
+        return subscription.getSubscriptionSubject() != null
+                && !StringUtils.isEmpty(subscription.getSubscriptionSubject())
+                && subjectNamesUpperCase.contains(subscription.getSubscriptionSubject().toUpperCase());
     }
 
-    private boolean matchesStatuses(SubscriptionSearchResult developer, Set<String> statuses) {
-        if (CollectionUtils.isEmpty(statuses)) {
+    private boolean matchesSubscriptionObjectTypes(SubscriptionSearchResult subscription, Set<String> subscriptionObjectTypes) {
+        if (CollectionUtils.isEmpty(subscriptionObjectTypes)) {
             return true;
         }
 
-        List<String> statusesUpperCase = statuses.stream().map(status -> status.toUpperCase()).collect(Collectors.toList());
-        return developer.getStatus() != null
-                && !StringUtils.isEmpty(developer.getStatus().getName())
-                && statusesUpperCase.contains(developer.getStatus().getName().toUpperCase());
+        List<String> subscriptionObjectTypesUpperCase = subscriptionObjectTypes.stream().map(name -> name.toUpperCase()).collect(Collectors.toList());
+        return subscription.getSubscriptionObjectType() != null
+                && !StringUtils.isEmpty(subscription.getSubscriptionObjectType())
+                && subscriptionObjectTypesUpperCase.contains(subscription.getSubscriptionObjectType().toUpperCase());
     }
 
-    private boolean matchesDecertificationDateRange(SubscriptionSearchResult developer, String decertificationDateRangeStart,
-            String decertificationDateRangeEnd) {
-        if (StringUtils.isAllEmpty(decertificationDateRangeStart, decertificationDateRangeEnd)) {
+    private boolean matchesSubscriberRoles(SubscriptionSearchResult subscription, Set<String> subscriberRoles) {
+        if (CollectionUtils.isEmpty(subscriberRoles)) {
             return true;
         }
-        LocalDate startDate = parseLocalDate(decertificationDateRangeStart);
-        LocalDate endDate = parseLocalDate(decertificationDateRangeEnd);
-        if (developer.getDecertificationDate() != null) {
-            if (startDate == null && endDate != null) {
-                return developer.getDecertificationDate().isEqual(endDate) || developer.getDecertificationDate().isBefore(endDate);
-            } else if (startDate != null && endDate == null) {
-                return developer.getDecertificationDate().isEqual(startDate) || developer.getDecertificationDate().isAfter(startDate);
+
+        List<String> subscriberRolesUpperCase = subscriberRoles.stream().map(name -> name.toUpperCase()).collect(Collectors.toList());
+        return subscription.getSubscriberRole() != null
+                && !StringUtils.isEmpty(subscription.getSubscriberRole())
+                && subscriberRolesUpperCase.contains(subscription.getSubscriberRole().toUpperCase());
+    }
+
+    private boolean matchesSubscriberStatuses(SubscriptionSearchResult subscription, Set<String> subscriberStatuses) {
+        if (CollectionUtils.isEmpty(subscriberStatuses)) {
+            return true;
+        }
+
+        List<String> subscriberStatusesUpperCase = subscriberStatuses.stream().map(name -> name.toUpperCase()).collect(Collectors.toList());
+        return subscription.getSubscriberStatus() != null
+                && !StringUtils.isEmpty(subscription.getSubscriberStatus())
+                && subscriberStatusesUpperCase.contains(subscription.getSubscriberStatus().toUpperCase());
+    }
+
+    private boolean matchesCreationDateRange(SubscriptionSearchResult subscription, String creationDateRangeStart,
+            String creationDateRangeEnd) {
+        if (StringUtils.isAllEmpty(creationDateRangeStart, creationDateRangeEnd)) {
+            return true;
+        }
+        LocalDateTime startDateTime = parseLocalDateTime(creationDateRangeStart);
+        LocalDateTime endDateTime = parseLocalDateTime(creationDateRangeEnd);
+        if (subscription.getCreationDate() != null) {
+            if (startDateTime == null && endDateTime != null) {
+                return subscription.getCreationDate().isEqual(endDateTime) || subscription.getCreationDate().isBefore(endDateTime);
+            } else if (startDateTime != null && endDateTime == null) {
+                return subscription.getCreationDate().isEqual(startDateTime) || subscription.getCreationDate().isAfter(startDateTime);
             } else {
-                return (developer.getDecertificationDate().isEqual(endDate) || developer.getDecertificationDate().isBefore(endDate))
-                        && (developer.getDecertificationDate().isEqual(startDate) || developer.getDecertificationDate().isAfter(startDate));
+                return (subscription.getCreationDate().isEqual(endDateTime) || subscription.getCreationDate().isBefore(endDateTime))
+                        && (subscription.getCreationDate().isEqual(startDateTime) || subscription.getCreationDate().isAfter(startDateTime));
             }
         }
         return false;
     }
 
-    private LocalDate parseLocalDate(String dateString) {
-        if (StringUtils.isEmpty(dateString)) {
+    private LocalDateTime parseLocalDateTime(String dateTimeString) {
+        if (StringUtils.isEmpty(dateTimeString)) {
             return null;
         }
 
-        LocalDate date = null;
+        LocalDateTime date = null;
         try {
-            date = LocalDate.parse(dateString, dateFormatter);
+            date = LocalDateTime.parse(dateTimeString, dateFormatter);
         } catch (DateTimeParseException ex) {
-            LOGGER.error("Cannot parse " + dateString + " as date of the format " + SearchRequest.DATE_SEARCH_FORMAT);
+            LOGGER.error("Cannot parse " + dateTimeString + " as LocalDateTime of the format " + SearchRequest.TIMESTAMP_SEARCH_FORMAT);
         }
         return date;
     }
 
-    private List<SubscriptionSearchResult> getPage(List<SubscriptionSearchResult> developers, int beginIndex, int endIndex) {
-        if (endIndex > developers.size()) {
-            endIndex = developers.size();
+    private List<SubscriptionSearchResult> getPage(List<SubscriptionSearchResult> subscriptions, int beginIndex, int endIndex) {
+        if (endIndex > subscriptions.size()) {
+            endIndex = subscriptions.size();
         }
         if (endIndex <= beginIndex) {
             return new ArrayList<SubscriptionSearchResult>();
         }
-        LOGGER.debug("Getting filtered developer results between [" + beginIndex + ", " + endIndex + ")");
-        return developers.subList(beginIndex, endIndex);
+        LOGGER.debug("Getting filtered subscriptions results between [" + beginIndex + ", " + endIndex + ")");
+        return subscriptions.subList(beginIndex, endIndex);
     }
 
     private int getBeginIndex(SearchRequest searchRequest) {
@@ -173,20 +190,20 @@ public class SubscriptionSearchService {
         return getBeginIndex(searchRequest) + searchRequest.getPageSize();
     }
 
-    private void sort(List<SubscriptionSearchResult> developers, OrderByOption orderBy, boolean descending) {
+    private void sort(List<SubscriptionSearchResult> subscriptions, OrderByOption orderBy, boolean descending) {
         if (orderBy == null) {
             return;
         }
 
         switch (orderBy) {
-            case STATUS:
-                developers.sort(new StatusComparator(descending));
+            case CREATION_DATE:
+                subscriptions.sort(new CreationDateComparator(descending));
                 break;
-            case DECERTIFICATION_DATE:
-                developers.sort(new DecertificationDateComparator(descending));
+            case SUBSCRIBER_EMAIL:
+                subscriptions.sort(new SubscriberEmailComparator(descending));
                 break;
-            case DEVELOPER:
-                developers.sort(new DeveloperComparator(descending));
+            case SUBSCRIBER_ROLE:
+                subscriptions.sort(new SubscriberRoleComparator(descending));
                 break;
             default:
                 LOGGER.error("Unrecognized value for Order By: " + orderBy.name());
@@ -194,56 +211,56 @@ public class SubscriptionSearchService {
         }
     }
 
-    private class DeveloperComparator implements Comparator<SubscriptionSearchResult> {
+    private class SubscriberEmailComparator implements Comparator<SubscriptionSearchResult> {
         private boolean descending = false;
 
-        DeveloperComparator(boolean descending) {
+        SubscriberEmailComparator(boolean descending) {
             this.descending = descending;
         }
 
         @Override
-        public int compare(SubscriptionSearchResult dev1, SubscriptionSearchResult dev2) {
-            if (ObjectUtils.anyNull(dev1, dev2)
-                    || StringUtils.isAnyEmpty(dev1.getName(), dev2.getName())) {
+        public int compare(SubscriptionSearchResult sub1, SubscriptionSearchResult sub2) {
+            if (ObjectUtils.anyNull(sub1, sub2)
+                    || StringUtils.isAnyEmpty(sub1.getSubscriberEmail(), sub2.getSubscriberEmail())) {
                 return 0;
             }
             int sortFactor = descending ? -1 : 1;
-            return (dev1.getName().compareTo(dev2.getName())) * sortFactor;
+            return (sub1.getSubscriberEmail().compareTo(sub2.getSubscriberEmail())) * sortFactor;
         }
     }
 
-    private class DecertificationDateComparator implements Comparator<SubscriptionSearchResult> {
+    private class CreationDateComparator implements Comparator<SubscriptionSearchResult> {
         private boolean descending = false;
 
-        DecertificationDateComparator(boolean descending) {
+        CreationDateComparator(boolean descending) {
             this.descending = descending;
         }
 
         @Override
-        public int compare(SubscriptionSearchResult dev1, SubscriptionSearchResult dev2) {
-            if (dev1.getDecertificationDate() == null ||  dev2.getDecertificationDate() == null) {
+        public int compare(SubscriptionSearchResult sub1, SubscriptionSearchResult sub2) {
+            if (sub1.getCreationDate() == null ||  sub2.getCreationDate() == null) {
                 return 0;
             }
             int sortFactor = descending ? -1 : 1;
-            return (dev1.getDecertificationDate().compareTo(dev2.getDecertificationDate())) * sortFactor;
+            return (sub1.getCreationDate().compareTo(sub2.getCreationDate())) * sortFactor;
         }
     }
 
-    private class StatusComparator implements Comparator<SubscriptionSearchResult> {
+    private class SubscriberRoleComparator implements Comparator<SubscriptionSearchResult> {
         private boolean descending = false;
 
-        StatusComparator(boolean descending) {
+        SubscriberRoleComparator(boolean descending) {
             this.descending = descending;
         }
 
         @Override
-        public int compare(SubscriptionSearchResult dev1, SubscriptionSearchResult dev2) {
-            if (ObjectUtils.anyNull(dev1.getStatus(), dev2.getStatus())
-                    || StringUtils.isAnyEmpty(dev1.getStatus().getName(), dev2.getStatus().getName())) {
+        public int compare(SubscriptionSearchResult sub1, SubscriptionSearchResult sub2) {
+            if (ObjectUtils.anyNull(sub1, sub2)
+                    || StringUtils.isAnyEmpty(sub1.getSubscriberRole(), sub2.getSubscriberRole())) {
                 return 0;
             }
             int sortFactor = descending ? -1 : 1;
-            return (dev1.getStatus().getName().compareTo(dev2.getStatus().getName())) * sortFactor;
+            return (sub1.getSubscriberRole().compareTo(sub2.getSubscriberRole())) * sortFactor;
         }
     }
 }
