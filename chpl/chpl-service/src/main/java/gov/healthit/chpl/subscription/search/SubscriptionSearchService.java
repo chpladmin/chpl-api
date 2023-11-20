@@ -59,11 +59,11 @@ public class SubscriptionSearchService {
         LOGGER.debug("Total matched subscriptions: " + searchResults.size());
 
         SubscriptionSearchResponse response = new SubscriptionSearchResponse();
-        response.setRecordCount(searchResults.size());
+        response.setRecordCount(matchedSubscriptions.size());
         response.setPageNumber(searchRequest.getPageNumber());
         response.setPageSize(searchRequest.getPageSize());
 
-        sort(searchResults, searchRequest.getOrderBy(), searchRequest.getSortDescending());
+        sort(matchedSubscriptions, searchRequest.getOrderBy(), searchRequest.getSortDescending());
         List<SubscriptionSearchResult> pageOfSubscriptions
             = getPage(matchedSubscriptions, getBeginIndex(searchRequest), getEndIndex(searchRequest));
         response.setResults(pageOfSubscriptions);
