@@ -17,6 +17,8 @@ import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterionEntity;
 import gov.healthit.chpl.domain.statistics.CriterionUpgradedToCuresFromOriginalListingStatistic;
 import gov.healthit.chpl.entity.EntityAudit;
+import gov.healthit.chpl.entity.lastmodifieduserstrategy.LastModifiedUserStrategy;
+import gov.healthit.chpl.entity.lastmodifieduserstrategy.SystemUserStrategy;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -34,6 +36,11 @@ import lombok.experimental.SuperBuilder;
 @Table(name = "criterion_upgraded_from_original_listing_statistic")
 public class CriterionUpgradedToCuresFromOriginalListingStatisticEntity extends EntityAudit {
     private static final long serialVersionUID = -4175214624438005611L;
+
+    @Override
+    public LastModifiedUserStrategy getLastModifiedUserStrategy() {
+        return new SystemUserStrategy();
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

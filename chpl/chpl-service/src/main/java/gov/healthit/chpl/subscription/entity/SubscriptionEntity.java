@@ -15,6 +15,8 @@ import javax.persistence.Table;
 import org.hibernate.annotations.Where;
 
 import gov.healthit.chpl.entity.EntityAudit;
+import gov.healthit.chpl.entity.lastmodifieduserstrategy.DefaultUserStrategy;
+import gov.healthit.chpl.entity.lastmodifieduserstrategy.LastModifiedUserStrategy;
 import gov.healthit.chpl.subscription.domain.Subscriber;
 import gov.healthit.chpl.subscription.domain.Subscription;
 import gov.healthit.chpl.subscription.domain.SubscriptionConsolidationMethod;
@@ -37,6 +39,12 @@ import lombok.experimental.SuperBuilder;
 @Where(clause = "deleted <> 'true'")
 public class SubscriptionEntity extends EntityAudit {
     private static final long serialVersionUID = -1705305416503500650L;
+
+    @Override
+    public LastModifiedUserStrategy getLastModifiedUserStrategy() {
+        return new DefaultUserStrategy();
+    }
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -13,8 +13,8 @@ import lombok.Data;
 
 @Data
 public class JWTAuthenticatedUser implements User {
+    private static final long serialVersionUID = -4472262738122217527L;
 
-    private static final long serialVersionUID = 1L;
     private Long id;
     private String email;
     private String fullName;

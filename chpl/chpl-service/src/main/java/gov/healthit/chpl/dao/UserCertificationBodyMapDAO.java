@@ -8,7 +8,6 @@ import javax.persistence.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.dto.UserCertificationBodyMapDTO;
 import gov.healthit.chpl.entity.CertificationBodyEntity;
@@ -122,7 +121,6 @@ public class UserCertificationBodyMapDAO extends BaseDAOImpl {
     }
 
     private UserCertificationBodyMapEntity create(UserCertificationBodyMapEntity entity) {
-        entity.setLastModifiedUser(getUserId(User.SYSTEM_USER_ID));
         if (entity.getRetired() == null) {
             entity.setRetired(false);
         }
@@ -134,7 +132,6 @@ public class UserCertificationBodyMapDAO extends BaseDAOImpl {
     }
 
     private UserCertificationBodyMapEntity update(UserCertificationBodyMapEntity entity) {
-        entity.setLastModifiedUser(getUserId(User.SYSTEM_USER_ID));
         entityManager.persist(entity);
         return entity;
     }

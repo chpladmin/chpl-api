@@ -8,7 +8,6 @@ import javax.persistence.Query;
 
 import org.springframework.stereotype.Repository;
 
-import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.statistics.CriterionUpgradedToCuresFromOriginalListingStatistic;
 import gov.healthit.chpl.entity.statistics.CriterionUpgradedToCuresFromOriginalListingStatisticEntity;
@@ -58,7 +57,6 @@ public class CriterionUpgradedToCuresFromOriginalListingStatisticsDAO extends Ba
         CriterionUpgradedToCuresFromOriginalListingStatisticEntity toDelete = getEntityById(id);
         if (toDelete != null) {
             toDelete.setDeleted(true);
-            toDelete.setLastModifiedUser(getUserId(User.SYSTEM_USER_ID));
             update(toDelete);
         }
     }
@@ -69,7 +67,6 @@ public class CriterionUpgradedToCuresFromOriginalListingStatisticsDAO extends Ba
         entity.setListingCount(dto.getListingsUpgradedFromOriginalCount());
         entity.setCertificationCriterionId(dto.getCuresCriterion().getId());
         entity.setStatisticDate(dto.getStatisticDate());
-        entity.setLastModifiedUser(getUserId(User.SYSTEM_USER_ID));
         entity.setDeleted(false);
 
         create(entity);

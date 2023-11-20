@@ -12,6 +12,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
+import gov.healthit.chpl.auth.user.SystemUsers;
 import gov.healthit.chpl.auth.user.User;
 
 public class AuthUtil {
@@ -50,7 +51,7 @@ public class AuthUtil {
                 return user.getId();
             }
         }
-        return User.DEFAULT_USER_ID;
+        return SystemUsers.DEFAULT_USER_ID;
     }
 
 
@@ -86,7 +87,7 @@ public class AuthUtil {
 
             @Override
             public Long getId() {
-                return id == null ? Long.valueOf(User.ADMIN_USER_ID) : id;
+                return id == null ? Long.valueOf(SystemUsers.ADMIN_USER_ID) : id;
             }
 
             @Override

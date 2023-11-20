@@ -13,6 +13,8 @@ import javax.persistence.Table;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterionEntity;
 import gov.healthit.chpl.entity.EntityAudit;
+import gov.healthit.chpl.entity.lastmodifieduserstrategy.LastModifiedUserStrategy;
+import gov.healthit.chpl.entity.lastmodifieduserstrategy.SystemUserStrategy;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -30,6 +32,11 @@ import lombok.experimental.SuperBuilder;
 @Table(name = "nonconformity_type_statistics")
 public class NonconformityTypeStatisticsEntity extends EntityAudit {
     private static final long serialVersionUID = -5941720247133532990L;
+
+    @Override
+    public LastModifiedUserStrategy getLastModifiedUserStrategy() {
+        return new SystemUserStrategy();
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

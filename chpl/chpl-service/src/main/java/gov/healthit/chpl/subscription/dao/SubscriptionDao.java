@@ -10,7 +10,6 @@ import javax.transaction.Transactional;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Repository;
 
-import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.subscription.domain.Subscription;
 import gov.healthit.chpl.subscription.domain.SubscriptionConsolidationMethod;
@@ -106,7 +105,6 @@ public class SubscriptionDao extends BaseDAOImpl {
             Long consolidationMethodId) {
         if (!doesSubscriptionExist(subscriberId, subscribedObjectId, subjectId)) {
             SubscriptionEntity subscriptionToCreate = new SubscriptionEntity();
-            subscriptionToCreate.setLastModifiedUser(User.DEFAULT_USER_ID);
             subscriptionToCreate.setSubscribedObjectId(subscribedObjectId);
             subscriptionToCreate.setSubscriberId(subscriberId);
             subscriptionToCreate.setSubscriptionConsolidationMethodId(consolidationMethodId);

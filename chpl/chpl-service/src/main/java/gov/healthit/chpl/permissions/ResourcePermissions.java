@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.FeatureList;
+import gov.healthit.chpl.auth.user.SystemUsers;
 import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
@@ -383,7 +384,7 @@ public class ResourcePermissions {
 
     public boolean doesAuditUserHaveRole(String authority) {
         Long auditUserId = AuthUtil.getAuditId();
-        if (auditUserId == null || auditUserId.equals(User.DEFAULT_USER_ID)) {
+        if (auditUserId == null || auditUserId.equals(SystemUsers.DEFAULT_USER_ID)) {
             return false;
         }
 

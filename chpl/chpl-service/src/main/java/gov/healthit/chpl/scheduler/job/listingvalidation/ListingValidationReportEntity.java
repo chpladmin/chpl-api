@@ -11,6 +11,8 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 import gov.healthit.chpl.entity.EntityAudit;
+import gov.healthit.chpl.entity.lastmodifieduserstrategy.LastModifiedUserStrategy;
+import gov.healthit.chpl.entity.lastmodifieduserstrategy.SystemUserStrategy;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -28,6 +30,11 @@ import lombok.experimental.SuperBuilder;
 @Table(name = "listing_validation_report")
 public class ListingValidationReportEntity extends EntityAudit {
     private static final long serialVersionUID = -4701072108627858074L;
+
+    @Override
+    public LastModifiedUserStrategy getLastModifiedUserStrategy() {
+        return new SystemUserStrategy();
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

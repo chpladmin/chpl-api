@@ -8,7 +8,6 @@ import javax.persistence.Query;
 
 import org.springframework.stereotype.Repository;
 
-import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 
 @Repository
@@ -21,7 +20,6 @@ public class UrlUptimeMonitorTestDAO extends BaseDAOImpl {
                 .datadogTestKey(urlUptimeMonitorTest.getDatadogTestKey())
                 .checkTime(urlUptimeMonitorTest.getCheckTime())
                 .passed(urlUptimeMonitorTest.getPassed())
-                .lastModifiedUser(User.SYSTEM_USER_ID)
                 .deleted(false)
                 .build();
 

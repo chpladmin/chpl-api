@@ -8,7 +8,6 @@ import javax.persistence.Query;
 
 import org.springframework.stereotype.Repository;
 
-import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.dao.CHPLFileDAO;
 import gov.healthit.chpl.dto.CHPLFileDTO;
 import gov.healthit.chpl.dto.FileTypeDTO;
@@ -16,7 +15,6 @@ import gov.healthit.chpl.entity.CHPLFileEntity;
 import gov.healthit.chpl.entity.FileTypeEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.util.AuthUtil;
 
 @Repository(value = "filesDAO")
 public class CHPLFileDAOImpl extends BaseDAOImpl implements CHPLFileDAO {
@@ -33,11 +31,6 @@ public class CHPLFileDAOImpl extends BaseDAOImpl implements CHPLFileDAO {
         insert.setAssociatedDate(dto.getAssociatedDate());
         insert.setLastModifiedDate(new Date());
         insert.setDeleted(false);
-        if (dto.getLastModifiedUser() != null) {
-            insert.setLastModifiedUser(dto.getLastModifiedUser());
-        } else {
-            insert.setLastModifiedUser(getUserId(User.SYSTEM_USER_ID));
-        }
         insert.setFileType(type);
 
         entityManager.persist(insert);
@@ -51,11 +44,6 @@ public class CHPLFileDAOImpl extends BaseDAOImpl implements CHPLFileDAO {
         if (toDelete != null) {
             toDelete.setDeleted(true);
             toDelete.setLastModifiedDate(new Date());
-            if (AuthUtil.getCurrentUser() != null) {
-                toDelete.setLastModifiedUser(AuthUtil.getAuditId());
-            } else {
-                toDelete.setLastModifiedUser(getUserId(User.SYSTEM_USER_ID));
-            }
             entityManager.merge(toDelete);
         }
 

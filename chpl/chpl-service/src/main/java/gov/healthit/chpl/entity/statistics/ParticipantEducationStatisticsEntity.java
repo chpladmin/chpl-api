@@ -10,6 +10,8 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import gov.healthit.chpl.entity.EntityAudit;
+import gov.healthit.chpl.entity.lastmodifieduserstrategy.CurrentUserThenSystemUserStrategy;
+import gov.healthit.chpl.entity.lastmodifieduserstrategy.LastModifiedUserStrategy;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -27,6 +29,11 @@ import lombok.experimental.SuperBuilder;
 @Table(name = "participant_education_statistics")
 public class ParticipantEducationStatisticsEntity extends EntityAudit {
     private static final long serialVersionUID = -4258273713908999510L;
+
+    @Override
+    public LastModifiedUserStrategy getLastModifiedUserStrategy() {
+        return new CurrentUserThenSystemUserStrategy();
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

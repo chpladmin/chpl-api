@@ -11,6 +11,8 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 import gov.healthit.chpl.entity.EntityAudit;
+import gov.healthit.chpl.entity.lastmodifieduserstrategy.LastModifiedUserStrategy;
+import gov.healthit.chpl.entity.lastmodifieduserstrategy.SystemUserStrategy;
 import gov.healthit.chpl.util.DateUtil;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -29,6 +31,11 @@ import lombok.experimental.SuperBuilder;
 @Table(name = "url_uptime_monitor_test")
 public class UrlUptimeMonitorTestEntity extends EntityAudit {
     private static final long serialVersionUID = -8138873905563114846L;
+
+    @Override
+    public LastModifiedUserStrategy getLastModifiedUserStrategy() {
+        return new SystemUserStrategy();
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -15,6 +15,8 @@ import javax.persistence.Table;
 
 import gov.healthit.chpl.entity.CertificationBodyEntity;
 import gov.healthit.chpl.entity.EntityAudit;
+import gov.healthit.chpl.entity.lastmodifieduserstrategy.LastModifiedUserStrategy;
+import gov.healthit.chpl.entity.lastmodifieduserstrategy.SystemUserStrategy;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -32,6 +34,11 @@ import lombok.experimental.SuperBuilder;
 @Table(name = "broken_surveillance_rules")
 public class BrokenSurveillanceRulesEntity extends EntityAudit {
     private static final long serialVersionUID = 2870697375846146076L;
+
+    @Override
+    public LastModifiedUserStrategy getLastModifiedUserStrategy() {
+        return new SystemUserStrategy();
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -8,7 +8,6 @@ import javax.persistence.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.dao.CriterionProductStatisticsDAO;
 import gov.healthit.chpl.dto.CriterionProductStatisticsDTO;
 import gov.healthit.chpl.entity.statistics.CriterionProductStatisticsEntity;
@@ -39,7 +38,6 @@ public class CriterionProductStatisticsDAOImpl extends BaseDAOImpl implements Cr
 
         if (toDelete != null) {
             toDelete.setDeleted(true);
-            toDelete.setLastModifiedUser(getUserId(User.SYSTEM_USER_ID));
             entityManager.merge(toDelete);
         }
     }
@@ -56,11 +54,6 @@ public class CriterionProductStatisticsDAOImpl extends BaseDAOImpl implements Cr
             entity.setDeleted(dto.getDeleted());
         } else {
             entity.setDeleted(false);
-        }
-        if (dto.getLastModifiedUser() != null) {
-            entity.setLastModifiedUser(dto.getLastModifiedUser());
-        } else {
-            entity.setLastModifiedUser(getUserId(User.SYSTEM_USER_ID));
         }
 
         entityManager.persist(entity);

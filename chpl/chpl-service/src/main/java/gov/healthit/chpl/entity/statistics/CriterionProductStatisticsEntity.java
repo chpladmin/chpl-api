@@ -14,6 +14,8 @@ import javax.persistence.Transient;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterionEntity;
 import gov.healthit.chpl.entity.EntityAudit;
+import gov.healthit.chpl.entity.lastmodifieduserstrategy.CurrentUserThenSystemUserStrategy;
+import gov.healthit.chpl.entity.lastmodifieduserstrategy.LastModifiedUserStrategy;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -31,6 +33,11 @@ import lombok.experimental.SuperBuilder;
 @Table(name = "criterion_product_statistics")
 public class CriterionProductStatisticsEntity extends EntityAudit {
     private static final long serialVersionUID = -4258273713908999510L;
+
+    @Override
+    public LastModifiedUserStrategy getLastModifiedUserStrategy() {
+        return new CurrentUserThenSystemUserStrategy();
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

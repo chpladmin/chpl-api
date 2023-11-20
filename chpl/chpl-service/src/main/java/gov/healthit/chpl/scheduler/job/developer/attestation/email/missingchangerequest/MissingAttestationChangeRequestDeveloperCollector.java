@@ -11,14 +11,14 @@ import gov.healthit.chpl.attestation.domain.AttestationPeriod;
 import gov.healthit.chpl.attestation.manager.AttestationPeriodService;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
-import gov.healthit.chpl.auth.user.User;
+import gov.healthit.chpl.auth.user.SystemUsers;
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestAttestationSubmission;
 import gov.healthit.chpl.changerequest.manager.ChangeRequestManager;
-import gov.healthit.chpl.changerequest.search.ChangeRequestSearchServiceV1;
 import gov.healthit.chpl.changerequest.search.ChangeRequestSearchRequest;
 import gov.healthit.chpl.changerequest.search.ChangeRequestSearchResponse;
 import gov.healthit.chpl.changerequest.search.ChangeRequestSearchResult;
+import gov.healthit.chpl.changerequest.search.ChangeRequestSearchServiceV1;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
@@ -110,7 +110,7 @@ public class MissingAttestationChangeRequestDeveloperCollector implements Develo
     private void setSecurityContext() {
         JWTAuthenticatedUser adminUser = new JWTAuthenticatedUser();
         adminUser.setFullName("Administrator");
-        adminUser.setId(User.ADMIN_USER_ID);
+        adminUser.setId(SystemUsers.ADMIN_USER_ID);
         adminUser.setFriendlyName("Admin");
         adminUser.setSubjectName("admin");
         adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));

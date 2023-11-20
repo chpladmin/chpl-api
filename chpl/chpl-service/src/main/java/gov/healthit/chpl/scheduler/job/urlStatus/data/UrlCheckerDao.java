@@ -11,7 +11,6 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -459,7 +458,6 @@ public class UrlCheckerDao extends BaseDAOImpl {
         }
 
         UrlResultEntity entity = new UrlResultEntity();
-        entity.setLastModifiedUser(User.SYSTEM_USER_ID);
         entity.setResponseCode(toCreate.getResponseCode());
         entity.setResponseMessage(toCreate.getResponseMessage());
         entity.setUrl(toCreate.getUrl());

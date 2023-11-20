@@ -12,6 +12,8 @@ import javax.persistence.Table;
 
 import gov.healthit.chpl.entity.auth.UserEntity;
 import gov.healthit.chpl.entity.developer.DeveloperEntitySimple;
+import gov.healthit.chpl.entity.lastmodifieduserstrategy.LastModifiedUserStrategy;
+import gov.healthit.chpl.entity.lastmodifieduserstrategy.SystemUserStrategy;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -29,6 +31,11 @@ import lombok.experimental.SuperBuilder;
 @Table(name = "user_developer_map")
 public class UserDeveloperMapEntity extends EntityAudit {
     private static final long serialVersionUID = 805450809818667182L;
+
+    @Override
+    public LastModifiedUserStrategy getLastModifiedUserStrategy() {
+        return new SystemUserStrategy();
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
