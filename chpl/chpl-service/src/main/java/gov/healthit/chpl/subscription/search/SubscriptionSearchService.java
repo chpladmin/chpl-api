@@ -37,7 +37,7 @@ public class SubscriptionSearchService {
         this.searchRequestValidator = searchRequestValidator;
         this.subscriptionDao = subscriptionDao;
         this.searchRequestNormalizer = new SearchRequestNormalizer();
-        dateFormatter = DateTimeFormatter.ofPattern(SearchRequest.TIMESTAMP_SEARCH_FORMAT);
+        dateFormatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
     }
 
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SUBSCRIPTION, "
