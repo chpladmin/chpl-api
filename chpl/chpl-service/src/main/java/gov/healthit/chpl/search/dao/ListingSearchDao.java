@@ -280,6 +280,7 @@ public class ListingSearchDao extends BaseDAOImpl {
         String[] criteriaWithStringFields = delimitedCriteriaWithValueString.split(delimeter);
         return Stream.of(criteriaWithStringFields)
                 .map(rethrowFunction(criterionWithValue -> convertToCriterionWithStringField(criterionWithValue)))
+                .filter(convertedValue -> convertedValue != null)
                 .collect(Collectors.toSet());
     }
 
@@ -290,11 +291,15 @@ public class ListingSearchDao extends BaseDAOImpl {
         }
 
         String[] criteriaSplitFromStringData = value.split(CertifiedProductSearchResult.FROWNEY_SPLIT_CHAR);
-        if (criteriaSplitFromStringData == null || criteriaSplitFromStringData.length != 2) {
+        if (criteriaSplitFromStringData == null || criteriaSplitFromStringData.length == 0) {
             throw new EntityRetrievalException("Unable to parse criteria with string value from '" + value + "'.");
         }
-        String aggregatedCriterionFields = criteriaSplitFromStringData[0];
-        String fieldValue = criteriaSplitFromStringData[1];
+        String aggregatedCriterionFields = criteriaSplitFromStringData.length >= 1 ? criteriaSplitFromStringData[0] : null;
+        String fieldValue = criteriaSplitFromStringData.length >= 2 ? criteriaSplitFromStringData[1] : null;
+
+        if (StringUtils.isEmpty(aggregatedCriterionFields) || StringUtils.isEmpty(fieldValue)) {
+            return null;
+        }
         return CertificationCriterionSearchResultWithStringField.builder()
                 .criterion(convertToCriterion(aggregatedCriterionFields))
                 .value(fieldValue)
