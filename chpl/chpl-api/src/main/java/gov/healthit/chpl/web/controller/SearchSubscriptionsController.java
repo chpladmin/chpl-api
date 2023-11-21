@@ -46,8 +46,11 @@ public class SearchSubscriptionsController {
     @Operation(summary = "Search subscriptions on the CHPL",
         description = "This endpoint will always use the oldest, valid version of the "
                 + "/subscriptions/search/vX endpoint. The current version being used is v1. For the "
-                + "current documentation, see /subscriptions/search/v1.",
-        security = {@SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
+                + "current documentation, see /subscriptions/search/v1. This is available to ADMIN and ONC roles.",
+        security = {
+                @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+        })
     @RequestMapping(value = "", method = RequestMethod.GET, produces = {
             "application/json; charset=utf-8", "application/xml"
     })
@@ -105,9 +108,10 @@ public class SearchSubscriptionsController {
                     + "Any parameter that can accept multiple things (i.e. subscriberRoles) expects "
                     + "a comma-delimited list of those things (i.e. subscriberRoles = Active,Pending). "
                     + "Date parameters are required to be in the format "
-                    + SearchRequest.TIMESTAMP_SEARCH_FORMAT + ". ",
+                    + SearchRequest.TIMESTAMP_SEARCH_FORMAT + ". This is available to ADMIN and ONC roles.",
             security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
     @RequestMapping(value = "/v1", method = RequestMethod.GET, produces = {
             "application/json; charset=utf-8", "application/xml"
