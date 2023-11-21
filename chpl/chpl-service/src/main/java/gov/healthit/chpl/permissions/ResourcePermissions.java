@@ -27,6 +27,7 @@ import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.TestingLab;
 import gov.healthit.chpl.domain.auth.Authority;
+import gov.healthit.chpl.domain.auth.CognitoGroups;
 import gov.healthit.chpl.domain.auth.UserPermission;
 import gov.healthit.chpl.dto.UserCertificationBodyMapDTO;
 import gov.healthit.chpl.dto.UserDeveloperMapDTO;
@@ -314,7 +315,11 @@ public class ResourcePermissions {
     }
 
     public boolean isUserRoleAdmin() {
-        return doesUserHaveRole(Authority.ROLE_ADMIN);
+        if (ff4j.check(FeatureList.SSO)) {
+            return doesUserHaveRole(CognitoGroups.CHPL_ADMIN);
+        } else {
+            return doesUserHaveRole(Authority.ROLE_ADMIN);
+        }
     }
 
     public boolean isUserRoleOnc() {
