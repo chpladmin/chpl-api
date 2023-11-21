@@ -93,10 +93,10 @@ public class ConformanceMethodNormalizer {
             .collect(Collectors.toList());
         if (!CollectionUtils.isEmpty(allowedConformanceMethodsForCriterion)) {
             Optional<ConformanceMethod> cmWithName = allowedConformanceMethodsForCriterion.stream()
-                .filter(cm -> cm.getName().equals(conformanceMethod.getConformanceMethod().getName()))
+                .filter(cm -> cm.getName().equalsIgnoreCase(conformanceMethod.getConformanceMethod().getName()))
                 .findFirst();
             if (cmWithName.isPresent()) {
-                conformanceMethod.getConformanceMethod().setId(cmWithName.get().getId());
+                conformanceMethod.setConformanceMethod(cmWithName.get());
             }
         }
     }
@@ -125,7 +125,7 @@ public class ConformanceMethodNormalizer {
             .collect(Collectors.toList());
         if (!CollectionUtils.isEmpty(allowedConformanceMethodsForCriterion)) {
             Optional<ConformanceMethod> cmWithName = allowedConformanceMethodsForCriterion.stream()
-                .filter(cm -> cm.getName().equals(conformanceMethod.getConformanceMethod().getName()))
+                .filter(cm -> cm.getName().equalsIgnoreCase(conformanceMethod.getConformanceMethod().getName()))
                 .findFirst();
             if (cmWithName.isPresent()) {
                 conformanceMethod.getConformanceMethod().setRemovalDate(cmWithName.get().getRemovalDate());
