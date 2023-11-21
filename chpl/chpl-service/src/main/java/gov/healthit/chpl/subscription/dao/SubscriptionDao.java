@@ -1,5 +1,7 @@
 package gov.healthit.chpl.subscription.dao;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -12,6 +14,7 @@ import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
+import gov.healthit.chpl.search.ListingSearchService;
 import gov.healthit.chpl.subscription.domain.Subscription;
 import gov.healthit.chpl.subscription.domain.SubscriptionConsolidationMethod;
 import gov.healthit.chpl.subscription.domain.SubscriptionObjectType;
@@ -37,9 +40,12 @@ public class SubscriptionDao extends BaseDAOImpl {
             + "JOIN FETCH subscription.subscriptionConsolidationMethod ";
 
     private SubscriptionLookupUtil lookupUtil;
+    private ListingSearchService listingSearchService;
 
-    public SubscriptionDao(SubscriptionLookupUtil lookupUtil) {
+    public SubscriptionDao(SubscriptionLookupUtil lookupUtil,
+            ListingSearchService listingSearchService) {
         this.lookupUtil = lookupUtil;
+        this.listingSearchService = listingSearchService;
     }
 
     public List<SubscriptionObjectType> getAllSubscriptionObjectTypes() {
@@ -221,28 +227,51 @@ public class SubscriptionDao extends BaseDAOImpl {
     }
 
     public List<SubscriptionSearchResult> getAllSubscriptions() {
-        Query query = entityManager.createQuery("SELECT subscription "
-                + "FROM SubscriptionEntity subscription "
+        List<SubscriptionSearchResult> subscriptions = new ArrayList<SubscriptionSearchResult>();
+        subscriptions.addAll(getAllListingSubscriptions());
+        subscriptions.addAll(getAllDeveloperSubscriptions());
+        subscriptions.addAll(getAllProductSubscriptions());
+        return subscriptions;
+    }
+
+    private List<SubscriptionSearchResult> getAllListingSubscriptions() {
+        //TODO: this is pretty slow.
+        // Next idea is to make a database view and/or different entity here where I can call the db function to get chpl product number
+        Query query = entityManager.createQuery("SELECT subscription, cp.chplProductNumber "
+                + "FROM SubscriptionEntity subscription, ListingSearchEntity cp "
                 + "JOIN FETCH subscription.subscriptionSubject subject "
                 + "JOIN FETCH subject.subscriptionObjectType "
                 + "JOIN FETCH subscription.subscriptionConsolidationMethod "
                 + "JOIN FETCH subscription.subscriber subscriber "
                 + "JOIN FETCH subscriber.subscriberStatus "
-                + "JOIN FETCH subscriber.subscriberRole ",
-                SubscriptionEntity.class);
+                + "JOIN FETCH subscriber.subscriberRole "
+                + "WHERE subscription.deleted = false "
+                + "AND subscription.subscribedObjectId = cp.id ");
 
-        List<SubscriptionEntity> results = query.getResultList();
+        //TODO: figure out how to fill in the CHPL Product Numbers
+
+        List<Object[]> results = query.getResultList();
         return results.stream()
-            .map(result -> toSearchResult(result))
+            .map(result -> toSearchResult((SubscriptionEntity) result[0], (String) result[1]))
             .collect(Collectors.toList());
     }
 
-    private SubscriptionSearchResult toSearchResult(SubscriptionEntity entity) {
+    private List<SubscriptionSearchResult> getAllDeveloperSubscriptions() {
+        //TODO: For the future
+        return Collections.EMPTY_LIST;
+    }
+
+    private List<SubscriptionSearchResult> getAllProductSubscriptions() {
+        //TODO: For the future
+        return Collections.EMPTY_LIST;
+    }
+
+    private SubscriptionSearchResult toSearchResult(SubscriptionEntity entity, String subscribedObjectName) {
         return SubscriptionSearchResult.builder()
                 .id(entity.getId())
                 .creationDate(DateUtil.toLocalDateTime(entity.getCreationDate().getTime()))
                 .subscribedObjectId(entity.getSubscribedObjectId())
-                .subscribedObjectName("TBD") //TODO: Figure out how to pull the listing/developer/etc and put it here
+                .subscribedObjectName(subscribedObjectName)
                 .subscriberEmail(entity.getSubscriber().getEmail())
                 .subscriberId(entity.getSubscriberId())
                 .subscriberRole(entity.getSubscriber().getSubscriberRole().getName())
