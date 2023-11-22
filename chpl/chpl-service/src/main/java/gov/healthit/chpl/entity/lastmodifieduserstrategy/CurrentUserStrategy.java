@@ -9,7 +9,7 @@ public class CurrentUserStrategy extends LastModifiedUserStrategy {
     @Override
     public void populationLastModifiedUser(EntityAudit entityAudit) {
         if (getFF4j().check(FeatureList.SSO)) {
-            entityAudit.setLastModifiedSsoUser(AuthUtil.getAuditSsoUser());
+            entityAudit.setLastModifiedSsoUser(AuthUtil.getAuditSsoUserId());
             entityAudit.setLastModifiedUser(null);
         } else {
             entityAudit.setLastModifiedUser(AuthUtil.getAuditId());

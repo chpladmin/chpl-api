@@ -13,7 +13,7 @@ public class CurrentUserThenSystemUserStrategy extends LastModifiedUserStrategy 
 
         if (getFF4j().check(FeatureList.SSO)) {
             if (AuthUtil.getCurrentUser() != null) {
-                entityAudit.setLastModifiedSsoUser(AuthUtil.getAuditSsoUser());
+                entityAudit.setLastModifiedSsoUser(AuthUtil.getAuditSsoUserId());
                 entityAudit.setLastModifiedUser(null);
             } else {
                 entityAudit.setLastModifiedSsoUser(CognitoSystemUsers.SYSTEM_USER_ID);

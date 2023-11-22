@@ -3,7 +3,6 @@ package gov.healthit.chpl.auth.user;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
 
 import org.springframework.security.core.GrantedAuthority;
 
@@ -128,8 +127,4 @@ public class JWTAuthenticatedUser implements User {
         this.email = subject;
     }
 
-    @Override
-    public UUID getSsoId() {
-        return null;
-    }
 }

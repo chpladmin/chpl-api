@@ -9,9 +9,11 @@ import org.springframework.security.core.GrantedAuthority;
 
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.dto.auth.UserDTO;
+import lombok.Builder;
 import lombok.Data;
 
 @Data
+@Builder
 public class CognitoJWTAuthenticatedUser implements User {
     private static final long serialVersionUID = 2847351904166625725L;
 
@@ -20,19 +22,29 @@ public class CognitoJWTAuthenticatedUser implements User {
     private String email;
     private String fullName;
     private String friendlyName;
-    private Set<GrantedPermission> permissions = new HashSet<GrantedPermission>();
-    private final boolean accountExpired = false;
-    private final boolean accountLocked = false;
-    private final boolean credentialsExpired = false;
-    private final boolean accountEnabled = true;
-    private boolean passwordResetRequired = false;
-    private boolean authenticated = true;
-    private UserDTO impersonatingUser;
 
-    /** Default constructor. */
-    public CognitoJWTAuthenticatedUser() {
-        this.email = null;
-    }
+    @Builder.Default
+    private Set<GrantedPermission> permissions = new HashSet<GrantedPermission>();
+
+    @Builder.Default
+    private boolean accountExpired = false;
+
+    @Builder.Default
+    private boolean accountLocked = false;
+
+    @Builder.Default
+    private boolean credentialsExpired = false;
+
+    @Builder.Default
+    private boolean accountEnabled = true;
+
+    @Builder.Default
+    private boolean passwordResetRequired = false;
+
+    @Builder.Default
+    private boolean authenticated = true;
+
+    private UserDTO impersonatingUser;
 
     @Override
     public void addPermission(GrantedPermission permission) {

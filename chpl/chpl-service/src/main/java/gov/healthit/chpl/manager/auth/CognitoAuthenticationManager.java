@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.apache.commons.lang3.NotImplementedException;
 import org.ff4j.FF4j;
@@ -22,8 +23,6 @@ import software.amazon.awssdk.auth.credentials.AwsCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.cognitoidentityprovider.CognitoIdentityProviderClient;
-import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminGetUserRequest;
-import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminGetUserResponse;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminInitiateAuthRequest;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminInitiateAuthResponse;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminListGroupsForUserRequest;
@@ -31,6 +30,8 @@ import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminListGr
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AttributeType;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AuthFlowType;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AuthenticationResultType;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.ListUsersRequest;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.ListUsersResponse;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.UserStatusType;
 
 @Log4j2
@@ -93,35 +94,32 @@ public class CognitoAuthenticationManager {
     //        + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).GET_BY_USER_NAME)")
     //@PostAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SECURED_USER, "
     //        + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).GET_BY_USER_NAME, returnObject)")
-    public User getUserInfo(String userName) throws UserRetrievalException {
+    public User getUserInfo(UUID ssoUserId) throws UserRetrievalException {
         if (!ff4j.check(FeatureList.SSO)) {
             throw new NotImplementedException("This feature has not been implemented");
         }
 
-        AdminGetUserRequest userRequest = AdminGetUserRequest.builder()
+        ListUsersResponse response = cognitoClient.listUsers(ListUsersRequest.builder()
                 .userPoolId(userPoolId)
-                .username(userName)
-                .build();
-        AdminGetUserResponse userResponse = cognitoClient.adminGetUser(userRequest);
-
-        userResponse.userAttributes().stream()
-                .forEach(att -> LOGGER.info("User Attribute {} | {}", att.name(), att.value()));
+                .filter("sub = \"" + ssoUserId.toString() + "\"")
+                .limit(1)
+                .build());
 
         User user = new User();
-        user.setUserId(-99L);
-        user.setSubjectName(getUserAttribute(userResponse.userAttributes(), "email").value());
-        user.setFriendlyName(getUserAttribute(userResponse.userAttributes(), "name").value());
-        user.setFullName(getUserAttribute(userResponse.userAttributes(), "name").value());
-        user.setEmail(getUserAttribute(userResponse.userAttributes(), "email").value());
-        user.setAccountLocked(false);
-        user.setAccountEnabled(userResponse.enabled());
+        user.setUserSsoId(ssoUserId);
+        user.setSubjectName(getUserAttribute(response.users().get(0).attributes(), "email").value());
+        user.setFriendlyName(getUserAttribute(response.users().get(0).attributes(), "name").value());
+        user.setFullName(getUserAttribute(response.users().get(0).attributes(), "name").value());
+        user.setEmail(getUserAttribute(response.users().get(0).attributes(), "email").value());
+        user.setAccountLocked(!response.users().get(0).enabled());
+        user.setAccountEnabled(response.users().get(0).enabled());
         user.setCredentialsExpired(false);
-        user.setPasswordResetRequired(userResponse.userStatus().equals(UserStatusType.RESET_REQUIRED));
+        user.setPasswordResetRequired(response.users().get(0).userStatus().equals(UserStatusType.RESET_REQUIRED));
         user.setLastLoggedInDate(new Date());
 
         AdminListGroupsForUserRequest groupsRequest = AdminListGroupsForUserRequest.builder()
                 .userPoolId(userPoolId)
-                .username(userName)
+                .username(user.getEmail())
                 .build();
         AdminListGroupsForUserResponse groupsResponse = cognitoClient.adminListGroupsForUser(groupsRequest);
         user.setRole(groupsResponse.groups().get(0).groupName());
