@@ -11,7 +11,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import gov.healthit.chpl.auth.permission.GrantedPermission;
-import gov.healthit.chpl.auth.user.CognitoJWTAuthenticatedUser;
+import gov.healthit.chpl.auth.user.CognitoAuthenticatedUser;
 import gov.healthit.chpl.auth.user.CognitoSystemUsers;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.auth.user.SystemUsers;
@@ -58,11 +58,11 @@ public class AuthUtil {
 
 
     public static UUID getAuditSsoUserId() {
-        CognitoJWTAuthenticatedUser user = null;
+        CognitoAuthenticatedUser user = null;
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
-        if (auth instanceof CognitoJWTAuthenticatedUser) {
-            user = (CognitoJWTAuthenticatedUser) auth;
+        if (auth instanceof CognitoAuthenticatedUser) {
+            user = (CognitoAuthenticatedUser) auth;
             //if (user.getImpersonatingUser() != null) {
             //    return user.getImpersonatingUser().getId();
             //} else {

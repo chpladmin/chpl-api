@@ -14,7 +14,7 @@ import com.auth0.jwt.interfaces.RSAKeyProvider;
 
 import gov.healthit.chpl.auth.jwt.CognitoRsaKeyProvider;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
-import gov.healthit.chpl.auth.user.CognitoJWTAuthenticatedUser;
+import gov.healthit.chpl.auth.user.CognitoAuthenticatedUser;
 import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.exception.JWTValidationException;
 import gov.healthit.chpl.exception.MultipleUserAccountsException;
@@ -38,7 +38,7 @@ public class CognitoJwtUserConverter {
 
     public User getAuthenticatedUser(String jwt) throws JWTValidationException, MultipleUserAccountsException {
         DecodedJWT decodeJwt = decodeJwt(jwt);
-        return CognitoJWTAuthenticatedUser.builder()
+        return CognitoAuthenticatedUser.builder()
                 .authenticated(true)
                 .ssoId(UUID.fromString(decodeJwt.getSubject()))
                 .fullName(decodeJwt.getClaim("name").asString())

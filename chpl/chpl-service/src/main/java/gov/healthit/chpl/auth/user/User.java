@@ -2,6 +2,7 @@ package gov.healthit.chpl.auth.user;
 
 import java.util.Collection;
 import java.util.Set;
+import java.util.UUID;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -11,10 +12,7 @@ import gov.healthit.chpl.auth.permission.GrantedPermission;
 
 public interface User extends UserDetails, Authentication {
 
-    Long DEFAULT_USER_ID = -1L;
-    Long ADMIN_USER_ID = -2L;
-    Long SYSTEM_USER_ID = -3L;
-
+    UUID getSsoId();
     Long getId();
     String getSubjectName();
     void setSubjectName(String subject);

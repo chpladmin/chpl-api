@@ -14,7 +14,7 @@ import lombok.Data;
 
 @Data
 @Builder
-public class CognitoJWTAuthenticatedUser implements User {
+public class CognitoAuthenticatedUser implements User {
     private static final long serialVersionUID = 2847351904166625725L;
 
     private Long id;
@@ -44,7 +44,7 @@ public class CognitoJWTAuthenticatedUser implements User {
     @Builder.Default
     private boolean authenticated = true;
 
-    private UserDTO impersonatingUser;
+        private UserDTO impersonatingUser;
 
     @Override
     public void addPermission(GrantedPermission permission) {
