@@ -19,6 +19,7 @@ import gov.healthit.chpl.subscription.domain.Subscription;
 import gov.healthit.chpl.subscription.domain.SubscriptionConsolidationMethod;
 import gov.healthit.chpl.subscription.domain.SubscriptionObjectType;
 import gov.healthit.chpl.subscription.domain.SubscriptionSubject;
+import gov.healthit.chpl.subscription.entity.ListingSubscriptionEntity;
 import gov.healthit.chpl.subscription.entity.SubscriptionConsolidationMethodEntity;
 import gov.healthit.chpl.subscription.entity.SubscriptionEntity;
 import gov.healthit.chpl.subscription.entity.SubscriptionObjectTypeEntity;
@@ -235,24 +236,19 @@ public class SubscriptionDao extends BaseDAOImpl {
     }
 
     private List<SubscriptionSearchResult> getAllListingSubscriptions() {
-        //TODO: this is pretty slow.
-        // Next idea is to make a database view and/or different entity here where I can call the db function to get chpl product number
-        Query query = entityManager.createQuery("SELECT subscription, cp.chplProductNumber "
-                + "FROM SubscriptionEntity subscription, ListingSearchEntity cp "
+        Query query = entityManager.createQuery("SELECT subscription "
+                + "FROM ListingSubscriptionEntity subscription "
                 + "JOIN FETCH subscription.subscriptionSubject subject "
                 + "JOIN FETCH subject.subscriptionObjectType "
                 + "JOIN FETCH subscription.subscriptionConsolidationMethod "
                 + "JOIN FETCH subscription.subscriber subscriber "
                 + "JOIN FETCH subscriber.subscriberStatus "
                 + "JOIN FETCH subscriber.subscriberRole "
-                + "WHERE subscription.deleted = false "
-                + "AND subscription.subscribedObjectId = cp.id ");
+                + "WHERE subscription.deleted = false ", ListingSubscriptionEntity.class);
 
-        //TODO: figure out how to fill in the CHPL Product Numbers
-
-        List<Object[]> results = query.getResultList();
+        List<ListingSubscriptionEntity> results = query.getResultList();
         return results.stream()
-            .map(result -> toSearchResult((SubscriptionEntity) result[0], (String) result[1]))
+            .map(result -> toSearchResult(result))
             .collect(Collectors.toList());
     }
 
@@ -266,12 +262,12 @@ public class SubscriptionDao extends BaseDAOImpl {
         return Collections.EMPTY_LIST;
     }
 
-    private SubscriptionSearchResult toSearchResult(SubscriptionEntity entity, String subscribedObjectName) {
+    private SubscriptionSearchResult toSearchResult(ListingSubscriptionEntity entity) {
         return SubscriptionSearchResult.builder()
                 .id(entity.getId())
                 .creationDate(DateUtil.toLocalDateTime(entity.getCreationDate().getTime()))
                 .subscribedObjectId(entity.getSubscribedObjectId())
-                .subscribedObjectName(subscribedObjectName)
+                .subscribedObjectName(entity.getChplProductNumber())
                 .subscriberEmail(entity.getSubscriber().getEmail())
                 .subscriberId(entity.getSubscriberId())
                 .subscriberRole(entity.getSubscriber().getSubscriberRole().getName())
