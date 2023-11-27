@@ -99,9 +99,10 @@ public class SubscriptionSearchService {
         }
 
         List<String> subjectNamesUpperCase = subjectNames.stream().map(name -> name.toUpperCase()).collect(Collectors.toList());
-        return subscription.getSubscriptionSubject() != null
-                && !StringUtils.isEmpty(subscription.getSubscriptionSubject())
-                && subjectNamesUpperCase.contains(subscription.getSubscriptionSubject().toUpperCase());
+        return !CollectionUtils.isEmpty(subscription.getSubscriptionSubjects())
+                && subscription.getSubscriptionSubjects().stream()
+                    .filter(subSubj -> subjectNamesUpperCase.contains(subSubj.toUpperCase()))
+                    .findAny().isPresent();
     }
 
     private boolean matchesSubscriptionObjectTypes(SubscriptionSearchResult subscription, Set<String> subscriptionObjectTypes) {

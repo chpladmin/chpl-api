@@ -2,10 +2,8 @@ package gov.healthit.chpl.subscription.search;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
-
-import org.apache.commons.lang3.ObjectUtils;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -25,13 +23,13 @@ public class SubscriptionSearchResult implements Serializable {
 
     private static final long serialVersionUID = -2546253641921038L;
 
-    private Long id;
     private UUID subscriberId;
     private String subscriberEmail;
     private String subscriberStatus;
     private String subscriberRole;
     private String subscriptionObjectType; // "Listing", "Developer", "Product"
-    private String subscriptionSubject; // "Certification Status Changed", "Attested Criteria"
+    private String subscriptionConsolidationMethod; // "Daily", "Weekly", "Push"
+    private Set<String> subscriptionSubjects; // "Certification Status Changed", "Attested Criteria"
     private Long subscribedObjectId; // listing ID, developer ID, etc
     private String subscribedObjectName; // "15.04.04.CODE...", "Epic Systems Inc".
 
@@ -43,25 +41,48 @@ public class SubscriptionSearchResult implements Serializable {
     }
 
     @Override
-    public boolean equals(Object another) {
-        if (another == null) {
-            return false;
-        }
-        if (!(another instanceof SubscriptionSearchResult)) {
-            return false;
-        }
-        SubscriptionSearchResult anotherSearchResult = (SubscriptionSearchResult) another;
-        if (ObjectUtils.allNotNull(this, anotherSearchResult, this.getId(), anotherSearchResult.getId())) {
-            return Objects.equals(this.getId(), anotherSearchResult.getId());
-        }
-        return false;
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((subscriberId == null) ? 0 : subscriberId.hashCode());
+        result = prime * result + ((subscribedObjectId == null) ? 0 : subscribedObjectId.hashCode());
+        result = prime * result + ((subscriptionObjectType == null) ? 0 : subscriptionObjectType.hashCode());
+        return result;
     }
 
     @Override
-    public int hashCode() {
-        if (this.getId() == null) {
-            return -1;
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
         }
-        return this.getId().hashCode();
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        SubscriptionSearchResult other = (SubscriptionSearchResult) obj;
+        if (subscriberId == null) {
+            if (other.subscriberId != null) {
+                return false;
+            }
+        } else if (!subscriberId.equals(other.subscriberId)) {
+            return false;
+        }
+        if (subscribedObjectId == null) {
+            if (other.subscribedObjectId != null) {
+                return false;
+            }
+        } else if (!subscribedObjectId.equals(other.subscribedObjectId)) {
+            return false;
+        }
+        if (subscriptionObjectType == null) {
+            if (other.subscriptionObjectType != null) {
+                return false;
+            }
+        } else if (!subscriptionObjectType.equals(other.subscriptionObjectType)) {
+            return false;
+        }
+        return true;
     }
 }
