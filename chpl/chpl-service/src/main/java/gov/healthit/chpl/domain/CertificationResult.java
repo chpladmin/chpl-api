@@ -187,6 +187,15 @@ public class CertificationResult implements Serializable {
     private String serviceBaseUrlList;
 
     /**
+     * The hyperlink to access Risk Management Summary Information. It is a fully qualified URL
+     * which is reachable via web browser.
+     */
+    @Schema(description = "The hyperlink to access Risk Management Summary Information. It is a fully qualified URL "
+            + "which is reachable via web browser.")
+    @XmlElement(required = false, nillable = true)
+    private String riskManagementSummaryInformation;
+
+    /**
      * This variable explains the way in which each privacy and security criterion was addressed for the purposes of
      * certification. It is applicable for 2015 Edition and takes either of Approach 1 and Approach 2.
      */
@@ -475,6 +484,13 @@ public class CertificationResult implements Serializable {
         } else {
             this.setUseCases(certResult.getUseCases());
         }
+        if (!certRules.hasCertOption(certResult.getCertificationCriterionId(), CertificationResultRules.RISK_MANAGEMENT_SUMMARY_INFORMATION)) {
+            this.setRiskManagementSummaryInformation(null);
+        } else if (certResult.getRiskManagementSummaryInformation() == null) {
+            this.setRiskManagementSummaryInformation("");
+        } else {
+            this.setRiskManagementSummaryInformation(certResult.getRiskManagementSummaryInformation());
+        }
         if (!certRules.hasCertOption(certResult.getCertificationCriterionId(), CertificationResultRules.SERVICE_BASE_URL_LIST)) {
             this.setServiceBaseUrlList(null);
         } else if (certResult.getServiceBaseUrlList() == null) {
@@ -756,6 +772,14 @@ public class CertificationResult implements Serializable {
 
     public void setServiceBaseUrlList(String serviceBaseUrlList) {
         this.serviceBaseUrlList = serviceBaseUrlList;
+    }
+
+    public String getRiskManagementSummaryInformation() {
+        return riskManagementSummaryInformation;
+    }
+
+    public void setRiskManagementSummaryInformation(String riskManagementSummaryInformation) {
+        this.riskManagementSummaryInformation = riskManagementSummaryInformation;
     }
 
     public String getPrivacySecurityFramework() {

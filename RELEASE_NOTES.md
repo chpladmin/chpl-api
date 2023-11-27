@@ -1,5 +1,25 @@
 # Release Notes
 
+## Version 42.5.0
+_27 November 2023_
+
+### Features
+* Update Surveillance to work with Editionless listings
+* Implement a more flexible rate limiter
+* Allow a9 or b11 to meet base EHR criteria after b11 start day
+* Handle surveillance requirements/non-conformity based on surveillance dates
+* Add Risk Management Summary Information to Questionable URL Report
+* Add Risk Management Summary Information as criteria attribute
+
+### Bug fixes
+* Handle mixed case Conformance Methods
+* Handle blank values on removed criteria that are not validated
+
+### Flagged Features
+* Implement basic Cognito authentication/authorization
+
+---
+
 ## Version 42.4.0
 _13 November 2023_
 

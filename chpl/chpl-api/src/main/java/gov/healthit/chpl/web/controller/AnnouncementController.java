@@ -27,7 +27,6 @@ import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import gov.healthit.chpl.web.controller.annotation.CacheControl;
 import gov.healthit.chpl.web.controller.annotation.CacheMaxAge;
 import gov.healthit.chpl.web.controller.annotation.CachePolicy;
-import gov.healthit.chpl.web.controller.annotation.DeprecatedApiResponseFields;
 import gov.healthit.chpl.web.controller.results.AnnouncementResults;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -50,7 +49,6 @@ public class AnnouncementController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    @DeprecatedApiResponseFields(responseClass = AnnouncementResults.class, friendlyUrl = "/announcements")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.FOUR_HOURS)
     public @ResponseBody AnnouncementResults getAnnouncements(
             @RequestParam(required = false, defaultValue = "false") boolean future) {
@@ -73,7 +71,6 @@ public class AnnouncementController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
-    @DeprecatedApiResponseFields(responseClass = Announcement.class, httpMethod = "POST", friendlyUrl = "/announcements")
     @RequestMapping(value = "", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
     public Announcement create(@RequestBody Announcement announcement) throws InvalidArgumentsException,
@@ -106,7 +103,6 @@ public class AnnouncementController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
-    @DeprecatedApiResponseFields(responseClass = Announcement.class, httpMethod = "PUT", friendlyUrl = "/announcements")
     @RequestMapping(value = "/{announcementId}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
     public Announcement updateAnnouncement(@PathVariable("announcementId") Long announcementId, @RequestBody Announcement announcement)
