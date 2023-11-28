@@ -133,6 +133,12 @@ public class UrlCheckerDao extends BaseDAOImpl {
                     results.addAll(serviceBaseUrls);
                     logger.info("Got " + serviceBaseUrls.size() + " Service Base URLs in the system.");
                     break;
+                case RISK_MANAGEMENT_SUMMARY_INFORMATION:
+                    logger.info("Getting all Risk Management Summary Info URLs in the system...");
+                    List<UrlResult> riskManagementSummaryInfoUrls = getRiskManagementSummaryInformationUrls();
+                    results.addAll(riskManagementSummaryInfoUrls);
+                    logger.info("Got " + riskManagementSummaryInfoUrls.size() + " Risk Management Summary Info URLs in the system.");
+                    break;
                 case REAL_WORLD_TESTING_PLANS:
                     logger.info("Getting all RWT Plan URLs in the system...");
                     List<UrlResult> rwtPlanUrls = getRealWorldTestingPlanUrls();
@@ -387,6 +393,27 @@ public class UrlCheckerDao extends BaseDAOImpl {
                 .map(website -> UrlResult.builder()
                         .url(website)
                         .urlType(UrlType.SERVICE_BASE_URL_LIST)
+                        .build())
+                .collect(Collectors.toList());
+    }
+
+    private List<UrlResult> getRiskManagementSummaryInformationUrls() {
+        @SuppressWarnings("unchecked")
+        List<String> riskManagementSummaryInfoWebsites = entityManager.createQuery(
+                        "SELECT DISTINCT cre.riskManagementSummaryInformation "
+                        + "FROM CertificationResultEntity cre, CertifiedProductDetailsEntity cpd "
+                        + "WHERE cre.certifiedProductId = cpd.id "
+                        + "AND cre.riskManagementSummaryInformation IS NOT NULL "
+                        + "AND cre.riskManagementSummaryInformation != '' "
+                        + "AND cpd.certificationStatusName IN (:activeStatuses) "
+                        + "AND cre.deleted = false")
+                .setParameter("activeStatuses", activeStatuses)
+                .getResultList();
+        return riskManagementSummaryInfoWebsites.stream()
+                .filter(website -> !StringUtils.isEmpty(website))
+                .map(website -> UrlResult.builder()
+                        .url(website)
+                        .urlType(UrlType.RISK_MANAGEMENT_SUMMARY_INFORMATION)
                         .build())
                 .collect(Collectors.toList());
     }

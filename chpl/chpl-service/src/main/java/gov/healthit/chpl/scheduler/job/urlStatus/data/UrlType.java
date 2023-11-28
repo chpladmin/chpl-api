@@ -12,6 +12,7 @@ public enum UrlType {
     DOCUMENTATION("Documentation"),
     USE_CASES("Use Cases"),
     SERVICE_BASE_URL_LIST("Service Base URL List"),
+    RISK_MANAGEMENT_SUMMARY_INFORMATION("Risk Management Summary Information"),
     REAL_WORLD_TESTING_PLANS("Real World Testing Plans"),
     REAL_WORLD_TESTING_RESULTS("Real World Testing Results"),
     STANDARDS_VERSION_ADVANCEMENT_PROCESS_NOTICE("Standards Version Advancement Process Notice");

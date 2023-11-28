@@ -83,6 +83,9 @@ public class CertificationResultEntity extends EntityAudit {
     @Column(name = "service_base_url_list")
     private String serviceBaseUrlList;
 
+    @Column(name = "risk_management_summary_information")
+    private String riskManagementSummaryInformation;
+
     @Column(name = "privacy_security_framework")
     private String privacySecurityFramework;
 

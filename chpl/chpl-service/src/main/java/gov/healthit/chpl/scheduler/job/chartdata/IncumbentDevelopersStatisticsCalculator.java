@@ -79,6 +79,8 @@ public class IncumbentDevelopersStatisticsCalculator {
                 default:
                     LOGGER.info("Listing has no edition");
                 }
+            } else if (listing.getEdition() == null) {
+                developers2015.add(listing.getDeveloper().getName());
             }
         }
 
@@ -99,7 +101,7 @@ public class IncumbentDevelopersStatisticsCalculator {
         from2014To2015.setNewCertificationEditionId(certificationEditionDAO.getByYear("2015").getId());
         LOGGER.info("Total 2011 Developers: " + developers2011.size());
         LOGGER.info("Total 2014 Developers: " + developers2014.size());
-        LOGGER.info("Total 2015 Developers: " + developers2015.size());
+        LOGGER.info("Total 2015 (and beyond) Developers: " + developers2015.size());
         for (String name : developers2014) {
             if (developers2011.contains(name)) {
                 from2011To2014.setIncumbentCount(from2011To2014.getIncumbentCount() + 1);

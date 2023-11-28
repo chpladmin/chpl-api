@@ -138,6 +138,9 @@ public class CertificationResultReviewer {
         if (!certResultRules.hasCertOption(certResult.getCriterion().getId(), CertificationResultRules.SERVICE_BASE_URL_LIST)) {
             certResult.setServiceBaseUrlList(null);
         }
+        if (!certResultRules.hasCertOption(certResult.getCriterion().getId(), CertificationResultRules.RISK_MANAGEMENT_SUMMARY_INFORMATION)) {
+            certResult.setRiskManagementSummaryInformation(null);
+        }
     }
 
     private void reviewCertResultFields(CertifiedProductSearchDetails listing, CertificationResult certResult) {
@@ -148,6 +151,7 @@ public class CertificationResultReviewer {
         reviewExportDocumentation(listing, certResult);
         reviewUseCases(listing, certResult);
         reviewServiceBaseUrlList(listing, certResult);
+        reviewRiskManagementSummaryInformation(listing, certResult);
     }
 
     private void reviewGap(CertifiedProductSearchDetails listing, CertificationResult certResult) {
@@ -261,6 +265,20 @@ public class CertificationResultReviewer {
                         msgUtil.getMessage("listing.criteria.serviceBaseUrlListNotApplicable", Util.formatCriteriaNumber(certResult.getCriterion())));
             }
             certResult.setServiceBaseUrlList(null);
+        }
+    }
+
+    private void reviewRiskManagementSummaryInformation(CertifiedProductSearchDetails listing, CertificationResult certResult) {
+        if (certResultRules.hasCertOption(certResult.getCriterion().getId(), CertificationResultRules.RISK_MANAGEMENT_SUMMARY_INFORMATION)
+                && ObjectUtils.isEmpty(certResult.getRiskManagementSummaryInformation())) {
+            listing.addDataErrorMessage(msgUtil.getMessage("listing.criteria.missingRiskManagementSummaryInformation",
+                    Util.formatCriteriaNumber(certResult.getCriterion())));
+        } else if (!certResultRules.hasCertOption(certResult.getCriterion().getId(), CertificationResultRules.RISK_MANAGEMENT_SUMMARY_INFORMATION)) {
+            if (!ObjectUtils.isEmpty(certResult.getRiskManagementSummaryInformation())) {
+                listing.addWarningMessage(
+                        msgUtil.getMessage("listing.criteria.riskManagementSummaryInformationNotApplicable", Util.formatCriteriaNumber(certResult.getCriterion())));
+            }
+            certResult.setRiskManagementSummaryInformation(null);
         }
     }
 }

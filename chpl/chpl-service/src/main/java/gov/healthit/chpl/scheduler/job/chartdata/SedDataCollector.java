@@ -43,8 +43,8 @@ public class SedDataCollector {
 
     private List<ListingSearchResult> filterData(List<ListingSearchResult> certifiedProducts) {
         return certifiedProducts.stream()
-                .filter(listing -> listing.getEdition() != null
-                        && listing.getEdition().getName().equalsIgnoreCase(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear())
+                .filter(listing -> (listing.getEdition() == null
+                             || listing.getEdition().getName().equalsIgnoreCase(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getYear()))
                         && hasMetAtLeastOneG3Crteria(listing))
                 .toList();
     }

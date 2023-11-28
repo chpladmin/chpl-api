@@ -49,7 +49,9 @@ public class CertificationCriteriaManager {
             LocalDate startDay, LocalDate endDay) {
         List<CertificationCriterion> activeCriteria = getActiveBetween(startDay, endDay);
         return activeCriteria.stream()
-                .filter(criterion -> StringUtils.isEmpty(certificationEdition) ? true : criterion.getCertificationEdition().equals(certificationEdition))
+                .filter(criterion -> StringUtils.isEmpty(certificationEdition)
+                        ? true
+                        : criterion.getCertificationEdition() == null || criterion.getCertificationEdition().equals(certificationEdition))
                 .map(criterion -> buildCertificationCriterionWithAttributes(criterion))
                 .sorted(criterionComparator)
                 .collect(Collectors.toList());
@@ -104,6 +106,7 @@ public class CertificationCriteriaManager {
                         .gap(rules.hasCertOption(criterion.getId(), CertificationResultRules.GAP))
                         .optionalStandard(rules.hasCertOption(criterion.getId(), CertificationResultRules.OPTIONAL_STANDARD))
                         .privacySecurityFramework(rules.hasCertOption(criterion.getId(), CertificationResultRules.PRIVACY_SECURITY))
+                        .riskManagementSummaryInformation(rules.hasCertOption(criterion.getId(), CertificationResultRules.RISK_MANAGEMENT_SUMMARY_INFORMATION))
                         .sed(rules.hasCertOption(criterion.getId(), CertificationResultRules.SED))
                         .serviceBaseUrlList(rules.hasCertOption(criterion.getId(), CertificationResultRules.SERVICE_BASE_URL_LIST))
                         .standardsTested(rules.hasCertOption(criterion.getId(), CertificationResultRules.STANDARDS_TESTED))

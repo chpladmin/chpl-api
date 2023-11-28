@@ -35,25 +35,26 @@ public class CertificationCriterionWithAttributes extends CertificationCriterion
     @AllArgsConstructor
     @Builder
     public static final class AllowedAttributes {
-        private boolean gap;
-        private boolean privacySecurityFramework;
-        private boolean conformanceMethod;
-        private boolean optionalStandard;
-        private boolean standardsTested;
-        private boolean functionalityTested;
+        private boolean additionalSoftware;
         private boolean apiDocumentation;
-        private boolean exportDocumentation;
+        private boolean attestationAnswer;
+        private boolean conformanceMethod;
         private boolean documentationUrl;
-        private boolean useCases;
+        private boolean exportDocumentation;
+        private boolean functionalityTested;
         private boolean g1Success;
         private boolean g2Success;
-        private boolean attestationAnswer;
-        private boolean additionalSoftware;
-        private boolean testTool;
-        private boolean testProcedure;
-        private boolean testData;
+        private boolean gap;
+        private boolean optionalStandard;
+        private boolean privacySecurityFramework;
+        private boolean riskManagementSummaryInformation;
         private boolean sed;
         private boolean serviceBaseUrlList;
+        private boolean standardsTested;
         private boolean svap;
+        private boolean testData;
+        private boolean testProcedure;
+        private boolean testTool;
+        private boolean useCases;
     }
 }

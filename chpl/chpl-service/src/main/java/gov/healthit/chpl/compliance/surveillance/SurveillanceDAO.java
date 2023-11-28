@@ -1,5 +1,6 @@
 package gov.healthit.chpl.compliance.surveillance;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -561,14 +562,24 @@ public class SurveillanceDAO extends BaseDAOImpl {
     }
 
     public List<NonconformityType> getNonconformityTypes() {
+        LocalDate today = LocalDate.now();
+
         return getNonconformityTypeEntities().stream()
                 .map(e -> e.toDomain())
+                .filter(ncType -> ncType.getStartDay() == null
+                    || ncType.getStartDay().isEqual(today)
+                    || ncType.getStartDay().isBefore(today))
                 .toList();
     }
 
     public List<RequirementType> getRequirementTypes() {
+        LocalDate today = LocalDate.now();
+
         return getRequirementTypeEntities().stream()
                 .map(e -> e.toDomain())
+                .filter(reqType -> reqType.getStartDay() == null
+                    || reqType.getStartDay().isEqual(today)
+                    || reqType.getStartDay().isBefore(today))
                 .toList();
     }
 
