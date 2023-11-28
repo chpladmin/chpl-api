@@ -1,0 +1,181 @@
+{
+	"info": {
+		"name": "search-subscriptions-controller",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "8125082"
+	},
+	"item": [
+		{
+			"name": "GET /subscriptions/search - return 401 and Access denied for ACB",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var ReqBody= {\r",
+							"        userName:pm.environment.get(\"emailACB\"),password:pm.environment.get(\"passwordACB\")\r",
+							"    };\r",
+							"pm.sendRequest({\r",
+							"    url: pm.environment.get(\"authurl\"),\r",
+							"    method: \"POST\",\r",
+							"    header: {\r",
+							"        \"Content-Type\": \"application/json\",\r",
+							"        \"API-KEY\": pm.environment.get(\"apiKey\")\r",
+							"    },\r",
+							"    body: JSON.stringify(ReqBody)\r",
+							"}, function (err, response) {\r",
+							"   var jsonData = response.json();\r",
+							"   pm.environment.set(\"token\",jsonData[\"token\"])\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"ACB user should be denied access to GET /subscriptions/search end point\", function () {\r",
+							"    pm.response.to.have.status(401);\r",
+							"    pm.expect(pm.response.text()).to.include(\"Access is denied\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "API-KEY",
+						"value": "{{apiKey}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{url}}/rest/subscriptions/search",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"rest",
+						"subscriptions",
+						"search"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET /subscriptions/search - return 200 and correct response for ONC",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var ReqBody= {\r",
+							"        userName:pm.environment.get(\"emailONC\"),password:pm.environment.get(\"passwordONC\")\r",
+							"    };\r",
+							"pm.sendRequest({\r",
+							"    url: pm.environment.get(\"authurl\"),\r",
+							"    method: \"POST\",\r",
+							"    header: {\r",
+							"        \"Content-Type\": \"application/json\",\r",
+							"        \"API-KEY\": pm.environment.get(\"apiKey\")\r",
+							"    },\r",
+							"    body: JSON.stringify(ReqBody)\r",
+							"}, function (err, response) {\r",
+							"   var jsonData = response.json();\r",
+							"   pm.environment.set(\"token\",jsonData[\"token\"])\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"ONC user should get 200 status to GET /subscriptions/search end point\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"var jsonData = pm.response.json();\r",
+							"pm.test(\"ONC user should get correct response from GET /subscriptions/search end point\", function () {\r",
+							"    pm.expect(jsonData.results.length).not.eql(0);\r",
+							"    pm.expect(jsonData.results[0]).to.have.property('subscriberId');\r",
+							"    pm.expect(jsonData.results[0]).to.have.property('subscriberEmail');\r",
+							"    pm.expect(jsonData.results[0]).to.have.property('subscriberStatus');\r",
+							"    pm.expect(jsonData.results[0]).to.have.property('subscriberRole');\r",
+							"    pm.expect(jsonData.results[0]).to.have.property('subscriptionObjectType'); \r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "API-Key",
+						"value": "{{apiKey}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/rest/subscriptions/search",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"rest",
+						"subscriptions",
+						"search"
+					]
+				},
+				"description": "GET /subscriptions/search - return 200 and correct response for ONC"
+			},
+			"response": []
+		}
+	]
+}
