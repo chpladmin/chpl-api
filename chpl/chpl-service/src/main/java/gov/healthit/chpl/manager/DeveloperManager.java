@@ -225,7 +225,6 @@ public class DeveloperManager extends SecuredManager {
         listingLeaf.setCuresUpdate(listingDto.getCuresUpdate());
         listingLeaf.setEdition(listingDto.getYear());
         listingLeaf.setId(listingDto.getId());
-        listingLeaf.setLastModifiedDate(listingDto.getLastModifiedDate().getTime());
         return listingLeaf;
     }
 

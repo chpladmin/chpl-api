@@ -59,7 +59,6 @@ public class QuarterlyReportRelevantListingDTO extends CertifiedProductDetailsDT
         this.setCertificationStatusId(entity.getCertificationStatusId());
         this.setCertificationStatusName(entity.getCertificationStatusName());
         this.setCertificationDate(entity.getCertificationDate());
-        this.setLastModifiedDate(entity.getLastModifiedDate());
         this.surveillances = new ArrayList<PrivilegedSurveillanceDTO>();
         if (entity.getSurveillances() != null && entity.getSurveillances().size() > 0) {
             for (PrivilegedSurveillanceEntity entitySurv : entity.getSurveillances()) {

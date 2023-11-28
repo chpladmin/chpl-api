@@ -6,7 +6,6 @@ import java.time.LocalDate;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
@@ -16,7 +15,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseField;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.util.DateUtil;
 import gov.healthit.chpl.util.LocalDateAdapter;
@@ -51,11 +49,6 @@ public class CertifiedProduct implements Serializable {
             + "the format: CertEdYr.ATL.ACB.Dev.Prod.Ver.ICS.AddS.Date")
     @XmlElement(required = true)
     private String chplProductNumber;
-
-    @XmlTransient
-    @Deprecated
-    @DeprecatedResponseField(message = "This field is deprecated and will be removed.", removalDate = "2023-10-31")
-    private Long lastModifiedDate;
 
     /**
      * Edition of the listing. Ex: 2011, 2014, or 2015
@@ -98,7 +91,6 @@ public class CertifiedProduct implements Serializable {
                     + dto.getProductCode() + "." + dto.getVersionCode() + "." + dto.getIcsCode() + "."
                     + dto.getAdditionalSoftwareCode() + "." + dto.getCertifiedDateCode();
         }
-        this.lastModifiedDate = dto.getLastModifiedDate() != null ? dto.getLastModifiedDate().getTime() : null;
         this.edition = dto.getYear();
         this.certificationDate = (dto.getCertificationDate() != null ? dto.getCertificationDate().getTime() : -1);
         this.certificationStatus = dto.getCertificationStatusName();
