@@ -155,7 +155,8 @@ public class ConformanceMethodReviewer extends PermissionBasedReviewer {
             CertificationResultConformanceMethod conformanceMethod = conformanceMethodIter.next();
             if (conformanceMethod.getConformanceMethod() != null && !isConformanceMethodAllowed(certResult, conformanceMethod)) {
                 ConformanceMethod defaultConformanceMethodForCriterion = getDefaultConformanceMethodForCriteria(certResult.getCriterion());
-                if (defaultConformanceMethodForCriterion != null) {
+                if (defaultConformanceMethodForCriterion != null
+                        && !certResultHasConformanceMethod(certResult, defaultConformanceMethodForCriterion)) {
                     CertificationResultConformanceMethod toAdd = CertificationResultConformanceMethod.builder()
                             .conformanceMethod(defaultConformanceMethodForCriterion)
                             .conformanceMethodVersion(conformanceMethod.getConformanceMethodVersion())
@@ -174,12 +175,25 @@ public class ConformanceMethodReviewer extends PermissionBasedReviewer {
         conformanceMethodsToReplace.keySet().stream()
                 .forEach(replacedConformanceMethodName -> {
                     CertificationResultConformanceMethod cmToAdd = conformanceMethodsToReplace.get(replacedConformanceMethodName);
-                    certResult.getConformanceMethods().add(cmToAdd);
+                    if (!certResultHasConformanceMethod(certResult, cmToAdd.getConformanceMethod())) {
+                        certResult.getConformanceMethods().add(cmToAdd);
+                    }
                     listing.addWarningMessage(msgUtil.getMessage("listing.criteria.conformanceMethod.invalidCriteriaReplaced",
                             replacedConformanceMethodName,
                             Util.formatCriteriaNumber(certResult.getCriterion()),
                             cmToAdd.getConformanceMethod().getName()));
                 });
+    }
+
+    private boolean certResultHasConformanceMethod(CertificationResult certResult, ConformanceMethod conformanceMethod) {
+        if (CollectionUtils.isEmpty(certResult.getConformanceMethods())) {
+            return false;
+        }
+
+        return certResult.getConformanceMethods().stream()
+                .filter(cm -> cm.getConformanceMethod() != null
+                    && cm.getConformanceMethod().getName().equalsIgnoreCase(conformanceMethod.getName()))
+                .findAny().isPresent();
     }
 
     private ConformanceMethod getDefaultConformanceMethodForCriteria(CertificationCriterion criterion) {

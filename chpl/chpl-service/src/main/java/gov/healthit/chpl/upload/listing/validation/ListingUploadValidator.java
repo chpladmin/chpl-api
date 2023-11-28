@@ -97,13 +97,13 @@ public class ListingUploadValidator {
             QmsStandardReviewer qmsReviewer,
             AccessibilityStandardReviewer accStdReviewer,
             @Qualifier("listingUploadMeasureReviewer") MeasureReviewer measureReviewer,
-            DuplicateDataReviewer duplicateDataReviewer,
             UrlReviewer urlReviewer,
             FieldLengthReviewer fieldLengthReviewer,
             UnsupportedCharacterReviewer unsupportedCharacterReviewer,
             CertificationResultReviewer certResultReviewer,
             CqmResultReviewer cqmResultReviewer,
             SedReviewer sedReviewer,
+            DuplicateDataReviewer duplicateDataReviewer,
             FF4j ff4j) {
         this.csvHeaderReviewer = csvHeaderReviewer;
         this.chplNumberFormatReviewer = chplNumberFormatReviewer;
@@ -127,13 +127,13 @@ public class ListingUploadValidator {
         this.qmsReviewer = qmsReviewer;
         this.accStdReviewer = accStdReviewer;
         this.measureReviewer = measureReviewer;
-        this.duplicateDataReviewer = duplicateDataReviewer;
         this.urlReviewer = urlReviewer;
         this.fieldLengthReviewer = fieldLengthReviewer;
         this.unsupportedCharacterReviewer = unsupportedCharacterReviewer;
         this.certResultReviewer = certResultReviewer;
         this.cqmResultReviewer = cqmResultReviewer;
         this.sedReviewer = sedReviewer;
+        this.duplicateDataReviewer = duplicateDataReviewer;
         this.ff4j = ff4j;
     }
 
@@ -163,13 +163,13 @@ public class ListingUploadValidator {
         certifiedDateCodeReviewer.review(listing);
         certDateReviewer.review(listing);
         certificationIdReviewer.review(listing);
-        duplicateDataReviewer.review(listing);
         qmsReviewer.review(listing);
         accStdReviewer.review(listing);
         measureReviewer.review(listing);
         certResultReviewer.review(listing);
         cqmResultReviewer.review(listing);
         sedReviewer.review(listing);
+        duplicateDataReviewer.review(listing);
 
         //leaving these three at the end because it's possible some other reviewers
         //will remove data and we shouldn't review all the url/strings/fieldlengths
