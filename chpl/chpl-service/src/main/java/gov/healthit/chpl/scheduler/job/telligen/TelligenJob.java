@@ -4,14 +4,15 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URISyntaxException;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 
@@ -36,7 +37,7 @@ public class TelligenJob extends QuartzJob {
 
         for (List<String> record : records) {
             try {
-                callEndpoint("localhost:3000" + record.get(0).toString().replaceAll("/$", ""));
+                callEndpoint("https://chpl-dev.healthit.gov" + record.get(0).toString());
             } catch (InterruptedException | IOException | URISyntaxException e) {
                 LOGGER.error(e);
             }
@@ -44,19 +45,17 @@ public class TelligenJob extends QuartzJob {
     }
 
     private void callEndpoint(String endpoint) throws IOException, InterruptedException, URISyntaxException {
-        URIBuilder uriBuilder = new URIBuilder()
-                .setScheme("https")
-                .setHost(endpoint);
+        try (CloseableHttpClient client = HttpClients.createDefault()) {
+            HttpGet request = new HttpGet(endpoint);
+            request.addHeader("API-Key", "12909a978483dfb8ecd0596c98ae9094");
+            CloseableHttpResponse response = client.execute(request);
 
-        HttpClient client = HttpClient.newBuilder().build();
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(uriBuilder.build())
-                .header("API-Key", "405935904f3dddecc10328e689d69f77")
-                .build();
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            String body = new String(response.getEntity().getContent().readAllBytes(), StandardCharsets.UTF_8);
+            LOGGER.info("URI: {}", request.toString());
+            LOGGER.info("Http Code: {}", response.getStatusLine().getStatusCode());
+            LOGGER.info("Bytes Received: {}", body.length());
+            LOGGER.info("Body: {}", body);
+        }
 
-        LOGGER.info("Http Code: {}", response.statusCode());
-        LOGGER.info("Bytes Received: {}", response.body().length());
-        LOGGER.info("Body: {}", response.body());
     }
 }
