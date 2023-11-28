@@ -2,13 +2,11 @@ package gov.healthit.chpl.domain;
 
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseField;
 import gov.healthit.chpl.util.LocalDateDeserializer;
 import gov.healthit.chpl.util.LocalDateSerializer;
 import lombok.AllArgsConstructor;
@@ -32,8 +30,4 @@ public class CertificationBody implements Serializable {
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
     private LocalDate retirementDay;
-
-    @Deprecated
-    @DeprecatedResponseField(message = "This field is deprecated and will be removed. Please use retirementDay.", removalDate = "2023-10-31")
-    private Date retirementDate;
 }

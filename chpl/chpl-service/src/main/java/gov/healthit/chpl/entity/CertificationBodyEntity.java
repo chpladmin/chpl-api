@@ -18,7 +18,6 @@ import javax.persistence.Table;
 import org.hibernate.annotations.Where;
 
 import gov.healthit.chpl.domain.CertificationBody;
-import gov.healthit.chpl.util.DateUtil;
 import lombok.Data;
 
 @Entity
@@ -80,7 +79,6 @@ public class CertificationBodyEntity implements Serializable {
                 .name(this.getName())
                 .retired(this.getRetired())
                 .retirementDay(this.getRetirementDate())
-                .retirementDate(DateUtil.toDate(this.getRetirementDate()))
                 .website(this.getWebsite())
                 .build();
     }
