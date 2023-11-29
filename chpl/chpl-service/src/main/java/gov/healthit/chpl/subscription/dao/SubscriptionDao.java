@@ -1,17 +1,13 @@
 package gov.healthit.chpl.subscription.dao;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.persistence.Query;
 import javax.transaction.Transactional;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.auth.user.User;
@@ -28,7 +24,6 @@ import gov.healthit.chpl.subscription.entity.SubscriptionSearchResultEntity;
 import gov.healthit.chpl.subscription.entity.SubscriptionSubjectEntity;
 import gov.healthit.chpl.subscription.search.SubscriptionSearchResult;
 import gov.healthit.chpl.subscription.service.SubscriptionLookupUtil;
-import gov.healthit.chpl.util.DateUtil;
 import lombok.extern.log4j.Log4j2;
 
 @Repository
@@ -235,33 +230,7 @@ public class SubscriptionDao extends BaseDAOImpl {
 
         List<SubscriptionSearchResultEntity> results = query.getResultList();
         return results.stream()
-            .map(result -> toSearchResult(result))
+            .map(result -> result.toDomain())
             .collect(Collectors.toList());
-    }
-
-    private SubscriptionSearchResult toSearchResult(SubscriptionSearchResultEntity entity) {
-        return SubscriptionSearchResult.builder()
-                .creationDate(DateUtil.toLocalDateTime(entity.getCreationDate().getTime()))
-                .subscribedObjectId(entity.getSubscribedObjectId())
-                .subscribedObjectName(entity.getSubscribedObjectName())
-                .subscriberEmail(entity.getSubscriberEmail())
-                .subscriberId(entity.getSubscriberId())
-                .subscriberRole(entity.getSubscriberRole())
-                .subscriberStatus(entity.getSubscriberStatus())
-                .subscriptionConsolidationMethod(entity.getSubscriptionConsolidationMethod())
-                .subscriptionObjectType(entity.getSubscriptionObjectType())
-                .subscriptionSubjects(subjectsStringToSet(entity.getSubscriptionSubjects()))
-                .build();
-    }
-
-    private Set<String> subjectsStringToSet(String subscriptionSubjects) {
-        if (StringUtils.isEmpty(subscriptionSubjects)) {
-            return new HashSet<String>();
-        }
-        String[] splitSubjects = subscriptionSubjects.split(SubscriptionSearchResultEntity.SUBJECT_SPLIT_CHAR);
-        if (splitSubjects == null || splitSubjects.length == 0) {
-            return new HashSet<String>();
-        }
-        return Stream.of(splitSubjects).collect(Collectors.toSet());
     }
 }

@@ -2,7 +2,11 @@ package gov.healthit.chpl.subscription.entity;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
@@ -10,8 +14,11 @@ import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.Immutable;
 
+import gov.healthit.chpl.subscription.search.SubscriptionSearchResult;
+import gov.healthit.chpl.util.DateUtil;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -57,6 +64,32 @@ public class SubscriptionSearchResultEntity {
 
     @Column(name = "creation_date", nullable = false, insertable = false, updatable = false)
     private Date creationDate;
+
+    public SubscriptionSearchResult toDomain() {
+        return SubscriptionSearchResult.builder()
+                .creationDate(DateUtil.toLocalDateTime(getCreationDate().getTime()))
+                .subscribedObjectId(getSubscribedObjectId())
+                .subscribedObjectName(getSubscribedObjectName())
+                .subscriberEmail(getSubscriberEmail())
+                .subscriberId(getSubscriberId())
+                .subscriberRole(getSubscriberRole())
+                .subscriberStatus(getSubscriberStatus())
+                .subscriptionConsolidationMethod(getSubscriptionConsolidationMethod())
+                .subscriptionObjectType(getSubscriptionObjectType())
+                .subscriptionSubjects(subjectsStringToSet(getSubscriptionSubjects()))
+                .build();
+    }
+
+    private Set<String> subjectsStringToSet(String subjects) {
+        if (StringUtils.isEmpty(subjects)) {
+            return new HashSet<String>();
+        }
+        String[] splitSubjects = subjects.split(SUBJECT_SPLIT_CHAR);
+        if (splitSubjects == null || splitSubjects.length == 0) {
+            return new HashSet<String>();
+        }
+        return Stream.of(splitSubjects).collect(Collectors.toSet());
+    }
 }
 
 @Getter
