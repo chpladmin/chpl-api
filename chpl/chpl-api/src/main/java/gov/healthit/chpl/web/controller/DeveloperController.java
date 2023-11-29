@@ -141,6 +141,24 @@ public class DeveloperController {
                 directReviewService.getDirectReviews(developerId).getDirectReviews(), HttpStatus.OK);
     }
 
+    @Operation(summary = "List all Real World Testing Plan URLs from active certificates for a developer.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
+    @RequestMapping(value = "/{developerId}/rwt-plan-urls", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public @ResponseBody DeveloperAttestationSubmissionResults getRwtPlanUrls(@PathVariable("developerId") Long developerId) throws InvalidArgumentsException, EntityRetrievalException {
+        return null;
+    }
+
+    @Operation(summary = "List all Real World Testing Result URLs from active certificates for a developer.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
+    @RequestMapping(value = "/{developerId}/rwt-result-urls", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public @ResponseBody DeveloperAttestationSubmissionResults getRwtResultsUrls(@PathVariable("developerId") Long developerId) throws InvalidArgumentsException, EntityRetrievalException {
+        return null;
+    }
+
     @Operation(summary = "Update a developer.",
             description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB",
             security = {
