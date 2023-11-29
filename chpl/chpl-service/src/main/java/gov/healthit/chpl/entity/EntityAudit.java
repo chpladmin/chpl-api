@@ -56,13 +56,13 @@ public abstract class EntityAudit implements Serializable {
         deleted = deleted != null ? deleted : false;
         this.creationDate = new Date();
         this.lastModifiedDate = new Date();
-        getLastModifiedUserStrategy().populationLastModifiedUser(this);
+        getLastModifiedUserStrategy().populateLastModifiedUser(this);
     }
 
     @PreUpdate
     public void populateAuditInformationBeforeUpdate() {
         deleted = deleted != null ? deleted : false;
         this.lastModifiedDate = new Date();
-        getLastModifiedUserStrategy().populationLastModifiedUser(this);
+        getLastModifiedUserStrategy().populateLastModifiedUser(this);
     }
 }

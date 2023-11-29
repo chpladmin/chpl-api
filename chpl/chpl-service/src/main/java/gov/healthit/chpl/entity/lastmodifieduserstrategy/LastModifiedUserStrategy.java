@@ -8,7 +8,7 @@ import gov.healthit.chpl.entity.EntityAudit;
 public abstract class LastModifiedUserStrategy {
     private FF4j ff4j = SpringContext.getBean(FF4j.class);
 
-    public abstract void populationLastModifiedUser(EntityAudit entityAudit);
+    public abstract void populateLastModifiedUser(EntityAudit entityAudit);
 
     public FF4j getFF4j() {
         return ff4j;

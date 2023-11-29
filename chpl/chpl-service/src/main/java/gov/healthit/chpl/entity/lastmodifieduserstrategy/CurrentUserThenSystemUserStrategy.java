@@ -8,7 +8,7 @@ import gov.healthit.chpl.util.AuthUtil;
 
 public class CurrentUserThenSystemUserStrategy extends LastModifiedUserStrategy {
     @Override
-    public void populationLastModifiedUser(EntityAudit entityAudit) {
+    public void populateLastModifiedUser(EntityAudit entityAudit) {
 
 
         if (getFF4j().check(FeatureList.SSO)) {
