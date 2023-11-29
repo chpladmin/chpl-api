@@ -45,6 +45,8 @@ import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.UserPermissionsManager;
+import gov.healthit.chpl.realworldtesting.domain.RealWorldTestingUrlByDeveloper;
+import gov.healthit.chpl.realworldtesting.manager.RealWorldTestingManager;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import gov.healthit.chpl.web.controller.annotation.DeprecatedApi;
@@ -67,6 +69,7 @@ public class DeveloperController {
     private UserPermissionsManager userPermissionsManager;
     private AttestationManager attestationManager;
     private DirectReviewCachingService directReviewService;
+    private RealWorldTestingManager rwtManager;
 
     @Autowired
     public DeveloperController(DeveloperManager developerManager,
@@ -74,12 +77,14 @@ public class DeveloperController {
             UserPermissionsManager userPermissionsManager,
             AttestationManager attestationManager,
             ErrorMessageUtil msgUtil,
-            DirectReviewCachingService directReviewService) {
+            DirectReviewCachingService directReviewService,
+            RealWorldTestingManager rwtManager) {
         this.developerManager = developerManager;
         this.userPermissionsManager = userPermissionsManager;
         this.attestationManager = attestationManager;
         this.msgUtil = msgUtil;
         this.directReviewService = directReviewService;
+        this.rwtManager = rwtManager;
     }
 
     @Operation(summary = "List all developers in the system.",
@@ -141,22 +146,22 @@ public class DeveloperController {
                 directReviewService.getDirectReviews(developerId).getDirectReviews(), HttpStatus.OK);
     }
 
-    @Operation(summary = "List all Real World Testing Plan URLs from active certificates for a developer.",
+    @Operation(summary = "List all Real World Testing Plans URLs from active certificates for a developer.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
-    @RequestMapping(value = "/{developerId}/rwt-plan-urls", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public @ResponseBody DeveloperAttestationSubmissionResults getRwtPlanUrls(@PathVariable("developerId") Long developerId) throws InvalidArgumentsException, EntityRetrievalException {
-        return null;
+    @RequestMapping(value = "/{developerId}/rwt-plans-urls", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public @ResponseBody List<RealWorldTestingUrlByDeveloper> getRwtPlansUrls(@PathVariable("developerId") Long developerId) throws InvalidArgumentsException, EntityRetrievalException {
+        return rwtManager.getPlansUrls(developerId);
     }
 
-    @Operation(summary = "List all Real World Testing Result URLs from active certificates for a developer.",
+    @Operation(summary = "List all Real World Testing Results URLs from active certificates for a developer.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
-    @RequestMapping(value = "/{developerId}/rwt-result-urls", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public @ResponseBody DeveloperAttestationSubmissionResults getRwtResultsUrls(@PathVariable("developerId") Long developerId) throws InvalidArgumentsException, EntityRetrievalException {
-        return null;
+    @RequestMapping(value = "/{developerId}/rwt-results-urls", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public @ResponseBody List<RealWorldTestingUrlByDeveloper> getRwtResultsUrls(@PathVariable("developerId") Long developerId) throws InvalidArgumentsException, EntityRetrievalException {
+        return rwtManager.getResultsUrls(developerId);
     }
 
     @Operation(summary = "Update a developer.",
