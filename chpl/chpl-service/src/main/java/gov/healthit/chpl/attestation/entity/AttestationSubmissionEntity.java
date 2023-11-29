@@ -31,7 +31,7 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @Entity
 @Table(name = "attestation_submission")
-public class AttestationSubmissionEntity extends EntityAudit{
+public class AttestationSubmissionEntity extends EntityAudit {
     private static final long serialVersionUID = -7242508236937180150L;
 
     @Id
