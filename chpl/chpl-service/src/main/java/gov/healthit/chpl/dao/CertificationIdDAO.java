@@ -46,7 +46,6 @@ public class CertificationIdDAO extends BaseDAOImpl {
     private static final String CERT_ID_CHARS = CERT_ID_CHARS_NUMERIC + CERT_ID_CHARS_ALPHA;
     private static final int CERT_ID_LENGTH = 15;
     private static final String CERT_ID_15C_BEGIN = "0015C";
-    private static final long MODIFIED_USER_ID = -4L;
     private static final int MAX_COUNT_ALPHAS = 3;
 
     @Transactional
