@@ -108,9 +108,4 @@ public class CertificationResultEntity extends EntityAudit {
     @JoinColumn(name = "certification_criterion_id", nullable = false, insertable = false, updatable = false)
     private CertificationCriterionEntity certificationCriterion;
 
-    //marked as updatable false to avoid running the soft delete triggers in the db
-    //adding and removing certification results is done through the success flag
-    @Column(name = "deleted", insertable = false, updatable = false)
-    private Boolean deleted;
-
 }
