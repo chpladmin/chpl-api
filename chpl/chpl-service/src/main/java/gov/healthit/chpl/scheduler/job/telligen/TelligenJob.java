@@ -25,7 +25,7 @@ public class TelligenJob extends QuartzJob {
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
         List<List<String>> records = new ArrayList<>();
-        try (BufferedReader br = new BufferedReader(new InputStreamReader(getClass().getClassLoader().getResourceAsStream("todd.csv")))) {
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(getClass().getClassLoader().getResourceAsStream("telligen.csv")))) {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] values = line.split(COMMA);
