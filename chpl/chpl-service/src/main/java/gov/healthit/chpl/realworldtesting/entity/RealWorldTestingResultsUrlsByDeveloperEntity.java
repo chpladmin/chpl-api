@@ -16,14 +16,14 @@ import lombok.Data;
 @Entity
 @Data
 @Immutable
-@Table(name = "rwt_plans_by_developer")
-public class RealWorldTestingPlansUrlsByDeveloper {
+@Table(name = "rwt_results_by_developer")
+public class RealWorldTestingResultsUrlsByDeveloperEntity {
 
     @EmbeddedId
-    private RealWorldTestingPlansUrlsId id;
+    private RealWorldTestingResultsUrlsId id;
 
-    @Column(name = "rwt_plans_url", insertable = false, updatable = false)
-    private String rwtPlansUrl;
+    @Column(name = "rwt_results_url", insertable = false, updatable = false)
+    private String rwtResultsUrl;
 
     @Column(name = "developer_id", insertable = false, updatable = false)
     private Long developerId;
@@ -33,7 +33,7 @@ public class RealWorldTestingPlansUrlsByDeveloper {
 
     public RealWorldTestingUrlByDeveloper toDomain() {
         return RealWorldTestingUrlByDeveloper.builder()
-                .url(rwtPlansUrl)
+                .url(rwtResultsUrl)
                 .activeCertificateCount(activeCertificateCount)
                 .build();
     }
@@ -41,11 +41,11 @@ public class RealWorldTestingPlansUrlsByDeveloper {
 
 @Embeddable
 @Data
-class RealWorldTestingPlansUrlsId implements Serializable {
-    private static final long serialVersionUID = 377917248713498861L;
+class RealWorldTestingResultsUrlsId implements Serializable {
+    private static final long serialVersionUID = 47791724871718281L;
 
-    @Column(name = "rwt_plans_url", insertable = false, updatable = false)
-    private String rwtPlansUrl;
+    @Column(name = "rwt_results_url", insertable = false, updatable = false)
+    private String rwtResultsUrl;
 
     @Column(name = "developer_id", insertable = false, updatable = false)
     private Long developerId;
@@ -54,7 +54,7 @@ class RealWorldTestingPlansUrlsId implements Serializable {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((rwtPlansUrl == null) ? 0 : rwtPlansUrl.hashCode());
+        result = prime * result + ((rwtResultsUrl == null) ? 0 : rwtResultsUrl.hashCode());
         result = prime * result + ((developerId == null) ? 0 : developerId.hashCode());
         return result;
     }
@@ -70,12 +70,12 @@ class RealWorldTestingPlansUrlsId implements Serializable {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        RealWorldTestingPlansUrlsId other = (RealWorldTestingPlansUrlsId) obj;
-        if (rwtPlansUrl == null) {
-            if (other.rwtPlansUrl != null) {
+        RealWorldTestingResultsUrlsId other = (RealWorldTestingResultsUrlsId) obj;
+        if (rwtResultsUrl == null) {
+            if (other.rwtResultsUrl != null) {
                 return false;
             }
-        } else if (!rwtPlansUrl.equals(other.rwtPlansUrl)) {
+        } else if (!rwtResultsUrl.equals(other.rwtResultsUrl)) {
             return false;
         }
         if (developerId == null) {
