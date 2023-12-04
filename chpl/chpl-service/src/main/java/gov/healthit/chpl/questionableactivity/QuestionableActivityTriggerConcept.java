@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 public enum QuestionableActivityTriggerConcept implements Serializable {
     CRITERIA_REMOVED("Certification Criteria Removed"),
+    REMOVED_CRITERIA_ADDED("Attested to Removed Certification Criteria"),
     CQM_ADDED("CQM Added"),
     CQM_REMOVED("CQM Removed"),
     G1_SUCCESS_EDITED("Measure Successfully Tested for 170.314 (g)(1) Edited"),
@@ -11,8 +12,6 @@ public enum QuestionableActivityTriggerConcept implements Serializable {
     MEASURE_REMOVED("G1/G2 Removed"),
     GAP_EDITED("GAP Status Edited"),
     SURVEILLANCE_REMOVED("Surveillance Removed"),
-    EDITION_2011_EDITED("2011 Listing Edited"),
-    EDITION_2014_EDITED("2014 Listing Edited"),
     CERTIFICATION_DATE_EDITED("Certification Date Edited"),
     CERTIFICATION_STATUS_EDITED_CURRENT("Current Certification Status Edited"),
     CERTIFICATION_STATUS_EDITED_HISTORY("Historical Certification Status Edited"),
@@ -30,15 +29,21 @@ public enum QuestionableActivityTriggerConcept implements Serializable {
     VERSION_NAME_EDITED("Version Name Edited"),
     REAL_WORLD_TESTING_REMOVED("Real World Testing Removed"),
     REAL_WORLD_TESTING_ADDED("Real World Testing Added To Ineligible Listing"),
+    EXPIRED_FUNCTIONALITY_TESTED_ADDED("Expired Functionality Tested Added"),
+    EXPIRED_STANDARD_ADDED("Expired Standard Added"),
+    EXPIRED_TEST_TOOL_ADDED("Expired Test Tool Added"),
     REPLACED_SVAP_ADDED("Replaced SVAP Added"),
     PROMOTING_INTEROPERABILITY_UPDATED_BY_ACB("Promoting Interoperability Updated by ONC-ACB"),
     RWT_PLANS_UPDATED_OUTSIDE_NORMAL_PERIOD("Real World Testing Plans URL or Check Date updated outside normal update period"),
     RWT_RESULTS_UPDATED_OUTSIDE_NORMAL_PERIOD("Real World Testing Results URL or Check Date updated outside normal update period"),
+    UPLOADED_AFTER_CERTIFICATION_DATE("Uploaded After Certification Date"),
     NON_ACTIVE_CERTIFIFCATE_EDITED("Non Active Certificate Edited"),
-    CURES_UPDATE_REMOVED("Cures Update Designation Removed"),
 
     //These are no longer being detected but there may be existing older questionable activities
-    CERTIFICATION_STATUS_DATE_EDITED_CURRENT("Current Certification Status Date Edited");
+    EDITION_2011_EDITED("2011 Listing Edited"),
+    EDITION_2014_EDITED("2014 Listing Edited"),
+    CERTIFICATION_STATUS_DATE_EDITED_CURRENT("Current Certification Status Date Edited"),
+    CURES_UPDATE_REMOVED("Cures Update Designation Removed");
 
     private final String name;
 

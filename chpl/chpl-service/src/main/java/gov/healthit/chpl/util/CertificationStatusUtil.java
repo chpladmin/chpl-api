@@ -3,6 +3,8 @@ package gov.healthit.chpl.util;
 import java.util.List;
 import java.util.stream.Stream;
 
+import gov.healthit.chpl.domain.CertificationStatus;
+import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.entity.CertificationStatusType;
 
 public final class CertificationStatusUtil {
@@ -23,5 +25,10 @@ public final class CertificationStatusUtil {
         return ACTIVE_STATUSES.stream()
                 .map(status -> status.getName())
                 .toList();
+    }
+
+    public static boolean isActive(CertifiedProductSearchDetails listing) {
+        CertificationStatus currentStatusName = NullSafeEvaluator.eval(() -> listing.getCurrentStatus().getStatus(), null);
+        return currentStatusName != null && getActiveStatusNames().contains(currentStatusName.getName());
     }
 }
