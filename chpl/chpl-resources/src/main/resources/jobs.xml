@@ -853,5 +853,13 @@
             <recover>false</recover>
         </job>
 
+        <job>
+            <name>telligenJob</name>
+            <group>systemJobs</group>
+            <description>Simulate Telligen calls</description>
+            <job-class>gov.healthit.cpl.scheduler.job.telligen.TelligenJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+        </job>
     </schedule>
 </job-scheduling-data>
