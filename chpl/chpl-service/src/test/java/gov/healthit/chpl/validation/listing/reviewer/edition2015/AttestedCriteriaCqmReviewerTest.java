@@ -39,7 +39,7 @@ public class AttestedCriteriaCqmReviewerTest {
     @Before
     public void before() throws EntityRetrievalException {
         c1 = buildCriterion(1L, "170.315 (c)(1)", "C1", true);
-        c1Cures = buildCriterion(2L, "170.315 (c)(1)", "C1 (Cures Update)", false);
+        c1Cures = buildCriterion(2L, "170.315 (c)(1)", "C1", false);
         c2 = buildCriterion(3L, "170.315 (c)(2)", "C2", false);
         c3 = buildCriterion(4L, "170.315 (c)(3)", "C3", false);
 
@@ -273,7 +273,7 @@ public class AttestedCriteriaCqmReviewerTest {
         reviewer.review(listing);
         assertEquals(0, listing.getWarningMessages().size());
         assertEquals(1, listing.getErrorMessages().size());
-        assertTrue(listing.getErrorMessages().contains(String.format(MISSING_CQM, "170.315 (c)(1) (Cures Update)")));
+        assertTrue(listing.getErrorMessages().contains(String.format(MISSING_CQM, "170.315 (c)(1)")));
     }
 
     @Test

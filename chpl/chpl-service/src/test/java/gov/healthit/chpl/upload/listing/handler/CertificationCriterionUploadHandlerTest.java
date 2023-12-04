@@ -119,8 +119,8 @@ public class CertificationCriterionUploadHandlerTest {
                 .certificationDate(DateUtil.toEpochMillis(LocalDate.parse("2023-01-01")))
                 .build();
 
-        CertificationCriterion origCriterion = createCriterion(1L, "170.315 (d)(4)", "test title", "2022-01-01", "2023-05-31");
-        CertificationCriterion curesCriterion = createCriterion(2L, "170.315 (d)(4)", "test title (Cures Update)", "2023-06-01", null);
+        CertificationCriterion origCriterion = createCriterion(1L, "170.315 (d)(4)", "170.315 (d)(4)", "2022-01-01", "2023-05-31");
+        CertificationCriterion curesCriterion = createCriterion(2L, "170.315 (d)(4)", "170.315 (d)(4)", "2023-06-01", null);
         List<CertificationCriterion> criteria = Stream.of(origCriterion, curesCriterion).toList();
         Mockito.when(criterionDao.getAllByNumber(ArgumentMatchers.eq("170.315 (d)(4)")))
             .thenReturn(criteria);
@@ -140,8 +140,8 @@ public class CertificationCriterionUploadHandlerTest {
                 .certificationDate(DateUtil.toEpochMillis(LocalDate.parse("2023-07-01")))
                 .build();
 
-        CertificationCriterion origCriterion = createCriterion(1L, "170.315 (d)(4)", "test title", "2022-01-01", "2023-05-31");
-        CertificationCriterion curesCriterion = createCriterion(2L, "170.315 (d)(4)", "test title (Cures Update)", "2023-06-01", null);
+        CertificationCriterion origCriterion = createCriterion(1L, "170.315 (d)(4)", "170.315 (d)(4)", "2022-01-01", "2023-05-31");
+        CertificationCriterion curesCriterion = createCriterion(2L, "170.315 (d)(4)", "170.315 (d)(4)", "2023-06-01", null);
         List<CertificationCriterion> criteria = Stream.of(origCriterion, curesCriterion).toList();
         Mockito.when(criterionDao.getAllByNumber(ArgumentMatchers.eq("170.315 (d)(4)")))
             .thenReturn(criteria);
@@ -161,8 +161,8 @@ public class CertificationCriterionUploadHandlerTest {
                 .certificationDate(DateUtil.toEpochMillis(LocalDate.parse("2022-07-01")))
                 .build();
 
-        CertificationCriterion origCriterion = createCriterion(1L, "170.315 (d)(4)", "test title", "2022-01-01", "2023-05-31");
-        CertificationCriterion curesCriterion = createCriterion(2L, "170.315 (d)(4)", "test title (Cures Update)", "2023-06-01", null);
+        CertificationCriterion origCriterion = createCriterion(1L, "170.315 (d)(4)", "170.315 (d)(4)", "2022-01-01", "2023-05-31");
+        CertificationCriterion curesCriterion = createCriterion(2L, "170.315 (d)(4)", "170.315 (d)(4)", "2023-06-01", null);
         List<CertificationCriterion> criteria = Stream.of(origCriterion, curesCriterion).toList();
         Mockito.when(criterionDao.getAllByNumber(ArgumentMatchers.eq("170.315 (d)(4)")))
             .thenReturn(criteria);
