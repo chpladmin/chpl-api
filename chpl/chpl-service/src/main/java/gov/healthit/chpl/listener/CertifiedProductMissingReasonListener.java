@@ -21,9 +21,8 @@ import gov.healthit.chpl.exception.MissingReasonException;
 import gov.healthit.chpl.questionableactivity.domain.QuestionableActivityListing;
 import gov.healthit.chpl.questionableactivity.listing.DeletedCertificationsActivity;
 import gov.healthit.chpl.questionableactivity.listing.DeletedCqmsActivity;
+import gov.healthit.chpl.questionableactivity.listing.NonActiveCertificateEdited;
 import gov.healthit.chpl.questionableactivity.listing.UpdateCurrentCertificationStatusActivity;
-import gov.healthit.chpl.questionableactivity.listing.Updated2011EditionListingActivity;
-import gov.healthit.chpl.questionableactivity.listing.Updated2014EditionListingActivity;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Component
@@ -33,8 +32,7 @@ public class CertifiedProductMissingReasonListener {
 
     private ErrorMessageUtil errorMessageUtil;
     private CertifiedProductDetailsManager cpdManager;
-    private Updated2011EditionListingActivity updated2011EditionListingActivity;
-    private Updated2014EditionListingActivity updated2014EditionListingActivity;
+    private NonActiveCertificateEdited nonActiveCertificateEditedActivity;
     private DeletedCqmsActivity deletedCqmsActivity;
     private DeletedCertificationsActivity deletedCertificationsActivity;
     private UpdateCurrentCertificationStatusActivity updatedCurrentCertificationStatusActivity;
@@ -42,16 +40,14 @@ public class CertifiedProductMissingReasonListener {
     @Autowired
     public CertifiedProductMissingReasonListener(ErrorMessageUtil errorMessageUtil,
             CertifiedProductDetailsManager cpdManager, final CertifiedProductDAO listingDao,
-            Updated2011EditionListingActivity updated2011EditionListingActivity,
-            Updated2014EditionListingActivity updated2014EditionListingActivity,
+            NonActiveCertificateEdited nonActiveCertificateEditedActivity,
             DeletedCqmsActivity deletedCqmsActivity,
             DeletedCertificationsActivity deletedCertificationsActivity,
             UpdateCurrentCertificationStatusActivity updatedCurrentCertificationStatusActivity) {
 
         this.errorMessageUtil = errorMessageUtil;
         this.cpdManager = cpdManager;
-        this.updated2011EditionListingActivity = updated2011EditionListingActivity;
-        this.updated2014EditionListingActivity = updated2014EditionListingActivity;
+        this.nonActiveCertificateEditedActivity = nonActiveCertificateEditedActivity;
         this.deletedCqmsActivity = deletedCqmsActivity;
         this.deletedCertificationsActivity = deletedCertificationsActivity;
         this.updatedCurrentCertificationStatusActivity = updatedCurrentCertificationStatusActivity;
@@ -64,20 +60,12 @@ public class CertifiedProductMissingReasonListener {
         CertifiedProductSearchDetails origListing = cpdManager.getCertifiedProductDetails(newListing.getId());
         List<QuestionableActivityListing> activities;
 
-        activities = updated2011EditionListingActivity.check(origListing, newListing);
+        activities = nonActiveCertificateEditedActivity.check(origListing, newListing);
         if (doActivitiesExist(activities)
                 && StringUtils.isEmpty(updateRequest.getReason())
                 && !updateRequest.isAcknowledgeBusinessErrors()) {
             throw new MissingReasonException(errorMessageUtil
-                    .getMessage("listing.reasonRequired", "updating a 2011 Edition Certified Product"));
-        }
-
-        activities = updated2014EditionListingActivity.check(origListing, newListing);
-        if (doActivitiesExist(activities)
-                && StringUtils.isEmpty(updateRequest.getReason())
-                && !updateRequest.isAcknowledgeBusinessErrors()) {
-            throw new MissingReasonException(errorMessageUtil
-                    .getMessage("listing.reasonRequired", "updating a 2014 Edition Certified Product"));
+                    .getMessage("listing.reasonRequired", "updating a Non-Active Certificate"));
         }
 
         activities = deletedCqmsActivity.check(origListing, newListing);
