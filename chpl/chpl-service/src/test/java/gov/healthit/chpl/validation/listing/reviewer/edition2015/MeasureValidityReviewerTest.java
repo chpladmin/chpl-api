@@ -4,6 +4,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.text.ParseException;
+import java.time.LocalDate;
 import java.util.LinkedHashSet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -387,7 +388,7 @@ public class MeasureValidityReviewerTest {
         reviewer.review(listing);
 
         assertEquals(1, listing.getErrorMessages().size());
-        assertEquals("The G1 measure Test for T is missing required criterion 170.315 (g)(1) (Cures Update).",
+        assertEquals("The G1 measure Test for T is missing required criterion 170.315 (g)(1).",
                 listing.getErrorMessages().iterator().next());
     }
 
@@ -476,6 +477,7 @@ public class MeasureValidityReviewerTest {
         return CertificationCriterion.builder()
         .id(id)
         .number(number)
+        .startDay(LocalDate.parse("2015-01-01"))
         .build();
     }
 
@@ -483,7 +485,7 @@ public class MeasureValidityReviewerTest {
         return CertificationCriterion.builder()
         .id(id)
         .number(number)
-        .title("(Cures Update)")
+        .startDay(LocalDate.parse("2020-06-30"))
         .build();
     }
 }

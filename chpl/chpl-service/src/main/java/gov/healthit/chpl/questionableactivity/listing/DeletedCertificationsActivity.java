@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.BooleanUtils;
@@ -17,7 +18,6 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.questionableactivity.QuestionableActivityTriggerConcept;
 import gov.healthit.chpl.questionableactivity.domain.QuestionableActivityListing;
 import gov.healthit.chpl.service.CertificationCriterionService;
-import gov.healthit.chpl.util.Util;
 
 @Component
 public class DeletedCertificationsActivity implements ListingActivity {
@@ -65,13 +65,14 @@ public class DeletedCertificationsActivity implements ListingActivity {
     private boolean wasCuresCriteriaSwappedForOriginal(CertificationCriterion removedCriterion,
             CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing) {
         removedCriterion = criteriaService.get(removedCriterion.getId());
-        return !Util.isCures(removedCriterion)
+        Set<CertificationCriterion> originalCriteria = originalToCuresCriteriaMap.keySet();
+        return originalCriteria.contains(removedCriterion)
                 && wasCuresCounterpartAdded(removedCriterion, origListing, newListing);
     }
 
-    private boolean wasCuresCounterpartAdded(CertificationCriterion nonCuresCriterion,
+    private boolean wasCuresCounterpartAdded(CertificationCriterion removedCriterion,
             CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing) {
-        CertificationCriterion curesCounterpart = originalToCuresCriteriaMap.get(nonCuresCriterion);
+        CertificationCriterion curesCounterpart = originalToCuresCriteriaMap.get(removedCriterion);
         if (curesCounterpart == null) {
             return false;
         }

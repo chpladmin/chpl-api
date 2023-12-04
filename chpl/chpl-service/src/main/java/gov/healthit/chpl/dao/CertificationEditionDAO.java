@@ -44,6 +44,9 @@ public class CertificationEditionDAO extends BaseDAOImpl {
 
     public CertificationEdition getByYear(String year) {
         CertificationEditionEntity entity = getEntityByYear(year);
+        if (entity == null) {
+            return null;
+        }
         return entity.toDomain();
     }
 
