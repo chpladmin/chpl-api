@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Optional;
 
 import org.apache.commons.csv.CSVRecord;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -19,8 +18,6 @@ import lombok.extern.log4j.Log4j2;
 @Component("certificationCriterionUploadHandler")
 @Log4j2
 public class CertificationCriterionUploadHandler {
-    private static final String CURES_TITLE_KEY = "Cures Update";
-
     private CertificationCriterionDAO criteriaDao;
     private ListingUploadHandlerUtil uploadUtil;
 
@@ -60,10 +57,11 @@ public class CertificationCriterionUploadHandler {
         if (criteriaWithNumber.size() == 1) {
             criterionOpt = Optional.of(criteriaWithNumber.get(0));
         } else {
+            //We used to check the matching criteria titles for the Cures Update keywords but no longer
+            //have that. To ensure we are getting the Cures criterion, I think we can just pick the one
+            //with the most recent starting date?
             criterionOpt = criteriaWithNumber.stream()
-                    .filter(criterionWithNumber -> !StringUtils.isEmpty(criterionWithNumber.getTitle())
-                            && criterionWithNumber.getTitle().contains(CURES_TITLE_KEY))
-                    .findFirst();
+                    .max((o1, o2) -> o1.getStartDay().compareTo(o2.getStartDay()));
         }
 
         if (criterionOpt == null || !criterionOpt.isPresent()) {

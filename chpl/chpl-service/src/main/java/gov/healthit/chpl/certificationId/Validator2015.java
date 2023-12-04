@@ -25,9 +25,6 @@ public class Validator2015 extends Validator {
     private List<CertificationCriterion> requiredCriteria;
     private List<CertificationCriterion> baseRequiredCriteriaOr;
 
-    protected static final List<String> CURES_REQUIRED_CRITERIA = new ArrayList<String>(Arrays.asList("170.315 (b)(1)",
-            "170.315 (g)(9)"));
-
     protected static final List<String> CPOE_CRITERIA_OR = new ArrayList<String>(Arrays.asList("170.315 (a)(1)",
             "170.315 (a)(2)", "170.315 (a)(3)"));
 
@@ -38,8 +35,10 @@ public class Validator2015 extends Validator {
     public Validator2015(CertificationCriterionService certificationCriterionService) {
         requiredCriteria = Stream.of(certificationCriterionService.get(Criteria2015.A_5),
                 certificationCriterionService.get(Criteria2015.A_14),
+                certificationCriterionService.get(Criteria2015.B_1_CURES),
                 certificationCriterionService.get(Criteria2015.C_1),
                 certificationCriterionService.get(Criteria2015.G_7),
+                certificationCriterionService.get(Criteria2015.G_9_CURES),
                 certificationCriterionService.get(Criteria2015.G_10)).collect(Collectors.toCollection(ArrayList::new));
 
         CertificationCriterion a9 = certificationCriterionService.get(Criteria2015.A_9);
@@ -67,7 +66,7 @@ public class Validator2015 extends Validator {
             this.counts.put("criteriaBaseRequiredMet", 0);
         }
 
-        this.counts.put("criteriaRequired", requiredCriteria.size() + CURES_REQUIRED_CRITERIA.size());
+        this.counts.put("criteriaRequired", requiredCriteria.size());
         this.counts.put("criteriaRequiredMet", 0);
         this.counts.put("criteriaCpoeRequired", 1);
         this.counts.put("criteriaCpoeRequiredMet", 0);
@@ -88,7 +87,7 @@ public class Validator2015 extends Validator {
     }
 
     protected boolean isCriteriaValid() {
-        this.counts.put("criteriaRequired", requiredCriteria.size() + CURES_REQUIRED_CRITERIA.size());
+        this.counts.put("criteriaRequired", requiredCriteria.size());
         boolean criteriaValid = true;
         for (CertificationCriterion crit : requiredCriteria) {
             Optional<CertificationCriterion> metRequiredCriterion = criteriaMet.keySet().stream()
@@ -102,22 +101,7 @@ public class Validator2015 extends Validator {
                 criteriaValid = false;
             }
         }
-        for (String crit : CURES_REQUIRED_CRITERIA) {
-            Boolean foundRevised = false;
-            for (CertificationCriterion cert : criteriaMet.keySet()) {
-                if (cert.getNumber().equalsIgnoreCase(crit)) {
-                    if (cert.getTitle().contains("Cures Update")) {
-                        foundRevised = true;
-                    }
-                }
-            }
-            if (foundRevised) {
-                this.counts.put("criteriaRequiredMet", this.counts.get("criteriaRequiredMet") + 1);
-            } else {
-                missingAnd.add(crit + " (Cures Update)");
-                criteriaValid = false;
-            }
-        }
+
         boolean isBaseValid = isBaseValid();
         boolean cpoeValid = isCPOEValid();
         boolean dpValid = isDPValid();

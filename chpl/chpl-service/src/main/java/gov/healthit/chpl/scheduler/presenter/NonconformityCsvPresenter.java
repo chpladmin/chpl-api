@@ -13,7 +13,6 @@ import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformity;
 import gov.healthit.chpl.domain.surveillance.SurveillanceRequirement;
 import gov.healthit.chpl.util.NullSafeEvaluator;
-import gov.healthit.chpl.util.Util;
 
 public class NonconformityCsvPresenter extends SurveillanceCsvPresenter {
     private static final String PRESENTER_NAME = "Non-conformity";
@@ -204,7 +203,7 @@ public class NonconformityCsvPresenter extends SurveillanceCsvPresenter {
         if (req.getRequirementType() == null) {
             reqRow.add(NullSafeEvaluator.eval(() -> req.getRequirementTypeOther(), ""));
         } else if (req.getRequirementType().getRequirementGroupType().getId().equals(RequirementGroupType.CERTIFIED_CAPABILITY_ID)) {
-            reqRow.add(Util.formatCriteriaNumber(req.getRequirementType()));
+            reqRow.add(req.getRequirementType().getFormattedTitleForReport());
         } else {
             reqRow.add(req.getRequirementType().getTitle());
         }
@@ -215,7 +214,7 @@ public class NonconformityCsvPresenter extends SurveillanceCsvPresenter {
 
     private List<String> generateNonconformityRowValues(final SurveillanceNonconformity nc) {
         List<String> ncRow = new ArrayList<String>();
-        ncRow.add(NullSafeEvaluator.eval(() -> nc.getType().getFormattedTitle(), ""));
+        ncRow.add(NullSafeEvaluator.eval(() -> nc.getType().getFormattedTitleForReport(), ""));
 
         // Derive the status
         if (nc.getNonconformityCloseDay() == null) {
