@@ -54,7 +54,6 @@ import gov.healthit.chpl.surveillance.report.dto.QuarterlyReportDTO;
 import gov.healthit.chpl.surveillance.report.dto.QuarterlyReportRelevantListingDTO;
 import gov.healthit.chpl.util.DateUtil;
 import gov.healthit.chpl.util.NullSafeEvaluator;
-import gov.healthit.chpl.util.Util;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -443,7 +442,7 @@ public abstract class ActivitiesAndOutcomesWorksheetBuilder {
                 if (req.getResult() != null
                         && req.getResult().getName().equals(SurveillanceResultType.NON_CONFORMITY)) {
                     for (SurveillanceNonconformity nc : req.getNonconformities()) {
-                        addDataCell(workbook, row, COL_NC_TYPE, nc.getType().getFormattedTitle());
+                        addDataCell(workbook, row, COL_NC_TYPE, nc.getType().getFormattedTitleForReport());
                         addDataCell(workbook, row, COL_NC_CLOSE_DATE,
                                 nc.getNonconformityCloseDay() != null ? dateFormatter.format(nc.getNonconformityCloseDay()) : "");
                         addDataCell(workbook, row, COL_NC_CAP_APPROVAL_DATE,
@@ -472,12 +471,11 @@ public abstract class ActivitiesAndOutcomesWorksheetBuilder {
     }
 
     private String getRequirementType(SurveillanceRequirement req) {
+
         if (req.getRequirementType() == null) {
             return NullSafeEvaluator.eval(() -> req.getRequirementTypeOther(), "");
-        } else if (req.getRequirementType().getRequirementGroupType().getId().equals(RequirementGroupType.CERTIFIED_CAPABILITY_ID)) {
-            return Util.formatCriteriaNumber(req.getRequirementType());
         } else {
-            return req.getRequirementType().getTitle();
+            return req.getRequirementType().getFormattedTitleForReport();
         }
     }
 
@@ -1230,15 +1228,6 @@ public abstract class ActivitiesAndOutcomesWorksheetBuilder {
         return result;
     }
 
-    private String determineNonconformityTypes(Surveillance surv) {
-        return surv.getRequirements().stream()
-                .filter(req -> req.getResult() != null  && req.getResult().getName().equalsIgnoreCase(SurveillanceResultType.NON_CONFORMITY))
-                .flatMap(req -> req.getNonconformities().stream())
-                .filter(survNC -> survNC.getType() != null)
-                .map(nc -> nc.getType().getFormattedTitle())
-                .collect(Collectors.joining(" and "));
-    }
-
     /**
      * Figures out the certification status of the listing on the date surveillance ended.
      * @param listing
@@ -1273,7 +1262,7 @@ public abstract class ActivitiesAndOutcomesWorksheetBuilder {
                     || statusEvent.getStatus().getName().equals(CertificationStatusType.SuspendedByOnc.getName())) {
                 //the suspended status occurred after the surv start and either the surv hasn't
                 //ended yet or the end date occurrs after the suspended status.
-                LocalDate statusEventDay = DateUtil.toLocalDate(statusEvent.getEventDate().longValue());
+                LocalDate statusEventDay = statusEvent.getEventDay();
                 if (statusEventDay.compareTo(surv.getStartDay()) >= 0
                         && (surv.getEndDay() == null || surv.getEndDay().compareTo(statusEventDay) >= 0)) {
                     result = "Yes";

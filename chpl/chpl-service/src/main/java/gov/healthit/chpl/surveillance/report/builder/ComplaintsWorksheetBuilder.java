@@ -450,9 +450,9 @@ public class ComplaintsWorksheetBuilder {
                 .flatMap(req -> req.getNonconformities().stream())
                 .forEach(nc -> {
                     if (StringUtils.isEmpty(result)) {
-                        result.append(survFriendlyId + ":" + nc.getType().getFormattedTitle());
+                        result.append(survFriendlyId + ":" + nc.getType().getFormattedTitleForReport());
                     } else {
-                        result.append("; " + survFriendlyId + ":" + nc.getType().getFormattedTitle());
+                        result.append("; " + survFriendlyId + ":" + nc.getType().getFormattedTitleForReport());
                     }
                 });
 

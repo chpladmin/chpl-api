@@ -35,9 +35,9 @@ public class CuresUpdateServiceTest {
     public void setup() {
         CertificationCriterionService ccs = Mockito.mock(CertificationCriterionService.class);
         b1Old = buildRemovedCriterion(16L, "170.315 (b)(1)", "B1");
-        b1Cures = buildCriterion(165L, "170.315 (b)(1)", "b1 title (Cures Update)");
-        d12 = buildCriterion(176L, "170.315 (d)(12)", "D12 (Cures Update)");
-        d13 = buildCriterion(177L, "170.315 (d)(13)", "D13 (Cures Update)");
+        b1Cures = buildCriterion(165L, "170.315 (b)(1)", "b1 title");
+        d12 = buildCriterion(176L, "170.315 (d)(12)", "D12");
+        d13 = buildCriterion(177L, "170.315 (d)(13)", "D13");
         g4 = buildCriterion(53L, "170.315 (g)(4)", "G4");
         g5 = buildCriterion(54L, "170.315 (g)(5)", "G5");
 
@@ -94,25 +94,25 @@ public class CuresUpdateServiceTest {
             .thenReturn(buildCriterion(15L, "170.315 (a)(15)", "A15"));
         Mockito.when(ccs.get(ArgumentMatchers.eq(Criteria2015.B_1_CURES))).thenReturn(b1Cures);
         Mockito.when(ccs.get(ArgumentMatchers.eq(Criteria2015.B_2_CURES)))
-            .thenReturn(buildCriterion(166L, "170.315 (b)(2)", "B2 (Cures Update)"));
+            .thenReturn(buildCriterion(166L, "170.315 (b)(2)", "B2"));
         Mockito.when(ccs.get(ArgumentMatchers.eq(Criteria2015.B_3_CURES)))
-            .thenReturn(buildCriterion(167L, "170.315 (b)(3)", "B3 (Cures Update)"));
+            .thenReturn(buildCriterion(167L, "170.315 (b)(3)", "B3"));
         Mockito.when(ccs.get(ArgumentMatchers.eq(Criteria2015.B_7_CURES)))
-            .thenReturn(buildCriterion(168L, "170.315 (b)(7)", "B7 (Cures Update)"));
+            .thenReturn(buildCriterion(168L, "170.315 (b)(7)", "B7"));
         Mockito.when(ccs.get(ArgumentMatchers.eq(Criteria2015.B_8_CURES)))
-            .thenReturn(buildCriterion(169L, "170.315 (b)(8)", "B8 (Cures Update)"));
+            .thenReturn(buildCriterion(169L, "170.315 (b)(8)", "B8"));
         Mockito.when(ccs.get(ArgumentMatchers.eq(Criteria2015.B_9_CURES)))
-            .thenReturn(buildCriterion(170L, "170.315 (b)(9)", "B9 (Cures Update)"));
+            .thenReturn(buildCriterion(170L, "170.315 (b)(9)", "B9"));
         Mockito.when(ccs.get(ArgumentMatchers.eq(Criteria2015.C_1)))
             .thenReturn(buildCriterion(25L, "170.315 (c)(1)", "C1"));
         Mockito.when(ccs.get(ArgumentMatchers.eq(Criteria2015.C_2)))
             .thenReturn(buildCriterion(26L, "170.315 (c)(2)", "C2"));
         Mockito.when(ccs.get(ArgumentMatchers.eq(Criteria2015.C_3_CURES)))
-            .thenReturn(buildCriterion(172L, "170.315 (c)(3)", "C3 (Cures Update)"));
+            .thenReturn(buildCriterion(172L, "170.315 (c)(3)", "C3"));
         Mockito.when(ccs.get(ArgumentMatchers.eq(Criteria2015.C_4)))
             .thenReturn(buildCriterion(27L, "170.315 (c)(4)", "C4"));
         Mockito.when(ccs.get(ArgumentMatchers.eq(Criteria2015.E_1_CURES)))
-            .thenReturn(buildCriterion(178L, "170.315 (e)(1)", "E1 (Cures Update)"));
+            .thenReturn(buildCriterion(178L, "170.315 (e)(1)", "E1"));
         Mockito.when(ccs.get(ArgumentMatchers.eq(Criteria2015.E_3)))
             .thenReturn(buildCriterion(42L, "170.315 (e)(3)", "E3"));
         Mockito.when(ccs.get(ArgumentMatchers.eq(Criteria2015.F_1)))
@@ -124,7 +124,7 @@ public class CuresUpdateServiceTest {
         Mockito.when(ccs.get(ArgumentMatchers.eq(Criteria2015.F_4)))
             .thenReturn(buildCriterion(46L, "170.315 (f)(4)", "F4"));
         Mockito.when(ccs.get(ArgumentMatchers.eq(Criteria2015.F_5_CURES)))
-            .thenReturn(buildCriterion(179L, "170.315 (f)(5)", "F5 (Cures Update)"));
+            .thenReturn(buildCriterion(179L, "170.315 (f)(5)", "F5"));
         Mockito.when(ccs.get(ArgumentMatchers.eq(Criteria2015.F_6)))
             .thenReturn(buildCriterion(47L, "170.315 (f)(6)", "F6"));
         Mockito.when(ccs.get(ArgumentMatchers.eq(Criteria2015.F_7)))
@@ -134,21 +134,21 @@ public class CuresUpdateServiceTest {
         Mockito.when(ccs.get(ArgumentMatchers.eq(Criteria2015.G_8)))
             .thenReturn(buildCriterion(57L, "170.315 (g)(8)", "G8"));
         Mockito.when(ccs.get(ArgumentMatchers.eq(Criteria2015.G_9_CURES)))
-            .thenReturn(buildCriterion(181L, "170.315 (g)(9)", "G9 (Cures Update)"));
+            .thenReturn(buildCriterion(181L, "170.315 (g)(9)", "G9"));
         Mockito.when(ccs.get(ArgumentMatchers.eq(Criteria2015.G_10)))
-            .thenReturn(buildCriterion(182L, "170.315 (g)(10)", "G10 (Cures Update)"));
+            .thenReturn(buildCriterion(182L, "170.315 (g)(10)", "G10"));
         Mockito.when(ccs.get(ArgumentMatchers.eq(Criteria2015.H_1)))
             .thenReturn(buildCriterion(59L, "170.315 (h)(1)", "H1"));
         Mockito.when(ccs.get(ArgumentMatchers.eq(Criteria2015.H_2)))
             .thenReturn(buildCriterion(60L, "170.315 (h)(2)", "H2"));
         Mockito.when(ccs.get(ArgumentMatchers.eq(Criteria2015.B_10)))
-            .thenReturn(buildCriterion(171L, "170.315 (b)(10)", "B10 (Cures Update)"));
+            .thenReturn(buildCriterion(171L, "170.315 (b)(10)", "B10"));
         Mockito.when(ccs.get(ArgumentMatchers.eq(Criteria2015.D_1)))
             .thenReturn(buildCriterion(29L, "170.315 (d)(1)", "D1"));
         Mockito.when(ccs.get(ArgumentMatchers.eq(Criteria2015.D_2_CURES)))
-            .thenReturn(buildCriterion(173L, "170.315 (d)(2)", "D2 (Cures Update)"));
+            .thenReturn(buildCriterion(173L, "170.315 (d)(2)", "D2"));
         Mockito.when(ccs.get(ArgumentMatchers.eq(Criteria2015.D_3_CURES)))
-            .thenReturn(buildCriterion(174L, "170.315 (d)(3)", "D3 (Cures Update)"));
+            .thenReturn(buildCriterion(174L, "170.315 (d)(3)", "D3"));
         Mockito.when(ccs.get(ArgumentMatchers.eq(Criteria2015.D_4)))
             .thenReturn(buildCriterion(32L, "170.315 (d)(4)", "D4"));
         Mockito.when(ccs.get(ArgumentMatchers.eq(Criteria2015.D_5)))
@@ -162,7 +162,7 @@ public class CuresUpdateServiceTest {
         Mockito.when(ccs.get(ArgumentMatchers.eq(Criteria2015.D_9)))
             .thenReturn(buildCriterion(37L, "170.315 (d)(9)", "D9"));
         Mockito.when(ccs.get(ArgumentMatchers.eq(Criteria2015.D_10_CURES)))
-            .thenReturn(buildCriterion(175L, "170.315 (d)(10)", "D10 (Cures Update)"));
+            .thenReturn(buildCriterion(175L, "170.315 (d)(10)", "D10"));
         Mockito.when(ccs.get(ArgumentMatchers.eq(Criteria2015.D_11)))
             .thenReturn(buildCriterion(39L, "170.315 (d)(11)", "D11"));
         Mockito.when(ccs.get(ArgumentMatchers.eq(Criteria2015.G_1)))
@@ -174,7 +174,7 @@ public class CuresUpdateServiceTest {
         Mockito.when(ccs.get(ArgumentMatchers.eq(Criteria2015.G_4))).thenReturn(g4);
         Mockito.when(ccs.get(ArgumentMatchers.eq(Criteria2015.G_5))).thenReturn(g5);
         Mockito.when(ccs.get(ArgumentMatchers.eq(Criteria2015.G_6_CURES)))
-            .thenReturn(buildCriterion(180L, "170.315 (g)(6)", "G6 (Cures Update)"));
+            .thenReturn(buildCriterion(180L, "170.315 (g)(6)", "G6"));
 
         jsonMapper = new ObjectMapper();
         curesUpdateService = new CuresUpdateService(ccs);

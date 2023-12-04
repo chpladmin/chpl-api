@@ -200,12 +200,8 @@ public abstract class Validator {
     }
 
     protected Boolean criteriaMetContainsCriterion(CertificationCriterion criterion) {
-        Boolean found = false;
-        for (CertificationCriterion cert : criteriaMet.keySet()) {
-            if (cert.getId().equals(criterion.getId())) {
-                found = true;
-            }
-        }
-        return found;
+        return criteriaMet.keySet().stream()
+            .filter(cert -> cert.getId().equals(criterion.getId()))
+            .findAny().isPresent();
     }
 }

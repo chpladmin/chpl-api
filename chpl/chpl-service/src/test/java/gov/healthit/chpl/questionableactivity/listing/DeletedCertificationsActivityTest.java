@@ -30,9 +30,9 @@ public class DeletedCertificationsActivityTest {
     public void setup() {
         a1 = buildCriterion(1L, "170.315 (a)(1)", "a1");
         b1 = buildCriterion(20L, "170.315 (b)(1)", "b1");
-        b1Cures = buildCriterion(180L, "170.315(b)(1)", "b1 " + Util.CURES_SUFFIX);
+        b1Cures = buildCriterion(180L, "170.315(b)(1)", "b1");
         g8 = buildCriterion(40L, "170.315 (g)(8)", "g8");
-        g10Cures = buildCriterion(181L, "170.315 (g)(10)", "g10 " + Util.CURES_SUFFIX);
+        g10Cures = buildCriterion(181L, "170.315 (g)(10)", "g10");
 
         criteriaService = Mockito.mock(CertificationCriterionService.class);
         Mockito.when(criteriaService.getOriginalToCuresCriteriaMap())

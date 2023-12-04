@@ -23,7 +23,6 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.complaint.domain.ComplaintListingMap;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
-import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.util.DateUtil;
 import gov.healthit.chpl.util.Util;
 import lombok.extern.log4j.Log4j2;
@@ -182,7 +181,7 @@ public class ComplaintsReportCsvCreator {
     private String getNonConformityTypes(Surveillance surv) {
         return surv.getRequirements().stream()
                 .flatMap(req -> req.getNonconformities().stream())
-                .map(nc -> CertificationCriterionService.formatCriteriaNumber(nc.getType().getNumber(), nc.getType().getTitle()))
+                .map(nc -> Util.formatCriteriaNumber(nc.getType()))
                 .collect(Collectors.joining(","));
     }
 
