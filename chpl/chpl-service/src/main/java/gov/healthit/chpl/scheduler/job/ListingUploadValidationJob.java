@@ -168,6 +168,7 @@ public class ListingUploadValidationJob implements Job {
     }
 
     private void sendUploadError(File file, Exception ex) {
+        LOGGER.info("Upload failed. Sending email to " + internalErrorEmailRecipients);
         if (StringUtils.isEmpty(internalErrorEmailRecipients)) {
             return;
         }
@@ -200,7 +201,7 @@ public class ListingUploadValidationJob implements Job {
     private File createCsv(Long listingUploadId) throws IOException {
         ListingUpload listingUpload = null;
         try {
-            listingUpload = listingUploadDao.getById(listingUploadId);
+            listingUpload = listingUploadDao.getByIdIncludingRecords(listingUploadId);
         } catch (EntityRetrievalException ex) {
             LOGGER.error("Unable to get listing upload with id " + listingUploadId + ".", ex);
         }
