@@ -856,8 +856,8 @@
         <job>
             <name>telligenJob</name>
             <group>systemJobs</group>
-            <description>Simulate Telkligen calls</description>
-            <job-class>gov.healthit.chpl.scheduler.job.telligen.TelligenJob</job-class>
+            <description>Simulate Telligen calls</description>
+            <job-class>gov.healthit.cpl.scheduler.job.telligen.TelligenJob</job-class>
             <durability>true</durability>
             <recover>false</recover>
         </job>
