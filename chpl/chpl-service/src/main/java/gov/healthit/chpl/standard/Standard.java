@@ -26,6 +26,7 @@ import gov.healthit.chpl.criteriaattribute.rule.Rule;
 import gov.healthit.chpl.util.LocalDateAdapter;
 import gov.healthit.chpl.util.LocalDateDeserializer;
 import gov.healthit.chpl.util.LocalDateSerializer;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -33,7 +34,10 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-//TODO OCD-4333 - NEED TEXT TO DESCRIBE THIS OBJECT
+/*
+ * A unique identifier for a health IT standard, ensuring consistent technical and interoperability compliance across systems
+ */
+@Schema(description = "A unique identifier for a health IT standard, ensuring consistent technical and interoperability compliance across systems")
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlAccessorOrder(value = XmlAccessOrder.ALPHABETICAL)

@@ -21,6 +21,10 @@ import lombok.Builder;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+/*
+ * The standards associated to the certification result
+ */
+@Schema(description = "The standards associated to the certification result")
 @XmlType(namespace = "http://chpl.healthit.gov/listings")
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlAccessorOrder(value = XmlAccessOrder.ALPHABETICAL)
