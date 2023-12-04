@@ -18,7 +18,6 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.questionableactivity.QuestionableActivityTriggerConcept;
 import gov.healthit.chpl.questionableactivity.domain.QuestionableActivityListing;
-import gov.healthit.chpl.util.DateUtil;
 
 @Component
 public class UpdatedCertificationStatusHistoryActivity implements ListingActivity {
@@ -60,7 +59,7 @@ public class UpdatedCertificationStatusHistoryActivity implements ListingActivit
             }
         } else if (origListing.getCurrentStatus().getStatus().getName().equals(CertificationStatusType.Active.getName())
                 && newListing.getCurrentStatus().getStatus().getName().equals(CertificationStatusType.Active.getName())
-                && !origListing.getCurrentStatus().getEventDate().equals(newListing.getCurrentStatus().getEventDate())) {
+                && !origListing.getCurrentStatus().getEventDay().isEqual(newListing.getCurrentStatus().getEventDay())) {
             //certification date change is handled by a different activity so we don't need to compare
             //this status event entry if that is the case
             origEvents.remove(origEvents.size() - 1);
@@ -78,7 +77,7 @@ public class UpdatedCertificationStatusHistoryActivity implements ListingActivit
         removedStatusEvents.stream()
             .forEach(removedStatusEvent -> activities.add(QuestionableActivityListing.builder()
                     .before(removedStatusEvent.getStatus().getName()
-                            + " (" + DateUtil.toLocalDate(removedStatusEvent.getEventDate()) + ")")
+                            + " (" + removedStatusEvent.getEventDay() + ")")
                     .after(null)
                     .certificationStatusChangeReason(removedStatusEvent.getReason())
                     .build()));
@@ -87,7 +86,7 @@ public class UpdatedCertificationStatusHistoryActivity implements ListingActivit
             .forEach(addedStatusEvent -> activities.add(QuestionableActivityListing.builder()
                 .before(null)
                 .after(addedStatusEvent.getStatus().getName()
-                        + " (" + DateUtil.toLocalDate(addedStatusEvent.getEventDate()) + ")")
+                        + " (" + addedStatusEvent.getEventDay() + ")")
                 .certificationStatusChangeReason(addedStatusEvent.getReason())
                 .build()));
 
@@ -151,7 +150,7 @@ public class UpdatedCertificationStatusHistoryActivity implements ListingActivit
     }
 
     private boolean matchesValues(CertificationStatusEvent event1, CertificationStatusEvent event2) {
-        return event1.getEventDate().equals(event2.getEventDate())
+        return event1.getEventDay().equals(event2.getEventDay())
                 && StringUtils.equals(event1.getReason(), event2.getReason())
                 && event1.getStatus().getName().equalsIgnoreCase(event2.getStatus().getName());
     }
@@ -166,9 +165,8 @@ public class UpdatedCertificationStatusHistoryActivity implements ListingActivit
 
         @Override
         public int compare(CertificationStatusEvent a, CertificationStatusEvent b) {
-            return a.getEventDate().longValue() < b.getEventDate().longValue()
-                    ? -1
-                            : a.getEventDate().longValue() == b.getEventDate().longValue() ? 0 : 1;
+            return a.getEventDay().isBefore(b.getEventDay())
+                    ? -1 : (a.getEventDay().isAfter(b.getEventDay()) ? 1 : 0);
         }
     }
 }

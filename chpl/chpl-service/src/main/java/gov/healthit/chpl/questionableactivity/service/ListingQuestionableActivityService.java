@@ -18,7 +18,7 @@ import gov.healthit.chpl.questionableactivity.domain.QuestionableActivityTrigger
 import gov.healthit.chpl.questionableactivity.listing.AddedCqmsActivity;
 import gov.healthit.chpl.questionableactivity.listing.AddedRwtPlanNonEligibleListingActivity;
 import gov.healthit.chpl.questionableactivity.listing.AddedRwtResultsNonEligibleListingActivity;
-import gov.healthit.chpl.questionableactivity.listing.CuresUpdateDesignationRemoved;
+import gov.healthit.chpl.questionableactivity.listing.AttestRemovedCriteriaActivity;
 import gov.healthit.chpl.questionableactivity.listing.DeletedCertificationsActivity;
 import gov.healthit.chpl.questionableactivity.listing.DeletedCqmsActivity;
 import gov.healthit.chpl.questionableactivity.listing.DeletedMeasuresActivity;
@@ -30,13 +30,12 @@ import gov.healthit.chpl.questionableactivity.listing.NonActiveCertificateEdited
 import gov.healthit.chpl.questionableactivity.listing.RwtPlansUpdatedOutsideNormalPeriod;
 import gov.healthit.chpl.questionableactivity.listing.RwtResultsUpdatedOutsideNormalPeriod;
 import gov.healthit.chpl.questionableactivity.listing.UpdateCurrentCertificationStatusActivity;
-import gov.healthit.chpl.questionableactivity.listing.Updated2011EditionListingActivity;
-import gov.healthit.chpl.questionableactivity.listing.Updated2014EditionListingActivity;
 import gov.healthit.chpl.questionableactivity.listing.UpdatedCertificationDateActivity;
 import gov.healthit.chpl.questionableactivity.listing.UpdatedCertificationStatusHistoryActivity;
 import gov.healthit.chpl.questionableactivity.listing.UpdatedCertificationStatusWithdrawnByDeveloperUnderReviewActivity;
 import gov.healthit.chpl.questionableactivity.listing.UpdatedPromotingInteroperabilityActivity;
 import gov.healthit.chpl.questionableactivity.listing.UpdatedTestingLabActivity;
+import gov.healthit.chpl.questionableactivity.listing.UploadedAfterCertificationDateActivity;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -64,38 +63,38 @@ public class ListingQuestionableActivityService {
 
     public void processQuestionableActivity(CertifiedProductSearchDetails origListing,  CertifiedProductSearchDetails newListing,
             ActivityDTO activity, String activityReason) {
-        if (processListingActivity(Updated2011EditionListingActivity.class.getName(), origListing, newListing, activity, activityReason) > 0) {
-            return;
-        }
-        processListingActivity(Updated2014EditionListingActivity.class.getName(), origListing, newListing, activity, activityReason);
-        processListingActivity(UpdatedCertificationStatusWithdrawnByDeveloperUnderReviewActivity.class.getName(), origListing, newListing, activity, activityReason);
-        processListingActivity(UpdatedCertificationStatusHistoryActivity.class.getName(), origListing, newListing, activity, activityReason);
-        processListingActivity(UpdatedTestingLabActivity.class.getName(), origListing, newListing, activity, activityReason);
-        processListingActivity(DeletedRwtPlanActivity.class.getName(), origListing, newListing, activity, activityReason);
-        processListingActivity(DeletedRwtResultsActivity.class.getName(), origListing, newListing, activity, activityReason);
-        processListingActivity(AddedRwtPlanNonEligibleListingActivity.class.getName(), origListing, newListing, activity, activityReason);
-        processListingActivity(AddedRwtResultsNonEligibleListingActivity.class.getName(), origListing, newListing, activity, activityReason);
-        processListingActivity(UpdatedPromotingInteroperabilityActivity.class.getName(), origListing, newListing, activity, activityReason);
-        processListingActivity(DeletedMeasuresActivity.class.getName(), origListing, newListing, activity, activityReason);
-        processListingActivity(RwtResultsUpdatedOutsideNormalPeriod.class.getName(), origListing, newListing, activity, activityReason);
-        processListingActivity(RwtPlansUpdatedOutsideNormalPeriod.class.getName(), origListing, newListing, activity, activityReason);
-        processListingActivity(CuresUpdateDesignationRemoved.class.getName(), origListing, newListing, activity, activityReason);
-        processListingActivity(NonActiveCertificateEdited.class.getName(), origListing, newListing, activity, activityReason);
+        if (origListing == null && newListing != null) {
+            processListingActivity(UploadedAfterCertificationDateActivity.class.getName(), origListing, newListing, activity, activityReason);
+        } else if (origListing != null && newListing != null) {
+            processListingActivity(UpdatedCertificationStatusWithdrawnByDeveloperUnderReviewActivity.class.getName(), origListing, newListing, activity, activityReason);
+            processListingActivity(UpdatedCertificationStatusHistoryActivity.class.getName(), origListing, newListing, activity, activityReason);
+            processListingActivity(UpdatedTestingLabActivity.class.getName(), origListing, newListing, activity, activityReason);
+            processListingActivity(DeletedRwtPlanActivity.class.getName(), origListing, newListing, activity, activityReason);
+            processListingActivity(DeletedRwtResultsActivity.class.getName(), origListing, newListing, activity, activityReason);
+            processListingActivity(AddedRwtPlanNonEligibleListingActivity.class.getName(), origListing, newListing, activity, activityReason);
+            processListingActivity(AddedRwtResultsNonEligibleListingActivity.class.getName(), origListing, newListing, activity, activityReason);
+            processListingActivity(UpdatedPromotingInteroperabilityActivity.class.getName(), origListing, newListing, activity, activityReason);
+            processListingActivity(DeletedMeasuresActivity.class.getName(), origListing, newListing, activity, activityReason);
+            processListingActivity(RwtResultsUpdatedOutsideNormalPeriod.class.getName(), origListing, newListing, activity, activityReason);
+            processListingActivity(RwtPlansUpdatedOutsideNormalPeriod.class.getName(), origListing, newListing, activity, activityReason);
+            processListingActivity(AttestRemovedCriteriaActivity.class.getName(), origListing, newListing, activity, activityReason);
+            processListingActivity(NonActiveCertificateEdited.class.getName(), origListing, newListing, activity, activityReason);
 
-        // finally check for other changes that are only questionable
-        // outside of the acceptable activity threshold
+            // finally check for other changes that are only questionable
+            // outside of the acceptable activity threshold
 
-        // get the confirm date of the listing to check against the threshold
-        Date confirmDate = certifiedProductDAO.getConfirmDate(origListing.getId());
-        if (confirmDate != null && activity.getActivityDate() != null
-                && (activity.getActivityDate().getTime() - confirmDate.getTime() > getListingActivityThresholdInMillis())) {
+            // get the confirm date of the listing to check against the threshold
+            Date confirmDate = certifiedProductDAO.getConfirmDate(origListing.getId());
+            if (confirmDate != null && activity.getActivityDate() != null
+                    && (activity.getActivityDate().getTime() - confirmDate.getTime() > getListingActivityThresholdInMillis())) {
 
-            processListingActivity(UpdateCurrentCertificationStatusActivity.class.getName(), origListing, newListing, activity, activityReason);
-            processListingActivity(UpdatedCertificationDateActivity.class.getName(), origListing, newListing, activity, activityReason);
-            processListingActivity(DeletedSurveillanceActivity.class.getName(), origListing, newListing, activity, activityReason);
-            processListingActivity(AddedCqmsActivity.class.getName(), origListing, newListing, activity, activityReason);
-            processListingActivity(DeletedCqmsActivity.class.getName(), origListing, newListing, activity, activityReason);
-            processListingActivity(DeletedCertificationsActivity.class.getName(), origListing, newListing, activity, activityReason);
+                processListingActivity(UpdateCurrentCertificationStatusActivity.class.getName(), origListing, newListing, activity, activityReason);
+                processListingActivity(UpdatedCertificationDateActivity.class.getName(), origListing, newListing, activity, activityReason);
+                processListingActivity(DeletedSurveillanceActivity.class.getName(), origListing, newListing, activity, activityReason);
+                processListingActivity(AddedCqmsActivity.class.getName(), origListing, newListing, activity, activityReason);
+                processListingActivity(DeletedCqmsActivity.class.getName(), origListing, newListing, activity, activityReason);
+                processListingActivity(DeletedCertificationsActivity.class.getName(), origListing, newListing, activity, activityReason);
+            }
         }
     }
 
@@ -111,7 +110,7 @@ public class ListingQuestionableActivityService {
                 for (QuestionableActivityListing dto : activities) {
                     if (dto != null) {
                         //Need to get the real user here
-                        createListingActivity(dto, origListing.getId(), listingActivity.get().getTriggerType(), activity, activityReason);
+                        createListingActivity(dto, newListing.getId(), listingActivity.get().getTriggerType(), activity, activityReason);
                     }
                 }
             }
