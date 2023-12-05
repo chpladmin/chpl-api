@@ -185,6 +185,7 @@ public class StandardDAO extends BaseDAOImpl {
         return entityManager
                 .createQuery("SELECT DISTINCT s "
                             + "FROM StandardEntity s "
+                            + "LEFT OUTER JOIN FETCH s.rule "
                             + "LEFT OUTER JOIN FETCH s.mappedCriteria criteriaMapping "
                             + "LEFT OUTER JOIN FETCH criteriaMapping.criterion criterion "
                             + "LEFT OUTER JOIN FETCH criterion.certificationEdition "
@@ -199,6 +200,7 @@ public class StandardDAO extends BaseDAOImpl {
         Query query = entityManager
                 .createQuery("SELECT DISTINCT s "
                         + "FROM StandardEntity s "
+                        + "LEFT OUTER JOIN FETCH s.rule "
                         + "LEFT OUTER JOIN FETCH s.mappedCriteria criteriaMapping "
                         + "LEFT OUTER JOIN FETCH criteriaMapping.criterion criterion "
                         + "LEFT OUTER JOIN FETCH criterion.certificationEdition "
