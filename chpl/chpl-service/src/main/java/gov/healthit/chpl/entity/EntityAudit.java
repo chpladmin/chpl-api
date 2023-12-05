@@ -32,37 +32,33 @@ public abstract class EntityAudit implements Serializable {
     }
 
     @Basic(optional = false)
-    @Column(name = "creation_date", nullable = false)
+    @Column(name = "creation_date", nullable = false, insertable = false, updatable = false)
     private Date creationDate;
 
     @Basic(optional = false)
-    @Column(nullable = false)
+    @Column(nullable = false, insertable = false)
     private Boolean deleted;
 
     @Basic(optional = false)
-    @Column(name = "last_modified_date", nullable = false)
+    @Column(name = "last_modified_date", nullable = false, insertable = false, updatable = false)
     private Date lastModifiedDate;
 
     @Basic(optional = true)
-    @Column(name = "last_modified_user", nullable = false)
+    @Column(name = "last_modified_user", nullable = true)
     private Long lastModifiedUser;
 
     @Basic(optional = true)
-    @Column(name = "last_modified_sso_user", nullable = false)
+    @Column(name = "last_modified_sso_user", nullable = true)
     private UUID lastModifiedSsoUser;
 
     @PrePersist
     public void populateAuditInformationBeforeInsert() {
-        this.deleted = this.deleted != null ? this.deleted : false;
-        this.creationDate = new Date();
-        this.lastModifiedDate = new Date();
         getLastModifiedUserStrategy().populateLastModifiedUser(this);
     }
 
     @PreUpdate
     public void populateAuditInformationBeforeUpdate() {
         this.deleted = this.deleted != null ? this.deleted : false;
-        this.lastModifiedDate = new Date();
         getLastModifiedUserStrategy().populateLastModifiedUser(this);
     }
 }
