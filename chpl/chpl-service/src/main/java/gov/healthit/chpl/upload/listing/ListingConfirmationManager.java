@@ -239,8 +239,8 @@ public class ListingConfirmationManager {
             saveOptionalStandards(certResult);
             saveTestData(certResult);
             saveTestProcedures(certResult);
-            saveFunctionalityTested(certResult);
-            saveStandard(certResult);
+            saveFunctionalitiesTested(certResult);
+            saveStandards(certResult);
             saveTestTools(certResult);
             saveConformanceMethods(certResult);
             saveSvaps(certResult);
@@ -275,14 +275,14 @@ public class ListingConfirmationManager {
         }
     }
 
-    private void saveFunctionalityTested(CertificationResult certResult) throws EntityCreationException {
+    private void saveFunctionalitiesTested(CertificationResult certResult) throws EntityCreationException {
         if (!CollectionUtils.isEmpty(certResult.getFunctionalitiesTested())) {
             certResult.getFunctionalitiesTested().stream()
                 .forEach(rethrowConsumer(functionalityTested -> certResultFuncTestedDao.createFunctionalityTestedMapping(certResult.getId(), functionalityTested)));
         }
     }
 
-    private void saveStandard(CertificationResult certResult) throws EntityCreationException {
+    private void saveStandards(CertificationResult certResult) throws EntityCreationException {
         if (!CollectionUtils.isEmpty(certResult.getStandards())) {
             certResult.getStandards().stream()
                 .forEach(rethrowConsumer(standard -> certResultStandardDao.createStandardMapping(certResult.getId(), standard)));
