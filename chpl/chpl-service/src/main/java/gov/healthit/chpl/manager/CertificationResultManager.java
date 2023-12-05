@@ -9,7 +9,6 @@ import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -105,8 +104,9 @@ public class CertificationResultManager extends SecuredManager {
             throws EntityCreationException, EntityRetrievalException {
 
         int numChanges = 0;
-        if ((orig == null || orig.getId() == null || BooleanUtils.isFalse(orig.isSuccess()))
-                && updated != null) {
+        //if ((orig == null || orig.getId() == null || BooleanUtils.isFalse(orig.isSuccess()))
+        //        && updated != null) {
+        if ((orig == null || orig.getId() == null) && updated != null) {
             //this is a new cert result we are adding
             long addedCertResultId = certResultDAO.create(updatedListing.getId(), updated);
             updated.setId(addedCertResultId);
