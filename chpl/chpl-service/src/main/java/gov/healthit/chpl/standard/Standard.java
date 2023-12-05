@@ -34,7 +34,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-/*
+/**
  * A unique identifier for a health IT standard, ensuring consistent technical and interoperability compliance across systems
  */
 @Schema(description = "A unique identifier for a health IT standard, ensuring consistent technical and interoperability compliance across systems")
