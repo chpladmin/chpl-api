@@ -257,14 +257,6 @@ public class CertifiedProductSearchBasicDetails implements Serializable {
     private String mandatoryDisclosures;
 
     /**
-     * The last time this listing was modified in any way given in milliseconds since epoch.
-     */
-    @Schema(description = "The last time this listing was modified in any way given in milliseconds since epoch.")
-    @Deprecated
-    @DeprecatedResponseField(message = "This field has been deprecated and will be removed.", removalDate = "2023-10-31")
-    private Long lastModifiedDate;
-
-    /**
      * Any surveillance that has occurred on this listing
      */
     @Schema(description = "Any surveillance that has occurred on this listing")

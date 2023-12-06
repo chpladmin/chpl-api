@@ -29,6 +29,8 @@ import gov.healthit.chpl.functionalitytested.CertificationResultFunctionalityTes
 import gov.healthit.chpl.optionalStandard.CertificationResultOptionalStandardComparator;
 import gov.healthit.chpl.optionalStandard.domain.CertificationResultOptionalStandard;
 import gov.healthit.chpl.optionalStandard.domain.OptionalStandard;
+import gov.healthit.chpl.standard.CertificationResultStandard;
+import gov.healthit.chpl.standard.CertificationResultStandardComparator;
 import gov.healthit.chpl.svap.domain.CertificationResultSvap;
 import gov.healthit.chpl.svap.domain.CertificationResultSvapComparator;
 import gov.healthit.chpl.svap.domain.Svap;
@@ -199,6 +201,10 @@ public class CertificationResult implements Serializable {
     @Builder.Default
     private List<CertificationResultSvap> svaps = new ArrayList<CertificationResultSvap>();
 
+    // TODO - Need this text for OCD-4333
+    @Builder.Default
+    private List<CertificationResultStandard> standards = new ArrayList<CertificationResultStandard>();
+
     @Schema(description = "Detailed information about the relevant certification criterion.")
     private CertificationCriterion criterion;
 
@@ -213,6 +219,8 @@ public class CertificationResult implements Serializable {
     @XmlTransient
     private String number;
 
+    @XmlTransient
+    private CertificationResultStandardComparator standardComparator;
     @XmlTransient
     private CertificationResultSvapComparator svapComparator;
     @XmlTransient
@@ -243,6 +251,7 @@ public class CertificationResult implements Serializable {
         this.testProcedures = new ArrayList<CertificationResultTestProcedure>();
         this.svaps = new ArrayList<CertificationResultSvap>();
 
+        this.standardComparator = new CertificationResultStandardComparator();
         this.svapComparator = new CertificationResultSvapComparator();
         this.osComparator = new CertificationResultOptionalStandardComparator();
         this.cmComparator = new CertificationResultConformanceMethodComparator();
@@ -368,6 +377,18 @@ public class CertificationResult implements Serializable {
         this.setTestStandards(getTestStandards(certResult, certRules));
         this.setAdditionalSoftware(getAdditionalSoftware(certResult, certRules));
         this.setSvaps(getSvaps(certResult, certRules));
+        this.setStandards(getStandards(certResult, certRules));
+    }
+
+
+    private List<CertificationResultStandard> getStandards(CertificationResultDetailsDTO certResult, CertificationResultRules certRules) {
+        if (certRules.hasCertOption(certResult.getCertificationCriterionId(), CertificationResultRules.STANDARD)) {
+            return certResult.getStandards().stream()
+                    .sorted(standardComparator)
+                    .collect(Collectors.toList());
+        } else {
+            return null;
+        }
     }
 
     private List<CertificationResultSvap> getSvaps(CertificationResultDetailsDTO certResult, CertificationResultRules certRules) {
@@ -576,6 +597,14 @@ public class CertificationResult implements Serializable {
 
     public void setFunctionalitiesTested(List<CertificationResultFunctionalityTested> functionalitiesTested) {
         this.functionalitiesTested = functionalitiesTested;
+    }
+
+    public List<CertificationResultStandard> getStandards() {
+        return standards;
+    }
+
+    public void setStandards(List<CertificationResultStandard> standards) {
+        this.standards = standards;
     }
 
     public String getApiDocumentation() {

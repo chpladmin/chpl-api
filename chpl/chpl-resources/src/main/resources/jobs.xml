@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <job-scheduling-data
     xmlns="http://www.quartz-scheduler.org/xml/JobSchedulingData"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -8,7 +7,10 @@
         <delete-triggers-in-group>triggerJob</delete-triggers-in-group>
         <delete-triggers-in-group>interruptJob</delete-triggers-in-group>
         <!-- BEGIN REMOVE after PROD push -->
-
+        <delete-job>
+            <name>fixupQuestionableActivityJob</name>
+            <group>systemJobs</group>
+        </delete-job>
         <!-- END remove after PROD push -->
     </pre-processing-commands>
     <processing-directives>
@@ -803,15 +805,6 @@
         </job>
 
         <job>
-            <name>fixupQuestionableActivityJob</name>
-            <group>systemJobs</group>
-            <description>Remove misleading questionable activity since 1/1/2022 and add correct questionable activity.</description>
-            <job-class>gov.healthit.chpl.scheduler.job.onetime.questionableActivity.FixupQuestionableActivity</job-class>
-            <durability>true</durability>
-            <recover>false</recover>
-        </job>
-
-        <job>
             <name>fixupDeveloperAttestationActivityJob</name>
             <group>systemJobs</group>
             <description>Rewrite inaccurate Developer activity due to a duplicate submission of Attestations in Period 2.</description>
@@ -857,7 +850,7 @@
             <name>telligenJob</name>
             <group>systemJobs</group>
             <description>Simulate Telligen calls</description>
-            <job-class>gov.healthit.cpl.scheduler.job.telligen.TelligenJob</job-class>
+            <job-class>gov.healthit.chpl.scheduler.job.telligen.TelligenJob</job-class>
             <durability>true</durability>
             <recover>false</recover>
         </job>

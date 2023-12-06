@@ -11,7 +11,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseField;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.util.DateUtil;
 import gov.healthit.chpl.util.LocalDateAdapter;
@@ -35,10 +34,6 @@ public class CertifiedProduct implements Serializable {
     @Schema(description = "The unique CHPL ID of the certified product. New uploads to CHPL will use "
             + "the format: CertEdYr.ATL.ACB.Dev.Prod.Ver.ICS.AddS.Date")
     private String chplProductNumber;
-
-    @Deprecated
-    @DeprecatedResponseField(message = "This field is deprecated and will be removed.", removalDate = "2023-10-31")
-    private Long lastModifiedDate;
 
     @Schema(description = "Edition of the listing. Ex: 2011, 2014, or 2015")
     private String edition;
@@ -65,7 +60,6 @@ public class CertifiedProduct implements Serializable {
                     + dto.getProductCode() + "." + dto.getVersionCode() + "." + dto.getIcsCode() + "."
                     + dto.getAdditionalSoftwareCode() + "." + dto.getCertifiedDateCode();
         }
-        this.lastModifiedDate = dto.getLastModifiedDate() != null ? dto.getLastModifiedDate().getTime() : null;
         this.edition = dto.getYear();
         this.certificationDate = (dto.getCertificationDate() != null ? dto.getCertificationDate().getTime() : -1);
         this.certificationStatus = dto.getCertificationStatusName();

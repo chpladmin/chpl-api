@@ -183,10 +183,6 @@ public class CertifiedProductSearchDetails implements Serializable {
     @Schema(description = "A hyperlink to the mandatory disclosures required by 170.523(k)(1) for the Health IT Module")
     private String mandatoryDisclosures;
 
-    @Deprecated
-    @DeprecatedResponseField(message = "This field is deprecated and will be removed.", removalDate = "2023-10-31")
-    private Long lastModifiedDate;
-
     @Schema(description = "Any surveillance that has occurred on this listing")
     private List<Surveillance> surveillance = new ArrayList<Surveillance>();
 
@@ -435,16 +431,6 @@ public class CertifiedProductSearchDetails implements Serializable {
 
     public Boolean getCuresUpdate() {
         return curesUpdate;
-    }
-
-    @Deprecated
-    public Long getLastModifiedDate() {
-        return lastModifiedDate;
-    }
-
-    @Deprecated
-    public void setLastModifiedDate(Long lastModifiedDate) {
-        this.lastModifiedDate = lastModifiedDate;
     }
 
     public ImmutableSortedSet<String> getWarningMessages() {

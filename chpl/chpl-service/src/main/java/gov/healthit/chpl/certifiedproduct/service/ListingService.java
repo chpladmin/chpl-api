@@ -187,7 +187,6 @@ public class ListingService {
                 .version(new ProductVersion(dto.getVersion()))
                 .productAdditionalSoftware(dto.getProductAdditionalSoftware())
                 .mandatoryDisclosures(dto.getMandatoryDisclosures())
-                .lastModifiedDate(dto.getLastModifiedDate().getTime())
                 .countCerts(dto.getCountCertifications())
                 .countCqms(dto.getCountCqms())
                 .countSurveillance(dto.getCountSurveillance())
@@ -287,7 +286,6 @@ public class ListingService {
         CertifiedProduct cp = new CertifiedProduct();
         cp.setId(dto.getId());
         cp.setChplProductNumber(chplProductNumberUtil.generate(dto.getId()));
-        cp.setLastModifiedDate(dto.getLastModifiedDate() != null ? dto.getLastModifiedDate().getTime() : null);
         CertificationEdition edition = getEdition(dto.getCertificationEditionId());
         if (edition != null) {
             cp.setEdition(edition.getName());

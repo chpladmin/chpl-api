@@ -269,7 +269,6 @@ public class CertifiedProductDetailsEntity {
                 .chplProductNumber(this.getChplProductNumber())
                 .curesUpdate(this.getCuresUpdate())
                 .edition(this.getYear())
-                .lastModifiedDate(this.getLastModifiedDate().getTime())
                 .build();
     }
 }
