@@ -29,6 +29,7 @@ import gov.healthit.chpl.permissions.domains.QuestionableActivityDomainPermissio
 import gov.healthit.chpl.permissions.domains.RealWorldTestingDomainPermissions;
 import gov.healthit.chpl.permissions.domains.SchedulerDomainPermissions;
 import gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions;
+import gov.healthit.chpl.permissions.domains.StandardDomainPermissions;
 import gov.healthit.chpl.permissions.domains.SurveillanceDomainPermissions;
 import gov.healthit.chpl.permissions.domains.SurveillanceReportDomainPermissions;
 import gov.healthit.chpl.permissions.domains.SvapDomainPermissions;
@@ -70,6 +71,7 @@ public class Permissions {
     public static final String QUESTIONABLE_ACTIVITY = "QUESTIONABLE_ACTIVITY";
     public static final String TEST_TOOL = "TEST_TOOL";
     public static final String FUNCTIONALITY_TESTED = "FUNCTIONALITY_TESTED";
+    public static final String STANDARD = "STANDARD";
 
     private Map<String, DomainPermissions> domainPermissions = new HashMap<String, DomainPermissions>();
 
@@ -103,7 +105,8 @@ public class Permissions {
             AttestationDomainPermissions attestationDomainPermissions,
             QuestionableActivityDomainPermissions qaDomainPermissions,
             TestToolDomainPermissions testToolDomainPermissions,
-            FunctionalityTestedDomainPermissions functionalityTestedDomainPermissions) {
+            FunctionalityTestedDomainPermissions functionalityTestedDomainPermissions,
+            StandardDomainPermissions standardDomainPermissions) {
 
         domainPermissions.put(CERTIFICATION_RESULTS, certificationResultsDomainPermissions);
         domainPermissions.put(CERTIFIED_PRODUCT, certifiedProductDomainPermissions);
@@ -134,6 +137,7 @@ public class Permissions {
         domainPermissions.put(QUESTIONABLE_ACTIVITY, qaDomainPermissions);
         domainPermissions.put(TEST_TOOL, testToolDomainPermissions);
         domainPermissions.put(FUNCTIONALITY_TESTED, functionalityTestedDomainPermissions);
+        domainPermissions.put(STANDARD, standardDomainPermissions);
     }
 
     public boolean hasAccess(final String domain, final String action) {

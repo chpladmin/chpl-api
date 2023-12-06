@@ -28,6 +28,7 @@ public class CertificationResultNormalizer {
     private OptionalStandardNormalizer optionalStandardNormalizer;
     private TestToolNormalizer testToolNormalizer;
     private SvapNormalizer svapNormalizer;
+    private StandardNormalizer standardNormalizer;
     private CertificationResultRules certResultRules;
     private CertificationCriterionService criterionService;
     private ErrorMessageUtil msgUtil;
@@ -41,6 +42,7 @@ public class CertificationResultNormalizer {
         OptionalStandardNormalizer optionalStandardNormalizer,
         TestToolNormalizer testToolNormalizer,
         SvapNormalizer svapNormalizer,
+        StandardNormalizer standardNormalizer,
         CertificationResultRules certResultRules,
         CertificationCriterionService criterionService,
         ErrorMessageUtil msgUtil) {
@@ -52,6 +54,7 @@ public class CertificationResultNormalizer {
         this.optionalStandardNormalizer = optionalStandardNormalizer;
         this.testToolNormalizer = testToolNormalizer;
         this.svapNormalizer = svapNormalizer;
+        this.standardNormalizer = standardNormalizer;
         this.certResultRules = certResultRules;
         this.criterionService = criterionService;
         this.msgUtil = msgUtil;
@@ -69,6 +72,7 @@ public class CertificationResultNormalizer {
         this.optionalStandardNormalizer.normalize(listing);
         this.testToolNormalizer.normalize(listing);
         this.svapNormalizer.normalize(listing);
+        this.standardNormalizer.normalize(listing);
 
         setSedTrueIfApplicableToCriteria(listing);
         listing.getCertificationResults().sort(new CertificationResultComparator());
