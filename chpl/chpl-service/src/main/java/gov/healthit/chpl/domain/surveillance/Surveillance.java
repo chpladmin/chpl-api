@@ -7,9 +7,6 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import javax.xml.bind.annotation.XmlTransient;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-
 import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -18,7 +15,6 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import gov.healthit.chpl.activity.ActivityExclude;
 import gov.healthit.chpl.domain.CertifiedProduct;
-import gov.healthit.chpl.util.LocalDateAdapter;
 import gov.healthit.chpl.util.LocalDateDeserializer;
 import gov.healthit.chpl.util.LocalDateSerializer;
 import gov.healthit.chpl.util.Util;
@@ -37,7 +33,6 @@ public class Surveillance implements Serializable {
     @Schema(description = "Surveillance internal ID")
     private Long id;
 
-    @XmlTransient
     private String surveillanceIdToReplace;
 
     @Schema(description = "The user-friendly ID of this surveillance relative to a listing. Ex: SURV01")
@@ -49,13 +44,11 @@ public class Surveillance implements Serializable {
     @Schema(description = "Day surveillance began")
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
-    @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
     private LocalDate startDay;
 
     @Schema(description = "Day surveillance ended")
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
-    @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
     private LocalDate endDay;
 
     @Schema(description = "The type of surveillance conducted. Allowable values are \"Reactive\" or \"Randomized\".")

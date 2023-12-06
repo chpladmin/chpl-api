@@ -2,8 +2,6 @@ package gov.healthit.chpl.domain;
 
 import java.io.Serializable;
 
-import javax.xml.bind.annotation.XmlTransient;
-
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.dto.CQMResultCriteriaDTO;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -24,7 +22,6 @@ public class CQMResultCertification implements Serializable {
     @Schema(description = "Certification number (i.e. 170.314 (c)(1)) of the criteria")
     private String certificationNumber;
 
-    @XmlTransient
     private CertificationCriterion criterion;
 
     public CQMResultCertification() {

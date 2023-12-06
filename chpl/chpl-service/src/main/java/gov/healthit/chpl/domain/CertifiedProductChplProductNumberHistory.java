@@ -4,13 +4,10 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-import gov.healthit.chpl.util.LocalDateTimeAdapter;
 import gov.healthit.chpl.util.LocalDateTimeDeserializer;
 import gov.healthit.chpl.util.LocalDateTimeSerializer;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -30,7 +27,6 @@ public class CertifiedProductChplProductNumberHistory implements Serializable {
     private String chplProductNumber;
 
     @Schema(description = "A timestamp indicating when this historical CHPL Product Number stopped being referenced")
-    @XmlJavaTypeAdapter(value = LocalDateTimeAdapter.class)
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     private LocalDateTime endDateTime;

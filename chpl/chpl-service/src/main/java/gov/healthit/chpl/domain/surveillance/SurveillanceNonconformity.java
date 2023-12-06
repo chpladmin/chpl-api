@@ -5,8 +5,6 @@ import java.time.LocalDate;
 import java.util.Date;
 import java.util.Objects;
 
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-
 import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -14,7 +12,6 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import gov.healthit.chpl.domain.NonconformityType;
-import gov.healthit.chpl.util.LocalDateAdapter;
 import gov.healthit.chpl.util.LocalDateDeserializer;
 import gov.healthit.chpl.util.LocalDateSerializer;
 import gov.healthit.chpl.util.NullSafeEvaluator;
@@ -47,37 +44,31 @@ public class SurveillanceNonconformity implements Serializable {
     @Schema(description = "Date of determination of non-conformity")
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
-    @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
     private LocalDate dateOfDeterminationDay;
 
     @Schema(description = "Corrective action plan approval day")
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
-    @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
     private LocalDate capApprovalDay;
 
     @Schema(description = "Corrective action plan start day")
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
-    @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
     private LocalDate capStartDay;
 
     @Schema(description = "Corrective action plan end day")
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
-    @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
     private LocalDate capEndDay;
 
     @Schema(description = "Corrective action plan must complete date")
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
-    @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
     private LocalDate capMustCompleteDay;
 
     @Schema(description = "Date non-conformity was closed")
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
-    @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
     private LocalDate nonconformityCloseDay;
 
     @Schema(description = "Non-conformity summary")

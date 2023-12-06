@@ -8,8 +8,6 @@ import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import javax.xml.bind.annotation.XmlTransient;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -53,7 +51,6 @@ public class TestTask implements Serializable {
             + "Edition, and takes only positive decimal numbers.")
     private Float taskSuccessAverage;
 
-    @XmlTransient
     @JsonIgnore
     private String taskSuccessAverageStr;
 
@@ -61,7 +58,6 @@ public class TestTask implements Serializable {
             + "applicable to 2015 Edition, and takes only positive decimal numbers.")
     private Float taskSuccessStddev;
 
-    @XmlTransient
     @JsonIgnore
     private String taskSuccessStddevStr;
 
@@ -70,7 +66,6 @@ public class TestTask implements Serializable {
             + "positive integer values.")
     private Integer taskPathDeviationObserved;
 
-    @XmlTransient
     @JsonIgnore
     private String taskPathDeviationObservedStr;
 
@@ -79,7 +74,6 @@ public class TestTask implements Serializable {
             + "integer(i.e. no decimals) values.")
     private Integer taskPathDeviationOptimal;
 
-    @XmlTransient
     @JsonIgnore
     private String taskPathDeviationOptimalStr;
 
@@ -88,7 +82,6 @@ public class TestTask implements Serializable {
             + "values.")
     private Long taskTimeAvg;
 
-    @XmlTransient
     @JsonIgnore
     private String taskTimeAvgStr;
 
@@ -96,7 +89,6 @@ public class TestTask implements Serializable {
             + "2015 Edition, and takes only positive integer number values.")
     private Integer taskTimeStddev;
 
-    @XmlTransient
     @JsonIgnore
     private String taskTimeStddevStr;
 
@@ -105,7 +97,6 @@ public class TestTask implements Serializable {
             + "number values.")
     private Integer taskTimeDeviationObservedAvg;
 
-    @XmlTransient
     @JsonIgnore
     private String taskTimeDeviationObservedAvgStr;
 
@@ -114,7 +105,6 @@ public class TestTask implements Serializable {
             + "number values.")
     private Integer taskTimeDeviationOptimalAvg;
 
-    @XmlTransient
     @JsonIgnore
     private String taskTimeDeviationOptimalAvgStr;
 
@@ -122,7 +112,6 @@ public class TestTask implements Serializable {
             + "Edition, and takes only positive decimal numbers.")
     private Float taskErrors;
 
-    @XmlTransient
     @JsonIgnore
     private String taskErrorsStr;
 
@@ -131,7 +120,6 @@ public class TestTask implements Serializable {
             + "numbers.")
     private Float taskErrorsStddev;
 
-    @XmlTransient
     @JsonIgnore
     private String taskErrorsStddevStr;
 
@@ -150,7 +138,6 @@ public class TestTask implements Serializable {
             + "only applicable to 2015 Edition.")
     private Float taskRating;
 
-    @XmlTransient
     @JsonIgnore
     private String taskRatingStr;
 
@@ -159,7 +146,6 @@ public class TestTask implements Serializable {
             + "Edition, and takes only positive decimal numbers.")
     private Float taskRatingStddev;
 
-    @XmlTransient
     @JsonIgnore
     private String taskRatingStddevStr;
 

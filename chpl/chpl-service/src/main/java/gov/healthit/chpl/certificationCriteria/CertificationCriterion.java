@@ -4,9 +4,6 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Objects;
 
-import javax.xml.bind.annotation.XmlTransient;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-
 import org.apache.commons.lang3.tuple.Pair;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -19,9 +16,7 @@ import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseField;
 import gov.healthit.chpl.criteriaattribute.rule.Rule;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
-import gov.healthit.chpl.util.CriterionStatusAdapter;
 import gov.healthit.chpl.util.DateUtil;
-import gov.healthit.chpl.util.LocalDateAdapter;
 import gov.healthit.chpl.util.LocalDateDeserializer;
 import gov.healthit.chpl.util.LocalDateSerializer;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -51,13 +46,11 @@ public class CertificationCriterion implements Serializable {
     @Schema(description = "A date value representing the date by which the Criteria Attribute became available.")
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
-    @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
     private LocalDate startDay;
 
     @Schema(description = "A date value representing the date by which the Criteria Attribute can no longer be used.")
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
-    @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
     private LocalDate endDay;
 
     private String description;
@@ -71,7 +64,6 @@ public class CertificationCriterion implements Serializable {
     private Boolean removed;
 
     @JsonProperty(access = Access.READ_ONLY)
-    @XmlJavaTypeAdapter(value = CriterionStatusAdapter.class)
     public CriterionStatus getStatus() {
         if (certificationEdition != null
                 && (certificationEdition.equals(CertificationEditionConcept.CERTIFICATION_EDITION_2011.getYear())
@@ -96,7 +88,6 @@ public class CertificationCriterion implements Serializable {
                 Pair.of(getStartDay(), getEndDay()));
     }
 
-    @XmlTransient
     public boolean isEditable() {
         LocalDate today = LocalDate.now();
         LocalDate startDayLocal = (this.startDay == null ? LocalDate.MIN : this.startDay);

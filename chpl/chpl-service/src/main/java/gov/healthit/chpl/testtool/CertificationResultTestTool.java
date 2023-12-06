@@ -2,8 +2,6 @@ package gov.healthit.chpl.testtool;
 
 import java.io.Serializable;
 
-import javax.xml.bind.annotation.XmlTransient;
-
 import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -37,7 +35,6 @@ public class CertificationResultTestTool implements Serializable {
     private String version;
 
 
-    @XmlTransient
     @JsonIgnore
     private Long certificationResultId;
 

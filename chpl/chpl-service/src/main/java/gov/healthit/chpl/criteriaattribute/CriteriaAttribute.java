@@ -4,15 +4,12 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.List;
 
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.criteriaattribute.rule.Rule;
-import gov.healthit.chpl.util.LocalDateAdapter;
 import gov.healthit.chpl.util.LocalDateDeserializer;
 import gov.healthit.chpl.util.LocalDateSerializer;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -40,19 +37,16 @@ public class CriteriaAttribute implements Serializable {
     @Schema(description = "A date value representing the date by which the Criteria Attribute became available.")
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
-    @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
     private LocalDate startDay;
 
     @Schema(description = "A date value representing the date by which the Criteria Attribute can no longer be used.")
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
-    @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
     private LocalDate endDay;
 
     @Schema(description = "A date value representing the date by which the Criteria Attribute is required for selected criteria.")
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
-    @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
     private LocalDate requiredDay;
 
     private List<CertificationCriterion> criteria;

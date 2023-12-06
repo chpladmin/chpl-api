@@ -5,8 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.xml.bind.annotation.XmlTransient;
-
 import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -63,15 +61,12 @@ public class CertificationResult implements Serializable {
             + "or false value, and is applicable to 2014 and 2015 Edition.")
     private Boolean gap;
 
-    @XmlTransient
     @JsonIgnore
     private String gapStr;
 
-    @XmlTransient
     @JsonIgnore
     private Boolean hasAdditionalSoftware;
 
-    @XmlTransient
     @JsonIgnore
     private String hasAdditionalSoftwareStr;
 
@@ -93,7 +88,6 @@ public class CertificationResult implements Serializable {
             + "value that takes either true or false, and is applicable to 2015 Edition.")
     private Boolean attestationAnswer;
 
-    @XmlTransient
     private String attestationAnswerStr;
 
     @Schema(description = "The hyperlink to access an application programming interface (API)'s documentation and terms of use. This "
@@ -129,25 +123,21 @@ public class CertificationResult implements Serializable {
     @Deprecated
     @DeprecatedResponseField(message = "This field is deprecated and will be removed. This data can be found via a GET request to the endpoint /conformance-methods.",
         removalDate = "2024-01-01")
-    @XmlTransient
     private List<ConformanceMethod> allowedConformanceMethods;
 
     @Deprecated
     @DeprecatedResponseField(message = "This field is deprecated and will be removed. This data can be found via a GET request to the endpoint /svaps.",
         removalDate = "2024-01-01")
-    @XmlTransient
     private List<Svap> allowedSvaps;
 
     @Deprecated
     @DeprecatedResponseField(message = "This field is deprecated and will be removed. This data can be found via a GET request to the endpoint /optional-standards.",
         removalDate = "2024-01-01")
-    @XmlTransient
     private List<OptionalStandard> allowedOptionalStandards;
 
     @Deprecated
     @DeprecatedResponseField(message = "This field is deprecated and will be removed. This data can be found via a GET request to the endpoint /test-tools.",
         removalDate = "2024-01-01")
-    @XmlTransient
     private List<TestTool> allowedTestTools;
 
     @Schema(description = "Any optional, alternative, ambulatory (2015 only), or inpatient (2015 only) capabilities within a certification "
@@ -216,28 +206,17 @@ public class CertificationResult implements Serializable {
      * Do not use it in any code unless you are specifically referencing legacy listing activity data.
      */
     @JsonProperty(access = Access.WRITE_ONLY)
-    @XmlTransient
     private String number;
 
-    @XmlTransient
     private CertificationResultStandardComparator standardComparator;
-    @XmlTransient
     private CertificationResultSvapComparator svapComparator;
-    @XmlTransient
     private CertificationResultOptionalStandardComparator osComparator;
-    @XmlTransient
     private CertificationResultConformanceMethodComparator cmComparator;
-    @XmlTransient
     private CertificationResultFunctionalityTestedComparator funcTestedComparator;
-    @XmlTransient
     private CertificationResultTestProcedureComparator testProcComparator;
-    @XmlTransient
     private CertificationResultTestDataComparator testDataComparator;
-    @XmlTransient
     private CertificationResultTestToolComparator testToolComparator;
-    @XmlTransient
     private CertificationResultTestStandardComparator testStandardComparator;
-    @XmlTransient
     private CertificationResultAdditionalSoftwareComparator asComparator;
 
     public CertificationResult() {

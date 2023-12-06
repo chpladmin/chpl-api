@@ -3,8 +3,6 @@ package gov.healthit.chpl.domain;
 import java.io.Serializable;
 import java.util.Objects;
 
-import javax.xml.bind.annotation.XmlTransient;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -65,7 +63,6 @@ public class TestParticipant implements Serializable {
             + "positive integers (i.e. no decimals) values.")
     private Integer professionalExperienceMonths;
 
-    @XmlTransient
     @JsonIgnore
     private String professionalExperienceMonthsStr;
 
@@ -74,7 +71,6 @@ public class TestParticipant implements Serializable {
             + "only positive integers (i.e. no decimals).")
     private Integer computerExperienceMonths;
 
-    @XmlTransient
     @JsonIgnore
     private String computerExperienceMonthsStr;
 
@@ -84,7 +80,6 @@ public class TestParticipant implements Serializable {
             + "integers (i.e. no decimals are allowed) values.")
     private Integer productExperienceMonths;
 
-    @XmlTransient
     @JsonIgnore
     private String productExperienceMonthsStr;
 

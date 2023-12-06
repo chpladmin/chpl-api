@@ -2,8 +2,6 @@ package gov.healthit.chpl.domain;
 
 import java.io.Serializable;
 
-import javax.xml.bind.annotation.XmlTransient;
-
 import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -29,7 +27,6 @@ public class CertifiedProductAccessibilityStandard implements Serializable {
     @Schema(description = "Accessibility standard name")
     private String accessibilityStandardName;
 
-    @XmlTransient
     @JsonIgnore
     private String userEnteredAccessibilityStandardName;
 

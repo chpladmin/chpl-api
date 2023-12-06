@@ -6,8 +6,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -15,7 +13,6 @@ import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-import gov.healthit.chpl.util.LocalDateAdapter;
 import gov.healthit.chpl.util.LocalDateSerializer;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -49,7 +46,6 @@ public class DirectReviewNonConformity implements Serializable {
     @JsonProperty(value = "dateOfDetermination", access = Access.WRITE_ONLY)
     @JsonAlias("customfield_11021")
     @JsonDeserialize(using = DateDeserializer.class)
-    @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
     private LocalDate dateOfDetermination;
 
     @JsonProperty(value = "nonConformitySummary", access = Access.WRITE_ONLY)
@@ -77,27 +73,23 @@ public class DirectReviewNonConformity implements Serializable {
     @JsonAlias("customfield_11022")
     @JsonDeserialize(using = DateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
-    @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
     private LocalDate providedCapApprovalDate;
 
     @JsonProperty(value = "capStartDate", access = Access.WRITE_ONLY)
     @JsonAlias("customfield_11023")
     @JsonDeserialize(using = DateDeserializer.class)
-    @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
     private LocalDate capStartDate;
 
     @JsonProperty(value = "providedCapMustCompleteDate")
     @JsonAlias("customfield_11024")
     @JsonDeserialize(using = DateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
-    @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
     private LocalDate providedCapMustCompleteDate;
 
     @JsonProperty(value = "providedCapEndDate")
     @JsonAlias("customfield_11025")
     @JsonDeserialize(using = DateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
-    @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
     private LocalDate providedCapEndDate;
 
     @JsonProperty(value = "lastUpdated")

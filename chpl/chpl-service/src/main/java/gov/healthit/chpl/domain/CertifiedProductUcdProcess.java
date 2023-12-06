@@ -3,8 +3,6 @@ package gov.healthit.chpl.domain;
 import java.io.Serializable;
 import java.util.LinkedHashSet;
 
-import javax.xml.bind.annotation.XmlTransient;
-
 import org.apache.commons.lang3.ObjectUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -27,7 +25,6 @@ public class CertifiedProductUcdProcess implements Serializable {
     @Schema(description = "The UCD Process name")
     private String name;
 
-    @XmlTransient
     @JsonIgnore
     private String userEnteredName;
 

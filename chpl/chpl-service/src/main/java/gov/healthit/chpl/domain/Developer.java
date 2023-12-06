@@ -5,8 +5,6 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlTransient;
-
 import org.apache.commons.collections4.CollectionUtils;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
@@ -59,23 +57,18 @@ public class Developer implements Serializable {
     @Schema(description = "Public attestations submitted by the developer.")
     private List<PublicAttestation> attestations;
 
-    @XmlTransient
     @JsonIgnore
     private String userEnteredName;
 
-    @XmlTransient
     @JsonIgnore
     private String userEnteredWebsite;
 
-    @XmlTransient
     @JsonIgnore
     private String userEnteredSelfDeveloper;
 
-    @XmlTransient
     @JsonIgnore
     private Address userEnteredAddress;
 
-    @XmlTransient
     @JsonIgnore
     private PointOfContact userEnteredPointOfContact;
 
@@ -166,7 +159,6 @@ public class Developer implements Serializable {
     }
 
     @JsonIgnore
-    @XmlTransient
     public DeveloperStatusEvent getMostRecentStatusEvent() {
         if (CollectionUtils.isEmpty(this.getStatusEvents())) {
             return null;

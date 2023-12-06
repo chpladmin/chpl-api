@@ -3,9 +3,6 @@ package gov.healthit.chpl.domain;
 import java.io.Serializable;
 import java.time.LocalDate;
 
-import javax.xml.bind.annotation.XmlTransient;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-
 import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -17,8 +14,6 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import gov.healthit.chpl.certificationCriteria.CriterionStatus;
 import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.domain.surveillance.NonconformityClassification;
-import gov.healthit.chpl.util.CriterionStatusAdapter;
-import gov.healthit.chpl.util.LocalDateAdapter;
 import gov.healthit.chpl.util.LocalDateDeserializer;
 import gov.healthit.chpl.util.LocalDateSerializer;
 import gov.healthit.chpl.util.NullSafeEvaluator;
@@ -40,7 +35,6 @@ public class NonconformityType implements Serializable {
     private CertificationEdition certificationEdition;
 
     @JsonIgnore
-    @XmlTransient
     private String edition;
 
     private String number;
@@ -49,21 +43,17 @@ public class NonconformityType implements Serializable {
     @Schema(description = "A date value representing the date by which the Non-Conformity Type became available.")
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
-    @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
     private LocalDate startDay;
 
     @Schema(description = "A date value representing the date by which the Non-Conformity Type can no longer be used.")
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
-    @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
     private LocalDate endDay;
 
     @JsonIgnore
-    @XmlTransient
     private NonconformityClassification classification;
 
     @JsonProperty(access = Access.READ_ONLY)
-    @XmlJavaTypeAdapter(value = CriterionStatusAdapter.class)
     public CriterionStatus getStatus() {
         if (certificationEdition != null && certificationEdition.getName() != null
                 && (certificationEdition.getName().equals(CertificationEditionConcept.CERTIFICATION_EDITION_2011.getYear())
@@ -79,7 +69,6 @@ public class NonconformityType implements Serializable {
     }
 
     @JsonProperty(access = Access.READ_ONLY)
-    @XmlTransient
     public Boolean isRemoved() {
         return getStatus().equals(CriterionStatus.REMOVED);
     }

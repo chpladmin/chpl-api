@@ -6,8 +6,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.xml.bind.annotation.XmlTransient;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -31,12 +29,10 @@ public class CertifiedProductSed implements Serializable {
     private List<TestTask> testTasks = new ArrayList<TestTask>();
 
     @JsonIgnore
-    @XmlTransient
     @Builder.Default
     private Set<String> unusedTestTaskUniqueIds = new LinkedHashSet<String>();
 
     @JsonIgnore
-    @XmlTransient
     @Builder.Default
     private Set<String> unusedTestParticipantUniqueIds = new LinkedHashSet<String>();
 

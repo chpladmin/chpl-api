@@ -7,8 +7,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.xml.bind.annotation.XmlTransient;
-
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -55,13 +53,11 @@ public class DirectReview implements Serializable {
     private Date created;
 
     @JsonIgnore
-    @XmlTransient
     @JsonAlias("key")
     private String jiraKey;
 
     private List<DirectReviewNonConformity> nonConformities = new ArrayList<DirectReviewNonConformity>();
 
-    @XmlTransient
     @JsonIgnore
     private Set<String> errorMessages = new HashSet<String>();
 }

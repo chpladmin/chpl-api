@@ -3,9 +3,6 @@ package gov.healthit.chpl.attestation.domain;
 import java.io.Serializable;
 import java.time.LocalDate;
 
-import javax.xml.bind.annotation.XmlTransient;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -13,7 +10,6 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import gov.healthit.chpl.attestation.entity.AttestationPeriodEntity;
 import gov.healthit.chpl.form.Form;
-import gov.healthit.chpl.util.LocalDateAdapter;
 import gov.healthit.chpl.util.LocalDateDeserializer;
 import gov.healthit.chpl.util.LocalDateSerializer;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -36,24 +32,19 @@ public class AttestationPeriod implements Serializable {
     @Schema(description = "The starting date for which the submitted Attestations are based.")
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
-    @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
     private LocalDate periodStart;
 
     @Schema(description = "The ending date for which the submitted Attestations are based.")
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
-    @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
     private LocalDate periodEnd;
 
-    @XmlTransient
     @JsonIgnore
     private LocalDate submissionStart;
 
-    @XmlTransient
     @JsonIgnore
     private LocalDate submissionEnd;
 
-    @XmlTransient
     @JsonIgnore
     private Form form;
 

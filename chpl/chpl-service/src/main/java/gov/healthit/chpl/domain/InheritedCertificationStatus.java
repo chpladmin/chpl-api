@@ -4,8 +4,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlTransient;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -38,7 +36,6 @@ public class InheritedCertificationStatus implements Serializable {
             + "false value.")
     private Boolean inherits;
 
-    @XmlTransient
     @JsonIgnore
     private String inheritsStr;
 

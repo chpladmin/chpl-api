@@ -11,9 +11,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.xml.bind.annotation.XmlTransient;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.collections.api.set.sorted.ImmutableSortedSet;
@@ -34,7 +31,6 @@ import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.util.CertificationStatusUtil;
 import gov.healthit.chpl.util.DateUtil;
-import gov.healthit.chpl.util.LocalDateAdapter;
 import gov.healthit.chpl.util.LocalDateDeserializer;
 import gov.healthit.chpl.util.LocalDateSerializer;
 import gov.healthit.chpl.util.NullSafeEvaluator;
@@ -78,10 +74,8 @@ public class CertifiedProductSearchDetails implements Serializable {
     @Schema(description = "Date all SED testing was concluded for the Health IT. The format for the date is YYYMMDD")
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
-    @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
     private LocalDate sedTestingEndDay;
 
-    @XmlTransient
     @JsonIgnore
     private String sedTestingEndDateStr;
 
@@ -128,7 +122,6 @@ public class CertifiedProductSearchDetails implements Serializable {
 
     private Long certificationDate;
 
-    @XmlTransient
     @JsonIgnore
     private String certificationDateStr;
 
@@ -139,7 +132,6 @@ public class CertifiedProductSearchDetails implements Serializable {
 
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
-    @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
     @Schema(description = "Decertification day")
     private LocalDate decertificationDay;
 
@@ -173,7 +165,6 @@ public class CertifiedProductSearchDetails implements Serializable {
             + "Edition. It is a binary variable that takes value of true or false.")
     private Boolean accessibilityCertified;
 
-    @XmlTransient
     @JsonIgnore
     private String accessibilityCertifiedStr;
 
@@ -229,7 +220,6 @@ public class CertifiedProductSearchDetails implements Serializable {
      * for this reason. This property should not be visible in any response from an API call.
      */
     @JsonProperty(access = Access.WRITE_ONLY)
-    @XmlTransient
     private LegacyCertificationStatus certificationStatus;
 
     @Schema(description = "All current and historical certification status of this listing. The certification statuses take values of Active; Suspended by "
@@ -250,25 +240,23 @@ public class CertifiedProductSearchDetails implements Serializable {
     @Schema(description = "All data related to safety-enhanced design for this listing.")
     private CertifiedProductSed sed = new CertifiedProductSed();
 
-    @Schema(description = "URL where the listing's Real World Testing Plan is located")
+    @Schema(description = "URL where the listings Real World Testing Plan is located")
     private String rwtPlansUrl;
 
-    @Schema(description = "Date the listing's Real World Testing Plan was submitted")
+    @Schema(description = "Date the listings Real World Testing Plan was submitted")
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
-    @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
     private LocalDate rwtPlansCheckDate;
 
-    @Schema(description = "URL where the listing's Real World Testing Results is located")
+    @Schema(description = "URL where the listings Real World Testing Results is located")
     private String rwtResultsUrl;
 
-    @Schema(description = "Date the listing's Real World Testing Results was submitted")
+    @Schema(description = "Date the listings Real World Testing Results was submitted")
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
-    @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
     private LocalDate rwtResultsCheckDate;
 
-    @Schema(description = "URL where the Listing's SVAP Notice URL is located")
+    @Schema(description = "URL where the Listings SVAP Notice URL is located")
     private String svapNoticeUrl;
 
     @Builder.Default
@@ -781,7 +769,6 @@ public class CertifiedProductSearchDetails implements Serializable {
     @Schema(description = "Certification day")
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
-    @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
     public LocalDate getCertificationDay() {
         Long certificationDateMillis = getCertificationDate();
         if (certificationDateMillis == null) {

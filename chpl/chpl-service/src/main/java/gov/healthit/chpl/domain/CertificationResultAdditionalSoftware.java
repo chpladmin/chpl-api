@@ -2,8 +2,6 @@ package gov.healthit.chpl.domain;
 
 import java.io.Serializable;
 
-import javax.xml.bind.annotation.XmlTransient;
-
 import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -63,7 +61,6 @@ public class CertificationResultAdditionalSoftware implements Serializable {
     @Schema(description = "Additional software justification")
     private String justification;
 
-    @XmlTransient
     private Long certificationResultId;
 
     @Schema(description = "For 2015 certified products, the concept of a 'grouping' is introduced to "

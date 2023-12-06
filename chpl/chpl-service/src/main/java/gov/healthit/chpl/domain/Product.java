@@ -8,8 +8,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.xml.bind.annotation.XmlTransient;
-
 import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -38,7 +36,6 @@ public class Product implements Serializable {
      * This property should not be visible in the generated XSD or any response from an API call.
      */
     @JsonProperty(access = Access.WRITE_ONLY)
-    @XmlTransient
     @Deprecated
     private Long developerId;
 
@@ -49,7 +46,6 @@ public class Product implements Serializable {
      * This property should not be visible in the generated XSD or any response from an API call.
      */
     @JsonProperty(access = Access.WRITE_ONLY)
-    @XmlTransient
     @Deprecated
     private String developerName;
 

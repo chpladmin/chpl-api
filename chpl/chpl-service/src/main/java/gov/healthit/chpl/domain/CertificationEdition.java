@@ -2,8 +2,6 @@ package gov.healthit.chpl.domain;
 
 import java.io.Serializable;
 
-import javax.xml.bind.annotation.XmlTransient;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -19,9 +17,7 @@ import lombok.NoArgsConstructor;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CertificationEdition implements Serializable {
     private static final long serialVersionUID = 5732322243572571895L;
-
     @JsonIgnore
-    @XmlTransient
     public static final String CURES_SUFFIX = " Cures Update";
 
     @Deprecated

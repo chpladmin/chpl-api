@@ -2,8 +2,6 @@ package gov.healthit.chpl.functionalitytested;
 
 import java.io.Serializable;
 
-import javax.xml.bind.annotation.XmlTransient;
-
 import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -49,7 +47,6 @@ public class CertificationResultFunctionalityTested implements Serializable {
             removalDate = "2024-01-01")
     private String name;
 
-    @XmlTransient
     @JsonIgnore
     private Long certificationResultId;
 

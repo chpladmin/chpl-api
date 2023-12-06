@@ -2,8 +2,6 @@ package gov.healthit.chpl.standard;
 
 import java.io.Serializable;
 
-import javax.xml.bind.annotation.XmlTransient;
-
 import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -30,7 +28,6 @@ public class CertificationResultStandard implements Serializable {
     @Schema(description = "Standard")
     private Standard standard;
 
-    @XmlTransient
     @JsonIgnore
     private Long certificationResultId;
 

@@ -3,11 +3,7 @@ package gov.healthit.chpl.domain;
 import java.io.Serializable;
 import java.util.HashMap;
 
-import javax.xml.bind.annotation.XmlTransient;
-
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -15,15 +11,14 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.extern.log4j.Log4j2;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Builder
+@Log4j2
 @AllArgsConstructor
 public class Address implements Serializable {
     private static final long serialVersionUID = 7978604053959537664L;
-    private static final Logger LOGGER = LogManager.getLogger(Address.class);
-
-    @XmlTransient
     @JsonIgnore
     public static final String DEFAULT_COUNTRY = "US";
 
