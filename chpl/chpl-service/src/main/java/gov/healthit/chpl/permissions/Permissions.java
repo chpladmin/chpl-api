@@ -29,11 +29,8 @@ import gov.healthit.chpl.permissions.domains.QuestionableActivityDomainPermissio
 import gov.healthit.chpl.permissions.domains.RealWorldTestingDomainPermissions;
 import gov.healthit.chpl.permissions.domains.SchedulerDomainPermissions;
 import gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions;
-<<<<<<< HEAD
-import gov.healthit.chpl.permissions.domains.SubscriptionDomainPermissions;
-=======
 import gov.healthit.chpl.permissions.domains.StandardDomainPermissions;
->>>>>>> staging
+import gov.healthit.chpl.permissions.domains.SubscriptionDomainPermissions;
 import gov.healthit.chpl.permissions.domains.SurveillanceDomainPermissions;
 import gov.healthit.chpl.permissions.domains.SurveillanceReportDomainPermissions;
 import gov.healthit.chpl.permissions.domains.SvapDomainPermissions;
