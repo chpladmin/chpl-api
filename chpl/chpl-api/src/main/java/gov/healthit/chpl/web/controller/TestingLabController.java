@@ -18,7 +18,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.domain.TestingLab;
-import gov.healthit.chpl.domain.auth.UsersResponse;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
@@ -26,7 +25,6 @@ import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.manager.TestingLabManager;
 import gov.healthit.chpl.manager.impl.UpdateTestingLabException;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
-import gov.healthit.chpl.web.controller.annotation.DeprecatedApi;
 import gov.healthit.chpl.web.controller.annotation.DeprecatedApiResponseFields;
 import gov.healthit.chpl.web.controller.results.TestingLabResults;
 import io.swagger.v3.oas.annotations.Operation;
@@ -144,38 +142,5 @@ public class TestingLabController {
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
         return new ResponseEntity<TestingLab>(result, responseHeaders, HttpStatus.OK);
-    }
-
-    @Operation(summary = "Remove user permissions from an ATL.",
-            description = "This endpoint is deprecated and has no effect.",
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
-            })
-    @Deprecated
-    @DeprecatedApi(httpMethod = "DELETE", friendlyUrl = "atls/{atlId}/users/{userId}",
-            message = "This endpoint will be removed", removalDate = "2023-11-30")
-    @RequestMapping(value = "{atlId}/users/{userId}", method = RequestMethod.DELETE,
-            produces = "application/json; charset=utf-8")
-    public String deleteUserFromAtl(@PathVariable final Long atlId, @PathVariable final Long userId)
-            throws UserRetrievalException, EntityRetrievalException, InvalidArgumentsException, JsonProcessingException, EntityCreationException {
-
-        return "{\"userDeleted\" : false}";
-    }
-
-    @Operation(summary = "List users with permissions on a specified ATL.",
-            description = "This endpoint is deprecated and will return an empty response object.",
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
-            })
-    @Deprecated
-    @DeprecatedApi(friendlyUrl = "atls/{atlId}/users",
-            message = "This endpoint will be removed", removalDate = "2023-11-30")
-    @RequestMapping(value = "/{atlId}/users", method = RequestMethod.GET,
-            produces = "application/json; charset=utf-8")
-    public @ResponseBody UsersResponse getUsers(@PathVariable("atlId") final Long atlId)
-            throws InvalidArgumentsException, EntityRetrievalException {
-        return new UsersResponse();
     }
 }

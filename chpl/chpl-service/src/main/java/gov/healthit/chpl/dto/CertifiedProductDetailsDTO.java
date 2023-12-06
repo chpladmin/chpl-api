@@ -73,8 +73,6 @@ public class CertifiedProductDetailsDTO implements Serializable {
     private Integer countClosedSurveillance;
     private Integer countOpenNonconformities;
     private Integer countClosedNonconformities;
-    @Deprecated
-    private Date lastModifiedDate;
     private Boolean ics;
     private Boolean sedTesting;
     private Boolean qmsTesting;
@@ -190,7 +188,6 @@ public class CertifiedProductDetailsDTO implements Serializable {
         this.rwtResultsUrl = entity.getRwtResultsUrl();
         this.rwtResultsCheckDate = entity.getRwtResultsCheckDate();
         this.svapNoticeUrl = entity.getSvapNoticeUrl();
-        this.lastModifiedDate = entity.getLastModifiedDate();
     }
 
     public CertifiedProductDetailsDTO(CertifiedProductDetailsEntitySimple entity) {
@@ -295,7 +292,6 @@ public class CertifiedProductDetailsDTO implements Serializable {
         this.rwtResultsUrl = entity.getRwtResultsUrl();
         this.rwtResultsCheckDate = entity.getRwtResultsCheckDate();
         this.svapNoticeUrl = entity.getSvapNoticeUrl();
-        this.lastModifiedDate = entity.getLastModifiedDate();
     }
 
     public String getYearCode() {
