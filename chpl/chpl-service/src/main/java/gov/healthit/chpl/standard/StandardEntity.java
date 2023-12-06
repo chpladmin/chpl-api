@@ -2,7 +2,6 @@ package gov.healthit.chpl.standard;
 
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -22,6 +21,7 @@ import javax.persistence.Table;
 import org.hibernate.annotations.Where;
 
 import gov.healthit.chpl.criteriaattribute.rule.RuleEntity;
+import gov.healthit.chpl.entity.EntityAudit;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -33,7 +33,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "standard")
 @Data
-public class StandardEntity implements Serializable {
+public class StandardEntity extends EntityAudit implements Serializable {
     private static final long serialVersionUID = 8610348267368158172L;
 
     @Id
@@ -75,22 +75,6 @@ public class StandardEntity implements Serializable {
     @OneToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "rule_id")
     private RuleEntity rule;
-
-    @Basic(optional = false)
-    @Column(name = "creation_date", nullable = false)
-    private Date creationDate;
-
-    @Basic(optional = false)
-    @Column(nullable = false)
-    private Boolean deleted;
-
-    @Basic(optional = false)
-    @Column(name = "last_modified_date", nullable = false)
-    private Date lastModifiedDate;
-
-    @Basic(optional = false)
-    @Column(name = "last_modified_user", nullable = false)
-    private Long lastModifiedUser;
 
     public Standard toDomain() {
         return Standard.builder()
