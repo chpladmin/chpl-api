@@ -37,6 +37,7 @@ public class CertificationResultXmlGenerator extends XmlGenerator {
             createSimpleElement(result.getRiskManagementSummaryInformation(), "riskManagementSummaryInformation", sw);
             createSimpleElement(result.isSed(), "sed", sw);
             createSimpleElement(result.getServiceBaseUrlList(), "serviceBaseUrlList", sw);
+            CertificationResultStandardXmlGenerator.add(result.getStandards(), "standards", sw);
             createSimpleElement(result.isSuccess(), "success", sw);
             CertificationResultSvapXmlGenerator.add(result.getSvaps(), "svaps", sw);
             CertificationResultTestDataXmlGenerator.add(result.getTestDataUsed(), "testDataList", sw);
