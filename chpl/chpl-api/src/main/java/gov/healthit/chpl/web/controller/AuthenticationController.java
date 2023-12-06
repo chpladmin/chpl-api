@@ -3,8 +3,6 @@ package gov.healthit.chpl.web.controller;
 import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.security.authentication.AccountStatusException;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -23,7 +21,6 @@ import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.domain.auth.AuthenticationResponse;
 import gov.healthit.chpl.domain.auth.LoginCredentials;
 import gov.healthit.chpl.domain.auth.ResetPasswordRequest;
-import gov.healthit.chpl.domain.auth.UpdateExpiredPasswordRequest;
 import gov.healthit.chpl.domain.auth.UpdatePasswordRequest;
 import gov.healthit.chpl.domain.auth.UpdatePasswordResponse;
 import gov.healthit.chpl.domain.auth.UserResetPasswordRequest;
@@ -42,7 +39,6 @@ import gov.healthit.chpl.service.UserAccountUpdateEmailer;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
-import gov.healthit.chpl.web.controller.annotation.DeprecatedApi;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -120,19 +116,6 @@ public class AuthenticationController {
                 .build();
     }
 
-    @Hidden
-    @Deprecated
-    @DeprecatedApi(friendlyUrl = "/auth/keep_alive",
-            message = "This endpoint is deprecated and will be removed. Please use /auth/keep-alive.",
-            removalDate = "2023-10-31")
-    @RequestMapping(value = "/keep_alive", method = RequestMethod.GET,
-            produces = "application/json; charset=utf-8")
-    public String keepAliveDeprecated() throws JWTCreationException, UserRetrievalException, MultipleUserAccountsException {
-        String jwt = authenticationManager.refreshJWT();
-        String jwtJSON = "{\"token\": \"" + jwt + "\"}";
-        return jwtJSON;
-    }
-
     @Operation(summary = "Change password.",
             description = "Change the logged in user's password as long as the old password "
                     + "passed in matches what is stored in the database.",
@@ -179,110 +162,6 @@ public class AuthenticationController {
         return response;
     }
 
-    @Operation(summary = "Change password.",
-            description = "Change the logged in user's password as long as the old password "
-                    + "passed in matches what is stored in the database.",
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
-            })
-    @Deprecated
-    @DeprecatedApi(friendlyUrl = "/auth/change_password",
-            message = "This endpoint is deprecated and will be removed. Please use /auth/change-password.",
-            removalDate = "2023-10-31")
-    @RequestMapping(value = "/change_password", method = RequestMethod.POST,
-            produces = "application/json; charset=utf-8")
-    public UpdatePasswordResponse changePasswordDeprecated(@RequestBody UpdatePasswordRequest request)
-            throws UserRetrievalException, MultipleUserAccountsException {
-        UpdatePasswordResponse response = new UpdatePasswordResponse();
-        if (AuthUtil.getCurrentUser() == null) {
-            throw new UserRetrievalException("No user is logged in.");
-        }
-
-        // get the current user
-        UserDTO currUser = userManager.getById(AuthUtil.getCurrentUser().getId());
-        if (currUser == null) {
-            throw new UserRetrievalException("The user with id " + AuthUtil.getCurrentUser().getId()
-                    + " could not be found or the logged in user does not have permission to modify their data.");
-        }
-
-        // check the strength of the new password
-        Strength strength = userManager.getPasswordStrength(currUser, request.getNewPassword());
-        if (strength.getScore() < UserManager.MIN_PASSWORD_STRENGTH) {
-            LOGGER.info("Strength results: [warning: {}] [suggestions: {}] [score: {}] [worst case crack time: {}]",
-                    strength.getFeedback().getWarning(), strength.getFeedback().getSuggestions().toString(),
-                    strength.getScore(), strength.getCrackTimesDisplay().getOfflineFastHashing1e10PerSecond());
-            response.setStrength(strength);
-            response.setPasswordUpdated(false);
-            return response;
-        }
-
-        // encode the old password passed in to compare
-        String currEncodedPassword = userManager.getEncodedPassword(currUser);
-        boolean oldPasswordMatches = bCryptPasswordEncoder.matches(request.getOldPassword(), currEncodedPassword);
-        if (!oldPasswordMatches) {
-            throw new UserRetrievalException("The provided old password does not match the database.");
-        } else {
-            userManager.updateUserPassword(userManager.getByNameOrEmail(currUser.getEmail()), request.getNewPassword());
-        }
-        response.setPasswordUpdated(true);
-        return response;
-    }
-
-    @Operation(summary = "Change expired password.",
-            description = "Change a user's expired password as long as the old password "
-                    + "passed in matches what is stored in the database.",
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
-    @Deprecated
-    @DeprecatedApi(friendlyUrl = "auth/change_expired_password",
-        message = "This endpoint is deprecated and will be removed.",
-        removalDate = "2023-10-31")
-    @RequestMapping(value = "/change_expired_password", method = RequestMethod.POST,
-            produces = "application/json; charset=utf-8")
-    public UpdatePasswordResponse changeExpiredPassword(@RequestBody UpdateExpiredPasswordRequest request)
-            throws UserRetrievalException, JWTCreationException, JWTValidationException,
-            MultipleUserAccountsException, AccountStatusException, ChplAccountEmailNotConfirmedException {
-        UpdatePasswordResponse response = new UpdatePasswordResponse();
-
-        // get the user trying to change their password
-        UserDTO currUser = authenticationManager.getUser(request.getLoginCredentials());
-        if (currUser == null) {
-            throw new UserRetrievalException("Cannot update password; bad username or password");
-        }
-
-        // check the strength of the new password
-        Strength strength = userManager.getPasswordStrength(currUser, request.getNewPassword());
-        if (strength.getScore() < UserManager.MIN_PASSWORD_STRENGTH
-                || request.getNewPassword().equals(request.getOldPassword())) {
-            LOGGER.info("Strength results: [warning: {}] [suggestions: {}] [score: {}] [worst case crack time: {}]",
-                    strength.getFeedback().getWarning(),
-                    strength.getFeedback().getSuggestions().toString(),
-                    strength.getScore(),
-                    strength.getCrackTimesDisplay().getOfflineFastHashing1e10PerSecond());
-            response.setStrength(strength);
-            response.setPasswordUpdated(false);
-            response.getSuggestions().add("New password cannot match old password");
-            return response;
-        }
-
-        // encode the old password passed in to compare
-        String currEncodedPassword = userManager.getEncodedPassword(currUser);
-        boolean oldPasswordMatches = bCryptPasswordEncoder.matches(request.getOldPassword(), currEncodedPassword);
-        if (!oldPasswordMatches) {
-            throw new UserRetrievalException("The provided old password does not match the database.");
-        } else {
-            String jwt = authenticationManager.getJWT(currUser);
-            User authenticatedUser = userConverter.getAuthenticatedUser(jwt);
-            SecurityContextHolder.getContext().setAuthentication(authenticatedUser);
-            userManager.updateUserPasswordUnsecured(currUser, request.getNewPassword());
-            SecurityContextHolder.getContext().setAuthentication(null);
-        }
-        response.setPasswordUpdated(true);
-        return response;
-    }
-
     @Operation(summary = "Reset password.", description = "Reset the user's password.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
@@ -290,21 +169,6 @@ public class AuthenticationController {
             })
     @RequestMapping(value = "/reset-password-request", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     public UpdatePasswordResponse resetPassword(@RequestBody ResetPasswordRequest request)
-            throws UserRetrievalException, MultipleUserAccountsException {
-        return userManager.authorizePasswordReset(request);
-    }
-
-    @Operation(summary = "Reset password.", description = "Reset the user's password.",
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
-            })
-    @Deprecated
-    @DeprecatedApi(friendlyUrl = "/auth/reset_password_request",
-        message = "This endpoint is deprecated and will be removed. Please use /auth/reset-password-request.",
-        removalDate = "2023-10-31")
-    @RequestMapping(value = "/reset_password_request", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
-    public UpdatePasswordResponse resetPasswordDeprecated(@RequestBody ResetPasswordRequest request)
             throws UserRetrievalException, MultipleUserAccountsException {
         return userManager.authorizePasswordReset(request);
     }
@@ -323,24 +187,6 @@ public class AuthenticationController {
         userAccountUpdateEmailer.sendPasswordResetEmail(userResetTokenDTO.getUserResetToken(), request.getEmail());
     }
 
-    @Operation(summary = "Reset a user's password.", description = "",
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
-    @RequestMapping(value = "/email_reset_password", method = RequestMethod.POST,
-            consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
-    @Deprecated
-    @DeprecatedApi(friendlyUrl = "/auth/email_reset_password",
-        message = "This endpoint is deprecated and will be removed. Please use /auth/email-reset-password.",
-        removalDate = "2023-10-31")
-    public String forgotPasswordDeprecated(@RequestBody UserResetPasswordRequest userInfo)
-            throws UserRetrievalException, EmailNotSentException {
-
-        UserResetTokenDTO userResetTokenDTO = userManager.createResetUserPasswordToken(userInfo.getEmail());
-        userAccountUpdateEmailer.sendPasswordResetEmail(userResetTokenDTO.getUserResetToken(), userInfo.getEmail());
-        return "{\"passwordResetEmailSent\" : true }";
-    }
-
     @Operation(summary = "Impersonate another user.", description = "",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
@@ -356,26 +202,6 @@ public class AuthenticationController {
         return AuthenticationResponse.builder()
                 .token(jwt)
                 .build();
-    }
-
-    @Operation(summary = "Impersonate another user.", description = "",
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
-            })
-    @Deprecated
-    @DeprecatedApi(friendlyUrl = "/auth/beta/impersonate",
-        message = "This endpoint is deprecated and will be removed. Please use /auth/impersonate.",
-        removalDate = "2023-10-31")
-    @RequestMapping(value = "/beta/impersonate", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public String impersonateUserById(@RequestHeader(value = "Authorization", required = true) String userJwt,
-            @RequestParam(value = "id", required = true) Long id)
-            throws UserRetrievalException, JWTCreationException, UserManagementException,
-            JWTValidationException, MultipleUserAccountsException {
-
-        String jwt = authenticationManager.impersonateUser(id);
-        String jwtJSON = "{\"token\": \"" + jwt + "\"}";
-        return jwtJSON;
     }
 
     @Operation(summary = "Stop impersonating another user.", description = "",

@@ -325,11 +325,6 @@ public class CertifiedProductSearchDetails implements Serializable {
     @XmlElement(required = false, nillable = true)
     private String mandatoryDisclosures;
 
-    @XmlTransient
-    @Deprecated
-    @DeprecatedResponseField(message = "This field is deprecated and will be removed.", removalDate = "2023-10-31")
-    private Long lastModifiedDate;
-
     /**
      * Any surveillance that has occurred on this listing
      */
@@ -673,16 +668,6 @@ public class CertifiedProductSearchDetails implements Serializable {
 
     public Boolean getCuresUpdate() {
         return curesUpdate;
-    }
-
-    @Deprecated
-    public Long getLastModifiedDate() {
-        return lastModifiedDate;
-    }
-
-    @Deprecated
-    public void setLastModifiedDate(Long lastModifiedDate) {
-        this.lastModifiedDate = lastModifiedDate;
     }
 
     public ImmutableSortedSet<String> getWarningMessages() {
