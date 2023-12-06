@@ -11,10 +11,12 @@ import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
 import lombok.ToString;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Builder
+@Data
 @ToString
 @AllArgsConstructor
 public class Measure implements Serializable {
@@ -62,69 +64,5 @@ public class Measure implements Serializable {
         }
 
         return true;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getAbbreviation() {
-        return abbreviation;
-    }
-
-    public void setAbbreviation(String abbreviation) {
-        this.abbreviation = abbreviation;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Boolean getRemoved() {
-        return removed;
-    }
-
-    public void setRemoved(Boolean removed) {
-        this.removed = removed;
-    }
-
-    public String getRequiredTest() {
-        return requiredTest;
-    }
-
-    public void setRequiredTest(String requiredTest) {
-        this.requiredTest = requiredTest;
-    }
-
-    public Boolean getRequiresCriteriaSelection() {
-        return requiresCriteriaSelection;
-    }
-
-    public void setRequiresCriteriaSelection(Boolean requiresCriteriaSelection) {
-        this.requiresCriteriaSelection = requiresCriteriaSelection;
-    }
-
-    public MeasureDomain getDomain() {
-        return domain;
-    }
-
-    public void setDomain(MeasureDomain domain) {
-        this.domain = domain;
-    }
-
-    public LinkedHashSet<CertificationCriterion> getAllowedCriteria() {
-        return allowedCriteria;
-    }
-
-    public void setAllowedCriteria(LinkedHashSet<CertificationCriterion> allowedCriteria) {
-        this.allowedCriteria = allowedCriteria;
     }
 }

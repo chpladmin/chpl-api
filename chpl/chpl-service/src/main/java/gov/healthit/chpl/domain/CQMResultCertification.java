@@ -7,9 +7,13 @@ import gov.healthit.chpl.dto.CQMResultCriteriaDTO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Builder
 @AllArgsConstructor
+@NoArgsConstructor
+@Data
 public class CQMResultCertification implements Serializable {
     private static final long serialVersionUID = 2547864525772721622L;
 
@@ -24,9 +28,6 @@ public class CQMResultCertification implements Serializable {
 
     private CertificationCriterion criterion;
 
-    public CQMResultCertification() {
-    }
-
     public CQMResultCertification(CQMResultCriteriaDTO dto) {
         this.id = dto.getId();
         this.certificationId = dto.getCriterionId();
@@ -34,37 +35,5 @@ public class CQMResultCertification implements Serializable {
         if (dto.getCriterion() != null) {
             this.certificationNumber = dto.getCriterion().getNumber();
         }
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(final Long id) {
-        this.id = id;
-    }
-
-    public Long getCertificationId() {
-        return certificationId;
-    }
-
-    public void setCertificationId(final Long criteriaId) {
-        this.certificationId = criteriaId;
-    }
-
-    public String getCertificationNumber() {
-        return certificationNumber;
-    }
-
-    public void setCertificationNumber(final String criteriaNumber) {
-        this.certificationNumber = criteriaNumber;
-    }
-
-    public CertificationCriterion getCriterion() {
-        return criterion;
-    }
-
-    public void setCriterion(CertificationCriterion criterion) {
-        this.criterion = criterion;
     }
 }

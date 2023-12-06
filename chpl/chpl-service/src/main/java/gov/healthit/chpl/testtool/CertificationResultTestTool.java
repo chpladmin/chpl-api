@@ -11,6 +11,7 @@ import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseField;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Schema(description = "The test tool used to certify the Health IT Module to the corresponding "
@@ -19,6 +20,7 @@ import lombok.NoArgsConstructor;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @AllArgsConstructor
 @NoArgsConstructor
+@Data
 @Builder
 public class CertificationResultTestTool implements Serializable {
     private static final long serialVersionUID = 2785949879671019720L;
@@ -80,77 +82,5 @@ public class CertificationResultTestTool implements Serializable {
             result = true;
         }
         return result;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(final Long id) {
-        this.id = id;
-    }
-
-    public TestTool getTestTool() {
-        return testTool;
-    }
-
-    public void setTestTool(TestTool testTool) {
-        this.testTool = testTool;
-    }
-
-    public String getVersion() {
-        return version;
-    }
-
-    public void setVersion(String version) {
-        this.version = version;
-    }
-
-    @Deprecated
-    public Long getTestToolId() {
-        return testToolId;
-    }
-
-    @Deprecated
-    public void setTestToolId(final Long testToolId) {
-        this.testToolId = testToolId;
-    }
-
-    @Deprecated
-    public String getTestToolName() {
-        return testToolName;
-    }
-
-    @Deprecated
-    public void setTestToolName(final String testToolName) {
-        this.testToolName = testToolName;
-    }
-
-    @Deprecated
-    public String getTestToolVersion() {
-        return testToolVersion;
-    }
-
-    @Deprecated
-    public void setTestToolVersion(final String testToolVersion) {
-        this.testToolVersion = testToolVersion;
-    }
-
-    @Deprecated
-    public boolean isRetired() {
-        return testTool.isRetired();
-    }
-
-    @Deprecated
-    public void setRetired(final boolean retired) {
-        this.retired = retired;
-    }
-
-    public Long getCertificationResultId() {
-        return certificationResultId;
-    }
-
-    public void setCertificationResultId(Long certificationResultId) {
-        this.certificationResultId = certificationResultId;
     }
 }

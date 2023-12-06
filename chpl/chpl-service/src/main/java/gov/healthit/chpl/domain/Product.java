@@ -19,9 +19,11 @@ import gov.healthit.chpl.util.DateUtil;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Builder
+@Data
 @AllArgsConstructor
 public class Product implements Serializable {
     private static final long serialVersionUID = 2177195816284265811L;
@@ -104,14 +106,6 @@ public class Product implements Serializable {
         return result;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
     @Deprecated
     @JsonProperty(access = Access.WRITE_ONLY)
     public Long getDeveloperId() {
@@ -119,67 +113,9 @@ public class Product implements Serializable {
     }
 
     @Deprecated
-    public void setDeveloperId(Long developerId) {
-        this.developerId = developerId;
-    }
-
-    @Deprecated
     @JsonProperty(access = Access.WRITE_ONLY)
     public String getDeveloperName() {
         return developerName;
-    }
-
-    @Deprecated
-    public void setDeveloperName(String developerName) {
-        this.developerName = developerName;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(final String name) {
-        this.name = name;
-    }
-
-    public String getReportFileLocation() {
-        return reportFileLocation;
-    }
-
-    public void setReportFileLocation(String reportFileLocation) {
-        this.reportFileLocation = reportFileLocation;
-    }
-
-    public String getLastModifiedDate() {
-        return lastModifiedDate;
-    }
-
-    public void setLastModifiedDate(String lastModifiedDate) {
-        this.lastModifiedDate = lastModifiedDate;
-    }
-
-    public Developer getOwner() {
-        return owner;
-    }
-
-    public void setOwner(Developer owner) {
-        this.owner = owner;
-    }
-
-    public List<ProductOwner> getOwnerHistory() {
-        return ownerHistory;
-    }
-
-    public void setOwnerHistory(List<ProductOwner> ownerHistory) {
-        this.ownerHistory = ownerHistory;
-    }
-
-    public PointOfContact getContact() {
-        return contact;
-    }
-
-    public void setContact(PointOfContact contact) {
-        this.contact = contact;
     }
 
     // Not all attributes have been included. The attributes being used were selected so the ProductManager could

@@ -3,8 +3,8 @@ package gov.healthit.chpl.questionableactivity.listing;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
@@ -30,7 +30,7 @@ public class AddedCqmsActivity implements ListingActivity {
                             && !newCqm.getNqfNumber().equals("N/A") && !origCqm.getNqfNumber().equals("N/A")
                             && newCqm.getNqfNumber().equals(origCqm.getNqfNumber())) {
                         // NQF is the same if the NQF numbers are equal
-                        if (!origCqm.isSuccess() && newCqm.isSuccess()) {
+                        if (!origCqm.getSuccess() && newCqm.getSuccess()) {
                             // orig did not have this cqm but new does so it was added
                             QuestionableActivityListing activity = new QuestionableActivityListing();
                             activity.setBefore(null);
@@ -41,7 +41,7 @@ public class AddedCqmsActivity implements ListingActivity {
                     } else if (newCqm.getCmsId() != null && origCqm.getCmsId() != null
                             && newCqm.getCmsId().equals(origCqm.getCmsId())) {
                         // CMS is the same if the CMS ID and version is equal
-                        if (!origCqm.isSuccess() && newCqm.isSuccess()) {
+                        if (!origCqm.getSuccess() && newCqm.getSuccess()) {
                             // orig did not have this cqm but new does so it was added
                             QuestionableActivityListing activity = new QuestionableActivityListing();
                             activity.setBefore(null);

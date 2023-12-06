@@ -13,9 +13,13 @@ import gov.healthit.chpl.util.LocalDateTimeSerializer;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Builder
+@Data
+@NoArgsConstructor
 @AllArgsConstructor
 public class CertifiedProductChplProductNumberHistory implements Serializable {
     private static final long serialVersionUID = -2085183878716253974L;
@@ -30,10 +34,6 @@ public class CertifiedProductChplProductNumberHistory implements Serializable {
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     private LocalDateTime endDateTime;
-
-    public CertifiedProductChplProductNumberHistory() {
-        super();
-    }
 
     @Override
     public boolean equals(Object obj) {
@@ -53,29 +53,4 @@ public class CertifiedProductChplProductNumberHistory implements Serializable {
     public int hashCode() {
         return this.getChplProductNumber().hashCode() + this.endDateTime.hashCode();
     }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getChplProductNumber() {
-        return chplProductNumber;
-    }
-
-    public void setChplProductNumber(String chplProductNumber) {
-        this.chplProductNumber = chplProductNumber;
-    }
-
-    public LocalDateTime getEndDateTime() {
-        return endDateTime;
-    }
-
-    public void setEndDateTime(LocalDateTime endDateTime) {
-        this.endDateTime = endDateTime;
-    }
-
 }

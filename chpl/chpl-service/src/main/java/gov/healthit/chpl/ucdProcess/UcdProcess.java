@@ -9,11 +9,13 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Schema(description = "The user-centered design (UCD) process applied for the corresponding certification criteria")
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Builder
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class UcdProcess implements Serializable {
@@ -59,21 +61,5 @@ public class UcdProcess implements Serializable {
         result = prime * result + ((id == null) ? 0 : id.hashCode());
         result = prime * result + ((name == null) ? 0 : name.hashCode());
         return result;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String ucdProcessName) {
-        this.name = ucdProcessName;
     }
 }

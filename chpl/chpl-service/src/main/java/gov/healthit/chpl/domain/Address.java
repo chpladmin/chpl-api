@@ -1,7 +1,6 @@
 package gov.healthit.chpl.domain;
 
 import java.io.Serializable;
-import java.util.HashMap;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -11,12 +10,16 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Builder
 @Log4j2
 @AllArgsConstructor
+@NoArgsConstructor
+@Data
 public class Address implements Serializable {
     private static final long serialVersionUID = 7978604053959537664L;
     @JsonIgnore
@@ -53,37 +56,6 @@ public class Address implements Serializable {
 
     @Schema(description = "Country of the address")
     private String country;
-
-    public Address() {
-    }
-
-    public Address(HashMap<String, Object> map) {
-        if (map.containsKey("addressId") && map.get("addressId") != null) {
-            try {
-                this.addressId = Long.parseLong(map.get("addressId").toString());
-            } catch (NumberFormatException ex) {
-                LOGGER.warn("addressId in map = '" + map.get("addressId") + "' is not parseable into a Long");
-            }
-        }
-        if (map.containsKey("line1") && map.get("line1") != null) {
-            this.line1 = map.get("line1").toString();
-        }
-        if (map.containsKey("line2") && map.get("line2") != null) {
-            this.line2 = map.get("line2").toString();
-        }
-        if (map.containsKey("city") && map.get("city") != null) {
-            this.city = map.get("city").toString();
-        }
-        if (map.containsKey("state") && map.get("state") != null) {
-            this.state = map.get("state").toString();
-        }
-        if (map.containsKey("zipcode") && map.get("zipcode") != null) {
-            this.zipcode = map.get("zipcode").toString();
-        }
-        if (map.containsKey("country") && map.get("country") != null) {
-            this.country = map.get("country").toString();
-        }
-    }
 
     public void normalizeSpaces() {
         this.line1 = StringUtils.normalizeSpace(this.getLine1());
@@ -137,61 +109,4 @@ public class Address implements Serializable {
         }
         return hashCode;
     }
-
-    public Long getAddressId() {
-        return addressId;
-    }
-
-    public void setAddressId(final Long addressId) {
-        this.addressId = addressId;
-    }
-
-    public String getLine1() {
-        return line1;
-    }
-
-    public void setLine1(final String line1) {
-        this.line1 = line1;
-    }
-
-    public String getLine2() {
-        return line2;
-    }
-
-    public void setLine2(final String line2) {
-        this.line2 = line2;
-    }
-
-    public String getCity() {
-        return city;
-    }
-
-    public void setCity(final String city) {
-        this.city = city;
-    }
-
-    public String getState() {
-        return state;
-    }
-
-    public void setState(final String state) {
-        this.state = state;
-    }
-
-    public String getCountry() {
-        return country;
-    }
-
-    public void setCountry(final String country) {
-        this.country = country;
-    }
-
-    public String getZipcode() {
-        return zipcode;
-    }
-
-    public void setZipcode(final String zipcode) {
-        this.zipcode = zipcode;
-    }
-
 }

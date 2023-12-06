@@ -81,12 +81,12 @@ public class CertificationResultDAO extends BaseDAOImpl {
         try {
             entity.setCertificationCriterionId(certificationResult.getCriterion().getId());
             entity.setCertifiedProductId(listingId);
-            boolean isCertified = BooleanUtils.isTrue(certificationResult.isSuccess());
-            entity.setSuccess(certificationResult.isSuccess());
-            entity.setGap(isCertified ? certificationResult.isGap() : null);
-            entity.setSed(isCertified ? certificationResult.isSed() : null);
-            entity.setG1Success(certificationResult.isG1Success());
-            entity.setG2Success(certificationResult.isG2Success());
+            boolean isCertified = BooleanUtils.isTrue(certificationResult.getSuccess());
+            entity.setSuccess(certificationResult.getSuccess());
+            entity.setGap(isCertified ? certificationResult.getGap() : null);
+            entity.setSed(isCertified ? certificationResult.getSed() : null);
+            entity.setG1Success(certificationResult.getG1Success());
+            entity.setG2Success(certificationResult.getG2Success());
             entity.setAttestationAnswer(isCertified ? certificationResult.getAttestationAnswer() : null);
             entity.setApiDocumentation(isCertified ? certificationResult.getApiDocumentation() : null);
             entity.setExportDocumentation(isCertified ? certificationResult.getExportDocumentation() : null);

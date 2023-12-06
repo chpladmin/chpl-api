@@ -11,17 +11,17 @@ import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseField;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 @Schema(description = "Any optional, alternative, ambulatory (2015 only), or inpatient (2015 only) capabilities within a certification "
      + "criterion to which the Health IT module was tested and certified. For example, within the 2015 certification criteria "
      + "170.315(a), the optional functionality to include a \"reason for order\" field should be denoted as \"(a)(1)(ii)\". You "
      + "can find a list of potential values in the 2014 or 2015 Functionality and Standards Reference Tables.")
 @JsonIgnoreProperties(ignoreUnknown = true)
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
 @Builder
 public class CertificationResultFunctionalityTested implements Serializable {
     private static final long serialVersionUID = -1647645050538126758L;
@@ -62,59 +62,4 @@ public class CertificationResultFunctionalityTested implements Serializable {
         }
         return result;
     }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(final Long id) {
-        this.id = id;
-    }
-
-    @Deprecated
-    public Long getFunctionalityTestedId() {
-        return functionalityTestedId;
-    }
-
-    @Deprecated
-    public void setFunctionalityTestedId(Long functionalityTestedId) {
-        this.functionalityTestedId = functionalityTestedId;
-    }
-
-    @Deprecated
-    public String getDescription() {
-        return description;
-    }
-
-    @Deprecated
-    public void setDescription(final String description) {
-        this.description = description;
-    }
-
-    @Deprecated
-    public String getName() {
-        return name;
-    }
-
-    @Deprecated
-    public void setName(final String name) {
-        this.name = name;
-    }
-
-    public Long getCertificationResultId() {
-        return this.certificationResultId;
-    }
-
-    public void setCertificationResultId(Long certificationResultId) {
-        this.certificationResultId = certificationResultId;
-    }
-
-    public FunctionalityTested getFunctionalityTested() {
-        return functionalityTested;
-    }
-
-    public void setFunctionalityTested(FunctionalityTested functionalityTested) {
-        this.functionalityTested = functionalityTested;
-    }
-
 }

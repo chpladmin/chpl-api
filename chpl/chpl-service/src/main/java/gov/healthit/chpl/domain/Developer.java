@@ -15,9 +15,11 @@ import gov.healthit.chpl.domain.contact.PointOfContact;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @AllArgsConstructor
+@Data
 @Builder
 public class Developer implements Serializable {
     private static final long serialVersionUID = 7341544844577617247L;
@@ -76,78 +78,6 @@ public class Developer implements Serializable {
         this.statusEvents = new ArrayList<DeveloperStatusEvent>();
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getWebsite() {
-        return website;
-    }
-
-    public void setWebsite(String website) {
-        this.website = website;
-    }
-
-    public Boolean getSelfDeveloper() {
-        return selfDeveloper;
-    }
-
-    public void setSelfDeveloper(Boolean selfDeveloper) {
-        this.selfDeveloper = selfDeveloper;
-    }
-
-    public Address getAddress() {
-        return address;
-    }
-
-    public void setAddress(Address address) {
-        this.address = address;
-    }
-
-    public String getLastModifiedDate() {
-        return lastModifiedDate;
-    }
-
-    public void setLastModifiedDate(String lastModifiedDate) {
-        this.lastModifiedDate = lastModifiedDate;
-    }
-
-    public String getDeveloperCode() {
-        return developerCode;
-    }
-
-    public void setDeveloperCode(String developerCode) {
-        this.developerCode = developerCode;
-    }
-
-    public PointOfContact getContact() {
-        return contact;
-    }
-
-    public void setContact(PointOfContact contact) {
-        this.contact = contact;
-    }
-
-    public Boolean getDeleted() {
-        return deleted;
-    }
-
-    public void setDeleted(Boolean deleted) {
-        this.deleted = deleted;
-    }
-
     @Schema(description = "The status of a developer with certified Health IT. Allowable values are \"Active\", \"Suspended by ONC\", or \"Under "
             + "Certification Ban by ONC\"")
     public DeveloperStatus getStatus() {
@@ -171,62 +101,6 @@ public class Developer implements Serializable {
             }
         }
         return newest;
-    }
-
-    public List<DeveloperStatusEvent> getStatusEvents() {
-        return statusEvents;
-    }
-
-    public void setStatusEvents(List<DeveloperStatusEvent> statusEvents) {
-        this.statusEvents = statusEvents;
-    }
-
-    public List<PublicAttestation> getAttestations() {
-        return attestations;
-    }
-
-    public void setAttestations(List<PublicAttestation> attestations) {
-        this.attestations = attestations;
-    }
-
-    public String getUserEnteredName() {
-        return userEnteredName;
-    }
-
-    public void setUserEnteredName(String userEnteredName) {
-        this.userEnteredName = userEnteredName;
-    }
-
-    public String getUserEnteredWebsite() {
-        return userEnteredWebsite;
-    }
-
-    public void setUserEnteredWebsite(String userEnteredWebsite) {
-        this.userEnteredWebsite = userEnteredWebsite;
-    }
-
-    public Address getUserEnteredAddress() {
-        return userEnteredAddress;
-    }
-
-    public void setUserEnteredAddress(Address userEnteredAddress) {
-        this.userEnteredAddress = userEnteredAddress;
-    }
-
-    public PointOfContact getUserEnteredPointOfContact() {
-        return userEnteredPointOfContact;
-    }
-
-    public void setUserEnteredPointOfContact(PointOfContact userEnteredPointOfContact) {
-        this.userEnteredPointOfContact = userEnteredPointOfContact;
-    }
-
-    public String getUserEnteredSelfDeveloper() {
-        return userEnteredSelfDeveloper;
-    }
-
-    public void setUserEnteredSelfDeveloper(String userEnteredSelfDeveloper) {
-        this.userEnteredSelfDeveloper = userEnteredSelfDeveloper;
     }
 
     // Not all attributes have been included. The attributes being used were selected so the DeveloperManager could

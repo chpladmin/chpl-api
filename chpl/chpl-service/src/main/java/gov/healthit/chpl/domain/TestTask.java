@@ -10,8 +10,6 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -23,16 +21,16 @@ import gov.healthit.chpl.dto.TestTaskDTO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.ToString;
+import lombok.Data;
+import lombok.extern.log4j.Log4j2;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Builder(toBuilder = true)
 @AllArgsConstructor
-@ToString
+@Data
+@Log4j2
 public class TestTask implements Serializable {
     private static final long serialVersionUID = -3761135258451736516L;
-
-    private static final Logger LOGGER = LogManager.getLogger(TestTask.class);
 
     @Schema(description = "Test task internal ID")
     private Long id;
@@ -304,26 +302,6 @@ public class TestTask implements Serializable {
                 .collect(Collectors.toList());
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public Float getTaskSuccessAverage() {
-        return taskSuccessAverage;
-    }
-
     public void setTaskSuccessAverage(String value) {
         if (!StringUtils.isEmpty(value)) {
             try {
@@ -332,10 +310,6 @@ public class TestTask implements Serializable {
                 LOGGER.debug("can't parse " + value + " as a float.");
             }
         }
-    }
-
-    public Float getTaskSuccessStddev() {
-        return taskSuccessStddev;
     }
 
     public void setTaskSuccessStddev(String value) {
@@ -348,10 +322,6 @@ public class TestTask implements Serializable {
         }
     }
 
-    public Integer getTaskPathDeviationObserved() {
-        return taskPathDeviationObserved;
-    }
-
     public void setTaskPathDeviationObserved(String value) {
         if (!StringUtils.isEmpty(value)) {
             try {
@@ -360,10 +330,6 @@ public class TestTask implements Serializable {
                 LOGGER.debug("can't parse " + value + " as a float.");
             }
         }
-    }
-
-    public Integer getTaskPathDeviationOptimal() {
-        return taskPathDeviationOptimal;
     }
 
     public void setTaskPathDeviationOptimal(String value) {
@@ -376,10 +342,6 @@ public class TestTask implements Serializable {
         }
     }
 
-    public Long getTaskTimeAvg() {
-        return taskTimeAvg;
-    }
-
     public void setTaskTimeAvg(String value) {
         if (!StringUtils.isEmpty(value)) {
             try {
@@ -388,10 +350,6 @@ public class TestTask implements Serializable {
                 LOGGER.debug("can't parse " + value + " as a float.");
             }
         }
-    }
-
-    public Integer getTaskTimeStddev() {
-        return taskTimeStddev;
     }
 
     public void setTaskTimeStddev(String value) {
@@ -404,10 +362,6 @@ public class TestTask implements Serializable {
         }
     }
 
-    public Integer getTaskTimeDeviationObservedAvg() {
-        return taskTimeDeviationObservedAvg;
-    }
-
     public void setTaskTimeDeviationObservedAvg(String value) {
         if (!StringUtils.isEmpty(value)) {
             try {
@@ -416,10 +370,6 @@ public class TestTask implements Serializable {
                 LOGGER.debug("can't parse " + value + " as a float.");
             }
         }
-    }
-
-    public Integer getTaskTimeDeviationOptimalAvg() {
-        return taskTimeDeviationOptimalAvg;
     }
 
     public void setTaskTimeDeviationOptimalAvg(String value) {
@@ -432,10 +382,6 @@ public class TestTask implements Serializable {
         }
     }
 
-    public Float getTaskErrors() {
-        return taskErrors;
-    }
-
     public void setTaskErrors(String value) {
         if (!StringUtils.isEmpty(value)) {
             try {
@@ -444,10 +390,6 @@ public class TestTask implements Serializable {
                 LOGGER.debug("can't parse " + value + " as a float.");
             }
         }
-    }
-
-    public Float getTaskErrorsStddev() {
-        return taskErrorsStddev;
     }
 
     public void setTaskErrorsStddev(String value) {
@@ -460,18 +402,6 @@ public class TestTask implements Serializable {
         }
     }
 
-    public String getTaskRatingScale() {
-        return taskRatingScale;
-    }
-
-    public void setTaskRatingScale(String taskRatingScale) {
-        this.taskRatingScale = taskRatingScale;
-    }
-
-    public Float getTaskRating() {
-        return taskRating;
-    }
-
     public void setTaskRating(String value) {
         if (!StringUtils.isEmpty(value)) {
             try {
@@ -482,26 +412,6 @@ public class TestTask implements Serializable {
         }
     }
 
-    public LinkedHashSet<TestParticipant> getTestParticipants() {
-        return testParticipants;
-    }
-
-    public void setTestParticipants(LinkedHashSet<TestParticipant> testParticipants) {
-        this.testParticipants = testParticipants;
-    }
-
-    public String getUniqueId() {
-        return uniqueId;
-    }
-
-    public void setUniqueId(String uniqueId) {
-        this.uniqueId = uniqueId;
-    }
-
-    public Float getTaskRatingStddev() {
-        return taskRatingStddev;
-    }
-
     public void setTaskRatingStddev(String value) {
         if (!StringUtils.isEmpty(value)) {
             try {
@@ -510,109 +420,5 @@ public class TestTask implements Serializable {
                 LOGGER.debug("can't parse " + value + " as a float or integer.");
             }
         }
-    }
-
-    public LinkedHashSet<CertificationCriterion> getCriteria() {
-        return criteria;
-    }
-
-    public void setCriteria(LinkedHashSet<CertificationCriterion> criteria) {
-        this.criteria = criteria;
-    }
-
-    public String getTaskSuccessAverageStr() {
-        return taskSuccessAverageStr;
-    }
-
-    public void setTaskSuccessAverageStr(String taskSuccessAverageStr) {
-        this.taskSuccessAverageStr = taskSuccessAverageStr;
-    }
-
-    public String getTaskSuccessStddevStr() {
-        return taskSuccessStddevStr;
-    }
-
-    public void setTaskSuccessStddevStr(String taskSuccessStddevStr) {
-        this.taskSuccessStddevStr = taskSuccessStddevStr;
-    }
-
-    public String getTaskPathDeviationObservedStr() {
-        return taskPathDeviationObservedStr;
-    }
-
-    public void setTaskPathDeviationObservedStr(String taskPathDeviationObservedStr) {
-        this.taskPathDeviationObservedStr = taskPathDeviationObservedStr;
-    }
-
-    public String getTaskPathDeviationOptimalStr() {
-        return taskPathDeviationOptimalStr;
-    }
-
-    public void setTaskPathDeviationOptimalStr(String taskPathDeviationOptimalStr) {
-        this.taskPathDeviationOptimalStr = taskPathDeviationOptimalStr;
-    }
-
-    public String getTaskTimeAvgStr() {
-        return taskTimeAvgStr;
-    }
-
-    public void setTaskTimeAvgStr(String taskTimeAvgStr) {
-        this.taskTimeAvgStr = taskTimeAvgStr;
-    }
-
-    public String getTaskTimeStddevStr() {
-        return taskTimeStddevStr;
-    }
-
-    public void setTaskTimeStddevStr(String taskTimeStddevStr) {
-        this.taskTimeStddevStr = taskTimeStddevStr;
-    }
-
-    public String getTaskTimeDeviationObservedAvgStr() {
-        return taskTimeDeviationObservedAvgStr;
-    }
-
-    public void setTaskTimeDeviationObservedAvgStr(String taskTimeDeviationObservedAvgStr) {
-        this.taskTimeDeviationObservedAvgStr = taskTimeDeviationObservedAvgStr;
-    }
-
-    public String getTaskTimeDeviationOptimalAvgStr() {
-        return taskTimeDeviationOptimalAvgStr;
-    }
-
-    public void setTaskTimeDeviationOptimalAvgStr(String taskTimeDeviationOptimalAvgStr) {
-        this.taskTimeDeviationOptimalAvgStr = taskTimeDeviationOptimalAvgStr;
-    }
-
-    public String getTaskErrorsStr() {
-        return taskErrorsStr;
-    }
-
-    public void setTaskErrorsStr(String taskErrorsStr) {
-        this.taskErrorsStr = taskErrorsStr;
-    }
-
-    public String getTaskErrorsStddevStr() {
-        return taskErrorsStddevStr;
-    }
-
-    public void setTaskErrorsStddevStr(String taskErrorsStddevStr) {
-        this.taskErrorsStddevStr = taskErrorsStddevStr;
-    }
-
-    public String getTaskRatingStr() {
-        return taskRatingStr;
-    }
-
-    public void setTaskRatingStr(String taskRatingStr) {
-        this.taskRatingStr = taskRatingStr;
-    }
-
-    public String getTaskRatingStddevStr() {
-        return taskRatingStddevStr;
-    }
-
-    public void setTaskRatingStddevStr(String taskRatingStddevStr) {
-        this.taskRatingStddevStr = taskRatingStddevStr;
     }
 }

@@ -17,14 +17,15 @@ import gov.healthit.chpl.activity.ActivityExclude;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.util.LocalDateDeserializer;
 import gov.healthit.chpl.util.LocalDateSerializer;
-import gov.healthit.chpl.util.Util;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Builder
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class Surveillance implements Serializable {
@@ -186,101 +187,5 @@ public class Surveillance implements Serializable {
             return false;
         }
         return true;
-    }
-
-    public Set<String> getErrorMessages() {
-        return errorMessages;
-    }
-
-    public void setErrorMessages(Set<String> errors) {
-        this.errorMessages = errors;
-    }
-
-    public Set<String> getWarningMessages() {
-        return warningMessages;
-    }
-
-    public void setWarningMessages(Set<String> warnings) {
-        this.warningMessages = warnings;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public CertifiedProduct getCertifiedProduct() {
-        return certifiedProduct;
-    }
-
-    public void setCertifiedProduct(CertifiedProduct certifiedProduct) {
-        this.certifiedProduct = certifiedProduct;
-    }
-
-    public LocalDate getStartDay() {
-        return this.startDay;
-    }
-
-    public void setStartDay(LocalDate startDay) {
-        this.startDay = startDay;
-    }
-
-    public LocalDate getEndDay() {
-        return this.endDay;
-    }
-
-    public void setEndDay(LocalDate endDay) {
-        this.endDay = endDay;
-    }
-
-    public SurveillanceType getType() {
-        return type;
-    }
-
-    public void setType(SurveillanceType type) {
-        this.type = type;
-    }
-
-    public Integer getRandomizedSitesUsed() {
-        return randomizedSitesUsed;
-    }
-
-    public void setRandomizedSitesUsed(Integer randomizedSitesUsed) {
-        this.randomizedSitesUsed = randomizedSitesUsed;
-    }
-
-    public LinkedHashSet<SurveillanceRequirement> getRequirements() {
-        return requirements;
-    }
-
-    public void setRequirements(LinkedHashSet<SurveillanceRequirement> requirements) {
-        this.requirements = requirements;
-    }
-
-    public String getSurveillanceIdToReplace() {
-        return surveillanceIdToReplace;
-    }
-
-    public void setSurveillanceIdToReplace(String surveillanceIdToReplace) {
-        this.surveillanceIdToReplace = surveillanceIdToReplace;
-    }
-
-    public String getFriendlyId() {
-        return friendlyId;
-    }
-
-    public void setFriendlyId(String friendlyId) {
-        this.friendlyId = friendlyId;
-    }
-
-    public Date getLastModifiedDate() {
-        return Util.getNewDate(lastModifiedDate);
-    }
-
-    public void setLastModifiedDate(Date lastModifiedDate) {
-        this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
     }
 }

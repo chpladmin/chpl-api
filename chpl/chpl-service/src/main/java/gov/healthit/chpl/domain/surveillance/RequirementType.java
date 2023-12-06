@@ -20,9 +20,11 @@ import gov.healthit.chpl.util.Util;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Builder
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class RequirementType {
@@ -93,65 +95,5 @@ public class RequirementType {
     @JsonProperty(access = Access.READ_ONLY)
     public Boolean isRemoved() {
         return getStatus().equals(CriterionStatus.REMOVED);
-    }
-
-    public LocalDate getEndDay() {
-        return endDay;
-    }
-
-    public void setEndDay(LocalDate endDay) {
-        this.endDay = endDay;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getNumber() {
-        return number;
-    }
-
-    public void setNumber(String number) {
-        this.number = number;
-    }
-
-    public LocalDate getStartDay() {
-        return startDay;
-    }
-
-    public void setStartDay(LocalDate startDay) {
-        this.startDay = startDay;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public CertificationEdition getCertificationEdition() {
-        return certificationEdition;
-    }
-
-    public void setCertificationEdition(CertificationEdition certificationEdition) {
-        this.certificationEdition = certificationEdition;
-    }
-
-    public RequirementGroupType getRequirementGroupType() {
-        return requirementGroupType;
-    }
-
-    public void setRequirementGroupType(RequirementGroupType requirementGroupType) {
-        this.requirementGroupType = requirementGroupType;
-    }
-
-    public void setEdition(String edition) {
-        this.edition = edition;
     }
 }

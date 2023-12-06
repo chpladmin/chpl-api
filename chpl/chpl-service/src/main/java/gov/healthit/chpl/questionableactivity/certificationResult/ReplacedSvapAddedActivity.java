@@ -22,7 +22,7 @@ public class ReplacedSvapAddedActivity implements CertificationResultActivity {
                 origCertResult.getSvaps() == null ? new ArrayList<CertificationResultSvap>() : origCertResult.getSvaps());
 
         return addedSvaps.stream()
-                .filter(crs -> crs.getReplaced())
+                .filter(crs -> crs.isReplaced())
                 .map(crs -> {
                     QuestionableActivityCertificationResult questAct = new QuestionableActivityCertificationResult();
                     questAct.setAfter(crs.getRegulatoryTextCitation() + ": " + crs.getApprovedStandardVersion());

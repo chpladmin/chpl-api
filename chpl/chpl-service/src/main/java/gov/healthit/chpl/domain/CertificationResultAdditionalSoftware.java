@@ -10,9 +10,13 @@ import gov.healthit.chpl.dto.CertificationResultAdditionalSoftwareDTO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
+@Data
 @Builder
+@NoArgsConstructor
 @AllArgsConstructor
 public class CertificationResultAdditionalSoftware implements Serializable {
     private static final long serialVersionUID = -4131156681875211987L;
@@ -69,10 +73,6 @@ public class CertificationResultAdditionalSoftware implements Serializable {
             + "specific certification criteria.")
     private String grouping;
 
-    public CertificationResultAdditionalSoftware() {
-        super();
-    }
-
     public CertificationResultAdditionalSoftware(CertificationResultAdditionalSoftwareDTO dto) {
         this.id = dto.getId();
         this.name = dto.getName();
@@ -110,69 +110,4 @@ public class CertificationResultAdditionalSoftware implements Serializable {
         }
         return result;
     }
-
-    public String getJustification() {
-        return justification;
-    }
-
-    public void setJustification(final String justification) {
-        this.justification = justification;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(final Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(final String name) {
-        this.name = name;
-    }
-
-    public String getVersion() {
-        return version;
-    }
-
-    public void setVersion(final String version) {
-        this.version = version;
-    }
-
-    public Long getCertifiedProductId() {
-        return certifiedProductId;
-    }
-
-    public void setCertifiedProductId(final Long certifiedProductId) {
-        this.certifiedProductId = certifiedProductId;
-    }
-
-    public Long getCertificationResultId() {
-        return certificationResultId;
-    }
-
-    public void setCertificationResultId(final Long certificationResultId) {
-        this.certificationResultId = certificationResultId;
-    }
-
-    public String getCertifiedProductNumber() {
-        return certifiedProductNumber;
-    }
-
-    public void setCertifiedProductNumber(final String certifiedProductNumber) {
-        this.certifiedProductNumber = certifiedProductNumber;
-    }
-
-    public String getGrouping() {
-        return grouping;
-    }
-
-    public void setGrouping(final String grouping) {
-        this.grouping = grouping;
-    }
-
 }

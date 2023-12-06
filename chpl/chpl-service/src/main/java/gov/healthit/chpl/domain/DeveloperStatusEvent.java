@@ -5,13 +5,16 @@ import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import gov.healthit.chpl.util.Util;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Builder
+@Data
+@NoArgsConstructor
 @AllArgsConstructor
 public class DeveloperStatusEvent implements Serializable {
     private static final long serialVersionUID = -7303257499336378800L;
@@ -31,9 +34,6 @@ public class DeveloperStatusEvent implements Serializable {
     @Schema(description = "The reason for this status change. "
             + "It is required of the status changed to 'Under Certification Ban by ONC'")
     private String reason;
-
-    public DeveloperStatusEvent() {
-    }
 
     public boolean matches(DeveloperStatusEvent anotherStatusEvent) {
         boolean result = false;
@@ -108,45 +108,5 @@ public class DeveloperStatusEvent implements Serializable {
         result = prime * result + ((status == null) ? 0 : status.hashCode());
         result = prime * result + ((statusDate == null) ? 0 : statusDate.hashCode());
         return result;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(final Long id) {
-        this.id = id;
-    }
-
-    public Long getDeveloperId() {
-        return developerId;
-    }
-
-    public void setDeveloperId(final Long developerId) {
-        this.developerId = developerId;
-    }
-
-    public DeveloperStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(final DeveloperStatus status) {
-        this.status = status;
-    }
-
-    public Date getStatusDate() {
-        return Util.getNewDate(statusDate);
-    }
-
-    public void setStatusDate(final Date statusDate) {
-        this.statusDate = Util.getNewDate(statusDate);
-    }
-
-    public String getReason() {
-        return reason;
-    }
-
-    public void setReason(String reason) {
-        this.reason = reason;
     }
 }

@@ -12,9 +12,11 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Builder
+@Data
 @AllArgsConstructor
 public class CertifiedProductSed implements Serializable {
     private static final long serialVersionUID = -4131156681875211447L;
@@ -40,37 +42,5 @@ public class CertifiedProductSed implements Serializable {
         super();
         this.ucdProcesses = new ArrayList<CertifiedProductUcdProcess>();
         this.testTasks = new ArrayList<TestTask>();
-    }
-
-    public List<CertifiedProductUcdProcess> getUcdProcesses() {
-        return ucdProcesses;
-    }
-
-    public void setUcdProcesses(List<CertifiedProductUcdProcess> ucdProcesses) {
-        this.ucdProcesses = ucdProcesses;
-    }
-
-    public List<TestTask> getTestTasks() {
-        return testTasks;
-    }
-
-    public void setTestTasks(List<TestTask> testTasks) {
-        this.testTasks = testTasks;
-    }
-
-    public Set<String> getUnusedTestTaskUniqueIds() {
-        return unusedTestTaskUniqueIds;
-    }
-
-    public void setUnusedTestTaskUniqueIds(Set<String> unusedTestTaskUniqueIds) {
-        this.unusedTestTaskUniqueIds = unusedTestTaskUniqueIds;
-    }
-
-    public Set<String> getUnusedTestParticipantUniqueIds() {
-        return unusedTestParticipantUniqueIds;
-    }
-
-    public void setUnusedTestParticipantUniqueIds(Set<String> unusedTestParticipantUniqueIds) {
-        this.unusedTestParticipantUniqueIds = unusedTestParticipantUniqueIds;
     }
 }

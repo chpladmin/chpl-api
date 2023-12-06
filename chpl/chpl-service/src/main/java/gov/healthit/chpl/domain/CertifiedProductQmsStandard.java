@@ -11,9 +11,13 @@ import gov.healthit.chpl.dto.CertifiedProductQmsStandardDTO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Builder
+@Data
+@NoArgsConstructor
 @AllArgsConstructor
 public class CertifiedProductQmsStandard implements Serializable {
     private static final long serialVersionUID = -2085183878828053974L;
@@ -41,10 +45,6 @@ public class CertifiedProductQmsStandard implements Serializable {
             + "or values.")
     private String applicableCriteria;
 
-    public CertifiedProductQmsStandard() {
-        super();
-    }
-
     public CertifiedProductQmsStandard(CertifiedProductQmsStandardDTO dto) {
         this.id = dto.getId();
         this.qmsStandardId = dto.getQmsStandardId();
@@ -63,53 +63,5 @@ public class CertifiedProductQmsStandard implements Serializable {
             result = true;
         }
         return result;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Long getQmsStandardId() {
-        return qmsStandardId;
-    }
-
-    public void setQmsStandardId(Long qmsStandardId) {
-        this.qmsStandardId = qmsStandardId;
-    }
-
-    public String getQmsStandardName() {
-        return qmsStandardName;
-    }
-
-    public void setQmsStandardName(String qmsStandardName) {
-        this.qmsStandardName = qmsStandardName;
-    }
-
-    public String getUserEnteredQmsStandardName() {
-        return userEnteredQmsStandardName;
-    }
-
-    public void setUserEnteredQmsStandardName(String userEnteredQmsStandardName) {
-        this.userEnteredQmsStandardName = userEnteredQmsStandardName;
-    }
-
-    public String getQmsModification() {
-        return qmsModification;
-    }
-
-    public void setQmsModification(String qmsModification) {
-        this.qmsModification = qmsModification;
-    }
-
-    public String getApplicableCriteria() {
-        return applicableCriteria;
-    }
-
-    public void setApplicableCriteria(String applicableCriteria) {
-        this.applicableCriteria = applicableCriteria;
     }
 }

@@ -13,10 +13,12 @@ import gov.healthit.chpl.dto.TestParticipantDTO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.ToString;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Builder(toBuilder = true)
-@ToString
+@Data
+@NoArgsConstructor
 @AllArgsConstructor
 public class TestParticipant implements Serializable {
     private static final long serialVersionUID = -3771155258451736516L;
@@ -88,9 +90,6 @@ public class TestParticipant implements Serializable {
             + "restrictions on formatting or values and is only applicable for 2015 "
             + "Edition.")
     private String assistiveTechnologyNeeds;
-
-    public TestParticipant() {
-    }
 
     public TestParticipant(TestParticipantDTO dto) {
         this();
@@ -183,42 +182,6 @@ public class TestParticipant implements Serializable {
         return result;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(final Long id) {
-        this.id = id;
-    }
-
-    public String getGender() {
-        return gender;
-    }
-
-    public void setGender(final String gender) {
-        this.gender = gender;
-    }
-
-    public Long getEducationTypeId() {
-        return educationTypeId;
-    }
-
-    public void setEducationTypeId(final Long educationTypeId) {
-        this.educationTypeId = educationTypeId;
-    }
-
-    public String getOccupation() {
-        return occupation;
-    }
-
-    public void setOccupation(final String occupation) {
-        this.occupation = occupation;
-    }
-
-    public Integer getProfessionalExperienceMonths() {
-        return professionalExperienceMonths;
-    }
-
     public void setProfessionalExperienceMonths(final String value) {
         if (!StringUtils.isEmpty(value)) {
             try {
@@ -227,10 +190,6 @@ public class TestParticipant implements Serializable {
                 LOGGER.error("can't parse " + value + " as a float.");
             }
         }
-    }
-
-    public Integer getComputerExperienceMonths() {
-        return computerExperienceMonths;
     }
 
     public void setComputerExperienceMonths(final String value) {
@@ -243,10 +202,6 @@ public class TestParticipant implements Serializable {
         }
     }
 
-    public Integer getProductExperienceMonths() {
-        return productExperienceMonths;
-    }
-
     public void setProductExperienceMonths(final String value) {
         if (!StringUtils.isEmpty(value)) {
             try {
@@ -256,69 +211,4 @@ public class TestParticipant implements Serializable {
             }
         }
     }
-
-    public String getAssistiveTechnologyNeeds() {
-        return assistiveTechnologyNeeds;
-    }
-
-    public void setAssistiveTechnologyNeeds(final String assistiveTechnologyNeeds) {
-        this.assistiveTechnologyNeeds = assistiveTechnologyNeeds;
-    }
-
-    public String getEducationTypeName() {
-        return educationTypeName;
-    }
-
-    public void setEducationTypeName(final String educationTypeName) {
-        this.educationTypeName = educationTypeName;
-    }
-
-    public String getUniqueId() {
-        return uniqueId;
-    }
-
-    public void setUniqueId(final String uniqueId) {
-        this.uniqueId = uniqueId;
-    }
-
-    public Long getAgeRangeId() {
-        return ageRangeId;
-    }
-
-    public void setAgeRangeId(final Long ageRangeId) {
-        this.ageRangeId = ageRangeId;
-    }
-
-    public String getAgeRange() {
-        return ageRange;
-    }
-
-    public void setAgeRange(final String ageRange) {
-        this.ageRange = ageRange;
-    }
-
-    public String getProfessionalExperienceMonthsStr() {
-        return professionalExperienceMonthsStr;
-    }
-
-    public void setProfessionalExperienceMonthsStr(String professionalExperienceMonthsStr) {
-        this.professionalExperienceMonthsStr = professionalExperienceMonthsStr;
-    }
-
-    public String getComputerExperienceMonthsStr() {
-        return computerExperienceMonthsStr;
-    }
-
-    public void setComputerExperienceMonthsStr(String computerExperienceMonthsStr) {
-        this.computerExperienceMonthsStr = computerExperienceMonthsStr;
-    }
-
-    public String getProductExperienceMonthsStr() {
-        return productExperienceMonthsStr;
-    }
-
-    public void setProductExperienceMonthsStr(String productExperienceMonthsStr) {
-        this.productExperienceMonthsStr = productExperienceMonthsStr;
-    }
-
 }

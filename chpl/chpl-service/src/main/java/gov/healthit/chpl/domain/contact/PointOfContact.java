@@ -9,10 +9,12 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
 import lombok.extern.log4j.Log4j2;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @AllArgsConstructor
+@Data
 @Log4j2
 public class PointOfContact extends Person {
     private static final long serialVersionUID = -1945872096428814999L;
@@ -46,14 +48,6 @@ public class PointOfContact extends Person {
         this.setEmail(StringUtils.normalizeSpace(this.getEmail()));
         this.setPhoneNumber(StringUtils.normalizeSpace(this.getPhoneNumber()));
         this.setTitle(StringUtils.normalizeSpace(this.getTitle()));
-    }
-
-    public Long getContactId() {
-        return contactId;
-    }
-
-    public void setContactId(Long contactId) {
-        this.contactId = contactId;
     }
 
     @Override

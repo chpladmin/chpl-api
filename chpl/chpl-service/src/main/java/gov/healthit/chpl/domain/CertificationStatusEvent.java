@@ -12,9 +12,14 @@ import gov.healthit.chpl.util.DateUtil;
 import gov.healthit.chpl.util.LocalDateDeserializer;
 import gov.healthit.chpl.util.LocalDateSerializer;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 
+@Data
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CertificationStatusEvent implements Serializable {
@@ -57,64 +62,15 @@ public class CertificationStatusEvent implements Serializable {
     private Long lastModifiedUser;
     private Long lastModifiedDate;
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    @Deprecated
-    public Long getEventDate() {
-        return eventDate;
-    }
-
     @Deprecated
     public void setEventDate(Long eventDate) {
         this.eventDate = eventDate;
         this.eventDay = DateUtil.toLocalDate(eventDate);
     }
 
-    public LocalDate getEventDay() {
-        return eventDay;
-    }
-
     public void setEventDay(LocalDate eventDay) {
         this.eventDay = eventDay;
         this.eventDate = DateUtil.toEpochMillis(eventDay);
-    }
-
-    public Long getLastModifiedUser() {
-        return lastModifiedUser;
-    }
-
-    public void setLastModifiedUser(Long lastModifiedUser) {
-        this.lastModifiedUser = lastModifiedUser;
-    }
-
-    public Long getLastModifiedDate() {
-        return lastModifiedDate;
-    }
-
-    public void setLastModifiedDate(Long lastModifiedDate) {
-        this.lastModifiedDate = lastModifiedDate;
-    }
-
-    public CertificationStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(CertificationStatus status) {
-        this.status = status;
-    }
-
-    public String getReason() {
-        return reason;
-    }
-
-    public void setReason(String reason) {
-        this.reason = reason;
     }
 
     /**

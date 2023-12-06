@@ -10,9 +10,11 @@ import gov.healthit.chpl.dto.CertifiedProductTargetedUserDTO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Builder
+@Data
 @AllArgsConstructor
 public class CertifiedProductTargetedUser implements Serializable {
     private static final long serialVersionUID = -2078691100124619582L;
@@ -47,29 +49,4 @@ public class CertifiedProductTargetedUser implements Serializable {
         }
         return result;
     }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(final Long id) {
-        this.id = id;
-    }
-
-    public Long getTargetedUserId() {
-        return targetedUserId;
-    }
-
-    public void setTargetedUserId(final Long targetedUserId) {
-        this.targetedUserId = targetedUserId;
-    }
-
-    public String getTargetedUserName() {
-        return targetedUserName;
-    }
-
-    public void setTargetedUserName(final String targetedUserName) {
-        this.targetedUserName = targetedUserName;
-    }
-
 }

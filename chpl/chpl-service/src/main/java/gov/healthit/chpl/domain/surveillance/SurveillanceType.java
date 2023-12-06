@@ -9,8 +9,12 @@ import gov.healthit.chpl.dto.SurveillanceTypeDTO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Builder
+@Data
+@NoArgsConstructor
 @AllArgsConstructor
 public class SurveillanceType implements Serializable {
     private static final long serialVersionUID = 5788880200952752783L;
@@ -23,10 +27,6 @@ public class SurveillanceType implements Serializable {
 
     @Schema(description = "Surveillance type name (randomized, reactive)")
     private String name;
-
-    public SurveillanceType() {
-
-    }
 
     public SurveillanceType(SurveillanceTypeDTO dto) {
         BeanUtils.copyProperties(dto, this);
@@ -47,21 +47,5 @@ public class SurveillanceType implements Serializable {
             return true;
         }
         return false;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(final Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(final String name) {
-        this.name = name;
     }
 }

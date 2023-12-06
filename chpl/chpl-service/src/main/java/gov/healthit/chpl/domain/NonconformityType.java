@@ -21,17 +21,18 @@ import gov.healthit.chpl.util.Util;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Builder
 @NoArgsConstructor
+@Data
 @AllArgsConstructor
 public class NonconformityType implements Serializable {
 
     private static final long serialVersionUID = -7437221753188417890L;
 
     private Long id;
-
     private CertificationEdition certificationEdition;
 
     @JsonIgnore
@@ -71,66 +72,6 @@ public class NonconformityType implements Serializable {
     @JsonProperty(access = Access.READ_ONLY)
     public Boolean isRemoved() {
         return getStatus().equals(CriterionStatus.REMOVED);
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public CertificationEdition getCertificationEdition() {
-        return certificationEdition;
-    }
-
-    public void setCertificationEdition(CertificationEdition certificationEdition) {
-        this.certificationEdition = certificationEdition;
-    }
-
-    public LocalDate getEndDay() {
-        return endDay;
-    }
-
-    public void setEndDay(LocalDate endDay) {
-        this.endDay = endDay;
-    }
-
-    public String getNumber() {
-        return number;
-    }
-
-    public void setNumber(String number) {
-        this.number = number;
-    }
-
-    public LocalDate getStartDay() {
-        return startDay;
-    }
-
-    public void setStartDay(LocalDate startDay) {
-        this.startDay = startDay;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public NonconformityClassification getClassification() {
-        return classification;
-    }
-
-    public void setClassification(NonconformityClassification classification) {
-        this.classification = classification;
-    }
-
-    public void setEdition(String edition) {
-        this.edition = edition;
     }
 
     @JsonIgnore

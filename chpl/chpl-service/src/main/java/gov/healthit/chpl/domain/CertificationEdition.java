@@ -9,11 +9,13 @@ import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseField;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CertificationEdition implements Serializable {
     private static final long serialVersionUID = 5732322243572571895L;
@@ -36,49 +38,4 @@ public class CertificationEdition implements Serializable {
 
     @Schema(description = "Whether or not the edition has been retired.")
     private boolean retired;
-
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    @Deprecated
-    public Long getCertificationEditionId() {
-        return certificationEditionId;
-    }
-
-    @Deprecated
-    public void setCertificationEditionId(final Long certificationEditionId) {
-        this.certificationEditionId = certificationEditionId;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    @Deprecated
-    public String getYear() {
-        return year;
-    }
-
-    @Deprecated
-    public void setYear(final String year) {
-        this.year = year;
-    }
-
-    public boolean isRetired() {
-        return retired;
-    }
-
-    public void setRetired(final boolean retired) {
-        this.retired = retired;
-    }
 }

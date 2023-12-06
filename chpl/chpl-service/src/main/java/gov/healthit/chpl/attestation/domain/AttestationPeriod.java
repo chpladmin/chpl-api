@@ -15,14 +15,14 @@ import gov.healthit.chpl.util.LocalDateSerializer;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Builder
 @AllArgsConstructor
-@ToString
-@EqualsAndHashCode
+@NoArgsConstructor
+@Data
 public class AttestationPeriod implements Serializable {
     private static final long serialVersionUID = 6251042464421884050L;
 
@@ -51,10 +51,6 @@ public class AttestationPeriod implements Serializable {
     @Schema(description = "A description of the attestation period.")
     private String description;
 
-    public AttestationPeriod() {
-        super();
-    }
-
     public AttestationPeriod(AttestationPeriodEntity entity) {
         this.id = entity.getId();
         this.form = entity.getForm() != null ? entity.getForm().toDomain() : null;
@@ -63,61 +59,5 @@ public class AttestationPeriod implements Serializable {
         this.submissionEnd = entity.getSubmissionEnd();
         this.submissionStart = entity.getSubmissionStart();
         this.description = entity.getDescription();
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Form getForm() {
-        return form;
-    }
-
-    public void setForm(Form form) {
-        this.form = form;
-    }
-
-    public LocalDate getPeriodStart() {
-        return periodStart;
-    }
-
-    public void setPeriodStart(LocalDate periodStart) {
-        this.periodStart = periodStart;
-    }
-
-    public LocalDate getPeriodEnd() {
-        return periodEnd;
-    }
-
-    public void setPeriodEnd(LocalDate periodEnd) {
-        this.periodEnd = periodEnd;
-    }
-
-    public LocalDate getSubmissionStart() {
-        return submissionStart;
-    }
-
-    public void setSubmissionStart(LocalDate submissionStart) {
-        this.submissionStart = submissionStart;
-    }
-
-    public LocalDate getSubmissionEnd() {
-        return submissionEnd;
-    }
-
-    public void setSubmissionEnd(LocalDate submissionEnd) {
-        this.submissionEnd = submissionEnd;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
     }
 }

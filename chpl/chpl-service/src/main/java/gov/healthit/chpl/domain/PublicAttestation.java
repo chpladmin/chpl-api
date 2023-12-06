@@ -9,9 +9,13 @@ import gov.healthit.chpl.domain.concept.PublicAttestationStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Builder
+@Data
+@NoArgsConstructor
 @AllArgsConstructor
 public class PublicAttestation implements Serializable {
     private static final long serialVersionUID = -5574794434517251480L;
@@ -29,33 +33,5 @@ public class PublicAttestation implements Serializable {
 
     public String getStatusText() {
         return status.getName();
-    }
-
-    public PublicAttestation() {
-        super();
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public AttestationPeriod getAttestationPeriod() {
-        return attestationPeriod;
-    }
-
-    public void setAttestationPeriod(AttestationPeriod attestationPeriod) {
-        this.attestationPeriod = attestationPeriod;
-    }
-
-    public PublicAttestationStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(PublicAttestationStatus status) {
-        this.status = status;
     }
 }

@@ -197,7 +197,7 @@ public class RealWorldTestingEligiblityService {
     private boolean doesListingAttestToEligibleCriteria(CertifiedProductSearchDetails listing, Integer year) {
         List<CertificationCriterion> eligibleCriteria = realWorldTestingCriteriaService.getEligibleCriteria(year);
         return listing.getCertificationResults().stream()
-                .filter(result -> result.isSuccess()
+                .filter(result -> result.getSuccess()
                         && eligibleCriteria.stream()
                         .filter(crit -> crit.getId().equals(result.getCriterion().getId()))
                         .findAny()

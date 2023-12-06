@@ -235,7 +235,7 @@ public class ListingConfirmationManager {
     private void saveCertificationResult(Long listingId, CertificationResult certResult) throws EntityCreationException {
         Long certResultId = certResultDao.create(listingId, certResult);
         certResult.setId(certResultId);
-        if (BooleanUtils.isTrue(certResult.isSuccess())) {
+        if (BooleanUtils.isTrue(certResult.getSuccess())) {
             saveAdditionalSoftware(certResult);
             saveOptionalStandards(certResult);
             saveTestData(certResult);
@@ -353,7 +353,7 @@ public class ListingConfirmationManager {
     private void saveCqms(CertifiedProductSearchDetails listing) throws EntityCreationException {
         //only save attested CQMs
         listing.getCqmResults().stream()
-            .filter(cqmResult -> BooleanUtils.isTrue(cqmResult.isSuccess()))
+            .filter(cqmResult -> BooleanUtils.isTrue(cqmResult.getSuccess()))
             .forEach(rethrowConsumer(cqmResult -> cqmResultDao.create(listing.getId(), cqmResult)));
     }
 

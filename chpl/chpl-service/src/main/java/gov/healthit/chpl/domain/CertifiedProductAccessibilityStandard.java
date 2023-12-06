@@ -11,9 +11,13 @@ import gov.healthit.chpl.dto.CertifiedProductAccessibilityStandardDTO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Builder
+@Data
+@NoArgsConstructor
 @AllArgsConstructor
 public class CertifiedProductAccessibilityStandard implements Serializable {
     private static final long serialVersionUID = -676179466407109456L;
@@ -29,10 +33,6 @@ public class CertifiedProductAccessibilityStandard implements Serializable {
 
     @JsonIgnore
     private String userEnteredAccessibilityStandardName;
-
-    public CertifiedProductAccessibilityStandard() {
-        super();
-    }
 
     public CertifiedProductAccessibilityStandard(CertifiedProductAccessibilityStandardDTO dto) {
         this.id = dto.getId();
@@ -51,37 +51,5 @@ public class CertifiedProductAccessibilityStandard implements Serializable {
             result = true;
         }
         return result;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Long getAccessibilityStandardId() {
-        return accessibilityStandardId;
-    }
-
-    public void setAccessibilityStandardId(Long accessibilityStandardId) {
-        this.accessibilityStandardId = accessibilityStandardId;
-    }
-
-    public String getAccessibilityStandardName() {
-        return accessibilityStandardName;
-    }
-
-    public void setAccessibilityStandardName(String accessibilityStandardName) {
-        this.accessibilityStandardName = accessibilityStandardName;
-    }
-
-    public String getUserEnteredAccessibilityStandardName() {
-        return userEnteredAccessibilityStandardName;
-    }
-
-    public void setUserEnteredAccessibilityStandardName(String userEnteredAccessibilityStandardName) {
-        this.userEnteredAccessibilityStandardName = userEnteredAccessibilityStandardName;
     }
 }

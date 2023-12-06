@@ -11,16 +11,15 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Builder
+@NoArgsConstructor
 @AllArgsConstructor
 @Data
 public class InheritedCertificationStatus implements Serializable {
     private static final long serialVersionUID = 2456763191912903082L;
-
-    public InheritedCertificationStatus() {
-    }
 
     /**
      * Boolean constructor provided for backwards compatibility with older listing details objects so that activity can

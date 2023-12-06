@@ -11,10 +11,12 @@ import gov.healthit.chpl.util.LocalDateDeserializer;
 import gov.healthit.chpl.util.LocalDateSerializer;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Builder
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class PromotingInteroperabilityUser implements Serializable {
@@ -26,30 +28,6 @@ public class PromotingInteroperabilityUser implements Serializable {
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
     private LocalDate userCountDate;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Long getUserCount() {
-        return userCount;
-    }
-
-    public void setUserCount(Long userCount) {
-        this.userCount = userCount;
-    }
-
-    public LocalDate getUserCountDate() {
-        return userCountDate;
-    }
-
-    public void setUserCountDate(LocalDate userCountDate) {
-        this.userCountDate = userCountDate;
-    }
 
     public boolean matches(PromotingInteroperabilityUser other) {
         boolean result = false;

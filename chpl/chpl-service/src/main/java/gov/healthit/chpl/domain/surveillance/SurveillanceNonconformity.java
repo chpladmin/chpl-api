@@ -15,15 +15,16 @@ import gov.healthit.chpl.domain.NonconformityType;
 import gov.healthit.chpl.util.LocalDateDeserializer;
 import gov.healthit.chpl.util.LocalDateSerializer;
 import gov.healthit.chpl.util.NullSafeEvaluator;
-import gov.healthit.chpl.util.Util;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Builder
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
@@ -207,133 +208,5 @@ public class SurveillanceNonconformity implements Serializable {
             return false;
         }
         return true;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public NonconformityType getType() {
-        return type;
-    }
-
-    public void setType(NonconformityType type) {
-        this.type = type;
-    }
-
-    public String getNonconformityStatus() {
-        return nonconformityStatus;
-    }
-
-    public void setNonconformityStatus(String nonconformityStatus) {
-        this.nonconformityStatus = nonconformityStatus;
-    }
-
-    public LocalDate getDateOfDeterminationDay() {
-        return this.dateOfDeterminationDay;
-    }
-
-    public void setDateOfDeterminationDay(LocalDate dateOfDeterminationDay) {
-        this.dateOfDeterminationDay = dateOfDeterminationDay;
-    }
-
-    public LocalDate getCapApprovalDay() {
-        return this.capApprovalDay;
-    }
-
-    public void setCapApprovalDay(LocalDate capApprovalDay) {
-        this.capApprovalDay = capApprovalDay;
-    }
-
-    public LocalDate getCapStartDay() {
-        return this.capStartDay;
-    }
-
-    public void setCapStartDay(LocalDate capStartDay) {
-        this.capStartDay = capStartDay;
-    }
-
-    public LocalDate getCapEndDay() {
-        return this.capEndDay;
-    }
-
-    public void setCapEndDay(LocalDate capEndDay) {
-        this.capEndDay = capEndDay;
-    }
-
-    public LocalDate getCapMustCompleteDay() {
-        return this.capMustCompleteDay;
-    }
-
-    public void setCapMustCompleteDay(LocalDate capMustCompleteDay) {
-        this.capMustCompleteDay = capMustCompleteDay;
-    }
-
-    public LocalDate getNonconformityCloseDay() {
-        return nonconformityCloseDay;
-    }
-
-    public void setNonconformityCloseDay(LocalDate nonconformityCloseDay) {
-        this.nonconformityCloseDay = nonconformityCloseDay;
-    }
-
-    public String getSummary() {
-        return summary;
-    }
-
-    public void setSummary(String summary) {
-        this.summary = summary;
-    }
-
-    public String getFindings() {
-        return findings;
-    }
-
-    public void setFindings(String findings) {
-        this.findings = findings;
-    }
-
-    public Integer getSitesPassed() {
-        return sitesPassed;
-    }
-
-    public void setSitesPassed(Integer sitesPassed) {
-        this.sitesPassed = sitesPassed;
-    }
-
-    public Integer getTotalSites() {
-        return totalSites;
-    }
-
-    public void setTotalSites(Integer totalSites) {
-        this.totalSites = totalSites;
-    }
-
-    public String getDeveloperExplanation() {
-        return developerExplanation;
-    }
-
-    public void setDeveloperExplanation(String developerExplanation) {
-        this.developerExplanation = developerExplanation;
-    }
-
-    public String getResolution() {
-        return resolution;
-    }
-
-    public void setResolution(String resolution) {
-        this.resolution = resolution;
-    }
-
-    public Date getLastModifiedDate() {
-        return Util.getNewDate(lastModifiedDate);
-    }
-
-    public void setLastModifiedDate(Date lastModifiedDate) {
-        this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
     }
 }

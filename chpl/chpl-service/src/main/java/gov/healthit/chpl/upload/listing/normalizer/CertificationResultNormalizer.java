@@ -95,7 +95,7 @@ public class CertificationResultNormalizer {
         Iterator<CertificationResult> certResultIter = listing.getCertificationResults().iterator();
         while (certResultIter.hasNext()) {
             CertificationResult certResult = certResultIter.next();
-            if (BooleanUtils.isFalse(certResult.isSuccess())
+            if (BooleanUtils.isFalse(certResult.getSuccess())
                     && isCriteriaInAnotherCertResult(listing.getCertificationResults(), certResult)) {
                 certResultIter.remove();
             }
@@ -124,7 +124,7 @@ public class CertificationResultNormalizer {
     private boolean isCriteriaAttestedInAnotherCertResult(List<CertificationResult> certResults, CertificationResult unattestedCertResult) {
         return certResults.stream()
             .filter(certResult -> certResult != unattestedCertResult)
-            .filter(certResult -> BooleanUtils.isTrue(certResult.isSuccess())
+            .filter(certResult -> BooleanUtils.isTrue(certResult.getSuccess())
                     && certResult.getCriterion().getId().equals(unattestedCertResult.getCriterion().getId()))
             .findAny().isPresent();
     }
@@ -132,7 +132,7 @@ public class CertificationResultNormalizer {
     private void setSedTrueIfApplicableToCriteria(CertifiedProductSearchDetails listing) {
         listing.getCertificationResults().stream()
             .filter(certResult -> certResult.getCriterion() != null
-                    && BooleanUtils.isTrue(certResult.isSuccess())
+                    && BooleanUtils.isTrue(certResult.getSuccess())
                     && certResultRules.hasCertOption(certResult.getCriterion().getId(), CertificationResultRules.SED))
             .forEach(certResult -> certResult.setSed(true));
     }

@@ -10,10 +10,12 @@ import gov.healthit.chpl.util.NullSafeEvaluator;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Builder
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class SurveillanceRequirement implements Serializable {
@@ -115,46 +117,5 @@ public class SurveillanceRequirement implements Serializable {
     public boolean doResultTypesMatch(SurveillanceRequirement anotherRequirement) {
         return NullSafeEvaluator.eval(() -> this.getResult().getId(), 0L).equals(
                 NullSafeEvaluator.eval(() -> anotherRequirement.getResult().getId(), 0L));
-    }
-
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public RequirementType getRequirementType() {
-        return requirementType;
-    }
-
-    public void setRequirementType(RequirementType requirementType) {
-        this.requirementType = requirementType;
-    }
-
-    public String getRequirementTypeOther() {
-        return requirementTypeOther;
-    }
-
-    public void setRequirementTypeOther(String requirementTypeOther) {
-        this.requirementTypeOther = requirementTypeOther;
-    }
-
-    public SurveillanceResultType getResult() {
-        return result;
-    }
-
-    public void setResult(SurveillanceResultType result) {
-        this.result = result;
-    }
-
-    public List<SurveillanceNonconformity> getNonconformities() {
-        return nonconformities;
-    }
-
-    public void setNonconformities(List<SurveillanceNonconformity> nonconformities) {
-        this.nonconformities = nonconformities;
     }
 }

@@ -13,9 +13,11 @@ import gov.healthit.chpl.dto.CertificationResultUcdProcessDTO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Builder
+@Data
 @AllArgsConstructor
 public class CertifiedProductUcdProcess implements Serializable {
     private static final long serialVersionUID = 7248865611086710891L;
@@ -55,45 +57,5 @@ public class CertifiedProductUcdProcess implements Serializable {
             result = true;
         }
         return result;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String ucdProcessName) {
-        this.name = ucdProcessName;
-    }
-
-    public String getUserEnteredName() {
-        return userEnteredName;
-    }
-
-    public void setUserEnteredName(String userEnteredName) {
-        this.userEnteredName = userEnteredName;
-    }
-
-    public String getDetails() {
-        return details;
-    }
-
-    public void setDetails(String ucdProcessDetails) {
-        this.details = ucdProcessDetails;
-    }
-
-    public LinkedHashSet<CertificationCriterion> getCriteria() {
-        return criteria;
-    }
-
-    public void setCriteria(LinkedHashSet<CertificationCriterion> criteria) {
-        this.criteria = criteria;
     }
 }

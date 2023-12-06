@@ -8,14 +8,16 @@ import gov.healthit.chpl.entity.listing.CertificationResultOptionalStandardEntit
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.ToString;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Schema(description = "An optional standard used to meet a certification criterion. You can find a list of "
      + "potential values in the 2015 Functionality and Standards Reference Tables.")
 @JsonIgnoreProperties(ignoreUnknown = true)
+@NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@ToString
+@Data
 public class CertificationResultOptionalStandard implements Serializable {
     private static final long serialVersionUID = -9182555768595891414L;
 
@@ -31,10 +33,6 @@ public class CertificationResultOptionalStandard implements Serializable {
     @Schema(description = "The description of the Optional Standard used to test the associated criteria.")
     private String description;
 
-    public CertificationResultOptionalStandard() {
-        super();
-    }
-
     public CertificationResultOptionalStandard(CertificationResultOptionalStandardEntity entity) {
         this.id = entity.getId();
         if (entity.getOptionalStandard() != null) {
@@ -47,37 +45,5 @@ public class CertificationResultOptionalStandard implements Serializable {
     public boolean matches(CertificationResultOptionalStandard existingItem) {
         return this.optionalStandardId.longValue() == existingItem.getOptionalStandardId().longValue()
                 || this.citation.equalsIgnoreCase(existingItem.getCitation());
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Long getOptionalStandardId() {
-        return optionalStandardId;
-    }
-
-    public void setOptionalStandardId(Long optionalStandardId) {
-        this.optionalStandardId = optionalStandardId;
-    }
-
-    public String getCitation() {
-        return citation;
-    }
-
-    public void setCitation(String citation) {
-        this.citation = citation;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
     }
 }

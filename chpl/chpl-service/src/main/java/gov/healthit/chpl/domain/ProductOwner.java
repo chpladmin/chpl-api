@@ -12,9 +12,13 @@ import gov.healthit.chpl.util.LocalDateSerializer;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Builder
+@Data
+@NoArgsConstructor
 @AllArgsConstructor
 public class ProductOwner implements Serializable {
     private static final long serialVersionUID = 5678373560374145870L;
@@ -29,34 +33,6 @@ public class ProductOwner implements Serializable {
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
     private LocalDate transferDay;
-
-    public ProductOwner() {
-
-    }
-
-    public Developer getDeveloper() {
-        return developer;
-    }
-
-    public void setDeveloper(Developer developer) {
-        this.developer = developer;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public LocalDate getTransferDay() {
-        return transferDay;
-    }
-
-    public void setTransferDay(LocalDate transferDay) {
-        this.transferDay = transferDay;
-    }
 
     @Override
     public int hashCode() {

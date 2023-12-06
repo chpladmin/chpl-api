@@ -10,9 +10,13 @@ import gov.healthit.chpl.dto.CertificationResultTestProcedureDTO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
+@Data
 @Builder
+@NoArgsConstructor
 @AllArgsConstructor
 public class CertificationResultTestProcedure implements Serializable {
     private static final long serialVersionUID = -8648559250833503194L;
@@ -28,10 +32,6 @@ public class CertificationResultTestProcedure implements Serializable {
             + "variable is a string variable that does not take any restrictions on "
             + "formatting or values and is applicable for 2014 and 2015 Edition.")
     private String testProcedureVersion;
-
-    public CertificationResultTestProcedure() {
-        super();
-    }
 
     public CertificationResultTestProcedure(CertificationResultTestProcedureDTO dto) {
         this.id = dto.getId();
@@ -57,29 +57,5 @@ public class CertificationResultTestProcedure implements Serializable {
             result = true;
         }
         return result;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(final Long id) {
-        this.id = id;
-    }
-
-    public String getTestProcedureVersion() {
-        return testProcedureVersion;
-    }
-
-    public void setTestProcedureVersion(final String testProcedureVersion) {
-        this.testProcedureVersion = testProcedureVersion;
-    }
-
-    public TestProcedure getTestProcedure() {
-        return testProcedure;
-    }
-
-    public void setTestProcedure(TestProcedure testProcedure) {
-        this.testProcedure = testProcedure;
     }
 }

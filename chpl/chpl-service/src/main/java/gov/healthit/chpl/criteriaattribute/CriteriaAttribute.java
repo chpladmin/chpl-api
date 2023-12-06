@@ -14,12 +14,14 @@ import gov.healthit.chpl.util.LocalDateDeserializer;
 import gov.healthit.chpl.util.LocalDateSerializer;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
+@Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CriteriaAttribute implements Serializable {
     private static final long serialVersionUID = 2856878300304895096L;
@@ -57,69 +59,5 @@ public class CriteriaAttribute implements Serializable {
     public Boolean isRetired() {
         LocalDate end = endDay != null ? endDay : LocalDate.MAX;
         return end.isBefore(LocalDate.now());
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getValue() {
-        return value;
-    }
-
-    public void setValue(String value) {
-        this.value = value;
-    }
-
-    public String getRegulatoryTextCitation() {
-        return regulatoryTextCitation;
-    }
-
-    public void setRegulatoryTextCitation(String regulatoryTextCitation) {
-        this.regulatoryTextCitation = regulatoryTextCitation;
-    }
-
-    public LocalDate getStartDay() {
-        return startDay;
-    }
-
-    public void setStartDay(LocalDate startDay) {
-        this.startDay = startDay;
-    }
-
-    public LocalDate getEndDay() {
-        return endDay;
-    }
-
-    public void setEndDay(LocalDate endDay) {
-        this.endDay = endDay;
-    }
-
-    public LocalDate getRequiredDay() {
-        return requiredDay;
-    }
-
-    public void setRequiredDay(LocalDate requiredDay) {
-        this.requiredDay = requiredDay;
-    }
-
-    public List<CertificationCriterion> getCriteria() {
-        return criteria;
-    }
-
-    public void setCriteria(List<CertificationCriterion> criteria) {
-        this.criteria = criteria;
-    }
-
-    public Rule getRule() {
-        return rule;
-    }
-
-    public void setRule(Rule rule) {
-        this.rule = rule;
     }
 }

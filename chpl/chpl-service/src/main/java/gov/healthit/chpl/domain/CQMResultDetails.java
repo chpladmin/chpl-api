@@ -15,10 +15,12 @@ import gov.healthit.chpl.dto.CQMResultDetailsDTO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Builder
 @AllArgsConstructor
+@Data
 public class CQMResultDetails implements Serializable {
     private static final long serialVersionUID = -7077008682408284325L;
 
@@ -107,112 +109,4 @@ public class CQMResultDetails implements Serializable {
             }
         }
     }
-
-    public String getNumber() {
-        return number;
-    }
-
-    public void setNumber(String number) {
-        this.number = number;
-    }
-
-    public String getCmsId() {
-        return cmsId;
-    }
-
-    public void setCmsId(String cmsId) {
-        this.cmsId = cmsId;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getNqfNumber() {
-        return nqfNumber;
-    }
-
-    public void setNqfNumber(String nqfNumber) {
-        this.nqfNumber = nqfNumber;
-    }
-
-    public Long getTypeId() {
-        return typeId;
-    }
-
-    public void setTypeId(Long typeId) {
-        this.typeId = typeId;
-    }
-
-    public String getDomain() {
-        return domain;
-    }
-
-    public void setDomain(String domain) {
-        this.domain = domain;
-    }
-
-    public LinkedHashSet<String> getSuccessVersions() {
-        return successVersions;
-    }
-
-    public void setSuccessVersions(LinkedHashSet<String> successVersions) {
-        this.successVersions = successVersions;
-    }
-
-    public LinkedHashSet<String> getAllVersions() {
-        return allVersions;
-    }
-
-    public void setAllVersions(LinkedHashSet<String> allVersions) {
-        this.allVersions = allVersions;
-    }
-
-    public Boolean isSuccess() {
-        if (successVersions != null && successVersions.size() > 0) {
-            return true;
-        }
-        return success;
-    }
-
-    public void setSuccess(Boolean success) {
-        this.success = success;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Long getCqmCriterionId() {
-        return cqmCriterionId;
-    }
-
-    public void setCqmCriterionId(Long cqmCriterionId) {
-        this.cqmCriterionId = cqmCriterionId;
-    }
-
-    public List<CQMResultCertification> getCriteria() {
-        return criteria;
-    }
-
-    public void setCriteria(List<CQMResultCertification> criteria) {
-        this.criteria = criteria;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
 }

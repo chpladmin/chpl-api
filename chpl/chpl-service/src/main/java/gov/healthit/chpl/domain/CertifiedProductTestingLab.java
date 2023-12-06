@@ -8,9 +8,11 @@ import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseField;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Builder
+@Data
 @AllArgsConstructor
 public class CertifiedProductTestingLab implements Serializable {
     private static final long serialVersionUID = -2078691100124619582L;
@@ -55,51 +57,5 @@ public class CertifiedProductTestingLab implements Serializable {
             result = true;
         }
         return result;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(final Long id) {
-        this.id = id;
-    }
-
-    public TestingLab getTestingLab() {
-        return testingLab;
-    }
-
-    public void setTestingLab(TestingLab testingLab) {
-        this.testingLab = testingLab;
-    }
-
-    @Deprecated
-    public Long getTestingLabId() {
-        return testingLabId;
-    }
-
-    @Deprecated
-    public void setTestingLabId(final Long testingLabId) {
-        this.testingLabId = testingLabId;
-    }
-
-    @Deprecated
-    public String getTestingLabName() {
-        return testingLabName;
-    }
-
-    @Deprecated
-    public void setTestingLabName(final String testingLabName) {
-        this.testingLabName = testingLabName;
-    }
-
-    @Deprecated
-    public String getTestingLabCode() {
-        return testingLabCode;
-    }
-
-    @Deprecated
-    public void setTestingLabCode(final String testingLabCode) {
-        this.testingLabCode = testingLabCode;
     }
 }

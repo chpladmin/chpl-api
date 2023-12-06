@@ -10,9 +10,13 @@ import gov.healthit.chpl.dto.ProductVersionDTO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Builder
+@Data
+@NoArgsConstructor
 @AllArgsConstructor
 public class ProductVersion implements Serializable {
     private static final long serialVersionUID = -447822739573816090L;
@@ -28,47 +32,12 @@ public class ProductVersion implements Serializable {
 
     private String lastModifiedDate;
 
-    public ProductVersion() {
-    }
-
     public ProductVersion(ProductVersionDTO dto) {
         this.id = dto.getId();
         this.version = dto.getVersion();
         if (dto.getLastModifiedDate() != null) {
             this.lastModifiedDate = dto.getLastModifiedDate().getTime() + "";
         }
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getVersion() {
-        return version;
-    }
-
-    public void setVersion(final String version) {
-        this.version = version;
-    }
-
-    public String getDetails() {
-        return details;
-    }
-
-    public void setDetails(final String details) {
-        this.details = details;
-    }
-
-    public String getLastModifiedDate() {
-        return lastModifiedDate;
-    }
-
-    public void setLastModifiedDate(final String lastModifiedDate) {
-        this.lastModifiedDate = lastModifiedDate;
     }
 
     // Not all attributes have been included. The attributes being used were selected so the ProductVersionManager could

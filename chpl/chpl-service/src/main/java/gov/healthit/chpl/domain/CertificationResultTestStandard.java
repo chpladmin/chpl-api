@@ -10,9 +10,13 @@ import gov.healthit.chpl.dto.CertificationResultTestStandardDTO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Builder
+@Data
+@NoArgsConstructor
 @AllArgsConstructor
 public class CertificationResultTestStandard implements Serializable {
     private static final long serialVersionUID = -9182555768595891414L;
@@ -28,10 +32,6 @@ public class CertificationResultTestStandard implements Serializable {
 
     @Schema(description = "Name of test standard")
     private String testStandardName;
-
-    public CertificationResultTestStandard() {
-        super();
-    }
 
     public CertificationResultTestStandard(CertificationResultTestStandardDTO dto) {
         this.id = dto.getId();
@@ -52,37 +52,4 @@ public class CertificationResultTestStandard implements Serializable {
         }
         return result;
     }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(final Long id) {
-        this.id = id;
-    }
-
-    public Long getTestStandardId() {
-        return testStandardId;
-    }
-
-    public void setTestStandardId(final Long testStandardId) {
-        this.testStandardId = testStandardId;
-    }
-
-    public String getTestStandardDescription() {
-        return testStandardDescription;
-    }
-
-    public void setTestStandardDescription(final String testStandardDescription) {
-        this.testStandardDescription = testStandardDescription;
-    }
-
-    public String getTestStandardName() {
-        return testStandardName;
-    }
-
-    public void setTestStandardName(final String testStandardName) {
-        this.testStandardName = testStandardName;
-    }
-
 }

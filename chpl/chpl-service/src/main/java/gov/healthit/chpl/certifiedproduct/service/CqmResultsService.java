@@ -148,7 +148,7 @@ public class CqmResultsService {
     }
 
     private List<CQMResultCertification> getCqmCriteriaMapping(CQMResultDetails cqmResult) {
-        if (cqmResult.isSuccess() && cqmResult.getId() != null) {
+        if (cqmResult.getSuccess() && cqmResult.getId() != null) {
             return cqmResultDao.getCriteriaForCqmResult(cqmResult.getId()).stream()
                     .map(dto -> new CQMResultCertification(dto))
                     .collect(Collectors.toList());

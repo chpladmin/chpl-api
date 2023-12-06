@@ -11,9 +11,13 @@ import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Builder
+@Data
+@NoArgsConstructor
 @AllArgsConstructor
 public class ListingMeasure implements Serializable {
     private static final long serialVersionUID = 3070403246291821852L;
@@ -30,10 +34,6 @@ public class ListingMeasure implements Serializable {
 
     @Builder.Default
     private LinkedHashSet<CertificationCriterion> associatedCriteria = new LinkedHashSet<CertificationCriterion>();
-
-    public ListingMeasure() {
-        super();
-    }
 
     public boolean matches(ListingMeasure anotherMeasure) {
         if (!propertiesMatch(anotherMeasure)) {
@@ -113,37 +113,5 @@ public class ListingMeasure implements Serializable {
             return false;
         }
         return true;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Measure getMeasure() {
-        return measure;
-    }
-
-    public void setMeasure(Measure measure) {
-        this.measure = measure;
-    }
-
-    public MeasureType getMeasureType() {
-        return measureType;
-    }
-
-    public void setMeasureType(MeasureType measureType) {
-        this.measureType = measureType;
-    }
-
-    public LinkedHashSet<CertificationCriterion> getAssociatedCriteria() {
-        return associatedCriteria;
-    }
-
-    public void setAssociatedCriteria(LinkedHashSet<CertificationCriterion> associatedCriteria) {
-        this.associatedCriteria = associatedCriteria;
     }
 }
