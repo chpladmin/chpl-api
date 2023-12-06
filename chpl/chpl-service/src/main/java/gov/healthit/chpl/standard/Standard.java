@@ -111,6 +111,9 @@ public class Standard implements Serializable {
     private Rule rule;
 
     @XmlTransient
+    private String groupName;
+
+    @XmlTransient
     public Boolean isRetired() {
         LocalDate end = endDay != null ? endDay : LocalDate.MAX;
         return end.isBefore(LocalDate.now());

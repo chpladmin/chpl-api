@@ -55,6 +55,10 @@ public class StandardEntity implements Serializable {
     private String additionalInformation;
 
     @Basic(optional = true)
+    @Column(name = "group_name")
+    private String groupName;
+
+    @Basic(optional = true)
     @Column(name = "start_day")
     private LocalDate startDay;
 
@@ -98,6 +102,7 @@ public class StandardEntity implements Serializable {
                 .value(this.getValue())
                 .regulatoryTextCitation(this.regulatoryTextCitation)
                 .additionalInformation(additionalInformation)
+                .groupName(this.groupName)
                 .startDay(this.startDay)
                 .endDay(this.endDay)
                 .requiredDay(this.requiredDay)
@@ -111,6 +116,7 @@ public class StandardEntity implements Serializable {
                 .value(this.getValue())
                 .regulatoryTextCitation(this.regulatoryTextCitation)
                 .additionalInformation(additionalInformation)
+                .groupName(this.groupName)
                 .startDay(this.startDay)
                 .endDay(this.endDay)
                 .requiredDay(this.requiredDay)
