@@ -89,11 +89,11 @@ public class StandardNormalizer {
 
         validStandardsForCriterionAndListing
                 .forEach(std -> {
-                    List<Standard> standardExistingInCertResult = certResult.getStandards().stream()
+                    List<Standard> standardsExistingInCertResult = certResult.getStandards().stream()
                             .map(crs -> crs.getStandard())
                             .toList();
 
-                    if (!isStandardInList(std, standardExistingInCertResult)) {
+                    if (!isStandardInList(std, standardsExistingInCertResult)) {
                         certResult.getStandards().add(CertificationResultStandard.builder()
                                 .certificationResultId(certResult.getId())
                                 .standard(std)
@@ -116,9 +116,8 @@ public class StandardNormalizer {
             List<StandardCriteriaMap> maps = standardDao.getAllStandardCriteriaMap();
             maps.removeIf(map -> !map.getCriterion().getId().equals(criterion.getId()));
             return maps.stream()
-                    .filter(map -> map.getStandard().getGroupName() == null
-                            && (map.getStandard().getEndDay() == null
-                                    || map.getStandard().getEndDay().isAfter(certificationDate)))
+                    .filter(map -> !isStandardInAGroup(map.getStandard())
+                            && isStandardEndDateAfterCertificationDate(map.getStandard(), certificationDate))
                     .map(map -> map.getStandard())
                     .toList();
 
@@ -126,6 +125,15 @@ public class StandardNormalizer {
             LOGGER.info("Error retrieving Standards for Criterion");
             throw new RuntimeException(e);
         }
+    }
+
+    private Boolean isStandardInAGroup(Standard standard) {
+        return standard.getGroupName() != null;
+    }
+
+    private Boolean isStandardEndDateAfterCertificationDate(Standard standard, LocalDate certificationDate) {
+        return standard.getEndDay() == null
+                || standard.getEndDay().isAfter(certificationDate);
     }
 }
 
