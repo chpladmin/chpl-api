@@ -116,8 +116,9 @@ public class StandardNormalizer {
             List<StandardCriteriaMap> maps = standardDao.getAllStandardCriteriaMap();
             maps.removeIf(map -> !map.getCriterion().getId().equals(criterion.getId()));
             return maps.stream()
-                    .filter(map -> map.getStandard().getEndDay() == null
-                            ||map.getStandard().getEndDay().isAfter(certificationDate))
+                    .filter(map -> map.getStandard().getGroupName() == null
+                            && (map.getStandard().getEndDay() == null
+                                    || map.getStandard().getEndDay().isAfter(certificationDate)))
                     .map(map -> map.getStandard())
                     .toList();
 
