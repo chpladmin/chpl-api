@@ -2,16 +2,10 @@ package gov.healthit.chpl.domain.surveillance;
 
 import java.io.Serializable;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlType;
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import lombok.Data;
 
-@XmlType(namespace = "http://chpl.healthit.gov/listings")
-@XmlAccessorType(XmlAccessType.FIELD)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Data
 public class SurveillanceNonconformityStatus implements Serializable {
@@ -20,7 +14,6 @@ public class SurveillanceNonconformityStatus implements Serializable {
     public static final String CLOSED = "Closed";
 
     private Long id;
-
     private String name;
 
     public SurveillanceNonconformityStatus() {

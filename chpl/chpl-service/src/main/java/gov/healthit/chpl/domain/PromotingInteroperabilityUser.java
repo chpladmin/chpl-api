@@ -3,10 +3,6 @@ package gov.healthit.chpl.domain;
 import java.io.Serializable;
 import java.time.LocalDate;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -20,9 +16,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
 
-
-@XmlType(namespace = "http://chpl.healthit.gov/listings")
-@XmlAccessorType(XmlAccessType.FIELD)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Builder
 @NoArgsConstructor
@@ -30,16 +23,12 @@ import lombok.NoArgsConstructor;
 public class PromotingInteroperabilityUser implements Serializable {
     private static final long serialVersionUID = -4803363243075068608L;
 
-    @XmlElement(name = "id", nillable = true, required = false)
     private Long id;
-
-    @XmlElement(name = "userCount", nillable = true, required = false)
     private Long userCount;
 
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
     @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
-    @XmlElement(name = "userCountDate", nillable = true, required = false)
     private LocalDate userCountDate;
 
     public Long getId() {

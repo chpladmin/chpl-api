@@ -2,11 +2,7 @@ package gov.healthit.chpl.domain.surveillance;
 
 import java.time.LocalDate;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlTransient;
-import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.apache.commons.lang3.StringUtils;
@@ -34,37 +30,27 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@XmlType(namespace = "http://chpl.healthit.gov/listings")
-@XmlAccessorType(XmlAccessType.FIELD)
 public class RequirementType {
     private Long id;
     private String number;
     private String title;
 
-    /**
-     * A date value representing the date by which the Requirement Type became available.
-     */
     @Schema(description = "A date value representing the date by which the Requirement Type became available.")
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
-    @XmlElement(required = false, nillable = true)
     @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
     private LocalDate startDay;
 
-    /**
-     * A date value representing the date by which the Requirement Type can no longer be used.
-     */
     @Schema(description = "A date value representing the date by which the Requirement Type can no longer be used.")
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
-    @XmlElement(required = false, nillable = true)
     @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
     private LocalDate endDay;
 
-    @XmlTransient
     private CertificationEdition certificationEdition;
 
     @JsonIgnore
+    @XmlTransient
     private String edition;
 
     private RequirementGroupType requirementGroupType;
@@ -98,7 +84,6 @@ public class RequirementType {
     }
 
     @JsonProperty(access = Access.READ_ONLY)
-    @XmlElement(required = true, nillable = false)
     @XmlJavaTypeAdapter(value = CriterionStatusAdapter.class)
     public CriterionStatus getStatus() {
         if (certificationEdition != null && certificationEdition.getName() != null
@@ -115,7 +100,6 @@ public class RequirementType {
     }
 
     @JsonProperty(access = Access.READ_ONLY)
-    @XmlTransient
     public Boolean isRemoved() {
         return getStatus().equals(CriterionStatus.REMOVED);
     }

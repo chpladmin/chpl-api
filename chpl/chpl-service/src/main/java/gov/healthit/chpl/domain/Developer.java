@@ -5,12 +5,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlTransient;
-import javax.xml.bind.annotation.XmlType;
 
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -23,92 +18,45 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 
-@XmlType(namespace = "http://chpl.healthit.gov/listings")
-@XmlAccessorType(XmlAccessType.FIELD)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @AllArgsConstructor
 @Builder
 public class Developer implements Serializable {
     private static final long serialVersionUID = 7341544844577617247L;
 
-    /**
-     * The internal ID of the developer.
-     */
     @Schema(description = "The internal ID of the developer.")
-    @XmlElement(required = true)
     @JsonAlias("developerId")
     private Long id;
 
-    /**
-     * A four-digit code assigned to each developer when it was created.
-     */
     @Schema(description = "A four-digit code assigned to each developer when it was created.")
-    @XmlElement(required = true)
     private String developerCode;
 
-    /**
-     * The name of the developer or vendor of the certified health IT product being uploaded. It is applicable to 2014
-     * and 2015 Edition. If uploading a certified product from a developer that already exists in the CHPL database,
-     * please use the CHPL Developer management functionality to ensure that the name of the developer matches the
-     * database record to prevent duplication.
-     */
     @Schema(description = "The name of the developer or vendor of the certified health IT product being uploaded. It is applicable to 2014"
             + "and 2015 Edition. If uploading a certified product from a developer that already exists in the CHPL database, please use the "
             + "CHPL Developer management functionality to ensure that the name of the developer matches the database record to prevent duplication.")
-    @XmlElement(required = true)
     private String name;
 
-    /**
-     * Website of health IT developer. Fully qualified URL which is reachable via web browser validation and
-     * verification. This variable is applicable for 2014 and 2015 Edition.
-     */
     @Schema(description = "Website of health IT developer. Fully qualified URL which is reachable via web browser validation and "
             + "verification. This variable is applicable for 2014 and 2015 Edition.")
-    @XmlElement(required = false, nillable = true)
     private String website;
 
-    /**
-     * Indication of whether a health IT developer is a "self-developer" or not.
-     */
     @Schema(description = "Indication of whether a health IT developer is a \"self-developer\" or not.")
-    @XmlElement(required = true)
     private Boolean selfDeveloper;
 
-    /**
-     * Developer's physical address
-     */
     @Schema(description = "Developer's physical address")
-    @XmlElement(required = false, nillable = true)
     private Address address;
 
-    /**
-     * Contact information for the developer.
-     */
     @Schema(description = "Contact information for the developer.")
-    @XmlElement(required = false, nillable = true)
     private PointOfContact contact;
 
-    @XmlTransient
     private String lastModifiedDate;
-
-    @XmlTransient
     private Boolean deleted;
 
-    /**
-     * Status changes that have occurred on the developer.
-     */
     @Schema(description = "Status changes that have occurred on the developer.")
-    @XmlElementWrapper(name = "statusEvents", nillable = true, required = false)
-    @XmlElement(name = "statusEvent", required = false, nillable = true)
     @Builder.Default
     private List<DeveloperStatusEvent> statusEvents = new ArrayList<DeveloperStatusEvent>();
 
-    /**
-     * Public attestations submitted by the developer.
-     */
     @Schema(description = "Public attestations submitted by the developer.")
-    @XmlElementWrapper(name = "attestations", nillable = true, required = false)
-    @XmlElement(name = "attestation")
     private List<PublicAttestation> attestations;
 
     @XmlTransient
@@ -207,13 +155,8 @@ public class Developer implements Serializable {
         this.deleted = deleted;
     }
 
-    /**
-     * The status of a developer with certified Health IT. Allowable values are "Active", "Suspended by ONC", or "Under
-     * Certification Ban by ONC"
-     */
     @Schema(description = "The status of a developer with certified Health IT. Allowable values are \"Active\", \"Suspended by ONC\", or \"Under "
             + "Certification Ban by ONC\"")
-    @XmlElement(required = false, nillable = true)
     public DeveloperStatus getStatus() {
         if (CollectionUtils.isEmpty(this.getStatusEvents())) {
             return null;

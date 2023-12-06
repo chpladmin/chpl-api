@@ -2,26 +2,16 @@ package gov.healthit.chpl.ucdProcess;
 
 import java.io.Serializable;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlType;
-
 import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
 
-/**
- * The user-centered design (UCD) process applied for the corresponding
- * certification criteria
- *
- */
-@XmlType(namespace = "http://chpl.healthit.gov/listings")
-@XmlAccessorType(XmlAccessType.FIELD)
+@Schema(description = "The user-centered design (UCD) process applied for the corresponding certification criteria")
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Builder
 @NoArgsConstructor
@@ -29,17 +19,10 @@ import lombok.NoArgsConstructor;
 public class UcdProcess implements Serializable {
     private static final long serialVersionUID = 7248865611086710891L;
 
-    /**
-     * UCD process to certification result internal mapping ID
-     */
-    @XmlElement(required = true)
+    @Schema(description = "UCD process to certification result internal mapping ID")
     private Long id;
 
-    /**
-     * The user-centered design (UCD) process applied for the corresponding
-     * certification criteria
-     */
-    @XmlElement(required = true)
+    @Schema(description = "The user-centered design (UCD) process applied for the corresponding certification criteria")
     private String name;
 
     @Override

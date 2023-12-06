@@ -3,10 +3,6 @@ package gov.healthit.chpl.domain;
 import java.io.Serializable;
 import java.time.LocalDate;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -20,30 +16,19 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 
-@XmlType(namespace = "http://chpl.healthit.gov/listings")
-@XmlAccessorType(XmlAccessType.FIELD)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Builder
 @AllArgsConstructor
 public class ProductOwner implements Serializable {
     private static final long serialVersionUID = 5678373560374145870L;
 
-    /**
-     * Product owner internal ID
-     */
     @Schema(description = "Product owner internal ID")
-    @XmlElement(required = true)
     private Long id;
 
-    /**
-     * Developer that either owns or used to own a given product.
-     */
     @Schema(description = "Developer that either owns or used to own a given product.")
-    @XmlElement(required = true)
     private Developer developer;
 
     @Schema(description = "")
-    @XmlElement(required = true, nillable = false)
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
     @XmlJavaTypeAdapter(value = LocalDateAdapter.class)

@@ -3,13 +3,7 @@ package gov.healthit.chpl.attestation.domain;
 import java.io.Serializable;
 import java.time.LocalDate;
 
-import javax.xml.bind.annotation.XmlAccessOrder;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorOrder;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlTransient;
-import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -28,9 +22,6 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
-@XmlType(namespace = "http://chpl.healthit.gov/listings")
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlAccessorOrder(value = XmlAccessOrder.ALPHABETICAL)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Builder
 @AllArgsConstructor
@@ -39,28 +30,16 @@ import lombok.ToString;
 public class AttestationPeriod implements Serializable {
     private static final long serialVersionUID = 6251042464421884050L;
 
-    /**
-     * The internal ID of the attestation period.
-     */
     @Schema(description = "The internal ID of the attestation period.")
-    @XmlElement(required = true)
     private Long id;
 
-    /**
-     * The starting date for which the submitted Attestations are based.
-     */
     @Schema(description = "The starting date for which the submitted Attestations are based.")
-    @XmlElement(required = true, nillable = false)
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
     @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
     private LocalDate periodStart;
 
-    /**
-     * The ending date for which the submitted Attestations are based.
-     */
     @Schema(description = "The ending date for which the submitted Attestations are based.")
-    @XmlElement(required = true, nillable = false)
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
     @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
@@ -78,10 +57,6 @@ public class AttestationPeriod implements Serializable {
     @JsonIgnore
     private Form form;
 
-    /**
-     * A description of the attestation period.
-     */
-    @XmlElement(required = true)
     @Schema(description = "A description of the attestation period.")
     private String description;
 

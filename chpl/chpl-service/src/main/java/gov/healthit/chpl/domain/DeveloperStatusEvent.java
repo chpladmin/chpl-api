@@ -3,11 +3,6 @@ package gov.healthit.chpl.domain;
 import java.io.Serializable;
 import java.util.Date;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlType;
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import gov.healthit.chpl.util.Util;
@@ -15,49 +10,26 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 
-@XmlType(namespace = "http://chpl.healthit.gov/listings")
-@XmlAccessorType(XmlAccessType.FIELD)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Builder
 @AllArgsConstructor
 public class DeveloperStatusEvent implements Serializable {
     private static final long serialVersionUID = -7303257499336378800L;
 
-    /**
-     * Developer status event internal ID
-     */
     @Schema(description = "Developer status event internal ID")
-    @XmlElement(required = false, nillable = true)
     private Long id;
 
-    /**
-     * Developer internal ID
-     */
     @Schema(description = "Developer internal ID")
-    @XmlElement(required = true)
     private Long developerId;
 
-    /**
-     * The status the developer changed TO with this status event.
-     */
     @Schema(description = "The status the developer changed TO with this status event.")
-    @XmlElement(required = true)
     private DeveloperStatus status;
 
-    /**
-     * Date this status event occurred.
-     */
     @Schema(description = "Date this status event occurred.")
-    @XmlElement(required = true)
     private Date statusDate;
 
-    /**
-     * The reason for this status change.
-     * It is required of the status changed to 'Under Certification Ban by ONC'
-     */
     @Schema(description = "The reason for this status change. "
             + "It is required of the status changed to 'Under Certification Ban by ONC'")
-    @XmlElement(required = false)
     private String reason;
 
     public DeveloperStatusEvent() {

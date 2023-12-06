@@ -5,12 +5,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlTransient;
-import javax.xml.bind.annotation.XmlType;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -23,135 +18,65 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 
-/**
- * The clinical quality measure to which a given listing has been certified.
- */
-@XmlType(namespace = "http://chpl.healthit.gov/listings")
-@XmlAccessorType(XmlAccessType.FIELD)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Builder
 @AllArgsConstructor
 public class CQMResultDetails implements Serializable {
     private static final long serialVersionUID = -7077008682408284325L;
 
-    /**
-     * CQM internal ID
-     */
     @Schema(description = "CQM internal ID")
-    @XmlElement(required = false, nillable = true)
     private Long id;
 
     @JsonIgnore
     @XmlTransient
     private Long cqmCriterionId;
 
-    /**
-     * The CMS ID clinical quality measures to which the Health IT Module has
-     * been certified. It is applicable to 2014 and 2015 Edition. For a list of
-     * the clinical quality measures, please reference the CMS eCQM library.
-     */
     @Schema(description = "The CMS ID clinical quality measures to which the Health IT Module has "
             + "been certified. It is applicable to 2014 and 2015 Edition. For a list of "
             + "the clinical quality measures, please reference the CMS eCQM library.")
-    @XmlElement(required = false, nillable = true)
     private String number;
 
-    /**
-     * The CMS ID clinical quality measures to which the Health IT Module has
-     * been certified.
-     */
     @Schema(description = "The CMS ID clinical quality measures to which the Health IT Module has been certified.")
-    @XmlElement(required = false, nillable = true)
     private String cmsId;
 
-    /**
-     * The title of the clinical quality measure.
-     */
     @Schema(description = "The title of the clinical quality measure.")
-    @XmlElement(required = false, nillable = true)
     private String title;
 
-    /**
-     * The description of the clinical quality measure.
-     */
     @Schema(description = "The description of the clinical quality measure.")
-    @XmlElement(required = false, nillable = true)
     private String description;
 
-    /**
-     * The NQF Number of the clinical quality measure
-     */
     @Schema(description = "The NQF Number of the clinical quality measure")
-    @XmlElement(required = false, nillable = true)
     private String nqfNumber;
 
-    /**
-     * Type of CQM. 1 for Ambulatory, 2 for Inpatient
-     */
     @Schema(description = "Type of CQM. 1 for Ambulatory, 2 for Inpatient")
-    @XmlElement(required = false, nillable = true)
     private Long typeId;
 
-    /**
-     * Category of the clinial quality measure. Examples include
-     * "Population/Public Health" or "Patient and Family Engagement"
-     */
     @Schema(description = "Category of the clinial quality measure. Examples include "
             + "\"Population/Public Health\" or \"Patient and Family Engagement\"")
-    @XmlElement(required = false, nillable = true)
     private String domain;
 
-    /**
-     * This variable indicates whether or not the clinical quality measure has
-     * been certified to the related listing. It is applicable to 2014 and 2015
-     * Edition and a binary variable that takes either true or false value.
-     */
     @Schema(description = "This variable indicates whether or not the clinical quality measure has "
             + "been certified to the related listing. It is applicable to 2014 and 2015 "
             + "Edition and a binary variable that takes either true or false value.")
-    @XmlElement(required = false, nillable = true)
     private Boolean success;
 
-    /**
-     * The corresponding version of the clinical quality measures to which the
-     * Health IT Module has been certified. It is applicable to 2014 and 2015
-     * Edition. For a list of clinical quality measures and their viable
-     * versions, please reference the CMS eCQM library.
-     */
     @Schema(description = "The corresponding version of the clinical quality measures to which the "
             + "Health IT Module has been certified. It is applicable to 2014 and 2015 "
             + "Edition. For a list of clinical quality measures and their viable "
             + "versions, please reference the CMS eCQM library.")
-    @XmlElementWrapper(name = "successVersions", nillable = true, required = false)
-    @XmlElement(name = "version", required = false, nillable = true)
     @Builder.Default
     private LinkedHashSet<String> successVersions = new LinkedHashSet<String>();
 
-    /**
-     * All possible versions of the clinical quality measure. For a list of
-     * clinical quality measures and their viable versions, please reference the
-     * CMS eCQM library.
-     */
     @Schema(description = "All possible versions of the clinical quality measure. For a list of "
             + "clinical quality measures and their viable versions, please reference the "
             + "CMS eCQM library.")
-    @XmlElementWrapper(name = "allVersions", nillable = true, required = false)
-    @XmlElement(name = "version", required = false, nillable = true)
     @Builder.Default
     private LinkedHashSet<String> allVersions = new LinkedHashSet<String>();
 
-    /**
-     * The certification criteria to which a given clinical quality measure
-     * applies. It is only applicable to 2015 Edition. It takes values include:
-     * c1, c2, c3, c4,c1;c2[DC1], c1;c3, c1;c4, c2;c3, c2;c4, c3;c4, c1;c2;c3,
-     * c2;c3;c4, c1;c2;c3;c4
-     */
     @Schema(description = "The certification criteria to which a given clinical quality measure "
             + "applies. It is only applicable to 2015 Edition. It takes values include: "
             + "c1, c2, c3, c4,c1;c2[DC1], c1;c3, c1;c4, c2;c3, c2;c4, c3;c4, c1;c2;c3, "
             + "c2;c3;c4, c1;c2;c3;c4")
-    @XmlElementWrapper(name = "criteriaList", nillable = true, required = false)
-    @XmlElement(name = "criteria")
     @Builder.Default
     private List<CQMResultCertification> criteria = new ArrayList<CQMResultCertification>();
 

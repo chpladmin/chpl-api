@@ -2,11 +2,7 @@ package gov.healthit.chpl.testtool;
 
 import java.io.Serializable;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlTransient;
-import javax.xml.bind.annotation.XmlType;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -19,14 +15,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
 
-/**
- * The test tool used to certify the Health IT Module to the corresponding
- * certification criteria Allowable values are based on the NIST 2014 and 2015
- * Edition Test Tools.
- *
- */
-@XmlType(namespace = "http://chpl.healthit.gov/listings")
-@XmlAccessorType(XmlAccessType.FIELD)
+@Schema(description = "The test tool used to certify the Health IT Module to the corresponding "
+        + "certification criteria Allowable values are based on the NIST 2014 and 2015 "
+        + "Edition Test Tools.")
 @JsonIgnoreProperties(ignoreUnknown = true)
 @AllArgsConstructor
 @NoArgsConstructor
@@ -34,30 +25,15 @@ import lombok.NoArgsConstructor;
 public class CertificationResultTestTool implements Serializable {
     private static final long serialVersionUID = 2785949879671019720L;
 
-    /**
-     * Test tool to certification result mapping internal ID
-     */
     @Schema(description = "Test tool to certification result mapping internal ID")
-    @XmlElement(required = true)
     private Long id;
 
-    /**
-     * The test tool used to certify the Health IT Module to the corresponding
-     * certification criteria
-     */
     @Schema(description = "The test tool used to certify the Health IT Module to the corresponding certification criteria")
-    @XmlElement(required = true)
     private TestTool testTool;
 
-    /**
-     * The version of the test tool being used. This variable is applicable for
-     * 2014 and 2015 Edition, and a string variable that does not take any
-     * restrictions on formatting or values.
-     */
     @Schema(description = "The version of the test tool being used. This variable is applicable for "
             + "2014 and 2015 Edition, and a string variable that does not take any "
             + "restrictions on formatting or values.")
-    @XmlElement(required = false, nillable = true)
     private String version;
 
 
@@ -68,25 +44,21 @@ public class CertificationResultTestTool implements Serializable {
     @Deprecated
     @DeprecatedResponseField(message = "This field is deprecated and will be removed. This data can be found testTool.testTool.id",
             removalDate = "2024-01-01")
-    @XmlTransient
     private Long testToolId;
 
     @Deprecated
     @DeprecatedResponseField(message = "This field is deprecated and will be removed. This data can be found testTool.testTool.value",
             removalDate = "2024-01-01")
-    @XmlTransient
     private String testToolName;
 
     @Deprecated
     @DeprecatedResponseField(message = "This field is deprecated and will be removed. This data can be found testTool.version",
             removalDate = "2024-01-01")
-    @XmlTransient
     private String testToolVersion;
 
     @Deprecated
     @DeprecatedResponseField(message = "This field is deprecated and will be removed. This data can be found testTool.testTool.retired",
             removalDate = "2024-01-01")
-    @XmlTransient
     @Schema(description = "Whether or not the test tool has been retired.")
     private Boolean retired;
 

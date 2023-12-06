@@ -2,11 +2,6 @@ package gov.healthit.chpl.domain.surveillance;
 
 import java.io.Serializable;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlType;
-
 import org.apache.commons.lang3.StringUtils;
 
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -14,8 +9,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
 
-@XmlType(namespace = "http://chpl.healthit.gov/listings")
-@XmlAccessorType(XmlAccessType.FIELD)
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -32,18 +25,10 @@ public class RequirementGroupType implements Serializable {
     public static final Long ATTESTATION_SUBMISSION_ID = 5L;
     public static final Long DEVELOPER_SUBMISSION_REQUIREMENT_ID = 6L;
 
-    /**
-     * Requirement group type internal ID
-     */
     @Schema(description = "Requirement group type internal ID")
-    @XmlElement(required = true)
     private Long id;
 
-    /**
-     * Requirement group type name
-     */
     @Schema(description = "Requirement group type name")
-    @XmlElement(required = true)
     private String name;
 
     /**

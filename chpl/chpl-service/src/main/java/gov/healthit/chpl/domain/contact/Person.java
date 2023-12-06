@@ -3,11 +3,6 @@ package gov.healthit.chpl.domain.contact;
 import java.io.Serializable;
 import java.util.HashMap;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlType;
-
 import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -15,44 +10,21 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 
-/**
- * Domain object representing a Person. It may partially represent a user with access to log into the system
- * or may represent a point of contact for a developer or product.
- *
- */
-@XmlType(namespace = "http://chpl.healthit.gov/listings")
-@XmlAccessorType(XmlAccessType.FIELD)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @AllArgsConstructor
 public class Person implements Serializable {
     private static final long serialVersionUID = 5376154206189674741L;
 
-    /**
-     * Person's full name.
-     */
     @Schema(description = "Person's full name.")
-    @XmlElement(required = true)
     private String fullName;
 
-    /**
-     * Email address of the person.
-     */
     @Schema(description = "Email address of the person.")
-    @XmlElement(required = true)
     private String email;
 
-    /**
-     * Phone number of the person.
-     */
     @Schema(description = "Phone number of the person.")
-    @XmlElement(required = true)
     private String phoneNumber;
 
-    /**
-     * Title (Ms., Mr., Dr., etc) of the person.
-     */
     @Schema(description = "Title (Ms., Mr., Dr., etc) of the person.")
-    @XmlElement(required = false, nillable = true)
     private String title;
 
     public Person() {}

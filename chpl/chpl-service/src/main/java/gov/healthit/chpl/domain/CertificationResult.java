@@ -5,12 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlTransient;
-import javax.xml.bind.annotation.XmlType;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -46,11 +41,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.ToString;
 
-/**
- * Criteria to which a given listing attests.
- */
-@XmlType(namespace = "http://chpl.healthit.gov/listings")
-@XmlAccessorType(XmlAccessType.FIELD)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @AllArgsConstructor
 @Builder
@@ -59,27 +49,16 @@ public class CertificationResult implements Serializable {
     private static final long serialVersionUID = -4917413876078419868L;
     public static final String PRIVACY_SECURITY_FRAMEWORK_DELIMITER = ";";
 
-    @XmlTransient
     private Long id;
 
-    /**
-     * Whether or not this criteria was met.
-     */
     @Schema(description = "Whether or not this criteria was met.")
-    @XmlElement(required = true)
     private Boolean success;
 
-    @XmlTransient
     @JsonIgnore
     private String successStr;
 
-    /**
-     * This variable indicates if the certification criteria was gap certified. It is a binary variable that takes true
-     * or false value, and is applicable to 2014 and 2015 Edition.
-     */
     @Schema(description = "This variable indicates if the certification criteria was gap certified. It is a binary variable that takes true "
             + "or false value, and is applicable to 2014 and 2015 Edition.")
-    @XmlElement(required = false, nillable = true)
     private Boolean gap;
 
     @XmlTransient
@@ -94,114 +73,55 @@ public class CertificationResult implements Serializable {
     @JsonIgnore
     private String hasAdditionalSoftwareStr;
 
-    /**
-     * This variable indicates if the corresponding certification criteria was submitted for safety-enhanced design
-     * attestation during certification testing. It is a binary variable that takes either true or false value, and is
-     * only applicable to 2014 Edition.
-     */
     @Schema(description = "This variable indicates if the corresponding certification criteria was submitted for safety-enhanced design "
             + "attestation during certification testing. It is a binary variable that takes either true or false value, and is "
             + "only applicable to 2014 Edition.")
-    @XmlElement(required = false, nillable = true)
     private Boolean sed;
 
-    /**
-     * This variable indicates if the corresponding certification criteria was successfully tested for automated
-     * numerator recording. It is applicable for the 2014 edition, and it is a binary variable that takes either true or
-     * false value.
-     */
     @Schema(description = "This variable indicates if the corresponding certification criteria was successfully tested for automated "
             + "numerator recording. It is applicable for the 2014 edition, and it is a binary variable that takes either true or "
             + "false value.")
-    @XmlElement(required = false, nillable = true)
     private Boolean g1Success;
 
-    /**
-     * This variable indicates if the corresponding certification criteria was successfully tested for automated measure
-     * calculation. It is a binary variable that takes either true or false, and is applicable to 2014 Edition.
-     */
     @Schema(description = "This variable indicates if the corresponding certification criteria was successfully tested for automated measure "
             + "calculation. It is a binary variable that takes either true or false, and is applicable to 2014 Edition.")
-    @XmlElement(required = false, nillable = true)
     private Boolean g2Success;
 
-    /**
-     * This variable indicates if the corresponding certification criteria has an attestation answer. It is a binary
-     * value that takes either true or false, and is applicable to 2015 Edition.
-     */
     @Schema(description = "This variable indicates if the corresponding certification criteria has an attestation answer. It is a binary "
             + "value that takes either true or false, and is applicable to 2015 Edition.")
-    @XmlElement(required = false, nillable = true)
     private Boolean attestationAnswer;
 
     @XmlTransient
     private String attestationAnswerStr;
 
-    /**
-     * The hyperlink to access an application programming interface (API)'s documentation and terms of use. This
-     * variable is applicable for only 2015 Edition. It is fully qualified URL which is reachable via web browser
-     * validation and verification.
-     */
     @Schema(description = "The hyperlink to access an application programming interface (API)'s documentation and terms of use. This "
             + "variable is applicable for only 2015 Edition. It is fully qualified URL which is reachable via web browser "
             + "validation and verification.")
-    @XmlElement(required = false, nillable = true)
     private String apiDocumentation;
 
-    /**
-     * The hyperlink to access export documentation. This variable is applicable for only 2015 Edition. It is fully
-     * qualified URL which is reachable via web browser validation and verification.
-     */
     @Schema(description = "The hyperlink to access export documentation. This variable is applicable for only 2015 Edition. It is fully "
             + "qualified URL which is reachable via web browser validation and verification.")
-    @XmlElement(required = false, nillable = true)
     private String exportDocumentation;
 
-    /**
-     * The hyperlink to access a documentation URL. This variable is applicable for only 2015 Edition. It is fully
-     * qualified URL which is reachable via web browser validation and verification.
-     */
     @Schema(description = "The hyperlink to access a documentation URL. This variable is applicable for only 2015 Edition. It is fully "
             + "qualified URL which is reachable via web browser validation and verification.")
-    @XmlElement(required = false, nillable = true)
     private String documentationUrl;
 
-    /**
-     * The hyperlink to access Use Case(s). This variable is applicable for only 2015 Edition. It is fully qualified URL
-     * which is reachable via web browser validation and verification.
-     */
     @Schema(description = "The hyperlink to access Use Case(s). This variable is applicable for only 2015 Edition. It is fully qualified URL "
             + "which is reachable via web browser validation and verification.")
-    @XmlElement(required = false, nillable = true)
     private String useCases;
 
-    /**
-     * The publicly accessible hyperlink to the list of service base URLs for a Health IT Module
-     * certified to § 170.315(g)(10) that can be used by patients to access their electronic health
-     * information. It is a fully qualified URL which is reachable via web browser validation and verification.
-     */
     @Schema(description = "The publicly accessible hyperlink to the list of service base URLs for a Health IT Module "
             + "certified to § 170.315(g)(10) that can be used by patients to access their electronic health "
             + "information. It is a fully qualified URL which is reachable via web browser validation and verification.")
-    @XmlElement(required = false, nillable = true)
     private String serviceBaseUrlList;
 
-    /**
-     * The hyperlink to access Risk Management Summary Information. It is a fully qualified URL
-     * which is reachable via web browser.
-     */
     @Schema(description = "The hyperlink to access Risk Management Summary Information. It is a fully qualified URL "
             + "which is reachable via web browser.")
-    @XmlElement(required = false, nillable = true)
     private String riskManagementSummaryInformation;
 
-    /**
-     * This variable explains the way in which each privacy and security criterion was addressed for the purposes of
-     * certification. It is applicable for 2015 Edition and takes either of Approach 1 and Approach 2.
-     */
     @Schema(description = "This variable explains the way in which each privacy and security criterion was addressed for the purposes of "
             + "certification. It is applicable for 2015 Edition and takes either of Approach 1 and Approach 2.")
-    @XmlElement(required = false, nillable = true)
     private String privacySecurityFramework;
 
     @Deprecated
@@ -228,93 +148,39 @@ public class CertificationResult implements Serializable {
     @XmlTransient
     private List<TestTool> allowedTestTools;
 
-    /**
-     * Any optional, alternative, ambulatory (2015 only), or inpatient (2015 only) capabilities within a certification
-     * criterion to which the Health IT module was tested and certified. For example, within the 2015 certification
-     * criteria 170.315(a), the optional functionality to include a 'reason for order' field should be denoted as
-     * (a)(1)(ii). You can find a list of potential values in the 2014 or 2015 Functionality and Standards Reference
-     * Tables. It is applicable for 2014 and 2015 Edition.
-     */
     @Schema(description = "Any optional, alternative, ambulatory (2015 only), or inpatient (2015 only) capabilities within a certification "
             + "criterion to which the Health IT module was tested and certified. For example, within the 2015 certification "
             + "criteria 170.315(a), the optional functionality to include a 'reason for order' field should be denoted as "
             + "(a)(1)(ii). You can find a list of potential values in the 2014 or 2015 Functionality and Standards Reference "
             + "Tables. It is applicable for 2014 and 2015 Edition.")
-    @XmlElementWrapper(name = "functionalitiesTested", nillable = true, required = false)
-    @XmlElement(name = "functionalityTested")
     @Builder.Default
     private List<CertificationResultFunctionalityTested> functionalitiesTested = new ArrayList<CertificationResultFunctionalityTested>();
 
-    /**
-     * The methods used to evaluate compliance with the certification criterion.
-     */
     @Schema(description = "The methods used to evaluate compliance with the certification criterion.")
-    @XmlElementWrapper(name = "conformanceMethods", nillable = true, required = false)
-    @XmlElement(name = "conformanceMethod")
     private List<CertificationResultConformanceMethod> conformanceMethods = new ArrayList<CertificationResultConformanceMethod>();
 
-    /**
-     * The test procedures used for the certification criteria
-     */
     @Schema(description = "The test procedures used for the certification criteria")
-    @XmlElementWrapper(name = "testProcedures", nillable = true, required = false)
-    @XmlElement(name = "testProcedure")
     private List<CertificationResultTestProcedure> testProcedures = new ArrayList<CertificationResultTestProcedure>();
 
-    /**
-     * The versions of the test data being used for the certification criteria
-     */
     @Schema(description = "The versions of the test data being used for the certification criteria")
-    @XmlElementWrapper(name = "testDataList", nillable = true, required = false)
-    @XmlElement(name = "testData")
     private List<CertificationResultTestData> testDataUsed = new ArrayList<CertificationResultTestData>();
 
-    /**
-     * This variable indicates if any additional software is relied upon by the Health IT Module to demonstrate its
-     * compliance with a certification criterion or criteria. It is applicable for 2014 and 2015 Edition.
-     */
     @Schema(description = "This variable indicates if any additional software is relied upon by the Health IT Module to demonstrate its "
             + "compliance with a certification criterion or criteria. It is applicable for 2014 and 2015 Edition.")
-    @XmlElementWrapper(name = "additionalSoftwareList", nillable = true, required = false)
-    @XmlElement(name = "additionalSoftware")
     private List<CertificationResultAdditionalSoftware> additionalSoftware = new ArrayList<CertificationResultAdditionalSoftware>();
 
-    /**
-     * An optional standard used to meet a certification criterion for 2015 Edition. You can find a list of potential
-     * values in the 2015 Functionality and Standards Reference Tables. Allowed values are the corresponding
-     * paragraph number for the standard within the regulation.
-     */
     @Schema(description = "An optional standard used to meet a certification criterion for 2015 Edition. You can find a list of potential "
             + "values in the 2015 Functionality and Standards Reference Tables. Allowed values are the corresponding "
             + "paragraph number for the standard within the regulation.")
-    @XmlElementWrapper(name = "optionalStandards", nillable = true, required = false)
-    @XmlElement(name = "optionalStandard")
     @Builder.Default
     private List<CertificationResultOptionalStandard> optionalStandards = new ArrayList<CertificationResultOptionalStandard>();
 
-    /**
-     * A standard used to meet a certification criterion for 2014 and 2015 Edition. You can find a list of potential
-     * values in the 2014 or 2015 Functionality and Standards Reference Tables. Allowed values are the corresponding
-     * paragraph number for the standard within the regulation.
-     */
     @Schema(description = "A standard used to meet a certification criterion for 2014 and 2015 Edition. You can find a list of potential "
             + "values in the 2014 or 2015 Functionality and Standards Reference Tables. Allowed values are the corresponding "
             + "paragraph number for the standard within the regulation.")
-    @XmlElementWrapper(name = "testStandards", nillable = true, required = false)
-    @XmlElement(name = "testStandard")
     @Builder.Default
     private List<CertificationResultTestStandard> testStandards = new ArrayList<CertificationResultTestStandard>();
 
-    /**
-     * The test tool used to certify the Health IT Module to the corresponding certification criteria Allowable values
-     * are based on the NIST 2014 and 2015 Edition Test Tools. This variable is applicable for 2014 and 2015 Edition,
-     * and allowable values are based on the NIST 2014 and 2015 Edition Test Tools: HL7 CDA Cancer Registry Reporting
-     * Validation Tool, HL7v2 Immunization Test Suite, HL7v2 Syndromic Surveillance Test Suite, HL7v2 Electronic
-     * Laboratory Reporting Validation Tool, Electronic Prescribing, HL7 CDA National Health Care Surveys Validator,
-     * Edge Test Tool, 2015 Direct Certificate Discovery Tool, Cypress, HL7 v2 Electronic Laboratory Reporting (ELR)
-     * Validation Tool, HL7 v2 Immunization Information System (IIS) Reporting Validation Tool, HL7 v2 Laboratory
-     * Results Interface (LRI) Validation Tool, HL7 v2 Syndromic Surveillance Reporting Validation Tool
-     */
     @Schema(description = "The test tool used to certify the Health IT Module to the corresponding certification criteria Allowable values "
             + "are based on the NIST 2014 and 2015 Edition Test Tools. This variable is applicable for 2014 and 2015 Edition, "
             + "and allowable values are based on the NIST 2014 and 2015 Edition Test Tools: HL7 CDA Cancer Registry Reporting "
@@ -323,31 +189,17 @@ public class CertificationResult implements Serializable {
             + "Edge Test Tool, 2015 Direct Certificate Discovery Tool, Cypress, HL7 v2 Electronic Laboratory Reporting (ELR) "
             + "Validation Tool, HL7 v2 Immunization Information System (IIS) Reporting Validation Tool, HL7 v2 Laboratory "
             + "Results Interface (LRI) Validation Tool, HL7 v2 Syndromic Surveillance Reporting Validation Tool")
-    @XmlElementWrapper(name = "testTools", nillable = true, required = false)
-    @XmlElement(name = "testTool")
     @Builder.Default
     private List<CertificationResultTestTool> testToolsUsed = new ArrayList<CertificationResultTestTool>();
 
-    /**
-     * ONC has established the Standards Version Advancement Process (SVAP) to enable health IT developers’
-     * ability to incorporate newer versions of Secretary-adopted standards and implementation specifications,
-     * as part of the "Real World Testing" Condition and Maintenance of Certification requirement (§170.405)
-     * of the 21st Century Cures Act
-     */
     @Schema(description = "ONC has established the Standards Version Advancement Process (SVAP) to enable health IT developers’ "
             + "ability to incorporate newer versions of Secretary-adopted standards and implementation specifications, "
             + "as part of the \"Real World Testing\" Condition and Maintenance of Certification requirement (§170.405) "
             + "of the 21st Century Cures Act")
-    @XmlElementWrapper(name = "svaps", nillable = true, required = false)
-    @XmlElement(name = "svap")
     @Builder.Default
     private List<CertificationResultSvap> svaps = new ArrayList<CertificationResultSvap>();
 
-    /**
-     * Detailed information about the relevant certification criterion.
-     */
     @Schema(description = "Detailed information about the relevant certification criterion.")
-    @XmlElement(name = "criterion")
     private CertificationCriterion criterion;
 
     /**

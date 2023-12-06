@@ -8,12 +8,7 @@ import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlTransient;
-import javax.xml.bind.annotation.XmlType;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -32,11 +27,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.ToString;
 
-/**
- * A task used for SED testing for a given criteria.
- */
-@XmlType(namespace = "http://chpl.healthit.gov/listings")
-@XmlAccessorType(XmlAccessType.FIELD)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Builder(toBuilder = true)
 @AllArgsConstructor
@@ -46,243 +36,138 @@ public class TestTask implements Serializable {
 
     private static final Logger LOGGER = LogManager.getLogger(TestTask.class);
 
-    /**
-     * Test task internal ID
-     */
     @Schema(description = "Test task internal ID")
-    @XmlElement(required = true)
     private Long id;
 
-    /**
-     * An ONC-ACB designated identifier for an individual SED task and that must
-     * be unique to a particular task. This variable is only applicable to 2015
-     * Edition and for internal use within an upload file only.
-     */
     @Schema(description = "An ONC-ACB designated identifier for an individual SED task and that must "
             + "be unique to a particular task. This variable is only applicable to 2015 "
             + "Edition and for internal use within an upload file only.")
-    @XmlTransient
     private String uniqueId;
 
-    /**
-     * Brief description of task performed during SED/usability testing. This
-     * variable is only applicable to 2015 Edition, and a string variable that
-     * does not take any restrictions on formatting or values.
-     */
     @Schema(description = "Brief description of task performed during SED/usability testing. This "
             + "variable is only applicable to 2015 Edition, and a string variable that "
             + "does not take any restrictions on formatting or values.")
-    @XmlElement(required = true)
     private String description;
 
-    /**
-     * Mean task success rate (in percentages). It is only applicable to 2015
-     * Edition, and takes only positive decimal numbers.
-     */
     @Schema(description = "Mean task success rate (in percentages). It is only applicable to 2015 "
             + "Edition, and takes only positive decimal numbers.")
-    @XmlElement(required = true)
     private Float taskSuccessAverage;
 
     @XmlTransient
     @JsonIgnore
     private String taskSuccessAverageStr;
 
-    /**
-     * Standard deviation of the task success rate (in percentages). It is only
-     * applicable to 2015 Edition, and takes only positive decimal numbers.
-     */
     @Schema(description = "Standard deviation of the task success rate (in percentages). It is only "
             + "applicable to 2015 Edition, and takes only positive decimal numbers.")
-    @XmlElement(required = true)
     private Float taskSuccessStddev;
 
     @XmlTransient
     @JsonIgnore
     private String taskSuccessStddevStr;
 
-    /**
-     * This variable indicates observed number of steps taken for the
-     * corresponding task. It is applicable to 2015 Edition, and takes only
-     * positive integer values.
-     */
     @Schema(description = "This variable indicates observed number of steps taken for the "
             + "corresponding task. It is applicable to 2015 Edition, and takes only "
             + "positive integer values.")
-    @XmlElement(required = true)
     private Integer taskPathDeviationObserved;
 
     @XmlTransient
     @JsonIgnore
     private String taskPathDeviationObservedStr;
 
-    /**
-     * This variable indicates optimal number of steps for the corresponding
-     * task. It is only applicable to 2015 Edition, and only takes positive
-     * integer(i.e. no decimals) values.
-     */
     @Schema(description = "This variable indicates optimal number of steps for the corresponding "
             + "task. It is only applicable to 2015 Edition, and only takes positive "
             + "integer(i.e. no decimals) values.")
-    @XmlElement(required = true)
     private Integer taskPathDeviationOptimal;
 
     @XmlTransient
     @JsonIgnore
     private String taskPathDeviationOptimalStr;
 
-    /**
-     * Average time of completion for the corresponding task, in seconds. It is
-     * only applicable to 2015 Edition, and takes only positive integer number
-     * values.
-     */
     @Schema(description = "Average time of completion for the corresponding task, in seconds. It is "
             + "only applicable to 2015 Edition, and takes only positive integer number "
             + "values.")
-    @XmlElement(required = true)
     private Long taskTimeAvg;
 
     @XmlTransient
     @JsonIgnore
     private String taskTimeAvgStr;
 
-    /**
-     * Standard deviation for task time, in seconds. It is only applicable to
-     * 2015 Edition, and takes only positive integer number values.
-     */
     @Schema(description = "Standard deviation for task time, in seconds. It is only applicable to "
             + "2015 Edition, and takes only positive integer number values.")
-    @XmlElement(required = true)
     private Integer taskTimeStddev;
 
     @XmlTransient
     @JsonIgnore
     private String taskTimeStddevStr;
 
-    /**
-     * Observed number of time (in seconds) taken for the corresponding task. It
-     * is only applicable to 2015 Edition, and takes only positive integer
-     * number values.
-     */
     @Schema(description = "Observed number of time (in seconds) taken for the corresponding task. It "
             + "is only applicable to 2015 Edition, and takes only positive integer "
             + "number values.")
-    @XmlElement(required = true)
     private Integer taskTimeDeviationObservedAvg;
 
     @XmlTransient
     @JsonIgnore
     private String taskTimeDeviationObservedAvgStr;
 
-    /**
-     * Optimal number of time (in seconds) taken for the corresponding task. It
-     * is only applicable to 2015 Edition, and takes only positive integer
-     * number values.
-     */
     @Schema(description = "Optimal number of time (in seconds) taken for the corresponding task. It "
             + "is only applicable to 2015 Edition, and takes only positive integer "
             + "number values.")
-    @XmlElement(required = true)
     private Integer taskTimeDeviationOptimalAvg;
 
     @XmlTransient
     @JsonIgnore
     private String taskTimeDeviationOptimalAvgStr;
 
-    /**
-     * Mean task error rate (in percentages). It is only applicable to 2015
-     * Edition, and takes only positive decimal numbers.
-     */
     @Schema(description = "Mean task error rate (in percentages). It is only applicable to 2015 "
             + "Edition, and takes only positive decimal numbers.")
-    @XmlElement(required = true)
     private Float taskErrors;
 
     @XmlTransient
     @JsonIgnore
     private String taskErrorsStr;
 
-    /**
-     * Standard deviation of the task error rate (in percentages). This variable
-     * is only applicable to 2015 Edition, and takes only positive decimal
-     * numbers.
-     */
     @Schema(description = "Standard deviation of the task error rate (in percentages). This variable "
             + "is only applicable to 2015 Edition, and takes only positive decimal "
             + "numbers.")
-    @XmlElement(required = true)
     private Float taskErrorsStddev;
 
     @XmlTransient
     @JsonIgnore
     private String taskErrorsStddevStr;
 
-    /**
-     * This variable indicates the type of scale that was used to rate the
-     * usability of the task. System Usability Scale is preferred. Likert Scale
-     * is also accepted. If the scale type is System Usability Scale, only
-     * positive integers between 1-100 are allowed. If the scale type is the
-     * Likert scale, positive decimal numbers are allowed. It is only applicable
-     * to 2015 Edition.
-     */
     @Schema(description = "This variable indicates the type of scale that was used to rate the "
             + "usability of the task. System Usability Scale is preferred. Likert Scale "
             + "is also accepted. If the scale type is System Usability Scale, only "
             + "positive integers between 1-100 are allowed. If the scale type is the "
             + "Likert scale, positive decimal numbers are allowed. It is only applicable "
             + "to 2015 Edition.")
-    @XmlElement(required = true)
     private String taskRatingScale;
 
-    /**
-     * This variable indicates mean usability rating of the corresponding task,
-     * based on the specified scale type. If the scale type is System Usability
-     * Scale, only positive integers between 1-100 are allowed. If the scale
-     * type is the Likert scale, positive decimal numbers are allowed. It is
-     * only applicable to 2015 Edition.
-     */
     @Schema(description = "This variable indicates mean usability rating of the corresponding task, "
             + "based on the specified scale type. If the scale type is System Usability "
             + "Scale, only positive integers between 1-100 are allowed. If the scale "
             + "type is the Likert scale, positive decimal numbers are allowed. It is "
             + "only applicable to 2015 Edition.")
-    @XmlElement(required = true)
     private Float taskRating;
 
     @XmlTransient
     @JsonIgnore
     private String taskRatingStr;
 
-    /**
-     * Standard deviation of the mean usability rating of the corresponding
-     * task, based on the specified scale type. It is only applicable to 2015
-     * Edition, and takes only positive decimal numbers.
-     */
     @Schema(description = "Standard deviation of the mean usability rating of the corresponding "
             + "task, based on the specified scale type. It is only applicable to 2015 "
             + "Edition, and takes only positive decimal numbers.")
-    @XmlElement(required = true)
     private Float taskRatingStddev;
 
     @XmlTransient
     @JsonIgnore
     private String taskRatingStddevStr;
 
-    /**
-     * The set of criteria within a listing to which this task is applied.
-     */
     @Schema(description = "The set of criteria within a listing to which this task is applied.")
-    @XmlElementWrapper(name = "criteriaList", nillable = true, required = false)
-    @XmlElement(name = "criteria")
     @Builder.Default
     private LinkedHashSet<CertificationCriterion> criteria = new LinkedHashSet<CertificationCriterion>();
 
-    /**
-     * Participants in the test task.
-     */
     @Schema(description = "Participants in the test task.")
-    @XmlElementWrapper(name = "participants", required = true)
-    @XmlElement(name = "participant")
     @Builder.Default
     private LinkedHashSet<TestParticipant> testParticipants = new LinkedHashSet<TestParticipant>();
 

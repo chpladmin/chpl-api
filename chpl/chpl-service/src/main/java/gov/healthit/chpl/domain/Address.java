@@ -3,11 +3,7 @@ package gov.healthit.chpl.domain;
 import java.io.Serializable;
 import java.util.HashMap;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlTransient;
-import javax.xml.bind.annotation.XmlType;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -20,8 +16,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 
-@XmlType(namespace = "http://chpl.healthit.gov/listings")
-@XmlAccessorType(XmlAccessType.FIELD)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Builder
 @AllArgsConstructor
@@ -33,75 +27,36 @@ public class Address implements Serializable {
     @JsonIgnore
     public static final String DEFAULT_COUNTRY = "US";
 
-    /**
-     * Address internal ID.
-     */
-    @XmlElement(required = true)
     @Schema(description = "Address internal ID.")
     private Long addressId;
 
-    /**
-     * First line of the street address of the health IT developer for 2014 and
-     * 2015 Edition. This variable is a string variable that does not have any
-     * restrictions on formatting or values.
-     */
     @Schema(description = "First line of the street address of the health IT developer for 2014 and "
             + "2015 Edition. This variable is a string variable that does not have any "
             + "restrictions on formatting or values.")
-    @XmlElement(required = true)
     private String line1;
 
-    /**
-     * Second line of the street address of the health IT developer for 2014 and
-     * 2015 Edition. This variable is a string variable that does not have any
-     * restrictions on formatting or values. This variable is optional.
-     */
     @Schema(description = "Second line of the street address of the health IT developer for 2014 and "
             + "2015 Edition. This variable is a string variable that does not have any "
             + "restrictions on formatting or values. This variable is optional.")
-    @XmlElement(required = false, nillable = true)
     private String line2;
 
-    /**
-     * The city in which the health IT developer can be contacted. This variable
-     * is for 2014 and 2015 Edition, and a string variable that does not have
-     * any restrictions on formatting or values.
-     */
     @Schema(description = "The city in which the health IT developer can be contacted. This variable "
             + "is for 2014 and 2015 Edition, and a string variable that does not have "
             + "any restrictions on formatting or values.")
-    @XmlElement(required = true)
     private String city;
 
-    /**
-     * The state in which the health IT developer can be contacted. This
-     * variable is applicable for 2014 and 2015 Edition and is a string variable
-     * that does not have any restrictions on formatting or values. Name of
-     * states are denoted with two-letter abbreviation.
-     */
     @Schema(description = "The state in which the health IT developer can be contacted. This "
             + "variable is applicable for 2014 and 2015 Edition and is a string variable "
             + "that does not have any restrictions on formatting or values. Name of "
             + "states are denoted with two-letter abbreviation.")
-    @XmlElement(required = true)
     private String state;
 
-    /**
-     * The ZIP code at which the health IT developer can be contacted. This is a
-     * variable applicable for 2014 and 2015 Edition, and a string variable that
-     * does not have any restrictions on formatting or values.
-     */
     @Schema(description = "The ZIP code at which the health IT developer can be contacted. This is a "
             + "variable applicable for 2014 and 2015 Edition, and a string variable that "
             + "does not have any restrictions on formatting or values.")
-    @XmlElement(required = true)
     private String zipcode;
 
-    /**
-     * Country of the address
-     */
     @Schema(description = "Country of the address")
-    @XmlElement(required = true)
     private String country;
 
     public Address() {

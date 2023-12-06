@@ -3,12 +3,6 @@ package gov.healthit.chpl.domain;
 import java.io.Serializable;
 import java.util.LinkedHashSet;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
-import javax.xml.bind.annotation.XmlType;
-
 import org.apache.commons.lang3.ObjectUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -19,8 +13,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.ToString;
 
-@XmlType(namespace = "http://chpl.healthit.gov/listings")
-@XmlAccessorType(XmlAccessType.FIELD)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Builder
 @ToString
@@ -28,56 +20,27 @@ import lombok.ToString;
 public class Measure implements Serializable {
     private static final long serialVersionUID = 3070401446291821552L;
 
-    /**
-     * An internal ID for each valid measure
-     */
     @Schema(description = "An internal ID for each valid measure")
-    @XmlElement(required = true)
     private Long id;
 
-    @XmlElement(required = true)
     private MeasureDomain domain;
 
-    /**
-     * Abbreviation of the Required Test. Examples are "RT7" or "RT9"
-     */
     @Schema(description = "Abbreviation of the Required Test. Examples are \"RT7\" or \"RT9\"")
-    @XmlElement(required = true)
     private String abbreviation;
 
-    /**
-     * The required test associated with each measure. For example, "Required Test 10: Stage 2 Objective 3 Measure 1 and
-     * Stage 3 Objective 4 Measure 1"
-     */
     @Schema(description = "The required test associated with each measure. For example, \"Required Test 10: Stage 2 Objective 3 Measure 1 and "
             + "Stage 3 Objective 4 Measure 1\"")
-    @XmlElement(required = true)
     private String requiredTest;
 
-    /**
-     * The name of the measure. For example, "Computerized Provider Order Entry -
-     * Medications: Eligible Hospital/Critical"
-     */
     @Schema(description = "The name of the measure. For example, \"Computerized Provider Order Entry - Medications: Eligible Hospital/Critical\"")
-    @XmlElement(required = true)
     private String name;
 
-    /**
-     * Whether or not this measure requires criteria to be designated as associated with it.
-     */
     @Schema(description = "Whether or not this measure requires criteria to be designated as associated with it.")
-    @XmlElement(required = true)
     private Boolean requiresCriteriaSelection;
 
-    /**
-     * A flag indicating whether or not the measure has been marked as removed.
-     */
     @Schema(description = "A flag indicating whether or not the measure has been marked as removed.")
-    @XmlElement(required = true)
     private Boolean removed;
 
-    @XmlElementWrapper(name = "allowedCriteria", nillable = true, required = false)
-    @XmlElement(required = true, name = "criteria")
     @Builder.Default
     private LinkedHashSet<CertificationCriterion> allowedCriteria = new LinkedHashSet<CertificationCriterion>();
 

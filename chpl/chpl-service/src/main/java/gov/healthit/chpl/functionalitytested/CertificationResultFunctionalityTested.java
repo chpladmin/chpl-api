@@ -2,13 +2,7 @@ package gov.healthit.chpl.functionalitytested;
 
 import java.io.Serializable;
 
-import javax.xml.bind.annotation.XmlAccessOrder;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorOrder;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlTransient;
-import javax.xml.bind.annotation.XmlType;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -22,16 +16,10 @@ import lombok.Builder;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-/**
- * Any optional, alternative, ambulatory (2015 only), or inpatient (2015 only) capabilities within a certification
- * criterion to which the Health IT module was tested and certified. For example, within the 2015 certification criteria
- * 170.315(a), the optional functionality to include a "reason for order" field should be denoted as "(a)(1)(ii)". You
- * can find a list of potential values in the 2014 or 2015 Functionality and Standards Reference Tables.
- *
- */
-@XmlType(namespace = "http://chpl.healthit.gov/listings")
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlAccessorOrder(value = XmlAccessOrder.ALPHABETICAL)
+@Schema(description = "Any optional, alternative, ambulatory (2015 only), or inpatient (2015 only) capabilities within a certification "
+     + "criterion to which the Health IT module was tested and certified. For example, within the 2015 certification criteria "
+     + "170.315(a), the optional functionality to include a \"reason for order\" field should be denoted as \"(a)(1)(ii)\". You "
+     + "can find a list of potential values in the 2014 or 2015 Functionality and Standards Reference Tables.")
 @JsonIgnoreProperties(ignoreUnknown = true)
 @NoArgsConstructor
 @AllArgsConstructor
@@ -40,36 +28,25 @@ import lombok.ToString;
 public class CertificationResultFunctionalityTested implements Serializable {
     private static final long serialVersionUID = -1647645050538126758L;
 
-    /**
-     * Functionality tested to certification result mapping internal ID
-     */
     @Schema(description = "Functionality tested to certification result mapping internal ID")
-    @XmlElement(required = true)
     private Long id;
 
-    /**
-     * Functionality Tested
-     */
     @Schema(description = "Functionality tested internal ID")
-    @XmlElement(required = true)
     private FunctionalityTested functionalityTested;
 
     @Deprecated
     @DeprecatedResponseField(message = "This field is deprecated and will be removed. This data can be found functionalityTested.id",
             removalDate = "2024-01-01")
-    @XmlTransient
     private Long functionalityTestedId;
 
     @Deprecated
     @DeprecatedResponseField(message = "This field is deprecated and will be removed. This data can be found functionalityTested.value",
             removalDate = "2024-01-01")
-    @XmlTransient
     private String description;
 
     @Deprecated
     @DeprecatedResponseField(message = "This field is deprecated and will be removed. This data can be found functionalityTested.regulatoryTextCitation",
             removalDate = "2024-01-01")
-    @XmlTransient
     private String name;
 
     @XmlTransient

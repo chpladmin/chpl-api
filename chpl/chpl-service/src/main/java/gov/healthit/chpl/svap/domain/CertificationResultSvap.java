@@ -3,11 +3,6 @@ package gov.healthit.chpl.svap.domain;
 import java.io.Serializable;
 import java.util.Objects;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlType;
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import gov.healthit.chpl.svap.entity.CertificationResultSvapEntity;
@@ -16,15 +11,10 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.ToString;
 
-/**
- * ONC has established the Standards Version Advancement Process (SVAP) to enable health IT developers’
- * ability to incorporate newer versions of Secretary-adopted standards and implementation specifications,
- * as part of the "Real World Testing" Condition and Maintenance of Certification requirement (§170.405)
- * of the 21st Century Cures Act
- *
- */
-@XmlType(namespace = "http://chpl.healthit.gov/listings")
-@XmlAccessorType(XmlAccessType.FIELD)
+@Schema(description = "ONC has established the Standards Version Advancement Process (SVAP) to enable health IT developers' "
+     + "ability to incorporate newer versions of Secretary-adopted standards and implementation specifications, "
+     + "as part of the \"Real World Testing\" Condition and Maintenance of Certification requirement (§170.405) "
+     + "of the 21st Century Cures Act.")
 @JsonIgnoreProperties(ignoreUnknown = true)
 @AllArgsConstructor
 @Builder
@@ -32,39 +22,19 @@ import lombok.ToString;
 public class CertificationResultSvap implements Serializable {
     private static final long serialVersionUID = -1935940788953178006L;
 
-    /**
-     * SVAP to certification result mapping internal ID
-     */
     @Schema(description = "SVAP to certification result mapping internal ID")
-    @XmlElement(required = true)
     private Long id;
 
-    /**
-     * SVAP internal ID
-     */
     @Schema(description = "SVAP internal ID")
-    @XmlElement(required = true)
     private Long svapId;
 
-    /**
-     * Regulatory Text Citation for Standard / Implementation Specification Adopted
-     */
     @Schema(description = "Regulatory Text Citation for Standard / Implementation Specification Adopted")
-    @XmlElement(required = true)
     private String regulatoryTextCitation;
 
-    /**
-     *  National Coordinator Approved Advanced Version(s)
-     */
     @Schema(description = "National Coordinator Approved Advanced Version(s)")
-    @XmlElement(required = true)
     private String approvedStandardVersion;
 
-    /**
-     *  Indicates if the SVAP has been replaced
-     */
     @Schema(description = "Indicates if the SVAP has been replaced")
-    @XmlElement(required = true)
     private boolean replaced;
 
     public boolean matches(CertificationResultSvap anotherSvap) {

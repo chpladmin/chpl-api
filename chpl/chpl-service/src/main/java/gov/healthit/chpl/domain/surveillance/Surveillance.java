@@ -7,12 +7,7 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlTransient;
-import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.apache.commons.lang3.StringUtils;
@@ -32,11 +27,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
 
-/**
- * Domain object for Surveillance.
- */
-@XmlType(namespace = "http://chpl.healthit.gov/listings")
-@XmlAccessorType(XmlAccessType.FIELD)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Builder
 @NoArgsConstructor
@@ -44,99 +34,53 @@ import lombok.NoArgsConstructor;
 public class Surveillance implements Serializable {
     private static final long serialVersionUID = 7018071250912371691L;
 
-    /**
-     * Surveillance internal ID
-     */
     @Schema(description = "Surveillance internal ID")
-    @XmlElement(required = true)
     private Long id;
 
     @XmlTransient
     private String surveillanceIdToReplace;
 
-    /**
-     * The user-friendly ID of this surveillance relative to a listing. Ex:
-     * SURV01
-     */
     @Schema(description = "The user-friendly ID of this surveillance relative to a listing. Ex: SURV01")
-    @XmlElement(required = true)
     private String friendlyId;
 
-    /**
-     * The listing under surveillance
-     */
-    @XmlElement(required = true)
     @Schema(description = "The listing under surveillance")
     private CertifiedProduct certifiedProduct;
 
-    /**
-     * Day surveillance began
-     */
     @Schema(description = "Day surveillance began")
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
     @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
-    @XmlElement(required = true)
     private LocalDate startDay;
 
-    /**
-     * Day surveillance ended
-     */
     @Schema(description = "Day surveillance ended")
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
     @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
-    @XmlElement(required = false, nillable = true)
     private LocalDate endDay;
 
-    /**
-     * The type of surveillance conducted. Allowable values are "Reactive" or
-     * "Randomized".
-     */
     @Schema(description = "The type of surveillance conducted. Allowable values are \"Reactive\" or \"Randomized\".")
-    @XmlElement(required = true)
     private SurveillanceType type;
 
-    /**
-     * Number of randomized sites used. Only applicable for randomized
-     * surveillance.
-     */
     @Schema(description = "Number of randomized sites used. Only applicable for randomized surveillance.")
-    @XmlElement(required = false, nillable = true)
     private Integer randomizedSitesUsed;
 
-    /**
-     * For a given surveillance activity, the certification criteria or program
-     * requirement being surveilled. Where applicable, the surveillance
-     * requirement will be presented as the regulation text number (e.g.
-     * 170.315(a)(2) or 170.315(k)(1)). However, other values are allowed to
-     * provide a brief description of the surveilled requirement.
-     */
     @Schema(description = "For a given surveillance activity, the certification criteria or program "
             + "requirement being surveilled. Where applicable, the surveillance "
             + "requirement will be presented as the regulation text number (e.g. "
             + "170.315(a)(2) or 170.315(k)(1)). However, other values are allowed to "
             + "provide a brief description of the surveilled requirement.")
-    @XmlElementWrapper(name = "surveilledRequirements", nillable = true, required = false)
-    @XmlElement(name = "requirement")
     @Builder.Default
     private LinkedHashSet<SurveillanceRequirement> requirements = new LinkedHashSet<SurveillanceRequirement>();
 
-    @XmlTransient
     @Builder.Default
     @ActivityExclude
     private Set<String> errorMessages = new HashSet<String>();
 
-    @XmlTransient
     @Builder.Default
     @ActivityExclude
     private Set<String> warningMessages = new HashSet<String>();
 
-    /**
-     * Date of the last modification of the surveillance.
-     */
     @Schema(description = "Date of the last modification of the surveillance.")
-    @XmlElement(required = true)
     private Date lastModifiedDate;
 
     /**

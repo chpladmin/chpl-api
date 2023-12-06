@@ -11,12 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlTransient;
-import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -49,11 +44,6 @@ import lombok.Builder;
 import lombok.NoArgsConstructor;
 import lombok.Singular;
 
-/**
- * Certified Product Search Details entity.
- */
-@XmlType(namespace = "http://chpl.healthit.gov/listings")
-@XmlAccessorType(XmlAccessType.FIELD)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Builder
 @AllArgsConstructor
@@ -67,465 +57,237 @@ public class CertifiedProductSearchDetails implements Serializable {
     public static final String EDITION_ID_KEY = "id";
     public static final String EDITION_NAME_KEY = "name";
 
-    /**
-     * The internal ID of the certified product.
-     */
-    @XmlElement(required = true)
     @Schema(description = "The internal ID of the certified product.")
     private Long id;
 
-    /**
-     * The unique CHPL ID of the certified product. This variable is applicable to 2014 and 2015 Edition. New uploads to CHPL will use the format:
-     * CertEdYr.ATL.ACB.Dev.Prod.Ver.ICS.AddS.Date
-     */
-    @XmlElement(required = true)
     @Schema(description = "The unique CHPL ID of the certified product. This variable is applicable to 2014 and 2015 Edition. New uploads to CHPL "
             + "will use the format: CertEdYr.ATL.ACB.Dev.Prod.Ver.ICS.AddS.Date")
     private String chplProductNumber;
 
-    /**
-     * A hyperlink to the test results used to certify the Complete EHRs and/or EHR Modules that can be accessed by the public. This variable is applicable to
-     * 2014 Edition. Fully qualified URL which is reachable via web browser validation and verification.
-     */
     @Schema(description = "A hyperlink to the test results used to certify the Complete EHRs and/or EHR Modules that can be accessed by the public. "
             + "This variable is applicable to 2014 Edition. Fully qualified URL which is reachable via web browser validation and verification.")
-    @XmlElement(required = false, nillable = true)
     private String reportFileLocation;
 
-    /**
-     * Hyperlink to FULL Usability Test Report meeting all the SED requirements. This variable is applicable for 2014 and 2015 Edition. Fully qualified URL
-     * which is reachable via web browser validation and verification.
-     */
     @Schema(description = "Hyperlink to FULL Usability Test Report meeting all the SED requirements. This variable is applicable for 2014 and 2015 Edition. "
             + "Fully qualified URL which is reachable via web browser validation and verification.")
-    @XmlElement(required = false, nillable = true)
     private String sedReportFileLocation;
 
-    /**
-     * For SED testing, a description of the intended users of the Health IT
-     */
     @Schema(description = "For SED testing, a description of the intended users of the Health IT")
-    @XmlElement(required = false, nillable = true)
     private String sedIntendedUserDescription;
 
-    /**
-     * Date all SED testing was concluded for the Health IT. The format for the date is YYYMMDD
-     */
     @Schema(description = "Date all SED testing was concluded for the Health IT. The format for the date is YYYMMDD")
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
     @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
-    @XmlElement(required = false, nillable = true)
     private LocalDate sedTestingEndDay;
 
     @XmlTransient
     @JsonIgnore
     private String sedTestingEndDateStr;
 
-    /**
-     * The ID used by ONC-ACBs for internal tracking for 2014 and 2015 Certification Edition. It is a string variable that does not have any restrictions on
-     * formatting or values.
-     */
     @Schema(description = "The ID used by ONC-ACBs for internal tracking for 2014 and 2015 Certification Edition. It is a string variable that does not have "
             + "any restrictions on formatting or values.")
-    @XmlElement(required = false, nillable = true)
     private String acbCertificationId;
 
-    /**
-     * The classification of the certified product (either complete or modular). It is only applicable to 2014 Edition, and takes values of either Complete EHR
-     * or Modular EHR.
-     */
     @Schema(description = "The classification of the certified product (either complete or modular). It is only applicable to 2014 Edition, and takes values "
             + "of either Complete EHR or Modular EHR.")
-    @XmlElement(required = false, nillable = true)
     private Map<String, Object> classificationType = new HashMap<String, Object>();
 
-    /**
-     * If there was previously a different certifying body managing this listing this is their name.
-     */
     @Schema(description = "If there was previously a different certifying body managing this listing this is their name.")
-    @XmlElement(required = false, nillable = true)
     private String otherAcb;
 
-    /**
-     * The developer or vendor of the certified health IT product listing.
-     */
     @Schema(description = "The developer or vendor of the certified health IT product listing.")
-    @XmlElement(required = true)
     private Developer developer;
 
-    /**
-     * The product which this listing is under.
-     */
     @Schema(description = "The product which this listing is under.")
-    @XmlElement(required = true)
     private Product product;
 
-    /**
-     * The version of the product being uploaded. This variable is applicable for 2014 and 2015 Edition.
-     */
     @Schema(description = "The version of the product being uploaded. This variable is applicable for 2014 and 2015 Edition.")
-    @XmlElement(required = true)
     private ProductVersion version;
 
-    /**
-     * The certification edition. It takes a value of 2011, 2014 or 2015.
-     */
     @Deprecated
     @DeprecatedResponseField(message = "Please use the 'edition' field.", removalDate = "2024-01-01")
     @Builder.Default
-    @XmlTransient
     @Schema(description = "The certification edition. It takes a value of 2011, 2014 or 2015.")
     private Map<String, Object> certificationEdition = new HashMap<String, Object>();
 
-    /**
-     * The certification edition.
-     */
     @Schema(description = "The certification edition.")
-    @XmlElement(required = false, nillable = true)
     private CertificationEdition edition;
 
-    /**
-     * For 2014 products, the practice setting for which the certified product is designed. It takes value of Ambulatory or Inpatient.
-     */
     @Schema(description = "For 2014 products, the practice setting for which the certified product is designed. It takes value of Ambulatory or Inpatient.")
-    @XmlElement(required = false, nillable = true)
     private Map<String, Object> practiceType = new HashMap<String, Object>();
 
-    /**
-     * The ONC-ACB responsible for certifying the Health IT Module. This variable is applicable to 2014 and 2015 Edition, and allowable values are: Drummond
-     * Group, ICSA Labs, UL LLC.
-     */
     @Schema(description = "The ONC-ACB responsible for certifying the Health IT Module. This variable is applicable to 2014 and 2015 Edition, and "
             + "allowable values are: Drummond Group, ICSA Labs, UL LLC.")
-    @XmlElement(required = true)
     private Map<String, Object> certifyingBody = new HashMap<String, Object>();
 
-    /**
-     * The ATL responsible for testing the Health IT Module. It is applicable for 2014 and 2015 Edition and takes values of: Drummond Group, ICSA Labs, UL LLC,
-     * National Technical Systems, SLI Global, CCHIT
-     */
     @Schema(description = "The ATL responsible for testing the Health IT Module. It is applicable for 2014 and 2015 Edition and takes values of: "
             + "Drummond Group, ICSA Labs, UL LLC, National Technical Systems, SLI Global, CCHIT")
-    @XmlElementWrapper(name = "testingLabs", nillable = true, required = false)
-    @XmlElement(name = "testingLab")
     @Builder.Default
     private List<CertifiedProductTestingLab> testingLabs = new ArrayList<CertifiedProductTestingLab>();
 
-    @XmlTransient
     private Long certificationDate;
 
     @XmlTransient
     @JsonIgnore
     private String certificationDateStr;
 
-    /**
-     * Decertification date represented in milliseconds since epoch
-     */
     @Deprecated
     @DeprecatedResponseField(message = "Please use the 'decertificationDay' field.", removalDate = "2024-01-01")
     @Schema(description = "Decertification date represented in milliseconds since epoch")
-    @XmlTransient
     private Long decertificationDate;
 
-    /**
-     * Decertification day
-     */
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
     @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
     @Schema(description = "Decertification day")
-    @XmlElement(required = false, nillable = true)
     private LocalDate decertificationDay;
 
-    /**
-     * Number of certification criteria this listing attests to.
-     */
     @Schema(description = "Number of certification criteria this listing attests to.")
-    @XmlElement(required = false, nillable = true)
     private Integer countCerts;
 
-    /**
-     * Number of cqms this listing attests to.
-     */
     @Schema(description = "Number of cqms this listing attests to.")
-    @XmlElement(required = false, nillable = true)
     private Integer countCqms;
 
-    /**
-     * Total count of open+closed surveillance for this listing.
-     */
     @Schema(description = "Total count of open+closed surveillance for this listing.")
-    @XmlElement(required = false, nillable = true)
     private Integer countSurveillance;
 
-    /**
-     * Total count of open surveillance for this listing.
-     */
     @Schema(description = "Total count of open surveillance for this listing.")
-    @XmlElement(required = false, nillable = true)
     private Integer countOpenSurveillance;
 
-    /**
-     * Total count of closed surveillance for this listing.
-     */
     @Schema(description = "Total count of closed surveillance for this listing.")
-    @XmlElement(required = false, nillable = true)
     private Integer countClosedSurveillance;
 
-    /**
-     * The total number of open (unresolved) non-conformities found for the corresponding listing. For additional information, please see 'Understanding
-     * Surveillance Information in the CHPL', available in the CHPL Public User Guide
-     */
     @Schema(description = "The total number of open (unresolved) non-conformities found for the corresponding listing. For additional information, "
             + "please see 'Understanding Surveillance Information in the CHPL', available in the CHPL Public User Guide")
-    @XmlElement(required = false, nillable = true)
     private Integer countOpenNonconformities;
 
-    /**
-     * Total count of closed nonconformities for this listing.
-     */
     @Schema(description = "Total count of closed nonconformities for this listing.")
-    @XmlElement(required = false, nillable = true)
     private Integer countClosedNonconformities;
 
-    /**
-     * This variable indicates whether or not the certification issued was a result of an inherited certified status request. This variable is applicable for
-     * 2014 and 2015 Edition and contains the inherited status as well as first-level parents and children.
-     */
     @Schema(description = "This variable indicates whether or not the certification issued was a result of an inherited certified status request. This "
             + "variable is applicable for 2014 and 2015 Edition and contains the inherited status as well as first-level parents and children.")
-    @XmlElement(required = false, nillable = true)
     private InheritedCertificationStatus ics;
 
-    /**
-     * This variable identifies if Health IT Module was certified to the accessibility-centered design certification criterion for 2015 Edition. It is a binary
-     * variable that takes value of true or false.
-     */
     @Schema(description = "This variable identifies if Health IT Module was certified to the accessibility-centered design certification criterion for 2015 "
             + "Edition. It is a binary variable that takes value of true or false.")
-    @XmlElement(required = false, nillable = true)
     private Boolean accessibilityCertified;
 
     @XmlTransient
     @JsonIgnore
     private String accessibilityCertifiedStr;
 
-    /**
-     * For legacy CHPL listings, any additional software needed.
-     */
     @Schema(description = "For legacy CHPL listings, any additional software needed.")
-    @XmlElement(required = false, nillable = true)
     private String productAdditionalSoftware;
 
-    /**
-     * A hyperlink to the mandatory disclosures required by 170.523(k)(1) for the Health IT Module
-     */
     @Schema(description = "A hyperlink to the mandatory disclosures required by 170.523(k)(1) for the Health IT Module")
-    @XmlElement(required = false, nillable = true)
     private String mandatoryDisclosures;
 
-    @XmlTransient
     @Deprecated
     @DeprecatedResponseField(message = "This field is deprecated and will be removed.", removalDate = "2023-10-31")
     private Long lastModifiedDate;
 
-    /**
-     * Any surveillance that has occurred on this listing
-     */
     @Schema(description = "Any surveillance that has occurred on this listing")
-    @XmlElementWrapper(name = "surveillanceList", nillable = true, required = false)
-    @XmlElement(name = "surveillance")
     private List<Surveillance> surveillance = new ArrayList<Surveillance>();
 
-    /**
-     * Direct reviews that were conducted against this listing or its developer.
-     */
     @Schema(description = "Direct reviews that were conducted against this listing or its developer.")
-    @XmlElementWrapper(name = "directReviews", nillable = true, required = false)
-    @XmlElement(name = "directReview")
     private List<DirectReview> directReviews = new ArrayList<DirectReview>();
 
-    @XmlTransient
     private boolean directReviewsAvailable;
 
-    /**
-     * A record of CHPL Product Numbers which have been used at some time in the past to reference the listing.
-     */
     @Schema(description = "A record of CHPL Product Numbers which have been used at some time in the past to reference the listing.")
-    @XmlElementWrapper(name = "chplProductNumberHistory", nillable = true, required = false)
-    @XmlElement(name = "chplProductNumberHistoryItem")
     private List<CertifiedProductChplProductNumberHistory> chplProductNumberHistory = new ArrayList<CertifiedProductChplProductNumberHistory>();
 
-    /**
-     * This variable indicates that if there is the standard(s) or lack thereof used to meet the accessibility-centered design certification criterion for 2015
-     * Certification Edtion. It is a string variable that does not have any restrictions on formatting or values.
-     */
     @Schema(description = "This variable indicates that if there is the standard(s) or lack thereof used to meet the accessibility-centered design "
             + "certification criterion for 2015 Certification Edtion. It is a string variable that does not have any restrictions on formatting or "
             + "values.")
-    @XmlElementWrapper(name = "accessibilityStandards", nillable = true, required = false)
-    @XmlElement(name = "accessibilityStandard")
     @Builder.Default
     private List<CertifiedProductAccessibilityStandard> accessibilityStandards = new ArrayList<CertifiedProductAccessibilityStandard>();
 
-    /**
-     * Description of the health IT module(s) intended users for the tested capabilities/related criteria. This variable is applicable only for 2015 Edition,
-     * and a string variable that does not take any restrictions on formatting or values.
-     */
     @Schema(description = "Description of the health IT module(s) intended users for the tested capabilities/related criteria. This variable is applicable "
             + "only for 2015 Edition, and a string variable that does not take any restrictions on formatting or values.")
-    @XmlElementWrapper(name = "targetedUsers", nillable = true, required = false)
-    @XmlElement(name = "targetedUser")
     @Builder.Default
     private List<CertifiedProductTargetedUser> targetedUsers = new ArrayList<CertifiedProductTargetedUser>();
 
-    /**
-     * The standard or mapping used to meet the quality management system certification criterion. This variable is applicable for 2014 and 2015 Edition, and a
-     * string variable that does not take any restrictions on formatting or values.
-     */
     @Schema(description = "The standard or mapping used to meet the quality management system certification criterion. This variable is applicable for 2014 "
             + "and 2015 Edition, and a string variable that does not take any restrictions on formatting or values.")
-    @XmlElementWrapper(name = "qmsStandards", nillable = true, required = false)
-    @XmlElement(name = "qmsStandard")
     @Builder.Default
     private List<CertifiedProductQmsStandard> qmsStandards = new ArrayList<CertifiedProductQmsStandard>();
 
-    /**
-     * This variable indicates if the listing utilizes automated numerator or automated measure required tests.
-     */
     @Schema(description = "This variable indicates if the listing utilizes automated numerator or automated measure required tests.")
-    @XmlElementWrapper(name = "measures", nillable = true, required = false)
-    @XmlElement(name = "measure")
     @Builder.Default
     private List<ListingMeasure> measures = new ArrayList<ListingMeasure>();
 
-    /**
-     * The criteria to which this listing attests
-     */
     @Schema(description = "The criteria to which this listing attests")
-    @XmlElementWrapper(name = "certificationResults", nillable = true, required = false)
-    @XmlElement(name = "certificationResult")
     @Singular
     private List<CertificationResult> certificationResults = new ArrayList<CertificationResult>();
 
-    /**
-     * The clinical quality measures to which this listing has been certified.
-     */
     @Schema(description = "The clinical quality measures to which this listing has been certified.")
-    @XmlElementWrapper(name = "cqmResults", nillable = true, required = false)
-    @XmlElement(name = "cqmResult")
     @Builder.Default
     private List<CQMResultDetails> cqmResults = new ArrayList<CQMResultDetails>();
 
     /**
-     * This property exists solely to be able to deserialize listing activity events from very old data. Since we care about certification status changes when
-     * categorizing listing activity we need to be able to read this value in old listing activity event data. Not all old listing properties need to be present
-     * for this reason. This property should not be visible in the generated XSD or any response from an API call.
+     * This property exists solely to be able to deserialize listing activity events from very old data.
+     * Since we care about certification status changes when categorizing listing activity we need to be able to read
+     * this value in old listing activity event data. Not all old listing properties need to be present
+     * for this reason. This property should not be visible in any response from an API call.
      */
-    @Schema(description = "This property exists solely to be able to deserialize listing activity events from very old data. Since we care about certification "
-            + "status changes when categorizing listing activity we need to be able to read this value in old listing activity event data. Not all old listing "
-            + "properties need to be present for this reason. This property should not be visible in the generated XSD or any response from an API call.")
     @JsonProperty(access = Access.WRITE_ONLY)
     @XmlTransient
     private LegacyCertificationStatus certificationStatus;
 
-    /**
-     * All current and historical certification status of this listing. The certification statuses take values of Active; Suspended by ONC; Suspended by
-     * ONC-ACB; Withdrawn by Developer; Withdrawn by Developer Under Surveillance/Review; Withdrawn by ONC-ACB; Terminated by ONC; Retired. For a detailed
-     * description of each certification status, please see 'Understanding Certification Status in the CHPL', available in the CHPL Public User Guide.
-     */
     @Schema(description = "All current and historical certification status of this listing. The certification statuses take values of Active; Suspended by "
             + "ONC; Suspended by ONC-ACB; Withdrawn by Developer; Withdrawn by Developer Under Surveillance/Review; Withdrawn by ONC-ACB; Terminated by ONC; "
             + "Retired. For a detailed description of each certification status, please see 'Understanding Certification Status in the CHPL', available in "
             + "the CHPL Public User Guide.")
-    @XmlElementWrapper(name = "certificationEvents", nillable = true, required = false)
-    @XmlElement(name = "certificationEvent")
     @Builder.Default
     private List<CertificationStatusEvent> certificationEvents = new ArrayList<CertificationStatusEvent>();
 
-    /**
-     * This variable identifies if the listing meets the definition of "Cures Update". It is a binary variable that takes value of true or false.
-     */
     @Schema(description = "This variable identifies if the listing meets the definition of \"Cures Update\". It is a binary variable that takes value of "
             + "true or false.")
-    @XmlElement(required = false, nillable = true)
     private Boolean curesUpdate;
 
-    /**
-     * All current and historical values of promoting interoperability for this listing along with the dates each user count was valid.
-     */
     @Schema(description = "All current and historical values of promoting interoperability for this listing along with the dates each user count was valid.")
-    @XmlElementWrapper(name = "promotingInteroperabilityUserHistory", nillable = true, required = false)
-    @XmlElement(name = "promotingInteroperabilityUserEntry")
     @Builder.Default
     private List<PromotingInteroperabilityUser> promotingInteroperabilityUserHistory = new ArrayList<PromotingInteroperabilityUser>();
 
-    /**
-     * All data related to safety-enhanced design for this listing.
-     */
     @Schema(description = "All data related to safety-enhanced design for this listing.")
-    @XmlElement(name = "sed", nillable = true, required = false)
     private CertifiedProductSed sed = new CertifiedProductSed();
 
-    /**
-     * URL where the listing's Real World Testing Plan is located
-     */
     @Schema(description = "URL where the listing's Real World Testing Plan is located")
-    @XmlElement(name = "rwtPlansUrl", nillable = true, required = false)
     private String rwtPlansUrl;
 
-    /**
-     * Date the listing's Real World Testing Plan was submitted
-     */
     @Schema(description = "Date the listing's Real World Testing Plan was submitted")
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
     @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
-    @XmlElement(name = "rwtPlansCheckDate", nillable = true, required = false)
     private LocalDate rwtPlansCheckDate;
 
-    /**
-     * URL where the listing's Real World Testing Results is located
-     */
     @Schema(description = "URL where the listing's Real World Testing Results is located")
-    @XmlElement(name = "rwtResultsUrl", nillable = true, required = false)
     private String rwtResultsUrl;
 
-    /**
-     * Date the listing's Real World Testing Results was submitted
-     */
     @Schema(description = "Date the listing's Real World Testing Results was submitted")
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
     @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
-    @XmlElement(name = "rwtResultsCheckDate", nillable = true, required = false)
     private LocalDate rwtResultsCheckDate;
 
-    /**
-     * URL where the Listing's SVAP Notice URL is located
-     */
     @Schema(description = "URL where the Listing's SVAP Notice URL is located")
-    @XmlElement(name = "svapNoticeUrl", nillable = true, required = false)
     private String svapNoticeUrl;
 
     @Builder.Default
-    @XmlTransient
     @ActivityExclude
     private Set<String> warningMessages = new LinkedHashSet<String>();
 
     @Builder.Default
-    @XmlTransient
     @ActivityExclude
     private Set<String> errorMessages = new LinkedHashSet<String>();
 
     @Builder.Default
-    @XmlTransient
     @ActivityExclude
     private Set<String> dataErrorMessages = new HashSet<String>();
 
     @Builder.Default
-    @XmlTransient
     @ActivityExclude
     private Set<String> businessErrorMessages = new HashSet<String>();
 
@@ -1008,10 +770,6 @@ public class CertifiedProductSearchDetails implements Serializable {
         this.certificationDate = certificationDate;
     }
 
-    /**
-     * Certification date represented in milliseconds since epoch
-     */
-    @XmlElement(nillable = false, required = true)
     @Schema(description = "Certification date represented in milliseconds since epoch")
     public Long getCertificationDate() {
         if (CollectionUtils.isEmpty(this.getCertificationEvents())
@@ -1034,11 +792,7 @@ public class CertifiedProductSearchDetails implements Serializable {
         return result.getEventDate();
     }
 
-    /**
-     * Certification day
-     */
     @Schema(description = "Certification day")
-    @XmlElement(nillable = false, required = true)
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
     @XmlJavaTypeAdapter(value = LocalDateAdapter.class)

@@ -4,13 +4,7 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Objects;
 
-import javax.xml.bind.annotation.XmlAccessOrder;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorOrder;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlTransient;
-import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.apache.commons.lang3.tuple.Pair;
@@ -30,6 +24,7 @@ import gov.healthit.chpl.util.DateUtil;
 import gov.healthit.chpl.util.LocalDateAdapter;
 import gov.healthit.chpl.util.LocalDateDeserializer;
 import gov.healthit.chpl.util.LocalDateSerializer;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -37,9 +32,6 @@ import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
-@XmlType(namespace = "http://chpl.healthit.gov/listings")
-@XmlAccessorType(XmlAccessType.FIELD)
-@XmlAccessorOrder(value = XmlAccessOrder.ALPHABETICAL)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @SuperBuilder
 @NoArgsConstructor
@@ -50,56 +42,35 @@ import lombok.experimental.SuperBuilder;
 public class CertificationCriterion implements Serializable {
     private static final long serialVersionUID = 5732322243572571895L;
 
-    @XmlElement(required = false, nillable = true)
     private Long id;
-
-    @XmlElement(required = true)
     private String number;
-
-    @XmlElement(required = false, nillable = true)
     private String title;
-
-    @XmlElement(required = false, nillable = true)
     private Long certificationEditionId;
-
-    @XmlElement(required = false, nillable = true)
     private String certificationEdition;
 
-    /**
-     * A date value representing the date by which the Criteria Attribute became available.
-     */
+    @Schema(description = "A date value representing the date by which the Criteria Attribute became available.")
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
-    @XmlElement(required = false, nillable = true)
     @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
     private LocalDate startDay;
 
-    /**
-     * A date value representing the date by which the Criteria Attribute can no longer be used.
-     */
+    @Schema(description = "A date value representing the date by which the Criteria Attribute can no longer be used.")
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
-    @XmlElement(required = false, nillable = true)
     @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
     private LocalDate endDay;
 
-    @XmlElement(required = false, nillable = true)
     private String description;
 
-    /**
-     * The rule which this criterion is associated with.
-     */
-    @XmlElement(required = false, nillable = true)
+    @Schema(description = "The rule which this criterion is associated with.")
     private Rule rule;
 
     @Deprecated
     @DeprecatedResponseField(message = "This property will be removed. It can be derived based on the endDay.",
         removalDate = "2024-01-01")
-    @XmlTransient
     private Boolean removed;
 
     @JsonProperty(access = Access.READ_ONLY)
-    @XmlElement(required = true, nillable = false)
     @XmlJavaTypeAdapter(value = CriterionStatusAdapter.class)
     public CriterionStatus getStatus() {
         if (certificationEdition != null
@@ -116,7 +87,6 @@ public class CertificationCriterion implements Serializable {
     }
 
     @JsonProperty(access = Access.READ_ONLY)
-    @XmlTransient
     public Boolean isRemoved() {
         return getStatus().equals(CriterionStatus.REMOVED);
     }

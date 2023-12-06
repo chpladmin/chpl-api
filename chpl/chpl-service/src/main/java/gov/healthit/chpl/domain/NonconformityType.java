@@ -3,11 +3,7 @@ package gov.healthit.chpl.domain;
 import java.io.Serializable;
 import java.time.LocalDate;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlTransient;
-import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.apache.commons.lang3.StringUtils;
@@ -35,40 +31,30 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@XmlType(namespace = "http://chpl.healthit.gov/listings")
-@XmlAccessorType(XmlAccessType.FIELD)
 public class NonconformityType implements Serializable {
 
     private static final long serialVersionUID = -7437221753188417890L;
 
     private Long id;
 
-    @XmlTransient
     private CertificationEdition certificationEdition;
 
     @JsonIgnore
+    @XmlTransient
     private String edition;
 
     private String number;
     private String title;
 
-    /**
-     * A date value representing the date by which the Non-Conformity Type became available.
-     */
     @Schema(description = "A date value representing the date by which the Non-Conformity Type became available.")
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
-    @XmlElement(required = false, nillable = true)
     @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
     private LocalDate startDay;
 
-    /**
-     * A date value representing the date by which the Non-Conformity Type can no longer be used.
-     */
     @Schema(description = "A date value representing the date by which the Non-Conformity Type can no longer be used.")
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
-    @XmlElement(required = false, nillable = true)
     @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
     private LocalDate endDay;
 
@@ -77,7 +63,6 @@ public class NonconformityType implements Serializable {
     private NonconformityClassification classification;
 
     @JsonProperty(access = Access.READ_ONLY)
-    @XmlElement(required = true, nillable = false)
     @XmlJavaTypeAdapter(value = CriterionStatusAdapter.class)
     public CriterionStatus getStatus() {
         if (certificationEdition != null && certificationEdition.getName() != null

@@ -2,11 +2,7 @@ package gov.healthit.chpl.domain;
 
 import java.io.Serializable;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlTransient;
-import javax.xml.bind.annotation.XmlType;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -18,42 +14,19 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 
-/**
- * The standard(s) or lack thereof used to meet the accessibility-centered
- * design certification criterion. Please see the 2015 Edition Certification
- * Companion Guide for Accessibility Centered Design for example accessibility
- * standards:
- * https://www.healthit.gov/sites/default/files/2015Ed_CCG_g5-Accessibility-
- * centered-design.pdf
- *
- */
-@XmlType(namespace = "http://chpl.healthit.gov/listings")
-@XmlAccessorType(XmlAccessType.FIELD)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Builder
 @AllArgsConstructor
 public class CertifiedProductAccessibilityStandard implements Serializable {
     private static final long serialVersionUID = -676179466407109456L;
 
-    /**
-     * Accessibility standard to listing mapping internal ID
-     */
     @Schema(description = "Accessibility standard to listing mapping internal ID")
-    @XmlElement(required = true)
     private Long id;
 
-    /**
-     * Accessibility standard internal ID
-     */
     @Schema(description = "Accessibility standard internal ID")
-    @XmlElement(required = true)
     private Long accessibilityStandardId;
 
-    /**
-     * Accessibility standard name
-     */
     @Schema(description = "Accessibility standard name")
-    @XmlElement(required = true)
     private String accessibilityStandardName;
 
     @XmlTransient
