@@ -51,7 +51,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\"certificationBody\":{\"id\":4,\"acbCode\":\"05\",\"name\":\"SLI Compliance\",\"website\":\"http://www.slicompliance.com\",\"address\":{\"addressId\":380,\"line1\":\"4720 Independence Street\",\"line2\":null,\"city\":\"Wheat Ridge\",\"state\":\"CO\",\"zipcode\":\"80033\",\"country\":\"USA\"},\"retired\":false,\"retirementDate\":null,\"displayValue\":\"SLI Compliance\"},\"formattedReceivedDate\":\"2021-03-01T00:00:00.000Z\",\"acbComplaintId\":\"Test01\",\"complainantType\":{\"id\":6,\"name\":\"Anonymous\",\"description\":null},\"summary\":\"Test summary\",\"receivedDate\":1614556800000,\"closedDate\":null}"
+							"raw": "{\"certificationBody\":{\"id\":4,\"acbCode\":\"05\",\"name\":\"SLI Compliance\",\"website\":\"http://www.slicompliance.com\",\"address\":{\"addressId\":380,\"line1\":\"4720 Independence Street\",\"line2\":null,\"city\":\"Wheat Ridge\",\"state\":\"CO\",\"zipcode\":\"80033\",\"country\":\"USA\"},\"retired\":false,\"retirementDay\":null,\"displayValue\":\"SLI Compliance\"},\"formattedReceivedDate\":\"2021-03-01T00:00:00.000Z\",\"acbComplaintId\":\"Test01\",\"complainantType\":{\"id\":6,\"name\":\"Anonymous\",\"description\":null},\"summary\":\"Test summary\",\"receivedDate\":1614556800000,\"closedDate\":null}"
 						},
 						"url": {
 							"raw": "{{url}}/rest/complaints",

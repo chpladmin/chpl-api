@@ -209,7 +209,6 @@ public class CertifiedProductDAO extends BaseDAOImpl {
                 .chplProductNumber(cpd.getChplProductNumber())
                 .curesUpdate(cpd.getCuresUpdate())
                 .edition(cpd.getYear())
-                .lastModifiedDate(cpd.getLastModifiedDate().getTime())
                 .build();
     }
 
@@ -566,7 +565,6 @@ public class CertifiedProductDAO extends BaseDAOImpl {
             cp.setChplProductNumber(entity.getChplProductNumber());
             cp.setEdition(entity.getYear());
             cp.setId(entity.getId());
-            cp.setLastModifiedDate(entity.getLastModifiedDate().getTime());
             results.add(cp);
         }
         return results;

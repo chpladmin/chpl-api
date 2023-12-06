@@ -2,7 +2,6 @@ package gov.healthit.chpl.domain;
 
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.util.Date;
 
 import javax.xml.bind.annotation.XmlAccessOrder;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -16,7 +15,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseField;
 import gov.healthit.chpl.util.LocalDateAdapter;
 import gov.healthit.chpl.util.LocalDateDeserializer;
 import gov.healthit.chpl.util.LocalDateSerializer;
@@ -59,10 +57,6 @@ public class TestingLab implements Serializable {
     @XmlElement(required = false, nillable = true)
     @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
     private LocalDate retirementDay;
-
-    @Deprecated
-    @DeprecatedResponseField(message = "This field is deprecated and will be removed. Please use retirementDay.", removalDate = "2023-10-31")
-    private Date retirementDate;
 
     public Long getId() {
         return id;
@@ -118,13 +112,5 @@ public class TestingLab implements Serializable {
 
     public void setRetirementDay(LocalDate retirementDay) {
         this.retirementDay = retirementDay;
-    }
-
-    public Date getRetirementDate() {
-        return retirementDate;
-    }
-
-    public void setRetirementDate(Date retirementDate) {
-        this.retirementDate = retirementDate;
     }
 }
