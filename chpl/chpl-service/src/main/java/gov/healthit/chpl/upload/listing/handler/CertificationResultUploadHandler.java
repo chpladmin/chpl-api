@@ -15,6 +15,8 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.functionalitytested.CertificationResultFunctionalityTested;
 import gov.healthit.chpl.functionalitytested.FunctionalityTested;
 import gov.healthit.chpl.optionalStandard.domain.CertificationResultOptionalStandard;
+import gov.healthit.chpl.standard.CertificationResultStandard;
+import gov.healthit.chpl.standard.Standard;
 import gov.healthit.chpl.svap.domain.CertificationResultSvap;
 import gov.healthit.chpl.upload.listing.Headings;
 import gov.healthit.chpl.upload.listing.ListingUploadHandlerUtil;
@@ -70,6 +72,7 @@ public class CertificationResultUploadHandler {
                 .riskManagementSummaryInformation(parseRiskManagementSummaryInformation(certHeadingRecord, certResultRecords))
                 .apiDocumentation(parseApiDocumentation(certHeadingRecord, certResultRecords))
                 .svaps(parseSvaps(certHeadingRecord, certResultRecords))
+                .standards(parseStandards(certHeadingRecord, certResultRecords))
             .build();
         return certResult;
     }
@@ -204,4 +207,22 @@ public class CertificationResultUploadHandler {
         }
         return svaps;
     }
+
+    private List<CertificationResultStandard> parseStandards(CSVRecord certHeadingRecord, List<CSVRecord> certResultRecords) {
+        List<CertificationResultStandard> standards = new ArrayList<CertificationResultStandard>();
+            List<String> regulatoryTextCitations = uploadUtil.parseMultiRowFieldWithoutEmptyValues(
+                    Headings.STANDARD, certHeadingRecord, certResultRecords);
+            if (!CollectionUtils.isEmpty(regulatoryTextCitations)) {
+                regulatoryTextCitations.stream().forEach(regulatoryTextCitation -> {
+                    CertificationResultStandard standard = CertificationResultStandard.builder()
+                            .standard(Standard.builder()
+                                    .regulatoryTextCitation(regulatoryTextCitation)
+                                    .build())
+                            .build();
+                    standards.add(standard);
+                });
+        }
+        return standards;
+    }
+
 }

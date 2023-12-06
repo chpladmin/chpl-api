@@ -27,6 +27,7 @@ public class CertificationResultReviewer {
     private TestDataReviewer testDataReviewer;
     private ConformanceMethodReviewer conformanceMethodReviewer;
     private FunctionalityTestedReviewer functionalityTestedReviewer;
+    private StandardReviewer standardReviewer;
     private TestStandardReviewer testStandardReviewer;
     private OptionalStandardReviewer optionalStandardReviewer;
     private SvapReviewer svapReviewer;
@@ -47,6 +48,7 @@ public class CertificationResultReviewer {
             @Qualifier("listingUploadTestDataReviewer") TestDataReviewer testDataReviewer,
             @Qualifier("conformanceMethodReviewer") ConformanceMethodReviewer conformanceMethodReviewer,
             @Qualifier("listingUploadFunctionalityTestedReviewer") FunctionalityTestedReviewer functionalityTestedReviewer,
+            @Qualifier("listingUploadStandardReviewer") StandardReviewer standardReviewer,
             @Qualifier("listingUploadTestStandardReviewer") TestStandardReviewer testStandardReviewer,
             @Qualifier("listingUploadOptionalStandardReviewer") OptionalStandardReviewer optionalStandardReviewer,
             @Qualifier("listingUploadSvapReviewer") SvapReviewer svapReviewer,
@@ -62,6 +64,7 @@ public class CertificationResultReviewer {
         this.testDataReviewer = testDataReviewer;
         this.conformanceMethodReviewer = conformanceMethodReviewer;
         this.functionalityTestedReviewer = functionalityTestedReviewer;
+        this.standardReviewer = standardReviewer;
         this.testStandardReviewer = testStandardReviewer;
         this.optionalStandardReviewer = optionalStandardReviewer;
         this.svapReviewer = svapReviewer;
@@ -99,6 +102,7 @@ public class CertificationResultReviewer {
         testToolReviewer.review(listing);
         testDataReviewer.review(listing);
         functionalityTestedReviewer.review(listing);
+        standardReviewer.review(listing);
         testStandardReviewer.review(listing);
         optionalStandardReviewer.review(listing);
         svapReviewer.review(listing);
