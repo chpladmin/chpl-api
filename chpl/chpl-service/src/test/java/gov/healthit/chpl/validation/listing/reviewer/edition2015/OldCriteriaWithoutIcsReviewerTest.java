@@ -20,6 +20,7 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.InheritedCertificationStatus;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.service.CertificationCriterionService.Criteria2015;
+import gov.healthit.chpl.util.CertificationCriterionServiceTest;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 public class OldCriteriaWithoutIcsReviewerTest {
@@ -53,7 +54,7 @@ public class OldCriteriaWithoutIcsReviewerTest {
         Mockito.when(env.getProperty(Criteria2015.D_2_OLD)).thenReturn(String.valueOf(EDITION_2015_D_2));
         Mockito.when(env.getProperty(Criteria2015.D_3_OLD)).thenReturn(String.valueOf(EDITION_2015_D_3));
         Mockito.when(env.getProperty(Criteria2015.D_10_OLD)).thenReturn(String.valueOf(EDITION_2015_D_10));
-        Mockito.when(env.getProperty("criteria.sortOrder")).thenReturn("");
+        Mockito.when(env.getProperty("criteria.sortOrder")).thenReturn(CertificationCriterionServiceTest.sortOrderFromProperty());
 
         msgUtil = Mockito.mock(ErrorMessageUtil.class);
         Mockito.when(msgUtil.getMessage(

@@ -1,6 +1,5 @@
 package gov.healthit.chpl.util;
 
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -44,105 +43,32 @@ public class CertificationCriterionServiceTest {
 
     @Test
     public void sortCriteria_BetweenEditions_SortCorrectly() {
-        criterion1.setNumber("170.302 (h)");
-        criterion2.setNumber("170.314 (a)(1)");
+        criterion1.setId(137L);
+        criterion2.setId(71L);
         assertTrue("2011 should be earlier than 2014", service.sortCriteria(criterion1, criterion2) < 0);
-        criterion1.setNumber("170.315 (b)(2)");
+        criterion1.setId(10L);
         assertTrue("2015 should be later than 2014", service.sortCriteria(criterion1, criterion2) > 0);
-        criterion2.setNumber("170.304 (d)");
+        criterion2.setId(137L);
         assertTrue("2015 should be later than 2011", service.sortCriteria(criterion1, criterion2) > 0);
     }
 
     @Test
     public void sortCriteria_WithOneParagraph_SortCorrectly() {
-        criterion1.setNumber("170.302 (h)");
-        criterion2.setNumber("170.302 (i)");
+        criterion1.setId(129L);
+        criterion2.setId(130L);
         assertTrue("h should be earlier than i", service.sortCriteria(criterion1, criterion2) < 0);
     }
 
     @Test
     public void sortCriteria_WithTwoParagraphs_SortCorrectly() {
-        criterion1.setNumber("170.314 (a)(3)");
-        criterion2.setNumber("170.314 (a)(2)");
+        criterion1.setId(63L);
+        criterion2.setId(62L);
         assertTrue("3 should be after 2", service.sortCriteria(criterion1, criterion2) > 0);
     }
 
     @Test
-    public void sortCriteria_WithDifferingParagraphComponentCount_SortCorrectly() {
-        criterion1.setNumber("170.314 (d)(3)");
-        criterion2.setNumber("170.314 (d)(3)(A)");
-        assertTrue("fewer paragraphs should be before ones with more", service.sortCriteria(criterion1, criterion2) < 0);
-    }
-
-    @Test
-    public void sortCriteria_WithMatchingNumbers_SortCorrectly() {
-        criterion1.setNumber("170.314 (a)(3)");
-        criterion1.setTitle("This is a title");
-        criterion2.setNumber("170.314 (a)(3)");
-        criterion2.setTitle("This is a title (Cures Update)");
-        assertTrue("should sort by title if paragraphs match", service.sortCriteria(criterion1, criterion2) < 0);
-    }
-
-    @Test
-    public void hasCuresInTitle_CertificationCriterionWithoutCuresSuffixInTitle_IsNotCures() {
-        criterion.setTitle("170.315(b)(7)");
-        assertFalse("The criterion Should be identified as NOT CURES but was instead identfied as CURES",
-                service.hasCuresInTitle(criterion));
-    }
-
-    @Test
-    public void hasCuresInTitle_CertificationCriterionWithCuresSuffixInTitle_IsCures() {
-        criterion.setTitle("170.315(b)(7)" + CertificationCriterionService.CURES_SUFFIX);
-        assertTrue("The criterion Should be identified as CURES but was instead identfied as NOT CURES",
-                service.hasCuresInTitle(criterion));
-    }
-
-    @Test
-    public void hasCuresInTitle_CertificationCriterionDtoWithoutCuresSuffixInTitle_IsNotCures() {
-        criterion.setTitle("170.315(c)(3)");
-        assertFalse("The criterion Should be identified as NOT CURES but was instead identfied as CURES",
-                service.hasCuresInTitle(criterion));
-    }
-
-    @Test
-    public void hasCuresInTitle_CertificationResultDtoWithCuresSuffixInTitle_IsCures() {
-        criterion.setTitle("170.315(c)(3)" + CertificationCriterionService.CURES_SUFFIX);
-        assertTrue("The criterion Should be identified as CURES but was instead identfied as NOT CURES",
-                service.hasCuresInTitle(criterion));
-    }
-
-    @Test
-    public void formatCriteriaNumber_CertificationCriterionWithCuresSuffixInTitle_StringFormattedAsCures() {
-        final String num = "170.315(b)(1)";
-        criterion.setNumber(num);
-        final String expectedResult = num + CertificationCriterionService.CURES_SUFFIX;
-        criterion.setTitle(expectedResult);
-        final String formattedResult = service.formatCriteriaNumber(criterion);
-        assertEquals(expectedResult, formattedResult);
-    }
-
-    @Test
-    public void formatCriteriaNumber_CertificationCriterionWithoutCuresSuffixInTitle_StringFormattedAsNotCures() {
+    public void formatCriteriaNumber_CertificationCriterionWithoutCuresSuffixInTitle_formattedCorrectly() {
         final String expectedResult = "170.315(b)(1)";
-        criterion.setNumber(expectedResult);
-        criterion.setTitle(expectedResult);
-        final String formattedResult = service.formatCriteriaNumber(criterion);
-        assertEquals(expectedResult, formattedResult);
-    }
-
-    @Test
-    public void formatCriteriaNumber_CertificationCriterionDtoWithCuresSuffixInTitle_StringFormattedAsCures() {
-        final String num = "170.315(b)(2)";
-        criterion.setNumber(num);
-        final String expectedResult = num + CertificationCriterionService.CURES_SUFFIX;
-        criterion.setTitle(expectedResult);
-        final String formattedResult = service.formatCriteriaNumber(criterion);
-        assertEquals(expectedResult, formattedResult);
-    }
-
-    @Test
-    public void formatCriteriaNumber_CertificationCriterionDtoWithoutCuresSuffixInTitle_StringFormattedAsNotCures() {
-        final String expectedResult = "170.315(b)(2)";
         criterion.setNumber(expectedResult);
         criterion.setTitle(expectedResult);
         final String formattedResult = CertificationCriterionService.formatCriteriaNumber(criterion);
@@ -220,34 +146,16 @@ public class CertificationCriterionServiceTest {
         assertEquals("170.315 (a)(6)", result);
     }
 
-    private String sortOrderFromProperty() {
-        return "170.302 (a),170.302 (b),170.302 (c),170.302 (d),170.302 (e),170.302 (f)(1),170.302 (f)(2),170.302 (f)(3),"
-                + "170.302 (g),170.302 (h),170.302 (i),170.302 (j),170.302 (k),170.302 (l),170.302 (m),170.302 (n),170.302 (o),"
-                + "170.302 (p),170.302 (q),170.302 (r),170.302 (s),170.302 (t),170.302 (u),170.302 (v),170.302 (w),170.304 (a),"
-                + "170.304 (b),170.304 (c),170.304 (d),170.304 (e),170.304 (f),170.304 (g),170.304 (h),170.304 (i),170.304 (j),"
-                + "170.306 (a),170.306 (b),170.306 (c),170.306 (d)(1),170.306 (d)(2),170.306 (e),170.306 (f),170.306 (g),"
-                + "170.306 (h),170.306 (i),170.314 (a)(1),170.314 (a)(2),170.314 (a)(3),170.314 (a)(4),170.314 (a)(5),"
-                + "170.314 (a)(6),170.314 (a)(7),170.314 (a)(8),170.314 (a)(9),170.314 (a)(10),170.314 (a)(11),170.314 (a)(12),"
-                + "170.314 (a)(13),170.314 (a)(14),170.314 (a)(15),170.314 (a)(16),170.314 (a)(17),170.314 (a)(18),170.314 (a)(19),"
-                + "170.314 (a)(20),170.314 (b)(1),170.314 (b)(2),170.314 (b)(3),170.314 (b)(4),170.314 (b)(5)(A),170.314 (b)(5)(B),"
-                + "170.314 (b)(6),170.314 (b)(7),170.314 (b)(8),170.314 (b)(9),170.314 (c)(1),170.314 (c)(2),170.314 (c)(3),"
-                + "170.314 (d)(1),170.314 (d)(2),170.314 (d)(3),170.314 (d)(4),170.314 (d)(5),170.314 (d)(6),170.314 (d)(7),"
-                + "170.314 (d)(8),170.314 (d)(9),170.314 (e)(1),170.314 (e)(2),170.314 (e)(3),170.314 (f)(1),170.314 (f)(2),"
-                + "170.314 (f)(3),170.314 (f)(4),170.314 (f)(5),170.314 (f)(6),170.314 (f)(7),170.314 (g)(1),170.314 (g)(2),"
-                + "170.314 (g)(3),170.314 (g)(4),170.314 (h)(1),170.314 (h)(2),170.314 (h)(3),170.315 (a)(1),170.315 (a)(2),"
-                + "170.315 (a)(3),170.315 (a)(4),170.315 (a)(5),170.315 (a)(6),170.315 (a)(7),170.315 (a)(8),170.315 (a)(9),"
-                + "170.315 (a)(10),170.315 (a)(11),170.315 (a)(12),170.315 (a)(13),170.315 (a)(14),170.315 (a)(15),"
-                + "170.315 (b)(1) (Cures Update),170.315 (b)(1),170.315 (b)(2) (Cures Update),170.315 (b)(2),"
-                + "170.315 (b)(3) (Cures Update),170.315 (b)(3),170.315 (b)(4),170.315 (b)(5),170.315 (b)(6),"
-                + "170.315 (b)(7) (Cures Update),170.315 (b)(7),170.315 (b)(8) (Cures Update),170.315 (b)(8),"
-                + "170.315 (b)(9) (Cures Update),170.315 (b)(9),170.315 (b)(10),170.315 (c)(1),170.315 (c)(2),"
-                + "170.315 (c)(3) (Cures Update),170.315 (c)(3),170.315 (c)(4),170.315 (d)(1),170.315 (d)(2) (Cures Update),"
-                + "170.315 (d)(2),170.315 (d)(3) (Cures Update),170.315 (d)(3),170.315 (d)(4),170.315 (d)(5),170.315 (d)(6),"
-                + "170.315 (d)(7),170.315 (d)(8),170.315 (d)(9),170.315 (d)(10) (Cures Update),170.315 (d)(10),170.315 (d)(11),"
-                + "170.315 (d)(12),170.315 (d)(13),170.315 (e)(1) (Cures Update),170.315 (e)(1),170.315 (e)(2),170.315 (e)(3),"
-                + "170.315 (f)(1),170.315 (f)(2),170.315 (f)(3),170.315 (f)(4),170.315 (f)(5) (Cures Update),170.315 (f)(5),"
-                + "170.315 (f)(6),170.315 (f)(7),170.315 (g)(1),170.315 (g)(2),170.315 (g)(3),170.315 (g)(4),170.315 (g)(5),"
-                + "170.315 (g)(6) (Cures Update),170.315 (g)(6),170.315 (g)(7),170.315 (g)(8),170.315 (g)(9) (Cures Update),"
-                + "170.315 (g)(9),170.315 (g)(10),170.315 (h)(1),170.315 (h)(2),170.523 (k)(1),170.523 (k)(2)";
+    public static String sortOrderFromProperty() {
+        return "120, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, "
+                + "141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, "
+                + "160, 161, 162, 163, 164, 61, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 62, 80, 63, 64, 65, 66, 67, "
+                + "68, 69, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, "
+                + "103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 1, 2, 3, 4, "
+                + "5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 16, 165, 17, 17, 166, 18, 18, 167, 19, 20, 21, 22, 22, "
+                + "168, 23, 23, 169, 24, 24, 170, 171, 210, 25, 26, 27, 27, 172, 28, 29, 30, 30, 173, 31, 31, 174, 32, "
+                + "33, 34, 35, 36, 37, 38, 38, 175, 39, 176, 177, 211, 40, 40, 178, 41, 42, 43, 44, 45, 46, 47, 47, 179, "
+                + "48, 49, 50, 51, 52, 53, 54, 55, 55, 180, 56, 57, 58, 58, 181, 182, 59, 60";
+
     }
 }

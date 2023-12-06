@@ -104,4 +104,7 @@ public class CertificationCriterionAttributeEntity extends EntityAudit {
     @Column(name = "use_cases")
     private Boolean useCases;
 
+    @Column(name = "standard")
+    private Boolean standard;
+
 }

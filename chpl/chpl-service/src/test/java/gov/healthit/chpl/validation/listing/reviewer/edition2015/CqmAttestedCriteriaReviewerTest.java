@@ -39,7 +39,7 @@ public class CqmAttestedCriteriaReviewerTest {
     @Before
     public void before() throws EntityRetrievalException {
         c1 = buildCriterion(1L, "170.315 (c)(1)", "C1");
-        c1Cures = buildCriterion(2L, "170.315 (c)(1)", "C1 (Cures Update)");
+        c1Cures = buildCriterion(2L, "170.315 (c)(1)", "C1");
         c2 = buildCriterion(3L, "170.315 (c)(2)", "C2");
 
         msgUtil = Mockito.mock(ErrorMessageUtil.class);
