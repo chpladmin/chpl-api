@@ -733,7 +733,6 @@ public class CertifiedProductController {
                 .directReviewsAvailable(e.isDirectReviewsAvailable())
                 .ics(e.getIcs())
                 .id(e.getId())
-                .lastModifiedDate(e.getLastModifiedDate())
                 .mandatoryDisclosures(e.getMandatoryDisclosures())
                 .promotingInteroperabilityUserHistory(e.getPromotingInteroperabilityUserHistory())
                 .otherAcb(e.getOtherAcb())

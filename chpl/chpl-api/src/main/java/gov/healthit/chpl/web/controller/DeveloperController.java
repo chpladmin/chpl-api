@@ -26,7 +26,6 @@ import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.compliance.directreview.DirectReviewCachingService;
 import gov.healthit.chpl.developer.join.JoinDevelopersRequest;
 import gov.healthit.chpl.domain.Developer;
-import gov.healthit.chpl.domain.MergeDevelopersRequest;
 import gov.healthit.chpl.domain.PermissionDeletedResponse;
 import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.SplitDeveloperRequest;
@@ -47,7 +46,6 @@ import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.UserPermissionsManager;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
-import gov.healthit.chpl.web.controller.annotation.DeprecatedApi;
 import gov.healthit.chpl.web.controller.annotation.DeprecatedApiResponseFields;
 import gov.healthit.chpl.web.controller.results.DeveloperAttestationSubmissionResults;
 import gov.healthit.chpl.web.controller.results.DeveloperResults;
@@ -187,22 +185,6 @@ public class DeveloperController {
             throw new InvalidArgumentsException(msgUtil.getMessage("developer.join.missingDeveloperIds"));
         }
         return developerManager.join(developerId, joinRequest.getDeveloperIds());
-    }
-
-    @Deprecated
-    @DeprecatedApi(friendlyUrl = "/developers/merge", httpMethod = "POST", removalDate = "2023-10-01",
-            message = "Developer merge is deprecated and will be removed. "
-                    + "Going forward, PUT to /developers/{developerId}/join .")
-    @Operation(summary = "Merge developers.",
-            description = "Please use /developers/{developerId}/join .",
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
-            })
-    @RequestMapping(value = "/merge", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = "application/json; charset=utf-8")
-    public ResponseEntity<Void> merge(@RequestBody(required = true) MergeDevelopersRequest mergeRequest) {
-        return new ResponseEntity<>(HttpStatus.MOVED_PERMANENTLY);
     }
 
     @Operation(

@@ -56,6 +56,7 @@ import gov.healthit.chpl.functionalitytested.CertificationResultFunctionalityTes
 import gov.healthit.chpl.functionalitytested.FunctionalityTestedDAO;
 import gov.healthit.chpl.manager.impl.SecuredManager;
 import gov.healthit.chpl.optionalStandard.domain.CertificationResultOptionalStandard;
+import gov.healthit.chpl.standard.CertificationResultStandardService;
 import gov.healthit.chpl.svap.domain.CertificationResultSvap;
 import gov.healthit.chpl.testtool.CertificationResultTestToolService;
 import gov.healthit.chpl.util.CertifiedProductUtil;
@@ -74,6 +75,7 @@ public class CertificationResultManager extends SecuredManager {
     private TestTaskDAO testTaskDAO;
     private CertificationResultTestToolService certResultTestToolService;
     private CertificationResultFunctionalityTestedService certResultFunctionalityTestedService;
+    private CertificationResultStandardService certResultStandardService;
 
     @SuppressWarnings("checkstyle:parameternumber")
     @Autowired
@@ -81,7 +83,8 @@ public class CertificationResultManager extends SecuredManager {
             CertificationResultDAO certResultDAO, CertificationResultFunctionalityTestedDAO certResultFuncTestedDao,
             TestStandardDAO testStandardDAO, FunctionalityTestedDAO functionalityTestedDao, TestParticipantDAO testParticipantDAO,
             AgeRangeDAO ageDao, EducationTypeDAO educDao, TestTaskDAO testTaskDAO, CertificationResultTestToolService certResultTestToolService,
-            CertificationResultFunctionalityTestedService certResultFunctionalityTestedService) {
+            CertificationResultFunctionalityTestedService certResultFunctionalityTestedService,
+            CertificationResultStandardService certResultStandardService) {
         this.cpUtil = cpUtil;
         this.criteriaDao = criteriaDao;
         this.certResultDAO = certResultDAO;
@@ -92,6 +95,7 @@ public class CertificationResultManager extends SecuredManager {
         this.testTaskDAO = testTaskDAO;
         this.certResultTestToolService = certResultTestToolService;
         this.certResultFunctionalityTestedService = certResultFunctionalityTestedService;
+        this.certResultStandardService = certResultStandardService;
     }
 
     @SuppressWarnings({"checkstyle:methodlength", "checkstyle:linelength"})
@@ -143,6 +147,7 @@ public class CertificationResultManager extends SecuredManager {
         numChanges += updateTestData(updated, orig.getTestDataUsed(), updated.getTestDataUsed());
         numChanges += updateTestProcedures(updated, orig.getTestProcedures(), updated.getTestProcedures());
         numChanges += certResultFunctionalityTestedService.synchronizeFunctionalitiesTested(updated, orig.getFunctionalitiesTested(), updated.getFunctionalitiesTested());
+        numChanges += certResultStandardService.synchronizeStandards(updated,  orig.getStandards(), updated.getStandards());
         numChanges += updateSvap(updated, orig.getSvaps(), updated.getSvaps());
 
         List<CertifiedProductUcdProcess> origUcdsForCriteria = new ArrayList<CertifiedProductUcdProcess>();
