@@ -4,7 +4,6 @@ import java.util.Collection;
 import java.util.function.Predicate;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -37,7 +36,6 @@ public class CqmResultReviewer implements Reviewer {
     public void review(CertifiedProductSearchDetails listing) {
         if (!CollectionUtils.isEmpty(listing.getCqmResults())) {
             listing.getCqmResults().stream()
-                    .filter(cqmResult -> BooleanUtils.isTrue(cqmResult.getSuccess()))
                     .forEach(cqmResult -> reviewCqmResultRequiredFields(listing, cqmResult));
 
             Predicate<CQMResultDetails> shouldRemove = cqm -> isMissingCmsIdButHasOtherData(cqm) || isMissingCqmCriterionId(cqm);
