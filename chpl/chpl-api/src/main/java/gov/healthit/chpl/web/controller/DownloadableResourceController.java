@@ -8,7 +8,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
@@ -41,7 +40,6 @@ public class DownloadableResourceController {
     private SurveillanceManager survManager;
     private SvapManager svapManager;
     private FileUtils fileUtils;
-    private FF4j ff4j;
 
     @Value("${directReviewsReportName}")
     private String directReviewsReportName;
@@ -54,30 +52,28 @@ public class DownloadableResourceController {
             ErrorMessageUtil msgUtil,
             SurveillanceManager survManager,
             SvapManager svapManager,
-            FileUtils fileUtils,
-            FF4j ff4j) {
+            FileUtils fileUtils) {
         this.env = env;
         this.msgUtil = msgUtil;
         this.survManager = survManager;
         this.svapManager = svapManager;
         this.fileUtils = fileUtils;
-        this.ff4j = ff4j;
     }
 
     @Operation(summary = "Download all listings of a given type in the specified format.",
             description = "Valid values for 'listingType' are active, inactive, 2011 and 2014."
-                    + "Valid values for 'format' are csv, xml, and json.",
+                    + "Valid values for 'format' are csv and json.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
-    @RequestMapping(value = "/download/{listingType:2011|2014|active|inactive}", method = RequestMethod.GET, produces = "application/xml")
+    @RequestMapping(value = "/download/{listingType:2011|2014|active|inactive}", method = RequestMethod.GET, produces = "text/csv")
     public void downloadListings(@PathVariable(value = "listingType", required = true) String listingType,
-            @RequestParam(value = "format", defaultValue = "xml", required = false) String formatInput,
+            @RequestParam(value = "format", defaultValue = "csv", required = false) String formatInput,
             @RequestParam(value = "definition", defaultValue = "false", required = false) Boolean isDefinition,
             HttpServletRequest request, HttpServletResponse response) throws IOException, InvalidArgumentsException {
         String format = normalizeFormat(formatInput);
-        if (!format.equals("xml") && !format.equals("csv") && !format.equals("json")) {
-            throw new InvalidArgumentsException("Format must be XML, CSV, or JSON");
+        if (!format.equalsIgnoreCase("csv") && !format.equalsIgnoreCase("json")) {
+            throw new InvalidArgumentsException("Format must be CSV or JSON");
         }
         String responseType = getResponseType(format);
 
@@ -108,9 +104,7 @@ public class DownloadableResourceController {
         String format = formatInput;
         if (!StringUtils.isEmpty(format) && format.equalsIgnoreCase("csv")) {
             format = "csv";
-        } else if (!StringUtils.isEmpty(format) && format.equalsIgnoreCase("xml")) {
-            format = "xml";
-        } else {
+        } else if (!StringUtils.isEmpty(format) && format.equalsIgnoreCase("json")) {
             format = "json";
         }
         return format;
@@ -120,9 +114,7 @@ public class DownloadableResourceController {
         String responseType = "text/plain";
         if (!StringUtils.isEmpty(format) && format.equalsIgnoreCase("csv")) {
             responseType = "text/csv";
-        } else if (!StringUtils.isEmpty(format) && format.equalsIgnoreCase("xml")) {
-            responseType = "application/xml";
-        } else {
+        } else if (!StringUtils.isEmpty(format) && format.equalsIgnoreCase("json")) {
             responseType = "application/json";
         }
         return responseType;
@@ -130,9 +122,7 @@ public class DownloadableResourceController {
 
     private File getDefinitionDownloadFile(String listingType, String format) throws IOException {
         File toDownload = null;
-        if (format.equals("xml")) {
-            toDownload = fileUtils.getDownloadFile(env.getProperty("schemaXmlName"));
-        } else if (listingType.equals(CertificationEditionConcept.CERTIFICATION_EDITION_2011.getYear())) {
+        if (listingType.equals(CertificationEditionConcept.CERTIFICATION_EDITION_2011.getYear())) {
             toDownload = fileUtils.getDownloadFile(env.getProperty("schemaCsv2011Name"));
         } else if (listingType.equals(CertificationEditionConcept.CERTIFICATION_EDITION_2014.getYear())) {
             toDownload = fileUtils.getDownloadFile(env.getProperty("schemaCsv2014Name"));
@@ -159,7 +149,7 @@ public class DownloadableResourceController {
             })
     @RequestMapping(value = "/download", method = RequestMethod.GET, produces = "application/xml")
     public void downloadListingDetails(@RequestParam(value = "edition", required = false) String editionInput,
-            @RequestParam(value = "format", defaultValue = "xml", required = false) String formatInput,
+            @RequestParam(value = "format", defaultValue = "csv", required = false) String formatInput,
             @RequestParam(value = "definition", defaultValue = "false", required = false) Boolean isDefinition,
             HttpServletRequest request, HttpServletResponse response) throws IOException {
         // parse inputs
@@ -182,10 +172,7 @@ public class DownloadableResourceController {
 
         if (!StringUtils.isEmpty(format) && format.equalsIgnoreCase("csv")) {
             format = "csv";
-        } else if (!StringUtils.isEmpty(format) && format.equalsIgnoreCase("xml")) {
-            format = "xml";
-            responseType = "application/xml";
-        } else {
+        } else if (!StringUtils.isEmpty(format) && format.equalsIgnoreCase("json")) {
             format = "json";
             responseType = "application/json";
         }
@@ -193,9 +180,7 @@ public class DownloadableResourceController {
         File toDownload = null;
         // if the user wants a definition file, find it
         if (isDefinition != null && isDefinition.booleanValue()) {
-            if (format.equals("xml")) {
-                toDownload = fileUtils.getDownloadFile(env.getProperty("schemaXmlName"));
-            } else if (edition.equals("2014")) {
+            if (edition.equals("2014")) {
                 toDownload = fileUtils.getDownloadFile(env.getProperty("schemaCsv2014Name"));
             } else if (edition.equals("2015") || edition.equals("active")) {
                 toDownload = fileUtils.getDownloadFile(env.getProperty("schemaCsvListingName"));
