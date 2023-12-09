@@ -32,7 +32,8 @@ public class CertifiedProduct implements Serializable {
             + "the format: CertEdYr.ATL.ACB.Dev.Prod.Ver.ICS.AddS.Date")
     private String chplProductNumber;
 
-    @Schema(description = "Edition of the listing. Ex: 2011, 2014, or 2015")
+    @Schema(description = "Edition of the listing. Ex: 2011, 2014, or 2015"
+            )
     private String edition;
 
     @Schema(description = "The date the listing was certified given in milliseconds since epoch")

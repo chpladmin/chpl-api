@@ -31,13 +31,14 @@ public class Developer implements Serializable {
     @Schema(description = "A four-digit code assigned to each developer when it was created.")
     private String developerCode;
 
-    @Schema(description = "The name of the developer or vendor of the certified health IT product being uploaded. It is applicable to 2014"
-            + "and 2015 Edition. If uploading a certified product from a developer that already exists in the CHPL database, please use the "
-            + "CHPL Developer management functionality to ensure that the name of the developer matches the database record to prevent duplication.")
+    @Schema(description = "The name of the developer or vendor of the certified health IT product. "
+            + "If uploading a certified product from a developer that already exists in the CHPL database, "
+            + "please use the CHPL Developer management functionality to ensure that the name of the developer matches the "
+            + "database record to prevent duplication.")
     private String name;
 
-    @Schema(description = "Website of health IT developer. Fully qualified URL which is reachable via web browser validation and "
-            + "verification. This variable is applicable for 2014 and 2015 Edition.")
+    @Schema(description = "Website of health IT developer. "
+            + "Fully qualified URL which is reachable via web browser validation and verification.")
     private String website;
 
     @Schema(description = "Indication of whether a health IT developer is a \"self-developer\" or not.")

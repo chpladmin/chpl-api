@@ -35,14 +35,12 @@ public class CertifiedProductQmsStandard implements Serializable {
     private String userEnteredQmsStandardName;
 
     @Schema(description = " This variable indicates if a QMS standard or mapping was modified, "
-            + "documentation on the changes made. This variable is applicable for 2014 "
-            + "and 2015 Edition, and a string variable that does not take any "
+            + "documentation on the changes made. This is a string variable that does not take any "
             + "restrictions on formatting or values.")
     private String qmsModification;
 
-    @Schema(description = "QMS Applicable criteria. This variable is applicable for 2015 Edition, "
-            + "and a string variable that does not take any restrictions on formatting "
-            + "or values.")
+    @Schema(description = "QMS Applicable criteria. "
+            + "This is a string variable that does not take any restrictions on formatting or values.")
     private String applicableCriteria;
 
     public CertifiedProductQmsStandard(CertifiedProductQmsStandardDTO dto) {

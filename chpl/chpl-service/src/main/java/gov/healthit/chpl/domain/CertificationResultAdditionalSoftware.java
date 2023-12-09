@@ -27,25 +27,22 @@ public class CertificationResultAdditionalSoftware implements Serializable {
     @Schema(description = "This variable demonstrates if the additional software relied upon by the "
             + "Health IT Module is not a certified health IT product, the name of the "
             + "additional software product relied upon. It is a string variable that "
-            + "does not take any restrictions on formatting or values and is applicable "
-            + "for 2014 and 2015 Edition.")
+            + "does not take any restrictions on formatting or values.")
     private String name;
 
     @Schema(description = "The version of the corresponding non-certified additional software relied "
-            + "upon by the Health IT Module. This variable is for 2014 and 2015 Edition, "
-            + "and a string variable that does not take any restrictions on formatting "
+            + "upon by the Health IT Module. This is a string variable that does not take any restrictions on formatting "
             + "or values.")
     private String version;
 
     @Schema(description = "This variable indicates if the additional software relied upon by the "
             + "Health IT Module is also a certified health IT product, the unique CHPL "
-            + "ID of the additional software relied upon. It is applicable for 2014 and "
-            + "2015 Edition.It either takes CHIP-XXXXXX or "
+            + "ID of the additional software relied upon.It either takes CHIP-XXXXXX or "
             + "Edition.ATL.ACB.Developer.Product.Version.ICS.AdditionalSoftware.Date. "
             + "The CHPL ID format, "
             + "Edition.ATL.ACB.Developer.Product.Version.ICS.AdditionalSoftware.Date, is "
             + "coded using product-specific information. Edition = certification edition "
-            + "(ex. 2014, 2015); ATL = two digit code for the ONC Authorized Testing "
+            + "('14' or '15'); ATL = two digit code for the ONC Authorized Testing "
             + "Laboratory (ATL); ACB = two digit code for the ONC Authorized Certifying "
             + "Body (ACB); Developer = four digit code for the health IT product "
             + "developer; Product = four character alphanumeric reference to the "

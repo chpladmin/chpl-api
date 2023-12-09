@@ -31,9 +31,8 @@ public class CertificationResultTestTool implements Serializable {
     @Schema(description = "The test tool used to certify the Health IT Module to the corresponding certification criteria")
     private TestTool testTool;
 
-    @Schema(description = "The version of the test tool being used. This variable is applicable for "
-            + "2014 and 2015 Edition, and a string variable that does not take any "
-            + "restrictions on formatting or values.")
+    @Schema(description = "The version of the test tool being used. "
+            + "This variable is a string variable that does not take any restrictions on formatting or values.")
     private String version;
 
 

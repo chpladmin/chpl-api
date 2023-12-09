@@ -24,13 +24,11 @@ public class CertificationResultTestProcedure implements Serializable {
     @Schema(description = "Test Procedure to certification result mapping internal ID")
     private Long id;
 
-    @Schema(description = "This variable explains the test procedure being used to test "
-            + "the associated criteria. It is applicable for 2015 Edition.")
+    @Schema(description = "This variable explains the test procedure being used to test the associated criteria.")
     private TestProcedure testProcedure;
 
     @Schema(description = "The test procedure version used for a given certification criteria. This "
-            + "variable is a string variable that does not take any restrictions on "
-            + "formatting or values and is applicable for 2014 and 2015 Edition.")
+            + "variable is a string variable that does not take any restrictions on formatting or values.")
     private String testProcedureVersion;
 
     public CertificationResultTestProcedure(CertificationResultTestProcedureDTO dto) {

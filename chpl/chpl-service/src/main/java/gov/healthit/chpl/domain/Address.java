@@ -28,30 +28,26 @@ public class Address implements Serializable {
     @Schema(description = "Address internal ID.")
     private Long addressId;
 
-    @Schema(description = "First line of the street address of the health IT developer for 2014 and "
-            + "2015 Edition. This variable is a string variable that does not have any "
-            + "restrictions on formatting or values.")
+    @Schema(description = "First line of the street address of the health IT developer. "
+            + "This is a string variable that does not have any restrictions on formatting or values..")
     private String line1;
 
-    @Schema(description = "Second line of the street address of the health IT developer for 2014 and "
-            + "2015 Edition. This variable is a string variable that does not have any "
-            + "restrictions on formatting or values. This variable is optional.")
+    @Schema(description = "Second line of the street address of the health IT. "
+            + "This is a string variable that does not have any restrictions on formatting or values. "
+            + "This variable is optional.")
     private String line2;
 
-    @Schema(description = "The city in which the health IT developer can be contacted. This variable "
-            + "is for 2014 and 2015 Edition, and a string variable that does not have "
-            + "any restrictions on formatting or values.")
+    @Schema(description = "The city in which the health IT developer can be contacted. "
+            + "This is a string variable that does not have any restrictions on formatting or values.")
     private String city;
 
-    @Schema(description = "The state in which the health IT developer can be contacted. This "
-            + "variable is applicable for 2014 and 2015 Edition and is a string variable "
-            + "that does not have any restrictions on formatting or values. Name of "
-            + "states are denoted with two-letter abbreviation.")
+    @Schema(description = "The state in which the health IT developer can be contacted. "
+            + "This is a string variable that does not have any restrictions on formatting or values. "
+            + "Name of states are denoted with two-letter abbreviation.")
     private String state;
 
-    @Schema(description = "The ZIP code at which the health IT developer can be contacted. This is a "
-            + "variable applicable for 2014 and 2015 Edition, and a string variable that "
-            + "does not have any restrictions on formatting or values.")
+    @Schema(description = "The ZIP code at which the health IT developer can be contacted. "
+            + "This is a string variable that does not have any restrictions on formatting or values.")
     private String zipcode;
 
     @Schema(description = "Country of the address")

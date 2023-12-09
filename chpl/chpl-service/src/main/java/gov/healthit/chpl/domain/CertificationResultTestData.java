@@ -19,20 +19,15 @@ public class CertificationResultTestData implements Serializable {
     @Schema(description = "Certification result to test data mapping internal ID")
     private Long id;
 
-    @Schema(description = "This variable explains the test data being used to test "
-            + "the associated criteria. It is applicable for 2015 Edition.")
+    @Schema(description = "This variable explains the test data being used to test the associated criteria.")
     private TestData testData;
 
-    @Schema(description = "This variable explains the version of the test data being used for a "
-            + "given certification criteria. It is applicable for 2014 and 2015 Edition "
-            + "and a string variable that does not take any restrictions on formatting "
-            + "or values.")
+    @Schema(description = "This variable explains the version of the test data being used for a given certification criteria. "
+            + "It is  a string variable that does not take any restrictions on formatting or values.")
     private String version;
 
-    @Schema(description = "This variable indicates if test data alterations are made, a description"
-            + "of all modifications made. It is applicable for 2014 and 2015 Edition and"
-            + "a string variable that does not take any restrictions on formatting or"
-            + "values.")
+    @Schema(description = "This variable indicates if test data alterations are made, a description of all modifications made. "
+            + "It is a string variable that does not take any restrictions on formatting or values.")
     private String alteration;
 
     public CertificationResultTestData() {

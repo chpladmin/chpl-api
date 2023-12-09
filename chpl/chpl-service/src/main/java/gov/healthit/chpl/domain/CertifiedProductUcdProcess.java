@@ -30,9 +30,8 @@ public class CertifiedProductUcdProcess implements Serializable {
     @JsonIgnore
     private String userEnteredName;
 
-    @Schema(description = "A description of the UCD process used. This variable is applicable for "
-            + "2014 and 2015 Edition, and a string variable that does not take any "
-            + "restrictions on formatting or values.")
+    @Schema(description = "A description of the UCD process used. "
+            + "This is a string variable that does not take any restrictions on formatting or values.")
     private String details;
 
     @Builder.Default

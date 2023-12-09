@@ -30,9 +30,8 @@ public class CQMResultDetails implements Serializable {
     @JsonIgnore
     private Long cqmCriterionId;
 
-    @Schema(description = "The CMS ID clinical quality measures to which the Health IT Module has "
-            + "been certified. It is applicable to 2014 and 2015 Edition. For a list of "
-            + "the clinical quality measures, please reference the CMS eCQM library.")
+    @Schema(description = "The CMS ID clinical quality measures to which the Health IT Module has been certified. "
+            + "For a list of the clinical quality measures, please reference the CMS eCQM library.")
     private String number;
 
     @Schema(description = "The CMS ID clinical quality measures to which the Health IT Module has been certified.")
@@ -55,13 +54,11 @@ public class CQMResultDetails implements Serializable {
     private String domain;
 
     @Schema(description = "This variable indicates whether or not the clinical quality measure has "
-            + "been certified to the related listing. It is applicable to 2014 and 2015 "
-            + "Edition and a binary variable that takes either true or false value.")
+            + "been certified to the related listing. It is a binary variable that takes either true or false value.")
     private Boolean success;
 
     @Schema(description = "The corresponding version of the clinical quality measures to which the "
-            + "Health IT Module has been certified. It is applicable to 2014 and 2015 "
-            + "Edition. For a list of clinical quality measures and their viable "
+            + "Health IT Module has been certified. For a list of clinical quality measures and their viable "
             + "versions, please reference the CMS eCQM library.")
     @Builder.Default
     private LinkedHashSet<String> successVersions = new LinkedHashSet<String>();
@@ -72,9 +69,8 @@ public class CQMResultDetails implements Serializable {
     @Builder.Default
     private LinkedHashSet<String> allVersions = new LinkedHashSet<String>();
 
-    @Schema(description = "The certification criteria to which a given clinical quality measure "
-            + "applies. It is only applicable to 2015 Edition. It takes values include: "
-            + "c1, c2, c3, c4,c1;c2[DC1], c1;c3, c1;c4, c2;c3, c2;c4, c3;c4, c1;c2;c3, "
+    @Schema(description = "The certification criteria to which a given clinical quality measure applies. "
+            + "It takes values including: c1, c2, c3, c4,c1;c2, c1;c3, c1;c4, c2;c3, c2;c4, c3;c4, c1;c2;c3, "
             + "c2;c3;c4, c1;c2;c3;c4")
     @Builder.Default
     private List<CQMResultCertification> criteria = new ArrayList<CQMResultCertification>();

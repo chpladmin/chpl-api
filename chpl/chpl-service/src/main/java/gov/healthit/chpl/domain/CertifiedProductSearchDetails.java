@@ -58,15 +58,15 @@ public class CertifiedProductSearchDetails implements Serializable {
     @Schema(description = "The internal ID of the certified product.")
     private Long id;
 
-    @Schema(description = "The unique CHPL ID of the certified product. This variable is applicable to 2014 and 2015 Edition. New uploads to CHPL "
-            + "will use the format: CertEdYr.ATL.ACB.Dev.Prod.Ver.ICS.AddS.Date")
+    @Schema(description = "The unique CHPL ID of the certified product. New uploads to CHPL will use the format: "
+            + "CertEdYr.ATL.ACB.Dev.Prod.Ver.ICS.AddS.Date")
     private String chplProductNumber;
 
     @Schema(description = "A hyperlink to the test results used to certify the Complete EHRs and/or EHR Modules that can be accessed by the public. "
             + "This variable is applicable to 2014 Edition. Fully qualified URL which is reachable via web browser validation and verification.")
     private String reportFileLocation;
 
-    @Schema(description = "Hyperlink to FULL Usability Test Report meeting all the SED requirements. This variable is applicable for 2014 and 2015 Edition. "
+    @Schema(description = "Hyperlink to FULL Usability Test Report meeting all the SED requirements. "
             + "Fully qualified URL which is reachable via web browser validation and verification.")
     private String sedReportFileLocation;
 
@@ -81,8 +81,8 @@ public class CertifiedProductSearchDetails implements Serializable {
     @JsonIgnore
     private String sedTestingEndDateStr;
 
-    @Schema(description = "The ID used by ONC-ACBs for internal tracking for 2014 and 2015 Certification Edition. It is a string variable that does not have "
-            + "any restrictions on formatting or values.")
+    @Schema(description = "The ID used by ONC-ACBs for internal tracking. "
+            + "It is a string variable that does not have any restrictions on formatting or values.")
     private String acbCertificationId;
 
     @Schema(description = "The classification of the certified product (either complete or modular). It is only applicable to 2014 Edition, and takes values "
@@ -98,27 +98,25 @@ public class CertifiedProductSearchDetails implements Serializable {
     @Schema(description = "The product which this listing is under.")
     private Product product;
 
-    @Schema(description = "The version of the product being uploaded. This variable is applicable for 2014 and 2015 Edition.")
+    @Schema(description = "The version of the product being uploaded.")
     private ProductVersion version;
 
     @Deprecated
     @DeprecatedResponseField(message = "Please use the 'edition' field.", removalDate = "2024-01-01")
     @Builder.Default
-    @Schema(description = "The certification edition. It takes a value of 2011, 2014 or 2015.")
+    @Schema(description = "The certification edition. It takes a value of 2011, 2014, 2015, or null.")
     private Map<String, Object> certificationEdition = new HashMap<String, Object>();
 
-    @Schema(description = "The certification edition.")
+    @Schema(description = "The certification edition. It takes a value of 2011, 2014, 2015, or null.")
     private CertificationEdition edition;
 
     @Schema(description = "For 2014 products, the practice setting for which the certified product is designed. It takes value of Ambulatory or Inpatient.")
     private Map<String, Object> practiceType = new HashMap<String, Object>();
 
-    @Schema(description = "The ONC-ACB responsible for certifying the Health IT Module. This variable is applicable to 2014 and 2015 Edition, and "
-            + "allowable values are: Drummond Group, ICSA Labs, UL LLC.")
+    @Schema(description = "The ONC-ACB responsible for certifying the Health IT Module.")
     private Map<String, Object> certifyingBody = new HashMap<String, Object>();
 
-    @Schema(description = "The ATL responsible for testing the Health IT Module. It is applicable for 2014 and 2015 Edition and takes values of: "
-            + "Drummond Group, ICSA Labs, UL LLC, National Technical Systems, SLI Global, CCHIT")
+    @Schema(description = "The ATL responsible for testing the Health IT Module.")
     @Builder.Default
     private List<CertifiedProductTestingLab> testingLabs = new ArrayList<CertifiedProductTestingLab>();
 
@@ -159,12 +157,12 @@ public class CertifiedProductSearchDetails implements Serializable {
     @Schema(description = "Total count of closed nonconformities for this listing.")
     private Integer countClosedNonconformities;
 
-    @Schema(description = "This variable indicates whether or not the certification issued was a result of an inherited certified status request. This "
-            + "variable is applicable for 2014 and 2015 Edition and contains the inherited status as well as first-level parents and children.")
+    @Schema(description = "This variable indicates whether or not the certification issued was a result of an inherited certified status request. "
+            + "This variable contains the inherited status as well as first-level parents and children.")
     private InheritedCertificationStatus ics;
 
-    @Schema(description = "This variable identifies if Health IT Module was certified to the accessibility-centered design certification criterion for 2015 "
-            + "Edition. It is a binary variable that takes value of true or false.")
+    @Schema(description = "This variable identifies if Health IT Module was certified to the accessibility-centered "
+            + "design certification criterion. It is a binary variable that takes value of true or false.")
     private Boolean accessibilityCertified;
 
     @JsonIgnore
@@ -187,19 +185,20 @@ public class CertifiedProductSearchDetails implements Serializable {
     @Schema(description = "A record of CHPL Product Numbers which have been used at some time in the past to reference the listing.")
     private List<CertifiedProductChplProductNumberHistory> chplProductNumberHistory = new ArrayList<CertifiedProductChplProductNumberHistory>();
 
-    @Schema(description = "This variable indicates that if there is the standard(s) or lack thereof used to meet the accessibility-centered design "
-            + "certification criterion for 2015 Certification Edtion. It is a string variable that does not have any restrictions on formatting or "
-            + "values.")
+    @Schema(description = "The standard(s) or lack thereof used to meet the accessibility-centered design certification criterion. "
+            + "Please see the 2015 Edition Certification Companion Guide for Accessibility Centered Design for "
+            + "example accessibility standards: "
+            + "https://www.healthit.gov/test-method/accessibility-centered-design#ccg")
     @Builder.Default
     private List<CertifiedProductAccessibilityStandard> accessibilityStandards = new ArrayList<CertifiedProductAccessibilityStandard>();
 
-    @Schema(description = "Description of the health IT module(s) intended users for the tested capabilities/related criteria. This variable is applicable "
-            + "only for 2015 Edition, and a string variable that does not take any restrictions on formatting or values.")
+    @Schema(description = "Description of the health IT module(s) intended users for the tested capabilities/related criteria. "
+            + "This  is a string variable that does not take any restrictions on formatting or values.")
     @Builder.Default
     private List<CertifiedProductTargetedUser> targetedUsers = new ArrayList<CertifiedProductTargetedUser>();
 
-    @Schema(description = "The standard or mapping used to meet the quality management system certification criterion. This variable is applicable for 2014 "
-            + "and 2015 Edition, and a string variable that does not take any restrictions on formatting or values.")
+    @Schema(description = "The standard or mapping used to meet the quality management system certification criterion. "
+            + "This variable is a string variable that does not take any restrictions on formatting or values.")
     @Builder.Default
     private List<CertifiedProductQmsStandard> qmsStandards = new ArrayList<CertifiedProductQmsStandard>();
 

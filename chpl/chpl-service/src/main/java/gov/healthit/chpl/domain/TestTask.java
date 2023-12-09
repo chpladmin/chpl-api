@@ -36,86 +36,75 @@ public class TestTask implements Serializable {
     private Long id;
 
     @Schema(description = "An ONC-ACB designated identifier for an individual SED task and that must "
-            + "be unique to a particular task. This variable is only applicable to 2015 "
-            + "Edition and for internal use within an upload file only.")
+            + "be unique to a particular task. This is for internal use within an upload file only.")
     private String uniqueId;
 
-    @Schema(description = "Brief description of task performed during SED/usability testing. This "
-            + "variable is only applicable to 2015 Edition, and a string variable that "
-            + "does not take any restrictions on formatting or values.")
+    @Schema(description = "Brief description of task performed during SED/usability testing. "
+            + "This is a string variable that does not take any restrictions on formatting or values.")
     private String description;
 
-    @Schema(description = "Mean task success rate (in percentages). It is only applicable to 2015 "
-            + "Edition, and takes only positive decimal numbers.")
+    @Schema(description = "Mean task success rate (in percentages). It is only takes positive decimal numbers.")
     private Float taskSuccessAverage;
 
     @JsonIgnore
     private String taskSuccessAverageStr;
 
     @Schema(description = "Standard deviation of the task success rate (in percentages). It is only "
-            + "applicable to 2015 Edition, and takes only positive decimal numbers.")
+            + "takes positive decimal numbers")
     private Float taskSuccessStddev;
 
     @JsonIgnore
     private String taskSuccessStddevStr;
 
-    @Schema(description = "This variable indicates observed number of steps taken for the "
-            + "corresponding task. It is applicable to 2015 Edition, and takes only "
-            + "positive integer values.")
+    @Schema(description = "This variable indicates observed number of steps taken for the corresponding task. "
+            + "It only takes positive integer values.")
     private Integer taskPathDeviationObserved;
 
     @JsonIgnore
     private String taskPathDeviationObservedStr;
 
-    @Schema(description = "This variable indicates optimal number of steps for the corresponding "
-            + "task. It is only applicable to 2015 Edition, and only takes positive "
-            + "integer(i.e. no decimals) values.")
+    @Schema(description = "This variable indicates optimal number of steps for the corresponding task. "
+            + "It only takes positive integer(i.e. no decimals) values.")
     private Integer taskPathDeviationOptimal;
 
     @JsonIgnore
     private String taskPathDeviationOptimalStr;
 
-    @Schema(description = "Average time of completion for the corresponding task, in seconds. It is "
-            + "only applicable to 2015 Edition, and takes only positive integer number "
-            + "values.")
+    @Schema(description = "Average time of completion for the corresponding task, in seconds. "
+            + "It is only takes positive integer number values.")
     private Long taskTimeAvg;
 
     @JsonIgnore
     private String taskTimeAvgStr;
 
-    @Schema(description = "Standard deviation for task time, in seconds. It is only applicable to "
-            + "2015 Edition, and takes only positive integer number values.")
+    @Schema(description = "Standard deviation for task time, in seconds. It only takes positive integer number values.")
     private Integer taskTimeStddev;
 
     @JsonIgnore
     private String taskTimeStddevStr;
 
-    @Schema(description = "Observed number of time (in seconds) taken for the corresponding task. It "
-            + "is only applicable to 2015 Edition, and takes only positive integer "
-            + "number values.")
+    @Schema(description = "Observed number of time (in seconds) taken for the corresponding task. "
+            + "It is only takes positive integer number values.")
     private Integer taskTimeDeviationObservedAvg;
 
     @JsonIgnore
     private String taskTimeDeviationObservedAvgStr;
 
-    @Schema(description = "Optimal number of time (in seconds) taken for the corresponding task. It "
-            + "is only applicable to 2015 Edition, and takes only positive integer "
-            + "number values.")
+    @Schema(description = "Optimal number of time (in seconds) taken for the corresponding task. "
+            + "It only takes positive integer number values.")
     private Integer taskTimeDeviationOptimalAvg;
 
     @JsonIgnore
     private String taskTimeDeviationOptimalAvgStr;
 
-    @Schema(description = "Mean task error rate (in percentages). It is only applicable to 2015 "
-            + "Edition, and takes only positive decimal numbers.")
+    @Schema(description = "Mean task error rate (in percentages). It only takes positive decimal numbers.")
     private Float taskErrors;
 
     @JsonIgnore
     private String taskErrorsStr;
 
-    @Schema(description = "Standard deviation of the task error rate (in percentages). This variable "
-            + "is only applicable to 2015 Edition, and takes only positive decimal "
-            + "numbers.")
+    @Schema(description = "Standard deviation of the task error rate (in percentages). "
+            + "This takes only positive decimal numbers.")
     private Float taskErrorsStddev;
 
     @JsonIgnore
@@ -125,23 +114,20 @@ public class TestTask implements Serializable {
             + "usability of the task. System Usability Scale is preferred. Likert Scale "
             + "is also accepted. If the scale type is System Usability Scale, only "
             + "positive integers between 1-100 are allowed. If the scale type is the "
-            + "Likert scale, positive decimal numbers are allowed. It is only applicable "
-            + "to 2015 Edition.")
+            + "Likert scale, positive decimal numbers are allowed.")
     private String taskRatingScale;
 
     @Schema(description = "This variable indicates mean usability rating of the corresponding task, "
             + "based on the specified scale type. If the scale type is System Usability "
             + "Scale, only positive integers between 1-100 are allowed. If the scale "
-            + "type is the Likert scale, positive decimal numbers are allowed. It is "
-            + "only applicable to 2015 Edition.")
+            + "type is the Likert scale, positive decimal numbers are allowed.")
     private Float taskRating;
 
     @JsonIgnore
     private String taskRatingStr;
 
     @Schema(description = "Standard deviation of the mean usability rating of the corresponding "
-            + "task, based on the specified scale type. It is only applicable to 2015 "
-            + "Edition, and takes only positive decimal numbers.")
+            + "task, based on the specified scale type. It is only takes positive decimal numbers.")
     private Float taskRatingStddev;
 
     @JsonIgnore

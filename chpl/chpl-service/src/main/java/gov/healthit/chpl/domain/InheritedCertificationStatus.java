@@ -31,8 +31,7 @@ public class InheritedCertificationStatus implements Serializable {
     }
 
     @Schema(description = "This variable indicates whether or not the certification issued was a result of an inherited certified status "
-            + "request. This variable is applicable for 2014 and 2015 Edition and a binary variable that takes either true or "
-            + "false value.")
+            + "request. This is a binary variable that takes either true or false value.")
     private Boolean inherits;
 
     @JsonIgnore

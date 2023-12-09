@@ -27,22 +27,19 @@ public class TestParticipant implements Serializable {
     @Schema(description = "Participant internal ID")
     private Long id;
 
-    @Schema(description = "An ONC-ACB designated identifier for an individual SED participant. This "
-            + "variable is a string variable only applicable to 2015 Edition, but must "
-            + "be unique to a particular participant. It is for internal use within an "
-            + "upload file only.")
+    @Schema(description = "An ONC-ACB designated identifier for an individual SED participant. "
+            + "The value must be unique to a particular participant. "
+            + "It is for internal use within an upload file only.")
     private String uniqueId;
 
-    @Schema(description = "Self-reported gender of the corresponding participant. This variable is "
-            + "only applicable for 2015 Edition.",
+    @Schema(description = "Self-reported gender of the corresponding participant.",
             allowableValues = {"Male", "Female", "Unknown"})
     private String gender;
 
     @Schema(description = "Education internal ID")
     private Long educationTypeId;
 
-    @Schema(description = "Highest education level attained by corresponding participant. This "
-            + "variable is only applicable for 2015 Edition.",
+    @Schema(description = "Highest education level attained by corresponding participant.",
             allowableValues = {"No high school degree", "High school graduate, diploma or the equivalent (for example: GED)",
             "Some college credit, no degree", "Trade/technical/vocational training", "Associate degre", "Bachelor's degree",
             "Master's degree",  "Doctorate degree (e.g., MD,DNP, DMD, PhD)"})
@@ -55,31 +52,27 @@ public class TestParticipant implements Serializable {
             allowableValues = {"0-9", "10-19", "20-29", "30-39", "40-49", "50-59", "60-69", "70-79", "80-89", "90-99", "100+"})
     private String ageRange;
 
-    @Schema(description = "This variable illustrates occupation or role of corresponding "
-            + "participant. It is only applicable to 2015 Edition and a string variable "
-            + "that does not take any restrictions on formatting or values.")
+    @Schema(description = "This variable illustrates occupation or role of corresponding participant. "
+            + "It is a string variable that does not take any restrictions on formatting or values.")
     private String occupation;
 
     @Schema(description = "Professional experience of the corresponding participant, in number of "
-            + "months. This variable is only applicable to 2015 Edition, and takes only "
-            + "positive integers (i.e. no decimals) values.")
+            + "months. This variable only takes positive integers (i.e. no decimals) values.")
     private Integer professionalExperienceMonths;
 
     @JsonIgnore
     private String professionalExperienceMonthsStr;
 
     @Schema(description = "The corresponding participant's experience with computers (in general), "
-            + " in number of months. It is only applicable for 2015 Edition and takes "
-            + "only positive integers (i.e. no decimals).")
+            + "in number of months. It only takes positive integers (i.e. no decimals).")
     private Integer computerExperienceMonths;
 
     @JsonIgnore
     private String computerExperienceMonthsStr;
 
-    @Schema(description = "The corresponding participant's experience with the certified product/ "
-            + "health IT capabilities (SED criterion) being tested, in number of months. "
-            + "This variable is applicable to 2015 Edition, and only takes positive "
-            + "integers (i.e. no decimals are allowed) values.")
+    @Schema(description = "The corresponding participant's experience with the certified product/health "
+            + "IT capabilities (SED criterion) being tested, in number of months. "
+            + "This variable only takes positive integers (i.e. no decimals are allowed) values.")
     private Integer productExperienceMonths;
 
     @JsonIgnore
@@ -87,8 +80,7 @@ public class TestParticipant implements Serializable {
 
     @Schema(description = "Any assistive technology needs as identified by the corresponding "
             + "participant. This variable is a string variable that does not take any "
-            + "restrictions on formatting or values and is only applicable for 2015 "
-            + "Edition.")
+            + "restrictions on formatting or values.")
     private String assistiveTechnologyNeeds;
 
     public TestParticipant(TestParticipantDTO dto) {

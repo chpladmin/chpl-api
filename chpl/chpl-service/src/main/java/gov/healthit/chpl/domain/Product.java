@@ -51,7 +51,7 @@ public class Product implements Serializable {
     @Deprecated
     private String developerName;
 
-    @Schema(description = "The name of the product being uploaded. It is applicable for 2014 and 2015 Edition.")
+    @Schema(description = "The name of the product.")
     private String name;
 
     @Schema(description = "A hyperlink to the test results used to certify the Complete EHRs and/or "
