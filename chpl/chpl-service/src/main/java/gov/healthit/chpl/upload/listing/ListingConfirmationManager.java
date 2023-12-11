@@ -54,6 +54,7 @@ import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.ProductManager;
 import gov.healthit.chpl.manager.ProductVersionManager;
 import gov.healthit.chpl.service.CuresUpdateService;
+import gov.healthit.chpl.standard.CertificationResultStandardDAO;
 import lombok.extern.log4j.Log4j2;
 
 @Component
@@ -71,6 +72,7 @@ public class ListingConfirmationManager {
     private ListingMeasureDAO listingMeasureDao;
     private CertificationResultDAO certResultDao;
     private CertificationResultFunctionalityTestedDAO certResultFuncTestedDao;
+    private CertificationResultStandardDAO certResultStandardDao;
     private CQMResultDAO cqmResultDao;
     private CertificationStatusEventDAO statusEventDao;
     private CuresUpdateEventDAO curesUpdateDao;
@@ -95,7 +97,7 @@ public class ListingConfirmationManager {
             CertificationStatusDAO certStatusDao,  CertificationStatusEventDAO statusEventDao,
             CuresUpdateEventDAO curesUpdateDao,
             CertifiedProductDetailsManager cpDetailsManager, CuresUpdateService curesUpdateService,
-            ActivityManager activityManager,
+            ActivityManager activityManager, CertificationResultStandardDAO certResultStandardDao,
             FF4j ff4j) {
         this.developerManager = developerManager;
         this.productManager = productManager;
@@ -115,6 +117,7 @@ public class ListingConfirmationManager {
         this.cpDetailsManager = cpDetailsManager;
         this.curesUpdateService = curesUpdateService;
         this.activityManager = activityManager;
+        this.certResultStandardDao = certResultStandardDao;
         this.ff4j = ff4j;
 
         activeStatus = certStatusDao.getByStatusName(CertificationStatusType.Active.toString());
@@ -126,7 +129,8 @@ public class ListingConfirmationManager {
     @CacheEvict(value = {
             CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED,
             CacheNames.COLLECTIONS_DEVELOPERS,
-            CacheNames.COLLECTIONS_LISTINGS, CacheNames.PRODUCT_NAMES, CacheNames.DEVELOPER_NAMES
+            CacheNames.COLLECTIONS_LISTINGS, CacheNames.PRODUCT_NAMES, CacheNames.DEVELOPER_NAMES,
+            CacheNames.QUESTIONABLE_ACTIVITIES
     }, allEntries = true)
     @ListingSearchCacheRefresh
     public CertifiedProductSearchDetails create(CertifiedProductSearchDetails listing)
@@ -236,7 +240,8 @@ public class ListingConfirmationManager {
             saveOptionalStandards(certResult);
             saveTestData(certResult);
             saveTestProcedures(certResult);
-            saveFunctionalityTested(certResult);
+            saveFunctionalitiesTested(certResult);
+            saveStandards(certResult);
             saveTestTools(certResult);
             saveConformanceMethods(certResult);
             saveSvaps(certResult);
@@ -271,10 +276,17 @@ public class ListingConfirmationManager {
         }
     }
 
-    private void saveFunctionalityTested(CertificationResult certResult) throws EntityCreationException {
+    private void saveFunctionalitiesTested(CertificationResult certResult) throws EntityCreationException {
         if (!CollectionUtils.isEmpty(certResult.getFunctionalitiesTested())) {
             certResult.getFunctionalitiesTested().stream()
                 .forEach(rethrowConsumer(functionalityTested -> certResultFuncTestedDao.createFunctionalityTestedMapping(certResult.getId(), functionalityTested)));
+        }
+    }
+
+    private void saveStandards(CertificationResult certResult) throws EntityCreationException {
+        if (!CollectionUtils.isEmpty(certResult.getStandards())) {
+            certResult.getStandards().stream()
+                .forEach(rethrowConsumer(standard -> certResultStandardDao.createStandardMapping(certResult.getId(), standard)));
         }
     }
 

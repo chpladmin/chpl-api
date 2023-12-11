@@ -89,63 +89,6 @@
 			"response": []
 		},
 		{
-			"name": "POST /search/v2",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"var jsonData = pm.response.json();\r",
-							"\r",
-							"pm.test(\"expect POST /search/v2 request to return 200 status\", function () {\r",
-							"    pm.response.to.have.status(200);\r",
-							"    pm.expect(jsonData.response).not.eq(null);\r",
-							"});\r",
-							"\r",
-							"pm.test(\"expect listing data in POST /search/v2 endpoint response\", function () {\r",
-							"    pm.expect(pm.response.text()).to.include(\"2015\");    \r",
-							"    pm.expect(pm.response.text()).to.include(\"Carefluence\");\r",
-							"    pm.expect(pm.response.text()).to.include(\"Active\");    \r",
-							"    pm.expect(jsonData.results[0]).to.have.property('rwtPlansUrl');\r",
-							"});"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "API-KEY",
-						"value": "{{apiKey}}",
-						"type": "text"
-					},
-					{
-						"key": "Content-Type",
-						"value": "application/json",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n \"developer\": \"Carefluence\",\r\n  \"product\": \"Carefluence Open API\", \r\n   \"rwtOptions\": [\r\n    \"HAS_PLANS_URL\"\r\n  ]\r\n}"
-				},
-				"url": {
-					"raw": "{{url}}/rest/search/v2",
-					"host": [
-						"{{url}}"
-					],
-					"path": [
-						"rest",
-						"search",
-						"v2"
-					]
-				}
-			},
-			"response": []
-		},
-		{
 			"name": "GET /search - returns 200 status and valid response",
 			"event": [
 				{
@@ -215,71 +158,6 @@
 						"type": "text"
 					}
 				],
-				"url": {
-					"raw": "{{url}}/rest/search",
-					"host": [
-						"{{url}}"
-					],
-					"path": [
-						"rest",
-						"search"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "POST /search - return 200 status and valid response",
-			"event": [
-				{
-					"listen": "prerequest",
-					"script": {
-						"exec": [
-							""
-						],
-						"type": "text/javascript"
-					}
-				},
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"var jsonData = pm.response.json();\r",
-							"\r",
-							"pm.test(\"expect POST /search request to return 200 status\", function () {\r",
-							"    pm.response.to.have.status(200);\r",
-							"    pm.expect(jsonData.response).not.eq(null);\r",
-							"});\r",
-							"\r",
-							"pm.test(\"expect listing data in POST /search endpoint response\", function () {\r",
-							"    pm.expect(pm.response.text()).to.include(\"2015\");    \r",
-							"    pm.expect(pm.response.text()).to.include(\"Carefluence\");\r",
-							"    pm.expect(pm.response.text()).to.include(\"Active\");    \r",
-							"    pm.expect(jsonData.results[0]).to.have.property('rwtPlansUrl');\r",
-							"});"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "API-Key",
-						"value": "{{apiKey}}",
-						"type": "text"
-					},
-					{
-						"key": "Content-Type",
-						"value": "application/json",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n \"developer\": \"Carefluence\",\r\n  \"product\": \"Carefluence Open API\", \r\n   \"rwtOptions\": [\r\n    \"HAS_PLANS_URL\"\r\n  ]\r\n}"
-				},
 				"url": {
 					"raw": "{{url}}/rest/search",
 					"host": [

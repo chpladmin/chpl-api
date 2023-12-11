@@ -185,7 +185,7 @@ public class SurveillanceBasicCsvPresenter extends SurveillanceCsvPresenter {
         List<String> ncFields = new ArrayList<String>();
         ncFields.add("Y");
 
-        ncFields.add(NullSafeEvaluator.eval(() -> nc.getType().getFormattedTitle(), ""));
+        ncFields.add(NullSafeEvaluator.eval(() -> nc.getType().getFormattedTitleForReport(), ""));
 
         if (nc.getDateOfDeterminationDay() != null) {
             ncFields.add(getDateFormatter().format(nc.getDateOfDeterminationDay()));

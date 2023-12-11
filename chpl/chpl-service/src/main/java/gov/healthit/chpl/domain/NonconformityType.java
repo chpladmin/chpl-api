@@ -172,4 +172,19 @@ public class NonconformityType implements Serializable {
             return title;
         }
     }
+
+    @JsonIgnore
+    public String getFormattedTitleForReport() {
+        String formattedTitleForReport = "";
+        if (StringUtils.isNotEmpty(number)) {
+            CriterionStatus status = getStatus();
+            if (status != null && status.equals(CriterionStatus.REMOVED)) {
+                formattedTitleForReport = "Removed | ";
+            }
+            formattedTitleForReport += Util.formatCriteriaNumber(this);
+        } else {
+            formattedTitleForReport = title;
+        }
+        return formattedTitleForReport;
+    }
 }

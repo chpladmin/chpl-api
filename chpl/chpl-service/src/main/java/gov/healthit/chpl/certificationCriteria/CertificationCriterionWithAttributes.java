@@ -52,6 +52,7 @@ public class CertificationCriterionWithAttributes extends CertificationCriterion
         private boolean serviceBaseUrlList;
         private boolean standardsTested;
         private boolean svap;
+        private boolean standard;
         private boolean testData;
         private boolean testProcedure;
         private boolean testTool;

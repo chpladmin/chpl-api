@@ -1,5 +1,25 @@
 # Release Notes
 
+## Version 43.0.0
+_11 December 2023_
+
+### Breaking Changes
+* Remove lastModifiedDate from listing object
+* Remove CertificationBody retirementDate
+* Remove eligible deprecated endpoints
+
+### Features
+* Add Standards attribute to Criteria
+* Check for removed criteria attributes added for questionable activity
+* Stop detecting Cures Update removed questionable activity
+* Stop recording questionable activity for 2011/2014 listing update
+
+### Bug Fixes
+* Correctly return null if edition is not found during upload
+* Get uploaded listing records to include in error email
+
+---
+
 ## Version 42.5.0
 _27 November 2023_
 

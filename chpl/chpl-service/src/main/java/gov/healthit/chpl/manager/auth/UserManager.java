@@ -213,12 +213,6 @@ public class UserManager extends SecuredManager {
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SECURED_USER, "
             + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).UPDATE_PASSWORD, #user)")
     public void updateUserPassword(UserDTO user, String password) throws UserRetrievalException, MultipleUserAccountsException {
-        updateUserPasswordUnsecured(user, password);
-    }
-
-    @Transactional
-    public void updateUserPasswordUnsecured(UserDTO user, String password)
-            throws UserRetrievalException, MultipleUserAccountsException {
         String encodedPassword = encodePassword(password);
         userDAO.updatePassword(user.getEmail(), encodedPassword);
         userDAO.updateFailedLoginCount(user.getEmail(), 0);
@@ -268,7 +262,7 @@ public class UserManager extends SecuredManager {
                     strength.getScore(), strength.getCrackTimesDisplay().getOfflineFastHashing1e10PerSecond());
             response.setStrength(strength);
         }
-        updateUserPasswordUnsecured(userDto, resetRequest.getNewPassword());
+        updateUserPassword(userDto, resetRequest.getNewPassword());
         deletePreviousTokens(resetRequest.getToken());
         response.setPasswordUpdated(true);
         return response;

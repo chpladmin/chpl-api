@@ -43,8 +43,8 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.scheduler.surveillance.rules.RuleComplianceCalculator;
 import gov.healthit.chpl.search.dao.ListingSearchDao;
 import gov.healthit.chpl.search.domain.ListingSearchResult;
-import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.util.CertificationStatusUtil;
+import gov.healthit.chpl.util.Util;
 
 @DisallowConcurrentExecution
 public class BrokenSurveillanceRulesCreatorJob extends QuartzJob {
@@ -275,7 +275,7 @@ public class BrokenSurveillanceRulesCreatorJob extends QuartzJob {
 
         rule.setNonconformity(true);
         if (nc.getType() != null && nc.getType().getNumber() != null) {
-            rule.setNonconformityCriteria(CertificationCriterionService.formatCriteriaNumber(nc.getType().getNumber(), nc.getType().getTitle()));
+            rule.setNonconformityCriteria(Util.formatCriteriaNumber(nc.getType()));
         }
 
         if (nc.getNonconformityCloseDay() != null) {

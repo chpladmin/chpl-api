@@ -22,8 +22,6 @@ public final class Util {
     private static final int BASE_16 = 16;
     private static final String DATE_FORMAT = "yyyy-MM-dd";
     private static final String TIMESTAMP_FORMAT = "yyyyMMdd_HHmmss";
-    private static final String CURES_TITLE = "Cures Update";
-    public static final String CURES_SUFFIX = " (" + CURES_TITLE + ")";
 
     private Util() {
 
@@ -67,36 +65,16 @@ public final class Util {
         }
     }
 
-    private static boolean isCures(String title) {
-        return title != null && title.contains(CURES_TITLE);
-    }
-
-    public static boolean isCures(CertificationCriterion criterion) {
-        return isCures(criterion.getTitle());
-    }
-
     public static String formatCriteriaNumber(NonconformityType nonconformityType) {
-        String result = nonconformityType.getNumber();
-        if (isCures(nonconformityType.getTitle())) {
-            result += CURES_SUFFIX;
-        }
-        return result;
+        return nonconformityType.getNumber();
     }
 
     public static String formatCriteriaNumber(RequirementType requirementType) {
-        String result = requirementType.getNumber();
-        if (isCures(requirementType.getTitle())) {
-            result += CURES_SUFFIX;
-        }
-        return result;
+        return requirementType.getNumber();
     }
 
     public static String formatCriteriaNumber(CertificationCriterion criterion) {
-        String result = criterion.getNumber();
-        if (isCures(criterion)) {
-            result += CURES_SUFFIX;
-        }
-        return result;
+        return criterion.getNumber();
     }
 
     public static <T> List<T> getListFromIterator(Iterator<T> iterator) {
