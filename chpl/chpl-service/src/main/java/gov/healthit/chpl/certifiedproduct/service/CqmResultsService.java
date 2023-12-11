@@ -6,6 +6,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -148,7 +149,7 @@ public class CqmResultsService {
     }
 
     private List<CQMResultCertification> getCqmCriteriaMapping(CQMResultDetails cqmResult) {
-        if (cqmResult.getSuccess() && cqmResult.getId() != null) {
+        if (BooleanUtils.isTrue(cqmResult.getSuccess()) && cqmResult.getId() != null) {
             return cqmResultDao.getCriteriaForCqmResult(cqmResult.getId()).stream()
                     .map(dto -> new CQMResultCertification(dto))
                     .collect(Collectors.toList());

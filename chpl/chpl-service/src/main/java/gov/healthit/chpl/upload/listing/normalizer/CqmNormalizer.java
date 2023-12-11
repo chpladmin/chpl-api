@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -188,7 +189,7 @@ public class CqmNormalizer {
         Optional<CQMResultDetails> cqmInListing = cqmsInListing.stream()
                 .filter(cqm -> !StringUtils.isEmpty(cqm.getCmsId()) && cqm.getCmsId().equals(cqmDto.getCmsId()))
                 .findAny();
-        return cqmInListing != null && cqmInListing.isPresent() && cqmInListing.get().getSuccess();
+        return cqmInListing != null && cqmInListing.isPresent() && BooleanUtils.isTrue(cqmInListing.get().getSuccess());
     }
 
     private CQMResultDetails buildCqmDetails(CQMCriterionDTO cqmDto) {
