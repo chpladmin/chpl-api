@@ -105,4 +105,11 @@ public class CQMResultDetails implements Serializable {
             }
         }
     }
+
+    public Boolean getSuccess() {
+        if (successVersions != null && successVersions.size() > 0) {
+            return true;
+        }
+        return success;
+    }
 }
