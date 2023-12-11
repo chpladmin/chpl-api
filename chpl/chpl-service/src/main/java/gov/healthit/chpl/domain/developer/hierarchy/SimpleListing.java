@@ -1,6 +1,6 @@
 package gov.healthit.chpl.domain.developer.hierarchy;
 
-import org.apache.commons.lang3.ObjectUtils;
+import java.util.Objects;
 
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.CertifiedProduct;
@@ -29,7 +29,7 @@ public class SimpleListing extends CertifiedProduct {
             return false;
         }
         SimpleListing otherListing = (SimpleListing) obj;
-        return ObjectUtils.equals(this.getId(), otherListing.getId());
+        return Objects.equals(this.getId(), otherListing.getId());
     }
 
     public int hashCode() {
