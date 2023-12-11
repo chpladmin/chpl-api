@@ -108,8 +108,6 @@ public class CertificationResultManager extends SecuredManager {
             throws EntityCreationException, EntityRetrievalException {
 
         int numChanges = 0;
-        //if ((orig == null || orig.getId() == null || BooleanUtils.isFalse(orig.isSuccess()))
-        //        && updated != null) {
         if ((orig == null || orig.getId() == null) && updated != null) {
             //this is a new cert result we are adding
             long addedCertResultId = certResultDAO.create(updatedListing.getId(), updated);

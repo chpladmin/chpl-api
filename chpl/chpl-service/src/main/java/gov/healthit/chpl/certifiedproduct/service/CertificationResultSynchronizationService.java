@@ -61,8 +61,6 @@ public class CertificationResultSynchronizationService {
                     .filter(cr -> getMatchingItemInList(cr, origCertResults).isEmpty())
                     .toList();
 
-            removedCertResults.forEach(x -> LOGGER.info("Added Certification Result: {}", Util.formatCriteriaNumber(x.getCriterion())));
-
             addedCertResults.forEach(rethrowConsumer(addedCertResult ->
                 certResultManager.createOrUpdate(existingListing, updatedListing,
                         CertificationResult.builder()
