@@ -16,7 +16,6 @@ import javax.persistence.Table;
 import org.hibernate.annotations.Where;
 
 import gov.healthit.chpl.domain.CertificationBody;
-import gov.healthit.chpl.util.DateUtil;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -72,7 +71,6 @@ public class CertificationBodyEntity extends EntityAudit {
                 .name(this.getName())
                 .retired(this.getRetired())
                 .retirementDay(this.getRetirementDate())
-                .retirementDate(DateUtil.toDate(this.getRetirementDate()))
                 .website(this.getWebsite())
                 .build();
     }

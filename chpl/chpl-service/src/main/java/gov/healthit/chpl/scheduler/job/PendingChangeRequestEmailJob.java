@@ -32,7 +32,7 @@ import gov.healthit.chpl.changerequest.manager.ChangeRequestManager;
 import gov.healthit.chpl.changerequest.search.ChangeRequestSearchRequest;
 import gov.healthit.chpl.changerequest.search.ChangeRequestSearchResponse;
 import gov.healthit.chpl.changerequest.search.ChangeRequestSearchResult;
-import gov.healthit.chpl.changerequest.search.ChangeRequestSearchServiceV1;
+import gov.healthit.chpl.changerequest.search.ChangeRequestSearchService;
 import gov.healthit.chpl.changerequest.search.OrderByOption;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.domain.CertificationBody;
@@ -67,7 +67,7 @@ public class PendingChangeRequestEmailJob extends QuartzJob {
     private ChangeRequestStatusTypeDAO changeRequestStatusTypeDao;
 
     @Autowired
-    private ChangeRequestSearchServiceV1 changeRequestSearchManager;
+    private ChangeRequestSearchService changeRequestSearchService;
 
     @Autowired
     private ChangeRequestManager changeRequestManager;
@@ -179,13 +179,13 @@ public class PendingChangeRequestEmailJob extends QuartzJob {
         LOGGER.info("Getting all change requests...");
         List<ChangeRequestSearchResult> searchResults = new ArrayList<ChangeRequestSearchResult>();
         LOGGER.info(searchRequest.toString());
-        ChangeRequestSearchResponse searchResponse = changeRequestSearchManager.searchChangeRequests(searchRequest);
+        ChangeRequestSearchResponse searchResponse = changeRequestSearchService.searchChangeRequests(searchRequest);
         searchResults.addAll(searchResponse.getResults());
         while (searchResponse.getRecordCount() > searchResults.size()) {
             searchRequest.setPageSize(searchResponse.getPageSize());
             searchRequest.setPageNumber(searchResponse.getPageNumber() + 1);
             LOGGER.info(searchRequest.toString());
-            searchResponse = changeRequestSearchManager.searchChangeRequests(searchRequest);
+            searchResponse = changeRequestSearchService.searchChangeRequests(searchRequest);
             searchResults.addAll(searchResponse.getResults());
         }
         LOGGER.info("Got " + searchResults.size() + " total change requests.");
