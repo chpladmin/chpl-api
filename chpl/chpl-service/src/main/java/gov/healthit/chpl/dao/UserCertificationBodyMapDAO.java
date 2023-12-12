@@ -8,7 +8,6 @@ import javax.persistence.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.dto.UserCertificationBodyMapDTO;
 import gov.healthit.chpl.entity.CertificationBodyEntity;
@@ -38,7 +37,6 @@ public class UserCertificationBodyMapDAO extends BaseDAOImpl {
     public void delete(UserCertificationBodyMapDTO dto) throws EntityRetrievalException {
         UserCertificationBodyMapEntity entity = getEntityById(dto.getId());
         entity.setDeleted(true);
-        entity.setLastModifiedUser(getUserId(User.SYSTEM_USER_ID));
         update(entity);
     }
 
@@ -119,11 +117,10 @@ public class UserCertificationBodyMapDAO extends BaseDAOImpl {
         if (result.size() == 0) {
             return null;
         }
-        return (UserCertificationBodyMapEntity) result.get(0);
+        return result.get(0);
     }
 
     private UserCertificationBodyMapEntity create(UserCertificationBodyMapEntity entity) {
-        entity.setLastModifiedUser(getUserId(User.SYSTEM_USER_ID));
         if (entity.getRetired() == null) {
             entity.setRetired(false);
         }
@@ -135,7 +132,6 @@ public class UserCertificationBodyMapDAO extends BaseDAOImpl {
     }
 
     private UserCertificationBodyMapEntity update(UserCertificationBodyMapEntity entity) {
-        entity.setLastModifiedUser(getUserId(User.SYSTEM_USER_ID));
         entityManager.persist(entity);
         return entity;
     }

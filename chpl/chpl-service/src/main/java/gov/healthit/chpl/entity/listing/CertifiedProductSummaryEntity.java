@@ -1,6 +1,5 @@
 package gov.healthit.chpl.entity.listing;
 
-import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.HashSet;
@@ -17,13 +16,24 @@ import javax.persistence.Table;
 import org.hibernate.annotations.Immutable;
 import org.hibernate.annotations.Where;
 
-import lombok.Data;
+import gov.healthit.chpl.entity.EntityAudit;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 
+@Getter
+@Setter
+@ToString
+@SuperBuilder
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Immutable
 @Table(name = "certified_product_summary")
-@Data
-public class CertifiedProductSummaryEntity implements Serializable {
+public class CertifiedProductSummaryEntity extends EntityAudit {
     private static final long serialVersionUID = -7006206379019745873L;
 
     @Id
@@ -99,18 +109,6 @@ public class CertifiedProductSummaryEntity implements Serializable {
 
     @Column(name = "certified_date_code")
     private String certifiedDateCode;
-
-    @Column(name = "creation_date")
-    private Date creationDate;
-
-    @Column(name = "last_modified_date")
-    private Date lastModifiedDate;
-
-    @Column(name = "last_modified_user")
-    private String lastModifiedUser;
-
-    @Column(name = "deleted")
-    private Boolean deleted;
 
     @Column(name = "promoting_interoperability_user_count")
     private Long promotingInteroperabilityUserCount;

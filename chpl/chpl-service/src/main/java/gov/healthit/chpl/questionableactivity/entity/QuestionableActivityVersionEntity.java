@@ -13,20 +13,28 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import gov.healthit.chpl.dto.ProductVersionDTO;
+import gov.healthit.chpl.entity.EntityAudit;
 import gov.healthit.chpl.entity.ProductVersionEntity;
 import gov.healthit.chpl.entity.auth.UserEntity;
 import gov.healthit.chpl.questionableactivity.domain.QuestionableActivityTrigger;
 import gov.healthit.chpl.questionableactivity.domain.QuestionableActivityVersion;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 
-@Entity
 @Getter
 @Setter
 @ToString
+@SuperBuilder
+@AllArgsConstructor
+@NoArgsConstructor
+@Entity
 @Table(name = "questionable_activity_version")
-public class QuestionableActivityVersionEntity implements QuestionableActivityBaseEntity {
+public class QuestionableActivityVersionEntity extends EntityAudit implements QuestionableActivityBaseEntity {
+    private static final long serialVersionUID = 8164081169659751939L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -66,18 +74,6 @@ public class QuestionableActivityVersionEntity implements QuestionableActivityBa
     @JoinColumn(name = "activity_user_id", insertable = false, updatable = false)
     private UserEntity user;
 
-    @Column(name = "deleted")
-    private Boolean deleted;
-
-    @Column(name = "last_modified_user")
-    private Long lastModifiedUser;
-
-    @Column(name = "creation_date", insertable = false, updatable = false)
-    private Date creationDate;
-
-    @Column(name = "last_modified_date", insertable = false, updatable = false)
-    private Date lastModifiedDate;
-
     public QuestionableActivityVersion toDomain() {
         return QuestionableActivityVersion.builder()
                 .id(this.getId())
@@ -96,4 +92,3 @@ public class QuestionableActivityVersionEntity implements QuestionableActivityBa
                 .build();
     }
 }
-

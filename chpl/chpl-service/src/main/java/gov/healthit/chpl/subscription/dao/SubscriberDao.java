@@ -8,7 +8,6 @@ import javax.persistence.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.subscription.domain.Subscriber;
 import gov.healthit.chpl.subscription.domain.SubscriberRole;
@@ -47,7 +46,6 @@ public class SubscriberDao extends BaseDAOImpl {
     public UUID createSubscriber(String email) {
         SubscriberEntity subscriberToCreate = new SubscriberEntity();
         subscriberToCreate.setEmail(email);
-        subscriberToCreate.setLastModifiedUser(User.DEFAULT_USER_ID);
         subscriberToCreate.setSubscriberStatusId(lookupUtil.getPendingSubscriberStatusId());
         create(subscriberToCreate);
         return subscriberToCreate.getId();

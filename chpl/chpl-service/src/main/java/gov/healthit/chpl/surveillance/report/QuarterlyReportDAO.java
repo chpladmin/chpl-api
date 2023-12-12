@@ -1,7 +1,6 @@
 package gov.healthit.chpl.surveillance.report;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Query;
@@ -259,8 +258,6 @@ public class QuarterlyReportDAO extends BaseDAOImpl {
                 .activitiesOutcomesSummary(toCreate.getActivitiesOutcomesSummary())
                 .reactiveSurveillanceSummary(toCreate.getReactiveSurveillanceSummary())
                 .disclosureRequirementsSummary(toCreate.getDisclosureRequirementsSummary())
-                .creationDate(new Date())
-                .lastModifiedUser(AuthUtil.getAuditId())
                 .build();
 
         super.create(toCreateEntity);
@@ -282,8 +279,6 @@ public class QuarterlyReportDAO extends BaseDAOImpl {
         if (!StringUtils.isEmpty(toCreate.getReason())) {
             toCreateEntity.setReason(toCreate.getReason().trim());
         }
-        toCreateEntity.setCreationDate(new Date());
-        toCreateEntity.setLastModifiedUser(AuthUtil.getAuditId());
 
         super.create(toCreateEntity);
         toCreate.setId(toCreateEntity.getId());
@@ -309,7 +304,6 @@ public class QuarterlyReportDAO extends BaseDAOImpl {
             throws EntityRetrievalException {
         QuarterlyReportExcludedListingMapEntity toUpdateEntity = getExcludedEntityById(toUpdate.getId());
         toUpdateEntity.setReason(toUpdate.getReason());
-        toUpdateEntity.setLastModifiedUser(AuthUtil.getAuditId());
         super.update(toUpdateEntity);
         return new QuarterlyReportExclusionDTO(toUpdateEntity);
     }
@@ -317,14 +311,12 @@ public class QuarterlyReportDAO extends BaseDAOImpl {
     public void delete(Long idToDelete) throws EntityRetrievalException {
         QuarterlyReportEntity toDeleteEntity = getEntityById(idToDelete);
         toDeleteEntity.setDeleted(true);
-        toDeleteEntity.setLastModifiedUser(AuthUtil.getAuditId());
         super.update(toDeleteEntity);
     }
 
     public void deleteExclusion(Long idToDelete) throws EntityRetrievalException {
         QuarterlyReportExcludedListingMapEntity toUpdateEntity = getExcludedEntityById(idToDelete);
         toUpdateEntity.setDeleted(true);
-        toUpdateEntity.setLastModifiedUser(AuthUtil.getAuditId());
         super.update(toUpdateEntity);
     }
 

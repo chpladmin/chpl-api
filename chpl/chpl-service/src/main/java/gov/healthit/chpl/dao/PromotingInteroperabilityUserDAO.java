@@ -7,12 +7,12 @@ import javax.persistence.Query;
 import javax.transaction.Transactional;
 
 import org.springframework.stereotype.Repository;
+
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.PromotingInteroperabilityUser;
 import gov.healthit.chpl.entity.PromotingInteroperabilityUserEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.util.AuthUtil;
 
 @Repository("promotingInteroperabilityUserDao")
 public class PromotingInteroperabilityUserDAO extends BaseDAOImpl {
@@ -24,7 +24,6 @@ public class PromotingInteroperabilityUserDAO extends BaseDAOImpl {
         entity.setListingId(listingId);
         entity.setUserCount(toCreate.getUserCount());
         entity.setUserCountDate(toCreate.getUserCountDate());
-        entity.setLastModifiedUser(AuthUtil.getAuditId());
         entity.setDeleted(false);
         create(entity);
     }
@@ -37,7 +36,6 @@ public class PromotingInteroperabilityUserDAO extends BaseDAOImpl {
         }
         entity.setUserCount(toUpdate.getUserCount());
         entity.setUserCountDate(toUpdate.getUserCountDate());
-        entity.setLastModifiedUser(AuthUtil.getAuditId());
         update(entity);
     }
 
@@ -45,7 +43,6 @@ public class PromotingInteroperabilityUserDAO extends BaseDAOImpl {
         PromotingInteroperabilityUserEntity toDelete = getEntityById(id);
         if (toDelete != null) {
             toDelete.setDeleted(true);
-            toDelete.setLastModifiedUser(AuthUtil.getAuditId());
             update(toDelete);
         }
     }

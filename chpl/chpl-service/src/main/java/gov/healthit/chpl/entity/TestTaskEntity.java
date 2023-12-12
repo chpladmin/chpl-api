@@ -1,7 +1,5 @@
 package gov.healthit.chpl.entity;
 
-import java.io.Serializable;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -18,18 +16,22 @@ import javax.persistence.Table;
 import org.hibernate.annotations.Where;
 
 import gov.healthit.chpl.entity.listing.TestTaskParticipantMapEntity;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 
-@Entity
 @Getter
 @Setter
 @ToString
+@SuperBuilder
+@AllArgsConstructor
 @NoArgsConstructor
+@Entity
 @Table(name = "test_task")
-public class TestTaskEntity implements Serializable {
+public class TestTaskEntity extends EntityAudit {
     private static final long serialVersionUID = -6364783003138741063L;
 
     @Id
@@ -86,15 +88,4 @@ public class TestTaskEntity implements Serializable {
     @Where(clause = "deleted <> 'true'")
     private Set<TestTaskParticipantMapEntity> testParticipants = new HashSet<TestTaskParticipantMapEntity>();
 
-    @Column(name = "deleted", insertable = false)
-    private Boolean deleted;
-
-    @Column(name = "last_modified_user")
-    private Long lastModifiedUser;
-
-    @Column(name = "creation_date", insertable = false, updatable = false)
-    private Date creationDate;
-
-    @Column(name = "last_modified_date", insertable = false, updatable = false)
-    private Date lastModifiedDate;
 }

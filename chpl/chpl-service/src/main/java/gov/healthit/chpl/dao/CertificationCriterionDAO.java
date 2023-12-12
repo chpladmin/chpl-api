@@ -13,7 +13,6 @@ import gov.healthit.chpl.certificationCriteria.CertificationCriterionEntity;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.util.AuthUtil;
 
 @Repository("certificationCriterionDAO")
 public class CertificationCriterionDAO extends BaseDAOImpl {
@@ -28,7 +27,6 @@ public class CertificationCriterionDAO extends BaseDAOImpl {
         entity.setEndDay(criterion.getEndDay());
         entity.setRuleId(criterion.getRule() != null ? criterion.getRule().getId() : null);
         entity.setId(criterion.getId());
-        entity.setLastModifiedUser(AuthUtil.getAuditId());
         entity.setNumber(criterion.getNumber());
         entity.setTitle(criterion.getTitle());
         update(entity);

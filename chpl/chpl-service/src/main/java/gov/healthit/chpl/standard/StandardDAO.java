@@ -64,10 +64,6 @@ public class StandardDAO extends BaseDAOImpl {
                 .rule(standard.getRule() != null && standard.getRule().getId() != null
                         ? ruleDAO.getRuleEntityById(standard.getRule().getId())
                         : null)
-                .creationDate(new Date())
-                .lastModifiedDate(new Date())
-                .lastModifiedUser(AuthUtil.getAuditId())
-                .deleted(false)
                 .build();
 
         create(entity);
@@ -109,10 +105,6 @@ public class StandardDAO extends BaseDAOImpl {
         StandardCriteriaMapEntity entity = StandardCriteriaMapEntity.builder()
                 .certificationCriterionId(criterion.getId())
                 .standardId(standard.getId())
-                .creationDate(new Date())
-                .lastModifiedDate(new Date())
-                .lastModifiedUser(AuthUtil.getAuditId())
-                .deleted(false)
                 .build();
 
         create(entity);

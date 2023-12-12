@@ -1,7 +1,6 @@
 package gov.healthit.chpl.dao;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Query;
@@ -14,7 +13,6 @@ import gov.healthit.chpl.dto.CertifiedProductAccessibilityStandardDTO;
 import gov.healthit.chpl.entity.listing.CertifiedProductAccessibilityStandardEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.util.AuthUtil;
 
 @Repository(value = "certifiedProductAccessibilityStandardDao")
 public class CertifiedProductAccessibilityStandardDAO extends BaseDAOImpl {
@@ -25,7 +23,6 @@ public class CertifiedProductAccessibilityStandardDAO extends BaseDAOImpl {
             CertifiedProductAccessibilityStandardEntity mappingEntity = new CertifiedProductAccessibilityStandardEntity();
             mappingEntity.setCertifiedProductId(listingId);
             mappingEntity.setAccessibilityStandardId(accStdMapping.getAccessibilityStandardId());
-            mappingEntity.setLastModifiedUser(AuthUtil.getAuditId());
             create(mappingEntity);
             return mappingEntity.getId();
         } catch (Exception ex) {
@@ -38,9 +35,6 @@ public class CertifiedProductAccessibilityStandardDAO extends BaseDAOImpl {
         CertifiedProductAccessibilityStandardEntity toCreateEntity = new CertifiedProductAccessibilityStandardEntity();
         toCreateEntity.setCertifiedProductId(toCreate.getCertifiedProductId());
         toCreateEntity.setAccessibilityStandardId(toCreate.getAccessibilityStandardId());
-        toCreateEntity.setLastModifiedDate(new Date());
-        toCreateEntity.setLastModifiedUser(AuthUtil.getAuditId());
-        toCreateEntity.setCreationDate(new Date());
         toCreateEntity.setDeleted(false);
         create(toCreateEntity);
         return new CertifiedProductAccessibilityStandardDTO(toCreateEntity);
@@ -54,8 +48,6 @@ public class CertifiedProductAccessibilityStandardDAO extends BaseDAOImpl {
             throw new EntityRetrievalException("Could not find mapping with id " + id);
         }
         curr.setDeleted(true);
-        curr.setLastModifiedDate(new Date());
-        curr.setLastModifiedUser(AuthUtil.getAuditId());
         update(curr);
         return new CertifiedProductAccessibilityStandardDTO(curr);
     }

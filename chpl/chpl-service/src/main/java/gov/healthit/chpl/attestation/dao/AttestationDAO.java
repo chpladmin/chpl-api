@@ -1,6 +1,5 @@
 package gov.healthit.chpl.attestation.dao;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -22,7 +21,6 @@ import gov.healthit.chpl.form.AllowedResponse;
 import gov.healthit.chpl.form.FormItem;
 import gov.healthit.chpl.form.entity.AllowedResponseEntity;
 import gov.healthit.chpl.form.entity.FormItemEntity;
-import gov.healthit.chpl.util.AuthUtil;
 import lombok.extern.log4j.Log4j2;
 
 @Repository
@@ -94,9 +92,6 @@ public class AttestationDAO extends BaseDAOImpl{
                 .signature(attestationSubmission.getSignature())
                 .signatureEmail(attestationSubmission.getSignatureEmail())
                 .deleted(false)
-                .lastModifiedUser(AuthUtil.getAuditId())
-                .creationDate(new Date())
-                .lastModifiedDate(new Date())
                 .build();
 
         create(parent);
@@ -112,9 +107,6 @@ public class AttestationDAO extends BaseDAOImpl{
                             .response(AllowedResponseEntity.builder()
                                     .id(resp.getId())
                                     .build())
-                            .creationDate(new Date())
-                            .lastModifiedDate(new Date())
-                            .lastModifiedUser(AuthUtil.getAuditId())
                             .deleted(false)
                             .build();
                     create(entity);
@@ -135,7 +127,6 @@ public class AttestationDAO extends BaseDAOImpl{
         getAttestationPeriodDeveloperExceptionEntities(developerId, attestationPeriodId).stream()
                 .forEach(entity -> {
                     entity.setDeleted(true);
-                    entity.setLastModifiedUser(AuthUtil.getAuditId());
                     update(entity);
                 });
     }
@@ -149,9 +140,6 @@ public class AttestationDAO extends BaseDAOImpl{
                         .id(adpe.getPeriod().getId())
                         .build())
                 .exceptionEnd(adpe.getExceptionEnd())
-                .creationDate(new Date())
-                .lastModifiedDate(new Date())
-                .lastModifiedUser(AuthUtil.getAuditId())
                 .deleted(false)
                 .build();
 

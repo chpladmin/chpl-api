@@ -10,14 +10,24 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import lombok.Data;
+import gov.healthit.chpl.entity.EntityAudit;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 
-@Entity
-@Data
+@Getter
+@Setter
+@ToString
+@SuperBuilder
+@AllArgsConstructor
 @NoArgsConstructor
+@Entity
 @Table(name = "contact")
-public class UserContactEntity {
+public class UserContactEntity extends EntityAudit {
+    private static final long serialVersionUID = 4455611185793875304L;
 
     @Id
     @Column(name = "contact_id")
@@ -46,12 +56,4 @@ public class UserContactEntity {
     @Column(name = "signature_date")
     private Date signatureDate;
 
-    @Column(name = "last_modified_user")
-    private Long lastModifiedUser;
-
-    @Column(name = "last_modified_date")
-    private Date lastModifiedDate;
-
-    @Column(name = "deleted")
-    private Boolean deleted;
 }

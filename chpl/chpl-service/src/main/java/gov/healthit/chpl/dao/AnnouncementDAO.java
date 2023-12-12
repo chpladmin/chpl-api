@@ -12,7 +12,6 @@ import gov.healthit.chpl.domain.Announcement;
 import gov.healthit.chpl.entity.AnnouncementEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.util.AuthUtil;
 import lombok.extern.log4j.Log4j2;
 
 @Repository(value = "announcementDAO")
@@ -26,7 +25,6 @@ public class AnnouncementDAO extends BaseDAOImpl {
         entity.setStartDate(announcement.getStartDateTime());
         entity.setEndDate(announcement.getEndDateTime());
         entity.setIsPublic(announcement.getIsPublic());
-        entity.setLastModifiedUser(AuthUtil.getAuditId());
 
         create(entity);
         return entity.toDomain();
@@ -44,7 +42,6 @@ public class AnnouncementDAO extends BaseDAOImpl {
         entity.setStartDate(announcement.getStartDateTime());
         entity.setEndDate(announcement.getEndDateTime());
         entity.setIsPublic(announcement.getIsPublic());
-        entity.setLastModifiedUser(AuthUtil.getAuditId());
         update(entity);
         return entity.toDomain();
     }
