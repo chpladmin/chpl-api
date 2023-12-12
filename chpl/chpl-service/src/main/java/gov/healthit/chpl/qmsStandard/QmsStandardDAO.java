@@ -1,6 +1,5 @@
 package gov.healthit.chpl.qmsStandard;
 
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -14,7 +13,6 @@ import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.entity.listing.CertifiedProductDetailsEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import lombok.extern.log4j.Log4j2;
 
@@ -31,7 +29,6 @@ public class QmsStandardDAO extends BaseDAOImpl {
     public QmsStandard create(QmsStandard qmsStandard) throws EntityCreationException {
         QmsStandardEntity entity = new QmsStandardEntity();
         entity.setDeleted(false);
-        entity.setLastModifiedUser(AuthUtil.getAuditId());
         entity.setName(qmsStandard.getName());
 
         try {
@@ -59,8 +56,6 @@ public class QmsStandardDAO extends BaseDAOImpl {
 
         if (toDelete != null) {
             toDelete.setDeleted(true);
-            toDelete.setLastModifiedDate(new Date());
-            toDelete.setLastModifiedUser(AuthUtil.getAuditId());
             update(toDelete);
         }
     }

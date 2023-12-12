@@ -1,8 +1,5 @@
 package gov.healthit.chpl.entity;
 
-import java.io.Serializable;
-import java.util.Date;
-
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -13,12 +10,22 @@ import javax.persistence.Table;
 import javax.validation.constraints.Size;
 
 import gov.healthit.chpl.domain.Address;
-import lombok.Data;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 
+@Getter
+@Setter
+@ToString
+@SuperBuilder
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
-@Data
 @Table(name = "address")
-public class AddressEntity implements Serializable {
+public class AddressEntity extends EntityAudit {
     private static final long serialVersionUID = 762431901700320834L;
 
     @Id
@@ -54,19 +61,6 @@ public class AddressEntity implements Serializable {
     @Size(min = 1)
     @Column(name = "country")
     private String country;
-
-    @Column(name = "creation_date", insertable = false, updatable = false)
-    private Date creationDate;
-
-    @Column(name = "last_modified_date", insertable = false, updatable = false)
-    private Date lastModifiedDate;
-
-    @Basic(optional = false)
-    @Column(name = "last_modified_user", nullable = false)
-    private Long lastModifiedUser;
-
-    @Column(name = "deleted", insertable = false)
-    private Boolean deleted;
 
     public Address toDomain() {
         return Address.builder()

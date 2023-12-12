@@ -2,7 +2,6 @@ package gov.healthit.chpl.certificationCriteria;
 
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.util.Date;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -17,18 +16,23 @@ import javax.persistence.Table;
 
 import gov.healthit.chpl.criteriaattribute.rule.RuleEntity;
 import gov.healthit.chpl.entity.CertificationEditionEntity;
+import gov.healthit.chpl.entity.EntityAudit;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 
-@Entity
-@Data
-@Builder
+@Getter
+@Setter
+@ToString
+@SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
+@Entity
 @Table(name = "certification_criterion")
-public class CertificationCriterionEntity implements Serializable {
+public class CertificationCriterionEntity extends EntityAudit implements Serializable {
     private static final long serialVersionUID = 5366674516357955978L;
 
     @Id
@@ -65,25 +69,9 @@ public class CertificationCriterionEntity implements Serializable {
     @JoinColumn(name = "rule_id", unique = true, nullable = true, insertable = false, updatable = false)
     private RuleEntity rule;
 
-    @Basic(optional = false)
-    @Column(name = "creation_date", nullable = false)
-    private Date creationDate;
-
-    @Basic(optional = false)
-    @Column(name = "deleted", nullable = false)
-    private Boolean deleted;
-
     @Basic(optional = true)
     @Column(name = "description", length = 1000)
     private String description;
-
-    @Basic(optional = false)
-    @Column(name = "last_modified_date", nullable = false)
-    private Date lastModifiedDate;
-
-    @Basic(optional = false)
-    @Column(name = "last_modified_user", nullable = false)
-    private Long lastModifiedUser;
 
     @Basic(optional = true)
     @Column(length = 15)

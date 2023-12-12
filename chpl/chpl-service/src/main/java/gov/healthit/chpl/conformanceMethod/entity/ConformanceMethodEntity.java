@@ -1,7 +1,6 @@
 package gov.healthit.chpl.conformanceMethod.entity;
 
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,12 +20,24 @@ import org.hibernate.annotations.WhereJoinTable;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterionEntity;
 import gov.healthit.chpl.conformanceMethod.domain.ConformanceMethod;
-import lombok.Data;
-
+import gov.healthit.chpl.entity.EntityAudit;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
+@Getter
+@Setter
+@ToString
+@SuperBuilder
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
-@Data
 @Table(name = "conformance_method")
-public class ConformanceMethodEntity {
+public class ConformanceMethodEntity extends EntityAudit {
+    private static final long serialVersionUID = 4601144687597871604L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
@@ -47,18 +58,6 @@ public class ConformanceMethodEntity {
         inverseJoinColumns = {@JoinColumn(name = "criteria_id", referencedColumnName = "certification_criterion_id")})
     @WhereJoinTable(clause = "deleted <> true")
     private List<CertificationCriterionEntity> criteria;
-
-    @Column(name = "creation_date", nullable = false, updatable = false, insertable = false)
-    private Date creationDate;
-
-    @Column(nullable = false)
-    private Boolean deleted;
-
-    @Column(name = "last_modified_date", nullable = false, updatable = false, insertable = false)
-    private Date lastModifiedDate;
-
-    @Column(name = "last_modified_user", nullable = false)
-    private Long lastModifiedUser;
 
     public ConformanceMethod toDomain() {
         return ConformanceMethod.builder()

@@ -1,7 +1,5 @@
 package gov.healthit.chpl.functionalitytested;
 
-import java.util.Date;
-
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -13,18 +11,24 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import gov.healthit.chpl.entity.EntityAudit;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 
-@Entity
 @Getter
 @Setter
 @ToString
+@SuperBuilder
+@AllArgsConstructor
 @NoArgsConstructor
+@Entity
 @Table(name = "certification_result_functionality_tested")
-public class CertificationResultFunctionalityTestedEntity {
+public class CertificationResultFunctionalityTestedEntity extends EntityAudit {
+    private static final long serialVersionUID = -6544851759049221578L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -43,18 +47,6 @@ public class CertificationResultFunctionalityTestedEntity {
     @OneToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "functionality_tested_id", unique = true, nullable = true, insertable = false, updatable = false)
     private FunctionalityTestedEntity functionalityTested;
-
-    @Column(name = "deleted", insertable = false)
-    private Boolean deleted;
-
-    @Column(name = "last_modified_user")
-    private Long lastModifiedUser;
-
-    @Column(name = "creation_date", insertable = false, updatable = false)
-    private Date creationDate;
-
-    @Column(name = "last_modified_date", insertable = false, updatable = false)
-    private Date lastModifiedDate;
 
     public CertificationResultFunctionalityTested toDomain() {
         return CertificationResultFunctionalityTested.builder()

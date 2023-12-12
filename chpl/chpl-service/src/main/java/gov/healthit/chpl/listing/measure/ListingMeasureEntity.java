@@ -1,6 +1,5 @@
 package gov.healthit.chpl.listing.measure;
 
-import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -20,12 +19,24 @@ import javax.persistence.Table;
 import org.hibernate.annotations.Where;
 
 import gov.healthit.chpl.domain.ListingMeasure;
-import lombok.Data;
+import gov.healthit.chpl.entity.EntityAudit;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 
+@Getter
+@Setter
+@ToString
+@SuperBuilder
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
-@Data
 @Table(name = "certified_product_measure")
-public class ListingMeasureEntity {
+public class ListingMeasureEntity extends EntityAudit {
+    private static final long serialVersionUID = -893200800638747496L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -60,19 +71,6 @@ public class ListingMeasureEntity {
     @Where(clause = " deleted = false ")
     private Set<ListingMeasureCriterionMapEntity> associatedCriteria
         = new LinkedHashSet<ListingMeasureCriterionMapEntity>();
-
-    @Column(name = "last_modified_date", updatable = false, insertable = false)
-    private Date lastModifiedDate;
-
-    @Basic(optional = false)
-    @Column(name = "last_modified_user", nullable = false)
-    private Long lastModifiedUser;
-
-    @Column(name = "creation_date", nullable = false, updatable = false, insertable = false)
-    private Date creationDate;
-
-    @Column(name = "deleted", nullable = false)
-    private Boolean deleted;
 
     public ListingMeasure convert() {
         ListingMeasure listingMeasure = new ListingMeasure();

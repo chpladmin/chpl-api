@@ -10,19 +10,25 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 import gov.healthit.chpl.domain.CertifiedProductChplProductNumberHistory;
+import gov.healthit.chpl.entity.EntityAudit;
 import gov.healthit.chpl.util.DateUtil;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 
-@Entity
 @Getter
 @Setter
 @ToString
+@SuperBuilder
+@AllArgsConstructor
 @NoArgsConstructor
+@Entity
 @Table(name = "certified_product_chpl_product_number_history")
-public class CertifiedProductChplProductNumberHistoryEntity {
+public class CertifiedProductChplProductNumberHistoryEntity extends EntityAudit {
+    private static final long serialVersionUID = -3216566032065336746L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,18 +43,6 @@ public class CertifiedProductChplProductNumberHistoryEntity {
 
     @Column(name = "end_date", nullable = false)
     private Date endDate;
-
-    @Column(name = "deleted", insertable = false)
-    private Boolean deleted;
-
-    @Column(name = "last_modified_user")
-    private Long lastModifiedUser;
-
-    @Column(name = "creation_date", insertable = false, updatable = false)
-    private Date creationDate;
-
-    @Column(name = "last_modified_date", insertable = false, updatable = false)
-    private Date lastModifiedDate;
 
     public CertifiedProductChplProductNumberHistory toDomain() {
         return CertifiedProductChplProductNumberHistory.builder()

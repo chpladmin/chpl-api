@@ -11,13 +11,25 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 import gov.healthit.chpl.api.domain.ApiKey;
+import gov.healthit.chpl.entity.EntityAudit;
 import gov.healthit.chpl.util.Util;
-import lombok.Data;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 
+@Getter
+@Setter
+@ToString
+@SuperBuilder
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
-@Data
 @Table(name = "api_key")
-public class ApiKeyEntity {
+public class ApiKeyEntity extends EntityAudit {
+    private static final long serialVersionUID = -2162141254926731903L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -41,22 +53,6 @@ public class ApiKeyEntity {
     @Column(name = "unrestricted", nullable = false, insertable = false)
     private Boolean unrestricted;
 
-    @Basic(optional = false)
-    @Column(name = "creation_date", nullable = false, insertable = false, updatable = false)
-    private Date creationDate;
-
-    @Basic(optional = false)
-    @Column(name = "last_modified_date", nullable = false, insertable = false, updatable = false)
-    private Date lastModifiedDate;
-
-    @Basic(optional = false)
-    @Column(name = "last_modified_user", nullable = false)
-    private Long lastModifiedUser;
-
-    @Basic(optional = false)
-    @Column(name = "deleted", nullable = false)
-    private Boolean deleted;
-
     @Column(name = "last_used_date", nullable = false)
     private Date lastUsedDate;
 
@@ -69,22 +65,6 @@ public class ApiKeyEntity {
 
     public void setLastUsedDate(final Date lastUsedDate) {
         this.lastUsedDate = Util.getNewDate(lastUsedDate);
-    }
-
-    public Date getCreationDate() {
-        return Util.getNewDate(creationDate);
-    }
-
-    public void setCreationDate(final Date creationDate) {
-        this.creationDate = Util.getNewDate(creationDate);
-    }
-
-    public Date getLastModifiedDate() {
-        return Util.getNewDate(lastModifiedDate);
-    }
-
-    public void setLastModifiedDate(final Date lastModifiedDate) {
-        this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
     }
 
     public Date getDeleteWarningSentDate() {

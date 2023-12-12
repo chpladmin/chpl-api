@@ -1,7 +1,5 @@
 package gov.healthit.chpl.compliance.surveillance.entity;
 
-import java.util.Date;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -10,18 +8,24 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 import gov.healthit.chpl.domain.surveillance.SurveillanceResultType;
+import gov.healthit.chpl.entity.EntityAudit;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 
+@Getter
+@Setter
+@ToString
+@SuperBuilder
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "surveillance_result")
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-public class SurveillanceResultTypeEntity {
+public class SurveillanceResultTypeEntity extends EntityAudit {
+    private static final long serialVersionUID = 2139281277384850004L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,18 +34,6 @@ public class SurveillanceResultTypeEntity {
 
     @Column(name = "name")
     private String name;
-
-    @Column(name = "deleted")
-    private Boolean deleted;
-
-    @Column(name = "last_modified_user")
-    private Long lastModifiedUser;
-
-    @Column(name = "creation_date", insertable = false, updatable = false)
-    private Date creationDate;
-
-    @Column(name = "last_modified_date", insertable = false, updatable = false)
-    private Date lastModifiedDate;
 
     public SurveillanceResultType toDomain() {
         return SurveillanceResultType.builder()

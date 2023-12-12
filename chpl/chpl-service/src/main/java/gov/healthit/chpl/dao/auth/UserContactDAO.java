@@ -1,7 +1,5 @@
 package gov.healthit.chpl.dao.auth;
 
-import java.util.Date;
-
 import javax.persistence.Query;
 
 import org.springframework.stereotype.Repository;
@@ -36,8 +34,6 @@ public class UserContactDAO extends BaseDAOImpl {
     }
 
     public void delete(UserContactEntity contact) {
-        contact.setLastModifiedDate(new Date());
-        contact.setLastModifiedUser(AuthUtil.getAuditId());
         contact.setDeleted(true);
         super.update(contact);
     }

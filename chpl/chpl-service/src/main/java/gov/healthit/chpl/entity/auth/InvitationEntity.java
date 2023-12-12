@@ -1,7 +1,5 @@
 package gov.healthit.chpl.entity.auth;
 
-import java.util.Date;
-
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -14,12 +12,24 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import gov.healthit.chpl.domain.auth.UserInvitation;
-import lombok.Data;
+import gov.healthit.chpl.entity.EntityAudit;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 
-@Data
+@Getter
+@Setter
+@ToString
+@SuperBuilder
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "invited_user")
-public class InvitationEntity {
+public class InvitationEntity extends EntityAudit {
+    private static final long serialVersionUID = -56212582485414978L;
 
     @Id
     @Basic(optional = false)
@@ -44,18 +54,6 @@ public class InvitationEntity {
 
     @Column(name = "created_user_id", unique = true)
     private Long createdUserId;
-
-    @Column(name = "deleted")
-    private Boolean deleted;
-
-    @Column(name = "last_modified_user")
-    private Long lastModifiedUser;
-
-    @Column(name = "creation_date", insertable = false, updatable = false)
-    private Date creationDate;
-
-    @Column(name = "last_modified_date", insertable = false, updatable = false)
-    private Date lastModifiedDate;
 
     @OneToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "user_permission_id", insertable = false, updatable = false)

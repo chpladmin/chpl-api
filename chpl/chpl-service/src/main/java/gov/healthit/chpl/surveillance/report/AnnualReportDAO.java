@@ -1,7 +1,6 @@
 package gov.healthit.chpl.surveillance.report;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Query;
@@ -13,7 +12,6 @@ import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.surveillance.report.domain.AnnualReport;
 import gov.healthit.chpl.surveillance.report.entity.AnnualReportEntity;
-import gov.healthit.chpl.util.AuthUtil;
 
 @Repository("annualReportDao")
 public class AnnualReportDAO extends BaseDAOImpl {
@@ -86,8 +84,6 @@ public class AnnualReportDAO extends BaseDAOImpl {
                 .year(toCreate.getYear())
                 .findingsSummary(toCreate.getPriorityChangesFromFindingsSummary())
                 .obstacleSummary(toCreate.getObstacleSummary())
-                .creationDate(new Date())
-                .lastModifiedUser(AuthUtil.getAuditId())
                 .build();
 
         super.create(toCreateEntity);
@@ -108,7 +104,6 @@ public class AnnualReportDAO extends BaseDAOImpl {
         toUpdateEntity.setYear(toUpdate.getYear());
         toUpdateEntity.setFindingsSummary(toUpdate.getPriorityChangesFromFindingsSummary());
         toUpdateEntity.setObstacleSummary(toUpdate.getObstacleSummary());
-        toUpdateEntity.setLastModifiedUser(AuthUtil.getAuditId());
 
         super.update(toUpdateEntity);
         return getById(toUpdateEntity.getId());
@@ -117,7 +112,6 @@ public class AnnualReportDAO extends BaseDAOImpl {
     public void delete(Long idToDelete) throws EntityRetrievalException {
         AnnualReportEntity toDeleteEntity = getEntityById(idToDelete);
         toDeleteEntity.setDeleted(true);
-        toDeleteEntity.setLastModifiedUser(AuthUtil.getAuditId());
         super.update(toDeleteEntity);
     }
 

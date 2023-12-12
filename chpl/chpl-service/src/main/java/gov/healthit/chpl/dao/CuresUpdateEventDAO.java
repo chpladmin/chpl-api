@@ -11,7 +11,6 @@ import gov.healthit.chpl.dto.CuresUpdateEventDTO;
 import gov.healthit.chpl.entity.listing.CuresUpdateEventEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.util.AuthUtil;
 
 @Repository("curesUpdateEventDAO")
 public class CuresUpdateEventDAO  extends BaseDAOImpl {
@@ -22,7 +21,6 @@ public class CuresUpdateEventDAO  extends BaseDAOImpl {
             entity.setCertifiedProductId(curesUpdateEvent.getCertifiedProductId());
             entity.setCuresUpdate(curesUpdateEvent.getCuresUpdate());
             entity.setEventDate(curesUpdateEvent.getEventDate());
-            entity.setLastModifiedUser(AuthUtil.getAuditId());
             entity.setDeleted(false);
             create(entity);
             return entity.getId();

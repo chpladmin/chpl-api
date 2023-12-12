@@ -17,7 +17,6 @@ import gov.healthit.chpl.domain.ListingMeasure;
 import gov.healthit.chpl.domain.MeasureType;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.util.AuthUtil;
 import lombok.extern.log4j.Log4j2;
 
 @Repository("listingMeasureDao")
@@ -42,7 +41,6 @@ public class ListingMeasureDAO extends BaseDAOImpl {
         try {
             ListingMeasureEntity mmEntity = new ListingMeasureEntity();
             mmEntity.setDeleted(false);
-            mmEntity.setLastModifiedUser(AuthUtil.getAuditId());
             mmEntity.setListingId(listingId);
             mmEntity.setMeasureId(mm.getMeasure().getId());
             mmEntity.setTypeId(mm.getMeasureType().getId());
@@ -53,7 +51,6 @@ public class ListingMeasureDAO extends BaseDAOImpl {
                 mmCriterionEntity.setCertificationCriterionId(associatedCriterion.getId());
                 mmCriterionEntity.setListingMeasureMapId(mmEntity.getId());
                 mmCriterionEntity.setDeleted(false);
-                mmCriterionEntity.setLastModifiedUser(AuthUtil.getAuditId());
                 create(mmCriterionEntity);
             }
         } catch (Exception ex) {
@@ -70,7 +67,6 @@ public class ListingMeasureDAO extends BaseDAOImpl {
         }
         existingEntity.setMeasureId(toUpdate.getMeasure().getId());
         existingEntity.setTypeId(toUpdate.getMeasureType().getId());
-        existingEntity.setLastModifiedUser(AuthUtil.getAuditId());
         update(existingEntity);
 
         Optional<List<CertificationCriterion>> updatedAssociatedCriteria = Optional
@@ -94,7 +90,6 @@ public class ListingMeasureDAO extends BaseDAOImpl {
         ListingMeasureCriterionMapEntity addedEntity = new ListingMeasureCriterionMapEntity();
         addedEntity.setCertificationCriterionId(addedCriterion.getId());
         addedEntity.setDeleted(false);
-        addedEntity.setLastModifiedUser(AuthUtil.getAuditId());
         addedEntity.setListingMeasureMapId(listingMeasureEntity.getId());
         create(addedEntity);
     }
@@ -107,7 +102,6 @@ public class ListingMeasureDAO extends BaseDAOImpl {
         if (removedEntityOpt.isPresent()) {
             ListingMeasureCriterionMapEntity removedEntity = removedEntityOpt.get();
             removedEntity.setDeleted(true);
-            removedEntity.setLastModifiedUser(AuthUtil.getAuditId());
             update(removedEntity);
         }
     }
@@ -153,7 +147,6 @@ public class ListingMeasureDAO extends BaseDAOImpl {
                     .forEach(assocCriterion -> deleteAssociatedCriterion(assocCriterion));
             }
             existingMeasureMap.setDeleted(true);
-            existingMeasureMap.setLastModifiedUser(AuthUtil.getAuditId());
         update(existingMeasureMap);
         } catch (Exception ex) {
             LOGGER.error("Exception marking listing-measure map with ID " + id + " as deleted.", ex);
@@ -162,7 +155,6 @@ public class ListingMeasureDAO extends BaseDAOImpl {
 
     private void deleteAssociatedCriterion(ListingMeasureCriterionMapEntity assocCriterion) {
         assocCriterion.setDeleted(true);
-        assocCriterion.setLastModifiedUser(AuthUtil.getAuditId());
         update(assocCriterion);
     }
 

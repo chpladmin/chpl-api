@@ -1,7 +1,5 @@
 package gov.healthit.chpl.conformanceMethod.entity;
 
-import java.util.Date;
-
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -15,18 +13,24 @@ import javax.persistence.Table;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterionEntity;
 import gov.healthit.chpl.conformanceMethod.domain.ConformanceMethodCriteriaMap;
+import gov.healthit.chpl.entity.EntityAudit;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 
-@Entity
-@Data
-@Builder
+@Getter
+@Setter
+@ToString
+@SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
+@Entity
 @Table(name = "conformance_method_criteria_map")
-public class ConformanceMethodCriteriaMapEntity {
+public class ConformanceMethodCriteriaMapEntity extends EntityAudit {
+    private static final long serialVersionUID = -820698266815762652L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -47,18 +51,6 @@ public class ConformanceMethodCriteriaMapEntity {
     @OneToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "conformance_method_id", insertable = false, updatable = false)
     private ConformanceMethodEntity conformanceMethod;
-
-    @Column(name = "creation_date", nullable = false, updatable = false, insertable = false)
-    private Date creationDate;
-
-    @Column(nullable = false)
-    private Boolean deleted;
-
-    @Column(name = "last_modified_date", nullable = false, updatable = false, insertable = false)
-    private Date lastModifiedDate;
-
-    @Column(name = "last_modified_user", nullable = false)
-    private Long lastModifiedUser;
 
     public ConformanceMethodCriteriaMap toDomain() {
         return ConformanceMethodCriteriaMap.builder()
