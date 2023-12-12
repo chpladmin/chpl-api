@@ -172,36 +172,38 @@ public class StandardReviewer {
         return standardStartDay.isAfter(listingEndDay);
     }
 
-//    private void reviewStandardExistForEachGroup(CertifiedProductSearchDetails listing, CertificationResult certResult) {
-//        getGroupedStandardsForCriteria(certResult.getCriterion()).entrySet().stream()
-//                .forEach(standardGroup -> {
-//                    if (!doesOneStandardForGroupExistForCriterion(standardGroup.getValue(), certResult)) {
-//                        listing.addBusinessErrorMessage("There is no standard selected for group name: " + standardGroup.getKey());
-//                    }
-//                });
-//    }
-//
-//    private boolean doesOneStandardForGroupExistForCriterion(List<Standard> groupedStandards, CertificationResult certResult) {
-//        return groupedStandards.stream()
-//                .filter(standardFromGroup -> isStandardInList(standardFromGroup, certResult.getStandards().stream().map(certResultStd -> certResultStd.getStandard()).toList()))
-//                .count() == 1;
-//    }
-//
-//    private boolean isStandardInList(Standard standardToFind, List<Standard> standard) {
-//        return standard.stream()
-//                .filter(std -> std.getId().equals(standardToFind.getId()))
-//                .findAny()
-//                .isPresent();
-//    }
-//    private Map<String, List<Standard>> getGroupedStandardsForCriteria(CertificationCriterion criterion) {
-//        try {
-//            return standardDao.getAllStandardCriteriaMap().stream()
-//                    .filter(stdCriteriaMap -> stdCriteriaMap.getCriterion().getId().equals(criterion.getId())
-//                            && stdCriteriaMap.getStandard().getGroupName() != null)
-//                    .collect(Collectors.groupingBy(value -> value.getStandard().getGroupName(), Collectors.mapping(value -> value.getStandard(), Collectors.toList())));
-//        } catch (EntityRetrievalException e) {
-//            LOGGER.error("Error retrieving all StandardCriteriaMaps: {}", e.getStackTrace(), e);
-//            throw new RuntimeException(e);
-//        }
-//    }
+    private void reviewStandardExistForEachGroup(CertifiedProductSearchDetails listing, CertificationResult certResult) {
+        getGroupedStandardsForCriteria(certResult.getCriterion()).entrySet().stream()
+                .forEach(standardGroup -> {
+                    if (!doesAtLeastOneStandardForGroupExistForCriterion(standardGroup.getValue(), certResult)) {
+                        listing.addBusinessErrorMessage(msgUtil.getMessage("listing.criteria.standardGroupNotSelected",
+                                Util.formatCriteriaNumber(certResult.getCriterion()),
+                                standardGroup.getValue().stream().map(std -> std.getRegulatoryTextCitation()).collect(Collectors.joining(", "))));
+                    }
+                });
+    }
+
+    private boolean doesAtLeastOneStandardForGroupExistForCriterion(List<Standard> groupedStandards, CertificationResult certResult) {
+        return groupedStandards.stream()
+                .filter(standardFromGroup -> isStandardInList(standardFromGroup, certResult.getStandards().stream().map(certResultStd -> certResultStd.getStandard()).toList()))
+                .count() >= 1;
+    }
+
+    private boolean isStandardInList(Standard standardToFind, List<Standard> standard) {
+        return standard.stream()
+                .filter(std -> std.getId().equals(standardToFind.getId()))
+                .findAny()
+                .isPresent();
+    }
+    private Map<String, List<Standard>> getGroupedStandardsForCriteria(CertificationCriterion criterion) {
+        try {
+            return standardDao.getAllStandardCriteriaMap().stream()
+                    .filter(stdCriteriaMap -> stdCriteriaMap.getCriterion().getId().equals(criterion.getId())
+                            && stdCriteriaMap.getStandard().getGroupName() != null)
+                    .collect(Collectors.groupingBy(value -> value.getStandard().getGroupName(), Collectors.mapping(value -> value.getStandard(), Collectors.toList())));
+        } catch (EntityRetrievalException e) {
+            LOGGER.error("Error retrieving all StandardCriteriaMaps: {}", e.getStackTrace(), e);
+            throw new RuntimeException(e);
+        }
+    }
 }
