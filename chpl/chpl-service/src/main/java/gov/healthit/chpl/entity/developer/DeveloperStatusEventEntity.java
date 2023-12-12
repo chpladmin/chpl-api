@@ -1,6 +1,5 @@
 package gov.healthit.chpl.entity.developer;
 
-import java.io.Serializable;
 import java.util.Date;
 
 import javax.persistence.Basic;
@@ -15,21 +14,23 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import gov.healthit.chpl.domain.DeveloperStatusEvent;
-import gov.healthit.chpl.util.Util;
+import gov.healthit.chpl.entity.EntityAudit;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 
-@Entity
-@NoArgsConstructor
-@AllArgsConstructor
 @Getter
 @Setter
 @ToString
+@SuperBuilder
+@AllArgsConstructor
+@NoArgsConstructor
+@Entity
 @Table(name = "vendor_status_history")
-public class DeveloperStatusEventEntity implements Serializable {
+public class DeveloperStatusEventEntity extends EntityAudit {
     private static final long serialVersionUID = 1730728043307135377L;
 
     @Id
@@ -57,26 +58,6 @@ public class DeveloperStatusEventEntity implements Serializable {
 
     @Column(name = "status_date")
     private Date statusDate;
-
-    @Column(name = "deleted", insertable = false)
-    private Boolean deleted;
-
-    @Column(name = "last_modified_user")
-    private Long lastModifiedUser;
-
-    @Column(name = "creation_date", insertable = false, updatable = false)
-    private Date creationDate;
-
-    @Column(name = "last_modified_date", insertable = false, updatable = false)
-    private Date lastModifiedDate;
-
-    public Date getStatusDate() {
-        return Util.getNewDate(statusDate);
-    }
-
-    public void setStatusDate(final Date statusDate) {
-        this.statusDate = Util.getNewDate(statusDate);
-    }
 
     public DeveloperStatusEvent toDomain() {
         return DeveloperStatusEvent.builder()

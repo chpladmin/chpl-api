@@ -1,8 +1,6 @@
 package gov.healthit.chpl.testtool;
 
-import java.io.Serializable;
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,20 +21,23 @@ import org.hibernate.annotations.WhereJoinTable;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterionEntity;
 import gov.healthit.chpl.criteriaattribute.rule.RuleEntity;
+import gov.healthit.chpl.entity.EntityAudit;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 
 @Getter
 @Setter
-@Builder
-@NoArgsConstructor
+@ToString
+@SuperBuilder
 @AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "test_tool")
-public class TestToolEntity implements Serializable {
+public class TestToolEntity extends EntityAudit {
     private static final long serialVersionUID = -5376346428073267735L;
 
     @Id
@@ -71,22 +72,6 @@ public class TestToolEntity implements Serializable {
     @OneToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "rule_id")
     private RuleEntity rule;
-
-    @Basic(optional = false)
-    @Column(name = "creation_date", nullable = false)
-    private Date creationDate;
-
-    @Basic(optional = false)
-    @Column(nullable = false)
-    private Boolean deleted;
-
-    @Basic(optional = false)
-    @Column(name = "last_modified_date", nullable = false)
-    private Date lastModifiedDate;
-
-    @Basic(optional = false)
-    @Column(name = "last_modified_user", nullable = false)
-    private Long lastModifiedUser;
 
     public TestTool toDomain() {
         return TestTool.builder()

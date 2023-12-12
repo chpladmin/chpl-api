@@ -1,7 +1,6 @@
 package gov.healthit.chpl.dao;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,7 +46,6 @@ public class CertificationIdDAO extends BaseDAOImpl {
     private static final String CERT_ID_CHARS = CERT_ID_CHARS_NUMERIC + CERT_ID_CHARS_ALPHA;
     private static final int CERT_ID_LENGTH = 15;
     private static final String CERT_ID_15C_BEGIN = "0015C";
-    private static final long MODIFIED_USER_ID = -4L;
     private static final int MAX_COUNT_ALPHAS = 3;
 
     @Transactional
@@ -60,9 +58,6 @@ public class CertificationIdDAO extends BaseDAOImpl {
         entity = new CertificationIdEntity();
         entity.setCertificationId(this.generateCertificationIdString(listings, year));
         entity.setYear(year);
-        entity.setLastModifiedDate(new Date());
-        entity.setCreationDate(new Date());
-        entity.setLastModifiedUser(MODIFIED_USER_ID);
         entity.setPracticeTypeId(null);
 
         // Store the map entities
@@ -74,9 +69,6 @@ public class CertificationIdDAO extends BaseDAOImpl {
             CertificationIdProductMapEntity mapEntity = new CertificationIdProductMapEntity();
             mapEntity.setCertifiedProductId(prodId);
             mapEntity.setCertificationIdId(newDto.getId());
-            mapEntity.setLastModifiedDate(new Date());
-            mapEntity.setCreationDate(new Date());
-            mapEntity.setLastModifiedUser(MODIFIED_USER_ID);
             entityManager.persist(mapEntity);
         }
 

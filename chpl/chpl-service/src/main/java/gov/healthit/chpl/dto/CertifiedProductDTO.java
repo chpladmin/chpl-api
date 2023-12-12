@@ -39,7 +39,6 @@ public class CertifiedProductDTO implements Serializable {
     private String chplProductNumber;
     private Date creationDate;
     private Boolean deleted;
-    private Date lastModifiedDate;
     private Long lastModifiedUser;
     private Long practiceTypeId;
     private Long productClassificationTypeId;
@@ -77,7 +76,6 @@ public class CertifiedProductDTO implements Serializable {
         this.chplProductNumber = entity.getChplProductNumber();
         this.creationDate = entity.getCreationDate();
         this.deleted = entity.getDeleted();
-        this.lastModifiedDate = entity.getLastModifiedDate();
         this.lastModifiedUser = entity.getLastModifiedUser();
         this.practiceTypeId = entity.getPracticeTypeId();
         this.productClassificationTypeId = entity.getProductClassificationTypeId();
@@ -177,14 +175,6 @@ public class CertifiedProductDTO implements Serializable {
 
     public void setCreationDate(Date creationDate) {
         this.creationDate = Util.getNewDate(creationDate);
-    }
-
-    public Date getLastModifiedDate() {
-        return Util.getNewDate(lastModifiedDate);
-    }
-
-    public void setLastModifiedDate(Date lastModifiedDate) {
-        this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
     }
 
     public LocalDate getSedTestingEnd() {

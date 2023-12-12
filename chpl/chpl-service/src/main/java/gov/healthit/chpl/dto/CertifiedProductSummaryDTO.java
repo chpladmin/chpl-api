@@ -82,7 +82,7 @@ public class CertifiedProductSummaryDTO implements Serializable {
         this.mandatoryDisclosures = entity.getMandatoryDisclosures();
         this.creationDate = entity.getCreationDate();
         this.lastModifiedDate = entity.getLastModifiedDate();
-        this.lastModifiedUser = entity.getLastModifiedUser();
+        this.lastModifiedUser = entity.getLastModifiedUser().toString();
         this.rwtPlansUrl = entity.getRwtPlansUrl();
         this.rwtPlansCheckDate = entity.getRwtPlansCheckDate();
         this.rwtResultsUrl = entity.getRwtResultsUrl();

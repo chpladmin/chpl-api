@@ -1,6 +1,5 @@
 package gov.healthit.chpl.changerequest.dao;
 
-import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -18,7 +17,6 @@ import gov.healthit.chpl.form.AllowedResponse;
 import gov.healthit.chpl.form.FormItem;
 import gov.healthit.chpl.form.entity.AllowedResponseEntity;
 import gov.healthit.chpl.form.entity.FormItemEntity;
-import gov.healthit.chpl.util.AuthUtil;
 import lombok.extern.log4j.Log4j2;
 
 @Component
@@ -32,9 +30,6 @@ public class ChangeRequestAttestationDAO extends BaseDAOImpl{
                 .signature(changeRequestAttestationSubmission.getSignature())
                 .signatureEmail(changeRequestAttestationSubmission.getSignatureEmail())
                 .deleted(false)
-                .lastModifiedUser(AuthUtil.getAuditId())
-                .creationDate(new Date())
-                .lastModifiedDate(new Date())
                 .build();
 
         create(parent);
@@ -54,9 +49,6 @@ public class ChangeRequestAttestationDAO extends BaseDAOImpl{
                                     .id(resp.getId())
                                     .build())
                             .responseMessage(resp.getMessage())
-                            .creationDate(new Date())
-                            .lastModifiedDate(new Date())
-                            .lastModifiedUser(AuthUtil.getAuditId())
                             .deleted(false)
                             .build();
                     create(entity);
@@ -71,7 +63,6 @@ public class ChangeRequestAttestationDAO extends BaseDAOImpl{
         entity.setSignature(changeRequestAttestationSubmission.getSignature());
         entity.setSignatureEmail(changeRequestAttestationSubmission.getSignatureEmail());
         entity.getAttestationPeriod().setId(changeRequestAttestationSubmission.getAttestationPeriod().getId());
-        entity.setLastModifiedUser(AuthUtil.getAuditId());
         update(entity);
 
 
@@ -92,9 +83,6 @@ public class ChangeRequestAttestationDAO extends BaseDAOImpl{
                                         .response(AllowedResponseEntity.builder()
                                             .id(resp.getId())
                                             .build())
-                                        .creationDate(new Date())
-                                        .lastModifiedDate(new Date())
-                                        .lastModifiedUser(AuthUtil.getAuditId())
                                         .deleted(false)
                                         .build());
                             });
@@ -103,7 +91,6 @@ public class ChangeRequestAttestationDAO extends BaseDAOImpl{
                             .forEach(responseEntity -> {
                                 LOGGER.info("Question: {} Removing response: {}", fi.getQuestion().getId(), responseEntity.getResponse().getResponse());
                                 responseEntity.setDeleted(true);
-                                responseEntity.setLastModifiedUser(AuthUtil.getAuditId());
                                 update(responseEntity);
                             });
                 });

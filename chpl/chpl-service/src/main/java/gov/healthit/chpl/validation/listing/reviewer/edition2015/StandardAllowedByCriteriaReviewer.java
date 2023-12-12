@@ -200,5 +200,4 @@ public class StandardAllowedByCriteriaReviewer extends PermissionBasedReviewer {
         }
     }
 
-
 }

@@ -1,8 +1,6 @@
 package gov.healthit.chpl.entity;
 
-import java.io.Serializable;
 import java.time.LocalDate;
-import java.util.Date;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -18,15 +16,22 @@ import javax.persistence.Table;
 import org.hibernate.annotations.Where;
 
 import gov.healthit.chpl.domain.TestingLab;
-import gov.healthit.chpl.util.DateUtil;
-import lombok.Data;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 
+@Getter
+@Setter
+@ToString
+@SuperBuilder
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "testing_lab")
-@Data
-@NoArgsConstructor
-public class TestingLabEntity implements Serializable {
+public class TestingLabEntity extends EntityAudit {
     private static final long serialVersionUID = -5332080900089062553L;
 
     @Id
@@ -56,22 +61,6 @@ public class TestingLabEntity implements Serializable {
     @Column(name = "retirement_date", nullable = true)
     private LocalDate retirementDate;
 
-    @Basic(optional = false)
-    @Column(name = "creation_date", nullable = false, insertable = false, updatable = false)
-    private Date creationDate;
-
-    @Basic(optional = false)
-    @Column(name = "deleted", nullable = false, insertable = false)
-    private Boolean deleted;
-
-    @Basic(optional = false)
-    @Column(name = "last_modified_date", nullable = false, insertable = false, updatable = false)
-    private Date lastModifiedDate;
-
-    @Basic(optional = false)
-    @Column(name = "last_modified_user", nullable = false)
-    private Long lastModifiedUser;
-
     public TestingLab toDomain() {
         return TestingLab.builder()
                 .atlCode(this.getTestingLabCode())
@@ -81,7 +70,6 @@ public class TestingLabEntity implements Serializable {
                 .name(this.getName())
                 .retired(this.getRetired())
                 .retirementDay(this.getRetirementDate())
-                .retirementDate(DateUtil.toDate(this.getRetirementDate()))
                 .website(this.getWebsite())
                 .build();
     }

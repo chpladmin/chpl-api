@@ -2,7 +2,6 @@ package gov.healthit.chpl.api.dao;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -12,7 +11,6 @@ import org.springframework.stereotype.Repository;
 import gov.healthit.chpl.api.domain.ApiKeyRegistration;
 import gov.healthit.chpl.api.domain.ApiKeyRequest;
 import gov.healthit.chpl.api.entity.ApiKeyRequestEntity;
-import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -32,9 +30,6 @@ public class ApiKeyRequestDAO extends BaseDAOImpl {
                 .email(apiKeyRegistration.getEmail())
                 .nameOrganization(apiKeyRegistration.getName())
                 .apiRequestToken(Util.md5(apiKeyRegistration.getEmail() + toEpochMilli(LocalDateTime.now())))
-                .creationDate(new Date())
-                .lastModifiedDate(new Date())
-                .lastModifiedUser(User.SYSTEM_USER_ID)
                 .deleted(false)
                 .build()));
     }

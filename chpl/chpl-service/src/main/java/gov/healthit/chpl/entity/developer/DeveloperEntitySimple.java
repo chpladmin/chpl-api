@@ -1,8 +1,5 @@
 package gov.healthit.chpl.entity.developer;
 
-import java.io.Serializable;
-import java.util.Date;
-
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -10,24 +7,29 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
 
 import org.hibernate.annotations.Immutable;
 
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.contact.PointOfContact;
+import gov.healthit.chpl.entity.EntityAudit;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 
-@Entity
-@Immutable
-@NoArgsConstructor
 @Getter
 @Setter
+@ToString
+@SuperBuilder
+@AllArgsConstructor
+@NoArgsConstructor
+@Entity
+@Immutable
 @Table(name = "vendor")
-public class DeveloperEntitySimple implements Serializable {
-
+public class DeveloperEntitySimple extends EntityAudit {
     private static final long serialVersionUID = -1396979119499564864L;
 
     @Id
@@ -53,24 +55,6 @@ public class DeveloperEntitySimple implements Serializable {
     @Column(name = "contact_id")
     private Long contactId;
 
-    @Basic(optional = false)
-    @Column(name = "creation_date", nullable = false)
-    private Date creationDate;
-
-    @Basic(optional = false)
-    @NotNull
-    @Column(nullable = false)
-    private Boolean deleted;
-
-    @Basic(optional = false)
-    @Column(name = "last_modified_date", nullable = false)
-    private Date lastModifiedDate;
-
-    @Basic(optional = false)
-    @NotNull
-    @Column(name = "last_modified_user", nullable = false)
-    private Long lastModifiedUser;
-
     public Developer toDomain() {
         return Developer.builder()
                 .id(getId())
@@ -85,5 +69,4 @@ public class DeveloperEntitySimple implements Serializable {
                         .build())
                 .build();
     }
-
 }

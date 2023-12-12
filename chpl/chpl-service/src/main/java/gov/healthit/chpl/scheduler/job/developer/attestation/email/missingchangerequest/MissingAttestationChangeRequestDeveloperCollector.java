@@ -11,14 +11,14 @@ import gov.healthit.chpl.attestation.domain.AttestationPeriod;
 import gov.healthit.chpl.attestation.manager.AttestationPeriodService;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
-import gov.healthit.chpl.auth.user.User;
+import gov.healthit.chpl.auth.user.SystemUsers;
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestAttestationSubmission;
 import gov.healthit.chpl.changerequest.manager.ChangeRequestManager;
-import gov.healthit.chpl.changerequest.search.ChangeRequestSearchServiceV1;
 import gov.healthit.chpl.changerequest.search.ChangeRequestSearchRequest;
 import gov.healthit.chpl.changerequest.search.ChangeRequestSearchResponse;
 import gov.healthit.chpl.changerequest.search.ChangeRequestSearchResult;
+import gov.healthit.chpl.changerequest.search.ChangeRequestSearchService;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
@@ -31,16 +31,16 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2(topic = "missingAttestationChangeRequestEmailJobLogger")
 public class MissingAttestationChangeRequestDeveloperCollector implements DeveloperCollector {
     private AttestationPeriodService attestationPeriodService;
-    private ChangeRequestSearchServiceV1 changeRequestSearchManager;
+    private ChangeRequestSearchService changeRequestSearchService;
     private DeveloperAttestationPeriodCalculator developerAttestationPeriodCalculator;
     private ChangeRequestManager changeRequestManager;
 
     @Autowired
     public MissingAttestationChangeRequestDeveloperCollector(AttestationPeriodService attestationPeriodService,
-            ChangeRequestSearchServiceV1 changeRequestSearchManager, DeveloperAttestationPeriodCalculator developerAttestationPeriodCalculator,
+            ChangeRequestSearchService changeRequestSearchService, DeveloperAttestationPeriodCalculator developerAttestationPeriodCalculator,
             ChangeRequestManager changeRequestManager) {
         this.attestationPeriodService = attestationPeriodService;
-        this.changeRequestSearchManager = changeRequestSearchManager;
+        this.changeRequestSearchService = changeRequestSearchService;
         this.developerAttestationPeriodCalculator = developerAttestationPeriodCalculator;
         this.changeRequestManager = changeRequestManager;
     }
@@ -72,12 +72,12 @@ public class MissingAttestationChangeRequestDeveloperCollector implements Develo
                 .build();
 
         try {
-            ChangeRequestSearchResponse searchResponse = changeRequestSearchManager.searchChangeRequests(searchRequest);
+            ChangeRequestSearchResponse searchResponse = changeRequestSearchService.searchChangeRequests(searchRequest);
             searchResults.addAll(searchResponse.getResults());
             while (searchResponse.getRecordCount() > searchResults.size()) {
                 searchRequest.setPageSize(searchResponse.getPageSize());
                 searchRequest.setPageNumber(searchResponse.getPageNumber() + 1);
-                searchResponse = changeRequestSearchManager.searchChangeRequests(searchRequest);
+                searchResponse = changeRequestSearchService.searchChangeRequests(searchRequest);
                 searchResults.addAll(searchResponse.getResults());
             }
             List<ChangeRequestAttestationSubmission> changeRequestAttestationSubmissions =  searchResults.stream()
@@ -110,7 +110,7 @@ public class MissingAttestationChangeRequestDeveloperCollector implements Develo
     private void setSecurityContext() {
         JWTAuthenticatedUser adminUser = new JWTAuthenticatedUser();
         adminUser.setFullName("Administrator");
-        adminUser.setId(User.ADMIN_USER_ID);
+        adminUser.setId(SystemUsers.ADMIN_USER_ID);
         adminUser.setFriendlyName("Admin");
         adminUser.setSubjectName("admin");
         adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));

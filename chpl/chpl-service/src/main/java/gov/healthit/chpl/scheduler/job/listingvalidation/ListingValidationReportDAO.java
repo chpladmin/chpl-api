@@ -1,12 +1,10 @@
 package gov.healthit.chpl.scheduler.job.listingvalidation;
 
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Repository;
 
-import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 
 @Repository
@@ -24,9 +22,6 @@ public class ListingValidationReportDAO extends BaseDAOImpl {
                 .certificationStatusName(lvr.getCertificationStatusName())
                 .errorMessage(lvr.getErrorMessage())
                 .reportDate(lvr.getReportDate())
-                .creationDate(new Date())
-                .lastModifiedUser(User.SYSTEM_USER_ID)
-                .lastModifiedDate(new Date())
                 .deleted(false)
                 .build();
 
@@ -54,7 +49,6 @@ public class ListingValidationReportDAO extends BaseDAOImpl {
 
     private ListingValidationReportEntity deleteEntity(ListingValidationReportEntity entity) {
         entity.setDeleted(true);
-        entity.setLastModifiedUser(User.SYSTEM_USER_ID);
         entityManager.merge(entity);
         entityManager.flush();
         return entity;
