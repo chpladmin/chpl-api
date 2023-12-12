@@ -23,11 +23,19 @@ import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.ActivityDTO;
 import gov.healthit.chpl.entity.auth.UserEntity;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 
+@Getter
+@Setter
+@ToString
+@SuperBuilder
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "activity")
 @NamedNativeQueries({
@@ -73,11 +81,8 @@ import lombok.ToString;
                 resultClass = ActivityEntity.class
             )
 })
-@Getter
-@Setter
-@ToString
-@NoArgsConstructor
-public class ActivityEntity {
+public class ActivityEntity extends EntityAudit {
+    private static final long serialVersionUID = 1332921172880486974L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -109,18 +114,6 @@ public class ActivityEntity {
 
     @Column(name = "reason")
     private String reason;
-
-    @Column(name = "creation_date", nullable = false, insertable = false, updatable = false)
-    private Date creationDate;
-
-    @Column(name = "last_modified_date", nullable = false, insertable = false, updatable = false)
-    private Date lastModifiedDate;
-
-    @Column(name = "deleted", nullable = false, insertable = false)
-    private Boolean deleted;
-
-    @Column(name = "last_modified_user", nullable = false)
-    private Long lastModifiedUser;
 
     @OneToOne(optional = true, fetch = FetchType.LAZY)
     @Fetch(FetchMode.JOIN)

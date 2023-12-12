@@ -1,7 +1,5 @@
 package gov.healthit.chpl.entity.listing;
 
-import java.util.Date;
-
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -15,12 +13,24 @@ import javax.persistence.Table;
 
 import gov.healthit.chpl.conformanceMethod.domain.CertificationResultConformanceMethod;
 import gov.healthit.chpl.conformanceMethod.entity.ConformanceMethodEntity;
-import lombok.Data;
+import gov.healthit.chpl.entity.EntityAudit;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 
+@Getter
+@Setter
+@ToString
+@SuperBuilder
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
-@Data
 @Table(name = "certification_result_conformance_method")
-public class CertificationResultConformanceMethodEntity {
+public class CertificationResultConformanceMethodEntity extends EntityAudit {
+    private static final long serialVersionUID = -3129172074380514255L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -43,18 +53,6 @@ public class CertificationResultConformanceMethodEntity {
     @Basic(optional = false)
     @Column(name = "version", nullable = false)
     private String version;
-
-    @Column(name = "creation_date", nullable = false, updatable = false, insertable = false)
-    private Date creationDate;
-
-    @Column(nullable = false, insertable = false)
-    private Boolean deleted;
-
-    @Column(name = "last_modified_date", nullable = false, updatable = false, insertable = false)
-    private Date lastModifiedDate;
-
-    @Column(name = "last_modified_user", nullable = false)
-    private Long lastModifiedUser;
 
     public CertificationResultConformanceMethod toDomain() {
         return CertificationResultConformanceMethod.builder()

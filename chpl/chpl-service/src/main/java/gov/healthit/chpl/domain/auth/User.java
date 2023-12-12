@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 import gov.healthit.chpl.domain.Organization;
 import gov.healthit.chpl.domain.contact.Person;
@@ -22,6 +23,7 @@ public class User extends Person implements Serializable {
     private static final long serialVersionUID = 8408154701107113148L;
 
     private Long userId;
+    private UUID userSsoId;
     private String role;
     private String subjectName;
     private String friendlyName;

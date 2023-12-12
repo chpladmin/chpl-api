@@ -3,7 +3,6 @@ package gov.healthit.chpl.dao;
 import static gov.healthit.chpl.util.LambdaExceptionUtil.rethrowConsumer;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,7 +21,6 @@ import gov.healthit.chpl.entity.listing.CQMResultCriteriaEntity;
 import gov.healthit.chpl.entity.listing.CQMResultEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.util.AuthUtil;
 
 @Repository(value = "cqmResultDAO")
 public class CQMResultDAO extends BaseDAOImpl {
@@ -53,7 +51,6 @@ public class CQMResultDAO extends BaseDAOImpl {
             cqmResultEntity.setCqmCriterionId(cqmWithVersionId);
             cqmResultEntity.setCertifiedProductId(listingId);
             cqmResultEntity.setSuccess(true);
-            cqmResultEntity.setLastModifiedUser(AuthUtil.getAuditId());
             create(cqmResultEntity);
             if (!CollectionUtils.isEmpty(cqmCriteria)) {
                 for (CQMResultCertification cqmCriterion : cqmCriteria) {
@@ -70,7 +67,6 @@ public class CQMResultDAO extends BaseDAOImpl {
             CQMResultCriteriaEntity cqmCriterionMappingEntity = new CQMResultCriteriaEntity();
             cqmCriterionMappingEntity.setCertificationCriterionId(criterionId);
             cqmCriterionMappingEntity.setCqmResultId(cqmResultId);
-            cqmCriterionMappingEntity.setLastModifiedUser(AuthUtil.getAuditId());
             create(cqmCriterionMappingEntity);
             return cqmCriterionMappingEntity.getId();
         } catch (Exception ex) {
@@ -97,9 +93,6 @@ public class CQMResultDAO extends BaseDAOImpl {
             entity.setCertifiedProductId(cqmResult.getCertifiedProductId());
             entity.setSuccess(cqmResult.getSuccess());
 
-            entity.setLastModifiedUser(AuthUtil.getAuditId());
-            entity.setLastModifiedDate(new Date());
-            entity.setCreationDate(new Date());
             entity.setDeleted(false);
             create(entity);
 
@@ -118,10 +111,7 @@ public class CQMResultDAO extends BaseDAOImpl {
         CQMResultCriteriaEntity newMapping = new CQMResultCriteriaEntity();
         newMapping.setCertificationCriterionId(criteria.getCriterionId());
         newMapping.setCqmResultId(criteria.getCqmResultId());
-        newMapping.setCreationDate(new Date());
         newMapping.setDeleted(false);
-        newMapping.setLastModifiedDate(new Date());
-        newMapping.setLastModifiedUser(AuthUtil.getAuditId());
         entityManager.persist(newMapping);
         entityManager.flush();
         return new CQMResultCriteriaDTO(newMapping);
@@ -129,8 +119,6 @@ public class CQMResultDAO extends BaseDAOImpl {
 
     public void update(CQMResultDTO cqmResult) throws EntityRetrievalException {
         CQMResultEntity entity = this.getEntityById(cqmResult.getId());
-        entity.setLastModifiedDate(new Date());
-        entity.setLastModifiedUser(AuthUtil.getAuditId());
         entity.setSuccess(cqmResult.getSuccess());
 
         update(entity);
@@ -144,8 +132,6 @@ public class CQMResultDAO extends BaseDAOImpl {
         }
         toUpdate.setCqmResultId(dto.getCqmResultId());
         toUpdate.setCertificationCriterionId(dto.getCriterionId());
-        toUpdate.setLastModifiedDate(new Date());
-        toUpdate.setLastModifiedUser(AuthUtil.getAuditId());
         entityManager.merge(toUpdate);
         entityManager.flush();
         return new CQMResultCriteriaDTO(toUpdate);
@@ -175,8 +161,6 @@ public class CQMResultDAO extends BaseDAOImpl {
         CQMResultCriteriaEntity toDelete = getCqmCriteriaById(mappingId);
         if (toDelete != null) {
             toDelete.setDeleted(true);
-            toDelete.setLastModifiedDate(new Date());
-            toDelete.setLastModifiedUser(AuthUtil.getAuditId());
             entityManager.persist(toDelete);
             entityManager.flush();
         }

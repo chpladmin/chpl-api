@@ -1,14 +1,12 @@
 package gov.healthit.chpl.dao.statistics;
 
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Query;
 
 import org.springframework.stereotype.Repository;
 
-import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.entity.statistics.SummaryStatisticsEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
@@ -20,9 +18,6 @@ public class SummaryStatisticsDAO extends BaseDAOImpl {
     public SummaryStatisticsEntity create(SummaryStatisticsEntity summaryStatistics)
             throws EntityCreationException, EntityRetrievalException {
 
-        summaryStatistics.setCreationDate(new Date());
-        summaryStatistics.setLastModifiedDate(new Date());
-        summaryStatistics.setLastModifiedUser(getUserId(User.SYSTEM_USER_ID));
         summaryStatistics.setDeleted(false);
         entityManager.persist(summaryStatistics);
         entityManager.flush();

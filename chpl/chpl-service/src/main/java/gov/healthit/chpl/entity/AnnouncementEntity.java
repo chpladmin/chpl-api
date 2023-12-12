@@ -1,7 +1,6 @@
 package gov.healthit.chpl.entity;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -11,18 +10,23 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 import gov.healthit.chpl.domain.Announcement;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 
-@Entity
 @Getter
 @Setter
 @ToString
+@SuperBuilder
+@AllArgsConstructor
 @NoArgsConstructor
+@Entity
 @Table(name = "announcement")
-public class AnnouncementEntity {
+public class AnnouncementEntity extends EntityAudit {
+    private static final long serialVersionUID = 6927035351584714349L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -43,18 +47,6 @@ public class AnnouncementEntity {
 
     @Column(name = "ispublic", nullable = false)
     private Boolean isPublic;
-
-    @Column(name = "creation_date", nullable = false, insertable = false, updatable = false)
-    private Date creationDate;
-
-    @Column(name = "last_modified_date", nullable = false, insertable = false, updatable = false)
-    private Date lastModifiedDate;
-
-    @Column(name = "last_modified_user", nullable = false)
-    private Long lastModifiedUser;
-
-    @Column(nullable = false, name = "deleted", insertable = false)
-    private Boolean deleted;
 
     public Announcement toDomain() {
         return Announcement.builder()

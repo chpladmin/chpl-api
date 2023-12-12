@@ -10,7 +10,6 @@ import javax.transaction.Transactional;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Repository;
 
-import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import lombok.extern.log4j.Log4j2;
 
@@ -50,7 +49,6 @@ public class DeprecatedApiUsageDao extends BaseDAOImpl {
         DeprecatedApiUsageEntity entity = entityManager.find(DeprecatedApiUsageEntity.class, id);
         if (entity != null) {
             entity.setNotificationSent(new Date());
-            entity.setLastModifiedUser(User.SYSTEM_USER_ID);
             update(entity);
         }
     }
@@ -66,7 +64,6 @@ public class DeprecatedApiUsageDao extends BaseDAOImpl {
         entity.setMessage(apiUsage.getMessage());
         entity.setDeleted(false);
         entity.setLastAccessedDate(new Date());
-        entity.setLastModifiedUser(User.SYSTEM_USER_ID);
         create(entity);
     }
 

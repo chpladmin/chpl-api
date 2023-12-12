@@ -1,8 +1,6 @@
 package gov.healthit.chpl.entity.listing;
 
-import java.io.Serializable;
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Basic;
@@ -17,18 +15,23 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import gov.healthit.chpl.entity.EntityAudit;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 
+@Getter
+@Setter
+@ToString
+@SuperBuilder
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "certified_product")
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-public class CertifiedProductEntity implements Serializable {
+public class CertifiedProductEntity extends EntityAudit {
     private static final long serialVersionUID = -2437147151682759808L;
 
     private static final int OTHER_ACB_LENGTH = 64;
@@ -130,19 +133,6 @@ public class CertifiedProductEntity implements Serializable {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "certified_product_id", nullable = false, insertable = false, updatable = false)
     private CertifiedProductEntity certifiedProduct;
-
-    @Column(name = "creation_date", nullable = false, insertable = false, updatable = false)
-    private Date creationDate;
-
-    @Column(name = "deleted", insertable = false, updatable = false)
-    private Boolean deleted;
-
-    @Column(name = "last_modified_date", insertable = false, updatable = false)
-    private Date lastModifiedDate;
-
-    @Basic(optional = false)
-    @Column(name = "last_modified_user", nullable = false)
-    private Long lastModifiedUser;
 
     @Basic(optional = true)
     @Column(name = "rwt_plans_url", nullable = true)

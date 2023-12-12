@@ -3,6 +3,7 @@ package gov.healthit.chpl.auth.user;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 import org.springframework.security.core.GrantedAuthority;
 
@@ -12,8 +13,8 @@ import lombok.Data;
 
 @Data
 public class JWTAuthenticatedUser implements User {
+    private static final long serialVersionUID = -4472262738122217527L;
 
-    private static final long serialVersionUID = 1L;
     private Long id;
     private String email;
     private String fullName;
@@ -32,6 +33,7 @@ public class JWTAuthenticatedUser implements User {
         this.email = null;
     }
 
+    @Override
     public void addPermission(GrantedPermission permission) {
         this.permissions.add(permission);
     }
@@ -125,4 +127,10 @@ public class JWTAuthenticatedUser implements User {
     public void setSubjectName(String subject) {
         this.email = subject;
     }
+
+    @Override
+    public UUID getSsoId() {
+        return null;
+    }
+
 }

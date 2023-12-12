@@ -1,6 +1,5 @@
 package gov.healthit.chpl.listing.measure;
 
-import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -20,12 +19,24 @@ import org.hibernate.annotations.Where;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.domain.Measure;
-import lombok.Data;
+import gov.healthit.chpl.entity.EntityAudit;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 
+@Getter
+@Setter
+@ToString
+@SuperBuilder
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
-@Data
 @Table(name = "measure")
-public class MeasureEntity {
+public class MeasureEntity extends EntityAudit {
+    private static final long serialVersionUID = -6519300005885154789L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -57,19 +68,6 @@ public class MeasureEntity {
     @Column(name = "measure_id", nullable = false)
     @Where(clause = " deleted = false ")
     private Set<MeasureCriterionMapEntity> allowedCriteria = new LinkedHashSet<MeasureCriterionMapEntity>();
-
-
-    @Column(name = "creation_date", nullable = false, updatable = false, insertable = false)
-    private Date creationDate;
-
-    @Column(nullable = false)
-    private Boolean deleted;
-
-    @Column(name = "last_modified_date", nullable = false, updatable = false, insertable = false)
-    private Date lastModifiedDate;
-
-    @Column(name = "last_modified_user", nullable = false)
-    private Long lastModifiedUser;
 
     public Measure convert() {
         LinkedHashSet<CertificationCriterion> convertedAllowedCriteria = new LinkedHashSet<CertificationCriterion>();

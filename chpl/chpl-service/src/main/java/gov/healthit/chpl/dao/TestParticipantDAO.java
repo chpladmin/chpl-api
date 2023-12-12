@@ -1,7 +1,6 @@
 package gov.healthit.chpl.dao;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Query;
@@ -15,7 +14,6 @@ import gov.healthit.chpl.dto.TestParticipantDTO;
 import gov.healthit.chpl.entity.TestParticipantEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import lombok.extern.log4j.Log4j2;
 
@@ -32,7 +30,6 @@ public class TestParticipantDAO extends BaseDAOImpl {
     public Long create(TestParticipant participant) throws EntityCreationException {
         TestParticipantEntity entity = new TestParticipantEntity();
         try {
-            entity.setLastModifiedUser(AuthUtil.getAuditId());
             entity.setAgeRangeId(participant.getAgeRangeId());
             entity.setAssistiveTechnologyNeeds(participant.getAssistiveTechnologyNeeds());
             entity.setComputerExperienceMonths(participant.getComputerExperienceMonths());
@@ -59,10 +56,7 @@ public class TestParticipantDAO extends BaseDAOImpl {
 
         if (entity == null) {
             entity = new TestParticipantEntity();
-            entity.setCreationDate(new Date());
             entity.setDeleted(false);
-            entity.setLastModifiedDate(new Date());
-            entity.setLastModifiedUser(AuthUtil.getAuditId());
             entity.setAgeRangeId(dto.getAgeRangeId());
             entity.setAssistiveTechnologyNeeds(dto.getAssistiveTechnologyNeeds());
             entity.setComputerExperienceMonths(dto.getComputerExperienceMonths());
@@ -99,8 +93,6 @@ public class TestParticipantDAO extends BaseDAOImpl {
         entity.setOccupation(dto.getOccupation());
         entity.setProductExperienceMonths(dto.getProductExperienceMonths());
         entity.setProfessionalExperienceMonths(dto.getProfessionalExperienceMonths());
-        entity.setLastModifiedUser(AuthUtil.getAuditId());
-        entity.setLastModifiedDate(new Date());
 
         update(entity);
         return new TestParticipantDTO(entity);
@@ -110,8 +102,6 @@ public class TestParticipantDAO extends BaseDAOImpl {
         TestParticipantEntity toDelete = getEntityById(id);
         if (toDelete != null) {
             toDelete.setDeleted(true);
-            toDelete.setLastModifiedDate(new Date());
-            toDelete.setLastModifiedUser(AuthUtil.getAuditId());
             update(toDelete);
         }
     }
