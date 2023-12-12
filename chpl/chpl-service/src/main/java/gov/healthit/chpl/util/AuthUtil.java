@@ -3,6 +3,7 @@ package gov.healthit.chpl.util;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -10,7 +11,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import gov.healthit.chpl.auth.permission.GrantedPermission;
+import gov.healthit.chpl.auth.user.CognitoAuthenticatedUser;
+import gov.healthit.chpl.auth.user.CognitoSystemUsers;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
+import gov.healthit.chpl.auth.user.SystemUsers;
 import gov.healthit.chpl.auth.user.User;
 
 public class AuthUtil {
@@ -49,7 +53,23 @@ public class AuthUtil {
                 return user.getId();
             }
         }
-        return User.DEFAULT_USER_ID;
+        return SystemUsers.DEFAULT_USER_ID;
+    }
+
+
+    public static UUID getAuditSsoUserId() {
+        CognitoAuthenticatedUser user = null;
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+        if (auth instanceof CognitoAuthenticatedUser) {
+            user = (CognitoAuthenticatedUser) auth;
+            //if (user.getImpersonatingUser() != null) {
+            //    return user.getImpersonatingUser().getId();
+            //} else {
+                return user.getSsoId();
+            //}
+        }
+        return CognitoSystemUsers.DEFAULT_USER_ID;
     }
 
     public static Authentication getCurrentAuthentication() {
@@ -66,7 +86,7 @@ public class AuthUtil {
 
             @Override
             public Long getId() {
-                return id == null ? Long.valueOf(User.ADMIN_USER_ID) : id;
+                return id == null ? Long.valueOf(SystemUsers.ADMIN_USER_ID) : id;
             }
 
             @Override

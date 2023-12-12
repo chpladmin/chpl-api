@@ -3,7 +3,6 @@ package gov.healthit.chpl.upload.listing;
 import java.io.IOException;
 import java.io.StringReader;
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Column;
@@ -26,16 +25,28 @@ import org.hibernate.annotations.Type;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.ListingUpload;
 import gov.healthit.chpl.entity.CertificationBodyEntity;
-import lombok.Data;
+import gov.healthit.chpl.entity.EntityAudit;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 import lombok.extern.log4j.Log4j2;
 
+@Getter
+@Setter
+@ToString
+@SuperBuilder
+@AllArgsConstructor
+@NoArgsConstructor
 @SelectBeforeUpdate
 @DynamicUpdate
 @Entity
 @Log4j2
 @Table(name = "certified_product_upload")
-@Data
-public class ListingUploadEntity {
+public class ListingUploadEntity extends EntityAudit {
+    private static final long serialVersionUID = 8098143453941187347L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -82,18 +93,6 @@ public class ListingUploadEntity {
 
     @Column(name = "contents")
     private String fileContents;
-
-    @Column(name = "deleted")
-    private Boolean deleted;
-
-    @Column(name = "last_modified_user")
-    private Long lastModifiedUser;
-
-    @Column(name = "creation_date", insertable = false, updatable = false)
-    private Date creationDate;
-
-    @Column(name = "last_modified_date", insertable = false, updatable = false)
-    private Date lastModifiedDate;
 
     public ListingUpload toDomain() {
         return ListingUpload.builder()

@@ -16,7 +16,6 @@ import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.entity.listing.CertificationStatusEventEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.util.AuthUtil;
 
 @Repository("certificationStatusEventDAO")
 public class CertificationStatusEventDAO extends BaseDAOImpl {
@@ -28,7 +27,6 @@ public class CertificationStatusEventDAO extends BaseDAOImpl {
             entity.setCertificationStatusId(cse.getStatus().getId());
             entity.setEventDate(new Date(cse.getEventDate()));
             entity.setReason(cse.getReason());
-            entity.setLastModifiedUser(AuthUtil.getAuditId());
             entity.setDeleted(false);
             create(entity);
             return entity.getId();
@@ -47,7 +45,6 @@ public class CertificationStatusEventDAO extends BaseDAOImpl {
         entity.setCertificationStatusId(cse.getStatus().getId());
         entity.setEventDate(new Date(cse.getEventDate()));
         entity.setReason(cse.getReason());
-        entity.setLastModifiedUser(AuthUtil.getAuditId());
 
         update(entity);
         return entity.toDomain();
@@ -57,7 +54,6 @@ public class CertificationStatusEventDAO extends BaseDAOImpl {
         CertificationStatusEventEntity toDelete = getEntityById(id);
         if (toDelete != null) {
             toDelete.setDeleted(true);
-            toDelete.setLastModifiedUser(AuthUtil.getAuditId());
             update(toDelete);
         }
     }

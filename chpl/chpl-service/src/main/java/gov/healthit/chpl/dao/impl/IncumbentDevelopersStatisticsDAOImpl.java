@@ -1,7 +1,6 @@
 package gov.healthit.chpl.dao.impl;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Query;
@@ -9,7 +8,6 @@ import javax.persistence.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.dao.IncumbentDevelopersStatisticsDAO;
 import gov.healthit.chpl.dto.IncumbentDevelopersStatisticsDTO;
 import gov.healthit.chpl.entity.statistics.IncumbentDevelopersStatisticsEntity;
@@ -41,7 +39,6 @@ public class IncumbentDevelopersStatisticsDAOImpl extends BaseDAOImpl implements
 
         if (toDelete != null) {
             toDelete.setDeleted(true);
-            toDelete.setLastModifiedUser(getUserId(User.SYSTEM_USER_ID));
             entityManager.merge(toDelete);
         }
     }
@@ -60,22 +57,6 @@ public class IncumbentDevelopersStatisticsDAOImpl extends BaseDAOImpl implements
             entity.setDeleted(dto.getDeleted());
         } else {
             entity.setDeleted(false);
-        }
-
-        if (dto.getLastModifiedUser() != null) {
-            entity.setLastModifiedUser(dto.getLastModifiedUser());
-        } else {
-            entity.setLastModifiedUser(getUserId(User.SYSTEM_USER_ID));
-        }
-        if (dto.getLastModifiedDate() != null) {
-            entity.setLastModifiedDate(dto.getLastModifiedDate());
-        } else {
-            entity.setLastModifiedDate(new Date());
-        }
-        if (dto.getCreationDate() != null) {
-            entity.setCreationDate(dto.getCreationDate());
-        } else {
-            entity.setCreationDate(new Date());
         }
 
         entityManager.persist(entity);

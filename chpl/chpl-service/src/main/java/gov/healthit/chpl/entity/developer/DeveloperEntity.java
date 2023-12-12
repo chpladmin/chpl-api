@@ -1,9 +1,7 @@
 package gov.healthit.chpl.entity.developer;
 
-import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -39,23 +37,25 @@ import gov.healthit.chpl.domain.PublicAttestation;
 import gov.healthit.chpl.domain.concept.PublicAttestationStatus;
 import gov.healthit.chpl.entity.AddressEntity;
 import gov.healthit.chpl.entity.ContactEntity;
+import gov.healthit.chpl.entity.EntityAudit;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
 @Getter
 @Setter
 @ToString
+@SuperBuilder
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @DynamicUpdate
 @Table(name = "vendor")
-public class DeveloperEntity implements Serializable {
+public class DeveloperEntity extends EntityAudit {
     private static final long serialVersionUID = -1396979009499564864L;
     private static final int WEBSITE_MAX_LENGTH = 300;
 
@@ -101,20 +101,6 @@ public class DeveloperEntity implements Serializable {
     @OneToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "contact_id", unique = true, nullable = true, insertable = false, updatable = false)
     private ContactEntity contact;
-
-    @Basic(optional = false)
-    @Column(name = "creation_date", insertable = false, updatable = false)
-    private Date creationDate;
-
-    @Column(name = "deleted", insertable = false)
-    private Boolean deleted;
-
-    @Column(name = "last_modified_date", insertable = false, updatable = false)
-    private Date lastModifiedDate;
-
-    @Basic(optional = false)
-    @Column(name = "last_modified_user", nullable = false)
-    private Long lastModifiedUser;
 
     @Basic(optional = true)
     @OneToOne(optional = true, fetch = FetchType.LAZY)

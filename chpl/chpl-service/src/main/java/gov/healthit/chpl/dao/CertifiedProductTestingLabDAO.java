@@ -1,6 +1,5 @@
 package gov.healthit.chpl.dao;
 
-import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Query;
@@ -13,7 +12,6 @@ import gov.healthit.chpl.entity.listing.CertifiedProductTargetedUserEntity;
 import gov.healthit.chpl.entity.listing.CertifiedProductTestingLabMapEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.util.AuthUtil;
 
 @Repository(value = "certifiedProductTestingLabDao")
 public class CertifiedProductTestingLabDAO extends BaseDAOImpl {
@@ -23,7 +21,6 @@ public class CertifiedProductTestingLabDAO extends BaseDAOImpl {
             CertifiedProductTestingLabMapEntity mappingEntity = new CertifiedProductTestingLabMapEntity();
             mappingEntity.setCertifiedProductId(listingId);
             mappingEntity.setTestingLabId(atlId);
-            mappingEntity.setLastModifiedUser(AuthUtil.getAuditId());
             create(mappingEntity);
             return mappingEntity.getId();
         } catch (Exception ex) {
@@ -37,9 +34,6 @@ public class CertifiedProductTestingLabDAO extends BaseDAOImpl {
         CertifiedProductTestingLabMapEntity toCreateEntity = new CertifiedProductTestingLabMapEntity();
         toCreateEntity.setCertifiedProductId(certifiedProductId);
         toCreateEntity.setTestingLabId(toCreate.getTestingLab().getId());
-        toCreateEntity.setLastModifiedDate(new Date());
-        toCreateEntity.setLastModifiedUser(AuthUtil.getAuditId());
-        toCreateEntity.setCreationDate(new Date());
         toCreateEntity.setDeleted(false);
         create(toCreateEntity);
     }
@@ -50,8 +44,6 @@ public class CertifiedProductTestingLabDAO extends BaseDAOImpl {
             throw new EntityRetrievalException("Could not find mapping with id " + id);
         }
         curr.setDeleted(true);
-        curr.setLastModifiedDate(new Date());
-        curr.setLastModifiedUser(AuthUtil.getAuditId());
         update(curr);
     }
 

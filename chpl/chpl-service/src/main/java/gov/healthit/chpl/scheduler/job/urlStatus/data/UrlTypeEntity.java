@@ -1,7 +1,5 @@
 package gov.healthit.chpl.scheduler.job.urlStatus.data;
 
-import java.util.Date;
-
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -12,13 +10,25 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.Immutable;
 
-import lombok.Data;
+import gov.healthit.chpl.entity.EntityAudit;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 
+@Getter
+@Setter
+@ToString
+@SuperBuilder
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Immutable
-@Data
 @Table(name = "url_type")
-public class UrlTypeEntity {
+public class UrlTypeEntity extends EntityAudit {
+    private static final long serialVersionUID = 6664540521078052165L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,16 +39,4 @@ public class UrlTypeEntity {
     @Basic(optional = false)
     @Column(name = "name")
     private String name;
-
-    @Column(name = "deleted", insertable = false)
-    private Boolean deleted;
-
-    @Column(name = "last_modified_user")
-    private Long lastModifiedUser;
-
-    @Column(name = "creation_date", insertable = false, updatable = false)
-    private Date creationDate;
-
-    @Column(name = "last_modified_date", insertable = false, updatable = false)
-    private Date lastModifiedDate;
 }

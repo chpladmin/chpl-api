@@ -15,21 +15,29 @@ import javax.persistence.Table;
 import org.hibernate.annotations.Where;
 
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
+import gov.healthit.chpl.entity.EntityAudit;
 import gov.healthit.chpl.entity.auth.UserEntity;
 import gov.healthit.chpl.entity.listing.CertifiedProductDetailsEntity;
 import gov.healthit.chpl.questionableactivity.domain.QuestionableActivityListing;
 import gov.healthit.chpl.questionableactivity.domain.QuestionableActivityTrigger;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 
-@Entity
 @Getter
 @Setter
 @ToString
+@SuperBuilder
+@AllArgsConstructor
+@NoArgsConstructor
+@Entity
 @Table(name = "questionable_activity_listing")
 @Where(clause = " deleted = false ")
-public class QuestionableActivityListingEntity implements QuestionableActivityBaseEntity {
+public class QuestionableActivityListingEntity extends EntityAudit implements QuestionableActivityBaseEntity {
+    private static final long serialVersionUID = 8924743657187771758L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -75,18 +83,6 @@ public class QuestionableActivityListingEntity implements QuestionableActivityBa
     @JoinColumn(name = "activity_user_id", insertable = false, updatable = false)
     private UserEntity user;
 
-    @Column(name = "deleted")
-    private Boolean deleted;
-
-    @Column(name = "last_modified_user")
-    private Long lastModifiedUser;
-
-    @Column(name = "creation_date", insertable = false, updatable = false)
-    private Date creationDate;
-
-    @Column(name = "last_modified_date", insertable = false, updatable = false)
-    private Date lastModifiedDate;
-
     public QuestionableActivityListing toDomain() {
         return QuestionableActivityListing.builder()
                 .id(this.getId())
@@ -107,4 +103,3 @@ public class QuestionableActivityListingEntity implements QuestionableActivityBa
                 .build();
     }
 }
-

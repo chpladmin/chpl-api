@@ -1,8 +1,5 @@
 package gov.healthit.chpl.entity;
 
-import java.io.Serializable;
-import java.util.Date;
-
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -12,20 +9,22 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 import gov.healthit.chpl.domain.PracticeType;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import lombok.extern.log4j.Log4j2;
+import lombok.experimental.SuperBuilder;
 
-@Log4j2
-@Entity
 @Getter
 @Setter
 @ToString
+@SuperBuilder
+@AllArgsConstructor
+@NoArgsConstructor
+@Entity
 @Table(name = "practice_type")
-public class PracticeTypeEntity implements Serializable {
-
-    /** Serial Version UID. */
+public class PracticeTypeEntity extends EntityAudit {
     private static final long serialVersionUID = -512191905822294896L;
 
     @Id
@@ -35,24 +34,8 @@ public class PracticeTypeEntity implements Serializable {
     private Long id;
 
     @Basic(optional = false)
-    @Column(name = "creation_date", nullable = false)
-    private Date creationDate;
-
-    @Basic(optional = false)
-    @Column(name = "deleted", nullable = false)
-    private Boolean deleted;
-
-    @Basic(optional = false)
     @Column(nullable = false, length = 250)
     private String description;
-
-    @Basic(optional = false)
-    @Column(name = "last_modified_date", nullable = false)
-    private Date lastModifiedDate;
-
-    @Basic(optional = false)
-    @Column(name = "last_modified_user", nullable = false)
-    private Long lastModifiedUser;
 
     @Basic(optional = false)
     @Column(name = "name", nullable = false, length = 50)

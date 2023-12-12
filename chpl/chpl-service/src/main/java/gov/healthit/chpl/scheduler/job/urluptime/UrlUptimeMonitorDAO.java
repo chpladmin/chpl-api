@@ -1,13 +1,11 @@
 package gov.healthit.chpl.scheduler.job.urluptime;
 
-import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Query;
 
 import org.springframework.stereotype.Repository;
 
-import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.entity.developer.DeveloperEntity;
 import gov.healthit.chpl.entity.developer.DeveloperEntitySimple;
@@ -28,9 +26,6 @@ public class UrlUptimeMonitorDAO extends BaseDAOImpl {
         UrlUptimeMonitorEntity entity = UrlUptimeMonitorEntity.builder()
                 .developer(getSimpleDeveloperById(datadogMonitor.getDeveloper().getId(), false))
                 .url(datadogMonitor.getUrl())
-                .creationDate(new Date())
-                .lastModifiedUser(User.SYSTEM_USER_ID)
-                .lastModifiedDate(new Date())
                 .deleted(false)
                 .build();
 
@@ -43,7 +38,6 @@ public class UrlUptimeMonitorDAO extends BaseDAOImpl {
         UrlUptimeMonitorEntity entity = getEntityById(datadogMonitor.getId());
         if (entity != null) {
             entity.setDeleted(true);
-            entity.setLastModifiedUser(User.SYSTEM_USER_ID);
             entityManager.merge(entity);
             entityManager.flush();
         }

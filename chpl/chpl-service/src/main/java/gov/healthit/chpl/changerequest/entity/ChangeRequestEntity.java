@@ -1,6 +1,5 @@
 package gov.healthit.chpl.changerequest.entity;
 
-import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -20,17 +19,25 @@ import javax.persistence.Table;
 import org.hibernate.annotations.Where;
 
 import gov.healthit.chpl.entity.CertificationBodyEntity;
+import gov.healthit.chpl.entity.EntityAudit;
 import gov.healthit.chpl.entity.developer.DeveloperEntity;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 
-@Entity
-@Table(name = "change_request")
 @Getter
 @Setter
 @ToString
-public class ChangeRequestEntity {
+@SuperBuilder
+@AllArgsConstructor
+@NoArgsConstructor
+@Entity
+@Table(name = "change_request")
+public class ChangeRequestEntity extends EntityAudit {
+    private static final long serialVersionUID = -8688917364094882557L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -61,17 +68,5 @@ public class ChangeRequestEntity {
             joinColumns = @JoinColumn(name = "change_request_id"),
             inverseJoinColumns = @JoinColumn(name = "certification_body_id"))
     private Set<CertificationBodyEntity> certificationBodies;
-
-    @Column(name = "creation_date", nullable = false)
-    private Date creationDate;
-
-    @Column(name = "last_modified_date", nullable = false)
-    private Date lastModifiedDate;
-
-    @Column(name = "last_modified_user", nullable = false)
-    private Long lastModifiedUser;
-
-    @Column(name = "deleted", nullable = false)
-    private Boolean deleted;
 
 }

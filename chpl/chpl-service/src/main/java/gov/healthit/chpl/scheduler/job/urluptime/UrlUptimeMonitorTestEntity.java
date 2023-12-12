@@ -1,7 +1,6 @@
 package gov.healthit.chpl.scheduler.job.urluptime;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -11,19 +10,32 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import gov.healthit.chpl.entity.EntityAudit;
+import gov.healthit.chpl.entity.lastmodifieduserstrategy.LastModifiedUserStrategy;
+import gov.healthit.chpl.entity.lastmodifieduserstrategy.SystemUserStrategy;
 import gov.healthit.chpl.util.DateUtil;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 
-@Entity
-@Table(name = "url_uptime_monitor_test")
-@Data
-@Builder
+@Getter
+@Setter
+@ToString
+@SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
-public class UrlUptimeMonitorTestEntity {
+@Entity
+@Table(name = "url_uptime_monitor_test")
+public class UrlUptimeMonitorTestEntity extends EntityAudit {
+    private static final long serialVersionUID = -8138873905563114846L;
+
+    @Override
+    public LastModifiedUserStrategy getLastModifiedUserStrategy() {
+        return new SystemUserStrategy();
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -47,22 +59,6 @@ public class UrlUptimeMonitorTestEntity {
     @Column(name = "passed", nullable = false)
     private Boolean passed;
 
-    @Basic(optional = false)
-    @Column(name = "creation_date", nullable = false)
-    private Date creationDate;
-
-    @Basic(optional = false)
-    @Column(name = "last_modified_date", nullable = false)
-    private Date lastModifiedDate;
-
-    @Basic(optional = false)
-    @Column(name = "last_modified_user", nullable = false)
-    private Long lastModifiedUser;
-
-    @Basic(optional = false)
-    @Column(nullable = false, name = "deleted")
-    private Boolean deleted;
-
     public UrlUptimeMonitorTest toDomain() {
         return UrlUptimeMonitorTest.builder()
                 .id(id)
@@ -72,5 +68,4 @@ public class UrlUptimeMonitorTestEntity {
                 .passed(passed)
                 .build();
     }
-
 }

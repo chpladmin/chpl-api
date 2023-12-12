@@ -1,8 +1,6 @@
 package gov.healthit.chpl.entity;
 
-import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -32,22 +30,22 @@ import gov.healthit.chpl.domain.ProductOwner;
 import gov.healthit.chpl.domain.comparator.ProductOwnerComparator;
 import gov.healthit.chpl.entity.developer.DeveloperEntity;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 
-@Entity
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
 @Getter
 @Setter
 @ToString
+@SuperBuilder
+@AllArgsConstructor
+@NoArgsConstructor
+@Entity
 @DynamicUpdate
 @Table(name = "product")
-public class ProductEntity implements Serializable {
+public class ProductEntity extends EntityAudit {
     private static final long serialVersionUID = -5332080900089062551L;
 
     @Transient
@@ -104,18 +102,6 @@ public class ProductEntity implements Serializable {
     @Column(name = "product_id", nullable = false)
     @Where(clause = "deleted <> 'true'")
     private Set<ProductActiveOwnerEntity> ownerHistory = new HashSet<ProductActiveOwnerEntity>();
-
-    @Column(name = "deleted", insertable = false)
-    private Boolean deleted;
-
-    @Column(name = "last_modified_user")
-    private Long lastModifiedUser;
-
-    @Column(name = "creation_date", insertable = false, updatable = false)
-    private Date creationDate;
-
-    @Column(name = "last_modified_date", insertable = false, updatable = false)
-    private Date lastModifiedDate;
 
     public Product toDomain() {
         return Product.builder()

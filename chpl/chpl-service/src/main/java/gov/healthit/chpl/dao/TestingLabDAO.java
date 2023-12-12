@@ -17,7 +17,6 @@ import gov.healthit.chpl.entity.AddressEntity;
 import gov.healthit.chpl.entity.TestingLabEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.util.AuthUtil;
 
 @Repository("testingLabDAO")
 public class TestingLabDAO extends BaseDAOImpl {
@@ -59,7 +58,6 @@ public class TestingLabDAO extends BaseDAOImpl {
             entity.setTestingLabCode(atlToCreate.getAtlCode());
             entity.setRetired(atlToCreate.isRetired());
             entity.setRetirementDate(atlToCreate.getRetirementDay());
-            entity.setLastModifiedUser(AuthUtil.getAuditId());
             create(entity);
             return entity.toDomain();
         }
@@ -97,7 +95,6 @@ public class TestingLabDAO extends BaseDAOImpl {
         if (atlToUpdate.getAtlCode() != null) {
             entity.setTestingLabCode(atlToUpdate.getAtlCode());
         }
-        entity.setLastModifiedUser(AuthUtil.getAuditId());
         update(entity);
         return entity.toDomain();
     }

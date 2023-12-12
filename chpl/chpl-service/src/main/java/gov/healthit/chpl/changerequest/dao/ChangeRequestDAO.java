@@ -2,7 +2,6 @@ package gov.healthit.chpl.changerequest.dao;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,7 +22,6 @@ import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.entity.developer.DeveloperEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.util.AuthUtil;
 
 @Repository("changeRequestDAO")
 public class ChangeRequestDAO extends BaseDAOImpl {
@@ -58,9 +56,6 @@ public class ChangeRequestDAO extends BaseDAOImpl {
                     entity.setCertificationBodyId(acb.getId());
                     entity.setChangeRequestId(changeRequestId);
                     entity.setDeleted(false);
-                    entity.setCreationDate(new Date());
-                    entity.setLastModifiedDate(new Date());
-                    entity.setLastModifiedUser(AuthUtil.getAuditId());
                     create(entity);
                 });
     }
@@ -276,9 +271,6 @@ public class ChangeRequestDAO extends BaseDAOImpl {
                 getSession().load(ChangeRequestTypeEntity.class, cr.getChangeRequestType().getId()));
         entity.setDeveloper(getSession().load(DeveloperEntity.class, cr.getDeveloper().getId()));
         entity.setDeleted(false);
-        entity.setLastModifiedUser(AuthUtil.getAuditId());
-        entity.setCreationDate(new Date());
-        entity.setLastModifiedDate(new Date());
         return entity;
     }
 

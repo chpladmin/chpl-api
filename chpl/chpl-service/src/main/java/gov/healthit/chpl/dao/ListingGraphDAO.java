@@ -15,7 +15,6 @@ import gov.healthit.chpl.dto.ListingToListingMapDTO;
 import gov.healthit.chpl.entity.listing.CertifiedProductEntity;
 import gov.healthit.chpl.entity.listing.ListingToListingMapEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
-import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import lombok.extern.log4j.Log4j2;
 
@@ -34,7 +33,6 @@ public class ListingGraphDAO extends BaseDAOImpl {
             ListingToListingMapEntity entity = new ListingToListingMapEntity();
             entity.setChildId(childId);
             entity.setParentId(parentId);
-            entity.setLastModifiedUser(AuthUtil.getAuditId());
             create(entity);
             return entity.getId();
         } catch (Exception ex) {
@@ -47,7 +45,6 @@ public class ListingGraphDAO extends BaseDAOImpl {
         entity.setChildId(toCreate.getChildId());
         entity.setParentId(toCreate.getParentId());
         entity.setDeleted(false);
-        entity.setLastModifiedUser(AuthUtil.getAuditId());
         try {
             entityManager.persist(entity);
             entityManager.flush();
@@ -72,7 +69,6 @@ public class ListingGraphDAO extends BaseDAOImpl {
 
         if (entity != null) {
             entity.setDeleted(true);
-            entity.setLastModifiedUser(AuthUtil.getAuditId());
             update(entity);
         }
     }
