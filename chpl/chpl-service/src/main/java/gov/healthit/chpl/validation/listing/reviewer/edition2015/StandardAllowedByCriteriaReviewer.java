@@ -11,8 +11,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.standard.CertificationResultStandard;
 import gov.healthit.chpl.standard.Standard;
@@ -21,7 +23,9 @@ import gov.healthit.chpl.standard.StandardManager;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
 import gov.healthit.chpl.validation.listing.reviewer.PermissionBasedReviewer;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 @Component
 public class StandardAllowedByCriteriaReviewer extends PermissionBasedReviewer {
 
@@ -42,6 +46,7 @@ public class StandardAllowedByCriteriaReviewer extends PermissionBasedReviewer {
         if (listing.getCertificationResults() != null) {
             for (CertificationResult cr : listing.getCertificationResults()) {
                 if (BooleanUtils.isTrue(cr.isSuccess()) && cr.getStandards() != null) {
+                    reviewStandardExistForEachGroup(listing, cr);
                     for (CertificationResultStandard crs : cr.getStandards()) {
                         addStandardErrorMessages(crs, cr, listing);
                     }
@@ -158,5 +163,42 @@ public class StandardAllowedByCriteriaReviewer extends PermissionBasedReviewer {
         LocalDate funcTestedStartDay = standard.getStartDay() == null ? LocalDate.MIN : standard.getStartDay();
         return funcTestedStartDay.isAfter(listingEndDay);
     }
+
+    private void reviewStandardExistForEachGroup(CertifiedProductSearchDetails listing, CertificationResult certResult) {
+        getGroupedStandardsForCriteria(certResult.getCriterion()).entrySet().stream()
+                .forEach(standardGroup -> {
+                    if (!doesOneStandardForGroupExistForCriterion(standardGroup.getValue(), certResult)) {
+                        listing.addBusinessErrorMessage("Exactly one of the following standards must be selected: " +
+                                standardGroup.getValue().stream()
+                                        .map(std -> std.getRegulatoryTextCitation())
+                                        .collect(Collectors.joining(", ")));
+                    }
+                });
+    }
+
+    private boolean doesOneStandardForGroupExistForCriterion(List<Standard> groupedStandards, CertificationResult certResult) {
+        return groupedStandards.stream()
+                .filter(standardFromGroup -> isStandardInList(standardFromGroup, certResult.getStandards().stream().map(certResultStd -> certResultStd.getStandard()).toList()))
+                .count() == 1;
+    }
+
+    private boolean isStandardInList(Standard standardToFind, List<Standard> standard) {
+        return standard.stream()
+                .filter(std -> std.getId().equals(standardToFind.getId()))
+                .findAny()
+                .isPresent();
+    }
+    private Map<String, List<Standard>> getGroupedStandardsForCriteria(CertificationCriterion criterion) {
+        try {
+            return standardDAO.getAllStandardCriteriaMap().stream()
+                    .filter(stdCriteriaMap -> stdCriteriaMap.getCriterion().getId().equals(criterion.getId())
+                            && stdCriteriaMap.getStandard().getGroupName() != null)
+                    .collect(Collectors.groupingBy(value -> value.getStandard().getGroupName(), Collectors.mapping(value -> value.getStandard(), Collectors.toList())));
+        } catch (EntityRetrievalException e) {
+            LOGGER.error("Error retrieving all StandardCriteriaMaps: {}", e.getStackTrace(), e);
+            throw new RuntimeException(e);
+        }
+    }
+
 
 }

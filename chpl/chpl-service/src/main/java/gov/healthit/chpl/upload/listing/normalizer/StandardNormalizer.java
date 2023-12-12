@@ -82,8 +82,6 @@ public class StandardNormalizer {
         return standardOpt.isPresent() ? standardOpt.get() : null;
     }
 
-    ///////////////////////////////////////////////////////////////
-
     private CertificationResult addMissingStandards(LocalDate certificationDate, CertificationResult certResult) {
         List<Standard> validStandardsForCriterionAndListing = getValidStandardsForCriteriaAndListing(certResult.getCriterion(), certificationDate);
 
@@ -117,7 +115,8 @@ public class StandardNormalizer {
             maps.removeIf(map -> !map.getCriterion().getId().equals(criterion.getId()));
             return maps.stream()
                     .filter(map -> !isStandardInAGroup(map.getStandard())
-                            && isStandardEndDateAfterCertificationDate(map.getStandard(), certificationDate))
+                            && isStandardEndDateAfterCertificationDate(map.getStandard(), certificationDate)
+                            && !isStandardRequiredDateBeforeCertificationDate(map.getStandard(), certificationDate))
                     .map(map -> map.getStandard())
                     .toList();
 
@@ -134,6 +133,11 @@ public class StandardNormalizer {
     private Boolean isStandardEndDateAfterCertificationDate(Standard standard, LocalDate certificationDate) {
         return standard.getEndDay() == null
                 || standard.getEndDay().isAfter(certificationDate);
+    }
+
+    private Boolean isStandardRequiredDateBeforeCertificationDate(Standard standard, LocalDate certificationDate) {
+        return standard.getRequiredDay() == null
+                || standard.getRequiredDay().isBefore(certificationDate);
     }
 }
 

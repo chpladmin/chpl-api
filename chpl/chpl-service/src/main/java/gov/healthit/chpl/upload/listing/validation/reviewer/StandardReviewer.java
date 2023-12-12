@@ -19,7 +19,9 @@ import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
 import gov.healthit.chpl.util.ValidationUtils;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 @Component("listingUploadStandardReviewer")
 public class StandardReviewer {
     private CertificationResultRules certResultRules;
@@ -49,6 +51,7 @@ public class StandardReviewer {
         reviewCriteriaCanHaveStandard(listing, certResult);
         removeStandardsWithoutIds(listing, certResult);
         removeStandardMismatchedToCriteria(listing, certResult);
+        //reviewStandardExistForEachGroup(listing, certResult);
         if (certResult.getStandards() != null && certResult.getStandards().size() > 0) {
             certResult.getStandards().stream()
                     .forEach(standard -> reviewStandardFields(listing, certResult, standard));
@@ -169,4 +172,36 @@ public class StandardReviewer {
         return standardStartDay.isAfter(listingEndDay);
     }
 
+//    private void reviewStandardExistForEachGroup(CertifiedProductSearchDetails listing, CertificationResult certResult) {
+//        getGroupedStandardsForCriteria(certResult.getCriterion()).entrySet().stream()
+//                .forEach(standardGroup -> {
+//                    if (!doesOneStandardForGroupExistForCriterion(standardGroup.getValue(), certResult)) {
+//                        listing.addBusinessErrorMessage("There is no standard selected for group name: " + standardGroup.getKey());
+//                    }
+//                });
+//    }
+//
+//    private boolean doesOneStandardForGroupExistForCriterion(List<Standard> groupedStandards, CertificationResult certResult) {
+//        return groupedStandards.stream()
+//                .filter(standardFromGroup -> isStandardInList(standardFromGroup, certResult.getStandards().stream().map(certResultStd -> certResultStd.getStandard()).toList()))
+//                .count() == 1;
+//    }
+//
+//    private boolean isStandardInList(Standard standardToFind, List<Standard> standard) {
+//        return standard.stream()
+//                .filter(std -> std.getId().equals(standardToFind.getId()))
+//                .findAny()
+//                .isPresent();
+//    }
+//    private Map<String, List<Standard>> getGroupedStandardsForCriteria(CertificationCriterion criterion) {
+//        try {
+//            return standardDao.getAllStandardCriteriaMap().stream()
+//                    .filter(stdCriteriaMap -> stdCriteriaMap.getCriterion().getId().equals(criterion.getId())
+//                            && stdCriteriaMap.getStandard().getGroupName() != null)
+//                    .collect(Collectors.groupingBy(value -> value.getStandard().getGroupName(), Collectors.mapping(value -> value.getStandard(), Collectors.toList())));
+//        } catch (EntityRetrievalException e) {
+//            LOGGER.error("Error retrieving all StandardCriteriaMaps: {}", e.getStackTrace(), e);
+//            throw new RuntimeException(e);
+//        }
+//    }
 }
