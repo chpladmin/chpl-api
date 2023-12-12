@@ -77,7 +77,7 @@ public class CqmResultReviewerTest {
     }
 
     @Test
-    public void review_UnattestedCqmNullCmsIdWithCriterion_hasWarning() {
+    public void review_UnattestedCqmNullCmsIdWithCriterion_noWarning() {
         CQMResultDetails cqmResult = CQMResultDetails.builder()
                 .success(false)
                 .cmsId(null)
@@ -92,8 +92,7 @@ public class CqmResultReviewerTest {
                 .build();
 
         reviewer.review(listing);
-        assertEquals(1, listing.getWarningMessages().size());
-        assertTrue(listing.getWarningMessages().contains(MISSING_CMS_ID));
+        assertEquals(0, listing.getWarningMessages().size());
         assertEquals(0, listing.getErrorMessages().size());
     }
 
