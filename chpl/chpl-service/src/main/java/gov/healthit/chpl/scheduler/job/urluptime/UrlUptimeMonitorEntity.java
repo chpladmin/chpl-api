@@ -1,7 +1,5 @@
 package gov.healthit.chpl.scheduler.job.urluptime;
 
-import java.util.Date;
-
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -13,19 +11,33 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import gov.healthit.chpl.entity.EntityAudit;
 import gov.healthit.chpl.entity.developer.DeveloperEntitySimple;
+import gov.healthit.chpl.entity.lastmodifieduserstrategy.CurrentUserThenSystemUserStrategy;
+import gov.healthit.chpl.entity.lastmodifieduserstrategy.LastModifiedUserStrategy;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 
-@Entity
-@Table(name = "url_uptime_monitor")
-@Data
-@Builder
+@Getter
+@Setter
+@ToString
+@SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
-public class UrlUptimeMonitorEntity {
+@Entity
+@Table(name = "url_uptime_monitor")
+public class UrlUptimeMonitorEntity extends EntityAudit {
+    private static final long serialVersionUID = 6887995523356585740L;
+
+    @Override
+    public LastModifiedUserStrategy getLastModifiedUserStrategy() {
+        return new CurrentUserThenSystemUserStrategy();
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
@@ -40,22 +52,6 @@ public class UrlUptimeMonitorEntity {
     @Basic(optional = false)
     @Column(name = "url", nullable = false)
     private String url;
-
-    @Basic(optional = false)
-    @Column(name = "creation_date", nullable = false)
-    private Date creationDate;
-
-    @Basic(optional = false)
-    @Column(name = "last_modified_date", nullable = false)
-    private Date lastModifiedDate;
-
-    @Basic(optional = false)
-    @Column(name = "last_modified_user", nullable = false)
-    private Long lastModifiedUser;
-
-    @Basic(optional = false)
-    @Column(nullable = false, name = "deleted")
-    private Boolean deleted;
 
     public UrlUptimeMonitor toDomain() {
         return UrlUptimeMonitor.builder()

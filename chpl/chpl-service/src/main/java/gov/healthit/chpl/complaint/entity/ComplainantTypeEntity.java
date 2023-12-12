@@ -1,7 +1,5 @@
 package gov.healthit.chpl.complaint.entity;
 
-import java.util.Date;
-
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -11,12 +9,24 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 import gov.healthit.chpl.complaint.domain.ComplainantType;
-import lombok.Data;
+import gov.healthit.chpl.entity.EntityAudit;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 
+@Getter
+@Setter
+@ToString
+@SuperBuilder
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "complainant_type")
-@Data
-public class ComplainantTypeEntity {
+public class ComplainantTypeEntity extends EntityAudit {
+    private static final long serialVersionUID = 9116199957815515032L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,18 +36,6 @@ public class ComplainantTypeEntity {
 
     @Column(name = "name", nullable = false)
     private String name;
-
-    @Column(name = "creation_date", nullable = false)
-    private Date creationDate;
-
-    @Column(name = "last_modified_date", nullable = false)
-    private Date lastModifiedDate;
-
-    @Column(name = "last_modified_user", nullable = false)
-    private Long lastModifiedUser;
-
-    @Column(name = "deleted", nullable = false)
-    private Boolean deleted;
 
     public ComplainantType buildComplainantType() {
         return ComplainantType.builder()

@@ -1,8 +1,5 @@
 package gov.healthit.chpl.ucdProcess;
 
-import java.io.Serializable;
-import java.util.Date;
-
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -11,18 +8,23 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import gov.healthit.chpl.entity.EntityAudit;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 
-@Entity
 @Getter
 @Setter
 @ToString
+@SuperBuilder
+@AllArgsConstructor
 @NoArgsConstructor
+@Entity
 @Table(name = "ucd_process")
-public class UcdProcessEntity implements Serializable {
+public class UcdProcessEntity extends EntityAudit {
     private static final long serialVersionUID = -8588994880748379730L;
 
     @Id
@@ -33,18 +35,6 @@ public class UcdProcessEntity implements Serializable {
 
     @Column(name = "name")
     private String name;
-
-    @Column(name = "deleted", insertable = false)
-    private Boolean deleted;
-
-    @Column(name = "last_modified_user")
-    private Long lastModifiedUser;
-
-    @Column(name = "creation_date", insertable = false, updatable = false)
-    private Date creationDate;
-
-    @Column(name = "last_modified_date", insertable = false, updatable = false)
-    private Date lastModifiedDate;
 
     public UcdProcess toDomain() {
         return UcdProcess.builder()

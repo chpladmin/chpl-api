@@ -1,6 +1,5 @@
 package gov.healthit.chpl.testtool;
 
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,7 +21,6 @@ import gov.healthit.chpl.domain.TestToolCriteriaMap;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.entity.listing.CertificationResultEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.util.AuthUtil;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -45,9 +43,6 @@ public class TestToolDAO extends BaseDAOImpl {
                 .startDay(testTool.getStartDay())
                 .endDay(testTool.getEndDay())
                 .rule(testTool.getRule() != null ? ruleDAO.getRuleEntityById(testTool.getRule().getId()) : null)
-                .creationDate(new Date())
-                .lastModifiedDate(new Date())
-                .lastModifiedUser(AuthUtil.getAuditId())
                 .deleted(false)
                 .build();
         create(entity);
@@ -105,9 +100,6 @@ public class TestToolDAO extends BaseDAOImpl {
             entity.setRule(null);
         }
 
-        entity.setLastModifiedUser(AuthUtil.getAuditId());
-        entity.setLastModifiedDate(new Date());
-
         update(entity);
     }
 
@@ -116,9 +108,6 @@ public class TestToolDAO extends BaseDAOImpl {
         TestToolCriteriaMapEntity entity = TestToolCriteriaMapEntity.builder()
                 .certificationCriterionId(criterion.getId())
                 .testToolId(testTool.getId())
-                .creationDate(new Date())
-                .lastModifiedDate(new Date())
-                .lastModifiedUser(AuthUtil.getAuditId())
                 .deleted(false)
                 .build();
 
@@ -130,8 +119,6 @@ public class TestToolDAO extends BaseDAOImpl {
         try {
             TestToolCriteriaMapEntity entity = getTestToolCriteriaMapByTestToolAndCriterionEntity(testTool.getId(), criterion.getId());
             entity.setDeleted(true);
-            entity.setLastModifiedDate(new Date());
-            entity.setLastModifiedUser(AuthUtil.getAuditId());
 
             update(entity);
         } catch (EntityRetrievalException e) {
@@ -149,8 +136,6 @@ public class TestToolDAO extends BaseDAOImpl {
     public void remove(TestTool testTool) throws EntityRetrievalException {
         TestToolEntity entity = getEntityById(testTool.getId());
         entity.setDeleted(true);
-        entity.setLastModifiedUser(AuthUtil.getAuditId());
-        entity.setLastModifiedDate(new Date());
         update(entity);
     }
 

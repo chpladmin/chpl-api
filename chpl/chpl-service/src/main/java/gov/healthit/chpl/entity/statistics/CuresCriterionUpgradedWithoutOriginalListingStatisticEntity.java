@@ -1,7 +1,6 @@
 package gov.healthit.chpl.entity.statistics;
 
 import java.time.LocalDate;
-import java.util.Date;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -17,12 +16,32 @@ import javax.persistence.Table;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterionEntity;
 import gov.healthit.chpl.domain.statistics.CuresCriterionUpgradedWithoutOriginalListingStatistic;
-import lombok.Data;
+import gov.healthit.chpl.entity.EntityAudit;
+import gov.healthit.chpl.entity.lastmodifieduserstrategy.LastModifiedUserStrategy;
+import gov.healthit.chpl.entity.lastmodifieduserstrategy.SystemUserStrategy;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 
+@Getter
+@Setter
+@ToString
+@SuperBuilder
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
-@Data
 @Table(name = "cures_criterion_upgraded_without_original_listing_statistic")
-public class CuresCriterionUpgradedWithoutOriginalListingStatisticEntity {
+public class CuresCriterionUpgradedWithoutOriginalListingStatisticEntity extends EntityAudit {
+    private static final long serialVersionUID = -1551162324747885091L;
+
+    @Override
+    public LastModifiedUserStrategy getLastModifiedUserStrategy() {
+        return new SystemUserStrategy();
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
@@ -44,22 +63,6 @@ public class CuresCriterionUpgradedWithoutOriginalListingStatisticEntity {
     @Basic(optional = false)
     @Column(name = "statistic_date", nullable = false)
     private LocalDate statisticDate;
-
-    @Basic(optional = false)
-    @Column(name = "creation_date", nullable = false)
-    private Date creationDate;
-
-    @Basic(optional = false)
-    @Column(name = "deleted", nullable = false)
-    private Boolean deleted;
-
-    @Basic(optional = false)
-    @Column(name = "last_modified_date", nullable = false)
-    private Date lastModifiedDate;
-
-    @Basic(optional = false)
-    @Column(name = "last_modified_user", nullable = false)
-    private Long lastModifiedUser;
 
     public CuresCriterionUpgradedWithoutOriginalListingStatistic toDomain() {
         return CuresCriterionUpgradedWithoutOriginalListingStatistic.builder()

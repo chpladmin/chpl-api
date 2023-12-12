@@ -1,8 +1,6 @@
 package gov.healthit.chpl.entity;
 
-import java.io.Serializable;
 import java.time.LocalDate;
-import java.util.Date;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -19,22 +17,23 @@ import org.hibernate.annotations.DynamicUpdate;
 
 import gov.healthit.chpl.domain.ProductOwner;
 import gov.healthit.chpl.entity.developer.DeveloperEntity;
-import gov.healthit.chpl.util.DateUtil;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 
-@Entity
 @Getter
 @Setter
 @ToString
-@NoArgsConstructor
+@SuperBuilder
 @AllArgsConstructor
+@NoArgsConstructor
+@Entity
 @DynamicUpdate
 @Table(name = "product_active_owner_history_map")
-public class ProductActiveOwnerEntity implements Serializable {
+public class ProductActiveOwnerEntity extends EntityAudit {
     private static final long serialVersionUID = -8325348768063869639L;
 
     @Id
@@ -56,18 +55,6 @@ public class ProductActiveOwnerEntity implements Serializable {
 
     @Column(name = "transfer_date")
     private LocalDate transferDay;
-
-    @Column(name = "creation_date", nullable = false, insertable = false, updatable = false)
-    private Date creationDate;
-
-    @Column(name = "deleted", nullable = false)
-    private Boolean deleted;
-
-    @Column(name = "last_modified_date", nullable = false, insertable = false, updatable = false)
-    private Date lastModifiedDate;
-
-    @Column(name = "last_modified_user", nullable = false)
-    private Long lastModifiedUser;
 
     public ProductOwner toDomain() {
         return ProductOwner.builder()

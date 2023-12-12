@@ -1,6 +1,5 @@
 package gov.healthit.chpl.entity;
 
-import java.io.Serializable;
 import java.util.Date;
 
 import javax.persistence.Basic;
@@ -12,14 +11,22 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 import gov.healthit.chpl.domain.contact.PointOfContact;
-import lombok.Data;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 
-@Entity
-@Data
+@Getter
+@Setter
+@ToString
+@SuperBuilder
+@AllArgsConstructor
 @NoArgsConstructor
+@Entity
 @Table(name = "contact")
-public class ContactEntity implements Serializable {
+public class ContactEntity extends EntityAudit {
     private static final long serialVersionUID = 1586086005459839264L;
     private static final int EMAIL_LENGTH = 250;
     private static final int FULL_NAME_LENGTH = 500;
@@ -51,19 +58,6 @@ public class ContactEntity implements Serializable {
     @Basic(optional = true)
     @Column(length = TITLE_LENGTH)
     private String title;
-
-    @Column(name = "deleted", insertable = false)
-    private Boolean deleted;
-
-    @Basic(optional = false)
-    @Column(name = "last_modified_user", nullable = false)
-    private Long lastModifiedUser;
-
-    @Column(name = "creation_date", nullable = false, insertable = false, updatable = false)
-    private Date creationDate;
-
-    @Column(name = "last_modified_date", nullable = false, insertable = false, updatable = false)
-    private Date lastModifiedDate;
 
     public PointOfContact toDomain() {
         return PointOfContact.builder()

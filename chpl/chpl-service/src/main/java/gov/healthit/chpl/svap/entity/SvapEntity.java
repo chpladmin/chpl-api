@@ -1,6 +1,5 @@
 package gov.healthit.chpl.svap.entity;
 
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -19,19 +18,25 @@ import javax.persistence.Table;
 import org.hibernate.annotations.WhereJoinTable;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterionEntity;
+import gov.healthit.chpl.entity.EntityAudit;
 import gov.healthit.chpl.svap.domain.Svap;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 
+@Getter
+@Setter
+@ToString
+@SuperBuilder
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "svap")
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-public class SvapEntity {
+public class SvapEntity extends EntityAudit {
+    private static final long serialVersionUID = -38745571925191621L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -54,22 +59,6 @@ public class SvapEntity {
 
     @Column(name = "replaced", nullable = false)
     private Boolean replaced;
-
-    @Basic(optional = false)
-    @Column(name = "deleted", nullable = false)
-    private Boolean deleted;
-
-    @Basic(optional = false)
-    @Column(name = "last_modified_user", nullable = false)
-    private Long lastModifiedUser;
-
-    @Basic(optional = false)
-    @Column(name = "creation_date", insertable = false, updatable = false)
-    private Date creationDate;
-
-    @Basic(optional = false)
-    @Column(name = "last_modified_date", insertable = false, updatable = false)
-    private Date lastModifiedDate;
 
     public Svap toDomain() {
         return Svap.builder()

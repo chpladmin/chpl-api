@@ -7,7 +7,6 @@ import javax.persistence.Query;
 
 import org.springframework.stereotype.Repository;
 
-import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.dto.ApiKeyActivityDTO;
 import gov.healthit.chpl.entity.ApiKeyActivityEntity;
@@ -47,12 +46,6 @@ public class ApiKeyActivityDAO extends BaseDAOImpl {
                 entity.setCreationDate(new Date());
             }
             entity.setDeleted(dto.getDeleted());
-
-            if (AuthUtil.getCurrentUser() == null) {
-                entity.setLastModifiedUser(User.SYSTEM_USER_ID);
-            } else {
-                entity.setLastModifiedUser(AuthUtil.getAuditId());
-            }
 
             create(entity);
         }

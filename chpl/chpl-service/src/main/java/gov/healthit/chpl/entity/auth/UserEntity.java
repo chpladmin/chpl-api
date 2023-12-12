@@ -13,14 +13,22 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-import lombok.Data;
+import gov.healthit.chpl.entity.EntityAudit;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 
-/**
- * Entity for user.
- */
+@Getter
+@Setter
+@ToString
+@SuperBuilder
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "`user`")
-@Data
 // Setting dynamic update makes the hql engine generate new sql for any update
 // call
 // and will exclude any unmodified columns from the update.
@@ -31,7 +39,7 @@ import lombok.Data;
 // column is
 // included in an update statement (even if its value hasn't changed).
 @org.hibernate.annotations.DynamicUpdate
-public class UserEntity {
+public class UserEntity extends EntityAudit {
     private static final long serialVersionUID = -5792083881155731413L;
 
     @Id
@@ -68,18 +76,6 @@ public class UserEntity {
 
     @Column(name = "last_logged_in_date")
     private Date lastLoggedInDate;
-
-    @Column(name = "deleted")
-    private Boolean deleted;
-
-    @Column(name = "last_modified_user")
-    private Long lastModifiedUser;
-
-    @Column(name = "creation_date", insertable = false, updatable = false)
-    private Date creationDate;
-
-    @Column(name = "last_modified_date", insertable = false, updatable = false)
-    private Date lastModifiedDate;
 
     @OneToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "user_permission_id", insertable = false, updatable = false)

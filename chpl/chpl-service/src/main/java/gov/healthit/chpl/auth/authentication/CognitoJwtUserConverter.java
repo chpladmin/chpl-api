@@ -1,5 +1,8 @@
 package gov.healthit.chpl.auth.authentication;
 
+import java.util.UUID;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -11,7 +14,7 @@ import com.auth0.jwt.interfaces.RSAKeyProvider;
 
 import gov.healthit.chpl.auth.jwt.CognitoRsaKeyProvider;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
-import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
+import gov.healthit.chpl.auth.user.CognitoAuthenticatedUser;
 import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.exception.JWTValidationException;
 import gov.healthit.chpl.exception.MultipleUserAccountsException;
@@ -34,18 +37,16 @@ public class CognitoJwtUserConverter {
     }
 
     public User getAuthenticatedUser(String jwt) throws JWTValidationException, MultipleUserAccountsException {
-        JWTAuthenticatedUser user = new JWTAuthenticatedUser();
         DecodedJWT decodeJwt = decodeJwt(jwt);
-
-        user.setAuthenticated(true);
-        user.setId(decodeJwt.getClaim("id").asLong());
-        user.setFullName(decodeJwt.getClaim("name").asString());
-        user.setSubjectName(decodeJwt.getClaim("email").asString());
-
-        decodeJwt.getClaim("cognito:groups").asList(String.class).stream()
-                .forEach(role -> user.addPermission(new GrantedPermission(role)));
-
-        return user;
+        return CognitoAuthenticatedUser.builder()
+                .authenticated(true)
+                .ssoId(UUID.fromString(decodeJwt.getSubject()))
+                .fullName(decodeJwt.getClaim("name").asString())
+                .email(decodeJwt.getClaim("email").asString())
+                .permissions(decodeJwt.getClaim("cognito:groups").asList(String.class).stream()
+                        .map(group -> new GrantedPermission(group))
+                        .collect(Collectors.toSet()))
+                .build();
     }
 
     private DecodedJWT decodeJwt(String jwt) {

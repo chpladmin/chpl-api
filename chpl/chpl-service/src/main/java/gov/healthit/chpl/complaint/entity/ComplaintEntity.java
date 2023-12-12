@@ -1,7 +1,6 @@
 package gov.healthit.chpl.complaint.entity;
 
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -26,12 +25,24 @@ import gov.healthit.chpl.complaint.domain.ComplaintListingMap;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.ComplaintSurveillanceMap;
 import gov.healthit.chpl.entity.CertificationBodyEntity;
-import lombok.Data;
+import gov.healthit.chpl.entity.EntityAudit;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 
+@Getter
+@Setter
+@ToString
+@SuperBuilder
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
-@Data
 @Table(name = "complaint")
-public class ComplaintEntity {
+public class ComplaintEntity extends EntityAudit {
+    private static final long serialVersionUID = 4097588663243344392L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -84,18 +95,6 @@ public class ComplaintEntity {
 
     @Column(name = "closed_date", nullable = true)
     private LocalDate closedDate;
-
-    @Column(name = "creation_date", nullable = false)
-    private Date creationDate;
-
-    @Column(name = "last_modified_date", nullable = false)
-    private Date lastModifiedDate;
-
-    @Column(name = "last_modified_user", nullable = false)
-    private Long lastModifiedUser;
-
-    @Column(name = "deleted", nullable = false)
-    private Boolean deleted;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "complaintId")
     @Basic(optional = true)
