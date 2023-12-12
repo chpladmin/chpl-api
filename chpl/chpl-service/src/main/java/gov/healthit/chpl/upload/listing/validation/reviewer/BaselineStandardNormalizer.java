@@ -6,8 +6,6 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
@@ -17,18 +15,18 @@ import gov.healthit.chpl.standard.CertificationResultStandard;
 import gov.healthit.chpl.standard.Standard;
 import gov.healthit.chpl.standard.StandardCriteriaMap;
 import gov.healthit.chpl.standard.StandardDAO;
+import gov.healthit.chpl.upload.listing.normalizer.CertificationResultLevelNormalizer;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
-@Component
-public class BaselineStandardNormalizer {
+public class BaselineStandardNormalizer implements CertificationResultLevelNormalizer {
     private StandardDAO standardDao;
 
-    @Autowired
     public BaselineStandardNormalizer(StandardDAO standardDao) {
         this.standardDao = standardDao;
     }
 
+    @Override
     public void normalize(CertifiedProductSearchDetails listing) {
         if (listing.getCertificationResults() != null && listing.getCertificationResults().size() > 0) {
             listing.getCertificationResults().stream()

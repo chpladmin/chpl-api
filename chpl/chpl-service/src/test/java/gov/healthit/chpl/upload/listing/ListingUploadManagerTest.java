@@ -27,16 +27,17 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.auth.UserDAO;
 import gov.healthit.chpl.domain.Address;
+import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.ConfirmListingRequest;
 import gov.healthit.chpl.domain.ListingUpload;
-import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.SchedulerManager;
+import gov.healthit.chpl.standard.StandardDAO;
 import gov.healthit.chpl.upload.listing.handler.CertificationDateHandler;
 import gov.healthit.chpl.upload.listing.handler.ListingDetailsUploadHandler;
 import gov.healthit.chpl.upload.listing.normalizer.ListingDetailsNormalizer;
@@ -91,6 +92,7 @@ public class ListingUploadManagerTest {
                 listingUploadValidator,
                 uploadUtil, chplProductNumberUtil, listingUploadDao, acbDao,
                 Mockito.mock(UserDAO.class),
+                Mockito.mock(StandardDAO.class),
                 listingConfirmationManager,
                 Mockito.mock(SchedulerManager.class),
                 Mockito.mock(ActivityManager.class), msgUtil);

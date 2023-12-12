@@ -60,7 +60,7 @@ public class CertificationResultNormalizer {
         this.msgUtil = msgUtil;
     }
 
-    public void normalize(CertifiedProductSearchDetails listing) {
+    public void normalize(CertifiedProductSearchDetails listing, List<CertificationResultLevelNormalizer> additionalNormalizers) {
         removeCertificationResultsWithNullCriterion(listing);
         removeCertificationResultsForDuplicateCriteria(listing);
 
@@ -74,8 +74,17 @@ public class CertificationResultNormalizer {
         this.svapNormalizer.normalize(listing);
         this.standardNormalizer.normalize(listing);
 
+        if (additionalNormalizers != null && additionalNormalizers.size() > 0) {
+            additionalNormalizers.forEach(normalizer -> normalizer.normalize(listing));
+        }
+
         setSedTrueIfApplicableToCriteria(listing);
         listing.getCertificationResults().sort(new CertificationResultComparator());
+    }
+
+
+    public void normalize(CertifiedProductSearchDetails listing) {
+        normalize(listing, null);
     }
 
     private void removeCertificationResultsWithNullCriterion(CertifiedProductSearchDetails listing) {
