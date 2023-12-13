@@ -3,6 +3,9 @@ package gov.healthit.chpl.upload.listing.validation.reviewer;
 import java.time.LocalDate;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
+
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
@@ -12,6 +15,7 @@ import gov.healthit.chpl.standard.Standard;
 import gov.healthit.chpl.standard.StandardCriteriaMap;
 import gov.healthit.chpl.standard.StandardDAO;
 import gov.healthit.chpl.upload.listing.normalizer.CertificationResultLevelNormalizer;
+import gov.healthit.chpl.util.DateUtil;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -63,7 +67,7 @@ public class BaselineStandardNormalizer implements CertificationResultLevelNorma
             maps.removeIf(map -> !map.getCriterion().getId().equals(criterion.getId()));
             return maps.stream()
                     .filter(map -> !isStandardInAGroup(map.getStandard())
-                            && isStandardValidAsOfCertificationDate(map.getStandard(), certificationDate))
+                            && DateUtil.isDateBetweenInclusive(Pair.of(map.getStandard().getRequiredDay(), map.getStandard().getEndDay()), certificationDate))
                     .map(map -> map.getStandard())
                     .toList();
         } catch (EntityRetrievalException e) {
@@ -73,22 +77,6 @@ public class BaselineStandardNormalizer implements CertificationResultLevelNorma
     }
 
     private Boolean isStandardInAGroup(Standard standard) {
-        return standard.getGroupName() != null;
+        return !StringUtils.isEmpty(standard.getGroupName());
     }
-
-    private Boolean isStandardValidAsOfCertificationDate(Standard standard, LocalDate certificationDate) {
-        return isStandardEndDateAfterCertificationDate(standard, certificationDate)
-                && isStandardRequiredDateBeforeCertificationDate(standard, certificationDate);
-    }
-
-    private Boolean isStandardEndDateAfterCertificationDate(Standard standard, LocalDate certificationDate) {
-        return standard.getEndDay() != null
-                && standard.getEndDay().isAfter(certificationDate);
-    }
-
-    private Boolean isStandardRequiredDateBeforeCertificationDate(Standard standard, LocalDate certificationDate) {
-        return standard.getRequiredDay() == null
-                || standard.getRequiredDay().isBefore(certificationDate);
-    }
-
 }
