@@ -63,8 +63,8 @@ public class BaselineStandardNormalizer implements CertificationResultLevelNorma
             maps.removeIf(map -> !map.getCriterion().getId().equals(criterion.getId()));
             return maps.stream()
                     .filter(map -> !isStandardInAGroup(map.getStandard())
-                            && isStandardEndDateAfterCertificationDate(map.getStandard(), certificationDate)
-                            && !isStandardRequiredDateBeforeCertificationDate(map.getStandard(), certificationDate))
+                            && !isStandardEndDateAfterCertificationDate(map.getStandard(), certificationDate)
+                            && isStandardRequiredDateBeforeCertificationDate(map.getStandard(), certificationDate))
                     .map(map -> map.getStandard())
                     .toList();
 
