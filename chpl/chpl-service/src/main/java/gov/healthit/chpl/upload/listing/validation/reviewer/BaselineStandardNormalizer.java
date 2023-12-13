@@ -2,10 +2,6 @@ package gov.healthit.chpl.upload.listing.validation.reviewer;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
-import org.apache.commons.lang3.StringUtils;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
@@ -30,38 +26,8 @@ public class BaselineStandardNormalizer implements CertificationResultLevelNorma
     public void normalize(CertifiedProductSearchDetails listing) {
         if (listing.getCertificationResults() != null && listing.getCertificationResults().size() > 0) {
             listing.getCertificationResults().stream()
-                .forEach(certResult -> populateStandards(listing, certResult));
+                .forEach(certResult -> addMissingStandards(listing.getCertificationDay(), certResult));
         }
-    }
-
-    private void populateStandards(CertifiedProductSearchDetails listing, CertificationResult certResult) {
-        if (certResult.getStandards() != null && certResult.getStandards().size() > 0) {
-            certResult.getStandards().stream()
-                .filter(standard -> standard.getId() == null)
-                .forEach(standard -> populateStandard(listing, certResult, standard));
-        }
-    }
-
-    private void populateStandard(CertifiedProductSearchDetails listing, CertificationResult certResult, CertificationResultStandard standard) {
-        if (!StringUtils.isEmpty(standard.getStandard().getRegulatoryTextCitation())) {
-            Standard foundStandard =
-                    getStandard(standard.getStandard().getRegulatoryTextCitation(), certResult.getCriterion().getId());
-            if (foundStandard != null) {
-                standard.setStandard(foundStandard);
-            }
-        }
-    }
-
-    private Standard getStandard(String regulatoryTextCitation, Long criterionId) {
-        Map<Long, List<Standard>> standardMappings = standardDao.getStandardCriteriaMaps();
-        if (!standardMappings.containsKey(criterionId)) {
-            return null;
-        }
-        List<Standard> standardForCriterion = standardMappings.get(criterionId);
-        Optional<Standard> standardOpt = standardForCriterion.stream()
-            .filter(standard -> standard.getRegulatoryTextCitation().equalsIgnoreCase(regulatoryTextCitation))
-            .findAny();
-        return standardOpt.isPresent() ? standardOpt.get() : null;
     }
 
     private CertificationResult addMissingStandards(LocalDate certificationDate, CertificationResult certResult) {
