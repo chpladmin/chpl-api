@@ -202,7 +202,7 @@ public class StandardReviewer {
         try {
             return standardDao.getAllStandardCriteriaMap().stream()
                     .filter(stdCriteriaMap -> stdCriteriaMap.getCriterion().getId().equals(criterion.getId())
-                            && stdCriteriaMap.getStandard().getGroupName() != null)
+                            && !StringUtils.isEmpty(stdCriteriaMap.getStandard().getGroupName()))
                     .collect(Collectors.groupingBy(value -> value.getStandard().getGroupName(), Collectors.mapping(value -> value.getStandard(), Collectors.toList())));
         } catch (EntityRetrievalException e) {
             LOGGER.error("Error retrieving all StandardCriteriaMaps: {}", e.getStackTrace(), e);
