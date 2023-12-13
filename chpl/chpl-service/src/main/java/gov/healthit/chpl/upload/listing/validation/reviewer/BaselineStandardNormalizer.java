@@ -63,11 +63,9 @@ public class BaselineStandardNormalizer implements CertificationResultLevelNorma
             maps.removeIf(map -> !map.getCriterion().getId().equals(criterion.getId()));
             return maps.stream()
                     .filter(map -> !isStandardInAGroup(map.getStandard())
-                            && !isStandardEndDateAfterCertificationDate(map.getStandard(), certificationDate)
-                            && isStandardRequiredDateBeforeCertificationDate(map.getStandard(), certificationDate))
+                            && isStandardValidAsOfCertificationDate(map.getStandard(), certificationDate))
                     .map(map -> map.getStandard())
                     .toList();
-
         } catch (EntityRetrievalException e) {
             LOGGER.info("Error retrieving Standards for Criterion");
             throw new RuntimeException(e);
@@ -78,9 +76,14 @@ public class BaselineStandardNormalizer implements CertificationResultLevelNorma
         return standard.getGroupName() != null;
     }
 
+    private Boolean isStandardValidAsOfCertificationDate(Standard standard, LocalDate certificationDate) {
+        return isStandardEndDateAfterCertificationDate(standard, certificationDate)
+                && isStandardRequiredDateBeforeCertificationDate(standard, certificationDate);
+    }
+
     private Boolean isStandardEndDateAfterCertificationDate(Standard standard, LocalDate certificationDate) {
-        return standard.getEndDay() == null
-                || standard.getEndDay().isAfter(certificationDate);
+        return standard.getEndDay() != null
+                && standard.getEndDay().isAfter(certificationDate);
     }
 
     private Boolean isStandardRequiredDateBeforeCertificationDate(Standard standard, LocalDate certificationDate) {
