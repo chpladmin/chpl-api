@@ -53,6 +53,10 @@ public class StatisticsController {
     }
 
 
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/statistics/listing_count",
+            message = "This endpoint is deprecated and will be removed in a future release. There is no replacement for this endpoint.",
+            removalDate = "2024-06-01")
     @Operation(summary = "Get count of Developers and Products with listings.",
             description = "Retrieves and returns the counts.",
             security = {
@@ -66,10 +70,7 @@ public class StatisticsController {
         return response;
     }
 
-    @Deprecated
-    @DeprecatedApi(friendlyUrl = "/statistics/criterion_product",
-            message = "This endpoint is deprecated and will be removed in a future release. There is no replacement for this endpoint.",
-            removalDate = "2024-06-01")
+
     @DeprecatedApiResponseFields(friendlyUrl = "/statistics/criterion_product",
             responseClass = CriterionProductStatisticsResult.class)
     @Operation(summary = "Get count of Criteria certified to by unique Product.",
@@ -144,7 +145,7 @@ public class StatisticsController {
     }
 
     @Deprecated
-    @DeprecatedApi(friendlyUrl = "/statistics/particiapant_age_count",
+    @DeprecatedApi(friendlyUrl = "/statistics/participant_age_count",
             message = "This endpoint is deprecated and will be removed in a future release. There is no replacement for this endpoint.",
             removalDate = "2024-06-01")
     @Operation(summary = "Get all Sed/Participant/Age counts.",
