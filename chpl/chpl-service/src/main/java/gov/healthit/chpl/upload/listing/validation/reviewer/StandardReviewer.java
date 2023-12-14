@@ -16,6 +16,7 @@ import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.standard.CertificationResultStandard;
 import gov.healthit.chpl.standard.Standard;
 import gov.healthit.chpl.standard.StandardDAO;
+import gov.healthit.chpl.standard.StandardGroupService;
 import gov.healthit.chpl.standard.StandardGroupValidation;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -34,8 +35,8 @@ public class StandardReviewer extends StandardGroupValidation {
 
     @Autowired
     public StandardReviewer(CertificationResultRules certResultRules, ValidationUtils validationUtils,
-            StandardDAO standardDao, ErrorMessageUtil msgUtil, ResourcePermissions resourcePermissions) {
-        super(standardDao, msgUtil, resourcePermissions);
+            StandardDAO standardDao, StandardGroupService standardGroupService, ErrorMessageUtil msgUtil, ResourcePermissions resourcePermissions) {
+        super(standardGroupService, msgUtil, resourcePermissions);
 
         this.certResultRules = certResultRules;
         this.validationUtils = validationUtils;
