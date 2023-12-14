@@ -15,6 +15,7 @@ import gov.healthit.chpl.dto.SedParticipantStatisticsCountDTO;
 import gov.healthit.chpl.manager.StatisticsManager;
 import gov.healthit.chpl.scheduler.job.chartdata.ExperienceType;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
+import gov.healthit.chpl.web.controller.annotation.DeprecatedApi;
 import gov.healthit.chpl.web.controller.annotation.DeprecatedApiResponseFields;
 import gov.healthit.chpl.web.controller.results.CriterionProductStatisticsResult;
 import gov.healthit.chpl.web.controller.results.IncumbentDevelopersStatisticsResult;
@@ -51,11 +52,16 @@ public class StatisticsController {
         return response;
     }
 
+
     @Operation(summary = "Get count of Developers and Products with listings.",
             description = "Retrieves and returns the counts.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/statistics/listing_count",
+            message = "This endpoint is deprecated and will be removed in a future release. There is no replacement for this endpoint.",
+            removalDate = "2024-06-01")
     @DeprecatedApiResponseFields(friendlyUrl = "/statistics/listing_count", responseClass = ListingCountStatisticsResult.class)
     @RequestMapping(value = "/listing_count", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public ListingCountStatisticsResult getListingCountStatistics() {
@@ -64,6 +70,10 @@ public class StatisticsController {
         return response;
     }
 
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/statistics/criterion_product",
+            message = "This endpoint is deprecated and will be removed in a future release. There is no replacement for this endpoint.",
+            removalDate = "2024-06-01")
     @DeprecatedApiResponseFields(friendlyUrl = "/statistics/criterion_product",
             responseClass = CriterionProductStatisticsResult.class)
     @Operation(summary = "Get count of Criteria certified to by unique Product.",
@@ -85,6 +95,10 @@ public class StatisticsController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
     @DeprecatedApiResponseFields(friendlyUrl = "/statistics/incumbent_developers", responseClass = IncumbentDevelopersStatisticsResult.class)
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/statistics/incumbent_developers",
+            message = "This endpoint is deprecated and will be removed in a future release. There is no replacement for this endpoint.",
+            removalDate = "2024-06-01")
     @RequestMapping(value = "incumbent_developers", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     public @ResponseBody IncumbentDevelopersStatisticsResult getIncumbentDevelopersStatistics() {
