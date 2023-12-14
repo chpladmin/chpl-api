@@ -37,6 +37,7 @@ public abstract class StandardGroupValidation extends PermissionBasedReviewer{
 
     public void reviewStandardExistForEachGroup(CertifiedProductSearchDetails listing, CertificationResult certResult, LocalDate validAsOfDate) {
         getGroupedStandardsForCriteria(certResult.getCriterion(), validAsOfDate).entrySet().stream()
+                .filter(standardGroup -> standardGroup.getValue().size() >= 2)
                 .forEach(standardGroup -> {
                     if (!doesAtLeastOneStandardForGroupExistForCriterion(standardGroup.getValue(), certResult)) {
                         listing.addBusinessErrorMessage(msgUtil.getMessage("listing.criteria.standardGroupNotSelected",
