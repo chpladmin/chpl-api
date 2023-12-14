@@ -168,10 +168,9 @@ public class StandardAllowedByCriteriaReviewer extends PermissionBasedReviewer {
         getGroupedStandardsForCriteria(certResult.getCriterion()).entrySet().stream()
                 .forEach(standardGroup -> {
                     if (!doesOneStandardForGroupExistForCriterion(standardGroup.getValue(), certResult)) {
-                        listing.addBusinessErrorMessage("Exactly one of the following standards must be selected: " +
-                                standardGroup.getValue().stream()
-                                        .map(std -> std.getRegulatoryTextCitation())
-                                        .collect(Collectors.joining(", ")));
+                        listing.addBusinessErrorMessage(msgUtil.getMessage("listing.criteria.standardGroupNotSelected",
+                                Util.formatCriteriaNumber(certResult.getCriterion()),
+                                standardGroup.getValue().stream().map(std -> std.getRegulatoryTextCitation()).collect(Collectors.joining(", "))));
                     }
                 });
     }
