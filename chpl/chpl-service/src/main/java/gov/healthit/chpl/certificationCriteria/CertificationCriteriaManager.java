@@ -93,6 +93,7 @@ public class CertificationCriteriaManager {
                 .rule(criterion.getRule())
                 .startDay(criterion.getStartDay())
                 .title(criterion.getTitle())
+                .companionGuideLink(criterion.getCompanionGuideLink())
                 .attributes(AllowedAttributes.builder()
                         .additionalSoftware(rules.hasCertOption(criterion.getId(), CertificationResultRules.ADDITIONAL_SOFTWARE))
                         .apiDocumentation(rules.hasCertOption(criterion.getId(), CertificationResultRules.API_DOCUMENTATION))
