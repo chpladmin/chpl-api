@@ -58,10 +58,6 @@ public class StatisticsController {
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
-    @Deprecated
-    @DeprecatedApi(friendlyUrl = "/statistics/listing_count",
-            message = "This endpoint is deprecated and will be removed in a future release. There is no replacement for this endpoint.",
-            removalDate = "2024-06-01")
     @DeprecatedApiResponseFields(friendlyUrl = "/statistics/listing_count", responseClass = ListingCountStatisticsResult.class)
     @RequestMapping(value = "/listing_count", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public ListingCountStatisticsResult getListingCountStatistics() {
@@ -107,6 +103,10 @@ public class StatisticsController {
         return response;
     }
 
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/statistics/sed_particiapant_count",
+            message = "This endpoint is deprecated and will be removed in a future release. There is no replacement for this endpoint.",
+            removalDate = "2024-06-01")
     @Operation(summary = "Get all Sed/Participant counts.",
             description = "Retrieves and returns the SED/Participant counts.",
             security = {
@@ -127,6 +127,10 @@ public class StatisticsController {
         return results;
     }
 
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/statistics/particiapnt_gender_count",
+            message = "This endpoint is deprecated and will be removed in a future release. There is no replacement for this endpoint.",
+            removalDate = "2024-06-01")
     @Operation(summary = "Get all Sed/Participant/Gender counts.",
             description = "Retrieves and returns the SED/Participant/Gender counts.",
             security = {
@@ -139,6 +143,10 @@ public class StatisticsController {
         return new ParticipantGenderStatistics(stats);
     }
 
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/statistics/particiapant_age_count",
+            message = "This endpoint is deprecated and will be removed in a future release. There is no replacement for this endpoint.",
+            removalDate = "2024-06-01")
     @Operation(summary = "Get all Sed/Participant/Age counts.",
             description = "Retrieves and returns the SED/Participant/Age counts.",
             security = {
@@ -152,6 +160,10 @@ public class StatisticsController {
         return response;
     }
 
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/statistics/participant_age_count",
+            message = "This endpoint is deprecated and will be removed in a future release. There is no replacement for this endpoint.",
+            removalDate = "2024-06-01")
     @Operation(summary = "Get all Sed/Participant/Education counts.",
             description = "Retrieves and returns the SED/Participant/Education counts.",
             security = {
@@ -165,6 +177,10 @@ public class StatisticsController {
         return response;
     }
 
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/statistics/participant_professional_experience_count",
+            message = "This endpoint is deprecated and will be removed in a future release. There is no replacement for this endpoint.",
+            removalDate = "2024-06-01")
     @Operation(summary = "Get all Sed/Participant/Professional Experience counts.",
             description = "Retrieves and returns the SED/Participant/Preofessional Experience counts.",
             security = {
@@ -179,6 +195,10 @@ public class StatisticsController {
         return response;
     }
 
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/statistics/participant_computer_experience_count",
+            message = "This endpoint is deprecated and will be removed in a future release. There is no replacement for this endpoint.",
+            removalDate = "2024-06-01")
     @Operation(summary = "Get all Sed/Participant/Computer Experience counts.",
             description = "Retrieves and returns the SED/Participant/Computer Experience counts.",
             security = {
@@ -193,6 +213,10 @@ public class StatisticsController {
         return response;
     }
 
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/statistics/participant_product_experience_count",
+            message = "This endpoint is deprecated and will be removed in a future release. There is no replacement for this endpoint.",
+            removalDate = "2024-06-01")
     @Operation(summary = "Get all Sed/Participant/Product Experience counts.",
             description = "Retrieves and returns the SED/Participant/Product Experience counts.",
             security = {
