@@ -3,7 +3,6 @@ package gov.healthit.chpl.upload.listing.validation.reviewer;
 import java.time.LocalDate;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -11,13 +10,13 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.standard.CertificationResultStandard;
 import gov.healthit.chpl.standard.Standard;
 import gov.healthit.chpl.standard.StandardDAO;
+import gov.healthit.chpl.standard.StandardGroupValidation;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
@@ -26,22 +25,25 @@ import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 @Component("listingUploadStandardReviewer")
-public class StandardReviewer {
+public class StandardReviewer extends StandardGroupValidation {
     private CertificationResultRules certResultRules;
     private ValidationUtils validationUtils;
     private StandardDAO standardDao;
     private ErrorMessageUtil msgUtil;
 
+
     @Autowired
-    public StandardReviewer(CertificationResultRules certResultRules,
-            ValidationUtils validationUtils,
-            StandardDAO standardDao, ErrorMessageUtil msgUtil) {
+    public StandardReviewer(CertificationResultRules certResultRules, ValidationUtils validationUtils,
+            StandardDAO standardDao, ErrorMessageUtil msgUtil, ResourcePermissions resourcePermissions) {
+        super(standardDao, msgUtil, resourcePermissions);
+
         this.certResultRules = certResultRules;
         this.validationUtils = validationUtils;
         this.standardDao = standardDao;
         this.msgUtil = msgUtil;
     }
 
+    @Override
     public void review(CertifiedProductSearchDetails listing) {
         listing.getCertificationResults().stream()
                 .filter(certResult -> validationUtils.isEligibleForErrors(certResult))
@@ -54,7 +56,7 @@ public class StandardReviewer {
         reviewCriteriaCanHaveStandard(listing, certResult);
         removeStandardsWithoutIds(listing, certResult);
         removeStandardMismatchedToCriteria(listing, certResult);
-        reviewStandardExistForEachGroup(listing, certResult);
+        reviewStandardExistForEachGroup(listing, certResult, listing.getCertificationDay());
         if (certResult.getStandards() != null && certResult.getStandards().size() > 0) {
             certResult.getStandards().stream()
                     .forEach(standard -> reviewStandardFields(listing, certResult, standard));
@@ -175,38 +177,4 @@ public class StandardReviewer {
         return standardStartDay.isAfter(listingEndDay);
     }
 
-    private void reviewStandardExistForEachGroup(CertifiedProductSearchDetails listing, CertificationResult certResult) {
-        getGroupedStandardsForCriteria(certResult.getCriterion()).entrySet().stream()
-                .forEach(standardGroup -> {
-                    if (!doesAtLeastOneStandardForGroupExistForCriterion(standardGroup.getValue(), certResult)) {
-                        listing.addBusinessErrorMessage(msgUtil.getMessage("listing.criteria.standardGroupNotSelected",
-                                Util.formatCriteriaNumber(certResult.getCriterion()),
-                                standardGroup.getValue().stream().map(std -> std.getRegulatoryTextCitation()).collect(Collectors.joining(", "))));
-                    }
-                });
-    }
-
-    private boolean doesAtLeastOneStandardForGroupExistForCriterion(List<Standard> groupedStandards, CertificationResult certResult) {
-        return groupedStandards.stream()
-                .filter(standardFromGroup -> isStandardInList(standardFromGroup, certResult.getStandards().stream().map(certResultStd -> certResultStd.getStandard()).toList()))
-                .count() >= 1;
-    }
-
-    private boolean isStandardInList(Standard standardToFind, List<Standard> standard) {
-        return standard.stream()
-                .filter(std -> std.getId().equals(standardToFind.getId()))
-                .findAny()
-                .isPresent();
-    }
-    private Map<String, List<Standard>> getGroupedStandardsForCriteria(CertificationCriterion criterion) {
-        try {
-            return standardDao.getAllStandardCriteriaMap().stream()
-                    .filter(stdCriteriaMap -> stdCriteriaMap.getCriterion().getId().equals(criterion.getId())
-                            && !StringUtils.isEmpty(stdCriteriaMap.getStandard().getGroupName()))
-                    .collect(Collectors.groupingBy(value -> value.getStandard().getGroupName(), Collectors.mapping(value -> value.getStandard(), Collectors.toList())));
-        } catch (EntityRetrievalException e) {
-            LOGGER.error("Error retrieving all StandardCriteriaMaps: {}", e.getStackTrace(), e);
-            throw new RuntimeException(e);
-        }
-    }
 }

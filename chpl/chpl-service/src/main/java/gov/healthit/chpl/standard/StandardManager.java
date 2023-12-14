@@ -19,7 +19,9 @@ import gov.healthit.chpl.scheduler.job.downloadfile.ListingSet;
 import gov.healthit.chpl.sharedstore.listing.ListingStoreRemove;
 import gov.healthit.chpl.sharedstore.listing.RemoveBy;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 @Component
 public class StandardManager {
     private StandardValidator standardValidator;
@@ -104,5 +106,4 @@ public class StandardManager {
                 .sorted(standardComparator)
                 .toList();
     }
-
 }
