@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -64,7 +65,7 @@ public abstract class StandardGroupValidation extends PermissionBasedReviewer{
         try {
             return standardDAO.getAllStandardCriteriaMap().stream()
                     .filter(stdCriteriaMap -> stdCriteriaMap.getCriterion().getId().equals(criterion.getId())
-                            && stdCriteriaMap.getStandard().getGroupName() != null
+                            && StringUtils.isNotEmpty(stdCriteriaMap.getStandard().getGroupName())
                             && DateUtil.isDateBetweenInclusive(Pair.of(stdCriteriaMap.getStandard().getStartDay(), stdCriteriaMap.getStandard().getEndDay()), validAsOfDate))
                     .collect(Collectors.groupingBy(value -> value.getStandard().getGroupName(), Collectors.mapping(value -> value.getStandard(), Collectors.toList())));
         } catch (EntityRetrievalException e) {
