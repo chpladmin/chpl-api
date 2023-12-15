@@ -66,6 +66,20 @@ public class CertificationCriterionDAO extends BaseDAOImpl {
         return entity.toDomain();
     }
 
+    public List<CertificationCriterion> getByWebsite(String companionGuideLink) {
+        Query query = entityManager.createQuery("SELECT cc "
+                + "FROM CertificationCriterionEntity cc "
+                + "LEFT JOIN FETCH cc.certificationEdition "
+                + "LEFT JOIN FETCH cc.rule "
+                + "WHERE c.deleted = false "
+                + "AND c.companionGuideLink = :companionGuideLink");
+        query.setParameter("companionGuideLink", companionGuideLink);
+        List<CertificationCriterionEntity> results = query.getResultList();
+        return results.stream()
+                .map(result -> result.toDomain())
+                .collect(Collectors.toList());
+    }
+
     private List<CertificationCriterionEntity> getAllEntities() {
         Query query = entityManager
                 .createQuery(
