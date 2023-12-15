@@ -28,11 +28,16 @@ public class StandardGroupService {
 
     public Map<String, List<Standard>> getGroupedStandardsForCriteria(CertificationCriterion criterion, LocalDate validAsOfDate) {
         try {
-            return standardDAO.getAllStandardCriteriaMap().stream()
+            Map<String, List<Standard>> groupedStandardsForCriteria = standardDAO.getAllStandardCriteriaMap().stream()
                     .filter(stdCriteriaMap -> stdCriteriaMap.getCriterion().getId().equals(criterion.getId())
                             && StringUtils.isNotEmpty(stdCriteriaMap.getStandard().getGroupName())
                             && DateUtil.isDateBetweenInclusive(Pair.of(stdCriteriaMap.getStandard().getStartDay(), stdCriteriaMap.getStandard().getEndDay()), validAsOfDate))
                     .collect(Collectors.groupingBy(value -> value.getStandard().getGroupName(), Collectors.mapping(value -> value.getStandard(), Collectors.toList())));
+
+            //Remove any entries where the group only has 1 standard in the list
+            groupedStandardsForCriteria.entrySet().removeIf(entry -> entry.getValue().size() < 2);
+
+            return groupedStandardsForCriteria;
         } catch (EntityRetrievalException e) {
             LOGGER.error("Error retrieving all StandardCriteriaMaps: {}", e.getStackTrace(), e);
             throw new RuntimeException(e);

@@ -2,8 +2,8 @@ package gov.healthit.chpl.upload.listing.validation.reviewer;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
@@ -14,15 +14,18 @@ import gov.healthit.chpl.standard.CertificationResultStandard;
 import gov.healthit.chpl.standard.Standard;
 import gov.healthit.chpl.standard.StandardCriteriaMap;
 import gov.healthit.chpl.standard.StandardDAO;
+import gov.healthit.chpl.standard.StandardGroupService;
 import gov.healthit.chpl.upload.listing.normalizer.CertificationResultLevelNormalizer;
 import gov.healthit.chpl.util.DateUtil;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 public class BaselineStandardNormalizer implements CertificationResultLevelNormalizer {
+    private StandardGroupService standardGroupService;
     private StandardDAO standardDao;
 
-    public BaselineStandardNormalizer(StandardDAO standardDao) {
+    public BaselineStandardNormalizer(StandardGroupService standardGroup, StandardDAO standardDao) {
+        this.standardGroupService = standardGroup;
         this.standardDao = standardDao;
     }
 
@@ -64,9 +67,11 @@ public class BaselineStandardNormalizer implements CertificationResultLevelNorma
     private List<Standard> getValidStandardsForCriteriaAndListing(CertificationCriterion criterion, LocalDate certificationDate) {
         try {
             List<StandardCriteriaMap> maps = standardDao.getAllStandardCriteriaMap();
+            Map<String, List<Standard>> standardGroups = standardGroupService.getGroupedStandardsForCriteria(criterion, certificationDate);
+
             maps.removeIf(map -> !map.getCriterion().getId().equals(criterion.getId()));
             return maps.stream()
-                    .filter(map -> !isStandardInAGroup(map.getStandard())
+                    .filter(map -> !isStandardInAGroup(standardGroups, map.getStandard())
                             && DateUtil.isDateBetweenInclusive(Pair.of(map.getStandard().getRequiredDay(), map.getStandard().getEndDay()), certificationDate))
                     .map(map -> map.getStandard())
                     .toList();
@@ -76,7 +81,14 @@ public class BaselineStandardNormalizer implements CertificationResultLevelNorma
         }
     }
 
-    private Boolean isStandardInAGroup(Standard standard) {
-        return !StringUtils.isEmpty(standard.getGroupName());
+    private Boolean isStandardInAGroup(Map<String, List<Standard>> standardGroups, Standard standard) {
+
+        var x = standardGroups.entrySet().stream()
+            .flatMap(mapEntry -> mapEntry.getValue().stream())
+            .filter(std -> std.getId().equals(standard.getId()))
+            .findAny()
+            .isPresent();
+        LOGGER.info("Checking if standard {} is in a group: {}", standard.getRegulatoryTextCitation(), x);
+        return x;
     }
 }

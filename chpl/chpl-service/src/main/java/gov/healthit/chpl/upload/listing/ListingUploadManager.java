@@ -54,6 +54,7 @@ import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.SchedulerManager;
 import gov.healthit.chpl.scheduler.job.ListingUploadValidationJob;
 import gov.healthit.chpl.standard.StandardDAO;
+import gov.healthit.chpl.standard.StandardGroupService;
 import gov.healthit.chpl.upload.listing.handler.CertificationDateHandler;
 import gov.healthit.chpl.upload.listing.handler.ListingDetailsUploadHandler;
 import gov.healthit.chpl.upload.listing.normalizer.ListingDetailsNormalizer;
@@ -82,18 +83,17 @@ public class ListingUploadManager {
     private SchedulerManager schedulerManager;
     private ActivityManager activityManager;
     private ErrorMessageUtil msgUtil;
+    private StandardGroupService standardGroupService;
 
     @Autowired
     @SuppressWarnings("checkstyle:parameternumber")
     public ListingUploadManager(ListingDetailsUploadHandler listingDetailsHandler,
-            CertificationDateHandler certDateHandler,
-            ListingDetailsNormalizer listingNormalizer,
-            ListingUploadValidator listingUploadValidator,
-            ListingUploadHandlerUtil uploadUtil, ChplProductNumberUtil chplProductNumberUtil,
-            ListingUploadDao listingUploadDao, CertificationBodyDAO acbDao, UserDAO userDao,
-            StandardDAO standardDAO, ListingConfirmationManager listingConfirmationManager,
-            SchedulerManager schedulerManager,
-            ActivityManager activityManager, ErrorMessageUtil msgUtil) {
+            CertificationDateHandler certDateHandler, ListingDetailsNormalizer listingNormalizer,
+            ListingUploadValidator listingUploadValidator, ListingUploadHandlerUtil uploadUtil,
+            ChplProductNumberUtil chplProductNumberUtil, ListingUploadDao listingUploadDao,
+            CertificationBodyDAO acbDao, UserDAO userDao, StandardDAO standardDAO,
+            ListingConfirmationManager listingConfirmationManager, SchedulerManager schedulerManager,
+            ActivityManager activityManager, ErrorMessageUtil msgUtil, StandardGroupService standardGroupService) {
         this.listingDetailsHandler = listingDetailsHandler;
         this.certDateHandler = certDateHandler;
         this.listingNormalizer = listingNormalizer;
@@ -108,6 +108,7 @@ public class ListingUploadManager {
         this.schedulerManager = schedulerManager;
         this.activityManager = activityManager;
         this.msgUtil = msgUtil;
+        this.standardGroupService = standardGroupService;
     }
 
     @Transactional
@@ -195,7 +196,7 @@ public class ListingUploadManager {
         CertifiedProductSearchDetails listing = listingDetailsHandler.parseAsListing(headingRecord, allListingRecords);
         listing.setId(id);
         LOGGER.debug("Converted listing upload with ID " + id + " into CertifiedProductSearchDetails object");
-        listingNormalizer.normalize(listing, List.of(new BaselineStandardNormalizer(standardDAO)));
+        listingNormalizer.normalize(listing, List.of(new BaselineStandardNormalizer(standardGroupService, standardDAO)));
         LOGGER.debug("Normalized listing upload with ID " + id);
         listingUploadValidator.review(listingUpload, listing);
         LOGGER.debug("Validated listing upload with ID " + id);
