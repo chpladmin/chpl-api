@@ -88,7 +88,6 @@ public class BaselineStandardNormalizer implements CertificationResultLevelNorma
             .filter(std -> std.getId().equals(standard.getId()))
             .findAny()
             .isPresent();
-        LOGGER.info("Checking if standard {} is in a group: {}", standard.getRegulatoryTextCitation(), x);
         return x;
     }
 }
