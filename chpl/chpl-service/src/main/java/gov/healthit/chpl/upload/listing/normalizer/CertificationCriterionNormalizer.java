@@ -45,8 +45,8 @@ public class CertificationCriterionNormalizer {
         //criteria can still g1_success and g2_success values.
         return cr.getCriterion().getCertificationEdition() != null
                 && cr.getCriterion().getCertificationEdition().equals(CertificationEditionConcept.CERTIFICATION_EDITION_2014.getYear())
-                && ((cr.isG1Success() != null && cr.isG1Success())
-                        || (cr.isG2Success() != null && cr.isG2Success()));
+                && (certResultRules.hasCertOption(cr.getCriterion().getId(), CertificationResultRules.G1_SUCCESS)
+                        || certResultRules.hasCertOption(cr.getCriterion().getId(), CertificationResultRules.G2_SUCCESS));
     }
 
     private void nullifyNotApplicableFieldsInCertificationResults(CertifiedProductSearchDetails listing) {
