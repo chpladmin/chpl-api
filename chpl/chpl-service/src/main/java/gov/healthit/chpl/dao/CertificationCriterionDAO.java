@@ -71,8 +71,8 @@ public class CertificationCriterionDAO extends BaseDAOImpl {
                 + "FROM CertificationCriterionEntity cc "
                 + "LEFT JOIN FETCH cc.certificationEdition "
                 + "LEFT JOIN FETCH cc.rule "
-                + "WHERE c.deleted = false "
-                + "AND c.companionGuideLink = :companionGuideLink");
+                + "WHERE cc.deleted = false "
+                + "AND cc.companionGuideLink = :companionGuideLink");
         query.setParameter("companionGuideLink", companionGuideLink);
         List<CertificationCriterionEntity> results = query.getResultList();
         return results.stream()
