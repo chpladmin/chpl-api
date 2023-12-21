@@ -48,7 +48,7 @@ public class PrivacyAndSecurityCriteriaReviewer implements Reviewer {
     @Override
     public void review(CertifiedProductSearchDetails listing) {
         List<CertificationCriterion> attestedToCriteria = listing.getCertificationResults().stream()
-                .filter(certResult -> BooleanUtils.isTrue(certResult.isSuccess()))
+                .filter(certResult -> BooleanUtils.isTrue(certResult.getSuccess()))
                 .map(certResult -> certResult.getCriterion())
                 .collect(Collectors.toList());
 

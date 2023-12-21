@@ -81,10 +81,10 @@ public class CertificationResultDTO implements Serializable {
 
     public CertificationResultDTO(CertificationResult domain) {
         this();
-        this.gap = domain.isGap();
-        this.sed = domain.isSed();
-        this.g1Success = domain.isG1Success();
-        this.g2Success = domain.isG2Success();
+        this.gap = domain.getGap();
+        this.sed = domain.getSed();
+        this.g1Success = domain.getG1Success();
+        this.g2Success = domain.getG2Success();
         this.attestationAnswer = domain.getAttestationAnswer();
         this.apiDocumentation = domain.getApiDocumentation();
         this.exportDocumentation = domain.getExportDocumentation();
@@ -93,6 +93,6 @@ public class CertificationResultDTO implements Serializable {
         this.serviceBaseUrlList = domain.getServiceBaseUrlList();
         this.riskManagementSummaryInformation = domain.getRiskManagementSummaryInformation();
         this.privacySecurityFramework = domain.getPrivacySecurityFramework();
-        this.successful = domain.isSuccess();
+        this.successful = domain.getSuccess();
     }
 }

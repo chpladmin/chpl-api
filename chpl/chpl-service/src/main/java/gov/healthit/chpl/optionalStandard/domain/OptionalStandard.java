@@ -4,8 +4,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlTransient;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
@@ -35,7 +33,6 @@ public class OptionalStandard implements Serializable {
     // Do not include this property if the value is "empty". It will be empty when generating listing details
     // and will be non-empty (this included) when doing CRUD operations on optional standards
     @JsonInclude(value = Include.NON_EMPTY)
-    @XmlTransient
     @Builder.Default
     private List<CertificationCriterion> criteria = new ArrayList<CertificationCriterion>();
 }

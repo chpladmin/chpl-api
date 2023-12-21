@@ -11,6 +11,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
+import gov.healthit.chpl.search.ListingSearchService;
 import gov.healthit.chpl.subscription.domain.Subscription;
 import gov.healthit.chpl.subscription.domain.SubscriptionConsolidationMethod;
 import gov.healthit.chpl.subscription.domain.SubscriptionObjectType;
@@ -18,7 +19,9 @@ import gov.healthit.chpl.subscription.domain.SubscriptionSubject;
 import gov.healthit.chpl.subscription.entity.SubscriptionConsolidationMethodEntity;
 import gov.healthit.chpl.subscription.entity.SubscriptionEntity;
 import gov.healthit.chpl.subscription.entity.SubscriptionObjectTypeEntity;
+import gov.healthit.chpl.subscription.entity.SubscriptionSearchResultEntity;
 import gov.healthit.chpl.subscription.entity.SubscriptionSubjectEntity;
+import gov.healthit.chpl.subscription.search.SubscriptionSearchResult;
 import gov.healthit.chpl.subscription.service.SubscriptionLookupUtil;
 import lombok.extern.log4j.Log4j2;
 
@@ -34,9 +37,12 @@ public class SubscriptionDao extends BaseDAOImpl {
             + "JOIN FETCH subscription.subscriptionConsolidationMethod ";
 
     private SubscriptionLookupUtil lookupUtil;
+    private ListingSearchService listingSearchService;
 
-    public SubscriptionDao(SubscriptionLookupUtil lookupUtil) {
+    public SubscriptionDao(SubscriptionLookupUtil lookupUtil,
+            ListingSearchService listingSearchService) {
         this.lookupUtil = lookupUtil;
+        this.listingSearchService = listingSearchService;
     }
 
     public List<SubscriptionObjectType> getAllSubscriptionObjectTypes() {
@@ -213,6 +219,16 @@ public class SubscriptionDao extends BaseDAOImpl {
         List<SubscriptionEntity> results = query.getResultList();
         return results.stream()
             .map(result -> result.getId())
+            .collect(Collectors.toList());
+    }
+
+    public List<SubscriptionSearchResult> getAllSubscriptions() {
+        Query query = entityManager.createQuery("SELECT srs "
+                + "FROM SubscriptionSearchResultEntity srs ", SubscriptionSearchResultEntity.class);
+
+        List<SubscriptionSearchResultEntity> results = query.getResultList();
+        return results.stream()
+            .map(result -> result.toDomain())
             .collect(Collectors.toList());
     }
 }

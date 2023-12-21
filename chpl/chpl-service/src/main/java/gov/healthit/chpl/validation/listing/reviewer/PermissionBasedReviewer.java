@@ -74,7 +74,7 @@ public abstract class PermissionBasedReviewer implements Reviewer {
     }
 
     public Boolean isCertificationResultAttestedTo(CertificationResult cert) {
-        return BooleanUtils.isTrue(cert.isSuccess());
+        return BooleanUtils.isTrue(cert.getSuccess());
     }
 
     @Override

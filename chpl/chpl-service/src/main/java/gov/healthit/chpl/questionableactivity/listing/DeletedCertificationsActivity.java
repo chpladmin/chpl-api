@@ -56,8 +56,8 @@ public class DeletedCertificationsActivity implements ListingActivity {
                 .map(origCertResult -> createCertResultPair(origCertResult, newListing.getCertificationResults()))
                 .collect(Collectors.toList());
         return origAndNewCertResultPairs.stream()
-            .filter(pair -> (pair.getLeft() != null && BooleanUtils.isTrue(pair.getLeft().isSuccess()))
-                                && (pair.getRight() == null || BooleanUtils.isFalse(pair.getRight().isSuccess())))
+            .filter(pair -> (pair.getLeft() != null && BooleanUtils.isTrue(pair.getLeft().getSuccess()))
+                                && (pair.getRight() == null || BooleanUtils.isFalse(pair.getRight().getSuccess())))
             .map(pair -> pair.getLeft().getCriterion())
             .collect(Collectors.toList());
     }
@@ -89,8 +89,8 @@ public class DeletedCertificationsActivity implements ListingActivity {
                 .map(newCertResult -> createCertResultPair(originalListing.getCertificationResults(), newCertResult))
                 .collect(Collectors.toList());
         return origAndNewCertResultPairs.stream()
-            .filter(pair -> (pair.getLeft() == null || BooleanUtils.isFalse(pair.getLeft().isSuccess()))
-                                    && (pair.getRight() != null && BooleanUtils.isTrue(pair.getRight().isSuccess())))
+            .filter(pair -> (pair.getLeft() == null || BooleanUtils.isFalse(pair.getLeft().getSuccess()))
+                                    && (pair.getRight() != null && BooleanUtils.isTrue(pair.getRight().getSuccess())))
             .map(pair -> pair.getRight().getCriterion())
             .collect(Collectors.toList());
     }

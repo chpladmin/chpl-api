@@ -14,6 +14,7 @@ import gov.healthit.chpl.questionableactivity.certificationResult.CertificationR
 import gov.healthit.chpl.questionableactivity.certificationResult.ExpiredFunctionalityTestedAddedActivity;
 import gov.healthit.chpl.questionableactivity.certificationResult.ExpiredTestToolAddedActivity;
 import gov.healthit.chpl.questionableactivity.certificationResult.ReplacedSvapAddedActivity;
+import gov.healthit.chpl.questionableactivity.certificationResult.ExpiredStandardAddedActivity;
 import gov.healthit.chpl.questionableactivity.certificationResult.UpdatedG1SuccessActivity;
 import gov.healthit.chpl.questionableactivity.certificationResult.UpdatedG2SuccessActivity;
 import gov.healthit.chpl.questionableactivity.certificationResult.UpdatedGapActivity;
@@ -49,7 +50,7 @@ public class CertificationResultQuestionableActivityService {
         processCertificationResultActivity(ReplacedSvapAddedActivity.class.getName(), origCertResult, newCertResult, activity, activityReason);
         processCertificationResultActivity(ExpiredTestToolAddedActivity.class.getName(), origCertResult, newCertResult, activity, activityReason);
         processCertificationResultActivity(ExpiredFunctionalityTestedAddedActivity.class.getName(), origCertResult, newCertResult, activity, activityReason);
-        //TODO: Add activity to detect removed Standard added with OCD-4333
+        processCertificationResultActivity(ExpiredStandardAddedActivity.class.getName(), origCertResult, newCertResult, activity, activityReason);
     }
 
     private Integer processCertificationResultActivity(String className, CertificationResult origCertResult,

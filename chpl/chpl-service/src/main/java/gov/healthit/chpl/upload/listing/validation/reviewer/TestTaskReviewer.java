@@ -78,7 +78,7 @@ public class TestTaskReviewer {
 
     private boolean doesListingAttestToCriterion(CertifiedProductSearchDetails listing, CertificationCriterion criterion) {
         return listing.getCertificationResults().stream()
-                .filter(certResult -> certResult.getCriterion() != null && BooleanUtils.isTrue(certResult.isSuccess())
+                .filter(certResult -> certResult.getCriterion() != null && BooleanUtils.isTrue(certResult.getSuccess())
                         && certResult.getCriterion().getId().equals(criterion.getId()))
                 .count() > 0;
     }
@@ -104,7 +104,7 @@ public class TestTaskReviewer {
     }
 
     private void reviewCertResultHasTestTasksIfRequired(CertifiedProductSearchDetails listing, CertificationResult certResult) {
-        if (certResult.isSed()) {
+        if (certResult.getSed()) {
             if (listing.getSed() == null || CollectionUtils.isEmpty(listing.getSed().getTestTasks())) {
                 listing.addDataErrorMessage(msgUtil.getMessage("listing.criteria.missingTestTask",
                         Util.formatCriteriaNumber(certResult.getCriterion())));

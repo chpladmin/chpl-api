@@ -46,7 +46,7 @@ public class StandardAllowedByCriteriaReviewer extends StandardGroupValidation {
     public void review(CertifiedProductSearchDetails listing) {
         if (listing.getCertificationResults() != null) {
             for (CertificationResult cr : listing.getCertificationResults()) {
-                if (BooleanUtils.isTrue(cr.isSuccess()) && cr.getStandards() != null) {
+                if (BooleanUtils.isTrue(cr.getSuccess()) && cr.getStandards() != null) {
                     reviewStandardExistForEachGroup(listing, cr, LocalDate.now());
                     for (CertificationResultStandard crs : cr.getStandards()) {
                         addStandardErrorMessages(crs, cr, listing);

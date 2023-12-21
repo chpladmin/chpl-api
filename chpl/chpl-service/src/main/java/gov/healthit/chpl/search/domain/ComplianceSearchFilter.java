@@ -4,8 +4,6 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.xml.bind.annotation.XmlTransient;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.AllArgsConstructor;
@@ -26,14 +24,12 @@ public class ComplianceSearchFilter implements Serializable {
     private Boolean hasHadComplianceActivity;
 
     @JsonIgnore
-    @XmlTransient
     @Builder.Default
     private Set<String> nonConformityOptionsStrings = new HashSet<String>();
     @Builder.Default
     private Set<NonConformitySearchOptions> nonConformityOptions = new HashSet<NonConformitySearchOptions>();
 
     @JsonIgnore
-    @XmlTransient
     private String nonConformityOptionsOperatorString;
     private SearchSetOperator nonConformityOptionsOperator;
 }

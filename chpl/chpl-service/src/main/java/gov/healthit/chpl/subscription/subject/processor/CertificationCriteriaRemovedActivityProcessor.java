@@ -35,8 +35,8 @@ public class CertificationCriteriaRemovedActivityProcessor extends SubscriptionS
                 .map(origCertResult -> createCertResultPair(origCertResult, newListing.getCertificationResults()))
                 .collect(Collectors.toList());
         return origAndNewCertResultPairs.stream()
-            .anyMatch(pair -> (pair.getLeft() != null && BooleanUtils.isTrue(pair.getLeft().isSuccess()))
-                                && (pair.getRight() == null || BooleanUtils.isFalse(pair.getRight().isSuccess())));
+            .anyMatch(pair -> (pair.getLeft() != null && BooleanUtils.isTrue(pair.getLeft().getSuccess()))
+                                && (pair.getRight() == null || BooleanUtils.isFalse(pair.getRight().getSuccess())));
     }
 
     private Pair<CertificationResult, CertificationResult> createCertResultPair(CertificationResult origCertResult, List<CertificationResult> newCertResults) {
