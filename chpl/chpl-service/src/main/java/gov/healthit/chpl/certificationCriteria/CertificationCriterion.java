@@ -58,6 +58,8 @@ public class CertificationCriterion implements Serializable {
     @Schema(description = "The rule which this criterion is associated with.")
     private Rule rule;
 
+    private String companionGuideLink;
+
     @Deprecated
     @DeprecatedResponseField(message = "This property will be removed. It can be derived based on the endDay.",
         removalDate = "2024-01-01")
