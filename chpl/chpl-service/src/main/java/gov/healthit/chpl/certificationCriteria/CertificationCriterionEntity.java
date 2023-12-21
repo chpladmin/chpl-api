@@ -81,6 +81,10 @@ public class CertificationCriterionEntity extends EntityAudit implements Seriali
     @Column(length = 250)
     private String title;
 
+    @Basic(optional = true)
+    @Column(name = "certification_companion_guide_link")
+    private String companionGuideLink;
+
     public static CertificationCriterionEntity getNewCertificationCriterionEntity(CertificationCriterion criterion) {
         CertificationEditionEntity editionEntity = new CertificationEditionEntity();
         editionEntity.setId(criterion.getCertificationEditionId());
@@ -109,6 +113,7 @@ public class CertificationCriterionEntity extends EntityAudit implements Seriali
                 .description(this.getDescription())
                 .number(this.getNumber())
                 .title(this.getTitle())
+                .companionGuideLink(this.getCompanionGuideLink())
                 .build();
     }
 
