@@ -337,7 +337,7 @@ public class SurveillanceUploadHandler2015 implements SurveillanceUploadHandler 
         try {
             CertifiedProductSearchDetails listing = certifiedProductDetailsManager.getCertifiedProductDetails(listingId);
             return listing.getCertificationResults().stream()
-                    .filter(cr -> cr.isSuccess() && cr.getCriterion().getId().equals(criterionId))
+                    .filter(cr -> cr.getSuccess() && cr.getCriterion().getId().equals(criterionId))
                     .findAny()
                     .isPresent();
         } catch (EntityRetrievalException e) {

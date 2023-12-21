@@ -31,15 +31,15 @@ public class SedG32015Reviewer extends PermissionBasedReviewer {
     @Override
     public void review(CertifiedProductSearchDetails listing) {
         List<CertificationResult> presentCriteriaWithSed = listing.getCertificationResults().stream()
-                .filter(certResult -> BooleanUtils.isTrue(certResult.isSuccess())
-                        && certResult.isSed() != null && certResult.isSed().equals(Boolean.TRUE)
+                .filter(certResult -> BooleanUtils.isTrue(certResult.getSuccess())
+                        && certResult.getSed() != null && certResult.getSed().equals(Boolean.TRUE)
                         && certResult.getCriterion().isRemoved() != null
                         && certResult.getCriterion().isRemoved().equals(Boolean.FALSE))
                 .collect(Collectors.<CertificationResult>toList());
 
         List<CertificationResult> removedCriteriaWithSed = listing.getCertificationResults().stream()
-                .filter(certResult -> BooleanUtils.isTrue(certResult.isSuccess())
-                        && certResult.isSed() != null && certResult.isSed().equals(Boolean.TRUE)
+                .filter(certResult -> BooleanUtils.isTrue(certResult.getSuccess())
+                        && certResult.getSed() != null && certResult.getSed().equals(Boolean.TRUE)
                         && certResult.getCriterion().isRemoved() != null
                         && certResult.getCriterion().isRemoved().equals(Boolean.TRUE))
                 .collect(Collectors.<CertificationResult>toList());
@@ -47,7 +47,7 @@ public class SedG32015Reviewer extends PermissionBasedReviewer {
         Optional<CertificationResult> g3CertificationResult = listing.getCertificationResults().stream()
                 .filter(certResult -> certResult.getCriterion() != null
                         && certResult.getCriterion().getId().equals(g3.getId())
-                        && BooleanUtils.isTrue(certResult.isSuccess()))
+                        && BooleanUtils.isTrue(certResult.getSuccess()))
                 .findFirst();
 
         // cases where the listing has at least one sed criteria but has not attested to g3

@@ -60,8 +60,8 @@ public class CertificationResultUploadHandlerTest {
 
         CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords, listing);
         assertNotNull(certResult);
-        assertNotNull(certResult.isSuccess());
-        assertFalse(certResult.isSuccess());
+        assertNotNull(certResult.getSuccess());
+        assertFalse(certResult.getSuccess());
     }
 
     @Test
@@ -73,8 +73,8 @@ public class CertificationResultUploadHandlerTest {
 
         CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords, listing);
         assertNotNull(certResult);
-        assertNotNull(certResult.isSuccess());
-        assertTrue(certResult.isSuccess());
+        assertNotNull(certResult.getSuccess());
+        assertTrue(certResult.getSuccess());
     }
 
     @Test
@@ -86,8 +86,8 @@ public class CertificationResultUploadHandlerTest {
 
         CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords, listing);
         assertNotNull(certResult);
-        assertNotNull(certResult.isSuccess());
-        assertFalse(certResult.isSuccess());
+        assertNotNull(certResult.getSuccess());
+        assertFalse(certResult.getSuccess());
     }
 
     @Test
@@ -99,8 +99,8 @@ public class CertificationResultUploadHandlerTest {
 
         CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords, listing);
         assertNotNull(certResult);
-        assertNotNull(certResult.isSuccess());
-        assertFalse(certResult.isSuccess());
+        assertNotNull(certResult.getSuccess());
+        assertFalse(certResult.getSuccess());
     }
 
     @Test
@@ -110,7 +110,7 @@ public class CertificationResultUploadHandlerTest {
         List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("JUNK");
         assertNotNull(certResultRecords);
         CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords, listing);
-        assertNull(certResult.isSuccess());
+        assertNull(certResult.getSuccess());
         assertNotNull(certResult.getSuccessStr());
         assertEquals("JUNK", certResult.getSuccessStr());
     }
@@ -124,7 +124,7 @@ public class CertificationResultUploadHandlerTest {
 
         CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords, listing);
         assertNotNull(certResult);
-        assertNull(certResult.isGap());
+        assertNull(certResult.getGap());
     }
 
     @Test
@@ -137,8 +137,8 @@ public class CertificationResultUploadHandlerTest {
 
         CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords, listing);
         assertNotNull(certResult);
-        assertNotNull(certResult.isGap());
-        assertFalse(certResult.isGap());
+        assertNotNull(certResult.getGap());
+        assertFalse(certResult.getGap());
     }
 
     @Test
@@ -151,8 +151,8 @@ public class CertificationResultUploadHandlerTest {
 
         CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords, listing);
         assertNotNull(certResult);
-        assertNotNull(certResult.isGap());
-        assertTrue(certResult.isGap());
+        assertNotNull(certResult.getGap());
+        assertTrue(certResult.getGap());
     }
 
     @Test
@@ -165,8 +165,8 @@ public class CertificationResultUploadHandlerTest {
 
         CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords, listing);
         assertNotNull(certResult);
-        assertNotNull(certResult.isGap());
-        assertFalse(certResult.isGap());
+        assertNotNull(certResult.getGap());
+        assertFalse(certResult.getGap());
     }
 
     @Test
@@ -179,8 +179,8 @@ public class CertificationResultUploadHandlerTest {
 
         CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords, listing);
         assertNotNull(certResult);
-        assertNotNull(certResult.isGap());
-        assertTrue(certResult.isGap());
+        assertNotNull(certResult.getGap());
+        assertTrue(certResult.getGap());
     }
 
     @Test
@@ -193,8 +193,8 @@ public class CertificationResultUploadHandlerTest {
 
         CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords, listing);
         assertNotNull(certResult);
-        assertNotNull(certResult.isGap());
-        assertTrue(certResult.isGap());
+        assertNotNull(certResult.getGap());
+        assertTrue(certResult.getGap());
     }
 
     @Test
@@ -207,8 +207,8 @@ public class CertificationResultUploadHandlerTest {
 
         CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords, listing);
         assertNotNull(certResult);
-        assertNotNull(certResult.isGap());
-        assertFalse(certResult.isGap());
+        assertNotNull(certResult.getGap());
+        assertFalse(certResult.getGap());
     }
 
     @Test
@@ -219,7 +219,7 @@ public class CertificationResultUploadHandlerTest {
         List<CSVRecord> certResultRecords = ListingUploadTestUtil.getRecordsFromString("1,JUNK");
         assertNotNull(certResultRecords);
         CertificationResult certResult = handler.parseAsCertificationResult(headingRecord, certResultRecords, listing);
-        assertNull(certResult.isGap());
+        assertNull(certResult.getGap());
         assertNotNull(certResult.getGapStr());
         assertEquals("JUNK", certResult.getGapStr());
     }

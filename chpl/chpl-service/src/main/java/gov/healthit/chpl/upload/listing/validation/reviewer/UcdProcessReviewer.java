@@ -136,7 +136,7 @@ public class UcdProcessReviewer implements Reviewer {
     }
 
     private void reviewCertResultHasUcdProcessIfRequired(CertifiedProductSearchDetails listing, CertificationResult certResult) {
-        if (certResult.isSed()) {
+        if (certResult.getSed()) {
             if (listing.getSed() == null || CollectionUtils.isEmpty(listing.getSed().getUcdProcesses())) {
                 addCriterionRequiresUcdProcessErrorProcess(listing, certResult.getCriterion());
             } else if (!doesUcdProcessListContainCriterion(listing, certResult.getCriterion())) {

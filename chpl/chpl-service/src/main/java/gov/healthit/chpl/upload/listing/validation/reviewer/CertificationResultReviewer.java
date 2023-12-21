@@ -116,7 +116,7 @@ public class CertificationResultReviewer {
     }
 
     private void reviewSuccessField(CertifiedProductSearchDetails listing, CertificationResult certResult) {
-        if (certResult.isSuccess() == null && !ObjectUtils.isEmpty(certResult.getSuccessStr())) {
+        if (certResult.getSuccess() == null && !ObjectUtils.isEmpty(certResult.getSuccessStr())) {
             listing.addDataErrorMessage(msgUtil.getMessage("listing.criteria.invalidSuccess",
                     Util.formatCriteriaNumber(certResult.getCriterion()),
                     certResult.getSuccessStr()));
@@ -160,7 +160,7 @@ public class CertificationResultReviewer {
 
     private void reviewGap(CertifiedProductSearchDetails listing, CertificationResult certResult) {
         if (certResultRules.hasCertOption(certResult.getCriterion().getId(), CertificationResultRules.GAP)
-                && certResult.isGap() == null) {
+                && certResult.getGap() == null) {
             if (!ObjectUtils.isEmpty(certResult.getGapStr())) {
                 listing.addDataErrorMessage(msgUtil.getMessage("listing.criteria.invalidGap",
                         Util.formatCriteriaNumber(certResult.getCriterion()),
@@ -170,7 +170,7 @@ public class CertificationResultReviewer {
                         Util.formatCriteriaNumber(certResult.getCriterion())));
             }
         } else if (!certResultRules.hasCertOption(certResult.getCriterion().getId(), CertificationResultRules.GAP)) {
-            if (certResult.isGap() != null | !ObjectUtils.isEmpty(certResult.getGapStr())) {
+            if (certResult.getGap() != null | !ObjectUtils.isEmpty(certResult.getGapStr())) {
                 listing.addWarningMessage(
                         msgUtil.getMessage("listing.criteria.gapNotApplicable", Util.formatCriteriaNumber(certResult.getCriterion())));
             }
