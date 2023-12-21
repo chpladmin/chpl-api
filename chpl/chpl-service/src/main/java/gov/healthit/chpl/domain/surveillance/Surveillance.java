@@ -7,14 +7,6 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
-import javax.xml.bind.annotation.XmlTransient;
-import javax.xml.bind.annotation.XmlType;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-
 import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -23,120 +15,66 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import gov.healthit.chpl.activity.ActivityExclude;
 import gov.healthit.chpl.domain.CertifiedProduct;
-import gov.healthit.chpl.util.LocalDateAdapter;
 import gov.healthit.chpl.util.LocalDateDeserializer;
 import gov.healthit.chpl.util.LocalDateSerializer;
-import gov.healthit.chpl.util.Util;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- * Domain object for Surveillance.
- */
-@XmlType(namespace = "http://chpl.healthit.gov/listings")
-@XmlAccessorType(XmlAccessType.FIELD)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Builder
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class Surveillance implements Serializable {
     private static final long serialVersionUID = 7018071250912371691L;
 
-    /**
-     * Surveillance internal ID
-     */
     @Schema(description = "Surveillance internal ID")
-    @XmlElement(required = true)
     private Long id;
 
-    @XmlTransient
     private String surveillanceIdToReplace;
 
-    /**
-     * The user-friendly ID of this surveillance relative to a listing. Ex:
-     * SURV01
-     */
     @Schema(description = "The user-friendly ID of this surveillance relative to a listing. Ex: SURV01")
-    @XmlElement(required = true)
     private String friendlyId;
 
-    /**
-     * The listing under surveillance
-     */
-    @XmlElement(required = true)
     @Schema(description = "The listing under surveillance")
     private CertifiedProduct certifiedProduct;
 
-    /**
-     * Day surveillance began
-     */
     @Schema(description = "Day surveillance began")
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
-    @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
-    @XmlElement(required = true)
     private LocalDate startDay;
 
-    /**
-     * Day surveillance ended
-     */
     @Schema(description = "Day surveillance ended")
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
-    @XmlJavaTypeAdapter(value = LocalDateAdapter.class)
-    @XmlElement(required = false, nillable = true)
     private LocalDate endDay;
 
-    /**
-     * The type of surveillance conducted. Allowable values are "Reactive" or
-     * "Randomized".
-     */
     @Schema(description = "The type of surveillance conducted. Allowable values are \"Reactive\" or \"Randomized\".")
-    @XmlElement(required = true)
     private SurveillanceType type;
 
-    /**
-     * Number of randomized sites used. Only applicable for randomized
-     * surveillance.
-     */
     @Schema(description = "Number of randomized sites used. Only applicable for randomized surveillance.")
-    @XmlElement(required = false, nillable = true)
     private Integer randomizedSitesUsed;
 
-    /**
-     * For a given surveillance activity, the certification criteria or program
-     * requirement being surveilled. Where applicable, the surveillance
-     * requirement will be presented as the regulation text number (e.g.
-     * 170.315(a)(2) or 170.315(k)(1)). However, other values are allowed to
-     * provide a brief description of the surveilled requirement.
-     */
     @Schema(description = "For a given surveillance activity, the certification criteria or program "
             + "requirement being surveilled. Where applicable, the surveillance "
             + "requirement will be presented as the regulation text number (e.g. "
             + "170.315(a)(2) or 170.315(k)(1)). However, other values are allowed to "
             + "provide a brief description of the surveilled requirement.")
-    @XmlElementWrapper(name = "surveilledRequirements", nillable = true, required = false)
-    @XmlElement(name = "requirement")
     @Builder.Default
     private LinkedHashSet<SurveillanceRequirement> requirements = new LinkedHashSet<SurveillanceRequirement>();
 
-    @XmlTransient
     @Builder.Default
     @ActivityExclude
     private Set<String> errorMessages = new HashSet<String>();
 
-    @XmlTransient
     @Builder.Default
     @ActivityExclude
     private Set<String> warningMessages = new HashSet<String>();
 
-    /**
-     * Date of the last modification of the surveillance.
-     */
     @Schema(description = "Date of the last modification of the surveillance.")
-    @XmlElement(required = true)
     private Date lastModifiedDate;
 
     /**
@@ -249,101 +187,5 @@ public class Surveillance implements Serializable {
             return false;
         }
         return true;
-    }
-
-    public Set<String> getErrorMessages() {
-        return errorMessages;
-    }
-
-    public void setErrorMessages(Set<String> errors) {
-        this.errorMessages = errors;
-    }
-
-    public Set<String> getWarningMessages() {
-        return warningMessages;
-    }
-
-    public void setWarningMessages(Set<String> warnings) {
-        this.warningMessages = warnings;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public CertifiedProduct getCertifiedProduct() {
-        return certifiedProduct;
-    }
-
-    public void setCertifiedProduct(CertifiedProduct certifiedProduct) {
-        this.certifiedProduct = certifiedProduct;
-    }
-
-    public LocalDate getStartDay() {
-        return this.startDay;
-    }
-
-    public void setStartDay(LocalDate startDay) {
-        this.startDay = startDay;
-    }
-
-    public LocalDate getEndDay() {
-        return this.endDay;
-    }
-
-    public void setEndDay(LocalDate endDay) {
-        this.endDay = endDay;
-    }
-
-    public SurveillanceType getType() {
-        return type;
-    }
-
-    public void setType(SurveillanceType type) {
-        this.type = type;
-    }
-
-    public Integer getRandomizedSitesUsed() {
-        return randomizedSitesUsed;
-    }
-
-    public void setRandomizedSitesUsed(Integer randomizedSitesUsed) {
-        this.randomizedSitesUsed = randomizedSitesUsed;
-    }
-
-    public LinkedHashSet<SurveillanceRequirement> getRequirements() {
-        return requirements;
-    }
-
-    public void setRequirements(LinkedHashSet<SurveillanceRequirement> requirements) {
-        this.requirements = requirements;
-    }
-
-    public String getSurveillanceIdToReplace() {
-        return surveillanceIdToReplace;
-    }
-
-    public void setSurveillanceIdToReplace(String surveillanceIdToReplace) {
-        this.surveillanceIdToReplace = surveillanceIdToReplace;
-    }
-
-    public String getFriendlyId() {
-        return friendlyId;
-    }
-
-    public void setFriendlyId(String friendlyId) {
-        this.friendlyId = friendlyId;
-    }
-
-    public Date getLastModifiedDate() {
-        return Util.getNewDate(lastModifiedDate);
-    }
-
-    public void setLastModifiedDate(Date lastModifiedDate) {
-        this.lastModifiedDate = Util.getNewDate(lastModifiedDate);
     }
 }

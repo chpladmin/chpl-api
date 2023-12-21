@@ -48,7 +48,7 @@ public class TestToolNormalizer {
 
     private void clearDataForUnattestedCriteria(CertifiedProductSearchDetails listing) {
         listing.getCertificationResults().stream()
-            .filter(certResult -> (certResult.isSuccess() == null || BooleanUtils.isFalse(certResult.isSuccess()))
+            .filter(certResult -> (certResult.getSuccess() == null || BooleanUtils.isFalse(certResult.getSuccess()))
                     && certResult.getTestToolsUsed() != null && certResult.getTestToolsUsed().size() > 0)
             .forEach(unattestedCertResult -> unattestedCertResult.getTestToolsUsed().clear());
     }

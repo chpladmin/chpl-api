@@ -5,13 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
-import javax.xml.bind.annotation.XmlTransient;
-import javax.xml.bind.annotation.XmlType;
-
 import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -46,320 +39,156 @@ import gov.healthit.chpl.util.CertificationResultRules;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
 import lombok.ToString;
 
-/**
- * Criteria to which a given listing attests.
- */
-@XmlType(namespace = "http://chpl.healthit.gov/listings")
-@XmlAccessorType(XmlAccessType.FIELD)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @AllArgsConstructor
 @Builder
+@Data
 @ToString
 public class CertificationResult implements Serializable {
     private static final long serialVersionUID = -4917413876078419868L;
     public static final String PRIVACY_SECURITY_FRAMEWORK_DELIMITER = ";";
 
-    @XmlTransient
     private Long id;
 
-    /**
-     * Whether or not this criteria was met.
-     */
     @Schema(description = "Whether or not this criteria was met.")
-    @XmlElement(required = true)
     private Boolean success;
 
-    @XmlTransient
     @JsonIgnore
     private String successStr;
 
-    /**
-     * This variable indicates if the certification criteria was gap certified. It is a binary variable that takes true
-     * or false value, and is applicable to 2014 and 2015 Edition.
-     */
-    @Schema(description = "This variable indicates if the certification criteria was gap certified. It is a binary variable that takes true "
-            + "or false value, and is applicable to 2014 and 2015 Edition.")
-    @XmlElement(required = false, nillable = true)
+    @Schema(description = "This variable indicates if the certification criteria was gap certified. "
+            + "It is a binary variable that takes true or false value.")
     private Boolean gap;
 
-    @XmlTransient
     @JsonIgnore
     private String gapStr;
 
-    @XmlTransient
     @JsonIgnore
     private Boolean hasAdditionalSoftware;
 
-    @XmlTransient
     @JsonIgnore
     private String hasAdditionalSoftwareStr;
 
-    /**
-     * This variable indicates if the corresponding certification criteria was submitted for safety-enhanced design
-     * attestation during certification testing. It is a binary variable that takes either true or false value, and is
-     * only applicable to 2014 Edition.
-     */
     @Schema(description = "This variable indicates if the corresponding certification criteria was submitted for safety-enhanced design "
-            + "attestation during certification testing. It is a binary variable that takes either true or false value, and is "
-            + "only applicable to 2014 Edition.")
-    @XmlElement(required = false, nillable = true)
+            + "attestation during certification testing. It is applicable for the 2014 Edition, and it is a binary variable that takes "
+            + "either true or false value.")
     private Boolean sed;
 
-    /**
-     * This variable indicates if the corresponding certification criteria was successfully tested for automated
-     * numerator recording. It is applicable for the 2014 edition, and it is a binary variable that takes either true or
-     * false value.
-     */
     @Schema(description = "This variable indicates if the corresponding certification criteria was successfully tested for automated "
-            + "numerator recording. It is applicable for the 2014 edition, and it is a binary variable that takes either true or "
+            + "numerator recording. It is applicable for the 2014 Edition, and it is a binary variable that takes either true or "
             + "false value.")
-    @XmlElement(required = false, nillable = true)
     private Boolean g1Success;
 
-    /**
-     * This variable indicates if the corresponding certification criteria was successfully tested for automated measure
-     * calculation. It is a binary variable that takes either true or false, and is applicable to 2014 Edition.
-     */
     @Schema(description = "This variable indicates if the corresponding certification criteria was successfully tested for automated measure "
-            + "calculation. It is a binary variable that takes either true or false, and is applicable to 2014 Edition.")
-    @XmlElement(required = false, nillable = true)
+            + "calculation. It is applicable for the 2014 Edition, and it is a binary variable that takes either true or false.")
     private Boolean g2Success;
 
-    /**
-     * This variable indicates if the corresponding certification criteria has an attestation answer. It is a binary
-     * value that takes either true or false, and is applicable to 2015 Edition.
-     */
-    @Schema(description = "This variable indicates if the corresponding certification criteria has an attestation answer. It is a binary "
-            + "value that takes either true or false, and is applicable to 2015 Edition.")
-    @XmlElement(required = false, nillable = true)
+    @Schema(description = "This variable indicates if the corresponding certification criteria has an attestation answer. "
+            + "It is a binary value that takes either true or false.")
     private Boolean attestationAnswer;
 
-    @XmlTransient
     private String attestationAnswerStr;
 
-    /**
-     * The hyperlink to access an application programming interface (API)'s documentation and terms of use. This
-     * variable is applicable for only 2015 Edition. It is fully qualified URL which is reachable via web browser
-     * validation and verification.
-     */
-    @Schema(description = "The hyperlink to access an application programming interface (API)'s documentation and terms of use. This "
-            + "variable is applicable for only 2015 Edition. It is fully qualified URL which is reachable via web browser "
-            + "validation and verification.")
-    @XmlElement(required = false, nillable = true)
+    @Schema(description = "The hyperlink to access an application programming interface (API)'s documentation and terms of use. "
+            + "It is a fully qualified URL which is reachable via web browser validation and verification.")
     private String apiDocumentation;
 
-    /**
-     * The hyperlink to access export documentation. This variable is applicable for only 2015 Edition. It is fully
-     * qualified URL which is reachable via web browser validation and verification.
-     */
-    @Schema(description = "The hyperlink to access export documentation. This variable is applicable for only 2015 Edition. It is fully "
-            + "qualified URL which is reachable via web browser validation and verification.")
-    @XmlElement(required = false, nillable = true)
+    @Schema(description = "The hyperlink to access export documentation. "
+            + "It is a fully qualified URL which is reachable via web browser validation and verification.")
     private String exportDocumentation;
 
-    /**
-     * The hyperlink to access a documentation URL. This variable is applicable for only 2015 Edition. It is fully
-     * qualified URL which is reachable via web browser validation and verification.
-     */
-    @Schema(description = "The hyperlink to access a documentation URL. This variable is applicable for only 2015 Edition. It is fully "
-            + "qualified URL which is reachable via web browser validation and verification.")
-    @XmlElement(required = false, nillable = true)
+    @Schema(description = "The hyperlink to access a documentation URL."
+            + " It is a fully qualified URL which is reachable via web browser validation and verification.")
     private String documentationUrl;
 
-    /**
-     * The hyperlink to access Use Case(s). This variable is applicable for only 2015 Edition. It is fully qualified URL
-     * which is reachable via web browser validation and verification.
-     */
-    @Schema(description = "The hyperlink to access Use Case(s). This variable is applicable for only 2015 Edition. It is fully qualified URL "
-            + "which is reachable via web browser validation and verification.")
-    @XmlElement(required = false, nillable = true)
+    @Schema(description = "The hyperlink to access Use Case(s). "
+            + "It is a fully qualified URL which is reachable via web browser validation and verification.")
     private String useCases;
 
-    /**
-     * The publicly accessible hyperlink to the list of service base URLs for a Health IT Module
-     * certified to § 170.315(g)(10) that can be used by patients to access their electronic health
-     * information. It is a fully qualified URL which is reachable via web browser validation and verification.
-     */
     @Schema(description = "The publicly accessible hyperlink to the list of service base URLs for a Health IT Module "
             + "certified to § 170.315(g)(10) that can be used by patients to access their electronic health "
             + "information. It is a fully qualified URL which is reachable via web browser validation and verification.")
-    @XmlElement(required = false, nillable = true)
     private String serviceBaseUrlList;
 
-    /**
-     * The hyperlink to access Risk Management Summary Information. It is a fully qualified URL
-     * which is reachable via web browser.
-     */
     @Schema(description = "The hyperlink to access Risk Management Summary Information. It is a fully qualified URL "
             + "which is reachable via web browser.")
-    @XmlElement(required = false, nillable = true)
     private String riskManagementSummaryInformation;
 
-    /**
-     * This variable explains the way in which each privacy and security criterion was addressed for the purposes of
-     * certification. It is applicable for 2015 Edition and takes either of Approach 1 and Approach 2.
-     */
-    @Schema(description = "This variable explains the way in which each privacy and security criterion was addressed for the purposes of "
-            + "certification. It is applicable for 2015 Edition and takes either of Approach 1 and Approach 2.")
-    @XmlElement(required = false, nillable = true)
+    @Schema(description = "This variable explains the way in which each privacy and security criterion was addressed for "
+            + "the purposes of certification. It takes either of Approach 1 and Approach 2.")
     private String privacySecurityFramework;
 
     @Deprecated
     @DeprecatedResponseField(message = "This field is deprecated and will be removed. This data can be found via a GET request to the endpoint /conformance-methods.",
         removalDate = "2024-01-01")
-    @XmlTransient
     private List<ConformanceMethod> allowedConformanceMethods;
 
     @Deprecated
     @DeprecatedResponseField(message = "This field is deprecated and will be removed. This data can be found via a GET request to the endpoint /svaps.",
         removalDate = "2024-01-01")
-    @XmlTransient
     private List<Svap> allowedSvaps;
 
     @Deprecated
     @DeprecatedResponseField(message = "This field is deprecated and will be removed. This data can be found via a GET request to the endpoint /optional-standards.",
         removalDate = "2024-01-01")
-    @XmlTransient
     private List<OptionalStandard> allowedOptionalStandards;
 
     @Deprecated
     @DeprecatedResponseField(message = "This field is deprecated and will be removed. This data can be found via a GET request to the endpoint /test-tools.",
         removalDate = "2024-01-01")
-    @XmlTransient
     private List<TestTool> allowedTestTools;
 
-    /**
-     * Any optional, alternative, ambulatory (2015 only), or inpatient (2015 only) capabilities within a certification
-     * criterion to which the Health IT module was tested and certified. For example, within the 2015 certification
-     * criteria 170.315(a), the optional functionality to include a 'reason for order' field should be denoted as
-     * (a)(1)(ii). You can find a list of potential values in the 2014 or 2015 Functionality and Standards Reference
-     * Tables. It is applicable for 2014 and 2015 Edition.
-     */
     @Schema(description = "Any optional, alternative, ambulatory (2015 only), or inpatient (2015 only) capabilities within a certification "
             + "criterion to which the Health IT module was tested and certified. For example, within the 2015 certification "
             + "criteria 170.315(a), the optional functionality to include a 'reason for order' field should be denoted as "
-            + "(a)(1)(ii). You can find a list of potential values in the 2014 or 2015 Functionality and Standards Reference "
-            + "Tables. It is applicable for 2014 and 2015 Edition.")
-    @XmlElementWrapper(name = "functionalitiesTested", nillable = true, required = false)
-    @XmlElement(name = "functionalityTested")
+            + "(a)(1)(ii). You can find a list of potential values in the 2014 or 2015 Functionality and Standards Reference Tables.")
     @Builder.Default
     private List<CertificationResultFunctionalityTested> functionalitiesTested = new ArrayList<CertificationResultFunctionalityTested>();
 
-    /**
-     * The methods used to evaluate compliance with the certification criterion.
-     */
     @Schema(description = "The methods used to evaluate compliance with the certification criterion.")
-    @XmlElementWrapper(name = "conformanceMethods", nillable = true, required = false)
-    @XmlElement(name = "conformanceMethod")
     private List<CertificationResultConformanceMethod> conformanceMethods = new ArrayList<CertificationResultConformanceMethod>();
 
-    /**
-     * The test procedures used for the certification criteria
-     */
     @Schema(description = "The test procedures used for the certification criteria")
-    @XmlElementWrapper(name = "testProcedures", nillable = true, required = false)
-    @XmlElement(name = "testProcedure")
     private List<CertificationResultTestProcedure> testProcedures = new ArrayList<CertificationResultTestProcedure>();
 
-    /**
-     * The versions of the test data being used for the certification criteria
-     */
     @Schema(description = "The versions of the test data being used for the certification criteria")
-    @XmlElementWrapper(name = "testDataList", nillable = true, required = false)
-    @XmlElement(name = "testData")
     private List<CertificationResultTestData> testDataUsed = new ArrayList<CertificationResultTestData>();
 
-    /**
-     * This variable indicates if any additional software is relied upon by the Health IT Module to demonstrate its
-     * compliance with a certification criterion or criteria. It is applicable for 2014 and 2015 Edition.
-     */
     @Schema(description = "This variable indicates if any additional software is relied upon by the Health IT Module to demonstrate its "
-            + "compliance with a certification criterion or criteria. It is applicable for 2014 and 2015 Edition.")
-    @XmlElementWrapper(name = "additionalSoftwareList", nillable = true, required = false)
-    @XmlElement(name = "additionalSoftware")
+            + "compliance with a certification criterion or criteria.")
     private List<CertificationResultAdditionalSoftware> additionalSoftware = new ArrayList<CertificationResultAdditionalSoftware>();
 
-    /**
-     * An optional standard used to meet a certification criterion for 2015 Edition. You can find a list of potential
-     * values in the 2015 Functionality and Standards Reference Tables. Allowed values are the corresponding
-     * paragraph number for the standard within the regulation.
-     */
-    @Schema(description = "An optional standard used to meet a certification criterion for 2015 Edition. You can find a list of potential "
+    @Schema(description = "An optional standard used to meet a certification criterion. You can find a list of potential "
             + "values in the 2015 Functionality and Standards Reference Tables. Allowed values are the corresponding "
             + "paragraph number for the standard within the regulation.")
-    @XmlElementWrapper(name = "optionalStandards", nillable = true, required = false)
-    @XmlElement(name = "optionalStandard")
     @Builder.Default
     private List<CertificationResultOptionalStandard> optionalStandards = new ArrayList<CertificationResultOptionalStandard>();
 
-    /**
-     * A standard used to meet a certification criterion for 2014 and 2015 Edition. You can find a list of potential
-     * values in the 2014 or 2015 Functionality and Standards Reference Tables. Allowed values are the corresponding
-     * paragraph number for the standard within the regulation.
-     */
-    @Schema(description = "A standard used to meet a certification criterion for 2014 and 2015 Edition. You can find a list of potential "
+    @Schema(description = "A standard used to meet a certification criterion.You can find a list of potential "
             + "values in the 2014 or 2015 Functionality and Standards Reference Tables. Allowed values are the corresponding "
             + "paragraph number for the standard within the regulation.")
-    @XmlElementWrapper(name = "testStandards", nillable = true, required = false)
-    @XmlElement(name = "testStandard")
     @Builder.Default
     private List<CertificationResultTestStandard> testStandards = new ArrayList<CertificationResultTestStandard>();
 
-    /**
-     * The test tool used to certify the Health IT Module to the corresponding certification criteria Allowable values
-     * are based on the NIST 2014 and 2015 Edition Test Tools. This variable is applicable for 2014 and 2015 Edition,
-     * and allowable values are based on the NIST 2014 and 2015 Edition Test Tools: HL7 CDA Cancer Registry Reporting
-     * Validation Tool, HL7v2 Immunization Test Suite, HL7v2 Syndromic Surveillance Test Suite, HL7v2 Electronic
-     * Laboratory Reporting Validation Tool, Electronic Prescribing, HL7 CDA National Health Care Surveys Validator,
-     * Edge Test Tool, 2015 Direct Certificate Discovery Tool, Cypress, HL7 v2 Electronic Laboratory Reporting (ELR)
-     * Validation Tool, HL7 v2 Immunization Information System (IIS) Reporting Validation Tool, HL7 v2 Laboratory
-     * Results Interface (LRI) Validation Tool, HL7 v2 Syndromic Surveillance Reporting Validation Tool
-     */
-    @Schema(description = "The test tool used to certify the Health IT Module to the corresponding certification criteria Allowable values "
-            + "are based on the NIST 2014 and 2015 Edition Test Tools. This variable is applicable for 2014 and 2015 Edition, "
-            + "and allowable values are based on the NIST 2014 and 2015 Edition Test Tools: HL7 CDA Cancer Registry Reporting "
-            + "Validation Tool, HL7v2 Immunization Test Suite, HL7v2 Syndromic Surveillance Test Suite, HL7v2 Electronic "
-            + "Laboratory Reporting Validation Tool, Electronic Prescribing, HL7 CDA National Health Care Surveys Validator, "
-            + "Edge Test Tool, 2015 Direct Certificate Discovery Tool, Cypress, HL7 v2 Electronic Laboratory Reporting (ELR) "
-            + "Validation Tool, HL7 v2 Immunization Information System (IIS) Reporting Validation Tool, HL7 v2 Laboratory "
-            + "Results Interface (LRI) Validation Tool, HL7 v2 Syndromic Surveillance Reporting Validation Tool")
-    @XmlElementWrapper(name = "testTools", nillable = true, required = false)
-    @XmlElement(name = "testTool")
+    @Schema(description = "The test tool used to certify the Health IT Module to the corresponding ONC certification criteria.")
     @Builder.Default
     private List<CertificationResultTestTool> testToolsUsed = new ArrayList<CertificationResultTestTool>();
 
-    /**
-     * ONC has established the Standards Version Advancement Process (SVAP) to enable health IT developers’
-     * ability to incorporate newer versions of Secretary-adopted standards and implementation specifications,
-     * as part of the "Real World Testing" Condition and Maintenance of Certification requirement (§170.405)
-     * of the 21st Century Cures Act
-     */
     @Schema(description = "ONC has established the Standards Version Advancement Process (SVAP) to enable health IT developers’ "
             + "ability to incorporate newer versions of Secretary-adopted standards and implementation specifications, "
             + "as part of the \"Real World Testing\" Condition and Maintenance of Certification requirement (§170.405) "
             + "of the 21st Century Cures Act")
-    @XmlElementWrapper(name = "svaps", nillable = true, required = false)
-    @XmlElement(name = "svap")
     @Builder.Default
     private List<CertificationResultSvap> svaps = new ArrayList<CertificationResultSvap>();
 
     // TODO - Need this text for OCD-4333
-    @Schema(description = "ONC has established the Standards Version Advancement Process (SVAP) to enable health IT developers’ "
-            + "ability to incorporate newer versions of Secretary-adopted standards and implementation specifications, "
-            + "as part of the \"Real World Testing\" Condition and Maintenance of Certification requirement (§170.405) "
-            + "of the 21st Century Cures Act")
-    @XmlElementWrapper(name = "standards", nillable = true, required = false)
-    @XmlElement(name = "standard")
     @Builder.Default
     private List<CertificationResultStandard> standards = new ArrayList<CertificationResultStandard>();
 
-    /**
-     * Detailed information about the relevant certification criterion.
-     */
     @Schema(description = "Detailed information about the relevant certification criterion.")
-    @XmlElement(name = "criterion")
     private CertificationCriterion criterion;
 
     /**
@@ -370,28 +199,17 @@ public class CertificationResult implements Serializable {
      * Do not use it in any code unless you are specifically referencing legacy listing activity data.
      */
     @JsonProperty(access = Access.WRITE_ONLY)
-    @XmlTransient
     private String number;
 
-    @XmlTransient
     private CertificationResultStandardComparator standardComparator;
-    @XmlTransient
     private CertificationResultSvapComparator svapComparator;
-    @XmlTransient
     private CertificationResultOptionalStandardComparator osComparator;
-    @XmlTransient
     private CertificationResultConformanceMethodComparator cmComparator;
-    @XmlTransient
     private CertificationResultFunctionalityTestedComparator funcTestedComparator;
-    @XmlTransient
     private CertificationResultTestProcedureComparator testProcComparator;
-    @XmlTransient
     private CertificationResultTestDataComparator testDataComparator;
-    @XmlTransient
     private CertificationResultTestToolComparator testToolComparator;
-    @XmlTransient
     private CertificationResultTestStandardComparator testStandardComparator;
-    @XmlTransient
     private CertificationResultAdditionalSoftwareComparator asComparator;
 
     public CertificationResult() {
@@ -641,216 +459,6 @@ public class CertificationResult implements Serializable {
         }
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public List<CertificationResultConformanceMethod> getConformanceMethods() {
-        return conformanceMethods;
-    }
-
-    public void setConformanceMethods(List<CertificationResultConformanceMethod> conformanceMethods) {
-        this.conformanceMethods = conformanceMethods;
-    }
-
-    public List<CertificationResultTestProcedure> getTestProcedures() {
-        return testProcedures;
-    }
-
-    public void setTestProcedures(List<CertificationResultTestProcedure> testProcedures) {
-        this.testProcedures = testProcedures;
-    }
-
-    public Boolean isSuccess() {
-        return success;
-    }
-
-    public void setSuccess(Boolean successful) {
-        this.success = successful;
-    }
-
-    public List<CertificationResultAdditionalSoftware> getAdditionalSoftware() {
-        return additionalSoftware;
-    }
-
-    public void setAdditionalSoftware(List<CertificationResultAdditionalSoftware> additionalSoftware) {
-        this.additionalSoftware = additionalSoftware;
-    }
-
-    public Boolean isGap() {
-        return gap;
-    }
-
-    public void setGap(Boolean gap) {
-        this.gap = gap;
-    }
-
-    public Boolean isSed() {
-        return sed;
-    }
-
-    public void setSed(Boolean sed) {
-        this.sed = sed;
-    }
-
-    public Boolean isG1Success() {
-        return g1Success;
-    }
-
-    public void setG1Success(Boolean g1Success) {
-        this.g1Success = g1Success;
-    }
-
-    public Boolean isG2Success() {
-        return g2Success;
-    }
-
-    public void setG2Success(Boolean g2Success) {
-        this.g2Success = g2Success;
-    }
-
-    public List<CertificationResultOptionalStandard> getOptionalStandards() {
-        return optionalStandards;
-    }
-
-    public void setOptionalStandards(List<CertificationResultOptionalStandard> optionalStandards) {
-        this.optionalStandards = optionalStandards;
-    }
-
-    public List<CertificationResultTestTool> getTestToolsUsed() {
-        return testToolsUsed;
-    }
-
-    public void setTestToolsUsed(List<CertificationResultTestTool> testToolsUsed) {
-        this.testToolsUsed = testToolsUsed;
-    }
-
-    public List<CertificationResultTestStandard> getTestStandards() {
-        return testStandards;
-    }
-
-    public void setTestStandards(List<CertificationResultTestStandard> testStandards) {
-        this.testStandards = testStandards;
-    }
-
-    public List<CertificationResultTestData> getTestDataUsed() {
-        return testDataUsed;
-    }
-
-    public void setTestDataUsed(List<CertificationResultTestData> testDataUsed) {
-        this.testDataUsed = testDataUsed;
-    }
-
-    public List<CertificationResultFunctionalityTested> getFunctionalitiesTested() {
-        return functionalitiesTested;
-    }
-
-    public void setFunctionalitiesTested(List<CertificationResultFunctionalityTested> functionalitiesTested) {
-        this.functionalitiesTested = functionalitiesTested;
-    }
-
-    public List<CertificationResultStandard> getStandards() {
-        return standards;
-    }
-
-    public void setStandards(List<CertificationResultStandard> standards) {
-        this.standards = standards;
-    }
-
-    public String getApiDocumentation() {
-        return apiDocumentation;
-    }
-
-    public void setApiDocumentation(String apiDocumentation) {
-        this.apiDocumentation = apiDocumentation;
-    }
-
-    public Boolean getAttestationAnswer() {
-        return attestationAnswer;
-    }
-
-    public void setAttestationAnswer(Boolean attestationAnswer) {
-        this.attestationAnswer = attestationAnswer;
-    }
-
-    public String getExportDocumentation() {
-        return exportDocumentation;
-    }
-
-    public void setExportDocumentation(String exportDocumentation) {
-        this.exportDocumentation = exportDocumentation;
-    }
-
-    public String getDocumentationUrl() {
-        return documentationUrl;
-    }
-
-    public void setDocumentationUrl(String documentationUrl) {
-        this.documentationUrl = documentationUrl;
-    }
-
-    public String getUseCases() {
-        return useCases;
-    }
-
-    public void setUseCases(String useCases) {
-        this.useCases = useCases;
-    }
-
-    public String getServiceBaseUrlList() {
-        return serviceBaseUrlList;
-    }
-
-    public void setServiceBaseUrlList(String serviceBaseUrlList) {
-        this.serviceBaseUrlList = serviceBaseUrlList;
-    }
-
-    public String getRiskManagementSummaryInformation() {
-        return riskManagementSummaryInformation;
-    }
-
-    public void setRiskManagementSummaryInformation(String riskManagementSummaryInformation) {
-        this.riskManagementSummaryInformation = riskManagementSummaryInformation;
-    }
-
-    public String getPrivacySecurityFramework() {
-        return privacySecurityFramework;
-    }
-
-    public void setPrivacySecurityFramework(String privacySecurityFramework) {
-        this.privacySecurityFramework = privacySecurityFramework;
-    }
-
-    @Deprecated
-    public List<ConformanceMethod> getAllowedConformanceMethods() {
-        return allowedConformanceMethods;
-    }
-
-    @Deprecated
-    public void setAllowedConformanceMethods(List<ConformanceMethod> allowedConformanceMethods) {
-        this.allowedConformanceMethods = allowedConformanceMethods;
-    }
-
-    public CertificationCriterion getCriterion() {
-        return criterion;
-    }
-
-    public void setCriterion(CertificationCriterion criterion) {
-        this.criterion = criterion;
-    }
-
-    public String getNumber() {
-        return this.number;
-    }
-
-    public void setNumber(String number) {
-        this.number = number;
-    }
-
     public static String formatPrivacyAndSecurityFramework(String privacyAndSecurityFramework) {
         if (StringUtils.isEmpty(privacyAndSecurityFramework)) {
             return privacyAndSecurityFramework;
@@ -866,83 +474,5 @@ public class CertificationResult implements Serializable {
             result.append(frameworks[i].trim());
         }
         return result.toString();
-    }
-
-    public String getGapStr() {
-        return gapStr;
-    }
-
-    public void setGapStr(String gapStr) {
-        this.gapStr = gapStr;
-    }
-
-    public String getAttestationAnswerStr() {
-        return attestationAnswerStr;
-    }
-
-    public void setAttestationAnswerStr(String attestationAnswerStr) {
-        this.attestationAnswerStr = attestationAnswerStr;
-    }
-
-    public String getSuccessStr() {
-        return successStr;
-    }
-
-    public void setSuccessStr(String successStr) {
-        this.successStr = successStr;
-    }
-
-    @Deprecated
-    public List<OptionalStandard> getAllowedOptionalStandards() {
-        return allowedOptionalStandards;
-    }
-
-    @Deprecated
-    public void setAllowedOptionalStandards(List<OptionalStandard> allowedOptionalStandards) {
-        this.allowedOptionalStandards = allowedOptionalStandards;
-    }
-
-    @Deprecated
-    public List<Svap> getAllowedSvaps() {
-        return allowedSvaps;
-    }
-
-    @Deprecated
-    public void setAllowedSvaps(List<Svap> allowedSvaps) {
-        this.allowedSvaps = allowedSvaps;
-    }
-
-    @Deprecated
-    public List<TestTool> getAllowedTestTools() {
-        return allowedTestTools;
-    }
-
-    @Deprecated
-    public void setAllowedTestTools(List<TestTool> allowedTestTools) {
-        this.allowedTestTools = allowedTestTools;
-    }
-
-    public List<CertificationResultSvap> getSvaps() {
-        return svaps;
-    }
-
-    public void setSvaps(List<CertificationResultSvap> svaps) {
-        this.svaps = svaps;
-    }
-
-    public Boolean getHasAdditionalSoftware() {
-        return hasAdditionalSoftware;
-    }
-
-    public void setHasAdditionalSoftware(Boolean hasAdditionalSoftware) {
-        this.hasAdditionalSoftware = hasAdditionalSoftware;
-    }
-
-    public String getHasAdditionalSoftwareStr() {
-        return hasAdditionalSoftwareStr;
-    }
-
-    public void setHasAdditionalSoftwareStr(String hasAdditionalSoftwareStr) {
-        this.hasAdditionalSoftwareStr = hasAdditionalSoftwareStr;
     }
 }

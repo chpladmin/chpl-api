@@ -4,67 +4,38 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
-import javax.xml.bind.annotation.XmlType;
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import gov.healthit.chpl.util.NullSafeEvaluator;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@XmlType(namespace = "http://chpl.healthit.gov/listings")
-@XmlAccessorType(XmlAccessType.FIELD)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Builder
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class SurveillanceRequirement implements Serializable {
     private static final long serialVersionUID = -5658812197618734286L;
 
-    /**
-     * Surveilled requirement internal ID
-     */
     @Schema(description = "Surveilled requirement internal ID")
-    @XmlElement(required = true)
     private Long id;
 
-    /**
-     * For a given surveillance activity, details about the requirement and
-     * the type of requirement being surveilled
-     */
     @Schema(description = "For a given surveillance activity, details about the requirement and "
             + "the type of requirement being surveilled")
-    @XmlElement
     private RequirementType requirementType;
 
-    /**
-     * When the requirement type is "Other", the value of the requirement type
-     */
     @Schema(description = "When the requirement type is \"Other\", the value of the requirement type")
-    @XmlElement(required = false, nillable = true)
     private String requirementTypeOther;
 
-    /**
-     * The result for surveillance conducted on each surveillance requirement.
-     * Allowable values are "Non-Conformity" or "No Non-Conformity"
-     */
     @Schema(description = "The result for surveillance conducted on each surveillance requirement.",
             allowableValues = {"Non-Conformity", "No Non-Conformity"})
-    @XmlElement(required = false, nillable = true)
     private SurveillanceResultType result;
 
-    /**
-     * List of nonconformities found for this surveilled requirement
-     */
     @Schema(description = "List of nonconformities found for this surveilled requirement")
-    @XmlElementWrapper(name = "nonconformities", nillable = true, required = false)
-    @XmlElement(name = "nonconformity")
     @Builder.Default
     private List<SurveillanceNonconformity> nonconformities = new ArrayList<SurveillanceNonconformity>();
 
@@ -146,46 +117,5 @@ public class SurveillanceRequirement implements Serializable {
     public boolean doResultTypesMatch(SurveillanceRequirement anotherRequirement) {
         return NullSafeEvaluator.eval(() -> this.getResult().getId(), 0L).equals(
                 NullSafeEvaluator.eval(() -> anotherRequirement.getResult().getId(), 0L));
-    }
-
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public RequirementType getRequirementType() {
-        return requirementType;
-    }
-
-    public void setRequirementType(RequirementType requirementType) {
-        this.requirementType = requirementType;
-    }
-
-    public String getRequirementTypeOther() {
-        return requirementTypeOther;
-    }
-
-    public void setRequirementTypeOther(String requirementTypeOther) {
-        this.requirementTypeOther = requirementTypeOther;
-    }
-
-    public SurveillanceResultType getResult() {
-        return result;
-    }
-
-    public void setResult(SurveillanceResultType result) {
-        this.result = result;
-    }
-
-    public List<SurveillanceNonconformity> getNonconformities() {
-        return nonconformities;
-    }
-
-    public void setNonconformities(List<SurveillanceNonconformity> nonconformities) {
-        this.nonconformities = nonconformities;
     }
 }

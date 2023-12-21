@@ -36,7 +36,6 @@ import gov.healthit.chpl.scheduler.presenter.CertifiedProduct2011And2014CsvPrese
 import gov.healthit.chpl.scheduler.presenter.CertifiedProductCsvPresenter;
 import gov.healthit.chpl.scheduler.presenter.CertifiedProductJsonPresenter;
 import gov.healthit.chpl.scheduler.presenter.CertifiedProductPresenter;
-import gov.healthit.chpl.scheduler.presenter.CertifiedProductXmlPresenter;
 import gov.healthit.chpl.util.Util;
 import lombok.extern.log4j.Log4j2;
 
@@ -50,7 +49,7 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
 
     private CertificationEditionConcept edition;
     private List<CertificationStatusType> certificationStatuses;
-    private File tempDirectory, tempCsvDataFile, tempCsvDefinitionFile, tempXmlFile, tempJsonFile;
+    private File tempDirectory, tempCsvDataFile, tempCsvDefinitionFile, tempJsonFile;
     private ExecutorService executorService;
 
     @Value("classpath:" + CSV_SCHEMA_2011_FILENAME)
@@ -77,15 +76,14 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
         initializeCertificationStatuses(jobContext);
 
         LOGGER.info("********* Starting the Certified Product Downloadable Resource Creator job for {}. *********", getDownloadFileType());
-        try (CertifiedProductXmlPresenter xmlPresenter = new CertifiedProductXmlPresenter();
-                CertifiedProductJsonPresenter jsonPresenter = new CertifiedProductJsonPresenter();
-                CertifiedProductCsvPresenter csvPresenter = getCsvPresenter();) {
+        try (CertifiedProductJsonPresenter jsonPresenter = new CertifiedProductJsonPresenter();
+               CertifiedProductCsvPresenter csvPresenter = getCsvPresenter();) {
             initializeTempFiles();
-            if (tempXmlFile != null && tempJsonFile != null && tempCsvDataFile != null) {
-                initializeWritingToFiles(xmlPresenter, jsonPresenter, csvPresenter);
+            if (tempJsonFile != null && tempCsvDataFile != null) {
+                initializeWritingToFiles(jsonPresenter, csvPresenter);
                 initializeExecutorService();
 
-                List<CertifiedProductPresenter> presenters = List.of(xmlPresenter, jsonPresenter, csvPresenter);
+                List<CertifiedProductPresenter> presenters = List.of(jsonPresenter, csvPresenter);
                 List<CompletableFuture<Void>> futures = getCertifiedProductSearchFutures(getRelevantListings(), presenters);
                 CompletableFuture<Void> combinedFutures = CompletableFuture
                         .allOf(futures.toArray(new CompletableFuture[futures.size()]));
@@ -137,16 +135,10 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
                 });
     }
 
-    private void initializeWritingToFiles(CertifiedProductXmlPresenter xmlPresenter, CertifiedProductJsonPresenter jsonPresenter, CertifiedProductCsvPresenter csvPresenter)
+    private void initializeWritingToFiles(CertifiedProductJsonPresenter jsonPresenter, CertifiedProductCsvPresenter csvPresenter)
             throws IOException {
-        initializeXmlFile(xmlPresenter);
         initializeJsonFile(jsonPresenter);
         initializeCsvFiles(csvPresenter);
-    }
-
-    private void initializeXmlFile(CertifiedProductXmlPresenter xmlPresenter) throws IOException  {
-        xmlPresenter.setLogger(LOGGER);
-        xmlPresenter.open(tempXmlFile);
     }
 
     private void initializeJsonFile(CertifiedProductJsonPresenter jsonPresenter) throws IOException  {
@@ -246,8 +238,6 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
         this.tempDirectory = tempDir.toFile();
         String filenamePart = getFilenamePart();
 
-        Path xmlPath = Files.createTempFile(tempDir, "chpl-" + filenamePart, ".xml");
-        tempXmlFile = xmlPath.toFile();
         Path jsonPath = Files.createTempFile(tempDir, "chpl-" + filenamePart, ".json");
         tempJsonFile = jsonPath.toFile();
         Path csvDataPath = Files.createTempFile(tempDir, "chpl-" + filenamePart, ".csv");
@@ -259,18 +249,6 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
     private void swapFiles() throws IOException {
         LOGGER.info("Swapping temporary files.");
         File downloadFolder = getDownloadFolder();
-
-        if (tempXmlFile != null) {
-            String xmlFilename = getFileName(downloadFolder.getAbsolutePath(),
-                    getFilenameTimestampFormat().format(new Date()), "xml");
-            LOGGER.info("Moving " + tempXmlFile.getAbsolutePath() + " to " + tempXmlFile);
-            Path targetFile = Files.move(tempXmlFile.toPath(), Paths.get(xmlFilename), StandardCopyOption.ATOMIC_MOVE);
-            if (targetFile == null) {
-                LOGGER.warn("XML file move may not have succeeded. Check file system.");
-            }
-        } else {
-            LOGGER.warn("Temp XML File was null and could not be moved.");
-        }
 
         if (tempJsonFile != null) {
             String jsonFilename = getFileName(downloadFolder.getAbsolutePath(),
@@ -310,12 +288,6 @@ public class CertifiedProductDownloadableResourceCreatorJob extends Downloadable
 
     private void cleanupTempFiles() {
         LOGGER.info("Deleting temporary files.");
-        if (tempXmlFile != null && tempXmlFile.exists()) {
-            tempXmlFile.delete();
-        } else {
-            LOGGER.warn("Temp XML File was null and could not be deleted.");
-        }
-
         if (tempJsonFile != null && tempJsonFile.exists()) {
             tempJsonFile.delete();
         } else {

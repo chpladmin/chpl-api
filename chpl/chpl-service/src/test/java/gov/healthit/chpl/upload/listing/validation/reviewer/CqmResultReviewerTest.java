@@ -77,7 +77,7 @@ public class CqmResultReviewerTest {
     }
 
     @Test
-    public void review_UnattestedCqmNullCmsIdWithCriterion_noError() {
+    public void review_UnattestedCqmNullCmsIdWithCriterion_noWarning() {
         CQMResultDetails cqmResult = CQMResultDetails.builder()
                 .success(false)
                 .cmsId(null)

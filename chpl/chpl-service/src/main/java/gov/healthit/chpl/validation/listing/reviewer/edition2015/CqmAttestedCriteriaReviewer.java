@@ -39,11 +39,11 @@ public class CqmAttestedCriteriaReviewer implements Reviewer {
 
         List<CertificationCriterion> attestedCriteria = validationUtils.getAttestedCriteria(listing);
         listing.getCqmResults().stream()
-                .filter(cqmResult -> BooleanUtils.isTrue(cqmResult.isSuccess()))
+                .filter(cqmResult -> BooleanUtils.isTrue(cqmResult.getSuccess()))
                 .forEach(cqmResult -> removeValuesThatAreNotCriteria(cqmResult, listing));
 
         listing.getCqmResults().stream()
-                .filter(cqmResult -> BooleanUtils.isTrue(cqmResult.isSuccess()))
+                .filter(cqmResult -> BooleanUtils.isTrue(cqmResult.getSuccess()))
                 .forEach(cqmResult -> reviewListingHasAllCriteriaForCqmResult(cqmResult, listing, attestedCriteria));
     }
 

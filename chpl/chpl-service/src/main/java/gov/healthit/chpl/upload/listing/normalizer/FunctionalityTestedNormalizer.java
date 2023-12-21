@@ -67,7 +67,7 @@ public class FunctionalityTestedNormalizer {
 
     private void clearDataForUnattestedCriteria(CertifiedProductSearchDetails listing) {
         listing.getCertificationResults().stream()
-            .filter(certResult -> (certResult.isSuccess() == null || BooleanUtils.isFalse(certResult.isSuccess()))
+            .filter(certResult -> (certResult.getSuccess() == null || BooleanUtils.isFalse(certResult.getSuccess()))
                     && certResult.getFunctionalitiesTested() != null
                     && certResult.getFunctionalitiesTested().size() > 0)
             .forEach(unattestedCertResult -> unattestedCertResult.getFunctionalitiesTested().clear());
