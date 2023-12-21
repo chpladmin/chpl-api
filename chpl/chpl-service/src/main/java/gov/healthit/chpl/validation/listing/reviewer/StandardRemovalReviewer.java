@@ -30,13 +30,15 @@ public class StandardRemovalReviewer implements ComparisonReviewer {
         existingListing.getCertificationResults().forEach(existingCertResult -> {
             Optional<CertificationResult> updatedCertResults = findCertificationResult(updatedListing, existingCertResult.getId());
 
-            List<Standard> removedStandards = getRemovedStandards(existingCertResult.getStandards().stream().map(crs -> crs.getStandard()).toList(),
-                    updatedCertResults.isEmpty() ? null : updatedCertResults.get().getStandards().stream().map(crs -> crs.getStandard()).toList());
+            if (updatedCertResults.isPresent()) {
+                List<Standard> removedStandards = getRemovedStandards(existingCertResult.getStandards().stream().map(crs -> crs.getStandard()).toList(),
+                        CollectionUtils.isEmpty(updatedCertResults.get().getStandards())  ? null : updatedCertResults.get().getStandards().stream().map(crs -> crs.getStandard()).toList());
 
-            removedStandards.stream()
-                    .filter(std -> !isStandardInteresting(std))
-                    .forEach(std -> updatedListing.addBusinessErrorMessage(errorMessageUtil.getMessage("listing.criteria.standardNotRemovable", std.getRegulatoryTextCitation(),
+                removedStandards.stream()
+                        .filter(std -> !isStandardInteresting(std))
+                        .forEach(std -> updatedListing.addBusinessErrorMessage(errorMessageUtil.getMessage("listing.criteria.standardNotRemovable", std.getRegulatoryTextCitation(),
                             Util.formatCriteriaNumber(existingCertResult.getCriterion()))));
+            }
         });
     }
 
