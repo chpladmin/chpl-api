@@ -8,7 +8,9 @@ import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
+import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.dao.CertificationResultDetailsDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
@@ -31,15 +33,33 @@ public class QuestionableUrlLookupDao {
     private DeveloperDAO devDao;
     private CertifiedProductDAO cpDao;
     private CertificationResultDetailsDAO certResultDao;
+    private CertificationCriterionDAO criteriaDao;
 
     @Autowired
     public QuestionableUrlLookupDao(CertificationBodyDAO acbDao, TestingLabDAO atlDao,
-            DeveloperDAO devDao, CertifiedProductDAO cpDao, CertificationResultDetailsDAO certResultDao) {
+            DeveloperDAO devDao, CertifiedProductDAO cpDao, CertificationResultDetailsDAO certResultDao,
+            CertificationCriterionDAO criteriaDao) {
         this.acbDao = acbDao;
         this.atlDao = atlDao;
         this.devDao = devDao;
         this.cpDao = cpDao;
         this.certResultDao = certResultDao;
+        this.criteriaDao = criteriaDao;
+    }
+
+    @Transactional
+    public List<FailedUrlResult> getCriteriaWithUrl(UrlResult urlResult) {
+        List<CertificationCriterion> criteriaWithBadUrl = criteriaDao.getByWebsite(urlResult.getUrl());
+        return criteriaWithBadUrl.stream()
+            .map(cc -> FailedUrlResult.builder()
+                    .lastChecked(urlResult.getLastChecked())
+                    .responseCode(urlResult.getResponseCode())
+                    .responseMessage(urlResult.getResponseMessage())
+                    .url(urlResult.getUrl())
+                    .urlType(urlResult.getUrlType())
+                    .criterion(cc)
+                    .build())
+            .collect(Collectors.toList());
     }
 
     @Transactional

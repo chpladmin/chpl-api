@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.dto.CertifiedProductSummaryDTO;
+import gov.healthit.chpl.util.Util;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2(topic = "questionableUrlReportGeneratorJobLogger")
@@ -19,25 +20,26 @@ public class FailedUrlCsvFormatter {
     private static final int INDEX_STATUS_NAME = 2;
     private static final int INDEX_ERROR_MESSAGE = 3;
     private static final int INDEX_URL_TYPE = 4;
-    private static final int INDEX_ATL = 5;
-    private static final int INDEX_ACB = 6;
-    private static final int INDEX_DEVELOPER_NAME = 7;
-    private static final int INDEX_DEVELOPER_CONTACT_NAME = 8;
-    private static final int INDEX_DEVELOPER_CONTACT_EMAIL = 9;
-    private static final int INDEX_DEVELOPER_CONTACT_PHONE = 10;
-    private static final int INDEX_PRODUCT_NAME = 11;
-    private static final int INDEX_VERSION = 12;
-    private static final int INDEX_CHPL_PRODUCT_NUMBER = 13;
-    private static final int INDEX_CERTIFICATION_DATE = 14;
-    private static final int INDEX_CERTIFICATION_STATUS = 15;
-    private static final int INDEX_CRITERION = 16;
-    private static final int INDEX_LAST_CHECKED_DATE = 17;
+    private static final int INDEX_CRITERION = 5;
+    private static final int INDEX_ATL = 6;
+    private static final int INDEX_ACB = 7;
+    private static final int INDEX_DEVELOPER_NAME = 8;
+    private static final int INDEX_DEVELOPER_CONTACT_NAME = 9;
+    private static final int INDEX_DEVELOPER_CONTACT_EMAIL = 10;
+    private static final int INDEX_DEVELOPER_CONTACT_PHONE = 11;
+    private static final int INDEX_PRODUCT_NAME = 12;
+    private static final int INDEX_VERSION = 13;
+    private static final int INDEX_CHPL_PRODUCT_NUMBER = 14;
+    private static final int INDEX_CERTIFICATION_DATE = 15;
+    private static final int INDEX_CERTIFICATION_STATUS = 16;
+    private static final int INDEX_CERT_RESULT = 17;
+    private static final int INDEX_LAST_CHECKED_DATE = 18;
 
     private static final String[] CSV_HEADER = {
-            "URL", "Status Code", "Status Name", "Error Message", "URL Type", "ONC-ATL", "ONC-ACB", "Developer",
-            "Developer Contact Name", "Developer Contact Email", "Developer Contact Phone Number", "Product", "Version",
-            "CHPL Product Number", "Certification Date", "Certification Status", "Criteria",
-            "Date Last Checked"
+            "URL", "Status Code", "Status Name", "Error Message", "URL Type", "Certification Criterion",
+            "ONC-ATL", "ONC-ACB", "Developer", "Developer Contact Name", "Developer Contact Email",
+            "Developer Contact Phone Number", "Product", "Version", "CHPL Product Number",
+            "Certification Date", "Certification Status", "Criteria", "Date Last Checked"
     };
 
     public List<String> getHeaderRow() {
@@ -46,6 +48,9 @@ public class FailedUrlCsvFormatter {
 
     public List<String> getRow(FailedUrlResult urlResult) {
         List<String> row = createRow(urlResult);
+        if (urlResult.getCriterion() != null) {
+            row.set(INDEX_CRITERION, Util.formatCriteriaNumber(urlResult.getCriterion()));
+        }
         if (urlResult.getAcb() != null) {
             row.set(INDEX_ACB, urlResult.getAcb().getName());
         }
@@ -74,7 +79,7 @@ public class FailedUrlCsvFormatter {
             row.set(INDEX_CERTIFICATION_STATUS, listing.getCertificationStatus());
         }
         if (urlResult.getCertResult() != null) {
-            row.set(INDEX_CRITERION, urlResult.getCertResult().getCriterion().getNumber());
+            row.set(INDEX_CERT_RESULT, urlResult.getCertResult().getCriterion().getNumber());
         }
         return row;
     }

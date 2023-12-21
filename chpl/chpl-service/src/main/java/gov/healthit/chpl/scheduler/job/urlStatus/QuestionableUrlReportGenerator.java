@@ -103,6 +103,10 @@ public class QuestionableUrlReportGenerator extends QuartzJob {
             int i = 0;
             for (UrlResult questionableUrlResult : allQuestionableUrlResults) {
                 switch (questionableUrlResult.getUrlType()) {
+                case CERTIFICATION_CRITERION:
+                    LOGGER.info("[" + i + "]: Getting Criterion with bad website " + questionableUrlResult.getUrl());
+                    questionableUrls.addAll(urlLookupDao.getCriteriaWithUrl(questionableUrlResult));
+                    break;
                 case ACB:
                     LOGGER.info("[" + i + "]: Getting ACBs with bad website " + questionableUrlResult.getUrl());
                     questionableUrls.addAll(urlLookupDao.getAcbsWithUrl(questionableUrlResult));
@@ -311,6 +315,7 @@ public class QuestionableUrlReportGenerator extends QuartzJob {
                     .footer(AdminFooter.class)
                     .build();
         } else {
+            int brokenCertificationCriterionUrls = getCountOfBrokenUrlsOfType(urlResults, UrlType.CERTIFICATION_CRITERION);
             int brokenAcbUrls = getCountOfBrokenUrlsOfType(urlResults, UrlType.ACB);
             int brokenAtlUrls = getCountOfBrokenUrlsOfType(urlResults, UrlType.ATL);
             int brokenDeveloperUrls = getCountOfBrokenUrlsOfType(urlResults, UrlType.DEVELOPER);
@@ -331,6 +336,7 @@ public class QuestionableUrlReportGenerator extends QuartzJob {
             if (!isAcbSpecific(jobContext)) {
                 brokenUrlSummaryHtml += "<li>" + UrlType.ATL.getName() + ": " + brokenAtlUrls + "</li>";
             }
+            brokenUrlSummaryHtml += "<li>" + UrlType.CERTIFICATION_CRITERION.getName() + ": " + brokenCertificationCriterionUrls + "</li>";
             brokenUrlSummaryHtml += "<li>" + UrlType.ACB.getName() + ": " + brokenAcbUrls + "</li>";
             brokenUrlSummaryHtml += "<li>" + UrlType.DEVELOPER.getName() + ": " + brokenDeveloperUrls + "</li>";
             brokenUrlSummaryHtml += "<li>" + UrlType.FULL_USABILITY_REPORT.getName() + ": " + brokenFullUsabilityReportUrls + "</li>";
