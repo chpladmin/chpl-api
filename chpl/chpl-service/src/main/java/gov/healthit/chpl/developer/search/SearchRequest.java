@@ -4,8 +4,6 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.xml.bind.annotation.XmlTransient;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.AllArgsConstructor;
@@ -37,7 +35,6 @@ public class SearchRequest implements Serializable {
     private String decertificationDateEnd;
 
     @JsonIgnore
-    @XmlTransient
     private String orderByString;
     private OrderByOption orderBy;
     @Builder.Default

@@ -54,7 +54,7 @@ public class InvalidCriteriaCombinationReviewer implements Reviewer {
     private Optional<CertificationResult> findCertificationResult(CertifiedProductSearchDetails listing,
             Integer criteriaId) {
         return listing.getCertificationResults().stream()
-                .filter(cr -> BooleanUtils.isTrue(cr.isSuccess())
+                .filter(cr -> BooleanUtils.isTrue(cr.getSuccess())
                         && cr.getCriterion() != null && cr.getCriterion().getId() != null
                         && cr.getCriterion().getId().equals(Long.valueOf(criteriaId)))
                 .findFirst();

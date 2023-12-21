@@ -37,7 +37,7 @@ public class OptionalStandardReviewer extends PermissionBasedReviewer implements
     @Override
     public void review(CertifiedProductSearchDetails listing) {
         List<CertificationResult> certificationResultsWithOptionalStandards = listing.getCertificationResults().stream()
-                .filter(cr -> BooleanUtils.isTrue(cr.isSuccess())
+                .filter(cr -> BooleanUtils.isTrue(cr.getSuccess())
                         && !CollectionUtils.isEmpty(cr.getOptionalStandards()))
                 .collect(Collectors.toList());
         Map<Long, List<OptionalStandardCriteriaMap>> optionalStandardCriteriaMap = null;

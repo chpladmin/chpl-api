@@ -37,7 +37,7 @@ public class CertificationCriterionNormalizer {
     }
 
     private void removeUnattestedToCriteria(CertifiedProductSearchDetails listing) {
-        listing.getCertificationResults().removeIf(cr -> (cr.isSuccess() == null || !cr.isSuccess()) && !isUnattestedCriteriaAllowed(cr));
+        listing.getCertificationResults().removeIf(cr -> (cr.getSuccess() == null || !cr.getSuccess()) && !isUnattestedCriteriaAllowed(cr));
     }
 
     private Boolean isUnattestedCriteriaAllowed(CertificationResult cr) {
@@ -55,7 +55,7 @@ public class CertificationCriterionNormalizer {
     }
 
     private void nullifyNotApplicableFields(CertificationResult certResult) {
-        if (BooleanUtils.isFalse(certResult.isSuccess())
+        if (BooleanUtils.isFalse(certResult.getSuccess())
                 && !isFieldAllowed(certResult.getCriterion(), CertificationResultRules.ADDITIONAL_SOFTWARE)) {
             certResult.setAdditionalSoftware(null);
         } else if (isFieldAllowed(certResult.getCriterion(), CertificationResultRules.ADDITIONAL_SOFTWARE)
@@ -63,7 +63,7 @@ public class CertificationCriterionNormalizer {
             certResult.setAdditionalSoftware(new ArrayList<CertificationResultAdditionalSoftware>());
         }
 
-        if (BooleanUtils.isFalse(certResult.isSuccess())
+        if (BooleanUtils.isFalse(certResult.getSuccess())
                 && !isFieldAllowed(certResult.getCriterion(), CertificationResultRules.API_DOCUMENTATION)) {
             certResult.setApiDocumentation(null);
         } else if (isFieldAllowed(certResult.getCriterion(), CertificationResultRules.API_DOCUMENTATION)
@@ -71,7 +71,7 @@ public class CertificationCriterionNormalizer {
             certResult.setApiDocumentation("");
         }
 
-        if (BooleanUtils.isFalse(certResult.isSuccess())
+        if (BooleanUtils.isFalse(certResult.getSuccess())
                 && !isFieldAllowed(certResult.getCriterion(), CertificationResultRules.ATTESTATION_ANSWER)) {
             certResult.setAttestationAnswer(null);
         } else if (isFieldAllowed(certResult.getCriterion(), CertificationResultRules.ATTESTATION_ANSWER)
@@ -79,7 +79,7 @@ public class CertificationCriterionNormalizer {
             certResult.setAttestationAnswer(false);
         }
 
-        if (BooleanUtils.isFalse(certResult.isSuccess())
+        if (BooleanUtils.isFalse(certResult.getSuccess())
                 && !isFieldAllowed(certResult.getCriterion(), CertificationResultRules.DOCUMENTATION_URL)) {
             certResult.setDocumentationUrl(null);
         } else if (isFieldAllowed(certResult.getCriterion(), CertificationResultRules.DOCUMENTATION_URL)
@@ -87,7 +87,7 @@ public class CertificationCriterionNormalizer {
             certResult.setDocumentationUrl("");
         }
 
-        if (BooleanUtils.isFalse(certResult.isSuccess())
+        if (BooleanUtils.isFalse(certResult.getSuccess())
                 && !isFieldAllowed(certResult.getCriterion(), CertificationResultRules.EXPORT_DOCUMENTATION)) {
             certResult.setExportDocumentation(null);
         } else if (isFieldAllowed(certResult.getCriterion(), CertificationResultRules.EXPORT_DOCUMENTATION)
@@ -95,7 +95,7 @@ public class CertificationCriterionNormalizer {
             certResult.setExportDocumentation("");
         }
 
-        if (BooleanUtils.isFalse(certResult.isSuccess())
+        if (BooleanUtils.isFalse(certResult.getSuccess())
                 && !isFieldAllowed(certResult.getCriterion(), CertificationResultRules.FUNCTIONALITY_TESTED)) {
             certResult.setFunctionalitiesTested(null);
         } else if (isFieldAllowed(certResult.getCriterion(), CertificationResultRules.FUNCTIONALITY_TESTED)
@@ -103,22 +103,22 @@ public class CertificationCriterionNormalizer {
             certResult.setFunctionalitiesTested(new ArrayList<CertificationResultFunctionalityTested>());
         }
 
-        if (BooleanUtils.isFalse(certResult.isSuccess())
+        if (BooleanUtils.isFalse(certResult.getSuccess())
                 && !isFieldAllowed(certResult.getCriterion(), CertificationResultRules.G1_SUCCESS)) {
             certResult.setG1Success(null);
         }
 
-        if (BooleanUtils.isFalse(certResult.isSuccess())
+        if (BooleanUtils.isFalse(certResult.getSuccess())
                 && !isFieldAllowed(certResult.getCriterion(), CertificationResultRules.G2_SUCCESS)) {
             certResult.setG2Success(null);
         }
 
-        if (BooleanUtils.isFalse(certResult.isSuccess())
+        if (BooleanUtils.isFalse(certResult.getSuccess())
                 && !isFieldAllowed(certResult.getCriterion(), CertificationResultRules.GAP)) {
             certResult.setGap(null);
         }
 
-        if (BooleanUtils.isFalse(certResult.isSuccess())
+        if (BooleanUtils.isFalse(certResult.getSuccess())
                 && !isFieldAllowed(certResult.getCriterion(), CertificationResultRules.OPTIONAL_STANDARD)) {
             certResult.setOptionalStandards(null);
         } else if (isFieldAllowed(certResult.getCriterion(), CertificationResultRules.OPTIONAL_STANDARD)
@@ -126,7 +126,7 @@ public class CertificationCriterionNormalizer {
             certResult.setOptionalStandards(new ArrayList<CertificationResultOptionalStandard>());
         }
 
-        if (BooleanUtils.isFalse(certResult.isSuccess())
+        if (BooleanUtils.isFalse(certResult.getSuccess())
                 && !isFieldAllowed(certResult.getCriterion(), CertificationResultRules.PRIVACY_SECURITY)) {
             certResult.setPrivacySecurityFramework(null);
         } else if (isFieldAllowed(certResult.getCriterion(), CertificationResultRules.PRIVACY_SECURITY)
@@ -134,12 +134,12 @@ public class CertificationCriterionNormalizer {
             certResult.setPrivacySecurityFramework("");
         }
 
-        if (BooleanUtils.isFalse(certResult.isSuccess())
+        if (BooleanUtils.isFalse(certResult.getSuccess())
                 && !isFieldAllowed(certResult.getCriterion(), CertificationResultRules.SED)) {
             certResult.setSed(null);
         }
 
-        if (BooleanUtils.isFalse(certResult.isSuccess())
+        if (BooleanUtils.isFalse(certResult.getSuccess())
                 && !isFieldAllowed(certResult.getCriterion(), CertificationResultRules.SERVICE_BASE_URL_LIST)) {
             certResult.setServiceBaseUrlList(null);
         } else if (isFieldAllowed(certResult.getCriterion(), CertificationResultRules.SERVICE_BASE_URL_LIST)
@@ -147,7 +147,7 @@ public class CertificationCriterionNormalizer {
             certResult.setServiceBaseUrlList("");
         }
 
-        if (BooleanUtils.isFalse(certResult.isSuccess())
+        if (BooleanUtils.isFalse(certResult.getSuccess())
                 && !isFieldAllowed(certResult.getCriterion(), CertificationResultRules.RISK_MANAGEMENT_SUMMARY_INFORMATION)) {
             certResult.setRiskManagementSummaryInformation(null);
         } else if (isFieldAllowed(certResult.getCriterion(), CertificationResultRules.RISK_MANAGEMENT_SUMMARY_INFORMATION)
@@ -155,7 +155,7 @@ public class CertificationCriterionNormalizer {
             certResult.setRiskManagementSummaryInformation("");
         }
 
-        if (BooleanUtils.isFalse(certResult.isSuccess())
+        if (BooleanUtils.isFalse(certResult.getSuccess())
                 && !isFieldAllowed(certResult.getCriterion(), CertificationResultRules.STANDARDS_TESTED)) {
             certResult.setTestStandards(null);
         } else if (isFieldAllowed(certResult.getCriterion(), CertificationResultRules.STANDARDS_TESTED)
@@ -163,7 +163,7 @@ public class CertificationCriterionNormalizer {
             certResult.setTestStandards(new ArrayList<CertificationResultTestStandard>());
         }
 
-        if (BooleanUtils.isFalse(certResult.isSuccess())
+        if (BooleanUtils.isFalse(certResult.getSuccess())
                 && !isFieldAllowed(certResult.getCriterion(), CertificationResultRules.SVAP)) {
             certResult.setSvaps(null);
         } else if (isFieldAllowed(certResult.getCriterion(), CertificationResultRules.SVAP)
@@ -171,7 +171,7 @@ public class CertificationCriterionNormalizer {
             certResult.setSvaps(new ArrayList<CertificationResultSvap>());
         }
 
-        if (BooleanUtils.isFalse(certResult.isSuccess())
+        if (BooleanUtils.isFalse(certResult.getSuccess())
                 && !isFieldAllowed(certResult.getCriterion(), CertificationResultRules.TEST_DATA)) {
             certResult.setTestDataUsed(null);
         } else if (isFieldAllowed(certResult.getCriterion(), CertificationResultRules.TEST_DATA)
@@ -179,7 +179,7 @@ public class CertificationCriterionNormalizer {
             certResult.setTestDataUsed(new ArrayList<CertificationResultTestData>());
         }
 
-        if (BooleanUtils.isFalse(certResult.isSuccess())
+        if (BooleanUtils.isFalse(certResult.getSuccess())
                 && !isFieldAllowed(certResult.getCriterion(), CertificationResultRules.TEST_PROCEDURE)) {
             certResult.setTestProcedures(null);
         } else if (isFieldAllowed(certResult.getCriterion(), CertificationResultRules.TEST_PROCEDURE)
@@ -187,7 +187,7 @@ public class CertificationCriterionNormalizer {
             certResult.setTestProcedures(new ArrayList<CertificationResultTestProcedure>());
         }
 
-        if (BooleanUtils.isFalse(certResult.isSuccess())
+        if (BooleanUtils.isFalse(certResult.getSuccess())
                 && !isFieldAllowed(certResult.getCriterion(), CertificationResultRules.CONFORMANCE_METHOD)) {
             certResult.setConformanceMethods(null);
         } else if (isFieldAllowed(certResult.getCriterion(), CertificationResultRules.CONFORMANCE_METHOD)
@@ -195,7 +195,7 @@ public class CertificationCriterionNormalizer {
             certResult.setConformanceMethods(new ArrayList<CertificationResultConformanceMethod>());
         }
 
-        if (BooleanUtils.isFalse(certResult.isSuccess())
+        if (BooleanUtils.isFalse(certResult.getSuccess())
                 && !isFieldAllowed(certResult.getCriterion(), CertificationResultRules.TEST_TOOLS_USED)) {
             certResult.setTestToolsUsed(null);
         } else if (isFieldAllowed(certResult.getCriterion(), CertificationResultRules.TEST_TOOLS_USED)
@@ -203,7 +203,7 @@ public class CertificationCriterionNormalizer {
             certResult.setTestToolsUsed(new ArrayList<CertificationResultTestTool>());
         }
 
-        if (BooleanUtils.isFalse(certResult.isSuccess())
+        if (BooleanUtils.isFalse(certResult.getSuccess())
                 && !isFieldAllowed(certResult.getCriterion(), CertificationResultRules.USE_CASES)) {
             certResult.setUseCases(null);
         } else if (isFieldAllowed(certResult.getCriterion(), CertificationResultRules.USE_CASES)

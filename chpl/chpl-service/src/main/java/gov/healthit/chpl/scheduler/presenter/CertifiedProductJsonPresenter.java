@@ -48,7 +48,7 @@ public class CertifiedProductJsonPresenter extends CertifiedProductPresenter imp
 
     public Logger getLogger() {
         if (logger == null) {
-            logger = LogManager.getLogger(CertifiedProductXmlPresenter.class);
+            logger = LogManager.getLogger(CertifiedProductJsonPresenter.class);
         }
         return logger;
     }

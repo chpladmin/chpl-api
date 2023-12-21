@@ -3,12 +3,6 @@ package gov.healthit.chpl.domain;
 import java.io.Serializable;
 import java.util.LinkedHashSet;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
-import javax.xml.bind.annotation.XmlType;
-
 import org.apache.commons.lang3.ObjectUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -17,46 +11,29 @@ import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@XmlType(namespace = "http://chpl.healthit.gov/listings")
-@XmlAccessorType(XmlAccessType.FIELD)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Builder
+@Data
+@NoArgsConstructor
 @AllArgsConstructor
 public class ListingMeasure implements Serializable {
     private static final long serialVersionUID = 3070403246291821852L;
 
-    /**
-     * An internal ID for each mapping between measure and listing.
-     */
     @Schema(description = "An internal ID for each mapping between measure and listing.")
-    @XmlElement(required = false, nillable = true)
     private Long id;
 
-    /**
-     * The measure being applied to a listing.
-     */
     @Schema(description = "The measure being applied to a listing.")
-    @XmlElement(required = true)
     private Measure measure;
 
-    /**
-     * Indicates whether this measure was applied to the listing using
-     * Automated Numerator Recording (G1) or Automated Measure Calculation (G2).
-     */
     @Schema(description = "Indicates whether this measure was applied to the listing using "
             + "Automated Numerator Recording (G1) or Automated Measure Calculation (G2).")
-    @XmlElement(required = true)
     private MeasureType measureType;
 
-    @XmlElementWrapper(name = "associatedCriteria", nillable = true, required = false)
-    @XmlElement(required = true, name = "criteria")
     @Builder.Default
     private LinkedHashSet<CertificationCriterion> associatedCriteria = new LinkedHashSet<CertificationCriterion>();
-
-    public ListingMeasure() {
-        super();
-    }
 
     public boolean matches(ListingMeasure anotherMeasure) {
         if (!propertiesMatch(anotherMeasure)) {
@@ -136,37 +113,5 @@ public class ListingMeasure implements Serializable {
             return false;
         }
         return true;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Measure getMeasure() {
-        return measure;
-    }
-
-    public void setMeasure(Measure measure) {
-        this.measure = measure;
-    }
-
-    public MeasureType getMeasureType() {
-        return measureType;
-    }
-
-    public void setMeasureType(MeasureType measureType) {
-        this.measureType = measureType;
-    }
-
-    public LinkedHashSet<CertificationCriterion> getAssociatedCriteria() {
-        return associatedCriteria;
-    }
-
-    public void setAssociatedCriteria(LinkedHashSet<CertificationCriterion> associatedCriteria) {
-        this.associatedCriteria = associatedCriteria;
     }
 }

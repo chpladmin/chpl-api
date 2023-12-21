@@ -3,11 +3,6 @@ package gov.healthit.chpl.domain;
 import java.io.Serializable;
 import java.util.Objects;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlType;
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import gov.healthit.chpl.dto.CertificationResultTestDataDTO;
@@ -15,58 +10,24 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 
-/**
- * The version of the test data being used for a given certification criteria.
- *
- */
-@XmlType(namespace = "http://chpl.healthit.gov/listings")
-@XmlAccessorType(XmlAccessType.FIELD)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @AllArgsConstructor
 @Builder
 public class CertificationResultTestData implements Serializable {
     private static final long serialVersionUID = -7272525145274770518L;
 
-    /**
-     * Certification result to test data mapping internal ID
-     */
     @Schema(description = "Certification result to test data mapping internal ID")
-    @XmlElement(required = true)
     private Long id;
 
-    /**
-     * This variable explains the test data being used to test
-     * the associated criteria. It is applicable for 2015 Edition.
-     */
-    @Schema(description = "This variable explains the test data being used to test "
-            + "the associated criteria. It is applicable for 2015 Edition.")
-    @XmlElement(required = true)
+    @Schema(description = "This variable explains the test data being used to test the associated criteria.")
     private TestData testData;
 
-    /**
-     * This variable explains the version of the test data being used for a
-     * given certification criteria. It is applicable for 2014 and 2015 Edition
-     * and a string variable that does not take any restrictions on formatting
-     * or values.
-     */
-    @Schema(description = "This variable explains the version of the test data being used for a "
-            + "given certification criteria. It is applicable for 2014 and 2015 Edition "
-            + "and a string variable that does not take any restrictions on formatting "
-            + "or values.")
-    @XmlElement(required = true)
+    @Schema(description = "This variable explains the version of the test data being used for a given certification criteria. "
+            + "It is  a string variable that does not take any restrictions on formatting or values.")
     private String version;
 
-    /**
-     * This variable indicates if test data alterations are made, a description
-     * of all modifications made. It is applicable for 2014 and 2015 Edition and
-     * a string variable that does not take any restrictions on formatting or
-     * values.
-     */
-    @Schema(description = "This variable indicates if test data alterations are made, a description"
-            + "of all modifications made. It is applicable for 2014 and 2015 Edition and"
-            + "a string variable that does not take any restrictions on formatting or"
-            + "values.")
-    @XmlElement(required = false, nillable = true)
+    @Schema(description = "This variable indicates if test data alterations are made, a description of all modifications made. "
+            + "It is a string variable that does not take any restrictions on formatting or values.")
     private String alteration;
 
     public CertificationResultTestData() {

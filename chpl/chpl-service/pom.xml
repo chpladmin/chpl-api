@@ -383,25 +383,25 @@
             <artifactId>springdoc-openapi-webmvc-core</artifactId>
             <version>${org.springdoc.version}</version>
         </dependency>
-        
+
         <dependency>
             <groupId>software.amazon.awssdk</groupId>
             <artifactId>aws-sdk-java</artifactId>
             <version>2.20.156</version>
         </dependency>
-        
+
         <dependency>
             <groupId>com.auth0</groupId>
             <artifactId>java-jwt</artifactId>
             <version>3.3.0</version>
         </dependency>
-        
+
         <dependency>
             <groupId>com.auth0</groupId>
             <artifactId>jwks-rsa</artifactId>
             <version>0.4.0</version>
         </dependency>
-        
+
         <!--  needed for unit tests -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
@@ -460,76 +460,6 @@
                 <configuration>
                     <release>${java.version}</release>
                 </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>jaxb2-maven-plugin</artifactId>
-                <version>2.5.0</version>
-                <configuration>
-                    <clearOutputDir>true</clearOutputDir>
-                    <verbose>true</verbose>
-                    <createJavaDocAnnotations>true</createJavaDocAnnotations>
-                    <sources>
-                        <source>src/main/java/gov/healthit/chpl/attestation/domain/AttestationPeriod.java</source>
-                        <source>src/main/java/gov/healthit/chpl/domain/Address.java</source>
-                        <source>src/main/java/gov/healthit/chpl/domain/CertifiedProduct.java</source>
-                        <source>src/main/java/gov/healthit/chpl/domain/CertifiedProductAccessibilityStandard.java</source>
-                        <source>src/main/java/gov/healthit/chpl/domain/CertifiedProductChplProductNumberHistory.java</source>
-                        <source>src/main/java/gov/healthit/chpl/domain/CertifiedProductDownloadResponse.java</source>
-                        <source>src/main/java/gov/healthit/chpl/domain/CertifiedProductQmsStandard.java</source>
-                        <source>src/main/java/gov/healthit/chpl/domain/CertifiedProductSearchDetails.java</source>
-                        <source>src/main/java/gov/healthit/chpl/domain/CertifiedProductSed.java</source>
-                        <source>src/main/java/gov/healthit/chpl/domain/CertifiedProductTargetedUser.java</source>
-                        <source>src/main/java/gov/healthit/chpl/domain/CertificationResult.java</source>
-                        <source>src/main/java/gov/healthit/chpl/domain/CertificationResultAdditionalSoftware.java</source>
-                        <source>src/main/java/gov/healthit/chpl/domain/CertificationResultTestData.java</source>
-                        <source>src/main/java/gov/healthit/chpl/domain/CertificationResultTestProcedure.java</source>
-                        <source>src/main/java/gov/healthit/chpl/domain/CertificationResultTestTool.java</source>
-                        <source>src/main/java/gov/healthit/chpl/standard/CertificationResultStandard.java</source>
-                        <source>src/main/java/gov/healthit/chpl/domain/CertificationStatusEvent.java</source>
-                        <source>src/main/java/gov/healthit/chpl/domain/CQMResultCertification.java</source>
-                        <source>src/main/java/gov/healthit/chpl/domain/CQMResultDetails.java</source>
-                        <source>src/main/java/gov/healthit/chpl/domain/Developer.java</source>
-                        <source>src/main/java/gov/healthit/chpl/domain/DeveloperStatus.java</source>
-                        <source>src/main/java/gov/healthit/chpl/domain/DeveloperStatusEvent.java</source>
-                        <source>src/main/java/gov/healthit/chpl/domain/NonconformityType.java</source>
-                        <source>src/main/java/gov/healthit/chpl/domain/Product.java</source>
-                        <source>src/main/java/gov/healthit/chpl/domain/ProductOwner.java</source>
-                        <source>src/main/java/gov/healthit/chpl/domain/ProductVersion.java</source>
-                        <source>src/main/java/gov/healthit/chpl/domain/PromotingInteroperabilityUser.java</source>
-                        <source>src/main/java/gov/healthit/chpl/domain/PublicAttestation.java</source>
-                        <source>src/main/java/gov/healthit/chpl/domain/TestData.java</source>
-                        <source>src/main/java/gov/healthit/chpl/domain/TestParticipant.java</source>
-                        <source>src/main/java/gov/healthit/chpl/domain/TestProcedure.java</source>
-                        <source>src/main/java/gov/healthit/chpl/domain/TestTask.java</source>
-                        <source>src/main/java/gov/healthit/chpl/ucdProcess/UcdProcess.java</source>
-                        <source>src/main/java/gov/healthit/chpl/domain/concept/PublicAttestationStatus.java</source>
-                        <source>src/main/java/gov/healthit/chpl/domain/surveillance/RequirementGroupType.java</source>
-                        <source>src/main/java/gov/healthit/chpl/domain/surveillance/RequirementType.java</source>
-                        <source>src/main/java/gov/healthit/chpl/domain/surveillance/Surveillance.java</source>
-                        <source>src/main/java/gov/healthit/chpl/domain/surveillance/SurveillanceNonconformity.java</source>
-                        <source>src/main/java/gov/healthit/chpl/domain/surveillance/SurveillanceNonconformityStatus.java</source>
-                        <source>src/main/java/gov/healthit/chpl/domain/surveillance/SurveillanceRequirement.java</source>
-                        <source>src/main/java/gov/healthit/chpl/domain/surveillance/SurveillanceResultType.java</source>
-                        <source>src/main/java/gov/healthit/chpl/domain/surveillance/SurveillanceType.java</source>
-                        <source>src/main/java/gov/healthit/chpl/functionalityTested/CertificationResultFunctionalityTested.java</source>
-                        <source>src/main/java/gov/healthit/chpl/optionalStandard/domain/CertificationResultOptionalStandard.java</source>
-                        <source>src/main/java/gov/healthit/chpl/svap/domain/CertificationResultSvap.java</source>
-                        <source>src/main/java/gov/healthit/chpl/criteriaattribute/Rule.java</source>
-                        <source>src/main/java/gov/healthit/chpl/criteriaattribute/Rule.java</source>
-                        <source>src/main/java/gov/healthit/chpl/criteriaattribute/CriteriaAttribute.java</source>
-                        <source>src/main/java/gov/healthit/chpl/standard/Standard.java</source>
-                    </sources>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>schemagen</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>schemagen</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

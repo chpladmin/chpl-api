@@ -25,7 +25,7 @@ public class UnavailableCriteriaReviewer implements Reviewer {
     @Override
     public void review(CertifiedProductSearchDetails listing) {
         listing.getCertificationResults().stream()
-            .filter(certResult -> BooleanUtils.isTrue(certResult.isSuccess()))
+            .filter(certResult -> BooleanUtils.isTrue(certResult.getSuccess()))
             .forEach(certResult -> review(listing, certResult));
     }
 
@@ -46,7 +46,7 @@ public class UnavailableCriteriaReviewer implements Reviewer {
     }
 
     private boolean isCriterionAttested(CertificationResult certResult) {
-        return BooleanUtils.isTrue(certResult.isSuccess());
+        return BooleanUtils.isTrue(certResult.getSuccess());
     }
 
     private boolean doCriterionDatesOverlapCertificationDay(CertifiedProductSearchDetails listing, CertificationResult certResult) {

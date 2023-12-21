@@ -4,59 +4,36 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlType;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-import gov.healthit.chpl.util.LocalDateTimeAdapter;
 import gov.healthit.chpl.util.LocalDateTimeDeserializer;
 import gov.healthit.chpl.util.LocalDateTimeSerializer;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@XmlType(namespace = "http://chpl.healthit.gov/listings")
-@XmlAccessorType(XmlAccessType.FIELD)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Builder
+@Data
+@NoArgsConstructor
 @AllArgsConstructor
 public class CertifiedProductChplProductNumberHistory implements Serializable {
     private static final long serialVersionUID = -2085183878716253974L;
 
-    /**
-     * Internal ID of the CHPL Product Number history record.
-     */
     @Schema(description = "Internal ID of the CHPL Product Number history record.")
-    @XmlElement(required = true)
     private Long id;
 
-    /**
-     * A CHPL Product Number that could have been used to reference this listing in the past.
-     */
     @Schema(description = "A CHPL Product Number that could have been used to reference this listing in the past.")
-    @XmlElement(required = true)
     private String chplProductNumber;
 
-    /**
-     * A timestamp indicating when this historical CHPL Product Number stopped being referenced
-     * for this listing.
-     */
     @Schema(description = "A timestamp indicating when this historical CHPL Product Number stopped being referenced")
-    @XmlElement(required = true)
-    @XmlJavaTypeAdapter(value = LocalDateTimeAdapter.class)
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     private LocalDateTime endDateTime;
-
-    public CertifiedProductChplProductNumberHistory() {
-        super();
-    }
 
     @Override
     public boolean equals(Object obj) {
@@ -72,28 +49,8 @@ public class CertifiedProductChplProductNumberHistory implements Serializable {
                 && Objects.equals(this.endDateTime, other.getEndDateTime());
     }
 
-    public Long getId() {
-        return id;
+    @Override
+    public int hashCode() {
+        return this.getChplProductNumber().hashCode() + this.endDateTime.hashCode();
     }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getChplProductNumber() {
-        return chplProductNumber;
-    }
-
-    public void setChplProductNumber(String chplProductNumber) {
-        this.chplProductNumber = chplProductNumber;
-    }
-
-    public LocalDateTime getEndDateTime() {
-        return endDateTime;
-    }
-
-    public void setEndDateTime(LocalDateTime endDateTime) {
-        this.endDateTime = endDateTime;
-    }
-
 }

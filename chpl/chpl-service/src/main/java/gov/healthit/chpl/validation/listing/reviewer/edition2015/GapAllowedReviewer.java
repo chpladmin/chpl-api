@@ -51,7 +51,7 @@ public class GapAllowedReviewer implements Reviewer {
     public void review(CertifiedProductSearchDetails listing) {
         if (isCertificationDateAfterCuresEffictiveRuleDate(listing)) {
             Optional<CertificationResult> f3Result = getF3Criterion(listing);
-            if (f3Result.isPresent() && f3Result.get().isSuccess() && BooleanUtils.isTrue(f3Result.get().isGap())) {
+            if (f3Result.isPresent() && f3Result.get().getSuccess() && BooleanUtils.isTrue(f3Result.get().getGap())) {
                 listing.addBusinessErrorMessage(errorMessageUtil.getMessage("listing.criteria.f3CannotHaveGap"));
             }
         }
