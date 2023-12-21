@@ -554,7 +554,7 @@ public class QuestionableActivityEmailJob extends QuartzJob {
         currRow.set(LISTING_COL, activity.getListing().getChplProductNumber());
         currRow.set(STATUS_COL, activity.getListing().getCertificationStatusName());
         currRow.set(LINK_COL, env.getProperty("chplUrlBegin") + env.getProperty("listingReportsUrlPart") + "/" + activity.getListing().getId());
-        currRow.set(ACTIVITY_USER_COL, activity.getUser().getSubjectName());
+        currRow.set(ACTIVITY_USER_COL, activity.getUser().getUsername());
 
         String currActivityRowValue = currRow.get(ACTIVITY_DESCRIPTION_COL);
         if (!StringUtils.isEmpty(currActivityRowValue)) {
