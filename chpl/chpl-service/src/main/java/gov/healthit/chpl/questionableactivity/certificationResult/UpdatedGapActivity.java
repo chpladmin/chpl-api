@@ -15,16 +15,16 @@ public class UpdatedGapActivity implements CertificationResultActivity {
     @Override
      public List<QuestionableActivityCertificationResult> check(CertificationResult origCertResult, CertificationResult newCertResult) {
         List<QuestionableActivityCertificationResult> updatedGapActivities = new ArrayList<QuestionableActivityCertificationResult>();
-        if (origCertResult.isGap() != null || newCertResult.isGap() != null) {
-            if ((origCertResult.isGap() == null && newCertResult.isGap() != null)
-                    ||  (!origCertResult.isGap() && newCertResult.isGap())) {
+        if (origCertResult.getGap() != null || newCertResult.getGap() != null) {
+            if ((origCertResult.getGap() == null && newCertResult.getGap() != null)
+                    ||  (!origCertResult.getGap() && newCertResult.getGap())) {
                 //gap changed to true
                 QuestionableActivityCertificationResult activity = new QuestionableActivityCertificationResult();
                 activity.setBefore(Boolean.FALSE.toString());
                 activity.setAfter(Boolean.TRUE.toString());
                 updatedGapActivities.add(activity);
-            } else if ((origCertResult.isGap() != null && newCertResult.isGap() == null)
-                    || (origCertResult.isGap() && !newCertResult.isGap())) {
+            } else if ((origCertResult.getGap() != null && newCertResult.getGap() == null)
+                    || (origCertResult.getGap() && !newCertResult.getGap())) {
                 //gap changed to false
                 QuestionableActivityCertificationResult activity = new QuestionableActivityCertificationResult();
                 activity.setBefore(Boolean.TRUE.toString());

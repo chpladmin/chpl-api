@@ -50,7 +50,7 @@ public class SvapReviewer implements ComparisonReviewer {
             validateSvapNoticeUrl(updatedListing);
 
             List<CertificationResult> certificationResultsWithSvaps = updatedListing.getCertificationResults().stream()
-                    .filter(cr -> BooleanUtils.isTrue(cr.isSuccess()) && !CollectionUtils.isEmpty(cr.getSvaps()))
+                    .filter(cr -> BooleanUtils.isTrue(cr.getSuccess()) && !CollectionUtils.isEmpty(cr.getSvaps()))
                     .collect(Collectors.toList());
 
             Map<Long, List<SvapCriteriaMap>> svapCriteriaMap = null;

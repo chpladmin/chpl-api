@@ -43,7 +43,7 @@ public class UnavailableCriteriaReviewer {
     }
 
     private boolean isCriterionAttested(CertificationResult certResult) {
-        return BooleanUtils.isTrue(certResult.isSuccess());
+        return BooleanUtils.isTrue(certResult.getSuccess());
     }
 
     private boolean doCriterionDatesOverlapCertificationDay(CertifiedProductSearchDetails listing, CertificationResult certResult) {

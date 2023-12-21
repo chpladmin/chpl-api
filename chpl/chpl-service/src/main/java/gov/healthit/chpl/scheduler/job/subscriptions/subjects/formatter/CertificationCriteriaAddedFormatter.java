@@ -61,8 +61,8 @@ public class CertificationCriteriaAddedFormatter extends ObservationSubjectForma
                 .map(newCertResult -> createCertResultPair(originalListing.getCertificationResults(), newCertResult))
                 .collect(Collectors.toList());
         return origAndNewCertResultPairs.stream()
-            .filter(pair -> (pair.getLeft() == null || BooleanUtils.isFalse(pair.getLeft().isSuccess()))
-                                    && (pair.getRight() != null && BooleanUtils.isTrue(pair.getRight().isSuccess())))
+            .filter(pair -> (pair.getLeft() == null || BooleanUtils.isFalse(pair.getLeft().getSuccess()))
+                                    && (pair.getRight() != null && BooleanUtils.isTrue(pair.getRight().getSuccess())))
             .map(pair -> pair.getRight().getCriterion())
             .collect(Collectors.toList());
     }

@@ -44,7 +44,7 @@ public class FunctionalityTestedAllowedByCriteriaReviewer extends PermissionBase
     public void review(CertifiedProductSearchDetails listing) {
         if (listing.getCertificationResults() != null) {
             for (CertificationResult cr : listing.getCertificationResults()) {
-                if (BooleanUtils.isTrue(cr.isSuccess()) && cr.getFunctionalitiesTested() != null) {
+                if (BooleanUtils.isTrue(cr.getSuccess()) && cr.getFunctionalitiesTested() != null) {
                     for (CertificationResultFunctionalityTested crft : cr.getFunctionalitiesTested()) {
                         addFunctionalitiesTestedErrorMessages(crft, cr, listing);
                     }

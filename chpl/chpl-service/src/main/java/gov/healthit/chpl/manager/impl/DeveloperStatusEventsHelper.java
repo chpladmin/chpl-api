@@ -120,7 +120,7 @@ public final class DeveloperStatusEventsHelper {
                                 .id(original.getStatus().getId())
                                 .status(original.getStatus().getStatus())
                                 .build())
-                        .statusDate(original.getStatusDate())
+                        .statusDate(new Date(original.getStatusDate().getTime()))
                         .build());
             }
             return clone;
