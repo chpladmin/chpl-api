@@ -32,7 +32,6 @@ import gov.healthit.chpl.caching.ListingSearchCacheRefresh;
 import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
 import gov.healthit.chpl.certifiedproduct.service.CertificationResultSynchronizationService;
 import gov.healthit.chpl.certifiedproduct.service.CqmResultSynchronizationService;
-import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.dao.CertificationStatusDAO;
 import gov.healthit.chpl.dao.CertificationStatusEventDAO;
 import gov.healthit.chpl.dao.CertifiedProductAccessibilityStandardDAO;
@@ -111,7 +110,6 @@ import lombok.extern.log4j.Log4j2;
 public class CertifiedProductManager extends SecuredManager {
     private ErrorMessageUtil msgUtil;
     private CertifiedProductDAO cpDao;
-    private CertificationCriterionDAO certCriterionDao;
     private QmsStandardDAO qmsDao;
     private TargetedUserDAO targetedUserDao;
     private AccessibilityStandardDAO asDao;
@@ -129,7 +127,7 @@ public class CertifiedProductManager extends SecuredManager {
     private CuresUpdateEventDAO curesUpdateDao;
     private PromotingInteroperabilityUserDAO piuDao;
     private CertificationResultSynchronizationService certResultService;
-    private CqmResultSynchronizationService cqmService;
+    private CqmResultSynchronizationService cqmResultService;
     private CertificationStatusDAO certStatusDao;
     private ListingGraphDAO listingGraphDao;
     private ResourcePermissions resourcePermissions;
@@ -152,14 +150,14 @@ public class CertifiedProductManager extends SecuredManager {
             "checkstyle:parameternumber"
     })
     @Autowired
-    public CertifiedProductManager(ErrorMessageUtil msgUtil, CertifiedProductDAO cpDao, CertificationCriterionDAO certCriterionDao,
+    public CertifiedProductManager(ErrorMessageUtil msgUtil, CertifiedProductDAO cpDao,
             QmsStandardDAO qmsDao, TargetedUserDAO targetedUserDao, AccessibilityStandardDAO asDao, CertifiedProductQmsStandardDAO cpQmsDao,
             ListingMeasureDAO cpMeasureDao, CertifiedProductTestingLabDAO cpTestingLabDao, CertifiedProductTargetedUserDAO cpTargetedUserDao,
             CertifiedProductAccessibilityStandardDAO cpAccStdDao,
              DeveloperDAO developerDao, DeveloperStatusDAO devStatusDao, @Lazy DeveloperManager developerManager,
             ProductManager productManager, ProductVersionManager versionManager, CertificationStatusEventDAO statusEventDao,
             CuresUpdateEventDAO curesUpdateDao, PromotingInteroperabilityUserDAO piuDao,
-            CertificationResultSynchronizationService certResultService, CqmResultSynchronizationService cqmService,
+            CertificationResultSynchronizationService certResultService, CqmResultSynchronizationService cqmResultService,
             CertificationStatusDAO certStatusDao, ListingGraphDAO listingGraphDao, ResourcePermissions resourcePermissions,
             CertifiedProductDetailsManager certifiedProductDetailsManager,
             SchedulerManager schedulerManager, ActivityManager activityManager, ListingDetailsNormalizer listingNormalizer,
@@ -168,7 +166,6 @@ public class CertifiedProductManager extends SecuredManager {
 
         this.msgUtil = msgUtil;
         this.cpDao = cpDao;
-        this.certCriterionDao = certCriterionDao;
         this.qmsDao = qmsDao;
         this.targetedUserDao = targetedUserDao;
         this.asDao = asDao;
@@ -186,7 +183,7 @@ public class CertifiedProductManager extends SecuredManager {
         this.curesUpdateDao = curesUpdateDao;
         this.piuDao = piuDao;
         this.certResultService = certResultService;
-        this.cqmService = cqmService;
+        this.cqmResultService = cqmResultService;
         this.certStatusDao = certStatusDao;
         this.listingGraphDao = listingGraphDao;
         this.resourcePermissions = resourcePermissions;
@@ -1255,7 +1252,7 @@ public class CertifiedProductManager extends SecuredManager {
     private int updateCqms(CertifiedProductSearchDetails listing, List<CQMResultDetails> existingCqmDetails,
             List<CQMResultDetails> updatedCqmDetails)
             throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
-        return cqmService.synchronizeCqmss(listing, existingCqmDetails, updatedCqmDetails);
+        return cqmResultService.synchronizeCqmss(listing, existingCqmDetails, updatedCqmDetails);
     }
 
     private void triggerDeveloperBan(CertifiedProductSearchDetails updatedListing, String reason) {

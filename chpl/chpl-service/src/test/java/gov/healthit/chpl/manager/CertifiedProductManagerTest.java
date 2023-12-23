@@ -27,9 +27,7 @@ import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.accessibilityStandard.AccessibilityStandardDAO;
 import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
 import gov.healthit.chpl.certifiedproduct.service.CertificationResultSynchronizationService;
-import gov.healthit.chpl.dao.CQMCriterionDAO;
-import gov.healthit.chpl.dao.CQMResultDAO;
-import gov.healthit.chpl.dao.CertificationCriterionDAO;
+import gov.healthit.chpl.certifiedproduct.service.CqmResultSynchronizationService;
 import gov.healthit.chpl.dao.CertificationStatusDAO;
 import gov.healthit.chpl.dao.CertificationStatusEventDAO;
 import gov.healthit.chpl.dao.CertifiedProductAccessibilityStandardDAO;
@@ -44,7 +42,6 @@ import gov.healthit.chpl.dao.DeveloperStatusDAO;
 import gov.healthit.chpl.dao.ListingGraphDAO;
 import gov.healthit.chpl.dao.PromotingInteroperabilityUserDAO;
 import gov.healthit.chpl.dao.TargetedUserDAO;
-import gov.healthit.chpl.dao.TestingLabDAO;
 import gov.healthit.chpl.domain.Address;
 import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.CertificationEdition;
@@ -86,7 +83,7 @@ public class CertifiedProductManagerTest {
     private ErrorMessageUtil msgUtil;
     private CertifiedProductDAO cpDao;
     private CertificationResultSynchronizationService certResultService;
-    private CertificationCriterionDAO certCriterionDao;
+    private CqmResultSynchronizationService cqmResultService;
     private QmsStandardDAO qmsDao;
     private TargetedUserDAO targetedUserDao;
     private AccessibilityStandardDAO asDao;
@@ -95,9 +92,6 @@ public class CertifiedProductManagerTest {
     private CertifiedProductTestingLabDAO cpTestingLabDao;
     private CertifiedProductTargetedUserDAO cpTargetedUserDao;
     private CertifiedProductAccessibilityStandardDAO cpAccStdDao;
-    private CQMResultDAO cqmResultDAO;
-    private CQMCriterionDAO cqmCriterionDao;
-    private TestingLabDAO atlDao;
     private DeveloperDAO developerDao;
     private DeveloperStatusDAO devStatusDao;
     private DeveloperManager developerManager;
@@ -106,7 +100,6 @@ public class CertifiedProductManagerTest {
     private CertificationStatusEventDAO statusEventDao;
     private CuresUpdateEventDAO curesUpdateDao;
     private PromotingInteroperabilityUserDAO piuDao;
-    private CertificationResultManager certResultManager;
     private CertificationStatusDAO certStatusDao;
     private ListingGraphDAO listingGraphDao;
     private ResourcePermissions resourcePermissions;
@@ -124,7 +117,7 @@ public class CertifiedProductManagerTest {
         msgUtil = Mockito.mock(ErrorMessageUtil.class);
         cpDao = Mockito.mock(CertifiedProductDAO.class);
         certResultService = Mockito.mock(CertificationResultSynchronizationService.class);
-        certCriterionDao = Mockito.mock(CertificationCriterionDAO.class);
+        cqmResultService = Mockito.mock(CqmResultSynchronizationService.class);
         qmsDao = Mockito.mock(QmsStandardDAO.class);
         targetedUserDao = Mockito.mock(TargetedUserDAO.class);
         asDao = Mockito.mock(AccessibilityStandardDAO.class);
@@ -133,9 +126,6 @@ public class CertifiedProductManagerTest {
         cpTestingLabDao = Mockito.mock(CertifiedProductTestingLabDAO.class);
         cpTargetedUserDao = Mockito.mock(CertifiedProductTargetedUserDAO.class);
         cpAccStdDao = Mockito.mock(CertifiedProductAccessibilityStandardDAO.class);
-        cqmResultDAO = Mockito.mock(CQMResultDAO.class);
-        cqmCriterionDao = Mockito.mock(CQMCriterionDAO.class);
-        atlDao = Mockito.mock(TestingLabDAO.class);
         developerDao = Mockito.mock(DeveloperDAO.class);
         devStatusDao = Mockito.mock(DeveloperStatusDAO.class);
         developerManager = Mockito.mock(DeveloperManager.class);
@@ -144,7 +134,6 @@ public class CertifiedProductManagerTest {
         statusEventDao = Mockito.mock(CertificationStatusEventDAO.class);
         curesUpdateDao = Mockito.mock(CuresUpdateEventDAO.class);
         piuDao = Mockito.mock(PromotingInteroperabilityUserDAO.class);
-        certResultManager = Mockito.mock(CertificationResultManager.class);
         certStatusDao = Mockito.mock(CertificationStatusDAO.class);
         listingGraphDao = Mockito.mock(ListingGraphDAO.class);
         resourcePermissions = Mockito.mock(ResourcePermissions.class);
@@ -157,12 +146,12 @@ public class CertifiedProductManagerTest {
 
         Mockito.when(ff4j.check(FeatureList.EDITIONLESS)).thenReturn(false);
 
-        certifiedProductManager = new  CertifiedProductManager(msgUtil, cpDao,
-                certCriterionDao, qmsDao,  targetedUserDao, asDao,  cpQmsDao, cpMeasureDao, cpTestingLabDao,
-                cpTargetedUserDao, cpAccStdDao,  cqmResultDAO, cqmCriterionDao,  atlDao,
+        certifiedProductManager = new CertifiedProductManager(msgUtil, cpDao,
+                 qmsDao,  targetedUserDao, asDao,  cpQmsDao, cpMeasureDao, cpTestingLabDao,
+                cpTargetedUserDao, cpAccStdDao,
                 developerDao,  devStatusDao, developerManager,  productManager, versionManager,
-                statusEventDao, curesUpdateDao, piuDao, certResultService, certStatusDao,
-                listingGraphDao, resourcePermissions, certifiedProductSearchResultDAO,
+                statusEventDao, curesUpdateDao, piuDao, certResultService, cqmResultService, certStatusDao,
+                listingGraphDao, resourcePermissions,
                 certifiedProductDetailsManager,
                 Mockito.mock(SchedulerManager.class),
                 activityManager, Mockito.mock(ListingDetailsNormalizer.class),
