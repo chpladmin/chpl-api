@@ -5,13 +5,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.persistence.EntityNotFoundException;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.ff4j.FF4j;
@@ -32,18 +29,15 @@ import gov.healthit.chpl.accessibilityStandard.AccessibilityStandard;
 import gov.healthit.chpl.accessibilityStandard.AccessibilityStandardDAO;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.caching.ListingSearchCacheRefresh;
-import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
 import gov.healthit.chpl.certifiedproduct.service.CertificationResultSynchronizationService;
-import gov.healthit.chpl.dao.CQMCriterionDAO;
-import gov.healthit.chpl.dao.CQMResultDAO;
+import gov.healthit.chpl.certifiedproduct.service.CqmResultSynchronizationService;
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.dao.CertificationStatusDAO;
 import gov.healthit.chpl.dao.CertificationStatusEventDAO;
 import gov.healthit.chpl.dao.CertifiedProductAccessibilityStandardDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.CertifiedProductQmsStandardDAO;
-import gov.healthit.chpl.dao.CertifiedProductSearchResultDAO;
 import gov.healthit.chpl.dao.CertifiedProductTargetedUserDAO;
 import gov.healthit.chpl.dao.CertifiedProductTestingLabDAO;
 import gov.healthit.chpl.dao.CuresUpdateEventDAO;
@@ -52,7 +46,6 @@ import gov.healthit.chpl.dao.DeveloperStatusDAO;
 import gov.healthit.chpl.dao.ListingGraphDAO;
 import gov.healthit.chpl.dao.PromotingInteroperabilityUserDAO;
 import gov.healthit.chpl.dao.TargetedUserDAO;
-import gov.healthit.chpl.dao.TestingLabDAO;
 import gov.healthit.chpl.domain.CQMResultCertification;
 import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.CertificationResult;
@@ -74,8 +67,6 @@ import gov.healthit.chpl.domain.PromotingInteroperabilityUser;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.domain.schedule.ChplJob;
 import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
-import gov.healthit.chpl.dto.CQMCriterionDTO;
-import gov.healthit.chpl.dto.CQMResultDTO;
 import gov.healthit.chpl.dto.CertifiedProductAccessibilityStandardDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
@@ -129,9 +120,6 @@ public class CertifiedProductManager extends SecuredManager {
     private CertifiedProductTestingLabDAO cpTestingLabDao;
     private CertifiedProductTargetedUserDAO cpTargetedUserDao;
     private CertifiedProductAccessibilityStandardDAO cpAccStdDao;
-    private CQMResultDAO cqmResultDAO;
-    private CQMCriterionDAO cqmCriterionDao;
-    private TestingLabDAO atlDao;
     private DeveloperDAO developerDao;
     private DeveloperStatusDAO devStatusDao;
     private DeveloperManager developerManager;
@@ -141,10 +129,10 @@ public class CertifiedProductManager extends SecuredManager {
     private CuresUpdateEventDAO curesUpdateDao;
     private PromotingInteroperabilityUserDAO piuDao;
     private CertificationResultSynchronizationService certResultService;
+    private CqmResultSynchronizationService cqmService;
     private CertificationStatusDAO certStatusDao;
     private ListingGraphDAO listingGraphDao;
     private ResourcePermissions resourcePermissions;
-    private CertifiedProductSearchResultDAO certifiedProductSearchResultDAO;
     private CertifiedProductDetailsManager certifiedProductDetailsManager;
     private SchedulerManager schedulerManager;
     private ActivityManager activityManager;
@@ -167,12 +155,13 @@ public class CertifiedProductManager extends SecuredManager {
     public CertifiedProductManager(ErrorMessageUtil msgUtil, CertifiedProductDAO cpDao, CertificationCriterionDAO certCriterionDao,
             QmsStandardDAO qmsDao, TargetedUserDAO targetedUserDao, AccessibilityStandardDAO asDao, CertifiedProductQmsStandardDAO cpQmsDao,
             ListingMeasureDAO cpMeasureDao, CertifiedProductTestingLabDAO cpTestingLabDao, CertifiedProductTargetedUserDAO cpTargetedUserDao,
-            CertifiedProductAccessibilityStandardDAO cpAccStdDao, CQMResultDAO cqmResultDAO, CQMCriterionDAO cqmCriterionDao,
-            TestingLabDAO atlDao, DeveloperDAO developerDao, DeveloperStatusDAO devStatusDao, @Lazy DeveloperManager developerManager,
+            CertifiedProductAccessibilityStandardDAO cpAccStdDao,
+             DeveloperDAO developerDao, DeveloperStatusDAO devStatusDao, @Lazy DeveloperManager developerManager,
             ProductManager productManager, ProductVersionManager versionManager, CertificationStatusEventDAO statusEventDao,
-            CuresUpdateEventDAO curesUpdateDao, PromotingInteroperabilityUserDAO piuDao, CertificationResultSynchronizationService certResultService,
+            CuresUpdateEventDAO curesUpdateDao, PromotingInteroperabilityUserDAO piuDao,
+            CertificationResultSynchronizationService certResultService, CqmResultSynchronizationService cqmService,
             CertificationStatusDAO certStatusDao, ListingGraphDAO listingGraphDao, ResourcePermissions resourcePermissions,
-            CertifiedProductSearchResultDAO certifiedProductSearchResultDAO, CertifiedProductDetailsManager certifiedProductDetailsManager,
+            CertifiedProductDetailsManager certifiedProductDetailsManager,
             SchedulerManager schedulerManager, ActivityManager activityManager, ListingDetailsNormalizer listingNormalizer,
             ListingValidatorFactory validatorFactory, CuresUpdateService curesUpdateService, @Lazy ListingIcsSharedStoreHandler icsSharedStoreHandler,
             ChplTeamNotifier chplteamNotifier, Environment env, ChplHtmlEmailBuilder chplHtmlEmailBuilder, FF4j ff4j) {
@@ -188,9 +177,6 @@ public class CertifiedProductManager extends SecuredManager {
         this.cpTestingLabDao = cpTestingLabDao;
         this.cpTargetedUserDao = cpTargetedUserDao;
         this.cpAccStdDao = cpAccStdDao;
-        this.cqmResultDAO = cqmResultDAO;
-        this.cqmCriterionDao = cqmCriterionDao;
-        this.atlDao = atlDao;
         this.developerDao = developerDao;
         this.devStatusDao = devStatusDao;
         this.developerManager = developerManager;
@@ -200,10 +186,10 @@ public class CertifiedProductManager extends SecuredManager {
         this.curesUpdateDao = curesUpdateDao;
         this.piuDao = piuDao;
         this.certResultService = certResultService;
+        this.cqmService = cqmService;
         this.certStatusDao = certStatusDao;
         this.listingGraphDao = listingGraphDao;
         this.resourcePermissions = resourcePermissions;
-        this.certifiedProductSearchResultDAO = certifiedProductSearchResultDAO;
         this.certifiedProductDetailsManager = certifiedProductDetailsManager;
         this.schedulerManager = schedulerManager;
         this.activityManager = activityManager;
@@ -350,7 +336,6 @@ public class CertifiedProductManager extends SecuredManager {
                 changedProduct, reason);
     }
 
-    @SuppressWarnings({ "checkstyle:linelength" })
     private void updateListingsChildData(CertifiedProductSearchDetails existingListing, CertifiedProductSearchDetails updatedListing)
             throws EntityCreationException, EntityRetrievalException, IOException {
 
@@ -372,7 +357,8 @@ public class CertifiedProductManager extends SecuredManager {
             updateCuresUpdateEvents(updatedListing.getId(), existingListing.getCuresUpdate(), updatedListing);
         }
 
-        updatePromotingInteroperabilityUserHistory(updatedListing.getId(), existingListing.getPromotingInteroperabilityUserHistory(),
+        updatePromotingInteroperabilityUserHistory(updatedListing.getId(),
+                existingListing.getPromotingInteroperabilityUserHistory(),
                 updatedListing.getPromotingInteroperabilityUserHistory());
         updateCertifications(existingListing, updatedListing,
                 existingListing.getCertificationResults(), updatedListing.getCertificationResults());
@@ -1269,244 +1255,7 @@ public class CertifiedProductManager extends SecuredManager {
     private int updateCqms(CertifiedProductSearchDetails listing, List<CQMResultDetails> existingCqmDetails,
             List<CQMResultDetails> updatedCqmDetails)
             throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
-
-        int numChanges = 0;
-        numChanges += addCqmResults(listing.getId(), existingCqmDetails, updatedCqmDetails);
-        numChanges += removeCqmResults(listing.getId(), existingCqmDetails, updatedCqmDetails);
-        numChanges += updateCqmResults(listing.getId(), existingCqmDetails, updatedCqmDetails);
-        return numChanges;
-    }
-
-    private int addCqmResults(Long listingId, List<CQMResultDetails> existingCqms, List<CQMResultDetails> updatedCqms) {
-        List<CQMResultDetails> cqmsToAdd = new ArrayList<CQMResultDetails>();
-        updatedCqms.stream()
-            .filter(updatedCqm -> updatedCqm.getSuccess() && !isCqmAttested(updatedCqm, existingCqms))
-            .forEach(updatedCqmToAdd -> cqmsToAdd.add(updatedCqmToAdd));
-
-        cqmsToAdd.stream()
-            .forEach(cqmToAdd -> {
-                try {
-                    LOGGER.info("Adding CQM " + cqmToAdd.getCmsId() + " for listing " + listingId);
-                    addCqmAndAllSuccessVersions(listingId, cqmToAdd);
-                } catch (EntityRetrievalException | EntityCreationException ex) {
-                    LOGGER.error("Error inserting CQM " + cqmToAdd.getCmsId() + " for listing ID " + listingId, ex);
-                }
-            });
-
-        return cqmsToAdd.size();
-    }
-
-    private boolean isCqmAttested(CQMResultDetails cqmToFind, List<CQMResultDetails> cqms) {
-        return cqms.stream()
-            .filter(cqm -> (isNqfCqmMatching(cqmToFind, cqm) || isCmsCqmMatching(cqmToFind, cqm))
-                    && BooleanUtils.isTrue(cqm.getSuccess()))
-            .findAny().isPresent();
-    }
-
-    private void addCqmAndAllSuccessVersions(Long listingId, CQMResultDetails cqmDetails)
-            throws EntityRetrievalException, EntityCreationException {
-        List<CQMCriterionDTO> cqmsToCreate = new ArrayList<CQMCriterionDTO>();
-        if (StringUtils.isEmpty(cqmDetails.getCmsId())) {
-            cqmsToCreate = Stream.of(cqmCriterionDao.getNQFByNumber(cqmDetails.getNumber())).toList();
-        } else if (cqmDetails.getCmsId().startsWith("CMS")) {
-            cqmsToCreate.addAll(cqmDetails.getSuccessVersions().stream()
-                    .map(successVersion -> cqmCriterionDao.getCMSByNumberAndVersion(cqmDetails.getCmsId(), successVersion))
-                    .filter(lookedUpCqmCriterion -> lookedUpCqmCriterion != null)
-                    .collect(Collectors.toList()));
-        }
-        if (CollectionUtils.isEmpty(cqmsToCreate)) {
-            throw new EntityRetrievalException("Could not find CQM " + cqmDetails.getCmsId());
-        }
-
-        cqmsToCreate.stream()
-            .forEach(cqmToCreate -> {
-                //create a CQM+Version mapping for the listing and then add the linked criteria (c1,c2,c3,c4)
-                CQMResultDTO newCQMResult = new CQMResultDTO();
-                newCQMResult.setCertifiedProductId(listingId);
-                newCQMResult.setCqmCriterionId(cqmToCreate.getId());
-                newCQMResult.setSuccess(true);
-                try {
-                    CQMResultDTO createdCqmResult = cqmResultDAO.create(newCQMResult);
-                    if (cqmDetails.getCriteria() != null && cqmDetails.getCriteria().size() > 0) {
-                        cqmDetails.getCriteria().stream()
-                            .forEach(cqmCriterion -> cqmResultDAO.createCriteriaMapping(createdCqmResult.getId(), cqmCriterion.getCriterion().getId()));
-                    }
-                } catch (Exception ex) {
-                    LOGGER.error("Error creating CQM Result for CQM ID " + cqmToCreate.getId() + " and listing ID " + listingId, ex);
-                }
-            });
-    }
-
-    private int removeCqmResults(Long listingId, List<CQMResultDetails> existingCqms, List<CQMResultDetails> updatedCqms) {
-        List<CQMResultDetails> cqmsToRemove = new ArrayList<CQMResultDetails>();
-        existingCqms.stream()
-            .filter(existingCqm -> existingCqm.getSuccess() && !isCqmAttested(existingCqm, updatedCqms))
-            .forEach(existingCqmToRemove -> cqmsToRemove.add(existingCqmToRemove));
-
-        cqmsToRemove.stream()
-        .forEach(cqmToRemove -> {
-            try {
-                removeCqmResult(listingId, cqmToRemove);
-            } catch (Exception ex) {
-                LOGGER.error("Error removing CQM Result " + cqmToRemove.getId() + " for listing ID " + listingId, ex);
-            }
-        });
-
-        return cqmsToRemove.size();
-    }
-
-    private void removeCqmResult(Long listingId, CQMResultDetails cqmToRemove) {
-        cqmToRemove.getSuccessVersions().stream()
-            .forEach(version -> {
-                cqmResultDAO.deleteByCmsNumberAndVersion(listingId, cqmToRemove.getCmsId(), version);
-            });
-        //criteria mappings will be removed via soft delete
-    }
-
-    private boolean isNqfCqmMatching(CQMResultDetails cqm1, CQMResultDetails cqm2) {
-        // NQF is the same if the NQF numbers are equal
-        return StringUtils.isEmpty(cqm2.getCmsId())
-            && StringUtils.isEmpty(cqm1.getCmsId())
-            && !StringUtils.isEmpty(cqm2.getNqfNumber())
-            && !StringUtils.isEmpty(cqm1.getNqfNumber())
-            && !cqm2.getNqfNumber().equals("N/A") && !cqm1.getNqfNumber().equals("N/A")
-            && cqm2.getNqfNumber().equals(cqm1.getNqfNumber());
-    }
-
-    private boolean isCmsCqmMatching(CQMResultDetails cqm1, CQMResultDetails cqm2) {
-        // CMS is the same if the CMS ID is equal
-        return cqm2.getCmsId() != null && cqm1.getCmsId() != null
-                && cqm2.getCmsId().equals(cqm1.getCmsId());
-    }
-
-    private int updateCqmResults(Long listingId, List<CQMResultDetails> existingCqms, List<CQMResultDetails> updatedCqms)
-            throws EntityRetrievalException {
-        List<CQMResultDetailsPair> cqmPairs = getCqmPairs(existingCqms, updatedCqms);
-        cqmPairs.stream()
-            .filter(cqmPair -> cqmPair.getOrig().getSuccess() && cqmPair.getUpdated().getSuccess())
-            .forEach(cqmPair -> {
-                //check for changes to success versions
-                updateCqmSuccessVersions(listingId, cqmPair.getOrig(), cqmPair.getUpdated());
-                //check for changes to associated c-criteria
-                updateCqmAssociatedCriteria(cqmPair.getOrig(), cqmPair.getUpdated());
-            });
-        return cqmPairs.size();
-    }
-
-    private List<CQMResultDetailsPair> getCqmPairs(List<CQMResultDetails> existingCqms, List<CQMResultDetails> updatedCqms) {
-        List<CQMResultDetailsPair> cqmPairs = new ArrayList<CQMResultDetailsPair>();
-        if (updatedCqms != null && updatedCqms.size() > 0) {
-            for (CQMResultDetails updatedCqm : updatedCqms) {
-                for (CQMResultDetails existingCqm : existingCqms) {
-                    if (isNqfCqmMatching(existingCqm, updatedCqm) || isCmsCqmMatching(existingCqm, updatedCqm)) {
-                        cqmPairs.add(new CQMResultDetailsPair(existingCqm, updatedCqm));
-                    }
-                }
-            }
-        }
-        return cqmPairs;
-    }
-
-    private int updateCqmAssociatedCriteria(CQMResultDetails existingCqm, CQMResultDetails updatedCqm) {
-        List<CQMResultCertification> criteriaToAdd = new ArrayList<CQMResultCertification>();
-        List<CQMResultCertification> criteriaToRemove = new ArrayList<CQMResultCertification>();
-
-        for (CQMResultCertification existingCriterion : existingCqm.getCriteria()) {
-            boolean exists = false;
-            for (CQMResultCertification updatedCriterion : updatedCqm.getCriteria()) {
-                if (existingCriterion.getCriterion().getId().equals(updatedCriterion.getCriterion().getId())) {
-                    exists = true;
-                }
-            }
-            if (!exists) {
-                criteriaToRemove.add(existingCriterion);
-            }
-        }
-
-        for (CQMResultCertification updatedCriterion : updatedCqm.getCriteria()) {
-            boolean exists = false;
-            for (CQMResultCertification existingCriterion : existingCqm.getCriteria()) {
-                if (existingCriterion.getCriterion().getId().equals(updatedCriterion.getCriterion().getId())) {
-                    exists = true;
-                }
-            }
-            if (!exists) {
-                criteriaToAdd.add(updatedCriterion);
-            }
-        }
-
-        int numChanges = criteriaToAdd.size() + criteriaToRemove.size();
-        for (CQMResultCertification currToAdd : criteriaToAdd) {
-            Long mappedCriterionId = findCqmCriterionId(currToAdd);
-            if (mappedCriterionId != null) {
-                cqmResultDAO.createCriteriaMapping(existingCqm.getId(), mappedCriterionId);
-            }
-        }
-        for (CQMResultCertification currToRemove : criteriaToRemove) {
-            cqmResultDAO.deleteCriteriaMapping(currToRemove.getId());
-        }
-        return numChanges;
-    }
-
-    private int updateCqmSuccessVersions(Long listingId, CQMResultDetails existingCqm, CQMResultDetails updatedCqm) {
-        List<String> versionsToAdd = new ArrayList<String>();
-        List<String> versionsToRemove = new ArrayList<String>();
-
-        for (String existingVersion : existingCqm.getSuccessVersions()) {
-            boolean exists = false;
-            for (String updatedVersion : updatedCqm.getSuccessVersions()) {
-                if (existingVersion.equals(updatedVersion)) {
-                    exists = true;
-                }
-            }
-            if (!exists) {
-                versionsToRemove.add(existingVersion);
-            }
-        }
-
-        for (String updatedVersion : updatedCqm.getSuccessVersions()) {
-            boolean exists = false;
-            for (String existingVersion : existingCqm.getSuccessVersions()) {
-                if (existingVersion.equals(updatedVersion)) {
-                    exists = true;
-                }
-            }
-            if (!exists) {
-                versionsToAdd.add(updatedVersion);
-            }
-        }
-
-        int numChanges = versionsToAdd.size() + versionsToRemove.size();
-        for (String currToAdd : versionsToAdd) {
-            try {
-                cqmResultDAO.create(listingId, existingCqm.getCmsId(), currToAdd, existingCqm.getCriteria());
-            } catch (Exception ex) {
-                LOGGER.error("Could not create mapping between listing " + listingId + " and CQM " + existingCqm.getCmsId() + " and version " + currToAdd);
-            }
-        }
-        for (String currToRemove : versionsToRemove) {
-            cqmResultDAO.deleteByCmsNumberAndVersion(listingId, existingCqm.getCmsId(), currToRemove);
-        }
-        return numChanges;
-    }
-
-    private Long findCqmCriterionId(CQMResultCertification cqm) {
-        if (cqm.getCriterion() != null && cqm.getCriterion().getId() != null) {
-            return cqm.getCriterion().getId();
-        } else if (cqm.getCriterion() != null && !StringUtils.isEmpty(cqm.getCriterion().getNumber())
-                && !StringUtils.isEmpty(cqm.getCriterion().getTitle())) {
-            CertificationCriterion cert = certCriterionDao.getByNumberAndTitle(
-                    cqm.getCriterion().getNumber(), cqm.getCriterion().getTitle());
-            if (cert != null) {
-                return cert.getId();
-            } else {
-                LOGGER.error(
-                        "Could not find certification criteria with number " + cqm.getCriterion().getNumber());
-            }
-        } else {
-            LOGGER.error("A criteria id or number must be provided.");
-        }
-        return null;
+        return cqmService.synchronizeCqmss(listing, existingCqmDetails, updatedCqmDetails);
     }
 
     private void triggerDeveloperBan(CertifiedProductSearchDetails updatedListing, String reason) {
@@ -1607,20 +1356,6 @@ public class CertifiedProductManager extends SecuredManager {
         }
 
         MeasurePair(ListingMeasure orig, ListingMeasure updated) {
-            this.orig = orig;
-            this.updated = updated;
-        }
-    }
-
-    @Data
-    private static class CQMResultDetailsPair {
-        private CQMResultDetails orig;
-        private CQMResultDetails updated;
-
-        CQMResultDetailsPair() {
-        }
-
-        CQMResultDetailsPair(CQMResultDetails orig, CQMResultDetails updated) {
             this.orig = orig;
             this.updated = updated;
         }
