@@ -5,10 +5,13 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.persistence.EntityNotFoundException;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.ff4j.FF4j;
@@ -72,9 +75,7 @@ import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.domain.schedule.ChplJob;
 import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
 import gov.healthit.chpl.dto.CQMCriterionDTO;
-import gov.healthit.chpl.dto.CQMResultCriteriaDTO;
 import gov.healthit.chpl.dto.CQMResultDTO;
-import gov.healthit.chpl.dto.CQMResultDetailsDTO;
 import gov.healthit.chpl.dto.CertifiedProductAccessibilityStandardDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
@@ -1268,187 +1269,229 @@ public class CertifiedProductManager extends SecuredManager {
     private int updateCqms(CertifiedProductSearchDetails listing, List<CQMResultDetails> existingCqmDetails,
             List<CQMResultDetails> updatedCqmDetails)
             throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
-        // convert to CQMResultDetailsDTO since CMS CQMs can have multiple entries
-        // per success version. work with these objects instead of the passed-in
-        // ones
-        List<CQMResultDetailsDTO> existingCqms = new ArrayList<CQMResultDetailsDTO>();
-        for (CQMResultDetails existingItem : existingCqmDetails) {
-            List<CQMResultDetailsDTO> toAdd = convert(existingItem);
-            existingCqms.addAll(toAdd);
-        }
-        List<CQMResultDetailsDTO> updatedCqms = new ArrayList<CQMResultDetailsDTO>();
-        for (CQMResultDetails updatedItem : updatedCqmDetails) {
-            List<CQMResultDetailsDTO> toAdd = convert(updatedItem);
-            updatedCqms.addAll(toAdd);
-        }
 
         int numChanges = 0;
-        List<CQMResultDetailsDTO> cqmsToAdd = new ArrayList<CQMResultDetailsDTO>();
-        List<CQMResultDetailsPair> cqmsToUpdate = new ArrayList<CQMResultDetailsPair>();
-        List<Long> idsToRemove = new ArrayList<Long>();
-
-        // figure out which cqms to add
-        if (updatedCqms != null && updatedCqms.size() > 0) {
-            // existing listing has some, compare to the update to see if any
-            // are different
-            for (CQMResultDetailsDTO updatedItem : updatedCqms) {
-                boolean inExistingListing = false;
-                for (CQMResultDetailsDTO existingItem : existingCqms) {
-                    if (!inExistingListing && StringUtils.isEmpty(updatedItem.getCmsId())
-                            && StringUtils.isEmpty(existingItem.getCmsId())
-                            && !StringUtils.isEmpty(updatedItem.getNqfNumber())
-                            && !StringUtils.isEmpty(existingItem.getNqfNumber())
-                            && !updatedItem.getNqfNumber().equals("N/A") && !existingItem.getNqfNumber().equals("N/A")
-                            && updatedItem.getNqfNumber().equals(existingItem.getNqfNumber())) {
-                        // NQF is the same if the NQF numbers are equal
-                        inExistingListing = true;
-                        cqmsToUpdate.add(new CQMResultDetailsPair(existingItem, updatedItem));
-                    } else if (!inExistingListing && updatedItem.getCmsId() != null && existingItem.getCmsId() != null
-                            && updatedItem.getCmsId().equals(existingItem.getCmsId())
-                            && updatedItem.getVersion() != null && existingItem.getVersion() != null
-                            && updatedItem.getVersion().equals(existingItem.getVersion())) {
-                        // CMS is the same if the CMS ID and version is equal
-                        inExistingListing = true;
-                        cqmsToUpdate.add(new CQMResultDetailsPair(existingItem, updatedItem));
-                    }
-                }
-
-                if (!inExistingListing) {
-                    cqmsToAdd.add(updatedItem);
-                }
-            }
-        }
-
-        // figure out which cqms to remove
-        if (existingCqms != null && existingCqms.size() > 0) {
-            for (CQMResultDetailsDTO existingItem : existingCqms) {
-                boolean inUpdatedListing = false;
-                for (CQMResultDetailsDTO updatedItem : updatedCqms) {
-                    if (!inUpdatedListing && StringUtils.isEmpty(updatedItem.getCmsId())
-                            && StringUtils.isEmpty(existingItem.getCmsId())
-                            && !StringUtils.isEmpty(updatedItem.getNqfNumber())
-                            && !StringUtils.isEmpty(existingItem.getNqfNumber())
-                            && !updatedItem.getNqfNumber().equals("N/A") && !existingItem.getNqfNumber().equals("N/A")
-                            && updatedItem.getNqfNumber().equals(existingItem.getNqfNumber())) {
-                        // NQF is the same if the NQF numbers are equal
-                        inUpdatedListing = true;
-                    } else if (!inUpdatedListing && updatedItem.getCmsId() != null && existingItem.getCmsId() != null
-                            && updatedItem.getCmsId().equals(existingItem.getCmsId())
-                            && updatedItem.getVersion() != null && existingItem.getVersion() != null
-                            && updatedItem.getVersion().equals(existingItem.getVersion())) {
-                        // CMS is the same if the CMS ID and version is equal
-                        inUpdatedListing = true;
-                    }
-                }
-                if (!inUpdatedListing) {
-                    idsToRemove.add(existingItem.getId());
-                }
-            }
-        }
-
-        numChanges = cqmsToAdd.size() + idsToRemove.size();
-
-        for (CQMResultDetailsDTO toAdd : cqmsToAdd) {
-            CQMCriterionDTO criterion = null;
-            if (StringUtils.isEmpty(toAdd.getCmsId())) {
-                criterion = cqmCriterionDao.getNQFByNumber(toAdd.getNumber());
-            } else if (toAdd.getCmsId().startsWith("CMS")) {
-                criterion = cqmCriterionDao.getCMSByNumberAndVersion(toAdd.getCmsId(), toAdd.getVersion());
-            }
-            if (criterion == null) {
-                throw new EntityRetrievalException(
-                        "Could not find CQM with number " + toAdd.getCmsId() + " and version " + toAdd.getVersion());
-            }
-
-            CQMResultDTO newCQMResult = new CQMResultDTO();
-            newCQMResult.setCertifiedProductId(listing.getId());
-            newCQMResult.setCqmCriterionId(criterion.getId());
-            newCQMResult.setCreationDate(new Date());
-            newCQMResult.setDeleted(false);
-            newCQMResult.setSuccess(true);
-            CQMResultDTO created = cqmResultDAO.create(newCQMResult);
-            if (toAdd.getCriteria() != null && toAdd.getCriteria().size() > 0) {
-                for (CQMResultCriteriaDTO criteria : toAdd.getCriteria()) {
-                    criteria.setCqmResultId(created.getId());
-                    Long mappedCriterionId = findCqmCriterionId(criteria);
-                    criteria.setCriterionId(mappedCriterionId);
-                    cqmResultDAO.createCriteriaMapping(criteria);
-                }
-            }
-        }
-
-        for (CQMResultDetailsPair toUpdate : cqmsToUpdate) {
-            numChanges += updateCqm(listing, toUpdate.getOrig(), toUpdate.getUpdated());
-        }
-
-        for (Long idToRemove : idsToRemove) {
-            cqmResultDAO.deleteMappingsForCqmResult(idToRemove);
-            cqmResultDAO.delete(idToRemove);
-        }
-
+        numChanges += addCqmResults(listing.getId(), existingCqmDetails, updatedCqmDetails);
+        numChanges += removeCqmResults(listing.getId(), existingCqmDetails, updatedCqmDetails);
+        numChanges += updateCqmResults(listing.getId(), existingCqmDetails, updatedCqmDetails);
         return numChanges;
     }
 
-    private int updateCqm(CertifiedProductSearchDetails listing, CQMResultDetailsDTO existingCqm,
-            CQMResultDetailsDTO updatedCqm) throws EntityRetrievalException {
+    private int addCqmResults(Long listingId, List<CQMResultDetails> existingCqms, List<CQMResultDetails> updatedCqms) {
+        List<CQMResultDetails> cqmsToAdd = new ArrayList<CQMResultDetails>();
+        updatedCqms.stream()
+            .filter(updatedCqm -> updatedCqm.getSuccess() && !isCqmAttested(updatedCqm, existingCqms))
+            .forEach(updatedCqmToAdd -> cqmsToAdd.add(updatedCqmToAdd));
 
-        int numChanges = 0;
-        // look for changes in the cqms and update if necessary
-        if (!Objects.equals(existingCqm.getSuccess(), updatedCqm.getSuccess())) {
-            CQMResultDTO toUpdate = new CQMResultDTO();
-            toUpdate.setId(existingCqm.getId());
-            toUpdate.setCertifiedProductId(listing.getId());
-            toUpdate.setCqmCriterionId(updatedCqm.getCqmCriterionId());
-            toUpdate.setSuccess(updatedCqm.getSuccess());
-            cqmResultDAO.update(toUpdate);
+        cqmsToAdd.stream()
+            .forEach(cqmToAdd -> {
+                try {
+                    LOGGER.info("Adding CQM " + cqmToAdd.getCmsId() + " for listing " + listingId);
+                    addCqmAndAllSuccessVersions(listingId, cqmToAdd);
+                } catch (EntityRetrievalException | EntityCreationException ex) {
+                    LOGGER.error("Error inserting CQM " + cqmToAdd.getCmsId() + " for listing ID " + listingId, ex);
+                }
+            });
+
+        return cqmsToAdd.size();
+    }
+
+    private boolean isCqmAttested(CQMResultDetails cqmToFind, List<CQMResultDetails> cqms) {
+        return cqms.stream()
+            .filter(cqm -> (isNqfCqmMatching(cqmToFind, cqm) || isCmsCqmMatching(cqmToFind, cqm))
+                    && BooleanUtils.isTrue(cqm.getSuccess()))
+            .findAny().isPresent();
+    }
+
+    private void addCqmAndAllSuccessVersions(Long listingId, CQMResultDetails cqmDetails)
+            throws EntityRetrievalException, EntityCreationException {
+        List<CQMCriterionDTO> cqmsToCreate = new ArrayList<CQMCriterionDTO>();
+        if (StringUtils.isEmpty(cqmDetails.getCmsId())) {
+            cqmsToCreate = Stream.of(cqmCriterionDao.getNQFByNumber(cqmDetails.getNumber())).toList();
+        } else if (cqmDetails.getCmsId().startsWith("CMS")) {
+            cqmsToCreate.addAll(cqmDetails.getSuccessVersions().stream()
+                    .map(successVersion -> cqmCriterionDao.getCMSByNumberAndVersion(cqmDetails.getCmsId(), successVersion))
+                    .filter(lookedUpCqmCriterion -> lookedUpCqmCriterion != null)
+                    .collect(Collectors.toList()));
+        }
+        if (CollectionUtils.isEmpty(cqmsToCreate)) {
+            throw new EntityRetrievalException("Could not find CQM " + cqmDetails.getCmsId());
         }
 
-        // need to compare existing with updated cqm criteria in case there are
-        // differences
-        List<CQMResultCriteriaDTO> criteriaToAdd = new ArrayList<CQMResultCriteriaDTO>();
-        List<CQMResultCriteriaDTO> criteriaToRemove = new ArrayList<CQMResultCriteriaDTO>();
+        cqmsToCreate.stream()
+            .forEach(cqmToCreate -> {
+                //create a CQM+Version mapping for the listing and then add the linked criteria (c1,c2,c3,c4)
+                CQMResultDTO newCQMResult = new CQMResultDTO();
+                newCQMResult.setCertifiedProductId(listingId);
+                newCQMResult.setCqmCriterionId(cqmToCreate.getId());
+                newCQMResult.setSuccess(true);
+                try {
+                    CQMResultDTO createdCqmResult = cqmResultDAO.create(newCQMResult);
+                    if (cqmDetails.getCriteria() != null && cqmDetails.getCriteria().size() > 0) {
+                        cqmDetails.getCriteria().stream()
+                            .forEach(cqmCriterion -> cqmResultDAO.createCriteriaMapping(createdCqmResult.getId(), cqmCriterion.getCriterion().getId()));
+                    }
+                } catch (Exception ex) {
+                    LOGGER.error("Error creating CQM Result for CQM ID " + cqmToCreate.getId() + " and listing ID " + listingId, ex);
+                }
+            });
+    }
 
-        for (CQMResultCriteriaDTO existingItem : existingCqm.getCriteria()) {
+    private int removeCqmResults(Long listingId, List<CQMResultDetails> existingCqms, List<CQMResultDetails> updatedCqms) {
+        List<CQMResultDetails> cqmsToRemove = new ArrayList<CQMResultDetails>();
+        existingCqms.stream()
+            .filter(existingCqm -> existingCqm.getSuccess() && !isCqmAttested(existingCqm, updatedCqms))
+            .forEach(existingCqmToRemove -> cqmsToRemove.add(existingCqmToRemove));
+
+        cqmsToRemove.stream()
+        .forEach(cqmToRemove -> {
+            try {
+                removeCqmResult(listingId, cqmToRemove);
+            } catch (Exception ex) {
+                LOGGER.error("Error removing CQM Result " + cqmToRemove.getId() + " for listing ID " + listingId, ex);
+            }
+        });
+
+        return cqmsToRemove.size();
+    }
+
+    private void removeCqmResult(Long listingId, CQMResultDetails cqmToRemove) {
+        cqmToRemove.getSuccessVersions().stream()
+            .forEach(version -> {
+                cqmResultDAO.deleteByCmsNumberAndVersion(listingId, cqmToRemove.getCmsId(), version);
+            });
+        //criteria mappings will be removed via soft delete
+    }
+
+    private boolean isNqfCqmMatching(CQMResultDetails cqm1, CQMResultDetails cqm2) {
+        // NQF is the same if the NQF numbers are equal
+        return StringUtils.isEmpty(cqm2.getCmsId())
+            && StringUtils.isEmpty(cqm1.getCmsId())
+            && !StringUtils.isEmpty(cqm2.getNqfNumber())
+            && !StringUtils.isEmpty(cqm1.getNqfNumber())
+            && !cqm2.getNqfNumber().equals("N/A") && !cqm1.getNqfNumber().equals("N/A")
+            && cqm2.getNqfNumber().equals(cqm1.getNqfNumber());
+    }
+
+    private boolean isCmsCqmMatching(CQMResultDetails cqm1, CQMResultDetails cqm2) {
+        // CMS is the same if the CMS ID is equal
+        return cqm2.getCmsId() != null && cqm1.getCmsId() != null
+                && cqm2.getCmsId().equals(cqm1.getCmsId());
+    }
+
+    private int updateCqmResults(Long listingId, List<CQMResultDetails> existingCqms, List<CQMResultDetails> updatedCqms)
+            throws EntityRetrievalException {
+        List<CQMResultDetailsPair> cqmPairs = getCqmPairs(existingCqms, updatedCqms);
+        cqmPairs.stream()
+            .filter(cqmPair -> cqmPair.getOrig().getSuccess() && cqmPair.getUpdated().getSuccess())
+            .forEach(cqmPair -> {
+                //check for changes to success versions
+                updateCqmSuccessVersions(listingId, cqmPair.getOrig(), cqmPair.getUpdated());
+                //check for changes to associated c-criteria
+                updateCqmAssociatedCriteria(cqmPair.getOrig(), cqmPair.getUpdated());
+            });
+        return cqmPairs.size();
+    }
+
+    private List<CQMResultDetailsPair> getCqmPairs(List<CQMResultDetails> existingCqms, List<CQMResultDetails> updatedCqms) {
+        List<CQMResultDetailsPair> cqmPairs = new ArrayList<CQMResultDetailsPair>();
+        if (updatedCqms != null && updatedCqms.size() > 0) {
+            for (CQMResultDetails updatedCqm : updatedCqms) {
+                for (CQMResultDetails existingCqm : existingCqms) {
+                    if (isNqfCqmMatching(existingCqm, updatedCqm) || isCmsCqmMatching(existingCqm, updatedCqm)) {
+                        cqmPairs.add(new CQMResultDetailsPair(existingCqm, updatedCqm));
+                    }
+                }
+            }
+        }
+        return cqmPairs;
+    }
+
+    private int updateCqmAssociatedCriteria(CQMResultDetails existingCqm, CQMResultDetails updatedCqm) {
+        List<CQMResultCertification> criteriaToAdd = new ArrayList<CQMResultCertification>();
+        List<CQMResultCertification> criteriaToRemove = new ArrayList<CQMResultCertification>();
+
+        for (CQMResultCertification existingCriterion : existingCqm.getCriteria()) {
             boolean exists = false;
-            for (CQMResultCriteriaDTO updatedItem : updatedCqm.getCriteria()) {
-                if (existingItem.getCriterionId().equals(updatedItem.getCriterionId())) {
+            for (CQMResultCertification updatedCriterion : updatedCqm.getCriteria()) {
+                if (existingCriterion.getCriterion().getId().equals(updatedCriterion.getCriterion().getId())) {
                     exists = true;
                 }
             }
             if (!exists) {
-                criteriaToRemove.add(existingItem);
+                criteriaToRemove.add(existingCriterion);
             }
         }
 
-        for (CQMResultCriteriaDTO updatedItem : updatedCqm.getCriteria()) {
+        for (CQMResultCertification updatedCriterion : updatedCqm.getCriteria()) {
             boolean exists = false;
-            for (CQMResultCriteriaDTO existingItem : existingCqm.getCriteria()) {
-                if (existingItem.getCriterionId().equals(updatedItem.getCriterionId())) {
+            for (CQMResultCertification existingCriterion : existingCqm.getCriteria()) {
+                if (existingCriterion.getCriterion().getId().equals(updatedCriterion.getCriterion().getId())) {
                     exists = true;
                 }
             }
             if (!exists) {
-                criteriaToAdd.add(updatedItem);
+                criteriaToAdd.add(updatedCriterion);
             }
         }
 
-        numChanges = criteriaToAdd.size() + criteriaToRemove.size();
-        for (CQMResultCriteriaDTO currToAdd : criteriaToAdd) {
-            currToAdd.setCqmResultId(existingCqm.getId());
+        int numChanges = criteriaToAdd.size() + criteriaToRemove.size();
+        for (CQMResultCertification currToAdd : criteriaToAdd) {
             Long mappedCriterionId = findCqmCriterionId(currToAdd);
-            currToAdd.setCriterionId(mappedCriterionId);
-            cqmResultDAO.createCriteriaMapping(currToAdd);
+            if (mappedCriterionId != null) {
+                cqmResultDAO.createCriteriaMapping(existingCqm.getId(), mappedCriterionId);
+            }
         }
-        for (CQMResultCriteriaDTO currToRemove : criteriaToRemove) {
+        for (CQMResultCertification currToRemove : criteriaToRemove) {
             cqmResultDAO.deleteCriteriaMapping(currToRemove.getId());
         }
         return numChanges;
     }
 
-    private Long findCqmCriterionId(CQMResultCriteriaDTO cqm) throws EntityRetrievalException {
-        if (cqm.getCriterionId() != null) {
-            return cqm.getCriterionId();
-        } else if (cqm.getCriterion() != null && cqm.getCriterion().getId() != null) {
+    private int updateCqmSuccessVersions(Long listingId, CQMResultDetails existingCqm, CQMResultDetails updatedCqm) {
+        List<String> versionsToAdd = new ArrayList<String>();
+        List<String> versionsToRemove = new ArrayList<String>();
+
+        for (String existingVersion : existingCqm.getSuccessVersions()) {
+            boolean exists = false;
+            for (String updatedVersion : updatedCqm.getSuccessVersions()) {
+                if (existingVersion.equals(updatedVersion)) {
+                    exists = true;
+                }
+            }
+            if (!exists) {
+                versionsToRemove.add(existingVersion);
+            }
+        }
+
+        for (String updatedVersion : updatedCqm.getSuccessVersions()) {
+            boolean exists = false;
+            for (String existingVersion : existingCqm.getSuccessVersions()) {
+                if (existingVersion.equals(updatedVersion)) {
+                    exists = true;
+                }
+            }
+            if (!exists) {
+                versionsToAdd.add(updatedVersion);
+            }
+        }
+
+        int numChanges = versionsToAdd.size() + versionsToRemove.size();
+        for (String currToAdd : versionsToAdd) {
+            try {
+                cqmResultDAO.create(listingId, existingCqm.getCmsId(), currToAdd, existingCqm.getCriteria());
+            } catch (Exception ex) {
+                LOGGER.error("Could not create mapping between listing " + listingId + " and CQM " + existingCqm.getCmsId() + " and version " + currToAdd);
+            }
+        }
+        for (String currToRemove : versionsToRemove) {
+            cqmResultDAO.deleteByCmsNumberAndVersion(listingId, existingCqm.getCmsId(), currToRemove);
+        }
+        return numChanges;
+    }
+
+    private Long findCqmCriterionId(CQMResultCertification cqm) {
+        if (cqm.getCriterion() != null && cqm.getCriterion().getId() != null) {
             return cqm.getCriterion().getId();
         } else if (cqm.getCriterion() != null && !StringUtils.isEmpty(cqm.getCriterion().getNumber())
                 && !StringUtils.isEmpty(cqm.getCriterion().getTitle())) {
@@ -1457,53 +1500,13 @@ public class CertifiedProductManager extends SecuredManager {
             if (cert != null) {
                 return cert.getId();
             } else {
-                throw new EntityRetrievalException(
+                LOGGER.error(
                         "Could not find certification criteria with number " + cqm.getCriterion().getNumber());
             }
         } else {
-            throw new EntityRetrievalException("A criteria id or number must be provided.");
+            LOGGER.error("A criteria id or number must be provided.");
         }
-    }
-
-    private List<CQMResultDetailsDTO> convert(CQMResultDetails cqm) {
-        List<CQMResultDetailsDTO> result = new ArrayList<CQMResultDetailsDTO>();
-
-        if (!StringUtils.isEmpty(cqm.getCmsId()) && cqm.getSuccessVersions() != null
-                && cqm.getSuccessVersions().size() > 0) {
-            for (String version : cqm.getSuccessVersions()) {
-                CQMResultDetailsDTO dto = new CQMResultDetailsDTO();
-                dto.setId(cqm.getId());
-                dto.setNqfNumber(cqm.getNqfNumber());
-                dto.setCmsId(cqm.getCmsId());
-                dto.setNumber(cqm.getNumber());
-                dto.setTitle(cqm.getTitle());
-                dto.setVersion(version);
-                dto.setSuccess(Boolean.TRUE);
-                if (cqm.getCriteria() != null && cqm.getCriteria().size() > 0) {
-                    for (CQMResultCertification criteria : cqm.getCriteria()) {
-                        CQMResultCriteriaDTO cqmdto = new CQMResultCriteriaDTO();
-                        cqmdto.setId(criteria.getId());
-                        cqmdto.setCriterionId(criteria.getCertificationId());
-                        CertificationCriterion cert = new CertificationCriterion();
-                        cert.setId(criteria.getCertificationId());
-                        cert.setNumber(criteria.getCertificationNumber());
-                        cqmdto.setCriterion(cert);
-                        dto.getCriteria().add(cqmdto);
-                    }
-                }
-                result.add(dto);
-            }
-        } else if (StringUtils.isEmpty(cqm.getCmsId())) {
-            CQMResultDetailsDTO dto = new CQMResultDetailsDTO();
-            dto.setId(cqm.getId());
-            dto.setNqfNumber(cqm.getNqfNumber());
-            dto.setCmsId(cqm.getCmsId());
-            dto.setNumber(cqm.getNumber());
-            dto.setTitle(cqm.getTitle());
-            dto.setSuccess(cqm.getSuccess());
-            result.add(dto);
-        }
-        return result;
+        return null;
     }
 
     private void triggerDeveloperBan(CertifiedProductSearchDetails updatedListing, String reason) {
@@ -1611,13 +1614,13 @@ public class CertifiedProductManager extends SecuredManager {
 
     @Data
     private static class CQMResultDetailsPair {
-        private CQMResultDetailsDTO orig;
-        private CQMResultDetailsDTO updated;
+        private CQMResultDetails orig;
+        private CQMResultDetails updated;
 
         CQMResultDetailsPair() {
         }
 
-        CQMResultDetailsPair(CQMResultDetailsDTO orig, CQMResultDetailsDTO updated) {
+        CQMResultDetailsPair(CQMResultDetails orig, CQMResultDetails updated) {
             this.orig = orig;
             this.updated = updated;
         }

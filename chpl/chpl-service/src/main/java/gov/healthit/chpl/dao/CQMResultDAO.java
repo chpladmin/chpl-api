@@ -15,6 +15,7 @@ import org.springframework.stereotype.Repository;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.CQMResultCertification;
 import gov.healthit.chpl.domain.CQMResultDetails;
+import gov.healthit.chpl.dto.CQMCriterionDTO;
 import gov.healthit.chpl.dto.CQMResultCriteriaDTO;
 import gov.healthit.chpl.dto.CQMResultDTO;
 import gov.healthit.chpl.entity.listing.CQMResultCriteriaEntity;
@@ -42,6 +43,12 @@ public class CQMResultDAO extends BaseDAOImpl {
                 .collect(Collectors.toList());
         cqmsWithVersionIds.stream()
             .forEach(rethrowConsumer(cqmWithVersionId -> create(listingId, cqmWithVersionId, cqmResult.getCriteria())));
+    }
+
+    public void create(Long listingId, String cmsId, String successVersion, List<CQMResultCertification> cqmCriteria)
+            throws EntityCreationException {
+        CQMCriterionDTO cqmVersion = cqmDao.getCMSByNumberAndVersion(cmsId, successVersion);
+        create(listingId, cqmVersion.getId(), cqmCriteria);
     }
 
     private void create(Long listingId, Long cqmWithVersionId, List<CQMResultCertification> cqmCriteria)
@@ -98,8 +105,7 @@ public class CQMResultDAO extends BaseDAOImpl {
 
             if (cqmResult.getCriteria() != null) {
                 for (CQMResultCriteriaDTO certDto : cqmResult.getCriteria()) {
-                    certDto.setCqmResultId(entity.getId());
-                    createCriteriaMapping(certDto);
+                    createCriteriaMapping(entity.getId(), certDto.getCriterionId());
                 }
             }
 
@@ -107,14 +113,11 @@ public class CQMResultDAO extends BaseDAOImpl {
         }
     }
 
-    public CQMResultCriteriaDTO createCriteriaMapping(CQMResultCriteriaDTO criteria) {
+    public void createCriteriaMapping(Long cqmResultId, Long criterionId) {
         CQMResultCriteriaEntity newMapping = new CQMResultCriteriaEntity();
-        newMapping.setCertificationCriterionId(criteria.getCriterionId());
-        newMapping.setCqmResultId(criteria.getCqmResultId());
-        newMapping.setDeleted(false);
-        entityManager.persist(newMapping);
-        entityManager.flush();
-        return new CQMResultCriteriaDTO(newMapping);
+        newMapping.setCertificationCriterionId(criterionId);
+        newMapping.setCqmResultId(cqmResultId);
+        create(newMapping);
     }
 
     public void update(CQMResultDTO cqmResult) throws EntityRetrievalException {
@@ -138,11 +141,22 @@ public class CQMResultDAO extends BaseDAOImpl {
     }
 
     public void delete(Long cqmResultId) {
-        // TODO: How to delete this without leaving orphans
         deleteMappingsForCqmResult(cqmResultId);
         Query query = entityManager
                 .createQuery("UPDATE CQMResultEntity SET deleted = true WHERE cqm_result_id = :resultid");
         query.setParameter("resultid", cqmResultId);
+        query.executeUpdate();
+    }
+
+    public void deleteByCmsNumberAndVersion(Long listingId, String cmsId, String version) {
+        CQMCriterionDTO cqmDto = cqmDao.getCMSByNumberAndVersion(cmsId, version);
+        Query query = entityManager.createQuery(
+                "UPDATE CQMResultEntity "
+                + "SET deleted = true "
+                + "WHERE cqm_criterion_id = :cqmCriterionId "
+                + "AND certified_product_id = :listingId");
+        query.setParameter("cqmCriterionId", cqmDto.getId());
+        query.setParameter("listingId", listingId);
         query.executeUpdate();
     }
 
