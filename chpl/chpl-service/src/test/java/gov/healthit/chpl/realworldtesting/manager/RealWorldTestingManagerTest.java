@@ -19,6 +19,7 @@ import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.SchedulerManager;
 import gov.healthit.chpl.manager.auth.UserManager;
+import gov.healthit.chpl.realworldtesting.dao.RealWorldTestingByDeveloperDao;
 import gov.healthit.chpl.realworldtesting.domain.RealWorldTestingUploadResponse;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
@@ -46,7 +47,8 @@ public class RealWorldTestingManagerTest {
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.anyString(), ArgumentMatchers.any()))
                 .thenReturn("This is an error message.");
 
-        realWorldTestingManager = new RealWorldTestingManager(schedulerManager, userManager, errorMessageUtil);
+        realWorldTestingManager = new RealWorldTestingManager(Mockito.mock(RealWorldTestingByDeveloperDao.class),
+                schedulerManager, userManager, errorMessageUtil);
     }
 
     @Test(expected = ValidationException.class)
