@@ -29,9 +29,11 @@ import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.SchedulerManager;
 import gov.healthit.chpl.manager.auth.UserManager;
+import gov.healthit.chpl.realworldtesting.dao.RealWorldTestingByDeveloperDao;
 import gov.healthit.chpl.realworldtesting.domain.RealWorldTestingType;
 import gov.healthit.chpl.realworldtesting.domain.RealWorldTestingUpload;
 import gov.healthit.chpl.realworldtesting.domain.RealWorldTestingUploadResponse;
+import gov.healthit.chpl.realworldtesting.domain.RealWorldTestingUrlByDeveloper;
 import gov.healthit.chpl.scheduler.job.RealWorldTestingUploadJob;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -44,17 +46,28 @@ public class RealWorldTestingManager {
     private static final int URL_COLUMN_IDX = 3;
     private static final int DELAY_BEFORE_JOB_START = 5000;
 
+    private RealWorldTestingByDeveloperDao rwtByDeveloperDao;
     private SchedulerManager schedulerManager;
     private UserManager userManager;
     private ErrorMessageUtil errorMessageUtil;
 
     @Autowired
-    public RealWorldTestingManager(SchedulerManager schedulerManager, UserManager userManager,
+    public RealWorldTestingManager(RealWorldTestingByDeveloperDao rwtByDeveloperDao,
+            SchedulerManager schedulerManager, UserManager userManager,
             ErrorMessageUtil errorMessageUtil) {
 
+        this.rwtByDeveloperDao = rwtByDeveloperDao;
         this.schedulerManager = schedulerManager;
         this.userManager = userManager;
         this.errorMessageUtil = errorMessageUtil;
+    }
+
+    public List<RealWorldTestingUrlByDeveloper> getPlansUrls(Long developerId) {
+        return rwtByDeveloperDao.getPlansUrls(developerId);
+    }
+
+    public List<RealWorldTestingUrlByDeveloper> getResultsUrls(Long developerId) {
+        return rwtByDeveloperDao.getResultsUrls(developerId);
     }
 
     @Transactional
