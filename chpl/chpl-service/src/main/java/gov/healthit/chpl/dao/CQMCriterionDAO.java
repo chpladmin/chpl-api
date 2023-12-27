@@ -11,74 +11,10 @@ import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.dto.CQMCriterionDTO;
 import gov.healthit.chpl.entity.CQMCriterionEntity;
 import gov.healthit.chpl.entity.CQMVersionEntity;
-import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 
 @Repository(value = "cqmCriterionDAO")
 public class CQMCriterionDAO extends BaseDAOImpl {
-
-    public CQMCriterionDTO create(CQMCriterionDTO dto) throws EntityCreationException, EntityRetrievalException {
-        CQMCriterionEntity entity = null;
-        try {
-            if (dto.getId() != null) {
-                entity = this.getEntityById(dto.getId());
-            }
-        } catch (final EntityRetrievalException e) {
-            throw new EntityCreationException(e);
-        }
-
-        if (entity != null) {
-            throw new EntityCreationException("An entity with this ID already exists.");
-        } else {
-
-            entity = new CQMCriterionEntity();
-            entity.setCmsId(dto.getCmsId());
-            entity.setCqmCriterionTypeId(dto.getCqmCriterionTypeId());
-            entity.setCqmDomain(dto.getCqmDomain());
-            entity.setCqmVersionId(dto.getCqmVersionId());
-            entity.setDeleted(dto.getDeleted());
-            entity.setDescription(dto.getDescription());
-            entity.setNqfNumber(dto.getNqfNumber());
-            entity.setNumber(dto.getNumber());
-            entity.setTitle(dto.getTitle());
-            entity.setRetired(dto.getRetired());
-
-            create(entity);
-        }
-
-        CQMCriterionDTO result = null;
-        if (entity != null) {
-            result = new CQMCriterionDTO(entity);
-        }
-        return result;
-    }
-
-    public void update(CQMCriterionDTO dto) throws EntityRetrievalException, EntityCreationException {
-
-        CQMCriterionEntity entity = this.getEntityById(dto.getId());
-
-        entity.setCmsId(dto.getCmsId());
-        entity.setCqmCriterionTypeId(dto.getCqmCriterionTypeId());
-        entity.setCqmDomain(dto.getCqmDomain());
-        entity.setCqmVersionId(dto.getCqmVersionId());
-        entity.setDeleted(dto.getDeleted());
-        entity.setDescription(dto.getDescription());
-        entity.setNqfNumber(dto.getNqfNumber());
-        entity.setNumber(dto.getNumber());
-        entity.setTitle(dto.getTitle());
-        entity.setRetired(dto.getRetired());
-
-        update(entity);
-
-    }
-
-    public void delete(Long criterionId) {
-        Query query = entityManager
-                .createQuery("UPDATE CQMCriterionEntity SET deleted = true WHERE cqm_criterion_id = :entityid");
-        query.setParameter("entityid", criterionId);
-        query.executeUpdate();
-
-    }
 
     public List<CQMCriterionDTO> findAll() {
         List<CQMCriterionEntity> entities = getAllEntities();
