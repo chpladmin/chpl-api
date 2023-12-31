@@ -17,10 +17,10 @@ import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.dao.CQMCriterionDAO;
 import gov.healthit.chpl.dao.CQMResultDAO;
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
+import gov.healthit.chpl.domain.CQMCriterion;
 import gov.healthit.chpl.domain.CQMResultCertification;
 import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.dto.CQMCriterionDTO;
 import gov.healthit.chpl.dto.CQMResultDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -81,7 +81,7 @@ public class CqmResultSynchronizationService {
 
     private void addCqmAndAllSuccessVersions(Long listingId, CQMResultDetails cqmDetails)
             throws EntityRetrievalException, EntityCreationException {
-        List<CQMCriterionDTO> cqmsToCreate = new ArrayList<CQMCriterionDTO>();
+        List<CQMCriterion> cqmsToCreate = new ArrayList<CQMCriterion>();
         if (StringUtils.isEmpty(cqmDetails.getCmsId())) {
             cqmsToCreate = Stream.of(cqmCriterionDao.getNQFByNumber(cqmDetails.getNumber())).toList();
         } else if (cqmDetails.getCmsId().startsWith("CMS")) {
@@ -99,7 +99,7 @@ public class CqmResultSynchronizationService {
                 //create a CQM+Version mapping for the listing and then add the linked criteria (c1,c2,c3,c4)
                 CQMResultDTO newCQMResult = new CQMResultDTO();
                 newCQMResult.setCertifiedProductId(listingId);
-                newCQMResult.setCqmCriterionId(cqmToCreate.getId());
+                newCQMResult.setCqmCriterionId(cqmToCreate.getCriterionId());
                 newCQMResult.setSuccess(true);
                 try {
                     CQMResultDTO createdCqmResult = cqmResultDao.create(newCQMResult);
@@ -108,7 +108,7 @@ public class CqmResultSynchronizationService {
                             .forEach(cqmCriterion -> cqmResultDao.createCriteriaMapping(createdCqmResult.getId(), cqmCriterion.getCriterion().getId()));
                     }
                 } catch (Exception ex) {
-                    LOGGER.error("Error creating CQM Result for CQM ID " + cqmToCreate.getId() + " and listing ID " + listingId, ex);
+                    LOGGER.error("Error creating CQM Result for CQM ID " + cqmToCreate.getCriterionId() + " and listing ID " + listingId, ex);
                 }
             });
     }

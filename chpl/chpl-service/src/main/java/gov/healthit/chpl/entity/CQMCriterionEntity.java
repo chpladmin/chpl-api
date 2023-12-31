@@ -11,6 +11,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import gov.healthit.chpl.domain.CQMCriterion;
+import gov.healthit.chpl.util.NullSafeEvaluator;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -73,4 +75,19 @@ public class CQMCriterionEntity extends EntityAudit {
     @Basic(optional = false)
     @Column(name = "retired", length = 10)
     private Boolean retired;
+
+    public CQMCriterion toDomain() {
+        return CQMCriterion.builder()
+                .criterionId(this.getId())
+                .cmsId(this.getCmsId())
+                .cqmCriterionTypeId(this.getCqmCriterionTypeId())
+                .cqmDomain(this.getCqmDomain())
+                .cqmVersionId(this.getCqmVersionId())
+                .cqmVersion(NullSafeEvaluator.eval(() -> this.getCqmVersion().getVersion(), ""))
+                .description(this.getDescription())
+                .nqfNumber(this.getNqfNumber())
+                .number(this.getNumber())
+                .title(this.getTitle())
+                .build();
+    }
 }

@@ -1,14 +1,14 @@
 package gov.healthit.chpl.dao;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.persistence.Query;
 
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
-import gov.healthit.chpl.dto.CQMCriterionDTO;
+import gov.healthit.chpl.domain.CQMCriterion;
 import gov.healthit.chpl.entity.CQMCriterionEntity;
 import gov.healthit.chpl.entity.CQMVersionEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -16,49 +16,43 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 @Repository(value = "cqmCriterionDAO")
 public class CQMCriterionDAO extends BaseDAOImpl {
 
-    public List<CQMCriterionDTO> findAll() {
+    public List<CQMCriterion> findAll() {
         List<CQMCriterionEntity> entities = getAllEntities();
-        List<CQMCriterionDTO> dtos = new ArrayList<>();
-
-        for (CQMCriterionEntity entity : entities) {
-            CQMCriterionDTO dto = new CQMCriterionDTO(entity);
-            dtos.add(dto);
-        }
-        return dtos;
+        return entities.stream()
+                .map(entity -> entity.toDomain())
+                .collect(Collectors.toList());
     }
 
-    public CQMCriterionDTO getById(Long criterionId) throws EntityRetrievalException {
-        CQMCriterionDTO dto = null;
+    public CQMCriterion getById(Long criterionId) throws EntityRetrievalException {
         CQMCriterionEntity entity = getEntityById(criterionId);
-
         if (entity != null) {
-            dto = new CQMCriterionDTO(entity);
+            return entity.toDomain();
         }
-        return dto;
+        return null;
     }
 
-    public CQMCriterionDTO getCMSByNumber(String number) {
+    public CQMCriterion getCMSByNumber(String number) {
         CQMCriterionEntity entity = getCMSEntityByNumber(number);
         if (entity == null) {
             return null;
         }
-        return new CQMCriterionDTO(entity);
+        return entity.toDomain();
     }
 
-    public CQMCriterionDTO getCMSByNumberAndVersion(String number, String version) {
+    public CQMCriterion getCMSByNumberAndVersion(String number, String version) {
         CQMCriterionEntity entity = getCMSEntityByNumberAndVersion(number, version);
         if (entity == null) {
             return null;
         }
-        return new CQMCriterionDTO(entity);
+        return entity.toDomain();
     }
 
-    public CQMCriterionDTO getNQFByNumber(String number) {
+    public CQMCriterion getNQFByNumber(String number) {
         CQMCriterionEntity entity = getNQFEntityByNumber(number);
         if (entity == null) {
             return null;
         }
-        return new CQMCriterionDTO(entity);
+        return entity.toDomain();
     }
 
     private List<CQMCriterionEntity> getAllEntities() {

@@ -13,9 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
+import gov.healthit.chpl.domain.CQMCriterion;
 import gov.healthit.chpl.domain.CQMResultCertification;
 import gov.healthit.chpl.domain.CQMResultDetails;
-import gov.healthit.chpl.dto.CQMCriterionDTO;
 import gov.healthit.chpl.dto.CQMResultCriteriaDTO;
 import gov.healthit.chpl.dto.CQMResultDTO;
 import gov.healthit.chpl.entity.listing.CQMResultCriteriaEntity;
@@ -39,7 +39,7 @@ public class CQMResultDAO extends BaseDAOImpl {
         }
         List<Long> cqmsWithVersionIds = cqmResult.getSuccessVersions().stream()
                 .map(cqmSuccessVersion -> cqmDao.getCMSByNumberAndVersion(cqmResult.getCmsId(), cqmSuccessVersion))
-                .map(cqmWithVersion -> cqmWithVersion.getId())
+                .map(cqmWithVersion -> cqmWithVersion.getCriterionId())
                 .collect(Collectors.toList());
         cqmsWithVersionIds.stream()
             .forEach(rethrowConsumer(cqmWithVersionId -> create(listingId, cqmWithVersionId, cqmResult.getCriteria())));
@@ -47,8 +47,8 @@ public class CQMResultDAO extends BaseDAOImpl {
 
     public void create(Long listingId, String cmsId, String successVersion, List<CQMResultCertification> cqmCriteria)
             throws EntityCreationException {
-        CQMCriterionDTO cqmVersion = cqmDao.getCMSByNumberAndVersion(cmsId, successVersion);
-        create(listingId, cqmVersion.getId(), cqmCriteria);
+        CQMCriterion cqmVersion = cqmDao.getCMSByNumberAndVersion(cmsId, successVersion);
+        create(listingId, cqmVersion.getCriterionId(), cqmCriteria);
     }
 
     private void create(Long listingId, Long cqmWithVersionId, List<CQMResultCertification> cqmCriteria)
@@ -149,13 +149,13 @@ public class CQMResultDAO extends BaseDAOImpl {
     }
 
     public void deleteByCmsNumberAndVersion(Long listingId, String cmsId, String version) {
-        CQMCriterionDTO cqmDto = cqmDao.getCMSByNumberAndVersion(cmsId, version);
+        CQMCriterion cqm = cqmDao.getCMSByNumberAndVersion(cmsId, version);
         Query query = entityManager.createQuery(
                 "UPDATE CQMResultEntity "
                 + "SET deleted = true "
                 + "WHERE cqm_criterion_id = :cqmCriterionId "
                 + "AND certified_product_id = :listingId");
-        query.setParameter("cqmCriterionId", cqmDto.getId());
+        query.setParameter("cqmCriterionId", cqm.getCriterionId());
         query.setParameter("listingId", listingId);
         query.executeUpdate();
     }

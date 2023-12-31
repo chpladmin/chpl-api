@@ -1,6 +1,5 @@
 package gov.healthit.chpl.manager;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -47,7 +46,6 @@ import gov.healthit.chpl.domain.surveillance.RequirementType;
 import gov.healthit.chpl.domain.surveillance.SurveillanceResultType;
 import gov.healthit.chpl.domain.surveillance.SurveillanceType;
 import gov.healthit.chpl.dto.AgeRangeDTO;
-import gov.healthit.chpl.dto.CQMCriterionDTO;
 import gov.healthit.chpl.dto.EducationTypeDTO;
 import gov.healthit.chpl.dto.TargetedUserDTO;
 import gov.healthit.chpl.dto.TestDataCriteriaMapDTO;
@@ -300,23 +298,7 @@ public class DimensionalDataManager {
     @Transactional
     @Cacheable(value = CacheNames.CQM_CRITERION)
     public List<CQMCriterion> getCQMCriteria() {
-        List<CQMCriterion> result = new ArrayList<CQMCriterion>();
-        List<CQMCriterionDTO> dtos = cqmCriterionDao.findAll();
-        for (CQMCriterionDTO dto : dtos) {
-            CQMCriterion criterion = new CQMCriterion();
-            criterion.setCmsId(dto.getCmsId());
-            criterion.setCqmCriterionTypeId(dto.getCqmCriterionTypeId());
-            criterion.setCqmDomain(dto.getCqmDomain());
-            criterion.setCqmVersionId(dto.getCqmVersionId());
-            criterion.setCqmVersion(dto.getCqmVersion());
-            criterion.setCriterionId(dto.getId());
-            criterion.setDescription(dto.getDescription());
-            criterion.setNqfNumber(dto.getNqfNumber());
-            criterion.setNumber(dto.getNumber());
-            criterion.setTitle(dto.getTitle());
-            result.add(criterion);
-        }
-        return result;
+        return cqmCriterionDao.findAll();
     }
 
     @Transactional
