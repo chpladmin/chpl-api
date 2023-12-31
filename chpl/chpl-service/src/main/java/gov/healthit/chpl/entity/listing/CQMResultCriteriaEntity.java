@@ -12,6 +12,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterionEntity;
+import gov.healthit.chpl.domain.CQMResultCertification;
 import gov.healthit.chpl.entity.EntityAudit;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -51,4 +52,12 @@ public class CQMResultCriteriaEntity extends EntityAudit {
             updatable = false)
     private CertificationCriterionEntity certCriteria;
 
+    public CQMResultCertification toDomain() {
+        return CQMResultCertification.builder()
+                .id(this.getId())
+                .certificationId(this.getCertificationCriterionId())
+                .criterion(this.getCertCriteria() != null ? this.getCertCriteria().toDomain() : null)
+                .certificationNumber(this.getCertCriteria() != null ? this.getCertCriteria().getNumber() : null)
+                .build();
+    }
 }

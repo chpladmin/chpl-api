@@ -10,7 +10,6 @@ import org.apache.commons.lang3.StringUtils;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import gov.healthit.chpl.dto.CQMResultCriteriaDTO;
 import gov.healthit.chpl.dto.CQMResultDetailsDTO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -99,9 +98,8 @@ public class CQMResultDetails implements Serializable {
         }
 
         if (dto.getCriteria() != null && dto.getCriteria().size() > 0) {
-            for (CQMResultCriteriaDTO criteriaDTO : dto.getCriteria()) {
-                CQMResultCertification cqmCriteria = new CQMResultCertification(criteriaDTO);
-                this.criteria.add(cqmCriteria);
+            for (CQMResultCertification criterion : dto.getCriteria()) {
+                this.criteria.add(criterion);
             }
         }
     }

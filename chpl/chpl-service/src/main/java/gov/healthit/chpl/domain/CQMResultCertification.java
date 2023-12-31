@@ -3,7 +3,6 @@ package gov.healthit.chpl.domain;
 import java.io.Serializable;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
-import gov.healthit.chpl.dto.CQMResultCriteriaDTO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,13 +26,4 @@ public class CQMResultCertification implements Serializable {
     private String certificationNumber;
 
     private CertificationCriterion criterion;
-
-    public CQMResultCertification(CQMResultCriteriaDTO dto) {
-        this.id = dto.getId();
-        this.certificationId = dto.getCriterionId();
-        this.criterion = dto.getCriterion();
-        if (dto.getCriterion() != null) {
-            this.certificationNumber = dto.getCriterion().getNumber();
-        }
-    }
 }

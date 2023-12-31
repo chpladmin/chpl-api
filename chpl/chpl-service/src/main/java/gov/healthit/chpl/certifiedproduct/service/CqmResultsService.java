@@ -150,9 +150,7 @@ public class CqmResultsService {
 
     private List<CQMResultCertification> getCqmCriteriaMapping(CQMResultDetails cqmResult) {
         if (BooleanUtils.isTrue(cqmResult.getSuccess()) && cqmResult.getId() != null) {
-            return cqmResultDao.getCriteriaForCqmResult(cqmResult.getId()).stream()
-                    .map(dto -> new CQMResultCertification(dto))
-                    .collect(Collectors.toList());
+            return cqmResultDao.getCriteriaForCqmResult(cqmResult.getId());
         } else {
             return new ArrayList<CQMResultCertification>();
         }

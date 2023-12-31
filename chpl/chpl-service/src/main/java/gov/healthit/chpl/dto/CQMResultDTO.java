@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import gov.healthit.chpl.domain.CQMResultCertification;
 import gov.healthit.chpl.entity.listing.CQMResultEntity;
 import gov.healthit.chpl.util.Util;
 
@@ -19,10 +20,10 @@ public class CQMResultDTO implements Serializable {
     private Boolean success;
     private Boolean deleted;
 
-    private List<CQMResultCriteriaDTO> criteria;
+    private List<CQMResultCertification> criteria;
 
     public CQMResultDTO() {
-        criteria = new ArrayList<CQMResultCriteriaDTO>();
+        criteria = new ArrayList<CQMResultCertification>();
     }
 
     public CQMResultDTO(CQMResultEntity entity) {
@@ -101,11 +102,11 @@ public class CQMResultDTO implements Serializable {
         this.certifiedProductId = certifiedProductId;
     }
 
-    public List<CQMResultCriteriaDTO> getCriteria() {
+    public List<CQMResultCertification> getCriteria() {
         return criteria;
     }
 
-    public void setCriteria(final List<CQMResultCriteriaDTO> criteria) {
+    public void setCriteria(final List<CQMResultCertification> criteria) {
         this.criteria = criteria;
     }
 

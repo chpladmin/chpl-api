@@ -16,7 +16,6 @@ import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.CQMCriterion;
 import gov.healthit.chpl.domain.CQMResultCertification;
 import gov.healthit.chpl.domain.CQMResultDetails;
-import gov.healthit.chpl.dto.CQMResultCriteriaDTO;
 import gov.healthit.chpl.dto.CQMResultDTO;
 import gov.healthit.chpl.entity.listing.CQMResultCriteriaEntity;
 import gov.healthit.chpl.entity.listing.CQMResultEntity;
@@ -104,8 +103,8 @@ public class CQMResultDAO extends BaseDAOImpl {
             create(entity);
 
             if (cqmResult.getCriteria() != null) {
-                for (CQMResultCriteriaDTO certDto : cqmResult.getCriteria()) {
-                    createCriteriaMapping(entity.getId(), certDto.getCriterionId());
+                for (CQMResultCertification cert : cqmResult.getCriteria()) {
+                    createCriteriaMapping(entity.getId(), cert.getCertificationId());
                 }
             }
 
@@ -118,26 +117,6 @@ public class CQMResultDAO extends BaseDAOImpl {
         newMapping.setCertificationCriterionId(criterionId);
         newMapping.setCqmResultId(cqmResultId);
         create(newMapping);
-    }
-
-    public void update(CQMResultDTO cqmResult) throws EntityRetrievalException {
-        CQMResultEntity entity = this.getEntityById(cqmResult.getId());
-        entity.setSuccess(cqmResult.getSuccess());
-
-        update(entity);
-
-    }
-
-    public CQMResultCriteriaDTO updateCriteriaMapping(CQMResultCriteriaDTO dto) {
-        CQMResultCriteriaEntity toUpdate = getCqmCriteriaById(dto.getId());
-        if (toUpdate == null) {
-            return null;
-        }
-        toUpdate.setCqmResultId(dto.getCqmResultId());
-        toUpdate.setCertificationCriterionId(dto.getCriterionId());
-        entityManager.merge(toUpdate);
-        entityManager.flush();
-        return new CQMResultCriteriaDTO(toUpdate);
     }
 
     public void delete(Long cqmResultId) {
@@ -219,14 +198,11 @@ public class CQMResultDAO extends BaseDAOImpl {
         return dto;
     }
 
-    public List<CQMResultCriteriaDTO> getCriteriaForCqmResult(Long cqmResultId) {
+    public List<CQMResultCertification> getCriteriaForCqmResult(Long cqmResultId) {
         List<CQMResultCriteriaEntity> entities = getCertCriteriaForCqmResult(cqmResultId);
-        List<CQMResultCriteriaDTO> dtos = new ArrayList<CQMResultCriteriaDTO>();
-        for (CQMResultCriteriaEntity entity : entities) {
-            CQMResultCriteriaDTO dto = new CQMResultCriteriaDTO(entity);
-            dtos.add(dto);
-        }
-        return dtos;
+        return entities.stream()
+                .map(entity -> entity.toDomain())
+                .collect(Collectors.toList());
     }
 
     private CQMResultEntity getEntityById(Long id) throws EntityRetrievalException {
