@@ -5,12 +5,9 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import gov.healthit.chpl.dto.CQMResultDetailsDTO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -78,30 +75,6 @@ public class CQMResultDetails implements Serializable {
         this.successVersions = new LinkedHashSet<String>();
         this.allVersions = new LinkedHashSet<String>();
         this.criteria = new ArrayList<CQMResultCertification>();
-    }
-
-    public CQMResultDetails(CQMResultDetailsDTO dto) {
-        this();
-        this.id = dto.getId();
-        this.number = dto.getNumber();
-        this.cmsId = dto.getCmsId();
-        this.title = dto.getTitle();
-        this.description = dto.getDescription();
-        this.nqfNumber = dto.getNqfNumber();
-        this.typeId = dto.getCqmCriterionTypeId();
-        this.domain = dto.getDomain();
-
-        if (!StringUtils.isEmpty(dto.getCmsId())) {
-            this.getSuccessVersions().add(dto.getVersion());
-        } else if (!StringUtils.isEmpty(dto.getNqfNumber())) {
-            this.setSuccess(dto.getSuccess());
-        }
-
-        if (dto.getCriteria() != null && dto.getCriteria().size() > 0) {
-            for (CQMResultCertification criterion : dto.getCriteria()) {
-                this.criteria.add(criterion);
-            }
-        }
     }
 
     public Boolean getSuccess() {

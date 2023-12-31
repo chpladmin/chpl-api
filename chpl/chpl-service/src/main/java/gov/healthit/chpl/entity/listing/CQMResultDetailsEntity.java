@@ -169,5 +169,4 @@ public class CQMResultDetailsEntity {
     public void setDescription(final String description) {
         this.description = description;
     }
-
 }
