@@ -56,7 +56,8 @@ public class DeleteActionPermissions extends ActionPermissions {
 
     private boolean isListing2014Edition(SurveillanceEntity surv) {
         return surv.getCertifiedProduct() != null
+                && surv.getCertifiedProduct().getCertificationEditionId() != null
                 && surv.getCertifiedProduct().getCertificationEditionId().equals(
-                CertificationEditionConcept.CERTIFICATION_EDITION_2014.getId());
+                        CertificationEditionConcept.CERTIFICATION_EDITION_2014.getId());
     }
 }
