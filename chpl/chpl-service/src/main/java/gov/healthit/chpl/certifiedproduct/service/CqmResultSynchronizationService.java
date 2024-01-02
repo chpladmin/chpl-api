@@ -132,11 +132,17 @@ public class CqmResultSynchronizationService {
     }
 
     private void removeCqmResult(Long listingId, CQMResultDetails cqmToRemove) {
-        cqmToRemove.getSuccessVersions().stream()
+        if (!StringUtils.isEmpty(cqmToRemove.getNqfNumber())
+                && CollectionUtils.isEmpty(cqmToRemove.getSuccessVersions())) {
+            //NQF type
+            cqmResultDao.delete(cqmToRemove.getId());
+        } else if (!CollectionUtils.isEmpty(cqmToRemove.getSuccessVersions())) {
+            cqmToRemove.getSuccessVersions().stream()
             .forEach(version -> {
                 cqmResultDao.deleteByCmsNumberAndVersion(listingId, cqmToRemove.getCmsId(), version);
             });
-        //criteria mappings will be removed via soft delete
+            //criteria mappings will be removed via soft delete
+        }
     }
 
     private boolean isNqfCqmMatching(CQMResultDetails cqm1, CQMResultDetails cqm2) {
