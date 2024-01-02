@@ -37,7 +37,7 @@ public class TelligenJob extends QuartzJob {
 
         for (List<String> record : records) {
             try {
-                callEndpoint("https://chpl-dev.healthit.gov" + record.get(0).toString());
+                callEndpoint("https://chpl-stg.healthit.gov" + record.get(0).toString());
             } catch (InterruptedException | IOException | URISyntaxException e) {
                 LOGGER.error(e);
             }
@@ -47,7 +47,7 @@ public class TelligenJob extends QuartzJob {
     private void callEndpoint(String endpoint) throws IOException, InterruptedException, URISyntaxException {
         try (CloseableHttpClient client = HttpClients.createDefault()) {
             HttpGet request = new HttpGet(endpoint);
-            request.addHeader("API-Key", "12909a978483dfb8ecd0596c98ae9094");
+            request.addHeader("API-Key", "405935904f3dddecc10328e689d69f77");
             CloseableHttpResponse response = client.execute(request);
 
             String body = new String(response.getEntity().getContent().readAllBytes(), StandardCharsets.UTF_8);

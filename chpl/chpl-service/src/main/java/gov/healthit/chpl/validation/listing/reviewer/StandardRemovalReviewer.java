@@ -58,7 +58,7 @@ public class StandardRemovalReviewer implements ComparisonReviewer {
 
     private Optional<CertificationResult> findCertificationResult(CertifiedProductSearchDetails listing, Long certificationResultId) {
         return listing.getCertificationResults().stream()
-                .filter(cr -> cr.getId().equals(certificationResultId))
+                .filter(cr -> cr.getId() != null && cr.getId().equals(certificationResultId))
                 .findAny();
     }
 
