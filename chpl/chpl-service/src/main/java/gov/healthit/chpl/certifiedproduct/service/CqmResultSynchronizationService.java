@@ -83,7 +83,7 @@ public class CqmResultSynchronizationService {
             throws EntityRetrievalException, EntityCreationException {
         List<CQMCriterion> cqmsToCreate = new ArrayList<CQMCriterion>();
         if (StringUtils.isEmpty(cqmDetails.getCmsId())) {
-            cqmsToCreate = Stream.of(cqmCriterionDao.getNQFByNumber(cqmDetails.getNumber())).toList();
+            cqmsToCreate = Stream.of(cqmCriterionDao.getNQFByNumber(cqmDetails.getNqfNumber())).toList();
         } else if (cqmDetails.getCmsId().startsWith("CMS")) {
             cqmsToCreate.addAll(cqmDetails.getSuccessVersions().stream()
                     .map(successVersion -> cqmCriterionDao.getCMSByNumberAndVersion(cqmDetails.getCmsId(), successVersion))

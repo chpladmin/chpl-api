@@ -85,9 +85,10 @@ public class CQMCriterionDAO extends BaseDAOImpl {
 
     public CQMCriterionEntity getNQFEntityByNumber(String number) {
         CQMCriterionEntity entity = null;
-
-        Query query = entityManager.createQuery(
-                "from CQMCriterionEntity where (NOT deleted = true) AND (nqf_number = :number) ",
+        Query query = entityManager.createQuery("SELECT cqm "
+                + "FROM CQMCriterionEntity cqm "
+                + "WHERE (NOT cqm.deleted = true) "
+                + "AND (cqm.nqfNumber = :number) ",
                 CQMCriterionEntity.class);
         query.setParameter("number", number);
         List<CQMCriterionEntity> result = query.getResultList();
