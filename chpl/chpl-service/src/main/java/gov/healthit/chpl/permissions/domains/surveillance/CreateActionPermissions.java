@@ -64,7 +64,8 @@ public class CreateActionPermissions extends ActionPermissions {
 
     private boolean isListing2014Edition(CertifiedProductDTO listing) {
         return listing != null
+                && listing.getCertificationEditionId() != null
                 && listing.getCertificationEditionId().equals(
-                CertificationEditionConcept.CERTIFICATION_EDITION_2014.getId());
+                        CertificationEditionConcept.CERTIFICATION_EDITION_2014.getId());
     }
 }
