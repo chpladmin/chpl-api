@@ -50,4 +50,13 @@ public class UpdatedListingStatusReportEntity extends EntityAudit {
     @Column(name = "daysUpdatedEarly", nullable = true)
     private Integer daysUpdatedEarly;
 
+    public UpdatedListingStatusReport toDomain() {
+        return UpdatedListingStatusReport.builder()
+                .id(id)
+                .certifiedProductId(certifiedProductId)
+                .criteriaRequireUpdateCount(criteriaRequireUpdateCount)
+                .daysUpdatedEarly(daysUpdatedEarly)
+                .build();
+    }
+
 }
