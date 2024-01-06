@@ -43,7 +43,7 @@ public class CqmResultSynchronizationService {
         this.cqmResultDao = cqmResultDao;
     }
 
-    public int synchronizeCqmss(CertifiedProductSearchDetails listing, List<CQMResultDetails> existingCqmDetails,
+    public int synchronizeCqms(CertifiedProductSearchDetails listing, List<CQMResultDetails> existingCqmDetails,
             List<CQMResultDetails> updatedCqmDetails)
             throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
 
@@ -57,7 +57,7 @@ public class CqmResultSynchronizationService {
     private int addCqmResults(Long listingId, List<CQMResultDetails> existingCqms, List<CQMResultDetails> updatedCqms) {
         List<CQMResultDetails> cqmsToAdd = new ArrayList<CQMResultDetails>();
         updatedCqms.stream()
-            .filter(updatedCqm -> updatedCqm.getSuccess() && !isCqmAttested(updatedCqm, existingCqms))
+            .filter(updatedCqm -> !isNqfType(updatedCqm) && updatedCqm.getSuccess() && !isCqmAttested(updatedCqm, existingCqms))
             .forEach(updatedCqmToAdd -> cqmsToAdd.add(updatedCqmToAdd));
 
         cqmsToAdd.stream()
@@ -116,7 +116,7 @@ public class CqmResultSynchronizationService {
     private int removeCqmResults(Long listingId, List<CQMResultDetails> existingCqms, List<CQMResultDetails> updatedCqms) {
         List<CQMResultDetails> cqmsToRemove = new ArrayList<CQMResultDetails>();
         existingCqms.stream()
-            .filter(existingCqm -> existingCqm.getSuccess() && !isCqmAttested(existingCqm, updatedCqms))
+            .filter(existingCqm -> !isNqfType(existingCqm) && existingCqm.getSuccess() && !isCqmAttested(existingCqm, updatedCqms))
             .forEach(existingCqmToRemove -> cqmsToRemove.add(existingCqmToRemove));
 
         cqmsToRemove.stream()
@@ -145,13 +145,16 @@ public class CqmResultSynchronizationService {
         }
     }
 
+    private boolean isNqfType(CQMResultDetails cqm) {
+        return StringUtils.isEmpty(cqm.getCmsId())
+                && !StringUtils.isEmpty(cqm.getNqfNumber())
+                && !cqm.getNqfNumber().equals("N/A");
+    }
+
     private boolean isNqfCqmMatching(CQMResultDetails cqm1, CQMResultDetails cqm2) {
         // NQF is the same if the NQF numbers are equal
-        return StringUtils.isEmpty(cqm2.getCmsId())
-            && StringUtils.isEmpty(cqm1.getCmsId())
-            && !StringUtils.isEmpty(cqm2.getNqfNumber())
-            && !StringUtils.isEmpty(cqm1.getNqfNumber())
-            && !cqm2.getNqfNumber().equals("N/A") && !cqm1.getNqfNumber().equals("N/A")
+        return isNqfType(cqm1)
+            && isNqfType(cqm2)
             && cqm2.getNqfNumber().equals(cqm1.getNqfNumber());
     }
 
@@ -164,8 +167,18 @@ public class CqmResultSynchronizationService {
     private int updateCqmResults(Long listingId, List<CQMResultDetails> existingCqms, List<CQMResultDetails> updatedCqms)
             throws EntityRetrievalException {
         List<CQMResultDetailsPair> cqmPairs = getCqmPairs(existingCqms, updatedCqms);
+
+        //update NQF CQMs
         cqmPairs.stream()
-            .filter(cqmPair -> cqmPair.getOrig().getSuccess() && cqmPair.getUpdated().getSuccess())
+            .filter(cqmPair -> isNqfType(cqmPair.getOrig()) && !cqmPair.getOrig().getSuccess().equals(cqmPair.getUpdated().getSuccess()))
+            .forEach(cqmPair -> {
+                //update success value
+                cqmResultDao.updateNqfCqm(cqmPair.getOrig().getId(), cqmPair.getUpdated().getSuccess());
+            });
+
+        //update CMS CQMs
+        cqmPairs.stream()
+            .filter(cqmPair -> !isNqfType(cqmPair.getOrig()) && cqmPair.getOrig().getSuccess() && cqmPair.getUpdated().getSuccess())
             .forEach(cqmPair -> {
                 //check for changes to success versions
                 updateCqmSuccessVersions(listingId, cqmPair.getOrig(), cqmPair.getUpdated());

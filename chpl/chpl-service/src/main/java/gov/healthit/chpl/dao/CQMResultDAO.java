@@ -119,6 +119,16 @@ public class CQMResultDAO extends BaseDAOImpl {
         create(newMapping);
     }
 
+    public void updateNqfCqm(Long cqmResultId, Boolean success) {
+        Query query = entityManager
+                .createQuery("UPDATE CQMResultEntity "
+                        + "SET success = :success "
+                        + "WHERE cqm_result_id = :resultId");
+        query.setParameter("success", success);
+        query.setParameter("resultId", cqmResultId);
+        query.executeUpdate();
+    }
+
     public void delete(Long cqmResultId) {
         deleteMappingsForCqmResult(cqmResultId);
         Query query = entityManager

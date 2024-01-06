@@ -1252,7 +1252,7 @@ public class CertifiedProductManager extends SecuredManager {
     private int updateCqms(CertifiedProductSearchDetails listing, List<CQMResultDetails> existingCqmDetails,
             List<CQMResultDetails> updatedCqmDetails)
             throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
-        return cqmResultService.synchronizeCqmss(listing, existingCqmDetails, updatedCqmDetails);
+        return cqmResultService.synchronizeCqms(listing, existingCqmDetails, updatedCqmDetails);
     }
 
     private void triggerDeveloperBan(CertifiedProductSearchDetails updatedListing, String reason) {
