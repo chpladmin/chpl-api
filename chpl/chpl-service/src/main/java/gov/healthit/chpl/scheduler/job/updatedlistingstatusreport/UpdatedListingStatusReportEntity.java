@@ -47,7 +47,7 @@ public class UpdatedListingStatusReportEntity extends EntityAudit {
     @Column(name = "criteria_require_update_count", nullable = true)
     private Integer criteriaRequireUpdateCount;
 
-    @Column(name = "daysUpdatedEarly", nullable = true)
+    @Column(name = "days_updated_early", nullable = true)
     private Integer daysUpdatedEarly;
 
     public UpdatedListingStatusReport toDomain() {

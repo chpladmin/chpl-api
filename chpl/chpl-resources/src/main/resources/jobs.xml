@@ -854,5 +854,14 @@
             <durability>true</durability>
             <recover>false</recover>
         </job>
+
+        <job>
+            <name>updatedListingStatusReportCreatorJob</name>
+            <group>systemJobs</group>
+            <description>Updated Listing Status Report Creator Job</description>
+            <job-class>gov.healthit.chpl.scheduler.job.updatedlistingstatusreport.UpdatedListingStatusReportCreatorJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+        </job>
     </schedule>
 </job-scheduling-data>

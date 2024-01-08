@@ -75,12 +75,15 @@ public class UpdatedListingStatusReportCreatorJob  extends QuartzJob {
         listingSearchService.getAllPagesOfSearchResults(request).stream()
                 .map(result -> getCertifiedProductDetails(result.getId()))
                 .filter(listing -> listing.isPresent())
+                .peek(x -> LOGGER.info("Processing {}", x.get().getChplProductNumber()))
                 .map(certifiedProductDetails -> UpdatedListingStatusReport.builder()
                         .certifiedProductId(certifiedProductDetails.get().getId())
                         .criteriaRequireUpdateCount(getCriteriaRequireUpdateCount(certifiedProductDetails.get()))
                         .daysUpdatedEarly(getDaysUpdatedEarly(certifiedProductDetails.get()))
                         .build())
                 .forEach(updatedListingStatusReport -> updatedListingStatusReportDAO.create(updatedListingStatusReport));
+
+        LOGGER.info("COMPLETED");
     }
 
     private Integer getCriteriaRequireUpdateCount(CertifiedProductSearchDetails certifiedProductDetails) {
