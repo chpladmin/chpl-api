@@ -1,5 +1,26 @@
 # Release Notes
 
+## Version 43.1.0
+_8 January 2024_
+
+### Features
+* Deprecate endpoints used by removed charts
+* Update saving of Certification Results for 2014 Listings to handle unattested Criteria
+* Check criteria URLs in the URL Status Report
+* Include companion guide link in criterion API response
+* Detect Questionable Activity when retired Standards are added to a Certification Result
+* Add ability to store SSO user id when auditing changes
+* Remove ability to download daily listing files as XML
+* Stop generating an XML download file of listings
+* Add developer rwt-plan-urls and rwt-result-urls methods
+* Create /subscriptions/search endpoint for ADMIN use
+
+### Bug Fixes
+* Handle null edition in surveillance permissions check for ACBs
+* Include responsible user in questionable activity report
+
+---
+
 ## Version 43.0.0
 _11 December 2023_
 
