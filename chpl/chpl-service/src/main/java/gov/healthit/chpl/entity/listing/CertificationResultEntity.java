@@ -1,7 +1,5 @@
 package gov.healthit.chpl.entity.listing;
 
-import java.io.Serializable;
-import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Basic;
@@ -17,21 +15,24 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterionEntity;
+import gov.healthit.chpl.entity.EntityAudit;
 import gov.healthit.chpl.testtool.CertificationResultTestToolEntity;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 
-@ToString
 @Getter
 @Setter
-@RequiredArgsConstructor
+@ToString
+@SuperBuilder
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "certification_result")
-public class CertificationResultEntity implements Serializable {
-
-    /** Serial Version UID. */
+public class CertificationResultEntity extends EntityAudit {
     private static final long serialVersionUID = -9050374846030066967L;
 
     @Id
@@ -107,17 +108,4 @@ public class CertificationResultEntity implements Serializable {
     @JoinColumn(name = "certification_criterion_id", nullable = false, insertable = false, updatable = false)
     private CertificationCriterionEntity certificationCriterion;
 
-    //marked as updatable false to avoid running the soft delete triggers in the db
-    //adding and removing certification results is done through the success flag
-    @Column(name = "deleted", insertable = false, updatable = false)
-    private Boolean deleted;
-
-    @Column(name = "last_modified_user")
-    private Long lastModifiedUser;
-
-    @Column(name = "creation_date", insertable = false, updatable = false)
-    private Date creationDate;
-
-    @Column(name = "last_modified_date", insertable = false, updatable = false)
-    private Date lastModifiedDate;
 }

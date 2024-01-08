@@ -17,7 +17,6 @@ import org.springframework.stereotype.Repository;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.ListingUpload;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.util.AuthUtil;
 import lombok.extern.log4j.Log4j2;
 
 @Repository("listingUploadDao")
@@ -47,7 +46,6 @@ public class ListingUploadDao extends BaseDAOImpl {
         }
         toCreate.setFileContents(fileContents);
         toCreate.setDeleted(false);
-        toCreate.setLastModifiedUser(AuthUtil.getAuditId());
         create(toCreate);
 
         return toCreate.toDomain();
@@ -59,7 +57,6 @@ public class ListingUploadDao extends BaseDAOImpl {
             entity.setStatus(listingUpload.getStatus());
             entity.setErrorCount(listingUpload.getErrorCount());
             entity.setWarningCount(listingUpload.getWarningCount());
-            entity.setLastModifiedUser(AuthUtil.getAuditId());
             update(entity);
         }
     }
@@ -68,7 +65,6 @@ public class ListingUploadDao extends BaseDAOImpl {
         ListingUploadEntity entity = entityManager.find(ListingUploadEntity.class, listingUploadId);
         if (entity != null) {
             entity.setStatus(status);
-            entity.setLastModifiedUser(AuthUtil.getAuditId());
             update(entity);
         }
     }
@@ -77,7 +73,6 @@ public class ListingUploadDao extends BaseDAOImpl {
         ListingUploadEntity entity = entityManager.find(ListingUploadEntity.class, listingUploadId);
         if (entity != null) {
             entity.setCertifiedProductId(confirmedListingId);
-            entity.setLastModifiedUser(AuthUtil.getAuditId());
             update(entity);
         }
     }
@@ -86,7 +81,6 @@ public class ListingUploadDao extends BaseDAOImpl {
         ListingUploadEntity entity = entityManager.find(ListingUploadEntity.class, listingUploadId);
         if (entity != null) {
             entity.setDeleted(true);
-            entity.setLastModifiedUser(AuthUtil.getAuditId());
             update(entity);
         }
     }

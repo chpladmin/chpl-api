@@ -1,7 +1,6 @@
 package gov.healthit.chpl.dao;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Query;
@@ -15,7 +14,6 @@ import gov.healthit.chpl.dto.TestTaskDTO;
 import gov.healthit.chpl.entity.TestTaskEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import lombok.extern.log4j.Log4j2;
 
@@ -32,7 +30,6 @@ public class TestTaskDAO extends BaseDAOImpl {
     public Long create(TestTask testTask) throws EntityCreationException {
         TestTaskEntity entity = new TestTaskEntity();
         try {
-            entity.setLastModifiedUser(AuthUtil.getAuditId());
             entity.setDescription(testTask.getDescription());
             entity.setTaskErrors(testTask.getTaskErrors());
             entity.setTaskErrorsStddev(testTask.getTaskErrorsStddev());
@@ -64,10 +61,7 @@ public class TestTaskDAO extends BaseDAOImpl {
 
         if (entity == null) {
             entity = new TestTaskEntity();
-            entity.setCreationDate(new Date());
             entity.setDeleted(false);
-            entity.setLastModifiedDate(new Date());
-            entity.setLastModifiedUser(AuthUtil.getAuditId());
             entity.setDescription(dto.getDescription());
             entity.setTaskErrors(dto.getTaskErrors());
             entity.setTaskErrorsStddev(dto.getTaskErrorsStddev());
@@ -115,8 +109,6 @@ public class TestTaskDAO extends BaseDAOImpl {
         entity.setTaskTimeDeviationObservedAvg(dto.getTaskTimeDeviationObservedAvg());
         entity.setTaskTimeDeviationOptimalAvg(dto.getTaskTimeDeviationOptimalAvg());
         entity.setTaskTimeStddev(dto.getTaskTimeStddev());
-        entity.setLastModifiedUser(AuthUtil.getAuditId());
-        entity.setLastModifiedDate(new Date());
 
         update(entity);
         return new TestTaskDTO(entity);
@@ -127,8 +119,6 @@ public class TestTaskDAO extends BaseDAOImpl {
 
         if (toDelete != null) {
             toDelete.setDeleted(true);
-            toDelete.setLastModifiedDate(new Date());
-            toDelete.setLastModifiedUser(AuthUtil.getAuditId());
             entityManager.merge(toDelete);
             entityManager.flush();
         }

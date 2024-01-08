@@ -1,7 +1,5 @@
 package gov.healthit.chpl.changerequest.entity;
 
-import java.util.Date;
-
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -10,16 +8,24 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import gov.healthit.chpl.entity.EntityAudit;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 
-@Entity
-@Table(name = "change_request_status_type")
 @Getter
 @Setter
 @ToString
-public class ChangeRequestStatusTypeEntity {
+@SuperBuilder
+@AllArgsConstructor
+@NoArgsConstructor
+@Entity
+@Table(name = "change_request_status_type")
+public class ChangeRequestStatusTypeEntity extends EntityAudit {
+    private static final long serialVersionUID = 345760837447138029L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,17 +36,5 @@ public class ChangeRequestStatusTypeEntity {
     @Basic(optional = false)
     @Column(name = "name", nullable = false)
     private String name;
-
-    @Column(name = "creation_date", nullable = false)
-    private Date creationDate;
-
-    @Column(name = "last_modified_date", nullable = false)
-    private Date lastModifiedDate;
-
-    @Column(name = "last_modified_user", nullable = false)
-    private Long lastModifiedUser;
-
-    @Column(name = "deleted", nullable = false)
-    private Boolean deleted;
 
 }

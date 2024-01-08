@@ -6,8 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
-import javax.xml.bind.annotation.XmlTransient;
-
 import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -34,7 +32,6 @@ public class QuestionableActivitySearchResult implements Serializable {
     private static final String REMOVED_PREFIX = "Removed";
 
     @JsonIgnore
-    @XmlTransient
     public static final List<String> CSV_HEADINGS = Stream.of("ONC-ACB", "Developer", "Product", "Version",
             "CHPL Product Number", "Current Certification Status", "Activity Timestamp", "Link", "Responsible User",
             "Activity Level", "Activity Type", "Activity", "Reason for Status Change", "Reason").toList();
@@ -89,7 +86,6 @@ public class QuestionableActivitySearchResult implements Serializable {
     }
 
     @JsonIgnore
-    @XmlTransient
     public List<String> toListOfStringsForCsv(String listingsReportUrlPartBegin) {
         List<String> csvFields = new ArrayList<String>();
         csvFields.add(acbName);

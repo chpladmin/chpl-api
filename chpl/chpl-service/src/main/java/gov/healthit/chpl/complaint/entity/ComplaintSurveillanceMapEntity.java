@@ -1,7 +1,5 @@
 package gov.healthit.chpl.complaint.entity;
 
-import java.util.Date;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -16,14 +14,25 @@ import org.hibernate.annotations.Where;
 
 import gov.healthit.chpl.compliance.surveillance.entity.SurveillanceBasicEntity;
 import gov.healthit.chpl.domain.ComplaintSurveillanceMap;
-import lombok.Data;
+import gov.healthit.chpl.entity.EntityAudit;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 
-@Entity
-@Data
+@Getter
+@Setter
+@ToString
+@SuperBuilder
+@AllArgsConstructor
 @NoArgsConstructor
+@Entity
 @Table(name = "complaint_surveillance_map")
-public class ComplaintSurveillanceMapEntity {
+public class ComplaintSurveillanceMapEntity extends EntityAudit {
+    private static final long serialVersionUID = 5402427083505515536L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "complaint_surveillance_map_id", nullable = false)
@@ -40,19 +49,7 @@ public class ComplaintSurveillanceMapEntity {
     @Where(clause = "deleted <> 'true'")
     private SurveillanceBasicEntity surveillance;
 
-    @Column(name = "creation_date", nullable = false)
-    private Date creationDate;
-
-    @Column(name = "last_modified_date", nullable = false)
-    private Date lastModifiedDate;
-
-    @Column(name = "last_modified_user", nullable = false)
-    private Long lastModifiedUser;
-
-    @Column(name = "deleted", nullable = false)
-    private Boolean deleted;
-
-    public ComplaintSurveillanceMap buildComplaintSurveillanceMap() {
+        public ComplaintSurveillanceMap buildComplaintSurveillanceMap() {
         return ComplaintSurveillanceMap.builder()
             .complaintId(this.getComplaintId())
             .id(this.getId())

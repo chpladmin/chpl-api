@@ -288,6 +288,16 @@ const rulesControllerTests = {
   },
 };
 
+const subscriptionsControllerTests = {
+  ...commonOptions,
+  collection: collection_path + '/search-subscriptions-controller.postman_collection.json',
+  reporter: {
+    junit: {
+      export: reports_path + '/search-subscriptions-controller-tests.xml',
+    },
+  },
+};
+
 const jobs = [
   cb => newman.run(acbControllerTests,cb),
   cb => newman.run(accessibilityStandardsControllerTests,cb),
@@ -316,6 +326,7 @@ const jobs = [
   cb => newman.run(rulesControllerTests,cb),
   cb => newman.run(searchComplaintsControllerTests,cb),
   cb => newman.run(testToolsControllerTests,cb),
+  cb => newman.run(subscriptionsControllerTests,cb),
   ];
 
 const responseCallback = (err) => {

@@ -1,7 +1,6 @@
 package gov.healthit.chpl.scheduler.job.listingvalidation;
 
 import java.time.ZonedDateTime;
-import java.util.Date;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -11,18 +10,31 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import gov.healthit.chpl.entity.EntityAudit;
+import gov.healthit.chpl.entity.lastmodifieduserstrategy.LastModifiedUserStrategy;
+import gov.healthit.chpl.entity.lastmodifieduserstrategy.SystemUserStrategy;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 
-@Entity
-@Table(name = "listing_validation_report")
-@Data
-@Builder
+@Getter
+@Setter
+@ToString
+@SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ListingValidationReportEntity {
+@Entity
+@Table(name = "listing_validation_report")
+public class ListingValidationReportEntity extends EntityAudit {
+    private static final long serialVersionUID = -4701072108627858074L;
+
+    @Override
+    public LastModifiedUserStrategy getLastModifiedUserStrategy() {
+        return new SystemUserStrategy();
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -69,21 +81,5 @@ public class ListingValidationReportEntity {
     @Basic(optional = false)
     @Column(name = "report_date", nullable = false)
     private ZonedDateTime reportDate;
-
-    @Basic(optional = false)
-    @Column(name = "creation_date", nullable = false)
-    private Date creationDate;
-
-    @Basic(optional = false)
-    @Column(name = "last_modified_date", nullable = false)
-    private Date lastModifiedDate;
-
-    @Basic(optional = false)
-    @Column(name = "last_modified_user", nullable = false)
-    private Long lastModifiedUser;
-
-    @Basic(optional = false)
-    @Column(nullable = false, name = "deleted")
-    private Boolean deleted;
 
 }

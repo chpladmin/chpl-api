@@ -1,7 +1,5 @@
 package gov.healthit.chpl.form.entity;
 
-import java.util.Date;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -12,23 +10,26 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import gov.healthit.chpl.entity.EntityAudit;
 import gov.healthit.chpl.form.QuestionAllowedResponseMap;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 
-@Entity
-@Table(name = "question_allowed_response_map")
 @Getter
 @Setter
 @ToString
-@Builder
+@SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
-public class QuestionAllowedResponseMapEntity {
+@Entity
+@Table(name = "question_allowed_response_map")
+public class QuestionAllowedResponseMapEntity extends EntityAudit {
+    private static final long serialVersionUID = 5285841792600768210L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
@@ -44,18 +45,6 @@ public class QuestionAllowedResponseMapEntity {
 
     @Column(name = "sort_order", nullable = false)
     private Integer sortOrder;
-
-    @Column(name = "last_modified_user", nullable = false)
-    private Long lastModifiedUser;
-
-    @Column(name = "deleted", nullable = false)
-    private Boolean deleted;
-
-    @Column(name = "creation_date", nullable = false, insertable = false, updatable = false)
-    private Date creationDate;
-
-    @Column(name = "last_modified_date", nullable = false, insertable = false, updatable = false)
-    private Date lastModifiedDate;
 
     public QuestionAllowedResponseMap toDomain() {
         return QuestionAllowedResponseMap.builder()

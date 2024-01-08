@@ -9,7 +9,6 @@ import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -109,21 +108,20 @@ public class CertificationResultManager extends SecuredManager {
             throws EntityCreationException, EntityRetrievalException {
 
         int numChanges = 0;
-        if ((orig == null || orig.getId() == null || BooleanUtils.isFalse(orig.isSuccess()))
-                && updated != null) {
+        if ((orig == null || orig.getId() == null) && updated != null) {
             //this is a new cert result we are adding
             long addedCertResultId = certResultDAO.create(updatedListing.getId(), updated);
             updated.setId(addedCertResultId);
             numChanges++;
         } else {
             boolean hasChanged = false;
-            if (!Objects.equals(orig.isSuccess(), updated.isSuccess())
+            if (!Objects.equals(orig.getSuccess(), updated.getSuccess())
                     || !StringUtils.equals(orig.getApiDocumentation(), updated.getApiDocumentation())
                     || !StringUtils.equals(orig.getPrivacySecurityFramework(), updated.getPrivacySecurityFramework())
-                    || !Objects.equals(orig.isG1Success(), updated.isG1Success())
-                    || !Objects.equals(orig.isG2Success(), updated.isG2Success())
-                    || !Objects.equals(orig.isGap(), updated.isGap())
-                    || !Objects.equals(orig.isSed(), updated.isSed())
+                    || !Objects.equals(orig.getG1Success(), updated.getG1Success())
+                    || !Objects.equals(orig.getG2Success(), updated.getG2Success())
+                    || !Objects.equals(orig.getGap(), updated.getGap())
+                    || !Objects.equals(orig.getSed(), updated.getSed())
                     || !Objects.equals(orig.getAttestationAnswer(), updated.getAttestationAnswer())
                     || !Objects.equals(orig.getDocumentationUrl(), updated.getDocumentationUrl())
                     || !Objects.equals(orig.getExportDocumentation(), updated.getExportDocumentation())
@@ -158,7 +156,7 @@ public class CertificationResultManager extends SecuredManager {
                 boolean ucdMeetsCriteria = false;
                 for (CertificationCriterion ucdCriteria : existingUcd.getCriteria()) {
                     if (ucdCriteria.getId().equals(updated.getCriterion().getId())
-                            && orig.isSed() != null && orig.isSed()) {
+                            && orig.getSed() != null && orig.getSed()) {
                         ucdMeetsCriteria = true;
                     }
                 }
@@ -173,7 +171,7 @@ public class CertificationResultManager extends SecuredManager {
                 boolean ucdMeetsCriteria = false;
                 for (CertificationCriterion ucdCriteria : updatedUcd.getCriteria()) {
                     if (ucdCriteria.getId().equals(updated.getCriterion().getId())
-                            && updated.isSed() != null && updated.isSed()) {
+                            && updated.getSed() != null && updated.getSed()) {
                         ucdMeetsCriteria = true;
                     }
                 }
@@ -192,7 +190,7 @@ public class CertificationResultManager extends SecuredManager {
                 boolean taskMeetsCriteria = false;
                 for (CertificationCriterion taskCriteria : existingTask.getCriteria()) {
                     if (taskCriteria.getId().equals(updated.getCriterion().getId())
-                            && orig.isSed() != null && orig.isSed()) {
+                            && orig.getSed() != null && orig.getSed()) {
                         taskMeetsCriteria = true;
                     }
                 }
@@ -241,7 +239,7 @@ public class CertificationResultManager extends SecuredManager {
                 boolean taskMeetsCriteria = false;
                 for (CertificationCriterion taskCriteria : updatedTask.getCriteria()) {
                     if (taskCriteria.getId().equals(updated.getCriterion().getId())
-                            && updated.isSed() != null && updated.isSed()) {
+                            && updated.getSed() != null && updated.getSed()) {
                         taskMeetsCriteria = true;
                     }
                 }
@@ -267,15 +265,15 @@ public class CertificationResultManager extends SecuredManager {
         } else {
             toUpdate.setCertificationCriterionId(criteria.getId());
         }
-        toUpdate.setSuccessful(updatedCertResult.isSuccess());
-        toUpdate.setG1Success(updatedCertResult.isG1Success());
-        toUpdate.setG2Success(updatedCertResult.isG2Success());
+        toUpdate.setSuccessful(updatedCertResult.getSuccess());
+        toUpdate.setG1Success(updatedCertResult.getG1Success());
+        toUpdate.setG2Success(updatedCertResult.getG2Success());
 
         if (toUpdate.getSuccessful() != null && toUpdate.getSuccessful().booleanValue()) {
             toUpdate.setApiDocumentation(updatedCertResult.getApiDocumentation());
             toUpdate.setPrivacySecurityFramework(updatedCertResult.getPrivacySecurityFramework());
-            toUpdate.setGap(updatedCertResult.isGap());
-            toUpdate.setSed(updatedCertResult.isSed());
+            toUpdate.setGap(updatedCertResult.getGap());
+            toUpdate.setSed(updatedCertResult.getSed());
             toUpdate.setAttestationAnswer(updatedCertResult.getAttestationAnswer());
             toUpdate.setDocumentationUrl(updatedCertResult.getDocumentationUrl());
             toUpdate.setExportDocumentation(updatedCertResult.getExportDocumentation());

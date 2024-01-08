@@ -1,6 +1,5 @@
 package gov.healthit.chpl.changerequest.dao;
 
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.stereotype.Component;
@@ -12,7 +11,6 @@ import gov.healthit.chpl.changerequest.entity.ChangeRequestDeveloperDemographics
 import gov.healthit.chpl.changerequest.entity.ChangeRequestEntity;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.util.AuthUtil;
 
 @Component
 public class ChangeRequestDeveloperDemographicsDAO extends BaseDAOImpl {
@@ -51,7 +49,6 @@ public class ChangeRequestDeveloperDemographicsDAO extends BaseDAOImpl {
             entity.setContactPhoneNumber(crDev.getContact().getPhoneNumber());
             entity.setContactTitle(crDev.getContact().getTitle());
         }
-        entity.setLastModifiedUser(AuthUtil.getAuditId());
         update(entity);
         return ChangeRequestConverter.convert(getEntity(entity.getId()));
     }
@@ -78,9 +75,6 @@ public class ChangeRequestDeveloperDemographicsDAO extends BaseDAOImpl {
             entity.setContactTitle(crDev.getContact().getTitle());
         }
         entity.setDeleted(false);
-        entity.setLastModifiedUser(AuthUtil.getAuditId());
-        entity.setCreationDate(new Date());
-        entity.setLastModifiedDate(new Date());
         return entity;
     }
 

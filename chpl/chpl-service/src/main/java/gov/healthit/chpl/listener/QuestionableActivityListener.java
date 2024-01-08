@@ -102,21 +102,24 @@ public class QuestionableActivityListener implements EnvironmentAware {
     }
 
     private void checkQuestionableActivityForDeveloper(ActivityDTO activity, Developer originalDeveloper, Developer newDeveloper) {
-        if (originalDeveloper == null || newDeveloper == null || AuthUtil.getCurrentUser() == null) {
+        if (originalDeveloper == null || newDeveloper == null || !originalDeveloper.getId().equals(newDeveloper.getId())
+                || AuthUtil.getCurrentUser() == null) {
             return;
         }
         questionableActivityManager.checkDeveloperQuestionableActivity(originalDeveloper, newDeveloper, activity);
     }
 
     private void checkQuestionableActivityForProduct(ActivityDTO activity, Product originalProduct, Product newProduct) {
-        if (originalProduct == null || newProduct == null || AuthUtil.getCurrentUser() == null) {
+        if (originalProduct == null || newProduct == null || !originalProduct.getId().equals(newProduct.getId())
+                || AuthUtil.getCurrentUser() == null) {
             return;
         }
         questionableActivityManager.checkProductQuestionableActivity(originalProduct, newProduct, activity);
     }
 
     private void checkQuestionableActivityForVersion(ActivityDTO activity, ProductVersionDTO originalVersion, ProductVersionDTO newVersion) {
-        if (originalVersion == null || newVersion == null || AuthUtil.getCurrentUser() == null) {
+        if (originalVersion == null || newVersion == null || !originalVersion.getId().equals(newVersion.getId())
+                || AuthUtil.getCurrentUser() == null) {
             return;
         }
         questionableActivityManager.checkVersionQuestionableActivity(originalVersion, newVersion, activity);

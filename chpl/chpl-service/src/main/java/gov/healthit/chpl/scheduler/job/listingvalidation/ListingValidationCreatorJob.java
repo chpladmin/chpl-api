@@ -21,7 +21,7 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
-import gov.healthit.chpl.auth.user.User;
+import gov.healthit.chpl.auth.user.SystemUsers;
 import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
@@ -165,7 +165,7 @@ public class ListingValidationCreatorJob implements Job {
                     .certificationStatusName(listing.getCurrentStatus().getStatus().getName())
                     .errorMessage(error)
                     .reportDate(ZonedDateTime.now(Clock.systemUTC()))
-                    .lastModifiedUser(User.SYSTEM_USER_ID)
+                    .lastModifiedUser(SystemUsers.SYSTEM_USER_ID)
                     .build()))
                 .collect(Collectors.toList());
         LOGGER.info("Completed save of report data for: " + listing.getId());

@@ -97,8 +97,8 @@ public class UnavailableCriteriaComparisonReviewer implements ComparisonReviewer
     }
 
     private boolean isCriteriaEdited(CertificationResult updatedCert, CertificationResult existingCert) {
-        return existingCert.isSuccess() != null && existingCert.isSuccess()
-                && updatedCert.isSuccess() != null && updatedCert.isSuccess();
+        return existingCert.getSuccess() != null && existingCert.getSuccess()
+                && updatedCert.getSuccess() != null && updatedCert.getSuccess();
     }
 
     private void addErrorsForCertEdits(CertifiedProductSearchDetails updatedListing,
@@ -197,21 +197,21 @@ public class UnavailableCriteriaComparisonReviewer implements ComparisonReviewer
 
     private boolean isGapChanged(CertificationResult existingCert, CertificationResult updatedCert) {
         if (certResultRules.hasCertOption(updatedCert.getCriterion().getId(), CertificationResultRules.GAP)) {
-            return !Objects.equals(existingCert.isGap(), updatedCert.isGap());
+            return !Objects.equals(existingCert.getGap(), updatedCert.getGap());
         }
         return false;
     }
 
     private boolean isG1SuccessChanged(CertificationResult existingCert, CertificationResult updatedCert) {
         if (certResultRules.hasCertOption(updatedCert.getCriterion().getId(), CertificationResultRules.G1_SUCCESS)) {
-            return !Objects.equals(existingCert.isG1Success(), updatedCert.isG1Success());
+            return !Objects.equals(existingCert.getG1Success(), updatedCert.getG1Success());
         }
         return false;
     }
 
     private boolean isG2SuccessChanged(CertificationResult existingCert, CertificationResult updatedCert) {
         if (certResultRules.hasCertOption(updatedCert.getCriterion().getId(), CertificationResultRules.G2_SUCCESS)) {
-            return !Objects.equals(existingCert.isG2Success(), updatedCert.isG2Success());
+            return !Objects.equals(existingCert.getG2Success(), updatedCert.getG2Success());
         }
         return false;
     }
@@ -421,7 +421,7 @@ public class UnavailableCriteriaComparisonReviewer implements ComparisonReviewer
 
     private boolean isSedChanged(CertificationResult existingCert, CertificationResult updatedCert) {
         if (certResultRules.hasCertOption(updatedCert.getCriterion().getId(), CertificationResultRules.SED)) {
-            return !Objects.equals(updatedCert.isSed(), existingCert.isSed());
+            return !Objects.equals(updatedCert.getSed(), existingCert.getSed());
         }
         return false;
     }

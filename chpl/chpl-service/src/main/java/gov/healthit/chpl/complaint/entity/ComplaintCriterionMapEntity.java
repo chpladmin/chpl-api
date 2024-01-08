@@ -1,7 +1,5 @@
 package gov.healthit.chpl.complaint.entity;
 
-import java.util.Date;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -16,12 +14,25 @@ import org.hibernate.annotations.Where;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterionEntity;
 import gov.healthit.chpl.complaint.domain.ComplaintCriterionMap;
-import lombok.Data;
+import gov.healthit.chpl.entity.EntityAudit;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 
+@Getter
+@Setter
+@ToString
+@SuperBuilder
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
-@Data
 @Table(name = "complaint_criterion_map")
-public class ComplaintCriterionMapEntity {
+public class ComplaintCriterionMapEntity extends EntityAudit {
+    private static final long serialVersionUID = -7852427620682321127L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "complaint_criterion_map_id", nullable = false)
@@ -37,18 +48,6 @@ public class ComplaintCriterionMapEntity {
     @JoinColumn(name = "certification_criterion_id", insertable = false, updatable = false)
     @Where(clause = "deleted <> 'true'")
     private CertificationCriterionEntity certificationCriterion;
-
-    @Column(name = "creation_date", nullable = false)
-    private Date creationDate;
-
-    @Column(name = "last_modified_date", nullable = false)
-    private Date lastModifiedDate;
-
-    @Column(name = "last_modified_user", nullable = false)
-    private Long lastModifiedUser;
-
-    @Column(name = "deleted", nullable = false)
-    private Boolean deleted;
 
     public ComplaintCriterionMap buildComplaintCriterionMap() {
         return ComplaintCriterionMap.builder()

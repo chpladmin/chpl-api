@@ -102,7 +102,7 @@ public class TestDataReviewer {
     private boolean isGapEligibileAndHasGap(CertificationResult certResult) {
         boolean result = false;
         if (certResultRules.hasCertOption(certResult.getCriterion().getId(), CertificationResultRules.GAP)
-                && certResult.isGap() != null && certResult.isGap()) {
+                && certResult.getGap() != null && certResult.getGap()) {
             result = true;
         }
         return result;

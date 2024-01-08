@@ -54,7 +54,7 @@ public class SedReviewer {
 
     private void reviewCriteriaCanHaveSed(CertifiedProductSearchDetails listing, CertificationResult certResult) {
         if (!certResultRules.hasCertOption(certResult.getCriterion().getId(), CertificationResultRules.SED)) {
-            if (BooleanUtils.isTrue(certResult.isSed())) {
+            if (BooleanUtils.isTrue(certResult.getSed())) {
                 listing.addWarningMessage(msgUtil.getMessage(
                     "listing.criteria.sedNotApplicable", Util.formatCriteriaNumber(certResult.getCriterion())));
             }

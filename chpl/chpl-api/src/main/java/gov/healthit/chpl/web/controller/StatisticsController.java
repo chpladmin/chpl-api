@@ -15,6 +15,7 @@ import gov.healthit.chpl.dto.SedParticipantStatisticsCountDTO;
 import gov.healthit.chpl.manager.StatisticsManager;
 import gov.healthit.chpl.scheduler.job.chartdata.ExperienceType;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
+import gov.healthit.chpl.web.controller.annotation.DeprecatedApi;
 import gov.healthit.chpl.web.controller.annotation.DeprecatedApiResponseFields;
 import gov.healthit.chpl.web.controller.results.CriterionProductStatisticsResult;
 import gov.healthit.chpl.web.controller.results.IncumbentDevelopersStatisticsResult;
@@ -51,6 +52,11 @@ public class StatisticsController {
         return response;
     }
 
+
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/statistics/listing_count",
+            message = "This endpoint is deprecated and will be removed in a future release. There is no replacement for this endpoint.",
+            removalDate = "2024-06-01")
     @Operation(summary = "Get count of Developers and Products with listings.",
             description = "Retrieves and returns the counts.",
             security = {
@@ -63,6 +69,7 @@ public class StatisticsController {
         response.setStatisticsResult(statisticsManager.getListingCountStatisticsResult());
         return response;
     }
+
 
     @DeprecatedApiResponseFields(friendlyUrl = "/statistics/criterion_product",
             responseClass = CriterionProductStatisticsResult.class)
@@ -85,6 +92,10 @@ public class StatisticsController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
     @DeprecatedApiResponseFields(friendlyUrl = "/statistics/incumbent_developers", responseClass = IncumbentDevelopersStatisticsResult.class)
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/statistics/incumbent_developers",
+            message = "This endpoint is deprecated and will be removed in a future release. There is no replacement for this endpoint.",
+            removalDate = "2024-06-01")
     @RequestMapping(value = "incumbent_developers", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     public @ResponseBody IncumbentDevelopersStatisticsResult getIncumbentDevelopersStatistics() {
@@ -93,6 +104,10 @@ public class StatisticsController {
         return response;
     }
 
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/statistics/sed_particiapant_count",
+            message = "This endpoint is deprecated and will be removed in a future release. There is no replacement for this endpoint.",
+            removalDate = "2024-06-01")
     @Operation(summary = "Get all Sed/Participant counts.",
             description = "Retrieves and returns the SED/Participant counts.",
             security = {
@@ -113,6 +128,10 @@ public class StatisticsController {
         return results;
     }
 
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/statistics/particiapnt_gender_count",
+            message = "This endpoint is deprecated and will be removed in a future release. There is no replacement for this endpoint.",
+            removalDate = "2024-06-01")
     @Operation(summary = "Get all Sed/Participant/Gender counts.",
             description = "Retrieves and returns the SED/Participant/Gender counts.",
             security = {
@@ -125,6 +144,10 @@ public class StatisticsController {
         return new ParticipantGenderStatistics(stats);
     }
 
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/statistics/participant_age_count",
+            message = "This endpoint is deprecated and will be removed in a future release. There is no replacement for this endpoint.",
+            removalDate = "2024-06-01")
     @Operation(summary = "Get all Sed/Participant/Age counts.",
             description = "Retrieves and returns the SED/Participant/Age counts.",
             security = {
@@ -138,6 +161,10 @@ public class StatisticsController {
         return response;
     }
 
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/statistics/participant_age_count",
+            message = "This endpoint is deprecated and will be removed in a future release. There is no replacement for this endpoint.",
+            removalDate = "2024-06-01")
     @Operation(summary = "Get all Sed/Participant/Education counts.",
             description = "Retrieves and returns the SED/Participant/Education counts.",
             security = {
@@ -151,6 +178,10 @@ public class StatisticsController {
         return response;
     }
 
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/statistics/participant_professional_experience_count",
+            message = "This endpoint is deprecated and will be removed in a future release. There is no replacement for this endpoint.",
+            removalDate = "2024-06-01")
     @Operation(summary = "Get all Sed/Participant/Professional Experience counts.",
             description = "Retrieves and returns the SED/Participant/Preofessional Experience counts.",
             security = {
@@ -165,6 +196,10 @@ public class StatisticsController {
         return response;
     }
 
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/statistics/participant_computer_experience_count",
+            message = "This endpoint is deprecated and will be removed in a future release. There is no replacement for this endpoint.",
+            removalDate = "2024-06-01")
     @Operation(summary = "Get all Sed/Participant/Computer Experience counts.",
             description = "Retrieves and returns the SED/Participant/Computer Experience counts.",
             security = {
@@ -179,6 +214,10 @@ public class StatisticsController {
         return response;
     }
 
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/statistics/participant_product_experience_count",
+            message = "This endpoint is deprecated and will be removed in a future release. There is no replacement for this endpoint.",
+            removalDate = "2024-06-01")
     @Operation(summary = "Get all Sed/Participant/Product Experience counts.",
             description = "Retrieves and returns the SED/Participant/Product Experience counts.",
             security = {

@@ -29,7 +29,7 @@ public class ValidDataReviewer extends PermissionBasedReviewer {
     @Override
     public void review(CertifiedProductSearchDetails listing) {
         for (CertificationResult cert : listing.getCertificationResults()) {
-            if (BooleanUtils.isTrue(cert.isSuccess())) {
+            if (BooleanUtils.isTrue(cert.getSuccess())) {
                 if (!StringUtils.isEmpty(cert.getPrivacySecurityFramework())) {
                     String formattedPrivacyAndSecurityFramework = CertificationResult
                             .formatPrivacyAndSecurityFramework(cert.getPrivacySecurityFramework());

@@ -1,7 +1,6 @@
 package gov.healthit.chpl.dao.statistics;
 
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -9,7 +8,6 @@ import javax.persistence.Query;
 
 import org.springframework.stereotype.Repository;
 
-import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.statistics.CuresCriterionUpgradedWithoutOriginalListingStatistic;
 import gov.healthit.chpl.entity.statistics.CuresCriterionUpgradedWithoutOriginalListingStatisticEntity;
@@ -58,7 +56,6 @@ public class CuresCriterionUpgradedWithoutOriginalListingStatisticsDAO extends B
         CuresCriterionUpgradedWithoutOriginalListingStatisticEntity toDelete = getEntityById(id);
         if (toDelete != null) {
             toDelete.setDeleted(true);
-            toDelete.setLastModifiedUser(getUserId(User.SYSTEM_USER_ID));
             update(toDelete);
         }
     }
@@ -69,9 +66,6 @@ public class CuresCriterionUpgradedWithoutOriginalListingStatisticsDAO extends B
         entity.setListingCount(dto.getListingsUpgradedWithoutAttestingToOriginalCount());
         entity.setCertificationCriterionId(dto.getCuresCriterion().getId());
         entity.setStatisticDate(dto.getStatisticDate());
-        entity.setLastModifiedUser(getUserId(User.SYSTEM_USER_ID));
-        entity.setLastModifiedDate(new Date());
-        entity.setCreationDate(new Date());
         entity.setDeleted(false);
 
         create(entity);

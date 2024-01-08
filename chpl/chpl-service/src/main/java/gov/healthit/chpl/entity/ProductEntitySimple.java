@@ -1,8 +1,5 @@
 package gov.healthit.chpl.entity;
 
-import java.io.Serializable;
-import java.util.Date;
-
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -15,14 +12,22 @@ import javax.validation.constraints.Size;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.contact.PointOfContact;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 
-@Entity
-@Table(name = "product")
 @Getter
 @Setter
-public class ProductEntitySimple implements Serializable {
+@ToString
+@SuperBuilder
+@AllArgsConstructor
+@NoArgsConstructor
+@Entity
+@Table(name = "product")
+public class ProductEntitySimple extends EntityAudit {
     private static final long serialVersionUID = -533208090008462551L;
 
     @Id
@@ -30,22 +35,6 @@ public class ProductEntitySimple implements Serializable {
     @Basic(optional = false)
     @Column(name = "product_id", nullable = false)
     private Long id;
-
-    @Basic(optional = false)
-    @Column(name = "creation_date", nullable = false, insertable = false, updatable = false)
-    private Date creationDate;
-
-    @Basic(optional = false)
-    @Column(name = "deleted", nullable = false)
-    private Boolean deleted;
-
-    @Basic(optional = false)
-    @Column(name = "last_modified_date", nullable = false, insertable = false, updatable = false)
-    private Date lastModifiedDate;
-
-    @Basic(optional = false)
-    @Column(name = "last_modified_user", nullable = false)
-    private Long lastModifiedUser;
 
     @Basic(optional = false)
     @Size(min = 1)

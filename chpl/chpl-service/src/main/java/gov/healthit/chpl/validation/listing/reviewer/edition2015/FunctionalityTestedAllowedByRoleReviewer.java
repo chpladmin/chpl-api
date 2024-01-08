@@ -55,7 +55,7 @@ public class FunctionalityTestedAllowedByRoleReviewer implements ComparisonRevie
 
                 // Only check removed CertificationResultFunctionalityTested if the criteria is attested to
                 List<CertificationResultFunctionalityTested> removedCrtfs = new ArrayList<CertificationResultFunctionalityTested>();
-                if (BooleanUtils.isTrue(updatedCr.isSuccess())) {
+                if (BooleanUtils.isTrue(updatedCr.getSuccess())) {
                     removedCrtfs = getRemovedFunctionalitiesTested(listUpdateCrtfs, listExistingCrtfs);
                 }
 

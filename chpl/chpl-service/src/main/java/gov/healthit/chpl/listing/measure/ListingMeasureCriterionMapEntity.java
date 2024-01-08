@@ -1,7 +1,5 @@
 package gov.healthit.chpl.listing.measure;
 
-import java.util.Date;
-
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -15,12 +13,26 @@ import javax.persistence.Table;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterionEntity;
-import lombok.Data;
+import gov.healthit.chpl.entity.EntityAudit;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 
+@Getter
+@Setter
+@ToString
+@SuperBuilder
+@AllArgsConstructor
+@NoArgsConstructor
+@EqualsAndHashCode(callSuper = true)
 @Entity
-@Data
 @Table(name = "certified_product_measure_criteria")
-public class ListingMeasureCriterionMapEntity {
+public class ListingMeasureCriterionMapEntity extends EntityAudit {
+    private static final long serialVersionUID = 5625520749334532288L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,18 +51,6 @@ public class ListingMeasureCriterionMapEntity {
     @OneToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "certification_criterion_id", unique = true, nullable = true, insertable = false, updatable = false)
     private CertificationCriterionEntity criterion;
-
-    @Column(name = "creation_date", nullable = false, updatable = false, insertable = false)
-    private Date creationDate;
-
-    @Column(nullable = false)
-    private Boolean deleted;
-
-    @Column(name = "last_modified_date", nullable = false, updatable = false, insertable = false)
-    private Date lastModifiedDate;
-
-    @Column(name = "last_modified_user", nullable = false)
-    private Long lastModifiedUser;
 
     public CertificationCriterion convert() {
         if (getCriterion() == null) {

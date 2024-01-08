@@ -5,8 +5,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlTransient;
-
 import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.lang3.StringUtils;
 
@@ -39,10 +37,8 @@ public class ListingUpload implements Serializable {
     private Integer warningCount;
     private Integer errorCount;
     private ListingUploadStatus status;
-    @XmlTransient
     @JsonIgnore
     private Long certifiedProductId;
-    @XmlTransient
     @JsonIgnore
     private List<CSVRecord> records;
 

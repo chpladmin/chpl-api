@@ -2,41 +2,27 @@ package gov.healthit.chpl.domain;
 
 import java.io.Serializable;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlType;
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@XmlType(namespace = "http://chpl.healthit.gov/listings")
-@XmlAccessorType(XmlAccessType.FIELD)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Builder
+@Data
+@NoArgsConstructor
 @AllArgsConstructor
 public class DeveloperStatus implements Serializable {
     private static final long serialVersionUID = 4646214778954081679L;
 
-    /**
-     * Developer status internal id.
-     */
     @Schema(description = "Developer status internal id.")
-    @XmlElement(required = true)
     private Long id;
 
-    /**
-     * Developer status name
-     */
     @Schema(description = "Developer status name")
-    @XmlElement(required = true)
     private String status;
-
-    public DeveloperStatus() {
-    }
 
     public DeveloperStatus(DeveloperStatus other) {
         this();
@@ -81,21 +67,4 @@ public class DeveloperStatus implements Serializable {
         result = prime * result + ((status == null) ? 0 : status.hashCode());
         return result;
     }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(final Long id) {
-        this.id = id;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(final String status) {
-        this.status = status;
-    }
-
 }

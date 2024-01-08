@@ -256,7 +256,7 @@ public class CertifiedProductCsvPresenter extends CertifiedProductPresenter impl
                 CertificationResult currCriteria = data.getCertificationResults().get(i);
                 if (currCriteria.getCriterion().getId().equals(criteria.getId())) {
                     criteriaMatch = true;
-                    result.add(currCriteria.isSuccess().toString());
+                    result.add(currCriteria.getSuccess().toString());
                 }
             }
             if (!criteriaMatch) {

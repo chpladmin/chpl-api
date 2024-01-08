@@ -344,13 +344,13 @@ public class ConformanceMethodReviewer extends PermissionBasedReviewer {
 
     private void reviewF3ConformanceMethodForGapRequirement(CertifiedProductSearchDetails listing,
             CertificationResult certResult, CertificationResultConformanceMethod conformanceMethod) {
-        if (BooleanUtils.isFalse(certResult.isGap()) && conformanceMethod.getConformanceMethod() != null
+        if (BooleanUtils.isFalse(certResult.getGap()) && conformanceMethod.getConformanceMethod() != null
                 && StringUtils.equals(conformanceMethod.getConformanceMethod().getName(), CM_F3_MUST_HAVE_GAP)) {
             listing.addBusinessErrorMessage(msgUtil.getMessage("listing.criteria.conformanceMethod.f3GapMismatch",
                     Util.formatCriteriaNumber(certResult.getCriterion()),
                     conformanceMethod.getConformanceMethod().getName(),
                     "false"));
-        } else if (BooleanUtils.isTrue(certResult.isGap()) && conformanceMethod.getConformanceMethod() != null
+        } else if (BooleanUtils.isTrue(certResult.getGap()) && conformanceMethod.getConformanceMethod() != null
                 && StringUtils.equals(conformanceMethod.getConformanceMethod().getName(), CM_F3_CANNOT_HAVE_GAP)) {
             listing.addBusinessErrorMessage(msgUtil.getMessage("listing.criteria.conformanceMethod.f3GapMismatch",
                     Util.formatCriteriaNumber(certResult.getCriterion()),
@@ -361,7 +361,7 @@ public class ConformanceMethodReviewer extends PermissionBasedReviewer {
 
     private void removeF3TestDataAndTestToolsIfNotApplicable(CertifiedProductSearchDetails listing,
             CertificationResult certResult, CertificationResultConformanceMethod conformanceMethod) {
-        if (BooleanUtils.isTrue(certResult.isGap()) && conformanceMethod.getConformanceMethod() != null
+        if (BooleanUtils.isTrue(certResult.getGap()) && conformanceMethod.getConformanceMethod() != null
                 && StringUtils.equals(conformanceMethod.getConformanceMethod().getName(), CM_F3_MUST_HAVE_GAP)) {
             if (!CollectionUtils.isEmpty(certResult.getTestToolsUsed())) {
                 certResult.getTestToolsUsed().clear();

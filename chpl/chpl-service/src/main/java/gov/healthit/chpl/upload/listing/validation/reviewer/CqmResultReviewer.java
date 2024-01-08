@@ -37,7 +37,7 @@ public class CqmResultReviewer implements Reviewer {
     public void review(CertifiedProductSearchDetails listing) {
         if (!CollectionUtils.isEmpty(listing.getCqmResults())) {
             listing.getCqmResults().stream()
-                    .filter(cqmResult -> BooleanUtils.isTrue(cqmResult.isSuccess()))
+                    .filter(cqmResult -> BooleanUtils.isTrue(cqmResult.getSuccess()))
                     .forEach(cqmResult -> reviewCqmResultRequiredFields(listing, cqmResult));
 
             Predicate<CQMResultDetails> shouldRemove = cqm -> isMissingCmsIdButHasOtherData(cqm) || isMissingCqmCriterionId(cqm);

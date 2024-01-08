@@ -3,12 +3,6 @@ package gov.healthit.chpl.domain;
 import java.io.Serializable;
 import java.util.Objects;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlTransient;
-import javax.xml.bind.annotation.XmlType;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -19,165 +13,75 @@ import gov.healthit.chpl.dto.TestParticipantDTO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.ToString;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-/**
- * Participant in a given test task.
- */
-@XmlType(namespace = "http://chpl.healthit.gov/listings")
-@XmlAccessorType(XmlAccessType.FIELD)
 @Builder(toBuilder = true)
-@ToString
+@Data
+@NoArgsConstructor
 @AllArgsConstructor
 public class TestParticipant implements Serializable {
     private static final long serialVersionUID = -3771155258451736516L;
     private static final Logger LOGGER = LogManager.getLogger(TestParticipant.class);
 
-    /**
-     * Participant internal ID
-     */
     @Schema(description = "Participant internal ID")
-    @XmlElement(required = true)
     private Long id;
 
-    /**
-     * An ONC-ACB designated identifier for an individual SED participant. This
-     * variable is a string variable only applicable to 2015 Edition, but must
-     * be unique to a particular participant. It is for internal use within an
-     * upload file only.
-     */
-    @Schema(description = "An ONC-ACB designated identifier for an individual SED participant. This "
-            + "variable is a string variable only applicable to 2015 Edition, but must "
-            + "be unique to a particular participant. It is for internal use within an "
-            + "upload file only.")
-    @XmlTransient
+    @Schema(description = "An ONC-ACB designated identifier for an individual SED participant. "
+            + "The value must be unique to a particular participant. "
+            + "It is for internal use within an upload file only.")
     private String uniqueId;
 
-    /**
-     * Self-reported gender of the corresponding participant. This variable is
-     * only applicable for 2015 Edition. The following are allowable values for
-     * the 'Participant Gender' field: Male, Female, Unknown.
-     */
-    @Schema(description = "Self-reported gender of the corresponding participant. This variable is "
-            + "only applicable for 2015 Edition.",
+    @Schema(description = "Self-reported gender of the corresponding participant.",
             allowableValues = {"Male", "Female", "Unknown"})
-    @XmlElement(required = true)
     private String gender;
 
-    /**
-     * Education internal ID
-     */
     @Schema(description = "Education internal ID")
-    @XmlElement(required = true)
     private Long educationTypeId;
 
-    /**
-     * Highest education level attained by corresponding participant. This
-     * variable is only applicable for 2015 Edition. The following are allowable
-     * values for the 'Participant Education' field: No high school degree; High
-     * school graduate, diploma or the equivalent (for example: GED); Some
-     * college credit, no degree; Trade/technical/vocational training; Associate
-     * degree; Bachelor's degree; Master's degree; Doctorate degree (e.g., MD,
-     * DNP, DMD, PhD).
-     */
-    @Schema(description = "Highest education level attained by corresponding participant. This "
-            + "variable is only applicable for 2015 Edition.",
+    @Schema(description = "Highest education level attained by corresponding participant.",
             allowableValues = {"No high school degree", "High school graduate, diploma or the equivalent (for example: GED)",
             "Some college credit, no degree", "Trade/technical/vocational training", "Associate degre", "Bachelor's degree",
             "Master's degree",  "Doctorate degree (e.g., MD,DNP, DMD, PhD)"})
-    @XmlElement(required = true)
     private String educationTypeName;
 
-    /**
-     * Age range internal ID
-     */
-    @Schema(description = "")
-    @XmlElement(required = true)
+    @Schema(description = "Age range internal ID")
     private Long ageRangeId;
 
-    /**
-     * The age range for the corresponding participant. The following are
-     * allowable values for the 'Participant Age' field: 0-9, 10-19, 20-29,
-     * 30-39, 40-49, 50-59, 60-69, 70-79, 80-89, 90-99, 100+
-     */
     @Schema(description = "The age range for the corresponding participant.",
             allowableValues = {"0-9", "10-19", "20-29", "30-39", "40-49", "50-59", "60-69", "70-79", "80-89", "90-99", "100+"})
-    @XmlElement(required = true)
     private String ageRange;
 
-    /**
-     * This variable illustrates occupation or role of corresponding
-     * participant. It is only applicable to 2015 Edition and a string variable
-     * that does not take any restrictions on formatting or values.
-     */
-    @Schema(description = "This variable illustrates occupation or role of corresponding "
-            + "participant. It is only applicable to 2015 Edition and a string variable "
-            + "that does not take any restrictions on formatting or values.")
-    @XmlElement(required = true)
+    @Schema(description = "This variable illustrates occupation or role of corresponding participant. "
+            + "It is a string variable that does not take any restrictions on formatting or values.")
     private String occupation;
 
-    /**
-     * Professional experience of the corresponding participant, in number of
-     * months. This variable is only applicable to 2015 Edition, and takes only
-     * positive integers (i.e. no decimals) values.
-     */
     @Schema(description = "Professional experience of the corresponding participant, in number of "
-            + "months. This variable is only applicable to 2015 Edition, and takes only "
-            + "positive integers (i.e. no decimals) values.")
-    @XmlElement(required = true)
+            + "months. This variable only takes positive integers (i.e. no decimals) values.")
     private Integer professionalExperienceMonths;
 
-    @XmlTransient
     @JsonIgnore
     private String professionalExperienceMonthsStr;
 
-    /**
-     * The corresponding participant's experience with computers (in general),
-     * in number of months. It is only applicable for 2015 Edition and takes
-     * only positive integers (i.e. no decimals).
-     */
     @Schema(description = "The corresponding participant's experience with computers (in general), "
-            + " in number of months. It is only applicable for 2015 Edition and takes "
-            + "only positive integers (i.e. no decimals).")
-    @XmlElement(required = true)
+            + "in number of months. It only takes positive integers (i.e. no decimals).")
     private Integer computerExperienceMonths;
 
-    @XmlTransient
     @JsonIgnore
     private String computerExperienceMonthsStr;
 
-    /**
-     * The corresponding participant's experience with the certified product/
-     * health IT capabilities (SED criterion) being tested, in number of months.
-     * This variable is applicable to 2015 Edition, and only takes positive
-     * integers (i.e. no decimals are allowed) values.
-     */
-    @Schema(description = "The corresponding participant's experience with the certified product/ "
-            + "health IT capabilities (SED criterion) being tested, in number of months. "
-            + "This variable is applicable to 2015 Edition, and only takes positive "
-            + "integers (i.e. no decimals are allowed) values.")
-    @XmlElement(required = true)
+    @Schema(description = "The corresponding participant's experience with the certified product/health "
+            + "IT capabilities (SED criterion) being tested, in number of months. "
+            + "This variable only takes positive integers (i.e. no decimals are allowed) values.")
     private Integer productExperienceMonths;
 
-    @XmlTransient
     @JsonIgnore
     private String productExperienceMonthsStr;
 
-    /**
-     * Any assistive technology needs as identified by the corresponding
-     * participant. This variable is a string variable that does not take any
-     * restrictions on formatting or values and is only applicable for 2015
-     * Edition.
-     */
     @Schema(description = "Any assistive technology needs as identified by the corresponding "
             + "participant. This variable is a string variable that does not take any "
-            + "restrictions on formatting or values and is only applicable for 2015 "
-            + "Edition.")
-    @XmlElement(required = true)
+            + "restrictions on formatting or values.")
     private String assistiveTechnologyNeeds;
-
-    public TestParticipant() {
-    }
 
     public TestParticipant(TestParticipantDTO dto) {
         this();
@@ -270,42 +174,6 @@ public class TestParticipant implements Serializable {
         return result;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(final Long id) {
-        this.id = id;
-    }
-
-    public String getGender() {
-        return gender;
-    }
-
-    public void setGender(final String gender) {
-        this.gender = gender;
-    }
-
-    public Long getEducationTypeId() {
-        return educationTypeId;
-    }
-
-    public void setEducationTypeId(final Long educationTypeId) {
-        this.educationTypeId = educationTypeId;
-    }
-
-    public String getOccupation() {
-        return occupation;
-    }
-
-    public void setOccupation(final String occupation) {
-        this.occupation = occupation;
-    }
-
-    public Integer getProfessionalExperienceMonths() {
-        return professionalExperienceMonths;
-    }
-
     public void setProfessionalExperienceMonths(final String value) {
         if (!StringUtils.isEmpty(value)) {
             try {
@@ -314,10 +182,6 @@ public class TestParticipant implements Serializable {
                 LOGGER.error("can't parse " + value + " as a float.");
             }
         }
-    }
-
-    public Integer getComputerExperienceMonths() {
-        return computerExperienceMonths;
     }
 
     public void setComputerExperienceMonths(final String value) {
@@ -330,10 +194,6 @@ public class TestParticipant implements Serializable {
         }
     }
 
-    public Integer getProductExperienceMonths() {
-        return productExperienceMonths;
-    }
-
     public void setProductExperienceMonths(final String value) {
         if (!StringUtils.isEmpty(value)) {
             try {
@@ -343,69 +203,4 @@ public class TestParticipant implements Serializable {
             }
         }
     }
-
-    public String getAssistiveTechnologyNeeds() {
-        return assistiveTechnologyNeeds;
-    }
-
-    public void setAssistiveTechnologyNeeds(final String assistiveTechnologyNeeds) {
-        this.assistiveTechnologyNeeds = assistiveTechnologyNeeds;
-    }
-
-    public String getEducationTypeName() {
-        return educationTypeName;
-    }
-
-    public void setEducationTypeName(final String educationTypeName) {
-        this.educationTypeName = educationTypeName;
-    }
-
-    public String getUniqueId() {
-        return uniqueId;
-    }
-
-    public void setUniqueId(final String uniqueId) {
-        this.uniqueId = uniqueId;
-    }
-
-    public Long getAgeRangeId() {
-        return ageRangeId;
-    }
-
-    public void setAgeRangeId(final Long ageRangeId) {
-        this.ageRangeId = ageRangeId;
-    }
-
-    public String getAgeRange() {
-        return ageRange;
-    }
-
-    public void setAgeRange(final String ageRange) {
-        this.ageRange = ageRange;
-    }
-
-    public String getProfessionalExperienceMonthsStr() {
-        return professionalExperienceMonthsStr;
-    }
-
-    public void setProfessionalExperienceMonthsStr(String professionalExperienceMonthsStr) {
-        this.professionalExperienceMonthsStr = professionalExperienceMonthsStr;
-    }
-
-    public String getComputerExperienceMonthsStr() {
-        return computerExperienceMonthsStr;
-    }
-
-    public void setComputerExperienceMonthsStr(String computerExperienceMonthsStr) {
-        this.computerExperienceMonthsStr = computerExperienceMonthsStr;
-    }
-
-    public String getProductExperienceMonthsStr() {
-        return productExperienceMonthsStr;
-    }
-
-    public void setProductExperienceMonthsStr(String productExperienceMonthsStr) {
-        this.productExperienceMonthsStr = productExperienceMonthsStr;
-    }
-
 }

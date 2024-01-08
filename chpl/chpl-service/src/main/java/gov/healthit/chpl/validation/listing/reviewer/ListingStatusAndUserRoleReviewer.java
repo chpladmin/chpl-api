@@ -72,7 +72,7 @@ public class ListingStatusAndUserRoleReviewer implements ComparisonReviewer {
 
     private List<CertificationResult> getAttestedToCriteria(CertifiedProductSearchDetails listing) {
         return listing.getCertificationResults().stream()
-                .filter(cr -> BooleanUtils.isTrue(cr.isSuccess()))
+                .filter(cr -> BooleanUtils.isTrue(cr.getSuccess()))
                 .collect(Collectors.toList());
     }
 

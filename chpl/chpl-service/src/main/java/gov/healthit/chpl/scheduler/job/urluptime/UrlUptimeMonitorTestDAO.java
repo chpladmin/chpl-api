@@ -2,14 +2,12 @@ package gov.healthit.chpl.scheduler.job.urluptime;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Query;
 
 import org.springframework.stereotype.Repository;
 
-import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 
 @Repository
@@ -22,9 +20,6 @@ public class UrlUptimeMonitorTestDAO extends BaseDAOImpl {
                 .datadogTestKey(urlUptimeMonitorTest.getDatadogTestKey())
                 .checkTime(urlUptimeMonitorTest.getCheckTime())
                 .passed(urlUptimeMonitorTest.getPassed())
-                .creationDate(new Date())
-                .lastModifiedUser(User.SYSTEM_USER_ID)
-                .lastModifiedDate(new Date())
                 .deleted(false)
                 .build();
 

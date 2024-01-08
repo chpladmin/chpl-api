@@ -42,8 +42,8 @@ public class GapWithoutIcsReviewer extends IcsErrorsReviewer {
 
     private boolean doesGapExistForListing(CertifiedProductSearchDetails listing) {
         return listing.getCertificationResults().stream()
-                .filter(cert -> BooleanUtils.isTrue(cert.isSuccess())
-                        && cert.isGap() != null ? cert.isGap() : false)
+                .filter(cert -> BooleanUtils.isTrue(cert.getSuccess())
+                        && cert.getGap() != null ? cert.getGap() : false)
                 .count() > 0;
     }
 

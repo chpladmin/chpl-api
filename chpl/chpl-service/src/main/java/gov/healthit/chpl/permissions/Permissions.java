@@ -30,6 +30,7 @@ import gov.healthit.chpl.permissions.domains.RealWorldTestingDomainPermissions;
 import gov.healthit.chpl.permissions.domains.SchedulerDomainPermissions;
 import gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions;
 import gov.healthit.chpl.permissions.domains.StandardDomainPermissions;
+import gov.healthit.chpl.permissions.domains.SubscriptionDomainPermissions;
 import gov.healthit.chpl.permissions.domains.SurveillanceDomainPermissions;
 import gov.healthit.chpl.permissions.domains.SurveillanceReportDomainPermissions;
 import gov.healthit.chpl.permissions.domains.SvapDomainPermissions;
@@ -62,6 +63,7 @@ public class Permissions {
     public static final String ACTIVITY_METADATA = "ACTIVTY_METADATA";
     public static final String ANNOUNCEMENT = "ANNOUNCEMENT";
     public static final String CHANGE_REQUEST = "CHANGE_REQUEST";
+    public static final String SUBSCRIPTION = "SUBSCRIPTION";
     public static final String REAL_WORLD_TESTING = "REAL_WORLD_TESTING";
     public static final String SVAP = "SVAP";
     public static final String UCD_PROCESS = "UCD_PROCESS";
@@ -97,6 +99,7 @@ public class Permissions {
             ComplaintDomainPermissions complaintDomainPermissions,
             AnnouncementDomainPermissions announcementDomainPermissions,
             ChangeRequestDomainPermissions changeRequestDomainPermissions,
+            SubscriptionDomainPermissions subscriptionDomainPermissions,
             RealWorldTestingDomainPermissions realWorldTestingDomainPermissions,
             SvapDomainPermissions svapDomainPermissions,
             UcdProcessDomainPermissions ucdProcessDomainPermissions,
@@ -108,36 +111,37 @@ public class Permissions {
             FunctionalityTestedDomainPermissions functionalityTestedDomainPermissions,
             StandardDomainPermissions standardDomainPermissions) {
 
+        domainPermissions.put(ACCESSIBILITY_STANDARD, accessibilityStandardDomainPermissions);
+        domainPermissions.put(ACTIVITY, activityDomainPermissions);
+        domainPermissions.put(ANNOUNCEMENT, announcementDomainPermissions);
+        domainPermissions.put(ATTESTATION, attestationDomainPermissions);
+        domainPermissions.put(CERTIFICATION_BODY, certificationBodyDomainPermissions);
+        domainPermissions.put(CERTIFICATION_ID, certificationIdDomainPermissions);
         domainPermissions.put(CERTIFICATION_RESULTS, certificationResultsDomainPermissions);
         domainPermissions.put(CERTIFIED_PRODUCT, certifiedProductDomainPermissions);
+        domainPermissions.put(CHANGE_REQUEST, changeRequestDomainPermissions);
+        domainPermissions.put(COMPLAINT, complaintDomainPermissions);
         domainPermissions.put(CORRECTIVE_ACTION_PLAN, correctiveActionPlanDomainPermissions);
-        domainPermissions.put(CERTIFICATION_ID, certificationIdDomainPermissions);
+        domainPermissions.put(DEVELOPER, developerDomainPermissions);
+        domainPermissions.put(FUNCTIONALITY_TESTED, functionalityTestedDomainPermissions);
         domainPermissions.put(INVITATION, invitationDomainPermissions);
         domainPermissions.put(LISTING_UPLOAD, listingUploadDomainPermissions);
+        domainPermissions.put(PRODUCT, productDomainPermissions);
+        domainPermissions.put(PRODUCT_VERSION, productVersionDomainPermissions);
+        domainPermissions.put(QMS_STANDARD, qmsStandardDomainPermissions);
+        domainPermissions.put(QUESTIONABLE_ACTIVITY, qaDomainPermissions);
+        domainPermissions.put(REAL_WORLD_TESTING, realWorldTestingDomainPermissions);
+        domainPermissions.put(SCHEDULER, schedulerDomainPermissions);
+        domainPermissions.put(SECURED_USER, securedUserDomainPermissions);
+        domainPermissions.put(STANDARD, standardDomainPermissions);
+        domainPermissions.put(SUBSCRIPTION, subscriptionDomainPermissions);
         domainPermissions.put(SURVEILLANCE, surveillanceDomainPermissions);
         domainPermissions.put(SURVEILLANCE_REPORT, surveillanceReportDomainPermissions);
-        domainPermissions.put(CERTIFICATION_BODY, certificationBodyDomainPermissions);
-        domainPermissions.put(USER_PERMISSIONS, userPermissionsDomainPermissions);
-        domainPermissions.put(ACTIVITY, activityDomainPermissions);
-        domainPermissions.put(PRODUCT, productDomainPermissions);
-        domainPermissions.put(DEVELOPER, developerDomainPermissions);
-        domainPermissions.put(PRODUCT_VERSION, productVersionDomainPermissions);
-        domainPermissions.put(SECURED_USER, securedUserDomainPermissions);
-        domainPermissions.put(SCHEDULER, schedulerDomainPermissions);
-        domainPermissions.put(TESTING_LAB, testingLabDomainPermissions);
-        domainPermissions.put(COMPLAINT, complaintDomainPermissions);
-        domainPermissions.put(ANNOUNCEMENT, announcementDomainPermissions);
-        domainPermissions.put(CHANGE_REQUEST, changeRequestDomainPermissions);
-        domainPermissions.put(REAL_WORLD_TESTING, realWorldTestingDomainPermissions);
         domainPermissions.put(SVAP, svapDomainPermissions);
-        domainPermissions.put(UCD_PROCESS, ucdProcessDomainPermissions);
-        domainPermissions.put(ACCESSIBILITY_STANDARD, accessibilityStandardDomainPermissions);
-        domainPermissions.put(QMS_STANDARD, qmsStandardDomainPermissions);
-        domainPermissions.put(ATTESTATION, attestationDomainPermissions);
-        domainPermissions.put(QUESTIONABLE_ACTIVITY, qaDomainPermissions);
         domainPermissions.put(TEST_TOOL, testToolDomainPermissions);
-        domainPermissions.put(FUNCTIONALITY_TESTED, functionalityTestedDomainPermissions);
-        domainPermissions.put(STANDARD, standardDomainPermissions);
+        domainPermissions.put(TESTING_LAB, testingLabDomainPermissions);
+        domainPermissions.put(UCD_PROCESS, ucdProcessDomainPermissions);
+        domainPermissions.put(USER_PERMISSIONS, userPermissionsDomainPermissions);
     }
 
     public boolean hasAccess(final String domain, final String action) {

@@ -55,6 +55,6 @@ public class CertificationResultActivityHistoryHelper {
     }
 
     private Boolean isCertResultAttestedTo(Optional<CertificationResult> result) {
-        return result.isPresent() && result.get().isSuccess();
+        return result.isPresent() && result.get().getSuccess();
     }
 }

@@ -2,21 +2,16 @@ package gov.healthit.chpl.domain.surveillance;
 
 import java.io.Serializable;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlType;
-
 import org.apache.commons.lang3.StringUtils;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@XmlType(namespace = "http://chpl.healthit.gov/listings")
-@XmlAccessorType(XmlAccessType.FIELD)
 @Builder
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class SurveillanceResultType implements Serializable {
@@ -24,18 +19,10 @@ public class SurveillanceResultType implements Serializable {
     public static final String NON_CONFORMITY = "Non-Conformity";
     public static final String NO_NON_CONFORMITY = "No Non-Conformity";
 
-    /**
-     * Surveillance result type internal ID
-     */
     @Schema(description = "Surveillance result type internal ID")
-    @XmlElement(required = true)
     private Long id;
 
-    /**
-     * Surveillance result type name. Nonconformity or No Nonconformity
-     */
     @Schema(description = "Surveillance result type name. Nonconformity or No Nonconformity")
-    @XmlElement(required = true)
     private String name;
 
     /**
@@ -54,21 +41,5 @@ public class SurveillanceResultType implements Serializable {
             return true;
         }
         return false;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(final Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(final String name) {
-        this.name = name;
     }
 }

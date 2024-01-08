@@ -1,7 +1,6 @@
 package gov.healthit.chpl.dao;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Query;
@@ -15,7 +14,6 @@ import gov.healthit.chpl.dto.TargetedUserDTO;
 import gov.healthit.chpl.entity.TargetedUserEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import lombok.extern.log4j.Log4j2;
 
@@ -32,7 +30,6 @@ public class TargetedUserDAO extends BaseDAOImpl {
     public Long create(String name) throws EntityCreationException {
         try {
             TargetedUserEntity entity = new TargetedUserEntity();
-            entity.setLastModifiedUser(AuthUtil.getAuditId());
             entity.setName(name);
             create(entity);
             return entity.getId();
@@ -52,10 +49,7 @@ public class TargetedUserDAO extends BaseDAOImpl {
         } else {
             try {
                 entity = new TargetedUserEntity();
-                entity.setCreationDate(new Date());
                 entity.setDeleted(false);
-                entity.setLastModifiedDate(new Date());
-                entity.setLastModifiedUser(AuthUtil.getAuditId());
                 entity.setName(dto.getName());
                 create(entity);
             } catch (Exception ex) {
@@ -82,8 +76,6 @@ public class TargetedUserDAO extends BaseDAOImpl {
 
         if (toDelete != null) {
             toDelete.setDeleted(true);
-            toDelete.setLastModifiedDate(new Date());
-            toDelete.setLastModifiedUser(AuthUtil.getAuditId());
             update(toDelete);
         }
     }

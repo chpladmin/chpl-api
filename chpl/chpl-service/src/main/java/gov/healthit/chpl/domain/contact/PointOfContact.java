@@ -2,11 +2,6 @@ package gov.healthit.chpl.domain.contact;
 
 import java.util.HashMap;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlType;
-
 import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -14,20 +9,16 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
 import lombok.extern.log4j.Log4j2;
 
-@XmlType(namespace = "http://chpl.healthit.gov/listings")
-@XmlAccessorType(XmlAccessType.FIELD)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @AllArgsConstructor
+@Data
 @Log4j2
 public class PointOfContact extends Person {
     private static final long serialVersionUID = -1945872096428814999L;
 
-    /**
-     * Database ID of a point of contact.
-     */
-    @XmlElement(required = true)
     @Schema(description = "Database ID of a point of contact.")
     private Long contactId;
 
@@ -57,14 +48,6 @@ public class PointOfContact extends Person {
         this.setEmail(StringUtils.normalizeSpace(this.getEmail()));
         this.setPhoneNumber(StringUtils.normalizeSpace(this.getPhoneNumber()));
         this.setTitle(StringUtils.normalizeSpace(this.getTitle()));
-    }
-
-    public Long getContactId() {
-        return contactId;
-    }
-
-    public void setContactId(Long contactId) {
-        this.contactId = contactId;
     }
 
     @Override

@@ -44,7 +44,7 @@ public class TestParticipantNormalizer {
 
     private void clearDataForUnattestedCriteria(CertifiedProductSearchDetails listing) {
         List<Long> unattestedCriteriaIds = listing.getCertificationResults().stream()
-                .filter(certResult -> certResult.isSuccess() == null || BooleanUtils.isFalse(certResult.isSuccess()))
+                .filter(certResult -> certResult.getSuccess() == null || BooleanUtils.isFalse(certResult.getSuccess()))
                 .map(unattestedCertResult -> unattestedCertResult.getCriterion().getId())
                 .toList();
 

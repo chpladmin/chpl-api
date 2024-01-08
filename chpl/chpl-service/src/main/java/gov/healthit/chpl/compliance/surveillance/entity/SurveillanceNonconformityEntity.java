@@ -1,7 +1,6 @@
 package gov.healthit.chpl.compliance.surveillance.entity;
 
 import java.time.LocalDate;
-import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -15,21 +14,25 @@ import javax.persistence.Table;
 
 import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformity;
 import gov.healthit.chpl.domain.surveillance.SurveillanceNonconformityStatus;
+import gov.healthit.chpl.entity.EntityAudit;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 
 @Getter
 @Setter
+@ToString
+@SuperBuilder
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "surveillance_nonconformity")
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-public class SurveillanceNonconformityEntity {
+public class SurveillanceNonconformityEntity extends EntityAudit {
+    private static final long serialVersionUID = -3570727925941996498L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -78,18 +81,6 @@ public class SurveillanceNonconformityEntity {
 
     @Column(name = "resolution")
     private String resolution;
-
-    @Column(name = "deleted")
-    private Boolean deleted;
-
-    @Column(name = "last_modified_user")
-    private Long lastModifiedUser;
-
-    @Column(name = "creation_date", insertable = false, updatable = false)
-    private Date creationDate;
-
-    @Column(name = "last_modified_date", insertable = false, updatable = false)
-    private Date lastModifiedDate;
 
     public SurveillanceNonconformity toDomain(CertificationCriterionService certificationCriterionService) {
         SurveillanceNonconformity nc = SurveillanceNonconformity.builder()

@@ -2,6 +2,7 @@ package gov.healthit.chpl.permissions;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.FeatureList;
+import gov.healthit.chpl.auth.user.SystemUsers;
 import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
@@ -26,6 +28,7 @@ import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.TestingLab;
 import gov.healthit.chpl.domain.auth.Authority;
+import gov.healthit.chpl.domain.auth.CognitoGroups;
 import gov.healthit.chpl.domain.auth.UserPermission;
 import gov.healthit.chpl.dto.UserCertificationBodyMapDTO;
 import gov.healthit.chpl.dto.UserDeveloperMapDTO;
@@ -34,9 +37,12 @@ import gov.healthit.chpl.entity.developer.DeveloperStatusType;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.MultipleUserAccountsException;
 import gov.healthit.chpl.exception.UserRetrievalException;
+import gov.healthit.chpl.manager.auth.CognitoUserService;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 @Component
 public class ResourcePermissions {
     private UserCertificationBodyMapDAO userCertificationBodyMapDAO;
@@ -46,12 +52,15 @@ public class ResourcePermissions {
     private TestingLabDAO atlDAO;
     private UserDAO userDAO;
     private DeveloperDAO developerDAO;
+    private CognitoUserService cognitoUserService;
     private FF4j ff4j;
 
     @SuppressWarnings({"checkstyle:parameternumber"})
     @Autowired
-    public ResourcePermissions(UserCertificationBodyMapDAO userCertificationBodyMapDAO, UserDeveloperMapDAO userDeveloperMapDAO, CertificationBodyDAO acbDAO,
-            TestingLabDAO atlDAO, ErrorMessageUtil errorMessageUtil, UserDAO userDAO, DeveloperDAO developerDAO, FF4j ff4j) {
+    public ResourcePermissions(UserCertificationBodyMapDAO userCertificationBodyMapDAO, UserDeveloperMapDAO userDeveloperMapDAO,
+            CertificationBodyDAO acbDAO, TestingLabDAO atlDAO, ErrorMessageUtil errorMessageUtil, UserDAO userDAO,
+            DeveloperDAO developerDAO, CognitoUserService cognitoUserService, FF4j ff4j) {
+
         this.userCertificationBodyMapDAO = userCertificationBodyMapDAO;
         this.acbDAO = acbDAO;
         this.atlDAO = atlDAO;
@@ -59,6 +68,7 @@ public class ResourcePermissions {
         this.userDAO = userDAO;
         this.developerDAO = developerDAO;
         this.userDeveloperMapDAO = userDeveloperMapDAO;
+        this.cognitoUserService = cognitoUserService;
         this.ff4j = ff4j;
     }
 
@@ -275,6 +285,7 @@ public class ResourcePermissions {
         return hasPermissionOnUser(user);
     }
 
+    //TODO - This can be removed when SSO is implemented
     @Transactional(readOnly = true)
     public boolean hasPermissionOnUser(UserDTO user) {
         if (getRoleByUserId(user.getId()).getAuthority().equalsIgnoreCase(Authority.ROLE_STARTUP)) {
@@ -312,8 +323,27 @@ public class ResourcePermissions {
         return false;
     }
 
+    //TODO - This method will get built out to handle ONCs, ACBs, Developers as we continue to implemnt SSO
+    public boolean hasPermissionOnUser(UUID ssoId) {
+        try {
+            if (cognitoUserService.getUserInfo(ssoId).getRole().equalsIgnoreCase(CognitoGroups.CHPL_STARTUP)) {
+                return false;
+            } else if (isUserRoleAdmin() || AuthUtil.getCurrentUser().getSsoId().equals(ssoId)) {
+                return true;
+            }
+            return false;
+        } catch (UserRetrievalException e) {
+            LOGGER.error("Could not retrieve SSO user.", e);
+            return false;
+        }
+    }
+
     public boolean isUserRoleAdmin() {
-        return doesUserHaveRole(Authority.ROLE_ADMIN);
+        if (ff4j.check(FeatureList.SSO)) {
+            return doesUserHaveRole(CognitoGroups.CHPL_ADMIN);
+        } else {
+            return doesUserHaveRole(Authority.ROLE_ADMIN);
+        }
     }
 
     public boolean isUserRoleOnc() {
@@ -383,7 +413,7 @@ public class ResourcePermissions {
 
     public boolean doesAuditUserHaveRole(String authority) {
         Long auditUserId = AuthUtil.getAuditId();
-        if (auditUserId == null || auditUserId.equals(User.DEFAULT_USER_ID)) {
+        if (auditUserId == null || auditUserId.equals(SystemUsers.DEFAULT_USER_ID)) {
             return false;
         }
 

@@ -5,13 +5,6 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
-import javax.xml.bind.annotation.XmlTransient;
-import javax.xml.bind.annotation.XmlType;
-
 import org.apache.commons.collections4.CollectionUtils;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
@@ -22,112 +15,63 @@ import gov.healthit.chpl.domain.contact.PointOfContact;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
 
-@XmlType(namespace = "http://chpl.healthit.gov/listings")
-@XmlAccessorType(XmlAccessType.FIELD)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @AllArgsConstructor
+@Data
 @Builder
 public class Developer implements Serializable {
     private static final long serialVersionUID = 7341544844577617247L;
 
-    /**
-     * The internal ID of the developer.
-     */
     @Schema(description = "The internal ID of the developer.")
-    @XmlElement(required = true)
     @JsonAlias("developerId")
     private Long id;
 
-    /**
-     * A four-digit code assigned to each developer when it was created.
-     */
     @Schema(description = "A four-digit code assigned to each developer when it was created.")
-    @XmlElement(required = true)
     private String developerCode;
 
-    /**
-     * The name of the developer or vendor of the certified health IT product being uploaded. It is applicable to 2014
-     * and 2015 Edition. If uploading a certified product from a developer that already exists in the CHPL database,
-     * please use the CHPL Developer management functionality to ensure that the name of the developer matches the
-     * database record to prevent duplication.
-     */
-    @Schema(description = "The name of the developer or vendor of the certified health IT product being uploaded. It is applicable to 2014"
-            + "and 2015 Edition. If uploading a certified product from a developer that already exists in the CHPL database, please use the "
-            + "CHPL Developer management functionality to ensure that the name of the developer matches the database record to prevent duplication.")
-    @XmlElement(required = true)
+    @Schema(description = "The name of the developer or vendor of the certified health IT product. "
+            + "If uploading a certified product from a developer that already exists in the CHPL database, "
+            + "please use the CHPL Developer management functionality to ensure that the name of the developer matches the "
+            + "database record to prevent duplication.")
     private String name;
 
-    /**
-     * Website of health IT developer. Fully qualified URL which is reachable via web browser validation and
-     * verification. This variable is applicable for 2014 and 2015 Edition.
-     */
-    @Schema(description = "Website of health IT developer. Fully qualified URL which is reachable via web browser validation and "
-            + "verification. This variable is applicable for 2014 and 2015 Edition.")
-    @XmlElement(required = false, nillable = true)
+    @Schema(description = "Website of health IT developer. "
+            + "Fully qualified URL which is reachable via web browser validation and verification.")
     private String website;
 
-    /**
-     * Indication of whether a health IT developer is a "self-developer" or not.
-     */
     @Schema(description = "Indication of whether a health IT developer is a \"self-developer\" or not.")
-    @XmlElement(required = true)
     private Boolean selfDeveloper;
 
-    /**
-     * Developer's physical address
-     */
     @Schema(description = "Developer's physical address")
-    @XmlElement(required = false, nillable = true)
     private Address address;
 
-    /**
-     * Contact information for the developer.
-     */
     @Schema(description = "Contact information for the developer.")
-    @XmlElement(required = false, nillable = true)
     private PointOfContact contact;
 
-    @XmlTransient
     private String lastModifiedDate;
-
-    @XmlTransient
     private Boolean deleted;
 
-    /**
-     * Status changes that have occurred on the developer.
-     */
     @Schema(description = "Status changes that have occurred on the developer.")
-    @XmlElementWrapper(name = "statusEvents", nillable = true, required = false)
-    @XmlElement(name = "statusEvent", required = false, nillable = true)
     @Builder.Default
     private List<DeveloperStatusEvent> statusEvents = new ArrayList<DeveloperStatusEvent>();
 
-    /**
-     * Public attestations submitted by the developer.
-     */
     @Schema(description = "Public attestations submitted by the developer.")
-    @XmlElementWrapper(name = "attestations", nillable = true, required = false)
-    @XmlElement(name = "attestation")
     private List<PublicAttestation> attestations;
 
-    @XmlTransient
     @JsonIgnore
     private String userEnteredName;
 
-    @XmlTransient
     @JsonIgnore
     private String userEnteredWebsite;
 
-    @XmlTransient
     @JsonIgnore
     private String userEnteredSelfDeveloper;
 
-    @XmlTransient
     @JsonIgnore
     private Address userEnteredAddress;
 
-    @XmlTransient
     @JsonIgnore
     private PointOfContact userEnteredPointOfContact;
 
@@ -135,85 +79,8 @@ public class Developer implements Serializable {
         this.statusEvents = new ArrayList<DeveloperStatusEvent>();
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getWebsite() {
-        return website;
-    }
-
-    public void setWebsite(String website) {
-        this.website = website;
-    }
-
-    public Boolean getSelfDeveloper() {
-        return selfDeveloper;
-    }
-
-    public void setSelfDeveloper(Boolean selfDeveloper) {
-        this.selfDeveloper = selfDeveloper;
-    }
-
-    public Address getAddress() {
-        return address;
-    }
-
-    public void setAddress(Address address) {
-        this.address = address;
-    }
-
-    public String getLastModifiedDate() {
-        return lastModifiedDate;
-    }
-
-    public void setLastModifiedDate(String lastModifiedDate) {
-        this.lastModifiedDate = lastModifiedDate;
-    }
-
-    public String getDeveloperCode() {
-        return developerCode;
-    }
-
-    public void setDeveloperCode(String developerCode) {
-        this.developerCode = developerCode;
-    }
-
-    public PointOfContact getContact() {
-        return contact;
-    }
-
-    public void setContact(PointOfContact contact) {
-        this.contact = contact;
-    }
-
-    public Boolean getDeleted() {
-        return deleted;
-    }
-
-    public void setDeleted(Boolean deleted) {
-        this.deleted = deleted;
-    }
-
-    /**
-     * The status of a developer with certified Health IT. Allowable values are "Active", "Suspended by ONC", or "Under
-     * Certification Ban by ONC"
-     */
     @Schema(description = "The status of a developer with certified Health IT. Allowable values are \"Active\", \"Suspended by ONC\", or \"Under "
             + "Certification Ban by ONC\"")
-    @XmlElement(required = false, nillable = true)
     public DeveloperStatus getStatus() {
         if (CollectionUtils.isEmpty(this.getStatusEvents())) {
             return null;
@@ -223,7 +90,6 @@ public class Developer implements Serializable {
     }
 
     @JsonIgnore
-    @XmlTransient
     public DeveloperStatusEvent getMostRecentStatusEvent() {
         if (CollectionUtils.isEmpty(this.getStatusEvents())) {
             return null;
@@ -236,62 +102,6 @@ public class Developer implements Serializable {
             }
         }
         return newest;
-    }
-
-    public List<DeveloperStatusEvent> getStatusEvents() {
-        return statusEvents;
-    }
-
-    public void setStatusEvents(List<DeveloperStatusEvent> statusEvents) {
-        this.statusEvents = statusEvents;
-    }
-
-    public List<PublicAttestation> getAttestations() {
-        return attestations;
-    }
-
-    public void setAttestations(List<PublicAttestation> attestations) {
-        this.attestations = attestations;
-    }
-
-    public String getUserEnteredName() {
-        return userEnteredName;
-    }
-
-    public void setUserEnteredName(String userEnteredName) {
-        this.userEnteredName = userEnteredName;
-    }
-
-    public String getUserEnteredWebsite() {
-        return userEnteredWebsite;
-    }
-
-    public void setUserEnteredWebsite(String userEnteredWebsite) {
-        this.userEnteredWebsite = userEnteredWebsite;
-    }
-
-    public Address getUserEnteredAddress() {
-        return userEnteredAddress;
-    }
-
-    public void setUserEnteredAddress(Address userEnteredAddress) {
-        this.userEnteredAddress = userEnteredAddress;
-    }
-
-    public PointOfContact getUserEnteredPointOfContact() {
-        return userEnteredPointOfContact;
-    }
-
-    public void setUserEnteredPointOfContact(PointOfContact userEnteredPointOfContact) {
-        this.userEnteredPointOfContact = userEnteredPointOfContact;
-    }
-
-    public String getUserEnteredSelfDeveloper() {
-        return userEnteredSelfDeveloper;
-    }
-
-    public void setUserEnteredSelfDeveloper(String userEnteredSelfDeveloper) {
-        this.userEnteredSelfDeveloper = userEnteredSelfDeveloper;
     }
 
     // Not all attributes have been included. The attributes being used were selected so the DeveloperManager could

@@ -14,20 +14,28 @@ import javax.persistence.Table;
 
 import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
+import gov.healthit.chpl.entity.EntityAudit;
 import gov.healthit.chpl.entity.auth.UserEntity;
 import gov.healthit.chpl.entity.listing.CertificationResultDetailsEntity;
 import gov.healthit.chpl.questionableactivity.domain.QuestionableActivityCertificationResult;
 import gov.healthit.chpl.questionableactivity.domain.QuestionableActivityTrigger;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 
 @Getter
 @Setter
 @ToString
+@SuperBuilder
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "questionable_activity_certification_result")
-public class QuestionableActivityCertificationResultEntity implements QuestionableActivityBaseEntity {
+public class QuestionableActivityCertificationResultEntity extends EntityAudit implements QuestionableActivityBaseEntity {
+    private static final long serialVersionUID = -879393016829926690L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -70,18 +78,6 @@ public class QuestionableActivityCertificationResultEntity implements Questionab
     @JoinColumn(name = "activity_user_id", insertable = false, updatable = false)
     private UserEntity user;
 
-    @Column(name = "deleted")
-    private Boolean deleted;
-
-    @Column(name = "last_modified_user")
-    private Long lastModifiedUser;
-
-    @Column(name = "creation_date", insertable = false, updatable = false)
-    private Date creationDate;
-
-    @Column(name = "last_modified_date", insertable = false, updatable = false)
-    private Date lastModifiedDate;
-
     public QuestionableActivityCertificationResult toDomain() {
         return QuestionableActivityCertificationResult.builder()
                 .id(this.getId())
@@ -103,4 +99,3 @@ public class QuestionableActivityCertificationResultEntity implements Questionab
                 .build();
     }
 }
-

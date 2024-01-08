@@ -15,16 +15,16 @@ public class UpdatedG2SuccessActivity implements CertificationResultActivity {
     @Override
      public List<QuestionableActivityCertificationResult> check(CertificationResult origCertResult, CertificationResult newCertResult) {
         List<QuestionableActivityCertificationResult> updatedG2Activities = new ArrayList<QuestionableActivityCertificationResult>();
-        if (origCertResult.isG2Success() != null || newCertResult.isG2Success() != null) {
-            if ((origCertResult.isG2Success() == null && newCertResult.isG2Success() != null)
-                    || (!origCertResult.isG2Success() && newCertResult.isG2Success())) {
+        if (origCertResult.getG2Success() != null || newCertResult.getG2Success() != null) {
+            if ((origCertResult.getG2Success() == null && newCertResult.getG2Success() != null)
+                    || (!origCertResult.getG2Success() && newCertResult.getG2Success())) {
                 //G2 success changed to true
                 QuestionableActivityCertificationResult activity = new QuestionableActivityCertificationResult();
                 activity.setBefore(Boolean.FALSE.toString());
                 activity.setAfter(Boolean.TRUE.toString());
                 updatedG2Activities.add(activity);
-            } else if ((origCertResult.isG2Success() != null && newCertResult.isG2Success() == null)
-                    || (origCertResult.isG2Success() && !newCertResult.isG2Success())) {
+            } else if ((origCertResult.getG2Success() != null && newCertResult.getG2Success() == null)
+                    || (origCertResult.getG2Success() && !newCertResult.getG2Success())) {
                 //G2 success changed to false
                 QuestionableActivityCertificationResult activity = new QuestionableActivityCertificationResult();
                 activity.setBefore(Boolean.TRUE.toString());

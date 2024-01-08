@@ -1,9 +1,11 @@
 package gov.healthit.chpl.validation.surveillance.reviewer;
 
 import org.apache.commons.lang3.StringUtils;
+import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
@@ -17,13 +19,15 @@ public class NewSurveillanceEditionReviewer implements Reviewer {
     private CertifiedProductDAO listingDao;
     private ErrorMessageUtil msgUtil;
     private ResourcePermissions resourcePermissions;
+    private FF4j ff4j;
 
     @Autowired
     public NewSurveillanceEditionReviewer(CertifiedProductDAO listingDao, ErrorMessageUtil msgUtil,
-            ResourcePermissions resourcePermissions) {
+            ResourcePermissions resourcePermissions, FF4j ff4j) {
         this.listingDao = listingDao;
         this.msgUtil = msgUtil;
         this.resourcePermissions = resourcePermissions;
+        this.ff4j = ff4j;
     }
 
     @Override
@@ -32,15 +36,17 @@ public class NewSurveillanceEditionReviewer implements Reviewer {
             return;
         }
 
-        String edition = surv.getCertifiedProduct().getEdition();
-        if (StringUtils.isEmpty(edition)) {
-            edition = determineEdition(surv);
+            String edition = surv.getCertifiedProduct().getEdition();
             if (StringUtils.isEmpty(edition)) {
-                surv.getErrorMessages().add(msgUtil.getMessage("surveillance.noCreateNoEdition"));
+                edition = determineEdition(surv);
+                if (StringUtils.isEmpty(edition)
+                        && !ff4j.check(FeatureList.EDITIONLESS)) {
+                    surv.getErrorMessages().add(msgUtil.getMessage("surveillance.noCreateNoEdition"));
+                }
+            } else if (!StringUtils.isEmpty(edition)
+                    && edition.equals(CertificationEditionConcept.CERTIFICATION_EDITION_2014.getYear())) {
+                surv.getErrorMessages().add(msgUtil.getMessage("surveillance.noCreate2014"));
             }
-        } else if (edition.equals(CertificationEditionConcept.CERTIFICATION_EDITION_2014.getYear())) {
-            surv.getErrorMessages().add(msgUtil.getMessage("surveillance.noCreate2014"));
-        }
     }
 
     private String determineEdition(Surveillance surv) {

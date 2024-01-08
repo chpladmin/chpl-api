@@ -39,17 +39,17 @@ public class UnattestedCriteriaWithDataReviewer {
             .filter(certResult -> certResult != null && certResult.getCriterion() != null
                     && certResult.getCriterion().getId() != null
                     && BooleanUtils.isFalse(certResult.getCriterion().isRemoved())
-                    && BooleanUtils.isNotTrue(certResult.isSuccess()))
+                    && BooleanUtils.isNotTrue(certResult.getSuccess()))
             .forEach(unattestedCertResult -> reviewCertificationResult(listing, unattestedCertResult));
     }
 
     private void reviewCertificationResult(CertifiedProductSearchDetails listing, CertificationResult certResult) {
-        if (certResult.isGap() != null && certResult.isGap()) {
+        if (certResult.getGap() != null && certResult.getGap()) {
             listing.addWarningMessage(
                     msgUtil.getMessage("listing.criteria.falseCriteriaHasData",
                             Util.formatCriteriaNumber(certResult.getCriterion()), "GAP"));
         }
-        if (certResult.isSed() != null && certResult.isSed()) {
+        if (certResult.getSed() != null && certResult.getSed()) {
             listing.addWarningMessage(
                     msgUtil.getMessage("listing.criteria.falseCriteriaHasData",
                             Util.formatCriteriaNumber(certResult.getCriterion()), "SED"));
@@ -159,7 +159,7 @@ public class UnattestedCriteriaWithDataReviewer {
 
     private boolean isCriterionAttestedTo(CertifiedProductSearchDetails listing, CertificationCriterion criterion) {
         return listing.getCertificationResults().stream()
-            .filter(certResult -> BooleanUtils.isTrue(certResult.isSuccess()))
+            .filter(certResult -> BooleanUtils.isTrue(certResult.getSuccess()))
             .filter(certResult -> certResult.getCriterion().getId().equals(criterion.getId()))
             .findAny().isPresent();
     }

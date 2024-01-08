@@ -7,7 +7,6 @@ import javax.persistence.Query;
 
 import org.springframework.stereotype.Repository;
 
-import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.subscription.domain.SubscriptionObservation;
 import gov.healthit.chpl.subscription.entity.SubscriptionEntity;
@@ -36,7 +35,6 @@ public class SubscriptionObservationDao extends BaseDAOImpl {
     public void createObservation(Long subscriptionId, Long activityId) {
         try {
             SubscriptionObservationEntity observationToCreate = new SubscriptionObservationEntity();
-            observationToCreate.setLastModifiedUser(User.DEFAULT_USER_ID);
             observationToCreate.setActivityId(activityId);
             observationToCreate.setSubscriptionId(subscriptionId);
             create(observationToCreate);

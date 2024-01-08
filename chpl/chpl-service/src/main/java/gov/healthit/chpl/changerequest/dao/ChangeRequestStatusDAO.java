@@ -1,6 +1,5 @@
 package gov.healthit.chpl.changerequest.dao;
 
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.stereotype.Repository;
@@ -14,7 +13,6 @@ import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.entity.CertificationBodyEntity;
 import gov.healthit.chpl.entity.auth.UserPermissionEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.DateUtil;
 
 @Repository("changeRequestStatusDAO")
@@ -62,9 +60,6 @@ public class ChangeRequestStatusDAO extends BaseDAOImpl {
         entity.setComment(crStatus.getComment());
         entity.setStatusChangeDate(DateUtil.toDate(crStatus.getStatusChangeDateTime()));
         entity.setDeleted(false);
-        entity.setLastModifiedUser(AuthUtil.getAuditId());
-        entity.setCreationDate(new Date());
-        entity.setLastModifiedDate(new Date());
         return entity;
     }
 }

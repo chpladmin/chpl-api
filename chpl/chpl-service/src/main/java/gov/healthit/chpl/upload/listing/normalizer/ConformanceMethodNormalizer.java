@@ -45,12 +45,12 @@ public class ConformanceMethodNormalizer {
 
     private void clearDataForUnattestedCriteria(CertifiedProductSearchDetails listing) {
         listing.getCertificationResults().stream()
-            .filter(certResult -> (certResult.isSuccess() == null || BooleanUtils.isFalse(certResult.isSuccess()))
+            .filter(certResult -> (certResult.getSuccess() == null || BooleanUtils.isFalse(certResult.getSuccess()))
                     && certResult.getConformanceMethods() != null && certResult.getConformanceMethods().size() > 0)
             .forEach(unattestedCertResult -> unattestedCertResult.getConformanceMethods().clear());
 
         listing.getCertificationResults().stream()
-            .filter(certResult -> (certResult.isSuccess() == null || BooleanUtils.isFalse(certResult.isSuccess()))
+            .filter(certResult -> (certResult.getSuccess() == null || BooleanUtils.isFalse(certResult.getSuccess()))
                     && certResult.getTestProcedures() != null && certResult.getTestProcedures().size() > 0)
             .forEach(unattestedCertResult -> unattestedCertResult.getTestProcedures().clear());
     }

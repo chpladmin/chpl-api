@@ -1,7 +1,6 @@
 package gov.healthit.chpl.complaint;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,7 +25,6 @@ import gov.healthit.chpl.complaint.entity.ComplaintSurveillanceMapEntity;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.ComplaintSurveillanceMap;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.util.AuthUtil;
 import lombok.extern.log4j.Log4j2;
 
 @Component
@@ -99,9 +97,6 @@ public class ComplaintDAO extends BaseDAOImpl {
         entity.setFlagForOncReview(complaint.isFlagForOncReview());
         entity.setClosedDate(complaint.getClosedDate());
         entity.setDeleted(false);
-        entity.setLastModifiedUser(AuthUtil.getAuditId());
-        entity.setCreationDate(new Date());
-        entity.setLastModifiedDate(new Date());
 
         create(entity);
 
@@ -129,8 +124,6 @@ public class ComplaintDAO extends BaseDAOImpl {
         entity.setFlagForOncReview(complaint.isFlagForOncReview());
         entity.setClosedDate(complaint.getClosedDate());
         entity.setDeleted(false);
-        entity.setLastModifiedUser(AuthUtil.getAuditId());
-        entity.setLastModifiedDate(new Date());
 
         update(entity);
 
@@ -145,7 +138,6 @@ public class ComplaintDAO extends BaseDAOImpl {
     public void delete(Complaint complaint) throws EntityRetrievalException {
         ComplaintEntity entity = getEntityById(complaint.getId());
         entity.setDeleted(true);
-        entity.setLastModifiedUser(AuthUtil.getAuditId());
 
         entityManager.merge(entity);
         entityManager.flush();
@@ -226,9 +218,6 @@ public class ComplaintDAO extends BaseDAOImpl {
         entity.setComplaintId(complaintId);
         entity.setSurveillanceId(surveillanceId);
         entity.setDeleted(false);
-        entity.setCreationDate(new Date());
-        entity.setLastModifiedUser(AuthUtil.getAuditId());
-        entity.setLastModifiedDate(new Date());
 
         create(entity);
     }
@@ -236,7 +225,6 @@ public class ComplaintDAO extends BaseDAOImpl {
     private void deleteSurveillanceToComplaint(long id) throws EntityRetrievalException {
         ComplaintSurveillanceMapEntity entity = getComplaintSurveillanceMapEntity(id);
         entity.setDeleted(true);
-        entity.setLastModifiedUser(AuthUtil.getAuditId());
 
         update(entity);
     }
@@ -325,9 +313,6 @@ public class ComplaintDAO extends BaseDAOImpl {
         entity.setComplaintId(complaintId);
         entity.setListingId(listingId);
         entity.setDeleted(false);
-        entity.setCreationDate(new Date());
-        entity.setLastModifiedUser(AuthUtil.getAuditId());
-        entity.setLastModifiedDate(new Date());
 
         create(entity);
     }
@@ -335,7 +320,6 @@ public class ComplaintDAO extends BaseDAOImpl {
     private void deleteListingToComplaint(long id) throws EntityRetrievalException {
         ComplaintListingMapEntity entity = getComplaintListingMapEntity(id);
         entity.setDeleted(true);
-        entity.setLastModifiedUser(AuthUtil.getAuditId());
 
         update(entity);
     }
@@ -437,9 +421,6 @@ public class ComplaintDAO extends BaseDAOImpl {
         entity.setComplaintId(complaintId);
         entity.setCertificationCriterionId(criterionId);
         entity.setDeleted(false);
-        entity.setCreationDate(new Date());
-        entity.setLastModifiedUser(AuthUtil.getAuditId());
-        entity.setLastModifiedDate(new Date());
 
         create(entity);
     }
@@ -447,7 +428,6 @@ public class ComplaintDAO extends BaseDAOImpl {
     private void deleteCriterionToComplaint(long id) throws EntityRetrievalException {
         ComplaintCriterionMapEntity entity = getComplaintCriterionMapEntity(id);
         entity.setDeleted(true);
-        entity.setLastModifiedUser(AuthUtil.getAuditId());
 
         update(entity);
     }

@@ -3,65 +3,37 @@ package gov.healthit.chpl.domain;
 import java.io.Serializable;
 import java.util.Date;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlType;
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import gov.healthit.chpl.util.Util;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@XmlType(namespace = "http://chpl.healthit.gov/listings")
-@XmlAccessorType(XmlAccessType.FIELD)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Builder
+@Data
+@NoArgsConstructor
 @AllArgsConstructor
 public class DeveloperStatusEvent implements Serializable {
     private static final long serialVersionUID = -7303257499336378800L;
 
-    /**
-     * Developer status event internal ID
-     */
     @Schema(description = "Developer status event internal ID")
-    @XmlElement(required = false, nillable = true)
     private Long id;
 
-    /**
-     * Developer internal ID
-     */
     @Schema(description = "Developer internal ID")
-    @XmlElement(required = true)
     private Long developerId;
 
-    /**
-     * The status the developer changed TO with this status event.
-     */
     @Schema(description = "The status the developer changed TO with this status event.")
-    @XmlElement(required = true)
     private DeveloperStatus status;
 
-    /**
-     * Date this status event occurred.
-     */
     @Schema(description = "Date this status event occurred.")
-    @XmlElement(required = true)
     private Date statusDate;
 
-    /**
-     * The reason for this status change.
-     * It is required of the status changed to 'Under Certification Ban by ONC'
-     */
     @Schema(description = "The reason for this status change. "
             + "It is required of the status changed to 'Under Certification Ban by ONC'")
-    @XmlElement(required = false)
     private String reason;
-
-    public DeveloperStatusEvent() {
-    }
 
     public boolean matches(DeveloperStatusEvent anotherStatusEvent) {
         boolean result = false;
@@ -136,45 +108,5 @@ public class DeveloperStatusEvent implements Serializable {
         result = prime * result + ((status == null) ? 0 : status.hashCode());
         result = prime * result + ((statusDate == null) ? 0 : statusDate.hashCode());
         return result;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(final Long id) {
-        this.id = id;
-    }
-
-    public Long getDeveloperId() {
-        return developerId;
-    }
-
-    public void setDeveloperId(final Long developerId) {
-        this.developerId = developerId;
-    }
-
-    public DeveloperStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(final DeveloperStatus status) {
-        this.status = status;
-    }
-
-    public Date getStatusDate() {
-        return Util.getNewDate(statusDate);
-    }
-
-    public void setStatusDate(final Date statusDate) {
-        this.statusDate = Util.getNewDate(statusDate);
-    }
-
-    public String getReason() {
-        return reason;
-    }
-
-    public void setReason(String reason) {
-        this.reason = reason;
     }
 }

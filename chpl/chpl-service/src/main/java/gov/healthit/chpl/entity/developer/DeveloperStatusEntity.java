@@ -1,8 +1,5 @@
 package gov.healthit.chpl.entity.developer;
 
-import java.io.Serializable;
-import java.util.Date;
-
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -14,20 +11,23 @@ import javax.persistence.Table;
 import org.hibernate.annotations.Type;
 
 import gov.healthit.chpl.domain.DeveloperStatus;
+import gov.healthit.chpl.entity.EntityAudit;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 
-@Entity
-@AllArgsConstructor
-@NoArgsConstructor
 @Getter
 @Setter
 @ToString
+@SuperBuilder
+@AllArgsConstructor
+@NoArgsConstructor
+@Entity
 @Table(name = "vendor_status")
-public class DeveloperStatusEntity implements Serializable {
+public class DeveloperStatusEntity extends EntityAudit {
     private static final long serialVersionUID = 1730728043307135377L;
 
     @Id
@@ -42,18 +42,6 @@ public class DeveloperStatusEntity implements Serializable {
                     value = "gov.healthit.chpl.entity.developer.DeveloperStatusType")
     })
     private DeveloperStatusType name;
-
-    @Column(name = "deleted")
-    private Boolean deleted;
-
-    @Column(name = "last_modified_user")
-    private Long lastModifiedUser;
-
-    @Column(name = "creation_date", insertable = false, updatable = false)
-    private Date creationDate;
-
-    @Column(name = "last_modified_date", insertable = false, updatable = false)
-    private Date lastModifiedDate;
 
     public DeveloperStatus toDomain() {
         return DeveloperStatus.builder()

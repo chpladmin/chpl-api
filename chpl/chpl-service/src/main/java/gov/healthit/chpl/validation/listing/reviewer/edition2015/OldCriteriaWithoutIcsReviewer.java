@@ -115,7 +115,7 @@ public class OldCriteriaWithoutIcsReviewer implements Reviewer {
         return listing.getCertificationResults().stream()
                 .anyMatch(certResult -> certResult.getCriterion() != null && certResult.getCriterion().getId() != null
                         && certResult.getCriterion().getId().equals(criteriaId)
-                        && BooleanUtils.isTrue(certResult.isSuccess()));
+                        && BooleanUtils.isTrue(certResult.getSuccess()));
     }
 
     private boolean hasICS(CertifiedProductSearchDetails listing) {

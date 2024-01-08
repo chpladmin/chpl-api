@@ -10,7 +10,6 @@ import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.contact.PointOfContact;
 import gov.healthit.chpl.entity.ContactEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.util.AuthUtil;
 
 @Repository("contactDao")
 public class ContactDAO extends BaseDAOImpl {
@@ -23,7 +22,6 @@ public class ContactDAO extends BaseDAOImpl {
         toInsert.setTitle(contact.getTitle());
         toInsert.setSignatureDate(null);
         toInsert.setDeleted(false);
-        toInsert.setLastModifiedUser(AuthUtil.getAuditId());
         create(toInsert);
         return toInsert.getId();
     }
@@ -36,7 +34,6 @@ public class ContactDAO extends BaseDAOImpl {
         contactEntity.setTitle(contact.getTitle());
         contactEntity.setSignatureDate(null);
         contactEntity.setDeleted(false);
-        contactEntity.setLastModifiedUser(AuthUtil.getAuditId());
         update(contactEntity);
     }
 
@@ -44,7 +41,6 @@ public class ContactDAO extends BaseDAOImpl {
         ContactEntity toDelete = getEntityById(id);
         if (toDelete != null) {
             toDelete.setDeleted(true);
-            toDelete.setLastModifiedUser(AuthUtil.getAuditId());
             update(toDelete);
         }
     }

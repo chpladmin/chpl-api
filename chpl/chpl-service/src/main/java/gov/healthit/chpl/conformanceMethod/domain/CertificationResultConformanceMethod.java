@@ -2,11 +2,6 @@ package gov.healthit.chpl.conformanceMethod.domain;
 
 import java.io.Serializable;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlType;
-
 import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -15,53 +10,29 @@ import gov.healthit.chpl.entity.listing.CertificationResultConformanceMethodEnti
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-/**
- * The conformance method used for the certification criteria
- *
- */
-@XmlType(namespace = "http://chpl.healthit.gov/listings")
-@XmlAccessorType(XmlAccessType.FIELD)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Builder
+@Data
+@NoArgsConstructor
 @AllArgsConstructor
 public class CertificationResultConformanceMethod implements Serializable {
     private static final long serialVersionUID = -8648559250833503194L;
 
-    /**
-     * Conformance Method to certification result mapping internal ID
-     */
     @Schema(description = "Conformance Method to certification result mapping internal ID")
-    @XmlElement(required = true)
     private Long id;
 
-    /**
-     * The method used to evaluate compliance with a certification criterion. It is applicable for 2015 Edition.
-     * For the Test Procedure method, this also includes the version used during testing of the certification
-     * criterion functionality.
-     */
-    @Schema(description = "The method used to evaluate compliance with a certification criterion. It is applicable for 2015 Edition. "
+    @Schema(description = "The method used to evaluate compliance with a certification criterion. "
             + "For the Test Procedure method, this also includes the version used during testing of the certification "
             + "criterion functionality.")
-    @XmlElement(required = true)
     private ConformanceMethod conformanceMethod;
 
-    /**
-     * The conformance method version used for a given certification criteria.
-     * It is valid for Test Procedure method only.
-     * This variable is a string variable that does not take any restrictions on
-     * formatting or values and is applicable for 2015 Edition.
-     */
     @Schema(description = "The conformance method version used for a given certification criteria. "
             + "It is valid for Test Procedure method only. "
-            + "This variable is a string variable that does not take any restrictions on "
-            + "formatting or values and is applicable for 2015 Edition.")
-    @XmlElement(required = false)
+            + "This is a string variable that does not take any restrictions on formatting or values.")
     private String conformanceMethodVersion;
-
-    public CertificationResultConformanceMethod() {
-        super();
-    }
 
     public CertificationResultConformanceMethod(CertificationResultConformanceMethodEntity entity) {
         this.id = entity.getId();
@@ -87,29 +58,5 @@ public class CertificationResultConformanceMethod implements Serializable {
             result = true;
         }
         return result;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getConformanceMethodVersion() {
-        return conformanceMethodVersion;
-    }
-
-    public void setConformanceMethodVersion(String conformanceMethodVersion) {
-        this.conformanceMethodVersion = conformanceMethodVersion;
-    }
-
-    public ConformanceMethod getConformanceMethod() {
-        return conformanceMethod;
-    }
-
-    public void setConformanceMethod(ConformanceMethod conformanceMethod) {
-        this.conformanceMethod = conformanceMethod;
     }
 }

@@ -47,12 +47,12 @@ public class OptionalStandardNormalizer {
 
     private void clearDataForUnattestedCriteria(CertifiedProductSearchDetails listing) {
         listing.getCertificationResults().stream()
-            .filter(certResult -> (certResult.isSuccess() == null || BooleanUtils.isFalse(certResult.isSuccess())
+            .filter(certResult -> (certResult.getSuccess() == null || BooleanUtils.isFalse(certResult.getSuccess())
                     && certResult.getOptionalStandards() != null && certResult.getOptionalStandards().size() > 0))
             .forEach(unattestedCertResult -> unattestedCertResult.getOptionalStandards().clear());
 
         listing.getCertificationResults().stream()
-            .filter(certResult -> (certResult.isSuccess() == null || BooleanUtils.isFalse(certResult.isSuccess()))
+            .filter(certResult -> (certResult.getSuccess() == null || BooleanUtils.isFalse(certResult.getSuccess()))
                     && certResult.getTestStandards() != null && certResult.getTestStandards().size() > 0)
             .forEach(unattestedCertResult -> unattestedCertResult.getTestStandards().clear());
     }

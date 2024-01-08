@@ -2,12 +2,7 @@ package gov.healthit.chpl.domain;
 
 import java.io.Serializable;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlType;
-
-import org.springframework.util.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -15,49 +10,26 @@ import gov.healthit.chpl.dto.CertificationResultTestProcedureDTO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-/**
- * The test procedure used for the certification criteria
- *
- */
-@XmlType(namespace = "http://chpl.healthit.gov/listings")
-@XmlAccessorType(XmlAccessType.FIELD)
 @JsonIgnoreProperties(ignoreUnknown = true)
+@Data
 @Builder
+@NoArgsConstructor
 @AllArgsConstructor
 public class CertificationResultTestProcedure implements Serializable {
     private static final long serialVersionUID = -8648559250833503194L;
 
-    /**
-     * Test Procedure to certification result mapping internal ID
-     */
     @Schema(description = "Test Procedure to certification result mapping internal ID")
-    @XmlElement(required = true)
     private Long id;
 
-    /**
-     * This variable explains the test procedure being used to test
-     * the associated criteria. It is applicable for 2015 Edition.
-     */
-    @Schema(description = "This variable explains the test procedure being used to test "
-            + "the associated criteria. It is applicable for 2015 Edition.")
-    @XmlElement(required = true)
+    @Schema(description = "This variable explains the test procedure being used to test the associated criteria.")
     private TestProcedure testProcedure;
 
-    /**
-     * The test procedure version used for a given certification criteria. This
-     * variable is a string variable that does not take any restrictions on
-     * formatting or values and is applicable for 2014 and 2015 Edition.
-     */
     @Schema(description = "The test procedure version used for a given certification criteria. This "
-            + "variable is a string variable that does not take any restrictions on "
-            + "formatting or values and is applicable for 2014 and 2015 Edition.")
-    @XmlElement(required = true)
+            + "variable is a string variable that does not take any restrictions on formatting or values.")
     private String testProcedureVersion;
-
-    public CertificationResultTestProcedure() {
-        super();
-    }
 
     public CertificationResultTestProcedure(CertificationResultTestProcedureDTO dto) {
         this.id = dto.getId();
@@ -83,29 +55,5 @@ public class CertificationResultTestProcedure implements Serializable {
             result = true;
         }
         return result;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(final Long id) {
-        this.id = id;
-    }
-
-    public String getTestProcedureVersion() {
-        return testProcedureVersion;
-    }
-
-    public void setTestProcedureVersion(final String testProcedureVersion) {
-        this.testProcedureVersion = testProcedureVersion;
-    }
-
-    public TestProcedure getTestProcedure() {
-        return testProcedure;
-    }
-
-    public void setTestProcedure(TestProcedure testProcedure) {
-        this.testProcedure = testProcedure;
     }
 }

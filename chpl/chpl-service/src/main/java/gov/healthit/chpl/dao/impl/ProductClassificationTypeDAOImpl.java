@@ -12,7 +12,6 @@ import gov.healthit.chpl.dto.ProductClassificationTypeDTO;
 import gov.healthit.chpl.entity.ProductClassificationTypeEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.util.AuthUtil;
 
 @Repository("productClassificationTypeDAO")
 public class ProductClassificationTypeDAOImpl extends BaseDAOImpl implements ProductClassificationTypeDAO {
@@ -34,12 +33,9 @@ public class ProductClassificationTypeDAOImpl extends BaseDAOImpl implements Pro
         } else {
 
             entity = new ProductClassificationTypeEntity();
-            entity.setCreationDate(dto.getCreationDate());
             entity.setDeleted(dto.getDeleted());
             entity.setId(dto.getId());
             entity.setName(dto.getName());
-            // entity.setLastModifiedDate(result.getLastModifiedDate());
-            entity.setLastModifiedUser(AuthUtil.getAuditId());
 
             create(entity);
         }
@@ -50,12 +46,9 @@ public class ProductClassificationTypeDAOImpl extends BaseDAOImpl implements Pro
     public void update(ProductClassificationTypeDTO dto) throws EntityRetrievalException {
 
         ProductClassificationTypeEntity entity = this.getEntityById(dto.getId());
-        entity.setCreationDate(dto.getCreationDate());
         entity.setDeleted(dto.getDeleted());
         entity.setId(dto.getId());
         entity.setName(dto.getName());
-        // entity.setLastModifiedDate(result.getLastModifiedDate());
-        entity.setLastModifiedUser(AuthUtil.getAuditId());
 
         update(entity);
     }

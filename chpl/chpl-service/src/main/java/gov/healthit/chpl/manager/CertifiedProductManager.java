@@ -1255,7 +1255,7 @@ public class CertifiedProductManager extends SecuredManager {
                 if (cqmCertMapping.getCertificationId() == null
                         && !StringUtils.isEmpty(cqmCertMapping.getCertificationNumber())) {
                     for (CertificationResult certResult : listing.getCertificationResults()) {
-                        if (certResult.isSuccess().equals(Boolean.TRUE)
+                        if (certResult.getSuccess().equals(Boolean.TRUE)
                                 && certResult.getCriterion().getNumber().equals(cqmCertMapping.getCertificationNumber())) {
                             cqmCertMapping.setCertificationId(certResult.getCriterion().getId());
                         }
@@ -1500,22 +1500,10 @@ public class CertifiedProductManager extends SecuredManager {
             dto.setCmsId(cqm.getCmsId());
             dto.setNumber(cqm.getNumber());
             dto.setTitle(cqm.getTitle());
-            dto.setSuccess(cqm.isSuccess());
+            dto.setSuccess(cqm.getSuccess());
             result.add(dto);
         }
         return result;
-    }
-
-    private CertifiedProductDetailsDTO getCertifiedProductDetailsDtoByChplProductNumber(String chplProductNumber)
-            throws EntityRetrievalException {
-
-        List<CertifiedProductDetailsDTO> dtos = certifiedProductSearchResultDAO
-                .getByChplProductNumber(chplProductNumber);
-
-        if (dtos.size() == 0) {
-            throw new EntityRetrievalException("Could not retrieve CertifiedProductSearchDetails.");
-        }
-        return dtos.get(0);
     }
 
     private void triggerDeveloperBan(CertifiedProductSearchDetails updatedListing, String reason) {

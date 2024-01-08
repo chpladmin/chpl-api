@@ -19,7 +19,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
-import gov.healthit.chpl.auth.user.User;
+import gov.healthit.chpl.auth.user.SystemUsers;
 import gov.healthit.chpl.dao.auth.UserDAO;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.email.ChplEmailFactory;
@@ -93,7 +93,7 @@ public class DeveloperAttestationCheckInReportJob implements Job {
             protected void doInTransactionWithoutResult(TransactionStatus status) {
                 try {
                     LOGGER.info("Starting the transaction");
-                    setSecurityContext(userDao.getById(User.ADMIN_USER_ID));
+                    setSecurityContext(userDao.getById(SystemUsers.ADMIN_USER_ID));
                     LOGGER.info("Set the Security Context");
 
                     List<CheckInReport> reportRows = checkInReportDataCollection.collect(getAcbIds(context));

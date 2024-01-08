@@ -1,8 +1,5 @@
 package gov.healthit.chpl.functionalitytested;
 
-import java.io.Serializable;
-import java.util.Date;
-
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -15,22 +12,23 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterionEntity;
+import gov.healthit.chpl.entity.EntityAudit;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 
-@Entity
 @Getter
 @Setter
 @ToString
-@Builder
-@NoArgsConstructor
+@SuperBuilder
 @AllArgsConstructor
+@NoArgsConstructor
+@Entity
 @Table(name = "functionality_tested_criteria_map")
-public class FunctionalityTestedCriteriaMapEntity implements Serializable {
+public class FunctionalityTestedCriteriaMapEntity extends EntityAudit {
     private static final long serialVersionUID = 6446486138564063907L;
 
     @Id
@@ -54,22 +52,6 @@ public class FunctionalityTestedCriteriaMapEntity implements Serializable {
     @OneToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "functionality_tested_id", insertable = false, updatable = false)
     private FunctionalityTestedEntity functionalityTested;
-
-    @Basic(optional = false)
-    @Column(name = "creation_date", nullable = false, insertable = false, updatable = false)
-    private Date creationDate;
-
-    @Basic(optional = false)
-    @Column(name = "last_modified_date", nullable = false, insertable = false, updatable = false)
-    private Date lastModifiedDate;
-
-    @Basic(optional = false)
-    @Column(name = "deleted", nullable = false)
-    private Boolean deleted;
-
-    @Basic(optional = false)
-    @Column(name = "last_modified_user", nullable = false)
-    private Long lastModifiedUser;
 
     public FunctionalityTestedCriteriaMap toDomain() {
         return FunctionalityTestedCriteriaMap.builder()

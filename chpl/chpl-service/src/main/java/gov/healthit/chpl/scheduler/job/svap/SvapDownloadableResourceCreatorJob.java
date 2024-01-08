@@ -153,7 +153,7 @@ public class SvapDownloadableResourceCreatorJob extends DownloadableResourceCrea
             listingSvapActivities.add(baseSvapActivity);
         } else {
             listingSvapActivities = listing.getCertificationResults().stream()
-                .filter(certResult -> BooleanUtils.isTrue(certResult.isSuccess()))
+                .filter(certResult -> BooleanUtils.isTrue(certResult.getSuccess()))
                 .filter(attestedCertResult -> attestedCertResult.getSvaps() != null && attestedCertResult.getSvaps().size() > 0)
                 .map(attestedCertResult -> createCertificationResultSvapActivities(attestedCertResult, baseSvapActivity))
                 .flatMap(List::stream)
@@ -168,7 +168,7 @@ public class SvapDownloadableResourceCreatorJob extends DownloadableResourceCrea
 
     private boolean hasCertificationResultSvapData(CertifiedProductSearchDetails listing) {
         return listing.getCertificationResults().stream()
-                .filter(certResult -> BooleanUtils.isTrue(certResult.isSuccess()))
+                .filter(certResult -> BooleanUtils.isTrue(certResult.getSuccess()))
                 .filter(attestedCertResult -> attestedCertResult.getSvaps() != null && attestedCertResult.getSvaps().size() > 0)
                 .count() > 0;
     }
@@ -182,7 +182,7 @@ public class SvapDownloadableResourceCreatorJob extends DownloadableResourceCrea
                     .criterionSvap(Svap.builder()
                             .approvedStandardVersion(certResultSvap.getApprovedStandardVersion())
                             .regulatoryTextCitation(certResultSvap.getRegulatoryTextCitation())
-                            .replaced(certResultSvap.getReplaced())
+                            .replaced(certResultSvap.isReplaced())
                             .svapId(certResultSvap.getSvapId())
                             .build())
                     .build())
@@ -210,7 +210,7 @@ public class SvapDownloadableResourceCreatorJob extends DownloadableResourceCrea
 
     private boolean listingAttestsToCriteria(CertifiedProductSearchDetails listing, CertificationCriterion criterion) {
         return listing.getCertificationResults().stream()
-                .filter(certResult -> BooleanUtils.isTrue(certResult.isSuccess()) && certResult.getCriterion().getId().equals(criterion.getId()))
+                .filter(certResult -> BooleanUtils.isTrue(certResult.getSuccess()) && certResult.getCriterion().getId().equals(criterion.getId()))
                 .count() > 0;
     }
 

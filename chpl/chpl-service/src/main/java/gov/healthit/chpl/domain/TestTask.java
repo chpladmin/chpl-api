@@ -8,17 +8,8 @@ import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
-import javax.xml.bind.annotation.XmlTransient;
-import javax.xml.bind.annotation.XmlType;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -30,259 +21,123 @@ import gov.healthit.chpl.dto.TestTaskDTO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.ToString;
+import lombok.Data;
+import lombok.extern.log4j.Log4j2;
 
-/**
- * A task used for SED testing for a given criteria.
- */
-@XmlType(namespace = "http://chpl.healthit.gov/listings")
-@XmlAccessorType(XmlAccessType.FIELD)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Builder(toBuilder = true)
 @AllArgsConstructor
-@ToString
+@Data
+@Log4j2
 public class TestTask implements Serializable {
     private static final long serialVersionUID = -3761135258451736516L;
 
-    private static final Logger LOGGER = LogManager.getLogger(TestTask.class);
-
-    /**
-     * Test task internal ID
-     */
     @Schema(description = "Test task internal ID")
-    @XmlElement(required = true)
     private Long id;
 
-    /**
-     * An ONC-ACB designated identifier for an individual SED task and that must
-     * be unique to a particular task. This variable is only applicable to 2015
-     * Edition and for internal use within an upload file only.
-     */
     @Schema(description = "An ONC-ACB designated identifier for an individual SED task and that must "
-            + "be unique to a particular task. This variable is only applicable to 2015 "
-            + "Edition and for internal use within an upload file only.")
-    @XmlTransient
+            + "be unique to a particular task. This is for internal use within an upload file only.")
     private String uniqueId;
 
-    /**
-     * Brief description of task performed during SED/usability testing. This
-     * variable is only applicable to 2015 Edition, and a string variable that
-     * does not take any restrictions on formatting or values.
-     */
-    @Schema(description = "Brief description of task performed during SED/usability testing. This "
-            + "variable is only applicable to 2015 Edition, and a string variable that "
-            + "does not take any restrictions on formatting or values.")
-    @XmlElement(required = true)
+    @Schema(description = "Brief description of task performed during SED/usability testing. "
+            + "This is a string variable that does not take any restrictions on formatting or values.")
     private String description;
 
-    /**
-     * Mean task success rate (in percentages). It is only applicable to 2015
-     * Edition, and takes only positive decimal numbers.
-     */
-    @Schema(description = "Mean task success rate (in percentages). It is only applicable to 2015 "
-            + "Edition, and takes only positive decimal numbers.")
-    @XmlElement(required = true)
+    @Schema(description = "Mean task success rate (in percentages). It is only takes positive decimal numbers.")
     private Float taskSuccessAverage;
 
-    @XmlTransient
     @JsonIgnore
     private String taskSuccessAverageStr;
 
-    /**
-     * Standard deviation of the task success rate (in percentages). It is only
-     * applicable to 2015 Edition, and takes only positive decimal numbers.
-     */
     @Schema(description = "Standard deviation of the task success rate (in percentages). It is only "
-            + "applicable to 2015 Edition, and takes only positive decimal numbers.")
-    @XmlElement(required = true)
+            + "takes positive decimal numbers")
     private Float taskSuccessStddev;
 
-    @XmlTransient
     @JsonIgnore
     private String taskSuccessStddevStr;
 
-    /**
-     * This variable indicates observed number of steps taken for the
-     * corresponding task. It is applicable to 2015 Edition, and takes only
-     * positive integer values.
-     */
-    @Schema(description = "This variable indicates observed number of steps taken for the "
-            + "corresponding task. It is applicable to 2015 Edition, and takes only "
-            + "positive integer values.")
-    @XmlElement(required = true)
+    @Schema(description = "This variable indicates observed number of steps taken for the corresponding task. "
+            + "It only takes positive integer values.")
     private Integer taskPathDeviationObserved;
 
-    @XmlTransient
     @JsonIgnore
     private String taskPathDeviationObservedStr;
 
-    /**
-     * This variable indicates optimal number of steps for the corresponding
-     * task. It is only applicable to 2015 Edition, and only takes positive
-     * integer(i.e. no decimals) values.
-     */
-    @Schema(description = "This variable indicates optimal number of steps for the corresponding "
-            + "task. It is only applicable to 2015 Edition, and only takes positive "
-            + "integer(i.e. no decimals) values.")
-    @XmlElement(required = true)
+    @Schema(description = "This variable indicates optimal number of steps for the corresponding task. "
+            + "It only takes positive integer(i.e. no decimals) values.")
     private Integer taskPathDeviationOptimal;
 
-    @XmlTransient
     @JsonIgnore
     private String taskPathDeviationOptimalStr;
 
-    /**
-     * Average time of completion for the corresponding task, in seconds. It is
-     * only applicable to 2015 Edition, and takes only positive integer number
-     * values.
-     */
-    @Schema(description = "Average time of completion for the corresponding task, in seconds. It is "
-            + "only applicable to 2015 Edition, and takes only positive integer number "
-            + "values.")
-    @XmlElement(required = true)
+    @Schema(description = "Average time of completion for the corresponding task, in seconds. "
+            + "It is only takes positive integer number values.")
     private Long taskTimeAvg;
 
-    @XmlTransient
     @JsonIgnore
     private String taskTimeAvgStr;
 
-    /**
-     * Standard deviation for task time, in seconds. It is only applicable to
-     * 2015 Edition, and takes only positive integer number values.
-     */
-    @Schema(description = "Standard deviation for task time, in seconds. It is only applicable to "
-            + "2015 Edition, and takes only positive integer number values.")
-    @XmlElement(required = true)
+    @Schema(description = "Standard deviation for task time, in seconds. It only takes positive integer number values.")
     private Integer taskTimeStddev;
 
-    @XmlTransient
     @JsonIgnore
     private String taskTimeStddevStr;
 
-    /**
-     * Observed number of time (in seconds) taken for the corresponding task. It
-     * is only applicable to 2015 Edition, and takes only positive integer
-     * number values.
-     */
-    @Schema(description = "Observed number of time (in seconds) taken for the corresponding task. It "
-            + "is only applicable to 2015 Edition, and takes only positive integer "
-            + "number values.")
-    @XmlElement(required = true)
+    @Schema(description = "Observed number of time (in seconds) taken for the corresponding task. "
+            + "It is only takes positive integer number values.")
     private Integer taskTimeDeviationObservedAvg;
 
-    @XmlTransient
     @JsonIgnore
     private String taskTimeDeviationObservedAvgStr;
 
-    /**
-     * Optimal number of time (in seconds) taken for the corresponding task. It
-     * is only applicable to 2015 Edition, and takes only positive integer
-     * number values.
-     */
-    @Schema(description = "Optimal number of time (in seconds) taken for the corresponding task. It "
-            + "is only applicable to 2015 Edition, and takes only positive integer "
-            + "number values.")
-    @XmlElement(required = true)
+    @Schema(description = "Optimal number of time (in seconds) taken for the corresponding task. "
+            + "It only takes positive integer number values.")
     private Integer taskTimeDeviationOptimalAvg;
 
-    @XmlTransient
     @JsonIgnore
     private String taskTimeDeviationOptimalAvgStr;
 
-    /**
-     * Mean task error rate (in percentages). It is only applicable to 2015
-     * Edition, and takes only positive decimal numbers.
-     */
-    @Schema(description = "Mean task error rate (in percentages). It is only applicable to 2015 "
-            + "Edition, and takes only positive decimal numbers.")
-    @XmlElement(required = true)
+    @Schema(description = "Mean task error rate (in percentages). It only takes positive decimal numbers.")
     private Float taskErrors;
 
-    @XmlTransient
     @JsonIgnore
     private String taskErrorsStr;
 
-    /**
-     * Standard deviation of the task error rate (in percentages). This variable
-     * is only applicable to 2015 Edition, and takes only positive decimal
-     * numbers.
-     */
-    @Schema(description = "Standard deviation of the task error rate (in percentages). This variable "
-            + "is only applicable to 2015 Edition, and takes only positive decimal "
-            + "numbers.")
-    @XmlElement(required = true)
+    @Schema(description = "Standard deviation of the task error rate (in percentages). "
+            + "This takes only positive decimal numbers.")
     private Float taskErrorsStddev;
 
-    @XmlTransient
     @JsonIgnore
     private String taskErrorsStddevStr;
 
-    /**
-     * This variable indicates the type of scale that was used to rate the
-     * usability of the task. System Usability Scale is preferred. Likert Scale
-     * is also accepted. If the scale type is System Usability Scale, only
-     * positive integers between 1-100 are allowed. If the scale type is the
-     * Likert scale, positive decimal numbers are allowed. It is only applicable
-     * to 2015 Edition.
-     */
     @Schema(description = "This variable indicates the type of scale that was used to rate the "
             + "usability of the task. System Usability Scale is preferred. Likert Scale "
             + "is also accepted. If the scale type is System Usability Scale, only "
             + "positive integers between 1-100 are allowed. If the scale type is the "
-            + "Likert scale, positive decimal numbers are allowed. It is only applicable "
-            + "to 2015 Edition.")
-    @XmlElement(required = true)
+            + "Likert scale, positive decimal numbers are allowed.")
     private String taskRatingScale;
 
-    /**
-     * This variable indicates mean usability rating of the corresponding task,
-     * based on the specified scale type. If the scale type is System Usability
-     * Scale, only positive integers between 1-100 are allowed. If the scale
-     * type is the Likert scale, positive decimal numbers are allowed. It is
-     * only applicable to 2015 Edition.
-     */
     @Schema(description = "This variable indicates mean usability rating of the corresponding task, "
             + "based on the specified scale type. If the scale type is System Usability "
             + "Scale, only positive integers between 1-100 are allowed. If the scale "
-            + "type is the Likert scale, positive decimal numbers are allowed. It is "
-            + "only applicable to 2015 Edition.")
-    @XmlElement(required = true)
+            + "type is the Likert scale, positive decimal numbers are allowed.")
     private Float taskRating;
 
-    @XmlTransient
     @JsonIgnore
     private String taskRatingStr;
 
-    /**
-     * Standard deviation of the mean usability rating of the corresponding
-     * task, based on the specified scale type. It is only applicable to 2015
-     * Edition, and takes only positive decimal numbers.
-     */
     @Schema(description = "Standard deviation of the mean usability rating of the corresponding "
-            + "task, based on the specified scale type. It is only applicable to 2015 "
-            + "Edition, and takes only positive decimal numbers.")
-    @XmlElement(required = true)
+            + "task, based on the specified scale type. It is only takes positive decimal numbers.")
     private Float taskRatingStddev;
 
-    @XmlTransient
     @JsonIgnore
     private String taskRatingStddevStr;
 
-    /**
-     * The set of criteria within a listing to which this task is applied.
-     */
     @Schema(description = "The set of criteria within a listing to which this task is applied.")
-    @XmlElementWrapper(name = "criteriaList", nillable = true, required = false)
-    @XmlElement(name = "criteria")
     @Builder.Default
     private LinkedHashSet<CertificationCriterion> criteria = new LinkedHashSet<CertificationCriterion>();
 
-    /**
-     * Participants in the test task.
-     */
     @Schema(description = "Participants in the test task.")
-    @XmlElementWrapper(name = "participants", required = true)
-    @XmlElement(name = "participant")
     @Builder.Default
     private LinkedHashSet<TestParticipant> testParticipants = new LinkedHashSet<TestParticipant>();
 
@@ -433,26 +288,6 @@ public class TestTask implements Serializable {
                 .collect(Collectors.toList());
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public Float getTaskSuccessAverage() {
-        return taskSuccessAverage;
-    }
-
     public void setTaskSuccessAverage(String value) {
         if (!StringUtils.isEmpty(value)) {
             try {
@@ -461,10 +296,6 @@ public class TestTask implements Serializable {
                 LOGGER.debug("can't parse " + value + " as a float.");
             }
         }
-    }
-
-    public Float getTaskSuccessStddev() {
-        return taskSuccessStddev;
     }
 
     public void setTaskSuccessStddev(String value) {
@@ -477,10 +308,6 @@ public class TestTask implements Serializable {
         }
     }
 
-    public Integer getTaskPathDeviationObserved() {
-        return taskPathDeviationObserved;
-    }
-
     public void setTaskPathDeviationObserved(String value) {
         if (!StringUtils.isEmpty(value)) {
             try {
@@ -489,10 +316,6 @@ public class TestTask implements Serializable {
                 LOGGER.debug("can't parse " + value + " as a float.");
             }
         }
-    }
-
-    public Integer getTaskPathDeviationOptimal() {
-        return taskPathDeviationOptimal;
     }
 
     public void setTaskPathDeviationOptimal(String value) {
@@ -505,10 +328,6 @@ public class TestTask implements Serializable {
         }
     }
 
-    public Long getTaskTimeAvg() {
-        return taskTimeAvg;
-    }
-
     public void setTaskTimeAvg(String value) {
         if (!StringUtils.isEmpty(value)) {
             try {
@@ -517,10 +336,6 @@ public class TestTask implements Serializable {
                 LOGGER.debug("can't parse " + value + " as a float.");
             }
         }
-    }
-
-    public Integer getTaskTimeStddev() {
-        return taskTimeStddev;
     }
 
     public void setTaskTimeStddev(String value) {
@@ -533,10 +348,6 @@ public class TestTask implements Serializable {
         }
     }
 
-    public Integer getTaskTimeDeviationObservedAvg() {
-        return taskTimeDeviationObservedAvg;
-    }
-
     public void setTaskTimeDeviationObservedAvg(String value) {
         if (!StringUtils.isEmpty(value)) {
             try {
@@ -545,10 +356,6 @@ public class TestTask implements Serializable {
                 LOGGER.debug("can't parse " + value + " as a float.");
             }
         }
-    }
-
-    public Integer getTaskTimeDeviationOptimalAvg() {
-        return taskTimeDeviationOptimalAvg;
     }
 
     public void setTaskTimeDeviationOptimalAvg(String value) {
@@ -561,10 +368,6 @@ public class TestTask implements Serializable {
         }
     }
 
-    public Float getTaskErrors() {
-        return taskErrors;
-    }
-
     public void setTaskErrors(String value) {
         if (!StringUtils.isEmpty(value)) {
             try {
@@ -573,10 +376,6 @@ public class TestTask implements Serializable {
                 LOGGER.debug("can't parse " + value + " as a float.");
             }
         }
-    }
-
-    public Float getTaskErrorsStddev() {
-        return taskErrorsStddev;
     }
 
     public void setTaskErrorsStddev(String value) {
@@ -589,18 +388,6 @@ public class TestTask implements Serializable {
         }
     }
 
-    public String getTaskRatingScale() {
-        return taskRatingScale;
-    }
-
-    public void setTaskRatingScale(String taskRatingScale) {
-        this.taskRatingScale = taskRatingScale;
-    }
-
-    public Float getTaskRating() {
-        return taskRating;
-    }
-
     public void setTaskRating(String value) {
         if (!StringUtils.isEmpty(value)) {
             try {
@@ -611,26 +398,6 @@ public class TestTask implements Serializable {
         }
     }
 
-    public LinkedHashSet<TestParticipant> getTestParticipants() {
-        return testParticipants;
-    }
-
-    public void setTestParticipants(LinkedHashSet<TestParticipant> testParticipants) {
-        this.testParticipants = testParticipants;
-    }
-
-    public String getUniqueId() {
-        return uniqueId;
-    }
-
-    public void setUniqueId(String uniqueId) {
-        this.uniqueId = uniqueId;
-    }
-
-    public Float getTaskRatingStddev() {
-        return taskRatingStddev;
-    }
-
     public void setTaskRatingStddev(String value) {
         if (!StringUtils.isEmpty(value)) {
             try {
@@ -639,109 +406,5 @@ public class TestTask implements Serializable {
                 LOGGER.debug("can't parse " + value + " as a float or integer.");
             }
         }
-    }
-
-    public LinkedHashSet<CertificationCriterion> getCriteria() {
-        return criteria;
-    }
-
-    public void setCriteria(LinkedHashSet<CertificationCriterion> criteria) {
-        this.criteria = criteria;
-    }
-
-    public String getTaskSuccessAverageStr() {
-        return taskSuccessAverageStr;
-    }
-
-    public void setTaskSuccessAverageStr(String taskSuccessAverageStr) {
-        this.taskSuccessAverageStr = taskSuccessAverageStr;
-    }
-
-    public String getTaskSuccessStddevStr() {
-        return taskSuccessStddevStr;
-    }
-
-    public void setTaskSuccessStddevStr(String taskSuccessStddevStr) {
-        this.taskSuccessStddevStr = taskSuccessStddevStr;
-    }
-
-    public String getTaskPathDeviationObservedStr() {
-        return taskPathDeviationObservedStr;
-    }
-
-    public void setTaskPathDeviationObservedStr(String taskPathDeviationObservedStr) {
-        this.taskPathDeviationObservedStr = taskPathDeviationObservedStr;
-    }
-
-    public String getTaskPathDeviationOptimalStr() {
-        return taskPathDeviationOptimalStr;
-    }
-
-    public void setTaskPathDeviationOptimalStr(String taskPathDeviationOptimalStr) {
-        this.taskPathDeviationOptimalStr = taskPathDeviationOptimalStr;
-    }
-
-    public String getTaskTimeAvgStr() {
-        return taskTimeAvgStr;
-    }
-
-    public void setTaskTimeAvgStr(String taskTimeAvgStr) {
-        this.taskTimeAvgStr = taskTimeAvgStr;
-    }
-
-    public String getTaskTimeStddevStr() {
-        return taskTimeStddevStr;
-    }
-
-    public void setTaskTimeStddevStr(String taskTimeStddevStr) {
-        this.taskTimeStddevStr = taskTimeStddevStr;
-    }
-
-    public String getTaskTimeDeviationObservedAvgStr() {
-        return taskTimeDeviationObservedAvgStr;
-    }
-
-    public void setTaskTimeDeviationObservedAvgStr(String taskTimeDeviationObservedAvgStr) {
-        this.taskTimeDeviationObservedAvgStr = taskTimeDeviationObservedAvgStr;
-    }
-
-    public String getTaskTimeDeviationOptimalAvgStr() {
-        return taskTimeDeviationOptimalAvgStr;
-    }
-
-    public void setTaskTimeDeviationOptimalAvgStr(String taskTimeDeviationOptimalAvgStr) {
-        this.taskTimeDeviationOptimalAvgStr = taskTimeDeviationOptimalAvgStr;
-    }
-
-    public String getTaskErrorsStr() {
-        return taskErrorsStr;
-    }
-
-    public void setTaskErrorsStr(String taskErrorsStr) {
-        this.taskErrorsStr = taskErrorsStr;
-    }
-
-    public String getTaskErrorsStddevStr() {
-        return taskErrorsStddevStr;
-    }
-
-    public void setTaskErrorsStddevStr(String taskErrorsStddevStr) {
-        this.taskErrorsStddevStr = taskErrorsStddevStr;
-    }
-
-    public String getTaskRatingStr() {
-        return taskRatingStr;
-    }
-
-    public void setTaskRatingStr(String taskRatingStr) {
-        this.taskRatingStr = taskRatingStr;
-    }
-
-    public String getTaskRatingStddevStr() {
-        return taskRatingStddevStr;
-    }
-
-    public void setTaskRatingStddevStr(String taskRatingStddevStr) {
-        this.taskRatingStddevStr = taskRatingStddevStr;
     }
 }

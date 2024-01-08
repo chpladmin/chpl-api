@@ -14,7 +14,6 @@ import gov.healthit.chpl.domain.CertifiedProductChplProductNumberHistory;
 import gov.healthit.chpl.entity.listing.CertifiedProductChplProductNumberHistoryEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.DateUtil;
 
 @Component("certifiedProductChplProductNumberHistoryDao")
@@ -26,7 +25,6 @@ public class CertifiedProductChplProductNumberHistoryDao extends BaseDAOImpl {
             entity.setCertifiedProductId(listingId);
             entity.setChplProductNumber(historyItem.getChplProductNumber());
             entity.setEndDate(new Date(DateUtil.toEpochMillis(historyItem.getEndDateTime())));
-            entity.setLastModifiedUser(AuthUtil.getAuditId());
             create(entity);
             return entity.getId();
         } catch (Exception ex) {

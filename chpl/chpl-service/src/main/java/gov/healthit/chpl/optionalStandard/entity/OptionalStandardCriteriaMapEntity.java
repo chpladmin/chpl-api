@@ -1,7 +1,5 @@
 package gov.healthit.chpl.optionalStandard.entity;
 
-import java.util.Date;
-
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -14,19 +12,25 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterionEntity;
+import gov.healthit.chpl.entity.EntityAudit;
 import gov.healthit.chpl.optionalStandard.domain.OptionalStandardCriteriaMap;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 
-@Entity
-@Table(name = "optional_standard_criteria_map")
-@Data
-@Builder
+@Getter
+@Setter
+@ToString
+@SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
-public class OptionalStandardCriteriaMapEntity {
+@Entity
+@Table(name = "optional_standard_criteria_map")
+public class OptionalStandardCriteriaMapEntity extends EntityAudit {
+    private static final long serialVersionUID = -2526790160399898620L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -49,22 +53,6 @@ public class OptionalStandardCriteriaMapEntity {
     @OneToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "optional_standard_id", insertable = false, updatable = false)
     private OptionalStandardEntity optionalStandard;
-
-    @Basic(optional = false)
-    @Column(name = "creation_date", nullable = false, insertable = false, updatable = false)
-    private Date creationDate;
-
-    @Basic(optional = false)
-    @Column(name = "last_modified_date", nullable = false, insertable = false, updatable = false)
-    private Date lastModifiedDate;
-
-    @Basic(optional = false)
-    @Column(name = "deleted", nullable = false)
-    private Boolean deleted;
-
-    @Basic(optional = false)
-    @Column(name = "last_modified_user", nullable = false)
-    private Long lastModifiedUser;
 
     public OptionalStandardCriteriaMap toDomain() {
         return OptionalStandardCriteriaMap.builder()

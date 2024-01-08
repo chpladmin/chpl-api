@@ -1,7 +1,5 @@
 package gov.healthit.chpl.listing.measure;
 
-import java.util.Date;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -10,18 +8,24 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 import gov.healthit.chpl.domain.MeasureDomain;
+import gov.healthit.chpl.entity.EntityAudit;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 
-@Entity
-@Data
-@Builder
+@Getter
+@Setter
+@ToString
+@SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
+@Entity
 @Table(name = "measure_domain")
-public class MeasureDomainEntity {
+public class MeasureDomainEntity extends EntityAudit {
+    private static final long serialVersionUID = -9220228565137094298L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,18 +34,6 @@ public class MeasureDomainEntity {
 
     @Column(name = "domain")
     private String domain;
-
-    @Column(name = "creation_date", nullable = false, updatable = false, insertable = false)
-    private Date creationDate;
-
-    @Column(nullable = false)
-    private Boolean deleted;
-
-    @Column(name = "last_modified_date", nullable = false, updatable = false, insertable = false)
-    private Date lastModifiedDate;
-
-    @Column(name = "last_modified_user", nullable = false)
-    private Long lastModifiedUser;
 
     public MeasureDomain convert() {
         MeasureDomain measureDomain = new MeasureDomain();

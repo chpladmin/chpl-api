@@ -4,8 +4,6 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.xml.bind.annotation.XmlTransient;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.AllArgsConstructor;
@@ -27,7 +25,6 @@ public class SearchRequest implements Serializable {
     private String searchTerm;
     @Builder.Default
     @JsonIgnore
-    @XmlTransient
     private Set<String> listingIdStrings = new HashSet<String>();
     @Builder.Default
     private Set<Long> listingIds = new HashSet<Long>();
@@ -39,18 +36,15 @@ public class SearchRequest implements Serializable {
     private Set<String> certificationEditions = new HashSet<String>();
     @Builder.Default
     @JsonIgnore
-    @XmlTransient
     private Set<String> certificationCriteriaIdStrings = new HashSet<String>();
     @Builder.Default
     private Set<Long> certificationCriteriaIds = new HashSet<Long>();
     @JsonIgnore
-    @XmlTransient
     private String certificationCriteriaOperatorString;
     private SearchSetOperator certificationCriteriaOperator;
     @Builder.Default
     private Set<String> cqms = new HashSet<String>();
     @JsonIgnore
-    @XmlTransient
     private String cqmsOperatorString;
     private SearchSetOperator cqmsOperator;
     @Builder.Default
@@ -69,13 +63,11 @@ public class SearchRequest implements Serializable {
     private ComplianceSearchFilter complianceActivity = new ComplianceSearchFilter();
 
     @JsonIgnore
-    @XmlTransient
     @Builder.Default
     private Set<String> rwtOptionsStrings = new HashSet<String>();
     @Builder.Default
     private Set<RwtSearchOptions> rwtOptions = new HashSet<RwtSearchOptions>();
     @JsonIgnore
-    @XmlTransient
     private String rwtOperatorString;
     private SearchSetOperator rwtOperator;
 
@@ -86,17 +78,14 @@ public class SearchRequest implements Serializable {
 
     @Builder.Default
     @JsonIgnore
-    @XmlTransient
     private Set<String> svapIdStrings = new HashSet<String>();
     @Builder.Default
     private Set<Long> svapIds = new HashSet<Long>();
     @JsonIgnore
-    @XmlTransient
     private String svapOperatorString;
     private SearchSetOperator svapOperator;
 
     @JsonIgnore
-    @XmlTransient
     private String orderByString;
     private OrderByOption orderBy;
     @Builder.Default

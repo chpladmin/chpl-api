@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -154,7 +155,7 @@ public class CqmNormalizer {
 
     private boolean isCriterionAttestedInListing(CertifiedProductSearchDetails listing, CertificationCriterion criterion) {
         Optional<CertificationResult> attestedCert = listing.getCertificationResults().stream()
-            .filter(certResult -> certResult.isSuccess() != null && certResult.isSuccess())
+            .filter(certResult -> certResult.getSuccess() != null && certResult.getSuccess())
             .filter(certResult -> certResult.getCriterion() != null
                 && certResult.getCriterion().getId().equals(criterion.getId()))
             .findAny();
@@ -188,7 +189,7 @@ public class CqmNormalizer {
         Optional<CQMResultDetails> cqmInListing = cqmsInListing.stream()
                 .filter(cqm -> !StringUtils.isEmpty(cqm.getCmsId()) && cqm.getCmsId().equals(cqmDto.getCmsId()))
                 .findAny();
-        return cqmInListing != null && cqmInListing.isPresent() && cqmInListing.get().isSuccess();
+        return cqmInListing != null && cqmInListing.isPresent() && BooleanUtils.isTrue(cqmInListing.get().getSuccess());
     }
 
     private CQMResultDetails buildCqmDetails(CQMCriterionDTO cqmDto) {

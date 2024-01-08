@@ -17,7 +17,6 @@ import gov.healthit.chpl.entity.CertificationBodyEntity;
 import gov.healthit.chpl.entity.UserCertificationBodyMapEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.DateUtil;
 import lombok.extern.log4j.Log4j2;
 
@@ -54,7 +53,6 @@ public class CertificationBodyDAO extends BaseDAOImpl {
             entity.setAcbCode(acb.getAcbCode());
             entity.setRetired(Boolean.FALSE);
             entity.setRetirementDate(null);
-            entity.setLastModifiedUser(AuthUtil.getAuditId());
             create(entity);
             return entity.toDomain();
         }
@@ -93,7 +91,6 @@ public class CertificationBodyDAO extends BaseDAOImpl {
             entity.setAcbCode(acb.getAcbCode());
         }
 
-        entity.setLastModifiedUser(AuthUtil.getAuditId());
         update(entity);
         return entity.toDomain();
     }

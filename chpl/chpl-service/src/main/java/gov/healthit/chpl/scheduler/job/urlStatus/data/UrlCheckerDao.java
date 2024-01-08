@@ -11,7 +11,6 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -68,6 +67,12 @@ public class UrlCheckerDao extends BaseDAOImpl {
         List<UrlResult> results = new ArrayList<UrlResult>();
         for (UrlType urlType : UrlType.values()) {
             switch (urlType) {
+                case CERTIFICATION_CRITERION:
+                    logger.info("Getting all Certification Criteria URLs in the system...");
+                    List<UrlResult> criteriaUrls = getCriteriaUrls();
+                    results.addAll(criteriaUrls);
+                    logger.info("Got " + criteriaUrls.size() + " Certification Criteria URLs in the system.");
+                    break;
                 case ACB:
                     logger.info("Getting all ACB URLs in the system...");
                     List<UrlResult> acbUrls = getAcbUrls();
@@ -176,6 +181,24 @@ public class UrlCheckerDao extends BaseDAOImpl {
             }
         }
         return results;
+    }
+
+    private List<UrlResult> getCriteriaUrls() {
+        @SuppressWarnings("unchecked")
+        List<String> criteriaWebsites = entityManager.createQuery(
+                "SELECT DISTINCT companionGuideLink "
+                + "FROM CertificationCriterionEntity "
+                + "WHERE companionGuideLink IS NOT NULL "
+                + "AND companionGuideLink != '' "
+                + "AND deleted = false")
+            .getResultList();
+        return criteriaWebsites.stream()
+            .filter(website -> !StringUtils.isEmpty(website))
+            .map(website -> UrlResult.builder()
+                    .url(website)
+                    .urlType(UrlType.CERTIFICATION_CRITERION)
+                    .build())
+            .collect(Collectors.toList());
     }
 
     private List<UrlResult> getAcbUrls() {
@@ -486,7 +509,6 @@ public class UrlCheckerDao extends BaseDAOImpl {
         }
 
         UrlResultEntity entity = new UrlResultEntity();
-        entity.setLastModifiedUser(User.SYSTEM_USER_ID);
         entity.setResponseCode(toCreate.getResponseCode());
         entity.setResponseMessage(toCreate.getResponseMessage());
         entity.setUrl(toCreate.getUrl());

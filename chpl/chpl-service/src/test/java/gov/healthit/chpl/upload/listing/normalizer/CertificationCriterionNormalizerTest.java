@@ -53,16 +53,16 @@ public class CertificationCriterionNormalizerTest {
         assertNotNull(listing.getCertificationResults());
         assertEquals(0, listing.getCertificationResults().size());
         for (CertificationResult certResult : listing.getCertificationResults()) {
-            assertFalse(certResult.isSuccess());
+            assertFalse(certResult.getSuccess());
             assertNull(certResult.getAdditionalSoftware());
             assertNull(certResult.getApiDocumentation());
             assertNull(certResult.getAttestationAnswer());
             assertNull(certResult.getConformanceMethods());
             assertNull(certResult.getDocumentationUrl());
             assertNull(certResult.getExportDocumentation());
-            assertNull(certResult.isGap());
-            assertNull(certResult.isG1Success());
-            assertNull(certResult.isG2Success());
+            assertNull(certResult.getGap());
+            assertNull(certResult.getG1Success());
+            assertNull(certResult.getG2Success());
             assertNull(certResult.getOptionalStandards());
             assertNull(certResult.getPrivacySecurityFramework());
             assertNull(certResult.getServiceBaseUrlList());
@@ -95,10 +95,10 @@ public class CertificationCriterionNormalizerTest {
         assertEquals(1, listing.getCertificationResults().size());
         for (CertificationResult certResult : listing.getCertificationResults()) {
             if (certResult.getCriterion().getNumber().equals("170.315 (a)(1)")) {
-                assertTrue(certResult.isSuccess());
+                assertTrue(certResult.getSuccess());
                 assertNotNull(certResult.getAdditionalSoftware());
             } else {
-                assertFalse(certResult.isSuccess());
+                assertFalse(certResult.getSuccess());
                 assertNull(certResult.getAdditionalSoftware());
             }
         }
@@ -126,10 +126,10 @@ public class CertificationCriterionNormalizerTest {
         assertEquals(1, listing.getCertificationResults().size());
         for (CertificationResult certResult : listing.getCertificationResults()) {
             if (certResult.getCriterion().getNumber().equals("170.315 (a)(1)")) {
-                assertTrue(certResult.isSuccess());
+                assertTrue(certResult.getSuccess());
                 assertNotNull(certResult.getAdditionalSoftware());
             } else {
-                assertFalse(certResult.isSuccess());
+                assertFalse(certResult.getSuccess());
                 assertNull(certResult.getAdditionalSoftware());
             }
         }
@@ -157,10 +157,10 @@ public class CertificationCriterionNormalizerTest {
         assertEquals(1, listing.getCertificationResults().size());
         for (CertificationResult certResult : listing.getCertificationResults()) {
             if (certResult.getCriterion().getNumber().equals("170.315 (a)(1)")) {
-                assertTrue(certResult.isSuccess());
+                assertTrue(certResult.getSuccess());
                 assertNotNull(certResult.getApiDocumentation());
             } else {
-                assertFalse(certResult.isSuccess());
+                assertFalse(certResult.getSuccess());
                 assertNull(certResult.getApiDocumentation());
             }
         }
@@ -188,10 +188,10 @@ public class CertificationCriterionNormalizerTest {
         assertEquals(1, listing.getCertificationResults().size());
         for (CertificationResult certResult : listing.getCertificationResults()) {
             if (certResult.getCriterion().getNumber().equals("170.315 (a)(1)")) {
-                assertTrue(certResult.isSuccess());
+                assertTrue(certResult.getSuccess());
                 assertNotNull(certResult.getAttestationAnswer());
             } else {
-                assertFalse(certResult.isSuccess());
+                assertFalse(certResult.getSuccess());
                 assertNull(certResult.getAttestationAnswer());
             }
         }
@@ -219,10 +219,10 @@ public class CertificationCriterionNormalizerTest {
         assertEquals(1, listing.getCertificationResults().size());
         for (CertificationResult certResult : listing.getCertificationResults()) {
             if (certResult.getCriterion().getNumber().equals("170.315 (a)(1)")) {
-                assertTrue(certResult.isSuccess());
+                assertTrue(certResult.getSuccess());
                 assertNotNull(certResult.getDocumentationUrl());
             } else {
-                assertFalse(certResult.isSuccess());
+                assertFalse(certResult.getSuccess());
                 assertNull(certResult.getDocumentationUrl());
             }
         }
@@ -250,10 +250,10 @@ public class CertificationCriterionNormalizerTest {
         assertEquals(1, listing.getCertificationResults().size());
         for (CertificationResult certResult : listing.getCertificationResults()) {
             if (certResult.getCriterion().getNumber().equals("170.315 (a)(1)")) {
-                assertTrue(certResult.isSuccess());
+                assertTrue(certResult.getSuccess());
                 assertNotNull(certResult.getExportDocumentation());
             } else {
-                assertFalse(certResult.isSuccess());
+                assertFalse(certResult.getSuccess());
                 assertNull(certResult.getExportDocumentation());
             }
         }
@@ -281,10 +281,10 @@ public class CertificationCriterionNormalizerTest {
         assertEquals(1, listing.getCertificationResults().size());
         for (CertificationResult certResult : listing.getCertificationResults()) {
             if (certResult.getCriterion().getNumber().equals("170.315 (a)(1)")) {
-                assertTrue(certResult.isSuccess());
+                assertTrue(certResult.getSuccess());
                 assertNotNull(certResult.getFunctionalitiesTested());
             } else {
-                assertFalse(certResult.isSuccess());
+                assertFalse(certResult.getSuccess());
                 assertNull(certResult.getFunctionalitiesTested());
             }
         }
@@ -312,11 +312,11 @@ public class CertificationCriterionNormalizerTest {
         assertEquals(1, listing.getCertificationResults().size());
         for (CertificationResult certResult : listing.getCertificationResults()) {
             if (certResult.getCriterion().getNumber().equals("170.315 (a)(1)")) {
-                assertTrue(certResult.isSuccess());
-                assertNull(certResult.isG1Success());
+                assertTrue(certResult.getSuccess());
+                assertNull(certResult.getG1Success());
             } else {
-                assertFalse(certResult.isSuccess());
-                assertNull(certResult.isG1Success());
+                assertFalse(certResult.getSuccess());
+                assertNull(certResult.getG1Success());
             }
         }
     }
@@ -343,11 +343,11 @@ public class CertificationCriterionNormalizerTest {
         assertEquals(1, listing.getCertificationResults().size());
         for (CertificationResult certResult : listing.getCertificationResults()) {
             if (certResult.getCriterion().getNumber().equals("170.315 (a)(1)")) {
-                assertTrue(certResult.isSuccess());
-                assertNull(certResult.isG2Success());
+                assertTrue(certResult.getSuccess());
+                assertNull(certResult.getG2Success());
             } else {
-                assertFalse(certResult.isSuccess());
-                assertNull(certResult.isG2Success());
+                assertFalse(certResult.getSuccess());
+                assertNull(certResult.getG2Success());
             }
         }
     }
@@ -374,11 +374,11 @@ public class CertificationCriterionNormalizerTest {
         assertEquals(1, listing.getCertificationResults().size());
         for (CertificationResult certResult : listing.getCertificationResults()) {
             if (certResult.getCriterion().getNumber().equals("170.315 (a)(1)")) {
-                assertTrue(certResult.isSuccess());
-                assertNull(certResult.isGap());
+                assertTrue(certResult.getSuccess());
+                assertNull(certResult.getGap());
             } else {
-                assertFalse(certResult.isSuccess());
-                assertNull(certResult.isGap());
+                assertFalse(certResult.getSuccess());
+                assertNull(certResult.getGap());
             }
         }
     }
@@ -405,10 +405,10 @@ public class CertificationCriterionNormalizerTest {
         assertEquals(1, listing.getCertificationResults().size());
         for (CertificationResult certResult : listing.getCertificationResults()) {
             if (certResult.getCriterion().getNumber().equals("170.315 (a)(1)")) {
-                assertTrue(certResult.isSuccess());
+                assertTrue(certResult.getSuccess());
                 assertNotNull(certResult.getOptionalStandards());
             } else {
-                assertFalse(certResult.isSuccess());
+                assertFalse(certResult.getSuccess());
                 assertNull(certResult.getOptionalStandards());
             }
         }
@@ -436,10 +436,10 @@ public class CertificationCriterionNormalizerTest {
         assertEquals(1, listing.getCertificationResults().size());
         for (CertificationResult certResult : listing.getCertificationResults()) {
             if (certResult.getCriterion().getNumber().equals("170.315 (a)(1)")) {
-                assertTrue(certResult.isSuccess());
+                assertTrue(certResult.getSuccess());
                 assertNotNull(certResult.getPrivacySecurityFramework());
             } else {
-                assertFalse(certResult.isSuccess());
+                assertFalse(certResult.getSuccess());
                 assertNull(certResult.getPrivacySecurityFramework());
             }
         }
@@ -467,11 +467,11 @@ public class CertificationCriterionNormalizerTest {
         assertEquals(1, listing.getCertificationResults().size());
         for (CertificationResult certResult : listing.getCertificationResults()) {
             if (certResult.getCriterion().getNumber().equals("170.315 (a)(1)")) {
-                assertTrue(certResult.isSuccess());
-                assertNull(certResult.isSed());
+                assertTrue(certResult.getSuccess());
+                assertNull(certResult.getSed());
             } else {
-                assertFalse(certResult.isSuccess());
-                assertNull(certResult.isSed());
+                assertFalse(certResult.getSuccess());
+                assertNull(certResult.getSed());
             }
         }
     }
@@ -498,10 +498,10 @@ public class CertificationCriterionNormalizerTest {
         assertEquals(1, listing.getCertificationResults().size());
         for (CertificationResult certResult : listing.getCertificationResults()) {
             if (certResult.getCriterion().getNumber().equals("170.315 (a)(1)")) {
-                assertTrue(certResult.isSuccess());
+                assertTrue(certResult.getSuccess());
                 assertNotNull(certResult.getServiceBaseUrlList());
             } else {
-                assertFalse(certResult.isSuccess());
+                assertFalse(certResult.getSuccess());
                 assertNull(certResult.getServiceBaseUrlList());
             }
         }
@@ -529,10 +529,10 @@ public class CertificationCriterionNormalizerTest {
         assertEquals(1, listing.getCertificationResults().size());
         for (CertificationResult certResult : listing.getCertificationResults()) {
             if (certResult.getCriterion().getNumber().equals("170.315 (a)(1)")) {
-                assertTrue(certResult.isSuccess());
+                assertTrue(certResult.getSuccess());
                 assertNotNull(certResult.getTestStandards());
             } else {
-                assertFalse(certResult.isSuccess());
+                assertFalse(certResult.getSuccess());
                 assertNull(certResult.getTestStandards());
             }
         }
@@ -560,10 +560,10 @@ public class CertificationCriterionNormalizerTest {
         assertEquals(1, listing.getCertificationResults().size());
         for (CertificationResult certResult : listing.getCertificationResults()) {
             if (certResult.getCriterion().getNumber().equals("170.315 (a)(1)")) {
-                assertTrue(certResult.isSuccess());
+                assertTrue(certResult.getSuccess());
                 assertNotNull(certResult.getSvaps());
             } else {
-                assertFalse(certResult.isSuccess());
+                assertFalse(certResult.getSuccess());
                 assertNull(certResult.getSvaps());
             }
         }
@@ -591,10 +591,10 @@ public class CertificationCriterionNormalizerTest {
         assertEquals(1, listing.getCertificationResults().size());
         for (CertificationResult certResult : listing.getCertificationResults()) {
             if (certResult.getCriterion().getNumber().equals("170.315 (a)(1)")) {
-                assertTrue(certResult.isSuccess());
+                assertTrue(certResult.getSuccess());
                 assertNotNull(certResult.getTestDataUsed());
             } else {
-                assertFalse(certResult.isSuccess());
+                assertFalse(certResult.getSuccess());
                 assertNull(certResult.getTestDataUsed());
             }
         }
@@ -622,10 +622,10 @@ public class CertificationCriterionNormalizerTest {
         assertEquals(1, listing.getCertificationResults().size());
         for (CertificationResult certResult : listing.getCertificationResults()) {
             if (certResult.getCriterion().getNumber().equals("170.315 (a)(1)")) {
-                assertTrue(certResult.isSuccess());
+                assertTrue(certResult.getSuccess());
                 assertNotNull(certResult.getTestProcedures());
             } else {
-                assertFalse(certResult.isSuccess());
+                assertFalse(certResult.getSuccess());
                 assertNull(certResult.getTestProcedures());
             }
         }
@@ -653,10 +653,10 @@ public class CertificationCriterionNormalizerTest {
         assertEquals(1, listing.getCertificationResults().size());
         for (CertificationResult certResult : listing.getCertificationResults()) {
             if (certResult.getCriterion().getNumber().equals("170.315 (a)(1)")) {
-                assertTrue(certResult.isSuccess());
+                assertTrue(certResult.getSuccess());
                 assertNotNull(certResult.getConformanceMethods());
             } else {
-                assertFalse(certResult.isSuccess());
+                assertFalse(certResult.getSuccess());
                 assertNull(certResult.getConformanceMethods());
             }
         }
@@ -684,10 +684,10 @@ public class CertificationCriterionNormalizerTest {
         assertEquals(1, listing.getCertificationResults().size());
         for (CertificationResult certResult : listing.getCertificationResults()) {
             if (certResult.getCriterion().getNumber().equals("170.315 (a)(1)")) {
-                assertTrue(certResult.isSuccess());
+                assertTrue(certResult.getSuccess());
                 assertNotNull(certResult.getTestToolsUsed());
             } else {
-                assertFalse(certResult.isSuccess());
+                assertFalse(certResult.getSuccess());
                 assertNull(certResult.getTestToolsUsed());
             }
         }
@@ -715,10 +715,10 @@ public class CertificationCriterionNormalizerTest {
         assertEquals(1, listing.getCertificationResults().size());
         for (CertificationResult certResult : listing.getCertificationResults()) {
             if (certResult.getCriterion().getNumber().equals("170.315 (a)(1)")) {
-                assertTrue(certResult.isSuccess());
+                assertTrue(certResult.getSuccess());
                 assertNotNull(certResult.getUseCases());
             } else {
-                assertFalse(certResult.isSuccess());
+                assertFalse(certResult.getSuccess());
                 assertNull(certResult.getUseCases());
             }
         }
@@ -746,10 +746,10 @@ public class CertificationCriterionNormalizerTest {
         assertEquals(1, listing.getCertificationResults().size());
         for (CertificationResult certResult : listing.getCertificationResults()) {
             if (certResult.getCriterion().getNumber().equals("170.315 (a)(1)")) {
-                assertTrue(certResult.isSuccess());
+                assertTrue(certResult.getSuccess());
                 assertEquals("data", certResult.getServiceBaseUrlList());
             } else {
-                assertFalse(certResult.isSuccess());
+                assertFalse(certResult.getSuccess());
                 assertNull(certResult.getServiceBaseUrlList());
             }
         }
@@ -777,10 +777,10 @@ public class CertificationCriterionNormalizerTest {
         assertEquals(1, listing.getCertificationResults().size());
         for (CertificationResult certResult : listing.getCertificationResults()) {
             if (certResult.getCriterion().getNumber().equals("170.315 (a)(1)")) {
-                assertTrue(certResult.isSuccess());
+                assertTrue(certResult.getSuccess());
                 assertEquals("data", certResult.getServiceBaseUrlList());
             } else {
-                assertFalse(certResult.isSuccess());
+                assertFalse(certResult.getSuccess());
                 assertNull(certResult.getServiceBaseUrlList());
             }
         }

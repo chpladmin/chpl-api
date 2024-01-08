@@ -500,7 +500,7 @@ public class ValidationUtils {
 
     public List<CertificationCriterion> getAttestedCriteria(CertifiedProductSearchDetails listing) {
         return listing.getCertificationResults().stream()
-                .filter(certResult -> BooleanUtils.isTrue(certResult.isSuccess()))
+                .filter(certResult -> BooleanUtils.isTrue(certResult.getSuccess()))
                 .map(attestedCertResult -> attestedCertResult.getCriterion())
                 .collect(Collectors.<CertificationCriterion>toList());
     }
@@ -508,6 +508,6 @@ public class ValidationUtils {
     public boolean isEligibleForErrors(CertificationResult certResult) {
         return certResult.getCriterion() != null
                 && BooleanUtils.isNotTrue(certResult.getCriterion().isRemoved())
-                && BooleanUtils.isTrue(certResult.isSuccess());
+                && BooleanUtils.isTrue(certResult.getSuccess());
     }
 }

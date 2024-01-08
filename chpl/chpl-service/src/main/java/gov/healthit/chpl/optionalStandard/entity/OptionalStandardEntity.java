@@ -1,6 +1,5 @@
 package gov.healthit.chpl.optionalStandard.entity;
 
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -19,13 +18,25 @@ import javax.persistence.Table;
 import org.hibernate.annotations.WhereJoinTable;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterionEntity;
+import gov.healthit.chpl.entity.EntityAudit;
 import gov.healthit.chpl.optionalStandard.domain.OptionalStandard;
-import lombok.Data;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 
+@Getter
+@Setter
+@ToString
+@SuperBuilder
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
-@Data
 @Table(name = "optional_standard")
-public class OptionalStandardEntity {
+public class OptionalStandardEntity extends EntityAudit {
+    private static final long serialVersionUID = 6507782927645169341L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -45,18 +56,6 @@ public class OptionalStandardEntity {
         inverseJoinColumns = {@JoinColumn(name = "criterion_id", referencedColumnName = "certification_criterion_id")})
     @WhereJoinTable(clause = "deleted <> true")
     private List<CertificationCriterionEntity> criteria;
-
-    @Column(name = "deleted", nullable = false)
-    private Boolean deleted;
-
-    @Column(name = "last_modified_user", nullable = false)
-    private Long lastModifiedUser;
-
-    @Column(name = "creation_date", insertable = false, updatable = false)
-    private Date creationDate;
-
-    @Column(name = "last_modified_date", insertable = false, updatable = false)
-    private Date lastModifiedDate;
 
     public OptionalStandard toDomain() {
         return OptionalStandard.builder()

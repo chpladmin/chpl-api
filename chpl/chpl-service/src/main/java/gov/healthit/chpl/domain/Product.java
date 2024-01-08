@@ -8,13 +8,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
-import javax.xml.bind.annotation.XmlTransient;
-import javax.xml.bind.annotation.XmlType;
-
 import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -26,20 +19,16 @@ import gov.healthit.chpl.util.DateUtil;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
 
-@XmlType(namespace = "http://chpl.healthit.gov/listings")
-@XmlAccessorType(XmlAccessType.FIELD)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Builder
+@Data
 @AllArgsConstructor
 public class Product implements Serializable {
     private static final long serialVersionUID = 2177195816284265811L;
 
-    /**
-     * Product internal ID
-     */
     @Schema(description = "Product internal ID")
-    @XmlElement(required = true)
     private Long id;
 
     /**
@@ -49,7 +38,6 @@ public class Product implements Serializable {
      * This property should not be visible in the generated XSD or any response from an API call.
      */
     @JsonProperty(access = Access.WRITE_ONLY)
-    @XmlTransient
     @Deprecated
     private Long developerId;
 
@@ -60,54 +48,27 @@ public class Product implements Serializable {
      * This property should not be visible in the generated XSD or any response from an API call.
      */
     @JsonProperty(access = Access.WRITE_ONLY)
-    @XmlTransient
     @Deprecated
     private String developerName;
 
-    /**
-     * The name of the product being uploaded. It is applicable for 2014 and
-     * 2015 Edition.
-     */
-    @Schema(description = "The name of the product being uploaded. It is applicable for 2014 and 2015 Edition.")
-    @XmlElement(required = true)
+    @Schema(description = "The name of the product.")
     private String name;
 
-    /**
-     * A hyperlink to the test results used to certify the Complete EHRs and/or
-     * EHR Modules that can be accessed by the public. This variable is
-     * applicable to 2014 Edition. Fully qualified URL which is reachable via
-     * web browser validation and verification.
-     */
     @Schema(description = "A hyperlink to the test results used to certify the Complete EHRs and/or "
             + "EHR Modules that can be accessed by the public. This variable is "
             + "applicable to 2014 Edition. Fully qualified URL which is reachable via "
             + "web browser validation and verification.")
-    @XmlElement(required = false, nillable = true)
     private String reportFileLocation;
 
-    /**
-     * The point of contact for the product
-     */
     @Schema(description = "The point of contact for the product")
-    @XmlElement(required = false, nillable = true)
     private PointOfContact contact;
 
-    /**
-     * The developer that owns this product.
-     */
     @Schema(description = "The developer that owns this product.")
-    @XmlElement(required = true)
     private Developer owner;
 
-    /**
-     * History of which developers have owned this product.
-     */
     @Schema(description = "History of which developers have owned this product.")
-    @XmlElementWrapper(name = "ownerHistory", nillable = true, required = false)
-    @XmlElement(name = "owner")
     private List<ProductOwner> ownerHistory;
 
-    @XmlTransient
     private String lastModifiedDate;
 
     public Product() {
@@ -145,14 +106,6 @@ public class Product implements Serializable {
         return result;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
     @Deprecated
     @JsonProperty(access = Access.WRITE_ONLY)
     public Long getDeveloperId() {
@@ -160,67 +113,9 @@ public class Product implements Serializable {
     }
 
     @Deprecated
-    public void setDeveloperId(Long developerId) {
-        this.developerId = developerId;
-    }
-
-    @Deprecated
     @JsonProperty(access = Access.WRITE_ONLY)
     public String getDeveloperName() {
         return developerName;
-    }
-
-    @Deprecated
-    public void setDeveloperName(String developerName) {
-        this.developerName = developerName;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(final String name) {
-        this.name = name;
-    }
-
-    public String getReportFileLocation() {
-        return reportFileLocation;
-    }
-
-    public void setReportFileLocation(String reportFileLocation) {
-        this.reportFileLocation = reportFileLocation;
-    }
-
-    public String getLastModifiedDate() {
-        return lastModifiedDate;
-    }
-
-    public void setLastModifiedDate(String lastModifiedDate) {
-        this.lastModifiedDate = lastModifiedDate;
-    }
-
-    public Developer getOwner() {
-        return owner;
-    }
-
-    public void setOwner(Developer owner) {
-        this.owner = owner;
-    }
-
-    public List<ProductOwner> getOwnerHistory() {
-        return ownerHistory;
-    }
-
-    public void setOwnerHistory(List<ProductOwner> ownerHistory) {
-        this.ownerHistory = ownerHistory;
-    }
-
-    public PointOfContact getContact() {
-        return contact;
-    }
-
-    public void setContact(PointOfContact contact) {
-        this.contact = contact;
     }
 
     // Not all attributes have been included. The attributes being used were selected so the ProductManager could

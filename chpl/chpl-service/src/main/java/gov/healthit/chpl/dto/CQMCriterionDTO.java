@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 import gov.healthit.chpl.entity.CQMCriterionEntity;
+import gov.healthit.chpl.util.NullSafeEvaluator;
 import gov.healthit.chpl.util.Util;
 
 public class CQMCriterionDTO implements Serializable {
@@ -33,7 +34,7 @@ public class CQMCriterionDTO implements Serializable {
         this.cqmCriterionTypeId = entity.getCqmCriterionTypeId();
         this.cqmDomain = entity.getCqmDomain();
         this.cqmVersionId = entity.getCqmVersionId();
-        this.cqmVersion = entity.getCqmVersion();
+        this.cqmVersion = NullSafeEvaluator.eval(() -> entity.getCqmVersion().getVersion(), "");
         this.creationDate = entity.getCreationDate();
         this.deleted = entity.getDeleted();
         this.description = entity.getDescription();

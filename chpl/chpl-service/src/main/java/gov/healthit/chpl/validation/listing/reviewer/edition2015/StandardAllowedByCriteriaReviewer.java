@@ -41,7 +41,7 @@ public class StandardAllowedByCriteriaReviewer extends PermissionBasedReviewer {
     public void review(CertifiedProductSearchDetails listing) {
         if (listing.getCertificationResults() != null) {
             for (CertificationResult cr : listing.getCertificationResults()) {
-                if (BooleanUtils.isTrue(cr.isSuccess()) && cr.getStandards() != null) {
+                if (BooleanUtils.isTrue(cr.getSuccess()) && cr.getStandards() != null) {
                     for (CertificationResultStandard crs : cr.getStandards()) {
                         addStandardErrorMessages(crs, cr, listing);
                     }

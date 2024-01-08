@@ -8,12 +8,13 @@ import javax.persistence.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.subscription.domain.Subscriber;
 import gov.healthit.chpl.subscription.domain.SubscriberRole;
+import gov.healthit.chpl.subscription.domain.SubscriberStatus;
 import gov.healthit.chpl.subscription.entity.SubscriberEntity;
 import gov.healthit.chpl.subscription.entity.SubscriberRoleEntity;
+import gov.healthit.chpl.subscription.entity.SubscriberStatusEntity;
 import gov.healthit.chpl.subscription.service.SubscriptionLookupUtil;
 import lombok.extern.log4j.Log4j2;
 
@@ -44,10 +45,19 @@ public class SubscriberDao extends BaseDAOImpl {
                 .toList();
     }
 
+    public List<SubscriberStatus> getAllStatuses() {
+        Query query = entityManager.createQuery("SELECT statuses "
+                + "FROM SubscriberStatusEntity statuses ",
+                SubscriberStatusEntity.class);
+        List<SubscriberStatusEntity> results = query.getResultList();
+        return results.stream()
+                .map(entity -> entity.toDomain())
+                .toList();
+    }
+
     public UUID createSubscriber(String email) {
         SubscriberEntity subscriberToCreate = new SubscriberEntity();
         subscriberToCreate.setEmail(email);
-        subscriberToCreate.setLastModifiedUser(User.DEFAULT_USER_ID);
         subscriberToCreate.setSubscriberStatusId(lookupUtil.getPendingSubscriberStatusId());
         create(subscriberToCreate);
         return subscriberToCreate.getId();

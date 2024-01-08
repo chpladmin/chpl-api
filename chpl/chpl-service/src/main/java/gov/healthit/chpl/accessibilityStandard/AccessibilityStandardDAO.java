@@ -1,6 +1,5 @@
 package gov.healthit.chpl.accessibilityStandard;
 
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -14,7 +13,6 @@ import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.entity.listing.CertifiedProductDetailsEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import lombok.extern.log4j.Log4j2;
 
@@ -31,7 +29,6 @@ public class AccessibilityStandardDAO extends BaseDAOImpl {
     public AccessibilityStandard create(AccessibilityStandard accessibilityStandard) throws EntityCreationException {
         AccessibilityStandardEntity entity = new AccessibilityStandardEntity();
         entity.setDeleted(false);
-        entity.setLastModifiedUser(AuthUtil.getAuditId());
         entity.setName(accessibilityStandard.getName());
 
         try {
@@ -52,8 +49,6 @@ public class AccessibilityStandardDAO extends BaseDAOImpl {
         }
 
         entity.setName(accessibilityStandard.getName());
-        entity.setLastModifiedUser(AuthUtil.getAuditId());
-        entity.setLastModifiedDate(new Date());
 
         update(entity);
         return entity.toDomain();
@@ -63,8 +58,6 @@ public class AccessibilityStandardDAO extends BaseDAOImpl {
         AccessibilityStandardEntity toDelete = getEntityById(id);
         if (toDelete != null) {
             toDelete.setDeleted(true);
-            toDelete.setLastModifiedDate(new Date());
-            toDelete.setLastModifiedUser(AuthUtil.getAuditId());
             update(toDelete);
         }
     }

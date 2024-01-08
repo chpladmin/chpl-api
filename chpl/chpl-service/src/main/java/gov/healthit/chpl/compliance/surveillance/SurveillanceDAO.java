@@ -32,7 +32,6 @@ import gov.healthit.chpl.domain.surveillance.SurveillanceResultType;
 import gov.healthit.chpl.domain.surveillance.SurveillanceType;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.UserPermissionRetrievalException;
-import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.NullSafeEvaluator;
 import lombok.extern.log4j.Log4j2;
 
@@ -54,7 +53,6 @@ public class SurveillanceDAO extends BaseDAOImpl {
     public Long insertSurveillance(Surveillance surv) throws UserPermissionRetrievalException {
         SurveillanceEntity toInsert = new SurveillanceEntity();
         populateSurveillanceEntity(toInsert, surv);
-        toInsert.setLastModifiedUser(AuthUtil.getAuditId());
         toInsert.setDeleted(false);
         entityManager.persist(toInsert);
         entityManager.flush();
@@ -86,7 +84,6 @@ public class SurveillanceDAO extends BaseDAOImpl {
                 .nonconformityCloseDate(nonconformity.getNonconformityCloseDay())
                 .summary(nonconformity.getSummary())
                 .totalSites(nonconformity.getTotalSites())
-                .lastModifiedUser(AuthUtil.getAuditId())
                 .deleted(false)
                 .build();
 
@@ -112,7 +109,6 @@ public class SurveillanceDAO extends BaseDAOImpl {
         nonconformityEntity.setNonconformityCloseDate(nonconformity.getNonconformityCloseDay());
         nonconformityEntity.setSummary(nonconformity.getSummary());
         nonconformityEntity.setTotalSites(nonconformity.getTotalSites());
-        nonconformityEntity.setLastModifiedUser(AuthUtil.getAuditId());
 
         entityManager.merge(nonconformityEntity);
         entityManager.flush();
@@ -122,7 +118,6 @@ public class SurveillanceDAO extends BaseDAOImpl {
 
     private SurveillanceNonconformityEntity deleteSurveillanceNonconformity(SurveillanceNonconformityEntity nonconformityEntity) {
         nonconformityEntity.setDeleted(true);
-        nonconformityEntity.setLastModifiedUser(AuthUtil.getAuditId());
 
         entityManager.merge(nonconformityEntity);
         entityManager.flush();
@@ -138,7 +133,6 @@ public class SurveillanceDAO extends BaseDAOImpl {
                         ? getRequirementTypeEntityById(requirement.getRequirementType().getId())
                         : null)
                 .requirementTypeOther(requirement.getRequirementTypeOther())
-                .lastModifiedUser(AuthUtil.getAuditId())
                 .deleted(false)
                 .build();
 
@@ -156,7 +150,6 @@ public class SurveillanceDAO extends BaseDAOImpl {
             requirementEntity.setRequirementType(getRequirementTypeEntityById(requirement.getRequirementType().getId()));
         }
         requirementEntity.setRequirementTypeOther(requirement.getRequirementTypeOther());
-        requirementEntity.setLastModifiedUser(AuthUtil.getAuditId());
 
         entityManager.merge(requirementEntity);
         entityManager.flush();
@@ -179,7 +172,6 @@ public class SurveillanceDAO extends BaseDAOImpl {
 
     private SurveillanceRequirementEntity deleteSurveillanceRequirement(SurveillanceRequirementEntity requirementEntity) {
         requirementEntity.setDeleted(true);
-        requirementEntity.setLastModifiedUser(AuthUtil.getAuditId());
 
         entityManager.merge(requirementEntity);
         entityManager.flush();
@@ -258,7 +250,6 @@ public class SurveillanceDAO extends BaseDAOImpl {
     public Long updateSurveillance(Surveillance updatedSurveillance) throws EntityRetrievalException {
         SurveillanceEntity originalSurveillance = fetchSurveillanceById(updatedSurveillance.getId());
         populateSurveillanceEntity(originalSurveillance, updatedSurveillance);
-        originalSurveillance.setLastModifiedUser(AuthUtil.getAuditId());
         originalSurveillance.setDeleted(false);
         entityManager.merge(originalSurveillance);
         entityManager.flush();
@@ -357,19 +348,16 @@ public class SurveillanceDAO extends BaseDAOImpl {
                 if (reqToDelete.getNonconformities() != null) {
                     for (SurveillanceNonconformityEntity ncToDelete : reqToDelete.getNonconformities()) {
                         ncToDelete.setDeleted(true);
-                        ncToDelete.setLastModifiedUser(AuthUtil.getAuditId());
                         entityManager.merge(ncToDelete);
                         entityManager.flush();
                     }
                 }
                 reqToDelete.setDeleted(true);
-                reqToDelete.setLastModifiedUser(AuthUtil.getAuditId());
                 entityManager.merge(reqToDelete);
                 entityManager.flush();
             }
         }
         toDelete.setDeleted(true);
-        toDelete.setLastModifiedUser(AuthUtil.getAuditId());
         entityManager.merge(toDelete);
         entityManager.flush();
     }

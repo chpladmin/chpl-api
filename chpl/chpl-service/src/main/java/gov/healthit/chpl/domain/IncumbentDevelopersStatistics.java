@@ -3,12 +3,11 @@ package gov.healthit.chpl.domain;
 import java.io.Serializable;
 
 import gov.healthit.chpl.dto.IncumbentDevelopersStatisticsDTO;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-/**
- * Domain object that represents incumbent developers statistics used for creating charts.
- * @author alarned
- *
- */
+@NoArgsConstructor
+@Data
 public class IncumbentDevelopersStatistics implements Serializable {
     private static final long serialVersionUID = -1648513956784683632L;
 
@@ -18,17 +17,6 @@ public class IncumbentDevelopersStatistics implements Serializable {
     private CertificationEdition oldCertificationEdition;
     private CertificationEdition newCertificationEdition;
 
-    /**
-     * Default constructor.
-     */
-    public IncumbentDevelopersStatistics() {
-        // Default Constructor
-    }
-
-    /**
-     * Constructor that populates the new object based on the DTO that was passed in as a parameter.
-     * @param dto IncumbentDevelopersStatisticsDTO object
-     */
     public IncumbentDevelopersStatistics(final IncumbentDevelopersStatisticsDTO dto) {
         this.id = dto.getId();
         this.setNewCount(dto.getNewCount());
@@ -40,46 +28,6 @@ public class IncumbentDevelopersStatistics implements Serializable {
             this.newCertificationEdition = dto.getNewCertificationEdition();
         }
 
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(final Long id) {
-        this.id = id;
-    }
-
-    public Long getNewCount() {
-        return newCount;
-    }
-
-    public void setNewCount(final Long newCount) {
-        this.newCount = newCount;
-    }
-
-    public Long getIncumbentCount() {
-        return incumbentCount;
-    }
-
-    public void setIncumbentCount(final Long incumbentCount) {
-        this.incumbentCount = incumbentCount;
-    }
-
-    public CertificationEdition getOldCertificationEdition() {
-        return oldCertificationEdition;
-    }
-
-    public void setOldCertificationEdition(final CertificationEdition oldCertificationEdition) {
-        this.oldCertificationEdition = oldCertificationEdition;
-    }
-
-    public CertificationEdition getNewCertificationEdition() {
-        return newCertificationEdition;
-    }
-
-    public void setNewCertificationEdition(final CertificationEdition newCertificationEdition) {
-        this.newCertificationEdition = newCertificationEdition;
     }
 
     @Override

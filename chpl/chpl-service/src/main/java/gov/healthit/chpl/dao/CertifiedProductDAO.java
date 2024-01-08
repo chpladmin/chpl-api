@@ -31,7 +31,6 @@ import gov.healthit.chpl.entity.listing.CertifiedProductSummaryEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.scheduler.job.urlStatus.data.UrlType;
-import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import lombok.NoArgsConstructor;
@@ -76,7 +75,6 @@ public class CertifiedProductDAO extends BaseDAOImpl {
             entity.setAccessibilityCertified(listing.getAccessibilityCertified());
             entity.setSvapNoticeUrl(listing.getSvapNoticeUrl());
             entity.setChplProductNumber(null);
-            entity.setLastModifiedUser(AuthUtil.getAuditId());
 
             //these fields are null for ALL current listings
             entity.setSedTesting(null);
@@ -119,7 +117,6 @@ public class CertifiedProductDAO extends BaseDAOImpl {
         entity.setRwtResultsUrl(dto.getRwtResultsUrl());
         entity.setRwtResultsCheckDate(dto.getRwtResultsCheckDate());
         entity.setSvapNoticeUrl(dto.getSvapNoticeUrl());
-        entity.setLastModifiedUser(AuthUtil.getAuditId());
         try {
             update(entity);
         } catch (Exception ex) {

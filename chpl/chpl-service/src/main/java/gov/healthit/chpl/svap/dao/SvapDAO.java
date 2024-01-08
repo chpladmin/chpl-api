@@ -1,6 +1,5 @@
 package gov.healthit.chpl.svap.dao;
 
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -18,7 +17,6 @@ import gov.healthit.chpl.svap.domain.Svap;
 import gov.healthit.chpl.svap.domain.SvapCriteriaMap;
 import gov.healthit.chpl.svap.entity.SvapCriteriaMapEntity;
 import gov.healthit.chpl.svap.entity.SvapEntity;
-import gov.healthit.chpl.util.AuthUtil;
 import lombok.extern.log4j.Log4j2;
 
 @Repository
@@ -66,8 +64,6 @@ public class SvapDAO extends BaseDAOImpl {
         entity.setApprovedStandardVersion(svap.getApprovedStandardVersion());
         entity.setRegulatoryTextCitation(svap.getRegulatoryTextCitation());
         entity.setReplaced(svap.isReplaced());
-        entity.setLastModifiedUser(AuthUtil.getAuditId());
-        entity.setLastModifiedDate(new Date());
 
         update(entity);
 
@@ -80,9 +76,6 @@ public class SvapDAO extends BaseDAOImpl {
                 .regulatoryTextCitation(svap.getRegulatoryTextCitation())
                 .replaced(svap.isReplaced())
                 .deleted(false)
-                .creationDate(new Date())
-                .lastModifiedDate(new Date())
-                .lastModifiedUser(AuthUtil.getAuditId())
                 .build();
 
         create(entity);
@@ -94,8 +87,6 @@ public class SvapDAO extends BaseDAOImpl {
         SvapEntity entity = getSvapEntityById(svap.getSvapId());
 
         entity.setDeleted(true);
-        entity.setLastModifiedUser(AuthUtil.getAuditId());
-        entity.setLastModifiedDate(new Date());
 
         update(entity);
     }
@@ -105,9 +96,6 @@ public class SvapDAO extends BaseDAOImpl {
         SvapCriteriaMapEntity entity = SvapCriteriaMapEntity.builder()
                 .certificationCriterionId(criterion.getId())
                 .svapId(svap.getSvapId())
-                .creationDate(new Date())
-                .lastModifiedDate(new Date())
-                .lastModifiedUser(AuthUtil.getAuditId())
                 .deleted(false)
                 .build();
 
@@ -118,8 +106,6 @@ public class SvapDAO extends BaseDAOImpl {
         try {
             SvapCriteriaMapEntity entity = getSvapCriteriaMapBySvapAndCriterionEntity(svap.getSvapId(), criterion.getId());
             entity.setDeleted(true);
-            entity.setLastModifiedDate(new Date());
-            entity.setLastModifiedUser(AuthUtil.getAuditId());
 
             update(entity);
         } catch (EntityRetrievalException e) {

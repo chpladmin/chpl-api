@@ -1,7 +1,5 @@
 package gov.healthit.chpl.testtool;
 
-import java.util.Date;
-
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -15,18 +13,24 @@ import javax.persistence.Table;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterionEntity;
 import gov.healthit.chpl.domain.TestToolCriteriaMap;
+import gov.healthit.chpl.entity.EntityAudit;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 
-@Entity
-@Table(name = "test_tool_criteria_map")
-@Data
-@Builder
+@Getter
+@Setter
+@ToString
+@SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
-public class TestToolCriteriaMapEntity {
+@Entity
+@Table(name = "test_tool_criteria_map")
+public class TestToolCriteriaMapEntity extends EntityAudit {
+    private static final long serialVersionUID = 2606890203542230945L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -49,22 +53,6 @@ public class TestToolCriteriaMapEntity {
     @OneToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "test_tool_id", insertable = false, updatable = false)
     private TestToolEntity testTool;
-
-    @Basic(optional = false)
-    @Column(name = "creation_date", nullable = false, insertable = false, updatable = false)
-    private Date creationDate;
-
-    @Basic(optional = false)
-    @Column(name = "last_modified_date", nullable = false, insertable = false, updatable = false)
-    private Date lastModifiedDate;
-
-    @Basic(optional = false)
-    @Column(name = "deleted", nullable = false)
-    private Boolean deleted;
-
-    @Basic(optional = false)
-    @Column(name = "last_modified_user", nullable = false)
-    private Long lastModifiedUser;
 
     public TestToolCriteriaMap toDomain() {
         return TestToolCriteriaMap.builder()

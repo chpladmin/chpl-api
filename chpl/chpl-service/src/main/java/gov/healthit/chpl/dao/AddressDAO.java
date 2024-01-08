@@ -12,7 +12,6 @@ import gov.healthit.chpl.domain.Address;
 import gov.healthit.chpl.entity.AddressEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.util.AuthUtil;
 
 @Repository("addressDao")
 public class AddressDAO extends BaseDAOImpl {
@@ -25,7 +24,6 @@ public class AddressDAO extends BaseDAOImpl {
         toInsert.setState(address.getState());
         toInsert.setZipcode(address.getZipcode());
         toInsert.setCountry(StringUtils.isEmpty(address.getCountry()) ? Address.DEFAULT_COUNTRY : address.getCountry());
-        toInsert.setLastModifiedUser(AuthUtil.getAuditId());
         create(toInsert);
         return toInsert.getId();
     }
@@ -38,7 +36,6 @@ public class AddressDAO extends BaseDAOImpl {
         addressEntity.setState(address.getState());
         addressEntity.setZipcode(address.getZipcode());
         addressEntity.setCountry(StringUtils.isEmpty(address.getCountry()) ? Address.DEFAULT_COUNTRY : address.getCountry());
-        addressEntity.setLastModifiedUser(AuthUtil.getAuditId());
         update(addressEntity);
     }
 

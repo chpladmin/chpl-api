@@ -15,7 +15,6 @@ import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.util.AuthUtil;
 
 @Repository("apiKeyDAO")
 public class ApiKeyDAO extends BaseDAOImpl {
@@ -39,7 +38,6 @@ public class ApiKeyDAO extends BaseDAOImpl {
             entity.setEmail(apiKey.getEmail());
             entity.setNameOrganization(apiKey.getName());
             entity.setUnrestricted(apiKey.isUnrestricted());
-            entity.setLastModifiedUser(AuthUtil.getAuditId());
             entity.setDeleted(false);
             create(entity);
         }
@@ -51,8 +49,6 @@ public class ApiKeyDAO extends BaseDAOImpl {
         entity.setApiKey(apiKey.getKey());
         entity.setEmail(apiKey.getEmail());
         entity.setNameOrganization(apiKey.getName());
-        entity.setLastModifiedUser(AuthUtil.getAuditId());
-        entity.setLastUsedDate(apiKey.getLastUsedDate());
         entity.setDeleteWarningSentDate(apiKey.getDeleteWarningSentDate());
         entity.setUnrestricted(apiKey.isUnrestricted());
         update(entity);
@@ -62,7 +58,6 @@ public class ApiKeyDAO extends BaseDAOImpl {
     public void delete(Long id) throws EntityRetrievalException {
         ApiKeyEntity entity = getEntityById(id);
         entity.setDeleted(true);
-        entity.setLastModifiedUser(AuthUtil.getAuditId());
         update(entity);
     }
 

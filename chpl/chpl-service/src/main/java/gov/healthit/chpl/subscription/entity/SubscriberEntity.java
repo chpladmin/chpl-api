@@ -1,6 +1,5 @@
 package gov.healthit.chpl.subscription.entity;
 
-import java.util.Date;
 import java.util.UUID;
 
 import javax.persistence.Column;
@@ -14,20 +13,36 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.Where;
 
+import gov.healthit.chpl.entity.EntityAudit;
+import gov.healthit.chpl.entity.lastmodifieduserstrategy.DefaultUserStrategy;
+import gov.healthit.chpl.entity.lastmodifieduserstrategy.LastModifiedUserStrategy;
 import gov.healthit.chpl.subscription.domain.Subscriber;
 import gov.healthit.chpl.subscription.domain.SubscriberRole;
 import gov.healthit.chpl.subscription.domain.SubscriberStatus;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 
 @Getter
 @Setter
+@ToString
+@SuperBuilder
+@AllArgsConstructor
 @NoArgsConstructor
 @Entity
 @Table(name = "subscriber")
 @Where(clause = "deleted <> 'true'")
-public class SubscriberEntity {
+public class SubscriberEntity extends EntityAudit {
+    private static final long serialVersionUID = -4246212592490876084L;
+
+    @Override
+    public LastModifiedUserStrategy getLastModifiedUserStrategy() {
+        return new DefaultUserStrategy();
+    }
+
 
     @Id
     @GeneratedValue
@@ -50,18 +65,6 @@ public class SubscriberEntity {
 
     @Column(name = "email", nullable = false)
     private String email;
-
-    @Column(name = "last_modified_user", nullable = false)
-    private Long lastModifiedUser;
-
-    @Column(name = "deleted", nullable = false, insertable = false)
-    private Boolean deleted;
-
-    @Column(name = "creation_date", nullable = false, insertable = false, updatable = false)
-    private Date creationDate;
-
-    @Column(name = "last_modified_date", nullable = false, insertable = false, updatable = false)
-    private Date lastModifiedDate;
 
     public Subscriber toDomain() {
         return Subscriber.builder()

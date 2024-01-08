@@ -2,6 +2,7 @@ package gov.healthit.chpl.scheduler.job.urlStatus.email;
 
 import java.util.Date;
 
+import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.Developer;
@@ -23,6 +24,7 @@ public class FailedUrlResult {
     private Date lastChecked;
     private Integer responseCode;
     private String responseMessage;
+    private CertificationCriterion criterion;
     private CertificationBody acb;
     private TestingLab atl;
     private Developer developer;

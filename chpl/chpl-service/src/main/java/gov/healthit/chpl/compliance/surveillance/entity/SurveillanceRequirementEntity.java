@@ -1,7 +1,6 @@
 package gov.healthit.chpl.compliance.surveillance.entity;
 
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -20,21 +19,26 @@ import javax.persistence.Table;
 import org.hibernate.annotations.Where;
 
 import gov.healthit.chpl.domain.surveillance.SurveillanceRequirement;
+import gov.healthit.chpl.entity.EntityAudit;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 
-@Entity
-@Table(name = "surveillance_requirement")
 @Getter
 @Setter
-@Builder
-@NoArgsConstructor
+@ToString
+@SuperBuilder
 @AllArgsConstructor
-public class SurveillanceRequirementEntity {
+@NoArgsConstructor
+@Entity
+@Table(name = "surveillance_requirement")
+public class SurveillanceRequirementEntity extends EntityAudit {
+    private static final long serialVersionUID = 1726385155207715763L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -53,18 +57,6 @@ public class SurveillanceRequirementEntity {
     @OneToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "result_id")
     private SurveillanceResultTypeEntity surveillanceResultTypeEntity;
-
-    @Column(name = "deleted")
-    private Boolean deleted;
-
-    @Column(name = "last_modified_user")
-    private Long lastModifiedUser;
-
-    @Column(name = "creation_date", insertable = false, updatable = false)
-    private Date creationDate;
-
-    @Column(name = "last_modified_date", insertable = false, updatable = false)
-    private Date lastModifiedDate;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "surveillanceRequirementId")
     @Column(name = "surveillance_requirement_id", nullable = false, insertable = false, updatable = false)

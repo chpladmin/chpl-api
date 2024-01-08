@@ -66,9 +66,9 @@ public class RequiredData2015Reviewer extends PermissionBasedReviewer {
             if (validationUtils.hasCert(UCD_RELATED_CERTS[i], attestedCriteria)) {
                 // check for full set of UCD data
                 for (CertificationResult cert : listing.getCertificationResults()) {
-                    if (cert.isSuccess() != null && cert.isSuccess().equals(Boolean.TRUE)
+                    if (cert.getSuccess() != null && cert.getSuccess().equals(Boolean.TRUE)
                             && cert.getCriterion().getNumber().equals(UCD_RELATED_CERTS[i])) {
-                        if (cert.isSed()) {
+                        if (cert.getSed()) {
                             if (listing.getSed() == null || listing.getSed().getTestTasks() == null
                                     || listing.getSed().getTestTasks().size() == 0) {
                                 addBusinessCriterionError(listing, cert, "listing.criteria.missingTestTask",
@@ -199,10 +199,10 @@ public class RequiredData2015Reviewer extends PermissionBasedReviewer {
         }
 
         for (CertificationResult cert : listing.getCertificationResults()) {
-            if (cert.isSuccess() != null && cert.isSuccess()) {
+            if (cert.getSuccess() != null && cert.getSuccess()) {
                 boolean gapEligibleAndTrue = false;
                 if (certRules.hasCertOption(cert.getCriterion().getId(), CertificationResultRules.GAP)
-                        && cert.isGap() != null && cert.isGap()) {
+                        && cert.getGap() != null && cert.getGap()) {
                     gapEligibleAndTrue = true;
                 }
 
@@ -352,9 +352,9 @@ public class RequiredData2015Reviewer extends PermissionBasedReviewer {
         }
 
         for (CertificationResult cert : listing.getCertificationResults()) {
-            if (BooleanUtils.isTrue(cert.isSuccess())
+            if (BooleanUtils.isTrue(cert.getSuccess())
                     && certRules.hasCertOption(cert.getCriterion().getId(), CertificationResultRules.GAP)
-                    && cert.isGap() == null) {
+                    && cert.getGap() == null) {
                 addBusinessCriterionError(listing, cert, "listing.criteria.missingGap",
                         Util.formatCriteriaNumber(cert.getCriterion()));
             }

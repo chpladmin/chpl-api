@@ -123,7 +123,7 @@ public class CuresUpdateService {
         }
 
         List<Long> criteriaIds = listing.getCertificationResults().stream()
-                .filter(criterion -> BooleanUtils.isTrue(criterion.isSuccess()))
+                .filter(criterion -> BooleanUtils.isTrue(criterion.getSuccess()))
                 .map(criterion -> criterion.getCriterion().getId())
                 .collect(Collectors.toList());
         return isCuresUpdate(criteriaIds);

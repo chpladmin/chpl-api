@@ -101,7 +101,7 @@ public class SvapReviewer {
     private void reviewSvapMarkedAsReplaced(CertifiedProductSearchDetails listing,
             CertificationResult certResult, CertificationResultSvap svap) {
         if (svap.getSvapId() != null
-                && BooleanUtils.isTrue(svap.getReplaced())
+                && BooleanUtils.isTrue(svap.isReplaced())
                 && !doesListingHaveIcs(listing)) {
             listing.addDataErrorMessage(msgUtil.getMessage("listing.criteria.svap.replacedWithIcs",
                     svap.getRegulatoryTextCitation(), certResult.getCriterion().getNumber()));

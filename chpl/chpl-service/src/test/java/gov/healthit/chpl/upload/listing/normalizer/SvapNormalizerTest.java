@@ -141,7 +141,7 @@ public class SvapNormalizerTest {
         assertEquals(1, listing.getCertificationResults().get(0).getSvaps().size());
         assertEquals(1L, listing.getCertificationResults().get(0).getSvaps().get(0).getSvapId());
         assertEquals("stdver1", listing.getCertificationResults().get(0).getSvaps().get(0).getApprovedStandardVersion());
-        assertEquals(false, listing.getCertificationResults().get(0).getSvaps().get(0).getReplaced());
+        assertEquals(false, listing.getCertificationResults().get(0).getSvaps().get(0).isReplaced());
         assertEquals("CITATION1", listing.getCertificationResults().get(0).getSvaps().get(0).getRegulatoryTextCitation());
     }
 

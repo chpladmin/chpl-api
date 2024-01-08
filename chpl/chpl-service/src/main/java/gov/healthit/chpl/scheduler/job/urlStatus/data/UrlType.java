@@ -1,6 +1,7 @@
 package gov.healthit.chpl.scheduler.job.urlStatus.data;
 
 public enum UrlType {
+    CERTIFICATION_CRITERION("Certification Criterion"),
     ATL("ONC-ATL"),
     ACB("ONC-ACB"),
     DEVELOPER("Developer"),

@@ -8,7 +8,6 @@ import javax.persistence.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.dto.UserDeveloperMapDTO;
 import gov.healthit.chpl.entity.UserDeveloperMapEntity;
@@ -38,7 +37,6 @@ public class UserDeveloperMapDAO extends BaseDAOImpl {
     public void delete(final UserDeveloperMapDTO dto) throws EntityRetrievalException {
         UserDeveloperMapEntity entity = getEntityById(dto.getId());
         entity.setDeleted(true);
-        entity.setLastModifiedUser(getUserId(User.SYSTEM_USER_ID));
         update(entity);
     }
 
@@ -117,11 +115,10 @@ public class UserDeveloperMapDAO extends BaseDAOImpl {
         if (result.size() == 0) {
             return null;
         }
-        return (UserDeveloperMapEntity) result.get(0);
+        return result.get(0);
     }
 
     private UserDeveloperMapEntity create(UserDeveloperMapEntity entity) {
-        entity.setLastModifiedUser(getUserId(User.SYSTEM_USER_ID));
         if (entity.getDeleted() == null) {
             entity.setDeleted(false);
         }
@@ -130,7 +127,6 @@ public class UserDeveloperMapDAO extends BaseDAOImpl {
     }
 
     private UserDeveloperMapEntity update(UserDeveloperMapEntity entity) {
-        entity.setLastModifiedUser(getUserId(User.SYSTEM_USER_ID));
         entityManager.persist(entity);
         return entity;
     }

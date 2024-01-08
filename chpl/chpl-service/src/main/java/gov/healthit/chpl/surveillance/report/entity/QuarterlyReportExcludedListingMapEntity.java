@@ -1,7 +1,5 @@
 package gov.healthit.chpl.surveillance.report.entity;
 
-import java.util.Date;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -12,13 +10,25 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import gov.healthit.chpl.entity.EntityAudit;
 import gov.healthit.chpl.entity.listing.CertifiedProductDetailsEntity;
-import lombok.Data;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 
+@Getter
+@Setter
+@ToString
+@SuperBuilder
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
-@Data
 @Table(name = "quarterly_report_excluded_listing_map")
-public class QuarterlyReportExcludedListingMapEntity {
+public class QuarterlyReportExcludedListingMapEntity extends EntityAudit {
+    private static final long serialVersionUID = 7473406726490504178L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,15 +52,4 @@ public class QuarterlyReportExcludedListingMapEntity {
     @Column(name = "reason")
     private String reason;
 
-    @Column(name = "deleted", insertable = false)
-    private Boolean deleted;
-
-    @Column(name = "last_modified_user")
-    private Long lastModifiedUser;
-
-    @Column(name = "creation_date", insertable = false, updatable = false)
-    private Date creationDate;
-
-    @Column(name = "last_modified_date", insertable = false, updatable = false)
-    private Date lastModifiedDate;
 }

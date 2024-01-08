@@ -1,8 +1,5 @@
 package gov.healthit.chpl.entity;
 
-import java.io.Serializable;
-import java.util.Date;
-
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -19,15 +16,17 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 
-@Entity
 @Getter
 @Setter
 @ToString
+@SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
+@Entity
 @Table(name = "product_version")
-public class ProductVersionEntity implements Serializable {
+public class ProductVersionEntity extends EntityAudit {
     private static final long serialVersionUID = -5400083913829291315L;
 
     @Id
@@ -49,15 +48,4 @@ public class ProductVersionEntity implements Serializable {
     @Column(name = "version")
     private String version;
 
-    @Column(name = "deleted", insertable = false)
-    private Boolean deleted;
-
-    @Column(name = "last_modified_user")
-    private Long lastModifiedUser;
-
-    @Column(name = "creation_date", insertable = false, updatable = false)
-    private Date creationDate;
-
-    @Column(name = "last_modified_date", insertable = false, updatable = false)
-    private Date lastModifiedDate;
 }

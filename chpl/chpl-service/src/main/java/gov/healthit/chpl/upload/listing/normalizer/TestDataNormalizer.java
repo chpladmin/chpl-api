@@ -32,7 +32,7 @@ public class TestDataNormalizer {
 
     private void clearDataForUnattestedCriteria(CertifiedProductSearchDetails listing) {
         listing.getCertificationResults().stream()
-            .filter(certResult -> (certResult.isSuccess() == null || BooleanUtils.isFalse(certResult.isSuccess()))
+            .filter(certResult -> (certResult.getSuccess() == null || BooleanUtils.isFalse(certResult.getSuccess()))
                     && certResult.getTestDataUsed() != null && certResult.getTestDataUsed().size() > 0)
             .forEach(unattestedCertResult -> unattestedCertResult.getTestDataUsed().clear());
     }

@@ -1,7 +1,6 @@
 package gov.healthit.chpl.dao;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Query;
@@ -14,7 +13,6 @@ import gov.healthit.chpl.dto.ProductVersionDTO;
 import gov.healthit.chpl.entity.ProductVersionEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.util.AuthUtil;
 
 @Repository("productVersionDAO")
 public class ProductVersionDAO extends BaseDAOImpl {
@@ -24,7 +22,6 @@ public class ProductVersionDAO extends BaseDAOImpl {
             ProductVersionEntity entity = new ProductVersionEntity();
             entity.setProductId(productId);
             entity.setVersion(version.getVersion());
-            entity.setLastModifiedUser(AuthUtil.getAuditId());
             create(entity);
             return entity.getId();
         } catch (Exception ex) {
@@ -50,29 +47,12 @@ public class ProductVersionDAO extends BaseDAOImpl {
             entity.setProductId(dto.getProductId());
             entity.setVersion(dto.getVersion());
 
-            if (dto.getCreationDate() != null) {
-                entity.setCreationDate(dto.getCreationDate());
-            } else {
-                entity.setCreationDate(new Date());
-            }
-
             if (dto.getDeleted() != null) {
                 entity.setDeleted(dto.getDeleted());
             } else {
                 entity.setDeleted(false);
             }
 
-            if (dto.getLastModifiedDate() != null) {
-                entity.setLastModifiedDate(dto.getLastModifiedDate());
-            } else {
-                entity.setLastModifiedDate(new Date());
-            }
-
-            if (dto.getLastModifiedUser() != null) {
-                entity.setLastModifiedUser(dto.getLastModifiedUser());
-            } else {
-                entity.setLastModifiedUser(AuthUtil.getAuditId());
-            }
             create(entity);
         }
 
@@ -88,28 +68,10 @@ public class ProductVersionDAO extends BaseDAOImpl {
             entity.setProductId(dto.getProductId());
         }
 
-        if (dto.getCreationDate() != null) {
-            entity.setCreationDate(dto.getCreationDate());
-        } else {
-            entity.setCreationDate(new Date());
-        }
-
         if (dto.getDeleted() != null) {
             entity.setDeleted(dto.getDeleted());
         } else {
             entity.setDeleted(false);
-        }
-
-        if (dto.getLastModifiedDate() != null) {
-            entity.setLastModifiedDate(dto.getLastModifiedDate());
-        } else {
-            entity.setLastModifiedDate(new Date());
-        }
-
-        if (dto.getLastModifiedUser() != null) {
-            entity.setLastModifiedUser(dto.getLastModifiedUser());
-        } else {
-            entity.setLastModifiedUser(AuthUtil.getAuditId());
         }
 
         update(entity);
@@ -122,8 +84,6 @@ public class ProductVersionDAO extends BaseDAOImpl {
 
         if (toDelete != null) {
             toDelete.setDeleted(true);
-            toDelete.setLastModifiedDate(new Date());
-            toDelete.setLastModifiedUser(AuthUtil.getAuditId());
             update(toDelete);
         }
     }
