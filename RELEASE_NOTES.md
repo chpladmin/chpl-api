@@ -1,5 +1,13 @@
 # Release Notes
 
+## Version 43.1.1
+_9 January 2024_
+
+### System Maintenance
+* Serialize calls to the listing search
+
+---
+
 ## Version 43.1.0
 _8 January 2024_
 
