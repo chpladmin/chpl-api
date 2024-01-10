@@ -19,11 +19,11 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.dao.CQMCriterionDAO;
+import gov.healthit.chpl.domain.CQMCriterion;
 import gov.healthit.chpl.domain.CQMResultCertification;
 import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.dto.CQMCriterionDTO;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.service.CertificationCriterionService.Criteria2015;
 import lombok.extern.log4j.Log4j2;
@@ -36,7 +36,7 @@ public class CqmNormalizer {
     private CQMCriterionDAO cqmDao;
     private CertificationCriterionService criterionService;
 
-    private List<CQMCriterionDTO> allCqmsWithVersions;
+    private List<CQMCriterion> allCqmsWithVersions;
 
     @Autowired
     public CqmNormalizer(CQMCriterionDAO cqmDao, CertificationCriterionService criterionService) {
@@ -79,15 +79,15 @@ public class CqmNormalizer {
         if (StringUtils.isEmpty(cqmResult.getCmsId())) {
             return;
         }
-        CQMCriterionDTO cqmDto = cqmDao.getCMSByNumber(cqmResult.getCmsId());
-        if (cqmDto != null) {
-            cqmResult.setCqmCriterionId(cqmDto.getId());
-            cqmResult.setDescription(cqmDto.getDescription());
-            cqmResult.setDomain(cqmDto.getCqmDomain());
-            cqmResult.setNqfNumber(cqmDto.getNqfNumber());
-            cqmResult.setNumber(cqmDto.getNumber());
-            cqmResult.setTitle(cqmDto.getTitle());
-            cqmResult.setTypeId(cqmDto.getCqmCriterionTypeId());
+        CQMCriterion cqm = cqmDao.getCMSByNumber(cqmResult.getCmsId());
+        if (cqm != null) {
+            cqmResult.setCqmCriterionId(cqm.getCriterionId());
+            cqmResult.setDescription(cqm.getDescription());
+            cqmResult.setDomain(cqm.getCqmDomain());
+            cqmResult.setNqfNumber(cqm.getNqfNumber());
+            cqmResult.setNumber(cqm.getNumber());
+            cqmResult.setTitle(cqm.getTitle());
+            cqmResult.setTypeId(cqm.getCqmCriterionTypeId());
         }
     }
 
@@ -166,13 +166,13 @@ public class CqmNormalizer {
     }
 
     private void addUnattestedCqms(CertifiedProductSearchDetails listing) {
-        List<CQMCriterionDTO> cqmsWithDistinctCmsIds = allCqmsWithVersions.stream()
-            .filter(distinctByKey(CQMCriterionDTO::getCmsId))
+        List<CQMCriterion> cqmsWithDistinctCmsIds = allCqmsWithVersions.stream()
+            .filter(distinctByKey(CQMCriterion::getCmsId))
             .collect(Collectors.toList());
 
         if (cqmsWithDistinctCmsIds != null && cqmsWithDistinctCmsIds.size() > 0) {
-            List<CQMCriterionDTO> cqmsToAdd = cqmsWithDistinctCmsIds.stream()
-                    .filter(cqmDto -> !existsInListing(listing.getCqmResults(), cqmDto))
+            List<CQMCriterion> cqmsToAdd = cqmsWithDistinctCmsIds.stream()
+                    .filter(cqm -> !existsInListing(listing.getCqmResults(), cqm))
                     .collect(Collectors.toList());
             cqmsToAdd.stream().forEach(cqmToAdd -> {
                     listing.getCqmResults().add(buildCqmDetails(cqmToAdd));
@@ -185,25 +185,25 @@ public class CqmNormalizer {
         return t -> seen.add(keyExtractor.apply(t));
     }
 
-    private boolean existsInListing(List<CQMResultDetails> cqmsInListing, CQMCriterionDTO cqmDto) {
+    private boolean existsInListing(List<CQMResultDetails> cqmsInListing, CQMCriterion cqmCriterion) {
         Optional<CQMResultDetails> cqmInListing = cqmsInListing.stream()
-                .filter(cqm -> !StringUtils.isEmpty(cqm.getCmsId()) && cqm.getCmsId().equals(cqmDto.getCmsId()))
+                .filter(cqm -> !StringUtils.isEmpty(cqm.getCmsId()) && cqm.getCmsId().equals(cqmCriterion.getCmsId()))
                 .findAny();
         return cqmInListing != null && cqmInListing.isPresent() && BooleanUtils.isTrue(cqmInListing.get().getSuccess());
     }
 
-    private CQMResultDetails buildCqmDetails(CQMCriterionDTO cqmDto) {
+    private CQMResultDetails buildCqmDetails(CQMCriterion cqmCriterion) {
         CQMResultDetails cqmDetails = CQMResultDetails.builder()
-                .cqmCriterionId(cqmDto.getId())
-                .cmsId(cqmDto.getCmsId())
-                .nqfNumber(cqmDto.getNqfNumber())
-                .number(cqmDto.getNumber())
-                .title(cqmDto.getTitle())
-                .description(cqmDto.getDescription())
+                .cqmCriterionId(cqmCriterion.getCriterionId())
+                .cmsId(cqmCriterion.getCmsId())
+                .nqfNumber(cqmCriterion.getNqfNumber())
+                .number(cqmCriterion.getNumber())
+                .title(cqmCriterion.getTitle())
+                .description(cqmCriterion.getDescription())
                 .success(Boolean.FALSE)
-                .typeId(cqmDto.getCqmCriterionTypeId())
+                .typeId(cqmCriterion.getCqmCriterionTypeId())
                 .build();
-        cqmDetails.getAllVersions().add(cqmDto.getCqmVersion());
+        cqmDetails.getAllVersions().add(cqmCriterion.getCqmVersion());
         return cqmDetails;
     }
 }
