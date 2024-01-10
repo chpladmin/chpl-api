@@ -38,6 +38,7 @@ import gov.healthit.chpl.search.domain.SearchRequest;
 import gov.healthit.chpl.search.domain.SearchSetOperator;
 import gov.healthit.chpl.util.CertificationStatusUtil;
 import lombok.NoArgsConstructor;
+import lombok.Synchronized;
 import lombok.extern.log4j.Log4j2;
 
 @Component("listingSearchService")
@@ -92,6 +93,7 @@ public class ListingSearchService {
         }
     }
 
+    @Synchronized
     public ListingSearchResponse findListings(SearchRequest searchRequest) throws ValidationException {
         searchRequestNormalizer.normalize(searchRequest);
         searchRequestValidator.validate(searchRequest);
