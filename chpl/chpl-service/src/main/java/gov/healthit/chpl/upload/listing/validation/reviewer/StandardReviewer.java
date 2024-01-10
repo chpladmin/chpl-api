@@ -97,7 +97,7 @@ public class StandardReviewer extends StandardGroupValidation {
     }
 
     private void removeStandardMismatchedToCriteria(CertifiedProductSearchDetails listing, CertificationResult certResult) {
-        if (CollectionUtils.isEmpty(certResult.getFunctionalitiesTested())) {
+        if (CollectionUtils.isEmpty(certResult.getStandards())) {
             return;
         }
         Iterator<CertificationResultStandard> standardIter = certResult.getStandards().iterator();
