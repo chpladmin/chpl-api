@@ -155,6 +155,11 @@ public class QuestionableActivityManager {
         certResultQuestionableActivityService.processQuestionableActivity(origCertResult, newCertResult, activity, activityReason);
     }
 
+    public void checkNewlyAttestedCertificationResultQuestionableActivity(CertificationResult addedCertResult,
+            ActivityDTO activity, String activityReason) {
+        certResultQuestionableActivityService.processQuestionableActivity(addedCertResult, activity, activityReason);
+    }
+
     private void createDeveloperActivity(QuestionableActivityDeveloper questionableActivity, Long developerId,
             ActivityDTO activity, QuestionableActivityTriggerConcept triggerConcept, String reason) {
         questionableActivity.setActivityId(activity.getId());

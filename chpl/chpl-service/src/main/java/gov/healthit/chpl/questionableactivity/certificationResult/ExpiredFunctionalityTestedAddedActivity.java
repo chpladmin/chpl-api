@@ -17,9 +17,15 @@ public class ExpiredFunctionalityTestedAddedActivity implements CertificationRes
 
     @Override
      public List<QuestionableActivityCertificationResult> check(CertificationResult origCertResult, CertificationResult newCertResult) {
-        List<CertificationResultFunctionalityTested> addedFunctionalitiesTested = subtractCertificationResultFunctionalityTestedLists(
+        List<CertificationResultFunctionalityTested> addedFunctionalitiesTested = new ArrayList<CertificationResultFunctionalityTested>();
+
+        if (origCertResult != null && newCertResult != null) {
+            addedFunctionalitiesTested = subtractCertificationResultFunctionalityTestedLists(
                 newCertResult.getFunctionalitiesTested() == null ? new ArrayList<CertificationResultFunctionalityTested>() : newCertResult.getFunctionalitiesTested(),
                 origCertResult.getFunctionalitiesTested() == null ? new ArrayList<CertificationResultFunctionalityTested>() : origCertResult.getFunctionalitiesTested());
+        } else if (newCertResult != null) {
+            addedFunctionalitiesTested = newCertResult.getFunctionalitiesTested() != null ? newCertResult.getFunctionalitiesTested() : new ArrayList<CertificationResultFunctionalityTested>();
+        }
 
         return addedFunctionalitiesTested.stream()
                 .filter(crft -> crft.getFunctionalityTested().isRetired())
