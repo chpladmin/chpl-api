@@ -1,5 +1,7 @@
 package gov.healthit.chpl.scheduler.job.updatedlistingstatusreport;
 
+import java.time.LocalDate;
+
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -44,19 +46,59 @@ public class UpdatedListingStatusReportEntity extends EntityAudit {
     @Column(name = "certified_product_id", nullable = false)
     private Long certifiedProductId;
 
+    @Basic(optional = false)
+    @Column(name = "report_day", nullable = false)
+    private LocalDate reportDay;
+
     @Column(name = "criteria_require_update_count", nullable = true)
-    private Integer criteriaRequireUpdateCount;
+    private Long criteriaRequireUpdateCount;
 
     @Column(name = "days_updated_early", nullable = true)
-    private Integer daysUpdatedEarly;
+    private Long daysUpdatedEarly;
+
+    @Column(name = "chpl_product_number", nullable = false)
+    private String chplProductNumber;
+
+    @Column(name = "product", nullable = false)
+    private String product;
+
+    @Column(name = "version", nullable = false)
+    private String version;
+
+    @Column(name = "developer", nullable = false)
+    private String developer;
+
+    @Column(name = "certification_body", nullable = false)
+    private String certificationBody;
+
+    @Column(name = "certification_status_name", nullable = false)
+    private String certificationStatus;
+
+    @Column(name = "developer_id", nullable = false)
+    private Long developerId;
+
+    @Column(name = "certification_body_id", nullable = false)
+    private Long certificationBodyId;
+
+    @Column(name = "certification_status_id", nullable = false)
+    private Long certificationStatusId;
 
     public UpdatedListingStatusReport toDomain() {
         return UpdatedListingStatusReport.builder()
                 .id(id)
                 .certifiedProductId(certifiedProductId)
+                .reportDay(reportDay)
                 .criteriaRequireUpdateCount(criteriaRequireUpdateCount)
                 .daysUpdatedEarly(daysUpdatedEarly)
+                .chplProductNumber(chplProductNumber)
+                .product(product)
+                .version(version)
+                .developer(developer)
+                .certificationBody(certificationBody)
+                .certificationStatus(certificationStatus)
+                .developerId(developerId)
+                .certificationBodyId(certificationBodyId)
+                .certificationStatusId(certificationStatusId)
                 .build();
     }
-
 }

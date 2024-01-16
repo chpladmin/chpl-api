@@ -1,6 +1,7 @@
 package gov.healthit.chpl.standard;
 
 import java.io.Serializable;
+import java.util.Date;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -9,16 +10,16 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 @Schema(description = "The standards associated to the certification result")
 @JsonIgnoreProperties(ignoreUnknown = true)
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-@Builder
+@SuperBuilder
 public class CertificationResultStandard implements Serializable {
     private static final long serialVersionUID = 418146022721549464L;
 
@@ -30,6 +31,9 @@ public class CertificationResultStandard implements Serializable {
 
     @JsonIgnore
     private Long certificationResultId;
+
+    @JsonIgnore
+    private Date createDate;
 
     public boolean matches(CertificationResultStandard anotherStandard) {
         boolean result = false;

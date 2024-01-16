@@ -1,8 +1,12 @@
 package gov.healthit.chpl.scheduler.job.updatedlistingstatusreport;
 
+import java.time.temporal.ChronoUnit;
+import java.util.List;
 import java.util.Optional;
+import java.util.OptionalLong;
 import java.util.Set;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,17 +18,20 @@ import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
+import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.scheduler.job.QuartzJob;
 import gov.healthit.chpl.search.ListingSearchService;
 import gov.healthit.chpl.search.domain.SearchRequest;
+import gov.healthit.chpl.standard.CertificationResultStandard;
+import gov.healthit.chpl.standard.CertificationResultStandardDAO;
+import gov.healthit.chpl.util.DateUtil;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 public class UpdatedListingStatusReportCreatorJob  extends QuartzJob {
-
 
     @Autowired
     private ListingSearchService listingSearchService;
@@ -34,6 +41,9 @@ public class UpdatedListingStatusReportCreatorJob  extends QuartzJob {
 
     @Autowired
     private UpdatedListingStatusReportDAO updatedListingStatusReportDAO;
+
+    @Autowired
+    private CertificationResultStandardDAO certificationResultStandardDAO;
 
     @Autowired
     private JpaTransactionManager txManager;
@@ -61,11 +71,11 @@ public class UpdatedListingStatusReportCreatorJob  extends QuartzJob {
                 }
             });
         } catch (Exception e) {
+            e.printStackTrace();
             LOGGER.error(e);
         }
 
     }
-
 
     private void xxxx() throws ValidationException {
         SearchRequest request = SearchRequest.builder()
@@ -76,22 +86,80 @@ public class UpdatedListingStatusReportCreatorJob  extends QuartzJob {
                 .map(result -> getCertifiedProductDetails(result.getId()))
                 .filter(listing -> listing.isPresent())
                 .peek(x -> LOGGER.info("Processing {}", x.get().getChplProductNumber()))
-                .map(certifiedProductDetails -> UpdatedListingStatusReport.builder()
-                        .certifiedProductId(certifiedProductDetails.get().getId())
-                        .criteriaRequireUpdateCount(getCriteriaRequireUpdateCount(certifiedProductDetails.get()))
-                        .daysUpdatedEarly(getDaysUpdatedEarly(certifiedProductDetails.get()))
-                        .build())
+                .map(certifiedProductDetails -> calculateUpdatedListingStatusReport(certifiedProductDetails.get()))
                 .forEach(updatedListingStatusReport -> updatedListingStatusReportDAO.create(updatedListingStatusReport));
 
         LOGGER.info("COMPLETED");
     }
 
-    private Integer getCriteriaRequireUpdateCount(CertifiedProductSearchDetails certifiedProductDetails) {
-        return 0;
+    private UpdatedListingStatusReport calculateUpdatedListingStatusReport(CertifiedProductSearchDetails certifiedProductDetails) {
+        Long criteriaRequireUpdateCount = getCriteriaRequireUpdateCount(certifiedProductDetails);
+        Long daysUpdatedEarly = 0L;
+        if (criteriaRequireUpdateCount.equals(0L)) {
+            daysUpdatedEarly = getDaysUpdatedEarly(certifiedProductDetails);
+        }
+        return UpdatedListingStatusReport.builder()
+            .certifiedProductId(certifiedProductDetails.getId())
+            .criteriaRequireUpdateCount(criteriaRequireUpdateCount)
+            .daysUpdatedEarly(daysUpdatedEarly)
+            .chplProductNumber(certifiedProductDetails.getChplProductNumber())
+            .product(certifiedProductDetails.getProduct().getName())
+            .version(certifiedProductDetails.getVersion().getVersion())
+            .developer(certifiedProductDetails.getDeveloper().getName())
+            .certificationBody(certifiedProductDetails.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_NAME_KEY).toString())
+            .certificationStatus(certifiedProductDetails.getCurrentStatus().getStatus().getName())
+            .developerId(certifiedProductDetails.getDeveloper().getId())
+            .certificationBodyId(Long.valueOf(certifiedProductDetails.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_ID_KEY).toString()))
+            .certificationStatusId(certifiedProductDetails.getCurrentStatus().getStatus().getId())
+            .build();
     }
 
-    private Integer getDaysUpdatedEarly(CertifiedProductSearchDetails certifiedProductDetails) {
-        return 0;
+    private Long getCriteriaRequireUpdateCount(CertifiedProductSearchDetails certifiedProductDetails) {
+        return certifiedProductDetails.getCertificationResults().stream()
+                .filter(certResult -> isCriteriaUpdated(certResult))
+                .peek(x -> LOGGER.info(x.getCriterion().getNumber()))
+                .count();
+    }
+
+    private boolean isCriteriaUpdated(CertificationResult certificationResult) {
+        Long updateRequired = 0L;
+
+        if (CollectionUtils.isNotEmpty(certificationResult.getStandards())) {
+            updateRequired = certificationResult.getStandards().stream()
+                    .filter(mergedCertResultStd -> mergedCertResultStd.getStandard().getEndDay() != null)
+                    .count();
+        }
+        if (CollectionUtils.isNotEmpty(certificationResult.getFunctionalitiesTested())) {
+            updateRequired += certificationResult.getFunctionalitiesTested().stream()
+                    .filter(certResultFT -> certResultFT.getFunctionalityTested().getEndDay() != null)
+                    .count();
+        }
+        return updateRequired > 0L;
+    }
+
+    private Long getDaysUpdatedEarly(CertifiedProductSearchDetails certifiedProductDetails) {
+        return certifiedProductDetails.getCertificationResults().stream()
+                .map(certResult -> getDaysUpdatedEarlyForCriteria(certResult))
+                .filter(optionalCount -> optionalCount.isPresent())
+                .mapToLong(optionalCount -> optionalCount.getAsLong())
+                .min()
+                .orElse(0L);
+    }
+
+    private OptionalLong getDaysUpdatedEarlyForCriteria(CertificationResult certificationResult) {
+        //Get the CertificationResultStandards using DAO, so that we have the create date
+        List<CertificationResultStandard> certificationResultStandards = certificationResultStandardDAO.getStandardsForCertificationResult(certificationResult.getId());
+        OptionalLong daysUpdatedEarly = OptionalLong.empty();
+        if (CollectionUtils.isNotEmpty(certificationResultStandards)) {
+            daysUpdatedEarly = certificationResultStandards.stream()
+                    .filter(certResultStd -> certResultStd.getStandard().getRequiredDay() != null
+                            && DateUtil.toLocalDate(certResultStd.getCreateDate().getTime()).isBefore(certResultStd.getStandard().getRequiredDay()))
+                    .mapToLong(certResultStd -> ChronoUnit.DAYS.between(DateUtil.toLocalDate(certResultStd.getCreateDate().getTime()), certResultStd.getStandard().getRequiredDay()))
+                    .min();
+
+            LOGGER.info("{} - {}", certificationResult.getCriterion().getNumber(), daysUpdatedEarly);
+        }
+        return daysUpdatedEarly;
     }
 
     private Optional<CertifiedProductSearchDetails> getCertifiedProductDetails(Long id) {
@@ -102,4 +170,5 @@ public class UpdatedListingStatusReportCreatorJob  extends QuartzJob {
             return Optional.empty();
         }
     }
+
 }
