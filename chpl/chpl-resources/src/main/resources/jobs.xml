@@ -863,5 +863,21 @@
             <durability>true</durability>
             <recover>false</recover>
         </job>
+        
+        <job>
+            <name>Updated Listing Status Report</name>
+            <group>chplJobs</group>
+            <description>Sends the Updated Listing Status Report</description>
+            <job-class>gov.healthit.chpl.scheduler.job.updatedlistingstatusreport.UpdatedListingStatusReportJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+            <job-data-map>
+                <entry>
+                    <key>authorities</key>
+                    <value>ROLE_ADMIN;ROLE_ONC;</value>
+                </entry>
+            </job-data-map>
+        </job>
+        
     </schedule>
 </job-scheduling-data>
