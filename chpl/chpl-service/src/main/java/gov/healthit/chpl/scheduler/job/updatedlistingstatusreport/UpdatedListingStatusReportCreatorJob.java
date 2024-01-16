@@ -1,5 +1,6 @@
 package gov.healthit.chpl.scheduler.job.updatedlistingstatusreport;
 
+import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
@@ -51,6 +52,7 @@ public class UpdatedListingStatusReportCreatorJob  extends QuartzJob {
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
+        LOGGER.info("********* Starting the Updated Listing Status Report Creator job. *********");
 
         try {
             // We need to manually create a transaction in this case because of how AOP works. When a method is
@@ -64,6 +66,9 @@ public class UpdatedListingStatusReportCreatorJob  extends QuartzJob {
                 @Override
                 protected void doInTransactionWithoutResult(TransactionStatus status) {
                     try {
+                        if (doStatisticsExistForDate(LocalDate.now())) {
+                            deleteStatisticsForDate(LocalDate.now());
+                        }
                         xxxx();
                     } catch (ValidationException e) {
                         LOGGER.error(e);
@@ -73,8 +78,9 @@ public class UpdatedListingStatusReportCreatorJob  extends QuartzJob {
         } catch (Exception e) {
             e.printStackTrace();
             LOGGER.error(e);
+        } finally {
+            LOGGER.info("********* Completed the Updated Listing Status Report Creator job. *********");
         }
-
     }
 
     private void xxxx() throws ValidationException {
@@ -88,8 +94,6 @@ public class UpdatedListingStatusReportCreatorJob  extends QuartzJob {
                 .peek(x -> LOGGER.info("Processing {}", x.get().getChplProductNumber()))
                 .map(certifiedProductDetails -> calculateUpdatedListingStatusReport(certifiedProductDetails.get()))
                 .forEach(updatedListingStatusReport -> updatedListingStatusReportDAO.create(updatedListingStatusReport));
-
-        LOGGER.info("COMPLETED");
     }
 
     private UpdatedListingStatusReport calculateUpdatedListingStatusReport(CertifiedProductSearchDetails certifiedProductDetails) {
@@ -171,4 +175,11 @@ public class UpdatedListingStatusReportCreatorJob  extends QuartzJob {
         }
     }
 
+    private Boolean doStatisticsExistForDate(LocalDate dateToCheck) {
+        return updatedListingStatusReportDAO.getUpdatedListingStatusReportsByDate(dateToCheck).size() > 0;
+    }
+
+    private void deleteStatisticsForDate(LocalDate dateToCheck) {
+        updatedListingStatusReportDAO.deleteUpdatedListingStatusReportsByDate(dateToCheck);
+    }
 }
