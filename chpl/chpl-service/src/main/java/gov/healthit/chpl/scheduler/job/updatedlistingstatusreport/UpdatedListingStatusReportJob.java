@@ -21,6 +21,7 @@ import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
 import gov.healthit.chpl.email.footer.AdminFooter;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.scheduler.job.QuartzJob;
+import lombok.Data;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -78,16 +79,16 @@ public class UpdatedListingStatusReportJob extends QuartzJob {
         chplEmailFactory.emailBuilder()
                 .recipient(context.getMergedJobDataMap().getString("email"))
                 .subject(env.getProperty("updatedListingStatusReport.subject"))
-                .htmlMessage(createHtmlMessage(context, rows.size()))
+                .htmlMessage(createHtmlMessage(context, rows))
                 .fileAttachments(Arrays.asList(updatedListingStatusReportCsvCreator.createCsvFile(rows)))
                 .sendEmail();
         LOGGER.info("Completed Sending email to: " + context.getMergedJobDataMap().getString("email"));
     }
 
-    private String createHtmlMessage(JobExecutionContext context, int errorCount) {
+    private String createHtmlMessage(JobExecutionContext context, List<UpdatedListingStatusReport> rows) {
         return chplHtmlEmailBuilder.initialize()
                 .heading(env.getProperty("updatedListingStatusReport.heading"))
-                //.paragraph("", String.format(env.getProperty("listingValidationReport.paragraph2.body"), errorCount))
+                .paragraph("", getStatisticsParagraph(rows))
                 .footer(AdminFooter.class)
                 .build();
     }
@@ -102,5 +103,31 @@ public class UpdatedListingStatusReportJob extends QuartzJob {
         return maxReportDate;
     }
 
+    private String getStatisticsParagraph(List<UpdatedListingStatusReport> rows) {
+        UpdatedListingStatusReportSummarryCounts counts = getCounts(rows);
 
+        return String.format("Total number of active listings: %s<br />"
+                + "Total number of listings requiring updates: %s<br />"
+                + "Total number of listings that are up to date: %s<br />",
+                counts.activeListings, counts.listingsRequiringUpdates, counts.updatedListings);
+    }
+
+    private UpdatedListingStatusReportSummarryCounts getCounts(List<UpdatedListingStatusReport> rows) {
+        UpdatedListingStatusReportSummarryCounts counts = new UpdatedListingStatusReportSummarryCounts();
+        counts.activeListings = Long.valueOf(rows.size());
+        counts.listingsRequiringUpdates = rows.stream()
+                .filter(row -> row.getCriteriaRequireUpdateCount() > 0)
+                .count();
+        counts.updatedListings = counts.activeListings - counts.listingsRequiringUpdates;
+
+        return counts;
+    }
+
+
+    @Data
+    private class UpdatedListingStatusReportSummarryCounts {
+        public Long activeListings;
+        public Long listingsRequiringUpdates;
+        public Long updatedListings;
+    }
 }
