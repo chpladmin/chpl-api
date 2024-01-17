@@ -24,7 +24,7 @@ import gov.healthit.chpl.scheduler.job.QuartzJob;
 import lombok.Data;
 import lombok.extern.log4j.Log4j2;
 
-@Log4j2
+@Log4j2(topic = "updatedListingStatusReportJobLogger")
 public class UpdatedListingStatusReportJob extends QuartzJob {
     @Autowired
     private ChplHtmlEmailBuilder chplHtmlEmailBuilder;

@@ -31,7 +31,7 @@ import gov.healthit.chpl.standard.CertificationResultStandardDAO;
 import gov.healthit.chpl.util.DateUtil;
 import lombok.extern.log4j.Log4j2;
 
-@Log4j2
+@Log4j2(topic = "updatedListingStatusReportCreatorJobLogger")
 public class UpdatedListingStatusReportCreatorJob extends QuartzJob {
 
     @Autowired
