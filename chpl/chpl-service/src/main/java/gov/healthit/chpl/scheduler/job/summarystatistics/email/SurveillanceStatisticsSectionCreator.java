@@ -4,15 +4,15 @@ import java.util.List;
 
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.scheduler.job.summarystatistics.StatisticsMassager;
-import gov.healthit.chpl.scheduler.job.summarystatistics.data.EmailStatistics;
+import gov.healthit.chpl.scheduler.job.summarystatistics.data.StatisticsSnapshot;
 
 public class SurveillanceStatisticsSectionCreator extends StatisticsSectionCreator {
 
-    public String build(EmailStatistics stats, List<CertificationBody> activeAcbs) {
+    public String build(StatisticsSnapshot stats, List<CertificationBody> activeAcbs) {
         return buildSurveillanceSection(stats, new StatisticsMassager(activeAcbs));
     }
 
-    private String buildSurveillanceSection(EmailStatistics stats, StatisticsMassager massager) {
+    private String buildSurveillanceSection(StatisticsSnapshot stats, StatisticsMassager massager) {
         StringBuilder section = new StringBuilder();
 
         section.append(buildHeader("Total # of Surveillance Activities", stats.getSurveillanceAllStatusTotal()));

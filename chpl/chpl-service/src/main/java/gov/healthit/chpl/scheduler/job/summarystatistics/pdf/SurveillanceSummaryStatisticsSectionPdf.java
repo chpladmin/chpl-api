@@ -10,8 +10,8 @@ import org.springframework.stereotype.Component;
 import com.itextpdf.layout.element.Table;
 
 import gov.healthit.chpl.dao.CertificationBodyDAO;
-import gov.healthit.chpl.scheduler.job.summarystatistics.data.EmailCertificationBodyStatistic;
-import gov.healthit.chpl.scheduler.job.summarystatistics.data.EmailStatistics;
+import gov.healthit.chpl.scheduler.job.summarystatistics.data.CertificationBodyStatistic;
+import gov.healthit.chpl.scheduler.job.summarystatistics.data.StatisticsSnapshot;
 
 @Component
 public class SurveillanceSummaryStatisticsSectionPdf extends SummaryStatisticsSectionPdf {
@@ -22,7 +22,7 @@ public class SurveillanceSummaryStatisticsSectionPdf extends SummaryStatisticsSe
     }
 
     @Override
-    public Table generateTable(LocalDate recent, LocalDate previous, EmailStatistics recentEmailStatistics, EmailStatistics previousEmailStatistics) {
+    public Table generateTable(LocalDate recent, LocalDate previous, StatisticsSnapshot recentEmailStatistics, StatisticsSnapshot previousEmailStatistics) {
         Table table = new Table(getRelativeColumnWidths());
         table.useAllAvailableWidth();
         table = addHeaders(table, "Surveillance Statistics", recent, previous);
@@ -124,9 +124,9 @@ public class SurveillanceSummaryStatisticsSectionPdf extends SummaryStatisticsSe
         return table;
     }
 
-    private Long sumEmailAcbStatisticList(List<EmailCertificationBodyStatistic> stats) {
+    private Long sumEmailAcbStatisticList(List<CertificationBodyStatistic> stats) {
         return stats.stream()
-        .collect(Collectors.summarizingLong(EmailCertificationBodyStatistic::getCount))
+        .collect(Collectors.summarizingLong(CertificationBodyStatistic::getCount))
         .getSum();
     }
 }

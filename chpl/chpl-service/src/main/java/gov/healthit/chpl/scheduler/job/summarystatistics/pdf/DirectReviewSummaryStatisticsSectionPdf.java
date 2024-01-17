@@ -12,7 +12,7 @@ import com.itextpdf.layout.element.Table;
 import com.itextpdf.layout.element.Text;
 
 import gov.healthit.chpl.dao.CertificationBodyDAO;
-import gov.healthit.chpl.scheduler.job.summarystatistics.data.EmailStatistics;
+import gov.healthit.chpl.scheduler.job.summarystatistics.data.StatisticsSnapshot;
 
 @Component
 public class DirectReviewSummaryStatisticsSectionPdf extends SummaryStatisticsSectionPdf {
@@ -23,7 +23,7 @@ public class DirectReviewSummaryStatisticsSectionPdf extends SummaryStatisticsSe
     }
 
     @Override
-    public Table generateTable(LocalDate recent, LocalDate previous, EmailStatistics recentEmailStatistics, EmailStatistics previousEmailStatistics) {
+    public Table generateTable(LocalDate recent, LocalDate previous, StatisticsSnapshot recentEmailStatistics, StatisticsSnapshot previousEmailStatistics) {
         Table table = new Table(getRelativeColumnWidths());
         table.useAllAvailableWidth();
         table = addHeaders(table, "Direct Review Statistics", recent, previous);
@@ -76,7 +76,7 @@ public class DirectReviewSummaryStatisticsSectionPdf extends SummaryStatisticsSe
 
     @SuppressWarnings("resource")
     @Override
-    public Document addTableEndNote(Document document, EmailStatistics recentEmailStatistics, EmailStatistics previousEmailStatistics) {
+    public Document addTableEndNote(Document document, StatisticsSnapshot recentEmailStatistics, StatisticsSnapshot previousEmailStatistics) {
         if (displayEndNote(recentEmailStatistics, previousEmailStatistics)) {
             Text first = new Text("Not Available (N/A) ").setFont(SummaryStatisticsPdfDefaults.getDefaultBoldFont());
             first.setFontSize(SummaryStatisticsPdfDefaults.FOOTER_FONT_SIZE);
@@ -89,7 +89,7 @@ public class DirectReviewSummaryStatisticsSectionPdf extends SummaryStatisticsSe
     }
 
 
-    private Boolean displayEndNote(EmailStatistics recentEmailStatistics, EmailStatistics previousEmailStatistics) {
+    private Boolean displayEndNote(StatisticsSnapshot recentEmailStatistics, StatisticsSnapshot previousEmailStatistics) {
         return Stream.of(
                 recentEmailStatistics.getTotalDirectReviews(),
                 previousEmailStatistics.getTotalDirectReviews(),

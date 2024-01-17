@@ -8,13 +8,15 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
 @Builder
+@NoArgsConstructor
 @AllArgsConstructor
-public class EmailCertificationBodyStatistic implements Serializable {
-    private static final long serialVersionUID = 4312495564762293030L;
+public class Listing implements Serializable {
+    private static final long serialVersionUID = -3968710463806250210L;
 
-    private Long count;
-    private String acbName;
+    private Long id;
     private Long acbId;
+    private Long developerId;
+    private Long productId;
+    private Long statusId;
 }

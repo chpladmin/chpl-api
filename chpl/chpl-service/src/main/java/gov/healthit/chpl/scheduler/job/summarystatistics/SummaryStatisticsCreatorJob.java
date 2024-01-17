@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 import java.util.concurrent.ExecutionException;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.quartz.DisallowConcurrentExecution;
@@ -27,7 +28,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.healthit.chpl.dao.CertificationStatusEventDAO;
-import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.statistics.SummaryStatisticsDAO;
 import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
@@ -36,9 +36,11 @@ import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.scheduler.job.QuartzJob;
 import gov.healthit.chpl.scheduler.job.summarystatistics.data.CsvStatistics;
-import gov.healthit.chpl.scheduler.job.summarystatistics.data.EmailStatistics;
-import gov.healthit.chpl.scheduler.job.summarystatistics.data.EmailStatisticsCreator;
 import gov.healthit.chpl.scheduler.job.summarystatistics.data.HistoricalStatisticsCreator;
+import gov.healthit.chpl.scheduler.job.summarystatistics.data.StatisticsSnapshot;
+import gov.healthit.chpl.scheduler.job.summarystatistics.data.StatisticsSnapshotCreator;
+import gov.healthit.chpl.search.ListingSearchManager;
+import gov.healthit.chpl.search.domain.ListingSearchResult;
 
 @DisallowConcurrentExecution
 public class SummaryStatisticsCreatorJob extends QuartzJob {
@@ -48,13 +50,13 @@ public class SummaryStatisticsCreatorJob extends QuartzJob {
     private HistoricalStatisticsCreator historicalStatisticsCreator;
 
     @Autowired
-    private EmailStatisticsCreator emailStatisticsCreator;
+    private StatisticsSnapshotCreator statisticsSnapshotCreator;
 
     @Autowired
     private SummaryStatisticsDAO summaryStatisticsDAO;
 
     @Autowired
-    private CertifiedProductDAO certifiedProductDAO;
+    private ListingSearchManager listingSearchManager;
 
     @Autowired
     private CertificationStatusEventDAO certificationStatusEventDAO;
@@ -76,13 +78,13 @@ public class SummaryStatisticsCreatorJob extends QuartzJob {
             SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
 
             LOGGER.info("Getting all listings.");
-            List<CertifiedProductDetailsDTO> allListings = certifiedProductDAO.findAll();
-            LOGGER.info("Completing getting all listings.");
+            List<ListingSearchResult> allListings = listingSearchManager.getAllListings();
+            LOGGER.info("Completed getting all " + allListings.size() + " listings.");
 
-            EmailStatistics emailBodyStats = emailStatisticsCreator.getStatistics(allListings);
-            saveSummaryStatistics(emailBodyStats);
+            StatisticsSnapshot statisticsSnapshot = statisticsSnapshotCreator.getStatistics(allListings);
+            saveStatisticsSnapshot(statisticsSnapshot);
 
-            createSummaryStatisticsFile(allListings, jobContext);
+//            createSummaryStatisticsFile(allListings, jobContext);
 
         } catch (Exception e) {
             LOGGER.error("Caught unexpected exception: " + e.getMessage(), e);
@@ -90,11 +92,8 @@ public class SummaryStatisticsCreatorJob extends QuartzJob {
         LOGGER.info("********* Completed the Summary Statistics Creation job. *********");
     }
 
-
-    @SuppressWarnings("checkstyle:linelength")
     private void createSummaryStatisticsFile(List<CertifiedProductDetailsDTO> allListings, JobExecutionContext jobContext)
             throws InterruptedException, ExecutionException {
-
 
         if (!isGenerateStatisticsFlagOn(jobContext)) {
             return;
@@ -129,12 +128,12 @@ public class SummaryStatisticsCreatorJob extends QuartzJob {
                 + env.getProperty("summaryEmailName", "summaryStatistics.csv"));
     }
 
-    private String getJson(EmailStatistics statistics) throws JsonProcessingException {
+    private String getJson(StatisticsSnapshot statisticsSnapshot) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
-        return mapper.writeValueAsString(statistics);
+        return mapper.writeValueAsString(statisticsSnapshot);
     }
 
-    public void saveSummaryStatistics(EmailStatistics statistics)
+    public void saveStatisticsSnapshot(StatisticsSnapshot statisticsSnapshot)
             throws JsonProcessingException, EntityCreationException, EntityRetrievalException {
 
         // We need to manually create a transaction in this case because of how AOP works. When a method is
@@ -151,7 +150,7 @@ public class SummaryStatisticsCreatorJob extends QuartzJob {
                 try {
                     SummaryStatisticsEntity entity = new SummaryStatisticsEntity();
                     entity.setEndDate(new Date());
-                    entity.setSummaryStatistics(getJson(statistics));
+                    entity.setSummaryStatistics(getJson(statisticsSnapshot));
                     summaryStatisticsDAO.create(entity);
                 } catch (Exception e) {
                     status.setRollbackOnly();

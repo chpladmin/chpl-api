@@ -22,11 +22,11 @@ public class ListingDataCreator extends StatisticsDataCreator {
         this.certificationResultsDAO = certificationResultsDAO;
     }
 
-    public EmailStatistic getUniqueListingCount(List<CertifiedProductDetailsDTO> certifiedProducts,
+    public Statistic getUniqueListingCount(List<CertifiedProductDetailsDTO> certifiedProducts,
             EditionCriteria listingsToInclude, List<CertificationStatusType> statuses,
             boolean onlyIncludeAlternativeTestMethods) {
 
-        EmailStatistic stat = new EmailStatistic();
+        Statistic stat = new Statistic();
         stat.setCount(getUniqueListingCountTotal(
                 certifiedProducts, listingsToInclude, statuses, onlyIncludeAlternativeTestMethods));
         stat.setAcbStatistics(getUniqueListingCountTotalsByAcb(
@@ -34,7 +34,7 @@ public class ListingDataCreator extends StatisticsDataCreator {
         return stat;
     }
 
-    public List<EmailCertificationBodyStatistic> getUniqueListingCountTotalsByAcb(
+    public List<CertificationBodyStatistic> getUniqueListingCountTotalsByAcb(
             List<CertifiedProductDetailsDTO> certifiedProducts,
             EditionCriteria listingsToInclude, List<CertificationStatusType> statuses,
             boolean onlyIncludeAlternativeTestMethods) {
@@ -46,7 +46,7 @@ public class ListingDataCreator extends StatisticsDataCreator {
                 .collect(Collectors.groupingBy(CertifiedProductDetailsDTO::getCertificationBodyName, Collectors.toList()))
                 .entrySet().stream()
                 .map(entry -> {
-                    EmailCertificationBodyStatistic stat = new EmailCertificationBodyStatistic();
+                    CertificationBodyStatistic stat = new CertificationBodyStatistic();
                     stat.setAcbName(entry.getKey());
                     stat.setCount(entry.getValue().stream()
                             .collect(Collectors.counting()));

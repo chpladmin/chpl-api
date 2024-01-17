@@ -39,7 +39,7 @@ import gov.healthit.chpl.scheduler.job.summarystatistics.chart.SurveillanceNonCo
 import gov.healthit.chpl.scheduler.job.summarystatistics.chart.TotalListingsOverTimeChart;
 import gov.healthit.chpl.scheduler.job.summarystatistics.chart.TotalUniqueProductsOverTimeChart;
 import gov.healthit.chpl.scheduler.job.summarystatistics.chart.UniqueProductsWithActiveListingsOverTimeChart;
-import gov.healthit.chpl.scheduler.job.summarystatistics.data.EmailStatistics;
+import gov.healthit.chpl.scheduler.job.summarystatistics.data.StatisticsSnapshot;
 
 @Component
 public class SummaryStatisticsPdf {
@@ -110,8 +110,8 @@ public class SummaryStatisticsPdf {
     }
     @SuppressWarnings("resource")
     private void addTables(Document document, SummaryStatisticsEntity recentStats, SummaryStatisticsEntity previousStats) {
-        EmailStatistics recentEmailStats = getEmailStatisticsFromSummaryStatistics(recentStats);
-        EmailStatistics previousEmailStats = getEmailStatisticsFromSummaryStatistics(previousStats);
+        StatisticsSnapshot recentEmailStats = getEmailStatisticsFromSummaryStatistics(recentStats);
+        StatisticsSnapshot previousEmailStats = getEmailStatisticsFromSummaryStatistics(previousStats);
 
         List<SummaryStatisticsSectionPdf> tableGenerators = Arrays.asList(
                 developerSummaryStatisticsSectionPdf,
@@ -133,7 +133,7 @@ public class SummaryStatisticsPdf {
 
     @SuppressWarnings("resource")
     private void addTable(Document document, SummaryStatisticsSectionPdf tableGenerator, LocalDate recentDate, LocalDate previousDate,
-            EmailStatistics recentEmailStats, EmailStatistics previousEmailStats) {
+            StatisticsSnapshot recentEmailStats, StatisticsSnapshot previousEmailStats) {
 
         document.add(tableGenerator.generateTable(recentDate, previousDate, recentEmailStats, previousEmailStats));
 
@@ -173,10 +173,10 @@ public class SummaryStatisticsPdf {
         return new Image(rawImage);
     }
 
-    private EmailStatistics getEmailStatisticsFromSummaryStatistics(SummaryStatisticsEntity stats) {
+    private StatisticsSnapshot getEmailStatisticsFromSummaryStatistics(SummaryStatisticsEntity stats) {
         try {
             ObjectMapper mapper = new ObjectMapper();
-            return mapper.readValue(stats.getSummaryStatistics(), EmailStatistics.class);
+            return mapper.readValue(stats.getSummaryStatistics(), StatisticsSnapshot.class);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

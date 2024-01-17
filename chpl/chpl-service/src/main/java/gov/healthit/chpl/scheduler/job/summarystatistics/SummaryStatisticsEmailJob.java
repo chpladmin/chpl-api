@@ -32,7 +32,7 @@ import gov.healthit.chpl.entity.statistics.SummaryStatisticsEntity;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.scheduler.job.QuartzJob;
-import gov.healthit.chpl.scheduler.job.summarystatistics.data.EmailStatistics;
+import gov.healthit.chpl.scheduler.job.summarystatistics.data.StatisticsSnapshot;
 import gov.healthit.chpl.scheduler.job.summarystatistics.email.DeveloperStatisticsSectionCreator;
 import gov.healthit.chpl.scheduler.job.summarystatistics.email.DirectReviewStatisticsSectionCreator;
 import gov.healthit.chpl.scheduler.job.summarystatistics.email.ListingStatisticsSectionCreator;
@@ -75,7 +75,7 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
             activeAcbs = certificationBodyDAO.findAllActive();
 
             SummaryStatisticsEntity summaryStatistics = summaryStatisticsDAO.getCurrentSummaryStatistics();
-            EmailStatistics stats = getStatistics(summaryStatistics);
+            StatisticsSnapshot stats = getStatistics(summaryStatistics);
             String message = createHtmlMessage(stats, summaryStatistics.getEndDate());
             LOGGER.info("Message to be sent: " + message);
             sendEmail(message, jobContext.getMergedJobDataMap().getString("email"));
@@ -126,13 +126,13 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
                 + env.getProperty("summaryEmailName", "summaryStatistics.csv"));
     }
 
-    private EmailStatistics getStatistics(SummaryStatisticsEntity summaryStatistics)
+    private StatisticsSnapshot getStatistics(SummaryStatisticsEntity summaryStatistics)
             throws JsonParseException, JsonMappingException, IOException {
         ObjectMapper mapper = new ObjectMapper();
-        return mapper.readValue(summaryStatistics.getSummaryStatistics(), EmailStatistics.class);
+        return mapper.readValue(summaryStatistics.getSummaryStatistics(), StatisticsSnapshot.class);
     }
 
-    private String createHtmlMessage(EmailStatistics stats, Date endDate) throws EntityRetrievalException {
+    private String createHtmlMessage(StatisticsSnapshot stats, Date endDate) throws EntityRetrievalException {
         StringBuilder emailMessage = new StringBuilder();
         DeveloperStatisticsSectionCreator developerStatisticsSectionCreator = new DeveloperStatisticsSectionCreator();
         ProductStatisticsSectionCreator productStatisticsSectionCreator = new ProductStatisticsSectionCreator();

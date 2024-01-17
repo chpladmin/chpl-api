@@ -15,15 +15,15 @@ import gov.healthit.chpl.scheduler.job.summarystatistics.EditionCriteria;
 public class ProductDataCreator extends StatisticsDataCreator {
     private static final Logger LOGGER = LogManager.getLogger("summaryStatisticsCreatorJobLogger");
 
-    public EmailStatistic getUniqueProductCount(List<CertifiedProductDetailsDTO> certifiedProducts,
+    public Statistic getUniqueProductCount(List<CertifiedProductDetailsDTO> certifiedProducts,
             EditionCriteria listingsToInclude, List<CertificationStatusType> statuses) {
-        EmailStatistic stat = new EmailStatistic();
+        Statistic stat = new Statistic();
         stat.setCount(getUniqueProductCountTotal(certifiedProducts, listingsToInclude, statuses));
         stat.setAcbStatistics(getUniqueProductCountTotalsByAcb(certifiedProducts, listingsToInclude, statuses));
         return stat;
     }
 
-    public List<EmailCertificationBodyStatistic> getUniqueProductCountTotalsByAcb(
+    public List<CertificationBodyStatistic> getUniqueProductCountTotalsByAcb(
             List<CertifiedProductDetailsDTO> certifiedProducts,
             EditionCriteria listingsToInclude, List<CertificationStatusType> statuses) {
 
@@ -33,7 +33,7 @@ public class ProductDataCreator extends StatisticsDataCreator {
                 .collect(Collectors.groupingBy(CertifiedProductDetailsDTO::getCertificationBodyName, Collectors.toList()))
                 .entrySet().stream()
                 .map(entry -> {
-                    EmailCertificationBodyStatistic stat = new EmailCertificationBodyStatistic();
+                    CertificationBodyStatistic stat = new CertificationBodyStatistic();
                     stat.setAcbName(entry.getKey());
                     stat.setCount(entry.getValue().stream()
                             .filter(distinctByKey(cp -> cp.getProduct().getId()))

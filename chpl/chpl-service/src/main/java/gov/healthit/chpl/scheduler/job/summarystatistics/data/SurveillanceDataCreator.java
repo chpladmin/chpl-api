@@ -24,8 +24,8 @@ public class SurveillanceDataCreator {
         return surveillanceStatisticsDAO.getTotalSurveillanceActivities(null);
     }
 
-    public EmailStatistic getTotalOpenSurveillanceActivities() {
-        EmailStatistic openSurvs = new EmailStatistic();
+    public Statistic getTotalOpenSurveillanceActivities() {
+        Statistic openSurvs = new Statistic();
         openSurvs.setCount(surveillanceStatisticsDAO.getTotalOpenSurveillanceActivities(null));
         openSurvs.setAcbStatistics(getTotalOpenSurveillancesByAcb());
         return openSurvs;
@@ -47,7 +47,7 @@ public class SurveillanceDataCreator {
         return totalDuration / surveillances.size();
     }
 
-    private List<EmailCertificationBodyStatistic> getTotalOpenSurveillancesByAcb() {
+    private List<CertificationBodyStatistic> getTotalOpenSurveillancesByAcb() {
         return surveillanceStatisticsDAO.getTotalOpenSurveillanceActivitiesByAcb(null);
     }
 

@@ -16,8 +16,8 @@ import com.itextpdf.layout.element.Table;
 
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.scheduler.job.summarystatistics.StatisticsMassager;
-import gov.healthit.chpl.scheduler.job.summarystatistics.data.EmailCertificationBodyStatistic;
-import gov.healthit.chpl.scheduler.job.summarystatistics.data.EmailStatistics;
+import gov.healthit.chpl.scheduler.job.summarystatistics.data.CertificationBodyStatistic;
+import gov.healthit.chpl.scheduler.job.summarystatistics.data.StatisticsSnapshot;
 
 public abstract class SummaryStatisticsSectionPdf {
     private static final float SECTION_DESCRIPTION_RELATIVE_WIDTH = 6;
@@ -34,9 +34,9 @@ public abstract class SummaryStatisticsSectionPdf {
         statisticsMassager = new StatisticsMassager(certificationBodyDAO.findAllActive());
     }
 
-    public abstract Table generateTable(LocalDate recent, LocalDate previous, EmailStatistics recentEmailStatistics, EmailStatistics previousEmailStatistics);
+    public abstract Table generateTable(LocalDate recent, LocalDate previous, StatisticsSnapshot recentEmailStatistics, StatisticsSnapshot previousEmailStatistics);
 
-    public Document addTableEndNote(Document document, EmailStatistics recentEmailStatistics, EmailStatistics previousEmailStatistics) {
+    public Document addTableEndNote(Document document, StatisticsSnapshot recentEmailStatistics, StatisticsSnapshot previousEmailStatistics) {
         //By default, do nothing
         return document;
     }
@@ -101,19 +101,19 @@ public abstract class SummaryStatisticsSectionPdf {
         }
     }
 
-    public Optional<EmailCertificationBodyStatistic> getAccompanyingEmailCertificationBodyStatistic(EmailCertificationBodyStatistic recent, List<EmailCertificationBodyStatistic> previousList) {
+    public Optional<CertificationBodyStatistic> getAccompanyingEmailCertificationBodyStatistic(CertificationBodyStatistic recent, List<CertificationBodyStatistic> previousList) {
         return previousList.stream()
                 .filter(previous -> previous.getAcbName().equals(recent.getAcbName()))
                 .findAny();
     }
 
-    public Table addAcbRows(Table table, List<EmailCertificationBodyStatistic> recentEmailAcbStats, List<EmailCertificationBodyStatistic> previousEmailAcbStats) {
+    public Table addAcbRows(Table table, List<CertificationBodyStatistic> recentEmailAcbStats, List<CertificationBodyStatistic> previousEmailAcbStats) {
         recentEmailAcbStats = addMissingAcbsToCollection(recentEmailAcbStats);
         previousEmailAcbStats = addMissingAcbsToCollection(previousEmailAcbStats);
 
-        for (EmailCertificationBodyStatistic recentAcbStat : recentEmailAcbStats) {
+        for (CertificationBodyStatistic recentAcbStat : recentEmailAcbStats) {
             //Find the matching stat in the previous collection
-            Optional<EmailCertificationBodyStatistic> previousAcbStat =
+            Optional<CertificationBodyStatistic> previousAcbStat =
                     getAccompanyingEmailCertificationBodyStatistic(recentAcbStat, previousEmailAcbStats);
 
             if (previousAcbStat.isPresent()) {
@@ -137,7 +137,7 @@ public abstract class SummaryStatisticsSectionPdf {
         return DateTimeFormatter.ofPattern("MMMM dd, yyyy");
     }
 
-    private List<EmailCertificationBodyStatistic> addMissingAcbsToCollection(List<EmailCertificationBodyStatistic> emailAcbStats) {
+    private List<CertificationBodyStatistic> addMissingAcbsToCollection(List<CertificationBodyStatistic> emailAcbStats) {
         return statisticsMassager.getStatistics(emailAcbStats);
     }
 }
