@@ -76,7 +76,6 @@ public class UpdatedListingStatusReportCreatorJob extends QuartzJob {
                 }
             });
         } catch (Exception e) {
-            e.printStackTrace();
             LOGGER.error(e);
         } finally {
             LOGGER.info("********* Completed the Updated Listing Status Report Creator job. *********");
