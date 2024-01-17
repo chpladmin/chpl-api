@@ -69,7 +69,7 @@ public class UpdatedListingStatusReportCreatorJob extends QuartzJob {
                         if (doStatisticsExistForDate(LocalDate.now())) {
                             deleteStatisticsForDate(LocalDate.now());
                         }
-                        xxxx();
+                        calculateStatisticsForActiveListings();
                     } catch (ValidationException e) {
                         LOGGER.error(e);
                     }
@@ -83,7 +83,7 @@ public class UpdatedListingStatusReportCreatorJob extends QuartzJob {
         }
     }
 
-    private void xxxx() throws ValidationException {
+    private void calculateStatisticsForActiveListings() throws ValidationException {
         SearchRequest request = SearchRequest.builder()
                 .certificationStatuses(Set.of("Active", "Suspended by ONC", "Suspended by ONC-ACB"))
                 .build();
