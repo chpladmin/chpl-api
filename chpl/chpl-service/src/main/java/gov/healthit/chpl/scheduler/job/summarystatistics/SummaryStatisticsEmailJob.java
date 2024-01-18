@@ -25,6 +25,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.healthit.chpl.dao.CertificationBodyDAO;
+import gov.healthit.chpl.dao.CertificationStatusDAO;
 import gov.healthit.chpl.dao.statistics.SummaryStatisticsDAO;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.email.ChplEmailFactory;
@@ -49,6 +50,9 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
 
     @Autowired
     private CertificationBodyDAO certificationBodyDAO;
+
+    @Autowired
+    private CertificationStatusDAO certificationStatusDao;
 
     @Autowired
     private SummaryStatisticsPdf summaryStatisticsPdf;
@@ -95,7 +99,7 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
         chplEmailFactory.emailBuilder()
                 .recipients(addresses)
                 .subject(subject).htmlMessage(message)
-                .fileAttachments(getAttachments())
+                //.fileAttachments(getAttachments())
                 .sendEmail();
     }
 
@@ -134,9 +138,9 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
 
     private String createHtmlMessage(StatisticsSnapshot stats, Date endDate) throws EntityRetrievalException {
         StringBuilder emailMessage = new StringBuilder();
-        DeveloperStatisticsSectionCreator developerStatisticsSectionCreator = new DeveloperStatisticsSectionCreator();
-        ProductStatisticsSectionCreator productStatisticsSectionCreator = new ProductStatisticsSectionCreator();
-        ListingStatisticsSectionCreator listingStatisticsSectionCreator = new ListingStatisticsSectionCreator();
+        DeveloperStatisticsSectionCreator developerStatisticsSectionCreator = new DeveloperStatisticsSectionCreator(certificationStatusDao);
+        ProductStatisticsSectionCreator productStatisticsSectionCreator = new ProductStatisticsSectionCreator(certificationStatusDao);
+        ListingStatisticsSectionCreator listingStatisticsSectionCreator = new ListingStatisticsSectionCreator(certificationStatusDao);
         SurveillanceStatisticsSectionCreator surveillanceStatisticsSectionCreator = new SurveillanceStatisticsSectionCreator();
         NonConformityStatisticsSectionCreator nonConformityStatisticsSectionCreator = new NonConformityStatisticsSectionCreator();
         DirectReviewStatisticsSectionCreator directReviewStatisticsSectionCreator = new DirectReviewStatisticsSectionCreator();

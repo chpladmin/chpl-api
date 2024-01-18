@@ -15,6 +15,21 @@ public final class CertificationStatusUtil {
             CertificationStatusType.SuspendedByOnc)
             .toList();
 
+    private static final List<CertificationStatusType> SUSPENDED_STATUSES = Stream.of(
+            CertificationStatusType.SuspendedByAcb,
+            CertificationStatusType.SuspendedByOnc)
+            .toList();
+
+    private static final List<CertificationStatusType> NONRETIRED_STATUSES = Stream.of(
+            CertificationStatusType.Active,
+            CertificationStatusType.SuspendedByAcb,
+            CertificationStatusType.SuspendedByOnc,
+            CertificationStatusType.TerminatedByOnc,
+            CertificationStatusType.WithdrawnByAcb,
+            CertificationStatusType.WithdrawnByDeveloper,
+            CertificationStatusType.WithdrawnByDeveloperUnderReview)
+            .toList();
+
     private CertificationStatusUtil() {}
 
     public static List<CertificationStatusType> getActiveStatuses() {
@@ -25,6 +40,14 @@ public final class CertificationStatusUtil {
         return ACTIVE_STATUSES.stream()
                 .map(status -> status.getName())
                 .toList();
+    }
+
+    public static List<CertificationStatusType> getSuspendedStatuses() {
+        return SUSPENDED_STATUSES;
+    }
+
+    public static List<CertificationStatusType> getNonretiredStatuses() {
+        return NONRETIRED_STATUSES;
     }
 
     public static boolean isActive(CertifiedProductSearchDetails listing) {

@@ -1,12 +1,38 @@
 package gov.healthit.chpl.scheduler.job.summarystatistics.email;
 
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import gov.healthit.chpl.dao.CertificationStatusDAO;
 import gov.healthit.chpl.domain.CertificationBody;
+import gov.healthit.chpl.domain.CertificationStatus;
+import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.scheduler.job.summarystatistics.StatisticsMassager;
 import gov.healthit.chpl.scheduler.job.summarystatistics.data.StatisticsSnapshot;
+import gov.healthit.chpl.util.CertificationStatusUtil;
 
 public class ListingStatisticsSectionCreator extends StatisticsSectionCreator {
+    private List<Long> nonRetiredStatusIds, activeAndSuspendedStatusIds, suspendedStatusIds,
+        withdrawnByDeveloperStatusIds;
+    private List<CertificationStatus> certificationStatuses;
+
+    public ListingStatisticsSectionCreator(CertificationStatusDAO certificationStatusDao) {
+        super();
+        certificationStatuses = certificationStatusDao.findAll();
+        nonRetiredStatusIds = CertificationStatusUtil.getNonretiredStatuses().stream()
+                .map(status -> getStatusId(status))
+                .collect(Collectors.toList());
+        activeAndSuspendedStatusIds = CertificationStatusUtil.getActiveStatuses().stream()
+                .map(status -> getStatusId(status))
+                .collect(Collectors.toList());
+        suspendedStatusIds = CertificationStatusUtil.getSuspendedStatuses().stream()
+                .map(status -> getStatusId(status))
+                .collect(Collectors.toList());
+        withdrawnByDeveloperStatusIds = Stream.of(CertificationStatusType.WithdrawnByDeveloper)
+                .map(status -> getStatusId(status))
+                .collect(Collectors.toList());
+    }
 
     public String build(StatisticsSnapshot stats, List<CertificationBody> activeAcbs) {
         return buildListingSection(stats, new StatisticsMassager(activeAcbs));
@@ -14,54 +40,32 @@ public class ListingStatisticsSectionCreator extends StatisticsSectionCreator {
 
     private String buildListingSection(StatisticsSnapshot stats, StatisticsMassager massager) {
         StringBuilder section = new StringBuilder();
-//
-//        section.append(buildHeader("Total # of Listings (Regardless of Status or Edition)",
-//                stats.getListingsForEditionAnyTotal()));
-//        section.append("<ul>");
-//
-//        section.append(buildSection(
-//                "Total # of Active (Including Suspended by ONC/ONC-ACB 2014 Listings)",
-//                stats.getListingsForEdition2014WithActiveAndSuspendedStatuses().getCount(),
-//                massager.getStatistics(stats.getListingsForEdition2014WithActiveAndSuspendedStatuses().getAcbStatistics())));
-//
-//        section.append(buildSection(
-//                "Total # of Active (Including Suspended by ONC/ONC-ACB 2015 Listings)",
-//                stats.getListingsForEdition2015NonCuresWithActiveAndSuspendedStatuses().getCount(),
-//                massager.getStatistics(
-//                        stats.getListingsForEdition2015NonCuresWithActiveAndSuspendedStatuses().getAcbStatistics())));
-//
-//        section.append(buildSection(
-//                "Total # of 2015 Listings with Alternative Test Methods",
-//                stats.getListingsForEdition2015NonCuresWithAllStatusesAndAltTestMethods().getCount(),
-//                massager.getStatistics(
-//                        stats.getListingsForEdition2015NonCuresWithAllStatusesAndAltTestMethods().getAcbStatistics())));
-//
-//        section.append(buildSection(
-//                "Total # of Active (Including Suspended by ONC/ONC-ACB 2015 Cures Update Listings)",
-//                stats.getListingsForEdition2015CuresWithActiveAndSuspendedStatuses().getCount(),
-//                massager.getStatistics(stats.getListingsForEdition2015CuresWithActiveAndSuspendedStatuses().getAcbStatistics())));
-//
-//        section.append(buildSection(
-//                "Total # of 2015 Cures Update Listings with Alternative Test Methods",
-//                stats.getListingsForEdition2015CuresWithAllStatusesAndAltTestMethods().getCount(),
-//                massager.getStatistics(
-//                        stats.getListingsForEdition2015CuresWithAllStatusesAndAltTestMethods().getAcbStatistics())));
-//
-//
-//        section.append(buildItem("Total # of 2015 Listings and 2015 Cures Update Listings (Regardless of Status)",
-//                stats.getListingsForEdition2015NonCuresAndCuresTotal()));
-//
-//        section.append(buildItem("Total # of 2015 Listings (Regardless of Status)",
-//                stats.getListingsForEdition2015NonCuresTotal()));
-//
-//        section.append(buildItem("Total # of 2015 Cures Update Listings (Regardless of Status)",
-//                stats.getListingsForEdition2015CuresTotal()));
-//
-//
-//        section.append(buildItem("Total # of 2014 Listings (Regardless of Status)", stats.getListingsForEdition2014Total()));
-//        section.append(buildItem("Total # of 2011 Listings (Regardless of Status)", stats.getListingsForEdition2011Total()));
+        section.append(buildHeader("Total # of Listings (2015 Edition to Present)",
+                stats.getListingCountForStatuses(nonRetiredStatusIds)));
+        section.append("<ul>");
+
+        section.append(buildSection(
+                "Total # of Active (Including Suspended) Listings",
+                stats.getListingCountForStatuses(activeAndSuspendedStatusIds),
+                massager.getStatistics(stats.getListingCountForStatusesByAcb(activeAndSuspendedStatusIds))));
+
+        section.append(buildSection(
+                "Total # of Suspended Listings",
+                stats.getListingCountForStatuses(suspendedStatusIds),
+                massager.getStatistics(stats.getListingCountForStatusesByAcb(suspendedStatusIds))));
+
+        section.append(buildSection(
+                "Total # of Withdrawn by Developer Listings",
+                stats.getListingCountForStatuses(withdrawnByDeveloperStatusIds),
+                massager.getStatistics(stats.getListingCountForStatusesByAcb(withdrawnByDeveloperStatusIds))));
 
         section.append("</ul>");
         return section.toString();
+    }
+
+    private Long getStatusId(CertificationStatusType statusType) {
+        return certificationStatuses.stream()
+            .filter(status -> status.getName().equalsIgnoreCase(statusType.getName()))
+            .findAny().get().getId();
     }
 }

@@ -1,6 +1,7 @@
 package gov.healthit.chpl.scheduler.job.summarystatistics.data;
 
 import java.io.Serializable;
+import java.util.Set;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -8,15 +9,14 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@Builder
 @NoArgsConstructor
+@Builder
 @AllArgsConstructor
-public class Listing implements Serializable {
-    private static final long serialVersionUID = -3968710463806250210L;
+public class CertificationBodyStatusStatistic implements Serializable {
+    private static final long serialVersionUID = 4312491254762293030L;
 
-    private Long id;
-    private Long acbId;
-    private Long developerId;
-    private Long productId;
+    private Set<Long> ids;
     private Long statusId;
+    private String acbName;
+    private Long acbId;
 }
