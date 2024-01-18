@@ -8,7 +8,7 @@
         <delete-triggers-in-group>interruptJob</delete-triggers-in-group>
         <!-- BEGIN REMOVE after PROD push -->
         <delete-job>
-            <name>fixupQuestionableActivityJob</name>
+            <name>summaryStatisticsCreator</name>
             <group>systemJobs</group>
         </delete-job>
         <!-- END remove after PROD push -->
@@ -137,8 +137,8 @@
             <recover>false</recover>
             <job-data-map>
                 <entry>
-                    <key>generateCsvFile</key>
-                    <value>true</value>
+                    <key>historicalStandardsBeginDate</key>
+                    <value>2024-02-06</value>
                 </entry>
             </job-data-map>
         </job>

@@ -14,7 +14,7 @@ import lombok.extern.log4j.Log4j2;
 
 @Component
 @Log4j2(topic = "summaryStatisticsCreatorJobLogger")
-public class DirectReviewDataCreator extends StatisticsDataCreator  {
+public class DirectReviewDataCreator {
     private DirectReviewSearchService directReviewSearchService;
 
     @Autowired
