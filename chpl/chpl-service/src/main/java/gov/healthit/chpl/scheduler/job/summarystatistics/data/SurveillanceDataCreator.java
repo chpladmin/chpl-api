@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.compliance.surveillance.entity.SurveillanceEntity;
-import gov.healthit.chpl.dao.statistics.SurveillanceStatisticsDAO;
 
 @Component
 public class SurveillanceDataCreator {
@@ -50,6 +49,4 @@ public class SurveillanceDataCreator {
     private List<CertificationBodyStatistic> getTotalOpenSurveillancesByAcb() {
         return surveillanceStatisticsDAO.getTotalOpenSurveillanceActivitiesByAcb(null);
     }
-
-
 }

@@ -15,7 +15,6 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.compliance.surveillance.entity.SurveillanceEntity;
 import gov.healthit.chpl.compliance.surveillance.entity.SurveillanceNonconformityEntity;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
-import gov.healthit.chpl.dao.statistics.SurveillanceStatisticsDAO;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 

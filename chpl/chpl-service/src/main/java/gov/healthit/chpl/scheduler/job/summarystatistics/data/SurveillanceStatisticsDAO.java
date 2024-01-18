@@ -1,8 +1,9 @@
-package gov.healthit.chpl.dao.statistics;
+package gov.healthit.chpl.scheduler.job.summarystatistics.data;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Stream;
 
 import javax.persistence.Query;
 
@@ -13,9 +14,9 @@ import gov.healthit.chpl.compliance.surveillance.entity.NonconformityTypeEntity;
 import gov.healthit.chpl.compliance.surveillance.entity.SurveillanceEntity;
 import gov.healthit.chpl.compliance.surveillance.entity.SurveillanceNonconformityEntity;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
+import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.domain.surveillance.NonconformityClassification;
 import gov.healthit.chpl.dto.NonconformityTypeStatisticsDTO;
-import gov.healthit.chpl.scheduler.job.summarystatistics.data.CertificationBodyStatistic;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.util.DateUtil;
 
@@ -23,76 +24,85 @@ import gov.healthit.chpl.util.DateUtil;
 public class SurveillanceStatisticsDAO extends BaseDAOImpl {
 
     private CertificationCriterionService certificationCriterionService;
+    private List<Long> retiredEditions;
 
     @Autowired
     public SurveillanceStatisticsDAO(CertificationCriterionService certificationCriterionService) {
         this.certificationCriterionService = certificationCriterionService;
+        this.retiredEditions = Stream.of(
+                CertificationEditionConcept.CERTIFICATION_EDITION_2011.getId(),
+                CertificationEditionConcept.CERTIFICATION_EDITION_2014.getId())
+                .toList();
     }
 
-    /**
-     * Total # of Surveillance Activities.
-     */
     public Long getTotalSurveillanceActivities(Date endDate) {
-        String hql = "SELECT count(*) " + "FROM SurveillanceEntity " + "WHERE ";
+        String hql = "SELECT count(surv) "
+                + "FROM SurveillanceEntity surv "
+                + "JOIN surv.certifiedProduct cp "
+                + "WHERE cp.certificationEditionId NOT IN (:retiredEditions) ";
         if (endDate == null) {
-            hql += " deleted = false";
+            hql += " AND surv.deleted = false";
         } else {
-            hql += "(deleted = false AND startDate <= :endDate) " + " OR "
-                    + "(deleted = true AND startDate <= :endDate AND lastModifiedDate > :endDate) ";
+            hql += " AND (surv.deleted = false AND surv.startDate <= :endDate) "
+                    + " OR (surv.deleted = true AND surv.startDate <= :endDate AND surv.lastModifiedDate > :endDate) ";
         }
 
         Query query = entityManager.createQuery(hql);
+        query.setParameter("retiredEditions", retiredEditions);
         if (endDate != null) {
             query.setParameter("endDate", DateUtil.toLocalDate(endDate.getTime()));
         }
         return (Long) query.getSingleResult();
     }
 
-    /**
-     * Open Surveillance Activities.
-     */
     public Long getTotalOpenSurveillanceActivities(Date endDate) {
-        String hql = "SELECT count(*) " + "FROM SurveillanceEntity " + "WHERE startDate <= now() "
-                + "AND (endDate IS NULL OR endDate >= now()) ";
+        String hql = "SELECT count(surv) "
+                + "FROM SurveillanceEntity surv "
+                + "JOIN surv.certifiedProduct cp "
+                + "WHERE cp.certificationEditionId NOT IN (:retiredEditions) "
+                + "AND surv.startDate <= now() "
+                + "AND (surv.endDate IS NULL OR surv.endDate >= now()) ";
         if (endDate == null) {
-            hql += " AND deleted = false";
+            hql += " AND surv.deleted = false";
         } else {
-            hql += "AND ((deleted = false AND startDate <= :endDate) " + " OR "
-                    + "(deleted = true AND startDate <= :endDate AND lastModifiedDate > :endDate)) ";
+            hql += "AND ((surv.deleted = false AND surv.startDate <= :endDate) "
+                    + " OR (surv.deleted = true AND surv.startDate <= :endDate AND surv.lastModifiedDate > :endDate)) ";
         }
 
         Query query = entityManager.createQuery(hql);
+        query.setParameter("retiredEditions", retiredEditions);
         if (endDate != null) {
             query.setParameter("endDate", DateUtil.toLocalDate(endDate.getTime()));
         }
         return (Long) query.getSingleResult();
     }
 
-    /**
-     * Closed Surveillance Activities.
-     */
     public Long getTotalClosedSurveillanceActivities(Date endDate) {
-        String hql = "SELECT count(*) " + "FROM SurveillanceEntity " + "WHERE startDate <= now() "
-                + "AND (endDate IS NOT NULL AND endDate <= now()) ";
+        String hql = "SELECT count(surv) "
+                + "FROM SurveillanceEntity surv "
+                + "JOIN surv.certifiedProduct cp "
+                + "WHERE cp.certificationEditionId NOT IN (:retiredEditions) "
+                + "AND surv.startDate <= now() "
+                + "AND (surv.endDate IS NOT NULL AND surv.endDate <= now()) ";
         if (endDate == null) {
-            hql += " AND deleted = false";
+            hql += " AND surv.deleted = false";
         } else {
-            hql += "AND ((deleted = false AND endDate <= :endDate) " + " OR "
-                    + "(deleted = true AND endDate <= :endDate AND lastModifiedDate > :endDate)) ";
+            hql += "AND ((surv.deleted = false AND surv.endDate <= :endDate) "
+                    + " OR (surv.deleted = true AND surv.endDate <= :endDate AND surv.lastModifiedDate > :endDate)) ";
         }
 
         Query query = entityManager.createQuery(hql);
+        query.setParameter("retiredEditions", retiredEditions);
         if (endDate != null) {
             query.setParameter("endDate", DateUtil.toLocalDate(endDate.getTime()));
         }
         return (Long) query.getSingleResult();
     }
 
-    /**
-     * Total # of NCs.
-     */
     public Long getTotalNonConformities(Date endDate) {
-        String hql = "SELECT count(*) " + "FROM SurveillanceNonconformityEntity " + "WHERE ";
+        String hql = "SELECT count(*) "
+                + "FROM SurveillanceNonconformityEntity nc "
+                + "WHERE ";
         if (endDate == null) {
             hql += " deleted = false";
         } else {
@@ -191,9 +201,6 @@ public class SurveillanceStatisticsDAO extends BaseDAOImpl {
         return (Long) query.getSingleResult();
     }
 
-    /**
-     * Open Surveillance Activities By ACB.
-     */
     public List<CertificationBodyStatistic> getTotalOpenSurveillanceActivitiesByAcb(Date endDate) {
         String hql = "SELECT cb.name, count(*) "
                 + "FROM CertifiedProductEntity cp, "
@@ -202,20 +209,20 @@ public class SurveillanceStatisticsDAO extends BaseDAOImpl {
                 + "WHERE s.startDate <= now() "
                 + "AND (s.endDate IS NULL OR s.endDate >= now()) "
                 + "AND cp.certificationBodyId = cb.id "
+                + "AND cp.certificationEditionId NOT IN (:retiredEditions) "
                 + "AND cp.id = s.certifiedProductId ";
 
         if (endDate == null) {
             hql += "AND s.deleted = false ";
         } else {
             hql += "AND ((s.deleted = false AND s.startDate <= :endDate) "
-                    + " OR " + "(s.deleted = true AND s.startDate <= :endDate AND s.lastModifiedDate > :endDate)) ";
+                    + " OR (s.deleted = true AND s.startDate <= :endDate AND s.lastModifiedDate > :endDate)) ";
         }
-
         hql += "GROUP BY name ";
         hql += "ORDER BY cb.name ";
 
         Query query = entityManager.createQuery(hql);
-
+        query.setParameter("retiredEditions", retiredEditions);
         if (endDate != null) {
             query.setParameter("endDate", DateUtil.toLocalDate(endDate.getTime()));
         }
@@ -279,10 +286,14 @@ public class SurveillanceStatisticsDAO extends BaseDAOImpl {
     }
 
     public List<SurveillanceEntity> getAllSurveillances() {
-        String hql = "FROM SurveillanceEntity se "
-                + "JOIN FETCH se.surveilledRequirements sre "
-                + "WHERE se.deleted = false ";
-        return entityManager.createQuery(hql, SurveillanceEntity.class)
-                .getResultList();
+        String hql = "SELECT surv "
+                + "FROM SurveillanceEntity surv "
+                + "JOIN surv.certifiedProduct cp "
+                + "JOIN FETCH surv.surveilledRequirements req "
+                + "WHERE cp.certificationEditionId NOT IN (:retiredEditions) "
+                + "AND surv.deleted = false ";
+        Query query = entityManager.createQuery(hql);
+        query.setParameter("retiredEditions", retiredEditions);
+        return query.getResultList();
     }
 }

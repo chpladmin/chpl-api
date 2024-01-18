@@ -15,7 +15,7 @@ public class SurveillanceStatisticsSectionCreator extends StatisticsSectionCreat
     private String buildSurveillanceSection(StatisticsSnapshot stats, StatisticsMassager massager) {
         StringBuilder section = new StringBuilder();
 
-        section.append(buildHeader("Total # of Surveillance Activities", stats.getSurveillanceAllStatusTotal()));
+        section.append(buildHeader("Total # of Surveillance Activities (2015 Edition to Present)", stats.getSurveillanceAllStatusTotal()));
         section.append("<ul>");
 
         section.append(buildSection(
