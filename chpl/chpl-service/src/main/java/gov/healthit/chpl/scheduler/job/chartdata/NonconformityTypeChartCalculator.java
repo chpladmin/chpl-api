@@ -14,15 +14,12 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 import gov.healthit.chpl.dao.statistics.NonconformityTypeStatisticsDAO;
 import gov.healthit.chpl.dto.NonconformityTypeStatisticsDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.scheduler.job.summarystatistics.data.SurveillanceStatisticsDAO;
 
 @EnableAsync
 public class NonconformityTypeChartCalculator {
 
     private static final Logger LOGGER = LogManager.getLogger("chartDataCreatorJobLogger");
 
-    @Autowired
-    private SurveillanceStatisticsDAO statisticsDAO;
     @Autowired
     private NonconformityTypeStatisticsDAO nonconformityTypeStatisticsDAO;
 
@@ -44,7 +41,7 @@ public class NonconformityTypeChartCalculator {
     @Transactional
     @Async
     public List<NonconformityTypeStatisticsDTO> getCounts() {
-        List<NonconformityTypeStatisticsDTO> dtos = statisticsDAO.getAllNonconformitiesByCriterion();
+        List<NonconformityTypeStatisticsDTO> dtos = nonconformityTypeStatisticsDAO.getAllNonconformitiesByCriterion();
         return dtos;
     }
 

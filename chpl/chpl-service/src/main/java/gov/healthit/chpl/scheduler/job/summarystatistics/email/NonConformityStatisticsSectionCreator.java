@@ -16,7 +16,7 @@ public class NonConformityStatisticsSectionCreator extends StatisticsSectionCrea
     private String buildNonConformitySection(StatisticsSnapshot stats, StatisticsMassager massager) {
         StringBuilder section = new StringBuilder();
 
-        section.append(buildHeader("Total # of Surveillance NCs", stats.getNonconfStatusAllTotal()));
+        section.append(buildHeader("Total # of Surveillance NCs (2015 Edition to Present)", stats.getNonconfStatusAllTotal()));
         section.append("<ul>");
 
         section.append(buildSection(

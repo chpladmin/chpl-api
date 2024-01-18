@@ -10,25 +10,17 @@ import javax.persistence.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import gov.healthit.chpl.compliance.surveillance.entity.NonconformityTypeEntity;
 import gov.healthit.chpl.compliance.surveillance.entity.SurveillanceEntity;
-import gov.healthit.chpl.compliance.surveillance.entity.SurveillanceNonconformityEntity;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
-import gov.healthit.chpl.domain.surveillance.NonconformityClassification;
-import gov.healthit.chpl.dto.NonconformityTypeStatisticsDTO;
-import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.util.DateUtil;
 
 @Repository("surveillanceStatisticsDAO")
 public class SurveillanceStatisticsDAO extends BaseDAOImpl {
-
-    private CertificationCriterionService certificationCriterionService;
     private List<Long> retiredEditions;
 
     @Autowired
-    public SurveillanceStatisticsDAO(CertificationCriterionService certificationCriterionService) {
-        this.certificationCriterionService = certificationCriterionService;
+    public SurveillanceStatisticsDAO() {
         this.retiredEditions = Stream.of(
                 CertificationEditionConcept.CERTIFICATION_EDITION_2011.getId(),
                 CertificationEditionConcept.CERTIFICATION_EDITION_2014.getId())
@@ -100,46 +92,50 @@ public class SurveillanceStatisticsDAO extends BaseDAOImpl {
     }
 
     public Long getTotalNonConformities(Date endDate) {
-        String hql = "SELECT count(*) "
-                + "FROM SurveillanceNonconformityEntity nc "
-                + "WHERE ";
+        String hql = "SELECT count(nc) "
+                + "FROM SurveillanceEntity surv "
+                + "JOIN surv.surveilledRequirements reqs "
+                + "JOIN reqs.nonconformities nc "
+                + "JOIN surv.certifiedProduct cp "
+                + "WHERE cp.certificationEditionId NOT IN (:retiredEditions) ";
         if (endDate == null) {
-            hql += " deleted = false";
+            hql += " AND nc.deleted = false";
         } else {
-            hql += "(deleted = false AND dateOfDetermination <= :endDate) "
-                    + " OR (deleted = true AND dateOfDetermination <= :endDate AND lastModifiedDate > :endDate) ";
+            hql += "AND ((nc.deleted = false AND nc.dateOfDetermination <= :endDate) "
+                    + " OR (nc.deleted = true AND nc.dateOfDetermination <= :endDate AND nc.lastModifiedDate > :endDate)) ";
         }
 
         Query query = entityManager.createQuery(hql);
+        query.setParameter("retiredEditions", retiredEditions);
         if (endDate != null) {
             query.setParameter("endDate", DateUtil.toLocalDate(endDate.getTime()));
         }
         return (Long) query.getSingleResult();
     }
 
-    /**
-     * Open NCs.
-     */
     public Long getTotalOpenNonconformities(Date endDate) {
-        String hql = "SELECT count(*) " + "FROM SurveillanceNonconformityEntity "
-                + "WHERE nonconformityCloseDate IS NULL ";
+        String hql = "SELECT count(nc) "
+                + "FROM SurveillanceEntity surv "
+                + "JOIN surv.surveilledRequirements reqs "
+                + "JOIN reqs.nonconformities nc "
+                + "JOIN surv.certifiedProduct cp "
+                + "WHERE cp.certificationEditionId NOT IN (:retiredEditions) "
+                + "AND nc.nonconformityCloseDate IS NULL ";
         if (endDate == null) {
-            hql += " AND deleted = false";
+            hql += " AND nc.deleted = false";
         } else {
-            hql += " AND ((deleted = false AND dateOfDetermination <= :endDate) "
-                    + " OR (deleted = true AND dateOfDetermination <= :endDate AND lastModifiedDate > :endDate)) ";
+            hql += " AND ((nc.deleted = false AND nc.dateOfDetermination <= :endDate) "
+                    + " OR (nc.deleted = true AND nc.dateOfDetermination <= :endDate AND nc.lastModifiedDate > :endDate)) ";
         }
 
         Query query = entityManager.createQuery(hql);
+        query.setParameter("retiredEditions", retiredEditions);
         if (endDate != null) {
             query.setParameter("endDate", DateUtil.toLocalDate(endDate.getTime()));
         }
         return (Long) query.getSingleResult();
     }
 
-    /**
-     * Open NCs By ACB.
-     */
     public List<CertificationBodyStatistic> getTotalOpenNonconformitiesByAcb(Date endDate) {
         String hql = "SELECT cb.name, count(*) "
                 + "FROM CertifiedProductEntity cp, "
@@ -148,6 +144,7 @@ public class SurveillanceStatisticsDAO extends BaseDAOImpl {
                 + "SurveillanceRequirementEntity sr, "
                 + "SurveillanceNonconformityEntity sn "
                 + "WHERE sn.nonconformityCloseDate IS NULL "
+                + "AND cp.certificationEditionId NOT IN (:retiredEditions) "
                 + "AND cp.certificationBodyId = cb.id "
                 + "AND cp.id = s.certifiedProductId "
                 + "AND s.id = sr.surveillanceId "
@@ -157,14 +154,13 @@ public class SurveillanceStatisticsDAO extends BaseDAOImpl {
             hql += "AND sn.deleted = false ";
         } else {
             hql += "AND ((sn.deleted = false AND sn.dateOfDetermination <= :endDate) "
-                    + " OR " + "(sn.deleted = true AND sn.dateOfDetermination <= :endDate AND sn.lastModifiedDate > :endDate)) ";
+                    + " OR (sn.deleted = true AND sn.dateOfDetermination <= :endDate AND sn.lastModifiedDate > :endDate)) ";
         }
-
         hql += "GROUP BY name ";
         hql += "ORDER BY cb.name ";
 
         Query query = entityManager.createQuery(hql);
-
+        query.setParameter("retiredEditions", retiredEditions);
         if (endDate != null) {
             query.setParameter("endDate", DateUtil.toLocalDate(endDate.getTime()));
         }
@@ -180,21 +176,23 @@ public class SurveillanceStatisticsDAO extends BaseDAOImpl {
         return cbStats;
     }
 
-    /**
-     * Closed NCs.
-     */
     public Long getTotalClosedNonconformities(Date endDate) {
-        String hql = "SELECT count(*) "
-                + "FROM SurveillanceNonconformityEntity "
-                + "WHERE nonconformityCloseDate IS NOT NULL ";
+        String hql = "SELECT count(nc) "
+                + "FROM SurveillanceEntity surv "
+                + "JOIN surv.surveilledRequirements reqs "
+                + "JOIN reqs.nonconformities nc "
+                + "JOIN surv.certifiedProduct cp "
+                + "WHERE cp.certificationEditionId NOT IN (:retiredEditions) "
+                + "AND nc.nonconformityCloseDate IS NOT NULL ";
         if (endDate == null) {
-            hql += " AND deleted = false";
+            hql += " AND nc.deleted = false";
         } else {
-            hql += " AND ((deleted = false AND nonconformityCloseDate <= :endDate) "
-                    + " OR " + "(deleted = true AND nonconformityCloseDate <= :endDate AND lastModifiedDate > :endDate)) ";
+            hql += " AND ((nc.deleted = false AND nc.nonconformityCloseDate <= :endDate) "
+                    + " OR (nc.deleted = true AND nc.nonconformityCloseDate <= :endDate AND nc.lastModifiedDate > :endDate)) ";
         }
 
         Query query = entityManager.createQuery(hql);
+        query.setParameter("retiredEditions", retiredEditions);
         if (endDate != null) {
             query.setParameter("endDate", DateUtil.toLocalDate(endDate.getTime()));
         }
@@ -238,51 +236,19 @@ public class SurveillanceStatisticsDAO extends BaseDAOImpl {
         return cbStats;
     }
 
-    /**
-     * Examine nonconformities to get a count of how many of each type of NC there
-     * are.
-     *
-     * @return a list of the DTOs that hold the counts
-     */
-    public List<NonconformityTypeStatisticsDTO> getAllNonconformitiesByCriterion() {
-        List<SurveillanceNonconformityEntity> allNonconformities = entityManager.createQuery(
-                "SELECT sne "
-                + "FROM SurveillanceNonconformityEntity sne "
-                + "JOIN FETCH sne.type ncType "
-                + "WHERE sne.deleted = false ", SurveillanceNonconformityEntity.class)
-                .getResultList();
-
-        List<NonconformityTypeEntity> nonconformityTypes = entityManager.createQuery(
-                "FROM NonconformityTypeEntity e ", NonconformityTypeEntity.class)
-                .getResultList();
-
-        return nonconformityTypes.stream()
-            .map(ncType ->
-                NonconformityTypeStatisticsDTO.builder()
-                        .nonconformityCount(allNonconformities.stream()
-                                .filter(nc -> nc.getType().getId().equals(ncType.getId()))
-                                .count())
-                        .nonconformityType(ncType.getClassification().equals(NonconformityClassification.REQUIREMENT.toString())
-                                ? ncType.getTitle()
-                                : null)
-                        .criterion(ncType.getClassification().equals(NonconformityClassification.CRITERION.toString())
-                                ?  certificationCriterionService.get(ncType.getId())
-                                : null)
-                        .build())
-            .filter(dto -> !dto.getNonconformityCount().equals(0L))
-            .toList();
-    }
-
     public List<SurveillanceEntity> getAllSurveillancesWithNonconformities() {
-        String hql = "FROM SurveillanceEntity se "
-                + "JOIN FETCH se.surveilledRequirements sre "
-                + "JOIN FETCH sre.nonconformities nc "
-                + "JOIN FETCH se.certifiedProduct cp "
-                + "WHERE se.deleted = false "
-                + "AND sre.deleted = false "
+        String hql = "SELECT surv "
+                + "FROM SurveillanceEntity surv "
+                + "JOIN FETCH surv.surveilledRequirements reqs "
+                + "JOIN FETCH reqs.nonconformities nc "
+                + "JOIN FETCH surv.certifiedProduct cp "
+                + "WHERE cp.certificationEditionId NOT IN (:retiredEditions) "
+                + "AND surv.deleted = false "
+                + "AND reqs.deleted = false "
                 + "AND nc.deleted = false ";
-        return entityManager.createQuery(hql, SurveillanceEntity.class)
-                .getResultList();
+        Query query = entityManager.createQuery(hql);
+        query.setParameter("retiredEditions", retiredEditions);
+        return query.getResultList();
     }
 
     public List<SurveillanceEntity> getAllSurveillances() {
