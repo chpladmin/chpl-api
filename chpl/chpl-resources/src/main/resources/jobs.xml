@@ -135,12 +135,6 @@
             <job-class>gov.healthit.chpl.scheduler.job.summarystatistics.SummaryStatisticsCreatorJob</job-class>
             <durability>true</durability>
             <recover>false</recover>
-            <job-data-map>
-                <entry>
-                    <key>historicalStandardsBeginDate</key>
-                    <value>2024-02-06</value>
-                </entry>
-            </job-data-map>
         </job>
 
         <!-- Summary statistics emailer -->
