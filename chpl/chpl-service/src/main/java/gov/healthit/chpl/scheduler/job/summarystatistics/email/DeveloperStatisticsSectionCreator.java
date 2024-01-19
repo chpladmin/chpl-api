@@ -1,37 +1,17 @@
 package gov.healthit.chpl.scheduler.job.summarystatistics.email;
 
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-import gov.healthit.chpl.dao.CertificationStatusDAO;
 import gov.healthit.chpl.domain.CertificationBody;
-import gov.healthit.chpl.domain.CertificationStatus;
-import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.scheduler.job.summarystatistics.StatisticsMassager;
 import gov.healthit.chpl.scheduler.job.summarystatistics.data.StatisticsSnapshot;
-import gov.healthit.chpl.util.CertificationStatusUtil;
 
 public class DeveloperStatisticsSectionCreator extends StatisticsSectionCreator {
-    private List<Long> nonRetiredStatusIds, activeAndSuspendedStatusIds, suspendedStatusIds,
-        withdrawnByDeveloperStatusIds;
-    private List<CertificationStatus> certificationStatuses;
+    private CertificationStatusIdHelper statusIdHelper;
 
-    public DeveloperStatisticsSectionCreator(CertificationStatusDAO certificationStatusDao) {
+    public DeveloperStatisticsSectionCreator(CertificationStatusIdHelper statusIdHelper) {
         super();
-        certificationStatuses = certificationStatusDao.findAll();
-        nonRetiredStatusIds = CertificationStatusUtil.getNonretiredStatuses().stream()
-                .map(status -> getStatusId(status))
-                .collect(Collectors.toList());
-        activeAndSuspendedStatusIds = CertificationStatusUtil.getActiveStatuses().stream()
-                .map(status -> getStatusId(status))
-                .collect(Collectors.toList());
-        suspendedStatusIds = CertificationStatusUtil.getSuspendedStatuses().stream()
-                .map(status -> getStatusId(status))
-                .collect(Collectors.toList());
-        withdrawnByDeveloperStatusIds = Stream.of(CertificationStatusType.WithdrawnByDeveloper)
-                .map(status -> getStatusId(status))
-                .collect(Collectors.toList());
+        this.statusIdHelper = statusIdHelper;
     }
 
     public String build(StatisticsSnapshot stats, List<CertificationBody> activeAcbs) {
@@ -42,32 +22,26 @@ public class DeveloperStatisticsSectionCreator extends StatisticsSectionCreator 
         StringBuilder section = new StringBuilder();
 
         section.append(buildHeader("Total # of Unique Developers (2015 Edition to Present)",
-                stats.getDeveloperCountForStatuses(nonRetiredStatusIds)));
+                stats.getDeveloperCountForStatuses(statusIdHelper.getNonRetiredStatusIds())));
         section.append("<i>The sum of the ONC-ACB breakdown may not match the total since a developer may be associated to more than one ONC-ACB</i>");
         section.append("<ul>");
 
         section.append(buildSection(
                 "Total # of Developers with Active (Including Suspended) Listings",
-                stats.getDeveloperCountForStatuses(activeAndSuspendedStatusIds),
-                massager.getStatistics(stats.getDeveloperCountForStatusesByAcb(activeAndSuspendedStatusIds))));
+                stats.getDeveloperCountForStatuses(statusIdHelper.getActiveAndSuspendedStatusIds()),
+                massager.getStatistics(stats.getDeveloperCountForStatusesByAcb(statusIdHelper.getActiveAndSuspendedStatusIds()))));
 
         section.append(buildSection(
                 "Total # of Developers with Suspended Listings",
-                stats.getDeveloperCountForStatuses(suspendedStatusIds),
-                massager.getStatistics(stats.getDeveloperCountForStatusesByAcb(suspendedStatusIds))));
+                stats.getDeveloperCountForStatuses(statusIdHelper.getSuspendedStatusIds()),
+                massager.getStatistics(stats.getDeveloperCountForStatusesByAcb(statusIdHelper.getSuspendedStatusIds()))));
 
         section.append(buildSection(
                 "Total # of Developers with Withdrawn by Developer Listings",
-                stats.getDeveloperCountForStatuses(withdrawnByDeveloperStatusIds),
-                massager.getStatistics(stats.getDeveloperCountForStatusesByAcb(withdrawnByDeveloperStatusIds))));
+                stats.getDeveloperCountForStatuses(statusIdHelper.getWithdrawnByDeveloperStatusIds()),
+                massager.getStatistics(stats.getDeveloperCountForStatusesByAcb(statusIdHelper.getWithdrawnByDeveloperStatusIds()))));
 
         section.append("</ul>");
         return section.toString();
-    }
-
-    private Long getStatusId(CertificationStatusType statusType) {
-        return certificationStatuses.stream()
-            .filter(status -> status.getName().equalsIgnoreCase(statusType.getName()))
-            .findAny().get().getId();
     }
 }

@@ -23,61 +23,69 @@ public class DirectReviewSummaryStatisticsSectionPdf extends SummaryStatisticsSe
     }
 
     @Override
-    public Table generateTable(LocalDate recent, LocalDate previous, StatisticsSnapshot recentEmailStatistics, StatisticsSnapshot previousEmailStatistics) {
+    public Table generateTable(LocalDate currSnapshotDate, LocalDate prevSnapshotDate, StatisticsSnapshot currSnapshot, StatisticsSnapshot prevSnapshot) {
         Table table = new Table(getRelativeColumnWidths());
         table.useAllAvailableWidth();
-        table = addHeaders(table, "Direct Review Statistics", recent, previous);
+        table = addHeaders(table, "Direct Review Statistics", currSnapshotDate, prevSnapshotDate);
 
         table = addTableRow(table, createDataForRow("1. Total # of Direct Review Activities",
-                recentEmailStatistics.getTotalDirectReviews(),
-                previousEmailStatistics.getTotalDirectReviews()), true);
+                    currSnapshot == null ? null : currSnapshot.getTotalDirectReviews(),
+                    prevSnapshot == null ? null : prevSnapshot.getTotalDirectReviews()),
+                    true);
 
         table = addTableRow(table, createDataForRow("a. Open Direct Review Activities",
-                recentEmailStatistics.getOpenDirectReviews(),
-                previousEmailStatistics.getOpenDirectReviews()),
-                NUMBER_OF_INDENTS_SUMMARY_LEVEL_STAT, true);
+                    currSnapshot == null ? null : currSnapshot.getOpenDirectReviews(),
+                    prevSnapshot == null ? null : prevSnapshot.getOpenDirectReviews()),
+                    NUMBER_OF_INDENTS_SUMMARY_LEVEL_STAT,
+                    true);
 
         table = addTableRow(table, createDataForRow("b. Closed Direct Review Activities",
-                recentEmailStatistics.getClosedDirectReviews(),
-                previousEmailStatistics.getClosedDirectReviews()),
-                NUMBER_OF_INDENTS_SUMMARY_LEVEL_STAT, true);
+                    currSnapshot == null ? null : currSnapshot.getClosedDirectReviews(),
+                    prevSnapshot == null ? null : prevSnapshot.getClosedDirectReviews()),
+                    NUMBER_OF_INDENTS_SUMMARY_LEVEL_STAT,
+                    true);
 
         table = addTableRow(table, createDataForRow("c. Average Duration of Closed Direct Review Activities (in days)",
-                recentEmailStatistics.getAverageDaysOpenDirectReviews(),
-                previousEmailStatistics.getAverageDaysOpenDirectReviews()),
-                NUMBER_OF_INDENTS_SUMMARY_LEVEL_STAT, true);
+                    currSnapshot == null ? null : currSnapshot.getAverageDaysOpenDirectReviews(),
+                    prevSnapshot == null ? null : prevSnapshot.getAverageDaysOpenDirectReviews()),
+                    NUMBER_OF_INDENTS_SUMMARY_LEVEL_STAT,
+                    true);
 
         table = addTableRow(table, createDataForRow("2. Total # of Direct Review Non-conformities",
-                recentEmailStatistics.getTotalNonConformities(),
-                previousEmailStatistics.getTotalNonConformities()), true);
+                    currSnapshot == null ? null : currSnapshot.getTotalNonConformities(),
+                    prevSnapshot == null ? null : prevSnapshot.getTotalNonConformities()),
+                    true);
 
         table = addTableRow(table, createDataForRow("a. Open NCs",
-                recentEmailStatistics.getOpenNonConformities(),
-                previousEmailStatistics.getOpenNonConformities()),
-                NUMBER_OF_INDENTS_SUMMARY_LEVEL_STAT, true);
+                    currSnapshot == null ? null : currSnapshot.getOpenNonConformities(),
+                    prevSnapshot == null ? null : prevSnapshot.getOpenNonConformities()),
+                    NUMBER_OF_INDENTS_SUMMARY_LEVEL_STAT,
+                    true);
 
         table = addTableRow(table, createDataForRow("b. Closed NCs",
-                recentEmailStatistics.getClosedNonConformities(),
-                previousEmailStatistics.getClosedNonConformities()),
-                NUMBER_OF_INDENTS_SUMMARY_LEVEL_STAT, true);
+                    currSnapshot == null ? null : currSnapshot.getClosedNonConformities(),
+                    prevSnapshot == null ? null : prevSnapshot.getClosedNonConformities()),
+                    NUMBER_OF_INDENTS_SUMMARY_LEVEL_STAT,
+                    true);
 
         table = addTableRow(table, createDataForRow("c. Number of Open CAPs",
-                recentEmailStatistics.getOpenCaps(),
-                previousEmailStatistics.getOpenCaps()),
-                NUMBER_OF_INDENTS_SUMMARY_LEVEL_STAT, true);
+                    currSnapshot == null ? null : currSnapshot.getOpenCaps(),
+                    prevSnapshot == null ? null : prevSnapshot.getOpenCaps()),
+                    NUMBER_OF_INDENTS_SUMMARY_LEVEL_STAT,
+                    true);
 
         table = addTableRow(table, createDataForRow("d. Number of Closed CAPs",
-                recentEmailStatistics.getClosedCaps(),
-                previousEmailStatistics.getClosedCaps()),
-                NUMBER_OF_INDENTS_SUMMARY_LEVEL_STAT, true);
+                    currSnapshot == null ? null : currSnapshot.getClosedCaps(),
+                    prevSnapshot == null ? null : prevSnapshot.getClosedCaps()),
+                    NUMBER_OF_INDENTS_SUMMARY_LEVEL_STAT,
+                    true);
 
         return table;
     }
 
-    @SuppressWarnings("resource")
     @Override
-    public Document addTableEndNote(Document document, StatisticsSnapshot recentEmailStatistics, StatisticsSnapshot previousEmailStatistics) {
-        if (displayEndNote(recentEmailStatistics, previousEmailStatistics)) {
+    public Document addTableEndNote(Document document, StatisticsSnapshot currSnapshot, StatisticsSnapshot prevSnapshot) {
+        if (displayEndNote(currSnapshot, prevSnapshot)) {
             Text first = new Text("Not Available (N/A) ").setFont(SummaryStatisticsPdfDefaults.getDefaultBoldFont());
             first.setFontSize(SummaryStatisticsPdfDefaults.FOOTER_FONT_SIZE);
             Text second = new Text("indicates that data was not available at the time the report was generated.").setFont(SummaryStatisticsPdfDefaults.getDefaultFont());
@@ -88,27 +96,26 @@ public class DirectReviewSummaryStatisticsSectionPdf extends SummaryStatisticsSe
         return document;
     }
 
-
-    private Boolean displayEndNote(StatisticsSnapshot recentEmailStatistics, StatisticsSnapshot previousEmailStatistics) {
+    private Boolean displayEndNote(StatisticsSnapshot currSnapshot, StatisticsSnapshot prevSnapshot) {
         return Stream.of(
-                recentEmailStatistics.getTotalDirectReviews(),
-                previousEmailStatistics.getTotalDirectReviews(),
-                recentEmailStatistics.getOpenDirectReviews(),
-                previousEmailStatistics.getOpenDirectReviews(),
-                recentEmailStatistics.getClosedDirectReviews(),
-                previousEmailStatistics.getClosedDirectReviews(),
-                recentEmailStatistics.getAverageDaysOpenDirectReviews(),
-                previousEmailStatistics.getAverageDaysOpenDirectReviews(),
-                recentEmailStatistics.getTotalNonConformities(),
-                previousEmailStatistics.getTotalNonConformities(),
-                recentEmailStatistics.getOpenNonConformities(),
-                previousEmailStatistics.getOpenNonConformities(),
-                recentEmailStatistics.getClosedNonConformities(),
-                previousEmailStatistics.getClosedNonConformities(),
-                recentEmailStatistics.getOpenCaps(),
-                previousEmailStatistics.getOpenCaps(),
-                recentEmailStatistics.getClosedCaps(),
-                previousEmailStatistics.getClosedCaps())
+                currSnapshot == null ? null : currSnapshot.getTotalDirectReviews(),
+                prevSnapshot == null ? null : prevSnapshot.getTotalDirectReviews(),
+                currSnapshot == null ? null : currSnapshot.getOpenDirectReviews(),
+                prevSnapshot == null ? null : prevSnapshot.getOpenDirectReviews(),
+                currSnapshot == null ? null : currSnapshot.getClosedDirectReviews(),
+                prevSnapshot == null ? null : prevSnapshot.getClosedDirectReviews(),
+                currSnapshot == null ? null : currSnapshot.getAverageDaysOpenDirectReviews(),
+                prevSnapshot == null ? null : prevSnapshot.getAverageDaysOpenDirectReviews(),
+                currSnapshot == null ? null : currSnapshot.getTotalNonConformities(),
+                prevSnapshot == null ? null : prevSnapshot.getTotalNonConformities(),
+                currSnapshot == null ? null : currSnapshot.getOpenNonConformities(),
+                prevSnapshot == null ? null : prevSnapshot.getOpenNonConformities(),
+                currSnapshot == null ? null : currSnapshot.getClosedNonConformities(),
+                prevSnapshot == null ? null : prevSnapshot.getClosedNonConformities(),
+                currSnapshot == null ? null : currSnapshot.getOpenCaps(),
+                prevSnapshot == null ? null : prevSnapshot.getOpenCaps(),
+                currSnapshot == null ? null : currSnapshot.getClosedCaps(),
+                prevSnapshot == null ? null : prevSnapshot.getClosedCaps())
         .anyMatch(x -> x == null);
     }
 

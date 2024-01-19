@@ -8,94 +8,60 @@ import org.springframework.stereotype.Component;
 import com.itextpdf.layout.element.Table;
 
 import gov.healthit.chpl.dao.CertificationBodyDAO;
+import gov.healthit.chpl.dao.CertificationStatusDAO;
 import gov.healthit.chpl.scheduler.job.summarystatistics.data.StatisticsSnapshot;
+import gov.healthit.chpl.scheduler.job.summarystatistics.email.CertificationStatusIdHelper;
 
 @Component
 public class ListingSummaryStatisticsSectionPdf extends SummaryStatisticsSectionPdf {
+    private CertificationStatusIdHelper statusIdHelper;
 
     @Autowired
-    public ListingSummaryStatisticsSectionPdf(CertificationBodyDAO certificationBodyDAO) {
+    public ListingSummaryStatisticsSectionPdf(CertificationBodyDAO certificationBodyDAO,
+            CertificationStatusDAO certificationStatusDao) {
         super(certificationBodyDAO);
+        this.statusIdHelper = new CertificationStatusIdHelper(certificationStatusDao);
     }
 
     @Override
-    public Table generateTable(LocalDate recent, LocalDate previous, StatisticsSnapshot recentEmailStatistics, StatisticsSnapshot previousEmailStatistics) {
+    public Table generateTable(LocalDate currSnapshotDate, LocalDate prevSnapshotDate, StatisticsSnapshot currSnapshot, StatisticsSnapshot prevSnapshot) {
         Table table = new Table(getRelativeColumnWidths());
         table.useAllAvailableWidth();
-        table = addHeaders(table, "Listing Statistics", recent, previous);
-//        table = addTableRow(table, createDataForRow("1. Total # of Listings (Regardless of Status or Edition)",
-//                                    recentEmailStatistics.getListingsForEditionAnyTotal(),
-//                                    previousEmailStatistics.getListingsForEditionAnyTotal()), true);
-//
-//        table = addTableRow(table, createDataForRow("a. Total # of Active (Including Suspended by ONC/ONC-ACB) 2014 Listings",
-//                recentEmailStatistics.getListingsForEdition2014WithActiveAndSuspendedStatuses().getCount(),
-//                previousEmailStatistics.getListingsForEdition2014WithActiveAndSuspendedStatuses().getCount()),
-//                NUMBER_OF_INDENTS_SUMMARY_LEVEL_STAT, true);
-//
-//        table = addAcbRows(table,
-//                recentEmailStatistics.getListingsForEdition2014WithActiveAndSuspendedStatuses().getAcbStatistics(),
-//                previousEmailStatistics.getListingsForEdition2014WithActiveAndSuspendedStatuses().getAcbStatistics());
-//
-//        table = addTableRow(table, createDataForRow("b. Total # of Active (Including Suspended) 2015 Listings",
-//                recentEmailStatistics.getListingsForEdition2015NonCuresWithActiveAndSuspendedStatuses().getCount(),
-//                previousEmailStatistics.getListingsForEdition2015NonCuresWithActiveAndSuspendedStatuses().getCount()),
-//                NUMBER_OF_INDENTS_SUMMARY_LEVEL_STAT, true);
-//
-//        table = addAcbRows(table,
-//                recentEmailStatistics.getListingsForEdition2015NonCuresWithActiveAndSuspendedStatuses().getAcbStatistics(),
-//                previousEmailStatistics.getListingsForEdition2015NonCuresWithActiveAndSuspendedStatuses().getAcbStatistics());
-//
-//        table = addTableRow(table, createDataForRow("c. Total # of 2015 Listings with Alternative Test Methods",
-//                recentEmailStatistics.getListingsForEdition2015NonCuresWithAllStatusesAndAltTestMethods().getCount(),
-//                previousEmailStatistics.getListingsForEdition2015NonCuresWithAllStatusesAndAltTestMethods().getCount()),
-//                NUMBER_OF_INDENTS_SUMMARY_LEVEL_STAT, true);
-//
-//        table = addAcbRows(table,
-//                recentEmailStatistics.getListingsForEdition2015NonCuresWithAllStatusesAndAltTestMethods().getAcbStatistics(),
-//                previousEmailStatistics.getListingsForEdition2015NonCuresWithAllStatusesAndAltTestMethods().getAcbStatistics());
-//
-//        table = addTableRow(table, createDataForRow("d. Total # of Active (Including Suspended by ONC/ONC-ACB 2015 Cures Update Listings)",
-//                recentEmailStatistics.getListingsForEdition2015CuresWithActiveAndSuspendedStatuses().getCount(),
-//                previousEmailStatistics.getListingsForEdition2015CuresWithActiveAndSuspendedStatuses().getCount()),
-//                NUMBER_OF_INDENTS_SUMMARY_LEVEL_STAT, true);
-//
-//        table = addAcbRows(table,
-//                recentEmailStatistics.getListingsForEdition2015CuresWithActiveAndSuspendedStatuses().getAcbStatistics(),
-//                previousEmailStatistics.getListingsForEdition2015CuresWithActiveAndSuspendedStatuses().getAcbStatistics());
-//
-//        table = addTableRow(table, createDataForRow("e. Total # of 2015 Cures Update Listings with Alternative Test Methods",
-//                recentEmailStatistics.getListingsForEdition2015CuresWithAllStatusesAndAltTestMethods().getCount(),
-//                previousEmailStatistics.getListingsForEdition2015CuresWithAllStatusesAndAltTestMethods().getCount()),
-//                NUMBER_OF_INDENTS_SUMMARY_LEVEL_STAT, true);
-//
-//        table = addAcbRows(table,
-//                recentEmailStatistics.getListingsForEdition2015CuresWithAllStatusesAndAltTestMethods().getAcbStatistics(),
-//                previousEmailStatistics.getListingsForEdition2015CuresWithAllStatusesAndAltTestMethods().getAcbStatistics());
-//
-//        table = addTableRow(table, createDataForRow("f. Total # of 2014 (Regardless of Status)",
-//                recentEmailStatistics.getListingsForEdition2014Total(),
-//                previousEmailStatistics.getListingsForEdition2014Total()),
-//                NUMBER_OF_INDENTS_SUMMARY_LEVEL_STAT, true);
-//
-//        table = addTableRow(table, createDataForRow("g. Total # of 2015 Listings and 2015 Cures Update Listings (Regardless of Status)",
-//                recentEmailStatistics.getListingsForEdition2015NonCuresAndCuresTotal(),
-//                previousEmailStatistics.getListingsForEdition2015NonCuresAndCuresTotal()),
-//                NUMBER_OF_INDENTS_SUMMARY_LEVEL_STAT, true);
-//
-//        table = addTableRow(table, createDataForRow("h. Total # of 2015 Listings (Regardless of Status)",
-//                recentEmailStatistics.getListingsForEdition2015NonCuresTotal(),
-//                previousEmailStatistics.getListingsForEdition2015NonCuresTotal()),
-//                NUMBER_OF_INDENTS_SUMMARY_LEVEL_STAT, true);
-//
-//        table = addTableRow(table, createDataForRow("i. Total # of 2015 Cures Update Listings (Regardless of Status)",
-//                recentEmailStatistics.getListingsForEdition2015CuresTotal(),
-//                previousEmailStatistics.getListingsForEdition2015CuresTotal()),
-//                NUMBER_OF_INDENTS_SUMMARY_LEVEL_STAT, true);
-//
-//        table = addTableRow(table, createDataForRow("j. Total # of 2011 Listings (Regardless of Status)",
-//                recentEmailStatistics.getListingsForEdition2011Total(),
-//                previousEmailStatistics.getListingsForEdition2011Total()),
-//                NUMBER_OF_INDENTS_SUMMARY_LEVEL_STAT, true);
+        table = addHeaders(table, "Listing Statistics", currSnapshotDate, prevSnapshotDate);
+        table = addTableRow(table, createDataForRow("1. Total # of Listings (2015 Edition to Present)",
+                    currSnapshot == null ? null : currSnapshot.getListingCountForStatuses(statusIdHelper.getNonRetiredStatusIds()),
+                    prevSnapshot == null ? null : prevSnapshot.getListingCountForStatuses(statusIdHelper.getNonRetiredStatusIds())),
+                    true);
+
+        table = addTableRow(table, createDataForRow("a. Total # of Active (Including Suspended) Listings",
+                    currSnapshot == null ? null : currSnapshot.getListingCountForStatuses(statusIdHelper.getActiveAndSuspendedStatusIds()),
+                    prevSnapshot == null ? null : prevSnapshot.getListingCountForStatuses(statusIdHelper.getActiveAndSuspendedStatusIds())),
+                    NUMBER_OF_INDENTS_SUMMARY_LEVEL_STAT,
+                    true);
+
+        table = addAcbRows(table,
+                    currSnapshot == null ? null : currSnapshot.getListingCountForStatusesByAcb(statusIdHelper.getActiveAndSuspendedStatusIds()),
+                    prevSnapshot == null ? null : prevSnapshot.getListingCountForStatusesByAcb(statusIdHelper.getActiveAndSuspendedStatusIds()));
+
+        table = addTableRow(table, createDataForRow("b. Total # of Suspended Listings",
+                    currSnapshot == null ? null : currSnapshot.getListingCountForStatuses(statusIdHelper.getSuspendedStatusIds()),
+                    prevSnapshot == null ? null : prevSnapshot.getListingCountForStatuses(statusIdHelper.getSuspendedStatusIds())),
+                    NUMBER_OF_INDENTS_SUMMARY_LEVEL_STAT,
+                    true);
+
+        table = addAcbRows(table,
+                    currSnapshot == null ? null : currSnapshot.getListingCountForStatusesByAcb(statusIdHelper.getSuspendedStatusIds()),
+                    prevSnapshot == null ? null : prevSnapshot.getListingCountForStatusesByAcb(statusIdHelper.getSuspendedStatusIds()));
+
+        table = addTableRow(table, createDataForRow("c. Total # of Withdrawn by Developer Listings",
+                    currSnapshot == null ? null : currSnapshot.getListingCountForStatuses(statusIdHelper.getWithdrawnByDeveloperStatusIds()),
+                    prevSnapshot == null ? null : prevSnapshot.getListingCountForStatuses(statusIdHelper.getWithdrawnByDeveloperStatusIds())),
+                    NUMBER_OF_INDENTS_SUMMARY_LEVEL_STAT,
+                    true);
+
+        table = addAcbRows(table,
+                    currSnapshot == null ? null : currSnapshot.getListingCountForStatusesByAcb(statusIdHelper.getWithdrawnByDeveloperStatusIds()),
+                    prevSnapshot == null ? null : prevSnapshot.getListingCountForStatusesByAcb(statusIdHelper.getWithdrawnByDeveloperStatusIds()));
 
         return table;
     }

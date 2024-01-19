@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.commons.collections.CollectionUtils;
+
 import com.itextpdf.layout.Document;
 import com.itextpdf.layout.borders.SolidBorder;
 import com.itextpdf.layout.element.Cell;
@@ -34,9 +36,9 @@ public abstract class SummaryStatisticsSectionPdf {
         statisticsMassager = new StatisticsMassager(certificationBodyDAO.findAllActive());
     }
 
-    public abstract Table generateTable(LocalDate recent, LocalDate previous, StatisticsSnapshot recentEmailStatistics, StatisticsSnapshot previousEmailStatistics);
+    public abstract Table generateTable(LocalDate currSnapshotDate, LocalDate prevSnapshotDate, StatisticsSnapshot currSnapshot, StatisticsSnapshot prevSnapshot);
 
-    public Document addTableEndNote(Document document, StatisticsSnapshot recentEmailStatistics, StatisticsSnapshot previousEmailStatistics) {
+    public Document addTableEndNote(Document document, StatisticsSnapshot currSnapshot, StatisticsSnapshot prevSnapshot) {
         //By default, do nothing
         return document;
     }
@@ -44,7 +46,6 @@ public abstract class SummaryStatisticsSectionPdf {
     public float[] getRelativeColumnWidths() {
         return new float[] {SECTION_DESCRIPTION_RELATIVE_WIDTH, RECENT_DATE_RELATIVE_WIDTH, PREVIOUS_DATE_RELATIVE_WIDTH, DELTA_RELATIVE_WIDTH};
     }
-
 
     public Table addTableHeaderRow(Table table, List<String> headers) {
         headers.stream()
@@ -101,23 +102,28 @@ public abstract class SummaryStatisticsSectionPdf {
         }
     }
 
-    public Optional<CertificationBodyStatistic> getAccompanyingEmailCertificationBodyStatistic(CertificationBodyStatistic recent, List<CertificationBodyStatistic> previousList) {
+    public Optional<CertificationBodyStatistic> getAccompanyingCertificationBodyStatistic(CertificationBodyStatistic recent, List<CertificationBodyStatistic> previousList) {
         return previousList.stream()
                 .filter(previous -> previous.getAcbName().equals(recent.getAcbName()))
                 .findAny();
     }
 
-    public Table addAcbRows(Table table, List<CertificationBodyStatistic> recentEmailAcbStats, List<CertificationBodyStatistic> previousEmailAcbStats) {
-        recentEmailAcbStats = addMissingAcbsToCollection(recentEmailAcbStats);
-        previousEmailAcbStats = addMissingAcbsToCollection(previousEmailAcbStats);
+    public Table addAcbRows(Table table, List<CertificationBodyStatistic> currAcbStats, List<CertificationBodyStatistic> prevAcbStats) {
+        currAcbStats = addMissingAcbsToCollection(currAcbStats);
+        prevAcbStats = addMissingAcbsToCollection(prevAcbStats);
 
-        for (CertificationBodyStatistic recentAcbStat : recentEmailAcbStats) {
+        for (CertificationBodyStatistic currAcbStat : currAcbStats) {
             //Find the matching stat in the previous collection
-            Optional<CertificationBodyStatistic> previousAcbStat =
-                    getAccompanyingEmailCertificationBodyStatistic(recentAcbStat, previousEmailAcbStats);
+            Optional<CertificationBodyStatistic> prevAcbStat =
+                    getAccompanyingCertificationBodyStatistic(currAcbStat, prevAcbStats);
 
-            if (previousAcbStat.isPresent()) {
-                table = addTableRow(table, createDataForRow(recentAcbStat.getAcbName(), recentAcbStat.getCount(), previousAcbStat.get().getCount()), NUMBER_OF_INDENTS_ACB_LEVEL_STAT, false);
+            if (prevAcbStat.isPresent()) {
+                table = addTableRow(table, createDataForRow(
+                                currAcbStat.getAcbName(),
+                                currAcbStat.getCount(),
+                                prevAcbStat.get().getCount()),
+                            NUMBER_OF_INDENTS_ACB_LEVEL_STAT,
+                            false);
             }
         }
         return table;
@@ -137,7 +143,10 @@ public abstract class SummaryStatisticsSectionPdf {
         return DateTimeFormatter.ofPattern("MMMM dd, yyyy");
     }
 
-    private List<CertificationBodyStatistic> addMissingAcbsToCollection(List<CertificationBodyStatistic> emailAcbStats) {
-        return statisticsMassager.getStatistics(emailAcbStats);
+    private List<CertificationBodyStatistic> addMissingAcbsToCollection(List<CertificationBodyStatistic> acbStats) {
+        if (CollectionUtils.isEmpty(acbStats)) {
+            return new ArrayList<CertificationBodyStatistic>();
+        }
+        return statisticsMassager.getStatistics(acbStats);
     }
 }

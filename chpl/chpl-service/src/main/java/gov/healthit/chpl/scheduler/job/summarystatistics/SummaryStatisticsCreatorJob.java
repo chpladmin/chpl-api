@@ -1,7 +1,6 @@
 package gov.healthit.chpl.scheduler.job.summarystatistics;
 
 import java.util.Date;
-import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -25,22 +24,17 @@ import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.scheduler.job.QuartzJob;
 import gov.healthit.chpl.scheduler.job.summarystatistics.data.StatisticsSnapshot;
-import gov.healthit.chpl.scheduler.job.summarystatistics.data.StatisticsSnapshotCreator;
-import gov.healthit.chpl.search.ListingSearchManager;
-import gov.healthit.chpl.search.domain.ListingSearchResult;
+import gov.healthit.chpl.scheduler.job.summarystatistics.data.StatisticsSnapshotCalculator;
 
 @DisallowConcurrentExecution
 public class SummaryStatisticsCreatorJob extends QuartzJob {
     private static final Logger LOGGER = LogManager.getLogger("summaryStatisticsCreatorJobLogger");
 
     @Autowired
-    private StatisticsSnapshotCreator statisticsSnapshotCreator;
+    private StatisticsSnapshotCalculator statisticsSnapshotCalculator;
 
     @Autowired
     private SummaryStatisticsDAO summaryStatisticsDAO;
-
-    @Autowired
-    private ListingSearchManager listingSearchManager;
 
     @Autowired
     private JpaTransactionManager txManager;
@@ -54,12 +48,7 @@ public class SummaryStatisticsCreatorJob extends QuartzJob {
         LOGGER.info("********* Starting the Summary Statistics Creation job. *********");
         try {
             SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
-
-            LOGGER.info("Getting all listings.");
-            List<ListingSearchResult> allListings = listingSearchManager.getAllListings();
-            LOGGER.info("Completed getting all " + allListings.size() + " listings.");
-
-            StatisticsSnapshot statisticsSnapshot = statisticsSnapshotCreator.getStatistics(allListings);
+            StatisticsSnapshot statisticsSnapshot = statisticsSnapshotCalculator.getStatistics();
             saveStatisticsSnapshot(statisticsSnapshot);
         } catch (Exception e) {
             LOGGER.error("Caught unexpected exception: " + e.getMessage(), e);

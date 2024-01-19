@@ -10,32 +10,32 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.compliance.surveillance.entity.SurveillanceEntity;
 
 @Component
-public class SurveillanceDataCreator {
+public class SurveillanceDataCalculator {
 
-    private SurveillanceStatisticsDAO surveillanceStatisticsDAO;
+    private SurveillanceStatisticsDAO surveillanceStatisticsDao;
 
     @Autowired
-    public SurveillanceDataCreator(SurveillanceStatisticsDAO surveillanceStatisticsDAO) {
-        this.surveillanceStatisticsDAO = surveillanceStatisticsDAO;
+    public SurveillanceDataCalculator(SurveillanceStatisticsDAO surveillanceStatisticsDao) {
+        this.surveillanceStatisticsDao = surveillanceStatisticsDao;
     }
 
     public Long getTotalSurveillanceActivities() {
-        return surveillanceStatisticsDAO.getTotalSurveillanceActivities(null);
+        return surveillanceStatisticsDao.getTotalSurveillanceActivities(null);
     }
 
     public Statistic getTotalOpenSurveillanceActivities() {
         Statistic openSurvs = new Statistic();
-        openSurvs.setCount(surveillanceStatisticsDAO.getTotalOpenSurveillanceActivities(null));
+        openSurvs.setCount(surveillanceStatisticsDao.getTotalOpenSurveillanceActivities(null));
         openSurvs.setAcbStatistics(getTotalOpenSurveillancesByAcb());
         return openSurvs;
     }
 
     public Long getTotalClosedSurveillanceActivities() {
-        return surveillanceStatisticsDAO.getTotalClosedSurveillanceActivities(null);
+        return surveillanceStatisticsDao.getTotalClosedSurveillanceActivities(null);
     }
 
     public Long getAverageTimeToCloseSurveillance() {
-        List<SurveillanceEntity> surveillances = surveillanceStatisticsDAO.getAllSurveillances().stream()
+        List<SurveillanceEntity> surveillances = surveillanceStatisticsDao.getAllSurveillances().stream()
                 .filter(surv -> surv.getStartDate() != null
                 && surv.getEndDate() != null)
                 .collect(Collectors.toList());
@@ -47,6 +47,6 @@ public class SurveillanceDataCreator {
     }
 
     private List<CertificationBodyStatistic> getTotalOpenSurveillancesByAcb() {
-        return surveillanceStatisticsDAO.getTotalOpenSurveillanceActivitiesByAcb(null);
+        return surveillanceStatisticsDao.getTotalOpenSurveillanceActivitiesByAcb(null);
     }
 }

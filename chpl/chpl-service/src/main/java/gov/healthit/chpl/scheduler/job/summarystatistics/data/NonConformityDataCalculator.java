@@ -19,7 +19,7 @@ import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 
 @Component
-public class NonConformityDataCreator {
+public class NonConformityDataCalculator {
     private static final Logger LOGGER = LogManager.getLogger("summaryStatisticsCreatorJobLogger");
     private static final Long NONCONFORMITY_SURVEILLANCE_RESULT = 1L;
 
@@ -27,7 +27,7 @@ public class NonConformityDataCreator {
     private CertificationBodyDAO certificationBodyDAO;
 
     @Autowired
-    public NonConformityDataCreator(SurveillanceStatisticsDAO surveillanceStatisticsDAO,
+    public NonConformityDataCalculator(SurveillanceStatisticsDAO surveillanceStatisticsDAO,
             CertificationBodyDAO certificationBodyDAO) {
         this.surveillanceStatisticsDAO = surveillanceStatisticsDAO;
         this.certificationBodyDAO = certificationBodyDAO;

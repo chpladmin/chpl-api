@@ -31,6 +31,7 @@ import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.scheduler.job.QuartzJob;
 import gov.healthit.chpl.scheduler.job.summarystatistics.data.StatisticsSnapshot;
+import gov.healthit.chpl.scheduler.job.summarystatistics.email.CertificationStatusIdHelper;
 import gov.healthit.chpl.scheduler.job.summarystatistics.email.DeveloperStatisticsSectionCreator;
 import gov.healthit.chpl.scheduler.job.summarystatistics.email.DirectReviewStatisticsSectionCreator;
 import gov.healthit.chpl.scheduler.job.summarystatistics.email.ListingStatisticsSectionCreator;
@@ -60,6 +61,7 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
     @Autowired
     private ChplEmailFactory chplEmailFactory;
 
+    private CertificationStatusIdHelper statusIdHelper;
     private List<CertificationBody> activeAcbs;
 
     public SummaryStatisticsEmailJob() throws Exception {
@@ -73,6 +75,7 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
             LOGGER.info("********* Starting the Summary Statistics Email job. *********");
             LOGGER.info("Sending email to: " + jobContext.getMergedJobDataMap().getString("email"));
 
+            statusIdHelper = new CertificationStatusIdHelper(certificationStatusDao);
             activeAcbs = certificationBodyDAO.findAllActive();
 
             SummaryStatisticsEntity summaryStatistics = summaryStatisticsDAO.getCurrentSummaryStatistics();
@@ -103,7 +106,7 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
 
     private List<File> getAttachments() throws IOException {
         List<File> files = new ArrayList<File>();
-        //files.add(summaryStatisticsPdf.generate(getSummaryStatisticsFile()));
+        files.add(summaryStatisticsPdf.generate());
         return files;
     }
 
@@ -115,9 +118,9 @@ public class SummaryStatisticsEmailJob extends QuartzJob {
 
     private String createHtmlMessage(StatisticsSnapshot stats, Date endDate) throws EntityRetrievalException {
         StringBuilder emailMessage = new StringBuilder();
-        DeveloperStatisticsSectionCreator developerStatisticsSectionCreator = new DeveloperStatisticsSectionCreator(certificationStatusDao);
-        ProductStatisticsSectionCreator productStatisticsSectionCreator = new ProductStatisticsSectionCreator(certificationStatusDao);
-        ListingStatisticsSectionCreator listingStatisticsSectionCreator = new ListingStatisticsSectionCreator(certificationStatusDao);
+        DeveloperStatisticsSectionCreator developerStatisticsSectionCreator = new DeveloperStatisticsSectionCreator(statusIdHelper);
+        ProductStatisticsSectionCreator productStatisticsSectionCreator = new ProductStatisticsSectionCreator(statusIdHelper);
+        ListingStatisticsSectionCreator listingStatisticsSectionCreator = new ListingStatisticsSectionCreator(statusIdHelper);
         SurveillanceStatisticsSectionCreator surveillanceStatisticsSectionCreator = new SurveillanceStatisticsSectionCreator();
         NonConformityStatisticsSectionCreator nonConformityStatisticsSectionCreator = new NonConformityStatisticsSectionCreator();
         DirectReviewStatisticsSectionCreator directReviewStatisticsSectionCreator = new DirectReviewStatisticsSectionCreator();
