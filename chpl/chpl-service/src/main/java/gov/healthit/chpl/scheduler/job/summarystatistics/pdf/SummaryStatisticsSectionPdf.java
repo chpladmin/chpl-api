@@ -124,6 +124,13 @@ public abstract class SummaryStatisticsSectionPdf {
                                 prevAcbStat.get().getCount()),
                             NUMBER_OF_INDENTS_ACB_LEVEL_STAT,
                             false);
+            } else {
+                table = addTableRow(table, createDataForRow(
+                        currAcbStat.getAcbName(),
+                        currAcbStat.getCount(),
+                        null),
+                    NUMBER_OF_INDENTS_ACB_LEVEL_STAT,
+                    false);
             }
         }
         return table;
