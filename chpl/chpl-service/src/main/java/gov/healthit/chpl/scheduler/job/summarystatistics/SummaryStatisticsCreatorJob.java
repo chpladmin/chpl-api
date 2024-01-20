@@ -2,8 +2,6 @@ package gov.healthit.chpl.scheduler.job.summarystatistics;
 
 import java.util.Date;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -25,10 +23,11 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.scheduler.job.QuartzJob;
 import gov.healthit.chpl.scheduler.job.summarystatistics.data.StatisticsSnapshot;
 import gov.healthit.chpl.scheduler.job.summarystatistics.data.StatisticsSnapshotCalculator;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2(topic = "summaryStatisticsCreatorJobLogger")
 @DisallowConcurrentExecution
 public class SummaryStatisticsCreatorJob extends QuartzJob {
-    private static final Logger LOGGER = LogManager.getLogger("summaryStatisticsCreatorJobLogger");
 
     @Autowired
     private StatisticsSnapshotCalculator statisticsSnapshotCalculator;

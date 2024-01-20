@@ -9,8 +9,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,9 +37,10 @@ import gov.healthit.chpl.scheduler.job.summarystatistics.email.NonConformityStat
 import gov.healthit.chpl.scheduler.job.summarystatistics.email.ProductStatisticsSectionCreator;
 import gov.healthit.chpl.scheduler.job.summarystatistics.email.SurveillanceStatisticsSectionCreator;
 import gov.healthit.chpl.scheduler.job.summarystatistics.pdf.SummaryStatisticsPdf;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2(topic = "summaryStatisticsEmailJobLogger")
 public class SummaryStatisticsEmailJob extends QuartzJob {
-    private static final Logger LOGGER = LogManager.getLogger("summaryStatisticsEmailJobLogger");
 
     @Autowired
     private SummaryStatisticsDAO summaryStatisticsDAO;

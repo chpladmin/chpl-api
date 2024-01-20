@@ -12,7 +12,6 @@ public class NonConformityStatisticsSectionCreator extends StatisticsSectionCrea
         return buildNonConformitySection(stats, new StatisticsMassager(activeAcbs));
     }
 
-
     private String buildNonConformitySection(StatisticsSnapshot stats, StatisticsMassager massager) {
         StringBuilder section = new StringBuilder();
 

@@ -12,7 +12,6 @@ import gov.healthit.chpl.dao.CertificationStatusDAO;
 import gov.healthit.chpl.scheduler.job.summarystatistics.data.StatisticsSnapshot;
 import gov.healthit.chpl.scheduler.job.summarystatistics.email.CertificationStatusIdHelper;
 
-
 @Component
 public class DeveloperSummaryStatisticsSectionPdf extends SummaryStatisticsSectionPdf {
     private CertificationStatusIdHelper statusIdHelper;

@@ -25,7 +25,7 @@ import gov.healthit.chpl.scheduler.job.summarystatistics.data.StatisticsSnapshot
 import gov.healthit.chpl.util.DateUtil;
 import lombok.extern.log4j.Log4j2;
 
-@Log4j2(topic = "summaryStatisticsCreatorJobLogger")
+@Log4j2(topic = "summaryStatisticsEmailJobLogger")
 @Component
 public class SummaryStatisticsPdf {
     private static final Integer DAYS_IN_ONE_WEEK = 7;
