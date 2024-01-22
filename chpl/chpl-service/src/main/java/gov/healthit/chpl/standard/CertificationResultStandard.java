@@ -33,7 +33,7 @@ public class CertificationResultStandard implements Serializable {
     private Long certificationResultId;
 
     @JsonIgnore
-    private Date createDate;
+    private Date creationDate;
 
     public boolean matches(CertificationResultStandard anotherStandard) {
         boolean result = false;

@@ -156,8 +156,8 @@ public class UpdatedListingStatusReportCreatorJob extends QuartzJob {
         if (CollectionUtils.isNotEmpty(certificationResultStandards)) {
             daysUpdatedEarly = certificationResultStandards.stream()
                     .filter(certResultStd -> certResultStd.getStandard().getRequiredDay() != null
-                            && DateUtil.toLocalDate(certResultStd.getCreateDate().getTime()).isBefore(certResultStd.getStandard().getRequiredDay()))
-                    .mapToLong(certResultStd -> ChronoUnit.DAYS.between(DateUtil.toLocalDate(certResultStd.getCreateDate().getTime()), certResultStd.getStandard().getRequiredDay()))
+                            && DateUtil.toLocalDate(certResultStd.getCreationDate().getTime()).isBefore(certResultStd.getStandard().getRequiredDay()))
+                    .mapToLong(certResultStd -> ChronoUnit.DAYS.between(DateUtil.toLocalDate(certResultStd.getCreationDate().getTime()), certResultStd.getStandard().getRequiredDay()))
                     .min();
 
             LOGGER.info("{} - {}", certificationResult.getCriterion().getNumber(), daysUpdatedEarly);

@@ -49,7 +49,7 @@ public class CertificationResultStandardEntity extends EntityAudit {
                 .id(this.getId())
                 .certificationResultId(certificationResultId)
                 .standard(this.standard.toDomain())
-                .createDate(getCreationDate())
+                .creationDate(getCreationDate())
                 .build();
     }
 
