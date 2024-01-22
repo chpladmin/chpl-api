@@ -28,7 +28,7 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2(topic = "summaryStatisticsEmailJobLogger")
 @Component
 public class SummaryStatisticsPdf {
-    private static final Integer DAYS_IN_ONE_WEEK = 7;
+    private static final Integer DAYS_IN_ONE_WEEK = 1;
     private SummaryStatisticsDAO summaryStatisticsDao;
     private DeveloperSummaryStatisticsSectionPdf developerSummaryStatisticsSectionPdf;
     private ProductSummaryStatisticsSectionPdf productSummaryStatisticsSectionPdf;
