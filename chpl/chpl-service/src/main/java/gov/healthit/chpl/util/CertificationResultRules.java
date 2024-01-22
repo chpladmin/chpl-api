@@ -17,6 +17,7 @@ import lombok.extern.log4j.Log4j2;
 public class CertificationResultRules {
     public static final String GAP = "gap";
     public static final String PRIVACY_SECURITY = "privacySecurity";
+    public static final String CODE_SET = "codeSet";
     public static final String CONFORMANCE_METHOD = "conformanceMethod";
     public static final String OPTIONAL_STANDARD = "optionalStandard";
     public static final String STANDARDS_TESTED = "standardsTested";
@@ -69,6 +70,11 @@ public class CertificationResultRules {
                     .canHaveOption(attribute.getAttestationAnswer())
                     .optionName(ATTESTATION_ANSWER)
                 .build());
+            rules.get(attribute.getCriterion().getId()).add(
+                    CertificationResultOption.builder()
+                    .canHaveOption(attribute.getCodeSet())
+                    .optionName(CODE_SET)
+                    .build());
             rules.get(attribute.getCriterion().getId()).add(
                     CertificationResultOption.builder()
                     .canHaveOption(attribute.getConformanceMethod())

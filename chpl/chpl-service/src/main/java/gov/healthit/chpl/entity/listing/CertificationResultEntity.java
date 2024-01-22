@@ -89,6 +89,9 @@ public class CertificationResultEntity extends EntityAudit {
     @Column(name = "privacy_security_framework")
     private String privacySecurityFramework;
 
+    @Column(name = "code_set")
+    private Boolean codeSet;
+
     @Basic(optional = true)
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "certificationResult")
     private List<CertificationResultTestToolEntity> certificationResultTestTool;
