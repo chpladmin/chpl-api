@@ -10,16 +10,16 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.experimental.SuperBuilder;
 
 @Schema(description = "The standards associated to the certification result")
 @JsonIgnoreProperties(ignoreUnknown = true)
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-@SuperBuilder
+@Builder
 public class CertificationResultStandard implements Serializable {
     private static final long serialVersionUID = 418146022721549464L;
 
