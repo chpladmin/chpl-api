@@ -90,37 +90,37 @@ public class StatisticsSnapshotCalculator {
             /////////////////////////////////////////////////////////////////////////////////////
             // Total # of NCs
             futures.add(CompletableFuture.supplyAsync(() -> nonConformityDataCalculator.getTotalNonConformities(), executorService)
-                    .thenAccept(result -> stats.setNonconfStatusAllTotal(result)));
+                    .thenAccept(result -> stats.setNonConfStatusAllTotal(result)));
             // Open NCs
             futures.add(CompletableFuture.supplyAsync(() -> nonConformityDataCalculator.getTotalOpenNonconformities(), executorService)
-                    .thenAccept(result -> stats.setNonconfStatusOpen(result)));
+                    .thenAccept(result -> stats.setNonConfStatusOpen(result)));
             // Closed NCs
             futures.add(CompletableFuture.supplyAsync(() -> nonConformityDataCalculator.getTotalClosedNonconformities(), executorService)
-                    .thenAccept(result -> stats.setNonconfStatusClosedTotal(result)));
+                    .thenAccept(result -> stats.setNonConfStatusClosedTotal(result)));
             // Average Time to Assess Conformity (in days)
             futures.add(CompletableFuture.supplyAsync(() -> nonConformityDataCalculator.getAverageTimeToAssessConformity(), executorService)
-                    .thenAccept(result -> stats.setNonconfAvgTimeToAssessConformity(result)));
+                    .thenAccept(result -> stats.setNonConfAvgTimeToAssessConformity(result)));
             // Average Time to Approve CAP (in days)
             futures.add(CompletableFuture.supplyAsync(() -> nonConformityDataCalculator.getAverageTimeToApproveCAP(), executorService)
-                    .thenAccept(result -> stats.setNonconfAvgTimeToApproveCAP(result)));
+                    .thenAccept(result -> stats.setNonConfAvgTimeToApproveCAP(result)));
             // Average Duration of CAP (in days) (includes closed and ongoing CAPs)
             futures.add(CompletableFuture.supplyAsync(() -> nonConformityDataCalculator.getAverageDurationOfCAP(), executorService)
-                    .thenAccept(result -> stats.setNonconfAvgDurationOfCAP(result)));
+                    .thenAccept(result -> stats.setNonConfAvgDurationOfCAP(result)));
             // Average Time from CAP Approval to Surveillance Close (in days)
             futures.add(CompletableFuture.supplyAsync(() -> nonConformityDataCalculator.getAverageTimeFromCAPApprovalToSurveillanceClose(), executorService)
-                    .thenAccept(result -> stats.setNonconfAvgTimeFromCAPAprrovalToSurveillanceEnd(result)));
+                    .thenAccept(result -> stats.setNonConfAvgTimeFromCAPAprrovalToSurveillanceEnd(result)));
             // Average Time from CAP Close to Surveillance Close (in days)
             futures.add(CompletableFuture.supplyAsync(() -> nonConformityDataCalculator.getAverageTimeFromCAPEndToSurveillanceClose(), executorService)
-                    .thenAccept(result -> stats.setNonconfAvgTimeFromCAPEndToSurveillanceEnd(result)));
+                    .thenAccept(result -> stats.setNonConfAvgTimeFromCAPEndToSurveillanceEnd(result)));
             // Average Duration of Closed Non-Conformities (in days)
             futures.add(CompletableFuture.supplyAsync(() -> nonConformityDataCalculator.getAverageTimeFromSurveillanceOpenToSurveillanceClose(), executorService)
-                    .thenAccept(result -> stats.setNonconfAvgTimeFromSurveillanceOpenToSurveillanceClose(result)));
+                    .thenAccept(result -> stats.setNonConfAvgTimeFromSurveillanceOpenToSurveillanceClose(result)));
             // Number of Open CAPs
             futures.add(CompletableFuture.supplyAsync(() -> nonConformityDataCalculator.getOpenCAPCountByAcb(), executorService)
-                    .thenAccept(result -> stats.setNonconfCAPStatusOpen(result)));
+                    .thenAccept(result -> stats.setNonConfCAPStatusOpen(result)));
             // Number of Closed CAPs
             futures.add(CompletableFuture.supplyAsync(() -> nonConformityDataCalculator.getClosedCAPCountByAcb(), executorService)
-                    .thenAccept(result -> stats.setNonconfCAPStatusClosed(result)));
+                    .thenAccept(result -> stats.setNonConfCAPStatusClosed(result)));
 
             /////////////////////////////////////////////////////////////////////////////////////
             // Direct Review Statistics

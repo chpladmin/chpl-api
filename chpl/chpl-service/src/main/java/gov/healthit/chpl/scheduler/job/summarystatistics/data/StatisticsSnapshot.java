@@ -27,17 +27,17 @@ public class StatisticsSnapshot implements Serializable {
 
     //////////////////////////////////////////////////////////////////////
 
-    private Long nonconfStatusAllTotal;
-    private Statistic nonconfStatusOpen;
-    private Long nonconfStatusClosedTotal;
-    private Long nonconfAvgTimeToAssessConformity;
-    private Long nonconfAvgTimeToApproveCAP;
-    private Long nonconfAvgDurationOfCAP;
-    private Long nonconfAvgTimeFromCAPAprrovalToSurveillanceEnd;
-    private Long nonconfAvgTimeFromCAPEndToSurveillanceEnd;
-    private Long nonconfAvgTimeFromSurveillanceOpenToSurveillanceClose;
-    private List<CertificationBodyStatistic> nonconfCAPStatusOpen;
-    private List<CertificationBodyStatistic> nonconfCAPStatusClosed;
+    private Long nonConfStatusAllTotal;
+    private Statistic nonConfStatusOpen;
+    private Long nonConfStatusClosedTotal;
+    private Long nonConfAvgTimeToAssessConformity;
+    private Long nonConfAvgTimeToApproveCAP;
+    private Long nonConfAvgDurationOfCAP;
+    private Long nonConfAvgTimeFromCAPAprrovalToSurveillanceEnd;
+    private Long nonConfAvgTimeFromCAPEndToSurveillanceEnd;
+    private Long nonConfAvgTimeFromSurveillanceOpenToSurveillanceClose;
+    private List<CertificationBodyStatistic> nonConfCAPStatusOpen;
+    private List<CertificationBodyStatistic> nonConfCAPStatusClosed;
 
     ////////////////////////////////////////////////////////////////////
 
