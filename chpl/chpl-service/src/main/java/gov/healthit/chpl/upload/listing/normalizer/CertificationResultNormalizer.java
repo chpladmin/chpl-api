@@ -75,6 +75,7 @@ public class CertificationResultNormalizer {
         this.standardNormalizer.normalize(listing);
 
         setSedTrueIfApplicableToCriteria(listing);
+        setCodeSetsTrueIfApplicableToCriteria(listing);
         listing.getCertificationResults().sort(new CertificationResultComparator());
     }
 
@@ -135,6 +136,13 @@ public class CertificationResultNormalizer {
                     && BooleanUtils.isTrue(certResult.getSuccess())
                     && certResultRules.hasCertOption(certResult.getCriterion().getId(), CertificationResultRules.SED))
             .forEach(certResult -> certResult.setSed(true));
+    }
+    private void setCodeSetsTrueIfApplicableToCriteria(CertifiedProductSearchDetails listing) {
+        listing.getCertificationResults().stream()
+            .filter(certResult -> certResult.getCriterion() != null
+                    && BooleanUtils.isTrue(certResult.getSuccess())
+                    && certResultRules.hasCertOption(certResult.getCriterion().getId(), CertificationResultRules.CODE_SETS))
+            .forEach(certResult -> certResult.setCodeSets(true));
     }
 
     @NoArgsConstructor
