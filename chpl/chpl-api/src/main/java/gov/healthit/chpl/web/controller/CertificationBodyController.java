@@ -33,7 +33,6 @@ import gov.healthit.chpl.manager.auth.UserManager;
 import gov.healthit.chpl.manager.impl.UpdateCertifiedBodyException;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
-import gov.healthit.chpl.web.controller.annotation.DeprecatedApiResponseFields;
 import gov.healthit.chpl.web.controller.results.CertificationBodyResults;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -75,7 +74,6 @@ public class CertificationBodyController {
             @ApiResponse(responseCode = "500", description = "There was an unexpected error getting all ONC-ACBs.",
                     content = @Content)
     })
-    @DeprecatedApiResponseFields(friendlyUrl = "/acbs", responseClass = CertificationBodyResults.class)
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody CertificationBodyResults getAcbs(
             @RequestParam(required = false, defaultValue = "false") final boolean editable) {
@@ -109,7 +107,6 @@ public class CertificationBodyController {
             @ApiResponse(responseCode = "500", description = "There was an unexpected error getting the ONC-ACB..",
                     content = @Content)
     })
-    @DeprecatedApiResponseFields(friendlyUrl = "/acbs/{acbId}", responseClass = CertificationBody.class)
     @RequestMapping(value = "/{acbId}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody CertificationBody getAcbById(@PathVariable("acbId") final Long acbId)
             throws EntityRetrievalException {
@@ -133,7 +130,6 @@ public class CertificationBodyController {
             @ApiResponse(responseCode = "500", description = "There was an unexpected error creating the ONC-ACB.",
                     content = @Content)
     })
-    @DeprecatedApiResponseFields(friendlyUrl = "/acbs", httpMethod = "POST", responseClass = CertificationBody.class)
     @RequestMapping(value = "", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
     public CertificationBody createAcb(@RequestBody final CertificationBody acbInfo)
@@ -173,7 +169,6 @@ public class CertificationBodyController {
             @ApiResponse(responseCode = "500", description = "There was an unexpected error when updating the ONC-ACB.",
                     content = @Content)
     })
-    @DeprecatedApiResponseFields(friendlyUrl = "/acbs/{acbId}", httpMethod = "PUT", responseClass = CertificationBody.class)
     @RequestMapping(value = "/{acbId}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
     public CertificationBody updateAcb(@RequestBody final CertificationBody acbToUpdate) throws InvalidArgumentsException,

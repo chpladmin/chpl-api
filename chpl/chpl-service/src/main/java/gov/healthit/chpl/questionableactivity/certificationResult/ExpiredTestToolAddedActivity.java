@@ -17,9 +17,15 @@ public class ExpiredTestToolAddedActivity implements CertificationResultActivity
 
     @Override
      public List<QuestionableActivityCertificationResult> check(CertificationResult origCertResult, CertificationResult newCertResult) {
-        List<CertificationResultTestTool> addedTestTools = subtractCertificationResultTestToolLists(
+        List<CertificationResultTestTool> addedTestTools = new ArrayList<CertificationResultTestTool>();
+
+        if (origCertResult != null && newCertResult != null) {
+            addedTestTools = subtractCertificationResultTestToolLists(
                 newCertResult.getTestToolsUsed() == null ? new ArrayList<CertificationResultTestTool>() : newCertResult.getTestToolsUsed(),
                 origCertResult.getTestToolsUsed() == null ? new ArrayList<CertificationResultTestTool>() : origCertResult.getTestToolsUsed());
+        } else if (newCertResult != null) {
+            addedTestTools = newCertResult.getTestToolsUsed() != null ? newCertResult.getTestToolsUsed() : new ArrayList<CertificationResultTestTool>();
+        }
 
         return addedTestTools.stream()
                 .filter(crtt -> crtt.getTestTool().isRetired())
