@@ -120,6 +120,7 @@ public class CertificationResultDAO extends BaseDAOImpl {
         entity.setServiceBaseUrlList(toUpdate.getServiceBaseUrlList());
         entity.setRiskManagementSummaryInformation(toUpdate.getRiskManagementSummaryInformation());
         entity.setPrivacySecurityFramework(toUpdate.getPrivacySecurityFramework());
+        entity.setCodeSets(toUpdate.getCodeSets());
 
         try {
             entityManager.merge(entity);

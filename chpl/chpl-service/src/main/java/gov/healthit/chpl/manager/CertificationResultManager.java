@@ -128,7 +128,7 @@ public class CertificationResultManager extends SecuredManager {
                     || !Objects.equals(orig.getUseCases(), updated.getUseCases())
                     || !Objects.equals(orig.getRiskManagementSummaryInformation(), updated.getRiskManagementSummaryInformation())
                     || !Objects.equals(orig.getServiceBaseUrlList(), updated.getServiceBaseUrlList())
-                    || !Objects.equals(orig.getCodeSet(), updated.getCodeSet())) {
+                    || !Objects.equals(orig.getCodeSets(), updated.getCodeSets())) {
                 hasChanged = true;
             }
             if (hasChanged) {
@@ -281,6 +281,7 @@ public class CertificationResultManager extends SecuredManager {
             toUpdate.setUseCases(updatedCertResult.getUseCases());
             toUpdate.setRiskManagementSummaryInformation(updatedCertResult.getRiskManagementSummaryInformation());
             toUpdate.setServiceBaseUrlList(updatedCertResult.getServiceBaseUrlList());
+            toUpdate.setCodeSets(updatedCertResult.getCodeSets());
 
         }
         certResultDAO.update(toUpdate);

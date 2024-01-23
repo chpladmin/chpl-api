@@ -190,7 +190,7 @@ public class CertificationResult implements Serializable {
 
     //TODO - Need this text for OCD-4446
     @Schema(description = "Need to insert this text")
-    private Boolean codeSet;
+    private Boolean codeSets;
 
     @Schema(description = "Detailed information about the relevant certification criterion.")
     private CertificationCriterion criterion;
@@ -257,6 +257,7 @@ public class CertificationResult implements Serializable {
         if (certResult.getCriterion() != null) {
             this.criterion = certResult.getCriterion();
         }
+        this.setCodeSets(certResult.getCodeSets());
     }
 
     //Correctly handles setting the values based on Certification rules
@@ -342,6 +343,12 @@ public class CertificationResult implements Serializable {
         } else {
             this.setPrivacySecurityFramework(certResult.getPrivacySecurityFramework());
         }
+        if (!certRules.hasCertOption(certResult.getCertificationCriterionId(), CertificationResultRules.CODE_SETS)) {
+            this.setCodeSets(null);
+        } else {
+            this.setCodeSets(certResult.getCodeSets());
+        }
+
         this.criterion = certResult.getCriterion();
 
         this.setOptionalStandards(getOptionalStandards(certResult, certRules));

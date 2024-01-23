@@ -93,6 +93,9 @@ public class CertificationResultDetailsEntity {
     @Column(name = "privacy_security_framework")
     private String privacySecurityFramework;
 
+    @Column(name = "code_sets")
+    private Boolean codeSets;
+
     @Column(name = "deleted")
     private Boolean deleted;
 
