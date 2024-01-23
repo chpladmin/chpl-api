@@ -17,6 +17,7 @@ import gov.healthit.chpl.functionalitytested.CertificationResultFunctionalityTes
 import gov.healthit.chpl.functionalitytested.FunctionalityTested;
 import gov.healthit.chpl.permissions.ChplResourcePermissions;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 public class FunctionalityTestedAllowedByRoleReviewerTest {
@@ -41,7 +42,10 @@ public class FunctionalityTestedAllowedByRoleReviewerTest {
         permissions = Mockito.mock(ChplResourcePermissions.class);
         Mockito.when(permissions.doesUserHaveRole(ArgumentMatchers.anyList())).thenReturn(true);
 
-        reviewer = new FunctionalityTestedAllowedByRoleReviewer(permissions, errorMessages, RESTRICTED_FUNCTIONALITY_TESTED_JSON);
+        ResourcePermissionsFactory resourcePermissionsFactory = Mockito.mock(ResourcePermissionsFactory.class);
+        Mockito.when(resourcePermissionsFactory.get()).thenReturn(permissions);
+
+        reviewer = new FunctionalityTestedAllowedByRoleReviewer(resourcePermissionsFactory, errorMessages, RESTRICTED_FUNCTIONALITY_TESTED_JSON);
     }
 
     @Test

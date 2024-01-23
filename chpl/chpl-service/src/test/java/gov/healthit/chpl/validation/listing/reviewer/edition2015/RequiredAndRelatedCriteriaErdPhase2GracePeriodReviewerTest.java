@@ -23,6 +23,7 @@ import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.permissions.ChplResourcePermissions;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.service.CertificationCriterionService.Criteria2015;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -183,8 +184,11 @@ public class RequiredAndRelatedCriteriaErdPhase2GracePeriodReviewerTest {
                 ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
                 .thenAnswer(i -> String.format(CRITERIA_COMPLEMENT_NOT_FOUND, i.getArgument(1), i.getArgument(2)));
 
+        ResourcePermissionsFactory resourcePermissionsFactory = Mockito.mock(ResourcePermissionsFactory.class);
+        Mockito.when(resourcePermissionsFactory.get()).thenReturn(resourcePermissions);
+
         reviewer = new RequiredAndRelatedCriteriaErdPhase2GracePeriodReviewer(certificationCriterionService, errorMessageUtil,
-                validationUtil, resourcePermissions);
+                validationUtil, resourcePermissionsFactory);
     }
 
     @Test

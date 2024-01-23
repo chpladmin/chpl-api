@@ -16,6 +16,7 @@ import gov.healthit.chpl.domain.Measure;
 import gov.healthit.chpl.domain.MeasureType;
 import gov.healthit.chpl.permissions.ChplResourcePermissions;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 public class MeasureComparisonReviewerTest {
@@ -36,7 +37,11 @@ public class MeasureComparisonReviewerTest {
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.removedMeasure"),
                 ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
                 .thenAnswer(i -> String.format(ERROR_MSG, i.getArgument(1), i.getArgument(2), i.getArgument(3)));
-        reviewer = new MeasureComparisonReviewer(resourcePermissions, msgUtil);
+
+        ResourcePermissionsFactory resourcePermissionsFactory = Mockito.mock(ResourcePermissionsFactory.class);
+        Mockito.when(resourcePermissionsFactory.get()).thenReturn(resourcePermissions);
+
+        reviewer = new MeasureComparisonReviewer(resourcePermissionsFactory, msgUtil);
     }
 
     @Test

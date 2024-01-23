@@ -24,6 +24,7 @@ import gov.healthit.chpl.optionalStandard.domain.OptionalStandard;
 import gov.healthit.chpl.optionalStandard.domain.OptionalStandardCriteriaMap;
 import gov.healthit.chpl.permissions.ChplResourcePermissions;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 public class OptionalStandardReviewerTest {
@@ -33,6 +34,7 @@ public class OptionalStandardReviewerTest {
     private OptionalStandardDAO optionalStandardDAO;
     private ErrorMessageUtil errorMessageUtil;
     private OptionalStandardReviewer optionalStandardReviewer;
+    private ResourcePermissionsFactory resourcePermissionsFactory;
     private ResourcePermissions resourcePermissions;
     private CertificationEdition edition2015;
 
@@ -54,7 +56,10 @@ public class OptionalStandardReviewerTest {
 
         resourcePermissions = Mockito.mock(ChplResourcePermissions.class);
 
-        optionalStandardReviewer = new OptionalStandardReviewer(optionalStandardDAO, errorMessageUtil, resourcePermissions);
+        resourcePermissionsFactory = Mockito.mock(ResourcePermissionsFactory.class);
+        Mockito.when(resourcePermissionsFactory.get()).thenReturn(resourcePermissions);
+
+        optionalStandardReviewer = new OptionalStandardReviewer(optionalStandardDAO, errorMessageUtil, resourcePermissionsFactory);
     }
 
     @Test

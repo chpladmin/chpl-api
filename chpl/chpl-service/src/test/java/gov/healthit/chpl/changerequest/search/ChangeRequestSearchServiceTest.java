@@ -19,6 +19,7 @@ import gov.healthit.chpl.domain.IdNamePair;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.permissions.ChplResourcePermissions;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.util.DateUtil;
 
 public class ChangeRequestSearchServiceTest {
@@ -33,8 +34,11 @@ public class ChangeRequestSearchServiceTest {
         ResourcePermissions resourcePermissions = Mockito.mock(ChplResourcePermissions.class);
         Mockito.when(resourcePermissions.isUserRoleAdmin()).thenReturn(true);
 
+        ResourcePermissionsFactory resourcePermissionsFactory = Mockito.mock(ResourcePermissionsFactory.class);
+        Mockito.when(resourcePermissionsFactory.get()).thenReturn(resourcePermissions);
+
         changeRequestSearchService = new ChangeRequestSearchService(changeRequestDao,
-                searchRequestValidator, resourcePermissions);
+                searchRequestValidator, resourcePermissionsFactory);
     }
 
     @Test

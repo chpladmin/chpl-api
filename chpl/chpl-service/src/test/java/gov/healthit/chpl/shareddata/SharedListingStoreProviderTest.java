@@ -10,7 +10,7 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.permissions.ChplResourcePermissions;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.sharedstore.SharedStore;
 import gov.healthit.chpl.sharedstore.SharedStoreDAO;
 import gov.healthit.chpl.sharedstore.listing.SharedListingStoreProvider;
@@ -25,7 +25,7 @@ public class SharedListingStoreProviderTest {
     public void setup() {
         sharedStoreDAO = Mockito.mock(SharedStoreDAO.class);
 
-        sharedListingStoreProvider = new SharedListingStoreProvider(Mockito.mock(ChplResourcePermissions.class), sharedStoreDAO);
+        sharedListingStoreProvider = new SharedListingStoreProvider(Mockito.mock(ResourcePermissionsFactory.class), sharedStoreDAO);
     }
 
     @Test

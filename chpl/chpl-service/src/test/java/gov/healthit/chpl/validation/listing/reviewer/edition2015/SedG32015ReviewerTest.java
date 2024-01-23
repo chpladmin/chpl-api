@@ -16,6 +16,7 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.permissions.ChplResourcePermissions;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
@@ -45,7 +46,11 @@ public class SedG32015ReviewerTest {
                 .certificationEdition("2015")
                 .build();
         Mockito.when(criteriaService.get(ArgumentMatchers.eq("criterion.170_315_g_3"))).thenReturn(g3);
-        reviewer = new SedG32015Reviewer(criteriaService, msgUtil, resourcePermissions);
+
+        ResourcePermissionsFactory resourcePermissionsFactory = Mockito.mock(ResourcePermissionsFactory.class);
+        Mockito.when(resourcePermissionsFactory.get()).thenReturn(resourcePermissions);
+
+        reviewer = new SedG32015Reviewer(criteriaService, msgUtil, resourcePermissionsFactory);
     }
 
     @Test
