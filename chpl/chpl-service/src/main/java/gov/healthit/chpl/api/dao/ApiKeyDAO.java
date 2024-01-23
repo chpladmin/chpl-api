@@ -49,6 +49,7 @@ public class ApiKeyDAO extends BaseDAOImpl {
         entity.setApiKey(apiKey.getKey());
         entity.setEmail(apiKey.getEmail());
         entity.setNameOrganization(apiKey.getName());
+        entity.setLastUsedDate(apiKey.getLastUsedDate());
         entity.setDeleteWarningSentDate(apiKey.getDeleteWarningSentDate());
         entity.setUnrestricted(apiKey.isUnrestricted());
         update(entity);
