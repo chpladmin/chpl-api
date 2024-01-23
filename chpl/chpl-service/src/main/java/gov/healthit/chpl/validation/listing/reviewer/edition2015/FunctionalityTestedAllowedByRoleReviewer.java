@@ -19,6 +19,7 @@ import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.functionalitytested.CertificationResultFunctionalityTested;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
 import gov.healthit.chpl.validation.listing.reviewer.ComparisonReviewer;
@@ -35,11 +36,11 @@ public class FunctionalityTestedAllowedByRoleReviewer implements ComparisonRevie
     private String jsonRestrictions;
 
     @Autowired
-    public FunctionalityTestedAllowedByRoleReviewer(ResourcePermissions permissions, ErrorMessageUtil errorMessages,
+    public FunctionalityTestedAllowedByRoleReviewer(ResourcePermissionsFactory resourcePermissionsFactory, ErrorMessageUtil errorMessages,
             @Value("${functionalitiesTested.restrictions}") String jsonRestrictions) {
 
         this.errorMessages = errorMessages;
-        this.permissions = permissions;
+        this.permissions = resourcePermissionsFactory.get();
         this.jsonRestrictions = jsonRestrictions;
     }
 

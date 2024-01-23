@@ -16,13 +16,14 @@ import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.contact.PointOfContact;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.permissions.ChplResourcePermissions;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 
 public class ChangeRequestContactValidationTest {
 
     @Test
     public void validateContact_AllData_ReturnsTrue() throws EntityRetrievalException {
-        ResourcePermissions resourcePermissions = Mockito.mock(ResourcePermissions.class);
+        ResourcePermissions resourcePermissions = Mockito.mock(ChplResourcePermissions.class);
         Mockito.when(resourcePermissions.isUserRoleDeveloperAdmin()).thenReturn(true);
         PointOfContact contact = buildContact(1L, "First M. Last", "Mr.", "444-444-4444", "first@gmail.com");
 
@@ -36,7 +37,7 @@ public class ChangeRequestContactValidationTest {
 
     @Test
     public void validateContact_ValidDataNoTitle_ReturnsTrue() throws EntityRetrievalException {
-        ResourcePermissions resourcePermissions = Mockito.mock(ResourcePermissions.class);
+        ResourcePermissions resourcePermissions = Mockito.mock(ChplResourcePermissions.class);
         Mockito.when(resourcePermissions.isUserRoleDeveloperAdmin()).thenReturn(true);
         PointOfContact contact = buildContact(1L, "First M. Last", null, "444-444-4444", "first@gmail.com");
 
@@ -50,7 +51,7 @@ public class ChangeRequestContactValidationTest {
 
     @Test
     public void validateContact_MissingName_ReturnsFalse() throws EntityRetrievalException {
-        ResourcePermissions resourcePermissions = Mockito.mock(ResourcePermissions.class);
+        ResourcePermissions resourcePermissions = Mockito.mock(ChplResourcePermissions.class);
         Mockito.when(resourcePermissions.isUserRoleDeveloperAdmin()).thenReturn(true);
         PointOfContact contact = buildContact(1L, null, null, "444-444-4444", "first@gmail.com");
 
@@ -63,7 +64,7 @@ public class ChangeRequestContactValidationTest {
 
     @Test
     public void validateContact_EmptyName_ReturnsFalse() throws EntityRetrievalException {
-        ResourcePermissions resourcePermissions = Mockito.mock(ResourcePermissions.class);
+        ResourcePermissions resourcePermissions = Mockito.mock(ChplResourcePermissions.class);
         Mockito.when(resourcePermissions.isUserRoleDeveloperAdmin()).thenReturn(true);
         PointOfContact contact = buildContact(1L, "", null, "444-444-4444", "first@gmail.com");
 
@@ -76,7 +77,7 @@ public class ChangeRequestContactValidationTest {
 
     @Test
     public void validateContact_MissingName_ReturnsExpectedError() throws EntityRetrievalException {
-        ResourcePermissions resourcePermissions = Mockito.mock(ResourcePermissions.class);
+        ResourcePermissions resourcePermissions = Mockito.mock(ChplResourcePermissions.class);
         Mockito.when(resourcePermissions.isUserRoleDeveloperAdmin()).thenReturn(true);
         PointOfContact contact = buildContact(1L, null, null, "444-444-4444", "first@gmail.com");
 
@@ -90,7 +91,7 @@ public class ChangeRequestContactValidationTest {
 
     @Test
     public void validateContact_MissingPhoneNumber_ReturnsFalse() throws EntityRetrievalException {
-        ResourcePermissions resourcePermissions = Mockito.mock(ResourcePermissions.class);
+        ResourcePermissions resourcePermissions = Mockito.mock(ChplResourcePermissions.class);
         Mockito.when(resourcePermissions.isUserRoleDeveloperAdmin()).thenReturn(true);
         PointOfContact contact = buildContact(1L, "First M. Last", null, null, "test@gmail.com");
 
@@ -103,7 +104,7 @@ public class ChangeRequestContactValidationTest {
 
     @Test
     public void validateContact_EmptyPhoneNumber_ReturnsFalse() throws EntityRetrievalException {
-        ResourcePermissions resourcePermissions = Mockito.mock(ResourcePermissions.class);
+        ResourcePermissions resourcePermissions = Mockito.mock(ChplResourcePermissions.class);
         Mockito.when(resourcePermissions.isUserRoleDeveloperAdmin()).thenReturn(true);
         PointOfContact contact = buildContact(1L, "First M. Last", null, "", "test@gmail.com");
 
@@ -116,7 +117,7 @@ public class ChangeRequestContactValidationTest {
 
     @Test
     public void validateContact_MissingPhoneNumber_ReturnsExpectedError() throws EntityRetrievalException {
-        ResourcePermissions resourcePermissions = Mockito.mock(ResourcePermissions.class);
+        ResourcePermissions resourcePermissions = Mockito.mock(ChplResourcePermissions.class);
         Mockito.when(resourcePermissions.isUserRoleDeveloperAdmin()).thenReturn(true);
         PointOfContact contact = buildContact(1L, "First M. Last", null, null, "test@gmail.com");
 
@@ -130,7 +131,7 @@ public class ChangeRequestContactValidationTest {
 
     @Test
     public void validateContact_MissingEmail_ReturnsFalse() throws EntityRetrievalException {
-        ResourcePermissions resourcePermissions = Mockito.mock(ResourcePermissions.class);
+        ResourcePermissions resourcePermissions = Mockito.mock(ChplResourcePermissions.class);
         Mockito.when(resourcePermissions.isUserRoleDeveloperAdmin()).thenReturn(true);
         PointOfContact contact = buildContact(1L, "First M. Last", null, "444-444-4444", null);
 
@@ -143,7 +144,7 @@ public class ChangeRequestContactValidationTest {
 
     @Test
     public void validateContact_EmptyEmail_ReturnsFalse() throws EntityRetrievalException {
-        ResourcePermissions resourcePermissions = Mockito.mock(ResourcePermissions.class);
+        ResourcePermissions resourcePermissions = Mockito.mock(ChplResourcePermissions.class);
         Mockito.when(resourcePermissions.isUserRoleDeveloperAdmin()).thenReturn(true);
         PointOfContact contact = buildContact(1L, "First M. Last", null, "444-444-4444", "");
 
@@ -156,7 +157,7 @@ public class ChangeRequestContactValidationTest {
 
     @Test
     public void validateContact_MissingEmail_ReturnsExpectedError() throws EntityRetrievalException {
-        ResourcePermissions resourcePermissions = Mockito.mock(ResourcePermissions.class);
+        ResourcePermissions resourcePermissions = Mockito.mock(ChplResourcePermissions.class);
         Mockito.when(resourcePermissions.isUserRoleDeveloperAdmin()).thenReturn(true);
         PointOfContact contact = buildContact(1L, "First M. Last", null, "444-444-4444", null);
 

@@ -7,7 +7,7 @@ import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultTestStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
-import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
 
@@ -16,10 +16,10 @@ public class TestStandardRemovalReviewer extends PermissionBasedReviewer {
     private ErrorMessageUtil msgUtil;
 
     @Autowired
-    public TestStandardRemovalReviewer(ErrorMessageUtil msgUtil, ResourcePermissions resourcePermissions) {
-        super(msgUtil, resourcePermissions);
+    public TestStandardRemovalReviewer(ErrorMessageUtil msgUtil, ResourcePermissionsFactory resourcePermissionsFactory) {
+        super(msgUtil, resourcePermissionsFactory);
         this.msgUtil = msgUtil;
-        this.resourcePermissions = resourcePermissions;
+        this.resourcePermissions = resourcePermissionsFactory.get();
     }
 
     @Override

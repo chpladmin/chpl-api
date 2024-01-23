@@ -12,6 +12,7 @@ import gov.healthit.chpl.domain.DeveloperStatus;
 import gov.healthit.chpl.entity.developer.DeveloperStatusType;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Component("developerStatusReviewer")
@@ -24,10 +25,10 @@ public class DeveloperStatusReviewer implements Reviewer {
 
     @Autowired
     public DeveloperStatusReviewer(DeveloperDAO developerDao,
-            ResourcePermissions resourcePermissions,
+            ResourcePermissionsFactory resourcePermissionsFactory,
             ErrorMessageUtil msgUtil) {
         this.developerDao = developerDao;
-        this.resourcePermissions = resourcePermissions;
+        this.resourcePermissions = resourcePermissionsFactory.get();
         this.msgUtil = msgUtil;
     }
 

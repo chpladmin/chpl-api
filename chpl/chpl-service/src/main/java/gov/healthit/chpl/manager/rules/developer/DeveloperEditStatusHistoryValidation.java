@@ -11,7 +11,7 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 public class DeveloperEditStatusHistoryValidation extends ValidationRule<DeveloperValidationContext> {
     private ResourcePermissions resourcePermissions;
 
-    public DeveloperEditStatusHistoryValidation(final ResourcePermissions resourcePermissions) {
+    public DeveloperEditStatusHistoryValidation(ResourcePermissions resourcePermissions) {
         this.resourcePermissions = resourcePermissions;
     }
 

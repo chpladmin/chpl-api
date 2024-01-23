@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
 import gov.healthit.chpl.util.ValidationUtils;
@@ -17,8 +17,8 @@ public class UrlReviewer extends PermissionBasedReviewer {
 
     @Autowired
     public UrlReviewer(ValidationUtils validationUtils, ErrorMessageUtil msgUtil,
-            ResourcePermissions resourcePermissions) {
-        super(msgUtil, resourcePermissions);
+            ResourcePermissionsFactory resourcePermissionsFactory) {
+        super(msgUtil, resourcePermissionsFactory);
         this.validationUtils = validationUtils;
     }
 

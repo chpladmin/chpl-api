@@ -21,6 +21,7 @@ import gov.healthit.chpl.functionalitytested.CertificationResultFunctionalityTes
 import gov.healthit.chpl.functionalitytested.FunctionalityTested;
 import gov.healthit.chpl.functionalitytested.FunctionalityTestedDAO;
 import gov.healthit.chpl.functionalitytested.FunctionalityTestedManager;
+import gov.healthit.chpl.permissions.ChplResourcePermissions;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 
 public class FunctionalityTestedNormalizerTest {
@@ -40,7 +41,7 @@ public class FunctionalityTestedNormalizerTest {
     @Before
     public void before() {
         functionalityTestedDao = Mockito.mock(FunctionalityTestedDAO.class);
-        resourcePermissions = Mockito.mock(ResourcePermissions.class);
+        resourcePermissions = Mockito.mock(ChplResourcePermissions.class);
         functionalityTestedManager = Mockito.mock(FunctionalityTestedManager.class);
 
         normalizer = new FunctionalityTestedNormalizer(functionalityTestedDao,

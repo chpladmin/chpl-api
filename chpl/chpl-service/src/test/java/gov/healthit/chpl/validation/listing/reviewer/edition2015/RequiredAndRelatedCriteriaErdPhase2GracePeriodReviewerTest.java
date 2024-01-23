@@ -21,6 +21,7 @@ import org.mockito.stubbing.Answer;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.permissions.ChplResourcePermissions;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.service.CertificationCriterionService.Criteria2015;
@@ -152,7 +153,7 @@ public class RequiredAndRelatedCriteriaErdPhase2GracePeriodReviewerTest {
         Mockito.when(certificationCriterionService.get(Criteria2015.G_10)).thenReturn(g10);
         Mockito.when(certificationCriterionService.get(Criteria2015.H_1)).thenReturn(h1);
 
-        resourcePermissions = Mockito.mock(ResourcePermissions.class);
+        resourcePermissions = Mockito.mock(ChplResourcePermissions.class);
         Mockito.when(resourcePermissions.doesUserHaveRole(ArgumentMatchers.any(List.class))).thenReturn(true);
 
         CertificationCriterionService criteriaService = Mockito.mock(CertificationCriterionService.class);

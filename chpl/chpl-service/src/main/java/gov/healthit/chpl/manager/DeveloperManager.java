@@ -60,6 +60,7 @@ import gov.healthit.chpl.manager.rules.ValidationRule;
 import gov.healthit.chpl.manager.rules.developer.DeveloperValidationContext;
 import gov.healthit.chpl.manager.rules.developer.DeveloperValidationFactory;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.scheduler.job.SplitDeveloperJob;
 import gov.healthit.chpl.scheduler.job.developer.JoinDeveloperJob;
 import gov.healthit.chpl.sharedstore.listing.ListingStoreRemove;
@@ -94,7 +95,7 @@ public class DeveloperManager extends SecuredManager {
     public DeveloperManager(DeveloperDAO developerDao, ProductManager productManager, ProductVersionManager versionManager,
             UserManager userManager, CertificationBodyManager acbManager,
             CertifiedProductDAO certifiedProductDAO, ChplProductNumberUtil chplProductNumberUtil,
-            ActivityManager activityManager, ErrorMessageUtil msgUtil, ResourcePermissions resourcePermissions,
+            ActivityManager activityManager, ErrorMessageUtil msgUtil, ResourcePermissionsFactory resourcePermissionsFactory,
             DeveloperValidationFactory developerValidationFactory,
             SchedulerManager schedulerManager) {
         this.developerDao = developerDao;
@@ -106,7 +107,7 @@ public class DeveloperManager extends SecuredManager {
         this.chplProductNumberUtil = chplProductNumberUtil;
         this.activityManager = activityManager;
         this.msgUtil = msgUtil;
-        this.resourcePermissions = resourcePermissions;
+        this.resourcePermissions = resourcePermissionsFactory.get();
         this.developerValidationFactory = developerValidationFactory;
         this.schedulerManager = schedulerManager;
     }

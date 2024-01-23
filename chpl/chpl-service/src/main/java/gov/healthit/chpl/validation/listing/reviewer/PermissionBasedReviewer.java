@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Component("pendingPermissionBasedReviewer")
@@ -17,9 +18,9 @@ public abstract class PermissionBasedReviewer implements Reviewer {
     protected ResourcePermissions resourcePermissions;
 
     @Autowired
-    public PermissionBasedReviewer(ErrorMessageUtil msgUtil, ResourcePermissions resourcePermissions) {
+    public PermissionBasedReviewer(ErrorMessageUtil msgUtil, ResourcePermissionsFactory resourcePermissionsFactory) {
         this.msgUtil = msgUtil;
-        this.resourcePermissions = resourcePermissions;
+        this.resourcePermissions = resourcePermissionsFactory.get();
     }
 
     public void addListingWarningsByPermission(CertifiedProductSearchDetails listing, List<String> errorMessages) {

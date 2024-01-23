@@ -11,7 +11,7 @@ import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultTestProcedure;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.TestProcedureDTO;
-import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
 
@@ -20,11 +20,11 @@ public class TestProcedureReviewer extends PermissionBasedReviewer {
     private TestProcedureDAO testProcedureDao;
 
     @Autowired
-    public TestProcedureReviewer(TestProcedureDAO testProcedureDao, ErrorMessageUtil msgUtil, ResourcePermissions resourcePermissions) {
-        super(msgUtil, resourcePermissions);
+    public TestProcedureReviewer(TestProcedureDAO testProcedureDao, ErrorMessageUtil msgUtil, ResourcePermissionsFactory resourcePermissionsFactory) {
+        super(msgUtil, resourcePermissionsFactory);
         this.msgUtil = msgUtil;
         this.testProcedureDao = testProcedureDao;
-        this.resourcePermissions = resourcePermissions;
+        this.resourcePermissions = resourcePermissionsFactory.get();
     }
 
     @Override

@@ -11,6 +11,7 @@ import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.TestTask;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.util.DateUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
@@ -22,9 +23,8 @@ public class UnavailableCriteriaTestTaskComparisonReviewer implements Comparison
     private ErrorMessageUtil msgUtil;
 
     @Autowired
-    public UnavailableCriteriaTestTaskComparisonReviewer(ResourcePermissions resourcePermissions,
-            ErrorMessageUtil msgUtil) {
-        this.resourcePermissions = resourcePermissions;
+    public UnavailableCriteriaTestTaskComparisonReviewer(ResourcePermissionsFactory resourcePermissionsFactory, ErrorMessageUtil msgUtil) {
+        this.resourcePermissions = resourcePermissionsFactory.get();
         this.msgUtil = msgUtil;
     }
 

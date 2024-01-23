@@ -7,6 +7,7 @@ import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.ProductDAO;
 import gov.healthit.chpl.manager.rules.ValidationRule;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 
 @Component
 public class ProductValidationFactory {
@@ -20,10 +21,10 @@ public class ProductValidationFactory {
 
     @Autowired
     public ProductValidationFactory(DeveloperDAO developerDao, ProductDAO productDao,
-            ResourcePermissions resourcePermissions) {
+            ResourcePermissionsFactory resourcePermissionsFactory) {
         this.developerDao = developerDao;
         this.productDao = productDao;
-        this.resourcePermissions = resourcePermissions;
+        this.resourcePermissions = resourcePermissionsFactory.get();
     }
 
     public ValidationRule<ProductValidationContext> getRule(String name) {

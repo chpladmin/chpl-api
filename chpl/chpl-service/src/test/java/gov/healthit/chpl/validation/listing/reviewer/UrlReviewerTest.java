@@ -9,6 +9,7 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.permissions.ChplResourcePermissions;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.ValidationUtils;
@@ -24,7 +25,7 @@ public class UrlReviewerTest {
     @Before
     public void setup() {
         validationUtils = new ValidationUtils();
-        resourcePermissions = Mockito.mock(ResourcePermissions.class);
+        resourcePermissions = Mockito.mock(ChplResourcePermissions.class);
         errorMessageUtil = Mockito.mock(ErrorMessageUtil.class);
 
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.invalidUrlFound"), ArgumentMatchers.any()))

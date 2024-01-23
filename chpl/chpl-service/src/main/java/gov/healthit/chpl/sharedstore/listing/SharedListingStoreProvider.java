@@ -10,6 +10,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.sharedstore.SharedStoreDAO;
 import gov.healthit.chpl.sharedstore.SharedStoreProvider;
 import gov.healthit.chpl.util.AuthUtil;
@@ -22,10 +23,10 @@ public class SharedListingStoreProvider extends SharedStoreProvider<Long, Certif
     private ObjectMapper mapper = new ObjectMapper();
 
     @Autowired
-    public SharedListingStoreProvider(ResourcePermissions resourcePermissions,
+    public SharedListingStoreProvider(ResourcePermissionsFactory resourcePermissionsFactory,
             SharedStoreDAO sharedStoreDAO) {
         super(sharedStoreDAO);
-        this.resourcePermissions = resourcePermissions;
+        this.resourcePermissions = resourcePermissionsFactory.get();
     }
 
     @Override

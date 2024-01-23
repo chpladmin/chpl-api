@@ -15,8 +15,8 @@ public class DeveloperPriorStatusActiveValidation extends ValidationRule<Develop
     private static final Logger LOGGER = LogManager.getLogger(DeveloperPriorStatusActiveValidation.class);
     private ResourcePermissions resourcePermissions;
 
-    public DeveloperPriorStatusActiveValidation(final ResourcePermissions resourcePermissions) {
-        this.resourcePermissions = resourcePermissions;
+    public DeveloperPriorStatusActiveValidation(ResourcePermissions resourcePermissions) {
+        this.resourcePermissions = resourcePermissions;;
     }
 
     @Override

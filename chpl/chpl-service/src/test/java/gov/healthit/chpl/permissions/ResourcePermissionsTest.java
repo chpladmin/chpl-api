@@ -19,7 +19,7 @@ public class ResourcePermissionsTest {
 
     @Before
     public void setup() {
-        resourcePermissions = Mockito.mock(ResourcePermissions.class);
+        resourcePermissions = Mockito.mock(ChplResourcePermissions.class);
     }
 
     @Test

@@ -41,6 +41,7 @@ import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.impl.SecuredManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.scheduler.ChplRepeatableTriggerChangeEmailer;
 import gov.healthit.chpl.scheduler.ChplSchedulerReference;
 import gov.healthit.chpl.scheduler.job.QuartzJob;
@@ -63,11 +64,11 @@ public class SchedulerManager extends SecuredManager {
     private ChplRepeatableTriggerChangeEmailer emailer;
 
     @Autowired
-    public SchedulerManager(ChplSchedulerReference chplScheduler, ResourcePermissions resourcePermissions,
+    public SchedulerManager(ChplSchedulerReference chplScheduler, ResourcePermissionsFactory resourcePermissionsFactory,
             ChplRepeatableTriggerChangeEmailer emailer) {
 
         this.chplScheduler = chplScheduler;
-        this.resourcePermissions = resourcePermissions;
+        this.resourcePermissions = resourcePermissionsFactory.get();
         this.emailer = emailer;
     }
 

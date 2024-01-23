@@ -20,6 +20,7 @@ import gov.healthit.chpl.functionalitytested.CertificationResultFunctionalityTes
 import gov.healthit.chpl.functionalitytested.FunctionalityTested;
 import gov.healthit.chpl.functionalitytested.FunctionalityTestedDAO;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import lombok.Data;
 import lombok.ToString;
 import lombok.extern.log4j.Log4j2;
@@ -34,10 +35,10 @@ public class FunctionalityTestedNormalizer {
 
     @Autowired
     public FunctionalityTestedNormalizer(FunctionalityTestedDAO functionalityTestedDao,
-            ResourcePermissions resourcePermissions,
+            ResourcePermissionsFactory resourcePermissionsFactory,
             @Value("${functionalitiesTested.restrictions}") String jsonRestrictions) {
         this.functionalityTestedDao = functionalityTestedDao;
-        this.resourcePermissions = resourcePermissions;
+        this.resourcePermissions = resourcePermissionsFactory.get();
         initRestrictedCriteriaFunctionalitiesTested(jsonRestrictions);
     }
 

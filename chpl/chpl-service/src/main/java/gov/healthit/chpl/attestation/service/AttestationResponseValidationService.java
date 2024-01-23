@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.form.Form;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.scheduler.job.developer.attestation.AttestationFormMetaData;
 import gov.healthit.chpl.search.ListingSearchService;
 import gov.healthit.chpl.search.domain.ListingSearchResult;
@@ -25,10 +26,10 @@ public class AttestationResponseValidationService {
 
     public AttestationResponseValidationService(ListingApplicabilityService listingApplicabilityService,
             ListingSearchService listingSearchService, ErrorMessageUtil msgUtil,
-            ResourcePermissions resourcePermissions, FF4j ff4j) {
+            ResourcePermissionsFactory resourcePermissionsFactory, FF4j ff4j) {
         this.listingApplicabilityService = listingApplicabilityService;
         this.msgUtil = msgUtil;
-        this.resourcePermissions = resourcePermissions;
+        this.resourcePermissions = resourcePermissionsFactory.get();
         this.ff4j = ff4j;
     }
 

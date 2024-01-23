@@ -37,6 +37,7 @@ import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.manager.auth.UserManager;
 import gov.healthit.chpl.manager.impl.SecuredManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.service.InvitationEmailer;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -61,14 +62,14 @@ public class InvitationManager extends SecuredManager {
     public InvitationManager(UserPermissionDAO userPermissionDao, InvitationDAO invitationDao,
             UserDAO userDao, UserManager userManager, UserPermissionsManager userPermissionsManager,
             InvitationEmailer invitationEmailer, ActivityManager activityManager,
-            ResourcePermissions resourcePermissions, ErrorMessageUtil msgUtil) {
+            ResourcePermissionsFactory resourcePermissionsFactory, ErrorMessageUtil msgUtil) {
         this.invitationDao = invitationDao;
         this.userDao = userDao;
         this.userManager = userManager;
         this.userPermissionsManager = userPermissionsManager;
         this.invitationEmailer = invitationEmailer;
         this.activityManager = activityManager;
-        this.resourcePermissions = resourcePermissions;
+        this.resourcePermissions = resourcePermissionsFactory.get();
         this.msgUtil = msgUtil;
         this.userPermissions = userPermissionDao.findAll();
     }

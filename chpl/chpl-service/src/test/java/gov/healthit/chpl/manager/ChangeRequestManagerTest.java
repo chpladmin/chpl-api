@@ -34,6 +34,7 @@ import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.ValidationException;
+import gov.healthit.chpl.permissions.ChplResourcePermissions;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
@@ -102,7 +103,7 @@ public class ChangeRequestManagerTest {
         ChangeRequestValidationService crValidationService = Mockito.mock(ChangeRequestValidationService.class);
         Mockito.when(crValidationService.getErrorMessages(ArgumentMatchers.any())).thenReturn(new ArrayList<String>());
 
-        ResourcePermissions resourcePermissions = Mockito.mock(ResourcePermissions.class);
+        ResourcePermissions resourcePermissions = Mockito.mock(ChplResourcePermissions.class);
         Mockito.when(resourcePermissions.isUserRoleDeveloperAdmin()).thenReturn(true);
 
         ChangeRequestDetailsFactory crDetailsFactory = Mockito.mock(ChangeRequestDetailsFactory.class);
@@ -200,7 +201,7 @@ public class ChangeRequestManagerTest {
         ChangeRequestValidationService crValidationService = Mockito.mock(ChangeRequestValidationService.class);
         Mockito.when(crValidationService.getErrorMessages(ArgumentMatchers.any())).thenReturn(new ArrayList<String>());
 
-        ResourcePermissions resourcePermissions = Mockito.mock(ResourcePermissions.class);
+        ResourcePermissions resourcePermissions = Mockito.mock(ChplResourcePermissions.class);
         Mockito.when(resourcePermissions.isUserRoleDeveloperAdmin()).thenReturn(false);
 
         ChangeRequestDetailsFactory crDetailsFactory = Mockito.mock(ChangeRequestDetailsFactory.class);
@@ -256,7 +257,7 @@ public class ChangeRequestManagerTest {
         ChangeRequestValidationService crValidationService = Mockito.mock(ChangeRequestValidationService.class);
         Mockito.when(crValidationService.getErrorMessages(ArgumentMatchers.any())).thenReturn(new ArrayList<String>());
 
-        ResourcePermissions resourcePermissions = Mockito.mock(ResourcePermissions.class);
+        ResourcePermissions resourcePermissions = Mockito.mock(ChplResourcePermissions.class);
         Mockito.when(resourcePermissions.isUserRoleDeveloperAdmin()).thenReturn(true);
 
         ChangeRequestDetailsFactory crDetailsFactory = Mockito.mock(ChangeRequestDetailsFactory.class);

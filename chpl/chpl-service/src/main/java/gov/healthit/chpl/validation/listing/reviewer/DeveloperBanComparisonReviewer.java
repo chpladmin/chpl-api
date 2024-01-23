@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
@@ -21,9 +22,8 @@ public class DeveloperBanComparisonReviewer implements ComparisonReviewer {
     private ErrorMessageUtil msgUtil;
 
     @Autowired
-    public DeveloperBanComparisonReviewer(final ResourcePermissions resourcePermissions,
-            final ErrorMessageUtil msgUtil) {
-        this.resourcePermissions = resourcePermissions;
+    public DeveloperBanComparisonReviewer(ResourcePermissionsFactory resourcePermissionsFactory, ErrorMessageUtil msgUtil) {
+        this.resourcePermissions = resourcePermissionsFactory.get();
         this.msgUtil = msgUtil;
     }
 

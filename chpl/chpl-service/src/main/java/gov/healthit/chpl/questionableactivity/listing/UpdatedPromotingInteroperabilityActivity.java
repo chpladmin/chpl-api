@@ -13,6 +13,7 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.PromotingInteroperabilityUser;
 import gov.healthit.chpl.domain.auth.Authority;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.questionableactivity.QuestionableActivityTriggerConcept;
 import gov.healthit.chpl.questionableactivity.domain.QuestionableActivityListing;
 import lombok.extern.log4j.Log4j2;
@@ -23,8 +24,8 @@ public class UpdatedPromotingInteroperabilityActivity implements ListingActivity
     private ResourcePermissions resourcePermissions;
 
     @Autowired
-    public UpdatedPromotingInteroperabilityActivity(ResourcePermissions resourcePermissions) {
-        this.resourcePermissions = resourcePermissions;
+    public UpdatedPromotingInteroperabilityActivity(ResourcePermissionsFactory resourcePermissionsFactory) {
+        this.resourcePermissions = resourcePermissionsFactory.get();
     }
 
     @Override

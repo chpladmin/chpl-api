@@ -20,6 +20,7 @@ import gov.healthit.chpl.domain.ListingMeasure;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.sharedstore.listing.SharedListingStoreProvider;
 import gov.healthit.chpl.util.AuthUtil;
 import lombok.extern.log4j.Log4j2;
@@ -45,7 +46,7 @@ public class CertifiedProductDetailsManager {
             ListingMeasuresService listingMeasuresService,
             CertificationStatusEventsService certificationStatusEventsService,
             SharedListingStoreProvider sharedListingStoreProvider,
-            ResourcePermissions resourcePermissions) {
+            ResourcePermissionsFactory resourcePermissionsFactory) {
 
         this.certifiedProductSearchResultDAO = certifiedProductSearchResultDAO;
         this.listingService = listingService;
@@ -54,7 +55,7 @@ public class CertifiedProductDetailsManager {
         this.listingMeasuresService = listingMeasuresService;
         this.certificationStatusEventsService = certificationStatusEventsService;
         this.sharedListingStoreProvider = sharedListingStoreProvider;
-        this.resourcePermissions = resourcePermissions;
+        this.resourcePermissions = resourcePermissionsFactory.get();
     }
 
     @Transactional(readOnly = true)

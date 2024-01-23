@@ -18,6 +18,7 @@ import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
 import gov.healthit.chpl.email.footer.PublicFooter;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.util.AuthUtil;
 import lombok.extern.log4j.Log4j2;
 
@@ -33,12 +34,12 @@ public class AttestationExceptionEmail {
 
         @Autowired
         public AttestationExceptionEmail(ChplEmailFactory chplEmailFactory, ChplHtmlEmailBuilder chplHtmlEmailBuilder,
-                ResourcePermissions resourcePermissions,
+                ResourcePermissionsFactory resourcePermissionsFactory,
                 @Value("${changeRequest.attestation.exception.subject}") String emailSubject,
                 @Value("${changeRequest.attestation.exception.body}") String emailBody) {
             this.chplEmailFactory = chplEmailFactory;
             this.chplHtmlEmailBuilder = chplHtmlEmailBuilder;
-            this.resourcePermissions = resourcePermissions;
+            this.resourcePermissions = resourcePermissionsFactory.get();
             this.emailSubject = emailSubject;
             this.emailBody = emailBody;
         }

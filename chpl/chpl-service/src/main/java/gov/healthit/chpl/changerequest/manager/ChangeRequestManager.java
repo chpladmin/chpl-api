@@ -57,6 +57,7 @@ import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.SchedulerManager;
 import gov.healthit.chpl.manager.auth.UserManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.scheduler.job.changerequest.ChangeRequestReportEmailJob;
 import gov.healthit.chpl.search.ListingSearchService;
 import gov.healthit.chpl.util.AuthUtil;
@@ -131,7 +132,7 @@ public class ChangeRequestManager {
             AttestationResponseValidationService attestationResponseValidationService,
             AttestationPeriodService attestationPeriodService,
             ListingSearchService listingSearchService,
-            ResourcePermissions resourcePermissions,
+            ResourcePermissionsFactory resourcePermissionsFactory,
             ErrorMessageUtil msgUtil,
             ValidationUtils validationUtils,
             FormValidator formValidator,
@@ -151,7 +152,7 @@ public class ChangeRequestManager {
         this.attestationResponseValidationService = attestationResponseValidationService;
         this.attestationPeriodService = attestationPeriodService;
         this.listingSearchService = listingSearchService;
-        this.resourcePermissions = resourcePermissions;
+        this.resourcePermissions = resourcePermissionsFactory.get();
         this.msgUtil = msgUtil;
         this.validationUtils = validationUtils;
         this.formValidator = formValidator;

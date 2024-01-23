@@ -7,18 +7,19 @@ import gov.healthit.chpl.entity.developer.DeveloperStatusType;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.rules.ValidationRule;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 public class DeveloperStatusChangedValidation extends ValidationRule<DeveloperValidationContext> {
     private ResourcePermissions resourcePermissions;
 
-    public DeveloperStatusChangedValidation(final ResourcePermissions resourcePermissions) {
+    public DeveloperStatusChangedValidation(ResourcePermissions resourcePermissions) {
         this.resourcePermissions = resourcePermissions;
     }
 
-    public DeveloperStatusChangedValidation(final DeveloperManager developerManagerImpl,
-            final ResourcePermissions resourcePermissions, final DeveloperDAO developerDao) {
-        this.resourcePermissions = resourcePermissions;
+    public DeveloperStatusChangedValidation(DeveloperManager developerManagerImpl,
+            ResourcePermissionsFactory resourcePermissionsFactory, DeveloperDAO developerDao) {
+        this.resourcePermissions = resourcePermissionsFactory.get();
     }
 
     @Override

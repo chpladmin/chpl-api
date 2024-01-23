@@ -16,13 +16,14 @@ import gov.healthit.chpl.domain.Address;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.permissions.ChplResourcePermissions;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 
 public class ChangeRequestAddressValidationTest {
 
     @Test
     public void validateAddress_AllData_ReturnsTrue() throws EntityRetrievalException {
-        ResourcePermissions resourcePermissions = Mockito.mock(ResourcePermissions.class);
+        ResourcePermissions resourcePermissions = Mockito.mock(ChplResourcePermissions.class);
         Mockito.when(resourcePermissions.isUserRoleDeveloperAdmin()).thenReturn(true);
         Address address = buildAddress(1L, "Street", "Suite 6", "City", "MD", "11111", "USA");
 
@@ -36,7 +37,7 @@ public class ChangeRequestAddressValidationTest {
 
     @Test
     public void validateAddress_ValidDataNoLine2_ReturnsTrue() throws EntityRetrievalException {
-        ResourcePermissions resourcePermissions = Mockito.mock(ResourcePermissions.class);
+        ResourcePermissions resourcePermissions = Mockito.mock(ChplResourcePermissions.class);
         Mockito.when(resourcePermissions.isUserRoleDeveloperAdmin()).thenReturn(true);
         Address address = buildAddress(1L, "Street", null, "City", "MD", "11111", "USA");
 
@@ -50,7 +51,7 @@ public class ChangeRequestAddressValidationTest {
 
     @Test
     public void validateAddress_ValidDataNoCountry_ReturnsTrue() throws EntityRetrievalException {
-        ResourcePermissions resourcePermissions = Mockito.mock(ResourcePermissions.class);
+        ResourcePermissions resourcePermissions = Mockito.mock(ChplResourcePermissions.class);
         Mockito.when(resourcePermissions.isUserRoleDeveloperAdmin()).thenReturn(true);
         Address address = buildAddress(1L, "Street", "Suite 6", "City", "MD", "11111", null);
 
@@ -64,7 +65,7 @@ public class ChangeRequestAddressValidationTest {
 
     @Test
     public void validateAddress_MissingLine1_ReturnsFalse() throws EntityRetrievalException {
-        ResourcePermissions resourcePermissions = Mockito.mock(ResourcePermissions.class);
+        ResourcePermissions resourcePermissions = Mockito.mock(ChplResourcePermissions.class);
         Mockito.when(resourcePermissions.isUserRoleDeveloperAdmin()).thenReturn(true);
         Address address = buildAddress(1L, null, null, "City", "MD", "11111", "USA");
 
@@ -77,7 +78,7 @@ public class ChangeRequestAddressValidationTest {
 
     @Test
     public void validateAddress_EmptyLine1_ReturnsFalse() throws EntityRetrievalException {
-        ResourcePermissions resourcePermissions = Mockito.mock(ResourcePermissions.class);
+        ResourcePermissions resourcePermissions = Mockito.mock(ChplResourcePermissions.class);
         Mockito.when(resourcePermissions.isUserRoleDeveloperAdmin()).thenReturn(true);
         Address address = buildAddress(1L, "", null, "City", "MD", "11111", "USA");
 
@@ -90,7 +91,7 @@ public class ChangeRequestAddressValidationTest {
 
     @Test
     public void validateAddress_MissingLine1_ReturnsExpectedError() throws EntityRetrievalException {
-        ResourcePermissions resourcePermissions = Mockito.mock(ResourcePermissions.class);
+        ResourcePermissions resourcePermissions = Mockito.mock(ChplResourcePermissions.class);
         Mockito.when(resourcePermissions.isUserRoleDeveloperAdmin()).thenReturn(true);
         Address address = buildAddress(1L, null, null, "City", "MD", "11111", "USA");
 
@@ -105,7 +106,7 @@ public class ChangeRequestAddressValidationTest {
 
     @Test
     public void validateAddress_MissingCity_ReturnsFalse() throws EntityRetrievalException {
-        ResourcePermissions resourcePermissions = Mockito.mock(ResourcePermissions.class);
+        ResourcePermissions resourcePermissions = Mockito.mock(ChplResourcePermissions.class);
         Mockito.when(resourcePermissions.isUserRoleDeveloperAdmin()).thenReturn(true);
         Address address = buildAddress(1L, "Line 1", null, null, "MD", "11111", "USA");
 
@@ -118,7 +119,7 @@ public class ChangeRequestAddressValidationTest {
 
     @Test
     public void validateAddress_EmptyCity_ReturnsFalse() throws EntityRetrievalException {
-        ResourcePermissions resourcePermissions = Mockito.mock(ResourcePermissions.class);
+        ResourcePermissions resourcePermissions = Mockito.mock(ChplResourcePermissions.class);
         Mockito.when(resourcePermissions.isUserRoleDeveloperAdmin()).thenReturn(true);
         Address address = buildAddress(1L, "Line 1", null, "", "MD", "11111", "USA");
 
@@ -131,7 +132,7 @@ public class ChangeRequestAddressValidationTest {
 
     @Test
     public void validateAddress_MissingCity_ReturnsExpectedError() throws EntityRetrievalException {
-        ResourcePermissions resourcePermissions = Mockito.mock(ResourcePermissions.class);
+        ResourcePermissions resourcePermissions = Mockito.mock(ChplResourcePermissions.class);
         Mockito.when(resourcePermissions.isUserRoleDeveloperAdmin()).thenReturn(true);
         Address address = buildAddress(1L, "Street", null, null, "MD", "11111", "USA");
 
@@ -146,7 +147,7 @@ public class ChangeRequestAddressValidationTest {
 
     @Test
     public void validateAddress_MissingState_ReturnsFalse() throws EntityRetrievalException {
-        ResourcePermissions resourcePermissions = Mockito.mock(ResourcePermissions.class);
+        ResourcePermissions resourcePermissions = Mockito.mock(ChplResourcePermissions.class);
         Mockito.when(resourcePermissions.isUserRoleDeveloperAdmin()).thenReturn(true);
         Address address = buildAddress(1L, "Line 1", null, "City", null, "11111", "USA");
 
@@ -159,7 +160,7 @@ public class ChangeRequestAddressValidationTest {
 
     @Test
     public void validateAddress_EmptyState_ReturnsFalse() throws EntityRetrievalException {
-        ResourcePermissions resourcePermissions = Mockito.mock(ResourcePermissions.class);
+        ResourcePermissions resourcePermissions = Mockito.mock(ChplResourcePermissions.class);
         Mockito.when(resourcePermissions.isUserRoleDeveloperAdmin()).thenReturn(true);
         Address address = buildAddress(1L, "Line 1", null, "City", "", "11111", "USA");
 
@@ -172,7 +173,7 @@ public class ChangeRequestAddressValidationTest {
 
     @Test
     public void validateAddress_MissingState_ReturnsExpectedError() throws EntityRetrievalException {
-        ResourcePermissions resourcePermissions = Mockito.mock(ResourcePermissions.class);
+        ResourcePermissions resourcePermissions = Mockito.mock(ChplResourcePermissions.class);
         Mockito.when(resourcePermissions.isUserRoleDeveloperAdmin()).thenReturn(true);
         Address address = buildAddress(1L, "Street", null, "City", null, "11111", "USA");
 
@@ -187,7 +188,7 @@ public class ChangeRequestAddressValidationTest {
 
     @Test
     public void validateAddress_MissingZipcode_ReturnsFalse() throws EntityRetrievalException {
-        ResourcePermissions resourcePermissions = Mockito.mock(ResourcePermissions.class);
+        ResourcePermissions resourcePermissions = Mockito.mock(ChplResourcePermissions.class);
         Mockito.when(resourcePermissions.isUserRoleDeveloperAdmin()).thenReturn(true);
         Address address = buildAddress(1L, "Line 1", null, "City", "MD", null, "USA");
 
@@ -200,7 +201,7 @@ public class ChangeRequestAddressValidationTest {
 
     @Test
     public void validateAddress_EmptyZipcode_ReturnsFalse() throws EntityRetrievalException {
-        ResourcePermissions resourcePermissions = Mockito.mock(ResourcePermissions.class);
+        ResourcePermissions resourcePermissions = Mockito.mock(ChplResourcePermissions.class);
         Mockito.when(resourcePermissions.isUserRoleDeveloperAdmin()).thenReturn(true);
         Address address = buildAddress(1L, "Line 1", null, "City", "MD", "", "USA");
 
@@ -213,7 +214,7 @@ public class ChangeRequestAddressValidationTest {
 
     @Test
     public void validateAddress_MissingZipcode_ReturnsExpectedError() throws EntityRetrievalException {
-        ResourcePermissions resourcePermissions = Mockito.mock(ResourcePermissions.class);
+        ResourcePermissions resourcePermissions = Mockito.mock(ChplResourcePermissions.class);
         Mockito.when(resourcePermissions.isUserRoleDeveloperAdmin()).thenReturn(true);
         Address address = buildAddress(1L, "Street", null, "City", "MD", null, "USA");
 

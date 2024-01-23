@@ -21,7 +21,7 @@ import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
 import gov.healthit.chpl.email.footer.PublicFooter;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.manager.CertificationIdManager;
-import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2(topic = "certificationIdEmailJobLogger")
@@ -36,7 +36,7 @@ public class CertificationIdEmailJob  implements Job {
     private ChplHtmlEmailBuilder chplHtmlEmailBuilder;
 
     @Autowired
-    private ResourcePermissions resourcePermissions;
+    private ResourcePermissionsFactory resourcePermissionsFactory;
 
     @Autowired
     private Environment env;
@@ -79,10 +79,10 @@ public class CertificationIdEmailJob  implements Job {
 
     private List<SimpleCertificationId> getReportData() {
         List<SimpleCertificationId> certificationIds = new ArrayList<SimpleCertificationId>();
-        if (resourcePermissions.isUserRoleAdmin() || resourcePermissions.isUserRoleOnc()) {
+        if (resourcePermissionsFactory.get().isUserRoleAdmin() || resourcePermissionsFactory.get().isUserRoleOnc()) {
             LOGGER.info("Getting all certification IDs with Products...");
             certificationIds = certificationIdManager.getAllWithProducts();
-        } else if (resourcePermissions.isUserRoleCmsStaff()) {
+        } else if (resourcePermissionsFactory.get().isUserRoleCmsStaff()) {
             LOGGER.info("Getting all certification IDs...");
             certificationIds = certificationIdManager.getAll();
         }

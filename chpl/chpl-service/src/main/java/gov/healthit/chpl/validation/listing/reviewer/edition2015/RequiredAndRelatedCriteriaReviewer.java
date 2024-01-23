@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.service.CertificationCriterionService.Criteria2015;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -28,8 +28,8 @@ public class RequiredAndRelatedCriteriaReviewer extends PermissionBasedReviewer 
     @Autowired
     public RequiredAndRelatedCriteriaReviewer(CertificationCriterionService criterionService,
             ErrorMessageUtil msgUtil, ValidationUtils validationUtils,
-            ResourcePermissions resourcePermissions) {
-        super(msgUtil, resourcePermissions);
+            ResourcePermissionsFactory resourcePermissionsFactory) {
+        super(msgUtil, resourcePermissionsFactory);
         this.criterionService = criterionService;
         this.msgUtil = msgUtil;
         this.validationUtils = validationUtils;

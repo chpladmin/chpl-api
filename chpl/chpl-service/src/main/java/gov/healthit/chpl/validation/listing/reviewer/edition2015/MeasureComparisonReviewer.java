@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.ListingMeasure;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.validation.listing.reviewer.ComparisonReviewer;
 
@@ -19,9 +20,9 @@ public class MeasureComparisonReviewer implements ComparisonReviewer {
     private ErrorMessageUtil msgUtil;
 
     @Autowired
-    public MeasureComparisonReviewer(ResourcePermissions resourcePermissions,
+    public MeasureComparisonReviewer(ResourcePermissionsFactory resourcePermissionsFactory,
             ErrorMessageUtil msgUtil) {
-        this.resourcePermissions = resourcePermissions;
+        this.resourcePermissions = resourcePermissionsFactory.get();
         this.msgUtil = msgUtil;
     }
 

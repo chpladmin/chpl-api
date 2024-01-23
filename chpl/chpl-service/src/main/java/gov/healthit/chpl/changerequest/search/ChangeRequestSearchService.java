@@ -21,6 +21,7 @@ import gov.healthit.chpl.changerequest.dao.ChangeRequestDAO;
 import gov.healthit.chpl.domain.IdNamePair;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.util.DateUtil;
 import lombok.extern.log4j.Log4j2;
 
@@ -36,9 +37,9 @@ public class ChangeRequestSearchService {
     @Autowired
     public ChangeRequestSearchService(ChangeRequestDAO changeRequestDAO,
             ChangeRequestSearchRequestValidator validator,
-            ResourcePermissions resourcePermissions) {
+            ResourcePermissionsFactory resourcePermissionsFactory) {
         this.changeRequestDAO = changeRequestDAO;
-        this.resourcePermissions = resourcePermissions;
+        this.resourcePermissions = resourcePermissionsFactory.get();
         this.validator = validator;
         this.normalizer = new ChangeRequestSearchRequestNormalizer();
         dateFormatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;

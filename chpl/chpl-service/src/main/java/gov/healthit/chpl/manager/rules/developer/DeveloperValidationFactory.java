@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.manager.rules.ValidationRule;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 
 @Component
 public class DeveloperValidationFactory {
@@ -27,9 +28,9 @@ public class DeveloperValidationFactory {
     private ResourcePermissions resourcePermissions;
 
     @Autowired
-    public DeveloperValidationFactory(DeveloperDAO developerDao, ResourcePermissions resourcePermissions) {
+    public DeveloperValidationFactory(DeveloperDAO developerDao, ResourcePermissionsFactory resourcePermissionsFactory) {
         this.developerDao = developerDao;
-        this.resourcePermissions = resourcePermissions;
+        this.resourcePermissions = resourcePermissionsFactory.get();
     }
 
     public ValidationRule<DeveloperValidationContext> getRule(String name) {

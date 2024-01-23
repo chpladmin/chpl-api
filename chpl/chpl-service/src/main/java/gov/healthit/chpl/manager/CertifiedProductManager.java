@@ -88,6 +88,7 @@ import gov.healthit.chpl.manager.impl.SecuredManager;
 import gov.healthit.chpl.notifier.BusinessRulesOverrideNotifierMessage;
 import gov.healthit.chpl.notifier.ChplTeamNotifier;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.qmsStandard.QmsStandard;
 import gov.healthit.chpl.qmsStandard.QmsStandardDAO;
 import gov.healthit.chpl.scheduler.job.TriggerDeveloperBanJob;
@@ -158,7 +159,7 @@ public class CertifiedProductManager extends SecuredManager {
             ProductManager productManager, ProductVersionManager versionManager, CertificationStatusEventDAO statusEventDao,
             CuresUpdateEventDAO curesUpdateDao, PromotingInteroperabilityUserDAO piuDao,
             CertificationResultSynchronizationService certResultService, CqmResultSynchronizationService cqmResultService,
-            CertificationStatusDAO certStatusDao, ListingGraphDAO listingGraphDao, ResourcePermissions resourcePermissions,
+            CertificationStatusDAO certStatusDao, ListingGraphDAO listingGraphDao, ResourcePermissionsFactory resourcePermissionsFactory,
             CertifiedProductDetailsManager certifiedProductDetailsManager,
             SchedulerManager schedulerManager, ActivityManager activityManager, ListingDetailsNormalizer listingNormalizer,
             ListingValidatorFactory validatorFactory, CuresUpdateService curesUpdateService, @Lazy ListingIcsSharedStoreHandler icsSharedStoreHandler,
@@ -186,7 +187,7 @@ public class CertifiedProductManager extends SecuredManager {
         this.cqmResultService = cqmResultService;
         this.certStatusDao = certStatusDao;
         this.listingGraphDao = listingGraphDao;
-        this.resourcePermissions = resourcePermissions;
+        this.resourcePermissions = resourcePermissionsFactory.get();
         this.certifiedProductDetailsManager = certifiedProductDetailsManager;
         this.schedulerManager = schedulerManager;
         this.activityManager = activityManager;

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.util.CertificationStatusUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
@@ -20,8 +21,8 @@ public class ListingStatusAndUserRoleReviewer implements ComparisonReviewer {
     private ErrorMessageUtil messages;
 
     @Autowired
-    public ListingStatusAndUserRoleReviewer(ResourcePermissions resourcePermissions, ErrorMessageUtil messages) {
-        this.resourcePermissions = resourcePermissions;
+    public ListingStatusAndUserRoleReviewer(ResourcePermissionsFactory resourcePermissionsFactory, ErrorMessageUtil messages) {
+        this.resourcePermissions = resourcePermissionsFactory.get();
         this.messages = messages;
     }
 

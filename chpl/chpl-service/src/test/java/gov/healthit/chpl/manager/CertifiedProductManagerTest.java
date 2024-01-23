@@ -67,6 +67,7 @@ import gov.healthit.chpl.exception.MissingReasonException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.listing.measure.ListingMeasureDAO;
 import gov.healthit.chpl.notifier.ChplTeamNotifier;
+import gov.healthit.chpl.permissions.ChplResourcePermissions;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.qmsStandard.QmsStandardDAO;
 import gov.healthit.chpl.service.CuresUpdateService;
@@ -136,7 +137,7 @@ public class CertifiedProductManagerTest {
         piuDao = Mockito.mock(PromotingInteroperabilityUserDAO.class);
         certStatusDao = Mockito.mock(CertificationStatusDAO.class);
         listingGraphDao = Mockito.mock(ListingGraphDAO.class);
-        resourcePermissions = Mockito.mock(ResourcePermissions.class);
+        resourcePermissions = Mockito.mock(ChplResourcePermissions.class);
         certifiedProductSearchResultDAO = Mockito.mock(CertifiedProductSearchResultDAO.class);
         certifiedProductDetailsManager = Mockito.mock(CertifiedProductDetailsManager.class);
         activityManager = Mockito.mock(ActivityManager.class);

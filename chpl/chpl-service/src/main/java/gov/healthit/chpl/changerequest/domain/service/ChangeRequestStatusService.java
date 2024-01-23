@@ -21,6 +21,7 @@ import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.util.AuthUtil;
 
 @Component
@@ -47,13 +48,13 @@ public class ChangeRequestStatusService {
     public ChangeRequestStatusService(final ChangeRequestStatusDAO crStatusDAO,
             final ChangeRequestStatusTypeDAO crStatusTypeDAO, final ChangeRequestDAO crDAO,
             final ChangeRequestDetailsFactory crDetailsFactory, final ActivityManager activityManager,
-            final ResourcePermissions resourcePermissions) {
+            final ResourcePermissionsFactory resourcePermissionsFactory) {
         this.crStatusDAO = crStatusDAO;
         this.crStatusTypeDAO = crStatusTypeDAO;
         this.crDAO = crDAO;
         this.crDetailsFactory = crDetailsFactory;
         this.activityManager = activityManager;
-        this.resourcePermissions = resourcePermissions;
+        this.resourcePermissions = resourcePermissionsFactory.get();
     }
 
     public ChangeRequestStatus saveInitialStatus(ChangeRequest cr) throws EntityRetrievalException {

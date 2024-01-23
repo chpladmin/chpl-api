@@ -33,6 +33,7 @@ import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.impl.SecuredManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import lombok.extern.log4j.Log4j2;
 
@@ -54,12 +55,12 @@ public class ActivityPagedMetadataManager extends SecuredManager {
     @Autowired
     public ActivityPagedMetadataManager(@Qualifier("activityDAO") ActivityDAO activityDao, AnnouncementDAO announcementDao,
             ActivityMetadataBuilderFactory metadataBuilderFactory, ErrorMessageUtil msgUtil,
-            ResourcePermissions resourcePermissions) {
+            ResourcePermissionsFactory resourcePermissionsFactory) {
         this.activityDao = activityDao;
         this.announcementDao = announcementDao;
         this.metadataBuilderFactory = metadataBuilderFactory;
         this.msgUtil = msgUtil;
-        this.resourcePermissions = resourcePermissions;
+        this.resourcePermissions = resourcePermissionsFactory.get();
     }
 
 

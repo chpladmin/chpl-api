@@ -12,6 +12,7 @@ import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Component
@@ -23,10 +24,10 @@ public class NewSurveillanceEditionReviewer implements Reviewer {
 
     @Autowired
     public NewSurveillanceEditionReviewer(CertifiedProductDAO listingDao, ErrorMessageUtil msgUtil,
-            ResourcePermissions resourcePermissions, FF4j ff4j) {
+            ResourcePermissionsFactory resourcePermissionsFactory, FF4j ff4j) {
         this.listingDao = listingDao;
         this.msgUtil = msgUtil;
-        this.resourcePermissions = resourcePermissions;
+        this.resourcePermissions = resourcePermissionsFactory.get();
         this.ff4j = ff4j;
     }
 

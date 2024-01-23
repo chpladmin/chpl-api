@@ -16,13 +16,14 @@ import gov.healthit.chpl.changerequest.domain.ChangeRequestType;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.permissions.ChplResourcePermissions;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.ValidationUtils;
 
 public class ChangeRequestWebsiteValidationTest {
     @Test
     public void validateSelfDeveloper_ValidData_ReturnsTrue() throws EntityRetrievalException {
-        ResourcePermissions resourcePermissions = Mockito.mock(ResourcePermissions.class);
+        ResourcePermissions resourcePermissions = Mockito.mock(ChplResourcePermissions.class);
         Mockito.when(resourcePermissions.isUserRoleDeveloperAdmin()).thenReturn(true);
 
         ValidationUtils validationUtils = Mockito.mock(ValidationUtils.class);
@@ -40,7 +41,7 @@ public class ChangeRequestWebsiteValidationTest {
 
     @Test
     public void validateSelfDeveloper_InvalidUrl_ReturnsFalse() throws EntityRetrievalException {
-        ResourcePermissions resourcePermissions = Mockito.mock(ResourcePermissions.class);
+        ResourcePermissions resourcePermissions = Mockito.mock(ChplResourcePermissions.class);
         Mockito.when(resourcePermissions.isUserRoleDeveloperAdmin()).thenReturn(true);
 
         ValidationUtils validationUtils = Mockito.mock(ValidationUtils.class);
@@ -58,7 +59,7 @@ public class ChangeRequestWebsiteValidationTest {
 
     @Test
     public void validateSelfDeveloper_MissingData_ReturnsFalse() throws EntityRetrievalException {
-        ResourcePermissions resourcePermissions = Mockito.mock(ResourcePermissions.class);
+        ResourcePermissions resourcePermissions = Mockito.mock(ChplResourcePermissions.class);
         Mockito.when(resourcePermissions.isUserRoleDeveloperAdmin()).thenReturn(true);
 
         ChangeRequestValidationContext context = getValidationContext(null, resourcePermissions);

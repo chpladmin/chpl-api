@@ -11,6 +11,7 @@ import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductUcdProcess;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.util.DateUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
@@ -22,9 +23,9 @@ public class UnavailableCriteriaUcdComparisonReviewer implements ComparisonRevie
     private ErrorMessageUtil msgUtil;
 
     @Autowired
-    public UnavailableCriteriaUcdComparisonReviewer(ResourcePermissions resourcePermissions,
+    public UnavailableCriteriaUcdComparisonReviewer(ResourcePermissionsFactory resourcePermissionsFactory,
             ErrorMessageUtil msgUtil) {
-        this.resourcePermissions = resourcePermissions;
+        this.resourcePermissions = resourcePermissionsFactory.get();
         this.msgUtil = msgUtil;
     }
 
