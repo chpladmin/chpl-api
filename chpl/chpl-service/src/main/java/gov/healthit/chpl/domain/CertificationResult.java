@@ -188,8 +188,8 @@ public class CertificationResult implements Serializable {
     @Builder.Default
     private List<CertificationResultStandard> standards = new ArrayList<CertificationResultStandard>();
 
-    //TODO - Need this text for OCD-4446
-    @Schema(description = "Need to insert this text")
+
+    @Schema(description = "Indicates if the Code Sets are up to date for the criterion.")
     private Boolean codeSets;
 
     @Schema(description = "Detailed information about the relevant certification criterion.")
