@@ -7,6 +7,7 @@ import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
@@ -87,8 +88,7 @@ public class QuestionableActivityListener implements EnvironmentAware {
                     && newData.getCertificationResults() != null
                     && newData.getCertificationResults().size() > 0) {
 
-                // all cert results are in the details so find matches based on the
-                // original and new criteria number fields
+                //check for cert result updates
                 for (CertificationResult origCertResult : originalData.getCertificationResults()) {
                     for (CertificationResult newCertResult : newData.getCertificationResults()) {
                         if (origCertResult.getCriterion().getId().equals(newCertResult.getCriterion().getId())) {
@@ -97,8 +97,20 @@ public class QuestionableActivityListener implements EnvironmentAware {
                         }
                     }
                 }
+
+                //if a cert result was added there are a few things to check for as well
+                newData.getCertificationResults().stream()
+                    .filter(newCertResult -> !isCriterionAttestedInListing(newCertResult.getCriterion(), originalData))
+                    .forEach(addedCertResult -> questionableActivityManager.checkNewlyAttestedCertificationResultQuestionableActivity(
+                            addedCertResult, activity, reason));
             }
         }
+    }
+
+    private boolean isCriterionAttestedInListing(CertificationCriterion criterion, CertifiedProductSearchDetails listing) {
+        return listing.getCertificationResults().stream()
+                .filter(certResult -> certResult.getSuccess() && certResult.getCriterion().getId().equals(criterion.getId()))
+                .findAny().isPresent();
     }
 
     private void checkQuestionableActivityForDeveloper(ActivityDTO activity, Developer originalDeveloper, Developer newDeveloper) {

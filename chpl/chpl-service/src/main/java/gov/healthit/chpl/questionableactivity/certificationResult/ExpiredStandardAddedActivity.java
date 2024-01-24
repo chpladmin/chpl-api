@@ -17,9 +17,15 @@ public class ExpiredStandardAddedActivity implements CertificationResultActivity
 
     @Override
      public List<QuestionableActivityCertificationResult> check(CertificationResult origCertResult, CertificationResult newCertResult) {
-        List<CertificationResultStandard> addedStandards = subtractCertificationResultStandardLists(
+        List<CertificationResultStandard> addedStandards = new ArrayList<CertificationResultStandard>();
+
+        if (origCertResult != null && newCertResult != null) {
+            addedStandards = subtractCertificationResultStandardLists(
                 newCertResult.getStandards() == null ? new ArrayList<CertificationResultStandard>() : newCertResult.getStandards(),
                 origCertResult.getStandards() == null ? new ArrayList<CertificationResultStandard>() : origCertResult.getStandards());
+        } else if (newCertResult != null) {
+            addedStandards = newCertResult.getStandards() != null ? newCertResult.getStandards() : new ArrayList<CertificationResultStandard>();
+        }
 
         return addedStandards.stream()
                 .filter(crs -> crs.getStandard().isRetired())
