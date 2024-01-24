@@ -38,6 +38,7 @@ public enum QuestionableActivityTriggerConcept implements Serializable {
     RWT_RESULTS_UPDATED_OUTSIDE_NORMAL_PERIOD("Real World Testing Results URL or Check Date updated outside normal update period"),
     UPLOADED_AFTER_CERTIFICATION_DATE("Uploaded After Certification Date"),
     NON_ACTIVE_CERTIFIFCATE_EDITED("Non Active Certificate Edited"),
+    CODE_SET_EDITED("Code Sets changed to false"),
 
     //These are no longer being detected but there may be existing older questionable activities
     EDITION_2011_EDITED("2011 Listing Edited"),

@@ -15,6 +15,7 @@ import gov.healthit.chpl.questionableactivity.certificationResult.ExpiredFunctio
 import gov.healthit.chpl.questionableactivity.certificationResult.ExpiredStandardAddedActivity;
 import gov.healthit.chpl.questionableactivity.certificationResult.ExpiredTestToolAddedActivity;
 import gov.healthit.chpl.questionableactivity.certificationResult.ReplacedSvapAddedActivity;
+import gov.healthit.chpl.questionableactivity.certificationResult.UpdatedCodeSetActivity;
 import gov.healthit.chpl.questionableactivity.certificationResult.UpdatedG1SuccessActivity;
 import gov.healthit.chpl.questionableactivity.certificationResult.UpdatedG2SuccessActivity;
 import gov.healthit.chpl.questionableactivity.certificationResult.UpdatedGapActivity;
@@ -51,6 +52,7 @@ public class CertificationResultQuestionableActivityService {
         processCertificationResultActivity(ExpiredTestToolAddedActivity.class.getName(), origCertResult, newCertResult, activity, activityReason);
         processCertificationResultActivity(ExpiredFunctionalityTestedAddedActivity.class.getName(), origCertResult, newCertResult, activity, activityReason);
         processCertificationResultActivity(ExpiredStandardAddedActivity.class.getName(), origCertResult, newCertResult, activity, activityReason);
+        processCertificationResultActivity(UpdatedCodeSetActivity.class.getName(), origCertResult, newCertResult, activity, activityReason);
     }
 
     public void processQuestionableActivity(CertificationResult newCertResult, ActivityDTO activity, String activityReason) {

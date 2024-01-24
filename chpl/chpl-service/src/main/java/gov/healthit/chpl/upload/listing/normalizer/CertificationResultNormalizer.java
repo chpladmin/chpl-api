@@ -146,10 +146,12 @@ public class CertificationResultNormalizer {
                     && certResultRules.hasCertOption(certResult.getCriterion().getId(), CertificationResultRules.SED))
             .forEach(certResult -> certResult.setSed(true));
     }
+
     private void setCodeSetsTrueIfApplicableToCriteria(CertifiedProductSearchDetails listing) {
         listing.getCertificationResults().stream()
             .filter(certResult -> certResult.getCriterion() != null
                     && BooleanUtils.isTrue(certResult.getSuccess())
+                    && certResult.getCodeSets() == null
                     && certResultRules.hasCertOption(certResult.getCriterion().getId(), CertificationResultRules.CODE_SETS))
             .forEach(certResult -> certResult.setCodeSets(true));
     }
