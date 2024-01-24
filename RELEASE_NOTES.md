@@ -1,5 +1,26 @@
 # Release Notes
 
+## Version 43.2.0
+_23 January 2024_
+
+### Features
+* Detect Questionable Activity when criterion with expired attribute is attested
+
+### Bug Fixes
+* Update API Key Last Used Date
+* Correctly add CQMs for 2011 listings with NQF type of CQMs
+* Correctly save listing CQM updates
+
+---
+
+## Version 43.1.1
+_9 January 2024_
+
+### System Maintenance
+* Serialize calls to the listing search
+
+---
+
 ## Version 43.1.0
 _8 January 2024_
 
