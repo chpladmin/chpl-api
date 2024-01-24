@@ -235,7 +235,6 @@ public class CertificationCriterionService {
         public static final String D_11 = "criterion.170_315_d_11";
         public static final String D_12 = "criterion.170_315_d_12";
         public static final String D_13 = "criterion.170_315_d_13";
-        public static final String D_14 = "criterion.170_315_d_14";
         public static final String E_1_OLD = "criterion.170_315_e_1_old";
         public static final String E_1_CURES = "criterion.170_315_e_1_cures";
         public static final String E_2 = "criterion.170_315_e_2";
