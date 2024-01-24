@@ -17,9 +17,17 @@ public class ReplacedSvapAddedActivity implements CertificationResultActivity {
 
     @Override
      public List<QuestionableActivityCertificationResult> check(CertificationResult origCertResult, CertificationResult newCertResult) {
-        List<CertificationResultSvap> addedSvaps = subtractCertificationResultSvapLists(
-                newCertResult.getSvaps() == null ? new ArrayList<CertificationResultSvap>() : newCertResult.getSvaps(),
-                origCertResult.getSvaps() == null ? new ArrayList<CertificationResultSvap>() : origCertResult.getSvaps());
+        List<CertificationResultSvap> addedSvaps = new ArrayList<CertificationResultSvap>();
+
+        if (origCertResult != null && newCertResult != null) {
+            //cert result was updated
+            addedSvaps = subtractCertificationResultSvapLists(
+                    newCertResult.getSvaps() == null ? new ArrayList<CertificationResultSvap>() : newCertResult.getSvaps(),
+                    origCertResult.getSvaps() == null ? new ArrayList<CertificationResultSvap>() : origCertResult.getSvaps());
+        } else if (newCertResult != null) {
+            //cert result was added
+            addedSvaps = newCertResult.getSvaps() != null ? newCertResult.getSvaps() : new ArrayList<CertificationResultSvap>();
+        }
 
         return addedSvaps.stream()
                 .filter(crs -> crs.isReplaced())
