@@ -12,31 +12,39 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.standard.CertificationResultStandard;
 import gov.healthit.chpl.standard.Standard;
 import gov.healthit.chpl.standard.StandardDAO;
+import gov.healthit.chpl.standard.StandardGroupService;
+import gov.healthit.chpl.standard.StandardGroupValidation;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
 import gov.healthit.chpl.util.ValidationUtils;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 @Component("listingUploadStandardReviewer")
-public class StandardReviewer {
+public class StandardReviewer extends StandardGroupValidation {
     private CertificationResultRules certResultRules;
     private ValidationUtils validationUtils;
     private StandardDAO standardDao;
     private ErrorMessageUtil msgUtil;
 
+
     @Autowired
-    public StandardReviewer(CertificationResultRules certResultRules,
-            ValidationUtils validationUtils,
-            StandardDAO standardDao, ErrorMessageUtil msgUtil) {
+    public StandardReviewer(CertificationResultRules certResultRules, ValidationUtils validationUtils,
+            StandardDAO standardDao, StandardGroupService standardGroupService, ErrorMessageUtil msgUtil, ResourcePermissions resourcePermissions) {
+        super(standardGroupService, msgUtil, resourcePermissions);
+
         this.certResultRules = certResultRules;
         this.validationUtils = validationUtils;
         this.standardDao = standardDao;
         this.msgUtil = msgUtil;
     }
 
+    @Override
     public void review(CertifiedProductSearchDetails listing) {
         listing.getCertificationResults().stream()
                 .filter(certResult -> validationUtils.isEligibleForErrors(certResult))
@@ -49,6 +57,7 @@ public class StandardReviewer {
         reviewCriteriaCanHaveStandard(listing, certResult);
         removeStandardsWithoutIds(listing, certResult);
         removeStandardMismatchedToCriteria(listing, certResult);
+        reviewStandardExistForEachGroup(listing, certResult, listing.getCertificationDay());
         if (certResult.getStandards() != null && certResult.getStandards().size() > 0) {
             certResult.getStandards().stream()
                     .forEach(standard -> reviewStandardFields(listing, certResult, standard));
@@ -88,7 +97,7 @@ public class StandardReviewer {
     }
 
     private void removeStandardMismatchedToCriteria(CertifiedProductSearchDetails listing, CertificationResult certResult) {
-        if (CollectionUtils.isEmpty(certResult.getFunctionalitiesTested())) {
+        if (CollectionUtils.isEmpty(certResult.getStandards())) {
             return;
         }
         Iterator<CertificationResultStandard> standardIter = certResult.getStandards().iterator();

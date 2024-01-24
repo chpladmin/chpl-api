@@ -64,6 +64,7 @@ public class StandardDAO extends BaseDAOImpl {
                 .rule(standard.getRule() != null && standard.getRule().getId() != null
                         ? ruleDAO.getRuleEntityById(standard.getRule().getId())
                         : null)
+                .groupName(standard.getGroupName())
                 .build();
 
         create(entity);
@@ -94,9 +95,7 @@ public class StandardDAO extends BaseDAOImpl {
         }
 
         entity.setAdditionalInformation(standard.getAdditionalInformation());
-        entity.setLastModifiedUser(AuthUtil.getAuditId());
-        entity.setLastModifiedDate(new Date());
-
+        entity.setGroupName(standard.getGroupName());
         update(entity);
     }
 
@@ -114,9 +113,6 @@ public class StandardDAO extends BaseDAOImpl {
     public void removeStandardCriteriaMap(Standard standard, CertificationCriterion criterion) {
         try {
             StandardCriteriaMapEntity entity = getStandardCriteriaMapByStandardAndCriterion(standard.getId(), criterion.getId());
-            entity.setDeleted(true);
-            entity.setLastModifiedDate(new Date());
-            entity.setLastModifiedUser(AuthUtil.getAuditId());
 
             update(entity);
         } catch (EntityRetrievalException e) {

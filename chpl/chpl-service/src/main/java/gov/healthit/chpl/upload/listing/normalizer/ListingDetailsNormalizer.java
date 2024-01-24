@@ -1,5 +1,7 @@
 package gov.healthit.chpl.upload.listing.normalizer;
 
+import java.util.List;
+
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.ff4j.FF4j;
@@ -58,7 +60,7 @@ public class ListingDetailsNormalizer {
         this.ff4j = ff4j;
     }
 
-    public void normalize(CertifiedProductSearchDetails listing) {
+    public void normalize(CertifiedProductSearchDetails listing, List<CertificationResultLevelNormalizer> additionalNormalizers) {
         if (!listing.getErrorMessages().isEmpty()) {
             listing.clearAllErrorMessages();
         }
@@ -78,10 +80,19 @@ public class ListingDetailsNormalizer {
         this.accessibilityStandardNormalizer.normalize(listing);
         this.qmsNormalizer.normalize(listing);
         this.targetedUserNormalizer.normalize(listing);
-        this.certResultNormalizer.normalize(listing);
+        if (additionalNormalizers != null && additionalNormalizers.size() > 0) {
+            this.certResultNormalizer.normalize(listing, additionalNormalizers);
+        } else {
+            this.certResultNormalizer.normalize(listing);
+        }
         this.cqmNormalizer.normalize(listing);
         this.measureNormalizer.normalize(listing);
         this.sedNormalizer.normalize(listing);
+
+    }
+
+    public void normalize(CertifiedProductSearchDetails listing) {
+        normalize(listing, null);
     }
 
     private void setEmptyStringFieldsToNull(CertifiedProductSearchDetails listing) {

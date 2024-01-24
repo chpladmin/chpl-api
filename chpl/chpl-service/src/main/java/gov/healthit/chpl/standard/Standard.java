@@ -69,6 +69,8 @@ public class Standard implements Serializable {
     @Schema(description = "The rule which this Criteria Attrbute is associated with.")
     private Rule rule;
 
+    private String groupName;
+
     public Boolean isRetired() {
         LocalDate end = endDay != null ? endDay : LocalDate.MAX;
         return end.isBefore(LocalDate.now());
