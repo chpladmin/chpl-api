@@ -1,7 +1,9 @@
 package gov.healthit.chpl.auth.user;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -44,7 +46,10 @@ public class CognitoAuthenticatedUser implements User {
     @Builder.Default
     private boolean authenticated = true;
 
-        private UserDTO impersonatingUser;
+    @Builder.Default
+    private List<Long> organizationIds = new ArrayList<>();
+
+    private UserDTO impersonatingUser;
 
     @Override
     public void addPermission(GrantedPermission permission) {

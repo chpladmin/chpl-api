@@ -2,6 +2,7 @@ package gov.healthit.chpl.auth.authentication;
 
 import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -43,9 +44,16 @@ public class CognitoJwtUserConverter {
                 .ssoId(UUID.fromString(decodeJwt.getSubject()))
                 .fullName(decodeJwt.getClaim("name").asString())
                 .email(decodeJwt.getClaim("email").asString())
+                .organizationIds(
+                        decodeJwt.getClaims().containsKey("custom:organizations")
+                                ? Stream.of(decodeJwt.getClaim("custom:organizations").asString().split(","))
+                                        .map(Long::valueOf)
+                                        .toList()
+                                : null)
                 .permissions(decodeJwt.getClaim("cognito:groups").asList(String.class).stream()
                         .map(group -> new GrantedPermission(group))
                         .collect(Collectors.toSet()))
+
                 .build();
     }
 

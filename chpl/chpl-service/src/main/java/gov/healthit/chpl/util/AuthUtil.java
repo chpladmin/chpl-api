@@ -37,6 +37,15 @@ public class AuthUtil {
         return user;
     }
 
+    public static CognitoAuthenticatedUser getCurrentSsoUser() {
+        CognitoAuthenticatedUser user = null;
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth instanceof CognitoAuthenticatedUser) {
+            user = (CognitoAuthenticatedUser) auth;
+        }
+        return user;
+    }
+
     /**
      * Get the ID of the active user. If the active user is being impersonated, get the id of the impersonating user instead.
      * @return the user's audit-ready id

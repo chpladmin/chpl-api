@@ -7,7 +7,6 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.Predicate;
-import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
@@ -15,7 +14,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.auth.user.SystemUsers;
 import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
@@ -53,13 +51,12 @@ public class ChplResourcePermissions implements ResourcePermissions {
     private UserDAO userDAO;
     private DeveloperDAO developerDAO;
     private CognitoUserService cognitoUserService;
-    private FF4j ff4j;
 
     @SuppressWarnings({"checkstyle:parameternumber"})
     @Autowired
     public ChplResourcePermissions(UserCertificationBodyMapDAO userCertificationBodyMapDAO, UserDeveloperMapDAO userDeveloperMapDAO,
             CertificationBodyDAO acbDAO, TestingLabDAO atlDAO, ErrorMessageUtil errorMessageUtil, UserDAO userDAO,
-            DeveloperDAO developerDAO, CognitoUserService cognitoUserService, FF4j ff4j) {
+            DeveloperDAO developerDAO, CognitoUserService cognitoUserService) {
 
         this.userCertificationBodyMapDAO = userCertificationBodyMapDAO;
         this.acbDAO = acbDAO;
@@ -69,7 +66,6 @@ public class ChplResourcePermissions implements ResourcePermissions {
         this.developerDAO = developerDAO;
         this.userDeveloperMapDAO = userDeveloperMapDAO;
         this.cognitoUserService = cognitoUserService;
-        this.ff4j = ff4j;
     }
 
     @Override
@@ -139,14 +135,10 @@ public class ChplResourcePermissions implements ResourcePermissions {
             if (isUserRoleAdmin() || isUserRoleOnc()) {
                 acbs = acbDAO.findAll();
             } else {
-                if (ff4j.check(FeatureList.SSO)) {
-                    
-                } else {
-                    List<UserCertificationBodyMapDTO> userAcbMaps = userCertificationBodyMapDAO.getByUserId(user.getId());
-                    acbs = userAcbMaps.stream()
-                            .map(userAcbMap -> userAcbMap.getCertificationBody())
-                            .collect(Collectors.toList());
-                }
+                List<UserCertificationBodyMapDTO> userAcbMaps = userCertificationBodyMapDAO.getByUserId(user.getId());
+                acbs = userAcbMaps.stream()
+                        .map(userAcbMap -> userAcbMap.getCertificationBody())
+                        .collect(Collectors.toList());
             }
         }
         return acbs;
@@ -162,7 +154,7 @@ public class ChplResourcePermissions implements ResourcePermissions {
             .collect(Collectors.toList());
     }
 
-    
+
     // TODO - OCD-4379 - Is this still used??
     @Override
     @Transactional(readOnly = true)
@@ -363,11 +355,7 @@ public class ChplResourcePermissions implements ResourcePermissions {
 
     @Override
     public boolean isUserRoleAdmin() {
-        if (ff4j.check(FeatureList.SSO)) {
-            return doesUserHaveRole(CognitoGroups.CHPL_ADMIN);
-        } else {
-            return doesUserHaveRole(Authority.ROLE_ADMIN);
-        }
+        return doesUserHaveRole(Authority.ROLE_ADMIN);
     }
 
     @Override
@@ -432,18 +420,11 @@ public class ChplResourcePermissions implements ResourcePermissions {
             return false;
         }
 
-        if (ff4j.check(FeatureList.SSO)) {
-            return user.getPermissions().stream()
-                    .filter(permission -> permission.getAuthority().equals(authority))
-                    .findAny()
-                    .isPresent();
-        } else {
-            UserPermission role = getRoleByUserId(user.getId());
-            if (role == null) {
-                return false;
-            }
-            return role.getAuthority().equalsIgnoreCase(authority);
+        UserPermission role = getRoleByUserId(user.getId());
+        if (role == null) {
+            return false;
         }
+        return role.getAuthority().equalsIgnoreCase(authority);
     }
 
     @Override
