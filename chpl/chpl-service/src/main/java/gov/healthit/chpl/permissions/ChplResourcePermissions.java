@@ -70,25 +70,6 @@ public class ChplResourcePermissions implements ResourcePermissions {
         }
     }
 
-//    @Override
-//    @Deprecated
-//    @Transactional(readOnly = true)
-//    public UserDTO getUserByName(String userName) throws UserRetrievalException {
-//        UserDTO user = null;
-//        try {
-//            user = userDAO.getByNameOrEmail(userName);
-//        } catch (MultipleUserAccountsException ex) {
-//            throw new UserRetrievalException(ex.getMessage());
-//        }
-//        return user;
-//    }
-
-    //@Override
-    //@Transactional(readOnly = true)
-    //public UserDTO getUserById(Long userId) throws UserRetrievalException {
-    //    return userDAO.getById(userId);
-    //}
-
     @Override
     @Transactional(readOnly = true)
     public List<UserDTO> getAllUsersOnAcb(CertificationBody acb) {

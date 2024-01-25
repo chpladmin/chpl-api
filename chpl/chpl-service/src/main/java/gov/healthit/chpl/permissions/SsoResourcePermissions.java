@@ -1,24 +1,24 @@
 package gov.healthit.chpl.permissions;
 
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.auth.user.CognitoAuthenticatedUser;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
+import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.Developer;
-import gov.healthit.chpl.domain.TestingLab;
 import gov.healthit.chpl.domain.auth.CognitoGroups;
 import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.domain.auth.UserPermission;
 import gov.healthit.chpl.dto.auth.UserDTO;
+import gov.healthit.chpl.entity.developer.DeveloperStatusType;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.util.AuthUtil;
 import lombok.extern.log4j.Log4j2;
 
@@ -26,26 +26,25 @@ import lombok.extern.log4j.Log4j2;
 @Component
 public class SsoResourcePermissions implements ResourcePermissions {
     private CertificationBodyDAO certificationBodyDAO;
+    private DeveloperDAO developerDAO;
 
     @Autowired
-    public SsoResourcePermissions(CertificationBodyDAO certificationBodyDAO) {
+    public SsoResourcePermissions(CertificationBodyDAO certificationBodyDAO, DeveloperDAO developerDAO) {
         this.certificationBodyDAO = certificationBodyDAO;
+        this.developerDAO = developerDAO;
     }
 
     @Override
+    @Transactional(readOnly = true)
     public boolean isDeveloperActive(Long developerId) {
-        throw new NotImplementedException("Not implemented: 1");
+        try {
+            Developer developer = developerDAO.getById(developerId);
+            return developer != null && developer.getStatus() != null
+                    && developer.getStatus().getStatus().equals(DeveloperStatusType.Active.toString());
+        } catch (EntityRetrievalException e) {
+            return false;
+        }
     }
-
-    @Override
-    public UserDTO getUserByName(String userName) throws UserRetrievalException {
-        throw new NotImplementedException("Not implemented: 2");
-    }
-
-    //@Override
-    //public UserDTO getUserById(Long userId) throws UserRetrievalException {
-    //    throw new NotImplementedException("Not implemented: 3");
-    //}
 
     @Override
     public List<UserDTO> getAllUsersOnAcb(CertificationBody acb) {
@@ -79,18 +78,16 @@ public class SsoResourcePermissions implements ResourcePermissions {
     }
 
     @Override
-    public List<TestingLab> getAllAtlsForCurrentUser() {
-        throw new NotImplementedException("Not implemented: 8");
-    }
-
-    @Override
     public List<Developer> getAllDevelopersForCurrentUser() {
         throw new NotImplementedException("Not implemented: 9");
     }
 
     @Override
-    public List<Developer> getAllDevelopersForUser(Long userId) {
-        throw new NotImplementedException("Not implemented: 10");
+    public List<Developer> getAllDevelopersForUser(User user) {
+        //return user.getOrganizations().stream()
+        //        .map(org -> developerDAO.getById(devId))
+        //        .toList();
+
     }
 
     @Override
@@ -99,33 +96,13 @@ public class SsoResourcePermissions implements ResourcePermissions {
     }
 
     @Override
-    public CertificationBody getAcbIfPermissionById(Long id) throws EntityRetrievalException {
+    public CertificationBody getAcbIfPermissionById(Long certificationBodyId) throws EntityRetrievalException {
         throw new NotImplementedException("Not implemented: 12");
     }
 
     @Override
-    public Developer getDeveloperIfPermissionById(Long id) throws EntityRetrievalException {
+    public Developer getDeveloperIfPermissionById(Long developerId) throws EntityRetrievalException {
         throw new NotImplementedException("Not implemented: 13");
-    }
-
-    @Override
-    public UserPermission getRoleByUserId(Long userId) {
-        throw new NotImplementedException("Not implemented: 14");
-    }
-
-    @Override
-    public boolean hasPermissionOnUser(Long userId) {
-        throw new NotImplementedException("Not implemented: 15");
-    }
-
-    @Override
-    public boolean hasPermissionOnUser(UserDTO user) {
-        throw new NotImplementedException("Not implemented: 16");
-    }
-
-    @Override
-    public boolean hasPermissionOnUser(UUID ssoId) {
-        throw new NotImplementedException("Not implemented: 17");
     }
 
     @Override
@@ -210,6 +187,16 @@ public class SsoResourcePermissions implements ResourcePermissions {
             LOGGER.error("Could not retrieve Certification Body: {}", certificationBodyId);
             return null;
         }
+    }
+
+    @Override
+    public UserPermission getRoleByUser(User user) {
+        throw new NotImplementedException("Not implemented: 35");
+    }
+
+    @Override
+    public boolean hasPermissionOnUser(User user) {
+        throw new NotImplementedException("Not implemented: 45");
     }
 
 }
