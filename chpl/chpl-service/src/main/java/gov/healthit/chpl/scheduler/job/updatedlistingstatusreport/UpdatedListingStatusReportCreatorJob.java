@@ -23,6 +23,8 @@ import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
+import gov.healthit.chpl.functionalitytested.CertificationResultFunctionalityTested;
+import gov.healthit.chpl.functionalitytested.CertificationResultFunctionalityTestedDAO;
 import gov.healthit.chpl.scheduler.job.QuartzJob;
 import gov.healthit.chpl.search.ListingSearchService;
 import gov.healthit.chpl.search.domain.SearchRequest;
@@ -45,6 +47,9 @@ public class UpdatedListingStatusReportCreatorJob extends QuartzJob {
 
     @Autowired
     private CertificationResultStandardDAO certificationResultStandardDAO;
+
+    @Autowired
+    private CertificationResultFunctionalityTestedDAO certificationResultFunctionalityTestedDAO;
 
     @Autowired
     private JpaTransactionManager txManager;
@@ -150,6 +155,17 @@ public class UpdatedListingStatusReportCreatorJob extends QuartzJob {
     }
 
     private OptionalLong getDaysUpdatedEarlyForCriteria(CertificationResult certificationResult) {
+        OptionalLong standardsDaysEarly = getDaysUpdatedEarlyForCriteriaBasedOnStandards(certificationResult);
+        OptionalLong functionalityTestedDaysEarly = getDaysUpdatedEarlyForCriteriaBasedOnFunctionalitiesTested(certificationResult);
+
+        if (standardsDaysEarly.isEmpty() || functionalityTestedDaysEarly.isEmpty()) {
+            return OptionalLong.empty();
+        } else {
+            return standardsDaysEarly.getAsLong() > functionalityTestedDaysEarly.getAsLong() ? functionalityTestedDaysEarly : standardsDaysEarly;
+        }
+    }
+
+    private OptionalLong getDaysUpdatedEarlyForCriteriaBasedOnStandards(CertificationResult certificationResult) {
         //Get the CertificationResultStandards using DAO, so that we have the create date
         List<CertificationResultStandard> certificationResultStandards = certificationResultStandardDAO.getStandardsForCertificationResult(certificationResult.getId());
         OptionalLong daysUpdatedEarly = OptionalLong.empty();
@@ -158,6 +174,24 @@ public class UpdatedListingStatusReportCreatorJob extends QuartzJob {
                     .filter(certResultStd -> certResultStd.getStandard().getRequiredDay() != null
                             && DateUtil.toLocalDate(certResultStd.getCreationDate().getTime()).isBefore(certResultStd.getStandard().getRequiredDay()))
                     .mapToLong(certResultStd -> ChronoUnit.DAYS.between(DateUtil.toLocalDate(certResultStd.getCreationDate().getTime()), certResultStd.getStandard().getRequiredDay()))
+                    .min();
+
+            LOGGER.info("{} - {}", certificationResult.getCriterion().getNumber(), daysUpdatedEarly);
+        }
+        return daysUpdatedEarly;
+    }
+
+    private OptionalLong getDaysUpdatedEarlyForCriteriaBasedOnFunctionalitiesTested(CertificationResult certificationResult) {
+        //Get the CertificationResultFunctionalitiesTested using DAO, so that we have the create date
+        List<CertificationResultFunctionalityTested> certificationResultFunctionalitiesTested =
+                certificationResultFunctionalityTestedDAO.getFunctionalitiesTestedForCertificationResult(certificationResult.getId());
+
+        OptionalLong daysUpdatedEarly = OptionalLong.empty();
+        if (CollectionUtils.isNotEmpty(certificationResultFunctionalitiesTested)) {
+            daysUpdatedEarly = certificationResultFunctionalitiesTested.stream()
+                    .filter(certResultFT -> certResultFT.getFunctionalityTested().getRequiredDay() != null
+                            && DateUtil.toLocalDate(certResultFT.getCreationDate().getTime()).isBefore(certResultFT.getFunctionalityTested().getRequiredDay()))
+                    .mapToLong(certResultFT -> ChronoUnit.DAYS.between(DateUtil.toLocalDate(certResultFT.getCreationDate().getTime()), certResultFT.getFunctionalityTested().getRequiredDay()))
                     .min();
 
             LOGGER.info("{} - {}", certificationResult.getCriterion().getNumber(), daysUpdatedEarly);
