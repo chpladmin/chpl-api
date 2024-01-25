@@ -15,10 +15,13 @@ import gov.healthit.chpl.changerequest.dao.ChangeRequestStatusTypeDAO;
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestStatus;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestStatusType;
+import gov.healthit.chpl.dao.auth.UserDAO;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
+import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
@@ -43,17 +46,18 @@ public class ChangeRequestStatusService {
     private ChangeRequestDetailsFactory crDetailsFactory;
     private ActivityManager activityManager;
     private ResourcePermissions resourcePermissions;
+    private UserDAO userDAO;
 
     @Autowired
-    public ChangeRequestStatusService(final ChangeRequestStatusDAO crStatusDAO,
-            final ChangeRequestStatusTypeDAO crStatusTypeDAO, final ChangeRequestDAO crDAO,
-            final ChangeRequestDetailsFactory crDetailsFactory, final ActivityManager activityManager,
-            final ResourcePermissionsFactory resourcePermissionsFactory) {
+    public ChangeRequestStatusService(ChangeRequestStatusDAO crStatusDAO, ChangeRequestStatusTypeDAO crStatusTypeDAO, ChangeRequestDAO crDAO,
+            ChangeRequestDetailsFactory crDetailsFactory, ActivityManager activityManager, UserDAO userDAO,
+            ResourcePermissionsFactory resourcePermissionsFactory) {
         this.crStatusDAO = crStatusDAO;
         this.crStatusTypeDAO = crStatusTypeDAO;
         this.crDAO = crDAO;
         this.crDetailsFactory = crDetailsFactory;
         this.activityManager = activityManager;
+        this.userDAO = userDAO;
         this.resourcePermissions = resourcePermissionsFactory.get();
     }
 
@@ -64,7 +68,7 @@ public class ChangeRequestStatusService {
         ChangeRequestStatus crStatus = new ChangeRequestStatus();
         crStatus.setStatusChangeDateTime(LocalDateTime.now());
         crStatus.setChangeRequestStatusType(crStatusType);
-        crStatus.setUserPermission(resourcePermissions.getRoleByUserId(AuthUtil.getCurrentUser().getId()));
+        crStatus.setUserPermission(resourcePermissions.getRoleByUser(getUserById(AuthUtil.getCurrentUser().getId())));
 
         return crStatusDAO.create(cr, crStatus);
     }
@@ -146,7 +150,7 @@ public class ChangeRequestStatusService {
         crStatus.setChangeRequestStatusType(crStatusType);
         crStatus.setComment(comment);
         crStatus.setStatusChangeDateTime(LocalDateTime.now());
-        crStatus.setUserPermission(resourcePermissions.getRoleByUserId(AuthUtil.getCurrentUser().getId()));
+        crStatus.setUserPermission(resourcePermissions.getRoleByUser(getUserById(AuthUtil.getCurrentUser().getId())));
         if (resourcePermissions.isUserRoleAcbAdmin()) {
             crStatus.setCertificationBody(getCertificationBodyForCurrentUser());
         }
@@ -172,4 +176,14 @@ public class ChangeRequestStatusService {
             return null;
         }
     }
+
+    private User getUserById(Long userId) {
+        try {
+            return userDAO.getById(userId).toDomain();
+        } catch (UserRetrievalException e) {
+            LOGGER.error("Could not retrieve user with ID: {}", userId, e);
+            return null;
+        }
+    }
+
 }

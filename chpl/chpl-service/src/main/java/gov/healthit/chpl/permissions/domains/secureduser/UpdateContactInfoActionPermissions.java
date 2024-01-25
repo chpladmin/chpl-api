@@ -19,7 +19,7 @@ public class UpdateContactInfoActionPermissions extends ActionPermissions {
             return false;
         }
         UserDTO user = (UserDTO) obj;
-        return getResourcePermissions().hasPermissionOnUser(user);
+        return getResourcePermissions().hasPermissionOnUser(user.toDomain());
     }
 
 }

@@ -2,7 +2,6 @@ package gov.healthit.chpl.permissions;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -14,28 +13,24 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import gov.healthit.chpl.auth.user.SystemUsers;
 import gov.healthit.chpl.auth.user.AuthenticatedUser;
+import gov.healthit.chpl.auth.user.SystemUsers;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
-import gov.healthit.chpl.dao.TestingLabDAO;
 import gov.healthit.chpl.dao.UserCertificationBodyMapDAO;
 import gov.healthit.chpl.dao.UserDeveloperMapDAO;
 import gov.healthit.chpl.dao.auth.UserDAO;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.Developer;
-import gov.healthit.chpl.domain.TestingLab;
 import gov.healthit.chpl.domain.auth.Authority;
-import gov.healthit.chpl.domain.auth.CognitoGroups;
+import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.domain.auth.UserPermission;
 import gov.healthit.chpl.dto.UserCertificationBodyMapDTO;
 import gov.healthit.chpl.dto.UserDeveloperMapDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.entity.developer.DeveloperStatusType;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.exception.MultipleUserAccountsException;
 import gov.healthit.chpl.exception.UserRetrievalException;
-import gov.healthit.chpl.manager.auth.CognitoUserService;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import lombok.extern.log4j.Log4j2;
@@ -47,25 +42,20 @@ public class ChplResourcePermissions implements ResourcePermissions {
     private UserDeveloperMapDAO userDeveloperMapDAO;
     private ErrorMessageUtil errorMessageUtil;
     private CertificationBodyDAO acbDAO;
-    private TestingLabDAO atlDAO;
     private UserDAO userDAO;
     private DeveloperDAO developerDAO;
-    private CognitoUserService cognitoUserService;
 
     @SuppressWarnings({"checkstyle:parameternumber"})
     @Autowired
     public ChplResourcePermissions(UserCertificationBodyMapDAO userCertificationBodyMapDAO, UserDeveloperMapDAO userDeveloperMapDAO,
-            CertificationBodyDAO acbDAO, TestingLabDAO atlDAO, ErrorMessageUtil errorMessageUtil, UserDAO userDAO,
-            DeveloperDAO developerDAO, CognitoUserService cognitoUserService) {
+            CertificationBodyDAO acbDAO, ErrorMessageUtil errorMessageUtil, UserDAO userDAO, DeveloperDAO developerDAO) {
 
         this.userCertificationBodyMapDAO = userCertificationBodyMapDAO;
         this.acbDAO = acbDAO;
-        this.atlDAO = atlDAO;
         this.errorMessageUtil = errorMessageUtil;
         this.userDAO = userDAO;
         this.developerDAO = developerDAO;
         this.userDeveloperMapDAO = userDeveloperMapDAO;
-        this.cognitoUserService = cognitoUserService;
     }
 
     @Override
@@ -80,24 +70,24 @@ public class ChplResourcePermissions implements ResourcePermissions {
         }
     }
 
-    @Override
-    @Deprecated
-    @Transactional(readOnly = true)
-    public UserDTO getUserByName(String userName) throws UserRetrievalException {
-        UserDTO user = null;
-        try {
-            user = userDAO.getByNameOrEmail(userName);
-        } catch (MultipleUserAccountsException ex) {
-            throw new UserRetrievalException(ex.getMessage());
-        }
-        return user;
-    }
+//    @Override
+//    @Deprecated
+//    @Transactional(readOnly = true)
+//    public UserDTO getUserByName(String userName) throws UserRetrievalException {
+//        UserDTO user = null;
+//        try {
+//            user = userDAO.getByNameOrEmail(userName);
+//        } catch (MultipleUserAccountsException ex) {
+//            throw new UserRetrievalException(ex.getMessage());
+//        }
+//        return user;
+//    }
 
-    @Override
-    @Transactional(readOnly = true)
-    public UserDTO getUserById(Long userId) throws UserRetrievalException {
-        return userDAO.getById(userId);
-    }
+    //@Override
+    //@Transactional(readOnly = true)
+    //public UserDTO getUserById(Long userId) throws UserRetrievalException {
+    //    return userDAO.getById(userId);
+    //}
 
     @Override
     @Transactional(readOnly = true)
@@ -146,29 +136,14 @@ public class ChplResourcePermissions implements ResourcePermissions {
 
     @Override
     @Transactional(readOnly = true)
-    public List<CertificationBody> getAllAcbsForUser(Long userID) {
+    public List<CertificationBody> getAllAcbsForUser(User user) {
         List<CertificationBody> acbs = new ArrayList<CertificationBody>();
-        List<UserCertificationBodyMapDTO> userAcbMaps = userCertificationBodyMapDAO.getByUserId(userID);
+        List<UserCertificationBodyMapDTO> userAcbMaps = userCertificationBodyMapDAO.getByUserId(user.getUserId());
         return userAcbMaps.stream()
             .map(userAcbMap -> userAcbMap.getCertificationBody())
             .collect(Collectors.toList());
     }
 
-
-    // TODO - OCD-4379 - Is this still used??
-    @Override
-    @Transactional(readOnly = true)
-    public List<TestingLab> getAllAtlsForCurrentUser() {
-        AuthenticatedUser user = AuthUtil.getCurrentUser();
-        List<TestingLab> atls = new ArrayList<TestingLab>();
-
-        if (user != null) {
-            if (isUserRoleAdmin() || isUserRoleOnc()) {
-                atls = atlDAO.findAll();
-            }
-        }
-        return atls;
-    }
 
     @Override
     @Transactional(readOnly = true)
@@ -191,9 +166,9 @@ public class ChplResourcePermissions implements ResourcePermissions {
 
     @Override
     @Transactional(readOnly = true)
-    public List<Developer> getAllDevelopersForUser(Long userId) {
+    public List<Developer> getAllDevelopersForUser(User user) {
         List<Developer> devs = new ArrayList<Developer>();
-        List<UserDeveloperMapDTO> dtos = userDeveloperMapDAO.getByUserId(userId);
+        List<UserDeveloperMapDTO> dtos = userDeveloperMapDAO.getByUserId(user.getUserId());
         for (UserDeveloperMapDTO dto : dtos) {
             devs.add(dto.getDeveloper());
         }
@@ -233,9 +208,9 @@ public class ChplResourcePermissions implements ResourcePermissions {
 
     @Override
     @Transactional(readOnly = true)
-    public CertificationBody getAcbIfPermissionById(Long id) throws EntityRetrievalException {
+    public CertificationBody getAcbIfPermissionById(Long certificationBodyId) throws EntityRetrievalException {
         try {
-            acbDAO.getById(id);
+            acbDAO.getById(certificationBodyId);
         } catch (final EntityRetrievalException ex) {
             throw new EntityRetrievalException(errorMessageUtil.getMessage("acb.notFound"));
         }
@@ -244,7 +219,7 @@ public class ChplResourcePermissions implements ResourcePermissions {
         CollectionUtils.filter(dtos, new Predicate<CertificationBody>() {
             @Override
             public boolean evaluate(final CertificationBody object) {
-                return object.getId().equals(id);
+                return object.getId().equals(certificationBodyId);
             }
 
         });
@@ -257,16 +232,16 @@ public class ChplResourcePermissions implements ResourcePermissions {
 
     @Override
     @Transactional(readOnly = true)
-    public Developer getDeveloperIfPermissionById(Long id) throws EntityRetrievalException {
+    public Developer getDeveloperIfPermissionById(Long developerId) throws EntityRetrievalException {
         try {
-            developerDAO.getById(id);
+            developerDAO.getById(developerId);
         } catch (final EntityRetrievalException ex) {
             throw new EntityRetrievalException(errorMessageUtil.getMessage("developer.notFound"));
         }
 
         List<Developer> developers = getAllDevelopersForCurrentUser();
         List<Developer> developersWithId = developers.stream()
-            .filter(developer -> developer.getId().equals(id))
+            .filter(developer -> developer.getId().equals(developerId))
             .toList();
 
         if (developersWithId.size() == 0) {
@@ -277,10 +252,10 @@ public class ChplResourcePermissions implements ResourcePermissions {
 
     @Override
     @Transactional(readOnly = true)
-    public UserPermission getRoleByUserId(Long userId) {
+    public UserPermission getRoleByUser(User user) {
         try {
-            UserDTO user = userDAO.getById(userId);
-            return user.getPermission();
+            UserDTO userDto = userDAO.getById(user.getUserId());
+            return userDto.getPermission();
         } catch (UserRetrievalException ex) {
         }
         return null;
@@ -288,33 +263,20 @@ public class ChplResourcePermissions implements ResourcePermissions {
 
     @Override
     @Transactional(readOnly = true)
-    public boolean hasPermissionOnUser(Long userId) {
-        UserDTO user = null;
-        try {
-            user = userDAO.getById(userId);
-        } catch (UserRetrievalException ex) {
+    public boolean hasPermissionOnUser(User user) {
+        if (getRoleByUser(user).getAuthority().equalsIgnoreCase(Authority.ROLE_STARTUP)) {
             return false;
-        }
-        return hasPermissionOnUser(user);
-    }
-
-    //TODO - This can be removed when SSO is implemented
-    @Override
-    @Transactional(readOnly = true)
-    public boolean hasPermissionOnUser(UserDTO user) {
-        if (getRoleByUserId(user.getId()).getAuthority().equalsIgnoreCase(Authority.ROLE_STARTUP)) {
-            return false;
-        } else if (isUserRoleAdmin() || AuthUtil.getCurrentUser().getId().equals(user.getId())) {
+        } else if (isUserRoleAdmin() || AuthUtil.getCurrentUser().getId().equals(user.getUserId())) {
             return true;
         } else if (isUserRoleOnc()) {
-            return !getRoleByUserId(user.getId()).getAuthority().equalsIgnoreCase(Authority.ROLE_ADMIN);
+            return !getRoleByUser(user).getAuthority().equalsIgnoreCase(Authority.ROLE_ADMIN);
         } else if (isUserRoleAcbAdmin()) {
-            if (getRoleByUserId(user.getId()).getAuthority().equalsIgnoreCase(Authority.ROLE_DEVELOPER)) {
+            if (getRoleByUser(user).getAuthority().equalsIgnoreCase(Authority.ROLE_DEVELOPER)) {
                 return true;
             }
             // is the user being checked on any of the same ACB(s) that the current user is on?
             List<CertificationBody> currUserAcbs = getAllAcbsForCurrentUser();
-            List<CertificationBody> otherUserAcbs = getAllAcbsForUser(user.getId());
+            List<CertificationBody> otherUserAcbs = getAllAcbsForUser(user);
             for (CertificationBody currUserAcb : currUserAcbs) {
                 for (CertificationBody otherUserAcb : otherUserAcbs) {
                     if (currUserAcb.getId().equals(otherUserAcb.getId())) {
@@ -325,7 +287,7 @@ public class ChplResourcePermissions implements ResourcePermissions {
         } else if (isUserRoleDeveloperAdmin()) {
             // is the user being checked on any of the same Developer(s) that the current user is on?
             List<Developer> currUserDevs = getAllDevelopersForCurrentUser();
-            List<Developer> otherUserDevs = getAllDevelopersForUser(user.getId());
+            List<Developer> otherUserDevs = getAllDevelopersForUser(user);
             for (Developer currUserDev : currUserDevs) {
                 for (Developer otherUserDev : otherUserDevs) {
                     if (currUserDev.getId().equals(otherUserDev.getId())) {
@@ -335,22 +297,6 @@ public class ChplResourcePermissions implements ResourcePermissions {
             }
         }
         return false;
-    }
-
-    //TODO - This method will get built out to handle ONCs, ACBs, Developers as we continue to implemnt SSO
-    @Override
-    public boolean hasPermissionOnUser(UUID ssoId) {
-        try {
-            if (cognitoUserService.getUserInfo(ssoId).getRole().equalsIgnoreCase(CognitoGroups.CHPL_STARTUP)) {
-                return false;
-            } else if (isUserRoleAdmin() || AuthUtil.getCurrentUser().getSsoId().equals(ssoId)) {
-                return true;
-            }
-            return false;
-        } catch (UserRetrievalException e) {
-            LOGGER.error("Could not retrieve SSO user.", e);
-            return false;
-        }
     }
 
     @Override
@@ -420,7 +366,7 @@ public class ChplResourcePermissions implements ResourcePermissions {
             return false;
         }
 
-        UserPermission role = getRoleByUserId(user.getId());
+        UserPermission role = getRoleByUser(getUserById(user.getId()));
         if (role == null) {
             return false;
         }
@@ -434,7 +380,7 @@ public class ChplResourcePermissions implements ResourcePermissions {
             return false;
         }
 
-        UserPermission role = getRoleByUserId(auditUserId);
+        UserPermission role = getRoleByUser(getUserById(auditUserId));
         if (role == null) {
             return false;
         }
@@ -453,5 +399,14 @@ public class ChplResourcePermissions implements ResourcePermissions {
             }
         }
         return false;
+    }
+
+    private User getUserById(Long userId) {
+        try {
+            return userDAO.getById(userId).toDomain();
+        } catch (UserRetrievalException e) {
+            LOGGER.error("Could not retrieve user with ID: {}", userId, e);
+            return null;
+        }
     }
 }

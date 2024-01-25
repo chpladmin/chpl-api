@@ -1,12 +1,9 @@
 package gov.healthit.chpl.permissions.domains.secureduser;
 
-import java.util.UUID;
-
 import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.dao.auth.UserDAO;
 import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.dto.auth.UserDTO;
@@ -39,13 +36,13 @@ public class GetByUserNameActionPermissions extends ActionPermissions {
         }
 
         try {
-            if (ff4j.check(FeatureList.SSO)) {
-                if (obj instanceof User) {
-                    return doesCurrentUserHavePermissionToSubjectUser(((User) obj).getUserSsoId());
-                } else {
-                    return false;
-                }
-            } else {
+            //if (ff4j.check(FeatureList.SSO)) {
+            //    if (obj instanceof User) {
+            //        return doesCurrentUserHavePermissionToSubjectUser(((User) obj).getUserSsoId());
+            //    } else {
+            //        return false;
+            //    }
+            //} else {
                 if (obj instanceof UserDTO) {
                     return doesCurrentUserHavePermissionToSubjectUser((UserDTO) obj);
                 } else if (obj instanceof User) {
@@ -53,7 +50,7 @@ public class GetByUserNameActionPermissions extends ActionPermissions {
                 } else {
                     return false;
                 }
-            }
+            //}
         } catch (UserRetrievalException e) {
             LOGGER.error("Error retrieving user from DB. " + e.getMessage(), e);
             return false;
@@ -67,12 +64,12 @@ public class GetByUserNameActionPermissions extends ActionPermissions {
     private boolean doesCurrentUserHavePermissionToSubjectUser(UserDTO user) {
         return getResourcePermissions().isUserRoleUserAuthenticator()
                 || getResourcePermissions().isUserRoleInvitedUserCreator()
-                || getResourcePermissions().hasPermissionOnUser(user);
+                || getResourcePermissions().hasPermissionOnUser(user.toDomain());
     }
-
-    private boolean doesCurrentUserHavePermissionToSubjectUser(UUID ssoUserId) {
-        return getResourcePermissions().isUserRoleUserAuthenticator()
-                || getResourcePermissions().isUserRoleInvitedUserCreator()
-                || getResourcePermissions().hasPermissionOnUser(ssoUserId);
-    }
+//
+//    private boolean doesCurrentUserHavePermissionToSubjectUser(UUID ssoUserId) {
+//        return getResourcePermissions().isUserRoleUserAuthenticator()
+//                || getResourcePermissions().isUserRoleInvitedUserCreator()
+//                || getResourcePermissions().hasPermissionOnUser(ssoUserId);
+//    }
 }

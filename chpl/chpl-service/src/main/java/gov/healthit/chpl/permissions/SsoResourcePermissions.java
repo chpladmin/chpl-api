@@ -14,6 +14,7 @@ import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.TestingLab;
 import gov.healthit.chpl.domain.auth.CognitoGroups;
+import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.domain.auth.UserPermission;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -41,10 +42,10 @@ public class SsoResourcePermissions implements ResourcePermissions {
         throw new NotImplementedException("Not implemented: 2");
     }
 
-    @Override
-    public UserDTO getUserById(Long userId) throws UserRetrievalException {
-        throw new NotImplementedException("Not implemented: 3");
-    }
+    //@Override
+    //public UserDTO getUserById(Long userId) throws UserRetrievalException {
+    //    throw new NotImplementedException("Not implemented: 3");
+    //}
 
     @Override
     public List<UserDTO> getAllUsersOnAcb(CertificationBody acb) {
@@ -73,7 +74,7 @@ public class SsoResourcePermissions implements ResourcePermissions {
     }
 
     @Override
-    public List<CertificationBody> getAllAcbsForUser(Long userID) {
+    public List<CertificationBody> getAllAcbsForUser(User user) {
         throw new NotImplementedException("Not implemented: 7");
     }
 
