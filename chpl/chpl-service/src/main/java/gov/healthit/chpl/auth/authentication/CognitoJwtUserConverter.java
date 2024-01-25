@@ -16,7 +16,7 @@ import com.auth0.jwt.interfaces.RSAKeyProvider;
 import gov.healthit.chpl.auth.jwt.CognitoRsaKeyProvider;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.CognitoAuthenticatedUser;
-import gov.healthit.chpl.auth.user.User;
+import gov.healthit.chpl.auth.user.AuthenticatedUser;
 import gov.healthit.chpl.exception.JWTValidationException;
 import gov.healthit.chpl.exception.MultipleUserAccountsException;
 import lombok.extern.log4j.Log4j2;
@@ -37,7 +37,7 @@ public class CognitoJwtUserConverter {
         this.tokenizeRsaKeyUrl = tokenizeRsaKeyUrl;
     }
 
-    public User getAuthenticatedUser(String jwt) throws JWTValidationException, MultipleUserAccountsException {
+    public AuthenticatedUser getAuthenticatedUser(String jwt) throws JWTValidationException, MultipleUserAccountsException {
         DecodedJWT decodeJwt = decodeJwt(jwt);
         return CognitoAuthenticatedUser.builder()
                 .authenticated(true)

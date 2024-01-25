@@ -12,7 +12,7 @@ import gov.healthit.chpl.dto.auth.UserDTO;
 import lombok.Data;
 
 @Data
-public class JWTAuthenticatedUser implements User {
+public class JWTAuthenticatedUser implements AuthenticatedUser {
     private static final long serialVersionUID = -4472262738122217527L;
 
     private Long id;

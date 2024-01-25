@@ -14,7 +14,7 @@ import gov.healthit.chpl.attestation.domain.AttestationPeriod;
 import gov.healthit.chpl.attestation.manager.AttestationManager;
 import gov.healthit.chpl.attestation.manager.AttestationPeriodService;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
-import gov.healthit.chpl.auth.user.User;
+import gov.healthit.chpl.auth.user.AuthenticatedUser;
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestAttestationSubmission;
 import gov.healthit.chpl.changerequest.validation.attestation.AttestationValidation;
@@ -54,7 +54,7 @@ public class AttestationValidationTest {
         Mockito.when(formValidator.removePhantomAndDuplicateResponses(ArgumentMatchers.any(Form.class)))
             .thenAnswer(i -> i.getArgument(0));
 
-        User currentUser = new JWTAuthenticatedUser();
+        AuthenticatedUser currentUser = new JWTAuthenticatedUser();
         currentUser.setFullName("User A");
 
         validator.isValid(ChangeRequestValidationContext.builder()
@@ -96,7 +96,7 @@ public class AttestationValidationTest {
         Mockito.when(formValidator.removePhantomAndDuplicateResponses(ArgumentMatchers.any(Form.class)))
             .thenAnswer(i -> i.getArgument(0));
 
-        User currentUser = new JWTAuthenticatedUser();
+        AuthenticatedUser currentUser = new JWTAuthenticatedUser();
         currentUser.setFullName("User A");
 
         validator.isValid(ChangeRequestValidationContext.builder()
@@ -137,7 +137,7 @@ public class AttestationValidationTest {
         Mockito.when(formValidator.removePhantomAndDuplicateResponses(ArgumentMatchers.any(Form.class)))
             .thenAnswer(i -> i.getArgument(0));
 
-        User currentUser = new JWTAuthenticatedUser();
+        AuthenticatedUser currentUser = new JWTAuthenticatedUser();
         currentUser.setFullName("User A");
 
         validator.isValid(ChangeRequestValidationContext.builder()
@@ -181,7 +181,7 @@ public class AttestationValidationTest {
         Mockito.when(formValidator.removePhantomAndDuplicateResponses(ArgumentMatchers.any(Form.class)))
             .thenAnswer(i -> i.getArgument(0));
 
-        User currentUser = new JWTAuthenticatedUser();
+        AuthenticatedUser currentUser = new JWTAuthenticatedUser();
         currentUser.setFullName("User A");
 
         validator.isValid(ChangeRequestValidationContext.builder()
@@ -221,7 +221,7 @@ public class AttestationValidationTest {
                         .valid(true)
                         .build());
 
-        User currentUser = new JWTAuthenticatedUser();
+        AuthenticatedUser currentUser = new JWTAuthenticatedUser();
         currentUser.setFullName("User A");
 
         validator.isValid(ChangeRequestValidationContext.builder()
@@ -261,7 +261,7 @@ public class AttestationValidationTest {
                         .valid(false)
                         .build());
 
-        User currentUser = new JWTAuthenticatedUser();
+        AuthenticatedUser currentUser = new JWTAuthenticatedUser();
         currentUser.setFullName("User A");
 
         validator.isValid(ChangeRequestValidationContext.builder()
@@ -303,7 +303,7 @@ public class AttestationValidationTest {
         Mockito.when(formValidator.removePhantomAndDuplicateResponses(ArgumentMatchers.any(Form.class)))
             .thenAnswer(i -> i.getArgument(0));
 
-        User currentUser = new JWTAuthenticatedUser();
+        AuthenticatedUser currentUser = new JWTAuthenticatedUser();
         currentUser.setFullName("User A");
 
         validator.isValid(ChangeRequestValidationContext.builder()

@@ -10,10 +10,11 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 
-public interface User extends UserDetails, Authentication {
+public interface AuthenticatedUser extends UserDetails, Authentication {
 
     UUID getSsoId();
     Long getId();
+    
     String getSubjectName();
     void setSubjectName(String subject);
 

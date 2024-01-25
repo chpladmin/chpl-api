@@ -8,8 +8,6 @@ import java.util.UUID;
 
 import gov.healthit.chpl.domain.Organization;
 import gov.healthit.chpl.domain.contact.Person;
-import gov.healthit.chpl.dto.OrganizationDTO;
-import gov.healthit.chpl.dto.auth.UserDTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -34,27 +32,4 @@ public class User extends Person implements Serializable {
     private Date lastLoggedInDate;
     private List<Organization> organizations = new ArrayList<Organization>();
     private String hash;
-
-    public User(UserDTO dto) {
-        super();
-        this.setUserId(dto.getId());
-        if (dto.getPermission() != null) {
-            this.setRole(dto.getPermission().getAuthority());
-        }
-        this.setSubjectName(dto.getSubjectName());
-        this.setFullName(dto.getFullName());
-        this.setFriendlyName(dto.getFriendlyName());
-        this.setEmail(dto.getEmail());
-        this.setPhoneNumber(dto.getPhoneNumber());
-        this.setTitle(dto.getTitle());
-        this.setAccountLocked(dto.isAccountLocked());
-        this.setAccountEnabled(dto.isAccountEnabled());
-        this.setCredentialsExpired(dto.isCredentialsExpired());
-        this.setPasswordResetRequired(dto.isPasswordResetRequired());
-        this.setLastLoggedInDate(dto.getLastLoggedInDate());
-
-        for (OrganizationDTO orgDTO : dto.getOrganizations()) {
-            this.getOrganizations().add(new Organization(orgDTO.getId(), orgDTO.getName()));
-        }
-    }
 }

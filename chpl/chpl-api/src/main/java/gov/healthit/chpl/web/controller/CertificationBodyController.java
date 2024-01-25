@@ -273,7 +273,7 @@ public class CertificationBodyController {
         List<UserDTO> users = resourcePermissionsFactory.get().getAllUsersOnAcb(acb);
         List<User> acbUsers = new ArrayList<User>(users.size());
         for (UserDTO userDto : users) {
-            User acbUser = new User(userDto);
+            User acbUser = userDto.toDomain();
             acbUsers.add(acbUser);
         }
 

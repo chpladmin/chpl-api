@@ -17,7 +17,7 @@ import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.auth.ChplAccountEmailNotConfirmedException;
 import gov.healthit.chpl.auth.ChplAccountStatusException;
 import gov.healthit.chpl.auth.authentication.JWTUserConverter;
-import gov.healthit.chpl.auth.user.User;
+import gov.healthit.chpl.auth.user.AuthenticatedUser;
 import gov.healthit.chpl.domain.auth.AuthenticationResponse;
 import gov.healthit.chpl.domain.auth.LoginCredentials;
 import gov.healthit.chpl.domain.auth.ResetPasswordRequest;
@@ -212,7 +212,7 @@ public class AuthenticationController {
     @RequestMapping(value = "/unimpersonate", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public AuthenticationResponse unimpersonateUser(@RequestHeader(value = "Authorization", required = true) String userJwt)
             throws JWTValidationException, JWTCreationException, UserRetrievalException, MultipleUserAccountsException {
-        User user = userConverter.getImpersonatingUser(userJwt.split(" ")[1]);
+        AuthenticatedUser user = userConverter.getImpersonatingUser(userJwt.split(" ")[1]);
         String jwt = authenticationManager.unimpersonateUser(user);
 
         return AuthenticationResponse.builder()

@@ -16,7 +16,7 @@ import lombok.Data;
 
 @Data
 @Builder
-public class CognitoAuthenticatedUser implements User {
+public class CognitoAuthenticatedUser implements AuthenticatedUser {
     private static final long serialVersionUID = 2847351904166625725L;
 
     private Long id;

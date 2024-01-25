@@ -14,7 +14,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.auth.ChplAccountEmailNotConfirmedException;
 import gov.healthit.chpl.auth.authentication.JWTUserConverter;
-import gov.healthit.chpl.auth.user.User;
+import gov.healthit.chpl.auth.user.AuthenticatedUser;
 import gov.healthit.chpl.domain.auth.LoginCredentials;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
@@ -59,7 +59,7 @@ public class MassRequirePasswordChangeJob extends QuartzJob {
                             jobContext.getMergedJobDataMap().getString("password")));
 
             String jwt = authenticationManager.getJWT(actor);
-            User authenticatedUser = userConverter.getAuthenticatedUser(jwt);
+            AuthenticatedUser authenticatedUser = userConverter.getAuthenticatedUser(jwt);
             SecurityContextHolder.getContext().setAuthentication(authenticatedUser);
             List<UserDTO> allUsers = userManager.getAll();
             for (UserDTO user : allUsers) {

@@ -22,7 +22,6 @@ import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.domain.activity.ActivityDetails;
 import gov.healthit.chpl.domain.activity.ProductActivityDetails;
-import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.dto.ActivityDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
@@ -176,7 +175,7 @@ public class ActivityManager extends SecuredManager {
         event.setActivityDate(dto.getActivityDate());
         event.setActivityObjectId(dto.getActivityObjectId());
         event.setConcept(dto.getConcept());
-        event.setResponsibleUser(dto.getUser() == null ? null : new User(dto.getUser()));
+        event.setResponsibleUser(dto.getUser() == null ? null : dto.getUser().toDomain());
 
         JsonNode originalJSON = null;
         if (dto.getOriginalData() != null) {

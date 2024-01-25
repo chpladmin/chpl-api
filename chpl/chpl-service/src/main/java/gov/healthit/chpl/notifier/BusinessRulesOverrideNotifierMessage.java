@@ -9,20 +9,20 @@ import java.util.List;
 import org.eclipse.collections.api.set.sorted.ImmutableSortedSet;
 import org.springframework.core.env.Environment;
 
-import gov.healthit.chpl.auth.user.User;
+import gov.healthit.chpl.auth.user.AuthenticatedUser;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
 
 public class BusinessRulesOverrideNotifierMessage implements ChplTeamNotifierMessage {
 
     private ImmutableSortedSet<String> overriddenBusinessErrors;
     private String chplProductNumber;
-    private User user;
+    private AuthenticatedUser user;
     private ChplHtmlEmailBuilder chplHtmlEmailBuilder;
     private String subject;
     private String body;
     private String tableHeader;
 
-    public BusinessRulesOverrideNotifierMessage(String chplProductNumber, User user, ImmutableSortedSet<String> overriddenBusinessErrors, Environment env,
+    public BusinessRulesOverrideNotifierMessage(String chplProductNumber, AuthenticatedUser user, ImmutableSortedSet<String> overriddenBusinessErrors, Environment env,
             ChplHtmlEmailBuilder chplHtmlEmailBuilder) {
         this.chplProductNumber = chplProductNumber;
         this.overriddenBusinessErrors = overriddenBusinessErrors;

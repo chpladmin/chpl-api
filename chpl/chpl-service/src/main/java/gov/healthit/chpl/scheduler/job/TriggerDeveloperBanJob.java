@@ -16,7 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
-import gov.healthit.chpl.auth.user.User;
+import gov.healthit.chpl.auth.user.AuthenticatedUser;
 import gov.healthit.chpl.compliance.directreview.DirectReviewSearchService;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.email.ChplEmailFactory;
@@ -71,7 +71,7 @@ public class TriggerDeveloperBanJob implements Job {
     private String publicFeedbackUrl;
 
     private CertifiedProductSearchDetails updatedListing;
-    private User userPerformingAction;
+    private AuthenticatedUser userPerformingAction;
     private Date listingChangeDate;
     private String userProvidedReason;
 
@@ -94,7 +94,7 @@ public class TriggerDeveloperBanJob implements Job {
 
     private void setJobDataFromMap(JobDataMap jobDataMap) {
         updatedListing = (CertifiedProductSearchDetails) jobDataMap.get(UPDATED_LISTING);
-        userPerformingAction = (User) jobDataMap.get(USER);
+        userPerformingAction = (AuthenticatedUser) jobDataMap.get(USER);
         listingChangeDate = new Date(jobDataMap.getLong(CHANGE_DATE));
         userProvidedReason = jobDataMap.getString(USER_PROVIDED_REASON);
     }

@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 import gov.healthit.chpl.auth.jwt.JWTConsumer;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
-import gov.healthit.chpl.auth.user.User;
+import gov.healthit.chpl.auth.user.AuthenticatedUser;
 import gov.healthit.chpl.dao.auth.UserDAO;
 import gov.healthit.chpl.exception.JWTValidationException;
 import gov.healthit.chpl.exception.MultipleUserAccountsException;
@@ -36,7 +36,7 @@ public class JWTUserConverter {
         this.userDAO = userDAO;
     }
 
-    public User getAuthenticatedUser(String jwt) throws JWTValidationException, MultipleUserAccountsException {
+    public AuthenticatedUser getAuthenticatedUser(String jwt) throws JWTValidationException, MultipleUserAccountsException {
 
         JWTAuthenticatedUser user = new JWTAuthenticatedUser();
         user.setAuthenticated(true);
@@ -75,7 +75,7 @@ public class JWTUserConverter {
         return user;
     }
 
-    public User getImpersonatingUser(String jwt) throws JWTValidationException {
+    public AuthenticatedUser getImpersonatingUser(String jwt) throws JWTValidationException {
 
         JWTAuthenticatedUser user = new JWTAuthenticatedUser();
         user.setAuthenticated(true);

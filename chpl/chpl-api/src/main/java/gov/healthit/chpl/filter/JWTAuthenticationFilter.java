@@ -18,7 +18,7 @@ import org.springframework.web.filter.GenericFilterBean;
 import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.auth.authentication.CognitoJwtUserConverter;
 import gov.healthit.chpl.auth.authentication.JWTUserConverter;
-import gov.healthit.chpl.auth.user.User;
+import gov.healthit.chpl.auth.user.AuthenticatedUser;
 import gov.healthit.chpl.exception.JWTValidationException;
 import gov.healthit.chpl.exception.MultipleUserAccountsException;
 
@@ -62,7 +62,7 @@ public class JWTAuthenticationFilter extends GenericFilterBean {
             chain.doFilter(req, res); //continue
             SecurityContextHolder.getContext().setAuthentication(null);
         } else {
-            User authenticatedUser;
+            AuthenticatedUser authenticatedUser;
             String jwt = null;
 
             try {

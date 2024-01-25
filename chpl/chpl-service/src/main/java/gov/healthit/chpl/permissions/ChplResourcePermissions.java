@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.auth.user.SystemUsers;
-import gov.healthit.chpl.auth.user.User;
+import gov.healthit.chpl.auth.user.AuthenticatedUser;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.TestingLabDAO;
@@ -128,7 +128,7 @@ public class ChplResourcePermissions implements ResourcePermissions {
     @Override
     @Transactional(readOnly = true)
     public List<CertificationBody> getAllAcbsForCurrentUser() {
-        User user = AuthUtil.getCurrentUser();
+        AuthenticatedUser user = AuthUtil.getCurrentUser();
         List<CertificationBody> acbs = new ArrayList<CertificationBody>();
 
         if (user != null) {
@@ -159,7 +159,7 @@ public class ChplResourcePermissions implements ResourcePermissions {
     @Override
     @Transactional(readOnly = true)
     public List<TestingLab> getAllAtlsForCurrentUser() {
-        User user = AuthUtil.getCurrentUser();
+        AuthenticatedUser user = AuthUtil.getCurrentUser();
         List<TestingLab> atls = new ArrayList<TestingLab>();
 
         if (user != null) {
@@ -173,7 +173,7 @@ public class ChplResourcePermissions implements ResourcePermissions {
     @Override
     @Transactional(readOnly = true)
     public List<Developer> getAllDevelopersForCurrentUser() {
-        User user = AuthUtil.getCurrentUser();
+        AuthenticatedUser user = AuthUtil.getCurrentUser();
         List<Developer> developers = new ArrayList<Developer>();
 
         if (user != null) {
@@ -203,7 +203,7 @@ public class ChplResourcePermissions implements ResourcePermissions {
     @Override
     @Transactional(readOnly = true)
     public List<UserDTO> getAllUsersForCurrentUser() {
-        User user = AuthUtil.getCurrentUser();
+        AuthenticatedUser user = AuthUtil.getCurrentUser();
         List<UserDTO> users = new ArrayList<UserDTO>();
 
         if (user != null) {
@@ -415,7 +415,7 @@ public class ChplResourcePermissions implements ResourcePermissions {
 
     @Override
     public boolean doesUserHaveRole(String authority) {
-        User user = AuthUtil.getCurrentUser();
+        AuthenticatedUser user = AuthUtil.getCurrentUser();
         if (user == null) {
             return false;
         }
