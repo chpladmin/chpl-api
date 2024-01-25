@@ -1,7 +1,6 @@
 package gov.healthit.chpl.permissions;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +18,8 @@ import gov.healthit.chpl.domain.auth.UserPermission;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.entity.developer.DeveloperStatusType;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.exception.UserRetrievalException;
+import gov.healthit.chpl.manager.auth.CognitoUserService;
 import gov.healthit.chpl.util.AuthUtil;
 import lombok.extern.log4j.Log4j2;
 
@@ -27,11 +28,13 @@ import lombok.extern.log4j.Log4j2;
 public class SsoResourcePermissions implements ResourcePermissions {
     private CertificationBodyDAO certificationBodyDAO;
     private DeveloperDAO developerDAO;
+    private CognitoUserService cognitoUserService;
 
     @Autowired
-    public SsoResourcePermissions(CertificationBodyDAO certificationBodyDAO, DeveloperDAO developerDAO) {
+    public SsoResourcePermissions(CertificationBodyDAO certificationBodyDAO, DeveloperDAO developerDAO, CognitoUserService cognitoUserService) {
         this.certificationBodyDAO = certificationBodyDAO;
         this.developerDAO = developerDAO;
+        this.cognitoUserService = cognitoUserService;
     }
 
     @Override
@@ -58,35 +61,46 @@ public class SsoResourcePermissions implements ResourcePermissions {
 
     @Override
     public List<CertificationBody> getAllAcbsForCurrentUser() {
-        CognitoAuthenticatedUser user = AuthUtil.getCurrentSsoUser();
-        if (user != null) {
-            if (isUserRoleAdmin() || isUserRoleOnc()) {
-                return certificationBodyDAO.findAll();
+        try {
+            User user = cognitoUserService.getUserInfo(AuthUtil.getCurrentUser().getSsoId());
+            if (user != null) {
+                if (isUserRoleAdmin() || isUserRoleOnc()) {
+                    return certificationBodyDAO.findAll();
+                } else {
+                    return getAllAcbsForUser(user);
+                }
             } else {
-                return user.getOrganizationIds().stream()
-                        .map(orgId -> getCertifcationBody(orgId))
-                        .collect(Collectors.toList());
+                return null;
             }
-        } else {
+        } catch (UserRetrievalException e) {
+            LOGGER.error("Could not retrieve all ONC-ACBs for current user.", e);
             return null;
         }
     }
 
     @Override
     public List<CertificationBody> getAllAcbsForUser(User user) {
-        throw new NotImplementedException("Not implemented: 7");
+        return user.getOrganizations().stream()
+                .map(org -> getCertifcationBody(org.getId()))
+                .toList();
     }
 
     @Override
     public List<Developer> getAllDevelopersForCurrentUser() {
-        throw new NotImplementedException("Not implemented: 9");
+        try {
+            User user = cognitoUserService.getUserInfo(AuthUtil.getCurrentUser().getSsoId());
+            return getAllDevelopersForUser(user);
+        } catch (UserRetrievalException e) {
+            LOGGER.error("Could not retrieve all developers for current user.", e);
+            return null;
+        }
     }
 
     @Override
     public List<Developer> getAllDevelopersForUser(User user) {
-        //return user.getOrganizations().stream()
-        //        .map(org -> developerDAO.getById(devId))
-        //        .toList();
+        return user.getOrganizations().stream()
+                .map(org -> getDeveloper(org.getId()))
+                .toList();
 
     }
 
@@ -185,6 +199,15 @@ public class SsoResourcePermissions implements ResourcePermissions {
             return certificationBodyDAO.getById(certificationBodyId);
         } catch (EntityRetrievalException e) {
             LOGGER.error("Could not retrieve Certification Body: {}", certificationBodyId);
+            return null;
+        }
+    }
+
+    private Developer getDeveloper(Long developerId) {
+        try {
+            return developerDAO.getById(developerId);
+        } catch (EntityRetrievalException e) {
+            LOGGER.error("Could not retrieve Developer: {}", developerId);
             return null;
         }
     }
