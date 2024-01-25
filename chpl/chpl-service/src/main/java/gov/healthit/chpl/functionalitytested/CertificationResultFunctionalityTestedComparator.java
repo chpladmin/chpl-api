@@ -1,5 +1,6 @@
 package gov.healthit.chpl.functionalitytested;
 
+import java.io.Serializable;
 import java.util.Comparator;
 
 import org.apache.commons.lang3.StringUtils;
@@ -7,7 +8,9 @@ import org.apache.commons.lang3.StringUtils;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
-public class CertificationResultFunctionalityTestedComparator implements Comparator<CertificationResultFunctionalityTested> {
+public class CertificationResultFunctionalityTestedComparator implements Serializable, Comparator<CertificationResultFunctionalityTested> {
+
+    private static final long serialVersionUID = 2105588718229339595L;
 
     @Override
     public int compare(CertificationResultFunctionalityTested func1, CertificationResultFunctionalityTested func2) {

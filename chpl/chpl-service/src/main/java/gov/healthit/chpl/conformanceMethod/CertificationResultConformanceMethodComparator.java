@@ -1,5 +1,6 @@
 package gov.healthit.chpl.conformanceMethod;
 
+import java.io.Serializable;
 import java.util.Comparator;
 
 import org.apache.commons.lang3.builder.CompareToBuilder;
@@ -8,7 +9,9 @@ import gov.healthit.chpl.conformanceMethod.domain.CertificationResultConformance
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
-public class CertificationResultConformanceMethodComparator implements Comparator<CertificationResultConformanceMethod> {
+public class CertificationResultConformanceMethodComparator implements Serializable, Comparator<CertificationResultConformanceMethod> {
+
+    private static final long serialVersionUID = -3131624036063434948L;
 
     @Override
     public int compare(CertificationResultConformanceMethod cm1, CertificationResultConformanceMethod cm2) {

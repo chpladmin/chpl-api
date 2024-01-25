@@ -1261,7 +1261,7 @@ public class CertifiedProductManager extends SecuredManager {
         triggerDeveloperBanJob.setName(TriggerDeveloperBanJob.JOB_NAME);
         triggerDeveloperBanJob.setGroup(SchedulerManager.CHPL_JOBS_KEY);
         JobDataMap jobDataMap = new JobDataMap();
-        jobDataMap.put(TriggerDeveloperBanJob.UPDATED_LISTING, updatedListing);
+        jobDataMap.put(TriggerDeveloperBanJob.LISTING_ID, updatedListing.getId());
         jobDataMap.put(TriggerDeveloperBanJob.USER, AuthUtil.getCurrentUser());
         jobDataMap.put(TriggerDeveloperBanJob.CHANGE_DATE, System.currentTimeMillis());
         jobDataMap.put(TriggerDeveloperBanJob.USER_PROVIDED_REASON, reason);
