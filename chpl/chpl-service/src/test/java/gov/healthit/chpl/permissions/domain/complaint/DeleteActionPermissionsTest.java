@@ -15,6 +15,7 @@ import gov.healthit.chpl.complaint.ComplaintDAO;
 import gov.healthit.chpl.complaint.domain.Complaint;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.permissions.domain.ActionPermissionsBaseTest;
 import gov.healthit.chpl.permissions.domains.complaint.DeleteActionPermissions;
 
@@ -26,13 +27,16 @@ public class DeleteActionPermissionsTest extends ActionPermissionsBaseTest {
     @Mock
     private ComplaintDAO complaintDAO;
 
+    @Mock
+    private ResourcePermissionsFactory resourcePermissionsFacotry;
+
     @InjectMocks
     private DeleteActionPermissions permissions;
 
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-
+        Mockito.when(resourcePermissionsFacotry.get()).thenReturn(resourcePermissions);
         Mockito.when(resourcePermissions.getAllAcbsForCurrentUser()).thenReturn(getAllAcbForUser(2L, 4L));
     }
 

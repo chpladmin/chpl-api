@@ -15,6 +15,7 @@ import gov.healthit.chpl.dao.ProductVersionDAO;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.dto.ProductVersionDTO;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.permissions.domain.ActionPermissionsBaseTest;
 import gov.healthit.chpl.permissions.domains.productversion.UpdateActionPermissions;
 
@@ -26,13 +27,16 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
     @Mock
     private ProductVersionDAO productVersionDAO;
 
+    @Mock
+    private ResourcePermissionsFactory resourcePermissionsFacotry;
+
     @InjectMocks
     private UpdateActionPermissions permissions;
 
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-
+        Mockito.when(resourcePermissionsFacotry.get()).thenReturn(resourcePermissions);
         Mockito.when(resourcePermissions.getAllAcbsForCurrentUser()).thenReturn(getAllAcbForUser(2L, 4L));
     }
 

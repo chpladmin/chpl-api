@@ -14,6 +14,7 @@ import org.mockito.MockitoAnnotations;
 
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.permissions.domain.ActionPermissionsBaseTest;
 import gov.healthit.chpl.permissions.domains.attestation.GetByDeveloperIdActionPermissions;
 
@@ -21,13 +22,16 @@ public class GetByDeveloperIdActionPermissionsTest extends ActionPermissionsBase
     @Mock
     private ResourcePermissions resourcePermissions;
 
+    @Mock
+    private ResourcePermissionsFactory resourcePermissionsFacotry;
+
     @InjectMocks
     private GetByDeveloperIdActionPermissions permissions;
 
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-
+        Mockito.when(resourcePermissionsFacotry.get()).thenReturn(resourcePermissions);
         Mockito.when(resourcePermissions.getAllDevelopersForCurrentUser()).thenReturn(
                 Arrays.asList(Developer.builder().id(1L).build()));
     }
