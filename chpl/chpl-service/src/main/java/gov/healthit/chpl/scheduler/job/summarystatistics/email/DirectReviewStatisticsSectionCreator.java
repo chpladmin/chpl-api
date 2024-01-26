@@ -2,15 +2,15 @@ package gov.healthit.chpl.scheduler.job.summarystatistics.email;
 
 import java.util.stream.Stream;
 
-import gov.healthit.chpl.scheduler.job.summarystatistics.data.EmailStatistics;
+import gov.healthit.chpl.scheduler.job.summarystatistics.data.StatisticsSnapshot;
 
 public class DirectReviewStatisticsSectionCreator extends StatisticsSectionCreator {
 
-    public String build(EmailStatistics stats) {
+    public String build(StatisticsSnapshot stats) {
         return buildDirectReviewSection(stats);
     }
 
-    private String buildDirectReviewSection(EmailStatistics stats) {
+    private String buildDirectReviewSection(StatisticsSnapshot stats) {
         StringBuilder section = new StringBuilder();
 
         section.append(buildHeader("Total # of Direct Review Activities", handleNullValue(stats.getTotalDirectReviews())));
@@ -42,7 +42,7 @@ public class DirectReviewStatisticsSectionCreator extends StatisticsSectionCreat
         return value != null ? value.toString() : "Not Available";
     }
 
-    private Boolean displayDirectReviewEndNote(EmailStatistics stats) {
+    private Boolean displayDirectReviewEndNote(StatisticsSnapshot stats) {
         return Stream.of(
                 stats.getTotalDirectReviews(),
                 stats.getOpenDirectReviews(),
@@ -51,7 +51,7 @@ public class DirectReviewStatisticsSectionCreator extends StatisticsSectionCreat
         .anyMatch(x -> x == null);
     }
 
-    private Boolean displayDirectReviewNonConformityEndNote(EmailStatistics stats) {
+    private Boolean displayDirectReviewNonConformityEndNote(StatisticsSnapshot stats) {
         return Stream.of(
                 stats.getTotalNonConformities(),
                 stats.getOpenNonConformities(),

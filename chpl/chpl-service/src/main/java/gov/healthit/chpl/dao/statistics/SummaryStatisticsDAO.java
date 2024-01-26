@@ -40,7 +40,7 @@ public class SummaryStatisticsDAO extends BaseDAOImpl {
         }
     }
 
-    public SummaryStatisticsEntity getSummaryStatistics(LocalDate asOf) throws EntityRetrievalException {
+    public SummaryStatisticsEntity getSummaryStatistics(LocalDate asOf) {
         Query query = entityManager.createQuery("SELECT stats "
                 + "FROM SummaryStatisticsEntity stats "
                 + "WHERE MONTH(stats.endDate) = :month "
