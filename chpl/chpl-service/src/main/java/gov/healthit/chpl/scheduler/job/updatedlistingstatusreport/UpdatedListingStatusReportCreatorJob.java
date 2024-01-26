@@ -147,21 +147,24 @@ public class UpdatedListingStatusReportCreatorJob extends QuartzJob {
 
     private Long getDaysUpdatedEarly(CertifiedProductSearchDetails certifiedProductDetails) {
         return certifiedProductDetails.getCertificationResults().stream()
-                .map(certResult -> getDaysUpdatedEarlyForCriteria(certResult))
-                .filter(optionalCount -> optionalCount.isPresent())
-                .mapToLong(optionalCount -> optionalCount.getAsLong())
+                .mapToLong(certResult -> getDaysUpdatedEarlyForCriteria(certResult))
+                .filter(daysEarly -> daysEarly > 0)
                 .min()
                 .orElse(0L);
     }
 
-    private OptionalLong getDaysUpdatedEarlyForCriteria(CertificationResult certificationResult) {
+    private Long getDaysUpdatedEarlyForCriteria(CertificationResult certificationResult) {
         OptionalLong standardsDaysEarly = getDaysUpdatedEarlyForCriteriaBasedOnStandards(certificationResult);
         OptionalLong functionalityTestedDaysEarly = getDaysUpdatedEarlyForCriteriaBasedOnFunctionalitiesTested(certificationResult);
 
-        if (standardsDaysEarly.isEmpty() || functionalityTestedDaysEarly.isEmpty()) {
-            return OptionalLong.empty();
+        if (standardsDaysEarly.isPresent() && functionalityTestedDaysEarly.isEmpty()) {
+            return standardsDaysEarly.getAsLong();
+        } else if (standardsDaysEarly.isEmpty() && functionalityTestedDaysEarly.isPresent()) {
+            return functionalityTestedDaysEarly.getAsLong();
+        } else if (standardsDaysEarly.isPresent() && functionalityTestedDaysEarly.isPresent()) {
+            return standardsDaysEarly.getAsLong() > functionalityTestedDaysEarly.getAsLong() ? functionalityTestedDaysEarly.getAsLong() : standardsDaysEarly.getAsLong();
         } else {
-            return standardsDaysEarly.getAsLong() > functionalityTestedDaysEarly.getAsLong() ? functionalityTestedDaysEarly : standardsDaysEarly;
+            return 0L;
         }
     }
 
@@ -172,11 +175,12 @@ public class UpdatedListingStatusReportCreatorJob extends QuartzJob {
         if (CollectionUtils.isNotEmpty(certificationResultStandards)) {
             daysUpdatedEarly = certificationResultStandards.stream()
                     .filter(certResultStd -> certResultStd.getStandard().getRequiredDay() != null
+                            && LocalDate.now().isBefore(certResultStd.getStandard().getRequiredDay())
                             && DateUtil.toLocalDate(certResultStd.getCreationDate().getTime()).isBefore(certResultStd.getStandard().getRequiredDay()))
                     .mapToLong(certResultStd -> ChronoUnit.DAYS.between(DateUtil.toLocalDate(certResultStd.getCreationDate().getTime()), certResultStd.getStandard().getRequiredDay()))
                     .min();
 
-            LOGGER.info("{} - {}", certificationResult.getCriterion().getNumber(), daysUpdatedEarly);
+            LOGGER.info("Standards Check {} - {}", certificationResult.getCriterion().getNumber(), daysUpdatedEarly);
         }
         return daysUpdatedEarly;
     }
@@ -190,11 +194,12 @@ public class UpdatedListingStatusReportCreatorJob extends QuartzJob {
         if (CollectionUtils.isNotEmpty(certificationResultFunctionalitiesTested)) {
             daysUpdatedEarly = certificationResultFunctionalitiesTested.stream()
                     .filter(certResultFT -> certResultFT.getFunctionalityTested().getRequiredDay() != null
+                            && LocalDate.now().isBefore(certResultFT.getFunctionalityTested().getRequiredDay())
                             && DateUtil.toLocalDate(certResultFT.getCreationDate().getTime()).isBefore(certResultFT.getFunctionalityTested().getRequiredDay()))
                     .mapToLong(certResultFT -> ChronoUnit.DAYS.between(DateUtil.toLocalDate(certResultFT.getCreationDate().getTime()), certResultFT.getFunctionalityTested().getRequiredDay()))
                     .min();
 
-            LOGGER.info("{} - {}", certificationResult.getCriterion().getNumber(), daysUpdatedEarly);
+            LOGGER.info("FT Check {} - {}", certificationResult.getCriterion().getNumber(), daysUpdatedEarly);
         }
         return daysUpdatedEarly;
     }
