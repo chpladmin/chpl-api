@@ -333,18 +333,10 @@ public class CertifiedProductSearchDetails implements Serializable {
         warningMessages.clear();
     }
 
+    //we don't want to write this to the shared store, but want to always calculate it when we return this object
+    @JsonProperty(value = "currentStatus", access = Access.WRITE_ONLY)
     public CertificationStatusEvent getCurrentStatus() {
-        if (this.getCertificationEvents() == null || this.getCertificationEvents().size() == 0) {
-            return null;
-        }
-
-        CertificationStatusEvent newest = this.getCertificationEvents().get(0);
-        for (CertificationStatusEvent event : this.getCertificationEvents()) {
-            if (event.getEventDate() > newest.getEventDate()) {
-                newest = event;
-            }
-        }
-        return newest;
+        return getStatusOnDate(new Date());
     }
 
     public CertificationStatusEvent getOldestStatus() {
