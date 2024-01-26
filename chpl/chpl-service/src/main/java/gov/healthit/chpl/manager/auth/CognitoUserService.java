@@ -114,11 +114,11 @@ public class CognitoUserService {
                 .username(user.getEmail())
                 .build();
         AdminListGroupsForUserResponse groupsResponse = cognitoClient.adminListGroupsForUser(groupsRequest);
-        user.setRole(groupsResponse.groups().get(0).groupName());
+        user.setGroupName(groupsResponse.groups().get(0).groupName());
 
         AttributeType orgIdsAttribute = getUserAttribute(response.users().get(0).attributes(), "custom:organizations");
         if (orgIdsAttribute != null && StringUtils.isNotEmpty(orgIdsAttribute.value())) {
-            user.setOrganizations(getOrganizations(user.getRole(), Stream.of(orgIdsAttribute.value().split(","))
+            user.setOrganizations(getOrganizations(user.getGroupName(), Stream.of(orgIdsAttribute.value().split(","))
                 .map(Long::valueOf)
                 .toList()));
         }

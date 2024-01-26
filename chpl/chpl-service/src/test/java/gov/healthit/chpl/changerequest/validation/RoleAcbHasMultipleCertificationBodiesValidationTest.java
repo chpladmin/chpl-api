@@ -9,7 +9,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import gov.healthit.chpl.domain.CertificationBody;
-import gov.healthit.chpl.permissions.ChplResourcePermissions;
+import gov.healthit.chpl.permissions.ResourcePermissions;
 
 public class RoleAcbHasMultipleCertificationBodiesValidationTest {
     private RoleAcbHasMultipleCertificationBodiesValidation validator;
@@ -21,7 +21,7 @@ public class RoleAcbHasMultipleCertificationBodiesValidationTest {
 
     @Test
     public void isValid_UserIsAcbAndOnlyAccesstoOneAcb_ReturnsTrue() {
-        ChplResourcePermissions resourcePermissions = Mockito.mock(ChplResourcePermissions.class);
+        ResourcePermissions resourcePermissions = Mockito.mock(ResourcePermissions.class);
         Mockito.when(resourcePermissions.isUserRoleAcbAdmin()).thenReturn(true);
         Mockito.when(resourcePermissions.getAllAcbsForCurrentUser()).thenReturn(
                 Arrays.asList(CertificationBody.builder().build()));
@@ -37,7 +37,7 @@ public class RoleAcbHasMultipleCertificationBodiesValidationTest {
 
     @Test
     public void isValid_UserIsNotAcb_ReturnsTrue() {
-        ChplResourcePermissions resourcePermissions = Mockito.mock(ChplResourcePermissions.class);
+        ResourcePermissions resourcePermissions = Mockito.mock(ResourcePermissions.class);
         Mockito.when(resourcePermissions.isUserRoleAcbAdmin()).thenReturn(false);
         Mockito.when(resourcePermissions.getAllAcbsForCurrentUser()).thenReturn(
                 Arrays.asList(CertificationBody.builder().build()));
@@ -54,7 +54,7 @@ public class RoleAcbHasMultipleCertificationBodiesValidationTest {
 
     @Test
     public void isValid_UserIsAcbAndOnlyAccesstoTwoAcbs_ReturnsFalse() {
-        ChplResourcePermissions resourcePermissions = Mockito.mock(ChplResourcePermissions.class);
+        ResourcePermissions resourcePermissions = Mockito.mock(ResourcePermissions.class);
         Mockito.when(resourcePermissions.isUserRoleAcbAdmin()).thenReturn(true);
         Mockito.when(resourcePermissions.getAllAcbsForCurrentUser()).thenReturn(
                 Arrays.asList(CertificationBody.builder().build(),

@@ -15,7 +15,7 @@ import gov.healthit.chpl.changerequest.validation.ChangeRequestValidationContext
 import gov.healthit.chpl.changerequest.validation.ChangeRequestValidationContext.ValidationDAOs;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.permissions.ChplResourcePermissions;
+import gov.healthit.chpl.permissions.ResourcePermissions;
 
 public class CurrentStatusValidationTest {
     private static final Long PENDING_ACB_ACTION = 1L;
@@ -27,12 +27,12 @@ public class CurrentStatusValidationTest {
     private CurrentStatusValidation validator;
     private ChangeRequest newChangeRequest;
     private ChangeRequestStatusTypeDAO changeRequestStatusTypeDAO;
-    private ChplResourcePermissions resourcePermissions;
+    private ResourcePermissions resourcePermissions;
 
     @Before
     public void before() throws EntityRetrievalException {
         validator = new CurrentStatusValidation();
-        resourcePermissions = Mockito.mock(ChplResourcePermissions.class);
+        resourcePermissions = Mockito.mock(ResourcePermissions.class);
 
         changeRequestStatusTypeDAO = Mockito.mock(ChangeRequestStatusTypeDAO.class);
         Mockito.when(changeRequestStatusTypeDAO.getChangeRequestStatusTypeById(ArgumentMatchers.anyLong()))

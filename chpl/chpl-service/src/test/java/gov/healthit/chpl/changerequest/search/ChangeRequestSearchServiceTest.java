@@ -17,7 +17,6 @@ import gov.healthit.chpl.changerequest.dao.ChangeRequestDAO;
 import gov.healthit.chpl.changerequest.search.ChangeRequestSearchResult.CurrentStatusSearchResult;
 import gov.healthit.chpl.domain.IdNamePair;
 import gov.healthit.chpl.exception.ValidationException;
-import gov.healthit.chpl.permissions.ChplResourcePermissions;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.util.DateUtil;
@@ -31,7 +30,7 @@ public class ChangeRequestSearchServiceTest {
     public void setup() {
         ChangeRequestSearchRequestValidator searchRequestValidator = Mockito.mock(ChangeRequestSearchRequestValidator.class);
         changeRequestDao = Mockito.mock(ChangeRequestDAO.class);
-        ResourcePermissions resourcePermissions = Mockito.mock(ChplResourcePermissions.class);
+        ResourcePermissions resourcePermissions = Mockito.mock(ResourcePermissions.class);
         Mockito.when(resourcePermissions.isUserRoleAdmin()).thenReturn(true);
 
         ResourcePermissionsFactory resourcePermissionsFactory = Mockito.mock(ResourcePermissionsFactory.class);

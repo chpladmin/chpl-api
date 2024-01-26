@@ -51,12 +51,14 @@ public class SsoResourcePermissions implements ResourcePermissions {
 
     @Override
     public List<UserDTO> getAllUsersOnAcb(CertificationBody acb) {
-        throw new NotImplementedException("Not implemented: 5");
+        LOGGER.error("Not implemented: getAllUsersOnAcb");
+        throw new NotImplementedException("Not implemented: getAllUsersOnAcb");
     }
 
     @Override
     public List<UserDTO> getAllUsersOnDeveloper(Developer dev) {
-        throw new NotImplementedException("Not implemented: 6");
+        LOGGER.error("Not implemented: getAllUsersOnDeveloper");
+        throw new NotImplementedException("Not implemented: getAllUsersOnDeveloper");
     }
 
     @Override
@@ -106,17 +108,20 @@ public class SsoResourcePermissions implements ResourcePermissions {
 
     @Override
     public List<UserDTO> getAllUsersForCurrentUser() {
-        throw new NotImplementedException("Not implemented: 11");
+        LOGGER.error("Not implemented: getAllUsersForCurrentUser");
+        throw new NotImplementedException("Not implemented: getAllUsersForCurrentUser");
     }
 
     @Override
     public CertificationBody getAcbIfPermissionById(Long certificationBodyId) throws EntityRetrievalException {
-        throw new NotImplementedException("Not implemented: 12");
+        LOGGER.error("Not implemented: getAcbIfPermissionById");
+        throw new NotImplementedException("Not implemented: getAcbIfPermissionById");
     }
 
     @Override
     public Developer getDeveloperIfPermissionById(Long developerId) throws EntityRetrievalException {
-        throw new NotImplementedException("Not implemented: 13");
+        LOGGER.error("Not implemented: getDeveloperIfPermissionById");
+        throw new NotImplementedException("Not implemented: getDeveloperIfPermissionById");
     }
 
     @Override
@@ -172,7 +177,8 @@ public class SsoResourcePermissions implements ResourcePermissions {
 
     @Override
     public boolean doesUserHaveRole(List<String> authorities) {
-        throw new NotImplementedException("Not implemented: 25");
+        LOGGER.error("Not implemented: doesUserHaveRole");
+        throw new NotImplementedException("Not implemented: doesUserHaveRole");
     }
 
     @Override
@@ -214,12 +220,44 @@ public class SsoResourcePermissions implements ResourcePermissions {
 
     @Override
     public UserPermission getRoleByUser(User user) {
-        throw new NotImplementedException("Not implemented: 35");
+        LOGGER.error("Not implemented: getRoleByUser");
+        throw new NotImplementedException("Not implemented: getRoleByUser");
     }
 
     @Override
     public boolean hasPermissionOnUser(User user) {
-        throw new NotImplementedException("Not implemented: 45");
+        if (user.getGroupName().equalsIgnoreCase(CognitoGroups.CHPL_STARTUP)) {
+            return false;
+        } else if (isUserRoleAdmin() || AuthUtil.getCurrentUser().getSsoId().equals(user.getUserSsoId())) {
+            return true;
+        } else if (isUserRoleOnc()) {
+            return !user.getGroupName().equalsIgnoreCase(CognitoGroups.CHPL_ADMIN);
+        } else if (isUserRoleAcbAdmin()) {
+            if (user.getGroupName().equalsIgnoreCase(CognitoGroups.CHPL_DEVELOPER)) {
+                return true;
+            }
+            // is the user being checked on any of the same ACB(s) that the current user is on?
+            List<CertificationBody> currUserAcbs = getAllAcbsForCurrentUser();
+            List<CertificationBody> otherUserAcbs = getAllAcbsForUser(user);
+            for (CertificationBody currUserAcb : currUserAcbs) {
+                for (CertificationBody otherUserAcb : otherUserAcbs) {
+                    if (currUserAcb.getId().equals(otherUserAcb.getId())) {
+                        return true;
+                    }
+                }
+            }
+        } else if (isUserRoleDeveloperAdmin()) {
+            // is the user being checked on any of the same Developer(s) that the current user is on?
+            List<Developer> currUserDevs = getAllDevelopersForCurrentUser();
+            List<Developer> otherUserDevs = getAllDevelopersForUser(user);
+            for (Developer currUserDev : currUserDevs) {
+                for (Developer otherUserDev : otherUserDevs) {
+                    if (currUserDev.getId().equals(otherUserDev.getId())) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
-
 }

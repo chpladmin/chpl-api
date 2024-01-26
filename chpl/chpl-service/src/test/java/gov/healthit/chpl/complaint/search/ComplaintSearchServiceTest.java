@@ -22,7 +22,6 @@ import gov.healthit.chpl.complaint.domain.ComplaintListingMap;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.ComplaintSurveillanceMap;
 import gov.healthit.chpl.exception.ValidationException;
-import gov.healthit.chpl.permissions.ChplResourcePermissions;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 
@@ -37,7 +36,7 @@ public class ComplaintSearchServiceTest {
         ComplaintSearchRequestValidator searchRequestValidator = Mockito.mock(ComplaintSearchRequestValidator.class);
         ComplaintSearchRequestNormalizer searchRequestNormalizer = Mockito.mock(ComplaintSearchRequestNormalizer.class);
 
-        resourcePermissions = Mockito.mock(ChplResourcePermissions.class);
+        resourcePermissions = Mockito.mock(ResourcePermissions.class);
         Mockito.when(resourcePermissions.getAllAcbsForCurrentUser())
             .thenReturn(Stream.of(CertificationBody.builder().id(1L).build(),
                     CertificationBody.builder().id(2L).build(),
