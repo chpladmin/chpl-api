@@ -88,9 +88,6 @@ public class CertifiedProductDetailsEntity {
     @Column(name = "certification_status_name")
     private String certificationStatusName;
 
-    @Column(name = "last_certification_status_change")
-    private Date certificationStatusDate;
-
     @Column(name = "cures_update")
     private Boolean curesUpdate;
 
