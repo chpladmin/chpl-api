@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.auth.user.AuthenticatedUser;
@@ -36,7 +35,6 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
-@Component
 public class ChplResourcePermissions implements ResourcePermissions {
     private UserCertificationBodyMapDAO userCertificationBodyMapDAO;
     private UserDeveloperMapDAO userDeveloperMapDAO;

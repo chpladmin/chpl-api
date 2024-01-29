@@ -14,7 +14,9 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.CognitoSecretHash;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
+import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.domain.CertificationBody;
+import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.Organization;
 import gov.healthit.chpl.domain.auth.CognitoGroups;
 import gov.healthit.chpl.domain.auth.LoginCredentials;
@@ -47,17 +49,19 @@ public class CognitoUserService {
     private String userPoolClientSecret;
     private CognitoIdentityProviderClient cognitoClient;
     private CertificationBodyDAO certificationBodyDAO;
+    private DeveloperDAO developerDAO;
 
     @Autowired
     public CognitoUserService( @Value("${cognito.accessKey}") String accessKey, @Value("${cognito.secretKey}") String secretKey,
             @Value("${cognito.region}") String region, @Value("${cognito.clientId}") String clientId, @Value("${cognito.userPoolId}") String userPoolId,
-            @Value("${cognito.userPoolClientSecret}") String userPoolClientSecret, CertificationBodyDAO certificationBodyDAO) {
+            @Value("${cognito.userPoolClientSecret}") String userPoolClientSecret, CertificationBodyDAO certificationBodyDAO, DeveloperDAO developerDAO) {
 
         cognitoClient = createCognitoClient(accessKey, secretKey, region);
         this.clientId = clientId;
         this.userPoolId = userPoolId;
         this.userPoolClientSecret = userPoolClientSecret;
         this.certificationBodyDAO = certificationBodyDAO;
+        this.developerDAO = developerDAO;
     }
 
     public String authenticate(LoginCredentials credentials) {
@@ -146,13 +150,15 @@ public class CognitoUserService {
     private List<Organization> getOrganizations(String role, List<Long> orgIds) {
         if (role.equalsIgnoreCase(CognitoGroups.CHPL_ACB)) {
             return getCerificationBodyOrganizations(role, orgIds);
+        } else if (role.equalsIgnoreCase(CognitoGroups.CHPL_DEVELOPER)) {
+            return getDeveloperOrganizations(role, orgIds);
         }
         return null;
     }
 
     private List<Organization> getCerificationBodyOrganizations(String role, List<Long> orgIds) {
         return orgIds.stream()
-                .map(acbid -> getCertificationBody(acbid))
+                .map(acbId -> getCertificationBody(acbId))
                 .map(acb -> new Organization(acb.getId(), acb.getName()))
                 .toList();
     }
@@ -165,4 +171,21 @@ public class CognitoUserService {
             return null;
         }
     }
+
+    private List<Organization> getDeveloperOrganizations(String role, List<Long> orgIds) {
+        return orgIds.stream()
+                .map(developerId -> getDeveloper(developerId))
+                .map(dev -> new Organization(dev.getId(), dev.getName()))
+                .toList();
+    }
+
+    private Developer getDeveloper(Long developerId) {
+        try {
+            return developerDAO.getById(developerId);
+        } catch (EntityRetrievalException e) {
+            LOGGER.error("Could not retrieve Developer: {}", developerId, e);
+            return null;
+        }
+    }
+
 }

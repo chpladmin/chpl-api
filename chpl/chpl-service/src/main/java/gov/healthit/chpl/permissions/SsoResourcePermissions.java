@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.auth.user.CognitoAuthenticatedUser;
@@ -24,7 +23,6 @@ import gov.healthit.chpl.util.AuthUtil;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
-@Component
 public class SsoResourcePermissions implements ResourcePermissions {
     private CertificationBodyDAO certificationBodyDAO;
     private DeveloperDAO developerDAO;
@@ -68,8 +66,10 @@ public class SsoResourcePermissions implements ResourcePermissions {
             if (user != null) {
                 if (isUserRoleAdmin() || isUserRoleOnc()) {
                     return certificationBodyDAO.findAll();
-                } else {
+                } else if (isUserRoleAcbAdmin()){
                     return getAllAcbsForUser(user);
+                } else {
+                    return null;
                 }
             } else {
                 return null;
