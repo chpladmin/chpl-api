@@ -166,18 +166,17 @@ public class AuthenticationManager {
     }
 
     public String refreshJWT() throws JWTCreationException, UserRetrievalException, MultipleUserAccountsException {
-        //JWTAuthenticatedUser user = (JWTAuthenticatedUser) AuthUtil.getCurrentUser();
+        JWTAuthenticatedUser user = (JWTAuthenticatedUser) AuthUtil.getCurrentUser();
 
-        //if (user != null) {
-        //    UserDTO userDto = getUserByNameOrEmail(user.getEmail());
-        //    if (user.getImpersonatingUser() != null) {
-        //        userDto.setImpersonatedBy(user.getImpersonatingUser());
-        //    }
-        //    return getJWT(userDto);
-        //} else {
-        //    throw new JWTCreationException("Cannot generate token for Anonymous user.");
-        //}
-        return "";
+        if (user != null) {
+            UserDTO userDto = getUserByNameOrEmail(user.getEmail());
+            if (user.getImpersonatingUser() != null) {
+                userDto.setImpersonatedBy(user.getImpersonatingUser());
+            }
+            return getJWT(userDto);
+        } else {
+            throw new JWTCreationException("Cannot generate token for Anonymous user.");
+        }
     }
 
     @Transactional
