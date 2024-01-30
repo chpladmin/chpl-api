@@ -7,7 +7,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import javax.persistence.Query;
 
@@ -23,8 +22,6 @@ import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.DeveloperStatusEvent;
-import gov.healthit.chpl.domain.KeyValueModelStatuses;
-import gov.healthit.chpl.domain.Statuses;
 import gov.healthit.chpl.entity.UserDeveloperMapEntity;
 import gov.healthit.chpl.entity.developer.DeveloperEntity;
 import gov.healthit.chpl.entity.developer.DeveloperEntitySimple;
@@ -260,13 +257,6 @@ public class DeveloperDAO extends BaseDAOImpl {
                 .toList();
     }
 
-    public Set<KeyValueModelStatuses> findAllWithStatuses() {
-        List<DeveloperEntity> entities = getAllEntities();
-        return entities.stream()
-                .map(entity -> new KeyValueModelStatuses(entity.getId(), entity.getName(), createStatuses(entity)))
-                .collect(Collectors.toSet());
-    }
-
     public Map<Developer, Set<CertificationBody>> findAllDevelopersWithAcbs() {
         Map<Developer, Set<CertificationBody>> developerAcbMaps = new HashMap<Developer, Set<CertificationBody>>();
         List<Object[]> results = entityManager.createQuery(DEVELOPERS_WITH_ACBS_HQL)
@@ -299,16 +289,6 @@ public class DeveloperDAO extends BaseDAOImpl {
             });
 
         return developerAcbMaps;
-    }
-
-    private Statuses createStatuses(DeveloperEntity entity) {
-        return new Statuses(entity.getDeveloperCertificationStatuses().getActive(),
-                entity.getDeveloperCertificationStatuses().getRetired(),
-                entity.getDeveloperCertificationStatuses().getWithdrawnByDeveloper(),
-                entity.getDeveloperCertificationStatuses().getWithdrawnByAcb(),
-                entity.getDeveloperCertificationStatuses().getSuspendedByAcb(),
-                entity.getDeveloperCertificationStatuses().getSuspendedByOnc(),
-                entity.getDeveloperCertificationStatuses().getTerminatedByOnc());
     }
 
     public List<Developer> findAllIncludingDeleted() {

@@ -11,8 +11,6 @@ public final class CacheNames {
     public static final String CERTIFICATION_STATUSES = "certificationStatuses";
     public static final String PRACTICE_TYPE_NAMES = "practiceTypeNames";
     public static final String CLASSIFICATION_NAMES = "classificationNames";
-    public static final String PRODUCT_NAMES = "productNames";
-    public static final String DEVELOPER_NAMES = "developerNames";
     public static final String MEASURES = "measures";
     public static final String MEASURE_TYPES = "measureTypes";
     public static final String CQM_CRITERION = "cqmCriterion";
