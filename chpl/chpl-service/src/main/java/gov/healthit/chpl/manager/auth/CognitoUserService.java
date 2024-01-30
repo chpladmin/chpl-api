@@ -144,7 +144,8 @@ public class CognitoUserService {
         return attributes.stream()
             .filter(att -> att.name().equals(name))
             .findAny()
-            .get();
+            .orElse(null);
+
     }
 
     private List<Organization> getOrganizations(String role, List<Long> orgIds) {
