@@ -334,7 +334,7 @@ public class CertifiedProductSearchDetails implements Serializable {
     }
 
     //we don't want to write this to the shared store, but want to always calculate it when we return this object
-    @JsonProperty(value = "currentStatus", access = Access.WRITE_ONLY)
+    @JsonProperty(value = "currentStatus", access = Access.READ_ONLY)
     public CertificationStatusEvent getCurrentStatus() {
         return getStatusOnDate(new Date());
     }
