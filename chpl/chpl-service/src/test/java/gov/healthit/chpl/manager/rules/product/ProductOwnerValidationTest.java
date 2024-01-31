@@ -21,6 +21,7 @@ import gov.healthit.chpl.domain.DeveloperStatusEvent;
 import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.util.DateUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
@@ -86,7 +87,7 @@ public class ProductOwnerValidationTest {
 
                 .build();
 
-        ProductOwnerValidation validation = new ProductOwnerValidation(devDao, productDao, Mockito.mock(ResourcePermissions.class));
+        ProductOwnerValidation validation = new ProductOwnerValidation(devDao, productDao, Mockito.mock(ResourcePermissionsFactory.class));
         boolean isValid = validation.isValid(context);
         assertFalse(isValid);
         assertTrue(validation.getMessages().contains(PRODUCT_OWNER_MISSING));
@@ -105,7 +106,7 @@ public class ProductOwnerValidationTest {
 
                 .build();
 
-        ProductOwnerValidation validation = new ProductOwnerValidation(devDao, productDao, Mockito.mock(ResourcePermissions.class));
+        ProductOwnerValidation validation = new ProductOwnerValidation(devDao, productDao, Mockito.mock(ResourcePermissionsFactory.class));
         boolean isValid = validation.isValid(context);
         assertFalse(isValid);
         assertTrue(validation.getMessages().contains(PRODUCT_OWNER_MISSING));
@@ -126,7 +127,7 @@ public class ProductOwnerValidationTest {
 
                 .build();
 
-        ProductOwnerValidation validation = new ProductOwnerValidation(devDao, productDao, Mockito.mock(ResourcePermissions.class));
+        ProductOwnerValidation validation = new ProductOwnerValidation(devDao, productDao, Mockito.mock(ResourcePermissionsFactory.class));
         boolean isValid = validation.isValid(context);
         assertFalse(isValid);
         assertTrue(validation.getMessages().contains(String.format(PRODUCT_OWNER_DOES_NOT_EXIST, "1")));
@@ -151,7 +152,7 @@ public class ProductOwnerValidationTest {
 
                 .build();
 
-        ProductOwnerValidation validation = new ProductOwnerValidation(devDao, productDao, Mockito.mock(ResourcePermissions.class));
+        ProductOwnerValidation validation = new ProductOwnerValidation(devDao, productDao, Mockito.mock(ResourcePermissionsFactory.class));
         boolean isValid = validation.isValid(context);
         assertFalse(isValid);
         assertTrue(validation.getMessages().contains(String.format(PRODUCT_OWNER_STATUS_DOES_NOT_EXIST, "name", "developer 1")));
@@ -176,7 +177,7 @@ public class ProductOwnerValidationTest {
 
                 .build();
 
-        ProductOwnerValidation validation = new ProductOwnerValidation(devDao, productDao, Mockito.mock(ResourcePermissions.class));
+        ProductOwnerValidation validation = new ProductOwnerValidation(devDao, productDao, Mockito.mock(ResourcePermissionsFactory.class));
         boolean isValid = validation.isValid(context);
         assertFalse(isValid);
         assertTrue(validation.getMessages().contains(String.format(PRODUCT_OWNER_STATUS_DOES_NOT_EXIST, "name", "developer 1")));
@@ -212,6 +213,8 @@ public class ProductOwnerValidationTest {
         Mockito.when(resourcePermissions.isUserRoleAcbAdmin()).thenReturn(true);
         Mockito.when(resourcePermissions.isUserRoleAdmin()).thenReturn(false);
         Mockito.when(resourcePermissions.isUserRoleOnc()).thenReturn(false);
+        ResourcePermissionsFactory resourcePermissionsFactory = Mockito.mock(ResourcePermissionsFactory.class);
+        Mockito.when(resourcePermissionsFactory.get()).thenReturn(resourcePermissions);
 
         ProductValidationContext context = ProductValidationContext.builder()
                 .errorMessageUtil(msgUtil)
@@ -226,7 +229,7 @@ public class ProductOwnerValidationTest {
 
                 .build();
 
-        ProductOwnerValidation validation = new ProductOwnerValidation(devDao, productDao, resourcePermissions);
+        ProductOwnerValidation validation = new ProductOwnerValidation(devDao, productDao, resourcePermissionsFactory);
         boolean isValid = validation.isValid(context);
         assertFalse(isValid);
         assertTrue(validation.getMessages().contains(String.format(PRODUCT_OWNER_HISTORY_OWNER_NO_PRODUCTS, "old dev")));
@@ -266,6 +269,8 @@ public class ProductOwnerValidationTest {
         Mockito.when(resourcePermissions.isUserRoleAcbAdmin()).thenReturn(true);
         Mockito.when(resourcePermissions.isUserRoleAdmin()).thenReturn(false);
         Mockito.when(resourcePermissions.isUserRoleOnc()).thenReturn(false);
+        ResourcePermissionsFactory resourcePermissionsFactory = Mockito.mock(ResourcePermissionsFactory.class);
+        Mockito.when(resourcePermissionsFactory.get()).thenReturn(resourcePermissions);
 
         ProductValidationContext context = ProductValidationContext.builder()
                 .errorMessageUtil(msgUtil)
@@ -280,7 +285,7 @@ public class ProductOwnerValidationTest {
 
                 .build();
 
-        ProductOwnerValidation validation = new ProductOwnerValidation(devDao, productDao, resourcePermissions);
+        ProductOwnerValidation validation = new ProductOwnerValidation(devDao, productDao, resourcePermissionsFactory);
         boolean isValid = validation.isValid(context);
         assertTrue(isValid);
     }
@@ -327,6 +332,8 @@ public class ProductOwnerValidationTest {
         Mockito.when(resourcePermissions.isUserRoleAcbAdmin()).thenReturn(true);
         Mockito.when(resourcePermissions.isUserRoleAdmin()).thenReturn(false);
         Mockito.when(resourcePermissions.isUserRoleOnc()).thenReturn(false);
+        ResourcePermissionsFactory resourcePermissionsFactory = Mockito.mock(ResourcePermissionsFactory.class);
+        Mockito.when(resourcePermissionsFactory.get()).thenReturn(resourcePermissions);
 
         ProductValidationContext context = ProductValidationContext.builder()
                 .errorMessageUtil(msgUtil)
@@ -341,7 +348,7 @@ public class ProductOwnerValidationTest {
 
                 .build();
 
-        ProductOwnerValidation validation = new ProductOwnerValidation(devDao, productDao, resourcePermissions);
+        ProductOwnerValidation validation = new ProductOwnerValidation(devDao, productDao, resourcePermissionsFactory);
         boolean isValid = validation.isValid(context);
         assertTrue(isValid);
     }
@@ -361,6 +368,8 @@ public class ProductOwnerValidationTest {
         Mockito.when(resourcePermissions.isUserRoleAcbAdmin()).thenReturn(true);
         Mockito.when(resourcePermissions.isUserRoleAdmin()).thenReturn(false);
         Mockito.when(resourcePermissions.isUserRoleOnc()).thenReturn(false);
+        ResourcePermissionsFactory resourcePermissionsFactory = Mockito.mock(ResourcePermissionsFactory.class);
+        Mockito.when(resourcePermissionsFactory.get()).thenReturn(resourcePermissions);
 
         ProductValidationContext context = ProductValidationContext.builder()
                 .errorMessageUtil(msgUtil)
@@ -373,7 +382,7 @@ public class ProductOwnerValidationTest {
 
                 .build();
 
-        ProductOwnerValidation validation = new ProductOwnerValidation(devDao, productDao, resourcePermissions);
+        ProductOwnerValidation validation = new ProductOwnerValidation(devDao, productDao, resourcePermissionsFactory);
         boolean isValid = validation.isValid(context);
         assertFalse(isValid);
         assertTrue(validation.getMessages().contains(String.format(PRODUCT_OWNER_STATUS_NOT_ACTIVE, "Suspended by ONC")));
@@ -394,6 +403,8 @@ public class ProductOwnerValidationTest {
         Mockito.when(resourcePermissions.isUserRoleAcbAdmin()).thenReturn(false);
         Mockito.when(resourcePermissions.isUserRoleAdmin()).thenReturn(false);
         Mockito.when(resourcePermissions.isUserRoleOnc()).thenReturn(true);
+        ResourcePermissionsFactory resourcePermissionsFactory = Mockito.mock(ResourcePermissionsFactory.class);
+        Mockito.when(resourcePermissionsFactory.get()).thenReturn(resourcePermissions);
 
         ProductValidationContext context = ProductValidationContext.builder()
                 .errorMessageUtil(msgUtil)
@@ -406,7 +417,7 @@ public class ProductOwnerValidationTest {
 
                 .build();
 
-        ProductOwnerValidation validation = new ProductOwnerValidation(devDao, productDao, resourcePermissions);
+        ProductOwnerValidation validation = new ProductOwnerValidation(devDao, productDao, resourcePermissionsFactory);
         boolean isValid = validation.isValid(context);
         assertTrue(isValid);
         assertTrue(CollectionUtils.isEmpty(validation.getMessages()));
@@ -427,6 +438,8 @@ public class ProductOwnerValidationTest {
         Mockito.when(resourcePermissions.isUserRoleAcbAdmin()).thenReturn(false);
         Mockito.when(resourcePermissions.isUserRoleAdmin()).thenReturn(true);
         Mockito.when(resourcePermissions.isUserRoleOnc()).thenReturn(false);
+        ResourcePermissionsFactory resourcePermissionsFactory = Mockito.mock(ResourcePermissionsFactory.class);
+        Mockito.when(resourcePermissionsFactory.get()).thenReturn(resourcePermissions);
 
         ProductValidationContext context = ProductValidationContext.builder()
                 .errorMessageUtil(msgUtil)
@@ -439,7 +452,7 @@ public class ProductOwnerValidationTest {
 
                 .build();
 
-        ProductOwnerValidation validation = new ProductOwnerValidation(devDao, productDao, resourcePermissions);
+        ProductOwnerValidation validation = new ProductOwnerValidation(devDao, productDao, resourcePermissionsFactory);
         boolean isValid = validation.isValid(context);
         assertTrue(isValid);
         assertTrue(CollectionUtils.isEmpty(validation.getMessages()));
@@ -461,6 +474,8 @@ public class ProductOwnerValidationTest {
         Mockito.when(resourcePermissions.isUserRoleAcbAdmin()).thenReturn(true);
         Mockito.when(resourcePermissions.isUserRoleAdmin()).thenReturn(false);
         Mockito.when(resourcePermissions.isUserRoleOnc()).thenReturn(false);
+        ResourcePermissionsFactory resourcePermissionsFactory = Mockito.mock(ResourcePermissionsFactory.class);
+        Mockito.when(resourcePermissionsFactory.get()).thenReturn(resourcePermissions);
 
         ProductValidationContext context = ProductValidationContext.builder()
                 .errorMessageUtil(msgUtil)
@@ -473,7 +488,7 @@ public class ProductOwnerValidationTest {
 
                 .build();
 
-        ProductOwnerValidation validation = new ProductOwnerValidation(devDao, productDao, resourcePermissions);
+        ProductOwnerValidation validation = new ProductOwnerValidation(devDao, productDao, resourcePermissionsFactory);
         boolean isValid = validation.isValid(context);
         assertTrue(isValid);
         assertTrue(CollectionUtils.isEmpty(validation.getMessages()));
@@ -493,6 +508,8 @@ public class ProductOwnerValidationTest {
         Mockito.when(resourcePermissions.isUserRoleAcbAdmin()).thenReturn(true);
         Mockito.when(resourcePermissions.isUserRoleAdmin()).thenReturn(false);
         Mockito.when(resourcePermissions.isUserRoleOnc()).thenReturn(false);
+        ResourcePermissionsFactory resourcePermissionsFactory = Mockito.mock(ResourcePermissionsFactory.class);
+        Mockito.when(resourcePermissionsFactory.get()).thenReturn(resourcePermissions);
 
         ProductValidationContext context = ProductValidationContext.builder()
                 .errorMessageUtil(msgUtil)
@@ -505,7 +522,7 @@ public class ProductOwnerValidationTest {
 
                 .build();
 
-        ProductOwnerValidation validation = new ProductOwnerValidation(devDao, productDao, resourcePermissions);
+        ProductOwnerValidation validation = new ProductOwnerValidation(devDao, productDao, resourcePermissionsFactory);
         boolean isValid = validation.isValid(context);
         assertTrue(isValid);
         assertTrue(CollectionUtils.isEmpty(validation.getMessages()));
