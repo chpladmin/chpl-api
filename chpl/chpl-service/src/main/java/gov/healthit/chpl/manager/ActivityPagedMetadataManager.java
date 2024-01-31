@@ -32,7 +32,6 @@ import gov.healthit.chpl.dto.ActivityDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.impl.SecuredManager;
-import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import lombok.extern.log4j.Log4j2;
@@ -44,7 +43,7 @@ public class ActivityPagedMetadataManager extends SecuredManager {
     private AnnouncementDAO announcementDao;
     private ActivityMetadataBuilderFactory metadataBuilderFactory;
     private ErrorMessageUtil msgUtil;
-    private ResourcePermissions resourcePermissions;
+    private ResourcePermissionsFactory resourcePermissionsFactory;
 
     @Value("${maxActivityPageSize}")
     private Integer maxActivityPageSize;
@@ -60,7 +59,7 @@ public class ActivityPagedMetadataManager extends SecuredManager {
         this.announcementDao = announcementDao;
         this.metadataBuilderFactory = metadataBuilderFactory;
         this.msgUtil = msgUtil;
-        this.resourcePermissions = resourcePermissionsFactory.get();
+        this.resourcePermissionsFactory = resourcePermissionsFactory;
     }
 
 
@@ -133,10 +132,10 @@ public class ActivityPagedMetadataManager extends SecuredManager {
         if (errors.size() > 0) {
             throw new ValidationException(errors);
         }
-        if (resourcePermissions.isUserRoleAdmin() || resourcePermissions.isUserRoleOnc()) {
+        if (resourcePermissionsFactory.get().isUserRoleAdmin() || resourcePermissionsFactory.get().isUserRoleOnc()) {
             return getActivityMetadataPageByConcept(ActivityConcept.USER, startMillis, endMillis, pageNum, pageSize);
         } else {
-            List<UserDTO> allowedUsers = resourcePermissions.getAllUsersForCurrentUser();
+            List<UserDTO> allowedUsers = resourcePermissionsFactory.get().getAllUsersForCurrentUser();
             List<Long> allowedUserIds = allowedUsers.stream()
                 .map(allowedUser -> allowedUser.getId())
                 .collect(Collectors.toList());
@@ -154,7 +153,7 @@ public class ActivityPagedMetadataManager extends SecuredManager {
         if (errors.size() > 0) {
             throw new ValidationException(errors);
         }
-        if (resourcePermissions.isUserAnonymous()) {
+        if (resourcePermissionsFactory.get().isUserAnonymous()) {
             List<Announcement> publicAnnouncements = announcementDao.findAll(true, false);
             List<Long> publicAnnouncementIds = publicAnnouncements.stream()
                 .map(publicAnnouncement -> publicAnnouncement.getId())

@@ -19,7 +19,7 @@ public class TestStandardRemovalReviewer extends PermissionBasedReviewer {
     public TestStandardRemovalReviewer(ErrorMessageUtil msgUtil, ResourcePermissionsFactory resourcePermissionsFactory) {
         super(msgUtil, resourcePermissionsFactory);
         this.msgUtil = msgUtil;
-        this.resourcePermissions = resourcePermissionsFactory.get();
+        this.resourcePermissionsFactory = resourcePermissionsFactory;
     }
 
     @Override

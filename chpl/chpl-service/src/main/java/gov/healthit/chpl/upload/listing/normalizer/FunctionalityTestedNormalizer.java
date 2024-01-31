@@ -19,7 +19,6 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.functionalitytested.CertificationResultFunctionalityTested;
 import gov.healthit.chpl.functionalitytested.FunctionalityTested;
 import gov.healthit.chpl.functionalitytested.FunctionalityTestedDAO;
-import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import lombok.Data;
 import lombok.ToString;
@@ -30,7 +29,7 @@ import lombok.extern.log4j.Log4j2;
 public class FunctionalityTestedNormalizer {
 
     private FunctionalityTestedDAO functionalityTestedDao;
-    private ResourcePermissions resourcePermissions;
+    private ResourcePermissionsFactory resourcePermissionsFactory;
     private List<RestrictedCriteriaFunctionalityTested> restrictedCriteriaFunctionalitiesTested;
 
     @Autowired
@@ -38,7 +37,7 @@ public class FunctionalityTestedNormalizer {
             ResourcePermissionsFactory resourcePermissionsFactory,
             @Value("${functionalitiesTested.restrictions}") String jsonRestrictions) {
         this.functionalityTestedDao = functionalityTestedDao;
-        this.resourcePermissions = resourcePermissionsFactory.get();
+        this.resourcePermissionsFactory = resourcePermissionsFactory;
         initRestrictedCriteriaFunctionalitiesTested(jsonRestrictions);
     }
 
@@ -131,7 +130,7 @@ public class FunctionalityTestedNormalizer {
             // Is there a match on the functionality tested
             return foundBasedOnCriteriaId.get().getRestrictedFunctionalitiesTested().stream()
                     .filter(restrictedFunctionalityTested -> restrictedFunctionalityTested.getFunctionalityTestedId().equals(functionalityTestedId)
-                            && !resourcePermissions.doesUserHaveRole(restrictedFunctionalityTested.allowedRoleNames))
+                            && !resourcePermissionsFactory.get().doesUserHaveRole(restrictedFunctionalityTested.allowedRoleNames))
                     .findAny();
         } else {
             return Optional.empty();

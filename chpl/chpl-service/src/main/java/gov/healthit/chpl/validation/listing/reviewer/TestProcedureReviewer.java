@@ -24,7 +24,7 @@ public class TestProcedureReviewer extends PermissionBasedReviewer {
         super(msgUtil, resourcePermissionsFactory);
         this.msgUtil = msgUtil;
         this.testProcedureDao = testProcedureDao;
-        this.resourcePermissions = resourcePermissionsFactory.get();
+        this.resourcePermissionsFactory = resourcePermissionsFactory;
     }
 
     @Override

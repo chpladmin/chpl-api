@@ -17,7 +17,6 @@ import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
 import gov.healthit.chpl.email.footer.PublicFooter;
 import gov.healthit.chpl.exception.EmailNotSentException;
-import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.util.AuthUtil;
 import lombok.extern.log4j.Log4j2;
@@ -27,7 +26,7 @@ import lombok.extern.log4j.Log4j2;
 public class AttestationExceptionEmail {
         private ChplEmailFactory chplEmailFactory;
         private ChplHtmlEmailBuilder chplHtmlEmailBuilder;
-        private ResourcePermissions resourcePermissions;
+        private ResourcePermissionsFactory resourcePermissionsFactory;
         private String emailSubject;
         private String emailBody;
 
@@ -39,13 +38,13 @@ public class AttestationExceptionEmail {
                 @Value("${changeRequest.attestation.exception.body}") String emailBody) {
             this.chplEmailFactory = chplEmailFactory;
             this.chplHtmlEmailBuilder = chplHtmlEmailBuilder;
-            this.resourcePermissions = resourcePermissionsFactory.get();
+            this.resourcePermissionsFactory = resourcePermissionsFactory;
             this.emailSubject = emailSubject;
             this.emailBody = emailBody;
         }
 
         public void send(AttestationPeriodDeveloperException attestationException) throws EmailNotSentException {
-            List<UserDTO> recipients = resourcePermissions.getAllUsersOnDeveloper(
+            List<UserDTO> recipients = resourcePermissionsFactory.get().getAllUsersOnDeveloper(
                     Developer.builder().id(attestationException.getDeveloper().getId()).build());
 
             chplEmailFactory.emailBuilder()
@@ -68,14 +67,14 @@ public class AttestationExceptionEmail {
         }
 
         private String getActingBody() {
-            if (resourcePermissions.isUserRoleAcbAdmin()) {
-                List<CertificationBody> acbsForUser = resourcePermissions.getAllAcbsForCurrentUser();
+            if (resourcePermissionsFactory.get().isUserRoleAcbAdmin()) {
+                List<CertificationBody> acbsForUser = resourcePermissionsFactory.get().getAllAcbsForCurrentUser();
                 if (CollectionUtils.isEmpty(acbsForUser)) {
                     LOGGER.warn("No ACBs were found for the current user " + AuthUtil.getCurrentUser().getSubjectName());
                     return "an ONC-ACB";
                 }
                 return acbsForUser.get(0).getName();
-            } else if (resourcePermissions.isUserRoleOnc() || resourcePermissions.isUserRoleAdmin()) {
+            } else if (resourcePermissionsFactory.get().isUserRoleOnc() || resourcePermissionsFactory.get().isUserRoleAdmin()) {
                 return "ONC";
             } else {
                 LOGGER.warn("The current user did not have one of the expected roles... " + AuthUtil.getCurrentUser().getSubjectName());

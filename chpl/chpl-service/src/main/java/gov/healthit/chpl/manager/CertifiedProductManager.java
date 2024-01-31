@@ -87,7 +87,6 @@ import gov.healthit.chpl.listing.measure.ListingMeasureDAO;
 import gov.healthit.chpl.manager.impl.SecuredManager;
 import gov.healthit.chpl.notifier.BusinessRulesOverrideNotifierMessage;
 import gov.healthit.chpl.notifier.ChplTeamNotifier;
-import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.qmsStandard.QmsStandard;
 import gov.healthit.chpl.qmsStandard.QmsStandardDAO;
@@ -131,7 +130,7 @@ public class CertifiedProductManager extends SecuredManager {
     private CqmResultSynchronizationService cqmResultService;
     private CertificationStatusDAO certStatusDao;
     private ListingGraphDAO listingGraphDao;
-    private ResourcePermissions resourcePermissions;
+    private ResourcePermissionsFactory resourcePermissionsFactory;
     private CertifiedProductDetailsManager certifiedProductDetailsManager;
     private SchedulerManager schedulerManager;
     private ActivityManager activityManager;
@@ -187,7 +186,7 @@ public class CertifiedProductManager extends SecuredManager {
         this.cqmResultService = cqmResultService;
         this.certStatusDao = certStatusDao;
         this.listingGraphDao = listingGraphDao;
-        this.resourcePermissions = resourcePermissionsFactory.get();
+        this.resourcePermissionsFactory = resourcePermissionsFactory;
         this.certifiedProductDetailsManager = certifiedProductDetailsManager;
         this.schedulerManager = schedulerManager;
         this.activityManager = activityManager;
@@ -399,7 +398,7 @@ public class CertifiedProductManager extends SecuredManager {
             case SuspendedByOnc:
             case TerminatedByOnc:
                 // only onc admin can do this and it always triggers developer ban
-                if (resourcePermissions.isUserRoleAdmin() || resourcePermissions.isUserRoleOnc()) {
+                if (resourcePermissionsFactory.get().isUserRoleAdmin() || resourcePermissionsFactory.get().isUserRoleOnc()) {
                     // find the new developer status
                     if (updatedStatusObj.getName().equals(CertificationStatusType.SuspendedByOnc.toString())) {
                         newDevStatus = devStatusDao.getByName(DeveloperStatusType.SuspendedByOnc.toString());
@@ -408,7 +407,7 @@ public class CertifiedProductManager extends SecuredManager {
                         newDevStatus = devStatusDao
                                 .getByName(DeveloperStatusType.UnderCertificationBanByOnc.toString());
                     }
-                } else if (!resourcePermissions.isUserRoleAdmin() && !resourcePermissions.isUserRoleOnc()) {
+                } else if (!resourcePermissionsFactory.get().isUserRoleAdmin() && !resourcePermissionsFactory.get().isUserRoleOnc()) {
                     LOGGER.error("User " + AuthUtil.getUsername()
                             + " does not have ROLE_ADMIN or ROLE_ONC and cannot change the status of developer for certified "
                             + "product with id " + listingId);
@@ -1295,7 +1294,7 @@ public class CertifiedProductManager extends SecuredManager {
     private boolean shouldValidationExceptionBeThrown(CertifiedProductSearchDetails listing, boolean acknowledgeBusinessErrors, boolean acknowledgeWarnings) {
         // return true when we want to throw ValidationException
         if (doErrorMessagesExist(listing)) {
-            if (resourcePermissions.isUserRoleAdmin() || resourcePermissions.isUserRoleOnc()) {
+            if (resourcePermissionsFactory.get().isUserRoleAdmin() || resourcePermissionsFactory.get().isUserRoleOnc()) {
                 return doDataErrorMessagesExist(listing) || (doBusinessErrorMessagesExist(listing) && !acknowledgeBusinessErrors);
             } else {
                 return true;

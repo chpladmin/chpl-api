@@ -9,20 +9,19 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.ListingMeasure;
-import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.validation.listing.reviewer.ComparisonReviewer;
 
 @Component("measureComparisonReviewer")
 public class MeasureComparisonReviewer implements ComparisonReviewer {
-    private ResourcePermissions resourcePermissions;
+    private ResourcePermissionsFactory resourcePermissionsFactory;
     private ErrorMessageUtil msgUtil;
 
     @Autowired
     public MeasureComparisonReviewer(ResourcePermissionsFactory resourcePermissionsFactory,
             ErrorMessageUtil msgUtil) {
-        this.resourcePermissions = resourcePermissionsFactory.get();
+        this.resourcePermissionsFactory = resourcePermissionsFactory;
         this.msgUtil = msgUtil;
     }
 
@@ -30,7 +29,7 @@ public class MeasureComparisonReviewer implements ComparisonReviewer {
     public void review(CertifiedProductSearchDetails existingListing, CertifiedProductSearchDetails updatedListing) {
         // checking for the addition of a removed measure.
         // this is only disallowed if the user is not ADMIN/ONC, so first check the permissions
-        if (resourcePermissions.isUserRoleAdmin() || resourcePermissions.isUserRoleOnc()) {
+        if (resourcePermissionsFactory.get().isUserRoleAdmin() || resourcePermissionsFactory.get().isUserRoleOnc()) {
             return;
         }
 

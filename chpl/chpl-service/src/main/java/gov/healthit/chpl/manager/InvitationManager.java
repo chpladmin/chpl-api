@@ -36,7 +36,6 @@ import gov.healthit.chpl.exception.UserPermissionRetrievalException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.manager.auth.UserManager;
 import gov.healthit.chpl.manager.impl.SecuredManager;
-import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.service.InvitationEmailer;
 import gov.healthit.chpl.util.AuthUtil;
@@ -53,7 +52,7 @@ public class InvitationManager extends SecuredManager {
     private UserPermissionsManager userPermissionsManager;
     private InvitationEmailer invitationEmailer;
     private ActivityManager activityManager;
-    private ResourcePermissions resourcePermissions;
+    private ResourcePermissionsFactory resourcePermissionsFactory;
     private ErrorMessageUtil msgUtil;
     private List<UserPermission> userPermissions;
 
@@ -69,7 +68,7 @@ public class InvitationManager extends SecuredManager {
         this.userPermissionsManager = userPermissionsManager;
         this.invitationEmailer = invitationEmailer;
         this.activityManager = activityManager;
-        this.resourcePermissions = resourcePermissionsFactory.get();
+        this.resourcePermissionsFactory = resourcePermissionsFactory;
         this.msgUtil = msgUtil;
         this.userPermissions = userPermissionDao.findAll();
     }
@@ -290,14 +289,14 @@ public class InvitationManager extends SecuredManager {
 
         if (!StringUtils.isEmpty(invitation.getRole()) && invitation.getRole().equals(Authority.ROLE_ACB)
                 && invitation.getPermissionObjectId() != null) {
-            userAcb = resourcePermissions.getAcbIfPermissionById(invitation.getPermissionObjectId());
+            userAcb = resourcePermissionsFactory.get().getAcbIfPermissionById(invitation.getPermissionObjectId());
             if (userAcb == null) {
                 throw new InvalidArgumentsException("Could not find ACB with id " + invitation.getPermissionObjectId());
             }
         } else if (!StringUtils.isEmpty(invitation.getRole())
                 && invitation.getRole().equals(Authority.ROLE_DEVELOPER)
                 && invitation.getPermissionObjectId() != null) {
-            userDeveloper = resourcePermissions.getDeveloperIfPermissionById(invitation.getPermissionObjectId());
+            userDeveloper = resourcePermissionsFactory.get().getDeveloperIfPermissionById(invitation.getPermissionObjectId());
             if (userDeveloper == null) {
                 throw new InvalidArgumentsException(
                         "Could not find the developer with id " + invitation.getPermissionObjectId());

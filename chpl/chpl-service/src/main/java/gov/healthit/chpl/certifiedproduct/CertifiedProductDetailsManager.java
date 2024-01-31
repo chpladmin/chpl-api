@@ -19,7 +19,6 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.ListingMeasure;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.sharedstore.listing.SharedListingStoreProvider;
 import gov.healthit.chpl.util.AuthUtil;
@@ -35,7 +34,7 @@ public class CertifiedProductDetailsManager {
     private ListingMeasuresService listingMeasuresService;
     private CertificationStatusEventsService certificationStatusEventsService;
     private SharedListingStoreProvider sharedListingStoreProvider;
-    private  ResourcePermissions resourcePermissions;
+    private ResourcePermissionsFactory resourcePermissionsFactory;
 
     @Autowired
     public CertifiedProductDetailsManager(
@@ -55,7 +54,7 @@ public class CertifiedProductDetailsManager {
         this.listingMeasuresService = listingMeasuresService;
         this.certificationStatusEventsService = certificationStatusEventsService;
         this.sharedListingStoreProvider = sharedListingStoreProvider;
-        this.resourcePermissions = resourcePermissionsFactory.get();
+        this.resourcePermissionsFactory = resourcePermissionsFactory;
     }
 
     @Transactional(readOnly = true)
@@ -108,9 +107,9 @@ public class CertifiedProductDetailsManager {
 
     private Boolean canUserViewCertificationEventReasons() {
         return AuthUtil.getCurrentUser() != null
-                && (resourcePermissions.isUserRoleAcbAdmin()
-                        || resourcePermissions.isUserRoleOnc()
-                        || resourcePermissions.isUserRoleAdmin());
+                && (resourcePermissionsFactory.get().isUserRoleAcbAdmin()
+                        || resourcePermissionsFactory.get().isUserRoleOnc()
+                        || resourcePermissionsFactory.get().isUserRoleAdmin());
     }
 
     @Transactional(readOnly = true)

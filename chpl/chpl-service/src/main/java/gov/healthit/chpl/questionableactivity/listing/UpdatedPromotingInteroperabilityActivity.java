@@ -12,7 +12,6 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.PromotingInteroperabilityUser;
 import gov.healthit.chpl.domain.auth.Authority;
-import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.questionableactivity.QuestionableActivityTriggerConcept;
 import gov.healthit.chpl.questionableactivity.domain.QuestionableActivityListing;
@@ -21,16 +20,16 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 @Component
 public class UpdatedPromotingInteroperabilityActivity implements ListingActivity {
-    private ResourcePermissions resourcePermissions;
+    private ResourcePermissionsFactory resourcePermissionsFactory;
 
     @Autowired
     public UpdatedPromotingInteroperabilityActivity(ResourcePermissionsFactory resourcePermissionsFactory) {
-        this.resourcePermissions = resourcePermissionsFactory.get();
+        this.resourcePermissionsFactory = resourcePermissionsFactory;
     }
 
     @Override
     public List<QuestionableActivityListing> check(CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails newListing) {
-        if (!resourcePermissions.doesAuditUserHaveRole(Authority.ROLE_ACB)
+        if (!resourcePermissionsFactory.get().doesAuditUserHaveRole(Authority.ROLE_ACB)
                 || (CollectionUtils.isEmpty(origListing.getPromotingInteroperabilityUserHistory())
                 && CollectionUtils.isEmpty(newListing.getPromotingInteroperabilityUserHistory()))) {
             return null;

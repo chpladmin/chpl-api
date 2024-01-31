@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.TestTask;
-import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.util.DateUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -19,19 +18,19 @@ import gov.healthit.chpl.validation.listing.reviewer.ComparisonReviewer;
 
 @Component("unavailableCriteriaTestTaskComparisonReviewer")
 public class UnavailableCriteriaTestTaskComparisonReviewer implements ComparisonReviewer {
-    private ResourcePermissions resourcePermissions;
+    private ResourcePermissionsFactory resourcePermissionsFactory;
     private ErrorMessageUtil msgUtil;
 
     @Autowired
     public UnavailableCriteriaTestTaskComparisonReviewer(ResourcePermissionsFactory resourcePermissionsFactory, ErrorMessageUtil msgUtil) {
-        this.resourcePermissions = resourcePermissionsFactory.get();
+        this.resourcePermissionsFactory = resourcePermissionsFactory;
         this.msgUtil = msgUtil;
     }
 
     @Override
     public void review(CertifiedProductSearchDetails existingListing, CertifiedProductSearchDetails updatedListing) {
         // this is only disallowed if the user is not ADMIN/ONC, so first check the permissions
-        if (resourcePermissions.isUserRoleAdmin() || resourcePermissions.isUserRoleOnc()) {
+        if (resourcePermissionsFactory.get().isUserRoleAdmin() || resourcePermissionsFactory.get().isUserRoleOnc()) {
             return;
         }
 

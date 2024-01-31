@@ -40,7 +40,6 @@ import gov.healthit.chpl.domain.schedule.TriggerSchedule;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.impl.SecuredManager;
-import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.scheduler.ChplRepeatableTriggerChangeEmailer;
 import gov.healthit.chpl.scheduler.ChplSchedulerReference;
@@ -60,7 +59,7 @@ public class SchedulerManager extends SecuredManager {
     public static final String SYSTEM_JOBS_KEY = "systemJobs";
 
     private ChplSchedulerReference chplScheduler;
-    private ResourcePermissions resourcePermissions;
+    private ResourcePermissionsFactory resourcePermissionsFactory;
     private ChplRepeatableTriggerChangeEmailer emailer;
 
     @Autowired
@@ -68,7 +67,7 @@ public class SchedulerManager extends SecuredManager {
             ChplRepeatableTriggerChangeEmailer emailer) {
 
         this.chplScheduler = chplScheduler;
-        this.resourcePermissions = resourcePermissionsFactory.get();
+        this.resourcePermissionsFactory = resourcePermissionsFactory;
         this.emailer = emailer;
     }
 
@@ -430,7 +429,7 @@ public class SchedulerManager extends SecuredManager {
         if (doesUserHavePermissionToJob(getScheduler().getJobDetail(trigger.getJobKey()))) {
             if (!StringUtils.isEmpty(trigger.getJobDataMap().getString("acb"))) {
                 // get acbs user has access to
-                List<Long> validAcbs = resourcePermissions.getAllAcbsForCurrentUser().stream()
+                List<Long> validAcbs = resourcePermissionsFactory.get().getAllAcbsForCurrentUser().stream()
                         .map(acb -> acb.getId())
                         .collect(Collectors.toList());
                 //get acbs that were selected

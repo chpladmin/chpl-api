@@ -7,7 +7,6 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.form.Form;
-import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.scheduler.job.developer.attestation.AttestationFormMetaData;
 import gov.healthit.chpl.search.ListingSearchService;
@@ -21,7 +20,7 @@ public class AttestationResponseValidationService {
 
     private ListingApplicabilityService listingApplicabilityService;
     private ErrorMessageUtil msgUtil;
-    private ResourcePermissions resourcePermissions;
+    private ResourcePermissionsFactory resourcePermissionsFactory;
     private FF4j ff4j;
 
     public AttestationResponseValidationService(ListingApplicabilityService listingApplicabilityService,
@@ -29,7 +28,7 @@ public class AttestationResponseValidationService {
             ResourcePermissionsFactory resourcePermissionsFactory, FF4j ff4j) {
         this.listingApplicabilityService = listingApplicabilityService;
         this.msgUtil = msgUtil;
-        this.resourcePermissions = resourcePermissionsFactory.get();
+        this.resourcePermissionsFactory = resourcePermissionsFactory;
         this.ff4j = ff4j;
     }
 
@@ -165,12 +164,12 @@ public class AttestationResponseValidationService {
     }
 
     private boolean isDeveloper() {
-        return resourcePermissions.isUserRoleDeveloperAdmin();
+        return resourcePermissionsFactory.get().isUserRoleDeveloperAdmin();
     }
 
     private boolean isAcbOrAdmin() {
-        return resourcePermissions.isUserRoleAcbAdmin()
-                || resourcePermissions.isUserRoleOnc()
-                || resourcePermissions.isUserRoleAdmin();
+        return resourcePermissionsFactory.get().isUserRoleAcbAdmin()
+                || resourcePermissionsFactory.get().isUserRoleOnc()
+                || resourcePermissionsFactory.get().isUserRoleAdmin();
     }
 }

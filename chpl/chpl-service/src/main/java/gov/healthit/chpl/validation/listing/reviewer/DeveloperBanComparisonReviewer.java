@@ -5,7 +5,6 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.entity.CertificationStatusType;
-import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -18,12 +17,12 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
  */
 @Component("developerBanComparisonReviewer")
 public class DeveloperBanComparisonReviewer implements ComparisonReviewer {
-    private ResourcePermissions resourcePermissions;
+    private ResourcePermissionsFactory resourcePermissionsFactory;
     private ErrorMessageUtil msgUtil;
 
     @Autowired
     public DeveloperBanComparisonReviewer(ResourcePermissionsFactory resourcePermissionsFactory, ErrorMessageUtil msgUtil) {
-        this.resourcePermissions = resourcePermissionsFactory.get();
+        this.resourcePermissionsFactory = resourcePermissionsFactory;
         this.msgUtil = msgUtil;
     }
 
@@ -44,8 +43,8 @@ public class DeveloperBanComparisonReviewer implements ComparisonReviewer {
                             .equals(CertificationStatusType.TerminatedByOnc.toString())
                     || updatedListing.getCurrentStatus().getStatus().getName()
                             .equals(CertificationStatusType.TerminatedByOnc.toString()))
-                    && !resourcePermissions.isUserRoleOnc()
-                    && !resourcePermissions.isUserRoleAdmin()) {
+                    && !resourcePermissionsFactory.get().isUserRoleOnc()
+                    && !resourcePermissionsFactory.get().isUserRoleAdmin()) {
                 updatedListing.addBusinessErrorMessage(msgUtil.getMessage("listing.certStatusChange.notAllowed",
                         AuthUtil.getUsername(),
                         existingListing.getChplProductNumber(),

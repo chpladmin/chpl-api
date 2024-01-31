@@ -56,7 +56,6 @@ import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.SchedulerManager;
 import gov.healthit.chpl.manager.auth.UserManager;
-import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.scheduler.job.changerequest.ChangeRequestReportEmailJob;
 import gov.healthit.chpl.search.ListingSearchService;
@@ -105,7 +104,7 @@ public class ChangeRequestManager {
     private AttestationResponseValidationService attestationResponseValidationService;
     private AttestationPeriodService attestationPeriodService;
     private ListingSearchService listingSearchService;
-    private ResourcePermissions resourcePermissions;
+    private ResourcePermissionsFactory resourcePermissionsFactory;
     private ErrorMessageUtil msgUtil;
     private ValidationUtils validationUtils;
     private FormValidator formValidator;
@@ -152,7 +151,7 @@ public class ChangeRequestManager {
         this.attestationResponseValidationService = attestationResponseValidationService;
         this.attestationPeriodService = attestationPeriodService;
         this.listingSearchService = listingSearchService;
-        this.resourcePermissions = resourcePermissionsFactory.get();
+        this.resourcePermissionsFactory = resourcePermissionsFactory;
         this.msgUtil = msgUtil;
         this.validationUtils = validationUtils;
         this.formValidator = formValidator;
@@ -219,7 +218,7 @@ public class ChangeRequestManager {
 
         ChangeRequest updatedDetails = null, updatedStatus = null;
         // Update the details, if the user is of role developer
-        if (resourcePermissions.isUserRoleDeveloperAdmin()
+        if (resourcePermissionsFactory.get().isUserRoleDeveloperAdmin()
                 && cr.getDetails() != null
                 && ChangeRequestStatusService.doesCurrentStatusExist(cr)
                 && !cr.getCurrentStatus().getChangeRequestStatusType().getId().equals(cancelledStatus)) {
@@ -338,7 +337,7 @@ public class ChangeRequestManager {
                 attestationResponseValidationService,
                 attestationPeriodService,
                 listingSearchService,
-                resourcePermissions,
+                resourcePermissionsFactory,
                 validationUtils,
                 developerDAO,
                 changeRequestDAO,

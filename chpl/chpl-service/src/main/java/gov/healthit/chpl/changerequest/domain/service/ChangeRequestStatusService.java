@@ -23,7 +23,6 @@ import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.manager.ActivityManager;
-import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.util.AuthUtil;
 
@@ -45,7 +44,7 @@ public class ChangeRequestStatusService {
     private ChangeRequestDAO crDAO;
     private ChangeRequestDetailsFactory crDetailsFactory;
     private ActivityManager activityManager;
-    private ResourcePermissions resourcePermissions;
+    private ResourcePermissionsFactory resourcePermissionsFactory;
     private UserDAO userDAO;
 
     @Autowired
@@ -58,7 +57,7 @@ public class ChangeRequestStatusService {
         this.crDetailsFactory = crDetailsFactory;
         this.activityManager = activityManager;
         this.userDAO = userDAO;
-        this.resourcePermissions = resourcePermissionsFactory.get();
+        this.resourcePermissionsFactory = resourcePermissionsFactory;
     }
 
     public ChangeRequestStatus saveInitialStatus(ChangeRequest cr) throws EntityRetrievalException {
@@ -68,7 +67,7 @@ public class ChangeRequestStatusService {
         ChangeRequestStatus crStatus = new ChangeRequestStatus();
         crStatus.setStatusChangeDateTime(LocalDateTime.now());
         crStatus.setChangeRequestStatusType(crStatusType);
-        crStatus.setUserPermission(resourcePermissions.getRoleByUser(getUserById(AuthUtil.getCurrentUser().getId())));
+        crStatus.setUserPermission(resourcePermissionsFactory.get().getRoleByUser(getUserById(AuthUtil.getCurrentUser().getId())));
 
         return crStatusDAO.create(cr, crStatus);
     }
@@ -150,8 +149,8 @@ public class ChangeRequestStatusService {
         crStatus.setChangeRequestStatusType(crStatusType);
         crStatus.setComment(comment);
         crStatus.setStatusChangeDateTime(LocalDateTime.now());
-        crStatus.setUserPermission(resourcePermissions.getRoleByUser(getUserById(AuthUtil.getCurrentUser().getId())));
-        if (resourcePermissions.isUserRoleAcbAdmin()) {
+        crStatus.setUserPermission(resourcePermissionsFactory.get().getRoleByUser(getUserById(AuthUtil.getCurrentUser().getId())));
+        if (resourcePermissionsFactory.get().isUserRoleAcbAdmin()) {
             crStatus.setCertificationBody(getCertificationBodyForCurrentUser());
         }
 
@@ -163,9 +162,9 @@ public class ChangeRequestStatusService {
     }
 
     private CertificationBody getCertificationBodyForCurrentUser() {
-        if (resourcePermissions.isUserRoleAcbAdmin()) {
-            if (resourcePermissions.getAllAcbsForCurrentUser().size() == 1) {
-                return resourcePermissions.getAllAcbsForCurrentUser().get(0);
+        if (resourcePermissionsFactory.get().isUserRoleAcbAdmin()) {
+            if (resourcePermissionsFactory.get().getAllAcbsForCurrentUser().size() == 1) {
+                return resourcePermissionsFactory.get().getAllAcbsForCurrentUser().get(0);
             } else {
                 String msg = "Cannot determine ACB for current user.  There are multiple ACBs for this user: "
                         + AuthUtil.getUsername();

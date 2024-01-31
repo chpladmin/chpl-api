@@ -57,7 +57,7 @@ public class ConformanceMethodReviewer extends PermissionBasedReviewer {
         this.certResultDao = certResultDao;
         this.validationUtils = validationUtils;
         this.certResultRules = certResultRules;
-        this.resourcePermissions = resourcePermissionsFactory.get();
+        this.resourcePermissionsFactory = resourcePermissionsFactory;
         f3 = criteriaService.get(Criteria2015.F_3);
 
         try {
