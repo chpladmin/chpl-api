@@ -43,7 +43,6 @@ public class DeveloperDAO extends BaseDAOImpl {
             + "LEFT OUTER JOIN FETCH v.contact "
             + "LEFT OUTER JOIN FETCH v.statusEvents statusEvents "
             + "LEFT OUTER JOIN FETCH statusEvents.developerStatus "
-            + "LEFT OUTER JOIN FETCH v.developerCertificationStatuses "
             + "LEFT OUTER JOIN FETCH v.attestations attestations "
             + "LEFT OUTER JOIN FETCH attestations.attestationPeriod ";
 
@@ -54,7 +53,6 @@ public class DeveloperDAO extends BaseDAOImpl {
             + "LEFT OUTER JOIN FETCH dev.contact "
             + "LEFT OUTER JOIN FETCH dev.statusEvents statusEvents "
             + "LEFT OUTER JOIN FETCH statusEvents.developerStatus "
-            + "LEFT OUTER JOIN FETCH dev.developerCertificationStatuses "
             + "LEFT OUTER JOIN FETCH dev.attestations attestations "
             + "LEFT OUTER JOIN FETCH attestations.attestationPeriod "
             + "WHERE dev.deleted <> true ";

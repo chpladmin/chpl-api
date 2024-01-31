@@ -267,7 +267,6 @@ public class ProductDAO extends BaseDAOImpl {
                 + "LEFT JOIN FETCH pe.contact "
                 + "LEFT JOIN FETCH pe.ownerHistory oh "
                 + "LEFT JOIN FETCH pe.productVersions pv "
-                + "LEFT JOIN FETCH pe.productCertificationStatuses "
                 + "WHERE (pe.developerId = :devId) "
                 + "AND (pe.deleted = false) ", ProductEntity.class);
         query.setParameter("devId", developerId);
@@ -285,7 +284,6 @@ public class ProductDAO extends BaseDAOImpl {
                 + "LEFT JOIN FETCH pe.contact "
                 + "LEFT JOIN FETCH pe.ownerHistory "
                 + "LEFT JOIN FETCH pe.productVersions "
-                + "LEFT JOIN FETCH pe.productCertificationStatuses "
                 + "where pe.deleted = false "
                 + "AND pe.developerId IN (:idList) ", ProductEntity.class);
         query.setParameter("idList", developerIds);
@@ -303,7 +301,6 @@ public class ProductDAO extends BaseDAOImpl {
                 + "LEFT JOIN FETCH pe.contact "
                 + "LEFT JOIN FETCH pe.ownerHistory "
                 + "LEFT JOIN FETCH pe.productVersions "
-                + "LEFT JOIN FETCH pe.productCertificationStatuses "
                 + "WHERE pe.deleted = false "
                 + "AND (pe.developerId = :developerId) "
                 + "AND (pe.name = :name)", ProductEntity.class);
@@ -325,7 +322,6 @@ public class ProductDAO extends BaseDAOImpl {
                                 + "LEFT JOIN FETCH pe.contact "
                                 + "LEFT JOIN FETCH pe.ownerHistory "
                                 + "LEFT JOIN FETCH pe.productVersions "
-                                + "LEFT JOIN FETCH pe.productCertificationStatuses "
                                 + "where (NOT pe.deleted = true) ",
                                 ProductEntity.class)
                 .getResultList();
@@ -356,8 +352,8 @@ public class ProductDAO extends BaseDAOImpl {
                 + "JOIN FETCH pe.developer "
                 + "LEFT JOIN FETCH pe.contact "
                 + "LEFT JOIN FETCH pe.ownerHistory "
-                + "LEFT JOIN FETCH pe.productVersions "
-                + "LEFT JOIN FETCH pe.productCertificationStatuses ", ProductEntity.class).getResultList();
+                + "LEFT JOIN FETCH pe.productVersions ",
+                ProductEntity.class).getResultList();
         LOGGER.debug("SQL call: List<ProductEntity> getAllEntities()");
         return result;
     }
