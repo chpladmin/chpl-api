@@ -41,11 +41,11 @@ public class CognitoAuthenticationManager {
             + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).GET_BY_USER_NAME)")
     @PostAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SECURED_USER, "
             + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).GET_BY_USER_NAME, returnObject)")
-    public User getUserInfo(UUID ssoUserId) throws UserRetrievalException {
+    public User getUserInfo(UUID cognitoId) throws UserRetrievalException {
         if (!ff4j.check(FeatureList.SSO)) {
             throw new NotImplementedException("This feature has not been implemented");
         }
 
-        return cognitoUserService.getUserInfo(ssoUserId);
+        return cognitoUserService.getUserInfo(cognitoId);
     }
 }

@@ -21,7 +21,7 @@ public class User extends Person implements Serializable {
     private static final long serialVersionUID = 8408154701107113148L;
 
     private Long userId;
-    private UUID userSsoId;
+    private UUID cognitoId;
     private String role;
     private String subjectName;
     private String friendlyName;

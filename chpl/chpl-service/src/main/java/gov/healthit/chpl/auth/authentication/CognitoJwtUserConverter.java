@@ -15,8 +15,8 @@ import com.auth0.jwt.interfaces.RSAKeyProvider;
 
 import gov.healthit.chpl.auth.jwt.CognitoRsaKeyProvider;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
-import gov.healthit.chpl.auth.user.CognitoAuthenticatedUser;
 import gov.healthit.chpl.auth.user.AuthenticatedUser;
+import gov.healthit.chpl.auth.user.CognitoAuthenticatedUser;
 import gov.healthit.chpl.exception.JWTValidationException;
 import gov.healthit.chpl.exception.MultipleUserAccountsException;
 import lombok.extern.log4j.Log4j2;
@@ -41,7 +41,7 @@ public class CognitoJwtUserConverter {
         DecodedJWT decodeJwt = decodeJwt(jwt);
         return CognitoAuthenticatedUser.builder()
                 .authenticated(true)
-                .ssoId(UUID.fromString(decodeJwt.getSubject()))
+                .cognitoId(UUID.fromString(decodeJwt.getSubject()))
                 .fullName(decodeJwt.getClaim("name").asString())
                 .email(decodeJwt.getClaim("email").asString())
                 .organizationIds(

@@ -23,13 +23,13 @@ import gov.healthit.chpl.util.AuthUtil;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
-public class SsoResourcePermissions implements ResourcePermissions {
+public class CognitoResourcePermissions implements ResourcePermissions {
     private CertificationBodyDAO certificationBodyDAO;
     private DeveloperDAO developerDAO;
     private CognitoUserService cognitoUserService;
 
     @Autowired
-    public SsoResourcePermissions(CertificationBodyDAO certificationBodyDAO, DeveloperDAO developerDAO, CognitoUserService cognitoUserService) {
+    public CognitoResourcePermissions(CertificationBodyDAO certificationBodyDAO, DeveloperDAO developerDAO, CognitoUserService cognitoUserService) {
         this.certificationBodyDAO = certificationBodyDAO;
         this.developerDAO = developerDAO;
         this.cognitoUserService = cognitoUserService;
@@ -62,7 +62,7 @@ public class SsoResourcePermissions implements ResourcePermissions {
     @Override
     public List<CertificationBody> getAllAcbsForCurrentUser() {
         try {
-            User user = cognitoUserService.getUserInfo(AuthUtil.getCurrentUser().getSsoId());
+            User user = cognitoUserService.getUserInfo(AuthUtil.getCurrentUser().getCognitoId());
             if (user != null) {
                 if (isUserRoleAdmin() || isUserRoleOnc()) {
                     return certificationBodyDAO.findAll();
@@ -90,7 +90,7 @@ public class SsoResourcePermissions implements ResourcePermissions {
     @Override
     public List<Developer> getAllDevelopersForCurrentUser() {
         try {
-            User user = cognitoUserService.getUserInfo(AuthUtil.getCurrentUser().getSsoId());
+            User user = cognitoUserService.getUserInfo(AuthUtil.getCurrentUser().getCognitoId());
             return getAllDevelopersForUser(user);
         } catch (UserRetrievalException e) {
             LOGGER.error("Could not retrieve all developers for current user.", e);
@@ -183,7 +183,7 @@ public class SsoResourcePermissions implements ResourcePermissions {
 
     @Override
     public boolean doesUserHaveRole(String authority) {
-        CognitoAuthenticatedUser user = AuthUtil.getCurrentSsoUser();
+        CognitoAuthenticatedUser user = AuthUtil.getCurrentCognitoUser();
         if (user == null) {
             return false;
         }
@@ -228,7 +228,7 @@ public class SsoResourcePermissions implements ResourcePermissions {
     public boolean hasPermissionOnUser(User user) {
         if (user.getRole().equalsIgnoreCase(CognitoGroups.CHPL_STARTUP)) {
             return false;
-        } else if (isUserRoleAdmin() || AuthUtil.getCurrentUser().getSsoId().equals(user.getUserSsoId())) {
+        } else if (isUserRoleAdmin() || AuthUtil.getCurrentUser().getCognitoId().equals(user.getCognitoId())) {
             return true;
         } else if (isUserRoleOnc()) {
             return !user.getRole().equalsIgnoreCase(CognitoGroups.CHPL_ADMIN);

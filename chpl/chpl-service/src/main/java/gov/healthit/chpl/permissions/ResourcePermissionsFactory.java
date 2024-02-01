@@ -16,7 +16,7 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 @Component
 public class ResourcePermissionsFactory {
     private ChplResourcePermissions chplResourcePermissions;
-    private SsoResourcePermissions ssoResourcePermissions;
+    private CognitoResourcePermissions cognitoResourcePermissions;
 
     private FF4j ff4j;
 
@@ -28,12 +28,12 @@ public class ResourcePermissionsFactory {
         this.ff4j = ff4j;
 
         this.chplResourcePermissions = new ChplResourcePermissions(userCertificationBodyMapDAO, userDeveloperMapDAO, acbDAO, errorMessageUtil, userDAO, developerDAO);
-        this.ssoResourcePermissions = new SsoResourcePermissions(certificationBodyDAO, developerDAO, cognitoUserService);
+        this.cognitoResourcePermissions = new CognitoResourcePermissions(certificationBodyDAO, developerDAO, cognitoUserService);
     }
 
     public ResourcePermissions get() {
         if (ff4j.check(FeatureList.SSO)) {
-            return ssoResourcePermissions;
+            return cognitoResourcePermissions;
         } else {
             return chplResourcePermissions;
         }

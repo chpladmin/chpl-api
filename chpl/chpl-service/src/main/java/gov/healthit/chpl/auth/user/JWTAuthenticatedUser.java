@@ -129,7 +129,7 @@ public class JWTAuthenticatedUser implements AuthenticatedUser {
     }
 
     @Override
-    public UUID getSsoId() {
+    public UUID getCognitoId() {
         return null;
     }
 

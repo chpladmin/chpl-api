@@ -12,9 +12,9 @@ import gov.healthit.chpl.auth.permission.GrantedPermission;
 
 public interface AuthenticatedUser extends UserDetails, Authentication {
 
-    UUID getSsoId();
+    UUID getCognitoId();
     Long getId();
-    
+
     String getSubjectName();
     void setSubjectName(String subject);
 

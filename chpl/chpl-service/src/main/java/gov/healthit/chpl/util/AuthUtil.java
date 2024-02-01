@@ -11,11 +11,11 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import gov.healthit.chpl.auth.permission.GrantedPermission;
+import gov.healthit.chpl.auth.user.AuthenticatedUser;
 import gov.healthit.chpl.auth.user.CognitoAuthenticatedUser;
 import gov.healthit.chpl.auth.user.CognitoSystemUsers;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.auth.user.SystemUsers;
-import gov.healthit.chpl.auth.user.AuthenticatedUser;
 
 public class AuthUtil {
     public static String getUsername() {
@@ -37,7 +37,7 @@ public class AuthUtil {
         return user;
     }
 
-    public static CognitoAuthenticatedUser getCurrentSsoUser() {
+    public static CognitoAuthenticatedUser getCurrentCognitoUser() {
         CognitoAuthenticatedUser user = null;
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth instanceof CognitoAuthenticatedUser) {
@@ -66,7 +66,7 @@ public class AuthUtil {
     }
 
 
-    public static UUID getAuditSsoUserId() {
+    public static UUID getAuditCognitoUserId() {
         CognitoAuthenticatedUser user = null;
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
@@ -75,7 +75,7 @@ public class AuthUtil {
             //if (user.getImpersonatingUser() != null) {
             //    return user.getImpersonatingUser().getId();
             //} else {
-                return user.getSsoId();
+                return user.getCognitoId();
             //}
         }
         return CognitoSystemUsers.DEFAULT_USER_ID;

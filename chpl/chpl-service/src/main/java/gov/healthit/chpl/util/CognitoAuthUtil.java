@@ -51,7 +51,7 @@ public class CognitoAuthUtil {
 
 
     //TODO - OCD-4377 - Need to figure out how to get this
-    public static UUID getAuditSsoUser() {
+    public static UUID getAuditCognitoUser() {
         //JWTAuthenticatedUser user = null;
         //Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 

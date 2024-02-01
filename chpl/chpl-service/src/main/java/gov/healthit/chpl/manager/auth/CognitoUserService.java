@@ -95,15 +95,15 @@ public class CognitoUserService {
         }
     }
 
-    public User getUserInfo(UUID ssoUserId) throws UserRetrievalException {
+    public User getUserInfo(UUID cognitoId) throws UserRetrievalException {
         ListUsersResponse response = cognitoClient.listUsers(ListUsersRequest.builder()
                 .userPoolId(userPoolId)
-                .filter("sub = \"" + ssoUserId.toString() + "\"")
+                .filter("sub = \"" + cognitoId.toString() + "\"")
                 .limit(1)
                 .build());
 
         User user = new User();
-        user.setUserSsoId(ssoUserId);
+        user.setCognitoId(cognitoId);
         user.setSubjectName(getUserAttribute(response.users().get(0).attributes(), "email").value());
         user.setFriendlyName(getUserAttribute(response.users().get(0).attributes(), "name").value());
         user.setFullName(getUserAttribute(response.users().get(0).attributes(), "name").value());

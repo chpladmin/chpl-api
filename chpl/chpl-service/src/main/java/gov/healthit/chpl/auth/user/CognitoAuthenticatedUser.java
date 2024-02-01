@@ -20,7 +20,7 @@ public class CognitoAuthenticatedUser implements AuthenticatedUser {
     private static final long serialVersionUID = 2847351904166625725L;
 
     private Long id;
-    private UUID ssoId;
+    private UUID cognitoId;
     private String email;
     private String fullName;
     private String friendlyName;
