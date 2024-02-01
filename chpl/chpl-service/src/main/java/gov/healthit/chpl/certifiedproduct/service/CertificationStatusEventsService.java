@@ -1,5 +1,6 @@
 package gov.healthit.chpl.certifiedproduct.service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -42,11 +43,12 @@ public class CertificationStatusEventsService {
     }
 
     public CertificationStatusEvent getCurrentCertificationStatusEvent(Long certifiedProductId) throws EntityRetrievalException {
+        LocalDate today = LocalDate.now();
         return certStatusEventDao.findByCertifiedProductId(certifiedProductId).stream()
                 .map(cse -> createCertificationStatusEvent(cse))
-                .sorted((event1, event2) -> Long.compare(event1.getEventDate(), event2.getEventDate()))
-                .reduce((a, b) -> b) // get the last item in the list
-                .orElse(null);
+                .filter(cse -> cse.getEventDay().isEqual(today) || cse.getEventDay().isBefore(today))
+                .max(new CertificationStatusEventComparator())
+                .get();
     }
 
     private CertificationStatusEvent createCertificationStatusEvent(CertificationStatusEvent certStatusEvent) {
