@@ -1,12 +1,15 @@
 package gov.healthit.chpl.activity;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import gov.healthit.chpl.certifiedproduct.service.CertificationStatusEventsService;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.activity.ActivityCategory;
 import gov.healthit.chpl.domain.activity.ActivityMetadata;
@@ -17,10 +20,14 @@ import gov.healthit.chpl.dto.ActivityDTO;
 @Component("listingActivityMetadataBuilder")
 public class ListingActivityMetadataBuilder extends ActivityMetadataBuilder {
     private static final Logger LOGGER = LogManager.getLogger(ListingActivityMetadataBuilder.class);
+
+    private CertificationStatusEventsService cseService;
     private ObjectMapper jsonMapper;
 
-    public ListingActivityMetadataBuilder() {
+    @Autowired
+    public ListingActivityMetadataBuilder(CertificationStatusEventsService cseService) {
         super();
+        this.cseService = cseService;
         jsonMapper = new ObjectMapper();
     }
 
@@ -102,14 +109,8 @@ public class ListingActivityMetadataBuilder extends ActivityMetadataBuilder {
             listingMetadata.getCategories().add(ActivityCategory.LISTING_UPLOAD);
         } else if (origListing != null && newListing != null) {
             //status change?
-            if (origListing.getCertificationStatus() != null && newListing.getCertificationStatus() != null
-                    && origListing.getCertificationStatus().getId() != newListing.getCertificationStatus().getId()) {
-                listingMetadata.getCategories().add(ActivityCategory.LISTING_STATUS_CHANGE);
-            } else if (origListing.getCurrentStatus() != null && newListing.getCurrentStatus() != null
-                    && origListing.getCurrentStatus().getStatus() != null
-                    && newListing.getCurrentStatus().getStatus() != null
-                    && !origListing.getCurrentStatus().getStatus().getName()
-                    .equals(newListing.getCurrentStatus().getStatus().getName())) {
+            if (!CollectionUtils.isEmpty(cseService.getAddedCertificationStatusEvents(origListing, newListing))
+                    || !CollectionUtils.isEmpty(cseService.getRemovedCertificationStatusEvents(origListing, newListing))) {
                 listingMetadata.getCategories().add(ActivityCategory.LISTING_STATUS_CHANGE);
             }
             //surveillance change?

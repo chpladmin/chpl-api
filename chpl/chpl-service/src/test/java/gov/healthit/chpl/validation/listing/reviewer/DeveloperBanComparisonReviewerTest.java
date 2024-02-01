@@ -14,6 +14,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
+import gov.healthit.chpl.certifiedproduct.service.CertificationStatusEventsService;
+import gov.healthit.chpl.dao.CertificationStatusDAO;
+import gov.healthit.chpl.dao.CertificationStatusEventDAO;
 import gov.healthit.chpl.domain.CertificationStatus;
 import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
@@ -23,6 +26,7 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 
 public class DeveloperBanComparisonReviewerTest {
     private static final String ERROR_MESSAGE = "User %s does not have permission to modify certification status%s '%s' on the listing.";
+    private CertificationStatusEventsService cseService;
     private ResourcePermissions resourcePermissions;
     private ErrorMessageUtil msgUtil;
     private DeveloperBanComparisonReviewer reviewer;
@@ -30,11 +34,14 @@ public class DeveloperBanComparisonReviewerTest {
     @Before
     public void before() {
         SecurityContextHolder.getContext().setAuthentication(getAcbUser());
+        cseService = new CertificationStatusEventsService(
+                Mockito.mock(CertificationStatusEventDAO.class),
+                Mockito.mock(CertificationStatusDAO.class));
         resourcePermissions = Mockito.mock(ResourcePermissions.class);
         msgUtil = Mockito.mock(ErrorMessageUtil.class);
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.certStatusChange.notAllowed"), ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
                 .thenAnswer(i -> String.format(ERROR_MESSAGE, i.getArgument(1), i.getArgument(2), i.getArgument(3)));
-        reviewer = new DeveloperBanComparisonReviewer(resourcePermissions, msgUtil);
+        reviewer = new DeveloperBanComparisonReviewer(cseService, resourcePermissions, msgUtil);
     }
 
     @Test
