@@ -226,14 +226,14 @@ public class SsoResourcePermissions implements ResourcePermissions {
 
     @Override
     public boolean hasPermissionOnUser(User user) {
-        if (user.getGroupName().equalsIgnoreCase(CognitoGroups.CHPL_STARTUP)) {
+        if (user.getRole().equalsIgnoreCase(CognitoGroups.CHPL_STARTUP)) {
             return false;
         } else if (isUserRoleAdmin() || AuthUtil.getCurrentUser().getSsoId().equals(user.getUserSsoId())) {
             return true;
         } else if (isUserRoleOnc()) {
-            return !user.getGroupName().equalsIgnoreCase(CognitoGroups.CHPL_ADMIN);
+            return !user.getRole().equalsIgnoreCase(CognitoGroups.CHPL_ADMIN);
         } else if (isUserRoleAcbAdmin()) {
-            if (user.getGroupName().equalsIgnoreCase(CognitoGroups.CHPL_DEVELOPER)) {
+            if (user.getRole().equalsIgnoreCase(CognitoGroups.CHPL_DEVELOPER)) {
                 return true;
             }
             // is the user being checked on any of the same ACB(s) that the current user is on?

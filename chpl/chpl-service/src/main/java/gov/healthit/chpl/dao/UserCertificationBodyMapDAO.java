@@ -63,7 +63,6 @@ public class UserCertificationBodyMapDAO extends BaseDAOImpl {
         return dtos;
     }
 
-
     public List<UserCertificationBodyMapDTO> getByAcbId(Long acbId) {
         Query query = entityManager.createQuery(
                 "from UserCertificationBodyMapEntity ucbm "
@@ -84,7 +83,6 @@ public class UserCertificationBodyMapDAO extends BaseDAOImpl {
         }
         return dtos;
     }
-
 
     public UserCertificationBodyMapDTO getById(Long id) {
         Query query = entityManager.createQuery(

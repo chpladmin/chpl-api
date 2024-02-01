@@ -96,7 +96,7 @@ public class UserDTO implements UserDetails {
         User user = new User();
         user.setUserId(this.getId());
         if (this.getPermission() != null) {
-            user.setGroupName(this.getPermission().getAuthority());
+            user.setRole(this.getPermission().getAuthority());
         }
         user.setSubjectName(this.getSubjectName());
         user.setFullName(this.getFullName());

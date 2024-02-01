@@ -22,7 +22,7 @@ public class User extends Person implements Serializable {
 
     private Long userId;
     private UUID userSsoId;
-    private String groupName;
+    private String role;
     private String subjectName;
     private String friendlyName;
     private Boolean accountLocked;

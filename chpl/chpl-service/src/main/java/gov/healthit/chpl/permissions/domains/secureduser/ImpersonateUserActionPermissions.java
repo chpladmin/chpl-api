@@ -47,14 +47,14 @@ public class ImpersonateUserActionPermissions extends ActionPermissions {
 
         if (getResourcePermissions().isUserRoleAdmin()) {
             //admin user can't impersonate another admin user
-            if (target.getGroupName().equalsIgnoreCase(Authority.ROLE_ADMIN)) {
+            if (target.getRole().equalsIgnoreCase(Authority.ROLE_ADMIN)) {
                 return false;
             }
             return true;
         } else if (getResourcePermissions().isUserRoleOnc()) {
             //onc can't impersonate admin or onc
-            if (target.getGroupName().equalsIgnoreCase(Authority.ROLE_ONC)
-                    || target.getGroupName().equalsIgnoreCase(Authority.ROLE_ADMIN)) {
+            if (target.getRole().equalsIgnoreCase(Authority.ROLE_ONC)
+                    || target.getRole().equalsIgnoreCase(Authority.ROLE_ADMIN)) {
                 return false;
             }
             return true;
