@@ -1,6 +1,7 @@
 package gov.healthit.chpl.functionalitytested;
 
 import java.io.Serializable;
+import java.util.Date;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -49,6 +50,9 @@ public class CertificationResultFunctionalityTested implements Serializable {
 
     @JsonIgnore
     private Long certificationResultId;
+
+    @JsonIgnore
+    private Date creationDate;
 
     public boolean matches(CertificationResultFunctionalityTested anotherFunc) {
         boolean result = false;

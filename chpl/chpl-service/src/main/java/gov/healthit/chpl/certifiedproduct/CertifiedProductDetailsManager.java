@@ -34,7 +34,7 @@ public class CertifiedProductDetailsManager {
     private ListingMeasuresService listingMeasuresService;
     private CertificationStatusEventsService certificationStatusEventsService;
     private SharedListingStoreProvider sharedListingStoreProvider;
-    private  ResourcePermissions resourcePermissions;
+    private ResourcePermissions resourcePermissions;
 
     @Autowired
     public CertifiedProductDetailsManager(
