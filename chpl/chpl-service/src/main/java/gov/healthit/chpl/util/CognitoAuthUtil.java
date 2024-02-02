@@ -7,7 +7,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
-import gov.healthit.chpl.auth.user.SystemUsers;
+import gov.healthit.chpl.auth.user.ChplSystemUsers;
 import gov.healthit.chpl.auth.user.AuthenticatedUser;
 
 public class CognitoAuthUtil {
@@ -46,7 +46,7 @@ public class CognitoAuthUtil {
                 return user.getId();
             }
         }
-        return SystemUsers.DEFAULT_USER_ID;
+        return ChplSystemUsers.DEFAULT_USER_ID;
     }
 
 

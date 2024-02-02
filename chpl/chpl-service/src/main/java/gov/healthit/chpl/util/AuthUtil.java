@@ -15,7 +15,7 @@ import gov.healthit.chpl.auth.user.AuthenticatedUser;
 import gov.healthit.chpl.auth.user.CognitoAuthenticatedUser;
 import gov.healthit.chpl.auth.user.CognitoSystemUsers;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
-import gov.healthit.chpl.auth.user.SystemUsers;
+import gov.healthit.chpl.auth.user.ChplSystemUsers;
 
 public class AuthUtil {
     public static String getUsername() {
@@ -62,7 +62,7 @@ public class AuthUtil {
                 return user.getId();
             }
         }
-        return SystemUsers.DEFAULT_USER_ID;
+        return ChplSystemUsers.DEFAULT_USER_ID;
     }
 
 
@@ -95,7 +95,7 @@ public class AuthUtil {
 
             @Override
             public Long getId() {
-                return id == null ? Long.valueOf(SystemUsers.ADMIN_USER_ID) : id;
+                return id == null ? Long.valueOf(ChplSystemUsers.ADMIN_USER_ID) : id;
             }
 
             @Override

@@ -13,7 +13,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.auth.user.AuthenticatedUser;
-import gov.healthit.chpl.auth.user.SystemUsers;
+import gov.healthit.chpl.auth.user.ChplSystemUsers;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.UserCertificationBodyMapDAO;
@@ -355,7 +355,7 @@ public class ChplResourcePermissions implements ResourcePermissions {
     @Override
     public boolean doesAuditUserHaveRole(String authority) {
         Long auditUserId = AuthUtil.getAuditId();
-        if (auditUserId == null || auditUserId.equals(SystemUsers.DEFAULT_USER_ID)) {
+        if (auditUserId == null || auditUserId.equals(ChplSystemUsers.DEFAULT_USER_ID)) {
             return false;
         }
 

@@ -9,15 +9,12 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.ff4j.FF4j;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 import org.springframework.web.filter.GenericFilterBean;
 
-import gov.healthit.chpl.FeatureList;
-import gov.healthit.chpl.auth.authentication.CognitoJwtUserConverter;
-import gov.healthit.chpl.auth.authentication.JWTUserConverter;
+import gov.healthit.chpl.auth.authentication.JWTUserConverterFactory;
 import gov.healthit.chpl.auth.user.AuthenticatedUser;
 import gov.healthit.chpl.exception.JWTValidationException;
 import gov.healthit.chpl.exception.MultipleUserAccountsException;
@@ -28,15 +25,10 @@ public class JWTAuthenticationFilter extends GenericFilterBean {
             "/monitoring", "/ff4j-console", "/v3/api-docs"
     };
 
-    private FF4j ff4j;
-    private JWTUserConverter userConverter;
-    private CognitoJwtUserConverter cognitoJwtUserConverter;
+    private JWTUserConverterFactory userConverterFactory;
 
-    public JWTAuthenticationFilter(JWTUserConverter userConverter,  CognitoJwtUserConverter cognitoJwtUserConverter, FF4j ff4j) {
-        this.userConverter = userConverter;
-        this.cognitoJwtUserConverter = cognitoJwtUserConverter;
-        this.ff4j = ff4j;
-
+    public JWTAuthenticationFilter(JWTUserConverterFactory userConverterFactory) {
+        this.userConverterFactory = userConverterFactory;
     }
 
     @Override
@@ -74,12 +66,7 @@ public class JWTAuthenticationFilter extends GenericFilterBean {
 
             if (jwt != null) {
                 try {
-                    if (ff4j.check(FeatureList.SSO)) {
-                        authenticatedUser = cognitoJwtUserConverter.getAuthenticatedUser(jwt);
-
-                    } else {
-                        authenticatedUser = userConverter.getAuthenticatedUser(jwt);
-                    }
+                    authenticatedUser = userConverterFactory.get().getAuthenticatedUser(jwt);
 
                     SecurityContextHolder.getContext().setAuthentication(authenticatedUser);
                     chain.doFilter(req, res); // continue

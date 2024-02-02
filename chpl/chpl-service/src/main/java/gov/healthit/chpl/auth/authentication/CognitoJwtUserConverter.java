@@ -5,7 +5,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
@@ -22,8 +21,7 @@ import gov.healthit.chpl.exception.MultipleUserAccountsException;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
-@Component
-public class CognitoJwtUserConverter {
+public class CognitoJwtUserConverter implements JWTUserConverter {
     private String region;
     private String userPoolId;
     private String clientId;
@@ -37,6 +35,7 @@ public class CognitoJwtUserConverter {
         this.tokenizeRsaKeyUrl = tokenizeRsaKeyUrl;
     }
 
+    @Override
     public AuthenticatedUser getAuthenticatedUser(String jwt) throws JWTValidationException, MultipleUserAccountsException {
         DecodedJWT decodeJwt = decodeJwt(jwt);
         return CognitoAuthenticatedUser.builder()
@@ -67,5 +66,11 @@ public class CognitoJwtUserConverter {
         DecodedJWT decodedJwt = jwtVerifier.verify(jwt);
 
         return decodedJwt;
+    }
+
+    @Override
+    public AuthenticatedUser getImpersonatingUser(String jwt) throws JWTValidationException {
+        // TODO Auto-generated method stub
+        return null;
     }
 }
