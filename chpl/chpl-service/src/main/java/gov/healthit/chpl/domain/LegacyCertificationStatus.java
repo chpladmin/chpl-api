@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import lombok.Data;
 
+@Deprecated
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class LegacyCertificationStatus {

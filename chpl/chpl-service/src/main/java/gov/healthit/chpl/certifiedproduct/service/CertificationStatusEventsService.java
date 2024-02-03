@@ -10,6 +10,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.google.common.base.Objects;
+
 import gov.healthit.chpl.dao.CertificationStatusDAO;
 import gov.healthit.chpl.dao.CertificationStatusEventDAO;
 import gov.healthit.chpl.domain.CertificationStatusEvent;
@@ -74,8 +76,11 @@ public class CertificationStatusEventsService {
     }
 
     private boolean doValuesMatch(CertificationStatusEvent event1, CertificationStatusEvent event2) {
-        return event1.getStatus().getName().equals(event2.getStatus().getName())
-                && event1.getEventDay().equals(event2.getEventDay())
+        return ((event1.getStatus() != null && event2.getStatus() != null
+                    && StringUtils.equals(event1.getStatus().getName(), event2.getStatus().getName()))
+                        || Objects.equal(event1.getCertificationStatusId(), event2.getCertificationStatusId()))
+                && (Objects.equal(event1.getEventDay(), event2.getEventDay())
+                        || Objects.equal(event1.getEventDate(), event2.getEventDate()))
                 && StringUtils.equalsIgnoreCase(event1.getReason(), event2.getReason());
     }
 

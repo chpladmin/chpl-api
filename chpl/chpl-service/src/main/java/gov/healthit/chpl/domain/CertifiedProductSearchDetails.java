@@ -220,6 +220,7 @@ public class CertifiedProductSearchDetails implements Serializable {
      * this value in old listing activity event data. Not all old listing properties need to be present
      * for this reason. This property should not be visible in any response from an API call.
      */
+    @Deprecated
     @JsonProperty(access = Access.WRITE_ONLY)
     private LegacyCertificationStatus certificationStatus;
 

@@ -109,8 +109,14 @@ public class ListingActivityMetadataBuilder extends ActivityMetadataBuilder {
             listingMetadata.getCategories().add(ActivityCategory.LISTING_UPLOAD);
         } else if (origListing != null && newListing != null) {
             //status change?
-            if (!CollectionUtils.isEmpty(cseService.getAddedCertificationStatusEvents(origListing, newListing))
-                    || !CollectionUtils.isEmpty(cseService.getRemovedCertificationStatusEvents(origListing, newListing))) {
+            if (origListing.getCertificationStatus() != null && newListing.getCertificationStatus() != null
+                    && origListing.getCertificationStatus().getId() != newListing.getCertificationStatus().getId()) {
+                //check the legacy certificationStatus field for older activities
+                listingMetadata.getCategories().add(ActivityCategory.LISTING_STATUS_CHANGE);
+            } else if (!CollectionUtils.isEmpty(origListing.getCertificationEvents())
+                    && !CollectionUtils.isEmpty(newListing.getCertificationEvents())
+                    && (!CollectionUtils.isEmpty(cseService.getAddedCertificationStatusEvents(origListing, newListing))
+                            || !CollectionUtils.isEmpty(cseService.getRemovedCertificationStatusEvents(origListing, newListing)))) {
                 listingMetadata.getCategories().add(ActivityCategory.LISTING_STATUS_CHANGE);
             }
             //surveillance change?
