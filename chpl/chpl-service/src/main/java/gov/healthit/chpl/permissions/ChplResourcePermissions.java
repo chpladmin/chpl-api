@@ -12,8 +12,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.transaction.annotation.Transactional;
 
-import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.auth.user.ChplSystemUsers;
+import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.UserCertificationBodyMapDAO;
@@ -104,7 +104,7 @@ public class ChplResourcePermissions implements ResourcePermissions {
             if (isUserRoleAdmin() || isUserRoleOnc()) {
                 acbs = acbDAO.findAll();
             } else {
-                List<UserCertificationBodyMapDTO> userAcbMaps = userCertificationBodyMapDAO.getByUserId((Long) user.getId());
+                List<UserCertificationBodyMapDTO> userAcbMaps = userCertificationBodyMapDAO.getByUserId(user.getId());
                 acbs = userAcbMaps.stream()
                         .map(userAcbMap -> userAcbMap.getCertificationBody())
                         .collect(Collectors.toList());
@@ -134,7 +134,7 @@ public class ChplResourcePermissions implements ResourcePermissions {
             if (isUserRoleAdmin() || isUserRoleOnc() || isUserRoleAcbAdmin()) {
                 developers = developerDAO.findAll();
             } else {
-                List<UserDeveloperMapDTO> dtos = userDeveloperMapDAO.getByUserId((Long)user.getId());
+                List<UserDeveloperMapDTO> dtos = userDeveloperMapDAO.getByUserId(user.getId());
                 for (UserDeveloperMapDTO dto : dtos) {
                     developers.add(dto.getDeveloper());
                 }
@@ -177,7 +177,7 @@ public class ChplResourcePermissions implements ResourcePermissions {
                 //they just have permission on themselves
                 UserDTO thisUser = null;
                 try {
-                    thisUser = userDAO.getById((Long) user.getId());
+                    thisUser = userDAO.getById(user.getId());
                     users.add(thisUser);
                 } catch (UserRetrievalException ex) { }
             }
@@ -345,7 +345,7 @@ public class ChplResourcePermissions implements ResourcePermissions {
             return false;
         }
 
-        UserPermission role = getRoleByUser(getUserById((Long) user.getId()));
+        UserPermission role = getRoleByUser(getUserById(user.getId()));
         if (role == null) {
             return false;
         }

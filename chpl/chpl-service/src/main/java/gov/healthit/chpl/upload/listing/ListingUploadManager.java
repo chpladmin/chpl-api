@@ -256,7 +256,7 @@ public class ListingUploadManager {
             throws ValidationException, SchedulerException {
         UserDTO jobUser = null;
         try {
-            jobUser = userDao.getById((Long) AuthUtil.getCurrentUser().getId());
+            jobUser = userDao.getById(AuthUtil.getCurrentUser().getId());
         } catch (UserRetrievalException ex) {
             LOGGER.error("Could not find user to execute job.");
         }

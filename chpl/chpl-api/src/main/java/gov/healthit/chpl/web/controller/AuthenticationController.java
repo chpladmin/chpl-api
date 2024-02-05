@@ -138,7 +138,7 @@ public class AuthenticationController {
         }
 
         // get the current user
-        UserDTO currUser = userManager.getById((Long) AuthUtil.getCurrentUser().getId());
+        UserDTO currUser = userManager.getById(AuthUtil.getCurrentUser().getId());
         if (currUser == null) {
             throw new UserRetrievalException("The user with id " + AuthUtil.getCurrentUser().getId()
                     + " could not be found or the logged in user does not have permission to modify their data.");

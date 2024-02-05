@@ -12,7 +12,6 @@ import gov.healthit.chpl.dto.ApiKeyActivityDTO;
 import gov.healthit.chpl.entity.ApiKeyActivityEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.util.AuthUtil;
 
 @Repository("apiKeyActivityDAO")
 public class ApiKeyActivityDAO extends BaseDAOImpl {
@@ -59,13 +58,13 @@ public class ApiKeyActivityDAO extends BaseDAOImpl {
         entity.setApiCallPath(dto.getApiCallPath());
         entity.setApiCallMethod(dto.getApiCallMethod());
 
-        if (dto.getLastModifiedDate() != null) {
-            entity.setLastModifiedDate(dto.getLastModifiedDate());
-        } else {
-            entity.setLastModifiedDate(new Date());
-        }
+        //if (dto.getLastModifiedDate() != null) {
+        //    entity.setLastModifiedDate(dto.getLastModifiedDate());
+        //} else {
+         //   entity.setLastModifiedDate(new Date());
+        //}
         entity.setDeleted(dto.getDeleted());
-        entity.setLastModifiedUser(AuthUtil.getAuditId());
+        //entity.setLastModifiedUser(AuthUtil.getAuditId());
         update(entity);
 
         return new ApiKeyActivityDTO(entity);

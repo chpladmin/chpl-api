@@ -1,6 +1,5 @@
 package gov.healthit.chpl.standard;
 
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -10,7 +9,6 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.exception.EntityCreationException;
-import gov.healthit.chpl.util.AuthUtil;
 
 @Component
 public class CertificationResultStandardDAO extends BaseDAOImpl {
@@ -27,7 +25,7 @@ public class CertificationResultStandardDAO extends BaseDAOImpl {
             CertificationResultStandardEntity entity = new CertificationResultStandardEntity();
             entity.setCertificationResultId(certResultId);
             entity.setStandardId(standard.getStandard().getId());
-            entity.setLastModifiedUser(AuthUtil.getAuditId());
+            //entity.setLastModifiedUser(AuthUtil.getAuditId());
             create(entity);
             return entity.getId();
         } catch (Exception ex) {
@@ -39,10 +37,10 @@ public class CertificationResultStandardDAO extends BaseDAOImpl {
         CertificationResultStandardEntity mapping = new CertificationResultStandardEntity();
         mapping.setCertificationResultId(standard.getCertificationResultId());
         mapping.setStandardId(standard.getStandard().getId());
-        mapping.setCreationDate(new Date());
-        mapping.setDeleted(false);
-        mapping.setLastModifiedDate(new Date());
-        mapping.setLastModifiedUser(AuthUtil.getAuditId());
+        //mapping.setCreationDate(new Date());
+        //mapping.setDeleted(false);
+        //mapping.setLastModifiedDate(new Date());
+        //mapping.setLastModifiedUser(AuthUtil.getAuditId());
         create(mapping);
 
         return getCertificationResultStandardById(mapping.getId()).toDomain();
@@ -52,8 +50,8 @@ public class CertificationResultStandardDAO extends BaseDAOImpl {
         CertificationResultStandardEntity toDelete = getCertificationResultStandardById(mappingId);
         if (toDelete != null) {
             toDelete.setDeleted(true);
-            toDelete.setLastModifiedDate(new Date());
-            toDelete.setLastModifiedUser(AuthUtil.getAuditId());
+            //toDelete.setLastModifiedDate(new Date());
+            //toDelete.setLastModifiedUser(AuthUtil.getAuditId());
             entityManager.persist(toDelete);
             entityManager.flush();
         }
@@ -62,8 +60,8 @@ public class CertificationResultStandardDAO extends BaseDAOImpl {
     public CertificationResultStandard updateStandardMapping(Long certificationResultTestToolId, CertificationResultStandard certResultStandard) {
         CertificationResultStandardEntity mapping = getCertificationResultStandardById(certificationResultTestToolId);
 
-        mapping.setLastModifiedDate(new Date());
-        mapping.setLastModifiedUser(AuthUtil.getAuditId());
+        //mapping.setLastModifiedDate(new Date());
+        //mapping.setLastModifiedUser(AuthUtil.getAuditId());
         entityManager.merge(mapping);
         entityManager.flush();
 

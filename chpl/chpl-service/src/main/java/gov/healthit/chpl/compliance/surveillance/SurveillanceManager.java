@@ -226,7 +226,7 @@ public class SurveillanceManager extends SecuredManager {
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SURVEILLANCE, "
             + "T(gov.healthit.chpl.permissions.domains.SurveillanceDomainPermissions).ACTIVITY_REPORT)")
     public ChplOneTimeTrigger submitActivityReportRequest(LocalDate start, LocalDate end) throws ValidationException, UserRetrievalException {
-        UserDTO user = userDAO.getById((Long) AuthUtil.getCurrentUser().getId());
+        UserDTO user = userDAO.getById(AuthUtil.getCurrentUser().getId());
 
         ChplOneTimeTrigger surveillanceActivityReportTrigger = new ChplOneTimeTrigger();
         ChplJob surveillanceActivityReportJob = new ChplJob();

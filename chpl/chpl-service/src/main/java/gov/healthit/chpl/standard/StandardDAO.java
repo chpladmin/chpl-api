@@ -1,7 +1,6 @@
 package gov.healthit.chpl.standard;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,7 +22,6 @@ import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.entity.listing.CertificationResultEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.util.AuthUtil;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -94,8 +92,8 @@ public class StandardDAO extends BaseDAOImpl {
         }
 
         entity.setAdditionalInformation(standard.getAdditionalInformation());
-        entity.setLastModifiedUser(AuthUtil.getAuditId());
-        entity.setLastModifiedDate(new Date());
+        //entity.setLastModifiedUser(AuthUtil.getAuditId());
+        //entity.setLastModifiedDate(new Date());
 
         update(entity);
     }
@@ -115,8 +113,8 @@ public class StandardDAO extends BaseDAOImpl {
         try {
             StandardCriteriaMapEntity entity = getStandardCriteriaMapByStandardAndCriterion(standard.getId(), criterion.getId());
             entity.setDeleted(true);
-            entity.setLastModifiedDate(new Date());
-            entity.setLastModifiedUser(AuthUtil.getAuditId());
+            //entity.setLastModifiedDate(new Date());
+            //entity.setLastModifiedUser(AuthUtil.getAuditId());
 
             update(entity);
         } catch (EntityRetrievalException e) {
@@ -134,8 +132,8 @@ public class StandardDAO extends BaseDAOImpl {
     public void remove(Standard standard) throws EntityRetrievalException {
         StandardEntity entity = getEntityById(standard.getId());
         entity.setDeleted(true);
-        entity.setLastModifiedUser(AuthUtil.getAuditId());
-        entity.setLastModifiedDate(new Date());
+        //entity.setLastModifiedUser(AuthUtil.getAuditId());
+        //entity.setLastModifiedDate(new Date());
         update(entity);
     }
 
