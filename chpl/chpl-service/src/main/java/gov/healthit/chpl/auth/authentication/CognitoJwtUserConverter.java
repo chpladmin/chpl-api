@@ -4,6 +4,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.beans.factory.annotation.Value;
 
 import com.auth0.jwt.JWT;
@@ -14,8 +15,8 @@ import com.auth0.jwt.interfaces.RSAKeyProvider;
 
 import gov.healthit.chpl.auth.jwt.CognitoRsaKeyProvider;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
-import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.auth.user.AuthenticationSystem;
+import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.exception.JWTValidationException;
 import gov.healthit.chpl.exception.MultipleUserAccountsException;
 import lombok.extern.log4j.Log4j2;
@@ -75,7 +76,6 @@ public class CognitoJwtUserConverter implements JWTUserConverter {
 
     @Override
     public JWTAuthenticatedUser getImpersonatingUser(String jwt) throws JWTValidationException {
-        // TODO Auto-generated method stub
-        return null;
+        throw new NotImplementedException("CognitoJwtUserConverter.getImpersonatingUser() has not been implemented.");
     }
 }
