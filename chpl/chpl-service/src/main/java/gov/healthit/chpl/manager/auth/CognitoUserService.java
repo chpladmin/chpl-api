@@ -81,16 +81,12 @@ public class CognitoUserService {
 
         try {
             AdminInitiateAuthResponse authResult = cognitoClient.adminInitiateAuth(authRequest);
-
             AuthenticationResultType resultType = authResult.authenticationResult();
-
-            LOGGER.info("Access Token: {}", resultType.accessToken());
-            LOGGER.info("ID Token: {}", resultType.idToken());
-            LOGGER.info("Refresh Token: {}", resultType.refreshToken());
-
             return resultType.idToken();
         } catch (Exception e) {
-            LOGGER.error("Authentication error: {}", e.getMessage(), e);
+            //This is cluttering the logs when the SSO flag is on, and the user logs in using CHPL creds
+            //We might want to uncomment it when we move to only using Cognito creds
+            //LOGGER.error("Authentication error: {}", e.getMessage(), e);
             return null;
         }
     }

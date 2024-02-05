@@ -92,8 +92,6 @@ public class StandardDAO extends BaseDAOImpl {
         }
 
         entity.setAdditionalInformation(standard.getAdditionalInformation());
-        //entity.setLastModifiedUser(AuthUtil.getAuditId());
-        //entity.setLastModifiedDate(new Date());
 
         update(entity);
     }
@@ -113,9 +111,6 @@ public class StandardDAO extends BaseDAOImpl {
         try {
             StandardCriteriaMapEntity entity = getStandardCriteriaMapByStandardAndCriterion(standard.getId(), criterion.getId());
             entity.setDeleted(true);
-            //entity.setLastModifiedDate(new Date());
-            //entity.setLastModifiedUser(AuthUtil.getAuditId());
-
             update(entity);
         } catch (EntityRetrievalException e) {
             LOGGER.catching(e);
@@ -132,8 +127,6 @@ public class StandardDAO extends BaseDAOImpl {
     public void remove(Standard standard) throws EntityRetrievalException {
         StandardEntity entity = getEntityById(standard.getId());
         entity.setDeleted(true);
-        //entity.setLastModifiedUser(AuthUtil.getAuditId());
-        //entity.setLastModifiedDate(new Date());
         update(entity);
     }
 

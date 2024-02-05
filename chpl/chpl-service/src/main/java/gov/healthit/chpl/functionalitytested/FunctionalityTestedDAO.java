@@ -72,10 +72,6 @@ public class FunctionalityTestedDAO extends BaseDAOImpl {
                 .practiceType(functionalityTested.getPracticeType() != null && functionalityTested.getPracticeType().getId() != null
                         ? getPracticeTypeEntity(functionalityTested.getPracticeType().getId())
                         : null)
-                //.creationDate(new Date())
-                //.lastModifiedDate(new Date())
-                //.lastModifiedUser(AuthUtil.getAuditId())
-                //.deleted(false)
                 .build();
 
         create(entity);
@@ -110,8 +106,6 @@ public class FunctionalityTestedDAO extends BaseDAOImpl {
             entity.setPracticeType(null);
         }
         entity.setAdditionalInformation(functionalityTested.getAdditionalInformation());
-        //entity.setLastModifiedUser(AuthUtil.getAuditId());
-        //entity.setLastModifiedDate(new Date());
 
         update(entity);
     }
@@ -121,10 +115,6 @@ public class FunctionalityTestedDAO extends BaseDAOImpl {
         FunctionalityTestedCriteriaMapEntity entity = FunctionalityTestedCriteriaMapEntity.builder()
                 .certificationCriterionId(criterion.getId())
                 .functionalityTestedId(functionalityTested.getId())
-                //.creationDate(new Date())
-                //.lastModifiedDate(new Date())
-                //.lastModifiedUser(AuthUtil.getAuditId())
-                //.deleted(false)
                 .build();
 
         create(entity);
@@ -135,8 +125,6 @@ public class FunctionalityTestedDAO extends BaseDAOImpl {
         try {
             FunctionalityTestedCriteriaMapEntity entity = getFunctionalityTestedCriteriaMapByFunctionalityTestedAndCriterion(functionalityTested.getId(), criterion.getId());
             entity.setDeleted(true);
-            //entity.setLastModifiedDate(new Date());
-            //entity.setLastModifiedUser(AuthUtil.getAuditId());
 
             update(entity);
         } catch (EntityRetrievalException e) {
@@ -154,8 +142,6 @@ public class FunctionalityTestedDAO extends BaseDAOImpl {
     public void remove(FunctionalityTested functionalityTested) throws EntityRetrievalException {
         FunctionalityTestedEntity entity = getEntityById(functionalityTested.getId());
         entity.setDeleted(true);
-        //entity.setLastModifiedUser(AuthUtil.getAuditId());
-        //entity.setLastModifiedDate(new Date());
         update(entity);
     }
 
