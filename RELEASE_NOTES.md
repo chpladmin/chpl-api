@@ -1,5 +1,20 @@
 # Release Notes
 
+## Version 43.3.0
+_5 February 2024_
+
+### Features
+* Create new report for listings that need to be updated for HTI-1
+* Require ONC-ACB to enter at least one Standard per Standards 'group'
+* Remove erd-phase-2-grace-period-end, erd-phase-3 flags
+* Remove all references to d14 criterion
+* Clean up Summary Statistics report
+
+### Bug Fixes
+* Make all fields of CertifiedProductSearchDetails Serializable
+
+---
+
 ## Version 43.2.0
 _23 January 2024_
 
