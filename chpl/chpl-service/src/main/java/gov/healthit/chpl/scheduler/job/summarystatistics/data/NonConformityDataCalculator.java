@@ -15,12 +15,11 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.compliance.surveillance.entity.SurveillanceEntity;
 import gov.healthit.chpl.compliance.surveillance.entity.SurveillanceNonconformityEntity;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
-import gov.healthit.chpl.dao.statistics.SurveillanceStatisticsDAO;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 
 @Component
-public class NonConformityDataCreator {
+public class NonConformityDataCalculator {
     private static final Logger LOGGER = LogManager.getLogger("summaryStatisticsCreatorJobLogger");
     private static final Long NONCONFORMITY_SURVEILLANCE_RESULT = 1L;
 
@@ -28,7 +27,7 @@ public class NonConformityDataCreator {
     private CertificationBodyDAO certificationBodyDAO;
 
     @Autowired
-    public NonConformityDataCreator(SurveillanceStatisticsDAO surveillanceStatisticsDAO,
+    public NonConformityDataCalculator(SurveillanceStatisticsDAO surveillanceStatisticsDAO,
             CertificationBodyDAO certificationBodyDAO) {
         this.surveillanceStatisticsDAO = surveillanceStatisticsDAO;
         this.certificationBodyDAO = certificationBodyDAO;
@@ -42,14 +41,14 @@ public class NonConformityDataCreator {
         return surveillanceStatisticsDAO.getTotalClosedNonconformities(null);
     }
 
-    public EmailStatistic getTotalOpenNonconformities() {
-        EmailStatistic totalOpen = new EmailStatistic();
+    public Statistic getTotalOpenNonconformities() {
+        Statistic totalOpen = new Statistic();
         totalOpen.setCount(surveillanceStatisticsDAO.getTotalOpenNonconformities(null));
         totalOpen.setAcbStatistics(getTotalOpenNonconformitiesByAcb());
         return totalOpen;
     }
 
-    private List<EmailCertificationBodyStatistic> getTotalOpenNonconformitiesByAcb() {
+    private List<CertificationBodyStatistic> getTotalOpenNonconformitiesByAcb() {
         return surveillanceStatisticsDAO.getTotalOpenNonconformitiesByAcb(null);
     }
 
@@ -161,7 +160,7 @@ public class NonConformityDataCreator {
         return totalDuration / surveillances.size();
     }
 
-    public List<EmailCertificationBodyStatistic> getOpenCAPCountByAcb() {
+    public List<CertificationBodyStatistic> getOpenCAPCountByAcb() {
         List<SurveillanceEntity> surveillances = surveillanceStatisticsDAO.getAllSurveillancesWithNonconformities();
 
         Map<String, Long> openCapsByAcb = surveillances.stream()
@@ -178,7 +177,7 @@ public class NonConformityDataCreator {
 
         return openCapsByAcb.entrySet().stream()
                 .map(entry -> {
-                    EmailCertificationBodyStatistic stat = new EmailCertificationBodyStatistic();
+                    CertificationBodyStatistic stat = new CertificationBodyStatistic();
                     stat.setAcbName(entry.getKey());
                     stat.setCount(entry.getValue());
                     return stat;
@@ -186,7 +185,7 @@ public class NonConformityDataCreator {
                 .collect(Collectors.toList());
     }
 
-    public List<EmailCertificationBodyStatistic> getClosedCAPCountByAcb() {
+    public List<CertificationBodyStatistic> getClosedCAPCountByAcb() {
         List<SurveillanceEntity> surveillances = surveillanceStatisticsDAO.getAllSurveillancesWithNonconformities();
 
         Map<String, Long> closedCapsByAcb = surveillances.stream()
@@ -203,7 +202,7 @@ public class NonConformityDataCreator {
 
         return closedCapsByAcb.entrySet().stream()
                 .map(entry -> {
-                    EmailCertificationBodyStatistic stat = new EmailCertificationBodyStatistic();
+                    CertificationBodyStatistic stat = new CertificationBodyStatistic();
                     stat.setAcbName(entry.getKey());
                     stat.setCount(entry.getValue());
                     return stat;

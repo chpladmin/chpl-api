@@ -1,5 +1,6 @@
 package gov.healthit.chpl.domain.surveillance;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 
 import org.apache.commons.lang3.StringUtils;
@@ -27,7 +28,8 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class RequirementType {
+public class RequirementType implements Serializable {
+    private static final long serialVersionUID = 3003348811882599136L;
     private Long id;
     private String number;
     private String title;

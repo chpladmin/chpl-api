@@ -1,6 +1,7 @@
 package gov.healthit.chpl.standard;
 
 import java.io.Serializable;
+import java.util.Date;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -30,6 +31,9 @@ public class CertificationResultStandard implements Serializable {
 
     @JsonIgnore
     private Long certificationResultId;
+
+    @JsonIgnore
+    private Date creationDate;
 
     public boolean matches(CertificationResultStandard anotherStandard) {
         boolean result = false;
