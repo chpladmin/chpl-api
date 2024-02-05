@@ -79,8 +79,6 @@ public class QuestionableActivityDAO extends BaseDAOImpl {
         toCreate.setAfter(qa.getAfter());
         toCreate.setTriggerId(qa.getTrigger().getId());
         toCreate.setUserId(qa.getUserId());
-        //toCreate.setDeleted(false);
-        //toCreate.setLastModifiedUser(AuthUtil.getAuditId());
         entityManager.persist(toCreate);
         entityManager.flush();
         entityManager.clear();

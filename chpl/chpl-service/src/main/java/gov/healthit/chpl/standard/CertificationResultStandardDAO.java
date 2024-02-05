@@ -25,7 +25,6 @@ public class CertificationResultStandardDAO extends BaseDAOImpl {
             CertificationResultStandardEntity entity = new CertificationResultStandardEntity();
             entity.setCertificationResultId(certResultId);
             entity.setStandardId(standard.getStandard().getId());
-            //entity.setLastModifiedUser(AuthUtil.getAuditId());
             create(entity);
             return entity.getId();
         } catch (Exception ex) {
@@ -37,10 +36,6 @@ public class CertificationResultStandardDAO extends BaseDAOImpl {
         CertificationResultStandardEntity mapping = new CertificationResultStandardEntity();
         mapping.setCertificationResultId(standard.getCertificationResultId());
         mapping.setStandardId(standard.getStandard().getId());
-        //mapping.setCreationDate(new Date());
-        //mapping.setDeleted(false);
-        //mapping.setLastModifiedDate(new Date());
-        //mapping.setLastModifiedUser(AuthUtil.getAuditId());
         create(mapping);
 
         return getCertificationResultStandardById(mapping.getId()).toDomain();
@@ -50,8 +45,6 @@ public class CertificationResultStandardDAO extends BaseDAOImpl {
         CertificationResultStandardEntity toDelete = getCertificationResultStandardById(mappingId);
         if (toDelete != null) {
             toDelete.setDeleted(true);
-            //toDelete.setLastModifiedDate(new Date());
-            //toDelete.setLastModifiedUser(AuthUtil.getAuditId());
             entityManager.persist(toDelete);
             entityManager.flush();
         }
@@ -60,8 +53,6 @@ public class CertificationResultStandardDAO extends BaseDAOImpl {
     public CertificationResultStandard updateStandardMapping(Long certificationResultTestToolId, CertificationResultStandard certResultStandard) {
         CertificationResultStandardEntity mapping = getCertificationResultStandardById(certificationResultTestToolId);
 
-        //mapping.setLastModifiedDate(new Date());
-        //mapping.setLastModifiedUser(AuthUtil.getAuditId());
         entityManager.merge(mapping);
         entityManager.flush();
 

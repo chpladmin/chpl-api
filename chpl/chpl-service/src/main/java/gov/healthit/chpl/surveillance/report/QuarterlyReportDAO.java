@@ -290,7 +290,6 @@ public class QuarterlyReportDAO extends BaseDAOImpl {
         toUpdateEntity.setPrioritizedElementSummary(toUpdate.getPrioritizedElementSummary());
         toUpdateEntity.setReactiveSurveillanceSummary(toUpdate.getReactiveSurveillanceSummary());
         toUpdateEntity.setDisclosureRequirementsSummary(toUpdate.getDisclosureRequirementsSummary());
-        //toUpdateEntity.setLastModifiedUser(AuthUtil.getAuditId());
 
         super.update(toUpdateEntity);
         return getById(toUpdateEntity.getId());

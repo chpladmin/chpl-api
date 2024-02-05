@@ -1,5 +1,6 @@
 package gov.healthit.chpl.auth.authentication;
 
+import org.apache.commons.lang3.NotImplementedException;
 import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -50,16 +51,6 @@ public class JWTUserConverterFacade implements JWTUserConverter {
 
     @Override
     public JWTAuthenticatedUser getImpersonatingUser(String jwt) throws JWTValidationException {
-        // TODO Auto-generated method stub
-        return null;
+        throw new NotImplementedException("CognitoJwtUserConverter.getImpersonatingUser() has not been implemented.");
     }
-
-//    public JWTUserConverter get() {
-//        if (ff4j.check(FeatureList.SSO)) {
-//            return cognitoJwtUserConverter;
-//        } else {
-//            return chplJwtUserConverter;
-//        }
-//    }
-
 }

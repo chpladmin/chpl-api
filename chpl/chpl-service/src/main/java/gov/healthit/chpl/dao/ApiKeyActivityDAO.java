@@ -57,14 +57,7 @@ public class ApiKeyActivityDAO extends BaseDAOImpl {
         entity.setApiKeyId(dto.getApiKeyId());
         entity.setApiCallPath(dto.getApiCallPath());
         entity.setApiCallMethod(dto.getApiCallMethod());
-
-        //if (dto.getLastModifiedDate() != null) {
-        //    entity.setLastModifiedDate(dto.getLastModifiedDate());
-        //} else {
-         //   entity.setLastModifiedDate(new Date());
-        //}
         entity.setDeleted(dto.getDeleted());
-        //entity.setLastModifiedUser(AuthUtil.getAuditId());
         update(entity);
 
         return new ApiKeyActivityDTO(entity);
