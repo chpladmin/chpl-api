@@ -1,5 +1,6 @@
 package gov.healthit.chpl.domain.comparator;
 
+import java.io.Serializable;
 import java.util.Comparator;
 
 import org.apache.commons.lang3.builder.CompareToBuilder;
@@ -8,7 +9,9 @@ import gov.healthit.chpl.domain.CertificationResultTestProcedure;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
-public class CertificationResultTestProcedureComparator implements Comparator<CertificationResultTestProcedure> {
+public class CertificationResultTestProcedureComparator implements Serializable, Comparator<CertificationResultTestProcedure> {
+
+    private static final long serialVersionUID = -6676127524757668890L;
 
     @Override
     public int compare(CertificationResultTestProcedure tp1, CertificationResultTestProcedure tp2) {

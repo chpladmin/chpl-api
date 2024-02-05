@@ -1,22 +1,16 @@
 package gov.healthit.chpl.scheduler.job.summarystatistics.data;
 
-public abstract class Statistic {
-    private Integer year;
-    private String name;
+import java.io.Serializable;
+import java.util.List;
 
-    public Integer getYear() {
-        return year;
-    };
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-    public void setYear(final Integer year) {
-        this.year = year;
-    }
+@Data
+@NoArgsConstructor
+public class Statistic implements Serializable {
+    private static final long serialVersionUID = -7970681451007161298L;
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(final String name) {
-        this.name = name;
-    }
+    private Long count;
+    private List<CertificationBodyStatistic> acbStatistics;
 }

@@ -62,6 +62,7 @@ public class StandardDAO extends BaseDAOImpl {
                 .rule(standard.getRule() != null && standard.getRule().getId() != null
                         ? ruleDAO.getRuleEntityById(standard.getRule().getId())
                         : null)
+                .groupName(standard.getGroupName())
                 .build();
 
         create(entity);
@@ -92,7 +93,7 @@ public class StandardDAO extends BaseDAOImpl {
         }
 
         entity.setAdditionalInformation(standard.getAdditionalInformation());
-
+        entity.setGroupName(standard.getGroupName());
         update(entity);
     }
 

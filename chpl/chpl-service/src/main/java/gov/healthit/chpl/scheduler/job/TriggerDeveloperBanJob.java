@@ -17,15 +17,16 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
+import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
 import gov.healthit.chpl.compliance.directreview.DirectReviewSearchService;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
 import gov.healthit.chpl.email.footer.AdminFooter;
 import gov.healthit.chpl.exception.EmailNotSentException;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.search.ListingSearchService;
-import gov.healthit.chpl.search.domain.ListingSearchResult;
 import gov.healthit.chpl.util.Util;
 import lombok.extern.log4j.Log4j2;
 
@@ -33,12 +34,15 @@ import lombok.extern.log4j.Log4j2;
 public class TriggerDeveloperBanJob implements Job {
     public static final String JOB_NAME = "Trigger Developer Ban Notification";
     public static final String USER = "user";
-    public static final String UPDATED_LISTING = "listing";
+    public static final String LISTING_ID = "listingId";
     public static final String CHANGE_DATE = "changeDate";
     public static final String USER_PROVIDED_REASON = "reason";
 
     @Autowired
-    private ListingSearchService searchService;
+    private CertifiedProductDetailsManager cpdManager;
+
+    @Autowired
+    private ListingSearchService listingSearchService;
 
     @Autowired
     private DirectReviewSearchService drSearchService;
@@ -70,8 +74,9 @@ public class TriggerDeveloperBanJob implements Job {
     @Value("${contact.publicUrl}")
     private String publicFeedbackUrl;
 
-    private CertifiedProductSearchDetails updatedListing;
     private JWTAuthenticatedUser userPerformingAction;
+    private Long listingId;
+    private CertifiedProductSearchDetails listing;
     private Date listingChangeDate;
     private String userProvidedReason;
 
@@ -81,8 +86,16 @@ public class TriggerDeveloperBanJob implements Job {
         LOGGER.info("********* Starting the Trigger Developer Ban job. *********");
 
         setJobDataFromMap(jobContext.getMergedJobDataMap());
-        String[] recipients = jobContext.getMergedJobDataMap().getString("email").split(",");
-        LOGGER.info("Intended recipients are: " + recipients);
+        String recipientEmails = jobContext.getMergedJobDataMap().getString("email");
+        LOGGER.info("Intended job recipients are: " + recipientEmails);
+        String[] recipients = null;
+        if (!StringUtils.isEmpty(recipientEmails)) {
+            recipients = recipientEmails.split(",");
+            LOGGER.info("Parsed " + recipients.length + " job recipients from job data.");
+        } else {
+            LOGGER.error("No recipients are defined for the Trigger Developer Ban Job!");
+            recipients = new String[0];
+        }
 
         try {
             sendEmails(jobContext, recipients);
@@ -93,14 +106,24 @@ public class TriggerDeveloperBanJob implements Job {
     }
 
     private void setJobDataFromMap(JobDataMap jobDataMap) {
-        updatedListing = (CertifiedProductSearchDetails) jobDataMap.get(UPDATED_LISTING);
+        listingId = (Long) jobDataMap.get(LISTING_ID);
+        try {
+            listing = cpdManager.getCertifiedProductDetailsNoCache(listingId);
+            if (listing == null) {
+                throw new EntityRetrievalException();
+            }
+        } catch (EntityRetrievalException ex) {
+            LOGGER.error("No listing found with ID " + listingId + ". Job cannot proceed.");
+            throw new RuntimeException();
+        }
+
         userPerformingAction = (JWTAuthenticatedUser) jobDataMap.get(USER);
         listingChangeDate = new Date(jobDataMap.getLong(CHANGE_DATE));
         userProvidedReason = jobDataMap.getString(USER_PROVIDED_REASON);
     }
 
     private void sendEmails(JobExecutionContext jobContext, String[] recipients) throws IOException {
-        String subject = String.format(emailSubject, updatedListing.getCurrentStatus().getStatus().getName());
+        String subject = String.format(emailSubject, listing.getCurrentStatus().getStatus().getName());
         String htmlMessage = createHtmlEmailBody();
 
         List<String> emailAddresses = Arrays.asList(recipients);
@@ -119,8 +142,8 @@ public class TriggerDeveloperBanJob implements Job {
 
     private void sendEmail(String recipientEmail, String subject, String htmlMessage)
             throws EmailNotSentException {
-        LOGGER.info("Sending email to: " + recipientEmail + " about listing " + updatedListing.getChplProductNumber()
-            + (" (ID: " + updatedListing.getId() + ")"));
+        LOGGER.info("Sending email to: " + recipientEmail + " about listing " + listing.getChplProductNumber()
+            + (" (ID: " + listing.getId() + ")"));
         chplEmailFactory.emailBuilder()
                 .recipient(recipientEmail)
                 .subject(subject)
@@ -129,7 +152,7 @@ public class TriggerDeveloperBanJob implements Job {
     }
 
     private String createHtmlEmailBody() {
-        String reasonForStatusChange = updatedListing.getCurrentStatus().getReason();
+        String reasonForStatusChange = listing.getCurrentStatus().getReason();
         if (StringUtils.isEmpty(reasonForStatusChange)) {
             reasonForStatusChange = "<strong>ONC-ACB provided reason for status change:</strong> This field is blank";
         } else {
@@ -143,29 +166,28 @@ public class TriggerDeveloperBanJob implements Job {
             reasonForListingChange = "<strong>ONC-ACB provided reason for listing change:</strong> \""
                     + reasonForListingChange + "\"";
         }
-        int openSurveillanceNcs = updatedListing.getCountOpenNonconformities();
-        int closedSurveillanceNcs = updatedListing.getCountClosedNonconformities();
-        int openDirectReviewNcs = 0;
-        int closedDirectReviewNcs = 0;
+        long openSurveillanceNcs = 0, closedSurveillanceNcs = 0;
+        int openDirectReviewNcs = 0, closedDirectReviewNcs = 0;
         try {
-            ListingSearchResult listingSearchResult = searchService.findListing(updatedListing.getId());
-            openDirectReviewNcs = listingSearchResult.getOpenDirectReviewNonConformityCount();
-            closedDirectReviewNcs = listingSearchResult.getClosedDirectReviewNonConformityCount();
+            openDirectReviewNcs = listingSearchService.findListing(listingId).getOpenDirectReviewNonConformityCount();
+            closedDirectReviewNcs = listingSearchService.findListing(listingId).getClosedDirectReviewNonConformityCount();
+            openSurveillanceNcs = listing.getCountOpenNonconformities();
+            closedSurveillanceNcs = listing.getCountClosedNonconformities();
         } catch (InvalidArgumentsException ex) {
-            LOGGER.error("No listing was found with the ID " + updatedListing.getId() + " from the ListingSearchService. The direct review non-conformity counts are unknown.");
+            LOGGER.error("No listing was found with the ID " + listing.getId() + " from the ListingSearchService. The direct review non-conformity counts are unknown.");
         }
 
         String htmlMessage = String.format(emailBody,
                 chplUrlBegin,
                 listingDetailsUrl,
-                updatedListing.getId(), // for URL to product page
-                updatedListing.getChplProductNumber(), // visible link
-                updatedListing.getDeveloper().getName(),
-                MapUtils.getString(updatedListing.getCertifyingBody(), CertifiedProductSearchDetails.ACB_NAME_KEY),
+                listing.getId(), // for URL to product page
+                listing.getChplProductNumber(), // visible link
+                listing.getDeveloper().getName(),
+                MapUtils.getString(listing.getCertifyingBody(), CertifiedProductSearchDetails.ACB_NAME_KEY),
                 Util.getDateFormatter().format(listingChangeDate), // date of change
                 userPerformingAction.getFullName(),
-                updatedListing.getCurrentStatus().getStatus().getName(), // target status
-                Util.getDateFormatter().format(new Date(updatedListing.getCurrentStatus().getEventDate())),
+                listing.getCurrentStatus().getStatus().getName(), // target status
+                Util.getDateFormatter().format(new Date(listing.getCurrentStatus().getEventDate())),
                 reasonForStatusChange, // reason for change
                 reasonForListingChange, // reason for change
                 (openSurveillanceNcs != 1 ? "were" : "was"), openSurveillanceNcs, (openSurveillanceNcs != 1 ? "ies" : "y"), // formatted counts of open

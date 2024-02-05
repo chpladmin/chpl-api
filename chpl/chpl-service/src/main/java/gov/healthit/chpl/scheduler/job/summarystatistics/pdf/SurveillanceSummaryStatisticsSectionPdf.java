@@ -10,8 +10,8 @@ import org.springframework.stereotype.Component;
 import com.itextpdf.layout.element.Table;
 
 import gov.healthit.chpl.dao.CertificationBodyDAO;
-import gov.healthit.chpl.scheduler.job.summarystatistics.data.EmailCertificationBodyStatistic;
-import gov.healthit.chpl.scheduler.job.summarystatistics.data.EmailStatistics;
+import gov.healthit.chpl.scheduler.job.summarystatistics.data.CertificationBodyStatistic;
+import gov.healthit.chpl.scheduler.job.summarystatistics.data.StatisticsSnapshot;
 
 @Component
 public class SurveillanceSummaryStatisticsSectionPdf extends SummaryStatisticsSectionPdf {
@@ -22,111 +22,126 @@ public class SurveillanceSummaryStatisticsSectionPdf extends SummaryStatisticsSe
     }
 
     @Override
-    public Table generateTable(LocalDate recent, LocalDate previous, EmailStatistics recentEmailStatistics, EmailStatistics previousEmailStatistics) {
+    public Table generateTable(LocalDate currSnapshotDate, LocalDate prevSnapshotDate, StatisticsSnapshot currSnapshot, StatisticsSnapshot prevSnapshot) {
         Table table = new Table(getRelativeColumnWidths());
         table.useAllAvailableWidth();
-        table = addHeaders(table, "Surveillance Statistics", recent, previous);
+        table = addHeaders(table, "Surveillance Statistics", currSnapshotDate, prevSnapshotDate);
         table = addTableRow(table, createDataForRow("1. Total # of Surveillance Activities",
-                                    recentEmailStatistics.getSurveillanceAllStatusTotal(),
-                                    previousEmailStatistics.getSurveillanceAllStatusTotal()), true);
+                    currSnapshot == null ? null : currSnapshot.getSurveillanceAllStatusTotal(),
+                    prevSnapshot == null ? null : prevSnapshot.getSurveillanceAllStatusTotal()),
+                    true);
 
         table = addTableRow(table, createDataForRow("a. Open Surveillance Activities",
-                recentEmailStatistics.getSurveillanceOpenStatus().getCount(),
-                previousEmailStatistics.getSurveillanceOpenStatus().getCount()),
-                NUMBER_OF_INDENTS_SUMMARY_LEVEL_STAT, true);
+                    currSnapshot == null ? null : currSnapshot.getSurveillanceOpenStatus().getCount(),
+                    prevSnapshot == null ? null : prevSnapshot.getSurveillanceOpenStatus().getCount()),
+                    NUMBER_OF_INDENTS_SUMMARY_LEVEL_STAT,
+                    true);
 
         table = addAcbRows(table,
-                recentEmailStatistics.getSurveillanceOpenStatus().getAcbStatistics(),
-                previousEmailStatistics.getSurveillanceOpenStatus().getAcbStatistics());
+                    currSnapshot == null ? null : currSnapshot.getSurveillanceOpenStatus().getAcbStatistics(),
+                    prevSnapshot == null ? null : prevSnapshot.getSurveillanceOpenStatus().getAcbStatistics());
 
         table = addTableRow(table, createDataForRow("b. Closed Surveillance Activities",
-                recentEmailStatistics.getSurveillanceClosedStatusTotal(),
-                previousEmailStatistics.getSurveillanceClosedStatusTotal()),
-                NUMBER_OF_INDENTS_SUMMARY_LEVEL_STAT, true);
+                    currSnapshot == null ? null : currSnapshot.getSurveillanceClosedStatusTotal(),
+                    prevSnapshot == null ? null : prevSnapshot.getSurveillanceClosedStatusTotal()),
+                    NUMBER_OF_INDENTS_SUMMARY_LEVEL_STAT,
+                    true);
 
         table = addTableRow(table, createDataForRow("c. Average Duration of Closed Surveillance (in days)",
-                recentEmailStatistics.getSurveillanceAvgTimeToClose(),
-                previousEmailStatistics.getSurveillanceAvgTimeToClose()),
-                NUMBER_OF_INDENTS_SUMMARY_LEVEL_STAT, true);
+                    currSnapshot == null ? null : currSnapshot.getSurveillanceAvgTimeToClose(),
+                    prevSnapshot == null ? null : prevSnapshot.getSurveillanceAvgTimeToClose()),
+                    NUMBER_OF_INDENTS_SUMMARY_LEVEL_STAT,
+                    true);
 
         table = addTableRow(table, createDataForRow("2. Total # of Surveillance Non-conformities",
-                recentEmailStatistics.getNonconfStatusAllTotal(),
-                previousEmailStatistics.getNonconfStatusAllTotal()), true);
+                    currSnapshot == null ? null : currSnapshot.getNonConfStatusAllTotal(),
+                    prevSnapshot == null ? null : prevSnapshot.getNonConfStatusAllTotal()),
+                true);
 
         table = addTableRow(table, createDataForRow("a. Open NCs",
-                recentEmailStatistics.getNonconfStatusOpen().getCount(),
-                previousEmailStatistics.getNonconfStatusOpen().getCount()),
-                NUMBER_OF_INDENTS_SUMMARY_LEVEL_STAT, true);
+                    currSnapshot == null ? null : currSnapshot.getNonConfStatusOpen().getCount(),
+                    prevSnapshot == null ? null : prevSnapshot.getNonConfStatusOpen().getCount()),
+                    NUMBER_OF_INDENTS_SUMMARY_LEVEL_STAT,
+                    true);
 
         table = addAcbRows(table,
-                recentEmailStatistics.getNonconfStatusOpen().getAcbStatistics(),
-                previousEmailStatistics.getNonconfStatusOpen().getAcbStatistics());
+                    currSnapshot == null ? null : currSnapshot.getNonConfStatusOpen().getAcbStatistics(),
+                    prevSnapshot == null ? null : prevSnapshot.getNonConfStatusOpen().getAcbStatistics());
 
         table = addTableRow(table, createDataForRow("b. Closed NCs",
-                recentEmailStatistics.getNonconfStatusClosedTotal(),
-                previousEmailStatistics.getNonconfStatusClosedTotal()),
-                NUMBER_OF_INDENTS_SUMMARY_LEVEL_STAT, true);
+                    currSnapshot == null ? null : currSnapshot.getNonConfStatusClosedTotal(),
+                    prevSnapshot == null ? null : prevSnapshot.getNonConfStatusClosedTotal()),
+                    NUMBER_OF_INDENTS_SUMMARY_LEVEL_STAT,
+                    true);
 
         table = addTableRow(table, createDataForRow("c. Average Time to Assess Conformity (in days)",
-                recentEmailStatistics.getNonconfAvgTimeToAssessConformity(),
-                previousEmailStatistics.getNonconfAvgTimeToAssessConformity()),
-                NUMBER_OF_INDENTS_SUMMARY_LEVEL_STAT, true);
+                    currSnapshot == null ? null : currSnapshot.getNonConfAvgTimeToAssessConformity(),
+                    prevSnapshot == null ? null : prevSnapshot.getNonConfAvgTimeToAssessConformity()),
+                    NUMBER_OF_INDENTS_SUMMARY_LEVEL_STAT,
+                    true);
 
         table = addTableRow(table, createDataForRow("d. Average Time to Approve CAP (in days)",
-                recentEmailStatistics.getNonconfAvgTimeToApproveCAP(),
-                previousEmailStatistics.getNonconfAvgTimeToApproveCAP()),
-                NUMBER_OF_INDENTS_SUMMARY_LEVEL_STAT, true);
+                    currSnapshot == null ? null : currSnapshot.getNonConfAvgTimeToApproveCAP(),
+                    prevSnapshot == null ? null : prevSnapshot.getNonConfAvgTimeToApproveCAP()),
+                    NUMBER_OF_INDENTS_SUMMARY_LEVEL_STAT,
+                    true);
 
         table = addTableRow(table, createDataForRow("e. Average Duration of CAP (in days) (includes closed and ongoing CAPs)",
-                recentEmailStatistics.getNonconfAvgDurationOfCAP(),
-                previousEmailStatistics.getNonconfAvgDurationOfCAP()),
-                NUMBER_OF_INDENTS_SUMMARY_LEVEL_STAT, true);
+                    currSnapshot == null ? null : currSnapshot.getNonConfAvgDurationOfCAP(),
+                    prevSnapshot == null ? null : prevSnapshot.getNonConfAvgDurationOfCAP()),
+                    NUMBER_OF_INDENTS_SUMMARY_LEVEL_STAT,
+                    true);
 
         table = addTableRow(table, createDataForRow("f. Average Time from CAP Approval to Surveillance Close (in days)",
-                recentEmailStatistics.getNonconfAvgTimeFromCAPAprrovalToSurveillanceEnd(),
-                previousEmailStatistics.getNonconfAvgTimeFromCAPAprrovalToSurveillanceEnd()),
-                NUMBER_OF_INDENTS_SUMMARY_LEVEL_STAT, true);
+                    currSnapshot == null ? null : currSnapshot.getNonConfAvgTimeFromCAPAprrovalToSurveillanceEnd(),
+                    prevSnapshot == null ? null : prevSnapshot.getNonConfAvgTimeFromCAPAprrovalToSurveillanceEnd()),
+                    NUMBER_OF_INDENTS_SUMMARY_LEVEL_STAT,
+                    true);
 
         table = addTableRow(table, createDataForRow("g. Average Time from CAP Close to Surveillance Close (in days)",
-                recentEmailStatistics.getNonconfAvgTimeFromCAPEndToSurveillanceEnd(),
-                previousEmailStatistics.getNonconfAvgTimeFromCAPEndToSurveillanceEnd()),
-                NUMBER_OF_INDENTS_SUMMARY_LEVEL_STAT, true);
+                    currSnapshot == null ? null : currSnapshot.getNonConfAvgTimeFromCAPEndToSurveillanceEnd(),
+                    prevSnapshot == null ? null : prevSnapshot.getNonConfAvgTimeFromCAPEndToSurveillanceEnd()),
+                    NUMBER_OF_INDENTS_SUMMARY_LEVEL_STAT,
+                    true);
 
         table = addTableRow(table, createDataForRow("h. Average Duration of Closed Non-Conformities (in days)",
-                recentEmailStatistics.getNonconfAvgTimeFromSurveillanceOpenToSurveillanceClose(),
-                previousEmailStatistics.getNonconfAvgTimeFromSurveillanceOpenToSurveillanceClose()),
-                NUMBER_OF_INDENTS_SUMMARY_LEVEL_STAT, true);
+                    currSnapshot == null ? null : currSnapshot.getNonConfAvgTimeFromSurveillanceOpenToSurveillanceClose(),
+                    prevSnapshot == null ? null : prevSnapshot.getNonConfAvgTimeFromSurveillanceOpenToSurveillanceClose()),
+                    NUMBER_OF_INDENTS_SUMMARY_LEVEL_STAT,
+                    true);
 
         // These are calculated differently than all of the other rows.  The data is a little different
         table = addTableRow(table, createDataForRow("3. Total Number of CAPs",
-                sumEmailAcbStatisticList(recentEmailStatistics.getNonconfCAPStatusOpen()) + sumEmailAcbStatisticList(recentEmailStatistics.getNonconfCAPStatusClosed()),
-                sumEmailAcbStatisticList(previousEmailStatistics.getNonconfCAPStatusOpen()) + sumEmailAcbStatisticList(previousEmailStatistics.getNonconfCAPStatusClosed()))
-                , true);
+                    currSnapshot == null ? null : sumAcbStatistics(currSnapshot.getNonConfCAPStatusOpen()) + sumAcbStatistics(currSnapshot.getNonConfCAPStatusClosed()),
+                    prevSnapshot == null ? null : sumAcbStatistics(prevSnapshot.getNonConfCAPStatusOpen()) + sumAcbStatistics(prevSnapshot.getNonConfCAPStatusClosed())),
+                    true);
 
         table = addTableRow(table, createDataForRow("a. Number of Open CAPs",
-                sumEmailAcbStatisticList(recentEmailStatistics.getNonconfCAPStatusOpen()),
-                sumEmailAcbStatisticList(previousEmailStatistics.getNonconfCAPStatusOpen())),
-                NUMBER_OF_INDENTS_SUMMARY_LEVEL_STAT, true);
+                    currSnapshot == null ? null : sumAcbStatistics(currSnapshot.getNonConfCAPStatusOpen()),
+                    prevSnapshot == null ? null : sumAcbStatistics(prevSnapshot.getNonConfCAPStatusOpen())),
+                    NUMBER_OF_INDENTS_SUMMARY_LEVEL_STAT,
+                    true);
 
         table = addAcbRows(table,
-                recentEmailStatistics.getNonconfCAPStatusOpen(),
-                previousEmailStatistics.getNonconfCAPStatusOpen());
+                    currSnapshot == null ? null : currSnapshot.getNonConfCAPStatusOpen(),
+                    prevSnapshot == null ? null : prevSnapshot.getNonConfCAPStatusOpen());
 
         table = addTableRow(table, createDataForRow("b. Number of Closed CAPs",
-                sumEmailAcbStatisticList(recentEmailStatistics.getNonconfCAPStatusClosed()),
-                sumEmailAcbStatisticList(previousEmailStatistics.getNonconfCAPStatusClosed())),
-                NUMBER_OF_INDENTS_SUMMARY_LEVEL_STAT, true);
+                    currSnapshot == null ? null : sumAcbStatistics(currSnapshot.getNonConfCAPStatusClosed()),
+                    prevSnapshot == null ? null : sumAcbStatistics(prevSnapshot.getNonConfCAPStatusClosed())),
+                    NUMBER_OF_INDENTS_SUMMARY_LEVEL_STAT,
+                    true);
 
         table = addAcbRows(table,
-        recentEmailStatistics.getNonconfCAPStatusClosed(),
-        previousEmailStatistics.getNonconfCAPStatusClosed());
+                    currSnapshot == null ? null : currSnapshot.getNonConfCAPStatusClosed(),
+                    prevSnapshot == null ? null : prevSnapshot.getNonConfCAPStatusClosed());
 
         return table;
     }
 
-    private Long sumEmailAcbStatisticList(List<EmailCertificationBodyStatistic> stats) {
+    private Long sumAcbStatistics(List<CertificationBodyStatistic> stats) {
         return stats.stream()
-        .collect(Collectors.summarizingLong(EmailCertificationBodyStatistic::getCount))
-        .getSum();
+            .collect(Collectors.summarizingLong(CertificationBodyStatistic::getCount))
+            .getSum();
     }
 }

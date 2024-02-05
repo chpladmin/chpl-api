@@ -3,12 +3,10 @@ package gov.healthit.chpl.validation.listing;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.upload.listing.validation.reviewer.AccessibilityStandardReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.QmsStandardReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.TestToolReviewer;
@@ -30,6 +28,7 @@ import gov.healthit.chpl.validation.listing.reviewer.ListingStatusAndUserRoleRev
 import gov.healthit.chpl.validation.listing.reviewer.OptionalStandardReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.RealWorldTestingReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.Reviewer;
+import gov.healthit.chpl.validation.listing.reviewer.StandardRemovalReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.SvapReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.TestProcedureReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.TestStandardRemovalReviewer;
@@ -50,8 +49,6 @@ import gov.healthit.chpl.validation.listing.reviewer.edition2015.MeasureComparis
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.MeasureValidityReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.OldCriteriaWithoutIcsReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.PrivacyAndSecurityCriteriaReviewer;
-import gov.healthit.chpl.validation.listing.reviewer.edition2015.PrivacyAndSecurityCriteriaReviewerPreErdPhase2;
-import gov.healthit.chpl.validation.listing.reviewer.edition2015.RequiredAndRelatedCriteriaErdPhase2GracePeriodReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.RequiredAndRelatedCriteriaReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.RequiredData2015Reviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.SedG32015Reviewer;
@@ -83,10 +80,6 @@ public class Edition2015ListingValidator extends Validator {
     @Autowired
     @Qualifier("requiredData2015Reviewer")
     private RequiredData2015Reviewer requiredDataReviewer;
-
-    @Autowired
-    @Qualifier("requiredAndRelatedCriteriaErdPhase2GracePeriodReviewer")
-    private RequiredAndRelatedCriteriaErdPhase2GracePeriodReviewer requiredAndRelatedCriteriaErdPhase2GracePeriodReviewer;
 
     @Autowired
     @Qualifier("requiredAndRelatedCriteriaReviewer")
@@ -181,10 +174,6 @@ public class Edition2015ListingValidator extends Validator {
     private UnavailableCriteriaUcdComparisonReviewer unavailableCriteriaUcdComparisonReviewer;
 
     @Autowired
-    @Qualifier("privacyAndSecurityCriteriaReviewerPreErdPhase2")
-    private PrivacyAndSecurityCriteriaReviewerPreErdPhase2 privacyAndSecurityCriteriaReviewerPreErdPhase2;
-
-    @Autowired
     @Qualifier("privacyAndSecurityCriteriaReviewer")
     private PrivacyAndSecurityCriteriaReviewer privacyAndSecurityCriteriaReviewer;
 
@@ -251,8 +240,9 @@ public class Edition2015ListingValidator extends Validator {
 
     @Autowired
     private TestingLabComparisonReviewer testingLabComparisonReviewer;
+
     @Autowired
-    private FF4j ff4j;
+    private StandardRemovalReviewer standardRemovalReviewer;
 
     @Override
     public synchronized List<Reviewer> getReviewers() {
@@ -262,13 +252,7 @@ public class Edition2015ListingValidator extends Validator {
         reviewers.add(unsupportedCharacterReviewer);
         reviewers.add(fieldLengthReviewer);
         reviewers.add(requiredDataReviewer);
-        if (!ff4j.check(FeatureList.ERD_PHASE_2_GRACE_PERIOD_END)) {
-            //use this reviewer during the grace period
-            reviewers.add(requiredAndRelatedCriteriaErdPhase2GracePeriodReviewer);
-        } else {
-            //use this reviewer after the grace period ends
-            reviewers.add(requiredAndRelatedCriteriaReviewer);
-        }
+        reviewers.add(requiredAndRelatedCriteriaReviewer);
         reviewers.add(unavailableCriteriaReviewer);
         reviewers.add(testingLabReviewer);
         reviewers.add(validDataReviewer);
@@ -296,10 +280,7 @@ public class Edition2015ListingValidator extends Validator {
         reviewers.add(accessibilityStandardReviewer);
         reviewers.add(qmsStandardReviewer);
         reviewers.add(realWorldTestingReviewer);
-        //after the grace period ends this reviewer should be included
-        if (ff4j.check(FeatureList.ERD_PHASE_2_GRACE_PERIOD_END)) {
-            reviewers.add(privacyAndSecurityCriteriaReviewer);
-        }
+        reviewers.add(privacyAndSecurityCriteriaReviewer);
         return reviewers;
     }
 
@@ -314,14 +295,11 @@ public class Edition2015ListingValidator extends Validator {
         comparisonReviewers.add(unavailableCriteriaUcdComparisonReviewer);
         comparisonReviewers.add(functionalityTestedAllowedByRoleReviewer);
         comparisonReviewers.add(listingStatusAndUserRoleReviewer);
-        //during the grace period the comparison reviewer should be included
-        if (!ff4j.check(FeatureList.ERD_PHASE_2_GRACE_PERIOD_END)) {
-            comparisonReviewers.add(privacyAndSecurityCriteriaReviewerPreErdPhase2);
-        }
         comparisonReviewers.add(svapReviewer);
         comparisonReviewers.add(inheritanceComparisonReviewer);
         comparisonReviewers.add(deprecatedFieldReviewer);
         comparisonReviewers.add(testingLabComparisonReviewer);
+        comparisonReviewers.add(standardRemovalReviewer);
         return comparisonReviewers;
     }
 }

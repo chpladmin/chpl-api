@@ -49,6 +49,10 @@ public final class DateUtil {
     }
 
     public static boolean isDateBetweenInclusive(Pair<LocalDate, LocalDate> dateRange, LocalDate dateToCheck) {
+        if (dateToCheck == null) {
+            return false;
+        }
+
         Pair<LocalDate, LocalDate> modifiedDateRange = Pair.of(dateRange);
         if (modifiedDateRange.getLeft() == null) {
             modifiedDateRange = Pair.of(LocalDate.MIN, modifiedDateRange.getRight());

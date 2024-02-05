@@ -17,23 +17,28 @@ import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.standard.CertificationResultStandard;
 import gov.healthit.chpl.standard.Standard;
 import gov.healthit.chpl.standard.StandardDAO;
+import gov.healthit.chpl.standard.StandardGroupService;
+import gov.healthit.chpl.standard.StandardGroupValidation;
 import gov.healthit.chpl.standard.StandardManager;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
-import gov.healthit.chpl.validation.listing.reviewer.PermissionBasedReviewer;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 @Component
-public class StandardAllowedByCriteriaReviewer extends PermissionBasedReviewer {
+public class StandardAllowedByCriteriaReviewer extends StandardGroupValidation {
 
     private StandardDAO standardDAO;
     private StandardManager standardManager;
+    private ErrorMessageUtil msgUtil;
 
     @Autowired
-    public StandardAllowedByCriteriaReviewer(StandardManager standardManager,StandardDAO standardDAO,
+    public StandardAllowedByCriteriaReviewer(StandardManager standardManager, StandardDAO standardDAO, StandardGroupService standardGroupService,
             ErrorMessageUtil msgUtil, ResourcePermissionsFactory resourcePermissionsFactory) {
-        super(msgUtil, resourcePermissionsFactory);
+        super(standardGroupService, msgUtil, resourcePermissionsFactory);
         this.standardManager = standardManager;
         this.standardDAO = standardDAO;
+        this.msgUtil = msgUtil;
     }
 
     @Override
@@ -41,6 +46,7 @@ public class StandardAllowedByCriteriaReviewer extends PermissionBasedReviewer {
         if (listing.getCertificationResults() != null) {
             for (CertificationResult cr : listing.getCertificationResults()) {
                 if (BooleanUtils.isTrue(cr.getSuccess()) && cr.getStandards() != null) {
+                    reviewStandardExistForEachGroup(listing, cr, LocalDate.now());
                     for (CertificationResultStandard crs : cr.getStandards()) {
                         addStandardErrorMessages(crs, cr, listing);
                     }

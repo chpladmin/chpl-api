@@ -5,7 +5,6 @@ import java.util.List;
 import org.ff4j.FF4j;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.form.Form;
 import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.scheduler.job.developer.attestation.AttestationFormMetaData;
@@ -21,7 +20,6 @@ public class AttestationResponseValidationService {
     private ListingApplicabilityService listingApplicabilityService;
     private ErrorMessageUtil msgUtil;
     private ResourcePermissionsFactory resourcePermissionsFactory;
-    private FF4j ff4j;
 
     public AttestationResponseValidationService(ListingApplicabilityService listingApplicabilityService,
             ListingSearchService listingSearchService, ErrorMessageUtil msgUtil,
@@ -29,7 +27,6 @@ public class AttestationResponseValidationService {
         this.listingApplicabilityService = listingApplicabilityService;
         this.msgUtil = msgUtil;
         this.resourcePermissionsFactory = resourcePermissionsFactory;
-        this.ff4j = ff4j;
     }
 
     public String getApiResponseNotApplicableMessage(List<ListingSearchResult> allActiveListingsForDeveloper) {
@@ -83,10 +80,6 @@ public class AttestationResponseValidationService {
     }
 
     public String getAssurancesResponseCompliantMessage(List<ListingSearchResult> allActiveListingsForDeveloper) {
-        if (!ff4j.check(FeatureList.ERD_PHASE_3)) {
-            return null;
-        }
-
         boolean isAssurancesApplicable = listingApplicabilityService.isAssurancesApplicable(allActiveListingsForDeveloper);
         if (!isAssurancesApplicable) {
             if (isDeveloper()) {
@@ -106,9 +99,6 @@ public class AttestationResponseValidationService {
     }
 
     public Boolean isAssurancesNotApplicableAndResponseIsCompliant(List<ListingSearchResult> allActiveListingsForDeveloper, Form attestationForm, Long attestationPeriodId) {
-        if (!ff4j.check(FeatureList.ERD_PHASE_3)) {
-            return false;
-        }
         return !listingApplicabilityService.isAssurancesApplicable(allActiveListingsForDeveloper)
                 && doesFormResponseEqualResponse(attestationForm,
                         AttestationFormMetaData.getAssurancesConditionId(attestationPeriodId),

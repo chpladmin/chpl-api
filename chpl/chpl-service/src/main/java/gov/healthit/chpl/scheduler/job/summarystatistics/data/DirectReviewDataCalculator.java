@@ -14,11 +14,11 @@ import lombok.extern.log4j.Log4j2;
 
 @Component
 @Log4j2(topic = "summaryStatisticsCreatorJobLogger")
-public class DirectReviewDataCreator extends StatisticsDataCreator  {
+public class DirectReviewDataCalculator {
     private DirectReviewSearchService directReviewSearchService;
 
     @Autowired
-    public DirectReviewDataCreator(DirectReviewSearchService directReviewSearchService) {
+    public DirectReviewDataCalculator(DirectReviewSearchService directReviewSearchService) {
         this.directReviewSearchService = directReviewSearchService;
     }
 
