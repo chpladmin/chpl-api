@@ -14,10 +14,8 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 import org.springframework.web.filter.GenericFilterBean;
 
-import gov.healthit.chpl.auth.authentication.JWTUserConverterFactory;
-import gov.healthit.chpl.auth.user.AuthenticatedUser;
-import gov.healthit.chpl.exception.JWTValidationException;
-import gov.healthit.chpl.exception.MultipleUserAccountsException;
+import gov.healthit.chpl.auth.authentication.JWTUserConverterFacade;
+import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 
 public class JWTAuthenticationFilter extends GenericFilterBean {
 
@@ -25,10 +23,10 @@ public class JWTAuthenticationFilter extends GenericFilterBean {
             "/monitoring", "/ff4j-console", "/v3/api-docs"
     };
 
-    private JWTUserConverterFactory userConverterFactory;
+    private JWTUserConverterFacade userConverterFacade;
 
-    public JWTAuthenticationFilter(JWTUserConverterFactory userConverterFactory) {
-        this.userConverterFactory = userConverterFactory;
+    public JWTAuthenticationFilter(JWTUserConverterFacade userConverterFacade) {
+        this.userConverterFacade = userConverterFacade;
     }
 
     @Override
@@ -54,7 +52,7 @@ public class JWTAuthenticationFilter extends GenericFilterBean {
             chain.doFilter(req, res); //continue
             SecurityContextHolder.getContext().setAuthentication(null);
         } else {
-            AuthenticatedUser authenticatedUser;
+            JWTAuthenticatedUser authenticatedUser;
             String jwt = null;
 
             try {
@@ -65,13 +63,12 @@ public class JWTAuthenticationFilter extends GenericFilterBean {
             }
 
             if (jwt != null) {
-                try {
-                    authenticatedUser = userConverterFactory.get().getAuthenticatedUser(jwt);
-
+                authenticatedUser = userConverterFacade.getAuthenticatedUser(jwt);
+                if (authenticatedUser != null) {
                     SecurityContextHolder.getContext().setAuthentication(authenticatedUser);
                     chain.doFilter(req, res); // continue
                     SecurityContextHolder.getContext().setAuthentication(null);
-                } catch (JWTValidationException | MultipleUserAccountsException e) {
+                } else {
                     HttpServletResponse response = (HttpServletResponse) res;
                     response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid JWT token");
                 }

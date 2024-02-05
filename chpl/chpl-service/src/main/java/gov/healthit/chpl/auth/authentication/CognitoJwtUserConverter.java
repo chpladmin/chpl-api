@@ -14,8 +14,8 @@ import com.auth0.jwt.interfaces.RSAKeyProvider;
 
 import gov.healthit.chpl.auth.jwt.CognitoRsaKeyProvider;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
-import gov.healthit.chpl.auth.user.AuthenticatedUser;
-import gov.healthit.chpl.auth.user.CognitoAuthenticatedUser;
+import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
+import gov.healthit.chpl.auth.user.AuthenticationSystem;
 import gov.healthit.chpl.exception.JWTValidationException;
 import gov.healthit.chpl.exception.MultipleUserAccountsException;
 import lombok.extern.log4j.Log4j2;
@@ -36,24 +36,29 @@ public class CognitoJwtUserConverter implements JWTUserConverter {
     }
 
     @Override
-    public AuthenticatedUser getAuthenticatedUser(String jwt) throws JWTValidationException, MultipleUserAccountsException {
-        DecodedJWT decodeJwt = decodeJwt(jwt);
-        return CognitoAuthenticatedUser.builder()
-                .authenticated(true)
-                .cognitoId(UUID.fromString(decodeJwt.getSubject()))
-                .fullName(decodeJwt.getClaim("name").asString())
-                .email(decodeJwt.getClaim("email").asString())
-                .organizationIds(
-                        decodeJwt.getClaims().containsKey("custom:organizations")
-                                ? Stream.of(decodeJwt.getClaim("custom:organizations").asString().split(","))
-                                        .map(Long::valueOf)
-                                        .toList()
-                                : null)
-                .permissions(decodeJwt.getClaim("cognito:groups").asList(String.class).stream()
-                        .map(group -> new GrantedPermission(group))
-                        .collect(Collectors.toSet()))
+    public JWTAuthenticatedUser getAuthenticatedUser(String jwt) throws JWTValidationException, MultipleUserAccountsException {
+        try {
+            DecodedJWT decodeJwt = decodeJwt(jwt);
+            return JWTAuthenticatedUser.builder()
+                    .authenticationSystem(AuthenticationSystem.COGNTIO)
+                    .authenticated(true)
+                    .cognitoId(UUID.fromString(decodeJwt.getSubject()))
+                    .fullName(decodeJwt.getClaim("name").asString())
+                    .email(decodeJwt.getClaim("email").asString())
+                    .organizationIds(
+                            decodeJwt.getClaims().containsKey("custom:organizations")
+                                    ? Stream.of(decodeJwt.getClaim("custom:organizations").asString().split(","))
+                                            .map(Long::valueOf)
+                                            .toList()
+                                    : null)
+                    .permissions(decodeJwt.getClaim("cognito:groups").asList(String.class).stream()
+                            .map(group -> new GrantedPermission(group))
+                            .collect(Collectors.toSet()))
 
-                .build();
+                    .build();
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     private DecodedJWT decodeJwt(String jwt) {
@@ -69,7 +74,7 @@ public class CognitoJwtUserConverter implements JWTUserConverter {
     }
 
     @Override
-    public AuthenticatedUser getImpersonatingUser(String jwt) throws JWTValidationException {
+    public JWTAuthenticatedUser getImpersonatingUser(String jwt) throws JWTValidationException {
         // TODO Auto-generated method stub
         return null;
     }

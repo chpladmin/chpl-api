@@ -4,13 +4,15 @@ import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.FeatureList;
+import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
+import gov.healthit.chpl.auth.user.AuthenticationSystem;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.UserCertificationBodyMapDAO;
 import gov.healthit.chpl.dao.UserDeveloperMapDAO;
 import gov.healthit.chpl.dao.auth.UserDAO;
 import gov.healthit.chpl.manager.auth.CognitoUserService;
+import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Component
@@ -32,10 +34,17 @@ public class ResourcePermissionsFactory {
     }
 
     public ResourcePermissions get() {
-        if (ff4j.check(FeatureList.SSO)) {
+        JWTAuthenticatedUser user = AuthUtil.getCurrentUser();
+        if (user == null || user.getAuthenticationSystem().equals(AuthenticationSystem.COGNTIO)) {
+            //What should be the default??
             return cognitoResourcePermissions;
         } else {
             return chplResourcePermissions;
         }
+//        if (ff4j.check(FeatureList.SSO)) {
+//            return cognitoResourcePermissions;
+//        } else {
+//            return chplResourcePermissions;
+//        }
     }
 }

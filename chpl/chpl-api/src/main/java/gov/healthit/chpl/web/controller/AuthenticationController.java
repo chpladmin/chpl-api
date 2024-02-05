@@ -1,5 +1,6 @@
 package gov.healthit.chpl.web.controller;
 
+import org.apache.commons.lang3.StringUtils;
 import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -16,8 +17,8 @@ import com.nulabinc.zxcvbn.Strength;
 import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.auth.ChplAccountEmailNotConfirmedException;
 import gov.healthit.chpl.auth.ChplAccountStatusException;
-import gov.healthit.chpl.auth.authentication.JWTUserConverterFactory;
-import gov.healthit.chpl.auth.user.AuthenticatedUser;
+import gov.healthit.chpl.auth.authentication.JWTUserConverterFacade;
+import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.domain.auth.AuthenticationResponse;
 import gov.healthit.chpl.domain.auth.LoginCredentials;
 import gov.healthit.chpl.domain.auth.ResetPasswordRequest;
@@ -55,7 +56,7 @@ public class AuthenticationController {
     private UserAccountUpdateEmailer userAccountUpdateEmailer;
     private BCryptPasswordEncoder bCryptPasswordEncoder;
     private UserManager userManager;
-    private JWTUserConverterFactory userConverterFactory;
+    private JWTUserConverterFacade userConverterFacade;
     private ErrorMessageUtil msgUtil;
     private CognitoAuthenticationManager cognitoAuthenticationManager;
     private FF4j ff4j;
@@ -64,13 +65,13 @@ public class AuthenticationController {
     public AuthenticationController(AuthenticationManager authenticationManager,
             UserAccountUpdateEmailer userAccountUpdateEmailer,
             BCryptPasswordEncoder bCryptPasswordEncoder,
-            UserManager userManager, JWTUserConverterFactory userConverterFactory, ErrorMessageUtil msgUtil,
+            UserManager userManager, JWTUserConverterFacade userConverterFacade, ErrorMessageUtil msgUtil,
             FF4j ff4j, CognitoAuthenticationManager cognitoAuthenticationManager) {
         this.authenticationManager = authenticationManager;
         this.userAccountUpdateEmailer = userAccountUpdateEmailer;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.userManager = userManager;
-        this.userConverterFactory = userConverterFactory;
+        this.userConverterFacade = userConverterFacade;
         this.msgUtil = msgUtil;
         this.ff4j = ff4j;
         this.cognitoAuthenticationManager = cognitoAuthenticationManager;
@@ -88,13 +89,17 @@ public class AuthenticationController {
     @RequestMapping(value = "/authenticate", method = RequestMethod.POST,
             consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
     public AuthenticationResponse authenticateJSON(@RequestBody LoginCredentials credentials)
-            throws JWTCreationException, UserRetrievalException, MultipleUserAccountsException,
-            ChplAccountEmailNotConfirmedException {
-        String jwt = "";
+            throws JWTCreationException, UserRetrievalException, MultipleUserAccountsException, ChplAccountEmailNotConfirmedException {
 
+        String jwt = null;
+
+        //If SSO is turned on try to auth using cognito
         if (ff4j.check(FeatureList.SSO)) {
             jwt = cognitoAuthenticationManager.authenticate(credentials);
-        } else {
+        }
+
+        //If SSO is turned off or Cognito auth fails, use the CHPL auth
+        if (StringUtils.isEmpty(jwt)) {
             jwt = authenticationManager.authenticate(credentials);
         }
 
@@ -133,7 +138,7 @@ public class AuthenticationController {
         }
 
         // get the current user
-        UserDTO currUser = userManager.getById(AuthUtil.getCurrentUser().getId());
+        UserDTO currUser = userManager.getById((Long) AuthUtil.getCurrentUser().getId());
         if (currUser == null) {
             throw new UserRetrievalException("The user with id " + AuthUtil.getCurrentUser().getId()
                     + " could not be found or the logged in user does not have permission to modify their data.");
@@ -212,7 +217,8 @@ public class AuthenticationController {
     @RequestMapping(value = "/unimpersonate", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public AuthenticationResponse unimpersonateUser(@RequestHeader(value = "Authorization", required = true) String userJwt)
             throws JWTValidationException, JWTCreationException, UserRetrievalException, MultipleUserAccountsException {
-        AuthenticatedUser user = userConverterFactory.get().getImpersonatingUser(userJwt.split(" ")[1]);
+        //AuthenticatedUser user = userConverterFactory.get().getImpersonatingUser(userJwt.split(" ")[1]);
+        JWTAuthenticatedUser user = userConverterFacade.getImpersonatingUser(userJwt.split(" ")[1]);
         String jwt = authenticationManager.unimpersonateUser(user);
 
         return AuthenticationResponse.builder()

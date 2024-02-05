@@ -3,7 +3,6 @@ package gov.healthit.chpl.util;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.UUID;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -11,11 +10,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import gov.healthit.chpl.auth.permission.GrantedPermission;
-import gov.healthit.chpl.auth.user.AuthenticatedUser;
-import gov.healthit.chpl.auth.user.CognitoAuthenticatedUser;
-import gov.healthit.chpl.auth.user.CognitoSystemUsers;
-import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.auth.user.ChplSystemUsers;
+import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 
 public class AuthUtil {
     public static String getUsername() {
@@ -28,20 +24,11 @@ public class AuthUtil {
         }
     }
 
-    public static AuthenticatedUser getCurrentUser() {
-        AuthenticatedUser user = null;
+    public static JWTAuthenticatedUser getCurrentUser() {
+        JWTAuthenticatedUser user = null;
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth instanceof AuthenticatedUser) {
-            user = (AuthenticatedUser) auth;
-        }
-        return user;
-    }
-
-    public static CognitoAuthenticatedUser getCurrentCognitoUser() {
-        CognitoAuthenticatedUser user = null;
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth instanceof CognitoAuthenticatedUser) {
-            user = (CognitoAuthenticatedUser) auth;
+        if (auth instanceof JWTAuthenticatedUser) {
+            user = (JWTAuthenticatedUser) auth;
         }
         return user;
     }
@@ -65,21 +52,6 @@ public class AuthUtil {
         return ChplSystemUsers.DEFAULT_USER_ID;
     }
 
-
-    public static UUID getAuditCognitoUserId() {
-        CognitoAuthenticatedUser user = null;
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-
-        if (auth instanceof CognitoAuthenticatedUser) {
-            user = (CognitoAuthenticatedUser) auth;
-            //if (user.getImpersonatingUser() != null) {
-            //    return user.getImpersonatingUser().getId();
-            //} else {
-                return user.getCognitoId();
-            //}
-        }
-        return CognitoSystemUsers.DEFAULT_USER_ID;
-    }
 
     public static Authentication getCurrentAuthentication() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();

@@ -6,7 +6,7 @@ import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import gov.healthit.chpl.auth.user.CognitoAuthenticatedUser;
+import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.domain.CertificationBody;
@@ -183,7 +183,7 @@ public class CognitoResourcePermissions implements ResourcePermissions {
 
     @Override
     public boolean doesUserHaveRole(String authority) {
-        CognitoAuthenticatedUser user = AuthUtil.getCurrentCognitoUser();
+        JWTAuthenticatedUser user = AuthUtil.getCurrentUser();
         if (user == null) {
             return false;
         }
@@ -228,7 +228,7 @@ public class CognitoResourcePermissions implements ResourcePermissions {
     public boolean hasPermissionOnUser(User user) {
         if (user.getRole().equalsIgnoreCase(CognitoGroups.CHPL_STARTUP)) {
             return false;
-        } else if (isUserRoleAdmin() || AuthUtil.getCurrentUser().getCognitoId().equals(user.getCognitoId())) {
+        } else if (isUserRoleAdmin() || (AuthUtil.getCurrentUser().getCognitoId()).equals(user.getCognitoId())) {
             return true;
         } else if (isUserRoleOnc()) {
             return !user.getRole().equalsIgnoreCase(CognitoGroups.CHPL_ADMIN);

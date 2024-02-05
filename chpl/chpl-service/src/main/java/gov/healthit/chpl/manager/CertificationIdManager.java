@@ -142,7 +142,7 @@ public class CertificationIdManager {
     public ChplOneTimeTrigger triggerCmsIdReport() throws SchedulerException, ValidationException {
         UserDTO jobUser = null;
         try {
-            jobUser = userManager.getById(AuthUtil.getCurrentUser().getId());
+            jobUser = userManager.getById((Long) AuthUtil.getCurrentUser().getId());
         } catch (UserRetrievalException ex) {
             LOGGER.error("Could not find user to execute job.");
         }

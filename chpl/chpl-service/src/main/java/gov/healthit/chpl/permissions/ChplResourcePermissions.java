@@ -12,7 +12,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.transaction.annotation.Transactional;
 
-import gov.healthit.chpl.auth.user.AuthenticatedUser;
+import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.auth.user.ChplSystemUsers;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
@@ -97,14 +97,14 @@ public class ChplResourcePermissions implements ResourcePermissions {
     @Override
     @Transactional(readOnly = true)
     public List<CertificationBody> getAllAcbsForCurrentUser() {
-        AuthenticatedUser user = AuthUtil.getCurrentUser();
+        JWTAuthenticatedUser user = AuthUtil.getCurrentUser();
         List<CertificationBody> acbs = new ArrayList<CertificationBody>();
 
         if (user != null) {
             if (isUserRoleAdmin() || isUserRoleOnc()) {
                 acbs = acbDAO.findAll();
             } else {
-                List<UserCertificationBodyMapDTO> userAcbMaps = userCertificationBodyMapDAO.getByUserId(user.getId());
+                List<UserCertificationBodyMapDTO> userAcbMaps = userCertificationBodyMapDAO.getByUserId((Long) user.getId());
                 acbs = userAcbMaps.stream()
                         .map(userAcbMap -> userAcbMap.getCertificationBody())
                         .collect(Collectors.toList());
@@ -127,14 +127,14 @@ public class ChplResourcePermissions implements ResourcePermissions {
     @Override
     @Transactional(readOnly = true)
     public List<Developer> getAllDevelopersForCurrentUser() {
-        AuthenticatedUser user = AuthUtil.getCurrentUser();
+        JWTAuthenticatedUser user = AuthUtil.getCurrentUser();
         List<Developer> developers = new ArrayList<Developer>();
 
         if (user != null) {
             if (isUserRoleAdmin() || isUserRoleOnc() || isUserRoleAcbAdmin()) {
                 developers = developerDAO.findAll();
             } else {
-                List<UserDeveloperMapDTO> dtos = userDeveloperMapDAO.getByUserId(user.getId());
+                List<UserDeveloperMapDTO> dtos = userDeveloperMapDAO.getByUserId((Long)user.getId());
                 for (UserDeveloperMapDTO dto : dtos) {
                     developers.add(dto.getDeveloper());
                 }
@@ -157,7 +157,7 @@ public class ChplResourcePermissions implements ResourcePermissions {
     @Override
     @Transactional(readOnly = true)
     public List<UserDTO> getAllUsersForCurrentUser() {
-        AuthenticatedUser user = AuthUtil.getCurrentUser();
+        JWTAuthenticatedUser user = AuthUtil.getCurrentUser();
         List<UserDTO> users = new ArrayList<UserDTO>();
 
         if (user != null) {
@@ -177,7 +177,7 @@ public class ChplResourcePermissions implements ResourcePermissions {
                 //they just have permission on themselves
                 UserDTO thisUser = null;
                 try {
-                    thisUser = userDAO.getById(user.getId());
+                    thisUser = userDAO.getById((Long) user.getId());
                     users.add(thisUser);
                 } catch (UserRetrievalException ex) { }
             }
@@ -340,12 +340,12 @@ public class ChplResourcePermissions implements ResourcePermissions {
 
     @Override
     public boolean doesUserHaveRole(String authority) {
-        AuthenticatedUser user = AuthUtil.getCurrentUser();
+        JWTAuthenticatedUser user = AuthUtil.getCurrentUser();
         if (user == null) {
             return false;
         }
 
-        UserPermission role = getRoleByUser(getUserById(user.getId()));
+        UserPermission role = getRoleByUser(getUserById((Long) user.getId()));
         if (role == null) {
             return false;
         }

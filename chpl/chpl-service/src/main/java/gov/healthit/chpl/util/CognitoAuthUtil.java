@@ -8,7 +8,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.auth.user.ChplSystemUsers;
-import gov.healthit.chpl.auth.user.AuthenticatedUser;
+import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 
 public class CognitoAuthUtil {
     public static String getUsername() {
@@ -21,11 +21,11 @@ public class CognitoAuthUtil {
         }
     }
 
-    public static AuthenticatedUser getCurrentUser() {
-        AuthenticatedUser user = null;
+    public static JWTAuthenticatedUser getCurrentUser() {
+        JWTAuthenticatedUser user = null;
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth instanceof AuthenticatedUser) {
-            user = (AuthenticatedUser) auth;
+        if (auth instanceof JWTAuthenticatedUser) {
+            user = (JWTAuthenticatedUser) auth;
         }
         return user;
     }

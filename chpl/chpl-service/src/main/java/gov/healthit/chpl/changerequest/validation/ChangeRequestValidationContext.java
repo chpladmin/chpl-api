@@ -3,7 +3,7 @@ package gov.healthit.chpl.changerequest.validation;
 import gov.healthit.chpl.attestation.manager.AttestationManager;
 import gov.healthit.chpl.attestation.manager.AttestationPeriodService;
 import gov.healthit.chpl.attestation.service.AttestationResponseValidationService;
-import gov.healthit.chpl.auth.user.AuthenticatedUser;
+import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestDAO;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestStatusTypeDAO;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestTypeDAO;
@@ -23,7 +23,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ChangeRequestValidationContext {
-    private AuthenticatedUser currentUser;
+    private JWTAuthenticatedUser currentUser;
     private ChangeRequest newChangeRequest;
     private ChangeRequest origChangeRequest;
     private ValidationDAOs validationDAOs;
@@ -37,7 +37,7 @@ public class ChangeRequestValidationContext {
     private ChangeRequestTypeIds changeRequestTypeIds;
     private ChangeRequestStatusIds changeRequestStatusIds;
 
-    public ChangeRequestValidationContext(AuthenticatedUser user,
+    public ChangeRequestValidationContext(JWTAuthenticatedUser user,
             ChangeRequest newChangeRequest,
             ChangeRequest origChangeRequest,
             FormValidator formValidator,

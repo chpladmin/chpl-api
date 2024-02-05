@@ -21,7 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import gov.healthit.chpl.auth.ChplAccountEmailNotConfirmedException;
 import gov.healthit.chpl.auth.ChplAccountStatusException;
 import gov.healthit.chpl.auth.jwt.JWTAuthor;
-import gov.healthit.chpl.auth.user.AuthenticatedUser;
+import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.dao.auth.UserDAO;
 import gov.healthit.chpl.domain.auth.LoginCredentials;
@@ -238,7 +238,7 @@ public class AuthenticationManager {
         return getJWT(impersonatedUser);
     }
 
-    public String unimpersonateUser(AuthenticatedUser user) throws JWTCreationException, UserRetrievalException,
+    public String unimpersonateUser(JWTAuthenticatedUser user) throws JWTCreationException, UserRetrievalException,
     MultipleUserAccountsException {
         return getJWT(getUserByNameOrEmail(user.getSubjectName()));
     }

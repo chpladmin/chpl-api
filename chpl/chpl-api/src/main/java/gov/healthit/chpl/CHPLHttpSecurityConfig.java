@@ -19,7 +19,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import gov.healthit.chpl.api.ApiKeyManager;
-import gov.healthit.chpl.auth.authentication.JWTUserConverterFactory;
+import gov.healthit.chpl.auth.authentication.JWTUserConverterFacade;
 import gov.healthit.chpl.filter.APIKeyAuthenticationFilter;
 import gov.healthit.chpl.filter.JWTAuthenticationFilter;
 import lombok.extern.log4j.Log4j2;
@@ -91,7 +91,7 @@ public class CHPLHttpSecurityConfig extends WebSecurityConfigurerAdapter {
         }
 
         @Autowired
-        private JWTUserConverterFactory userConverterFactory;
+        private JWTUserConverterFacade userConverterFactory;
 
         @Autowired
         private ObjectFactory<ApiKeyManager> apiKeyManagerObjectFactory;

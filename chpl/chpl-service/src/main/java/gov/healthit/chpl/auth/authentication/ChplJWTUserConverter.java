@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import gov.healthit.chpl.auth.jwt.JWTConsumer;
 import gov.healthit.chpl.auth.permission.GrantedPermission;
-import gov.healthit.chpl.auth.user.AuthenticatedUser;
+import gov.healthit.chpl.auth.user.AuthenticationSystem;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.dao.auth.UserDAO;
 import gov.healthit.chpl.exception.JWTValidationException;
@@ -35,9 +35,10 @@ public class ChplJWTUserConverter implements JWTUserConverter {
     }
 
     @Override
-    public AuthenticatedUser getAuthenticatedUser(String jwt) throws JWTValidationException, MultipleUserAccountsException {
+    public JWTAuthenticatedUser getAuthenticatedUser(String jwt) throws JWTValidationException, MultipleUserAccountsException {
 
         JWTAuthenticatedUser user = new JWTAuthenticatedUser();
+        user.setAuthenticationSystem(AuthenticationSystem.CHPL);
         user.setAuthenticated(true);
 
         Map<String, Object> validatedClaims;
@@ -75,7 +76,7 @@ public class ChplJWTUserConverter implements JWTUserConverter {
     }
 
     @Override
-    public AuthenticatedUser getImpersonatingUser(String jwt) throws JWTValidationException {
+    public JWTAuthenticatedUser getImpersonatingUser(String jwt) throws JWTValidationException {
 
         JWTAuthenticatedUser user = new JWTAuthenticatedUser();
         user.setAuthenticated(true);

@@ -13,14 +13,13 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.auth.ChplAccountEmailNotConfirmedException;
-import gov.healthit.chpl.auth.authentication.JWTUserConverterFactory;
-import gov.healthit.chpl.auth.user.AuthenticatedUser;
+import gov.healthit.chpl.auth.authentication.JWTUserConverterFacade;
+import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.domain.auth.LoginCredentials;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.JWTCreationException;
-import gov.healthit.chpl.exception.JWTValidationException;
 import gov.healthit.chpl.exception.MultipleUserAccountsException;
 import gov.healthit.chpl.exception.UserAccountExistsException;
 import gov.healthit.chpl.exception.UserRetrievalException;
@@ -40,7 +39,7 @@ public class MassRequirePasswordChangeJob extends QuartzJob {
     private AuthenticationManager authenticationManager;
 
     @Autowired
-    private JWTUserConverterFactory userConverterFactory;
+    private JWTUserConverterFacade userConverterFacade;
 
     /**
      * Default constructor.
@@ -59,7 +58,7 @@ public class MassRequirePasswordChangeJob extends QuartzJob {
                             jobContext.getMergedJobDataMap().getString("password")));
 
             String jwt = authenticationManager.getJWT(actor);
-            AuthenticatedUser authenticatedUser = userConverterFactory.get().getAuthenticatedUser(jwt);
+            JWTAuthenticatedUser authenticatedUser = userConverterFacade.getAuthenticatedUser(jwt);
             SecurityContextHolder.getContext().setAuthentication(authenticatedUser);
             List<UserDTO> allUsers = userManager.getAll();
             for (UserDTO user : allUsers) {
@@ -86,7 +85,7 @@ public class MassRequirePasswordChangeJob extends QuartzJob {
             SecurityContextHolder.getContext().setAuthentication(null);
         } catch (BadCredentialsException | AccountStatusException | UserRetrievalException
                 | MultipleUserAccountsException | UserAccountExistsException
-                | JWTCreationException | JWTValidationException | ChplAccountEmailNotConfirmedException e) {
+                | JWTCreationException | ChplAccountEmailNotConfirmedException e) {
             LOGGER.debug("Unable to update users {}", e.getLocalizedMessage());
         }
     }

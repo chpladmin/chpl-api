@@ -238,7 +238,7 @@ public class InvitationManager extends SecuredManager {
             + "T(gov.healthit.chpl.permissions.domains.InvitationDomainPermissions).UPDATE_FROM_INVITATION, #userInvitation)")
     public UserDTO updateUserFromInvitation(UserInvitationDTO userInvitation)
             throws EntityRetrievalException, InvalidArgumentsException, UserRetrievalException {
-        gov.healthit.chpl.auth.user.AuthenticatedUser loggedInUser = gov.healthit.chpl.util.AuthUtil.getCurrentUser();
+        gov.healthit.chpl.auth.user.JWTAuthenticatedUser loggedInUser = gov.healthit.chpl.util.AuthUtil.getCurrentUser();
 
         // have to give temporary permission to see all ACBs
         // because the logged in user wouldn't already have permission on them

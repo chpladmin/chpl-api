@@ -2,7 +2,6 @@ package gov.healthit.chpl.web.controller;
 
 import java.util.UUID;
 
-import org.apache.commons.lang3.NotImplementedException;
 import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -11,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.manager.auth.CognitoAuthenticationManager;
@@ -44,9 +42,6 @@ public class CognitoUserController {
     @RequestMapping(value = "/{ssoUserId}", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     public @ResponseBody User getUser(@PathVariable("ssoUserId") UUID ssoUserId) throws UserRetrievalException {
-        if (!ff4j.check(FeatureList.SSO)) {
-            throw new NotImplementedException("This feature has not been implemented");
-        }
-            return cognitoAuthenticationManager.getUserInfo(ssoUserId);
+        return cognitoAuthenticationManager.getUserInfo(ssoUserId);
     }
 }

@@ -2,14 +2,12 @@ package gov.healthit.chpl.manager.auth;
 
 import java.util.UUID;
 
-import org.apache.commons.lang3.NotImplementedException;
 import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.domain.auth.LoginCredentials;
 import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.exception.UserRetrievalException;
@@ -29,9 +27,9 @@ public class CognitoAuthenticationManager {
     }
 
     public String authenticate(LoginCredentials credentials) {
-        if (!ff4j.check(FeatureList.SSO)) {
-            throw new NotImplementedException("This feature has not been implemented");
-        }
+        //if (!ff4j.check(FeatureList.SSO)) {
+        //    throw new NotImplementedException("This feature has not been implemented");
+        //}
 
         return cognitoUserService.authenticate(credentials);
     }
@@ -42,10 +40,6 @@ public class CognitoAuthenticationManager {
     @PostAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SECURED_USER, "
             + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).GET_BY_USER_NAME, returnObject)")
     public User getUserInfo(UUID cognitoId) throws UserRetrievalException {
-        if (!ff4j.check(FeatureList.SSO)) {
-            throw new NotImplementedException("This feature has not been implemented");
-        }
-
         return cognitoUserService.getUserInfo(cognitoId);
     }
 }
