@@ -1,10 +1,13 @@
 package gov.healthit.chpl.permissions.domains.scheduler;
 
+import java.util.stream.Collectors;
+
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
 import gov.healthit.chpl.permissions.domains.ActionPermissions;
 import gov.healthit.chpl.scheduler.job.DirectReviewCacheRefreshJob;
+import gov.healthit.chpl.util.AuthUtil;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -19,6 +22,8 @@ public class CreateOneTimeTriggerActionPermissions extends ActionPermissions {
     @Override
     public boolean hasAccess(Object obj) {
         LOGGER.info("ResourcePermissions type {}", getResourcePermissions().getClass().toString());
+        LOGGER.info("Object is of type {}", obj.getClass());
+        LOGGER.info("User Roles - {}", AuthUtil.getCurrentUser().getAuthorities().stream().map(ga -> ga.toString()).collect(Collectors.joining(", ")));
         if (getResourcePermissions().isUserRoleAdmin()) {
             LOGGER.info("User is Admin");
             return true;
