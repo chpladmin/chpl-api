@@ -33,7 +33,7 @@ public class ResourcePermissionsFactory {
 
     public ResourcePermissions get() {
         JWTAuthenticatedUser user = AuthUtil.getCurrentUser();
-        if (user == null || user.getAuthenticationSystem().equals(AuthenticationSystem.CHPL)) {
+        if (user == null || user.getAuthenticationSystem() == null || user.getAuthenticationSystem().equals(AuthenticationSystem.CHPL)) {
             return chplResourcePermissions;
         } else {
             return cognitoResourcePermissions;

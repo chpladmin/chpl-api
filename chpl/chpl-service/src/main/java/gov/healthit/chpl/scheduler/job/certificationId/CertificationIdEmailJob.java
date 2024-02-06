@@ -10,11 +10,8 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
-import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.domain.SimpleCertificationId;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.email.ChplEmailFactory;
@@ -23,10 +20,11 @@ import gov.healthit.chpl.email.footer.PublicFooter;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.manager.CertificationIdManager;
 import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
+import gov.healthit.chpl.scheduler.SecurityContextCapableJob;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2(topic = "certificationIdEmailJobLogger")
-public class CertificationIdEmailJob  implements Job {
+public class CertificationIdEmailJob extends SecurityContextCapableJob implements Job {
     public static final String JOB_NAME = "certificationIdEmailJob";
     public static final String USER_KEY = "user";
 
@@ -64,18 +62,6 @@ public class CertificationIdEmailJob  implements Job {
             }
         }
         LOGGER.info("********* Completed the Complaints Report Email job *********");
-    }
-
-    private void setSecurityContext(UserDTO user) {
-        JWTAuthenticatedUser mergeUser = new JWTAuthenticatedUser();
-        mergeUser.setFullName(user.getFullName());
-        mergeUser.setId(user.getId());
-        mergeUser.setFriendlyName(user.getFriendlyName());
-        mergeUser.setSubjectName(user.getUsername());
-        mergeUser.getAuthorities().add(new SimpleGrantedAuthority(user.getPermission().getGrantedPermission().toString()));
-
-        SecurityContextHolder.getContext().setAuthentication(mergeUser);
-        SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);
     }
 
     private List<SimpleCertificationId> getReportData() {

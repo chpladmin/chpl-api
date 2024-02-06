@@ -7,7 +7,9 @@ import org.quartz.Job;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 
-public abstract class QuartzJob implements Job {
+import gov.healthit.chpl.scheduler.SecurityContextCapableJob;
+
+public abstract class QuartzJob extends SecurityContextCapableJob implements Job {
     public static final String JOB_DATA_KEY_EMAIL = "email";
     public static final String JOB_DATA_KEY_ACB = "acb";
     public static final String JOB_DATA_KEY_SUBMITTED_BY_USER_ID = "submittedByUserId";

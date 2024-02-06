@@ -15,22 +15,18 @@ import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.lang3.StringUtils;
 import org.quartz.DisallowConcurrentExecution;
-import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.orm.jpa.JpaTransactionManager;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
-import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.ListingUpload;
 import gov.healthit.chpl.dto.auth.UserDTO;
@@ -45,7 +41,7 @@ import lombok.extern.log4j.Log4j2;
 
 @DisallowConcurrentExecution
 @Log4j2(topic = "listingUploadValidationJobLogger")
-public class ListingUploadValidationJob implements Job {
+public class ListingUploadValidationJob extends QuartzJob {
     public static final String JOB_NAME = "listingUploadValidationJob";
     public static final String LISTING_UPLOAD_IDS = "listingUploadIds";
     public static final String USER_KEY = "user";
@@ -229,17 +225,5 @@ public class ListingUploadValidationJob implements Job {
         } catch (IOException e) {
             LOGGER.catching(e);
         }
-    }
-
-    private void setSecurityContext(UserDTO user) {
-        JWTAuthenticatedUser splitUser = new JWTAuthenticatedUser();
-        splitUser.setFullName(user.getFullName());
-        splitUser.setId(user.getId());
-        splitUser.setFriendlyName(user.getFriendlyName());
-        splitUser.setSubjectName(user.getUsername());
-        splitUser.getAuthorities().add(new SimpleGrantedAuthority(user.getPermission().getGrantedPermission().toString()));
-
-        SecurityContextHolder.getContext().setAuthentication(splitUser);
-        SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);
     }
 }

@@ -19,12 +19,8 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
-import gov.healthit.chpl.auth.user.ChplSystemUsers;
-import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestDAO;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestStatusTypeDAO;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestStatusType;
@@ -107,7 +103,7 @@ public class PendingChangeRequestEmailJob extends QuartzJob {
         List<ChangeRequestSearchResult> searchResults = null;
         List<CertificationBody> acbs = null;
         try {
-            setSecurityContext();
+            setSecurityContext(Authority.ROLE_ADMIN);
             acbs = getAppropriateAcbs(jobContext);
             searchResults = getPendingChangeRequestSearchResults(getSearchRequest(acbs));
         } catch (ValidationException ex) {
@@ -255,15 +251,4 @@ public class PendingChangeRequestEmailJob extends QuartzJob {
         tempFile = tempFilePath.toFile();
     }
 
-    private void setSecurityContext() {
-        JWTAuthenticatedUser adminUser = new JWTAuthenticatedUser();
-        adminUser.setFullName("Administrator");
-        adminUser.setId(ChplSystemUsers.ADMIN_USER_ID);
-        adminUser.setFriendlyName("Admin");
-        adminUser.setSubjectName("admin");
-        adminUser.getAuthorities().add(new SimpleGrantedAuthority(Authority.ROLE_ADMIN));
-
-        SecurityContextHolder.getContext().setAuthentication(adminUser);
-        SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);
-    }
 }

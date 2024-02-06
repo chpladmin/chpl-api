@@ -14,16 +14,12 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
-import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.ListingUpdateRequest;
@@ -37,7 +33,7 @@ import gov.healthit.chpl.realworldtesting.domain.RealWorldTestingType;
 import gov.healthit.chpl.realworldtesting.domain.RealWorldTestingUpload;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
-public class RealWorldTestingUploadJob implements Job {
+public class RealWorldTestingUploadJob extends QuartzJob {
     private static final Logger LOGGER = LogManager.getLogger("realWorldTestingUploadJobLogger");
     public static final String JOB_NAME = "realWorldTestingUploadJob";
     public static final String RWT_UPLOAD_ITEMS = "realWorldTestingUploadItems";
@@ -208,18 +204,6 @@ public class RealWorldTestingUploadJob implements Job {
             errors.add(errorMessageUtil.getMessage("realWorldTesting.upload.realWorldTestingTypeInvalid"));
         }
         return errors;
-    }
-
-    private void setSecurityContext(UserDTO user) {
-        JWTAuthenticatedUser rwtUploadUser = new JWTAuthenticatedUser();
-        rwtUploadUser.setFullName(user.getFullName());
-        rwtUploadUser.setId(user.getId());
-        rwtUploadUser.setFriendlyName(user.getFriendlyName());
-        rwtUploadUser.setSubjectName(user.getUsername());
-        rwtUploadUser.getAuthorities().add(new SimpleGrantedAuthority(user.getPermission().getGrantedPermission().toString()));
-
-        SecurityContextHolder.getContext().setAuthentication(rwtUploadUser);
-        SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);
     }
 
     private void sendResults(List<RealWorldTestingUpload> rwts, String address) throws EmailNotSentException {

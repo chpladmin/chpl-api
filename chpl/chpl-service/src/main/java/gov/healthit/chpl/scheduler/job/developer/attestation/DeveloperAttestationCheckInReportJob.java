@@ -5,14 +5,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.orm.jpa.JpaTransactionManager;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
@@ -20,17 +17,16 @@ import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.auth.user.ChplSystemUsers;
-import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.dao.auth.UserDAO;
-import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
 import gov.healthit.chpl.email.footer.AdminFooter;
 import gov.healthit.chpl.manager.SchedulerManager;
+import gov.healthit.chpl.scheduler.job.QuartzJob;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2(topic = "developerAttestationCheckinReportJobLogger")
-public class DeveloperAttestationCheckInReportJob implements Job {
+public class DeveloperAttestationCheckInReportJob extends QuartzJob {
 
     @Autowired
     private JpaTransactionManager txManager;
@@ -132,17 +128,4 @@ public class DeveloperAttestationCheckInReportJob implements Job {
                 .map(acb -> Long.parseLong(acb))
                 .collect(Collectors.toList());
     }
-
-    private void setSecurityContext(UserDTO user) {
-        JWTAuthenticatedUser splitUser = new JWTAuthenticatedUser();
-        splitUser.setFullName(user.getFullName());
-        splitUser.setId(user.getId());
-        splitUser.setFriendlyName(user.getFriendlyName());
-        splitUser.setSubjectName(user.getUsername());
-        splitUser.getAuthorities().add(new SimpleGrantedAuthority(user.getPermission().getGrantedPermission().toString()));
-
-        SecurityContextHolder.getContext().setAuthentication(splitUser);
-        SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);
-    }
-
 }
