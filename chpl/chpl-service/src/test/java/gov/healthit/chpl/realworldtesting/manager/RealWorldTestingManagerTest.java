@@ -160,7 +160,6 @@ public class RealWorldTestingManagerTest {
         adminUser.setId(USER_ID);
         adminUser.setFriendlyName("Administrator");
         adminUser.setSubjectName("admin");
-        //adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
         adminUser.getAuthorities().add(new SimpleGrantedAuthority(Authority.ROLE_ADMIN));
 
         SecurityContextHolder.getContext().setAuthentication(adminUser);

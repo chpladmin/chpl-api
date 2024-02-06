@@ -140,7 +140,6 @@ public class UpdateListingStatusJob extends QuartzJob {
         adminUser.setId(-2L);
         adminUser.setFriendlyName("Admin");
         adminUser.setSubjectName("admin");
-        //adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
         adminUser.getAuthorities().add(new SimpleGrantedAuthority(Authority.ROLE_ADMIN));
 
         SecurityContextHolder.getContext().setAuthentication(adminUser);

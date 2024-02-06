@@ -261,7 +261,6 @@ public class PendingChangeRequestEmailJob extends QuartzJob {
         adminUser.setId(ChplSystemUsers.ADMIN_USER_ID);
         adminUser.setFriendlyName("Admin");
         adminUser.setSubjectName("admin");
-        //adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
         adminUser.getAuthorities().add(new SimpleGrantedAuthority(Authority.ROLE_ADMIN));
 
         SecurityContextHolder.getContext().setAuthentication(adminUser);

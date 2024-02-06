@@ -52,15 +52,6 @@ public class GetAllActionPermissions extends ActionPermissions {
                             .filter(userAuth -> authorities.contains(userAuth.getAuthority()))
                             .findAny()
                             .isPresent();
-
-                    //Collection<GrantedAuthority> userRoles = AuthUtil.getCurrentUser().getAuthorities();
-                    //for (GrantedPerm permission : userRoles) {
-                    //    for (String authority : authorities) {
-                    //        if (permission.getAuthority().equalsIgnoreCase(authority)) {
-                    //            return true;
-                    //        }
-                    //    }
-                    //}
                 } else {
                     // If no authorities are present, we assume there are no
                     // permissions on the job

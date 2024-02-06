@@ -216,7 +216,6 @@ public class RealWorldTestingUploadJob implements Job {
         rwtUploadUser.setId(user.getId());
         rwtUploadUser.setFriendlyName(user.getFriendlyName());
         rwtUploadUser.setSubjectName(user.getUsername());
-        //rwtUploadUser.getPermissions().add(user.getPermission().getGrantedPermission());
         rwtUploadUser.getAuthorities().add(new SimpleGrantedAuthority(user.getPermission().getGrantedPermission().toString()));
 
         SecurityContextHolder.getContext().setAuthentication(rwtUploadUser);

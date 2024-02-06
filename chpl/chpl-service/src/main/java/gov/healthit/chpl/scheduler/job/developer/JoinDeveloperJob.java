@@ -125,7 +125,6 @@ public class JoinDeveloperJob implements Job {
         joinUser.setId(user.getId());
         joinUser.setFriendlyName(user.getFriendlyName());
         joinUser.setSubjectName(user.getUsername());
-        //joinUser.getPermissions().add(user.getPermission().getGrantedPermission());
         joinUser.getAuthorities().add(new SimpleGrantedAuthority(user.getPermission().getGrantedPermission().toString()));
 
         SecurityContextHolder.getContext().setAuthentication(joinUser);

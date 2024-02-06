@@ -237,7 +237,6 @@ public class ListingUploadValidationJob implements Job {
         splitUser.setId(user.getId());
         splitUser.setFriendlyName(user.getFriendlyName());
         splitUser.setSubjectName(user.getUsername());
-        //splitUser.getPermissions().add(user.getPermission().getGrantedPermission());
         splitUser.getAuthorities().add(new SimpleGrantedAuthority(user.getPermission().getGrantedPermission().toString()));
 
         SecurityContextHolder.getContext().setAuthentication(splitUser);

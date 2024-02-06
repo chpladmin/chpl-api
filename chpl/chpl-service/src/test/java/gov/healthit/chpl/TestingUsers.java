@@ -20,7 +20,6 @@ public class TestingUsers {
         adminUser.setId(-2L);
         adminUser.setFriendlyName("Administrator");
         adminUser.setSubjectName("admin");
-        //adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
         adminUser.getAuthorities().add(new SimpleGrantedAuthority(Authority.ROLE_ADMIN));
         return adminUser;
     }
@@ -36,7 +35,6 @@ public class TestingUsers {
         acbUser.setId(3L);
         acbUser.setFriendlyName("User3");
         acbUser.setSubjectName("testUser3");
-        //acbUser.getPermissions().add(new GrantedPermission("ROLE_ACB"));
         acbUser.getAuthorities().add(new SimpleGrantedAuthority(Authority.ROLE_ACB));
         return acbUser;
     }
@@ -57,7 +55,6 @@ public class TestingUsers {
         cmsUser.setId(3L);
         cmsUser.setFriendlyName("User");
         cmsUser.setSubjectName("cmsUser");
-        //cmsUser.getPermissions().add(new GrantedPermission("ROLE_CMS_STAFF"));
         cmsUser.getAuthorities().add(new SimpleGrantedAuthority(Authority.ROLE_CMS_STAFF));
 
         return cmsUser;
@@ -69,7 +66,6 @@ public class TestingUsers {
         startupUser.setId(-4L);
         startupUser.setFriendlyName("Startup");
         startupUser.setSubjectName("startpUser");
-        //startupUser.getPermissions().add(new GrantedPermission("ROLE_STARTUP"));
         startupUser.getAuthorities().add(new SimpleGrantedAuthority(Authority.ROLE_STARTUP));
         return startupUser;
     }
@@ -85,7 +81,6 @@ public class TestingUsers {
         oncUser.setId(3L);
         oncUser.setFriendlyName("User");
         oncUser.setSubjectName("oncUser");
-        //oncUser.getPermissions().add(new GrantedPermission("ROLE_ONC"));
         oncUser.getAuthorities().add(new SimpleGrantedAuthority(Authority.ROLE_ONC));
         return oncUser;
     }
@@ -101,7 +96,6 @@ public class TestingUsers {
         developerUser.setId(3L);
         developerUser.setFriendlyName("User");
         developerUser.setSubjectName("developerUser");
-        //oncUser.getPermissions().add(new GrantedPermission("ROLE_DEVELOPER"));
         developerUser.getAuthorities().add(new SimpleGrantedAuthority(Authority.ROLE_DEVELOPER));
         return developerUser;
     }

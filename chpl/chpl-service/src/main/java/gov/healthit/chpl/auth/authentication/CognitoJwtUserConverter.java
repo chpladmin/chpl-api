@@ -55,9 +55,6 @@ public class CognitoJwtUserConverter implements JWTUserConverter {
                     .authorities(decodeJwt.getClaim("cognito:groups").asList(String.class).stream()
                             .map(group -> new SimpleGrantedAuthority(group))
                             .collect(Collectors.toSet()))
-                    //.permissions(decodeJwt.getClaim("cognito:groups").asList(String.class).stream()
-                    //        .map(group -> new GrantedPermission(group))
-                    //        .collect(Collectors.toSet()))
                     .build();
         } catch (Exception e) {
             return null;

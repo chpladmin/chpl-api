@@ -404,24 +404,12 @@ public class SchedulerManager extends SecuredManager {
             List<String> authorities = new ArrayList<String>(
                     Arrays.asList(jobDetail.getJobDataMap().get("authorities").toString().split(AUTHORITY_DELIMITER)));
             return resourcePermissionsFactory.get().doesUserHaveRole(authorities);
-
-            //Set<GrantedPermission> userRoles = AuthUtil.getCurrentUser().getPermissions();
-            //for (GrantedPermission permission : userRoles) {
-            //    for (String authority : authorities) {
-            //        if (permission.getAuthority().equalsIgnoreCase(authority)) {
-            //            return true;
-            //        }
-            //    }
-            //}
         } else {
             // If no authorities are present, we assume there are no permissions
             // on the job
             // and everyone has access
             return true;
         }
-        // At this point we have fallen through all of the logic, and the user
-        // does not have the appropriate rights
-        //return false;
     }
 
     private Boolean doesUserHavePermissionToTrigger(Trigger trigger) throws SchedulerException {

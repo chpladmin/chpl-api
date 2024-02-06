@@ -72,7 +72,6 @@ public class CertificationIdEmailJob  implements Job {
         mergeUser.setId(user.getId());
         mergeUser.setFriendlyName(user.getFriendlyName());
         mergeUser.setSubjectName(user.getUsername());
-        //mergeUser.getPermissions().add(user.getPermission().getGrantedPermission());
         mergeUser.getAuthorities().add(new SimpleGrantedAuthority(user.getPermission().getGrantedPermission().toString()));
 
         SecurityContextHolder.getContext().setAuthentication(mergeUser);

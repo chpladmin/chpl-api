@@ -55,8 +55,6 @@ public class ChplJWTUserConverter implements JWTUserConverter {
             user.setSubjectName(subject);
 
             String role = (String) validatedClaims.get("Authority");
-            //GrantedPermission permission = new GrantedPermission(role);
-            //user.addPermission(permission);
             user.getAuthorities().add(new SimpleGrantedAuthority(role));
 
             @SuppressWarnings("unchecked") List<String> identityInfo = (List<String>) validatedClaims.get("Identity");
@@ -93,8 +91,6 @@ public class ChplJWTUserConverter implements JWTUserConverter {
             throw new JWTValidationException("Invalid authentication token.");
         } else {
             String role = (String) validatedClaims.get("Authority");
-            //GrantedPermission permission = new GrantedPermission(role);
-            //user.addPermission(permission);
             user.getAuthorities().add(new SimpleGrantedAuthority(role));
 
             @SuppressWarnings("unchecked") List<String> identityInfo = (List<String>) validatedClaims.get("Identity");

@@ -340,7 +340,6 @@ public class ChangeRequestReportEmailJob  extends QuartzJob {
         jobUser.setId(user.getId());
         jobUser.setFriendlyName(user.getFriendlyName());
         jobUser.setSubjectName(user.getUsername());
-        //jobUser.getPermissions().add(user.getPermission().getGrantedPermission());
         jobUser.getAuthorities().add(new SimpleGrantedAuthority(user.getPermission().getGrantedPermission().toString()));
 
         SecurityContextHolder.getContext().setAuthentication(jobUser);

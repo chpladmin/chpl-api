@@ -31,8 +31,7 @@ public class JWTAuthenticatedUser implements UserDetails, Authentication {
     private String friendlyName;
     private String email;
     private String passwordResetRequired;
-    //@Builder.Default
-    //private Set<GrantedPermission> permissions = new HashSet<GrantedPermission>();
+
     private UserDTO impersonatingUser;
 
     // UserDetails interface
@@ -52,7 +51,4 @@ public class JWTAuthenticatedUser implements UserDetails, Authentication {
     private boolean authenticated;
     private String name;
 
-    //public void addPermission(GrantedPermission permission) {
-    //    permissions.add(permission);
-    //}
 }
