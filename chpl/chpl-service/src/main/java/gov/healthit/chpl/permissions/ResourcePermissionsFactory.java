@@ -13,7 +13,9 @@ import gov.healthit.chpl.dao.auth.UserDAO;
 import gov.healthit.chpl.manager.auth.CognitoUserService;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 @Component
 public class ResourcePermissionsFactory {
     private ChplResourcePermissions chplResourcePermissions;
@@ -31,10 +33,10 @@ public class ResourcePermissionsFactory {
 
     public ResourcePermissions get() {
         JWTAuthenticatedUser user = AuthUtil.getCurrentUser();
-        if (user == null || user.getAuthenticationSystem().equals(AuthenticationSystem.COGNTIO)) {
-            return cognitoResourcePermissions;
-        } else {
+        if (user == null || user.getAuthenticationSystem().equals(AuthenticationSystem.CHPL)) {
             return chplResourcePermissions;
+        } else {
+            return cognitoResourcePermissions;
         }
     }
 }
