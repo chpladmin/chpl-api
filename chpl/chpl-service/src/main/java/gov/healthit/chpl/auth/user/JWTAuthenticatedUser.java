@@ -2,16 +2,13 @@ package gov.healthit.chpl.auth.user;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -34,8 +31,8 @@ public class JWTAuthenticatedUser implements UserDetails, Authentication {
     private String friendlyName;
     private String email;
     private String passwordResetRequired;
-    @Builder.Default
-    private Set<GrantedPermission> permissions = new HashSet<GrantedPermission>();
+    //@Builder.Default
+    //private Set<GrantedPermission> permissions = new HashSet<GrantedPermission>();
     private UserDTO impersonatingUser;
 
     // UserDetails interface
@@ -48,14 +45,14 @@ public class JWTAuthenticatedUser implements UserDetails, Authentication {
 
     // Authentication Interface
     @Builder.Default
-    private Collection<? extends GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
+    private Collection<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
     private Object credentials;
     private Object details;
     private Object principal;
     private boolean authenticated;
     private String name;
 
-    public void addPermission(GrantedPermission permission) {
-        permissions.add(permission);
-    }
+    //public void addPermission(GrantedPermission permission) {
+    //    permissions.add(permission);
+    //}
 }

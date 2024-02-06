@@ -5,9 +5,9 @@ import java.util.Map;
 
 import org.jose4j.jwt.consumer.InvalidJwtException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import gov.healthit.chpl.auth.jwt.JWTConsumer;
-import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.AuthenticationSystem;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.dao.auth.UserDAO;
@@ -55,8 +55,9 @@ public class ChplJWTUserConverter implements JWTUserConverter {
             user.setSubjectName(subject);
 
             String role = (String) validatedClaims.get("Authority");
-            GrantedPermission permission = new GrantedPermission(role);
-            user.addPermission(permission);
+            //GrantedPermission permission = new GrantedPermission(role);
+            //user.addPermission(permission);
+            user.getAuthorities().add(new SimpleGrantedAuthority(role));
 
             @SuppressWarnings("unchecked") List<String> identityInfo = (List<String>) validatedClaims.get("Identity");
             Long userId = Long.valueOf(identityInfo.get(USER_ID));
@@ -92,8 +93,9 @@ public class ChplJWTUserConverter implements JWTUserConverter {
             throw new JWTValidationException("Invalid authentication token.");
         } else {
             String role = (String) validatedClaims.get("Authority");
-            GrantedPermission permission = new GrantedPermission(role);
-            user.addPermission(permission);
+            //GrantedPermission permission = new GrantedPermission(role);
+            //user.addPermission(permission);
+            user.getAuthorities().add(new SimpleGrantedAuthority(role));
 
             @SuppressWarnings("unchecked") List<String> identityInfo = (List<String>) validatedClaims.get("Identity");
             Long userId = Long.valueOf(identityInfo.get(IMPERSONATING_USER_ID));

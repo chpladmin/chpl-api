@@ -4,14 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.attestation.domain.AttestationPeriod;
 import gov.healthit.chpl.attestation.manager.AttestationPeriodService;
-import gov.healthit.chpl.auth.permission.GrantedPermission;
-import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.auth.user.ChplSystemUsers;
+import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestAttestationSubmission;
 import gov.healthit.chpl.changerequest.manager.ChangeRequestManager;
@@ -20,6 +20,7 @@ import gov.healthit.chpl.changerequest.search.ChangeRequestSearchResponse;
 import gov.healthit.chpl.changerequest.search.ChangeRequestSearchResult;
 import gov.healthit.chpl.changerequest.search.ChangeRequestSearchService;
 import gov.healthit.chpl.domain.Developer;
+import gov.healthit.chpl.domain.auth.Authority;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.scheduler.job.developer.attestation.DeveloperAttestationPeriodCalculator;
@@ -113,7 +114,8 @@ public class MissingAttestationChangeRequestDeveloperCollector implements Develo
         adminUser.setId(ChplSystemUsers.ADMIN_USER_ID);
         adminUser.setFriendlyName("Admin");
         adminUser.setSubjectName("admin");
-        adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
+        //adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
+        adminUser.getAuthorities().add(new SimpleGrantedAuthority(Authority.ROLE_ADMIN));
 
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);

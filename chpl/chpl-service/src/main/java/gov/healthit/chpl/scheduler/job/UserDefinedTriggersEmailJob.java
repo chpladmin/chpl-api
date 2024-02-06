@@ -20,13 +20,14 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
-import gov.healthit.chpl.auth.permission.GrantedPermission;
-import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.auth.user.ChplSystemUsers;
+import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
+import gov.healthit.chpl.domain.auth.Authority;
 import gov.healthit.chpl.domain.schedule.ChplRepeatableTrigger;
 import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.exception.EmailNotSentException;
@@ -223,7 +224,9 @@ public class UserDefinedTriggersEmailJob extends QuartzJob {
         adminUser.setId(ChplSystemUsers.ADMIN_USER_ID);
         adminUser.setFriendlyName("Admin");
         adminUser.setSubjectName("admin");
-        adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
+        //adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
+        adminUser.getAuthorities().add(new SimpleGrantedAuthority(Authority.ROLE_ADMIN));
+
         SecurityContextHolder.getContext().setAuthentication(adminUser);
     }
 }

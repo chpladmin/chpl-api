@@ -2,17 +2,14 @@ package gov.healthit.chpl.permissions.domains.scheduler;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.domain.schedule.ChplJob;
 import gov.healthit.chpl.manager.SchedulerManager;
 import gov.healthit.chpl.permissions.domains.ActionPermissions;
-import gov.healthit.chpl.util.AuthUtil;
 
 @Component(value = "schedulerGetAllActionPermissions")
 public class GetAllActionPermissions extends ActionPermissions {
@@ -50,14 +47,15 @@ public class GetAllActionPermissions extends ActionPermissions {
                 List<String> authorities = Arrays
                         .asList(job.getJobDataMap().get("authorities").toString().split(AUTHORITY_DELIMITER));
                 if (authorities.size() > 0) {
-                    Set<GrantedPermission> userRoles = AuthUtil.getCurrentUser().getPermissions();
-                    for (GrantedPermission permission : userRoles) {
-                        for (String authority : authorities) {
-                            if (permission.getAuthority().equalsIgnoreCase(authority)) {
-                                return true;
-                            }
-                        }
-                    }
+                    return getResourcePermissions().doesUserHaveRole(authorities);
+                    //Collection<GrantedAuthority> userRoles = AuthUtil.getCurrentUser().getAuthorities();
+                    //for (GrantedPerm permission : userRoles) {
+                    //    for (String authority : authorities) {
+                    //        if (permission.getAuthority().equalsIgnoreCase(authority)) {
+                    //            return true;
+                    //        }
+                    //    }
+                    //}
                 } else {
                     // If no authorities are present, we assume there are no
                     // permissions on the job

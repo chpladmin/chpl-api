@@ -19,6 +19,7 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
@@ -215,7 +216,8 @@ public class RealWorldTestingUploadJob implements Job {
         rwtUploadUser.setId(user.getId());
         rwtUploadUser.setFriendlyName(user.getFriendlyName());
         rwtUploadUser.setSubjectName(user.getUsername());
-        rwtUploadUser.getPermissions().add(user.getPermission().getGrantedPermission());
+        //rwtUploadUser.getPermissions().add(user.getPermission().getGrantedPermission());
+        rwtUploadUser.getAuthorities().add(new SimpleGrantedAuthority(user.getPermission().getGrantedPermission().toString()));
 
         SecurityContextHolder.getContext().setAuthentication(rwtUploadUser);
         SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);

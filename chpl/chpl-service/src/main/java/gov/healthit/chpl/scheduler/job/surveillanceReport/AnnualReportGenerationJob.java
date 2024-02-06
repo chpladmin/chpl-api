@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.orm.jpa.JpaTransactionManager;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
@@ -222,7 +223,8 @@ public class AnnualReportGenerationJob implements Job {
         mergeUser.setId(user.getId());
         mergeUser.setFriendlyName(user.getFriendlyName());
         mergeUser.setSubjectName(user.getUsername());
-        mergeUser.getPermissions().add(user.getPermission().getGrantedPermission());
+        //mergeUser.getPermissions().add(user.getPermission().getGrantedPermission());
+        mergeUser.getAuthorities().add(new SimpleGrantedAuthority(user.getPermission().getGrantedPermission().toString()));
 
         SecurityContextHolder.getContext().setAuthentication(mergeUser);
         SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);

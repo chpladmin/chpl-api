@@ -6,12 +6,13 @@ import java.util.List;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.ChplSystemUsers;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
+import gov.healthit.chpl.domain.auth.Authority;
 
 public class AuthUtil {
     public static String getUsername() {
@@ -71,9 +72,9 @@ public class AuthUtil {
             }
 
             @Override
-            public Collection<? extends GrantedAuthority> getAuthorities() {
+            public Collection<GrantedAuthority> getAuthorities() {
                 List<GrantedAuthority> auths = new ArrayList<GrantedAuthority>();
-                auths.add(new GrantedPermission("ROLE_INVITED_USER_CREATOR"));
+                auths.add(new SimpleGrantedAuthority(Authority.ROLE_INVITED_USER_CREATOR));
                 return auths;
             }
 

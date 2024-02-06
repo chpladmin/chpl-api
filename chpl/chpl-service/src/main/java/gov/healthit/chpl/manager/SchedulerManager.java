@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -31,7 +30,6 @@ import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
-import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.domain.schedule.ChplJob;
 import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
 import gov.healthit.chpl.domain.schedule.ChplRepeatableTrigger;
@@ -405,14 +403,16 @@ public class SchedulerManager extends SecuredManager {
         if (jobDetail.getJobDataMap().containsKey("authorities")) {
             List<String> authorities = new ArrayList<String>(
                     Arrays.asList(jobDetail.getJobDataMap().get("authorities").toString().split(AUTHORITY_DELIMITER)));
-            Set<GrantedPermission> userRoles = AuthUtil.getCurrentUser().getPermissions();
-            for (GrantedPermission permission : userRoles) {
-                for (String authority : authorities) {
-                    if (permission.getAuthority().equalsIgnoreCase(authority)) {
-                        return true;
-                    }
-                }
-            }
+            return resourcePermissionsFactory.get().doesUserHaveRole(authorities);
+
+            //Set<GrantedPermission> userRoles = AuthUtil.getCurrentUser().getPermissions();
+            //for (GrantedPermission permission : userRoles) {
+            //    for (String authority : authorities) {
+            //        if (permission.getAuthority().equalsIgnoreCase(authority)) {
+            //            return true;
+            //        }
+            //    }
+            //}
         } else {
             // If no authorities are present, we assume there are no permissions
             // on the job
@@ -421,7 +421,7 @@ public class SchedulerManager extends SecuredManager {
         }
         // At this point we have fallen through all of the logic, and the user
         // does not have the appropriate rights
-        return false;
+        //return false;
     }
 
     private Boolean doesUserHavePermissionToTrigger(Trigger trigger) throws SchedulerException {

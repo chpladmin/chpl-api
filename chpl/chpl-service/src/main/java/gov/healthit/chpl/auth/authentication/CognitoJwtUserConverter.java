@@ -6,6 +6,7 @@ import java.util.stream.Stream;
 
 import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
@@ -14,7 +15,6 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.RSAKeyProvider;
 
 import gov.healthit.chpl.auth.jwt.CognitoRsaKeyProvider;
-import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.AuthenticationSystem;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.exception.JWTValidationException;
@@ -52,10 +52,12 @@ public class CognitoJwtUserConverter implements JWTUserConverter {
                                             .map(Long::valueOf)
                                             .toList()
                                     : null)
-                    .permissions(decodeJwt.getClaim("cognito:groups").asList(String.class).stream()
-                            .map(group -> new GrantedPermission(group))
+                    .authorities(decodeJwt.getClaim("cognito:groups").asList(String.class).stream()
+                            .map(group -> new SimpleGrantedAuthority(group))
                             .collect(Collectors.toSet()))
-
+                    //.permissions(decodeJwt.getClaim("cognito:groups").asList(String.class).stream()
+                    //        .map(group -> new GrantedPermission(group))
+                    //        .collect(Collectors.toSet()))
                     .build();
         } catch (Exception e) {
             return null;

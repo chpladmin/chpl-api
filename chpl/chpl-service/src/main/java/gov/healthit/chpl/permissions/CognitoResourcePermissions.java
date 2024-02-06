@@ -188,8 +188,8 @@ public class CognitoResourcePermissions implements ResourcePermissions {
             return false;
         }
 
-        return user.getPermissions().stream()
-                .filter(permission -> permission.getAuthority().equals(authority))
+        return user.getAuthorities().stream()
+                .filter(auth -> auth.getAuthority().equals(authority))
                 .findAny()
                 .isPresent();
     }

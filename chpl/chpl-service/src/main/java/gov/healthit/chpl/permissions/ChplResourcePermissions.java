@@ -367,12 +367,12 @@ public class ChplResourcePermissions implements ResourcePermissions {
     }
 
     private boolean doesAuthenticationHaveRole(String authority) {
-        Authentication auth = AuthUtil.getCurrentAuthentication();
-        if (auth == null) {
+        Authentication user = AuthUtil.getCurrentAuthentication();
+        if (user == null) {
             return false;
         }
 
-        for (GrantedAuthority role : auth.getAuthorities()) {
+        for (GrantedAuthority role : user.getAuthorities()) {
             if (role.getAuthority().contentEquals(authority)) {
                 return true;
             }

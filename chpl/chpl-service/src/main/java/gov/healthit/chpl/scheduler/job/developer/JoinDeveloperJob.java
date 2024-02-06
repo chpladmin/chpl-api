@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.CacheManager;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
@@ -124,7 +125,8 @@ public class JoinDeveloperJob implements Job {
         joinUser.setId(user.getId());
         joinUser.setFriendlyName(user.getFriendlyName());
         joinUser.setSubjectName(user.getUsername());
-        joinUser.getPermissions().add(user.getPermission().getGrantedPermission());
+        //joinUser.getPermissions().add(user.getPermission().getGrantedPermission());
+        joinUser.getAuthorities().add(new SimpleGrantedAuthority(user.getPermission().getGrantedPermission().toString()));
 
         SecurityContextHolder.getContext().setAuthentication(joinUser);
         SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);

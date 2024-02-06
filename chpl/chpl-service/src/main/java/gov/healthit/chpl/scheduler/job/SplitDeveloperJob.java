@@ -24,6 +24,7 @@ import org.springframework.cache.CacheManager;
 import org.springframework.core.env.Environment;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
@@ -160,7 +161,8 @@ public class SplitDeveloperJob implements Job {
         splitUser.setId(user.getId());
         splitUser.setFriendlyName(user.getFriendlyName());
         splitUser.setSubjectName(user.getUsername());
-        splitUser.getPermissions().add(user.getPermission().getGrantedPermission());
+        //splitUser.getPermissions().add(user.getPermission().getGrantedPermission());
+        splitUser.getAuthorities().add(new SimpleGrantedAuthority(user.getPermission().getGrantedPermission().toString()));
 
         SecurityContextHolder.getContext().setAuthentication(splitUser);
         SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);

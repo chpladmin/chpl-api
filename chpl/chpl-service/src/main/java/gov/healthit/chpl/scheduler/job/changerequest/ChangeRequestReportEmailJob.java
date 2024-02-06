@@ -21,6 +21,7 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
@@ -339,7 +340,8 @@ public class ChangeRequestReportEmailJob  extends QuartzJob {
         jobUser.setId(user.getId());
         jobUser.setFriendlyName(user.getFriendlyName());
         jobUser.setSubjectName(user.getUsername());
-        jobUser.getPermissions().add(user.getPermission().getGrantedPermission());
+        //jobUser.getPermissions().add(user.getPermission().getGrantedPermission());
+        jobUser.getAuthorities().add(new SimpleGrantedAuthority(user.getPermission().getGrantedPermission().toString()));
 
         SecurityContextHolder.getContext().setAuthentication(jobUser);
         SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);
