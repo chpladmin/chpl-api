@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.domain.schedule.ChplJob;
 import gov.healthit.chpl.manager.SchedulerManager;
 import gov.healthit.chpl.permissions.domains.ActionPermissions;
+import gov.healthit.chpl.util.AuthUtil;
 
 @Component(value = "schedulerGetAllActionPermissions")
 public class GetAllActionPermissions extends ActionPermissions {
@@ -47,7 +48,11 @@ public class GetAllActionPermissions extends ActionPermissions {
                 List<String> authorities = Arrays
                         .asList(job.getJobDataMap().get("authorities").toString().split(AUTHORITY_DELIMITER));
                 if (authorities.size() > 0) {
-                    return getResourcePermissions().doesUserHaveRole(authorities);
+                    return AuthUtil.getCurrentUser().getAuthorities().stream()
+                            .filter(userAuth -> authorities.contains(userAuth.getAuthority()))
+                            .findAny()
+                            .isPresent();
+
                     //Collection<GrantedAuthority> userRoles = AuthUtil.getCurrentUser().getAuthorities();
                     //for (GrantedPerm permission : userRoles) {
                     //    for (String authority : authorities) {
