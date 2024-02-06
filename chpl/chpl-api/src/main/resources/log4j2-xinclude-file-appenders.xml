@@ -746,4 +746,16 @@
         </Policies>
     </RollingFile>
 
+    <RollingFile name="updateCurrentCertificationStatusJob"
+        fileName="${logDir}/scheduler/updateCurrentCertificationStatusJob.log"
+        filePattern="${logDir}/scheduler/history/updateCurrentCertificationStatusJob-%d{yyyy-MM-dd}.log"
+        filePermissions="rw-rw-r--">
+        <PatternLayout>
+            <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %X{dd.trace_id} %X{dd.span_id} - %m%n</Pattern>
+        </PatternLayout>
+        <Policies>
+            <TimeBasedTriggeringPolicy
+                interval="1" modulate="true" />
+        </Policies>
+    </RollingFile>
 </Appenders>

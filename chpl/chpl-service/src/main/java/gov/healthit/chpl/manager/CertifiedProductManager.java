@@ -1,15 +1,13 @@
 package gov.healthit.chpl.manager;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
-import javax.persistence.EntityNotFoundException;
-
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.ff4j.FF4j;
 import org.quartz.JobDataMap;
@@ -31,6 +29,7 @@ import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.caching.ListingSearchCacheRefresh;
 import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
 import gov.healthit.chpl.certifiedproduct.service.CertificationResultSynchronizationService;
+import gov.healthit.chpl.certifiedproduct.service.CertificationStatusEventsService;
 import gov.healthit.chpl.certifiedproduct.service.CqmResultSynchronizationService;
 import gov.healthit.chpl.dao.CertificationStatusDAO;
 import gov.healthit.chpl.dao.CertificationStatusEventDAO;
@@ -40,8 +39,6 @@ import gov.healthit.chpl.dao.CertifiedProductQmsStandardDAO;
 import gov.healthit.chpl.dao.CertifiedProductTargetedUserDAO;
 import gov.healthit.chpl.dao.CertifiedProductTestingLabDAO;
 import gov.healthit.chpl.dao.CuresUpdateEventDAO;
-import gov.healthit.chpl.dao.DeveloperDAO;
-import gov.healthit.chpl.dao.DeveloperStatusDAO;
 import gov.healthit.chpl.dao.ListingGraphDAO;
 import gov.healthit.chpl.dao.PromotingInteroperabilityUserDAO;
 import gov.healthit.chpl.dao.TargetedUserDAO;
@@ -56,9 +53,6 @@ import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductTargetedUser;
 import gov.healthit.chpl.domain.CertifiedProductTestingLab;
-import gov.healthit.chpl.domain.Developer;
-import gov.healthit.chpl.domain.DeveloperStatus;
-import gov.healthit.chpl.domain.DeveloperStatusEvent;
 import gov.healthit.chpl.domain.InheritedCertificationStatus;
 import gov.healthit.chpl.domain.ListingMeasure;
 import gov.healthit.chpl.domain.ListingUpdateRequest;
@@ -75,8 +69,6 @@ import gov.healthit.chpl.dto.CuresUpdateEventDTO;
 import gov.healthit.chpl.dto.ListingToListingMapDTO;
 import gov.healthit.chpl.dto.TargetedUserDTO;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
-import gov.healthit.chpl.entity.CertificationStatusType;
-import gov.healthit.chpl.entity.developer.DeveloperStatusType;
 import gov.healthit.chpl.exception.CertifiedProductUpdateException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -90,7 +82,7 @@ import gov.healthit.chpl.notifier.ChplTeamNotifier;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.qmsStandard.QmsStandard;
 import gov.healthit.chpl.qmsStandard.QmsStandardDAO;
-import gov.healthit.chpl.scheduler.job.TriggerDeveloperBanJob;
+import gov.healthit.chpl.scheduler.job.certificationStatus.UpdateCurrentCertificationStatusJob;
 import gov.healthit.chpl.service.CuresUpdateService;
 import gov.healthit.chpl.sharedstore.listing.ListingIcsSharedStoreHandler;
 import gov.healthit.chpl.sharedstore.listing.ListingStoreRemove;
@@ -118,9 +110,6 @@ public class CertifiedProductManager extends SecuredManager {
     private CertifiedProductTestingLabDAO cpTestingLabDao;
     private CertifiedProductTargetedUserDAO cpTargetedUserDao;
     private CertifiedProductAccessibilityStandardDAO cpAccStdDao;
-    private DeveloperDAO developerDao;
-    private DeveloperStatusDAO devStatusDao;
-    private DeveloperManager developerManager;
     private ProductManager productManager;
     private ProductVersionManager versionManager;
     private CertificationStatusEventDAO statusEventDao;
@@ -138,6 +127,7 @@ public class CertifiedProductManager extends SecuredManager {
     private ListingValidatorFactory validatorFactory;
     private CuresUpdateService curesUpdateService;
     private ListingIcsSharedStoreHandler icsSharedStoreHandler;
+    private CertificationStatusEventsService certStatusEventsService;
     private ChplTeamNotifier chplTeamNotifier;
     private Environment env;
     private ChplHtmlEmailBuilder chplHtmlEmailBuilder;
@@ -154,7 +144,6 @@ public class CertifiedProductManager extends SecuredManager {
             QmsStandardDAO qmsDao, TargetedUserDAO targetedUserDao, AccessibilityStandardDAO asDao, CertifiedProductQmsStandardDAO cpQmsDao,
             ListingMeasureDAO cpMeasureDao, CertifiedProductTestingLabDAO cpTestingLabDao, CertifiedProductTargetedUserDAO cpTargetedUserDao,
             CertifiedProductAccessibilityStandardDAO cpAccStdDao,
-             DeveloperDAO developerDao, DeveloperStatusDAO devStatusDao, @Lazy DeveloperManager developerManager,
             ProductManager productManager, ProductVersionManager versionManager, CertificationStatusEventDAO statusEventDao,
             CuresUpdateEventDAO curesUpdateDao, PromotingInteroperabilityUserDAO piuDao,
             CertificationResultSynchronizationService certResultService, CqmResultSynchronizationService cqmResultService,
@@ -162,7 +151,8 @@ public class CertifiedProductManager extends SecuredManager {
             CertifiedProductDetailsManager certifiedProductDetailsManager,
             SchedulerManager schedulerManager, ActivityManager activityManager, ListingDetailsNormalizer listingNormalizer,
             ListingValidatorFactory validatorFactory, CuresUpdateService curesUpdateService, @Lazy ListingIcsSharedStoreHandler icsSharedStoreHandler,
-            ChplTeamNotifier chplteamNotifier, Environment env, ChplHtmlEmailBuilder chplHtmlEmailBuilder, FF4j ff4j) {
+            CertificationStatusEventsService certStatusEventsService, ChplTeamNotifier chplteamNotifier,
+            Environment env, ChplHtmlEmailBuilder chplHtmlEmailBuilder, FF4j ff4j) {
 
         this.msgUtil = msgUtil;
         this.cpDao = cpDao;
@@ -174,9 +164,6 @@ public class CertifiedProductManager extends SecuredManager {
         this.cpTestingLabDao = cpTestingLabDao;
         this.cpTargetedUserDao = cpTargetedUserDao;
         this.cpAccStdDao = cpAccStdDao;
-        this.developerDao = developerDao;
-        this.devStatusDao = devStatusDao;
-        this.developerManager = developerManager;
         this.productManager = productManager;
         this.versionManager = versionManager;
         this.statusEventDao = statusEventDao;
@@ -194,6 +181,7 @@ public class CertifiedProductManager extends SecuredManager {
         this.validatorFactory = validatorFactory;
         this.curesUpdateService = curesUpdateService;
         this.icsSharedStoreHandler = icsSharedStoreHandler;
+        this.certStatusEventsService = certStatusEventsService;
         this.chplTeamNotifier = chplteamNotifier;
         this.env = env;
         this.chplHtmlEmailBuilder = chplHtmlEmailBuilder;
@@ -282,9 +270,6 @@ public class CertifiedProductManager extends SecuredManager {
             // validate - throws ValidationException if the listing cannot be updated
             validateListingForUpdate(existingListing, updatedListing, updateRequest.isAcknowledgeWarnings(), updateRequest.isAcknowledgeBusinessErrors());
 
-            // if listing status has changed that may trigger other changes to developer status
-            performSecondaryActionsBasedOnStatusChanges(existingListing, updatedListing, updateRequest.getReason());
-
             // clear all ICS family from the shared store so that ICS relationships
             // are cleared for ICS additions and ICS removals
             icsSharedStoreHandler.handle(updateRequest.getListing().getId());
@@ -295,8 +280,20 @@ public class CertifiedProductManager extends SecuredManager {
             updateListingsChildData(existingListing, updatedListing);
             updateRwtEligibilityForListingAndChildren(result);
 
+            CertifiedProductSearchDetails updatedListingNoCache = certifiedProductDetailsManager.getCertifiedProductDetailsNoCache(existingListing.getId());
+
             // Log the activity
-            logCertifiedProductUpdateActivity(existingListing, updateRequest.getReason());
+            Long activityId = logCertifiedProductUpdateActivity(existingListing, updatedListingNoCache, updateRequest.getReason());
+
+            //if listing status has changed that may trigger other changes to developer status to happen in the background
+            List<CertificationStatusEvent> addedCertStatusEvents
+                = certStatusEventsService.getAddedCertificationStatusEvents(existingListing, updatedListingNoCache);
+            addedCertStatusEvents.stream()
+                .forEach(addedCertStatusEvent -> triggerUpdateCurrentCertificationStatusJob(
+                        updatedListing,
+                        activityId,
+                        updatedListing.getCurrentStatus().getEventDay(),
+                        updateRequest.getReason()));
 
             //Send notification to Team
             if (wereBusinessRulesOverriddenDuringUpdate(updateRequest)) {
@@ -323,14 +320,13 @@ public class CertifiedProductManager extends SecuredManager {
                 && request.isAcknowledgeBusinessErrors();
     }
 
-    private void logCertifiedProductUpdateActivity(CertifiedProductSearchDetails existingListing,
+    private Long logCertifiedProductUpdateActivity(CertifiedProductSearchDetails existingListing,
+            CertifiedProductSearchDetails updatedListing,
             String reason) throws JsonProcessingException, EntityCreationException, EntityRetrievalException {
-
-        CertifiedProductSearchDetails changedProduct = certifiedProductDetailsManager.getCertifiedProductDetailsNoCache(existingListing.getId());
-
-        activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, existingListing.getId(),
-                "Updated certified product " + changedProduct.getChplProductNumber() + ".", existingListing,
-                changedProduct, reason);
+        Long activityId = activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, existingListing.getId(),
+                "Updated certified product " + updatedListing.getChplProductNumber() + ".", existingListing,
+                updatedListing, reason);
+        return activityId;
     }
 
     private void updateListingsChildData(CertifiedProductSearchDetails existingListing, CertifiedProductSearchDetails updatedListing)
@@ -373,70 +369,6 @@ public class CertifiedProductManager extends SecuredManager {
                 updateRwtEligibilityForListingAndChildren(child);
             }
         }
-    }
-
-    private void performSecondaryActionsBasedOnStatusChanges(CertifiedProductSearchDetails existingListing,
-            CertifiedProductSearchDetails updatedListing, String reason)
-            throws EntityRetrievalException, JsonProcessingException, EntityCreationException, ValidationException {
-        Long listingId = updatedListing.getId();
-        Long productVersionId = updatedListing.getVersion().getId();
-        CertificationStatus updatedStatus = updatedListing.getCurrentStatus().getStatus();
-        CertificationStatus existingStatus = existingListing.getCurrentStatus().getStatus();
-        // if listing status has changed that may trigger other changes
-        // to developer status
-        if (ObjectUtils.notEqual(updatedStatus.getName(), existingStatus.getName())) {
-            // look at the updated status and see if a developer ban is appropriate
-            CertificationStatus updatedStatusObj = certStatusDao.getById(updatedStatus.getId());
-            Developer cpDeveloper = developerDao.getByVersion(productVersionId);
-            if (cpDeveloper == null) {
-                LOGGER.error("Could not find developer for product version with id " + productVersionId);
-                throw new EntityNotFoundException(
-                        "No developer could be located for the certified product in the update. Update cannot continue.");
-            }
-            DeveloperStatus newDevStatus = null;
-            switch (CertificationStatusType.getValue(updatedStatusObj.getName())) {
-            case SuspendedByOnc:
-            case TerminatedByOnc:
-                // only onc admin can do this and it always triggers developer ban
-                if (resourcePermissions.isUserRoleAdmin() || resourcePermissions.isUserRoleOnc()) {
-                    // find the new developer status
-                    if (updatedStatusObj.getName().equals(CertificationStatusType.SuspendedByOnc.toString())) {
-                        newDevStatus = devStatusDao.getByName(DeveloperStatusType.SuspendedByOnc.toString());
-                    } else if (updatedStatusObj.getName()
-                            .equals(CertificationStatusType.TerminatedByOnc.toString())) {
-                        newDevStatus = devStatusDao
-                                .getByName(DeveloperStatusType.UnderCertificationBanByOnc.toString());
-                    }
-                } else if (!resourcePermissions.isUserRoleAdmin() && !resourcePermissions.isUserRoleOnc()) {
-                    LOGGER.error("User " + AuthUtil.getUsername()
-                            + " does not have ROLE_ADMIN or ROLE_ONC and cannot change the status of developer for certified "
-                            + "product with id " + listingId);
-                    throw new AccessDeniedException(
-                            "User does not have admin permission to change " + cpDeveloper.getName() + " status.");
-                }
-                break;
-            case WithdrawnByAcb:
-            case WithdrawnByDeveloperUnderReview:
-                // initiate TriggerDeveloperBan job, telling ONC that they might
-                // need to ban a Developer
-                triggerDeveloperBan(updatedListing, reason);
-                break;
-            default:
-                LOGGER.info("New listing status is " + updatedStatusObj.getName()
-                        + " which does not trigger a developer ban.");
-                break;
-            }
-            if (newDevStatus != null) {
-                DeveloperStatusEvent statusHistoryToAdd = new DeveloperStatusEvent();
-                statusHistoryToAdd.setDeveloperId(cpDeveloper.getId());
-                statusHistoryToAdd.setStatus(newDevStatus);
-                statusHistoryToAdd.setStatusDate(new Date());
-                statusHistoryToAdd.setReason(msgUtil.getMessage("developer.statusAutomaticallyChanged"));
-                cpDeveloper.getStatusEvents().add(statusHistoryToAdd);
-                developerManager.update(cpDeveloper, false);
-            }
-        }
-
     }
 
     private void validateListingForUpdate(CertifiedProductSearchDetails existingListing,
@@ -1255,23 +1187,34 @@ public class CertifiedProductManager extends SecuredManager {
         return cqmResultService.synchronizeCqms(listing, existingCqmDetails, updatedCqmDetails);
     }
 
-    private void triggerDeveloperBan(CertifiedProductSearchDetails updatedListing, String reason) {
-        ChplOneTimeTrigger possibleDeveloperBanTrigger = new ChplOneTimeTrigger();
-        ChplJob triggerDeveloperBanJob = new ChplJob();
-        triggerDeveloperBanJob.setName(TriggerDeveloperBanJob.JOB_NAME);
-        triggerDeveloperBanJob.setGroup(SchedulerManager.CHPL_JOBS_KEY);
+    private void triggerUpdateCurrentCertificationStatusJob(CertifiedProductSearchDetails updatedListing, Long activityId,
+            LocalDate currentStatusUpdateDay, String reason) {
+        ChplOneTimeTrigger updateStatusTrigger = new ChplOneTimeTrigger();
+        ChplJob updateStatusJob = new ChplJob();
+        updateStatusJob.setName(UpdateCurrentCertificationStatusJob.JOB_NAME);
+        updateStatusJob.setGroup(SchedulerManager.CHPL_BACKGROUND_JOBS_KEY);
         JobDataMap jobDataMap = new JobDataMap();
-        jobDataMap.put(TriggerDeveloperBanJob.LISTING_ID, updatedListing.getId());
-        jobDataMap.put(TriggerDeveloperBanJob.USER, AuthUtil.getCurrentUser());
-        jobDataMap.put(TriggerDeveloperBanJob.CHANGE_DATE, System.currentTimeMillis());
-        jobDataMap.put(TriggerDeveloperBanJob.USER_PROVIDED_REASON, reason);
-        triggerDeveloperBanJob.setJobDataMap(jobDataMap);
-        possibleDeveloperBanTrigger.setJob(triggerDeveloperBanJob);
-        possibleDeveloperBanTrigger.setRunDateMillis(System.currentTimeMillis() + SchedulerManager.FIVE_SECONDS_IN_MILLIS);
+        jobDataMap.put(UpdateCurrentCertificationStatusJob.LISTING_ID, updatedListing.getId());
+        jobDataMap.put(UpdateCurrentCertificationStatusJob.USER, AuthUtil.getCurrentUser());
+        jobDataMap.put(UpdateCurrentCertificationStatusJob.CERTIFICATION_STATUS_EVENT_DAY, currentStatusUpdateDay.toString());
+        jobDataMap.put(UpdateCurrentCertificationStatusJob.ACTIVITY_ID, activityId);
+        jobDataMap.put(UpdateCurrentCertificationStatusJob.USER_PROVIDED_REASON, reason);
+        updateStatusJob.setJobDataMap(jobDataMap);
+        updateStatusTrigger.setJob(updateStatusJob);
+
+        if (currentStatusUpdateDay.equals(LocalDate.now())) {
+            updateStatusTrigger.setRunDateMillis(System.currentTimeMillis() + SchedulerManager.FIVE_SECONDS_IN_MILLIS);
+        } else if (currentStatusUpdateDay.isAfter(LocalDate.now())) {
+            //TODO: check for an existing job for this listing ID and event day and if it doesn't exist then schedule it
+        } else {
+            LOGGER.info("Activity " + activityId + " added a certification status to listing " + updatedListing.getId() + " that was in the past. No job will be scheduled.");
+            return;
+        }
+
         try {
-            possibleDeveloperBanTrigger = schedulerManager.createBackgroundJobTrigger(possibleDeveloperBanTrigger);
+            updateStatusTrigger = schedulerManager.createBackgroundJobTrigger(updateStatusTrigger);
         } catch (Exception ex) {
-            LOGGER.error("Unable to schedule Trigger Developer Ban Job.", ex);
+            LOGGER.error("Unable to schedule Update Current Certification Status Job.", ex);
         }
     }
 
