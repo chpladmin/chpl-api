@@ -23,7 +23,9 @@ public class CreateOneTimeTriggerActionPermissions extends ActionPermissions {
     public boolean hasAccess(Object obj) {
         LOGGER.info("ResourcePermissions type {}", getResourcePermissions().getClass().toString());
         LOGGER.info("Object is of type {}", obj.getClass());
-        LOGGER.info("User Roles - {}", AuthUtil.getCurrentUser().getAuthorities().stream().map(ga -> ga.toString()).collect(Collectors.joining(", ")));
+        if (AuthUtil.getCurrentUser() != null) {
+            LOGGER.info("User Roles - {}", AuthUtil.getCurrentUser().getAuthorities().stream().map(ga -> ga.toString()).collect(Collectors.joining(", ")));
+        }
         if (getResourcePermissions().isUserRoleAdmin()) {
             LOGGER.info("User is Admin");
             return true;
