@@ -96,10 +96,9 @@ public class UserManagerTest {
         Mockito.when(env.getProperty("resetLinkExpirationTimeInHours"))
                 .thenReturn(RESET_LINK_EXPIRATION);
 
-        Mockito.doNothing()
-                .when(activityManager)
-                .addActivity(ArgumentMatchers.any(), ArgumentMatchers.anyLong(), ArgumentMatchers.anyString(),
-                        ArgumentMatchers.any(), ArgumentMatchers.any());
+        Mockito.when(activityManager.addActivity(ArgumentMatchers.any(), ArgumentMatchers.anyLong(),
+                        ArgumentMatchers.anyString(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+            .thenReturn(1L);
 
         Mockito.doNothing()
                 .when(userResetTokenDAO)
