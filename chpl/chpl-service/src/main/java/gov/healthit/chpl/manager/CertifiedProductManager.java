@@ -1229,8 +1229,9 @@ public class CertifiedProductManager extends SecuredManager {
                     currentStatusUpdateDay.getMonth(),
                     currentStatusUpdateDay.getDayOfMonth(),
                     0, 5, 0);
-            updateStatusTrigger.setRunDateMillis(DateUtil.toEpochMillis(
-                    DateUtil.fromSystemToEastern(fiveAfterMidnightEastern)));
+            LOGGER.info("Five minutes after midnight: " + fiveAfterMidnightEastern);
+            LOGGER.info("In millis: " + DateUtil.toEpochMillis(fiveAfterMidnightEastern));
+            updateStatusTrigger.setRunDateMillis(DateUtil.toEpochMillis(fiveAfterMidnightEastern));
         } else {
             LOGGER.info("Activity " + activityId + " added a certification status to listing " + updatedListing.getId() + " that was in the past. No job will be scheduled.");
             return;
@@ -1247,7 +1248,9 @@ public class CertifiedProductManager extends SecuredManager {
         boolean isJobScheduled = getAllScheduledSystemJobs().stream()
                 .filter(systemJob -> systemJob.getName().equalsIgnoreCase(UpdateCurrentCertificationStatusJob.JOB_NAME)
                         && DateUtil.toLocalDate(systemJob.getNextRunDate().getTime()).equals(jobDay)
+                        && systemJob.getJobDataMap().get(UpdateCurrentCertificationStatusJob.LISTING_ID) != null
                         && systemJob.getJobDataMap().getLong(UpdateCurrentCertificationStatusJob.LISTING_ID) == listingId.longValue()
+                        && systemJob.getJobDataMap().get(UpdateCurrentCertificationStatusJob.ACTIVITY_ID) != null
                         && systemJob.getJobDataMap().getLong(UpdateCurrentCertificationStatusJob.ACTIVITY_ID) == activityId.longValue())
                 .findAny()
                 .isPresent();
