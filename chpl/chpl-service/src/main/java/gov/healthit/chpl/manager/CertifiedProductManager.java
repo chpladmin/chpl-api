@@ -3,6 +3,7 @@ package gov.healthit.chpl.manager;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -85,6 +86,7 @@ import gov.healthit.chpl.manager.auth.UserManager;
 import gov.healthit.chpl.manager.impl.SecuredManager;
 import gov.healthit.chpl.notifier.BusinessRulesOverrideNotifierMessage;
 import gov.healthit.chpl.notifier.ChplTeamNotifier;
+import gov.healthit.chpl.notifier.FutureCertificationStatusNotifierMessage;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.qmsStandard.QmsStandard;
 import gov.healthit.chpl.qmsStandard.QmsStandardDAO;
@@ -299,7 +301,7 @@ public class CertifiedProductManager extends SecuredManager {
 
             //if listing status has changed that may trigger other changes to developer status to happen in the background
             List<CertificationStatusEvent> addedCertStatusEvents
-                = certStatusEventsService.getAddedCertificationStatusEvents(existingListing, updatedListingNoCache);
+                = certStatusEventsService.getAddedCertificationStatusEventsIgnoringReasonUpdates(existingListing, updatedListingNoCache);
             addedCertStatusEvents.stream()
                 .forEach(addedCertStatusEvent -> triggerUpdateCurrentCertificationStatusJob(
                         updatedListing,
@@ -1223,15 +1225,18 @@ public class CertifiedProductManager extends SecuredManager {
 
         if (currentStatusUpdateDay.equals(LocalDate.now())) {
             updateStatusTrigger.setRunDateMillis(System.currentTimeMillis() + SchedulerManager.FIVE_SECONDS_IN_MILLIS);
-        } else if (currentStatusUpdateDay.isAfter(LocalDate.now())
-                && !isJobAlreadyScheduled(currentStatusUpdateDay, updatedListing.getId(), activityId)) {
-            LocalDateTime fiveAfterMidnightEastern = LocalDateTime.of(currentStatusUpdateDay.getYear(),
-                    currentStatusUpdateDay.getMonth(),
-                    currentStatusUpdateDay.getDayOfMonth(),
-                    0, 5, 0);
+        } else if (currentStatusUpdateDay.isAfter(LocalDate.now())) {
+            sendFutureCertificationStatusNotification(updatedListing, currentStatusUpdateDay, activityId);
+            if (isJobAlreadyScheduled(currentStatusUpdateDay, updatedListing.getId())) {
+                //if there is already one of these jobs scheduled for this listing on this day, then cancel it
+                //because we are going to schedule a new one with different activity ID (activity ID affects subscription notifications)
+
+                //TODO
+            }
+            LocalDateTime fiveAfterMidnightEastern = LocalDateTime.of(currentStatusUpdateDay, LocalTime.of(0, 5));
             LOGGER.info("Five minutes after midnight: " + fiveAfterMidnightEastern);
             LOGGER.info("In millis: " + DateUtil.toEpochMillis(fiveAfterMidnightEastern));
-            updateStatusTrigger.setRunDateMillis(DateUtil.toEpochMillis(fiveAfterMidnightEastern));
+            updateStatusTrigger.setRunDateMillis(DateUtil.toEpochMillis(DateUtil.fromEasternToSystem(fiveAfterMidnightEastern)));
         } else {
             LOGGER.info("Activity " + activityId + " added a certification status to listing " + updatedListing.getId() + " that was in the past. No job will be scheduled.");
             return;
@@ -1244,21 +1249,17 @@ public class CertifiedProductManager extends SecuredManager {
         }
     }
 
-    private boolean isJobAlreadyScheduled(LocalDate jobDay, Long listingId, Long activityId) {
+    private boolean isJobAlreadyScheduled(LocalDate jobDay, Long listingId) {
+        LOGGER.info("Checking whether a " + UpdateCurrentCertificationStatusJob.JOB_NAME + " job is already scheduled "
+                + "for listing " + listingId + " on " + jobDay);
         boolean isJobScheduled = getAllScheduledSystemJobs().stream()
                 .filter(systemJob -> systemJob.getName().equalsIgnoreCase(UpdateCurrentCertificationStatusJob.JOB_NAME)
                         && DateUtil.toLocalDate(systemJob.getNextRunDate().getTime()).equals(jobDay)
                         && systemJob.getJobDataMap().get(UpdateCurrentCertificationStatusJob.LISTING_ID) != null
-                        && systemJob.getJobDataMap().getLong(UpdateCurrentCertificationStatusJob.LISTING_ID) == listingId.longValue()
-                        && systemJob.getJobDataMap().get(UpdateCurrentCertificationStatusJob.ACTIVITY_ID) != null
-                        && systemJob.getJobDataMap().getLong(UpdateCurrentCertificationStatusJob.ACTIVITY_ID) == activityId.longValue())
+                        && systemJob.getJobDataMap().getLong(UpdateCurrentCertificationStatusJob.LISTING_ID) == listingId.longValue())
                 .findAny()
                 .isPresent();
-        if (isJobScheduled) {
-            LOGGER.info("The " + UpdateCurrentCertificationStatusJob.JOB_NAME + " is already scheduled "
-                + "for listing " + listingId + " and activity " + activityId
-                + " on " + jobDay);
-        }
+        LOGGER.info(isJobScheduled ? "Not scheduled!" : "Scheduled!");
         return isJobScheduled;
     }
 
@@ -1269,6 +1270,12 @@ public class CertifiedProductManager extends SecuredManager {
             LOGGER.error("Could not retrieve list of scheduled system Quartz jobs", e);
             return List.of();
         }
+    }
+
+    private void sendFutureCertificationStatusNotification(CertifiedProductSearchDetails listing,
+            LocalDate currentStatusUpdateDay, Long activityId) {
+        chplTeamNotifier.sendFutureCertificationStatusUsedNotification(
+                new FutureCertificationStatusNotifierMessage(listing, activityId, currentStatusUpdateDay, AuthUtil.getUsername(), env, chplHtmlEmailBuilder));
     }
 
     private boolean doErrorMessagesExist(CertifiedProductSearchDetails listing) {
