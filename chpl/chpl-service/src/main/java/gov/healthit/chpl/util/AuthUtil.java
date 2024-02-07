@@ -8,7 +8,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import gov.healthit.chpl.auth.user.ChplSystemUsers;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
@@ -18,10 +17,16 @@ public class AuthUtil {
     public static String getUsername() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
-        if (auth.getPrincipal() instanceof UserDetails) {
-            return ((UserDetails) auth.getPrincipal()).getUsername();
+        //if (auth.getPrincipal() instanceof UserDetails) {
+        //    return ((UserDetails) auth.getPrincipal()).getUsername();
+        //} else {
+        //    return auth.getPrincipal().toString();
+        //}
+
+        if (auth instanceof JWTAuthenticatedUser) {
+            return ((JWTAuthenticatedUser) auth).getSubjectName();
         } else {
-            return auth.getPrincipal().toString();
+            throw new RuntimeException("Canot determine the auth user type.");
         }
     }
 
