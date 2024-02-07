@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -23,9 +22,8 @@ import lombok.extern.log4j.Log4j2;
 @Component
 @Log4j2(topic = "subscriptionObservationsNotificationJobLogger")
 public class CertificationStatusChangedFormatter extends ObservationSubjectFormatter {
-    private static final String DESCRIPTION_UNFORMATTED = "Certification status changed from '%s' on %s%s "
-            + "to '%s' on %s%s";
-    private static final String WITH_REASON_TEXT = " (with reason '%s') ";
+    private static final String DESCRIPTION_UNFORMATTED = "Certification status changed from '%s' on %s "
+            + "to '%s' on %s";
 
     private CertificationStatusEventsService certStatusEventService;
 
@@ -51,21 +49,20 @@ public class CertificationStatusChangedFormatter extends ObservationSubjectForma
 
         LocalDate today = LocalDate.now();
         List<List<String>> formattedObservations = new ArrayList<List<String>>();
-        List<CertificationStatusEvent> addedStatusEvents = certStatusEventService.getAddedCertificationStatusEvents(before, after);
+        List<CertificationStatusEvent> addedStatusEvents
+            = certStatusEventService.getAddedCertificationStatusEventsIgnoringReasonUpdates(before, after);
         //Include a status event added with status change of today
         addedStatusEvents.stream()
             .filter(addedStatusEvent -> addedStatusEvent.getEventDay().isEqual(today))
             .forEach(addedStatusEvent -> {
                 //get the status of the listing on the day prior to this status event
-                CertificationStatusEvent previousStatusEvent = after.getStatusOnDate(DateUtil.toDate(addedStatusEvent.getEventDay().minusDays(1)));
+                CertificationStatusEvent yesterdaysStatusEvent = after.getStatusOnDate(DateUtil.toDate(addedStatusEvent.getEventDay().minusDays(1)));
                 formattedObservations.add(
                     Stream.of(observation.getSubscription().getSubject().getSubject(),
-                        String.format(DESCRIPTION_UNFORMATTED, previousStatusEvent.getStatus().getName(),
-                            previousStatusEvent.getEventDay(),
-                            !StringUtils.isEmpty(previousStatusEvent.getReason()) ? String.format(WITH_REASON_TEXT, previousStatusEvent.getReason()) : "",
+                        String.format(DESCRIPTION_UNFORMATTED, yesterdaysStatusEvent.getStatus().getName(),
+                            yesterdaysStatusEvent.getEventDay(),
                             addedStatusEvent.getStatus().getName(),
-                            addedStatusEvent.getEventDay(),
-                            !StringUtils.isEmpty(addedStatusEvent.getReason()) ? String.format(WITH_REASON_TEXT, addedStatusEvent.getReason()) : ""),
+                            addedStatusEvent.getEventDay()),
                         DateUtil.formatInEasternTime(activity.getActivityDate()))
                     .toList());
             });
