@@ -50,8 +50,7 @@ public class TransactionalSubscriptionObservationHelper {
             return;
         }
 
-        if (DateUtil.toLocalDate(activity.getActivityDate().getTime())
-                .isBefore(listing.getCurrentStatus().getEventDay())) {
+        if (dayOfActivityIsBeforeDayOfStatusChange(activity, listing)) {
             LOGGER.info("Activity ID " + activityId + " on " + activity.getActivityDate() + " occurred before"
                     + " the new certification status on " + listing.getCurrentStatus().getEventDay());
             List<Long> subscriptionIds = subscriptionDao.getSubscriptionIdsForConfirmedSubscribers(certificationStatusChangedSubjectId, listing.getId());
@@ -64,5 +63,9 @@ public class TransactionalSubscriptionObservationHelper {
             LOGGER.info("Activity ID " + activityId + " on " + activity.getActivityDate() + " did not occur before "
                     + "the new certification status on " + listing.getCurrentStatus().getEventDay());
         }
+    }
+
+    private boolean dayOfActivityIsBeforeDayOfStatusChange(ActivityDTO activity, CertifiedProductSearchDetails listing) {
+        return DateUtil.toLocalDate(activity.getActivityDate().getTime()).isBefore(listing.getCurrentStatus().getEventDay());
     }
 }
