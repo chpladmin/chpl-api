@@ -6,6 +6,7 @@ import javax.transaction.Transactional;
 
 import org.quartz.JobDataMap;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
@@ -31,7 +32,8 @@ import gov.healthit.chpl.scheduler.job.TriggerDeveloperBanJob;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import lombok.extern.log4j.Log4j2;
 
-@Log4j2(topic = "updateCertificationStatusJobLogger")
+@Component
+@Log4j2(topic = "updateCurrentCertificationStatusJobLogger")
 public class TransactionalDeveloperBanHelper {
 
     private DeveloperManager developerManager;
@@ -63,6 +65,7 @@ public class TransactionalDeveloperBanHelper {
         case TerminatedByOnc:
             // Only roles ONC or ADMIN can do this and it always triggers developer ban
             if (resourcePermissions.isUserRoleAdmin() || resourcePermissions.isUserRoleOnc()) {
+                LOGGER.info("Banning developer with ID " + listing.getDeveloper().getId());
                 banDeveloper(listing);
             } else {
                 LOGGER.error("User " + user.getSubjectName() + " does not have ROLE_ADMIN or ROLE_ONC and cannot "
@@ -73,6 +76,7 @@ public class TransactionalDeveloperBanHelper {
         case WithdrawnByAcb:
         case WithdrawnByDeveloperUnderReview:
             // initiate TriggerDeveloperBan job, telling ONC that they might need to ban a Developer
+            LOGGER.info("Sending developer ban email.");
             sendDeveloperBanEmail(listing, user, reason);
             break;
         default:
@@ -92,7 +96,12 @@ public class TransactionalDeveloperBanHelper {
         } else if (currentListingStatus.getName().equals(CertificationStatusType.TerminatedByOnc.toString())) {
             newDeveloperStatus = devStatusDao.getByName(DeveloperStatusType.UnderCertificationBanByOnc.toString());
         }
-        if (newDeveloperStatus != null) {
+
+        DeveloperStatusEvent mostRecentDeveloperStatus = developer.getMostRecentStatusEvent();
+        if (newDeveloperStatus != null
+                && !mostRecentDeveloperStatus.getStatus().getStatus().equals(newDeveloperStatus.getStatus())) {
+            LOGGER.info("Developer currently has the status " + mostRecentDeveloperStatus.getStatus().getStatus()
+                    + ". Setting the developer to " + newDeveloperStatus.getStatus());
             DeveloperStatusEvent statusHistoryToAdd = new DeveloperStatusEvent();
             statusHistoryToAdd.setDeveloperId(developer.getId());
             statusHistoryToAdd.setStatus(newDeveloperStatus);
@@ -100,6 +109,9 @@ public class TransactionalDeveloperBanHelper {
             statusHistoryToAdd.setReason(msgUtil.getMessage("developer.statusAutomaticallyChanged"));
             developer.getStatusEvents().add(statusHistoryToAdd);
             developerManager.update(developer, false);
+        } else {
+            LOGGER.info("Not changing the developer's status to " + newDeveloperStatus.getStatus()
+                + ". Developer's current status is " + mostRecentDeveloperStatus.getStatus().getStatus());
         }
     }
 

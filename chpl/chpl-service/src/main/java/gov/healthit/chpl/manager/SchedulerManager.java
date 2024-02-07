@@ -196,11 +196,13 @@ public class SchedulerManager extends SecuredManager {
                     String jobName = curTrigger.getKey().getName();
                     JobDetail jobDetail = getScheduler().getJobDetail(getScheduler().getTrigger(triggerKey).getJobKey());
                     String jobDescription = jobDetail.getDescription();
+                    JobDataMap jobDataMap = jobDetail.getJobDataMap();
                     Date nextRunDate = curTrigger.getNextFireTime();
                     if (curTrigger instanceof CronTrigger) {
                         ssJobs.add(ScheduledSystemJob.builder()
                                 .name(jobName)
                                 .description(jobDescription)
+                                .jobDataMap(jobDataMap)
                                 .nextRunDate(nextRunDate)
                                 .triggerScheduleType(TriggerSchedule.REPEATABLE)
                                 .triggerGroup(curTrigger.getKey().getGroup())
@@ -211,6 +213,7 @@ public class SchedulerManager extends SecuredManager {
                         ssJobs.add(ScheduledSystemJob.builder()
                                 .name(curTrigger.getJobKey().getName())
                                 .description(jobDescription)
+                                .jobDataMap(jobDataMap)
                                 .nextRunDate(nextRunDate)
                                 .triggerScheduleType(TriggerSchedule.ONE_TIME)
                                 .triggerGroup(curTrigger.getKey().getGroup())

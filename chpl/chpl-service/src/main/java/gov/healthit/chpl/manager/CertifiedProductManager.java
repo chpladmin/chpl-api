@@ -2,6 +2,7 @@ package gov.healthit.chpl.manager;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -11,6 +12,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.ff4j.FF4j;
 import org.quartz.JobDataMap;
+import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.context.annotation.Lazy;
@@ -60,6 +62,7 @@ import gov.healthit.chpl.domain.PromotingInteroperabilityUser;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.domain.schedule.ChplJob;
 import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
+import gov.healthit.chpl.domain.schedule.ScheduledSystemJob;
 import gov.healthit.chpl.dto.CertifiedProductAccessibilityStandardDTO;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
@@ -68,14 +71,17 @@ import gov.healthit.chpl.dto.CertifiedProductTargetedUserDTO;
 import gov.healthit.chpl.dto.CuresUpdateEventDTO;
 import gov.healthit.chpl.dto.ListingToListingMapDTO;
 import gov.healthit.chpl.dto.TargetedUserDTO;
+import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
 import gov.healthit.chpl.exception.CertifiedProductUpdateException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.MissingReasonException;
+import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.listing.measure.ListingMeasureDAO;
+import gov.healthit.chpl.manager.auth.UserManager;
 import gov.healthit.chpl.manager.impl.SecuredManager;
 import gov.healthit.chpl.notifier.BusinessRulesOverrideNotifierMessage;
 import gov.healthit.chpl.notifier.ChplTeamNotifier;
@@ -90,6 +96,7 @@ import gov.healthit.chpl.sharedstore.listing.RemoveBy;
 import gov.healthit.chpl.upload.listing.normalizer.ListingDetailsNormalizer;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.CertificationStatusUtil;
+import gov.healthit.chpl.util.DateUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.validation.listing.ListingValidatorFactory;
 import gov.healthit.chpl.validation.listing.Validator;
@@ -122,6 +129,7 @@ public class CertifiedProductManager extends SecuredManager {
     private ResourcePermissions resourcePermissions;
     private CertifiedProductDetailsManager certifiedProductDetailsManager;
     private SchedulerManager schedulerManager;
+    private UserManager userManager;
     private ActivityManager activityManager;
     private ListingDetailsNormalizer listingNormalizer;
     private ListingValidatorFactory validatorFactory;
@@ -142,15 +150,18 @@ public class CertifiedProductManager extends SecuredManager {
     @Autowired
     public CertifiedProductManager(ErrorMessageUtil msgUtil, CertifiedProductDAO cpDao,
             QmsStandardDAO qmsDao, TargetedUserDAO targetedUserDao, AccessibilityStandardDAO asDao, CertifiedProductQmsStandardDAO cpQmsDao,
-            ListingMeasureDAO cpMeasureDao, CertifiedProductTestingLabDAO cpTestingLabDao, CertifiedProductTargetedUserDAO cpTargetedUserDao,
+            ListingMeasureDAO cpMeasureDao, CertifiedProductTestingLabDAO cpTestingLabDao,
+            CertifiedProductTargetedUserDAO cpTargetedUserDao,
             CertifiedProductAccessibilityStandardDAO cpAccStdDao,
             ProductManager productManager, ProductVersionManager versionManager, CertificationStatusEventDAO statusEventDao,
             CuresUpdateEventDAO curesUpdateDao, PromotingInteroperabilityUserDAO piuDao,
             CertificationResultSynchronizationService certResultService, CqmResultSynchronizationService cqmResultService,
             CertificationStatusDAO certStatusDao, ListingGraphDAO listingGraphDao, ResourcePermissions resourcePermissions,
             CertifiedProductDetailsManager certifiedProductDetailsManager,
-            SchedulerManager schedulerManager, ActivityManager activityManager, ListingDetailsNormalizer listingNormalizer,
-            ListingValidatorFactory validatorFactory, CuresUpdateService curesUpdateService, @Lazy ListingIcsSharedStoreHandler icsSharedStoreHandler,
+            SchedulerManager schedulerManager, ActivityManager activityManager, UserManager userManager,
+            ListingDetailsNormalizer listingNormalizer,
+            ListingValidatorFactory validatorFactory, CuresUpdateService curesUpdateService,
+            @Lazy ListingIcsSharedStoreHandler icsSharedStoreHandler,
             CertificationStatusEventsService certStatusEventsService, ChplTeamNotifier chplteamNotifier,
             Environment env, ChplHtmlEmailBuilder chplHtmlEmailBuilder, FF4j ff4j) {
 
@@ -177,6 +188,7 @@ public class CertifiedProductManager extends SecuredManager {
         this.certifiedProductDetailsManager = certifiedProductDetailsManager;
         this.schedulerManager = schedulerManager;
         this.activityManager = activityManager;
+        this.userManager = userManager;
         this.listingNormalizer = listingNormalizer;
         this.validatorFactory = validatorFactory;
         this.curesUpdateService = curesUpdateService;
@@ -292,7 +304,7 @@ public class CertifiedProductManager extends SecuredManager {
                 .forEach(addedCertStatusEvent -> triggerUpdateCurrentCertificationStatusJob(
                         updatedListing,
                         activityId,
-                        updatedListing.getCurrentStatus().getEventDay(),
+                        addedCertStatusEvent.getEventDay(),
                         updateRequest.getReason()));
 
             //Send notification to Team
@@ -1189,14 +1201,21 @@ public class CertifiedProductManager extends SecuredManager {
 
     private void triggerUpdateCurrentCertificationStatusJob(CertifiedProductSearchDetails updatedListing, Long activityId,
             LocalDate currentStatusUpdateDay, String reason) {
+        UserDTO jobUser = null;
+        try {
+            jobUser = userManager.getById(AuthUtil.getCurrentUser().getId());
+        } catch (UserRetrievalException ex) {
+            LOGGER.error("Could not find user to execute job.");
+        }
+
         ChplOneTimeTrigger updateStatusTrigger = new ChplOneTimeTrigger();
         ChplJob updateStatusJob = new ChplJob();
         updateStatusJob.setName(UpdateCurrentCertificationStatusJob.JOB_NAME);
         updateStatusJob.setGroup(SchedulerManager.CHPL_BACKGROUND_JOBS_KEY);
         JobDataMap jobDataMap = new JobDataMap();
         jobDataMap.put(UpdateCurrentCertificationStatusJob.LISTING_ID, updatedListing.getId());
-        jobDataMap.put(UpdateCurrentCertificationStatusJob.USER, AuthUtil.getCurrentUser());
-        jobDataMap.put(UpdateCurrentCertificationStatusJob.CERTIFICATION_STATUS_EVENT_DAY, currentStatusUpdateDay.toString());
+        jobDataMap.put(UpdateCurrentCertificationStatusJob.USER, jobUser);
+        jobDataMap.put(UpdateCurrentCertificationStatusJob.CERTIFICATION_STATUS_EVENT_DAY, currentStatusUpdateDay);
         jobDataMap.put(UpdateCurrentCertificationStatusJob.ACTIVITY_ID, activityId);
         jobDataMap.put(UpdateCurrentCertificationStatusJob.USER_PROVIDED_REASON, reason);
         updateStatusJob.setJobDataMap(jobDataMap);
@@ -1204,8 +1223,14 @@ public class CertifiedProductManager extends SecuredManager {
 
         if (currentStatusUpdateDay.equals(LocalDate.now())) {
             updateStatusTrigger.setRunDateMillis(System.currentTimeMillis() + SchedulerManager.FIVE_SECONDS_IN_MILLIS);
-        } else if (currentStatusUpdateDay.isAfter(LocalDate.now())) {
-            //TODO: check for an existing job for this listing ID and event day and if it doesn't exist then schedule it
+        } else if (currentStatusUpdateDay.isAfter(LocalDate.now())
+                && !isJobAlreadyScheduled(currentStatusUpdateDay, updatedListing.getId(), activityId)) {
+            LocalDateTime fiveAfterMidnightEastern = LocalDateTime.of(currentStatusUpdateDay.getYear(),
+                    currentStatusUpdateDay.getMonth(),
+                    currentStatusUpdateDay.getDayOfMonth(),
+                    0, 5, 0);
+            updateStatusTrigger.setRunDateMillis(DateUtil.toEpochMillis(
+                    DateUtil.fromSystemToEastern(fiveAfterMidnightEastern)));
         } else {
             LOGGER.info("Activity " + activityId + " added a certification status to listing " + updatedListing.getId() + " that was in the past. No job will be scheduled.");
             return;
@@ -1215,6 +1240,31 @@ public class CertifiedProductManager extends SecuredManager {
             updateStatusTrigger = schedulerManager.createBackgroundJobTrigger(updateStatusTrigger);
         } catch (Exception ex) {
             LOGGER.error("Unable to schedule Update Current Certification Status Job.", ex);
+        }
+    }
+
+    private boolean isJobAlreadyScheduled(LocalDate jobDay, Long listingId, Long activityId) {
+        boolean isJobScheduled = getAllScheduledSystemJobs().stream()
+                .filter(systemJob -> systemJob.getName().equalsIgnoreCase(UpdateCurrentCertificationStatusJob.JOB_NAME)
+                        && DateUtil.toLocalDate(systemJob.getNextRunDate().getTime()).equals(jobDay)
+                        && systemJob.getJobDataMap().getLong(UpdateCurrentCertificationStatusJob.LISTING_ID) == listingId.longValue()
+                        && systemJob.getJobDataMap().getLong(UpdateCurrentCertificationStatusJob.ACTIVITY_ID) == activityId.longValue())
+                .findAny()
+                .isPresent();
+        if (isJobScheduled) {
+            LOGGER.info("The " + UpdateCurrentCertificationStatusJob.JOB_NAME + " is already scheduled "
+                + "for listing " + listingId + " and activity " + activityId
+                + " on " + jobDay);
+        }
+        return isJobScheduled;
+    }
+
+    private List<ScheduledSystemJob> getAllScheduledSystemJobs() {
+        try {
+            return schedulerManager.getScheduledSystemJobsForUser();
+        } catch (SchedulerException e) {
+            LOGGER.error("Could not retrieve list of scheduled system Quartz jobs", e);
+            return List.of();
         }
     }
 

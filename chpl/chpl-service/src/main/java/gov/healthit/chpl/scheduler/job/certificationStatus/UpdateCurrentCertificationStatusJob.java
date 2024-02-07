@@ -12,6 +12,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
+import gov.healthit.chpl.caching.ListingSearchCacheRefresh;
 import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
 import gov.healthit.chpl.domain.CertificationStatus;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
@@ -20,9 +21,9 @@ import gov.healthit.chpl.util.DateUtil;
 import lombok.extern.log4j.Log4j2;
 
 @DisallowConcurrentExecution
-@Log4j2(topic = "updateCertificationStatusJobLogger")
+@Log4j2(topic = "updateCurrentCertificationStatusJobLogger")
 public class UpdateCurrentCertificationStatusJob implements Job {
-    public static final String JOB_NAME = "updateCertificationStatusJob";
+    public static final String JOB_NAME = "updateCurrentCertificationStatusJob";
     public static final String LISTING_ID = "listingId";
     public static final String USER = "user";
     public static final String ACTIVITY_ID = "activityId";
@@ -44,6 +45,7 @@ public class UpdateCurrentCertificationStatusJob implements Job {
     private LocalDate certificationStatusEventDay;
     private String reason;
 
+    @ListingSearchCacheRefresh
     @Override
     public void execute(JobExecutionContext jobContext) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
@@ -57,13 +59,16 @@ public class UpdateCurrentCertificationStatusJob implements Job {
             CertificationStatus currentStatus = currentListing.getCurrentStatus().getStatus();
             CertificationStatus yesterdaysStatus = currentListing.getStatusOnDate(DateUtil.toDate(LocalDate.now().minusDays(1))).getStatus();
             if (currentStatus.getName().equals(yesterdaysStatus.getName())) {
-                LOGGER.error("The current listing status " + currentStatus.getName() + " is the same as the listing status yesterday. "
-                        + "Nothing to do.");
+                LOGGER.error("Listing ID " + currentListing.getId() + " has current status " + currentStatus.getName()
+                    + " which is the same as the listing status yesterday. Nothing to do.");
                 return;
             } else {
-                setSecurityContext();
+                LOGGER.info("Listing ID " + currentListing.getId() + " has current status " + currentStatus.getName()
+                    + " which is different from yesterday's status " + yesterdaysStatus.getName());
 
+                setSecurityContext();
                 try {
+                    LOGGER.info("Handling any necessary developer bans related to certification status change...");
                     txDeveloperBanHelper.handleCertificationStatusChange(currentListing, user, reason);
                 } catch (Exception ex) {
                     LOGGER.error("There was a failure handling the certification status change of listing "
@@ -72,6 +77,7 @@ public class UpdateCurrentCertificationStatusJob implements Job {
                 }
 
                 try {
+                    LOGGER.info("Handling any necessary subscription observation updates related to certification status change...");
                     txObservationHelper.handleCertificationStatusChange(currentListing, activityId);
                 } catch (Exception ex) {
                     LOGGER.error("There was a failure handling the certification status change of listing "
@@ -86,7 +92,7 @@ public class UpdateCurrentCertificationStatusJob implements Job {
     private void parseJobInput(JobExecutionContext jobContext) {
         JobDataMap jobDataMap = jobContext.getMergedJobDataMap();
         user = (UserDTO) jobDataMap.get(USER);
-        Long listingId = jobDataMap.getLongFromString(LISTING_ID);
+        Long listingId = jobDataMap.getLong(LISTING_ID);
         if (listingId != null) {
             try {
                 currentListing = cpdManager.getCertifiedProductDetailsNoCache(listingId);
@@ -94,8 +100,8 @@ public class UpdateCurrentCertificationStatusJob implements Job {
                 LOGGER.error("Could not find listing with ID " + listingId, ex);
             }
         }
-        activityId = jobDataMap.getLongFromString(ACTIVITY_ID);
-        certificationStatusEventDay = LocalDate.parse(jobDataMap.getString(CERTIFICATION_STATUS_EVENT_DAY));
+        activityId = jobDataMap.getLong(ACTIVITY_ID);
+        certificationStatusEventDay = (LocalDate) jobDataMap.get(CERTIFICATION_STATUS_EVENT_DAY);
         reason = jobDataMap.getString(USER_PROVIDED_REASON);
     }
 
