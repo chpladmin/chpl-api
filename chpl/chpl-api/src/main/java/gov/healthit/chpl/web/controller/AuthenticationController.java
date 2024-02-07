@@ -4,6 +4,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -18,6 +20,7 @@ import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.auth.ChplAccountEmailNotConfirmedException;
 import gov.healthit.chpl.auth.ChplAccountStatusException;
 import gov.healthit.chpl.auth.authentication.JWTUserConverterFacade;
+import gov.healthit.chpl.auth.user.AuthenticationSystem;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.domain.auth.AuthenticationResponse;
 import gov.healthit.chpl.domain.auth.LoginCredentials;
@@ -114,8 +117,16 @@ public class AuthenticationController {
     @Hidden
     @RequestMapping(value = "/keep-alive", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
-    public AuthenticationResponse keepAlive() throws JWTCreationException, UserRetrievalException, MultipleUserAccountsException {
-        String jwt = authenticationManager.refreshJWT();
+    public AuthenticationResponse keepAlive(@RequestHeader (name="Authorization") String token) throws JWTCreationException, UserRetrievalException, MultipleUserAccountsException {
+        //TODO Currently, keep-alive only works when logged in using CHPL id.  Cognito keep-alive will be implemented in the future
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String jwt = token.startsWith("Bearer") ? token.substring(7) : token;
+        if (auth != null
+                && auth instanceof JWTAuthenticatedUser
+                && ((JWTAuthenticatedUser) auth).getAuthenticationSystem().equals(AuthenticationSystem.CHPL)) {
+
+            jwt = authenticationManager.refreshJWT();
+        }
         return AuthenticationResponse.builder()
                 .token(jwt)
                 .build();
