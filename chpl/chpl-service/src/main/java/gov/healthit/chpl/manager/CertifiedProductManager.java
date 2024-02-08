@@ -300,15 +300,8 @@ public class CertifiedProductManager extends SecuredManager {
             // Log the activity
             Long activityId = logCertifiedProductUpdateActivity(existingListing, updatedListingNoCache, updateRequest.getReason());
 
-            //if listing status has changed that may trigger other changes to developer status to happen in the background
-            List<CertificationStatusEvent> addedCertStatusEvents
-                = certStatusEventsService.getAddedCertificationStatusEventsIgnoringReasonUpdates(existingListing, updatedListingNoCache);
-            addedCertStatusEvents.stream()
-                .forEach(addedCertStatusEvent -> triggerUpdateCurrentCertificationStatusJob(
-                        updatedListing,
-                        activityId,
-                        addedCertStatusEvent.getEventDay(),
-                        updateRequest.getReason()));
+            deleteTriggersForRemovedFutureListingStatusChanges(existingListing, updatedListingNoCache);
+            createTriggersForAddedFutureListingStatusChanges(existingListing, updatedListingNoCache, activityId, updateRequest.getReason());
 
             //Send notification to Team
             if (wereBusinessRulesOverriddenDuringUpdate(updateRequest)) {
@@ -1202,7 +1195,44 @@ public class CertifiedProductManager extends SecuredManager {
         return cqmResultService.synchronizeCqms(listing, existingCqmDetails, updatedCqmDetails);
     }
 
-    private void triggerUpdateCurrentCertificationStatusJob(CertifiedProductSearchDetails updatedListing, Long activityId,
+    private void deleteTriggersForRemovedFutureListingStatusChanges(CertifiedProductSearchDetails existingListing,
+            CertifiedProductSearchDetails updatedListing) {
+        List<CertificationStatusEvent> removedStatusEvents
+            = certStatusEventsService.getRemovedCertificationStatusEvents(existingListing, updatedListing);
+        removedStatusEvents.stream()
+            .filter(removedStatusEvent -> removedStatusEvent.getEventDay().isAfter(LocalDate.now()))
+            .forEach(removedFutureStatusEvent -> deleteTriggerForCertificationStatusEvent(existingListing.getId(), removedFutureStatusEvent.getEventDay()));
+    }
+
+    private void deleteTriggerForCertificationStatusEvent(Long listingId, LocalDate certStatusChangeDay) {
+        ScheduledSystemJob scheduledJobForListingOnDay = getScheduledJobForListingOnDay(certStatusChangeDay, listingId);
+        if (scheduledJobForListingOnDay != null) {
+            LOGGER.info("Update certification status job scheduled for " + listingId + " on "
+                    + certStatusChangeDay + ". Cancelling trigger " + scheduledJobForListingOnDay.getTriggerName());
+            try {
+                schedulerManager.deleteTriggerWithoutNotification(scheduledJobForListingOnDay.getTriggerGroup(),
+                        scheduledJobForListingOnDay.getTriggerName());
+            } catch (SchedulerException ex) {
+                LOGGER.error("Unable to delete trigger " + scheduledJobForListingOnDay.getTriggerName()
+                        + " in group " + scheduledJobForListingOnDay.getTriggerGroup());
+            }
+        }
+    }
+
+    private void createTriggersForAddedFutureListingStatusChanges(CertifiedProductSearchDetails existingListing,
+            CertifiedProductSearchDetails updatedListing, Long activityId, String reason) {
+        List<CertificationStatusEvent> addedCertStatusEvents
+            = certStatusEventsService.getAddedCertificationStatusEvents(existingListing, updatedListing);
+        addedCertStatusEvents.stream()
+            .filter(addedCertStatusEvent -> !addedCertStatusEvent.getEventDay().isBefore(LocalDate.now()))
+            .forEach(addedCertStatusEvent -> createTriggerToUpdateCurrentCertificationStatusJob(
+                    updatedListing,
+                    activityId,
+                    addedCertStatusEvent.getEventDay(),
+                    reason));
+    }
+
+    private void createTriggerToUpdateCurrentCertificationStatusJob(CertifiedProductSearchDetails updatedListing, Long activityId,
             LocalDate currentStatusUpdateDay, String reason) {
         UserDTO jobUser = null;
         try {
@@ -1228,22 +1258,6 @@ public class CertifiedProductManager extends SecuredManager {
             updateStatusTrigger.setRunDateMillis(System.currentTimeMillis() + SchedulerManager.FIVE_SECONDS_IN_MILLIS);
         } else if (currentStatusUpdateDay.isAfter(LocalDate.now())) {
             sendFutureCertificationStatusNotification(updatedListing, currentStatusUpdateDay, activityId);
-            ScheduledSystemJob scheduledJobForListingOnDay = getScheduledJobForListingOnDay(currentStatusUpdateDay, updatedListing.getId());
-            if (scheduledJobForListingOnDay != null) {
-                //if there is already one of these jobs scheduled for this listing on this day, then cancel it
-                //because we are going to schedule a new one with different activity ID
-                //and activity ID affects subscription notifications
-                LOGGER.info("Update certification status job already scheduled for " + updatedListing.getId() + " on "
-                        + currentStatusUpdateDay + ". Cancelling trigger " + scheduledJobForListingOnDay.getTriggerName()
-                        + " and scheduling a new one.");
-                try {
-                    schedulerManager.deleteTriggerWithoutNotification(scheduledJobForListingOnDay.getTriggerGroup(),
-                            scheduledJobForListingOnDay.getTriggerName());
-                } catch (SchedulerException ex) {
-                    LOGGER.error("Unable to delete trigger " + scheduledJobForListingOnDay.getTriggerName()
-                            + " in group " + scheduledJobForListingOnDay.getTriggerGroup());
-                }
-            }
             LocalDateTime fiveAfterMidnightEastern = LocalDateTime.of(currentStatusUpdateDay, LocalTime.of(0, 5));
             updateStatusTrigger.setRunDateMillis(DateUtil.toEpochMillis(DateUtil.fromEasternToSystem(fiveAfterMidnightEastern)));
         } else {
@@ -1261,8 +1275,6 @@ public class CertifiedProductManager extends SecuredManager {
     }
 
     private ScheduledSystemJob getScheduledJobForListingOnDay(LocalDate jobDay, Long listingId) {
-        LOGGER.info("Checking whether a " + UpdateCurrentCertificationStatusJob.JOB_NAME + " job is already scheduled "
-                + "for listing " + listingId + " on " + jobDay);
         Optional<ScheduledSystemJob> scheduledJobForListingOnDay = getAllScheduledSystemJobs().stream()
                 .filter(systemJob -> systemJob.getName().equalsIgnoreCase(UpdateCurrentCertificationStatusJob.JOB_NAME)
                         && DateUtil.toLocalDate(systemJob.getNextRunDate().getTime()).equals(jobDay)
