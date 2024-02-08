@@ -164,6 +164,20 @@ public class SchedulerManager extends SecuredManager {
     }
 
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SCHEDULER, "
+            + "T(gov.healthit.chpl.permissions.domains.SchedulerDomainPermissions).DELETE_TRIGGER)")
+    public void deleteTriggerWithoutNotification(String triggerGroup, String triggerName)
+            throws SchedulerException {
+        Scheduler scheduler = getScheduler();
+        TriggerKey triggerKey = triggerKey(triggerName, triggerGroup);
+        Trigger trigger = scheduler.getTrigger(triggerKey);
+        if (doesUserHavePermissionToTrigger(trigger)) {
+            scheduler.unscheduleJob(triggerKey);
+        } else {
+            throw new AccessDeniedException("Can not update this trigger");
+        }
+    }
+
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SCHEDULER, "
             + "T(gov.healthit.chpl.permissions.domains.SchedulerDomainPermissions).GET_ALL_TRIGGERS)")
     public List<ChplRepeatableTrigger> getAllTriggersForUser() throws SchedulerException {
         List<ChplRepeatableTrigger> triggers = new ArrayList<ChplRepeatableTrigger>();
@@ -196,7 +210,7 @@ public class SchedulerManager extends SecuredManager {
                     String jobName = curTrigger.getKey().getName();
                     JobDetail jobDetail = getScheduler().getJobDetail(getScheduler().getTrigger(triggerKey).getJobKey());
                     String jobDescription = jobDetail.getDescription();
-                    JobDataMap jobDataMap = jobDetail.getJobDataMap();
+                    JobDataMap jobDataMap = curTrigger.getJobDataMap();
                     Date nextRunDate = curTrigger.getNextFireTime();
                     if (curTrigger instanceof CronTrigger) {
                         ssJobs.add(ScheduledSystemJob.builder()

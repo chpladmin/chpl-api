@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -1227,15 +1228,23 @@ public class CertifiedProductManager extends SecuredManager {
             updateStatusTrigger.setRunDateMillis(System.currentTimeMillis() + SchedulerManager.FIVE_SECONDS_IN_MILLIS);
         } else if (currentStatusUpdateDay.isAfter(LocalDate.now())) {
             sendFutureCertificationStatusNotification(updatedListing, currentStatusUpdateDay, activityId);
-            if (isJobAlreadyScheduled(currentStatusUpdateDay, updatedListing.getId())) {
+            ScheduledSystemJob scheduledJobForListingOnDay = getScheduledJobForListingOnDay(currentStatusUpdateDay, updatedListing.getId());
+            if (scheduledJobForListingOnDay != null) {
                 //if there is already one of these jobs scheduled for this listing on this day, then cancel it
-                //because we are going to schedule a new one with different activity ID (activity ID affects subscription notifications)
-
-                //TODO
+                //because we are going to schedule a new one with different activity ID
+                //and activity ID affects subscription notifications
+                LOGGER.info("Update certification status job already scheduled for " + updatedListing.getId() + " on "
+                        + currentStatusUpdateDay + ". Cancelling trigger " + scheduledJobForListingOnDay.getTriggerName()
+                        + " and scheduling a new one.");
+                try {
+                    schedulerManager.deleteTriggerWithoutNotification(scheduledJobForListingOnDay.getTriggerGroup(),
+                            scheduledJobForListingOnDay.getTriggerName());
+                } catch (SchedulerException ex) {
+                    LOGGER.error("Unable to delete trigger " + scheduledJobForListingOnDay.getTriggerName()
+                            + " in group " + scheduledJobForListingOnDay.getTriggerGroup());
+                }
             }
             LocalDateTime fiveAfterMidnightEastern = LocalDateTime.of(currentStatusUpdateDay, LocalTime.of(0, 5));
-            LOGGER.info("Five minutes after midnight: " + fiveAfterMidnightEastern);
-            LOGGER.info("In millis: " + DateUtil.toEpochMillis(fiveAfterMidnightEastern));
             updateStatusTrigger.setRunDateMillis(DateUtil.toEpochMillis(DateUtil.fromEasternToSystem(fiveAfterMidnightEastern)));
         } else {
             LOGGER.info("Activity " + activityId + " added a certification status to listing " + updatedListing.getId() + " that was in the past. No job will be scheduled.");
@@ -1244,23 +1253,23 @@ public class CertifiedProductManager extends SecuredManager {
 
         try {
             updateStatusTrigger = schedulerManager.createBackgroundJobTrigger(updateStatusTrigger);
+            LOGGER.info("Scheduled " + updateStatusTrigger.getJob().getName() + " to run on " + currentStatusUpdateDay
+                    + " for listing " + updatedListing.getId() + " and activity ID " + activityId);
         } catch (Exception ex) {
-            LOGGER.error("Unable to schedule Update Current Certification Status Job.", ex);
+            LOGGER.error("Unable to schedule " + updateStatusTrigger.getJob().getName() + ".", ex);
         }
     }
 
-    private boolean isJobAlreadyScheduled(LocalDate jobDay, Long listingId) {
+    private ScheduledSystemJob getScheduledJobForListingOnDay(LocalDate jobDay, Long listingId) {
         LOGGER.info("Checking whether a " + UpdateCurrentCertificationStatusJob.JOB_NAME + " job is already scheduled "
                 + "for listing " + listingId + " on " + jobDay);
-        boolean isJobScheduled = getAllScheduledSystemJobs().stream()
+        Optional<ScheduledSystemJob> scheduledJobForListingOnDay = getAllScheduledSystemJobs().stream()
                 .filter(systemJob -> systemJob.getName().equalsIgnoreCase(UpdateCurrentCertificationStatusJob.JOB_NAME)
                         && DateUtil.toLocalDate(systemJob.getNextRunDate().getTime()).equals(jobDay)
                         && systemJob.getJobDataMap().get(UpdateCurrentCertificationStatusJob.LISTING_ID) != null
                         && systemJob.getJobDataMap().getLong(UpdateCurrentCertificationStatusJob.LISTING_ID) == listingId.longValue())
-                .findAny()
-                .isPresent();
-        LOGGER.info(isJobScheduled ? "Not scheduled!" : "Scheduled!");
-        return isJobScheduled;
+                .findAny();
+        return scheduledJobForListingOnDay.isPresent() ? scheduledJobForListingOnDay.get() : null;
     }
 
     private List<ScheduledSystemJob> getAllScheduledSystemJobs() {
