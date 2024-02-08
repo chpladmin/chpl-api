@@ -74,7 +74,7 @@ public class ActivityManager extends SecuredManager {
             chplProductNumberChangedListener.recordChplProductNumberChanged(concept, objectId, originalData, newData, activityDate);
             subscriptionObserver.checkActivityForSubscriptions(activity, originalData, newData);
         }
-        return activity.getId();
+        return activity == null ? null : activity.getId();
     }
 
     @Transactional
@@ -93,7 +93,7 @@ public class ActivityManager extends SecuredManager {
             chplProductNumberChangedListener.recordChplProductNumberChanged(concept, objectId, originalData, newData, activityDate);
             subscriptionObserver.checkActivityForSubscriptions(activity, originalData, newData);
         }
-        return activity.getId();
+        return activity == null ? null : activity.getId();
     }
 
     @Transactional
@@ -107,7 +107,7 @@ public class ActivityManager extends SecuredManager {
             chplProductNumberChangedListener.recordChplProductNumberChanged(concept, objectId, originalData, newData, activityDate);
             subscriptionObserver.checkActivityForSubscriptions(activity, originalData, newData);
         }
-        return activity.getId();
+        return activity == null ? null : activity.getId();
     }
 
     private ActivityDTO addActivity(ActivityConcept concept, Long objectId, String activityDescription, Object originalData,
