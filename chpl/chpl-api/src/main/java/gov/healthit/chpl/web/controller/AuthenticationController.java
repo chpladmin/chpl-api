@@ -228,7 +228,6 @@ public class AuthenticationController {
     @RequestMapping(value = "/unimpersonate", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public AuthenticationResponse unimpersonateUser(@RequestHeader(value = "Authorization", required = true) String userJwt)
             throws JWTValidationException, JWTCreationException, UserRetrievalException, MultipleUserAccountsException {
-        //AuthenticatedUser user = userConverterFactory.get().getImpersonatingUser(userJwt.split(" ")[1]);
         JWTAuthenticatedUser user = userConverterFacade.getImpersonatingUser(userJwt.split(" ")[1]);
         String jwt = authenticationManager.unimpersonateUser(user);
 
