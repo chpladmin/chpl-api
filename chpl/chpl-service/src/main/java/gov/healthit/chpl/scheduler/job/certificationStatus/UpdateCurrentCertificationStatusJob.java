@@ -8,15 +8,18 @@ import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.CacheManager;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
+import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.caching.ListingSearchCacheRefresh;
 import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
 import gov.healthit.chpl.domain.CertificationStatus;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.auth.UserDTO;
+import gov.healthit.chpl.search.CertifiedProductSearchManager;
 import gov.healthit.chpl.util.DateUtil;
 import lombok.extern.log4j.Log4j2;
 
@@ -38,6 +41,12 @@ public class UpdateCurrentCertificationStatusJob implements Job {
 
     @Autowired
     private TransactionalSubscriptionObservationHelper txObservationHelper;
+
+    @Autowired
+    private CacheManager cacheManager;
+
+    @Autowired
+    private CertifiedProductSearchManager certifiedProductSearchManager;
 
     private CertifiedProductSearchDetails currentListing;
     private UserDTO user;
@@ -84,6 +93,11 @@ public class UpdateCurrentCertificationStatusJob implements Job {
                             + currentListing.getId() + " from " + yesterdaysStatus.getName() + " to " + currentStatus.getName()
                             + ". Subscribers may not be correctly notified of this change.");
                 }
+
+                LOGGER.info("Refreshing searchable listing collection (deprecated)");
+                cacheManager.getCache(CacheNames.COLLECTIONS_LISTINGS).invalidate();
+                certifiedProductSearchManager.getFlatListingCollection();
+                LOGGER.info("Completed refreshing searchable listing collection (deprecated)");
             }
         }
         LOGGER.info("********* Completed the Future-to-Current Certification Status Job. *********");
