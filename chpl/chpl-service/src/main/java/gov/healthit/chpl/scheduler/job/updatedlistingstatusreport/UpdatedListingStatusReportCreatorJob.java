@@ -124,7 +124,8 @@ public class UpdatedListingStatusReportCreatorJob extends QuartzJob {
 
     private Long getCriteriaRequireUpdateCount(CertifiedProductSearchDetails certifiedProductDetails) {
         return certifiedProductDetails.getCertificationResults().stream()
-                .filter(certResult -> isCriteriaUpdated(certResult))
+                .filter(certResult -> !certResult.getCriterion().isRemoved()
+                        && isCriteriaUpdated(certResult))
                 .peek(x -> LOGGER.info(x.getCriterion().getNumber()))
                 .count();
     }
