@@ -17,12 +17,6 @@ public class AuthUtil {
     public static String getUsername() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
-        //if (auth.getPrincipal() instanceof UserDetails) {
-        //    return ((UserDetails) auth.getPrincipal()).getUsername();
-        //} else {
-        //    return auth.getPrincipal().toString();
-        //}
-
         if (auth instanceof JWTAuthenticatedUser) {
             return ((JWTAuthenticatedUser) auth).getSubjectName();
         } else {

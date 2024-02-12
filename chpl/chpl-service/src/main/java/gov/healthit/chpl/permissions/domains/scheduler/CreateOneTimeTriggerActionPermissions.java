@@ -1,7 +1,5 @@
 package gov.healthit.chpl.permissions.domains.scheduler;
 
-import java.util.stream.Collectors;
-
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
@@ -21,27 +19,19 @@ public class CreateOneTimeTriggerActionPermissions extends ActionPermissions {
 
     @Override
     public boolean hasAccess(Object obj) {
-        LOGGER.info("ResourcePermissions type {}", getResourcePermissions().getClass().toString());
-        LOGGER.info("Object is of type {}", obj.getClass());
         if (AuthUtil.getCurrentUser() != null) {
-            LOGGER.info("User Roles - {}", AuthUtil.getCurrentUser().getAuthorities().stream().map(ga -> ga.toString()).collect(Collectors.joining(", ")));
         }
         if (getResourcePermissions().isUserRoleAdmin()) {
-            LOGGER.info("User is Admin");
             return true;
         } else if (getResourcePermissions().isUserRoleStartup()
                 && obj instanceof ChplOneTimeTrigger) {
-            LOGGER.info("User is Startup");
             ChplOneTimeTrigger trigger = (ChplOneTimeTrigger) obj;
             if (trigger.getJob() != null
                     && DirectReviewCacheRefreshJob.JOB_NAME.equals(trigger.getJob().getName())
                     && DirectReviewCacheRefreshJob.JOB_GROUP.equals(trigger.getJob().getGroup())) {
-                LOGGER.info("Job information lines up...");
-                LOGGER.info("Return true");
                 return true;
             }
         }
-        LOGGER.info("Return false");
         return false;
     }
 

@@ -91,7 +91,7 @@ public class CHPLHttpSecurityConfig extends WebSecurityConfigurerAdapter {
         }
 
         @Autowired
-        private JWTUserConverterFacade userConverterFactory;
+        private JWTUserConverterFacade userConverterFacade;
 
         @Autowired
         private ObjectFactory<ApiKeyManager> apiKeyManagerObjectFactory;
@@ -130,7 +130,7 @@ public class CHPLHttpSecurityConfig extends WebSecurityConfigurerAdapter {
             .antMatchers("/").permitAll().and()
             .addFilterBefore(apiKeyAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
             // custom Token based authentication based on the header previously given to the client
-            .addFilterBefore(new JWTAuthenticationFilter(userConverterFactory), UsernamePasswordAuthenticationFilter.class)
+            .addFilterBefore(new JWTAuthenticationFilter(userConverterFacade), UsernamePasswordAuthenticationFilter.class)
             .headers().cacheControl();
         }
     }

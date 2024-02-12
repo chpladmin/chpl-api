@@ -6,11 +6,12 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.auth.user.ChplSystemUsers;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 
-public class CognitoAuthUtil {
+public final class CognitoAuthUtil {
+    private CognitoAuthUtil() { }
+
     public static String getUsername() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
