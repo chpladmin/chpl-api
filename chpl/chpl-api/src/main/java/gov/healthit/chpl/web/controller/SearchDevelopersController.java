@@ -48,9 +48,7 @@ public class SearchDevelopersController {
                 + "/developers/search/vX endpoint. The current version being used is v2. For the "
                 + "current documentation, see /developers/search/v2.",
         security = {@SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
-    @RequestMapping(value = "", method = RequestMethod.GET, produces = {
-            "application/json; charset=utf-8", "application/xml"
-    })
+    @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody DeveloperSearchResponse search(
         @Parameter(description = "Developer name or developer code", allowEmptyValue = true, in = ParameterIn.QUERY, name = "searchTerm")
             @RequestParam(value = "searchTerm", required = false, defaultValue = "") String searchTerm,
@@ -101,9 +99,7 @@ public class SearchDevelopersController {
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
-    @RequestMapping(value = "/v2", method = RequestMethod.GET, produces = {
-            "application/json; charset=utf-8", "application/xml"
-    })
+    @RequestMapping(value = "/v2", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody DeveloperSearchResponse searchV2(
         @Parameter(description = "Developer name or developer code", allowEmptyValue = true, in = ParameterIn.QUERY, name = "searchTerm")
             @RequestParam(value = "searchTerm", required = false, defaultValue = "") String searchTerm,

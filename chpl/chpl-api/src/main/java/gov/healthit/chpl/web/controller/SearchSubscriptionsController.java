@@ -51,9 +51,7 @@ public class SearchSubscriptionsController {
                 @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                 @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
         })
-    @RequestMapping(value = "", method = RequestMethod.GET, produces = {
-            "application/json; charset=utf-8", "application/xml"
-    })
+    @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody SubscriptionSearchResponse search(
         @Parameter(description = "Subscriber email or the name of the subscribed item (i.e. the CHPL product number, developer name, or product name)", allowEmptyValue = true, in = ParameterIn.QUERY, name = "searchTerm")
             @RequestParam(value = "searchTerm", required = false, defaultValue = "") String searchTerm,
@@ -113,9 +111,7 @@ public class SearchSubscriptionsController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
-    @RequestMapping(value = "/v1", method = RequestMethod.GET, produces = {
-            "application/json; charset=utf-8", "application/xml"
-    })
+    @RequestMapping(value = "/v1", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody SubscriptionSearchResponse searchV1(
             @Parameter(description = "Subscriber email or the name of the subscribed item (i.e. the CHPL product number, developer name, or product name)", allowEmptyValue = true, in = ParameterIn.QUERY, name = "searchTerm")
                 @RequestParam(value = "searchTerm", required = false, defaultValue = "") String searchTerm,
