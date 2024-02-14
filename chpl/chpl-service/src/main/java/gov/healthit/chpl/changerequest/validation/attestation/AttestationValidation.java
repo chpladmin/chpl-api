@@ -39,6 +39,10 @@ public class AttestationValidation extends ValidationRule<ChangeRequestValidatio
     private List<String> isAllowedToSubmitAttestationPeriod(ChangeRequestValidationContext context,
             ChangeRequestAttestationSubmission attestationSubmission) {
         List<String> errors = new ArrayList<String>();
+        //onc and admin can submit any time
+        if (context.getResourcePermissions().isUserRoleOnc() || context.getResourcePermissions().isUserRoleAdmin()) {
+            return errors;
+        }
         try {
             AttestationPeriod submittableAttestationPeriod
                 = context.getAttestationPeriodService().getSubmittableAttestationPeriod(context.getNewChangeRequest().getDeveloper().getId());
