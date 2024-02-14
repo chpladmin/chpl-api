@@ -14,6 +14,8 @@ import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
 import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseField;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
+import gov.healthit.chpl.codesetdate.CertificationResultCodeSetDate;
+import gov.healthit.chpl.codesetdate.CertificationResultCodeSetDateComparator;
 import gov.healthit.chpl.conformanceMethod.CertificationResultConformanceMethodComparator;
 import gov.healthit.chpl.conformanceMethod.domain.CertificationResultConformanceMethod;
 import gov.healthit.chpl.conformanceMethod.domain.ConformanceMethod;
@@ -188,6 +190,10 @@ public class CertificationResult implements Serializable {
     @Builder.Default
     private List<CertificationResultStandard> standards = new ArrayList<CertificationResultStandard>();
 
+    @Schema(description = "Need this text")
+    @Builder.Default
+    private List<CertificationResultCodeSetDate> codeSetDates = new ArrayList<CertificationResultCodeSetDate>();
+
     @Schema(description = "Detailed information about the relevant certification criterion.")
     private CertificationCriterion criterion;
 
@@ -211,6 +217,7 @@ public class CertificationResult implements Serializable {
     private CertificationResultTestToolComparator testToolComparator;
     private CertificationResultTestStandardComparator testStandardComparator;
     private CertificationResultAdditionalSoftwareComparator asComparator;
+    private CertificationResultCodeSetDateComparator codeSetDateComparator;
 
     public CertificationResult() {
         this.functionalitiesTested = new ArrayList<CertificationResultFunctionalityTested>();
@@ -233,6 +240,7 @@ public class CertificationResult implements Serializable {
         this.testToolComparator = new CertificationResultTestToolComparator();
         this.testStandardComparator = new CertificationResultTestStandardComparator();
         this.asComparator = new CertificationResultAdditionalSoftwareComparator();
+        this.codeSetDateComparator = new CertificationResultCodeSetDateComparator();
     }
 
     public CertificationResult(CertificationResultDetailsDTO certResult) {
@@ -350,8 +358,19 @@ public class CertificationResult implements Serializable {
         this.setAdditionalSoftware(getAdditionalSoftware(certResult, certRules));
         this.setSvaps(getSvaps(certResult, certRules));
         this.setStandards(getStandards(certResult, certRules));
+        this.setCodeSetDates(getCodeSetDates(certResult, certRules));
     }
 
+
+    private List<CertificationResultCodeSetDate> getCodeSetDates(CertificationResultDetailsDTO certResult, CertificationResultRules certRules) {
+        if (certRules.hasCertOption(certResult.getCertificationCriterionId(), CertificationResultRules.CODE_SET_DATE)) {
+            return certResult.getCodeSetDates().stream()
+                    .sorted(codeSetDateComparator)
+                    .collect(Collectors.toList());
+        } else {
+            return null;
+        }
+    }
 
     private List<CertificationResultStandard> getStandards(CertificationResultDetailsDTO certResult, CertificationResultRules certRules) {
         if (certRules.hasCertOption(certResult.getCertificationCriterionId(), CertificationResultRules.STANDARD)) {

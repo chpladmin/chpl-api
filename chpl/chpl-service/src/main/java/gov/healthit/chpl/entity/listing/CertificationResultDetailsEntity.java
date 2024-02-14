@@ -16,6 +16,7 @@ import org.hibernate.annotations.Immutable;
 import org.hibernate.annotations.Where;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterionEntity;
+import gov.healthit.chpl.codesetdate.CertificationResultCodeSetDateEntity;
 import gov.healthit.chpl.functionalitytested.CertificationResultFunctionalityTestedEntity;
 import gov.healthit.chpl.standard.CertificationResultStandardEntity;
 import gov.healthit.chpl.svap.entity.CertificationResultSvapEntity;
@@ -155,4 +156,10 @@ public class CertificationResultDetailsEntity {
     @Column(name = "certification_result_id")
     @Where(clause = "deleted <> 'true'")
     private Set<CertificationResultStandardEntity> certificationResultStandards;
+
+    @Basic(optional = true)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "certificationResultId")
+    @Column(name = "certification_result_id")
+    @Where(clause = "deleted <> 'true'")
+    private Set<CertificationResultCodeSetDateEntity> certificationResultCodeSetDates;
 }

@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
+import gov.healthit.chpl.codesetdate.CertificationResultCodeSetDateService;
 import gov.healthit.chpl.conformanceMethod.domain.CertificationResultConformanceMethod;
 import gov.healthit.chpl.dao.AgeRangeDAO;
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
@@ -75,6 +76,7 @@ public class CertificationResultManager extends SecuredManager {
     private CertificationResultTestToolService certResultTestToolService;
     private CertificationResultFunctionalityTestedService certResultFunctionalityTestedService;
     private CertificationResultStandardService certResultStandardService;
+    private CertificationResultCodeSetDateService certificationResultCodeSetDateService;
 
     @SuppressWarnings("checkstyle:parameternumber")
     @Autowired
@@ -83,7 +85,8 @@ public class CertificationResultManager extends SecuredManager {
             TestStandardDAO testStandardDAO, FunctionalityTestedDAO functionalityTestedDao, TestParticipantDAO testParticipantDAO,
             AgeRangeDAO ageDao, EducationTypeDAO educDao, TestTaskDAO testTaskDAO, CertificationResultTestToolService certResultTestToolService,
             CertificationResultFunctionalityTestedService certResultFunctionalityTestedService,
-            CertificationResultStandardService certResultStandardService) {
+            CertificationResultStandardService certResultStandardService,
+            CertificationResultCodeSetDateService certificationResultCodeSetDateService) {
         this.cpUtil = cpUtil;
         this.criteriaDao = criteriaDao;
         this.certResultDAO = certResultDAO;
@@ -95,6 +98,7 @@ public class CertificationResultManager extends SecuredManager {
         this.certResultTestToolService = certResultTestToolService;
         this.certResultFunctionalityTestedService = certResultFunctionalityTestedService;
         this.certResultStandardService = certResultStandardService;
+        this.certificationResultCodeSetDateService = certificationResultCodeSetDateService;
     }
 
     @SuppressWarnings({"checkstyle:methodlength", "checkstyle:linelength"})
@@ -147,6 +151,7 @@ public class CertificationResultManager extends SecuredManager {
         numChanges += certResultFunctionalityTestedService.synchronizeFunctionalitiesTested(updated, orig.getFunctionalitiesTested(), updated.getFunctionalitiesTested());
         numChanges += certResultStandardService.synchronizeStandards(updated,  orig.getStandards(), updated.getStandards());
         numChanges += updateSvap(updated, orig.getSvaps(), updated.getSvaps());
+        numChanges += certificationResultCodeSetDateService.synchronizeCodeSetDates(updated,  orig.getCodeSetDates(), updated.getCodeSetDates());
 
         List<CertifiedProductUcdProcess> origUcdsForCriteria = new ArrayList<CertifiedProductUcdProcess>();
         List<CertifiedProductUcdProcess> updatedUcdsForCriteria = new ArrayList<CertifiedProductUcdProcess>();
