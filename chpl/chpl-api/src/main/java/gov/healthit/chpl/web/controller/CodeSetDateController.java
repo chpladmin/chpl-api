@@ -22,7 +22,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 @Tag(name = "code-set-date", description = "Endpoints related to Code Set Dates.")
 @RestController
-@RequestMapping("/code-set-date")
+@RequestMapping("/code-set-dates")
 public class CodeSetDateController {
     private CodeSetDateManager codeSetDateManager;
 
@@ -85,7 +85,7 @@ public class CodeSetDateController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
     @RequestMapping(value = "/{codeSetDateId}", method = RequestMethod.DELETE, produces = "application/json; charset=utf-8")
-    public void delete(@PathVariable("code_setDateId") Long codeSetDateId) throws EntityRetrievalException {
+    public void delete(@PathVariable("codeSetDateId") Long codeSetDateId) throws EntityRetrievalException {
         codeSetDateManager.delete(codeSetDateId);
     }
 

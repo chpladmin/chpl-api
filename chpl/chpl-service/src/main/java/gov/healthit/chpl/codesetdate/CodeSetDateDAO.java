@@ -38,7 +38,7 @@ public class CodeSetDateDAO extends BaseDAOImpl  {
         try {
             CodeSetDateEntity entity = getEntityById(id);
             if (entity != null) {
-                return entity.toDomain();
+                return entity.toDomainWithCriteria();
             } else {
                 return null;
             }
@@ -77,6 +77,8 @@ public class CodeSetDateDAO extends BaseDAOImpl  {
         CodeSetDateEntity entity = getEntityById(codeSetDate.getId());
         entity.setDeleted(true);
         update(entity);
+
+
     }
 
     public List<CertifiedProductDetailsDTO> getCertifiedProductsByCodeSetDateAndCriteria(CodeSetDate codeSetDate, CertificationCriterion criterion)
@@ -96,7 +98,7 @@ public class CodeSetDateDAO extends BaseDAOImpl  {
     }
 
     @CacheEvict(value = CacheNames.CODE_SET_DATES, allEntries = true)
-    public void removeCodeSewtDateCriteriaMap(CodeSetDate codeSetDate, CertificationCriterion criterion) {
+    public void removeCodeSetDateCriteriaMap(CodeSetDate codeSetDate, CertificationCriterion criterion) {
         try {
             CodeSetDateCriteriaMapEntity entity = getCodeSetDateCriteriaMapByCodeSetDateAndCriterion(codeSetDate.getId(), criterion.getId());
             entity.setDeleted(true);
@@ -133,7 +135,7 @@ public class CodeSetDateDAO extends BaseDAOImpl  {
         CodeSetDateEntity entity = null;
 
         Query query = entityManager
-                .createQuery("SELECT csd "
+                .createQuery("SELECT DISTINCT csd "
                         + "FROM CodeSetDateEntity csd "
                         + "LEFT OUTER JOIN FETCH csd.mappedCriteria criteriaMapping "
                         + "LEFT OUTER JOIN FETCH criteriaMapping.criterion criterion "
@@ -158,7 +160,7 @@ public class CodeSetDateDAO extends BaseDAOImpl  {
 
     private List<CodeSetDateEntity> getAllEntities() {
         return entityManager
-                .createQuery("SELECT csd "
+                .createQuery("SELECT DISTINCT csd "
                             + "FROM CodeSetDateEntity csd "
                             + "LEFT OUTER JOIN FETCH csd.mappedCriteria criteriaMapping "
                             + "LEFT OUTER JOIN FETCH criteriaMapping.criterion criterion "
@@ -188,25 +190,25 @@ public class CodeSetDateDAO extends BaseDAOImpl  {
                 .collect(Collectors.toList());
     }
 
-    private CodeSetDateCriteriaMapEntity getCodeSetDateCriteriaMapByCodeSetDateAndCriterion(Long CodeSetDateId, Long certificationCriterionId) throws EntityRetrievalException {
+    private CodeSetDateCriteriaMapEntity getCodeSetDateCriteriaMapByCodeSetDateAndCriterion(Long codeSetDateId, Long certificationCriterionId) throws EntityRetrievalException {
         List<CodeSetDateCriteriaMapEntity> result = entityManager.createQuery("SELECT DISTINCT csdcm "
                         + "FROM CodeSetDateCriteriaMapEntity csdcm "
-                        + "JOIN FETCH csdm.criterion c "
-                        + "JOIN FETCH csdm.codeSetDate csd "
+                        + "JOIN FETCH csdcm.criterion c "
+                        + "JOIN FETCH csdcm.codeSetDate csd "
                         + "WHERE c.id = :certificationCriterionId "
-                        + "AND ft.id= :codeSetDateId "
+                        + "AND csd.id= :codeSetDateId "
                         + "AND csdcm.deleted <> true "
                         + "AND csd.deleted <> true "
                         + "AND c.deleted <> true",
                         CodeSetDateCriteriaMapEntity.class)
-                .setParameter("codeSetDateId", CodeSetDateId)
+                .setParameter("codeSetDateId", codeSetDateId)
                 .setParameter("certificationCriterionId", certificationCriterionId)
                 .getResultList();
 
         if (result.size() > 1) {
             throw new EntityRetrievalException("Data error. Duplicate code set date criteria map id in database.");
         } else if (result.size() == 0) {
-            throw new EntityRetrievalException("Data error. Could not locate code set date criteria map {" + CodeSetDateId + ", " + certificationCriterionId + "} in database.");
+            throw new EntityRetrievalException("Data error. Could not locate code set date criteria map {" + codeSetDateId + ", " + certificationCriterionId + "} in database.");
         }
 
         return result.get(0);
