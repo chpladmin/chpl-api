@@ -23,6 +23,7 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.form.Form;
 import gov.healthit.chpl.form.validation.FormValidationResult;
 import gov.healthit.chpl.form.validation.FormValidator;
+import gov.healthit.chpl.permissions.ResourcePermissions;
 
 public class AttestationValidationTest {
 
@@ -30,17 +31,21 @@ public class AttestationValidationTest {
     private AttestationManager attestationManager;
     private AttestationPeriodService attestationPeriodService;
     private FormValidator formValidator;
+    private ResourcePermissions resourcePermissions;
 
     @Before
     public void setup() {
         attestationManager = Mockito.mock(AttestationManager.class);
         attestationPeriodService = Mockito.mock(AttestationPeriodService.class);
         formValidator = Mockito.mock(FormValidator.class);
+        resourcePermissions = Mockito.mock(ResourcePermissions.class);
     }
 
     @Test
     public void isValid_ProvidedAttestationPeriodIsNull_MessageIsGenerated() throws EntityRetrievalException {
         Mockito.when(attestationManager.canDeveloperSubmitChangeRequest(ArgumentMatchers.anyLong())).thenReturn(true);
+        Mockito.when(resourcePermissions.isUserRoleOnc()).thenReturn(false);
+        Mockito.when(resourcePermissions.isUserRoleAdmin()).thenReturn(false);
         AttestationPeriod submittablePeriod = AttestationPeriod.builder()
                 .id(1L)
                 .build();
@@ -75,6 +80,7 @@ public class AttestationValidationTest {
                                 .signature("User A")
                                 .build())
                         .build())
+                .resourcePermissions(resourcePermissions)
                 .build());
 
         assertEquals(1, validator.getMessages().size());
@@ -83,6 +89,8 @@ public class AttestationValidationTest {
     @Test
     public void isValid_ProvidedAttestationPeriodIsNotSubmittable_MessageIsGenerated() throws EntityRetrievalException {
         Mockito.when(attestationManager.canDeveloperSubmitChangeRequest(ArgumentMatchers.anyLong())).thenReturn(true);
+        Mockito.when(resourcePermissions.isUserRoleOnc()).thenReturn(false);
+        Mockito.when(resourcePermissions.isUserRoleAdmin()).thenReturn(false);
         AttestationPeriod submittablePeriod = AttestationPeriod.builder()
                 .id(1L)
                 .build();
@@ -119,14 +127,64 @@ public class AttestationValidationTest {
                                 .signature("User A")
                                 .build())
                         .build())
+                .resourcePermissions(resourcePermissions)
                 .build());
 
         assertEquals(1, validator.getMessages().size());
     }
 
     @Test
+    public void isValid_ProvidedAttestationPeriodIsNotSubmittable_OncUser_NoErrors() throws EntityRetrievalException {
+        Mockito.when(attestationManager.canDeveloperSubmitChangeRequest(ArgumentMatchers.anyLong())).thenReturn(true);
+        Mockito.when(resourcePermissions.isUserRoleOnc()).thenReturn(true);
+        Mockito.when(resourcePermissions.isUserRoleAdmin()).thenReturn(false);
+        AttestationPeriod submittablePeriod = AttestationPeriod.builder()
+                .id(1L)
+                .build();
+        Mockito.when(attestationPeriodService.getSubmittableAttestationPeriod(ArgumentMatchers.anyLong()))
+            .thenReturn(submittablePeriod);
+        Mockito.when(formValidator.validate(ArgumentMatchers.any(Form.class))).thenReturn(
+                FormValidationResult.builder()
+                        .errorMessages(new ArrayList<String>())
+                        .valid(true)
+                        .build());
+        Mockito.when(formValidator.removePhantomAndDuplicateResponses(ArgumentMatchers.any(Form.class)))
+            .thenAnswer(i -> i.getArgument(0));
+
+        User currentUser = new JWTAuthenticatedUser();
+        currentUser.setFullName("User A");
+
+        validator.isValid(ChangeRequestValidationContext.builder()
+                .attestationPeriodService(attestationPeriodService)
+                .domainManagers(ChangeRequestValidationContext.DomainManagers.builder()
+                        .attestationManager(attestationManager)
+                        .build())
+                .formValidator(formValidator)
+                .currentUser(currentUser)
+                .newChangeRequest(ChangeRequest.builder()
+                        .developer(Developer.builder()
+                                .id(1L)
+                                .build())
+                        .details(ChangeRequestAttestationSubmission.builder()
+                                .attestationPeriod(AttestationPeriod.builder()
+                                        .id(2L)
+                                        .build())
+                                .form(Form.builder()
+                                        .build())
+                                .signature("User A")
+                                .build())
+                        .build())
+                .resourcePermissions(resourcePermissions)
+                .build());
+
+        assertEquals(0, validator.getMessages().size());
+    }
+
+    @Test
     public void isValid_DeveloperHasNoSubmittableAttestationPeriod_MessageIsGenerated() throws EntityRetrievalException {
         Mockito.when(attestationManager.canDeveloperSubmitChangeRequest(ArgumentMatchers.anyLong())).thenReturn(true);
+        Mockito.when(resourcePermissions.isUserRoleOnc()).thenReturn(false);
+        Mockito.when(resourcePermissions.isUserRoleAdmin()).thenReturn(false);
         Mockito.when(attestationPeriodService.getSubmittableAttestationPeriod(ArgumentMatchers.anyLong()))
             .thenReturn(null);
         Mockito.when(formValidator.validate(ArgumentMatchers.any(Form.class))).thenReturn(
@@ -160,14 +218,61 @@ public class AttestationValidationTest {
                                 .signature("User A")
                                 .build())
                         .build())
+                .resourcePermissions(resourcePermissions)
                 .build());
 
         assertEquals(1, validator.getMessages().size());
     }
 
     @Test
+    public void isValid_DeveloperHasNoSubmittableAttestationPeriod_OncUser_NoErrors() throws EntityRetrievalException {
+        Mockito.when(attestationManager.canDeveloperSubmitChangeRequest(ArgumentMatchers.anyLong())).thenReturn(true);
+        Mockito.when(resourcePermissions.isUserRoleOnc()).thenReturn(true);
+        Mockito.when(resourcePermissions.isUserRoleAdmin()).thenReturn(false);
+        Mockito.when(attestationPeriodService.getSubmittableAttestationPeriod(ArgumentMatchers.anyLong()))
+            .thenReturn(null);
+        Mockito.when(formValidator.validate(ArgumentMatchers.any(Form.class))).thenReturn(
+                FormValidationResult.builder()
+                        .errorMessages(new ArrayList<String>())
+                        .valid(true)
+                        .build());
+        Mockito.when(formValidator.removePhantomAndDuplicateResponses(ArgumentMatchers.any(Form.class)))
+            .thenAnswer(i -> i.getArgument(0));
+
+        User currentUser = new JWTAuthenticatedUser();
+        currentUser.setFullName("User A");
+
+        validator.isValid(ChangeRequestValidationContext.builder()
+                .attestationPeriodService(attestationPeriodService)
+                .domainManagers(ChangeRequestValidationContext.DomainManagers.builder()
+                        .attestationManager(attestationManager)
+                        .build())
+                .formValidator(formValidator)
+                .currentUser(currentUser)
+                .newChangeRequest(ChangeRequest.builder()
+                        .developer(Developer.builder()
+                                .id(1L)
+                                .build())
+                        .details(ChangeRequestAttestationSubmission.builder()
+                                .attestationPeriod(AttestationPeriod.builder()
+                                        .id(2L)
+                                        .build())
+                                .form(Form.builder()
+                                        .build())
+                                .signature("User A")
+                                .build())
+                        .build())
+                .resourcePermissions(resourcePermissions)
+                .build());
+
+        assertEquals(0, validator.getMessages().size());
+    }
+
+    @Test
     public void isValid_DeveloperCannotSubmitAttestationCr_MessageIsGenerated() throws EntityRetrievalException {
         Mockito.when(attestationManager.canDeveloperSubmitChangeRequest(ArgumentMatchers.anyLong())).thenReturn(false);
+        Mockito.when(resourcePermissions.isUserRoleOnc()).thenReturn(false);
+        Mockito.when(resourcePermissions.isUserRoleAdmin()).thenReturn(false);
         AttestationPeriod submittablePeriod = AttestationPeriod.builder()
                 .id(1L)
                 .build();
@@ -202,6 +307,7 @@ public class AttestationValidationTest {
                                 .signature("User A")
                                 .build())
                         .build())
+                .resourcePermissions(resourcePermissions)
                 .build());
 
         assertEquals(1, validator.getMessages().size());
@@ -210,6 +316,8 @@ public class AttestationValidationTest {
     @Test
     public void isValid_SignatureNotValid_MessageIsGenerated() throws EntityRetrievalException {
         Mockito.when(attestationManager.canDeveloperSubmitChangeRequest(ArgumentMatchers.anyLong())).thenReturn(true);
+        Mockito.when(resourcePermissions.isUserRoleOnc()).thenReturn(false);
+        Mockito.when(resourcePermissions.isUserRoleAdmin()).thenReturn(false);
         AttestationPeriod submittablePeriod = AttestationPeriod.builder()
                 .id(1L)
                 .build();
@@ -242,6 +350,7 @@ public class AttestationValidationTest {
                                 .signature("User B")
                                 .build())
                         .build())
+                .resourcePermissions(resourcePermissions)
                 .build());
 
         assertEquals(1, validator.getMessages().size());
@@ -250,6 +359,8 @@ public class AttestationValidationTest {
     @Test
     public void isValid_FormValidationFails_MessageIsGenerated() throws EntityRetrievalException {
         Mockito.when(attestationManager.canDeveloperSubmitChangeRequest(ArgumentMatchers.anyLong())).thenReturn(true);
+        Mockito.when(resourcePermissions.isUserRoleOnc()).thenReturn(false);
+        Mockito.when(resourcePermissions.isUserRoleAdmin()).thenReturn(false);
         AttestationPeriod submittablePeriod = AttestationPeriod.builder()
                 .id(1L)
                 .build();
@@ -282,6 +393,7 @@ public class AttestationValidationTest {
                                 .signature("User A")
                                 .build())
                         .build())
+                .resourcePermissions(resourcePermissions)
                 .build());
 
         assertEquals(1, validator.getMessages().size());
@@ -290,6 +402,8 @@ public class AttestationValidationTest {
     @Test
     public void isValid_ValidAttestationRequest_NoErrors() throws EntityRetrievalException {
         Mockito.when(attestationManager.canDeveloperSubmitChangeRequest(ArgumentMatchers.anyLong())).thenReturn(true);
+        Mockito.when(resourcePermissions.isUserRoleOnc()).thenReturn(false);
+        Mockito.when(resourcePermissions.isUserRoleAdmin()).thenReturn(false);
         AttestationPeriod submittablePeriod = AttestationPeriod.builder()
                 .id(1L)
                 .build();
@@ -324,6 +438,7 @@ public class AttestationValidationTest {
                                 .signature("User A")
                                 .build())
                         .build())
+                .resourcePermissions(resourcePermissions)
                 .build());
 
         assertEquals(0, validator.getMessages().size());
