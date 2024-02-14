@@ -78,13 +78,11 @@ public class CodeSetDateManager {
     }
 
     private void addNewCriteriaForExistingCodeSetDate(CodeSetDate codeSetDate, CodeSetDate originalCodeSetDate) {
-        LOGGER.info("Looking for criteria to add.");
         getCriteriaAddedToCodeSetDate(codeSetDate, originalCodeSetDate).stream()
                 .forEach(crit -> codeSetDateDAO.addCodeSetDateCriteriaMap(codeSetDate, crit));
     }
 
     private void deleteCriteriaRemovedFromCodeSetDate(CodeSetDate codeSetDate, CodeSetDate originalCodeSetDate) {
-        LOGGER.info("Looking for criteria to remove.");
         getCriteriaRemovedFromCodeSetDate(codeSetDate, originalCodeSetDate).stream()
                 .forEach(crit -> codeSetDateDAO.removeCodeSetDateCriteriaMap(codeSetDate, crit));
     }
@@ -103,7 +101,6 @@ public class CodeSetDateManager {
 
         return listA.stream()
                 .filter(notInListB)
-                .peek(x -> LOGGER.info("{} - {}", x.getId(), x.getNumber()))
                 .collect(Collectors.toList());
     }
 
