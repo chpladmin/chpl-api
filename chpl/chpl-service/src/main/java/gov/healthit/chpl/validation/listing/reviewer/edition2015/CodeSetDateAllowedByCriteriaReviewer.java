@@ -62,7 +62,7 @@ public class CodeSetDateAllowedByCriteriaReviewer implements Reviewer {
 
     private boolean isCodeSetDateValidForCriteria(CodeSetDate codeSetDateToCheck, List<CodeSetDate> codeSetDatesAllowedForCriteria) {
         return codeSetDatesAllowedForCriteria.stream()
-                .filter(csd -> csd.getId().equals(codeSetDateToCheck))
+                .filter(csd -> csd.getId().equals(codeSetDateToCheck.getId()))
                 .findAny()
                 .isPresent();
     }

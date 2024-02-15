@@ -46,6 +46,10 @@ public class CodeSetDateEntity extends EntityAudit {
     @Column(name = "required_day")
     private LocalDate requiredDay;
 
+    @Basic(optional = false)
+    @Column(name = "start_day")
+    private LocalDate startDay;
+
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "codeSetDateId")
     @Basic(optional = false)
     @Column(name = "code_set_date_id", nullable = false)
@@ -56,6 +60,7 @@ public class CodeSetDateEntity extends EntityAudit {
         return CodeSetDate.builder()
                 .id(id)
                 .requiredDay(requiredDay)
+                .startDay(startDay)
                 .build();
     }
 

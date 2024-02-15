@@ -59,6 +59,7 @@ public class CodeSetDateDAO extends BaseDAOImpl  {
     public CodeSetDate add(CodeSetDate codeSetDate) {
         CodeSetDateEntity entity = CodeSetDateEntity.builder()
                 .requiredDay(codeSetDate.getRequiredDay())
+                .startDay(codeSetDate.getStartDay())
                 .build();
 
         create(entity);
@@ -69,6 +70,7 @@ public class CodeSetDateDAO extends BaseDAOImpl  {
     public void update(CodeSetDate codeSetDate) throws EntityRetrievalException {
         CodeSetDateEntity entity = getEntityById(codeSetDate.getId());
         entity.setRequiredDay(codeSetDate.getRequiredDay());
+        entity.setStartDay(codeSetDate.getStartDay());
         update(entity);
     }
 

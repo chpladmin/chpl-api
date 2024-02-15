@@ -37,6 +37,10 @@ public class CodeSetDate implements Serializable {
     @JsonSerialize(using = LocalDateSerializer.class)
     private LocalDate requiredDay;
 
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonSerialize(using = LocalDateSerializer.class)
+    private LocalDate startDay;
+
     // Do not include this property if the value is "empty". It will be empty when generating listing details
     // and will be non-empty (this included) when doing CRUD operations on functionality tested
     @JsonInclude(value = Include.NON_EMPTY)
