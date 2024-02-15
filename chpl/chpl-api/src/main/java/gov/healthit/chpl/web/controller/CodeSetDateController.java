@@ -20,7 +20,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
-@Tag(name = "code-set-date", description = "Endpoints related to Code Set Dates.")
+@Tag(name = "code-set-dates", description = "Endpoints related to Code Set Dates.")
 @RestController
 @RequestMapping("/code-set-dates")
 public class CodeSetDateController {
@@ -32,7 +32,7 @@ public class CodeSetDateController {
     }
 
     @Operation(summary = "Retrieve all Code Set Dates. ",
-            description = "Returns all of the Code Set Datess that are currently in the CHPL.",
+            description = "Returns all of the Code Set Dates that are currently in the CHPL.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
@@ -41,8 +41,8 @@ public class CodeSetDateController {
         return codeSetDateManager.getAll();
     }
 
-    @Operation(summary = "Get all criteria that Code Set Dates can be associated with.",
-            description = "Returns all of the Criteria that a Code Set Dates can be associated to.",
+    @Operation(summary = "Get all criteria that a Code Set Date can be associated with.",
+            description = "Returns all of the Criteria that a Code Set Date can be associated to.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
@@ -51,8 +51,8 @@ public class CodeSetDateController {
         return codeSetDateManager.getCertificationCriteriaForCodeSetDates();
     }
 
-    @Operation(summary = "Create a Code Set Dates.",
-            description = "Provides functionality to add a new Code Set Dates and the Criteria associated with it. "
+    @Operation(summary = "Create a Code Set Date.",
+            description = "Provides functionality to add a new Code Set Date and the Criteria associated with it. "
                     + "Security Restrictions: To create: ROLE_ADMIN",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
@@ -64,8 +64,8 @@ public class CodeSetDateController {
         return codeSetDateManager.create(codeSetDate);
     }
 
-    @Operation(summary = "Update a Code Set Dates.",
-            description = "Provides functionality to update a Code Set Dates and the Criteria associated with it. "
+    @Operation(summary = "Update a Code Set Date.",
+            description = "Provides functionality to update a Code Set Date and the Criteria associated with it. "
                     + "Security Restrictions: To update: ROLE_ADMIN",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
@@ -77,8 +77,8 @@ public class CodeSetDateController {
         return codeSetDateManager.update(codeSetDate);
     }
 
-    @Operation(summary = "Delete a Code Set Dates.",
-            description = "Provides functionality to delete an existing Code Set Dates and the Criteria associated with it. "
+    @Operation(summary = "Delete a Code Set Date.",
+            description = "Provides functionality to delete an existing Code Set Date and the Criteria associated with it. "
                     + "Security Restrictions: To update: ROLE_ADMIN",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
