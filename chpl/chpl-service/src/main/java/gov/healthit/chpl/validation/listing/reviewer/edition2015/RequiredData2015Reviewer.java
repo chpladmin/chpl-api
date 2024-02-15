@@ -29,7 +29,8 @@ import gov.healthit.chpl.validation.listing.reviewer.PermissionBasedReviewer;
 public class RequiredData2015Reviewer extends PermissionBasedReviewer {
     private static final String[] UCD_RELATED_CERTS = {
             "170.315 (a)(1)", "170.315 (a)(2)", "170.315 (a)(3)", "170.315 (a)(4)", "170.315 (a)(5)", "170.315 (a)(6)",
-            "170.315 (a)(7)", "170.315 (a)(8)", "170.315 (a)(9)", "170.315 (a)(14)", "170.315 (b)(2)", "170.315 (b)(3)"
+            "170.315 (a)(7)", "170.315 (a)(8)", "170.315 (a)(9)", "170.315 (a)(14)", "170.315 (b)(2)", "170.315 (b)(3)",
+            "170.315 (b)(11)"
     };
 
     private static final String G1_CRITERIA_NUMBER = "170.315 (g)(1)";
