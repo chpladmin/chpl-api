@@ -142,6 +142,16 @@ public class UpdatedListingStatusReportCreatorJob extends QuartzJob {
                     .filter(certResultFT -> certResultFT.getFunctionalityTested().getEndDay() != null)
                     .count();
         }
+        // TODO - Will need to determine for HTI-2 how to correctly handle this.  Possible
+        // future state is we will need to make sure the most recent and in the past codes set is
+        // attested to.
+        // Initially, we will just make sure that the cert result has attested to the same
+        // number of code sets as are available for the criteria.
+        //if (CollectionUtils.isNotEmpty(certificationResult.getCodeSetDates())) {
+        //    updateRequired += certificationResult.getCodeSetDates().stream()
+        //            .filter(certResultCsd -> certResultCsd.getCodeSetDate().getEndDay() != null)
+        //            .count();
+        //}
         return updateRequired > 0L;
     }
 
