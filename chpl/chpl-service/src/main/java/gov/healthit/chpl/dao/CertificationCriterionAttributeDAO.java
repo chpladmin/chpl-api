@@ -57,7 +57,8 @@ public class CertificationCriterionAttributeDAO extends BaseDAOImpl {
         return entityManager
                 .createQuery("SELECT cca "
                         + "FROM CertificationCriterionAttributeEntity cca "
-                        + "JOIN FETCH cca.criterion "
+                        + "JOIN FETCH cca.criterion c "
+                        + "LEFT JOIN FETCH c.certificationEdition "
                         + "WHERE cca.deleted = false", CertificationCriterionAttributeEntity.class)
                 .getResultList();
     }
