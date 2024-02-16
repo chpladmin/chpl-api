@@ -20,32 +20,32 @@ import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Component
-public class CodeSetDateValidator {
+public class CodeSetValidator {
     private static final int MAX_LISTINGS_IN_DELETE_ERROR_MESSAGE = 25;
 
     private ErrorMessageUtil errorMessageUtil;
-    private CodeSetDateDAO codeSetDateDAO;
+    private CodeSetDAO codeSetDAO;
 
     @Autowired
-    public CodeSetDateValidator(ErrorMessageUtil errorMessageUtil, CodeSetDateDAO codeSetDateDAO) {
+    public CodeSetValidator(ErrorMessageUtil errorMessageUtil, CodeSetDAO codeSetDAO) {
         this.errorMessageUtil = errorMessageUtil;
-        this.codeSetDateDAO = codeSetDateDAO;
+        this.codeSetDAO = codeSetDAO;
     }
 
-    public void validateForEdit(CodeSetDate codeSetDate) throws ValidationException, EntityRetrievalException {
+    public void validateForEdit(CodeSet codeSet) throws ValidationException, EntityRetrievalException {
         Set<String> messages = new HashSet<String>();
 
-        if (codeSetDate.getRequiredDay() == null) {
-            messages.add(errorMessageUtil.getMessage("codeSetDate.edit.emptyRequiredDay"));
+        if (codeSet.getRequiredDay() == null) {
+            messages.add(errorMessageUtil.getMessage("codeSet.edit.emptyRequiredDay"));
         }
 
-        if (CollectionUtils.isEmpty(codeSetDate.getCriteria())) {
-            messages.add(errorMessageUtil.getMessage("codeSetDate.edit.noCriteria"));
+        if (CollectionUtils.isEmpty(codeSet.getCriteria())) {
+            messages.add(errorMessageUtil.getMessage("codeSet.edit.noCriteria"));
         } else {
-            if (isCodeSetDateDuplicateOnEdit(codeSetDate)) {
-                messages.add(errorMessageUtil.getMessage("codeSetDate.edit.duplicate", "Code Set Date"));
+            if (isCodeSetDuplicateOnEdit(codeSet)) {
+                messages.add(errorMessageUtil.getMessage("codeSet.edit.duplicate", "Code Set Date"));
             }
-            messages.addAll(validateCriteriaRemovedFromCodeSetDate(codeSetDate));
+            messages.addAll(validateCriteriaRemovedFromCodeSet(codeSet));
         }
 
         if (messages.size() > 0) {
@@ -54,19 +54,19 @@ public class CodeSetDateValidator {
         }
     }
 
-    public void validateForAdd(CodeSetDate codeSetDate) throws ValidationException, EntityRetrievalException {
+    public void validateForAdd(CodeSet codeSet) throws ValidationException, EntityRetrievalException {
         Set<String> messages = new HashSet<String>();
 
-        if (codeSetDate.getRequiredDay() == null) {
-            messages.add(errorMessageUtil.getMessage("codeSetDate.edit.emptyRequiredDay"));
+        if (codeSet.getRequiredDay() == null) {
+            messages.add(errorMessageUtil.getMessage("codeSet.edit.emptyRequiredDay"));
         }
 
-        if (CollectionUtils.isEmpty(codeSetDate.getCriteria())) {
-            messages.add(errorMessageUtil.getMessage("codeSetDate.edit.noCriteria"));
+        if (CollectionUtils.isEmpty(codeSet.getCriteria())) {
+            messages.add(errorMessageUtil.getMessage("codeSet.edit.noCriteria"));
         }
 
-        if (isCodeSetDatedDuplicateOnAdd(codeSetDate)) {
-            messages.add(errorMessageUtil.getMessage("codeSetDate.edit.duplicate", "Code Set Date"));
+        if (isCodeSetdDuplicateOnAdd(codeSet)) {
+            messages.add(errorMessageUtil.getMessage("codeSet.edit.duplicate", "Code Set Date"));
         }
 
         if (messages.size() > 0) {
@@ -75,16 +75,16 @@ public class CodeSetDateValidator {
         }
     }
 
-    public void validateForDelete(CodeSetDate codeSetDate) throws ValidationException {
+    public void validateForDelete(CodeSet codeSet) throws ValidationException {
         List<CertifiedProductDetailsDTO> listings = new ArrayList<CertifiedProductDetailsDTO>();
         try {
-            listings = codeSetDateDAO.getCertifiedProductsByCodeSetDate(codeSetDate);
+            listings = codeSetDAO.getCertifiedProductsByCodeSet(codeSet);
         } catch (EntityRetrievalException ex) {
             throw new ValidationException(ex.getMessage());
         }
 
         if (!CollectionUtils.isEmpty(listings)) {
-            String message = errorMessageUtil.getMessage("codeSetDate.delete.listingsExist",
+            String message = errorMessageUtil.getMessage("codeSet.delete.listingsExist",
                     listings.size(),
                     listings.size() > 1 ? "s" : "");
             if (listings.size() < MAX_LISTINGS_IN_DELETE_ERROR_MESSAGE) {
@@ -99,21 +99,21 @@ public class CodeSetDateValidator {
         }
     }
 
-    private Set<String> validateCriteriaRemovedFromCodeSetDate(CodeSetDate codeSetDate) {
+    private Set<String> validateCriteriaRemovedFromCodeSet(CodeSet codeSet) {
         Set<String> messages = new HashSet<String>();
-        CodeSetDate origCodeSetDate = codeSetDateDAO.getById(codeSetDate.getId());
+        CodeSet origCodeSet = codeSetDAO.getById(codeSet.getId());
 
-        getCriteriaRemovedFromCodeSetDate(codeSetDate, origCodeSetDate).stream()
+        getCriteriaRemovedFromCodeSet(codeSet, origCodeSet).stream()
                 .forEach(crit -> {
                     List<CertifiedProductDetailsDTO> listings = new ArrayList<CertifiedProductDetailsDTO>();
                     try {
-                        listings = codeSetDateDAO.getCertifiedProductsByCodeSetDateAndCriteria(origCodeSetDate, crit);
+                        listings = codeSetDAO.getCertifiedProductsByCodeSetAndCriteria(origCodeSet, crit);
                     } catch (EntityRetrievalException ex) {
                         messages.add(ex.getMessage());
                     }
 
                     if (!CollectionUtils.isEmpty(listings)) {
-                        String message = errorMessageUtil.getMessage("codeSetDate.edit.deletedCriteria.listingsExist",
+                        String message = errorMessageUtil.getMessage("codeSet.edit.deletedCriteria.listingsExist",
                                 CertificationCriterionService.formatCriteriaNumber(crit),
                                 listings.size(),
                                 listings.size() > 1 ? "s" : "");
@@ -129,37 +129,37 @@ public class CodeSetDateValidator {
         return messages;
     }
 
-    private boolean isCodeSetDateDuplicateOnEdit(CodeSetDate codeSetDate) throws EntityRetrievalException {
-        LocalDate updatedRequiredDay = codeSetDate.getRequiredDay() != null ? codeSetDate.getRequiredDay() : LocalDate.MAX;
+    private boolean isCodeSetDuplicateOnEdit(CodeSet codeSet) throws EntityRetrievalException {
+        LocalDate updatedRequiredDay = codeSet.getRequiredDay() != null ? codeSet.getRequiredDay() : LocalDate.MAX;
 
-        return codeSetDateDAO.getAllCodeSetDateCriteriaMap().stream()
+        return codeSetDAO.getAllCodeSetCriteriaMap().stream()
                 .filter(map -> {
-                        LocalDate origRequiredDay = map.getCodeSetDate().getRequiredDay() != null ? map.getCodeSetDate().getRequiredDay() : LocalDate.MAX;
+                        LocalDate origRequiredDay = map.getCodeSet().getRequiredDay() != null ? map.getCodeSet().getRequiredDay() : LocalDate.MAX;
 
-                        return map.getCodeSetDate().getRequiredDay().equals(codeSetDate.getRequiredDay())
+                        return map.getCodeSet().getRequiredDay().equals(codeSet.getRequiredDay())
                                 && origRequiredDay.equals(updatedRequiredDay)
-                                && !map.getCodeSetDate().getId().equals(codeSetDate.getId());
+                                && !map.getCodeSet().getId().equals(codeSet.getId());
                 })
                 .findAny()
                 .isPresent();
     }
 
-    private boolean isCodeSetDatedDuplicateOnAdd(CodeSetDate codeSetDate) throws EntityRetrievalException {
-        LocalDate updatedRequiredDay = codeSetDate.getRequiredDay() != null ? codeSetDate.getRequiredDay() : LocalDate.MAX;
+    private boolean isCodeSetdDuplicateOnAdd(CodeSet codeSet) throws EntityRetrievalException {
+        LocalDate updatedRequiredDay = codeSet.getRequiredDay() != null ? codeSet.getRequiredDay() : LocalDate.MAX;
 
-        return codeSetDateDAO.getAllCodeSetDateCriteriaMap().stream()
+        return codeSetDAO.getAllCodeSetCriteriaMap().stream()
                 .filter(map -> {
-                    LocalDate origRequiredDay = map.getCodeSetDate().getRequiredDay() != null ? map.getCodeSetDate().getRequiredDay() : LocalDate.MAX;
+                    LocalDate origRequiredDay = map.getCodeSet().getRequiredDay() != null ? map.getCodeSet().getRequiredDay() : LocalDate.MAX;
 
-                        return map.getCodeSetDate().getRequiredDay().equals(codeSetDate.getRequiredDay())
+                        return map.getCodeSet().getRequiredDay().equals(codeSet.getRequiredDay())
                                 && origRequiredDay.equals(updatedRequiredDay);
                 })
                 .findAny()
                 .isPresent();
     }
 
-    private List<CertificationCriterion> getCriteriaRemovedFromCodeSetDate(CodeSetDate updatedCodeSetDate, CodeSetDate originalCodeSetDate) {
-        return  subtractLists(originalCodeSetDate.getCriteria(), updatedCodeSetDate.getCriteria());
+    private List<CertificationCriterion> getCriteriaRemovedFromCodeSet(CodeSet updatedCodeSet, CodeSet originalCodeSet) {
+        return  subtractLists(originalCodeSet.getCriteria(), updatedCodeSet.getCriteria());
     }
 
     private List<CertificationCriterion> subtractLists(List<CertificationCriterion> listA, List<CertificationCriterion> listB) {

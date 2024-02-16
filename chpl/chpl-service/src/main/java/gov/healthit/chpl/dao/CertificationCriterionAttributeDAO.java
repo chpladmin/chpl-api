@@ -40,9 +40,9 @@ public class CertificationCriterionAttributeDAO extends BaseDAOImpl {
                 .collect(Collectors.toList());
     }
 
-    public List<CertificationCriterion> getCriteriaForCodeSetDates() {
+    public List<CertificationCriterion> getCriteriaForCodeSets() {
         return getAllCriteriaAttributeEntities().stream()
-                .filter(att -> att.getCodeSetDate())
+                .filter(att -> att.getCodeSet())
                 .map(cca -> cca.getCriterion().toDomain())
                 .collect(Collectors.toList());
     }

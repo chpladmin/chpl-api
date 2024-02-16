@@ -28,7 +28,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "code_set_date_criteria_map")
-public class CodeSetDateCriteriaMapEntity extends EntityAudit {
+public class CodeSetCriteriaMapEntity extends EntityAudit {
     private static final long serialVersionUID = 7619361802656158566L;
 
     @Id
@@ -45,19 +45,19 @@ public class CodeSetDateCriteriaMapEntity extends EntityAudit {
     @JoinColumn(name = "certification_criterion_id", insertable = false, updatable = false)
     private CertificationCriterionEntity criterion;
 
-    @Column(name = "code_set_date_id")
-    private Long codeSetDateId;
+    @Column(name = "code_set_id")
+    private Long codeSetId;
 
     @Basic(optional = false)
     @OneToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "code_set_date_id", insertable = false, updatable = false)
-    private CodeSetDateEntity codeSetDate;
+    @JoinColumn(name = "code_set_id", insertable = false, updatable = false)
+    private CodeSetEntity codeSet;
 
-    public CodeSetDateCriteriaMap toDomain() {
-        return CodeSetDateCriteriaMap.builder()
+    public CodeSetCriteriaMap toDomain() {
+        return CodeSetCriteriaMap.builder()
                 .id(id)
                 .criterion(criterion.toDomain())
-                .codeSetDate(codeSetDate.toDomainWithCriteria())
+                .codeSet(codeSet.toDomainWithCriteria())
                 .build();
     }
 

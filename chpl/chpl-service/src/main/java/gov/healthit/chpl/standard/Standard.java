@@ -76,10 +76,6 @@ public class Standard implements Serializable {
         return end.isBefore(LocalDate.now());
     }
 
-    public LocalDate getStartDay() {
-        return startDay;
-    }
-
     /*
      * TODO: OCD-4333 NEED THIS TEXT
      */

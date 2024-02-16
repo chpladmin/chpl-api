@@ -32,8 +32,8 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "code_set_date")
-public class CodeSetDateEntity extends EntityAudit {
+@Table(name = "code_set")
+public class CodeSetEntity extends EntityAudit {
     private static final long serialVersionUID = 3619325516271435265L;
 
     @Id
@@ -52,20 +52,20 @@ public class CodeSetDateEntity extends EntityAudit {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "codeSetDateId")
     @Basic(optional = false)
-    @Column(name = "code_set_date_id", nullable = false)
+    @Column(name = "code_set_id", nullable = false)
     @Where(clause = "deleted <> 'true'")
-    private Set<CodeSetDateCriteriaMapEntity> mappedCriteria = new HashSet<CodeSetDateCriteriaMapEntity>();
+    private Set<CodeSetCriteriaMapEntity> mappedCriteria = new HashSet<CodeSetCriteriaMapEntity>();
 
-    public CodeSetDate toDomain() {
-        return CodeSetDate.builder()
+    public CodeSet toDomain() {
+        return CodeSet.builder()
                 .id(id)
                 .requiredDay(requiredDay)
                 .startDay(startDay)
                 .build();
     }
 
-    public CodeSetDate toDomainWithCriteria() {
-        return CodeSetDate.builder()
+    public CodeSet toDomainWithCriteria() {
+        return CodeSet.builder()
                 .id(id)
                 .requiredDay(requiredDay)
                 .criteria(this.getMappedCriteria() != null ? this.getMappedCriteria().stream()

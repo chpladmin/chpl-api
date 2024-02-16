@@ -38,7 +38,7 @@ public class CertificationCriterionWithAttributes extends CertificationCriterion
         private boolean additionalSoftware;
         private boolean apiDocumentation;
         private boolean attestationAnswer;
-        private boolean codeSetDate;
+        private boolean codeSet;
         private boolean conformanceMethod;
         private boolean documentationUrl;
         private boolean exportDocumentation;

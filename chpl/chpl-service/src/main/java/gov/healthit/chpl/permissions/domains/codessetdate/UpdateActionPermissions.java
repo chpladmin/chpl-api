@@ -4,7 +4,7 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.permissions.domains.ActionPermissions;
 
-@Component("codeSetDateUpdateActionPermissions")
+@Component("codeSetUpdateActionPermissions")
 public class UpdateActionPermissions extends ActionPermissions {
 
     @Override

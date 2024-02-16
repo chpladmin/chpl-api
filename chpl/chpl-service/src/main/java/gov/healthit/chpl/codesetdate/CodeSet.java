@@ -28,7 +28,7 @@ import lombok.ToString;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class CodeSetDate implements Serializable {
+public class CodeSet implements Serializable {
     private static final long serialVersionUID = 8827071245268602313L;
 
     private Long id;

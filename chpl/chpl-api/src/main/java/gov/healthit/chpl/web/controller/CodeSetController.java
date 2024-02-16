@@ -12,23 +12,23 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
-import gov.healthit.chpl.codesetdate.CodeSetDate;
-import gov.healthit.chpl.codesetdate.CodeSetDateManager;
+import gov.healthit.chpl.codesetdate.CodeSet;
+import gov.healthit.chpl.codesetdate.CodeSetManager;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
-@Tag(name = "code-set-dates", description = "Endpoints related to Code Set Dates.")
+@Tag(name = "code-sets", description = "Endpoints related to Code Sets.")
 @RestController
-@RequestMapping("/code-set-dates")
-public class CodeSetDateController {
-    private CodeSetDateManager codeSetDateManager;
+@RequestMapping("/code-sets")
+public class CodeSetController {
+    private CodeSetManager codeSetManager;
 
     @Autowired
-    public CodeSetDateController(CodeSetDateManager codeSetDateManager) {
-        this.codeSetDateManager = codeSetDateManager;
+    public CodeSetController(CodeSetManager codeSetManager) {
+        this.codeSetManager = codeSetManager;
     }
 
     @Operation(summary = "Retrieve all Code Set Dates. ",
@@ -37,8 +37,8 @@ public class CodeSetDateController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public @ResponseBody List<CodeSetDate> getAllCodeSetDates() {
-        return codeSetDateManager.getAll();
+    public @ResponseBody List<CodeSet> getAllCodeSets() {
+        return codeSetManager.getAll();
     }
 
     @Operation(summary = "Get all criteria that a Code Set Date can be associated with.",
@@ -47,8 +47,8 @@ public class CodeSetDateController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
     @RequestMapping(value = "/criteria", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public @ResponseBody List<CertificationCriterion> getCertificationCriteriaForCodeSetDates() {
-        return codeSetDateManager.getCertificationCriteriaForCodeSetDates();
+    public @ResponseBody List<CertificationCriterion> getCertificationCriteriaForCodeSets() {
+        return codeSetManager.getCertificationCriteriaForCodeSets();
     }
 
     @Operation(summary = "Create a Code Set Date.",
@@ -60,8 +60,8 @@ public class CodeSetDateController {
             })
     @RequestMapping(value = "", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
-    public @ResponseBody CodeSetDate createCodeSetDate(@RequestBody(required = true) CodeSetDate codeSetDate) throws EntityRetrievalException {
-        return codeSetDateManager.create(codeSetDate);
+    public @ResponseBody CodeSet createCodeSet(@RequestBody(required = true) CodeSet codeSet) throws EntityRetrievalException {
+        return codeSetManager.create(codeSet);
     }
 
     @Operation(summary = "Update a Code Set Date.",
@@ -73,8 +73,8 @@ public class CodeSetDateController {
             })
     @RequestMapping(value = "", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
-    public @ResponseBody CodeSetDate updateCodeSetDate(@RequestBody(required = true) CodeSetDate codeSetDate) throws EntityRetrievalException {
-        return codeSetDateManager.update(codeSetDate);
+    public @ResponseBody CodeSet updateCodeSet(@RequestBody(required = true) CodeSet codeSet) throws EntityRetrievalException {
+        return codeSetManager.update(codeSet);
     }
 
     @Operation(summary = "Delete a Code Set Date.",
@@ -84,9 +84,9 @@ public class CodeSetDateController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
-    @RequestMapping(value = "/{codeSetDateId}", method = RequestMethod.DELETE, produces = "application/json; charset=utf-8")
-    public void delete(@PathVariable("codeSetDateId") Long codeSetDateId) throws EntityRetrievalException {
-        codeSetDateManager.delete(codeSetDateId);
+    @RequestMapping(value = "/{codeSetId}", method = RequestMethod.DELETE, produces = "application/json; charset=utf-8")
+    public void delete(@PathVariable("codeSetId") Long codeSetId) throws EntityRetrievalException {
+        codeSetManager.delete(codeSetId);
     }
 
 }

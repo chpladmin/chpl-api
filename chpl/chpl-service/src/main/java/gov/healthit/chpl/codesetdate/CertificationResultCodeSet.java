@@ -17,14 +17,14 @@ import lombok.NoArgsConstructor;
    @NoArgsConstructor
    @AllArgsConstructor
    @Builder
-public class CertificationResultCodeSetDate implements Serializable {
+public class CertificationResultCodeSet implements Serializable {
     private static final long serialVersionUID = 3834736549928411678L;
 
-    @Schema(description = "Code set date to certification result mapping internal ID")
+    @Schema(description = "Code set to certification result mapping internal ID")
     private Long id;
 
-    @Schema(description = "Code set date internal ID")
-    private CodeSetDate codeSetDate;
+    @Schema(description = "Code set internal ID")
+    private CodeSet codeSet;
 
     @JsonIgnore
     private Long certificationResultId;

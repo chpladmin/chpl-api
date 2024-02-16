@@ -26,8 +26,8 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "certification_result_code_set_date")
-public class CertificationResultCodeSetDateEntity extends EntityAudit {
+@Table(name = "certification_result_code_set")
+public class CertificationResultCodeSetEntity extends EntityAudit {
     private static final long serialVersionUID = 7697779196443883288L;
 
     @Id
@@ -40,19 +40,19 @@ public class CertificationResultCodeSetDateEntity extends EntityAudit {
     @Column(name = "certification_result_id", nullable = false)
     private Long certificationResultId;
 
-    @Column(name = "code_set_date_id")
-    private Long codeSetDateId;
+    @Column(name = "code_set_id")
+    private Long codeSetId;
 
     @Basic(optional = true)
     @OneToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "code_set_date_id", unique = true, nullable = true, insertable = false, updatable = false)
-    private CodeSetDateEntity codeSetDate;
+    private CodeSetEntity codeSet;
 
-    public CertificationResultCodeSetDate toDomain() {
-        return CertificationResultCodeSetDate.builder()
+    public CertificationResultCodeSet toDomain() {
+        return CertificationResultCodeSet.builder()
                 .id(id)
                 .certificationResultId(certificationResultId)
-                .codeSetDate(codeSetDate.toDomain())
+                .codeSet(codeSet.toDomain())
                 .build();
     }
 }

@@ -10,8 +10,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class CodeSetDateCriteriaMap {
+public class CodeSetCriteriaMap {
     private Long id;
     private CertificationCriterion criterion;
-    private CodeSetDate codeSetDate;
+    private CodeSet codeSet;
 }

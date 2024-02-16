@@ -37,7 +37,7 @@ public class CertificationResultRules {
     public static final String RISK_MANAGEMENT_SUMMARY_INFORMATION = "riskManagementSummaryInformation";
     public static final String SVAP = "svap";
     public static final String STANDARD = "standard";
-    public static final String CODE_SET_DATE = "codeSetDate";
+    public static final String CODE_SET = "codeSet";
 
     private CertificationCriterionAttributeDAO certificationCriterionAttributeDao;
     private Map<Long, List<CertificationResultOption>> rules = new HashMap<Long, List<CertificationResultOption>>();
@@ -167,8 +167,8 @@ public class CertificationResultRules {
                 .build());
             rules.get(attribute.getCriterion().getId()).add(
                     CertificationResultOption.builder()
-                        .canHaveOption(attribute.getCodeSetDate())
-                        .optionName(CODE_SET_DATE)
+                        .canHaveOption(attribute.getCodeSet())
+                        .optionName(CODE_SET)
                     .build());
         }
     }

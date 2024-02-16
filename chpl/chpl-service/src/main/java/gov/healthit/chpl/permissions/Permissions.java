@@ -15,7 +15,7 @@ import gov.healthit.chpl.permissions.domains.CertificationIdDomainPermissions;
 import gov.healthit.chpl.permissions.domains.CertificationResultsDomainPermissions;
 import gov.healthit.chpl.permissions.domains.CertifiedProductDomainPermissions;
 import gov.healthit.chpl.permissions.domains.ChangeRequestDomainPermissions;
-import gov.healthit.chpl.permissions.domains.CodeSetDateDomainPermissions;
+import gov.healthit.chpl.permissions.domains.CodeSetDomainPermissions;
 import gov.healthit.chpl.permissions.domains.ComplaintDomainPermissions;
 import gov.healthit.chpl.permissions.domains.CorrectiveActionPlanDomainPermissions;
 import gov.healthit.chpl.permissions.domains.DeveloperDomainPermissions;
@@ -75,7 +75,7 @@ public class Permissions {
     public static final String TEST_TOOL = "TEST_TOOL";
     public static final String FUNCTIONALITY_TESTED = "FUNCTIONALITY_TESTED";
     public static final String STANDARD = "STANDARD";
-    public static final String CODE_SET_DATE = "CODE_SET_DATE";
+    public static final String CODE_SET = "CODE_SET";
 
     private Map<String, DomainPermissions> domainPermissions = new HashMap<String, DomainPermissions>();
 
@@ -112,7 +112,7 @@ public class Permissions {
             TestToolDomainPermissions testToolDomainPermissions,
             FunctionalityTestedDomainPermissions functionalityTestedDomainPermissions,
             StandardDomainPermissions standardDomainPermissions,
-            CodeSetDateDomainPermissions codeSetDatePermissions) {
+            CodeSetDomainPermissions codeSetPermissions) {
 
         domainPermissions.put(ACCESSIBILITY_STANDARD, accessibilityStandardDomainPermissions);
         domainPermissions.put(ACTIVITY, activityDomainPermissions);
@@ -123,7 +123,7 @@ public class Permissions {
         domainPermissions.put(CERTIFICATION_RESULTS, certificationResultsDomainPermissions);
         domainPermissions.put(CERTIFIED_PRODUCT, certifiedProductDomainPermissions);
         domainPermissions.put(CHANGE_REQUEST, changeRequestDomainPermissions);
-        domainPermissions.put(CODE_SET_DATE, codeSetDatePermissions);
+        domainPermissions.put(CODE_SET, codeSetPermissions);
         domainPermissions.put(COMPLAINT, complaintDomainPermissions);
         domainPermissions.put(CORRECTIVE_ACTION_PLAN, correctiveActionPlanDomainPermissions);
         domainPermissions.put(DEVELOPER, developerDomainPermissions);

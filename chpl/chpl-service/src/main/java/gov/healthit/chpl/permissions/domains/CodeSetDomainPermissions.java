@@ -9,16 +9,16 @@ import gov.healthit.chpl.permissions.domains.codessetdate.DeleteActionPermission
 import gov.healthit.chpl.permissions.domains.codessetdate.UpdateActionPermissions;
 
 @Component
-public class CodeSetDateDomainPermissions extends DomainPermissions {
+public class CodeSetDomainPermissions extends DomainPermissions {
     public static final String DELETE = "DELETE";
     public static final String UPDATE = "UPDATE";
     public static final String CREATE = "CREATE";
 
     @Autowired
-    public CodeSetDateDomainPermissions(
-            @Qualifier("codeSetDateDeleteActionPermissions") DeleteActionPermissions deleteActionPermissions,
-            @Qualifier("codeSetDateUpdateActionPermissions") UpdateActionPermissions updateActionPermissions,
-            @Qualifier("codeSetDateCreateActionPermissions") CreateActionPermissions createActionPermissions) {
+    public CodeSetDomainPermissions(
+            @Qualifier("codeSetDeleteActionPermissions") DeleteActionPermissions deleteActionPermissions,
+            @Qualifier("codeSetUpdateActionPermissions") UpdateActionPermissions updateActionPermissions,
+            @Qualifier("codeSetCreateActionPermissions") CreateActionPermissions createActionPermissions) {
         getActionPermissions().put(DELETE, deleteActionPermissions);
         getActionPermissions().put(UPDATE, updateActionPermissions);
         getActionPermissions().put(CREATE, createActionPermissions);
