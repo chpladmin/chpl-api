@@ -1,4 +1,4 @@
-package gov.healthit.chpl.codesetdate;
+package gov.healthit.chpl.codeset;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -45,7 +45,7 @@ public class CertificationResultCodeSetEntity extends EntityAudit {
 
     @Basic(optional = true)
     @OneToOne(optional = true, fetch = FetchType.LAZY)
-    @JoinColumn(name = "code_set_date_id", unique = true, nullable = true, insertable = false, updatable = false)
+    @JoinColumn(name = "code_set_id", unique = true, nullable = true, insertable = false, updatable = false)
     private CodeSetEntity codeSet;
 
     public CertificationResultCodeSet toDomain() {

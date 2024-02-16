@@ -8,8 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
-import gov.healthit.chpl.codesetdate.CodeSet;
-import gov.healthit.chpl.codesetdate.CodeSetDAO;
+import gov.healthit.chpl.codeset.CodeSet;
+import gov.healthit.chpl.codeset.CodeSetDAO;
 import gov.healthit.chpl.dao.CertificationCriterionAttributeDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.util.ErrorMessageUtil;

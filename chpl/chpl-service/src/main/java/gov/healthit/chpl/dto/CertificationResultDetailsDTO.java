@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
-import gov.healthit.chpl.codesetdate.CertificationResultCodeSet;
+import gov.healthit.chpl.codeset.CertificationResultCodeSet;
 import gov.healthit.chpl.entity.listing.CertificationResultConformanceMethodEntity;
 import gov.healthit.chpl.entity.listing.CertificationResultDetailsEntity;
 import gov.healthit.chpl.functionalitytested.CertificationResultFunctionalityTested;

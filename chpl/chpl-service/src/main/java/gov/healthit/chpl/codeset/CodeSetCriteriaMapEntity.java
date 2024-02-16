@@ -1,4 +1,4 @@
-package gov.healthit.chpl.codesetdate;
+package gov.healthit.chpl.codeset;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -27,7 +27,7 @@ import lombok.ToString;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "code_set_date_criteria_map")
+@Table(name = "code_set_criteria_map")
 public class CodeSetCriteriaMapEntity extends EntityAudit {
     private static final long serialVersionUID = 7619361802656158566L;
 

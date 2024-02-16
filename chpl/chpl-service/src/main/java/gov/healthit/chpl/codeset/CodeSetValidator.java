@@ -1,4 +1,4 @@
-package gov.healthit.chpl.codesetdate;
+package gov.healthit.chpl.codeset;
 
 import java.time.LocalDate;
 import java.util.ArrayList;

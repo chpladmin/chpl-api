@@ -1,4 +1,4 @@
-package gov.healthit.chpl.codesetdate;
+package gov.healthit.chpl.codeset;
 
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -50,7 +50,7 @@ public class CodeSetEntity extends EntityAudit {
     @Column(name = "start_day")
     private LocalDate startDay;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "codeSetDateId")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "codeSetId")
     @Basic(optional = false)
     @Column(name = "code_set_id", nullable = false)
     @Where(clause = "deleted <> 'true'")

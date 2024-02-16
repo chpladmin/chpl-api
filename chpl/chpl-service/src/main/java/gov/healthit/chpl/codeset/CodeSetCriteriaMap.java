@@ -1,4 +1,4 @@
-package gov.healthit.chpl.codesetdate;
+package gov.healthit.chpl.codeset;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import lombok.AllArgsConstructor;

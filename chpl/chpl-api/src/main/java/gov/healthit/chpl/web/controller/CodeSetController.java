@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
-import gov.healthit.chpl.codesetdate.CodeSet;
-import gov.healthit.chpl.codesetdate.CodeSetManager;
+import gov.healthit.chpl.codeset.CodeSet;
+import gov.healthit.chpl.codeset.CodeSetManager;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import io.swagger.v3.oas.annotations.Operation;
