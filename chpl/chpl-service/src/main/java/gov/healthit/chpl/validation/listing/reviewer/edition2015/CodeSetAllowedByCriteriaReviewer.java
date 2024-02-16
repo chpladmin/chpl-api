@@ -42,7 +42,7 @@ public class CodeSetAllowedByCriteriaReviewer implements Reviewer {
                             listing.addBusinessErrorMessage(errorMessageUtil.getMessage("codeSet.notAllowed", cr.getCriterion().getNumber()));
                         } else {
                             cr.getCodeSets().forEach(csd -> {
-                                if (isCodeSetValidForCriteria(csd.getCodeSet(), mapOfCodeSets.get(cr.getCriterion().getId()))) {
+                                if (!isCodeSetValidForCriteria(csd.getCodeSet(), mapOfCodeSets.get(cr.getCriterion().getId()))) {
                                     listing.addBusinessErrorMessage(errorMessageUtil.getMessage("codeSet.notAllowedForCriteria",
                                             csd.getCodeSet().getRequiredDay(),
                                             cr.getCriterion().getNumber()));
