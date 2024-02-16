@@ -148,6 +148,7 @@ public class UpdatedListingStatusReportCreatorJob extends QuartzJob {
 
     private Long getDaysUpdatedEarly(CertifiedProductSearchDetails certifiedProductDetails) {
         return certifiedProductDetails.getCertificationResults().stream()
+                .filter(certResult -> !certResult.getCriterion().isRemoved())
                 .mapToLong(certResult -> getDaysUpdatedEarlyForCriteria(certResult))
                 .filter(daysEarly -> daysEarly > 0)
                 .min()
