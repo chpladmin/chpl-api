@@ -77,9 +77,7 @@ public class SearchQuestionableActivityController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
-    @RequestMapping(value = "/trigger-types", method = RequestMethod.GET, produces = {
-            "application/json; charset=utf-8", "application/xml"
-    })
+    @RequestMapping(value = "/trigger-types", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public List<QuestionableActivityTrigger> getAllTriggerTypes() {
         return questionableActivityManager.getTriggerTypes();
     }
@@ -96,9 +94,7 @@ public class SearchQuestionableActivityController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
-    @RequestMapping(value = "/search", method = RequestMethod.GET, produces = {
-            "application/json; charset=utf-8", "application/xml"
-    })
+    @RequestMapping(value = "/search", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody QuestionableActivitySearchResponse search(
         @Parameter(description = "Developer name, product name, or CHPL Product Number",
             allowEmptyValue = true, in = ParameterIn.QUERY, name = "searchTerm")

@@ -45,7 +45,7 @@ public class SearchController {
                     + "/search/vX endpoint. The current version being used is v3. For the "
                     + "current documentation, see /search/v3.",
             security = {@SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
-    @RequestMapping(method = RequestMethod.GET, produces = {"application/json; charset=utf-8", "application/xml"})
+    @RequestMapping(method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody ListingSearchResponse search(
         @Parameter(description = "CHPL ID, Developer (or previous developer) Name, Product Name, ONC-ACB Certification ID",
             allowEmptyValue = true, in = ParameterIn.QUERY, name = "searchTerm")
@@ -174,7 +174,7 @@ public class SearchController {
                     + "Date parameters are required to be in the format "
                     + SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT + ". ",
             security = {@SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
-    @RequestMapping(value = "/v3", method = RequestMethod.GET, produces = {"application/json; charset=utf-8", "application/xml"})
+    @RequestMapping(value = "/v3", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody ListingSearchResponse searchV3(
         @Parameter(description = "CHPL ID, Developer (or previous developer) Name, Product Name, ONC-ACB Certification ID",
                 allowEmptyValue = true, in = ParameterIn.QUERY, name = "searchTerm")
