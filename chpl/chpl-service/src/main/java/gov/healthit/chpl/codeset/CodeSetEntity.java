@@ -68,6 +68,7 @@ public class CodeSetEntity extends EntityAudit {
         return CodeSet.builder()
                 .id(id)
                 .requiredDay(requiredDay)
+                .startDay(startDay)
                 .criteria(this.getMappedCriteria() != null ? this.getMappedCriteria().stream()
                         .map(mappedCriterion -> mappedCriterion.getCriterion().toDomain())
                         .collect(Collectors.toList()) : null)
