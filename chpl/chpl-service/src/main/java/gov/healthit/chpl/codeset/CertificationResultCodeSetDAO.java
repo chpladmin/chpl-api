@@ -12,7 +12,7 @@ import gov.healthit.chpl.exception.EntityCreationException;
 
 @Component
 public class CertificationResultCodeSetDAO extends BaseDAOImpl {
-    public List<CertificationResultCodeSet> getCodeSetForCertificationResult(Long certificationResultId) {
+    public List<CertificationResultCodeSet> getCodeSetsForCertificationResult(Long certificationResultId) {
         List<CertificationResultCodeSetEntity> entities = getCodeSetForCertification(certificationResultId);
         return entities.stream()
                 .map(entity -> entity.toDomain())

@@ -1,6 +1,7 @@
 package gov.healthit.chpl.codeset;
 
 import java.io.Serializable;
+import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -12,11 +13,11 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Schema(description = "Need this text")
-   @JsonIgnoreProperties(ignoreUnknown = true)
-   @Data
-   @NoArgsConstructor
-   @AllArgsConstructor
-   @Builder
+@JsonIgnoreProperties(ignoreUnknown = true)
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class CertificationResultCodeSet implements Serializable {
     private static final long serialVersionUID = 3834736549928411678L;
 
@@ -28,4 +29,8 @@ public class CertificationResultCodeSet implements Serializable {
 
     @JsonIgnore
     private Long certificationResultId;
+
+    @JsonIgnore
+    private Date creationDate;
+
 }

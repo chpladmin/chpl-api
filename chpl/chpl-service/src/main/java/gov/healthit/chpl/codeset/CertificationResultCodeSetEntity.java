@@ -53,6 +53,7 @@ public class CertificationResultCodeSetEntity extends EntityAudit {
                 .id(id)
                 .certificationResultId(certificationResultId)
                 .codeSet(codeSet.toDomain())
+                .creationDate(getCreationDate())
                 .build();
     }
 }
