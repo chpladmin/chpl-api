@@ -139,7 +139,8 @@ public class UpdatedListingStatusReportCreatorJob extends QuartzJob {
 
     private Long getCriteriaRequireUpdateCount(CertifiedProductSearchDetails certifiedProductDetails) {
         return certifiedProductDetails.getCertificationResults().stream()
-                .filter(certResult -> isCriteriaUpdated(certResult))
+                .filter(certResult -> !certResult.getCriterion().isRemoved()
+                        && isCriteriaUpdated(certResult))
                 .peek(x -> LOGGER.info(x.getCriterion().getNumber()))
                 .count();
     }
@@ -172,6 +173,7 @@ public class UpdatedListingStatusReportCreatorJob extends QuartzJob {
 
     private Long getDaysUpdatedEarly(CertifiedProductSearchDetails certifiedProductDetails) {
         return certifiedProductDetails.getCertificationResults().stream()
+                .filter(certResult -> !certResult.getCriterion().isRemoved())
                 .mapToLong(certResult -> getDaysUpdatedEarlyForCriteria(certResult))
                 .filter(daysEarly -> daysEarly > 0)
                 .min()
