@@ -13,7 +13,7 @@ import gov.healthit.chpl.exception.EntityCreationException;
 @Component
 public class CertificationResultCodeSetDAO extends BaseDAOImpl {
     public List<CertificationResultCodeSet> getCodeSetsForCertificationResult(Long certificationResultId) {
-        List<CertificationResultCodeSetEntity> entities = getCodeSetForCertification(certificationResultId);
+        List<CertificationResultCodeSetEntity> entities = getCodeSetForCertificationResult(certificationResultId);
         return entities.stream()
                 .map(entity -> entity.toDomain())
                 .collect(Collectors.toList());
@@ -78,11 +78,11 @@ public class CertificationResultCodeSetDAO extends BaseDAOImpl {
         return entity;
     }
 
-    private List<CertificationResultCodeSetEntity> getCodeSetForCertification(Long certificationResultId) {
+    private List<CertificationResultCodeSetEntity> getCodeSetForCertificationResult(Long certificationResultId) {
         Query query = entityManager.createQuery("SELECT crcs "
                 + "FROM CertificationResultCodeSetEntity crcs "
                 + "LEFT OUTER JOIN FETCH crcs.codeSet csd "
-                + "WHERE (NOT cr.deleted = true) "
+                + "WHERE (NOT crcs.deleted = true) "
                 + "AND (crcs.certificationResultId = :certificationResultId) ",
                 CertificationResultCodeSetEntity.class);
         query.setParameter("certificationResultId", certificationResultId);

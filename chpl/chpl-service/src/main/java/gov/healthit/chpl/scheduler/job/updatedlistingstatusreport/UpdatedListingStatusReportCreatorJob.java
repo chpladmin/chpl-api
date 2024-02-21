@@ -244,7 +244,7 @@ public class UpdatedListingStatusReportCreatorJob extends QuartzJob {
                     .mapToLong(certResultFT -> ChronoUnit.DAYS.between(DateUtil.toLocalDate(certResultFT.getCreationDate().getTime()), certResultFT.getCodeSet().getRequiredDay()))
                     .min();
 
-            LOGGER.info("FT Check {} - {}", certificationResult.getCriterion().getNumber(), daysUpdatedEarly);
+            LOGGER.info("Code Set Check {} - {}", certificationResult.getCriterion().getNumber(), daysUpdatedEarly);
         }
         return daysUpdatedEarly;
     }
