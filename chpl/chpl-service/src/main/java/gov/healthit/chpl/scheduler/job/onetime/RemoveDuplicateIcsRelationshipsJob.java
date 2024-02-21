@@ -22,8 +22,7 @@ import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.scheduler.job.QuartzJob;
-import gov.healthit.chpl.sharedstore.listing.ListingStoreRemove;
-import gov.healthit.chpl.sharedstore.listing.RemoveBy;
+import gov.healthit.chpl.sharedstore.listing.SharedListingStoreProvider;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2(topic = "removeDuplicateIcsRelationshipsJobLogger")
@@ -39,7 +38,9 @@ public class RemoveDuplicateIcsRelationshipsJob extends QuartzJob {
     @Autowired
     private CertifiedProductDetailsManager cpdManager;
 
-    @ListingStoreRemove(removeBy = RemoveBy.ALL)
+    @Autowired
+    private SharedListingStoreProvider sharedListingStoreProvider;
+
     @Override
     public void execute(JobExecutionContext jobContext) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
@@ -51,6 +52,8 @@ public class RemoveDuplicateIcsRelationshipsJob extends QuartzJob {
             CertifiedProductSearchDetails listing = cpdManager.getCertifiedProductDetailsNoCache(listingId);
             updateIcsRelationshipDao.removeListingToListingMap(1135L);
             logCertifiedProductUpdateActivity(listing, ACTIVITY_REASON);
+            sharedListingStoreProvider.remove(listingId); //parent id
+            sharedListingStoreProvider.remove(11050L); //child id that was duplicate
             LOGGER.info("Updated listing " + listingId);
         } catch (Exception ex) {
             LOGGER.error("Could not update listing 10099", ex);
@@ -62,27 +65,35 @@ public class RemoveDuplicateIcsRelationshipsJob extends QuartzJob {
             CertifiedProductSearchDetails listing = cpdManager.getCertifiedProductDetailsNoCache(listingId);
             updateIcsRelationshipDao.removeListingToListingMap(1123L);
             logCertifiedProductUpdateActivity(listing, ACTIVITY_REASON);
+            sharedListingStoreProvider.remove(listingId); //parent id
+            sharedListingStoreProvider.remove(11032L); //child id that was duplicate
             LOGGER.info("Updated listing " + listingId);
         } catch (Exception ex) {
             LOGGER.error("Could not update listing 10875", ex);
         }
 
         try {
-            LOGGER.info("Updating listing 10553");
-            CertifiedProductSearchDetails listing = cpdManager.getCertifiedProductDetailsNoCache(10553L);
+            Long listingId = 10553L;
+            LOGGER.info("Updating listing " + listingId);
+            CertifiedProductSearchDetails listing = cpdManager.getCertifiedProductDetailsNoCache(listingId);
             updateIcsRelationshipDao.removeListingToListingMap(1132L);
             logCertifiedProductUpdateActivity(listing, ACTIVITY_REASON);
-            LOGGER.info("Updated listing 10553");
+            sharedListingStoreProvider.remove(listingId); //parent id
+            sharedListingStoreProvider.remove(11040L); //child id that was duplicate
+            LOGGER.info("Updated listing " + listingId);
         } catch (Exception ex) {
             LOGGER.error("Could not update listing 10553", ex);
         }
 
         try {
-            LOGGER.info("Updating listing 9298");
-            CertifiedProductSearchDetails listing = cpdManager.getCertifiedProductDetailsNoCache(9298L);
+            Long listingId = 9298L;
+            LOGGER.info("Updating listing " + listingId);
+            CertifiedProductSearchDetails listing = cpdManager.getCertifiedProductDetailsNoCache(listingId);
             updateIcsRelationshipDao.removeListingToListingMap(1111L);
             logCertifiedProductUpdateActivity(listing, ACTIVITY_REASON);
-            LOGGER.info("Updated listing 9298");
+            sharedListingStoreProvider.remove(listingId); //parent id
+            sharedListingStoreProvider.remove(11037L); //child id that was duplicate
+            LOGGER.info("Updated listing " + listingId);
         } catch (Exception ex) {
             LOGGER.error("Could not update listing 9298", ex);
         }
