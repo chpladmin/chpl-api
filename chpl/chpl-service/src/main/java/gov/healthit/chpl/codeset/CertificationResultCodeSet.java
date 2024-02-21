@@ -24,7 +24,7 @@ public class CertificationResultCodeSet implements Serializable {
     @Schema(description = "Code set to certification result mapping internal ID")
     private Long id;
 
-    @Schema(description = "Code set internal ID")
+    @Schema(description = "Code set associated to the certification result")
     private CodeSet codeSet;
 
     @JsonIgnore

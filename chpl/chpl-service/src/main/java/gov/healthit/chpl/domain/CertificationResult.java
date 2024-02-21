@@ -190,7 +190,7 @@ public class CertificationResult implements Serializable {
     @Builder.Default
     private List<CertificationResultStandard> standards = new ArrayList<CertificationResultStandard>();
 
-    @Schema(description = "Need this text")
+    @Schema(description = "The code set used to certify the Health IT Module to the corresponding ONC certification criteria.")
     @Builder.Default
     private List<CertificationResultCodeSet> codeSets = new ArrayList<CertificationResultCodeSet>();
 

@@ -43,7 +43,7 @@ public class CodeSetValidator {
             messages.add(errorMessageUtil.getMessage("codeSet.edit.noCriteria"));
         } else {
             if (isCodeSetDuplicateOnEdit(codeSet)) {
-                messages.add(errorMessageUtil.getMessage("codeSet.edit.duplicate", "Code Set Date"));
+                messages.add(errorMessageUtil.getMessage("codeSet.edit.duplicate", "Code Set"));
             }
             messages.addAll(validateCriteriaRemovedFromCodeSet(codeSet));
         }
@@ -66,7 +66,7 @@ public class CodeSetValidator {
         }
 
         if (isCodeSetdDuplicateOnAdd(codeSet)) {
-            messages.add(errorMessageUtil.getMessage("codeSet.edit.duplicate", "Code Set Date"));
+            messages.add(errorMessageUtil.getMessage("codeSet.edit.duplicate", "Code Set"));
         }
 
         if (messages.size() > 0) {

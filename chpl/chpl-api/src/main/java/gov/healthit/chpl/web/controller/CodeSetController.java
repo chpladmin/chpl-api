@@ -31,8 +31,8 @@ public class CodeSetController {
         this.codeSetManager = codeSetManager;
     }
 
-    @Operation(summary = "Retrieve all Code Set Dates. ",
-            description = "Returns all of the Code Set Dates that are currently in the CHPL.",
+    @Operation(summary = "Retrieve all Code Sets. ",
+            description = "Returns all of the Code Sets that are currently in the CHPL.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
@@ -41,8 +41,8 @@ public class CodeSetController {
         return codeSetManager.getAll();
     }
 
-    @Operation(summary = "Get all criteria that a Code Set Date can be associated with.",
-            description = "Returns all of the Criteria that a Code Set Date can be associated to.",
+    @Operation(summary = "Get all criteria that a Code Set can be associated with.",
+            description = "Returns all of the Criteria that a Code Set can be associated to.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
@@ -51,8 +51,8 @@ public class CodeSetController {
         return codeSetManager.getCertificationCriteriaForCodeSets();
     }
 
-    @Operation(summary = "Create a Code Set Date.",
-            description = "Provides functionality to add a new Code Set Date and the Criteria associated with it. "
+    @Operation(summary = "Create a Code Sets.",
+            description = "Provides functionality to add a new Code Set and the Criteria associated with it. "
                     + "Security Restrictions: To create: ROLE_ADMIN",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
@@ -64,8 +64,8 @@ public class CodeSetController {
         return codeSetManager.create(codeSet);
     }
 
-    @Operation(summary = "Update a Code Set Date.",
-            description = "Provides functionality to update a Code Set Date and the Criteria associated with it. "
+    @Operation(summary = "Update a Code Set.",
+            description = "Provides functionality to update a Code Set and the Criteria associated with it. "
                     + "Security Restrictions: To update: ROLE_ADMIN",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
@@ -77,8 +77,8 @@ public class CodeSetController {
         return codeSetManager.update(codeSet);
     }
 
-    @Operation(summary = "Delete a Code Set Date.",
-            description = "Provides functionality to delete an existing Code Set Date and the Criteria associated with it. "
+    @Operation(summary = "Delete a Code Set.",
+            description = "Provides functionality to delete an existing Code Set and the Criteria associated with it. "
                     + "Security Restrictions: To update: ROLE_ADMIN",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),

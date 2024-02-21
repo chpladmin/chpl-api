@@ -144,7 +144,7 @@ public class CodeSetDAO extends BaseDAOImpl  {
                         + "LEFT OUTER JOIN FETCH criterion.certificationEdition "
                         + "LEFT JOIN FETCH criterion.rule "
                         + "WHERE (NOT cs.deleted = true) "
-                        + "AND (csd.id = :entityid) ",
+                        + "AND (cs.id = :entityid) ",
                         CodeSetEntity.class);
         query.setParameter("entityid", id);
         List<CodeSetEntity> result = query.getResultList();

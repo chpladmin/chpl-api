@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,8 +42,8 @@ public class CodeSetManager {
         return certificationCriterionAttributeDAO.getCriteriaForCodeSets();
     }
 
-    //@PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).FUNCTIONALITY_TESTED, "
-    //        + "T(gov.healthit.chpl.permissions.domains.FunctionalityTestedDomainPermissions).UPDATE)")
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CODE_SET, "
+            + "T(gov.healthit.chpl.permissions.domains.FunctionalityTestedDomainPermissions).UPDATE)")
     @Transactional
     @ListingStoreRemove(removeBy = RemoveBy.ALL)
     @GenerateListingDownloadFile(listingSet = {ListingSet.EDITION_2011, ListingSet.EDITION_2014, ListingSet.INACTIVE})
@@ -54,8 +55,8 @@ public class CodeSetManager {
         return codeSetDAO.getById(codeSet.getId());
     }
 
-    //@PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).FUNCTIONALITY_TESTED, "
-    //        + "T(gov.healthit.chpl.permissions.domains.FunctionalityTestedDomainPermissions).CREATE)")
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CODE_SET, "
+            + "T(gov.healthit.chpl.permissions.domains.FunctionalityTestedDomainPermissions).CREATE)")
     @Transactional
     public CodeSet create(CodeSet codeSet) throws EntityRetrievalException {
         CodeSet newCodeSet = codeSetDAO.add(codeSet);
@@ -66,8 +67,8 @@ public class CodeSetManager {
         return codeSetDAO.getById(newCodeSet.getId());
     }
 
-    //@PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).FUNCTIONALITY_TESTED, "
-    //        + "T(gov.healthit.chpl.permissions.domains.FunctionalityTestedDomainPermissions).DELETE)")
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CODE_SET, "
+            + "T(gov.healthit.chpl.permissions.domains.FunctionalityTestedDomainPermissions).DELETE)")
     @Transactional
     public void delete(Long codeSetId) throws EntityRetrievalException {
         CodeSet codeSet = codeSetDAO.getById(codeSetId);
