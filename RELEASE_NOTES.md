@@ -1,5 +1,15 @@
 # Release Notes
 
+## Version 43.4.0
+_20 February 2024_
+
+### Features
+* Allow ONC/ADMIN to always update change request status
+* Remove XML response format from search endpoints
+* Add dependency between b11 and g3 criteria (related to SED)
+
+---
+
 ## Version 43.3.0
 _5 February 2024_
 
