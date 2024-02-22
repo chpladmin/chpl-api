@@ -814,6 +814,15 @@
         </job>
 
         <job>
+            <name>removeDuplicateIcsRelationshipsJob</name>
+            <group>systemJobs</group>
+            <description>Remove Duplicate ICS Relationships</description>
+            <job-class>gov.healthit.chpl.scheduler.job.onetime.RemoveDuplicateIcsRelationshipsJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+        </job>
+
+        <job>
             <name>serviceBaseUrlListUptimeCreatorJob</name>
             <group>systemJobs</group>
             <description>Retrieve uptime information from Datadog for (g)(10) Service Base URL Lists.</description>
