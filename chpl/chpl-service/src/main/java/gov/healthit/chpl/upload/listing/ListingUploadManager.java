@@ -59,7 +59,6 @@ import gov.healthit.chpl.upload.listing.handler.CertificationDateHandler;
 import gov.healthit.chpl.upload.listing.handler.ListingDetailsUploadHandler;
 import gov.healthit.chpl.upload.listing.normalizer.ListingDetailsNormalizer;
 import gov.healthit.chpl.upload.listing.validation.ListingUploadValidator;
-import gov.healthit.chpl.upload.listing.validation.reviewer.BaselineStandardNormalizer;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -196,7 +195,7 @@ public class ListingUploadManager {
         CertifiedProductSearchDetails listing = listingDetailsHandler.parseAsListing(headingRecord, allListingRecords);
         listing.setId(id);
         LOGGER.debug("Converted listing upload with ID " + id + " into CertifiedProductSearchDetails object");
-        listingNormalizer.normalize(listing, List.of(new BaselineStandardNormalizer(standardGroupService, standardDAO)));
+        listingNormalizer.normalize(listing);
         LOGGER.debug("Normalized listing upload with ID " + id);
         listingUploadValidator.review(listingUpload, listing);
         LOGGER.debug("Validated listing upload with ID " + id);

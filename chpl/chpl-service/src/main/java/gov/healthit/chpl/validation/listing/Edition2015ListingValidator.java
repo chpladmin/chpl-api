@@ -11,6 +11,7 @@ import gov.healthit.chpl.upload.listing.validation.reviewer.AccessibilityStandar
 import gov.healthit.chpl.upload.listing.validation.reviewer.QmsStandardReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.TestToolReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.UcdProcessReviewer;
+import gov.healthit.chpl.validation.listing.reviewer.BaselineStandardReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.CertificationDateReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.CertificationStatusReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.ChplNumberComparisonReviewer;
@@ -29,6 +30,7 @@ import gov.healthit.chpl.validation.listing.reviewer.OptionalStandardReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.RealWorldTestingReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.Reviewer;
 import gov.healthit.chpl.validation.listing.reviewer.StandardRemovalReviewer;
+import gov.healthit.chpl.validation.listing.reviewer.StandardReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.SvapReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.TestProcedureReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.TestStandardRemovalReviewer;
@@ -52,7 +54,6 @@ import gov.healthit.chpl.validation.listing.reviewer.edition2015.PrivacyAndSecur
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.RequiredAndRelatedCriteriaReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.RequiredData2015Reviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.SedG32015Reviewer;
-import gov.healthit.chpl.validation.listing.reviewer.edition2015.StandardAllowedByCriteriaReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.UnavailableCriteriaComparisonReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.UnavailableCriteriaTestTaskComparisonReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.UnavailableCriteriaUcdComparisonReviewer;
@@ -232,7 +233,10 @@ public class Edition2015ListingValidator extends Validator {
     private QmsStandardReviewer qmsStandardReviewer;
 
     @Autowired
-    private StandardAllowedByCriteriaReviewer standardAllowedByCriteriaReviewer;
+    private BaselineStandardReviewer baselineStandardReviewer;
+
+    @Autowired
+    private StandardReviewer standardReviewer;
 
     @Autowired
     @Qualifier("deprecatedFieldReviewer")
@@ -270,7 +274,8 @@ public class Edition2015ListingValidator extends Validator {
         reviewers.add(ttReviewer);
         reviewers.add(urlReviewer);
         reviewers.add(functionalityTestedReviewer);
-        reviewers.add(standardAllowedByCriteriaReviewer);
+        reviewers.add(baselineStandardReviewer);
+        reviewers.add(standardReviewer);
         reviewers.add(invalidCriteriaCombinationReviewer);
         reviewers.add(attestedCriteriaCqmReviewer);
         reviewers.add(cqmAttestedCriteriaReviewer);

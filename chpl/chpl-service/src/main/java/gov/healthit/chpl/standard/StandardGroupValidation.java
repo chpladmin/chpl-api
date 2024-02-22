@@ -17,7 +17,7 @@ import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 @Component
-public abstract class StandardGroupValidation extends PermissionBasedReviewer{
+public abstract class StandardGroupValidation extends PermissionBasedReviewer {
 
     private StandardGroupService standardGroupService;
     private ErrorMessageUtil msgUtil;

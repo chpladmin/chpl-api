@@ -1,4 +1,4 @@
-package gov.healthit.chpl.upload.listing.validation.reviewer;
+package gov.healthit.chpl.validation.listing.reviewer;
 
 import java.time.LocalDate;
 import java.util.Iterator;
@@ -25,7 +25,7 @@ import gov.healthit.chpl.util.ValidationUtils;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
-@Component("listingUploadStandardReviewer")
+@Component("standardReviewer")
 public class StandardReviewer extends StandardGroupValidation {
     private CertificationResultRules certResultRules;
     private ValidationUtils validationUtils;

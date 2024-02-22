@@ -1,44 +1,71 @@
-package gov.healthit.chpl.upload.listing.validation.reviewer;
+package gov.healthit.chpl.validation.listing.reviewer;
 
 import java.time.LocalDate;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.standard.CertificationResultStandard;
 import gov.healthit.chpl.standard.Standard;
 import gov.healthit.chpl.standard.StandardCriteriaMap;
 import gov.healthit.chpl.standard.StandardDAO;
 import gov.healthit.chpl.standard.StandardGroupService;
-import gov.healthit.chpl.upload.listing.normalizer.CertificationResultLevelNormalizer;
+import gov.healthit.chpl.standard.StandardGroupValidation;
 import gov.healthit.chpl.util.DateUtil;
+import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.util.Util;
 import lombok.extern.log4j.Log4j2;
 
+@Component
 @Log4j2
-public class BaselineStandardNormalizer implements CertificationResultLevelNormalizer {
+public class BaselineStandardReviewer extends StandardGroupValidation {
     private StandardGroupService standardGroupService;
     private StandardDAO standardDao;
+    private ErrorMessageUtil msgUtil;
 
-    public BaselineStandardNormalizer(StandardGroupService standardGroup, StandardDAO standardDao) {
-        this.standardGroupService = standardGroup;
+    @Autowired
+    public BaselineStandardReviewer(StandardGroupService standardGroupService, StandardDAO standardDao,
+            ErrorMessageUtil msgUtil, ResourcePermissions resourcePermissions) {
+        super(standardGroupService, msgUtil, resourcePermissions);
+
+        this.standardGroupService = standardGroupService;
         this.standardDao = standardDao;
+        this.msgUtil = msgUtil;
     }
 
     @Override
-    public void normalize(CertifiedProductSearchDetails listing) {
+    public void review(CertifiedProductSearchDetails listing) {
         if (listing.getCertificationResults() != null && listing.getCertificationResults().size() > 0) {
+            Set<CertificationCriterion> criteriaWithBaselineStandardsAdded = new LinkedHashSet<CertificationCriterion>();
+
             listing.getCertificationResults().stream()
-                .forEach(certResult -> addMissingStandards(listing.getCertificationDay(), certResult));
+                .forEach(certResult -> addMissingStandards(listing, certResult, criteriaWithBaselineStandardsAdded));
+
+            if (!CollectionUtils.isEmpty(criteriaWithBaselineStandardsAdded)) {
+                listing.addWarningMessage(msgUtil.getMessage("listing.criteria.baselineStandardsAdded",
+                        Util.joinListGrammatically(criteriaWithBaselineStandardsAdded.stream()
+                                .map(criterion -> Util.formatCriteriaNumber(criterion))
+                                .collect(Collectors.toList()), "and")));
+            }
         }
     }
 
-    private CertificationResult addMissingStandards(LocalDate certificationDate, CertificationResult certResult) {
-        List<Standard> validStandardsForCriterionAndListing = getValidStandardsForCriteriaAndListing(certResult.getCriterion(), certificationDate);
+    private CertificationResult addMissingStandards(CertifiedProductSearchDetails listing,
+            CertificationResult certResult,
+            Set<CertificationCriterion> criteriaWithBaselineStandardsAdded) {
+        List<Standard> validStandardsForCriterionAndListing = getValidStandardsForCriteriaAndListing(certResult.getCriterion(), listing.getCertificationDay());
 
         validStandardsForCriterionAndListing
                 .forEach(std -> {
@@ -51,9 +78,9 @@ public class BaselineStandardNormalizer implements CertificationResultLevelNorma
                                 .certificationResultId(certResult.getId())
                                 .standard(std)
                                 .build());
+                        criteriaWithBaselineStandardsAdded.add(certResult.getCriterion());
                     }
                 });
-
         return certResult;
     }
 
