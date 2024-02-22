@@ -42,7 +42,8 @@ public class SedRelatedCriteriaReviewer {
                 criteriaService.get(Criteria2015.B_2_OLD),
                 criteriaService.get(Criteria2015.B_2_CURES),
                 criteriaService.get(Criteria2015.B_3_OLD),
-                criteriaService.get(Criteria2015.B_3_CURES))
+                criteriaService.get(Criteria2015.B_3_CURES),
+                criteriaService.get(Criteria2015.B_11))
                 .collect(Collectors.toList());
     }
 

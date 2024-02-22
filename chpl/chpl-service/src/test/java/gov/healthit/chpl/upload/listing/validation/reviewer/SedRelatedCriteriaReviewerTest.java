@@ -49,6 +49,7 @@ public class SedRelatedCriteriaReviewerTest {
         Mockito.when(criteriaService.get(ArgumentMatchers.eq("criterion.170_315_b_2_cures"))).thenReturn(getCriterion(166L, "170.315 (b)(2)", "b2", false));
         Mockito.when(criteriaService.get(ArgumentMatchers.eq("criterion.170_315_b_3_old"))).thenReturn(getCriterion(18L, "170.315 (b)(3)", "b3 original", false));
         Mockito.when(criteriaService.get(ArgumentMatchers.eq("criterion.170_315_b_3_cures"))).thenReturn(getCriterion(167L, "170.315 (b)(3)", "b3", false));
+        Mockito.when(criteriaService.get(ArgumentMatchers.eq("criterion.170_315_b_11"))).thenReturn(getCriterion(210L, "170.315 (b)(11)", "b11", false));
         g3 = getCriterion(52L, "170.315 (g)(3)", "g3 original", false);
         Mockito.when(criteriaService.get(ArgumentMatchers.eq("criterion.170_315_g_3"))).thenReturn(g3);
 
