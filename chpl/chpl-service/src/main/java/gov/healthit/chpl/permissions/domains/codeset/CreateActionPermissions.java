@@ -1,4 +1,4 @@
-package gov.healthit.chpl.permissions.domains.codessetdate;
+package gov.healthit.chpl.permissions.domains.codeset;
 
 import org.springframework.stereotype.Component;
 

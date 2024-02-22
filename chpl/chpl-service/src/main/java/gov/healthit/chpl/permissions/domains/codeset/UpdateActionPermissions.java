@@ -1,11 +1,11 @@
-package gov.healthit.chpl.permissions.domains.codessetdate;
+package gov.healthit.chpl.permissions.domains.codeset;
 
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.permissions.domains.ActionPermissions;
 
-@Component("codeSetDeleteActionPermissions")
-public class DeleteActionPermissions extends ActionPermissions {
+@Component("codeSetUpdateActionPermissions")
+public class UpdateActionPermissions extends ActionPermissions {
 
     @Override
     public boolean hasAccess() {

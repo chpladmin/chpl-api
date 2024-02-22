@@ -4,9 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.permissions.domains.codessetdate.CreateActionPermissions;
-import gov.healthit.chpl.permissions.domains.codessetdate.DeleteActionPermissions;
-import gov.healthit.chpl.permissions.domains.codessetdate.UpdateActionPermissions;
+import gov.healthit.chpl.permissions.domains.codeset.CreateActionPermissions;
+import gov.healthit.chpl.permissions.domains.codeset.DeleteActionPermissions;
+import gov.healthit.chpl.permissions.domains.codeset.UpdateActionPermissions;
 
 @Component
 public class CodeSetDomainPermissions extends DomainPermissions {
