@@ -43,7 +43,7 @@ public class CodeSetManager {
     }
 
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CODE_SET, "
-            + "T(gov.healthit.chpl.permissions.domains.FunctionalityTestedDomainPermissions).UPDATE)")
+            + "T(gov.healthit.chpl.permissions.domains.CodeSetDomainPermissions).UPDATE)")
     @Transactional
     @ListingStoreRemove(removeBy = RemoveBy.ALL)
     @GenerateListingDownloadFile(listingSet = {ListingSet.EDITION_2011, ListingSet.EDITION_2014, ListingSet.INACTIVE})
@@ -56,7 +56,7 @@ public class CodeSetManager {
     }
 
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CODE_SET, "
-            + "T(gov.healthit.chpl.permissions.domains.FunctionalityTestedDomainPermissions).CREATE)")
+            + "T(gov.healthit.chpl.permissions.domains.CodeSetDomainPermissions).CREATE)")
     @Transactional
     public CodeSet create(CodeSet codeSet) throws EntityRetrievalException {
         CodeSet newCodeSet = codeSetDAO.add(codeSet);
@@ -68,7 +68,7 @@ public class CodeSetManager {
     }
 
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CODE_SET, "
-            + "T(gov.healthit.chpl.permissions.domains.FunctionalityTestedDomainPermissions).DELETE)")
+            + "T(gov.healthit.chpl.permissions.domains.CodeSetDomainPermissions).DELETE)")
     @Transactional
     public void delete(Long codeSetId) throws EntityRetrievalException {
         CodeSet codeSet = codeSetDAO.getById(codeSetId);
