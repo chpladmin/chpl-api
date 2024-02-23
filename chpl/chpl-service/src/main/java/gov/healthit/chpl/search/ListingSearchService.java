@@ -100,8 +100,11 @@ public class ListingSearchService {
 
         List<ListingSearchResult> listings = listingSearchManager.getAllListings();
         LOGGER.debug("Total listings: " + listings.size());
-        List<ListingSearchResult> matchedListings = listings.stream()
-            .filter(listing -> matchesSearchTerm(listing, searchRequest.getSearchTerm()))
+        List<ListingSearchResult> listingsMatchingSearchTermOnly = listings.stream()
+                .filter(listing -> matchesSearchTerm(listing, searchRequest.getSearchTerm()))
+                .collect(Collectors.toList());
+        LOGGER.debug("Total listings matching search term only: " + listingsMatchingSearchTermOnly.size());
+        List<ListingSearchResult> matchedListings = listingsMatchingSearchTermOnly.stream()
             .filter(listing -> matchesListingIds(listing, searchRequest.getListingIds()))
             .filter(listing -> matchesAcbNames(listing, searchRequest.getCertificationBodies()))
             .filter(listing -> matchesCertificationStatuses(listing, searchRequest.getCertificationStatuses()))
@@ -128,6 +131,7 @@ public class ListingSearchService {
 
         ListingSearchResponse response = new ListingSearchResponse();
         response.setRecordCount(matchedListings.size());
+        response.setSearchTermRecordCount(!StringUtils.isEmpty(searchRequest.getSearchTerm()) ? listingsMatchingSearchTermOnly.size() : null);
         response.setPageNumber(searchRequest.getPageNumber());
         response.setPageSize(searchRequest.getPageSize());
         response.setDirectReviewsAvailable(drService.doesCacheHaveAnyOkData());
