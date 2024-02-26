@@ -30,10 +30,10 @@ public class TestParticipantDAO extends BaseDAOImpl {
     public Long create(TestParticipant participant) throws EntityCreationException {
         TestParticipantEntity entity = new TestParticipantEntity();
         try {
-            entity.setAgeRangeId(participant.getAgeRangeId());
+            entity.setAgeRangeId(participant.getAge() == null || participant.getAge().getId() == null ? participant.getAgeRangeId() : participant.getAge().getId());
             entity.setAssistiveTechnologyNeeds(participant.getAssistiveTechnologyNeeds());
             entity.setComputerExperienceMonths(participant.getComputerExperienceMonths());
-            entity.setEducationTypeId(participant.getEducationTypeId());
+            entity.setEducationTypeId(participant.getEducationType() == null || participant.getEducationType().getId() == null ? participant.getEducationTypeId() : participant.getEducationType().getId());
             entity.setGender(participant.getGender());
             entity.setOccupation(participant.getOccupation());
             entity.setProductExperienceMonths(participant.getProductExperienceMonths());

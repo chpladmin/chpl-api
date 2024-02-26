@@ -16,7 +16,9 @@ import gov.healthit.chpl.domain.TestParticipant;
 import gov.healthit.chpl.domain.TestTask;
 import gov.healthit.chpl.dto.AgeRangeDTO;
 import gov.healthit.chpl.dto.EducationTypeDTO;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 @Component
 public class TestParticipantNormalizer {
     private AgeRangeDAO ageRangeDao;
@@ -62,12 +64,17 @@ public class TestParticipantNormalizer {
         testTask.getCriteria().removeAll(testTaskCriteriaToRemove);
     }
 
+    //remove when we turn off Angular listing edit
+    @Deprecated
     private void setTestTaskUniqueIdToIdIfNegative(TestTask testTask) {
-        if (testTask.getId() != null && testTask.getId() < 0) {
+        if ((testTask.getId() != null && testTask.getId() < 0)
+                || StringUtils.isEmpty(testTask.getUniqueId())) {
             testTask.setUniqueId(testTask.getId() + "");
         }
     }
 
+    //remove when we turn off Angular listing edit
+    @Deprecated
     private void setTestParticipantUniqueIdsToIdIfNegative(TestTask testTask) {
         if (testTask.getTestParticipants() != null && testTask.getTestParticipants().size() > 0) {
             testTask.getTestParticipants().stream()
@@ -93,6 +100,7 @@ public class TestParticipantNormalizer {
             AgeRangeDTO ageRangeDto = ageRangeDao.getByName(participant.getAgeRange());
             if (ageRangeDto != null) {
                 participant.setAgeRangeId(ageRangeDto.getId());
+                participant.getAge().setId(ageRangeDto.getId());
             }
         }
     }
@@ -109,6 +117,7 @@ public class TestParticipantNormalizer {
             EducationTypeDTO educationTypeDto = educationTypeDao.getByName(participant.getEducationTypeName());
             if (educationTypeDto != null) {
                 participant.setEducationTypeId(educationTypeDto.getId());
+                participant.getEducationType().setId(educationTypeDto.getId());
             }
         }
     }

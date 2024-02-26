@@ -202,30 +202,51 @@ public class CertificationResultManager extends SecuredManager {
         if (updatedListing.getSed() != null && updatedListing.getSed().getTestTasks() != null
                 && updatedListing.getSed().getTestTasks().size() > 0) {
             // Go through all the updated test tasks and participants.
-            // Any with a negative ID are new and need to be added and the
-            // negative ID could be repeated so a task/participant with a
-            // negative id
-            // needs to be added once and then that ID needs to be replaced
-            // with
-            // the created item's ID anywhere else that it is found
+            // With Angular listing edit: Any with a negative ID are new and need to be added and the negative ID could be repeated
+            // so a task/participant with a negative id needs to be added once and then that ID needs to be replaced with
+            // the created item's ID anywhere else that it is found.
+            // With React listing edit: Any null ID is a new task/participant and we will use the passed-in uniqueId to determine
+            // if that task is re-used across criteria or that participant is re-used across tasks.
             for (TestTask task : updatedListing.getSed().getTestTasks()) {
-                if (task.getId() < 0) {
-                    long prevId = task.getId();
+                //get rid of this "if" when we remove Angular listing edit but leave the "else if"
+                if (task.getId() != null && task.getId() < 0) {
+                    Long prevId = task.getId();
                     TestTaskDTO createdTask = testTaskDAO.create(convert(task));
                     for (TestTask otherTask : updatedListing.getSed().getTestTasks()) {
-                        if (otherTask.getId().longValue() == prevId) {
+                        if (otherTask.getId() != null && otherTask.getId().equals(prevId)) {
+                            otherTask.setId(createdTask.getId());
+                        }
+                    }
+                } else if (task.getId() == null && !StringUtils.isEmpty(task.getUniqueId())) {
+                    String prevId = task.getUniqueId();
+                    TestTaskDTO createdTask = testTaskDAO.create(convert(task));
+                    for (TestTask otherTask : updatedListing.getSed().getTestTasks()) {
+                        if (otherTask.getId() == null && !StringUtils.isEmpty(otherTask.getUniqueId())
+                                && StringUtils.equals(prevId, otherTask.getUniqueId())) {
                             otherTask.setId(createdTask.getId());
                         }
                     }
                 }
 
                 for (TestParticipant participant : task.getTestParticipants()) {
-                    if (participant.getId() < 0) {
-                        long prevId = participant.getId();
+                    //get rid of this "if" when we remove Angular listing edit but leave the "else if"
+                    if (participant.getId() != null && participant.getId() < 0) {
+                        Long prevId = participant.getId();
                         TestParticipantDTO createdParticipant = testParticipantDAO.create(convert(participant));
                         for (TestTask otherTask : updatedListing.getSed().getTestTasks()) {
                             for (TestParticipant otherParticipant : otherTask.getTestParticipants()) {
-                                if (otherParticipant.getId().longValue() == prevId) {
+                                if (otherParticipant.getId() != null && otherParticipant.getId().equals(prevId)) {
+                                    otherParticipant.setId(createdParticipant.getId());
+                                }
+                            }
+                        }
+                    } else if (participant.getId() == null && !StringUtils.isEmpty(participant.getUniqueId())) {
+                        String prevId = participant.getUniqueId();
+                        TestParticipantDTO createdParticipant = testParticipantDAO.create(convert(participant));
+                        for (TestTask otherTask : updatedListing.getSed().getTestTasks()) {
+                            for (TestParticipant otherParticipant : otherTask.getTestParticipants()) {
+                                if (otherParticipant.getId() == null && !StringUtils.isEmpty(otherParticipant.getUniqueId())
+                                        && StringUtils.equals(prevId, otherParticipant.getUniqueId())) {
                                     otherParticipant.setId(createdParticipant.getId());
                                 }
                             }
@@ -1031,11 +1052,13 @@ public class CertificationResultManager extends SecuredManager {
             TestParticipant existingPart = toUpdate.getOrig();
             TestParticipant updatedPart = toUpdate.getUpdated();
             if (!StringUtils.equals(existingPart.getAgeRange(), updatedPart.getAgeRange())
+                    || !StringUtils.equals(existingPart.getAge().getName(), updatedPart.getAge().getName())
                     || !StringUtils.equals(existingPart.getAssistiveTechnologyNeeds(),
                             updatedPart.getAssistiveTechnologyNeeds())
                     || !Objects.equals(existingPart.getComputerExperienceMonths(),
                             updatedPart.getComputerExperienceMonths())
                     || !StringUtils.equals(existingPart.getEducationTypeName(), updatedPart.getEducationTypeName())
+                    || !StringUtils.equals(existingPart.getEducationType().getName(), updatedPart.getEducationType().getName())
                     || !StringUtils.equals(existingPart.getGender(), updatedPart.getGender())
                     || !StringUtils.equals(existingPart.getOccupation(), updatedPart.getOccupation())
                     || !Objects.equals(existingPart.getProductExperienceMonths(),
@@ -1150,6 +1173,15 @@ public class CertificationResultManager extends SecuredManager {
             }
         } else if (domain.getAgeRangeId() != null) {
             result.setAgeRangeId(domain.getAgeRangeId());
+        } else if (domain.getAge() != null && domain.getAge().getId() == null && !StringUtils.isEmpty(domain.getAge().getName())) {
+            AgeRangeDTO age = ageDao.getByName(domain.getAge().getName());
+            if (age != null) {
+                result.setAgeRangeId(age.getId());
+            } else {
+                LOGGER.error("Could not find matching age range for " + domain.getAge().getName());
+            }
+        } else if (domain.getAge() != null && domain.getAge().getId() != null) {
+            result.setAgeRangeId(domain.getAge().getId());
         }
 
         if (domain.getEducationTypeId() == null && !StringUtils.isEmpty(domain.getEducationTypeName())) {
@@ -1161,6 +1193,16 @@ public class CertificationResultManager extends SecuredManager {
             }
         } else if (domain.getEducationTypeId() != null) {
             result.setEducationTypeId(domain.getEducationTypeId());
+        } else if (domain.getEducationType() != null && domain.getEducationType().getId() == null
+                && !StringUtils.isEmpty(domain.getEducationType().getName())) {
+            EducationTypeDTO educ = educDao.getByName(domain.getEducationType().getName());
+            if (educ != null) {
+                result.setEducationTypeId(educ.getId());
+            } else {
+                LOGGER.error("Could not find matching education level " + domain.getEducationType().getName());
+            }
+        } else if (domain.getEducationType() != null && domain.getEducationType().getId() != null) {
+            result.setEducationTypeId(domain.getEducationType().getId());
         }
         return result;
     }

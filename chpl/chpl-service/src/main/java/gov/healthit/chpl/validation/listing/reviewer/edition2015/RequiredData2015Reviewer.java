@@ -9,47 +9,35 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.FeatureList;
-import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.dao.TestDataDAO;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultTestData;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.TestData;
-import gov.healthit.chpl.domain.TestParticipant;
-import gov.healthit.chpl.domain.TestTask;
 import gov.healthit.chpl.dto.TestDataDTO;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
-import gov.healthit.chpl.util.ValidationUtils;
 import gov.healthit.chpl.validation.listing.reviewer.PermissionBasedReviewer;
 
 @Component("requiredData2015Reviewer")
 public class RequiredData2015Reviewer extends PermissionBasedReviewer {
-    private static final String[] UCD_RELATED_CERTS = {
-            "170.315 (a)(1)", "170.315 (a)(2)", "170.315 (a)(3)", "170.315 (a)(4)", "170.315 (a)(5)", "170.315 (a)(6)",
-            "170.315 (a)(7)", "170.315 (a)(8)", "170.315 (a)(9)", "170.315 (a)(14)", "170.315 (b)(2)", "170.315 (b)(3)",
-            "170.315 (b)(11)"
-    };
-
     private static final String G1_CRITERIA_NUMBER = "170.315 (g)(1)";
     private static final String G2_CRITERIA_NUMBER = "170.315 (g)(2)";
-    private static final int MINIMUM_TEST_PARTICIPANT_COUNT = 10;
 
     private CertificationResultRules certRules;
     private TestDataDAO testDataDao;
-    private ValidationUtils validationUtils;
     private FF4j ff4j;
 
     @Autowired
     @SuppressWarnings("checkstyle:parameternumber")
-    public RequiredData2015Reviewer(CertificationResultRules certRules, ErrorMessageUtil msgUtil, TestDataDAO testDataDao,
-            ValidationUtils validationUtils, ResourcePermissions resourcePermissions, FF4j ff4j) {
+    public RequiredData2015Reviewer(CertificationResultRules certRules, ErrorMessageUtil msgUtil,
+            TestDataDAO testDataDao,
+            ResourcePermissions resourcePermissions, FF4j ff4j) {
         super(msgUtil, resourcePermissions);
         this.certRules = certRules;
         this.testDataDao = testDataDao;
-        this.validationUtils = validationUtils;
         this.ff4j = ff4j;
     }
 
@@ -59,144 +47,6 @@ public class RequiredData2015Reviewer extends PermissionBasedReviewer {
 
         if (listing.getIcs() == null || listing.getIcs().getInherits() == null) {
             listing.addDataErrorMessage(msgUtil.getMessage("listing.missingIcs"));
-        }
-
-        List<CertificationCriterion> attestedCriteria = validationUtils.getAttestedCriteria(listing);
-
-        for (int i = 0; i < UCD_RELATED_CERTS.length; i++) {
-            if (validationUtils.hasCert(UCD_RELATED_CERTS[i], attestedCriteria)) {
-                // check for full set of UCD data
-                for (CertificationResult cert : listing.getCertificationResults()) {
-                    if (cert.getSuccess() != null && cert.getSuccess().equals(Boolean.TRUE)
-                            && cert.getCriterion().getNumber().equals(UCD_RELATED_CERTS[i])) {
-                        if (cert.getSed()) {
-                            if (listing.getSed() == null || listing.getSed().getTestTasks() == null
-                                    || listing.getSed().getTestTasks().size() == 0) {
-                                addBusinessCriterionError(listing, cert, "listing.criteria.missingTestTask",
-                                        Util.formatCriteriaNumber(cert.getCriterion()));
-                            } else {
-
-                                boolean foundCriteria = false;
-                                for (TestTask tt : listing.getSed().getTestTasks()) {
-                                    for (CertificationCriterion criteria : tt.getCriteria()) {
-                                        if (criteria.getId().equals(cert.getCriterion().getId())) {
-                                            foundCriteria = true;
-                                        }
-                                    }
-                                }
-                                if (!foundCriteria) {
-                                    addBusinessCriterionError(listing, cert, "listing.criteria.missingTestTask",
-                                            Util.formatCriteriaNumber(cert.getCriterion()));
-                                }
-                            }
-                        }
-
-                        if (listing.getSed() != null && listing.getSed().getTestTasks() != null) {
-                            for (TestTask task : listing.getSed().getTestTasks()) {
-                                String description = StringUtils.isEmpty(task.getDescription()) ? "unknown"
-                                        : task.getDescription();
-                                if (task.getTestParticipants() == null) {
-                                    listing.addDataErrorMessage(
-                                            msgUtil.getMessage("listing.sed.badTestTaskParticipantsSize", description));
-                                }
-                                if (task.getTestParticipants().size() < MINIMUM_TEST_PARTICIPANT_COUNT) {
-                                    listing.addBusinessErrorMessage(
-                                            msgUtil.getMessage("listing.sed.badTestTaskParticipantsSize", description));
-                                }
-                                if (StringUtils.isEmpty(task.getDescription())) {
-                                    listing.addDataErrorMessage(msgUtil.getMessage("listing.sed.badTestDescription", description));
-                                }
-                                if (task.getTaskSuccessAverage() == null) {
-                                    listing.addDataErrorMessage(
-                                            msgUtil.getMessage("listing.sed.badTestTaskSuccessAverage", description));
-                                }
-                                if (task.getTaskSuccessStddev() == null) {
-                                    listing.addDataErrorMessage(
-                                            msgUtil.getMessage("listing.sed.badTestTaskSuccessStddev", description));
-                                }
-                                if (task.getTaskPathDeviationObserved() == null) {
-                                    listing.addDataErrorMessage(msgUtil
-                                            .getMessage("listing.sed.badTestTaskPathDeviationObserved", description));
-                                }
-                                if (task.getTaskPathDeviationOptimal() == null) {
-                                    listing.addDataErrorMessage(msgUtil
-                                            .getMessage("listing.sed.badTestTaskPathDeviationOptimal", description));
-                                }
-                                if (task.getTaskTimeAvg() == null) {
-                                    listing.addDataErrorMessage(
-                                            msgUtil.getMessage("listing.sed.badTestTaskTimeAvg", description));
-                                }
-                                if (task.getTaskTimeStddev() == null) {
-                                    listing.addDataErrorMessage(
-                                            msgUtil.getMessage("listing.sed.badTestTaskTimeStddev", description));
-                                }
-                                if (task.getTaskTimeDeviationObservedAvg() == null) {
-                                    listing.addDataErrorMessage(msgUtil.getMessage(
-                                            "listing.sed.badTestTaskTimeDeviationObservedAvg", description));
-                                }
-                                if (task.getTaskTimeDeviationOptimalAvg() == null) {
-                                    listing.addDataErrorMessage(msgUtil
-                                            .getMessage("listing.sed.badTestTaskTimeDeviationOptimalAvg", description));
-                                }
-                                if (task.getTaskErrors() == null) {
-                                    listing.addDataErrorMessage(
-                                            msgUtil.getMessage("listing.sed.badTestTaskErrors", description));
-                                }
-                                if (task.getTaskErrorsStddev() == null) {
-                                    listing.addDataErrorMessage(
-                                            msgUtil.getMessage("listing.sed.badTestTaskErrorsStddev", description));
-                                }
-                                if (StringUtils.isEmpty(task.getTaskRatingScale())) {
-                                    listing.addDataErrorMessage(
-                                            msgUtil.getMessage("listing.sed.badTestTaskRatingScale", description));
-                                }
-                                if (task.getTaskRating() == null) {
-                                    listing.addDataErrorMessage(
-                                            msgUtil.getMessage("listing.sed.badTestTaskRating", description));
-                                }
-                                if (task.getTaskRatingStddev() == null) {
-                                    listing.addDataErrorMessage(
-                                            msgUtil.getMessage("listing.sed.badTestTaskRatingStddev", description));
-                                }
-                                for (TestParticipant part : task.getTestParticipants()) {
-                                    if (part.getEducationTypeId() == null) {
-                                        listing.addDataErrorMessage(msgUtil
-                                                .getMessage("listing.sed.badParticipantEducationLevel", description));
-                                    }
-                                    if (part.getAgeRangeId() == null) {
-                                        listing.addDataErrorMessage(
-                                                msgUtil.getMessage("listing.sed.badParticipantAgeRange", description));
-                                    }
-                                    if (StringUtils.isEmpty(part.getGender())) {
-                                        listing.addDataErrorMessage(
-                                                msgUtil.getMessage("listing.sed.badParticipantGender", description));
-                                    }
-                                    if (StringUtils.isEmpty(part.getOccupation())) {
-                                        listing.addDataErrorMessage(msgUtil
-                                                .getMessage("listing.sed.badParticipantOccupation", description));
-                                    }
-                                    if (StringUtils.isEmpty(part.getAssistiveTechnologyNeeds())) {
-                                        listing.addDataErrorMessage(msgUtil.getMessage(
-                                                "listing.sed.badParticipantAssistiveTechnologyNeeds", description));
-                                    }
-                                    if (part.getProfessionalExperienceMonths() == null) {
-                                        listing.addDataErrorMessage(msgUtil.getMessage(
-                                                "listing.sed.badParticipantProfessionalExperienceMonths", description));
-                                    }
-                                    if (part.getProductExperienceMonths() == null) {
-                                        listing.addDataErrorMessage(msgUtil.getMessage(
-                                                "listing.sed.badParticipantProductExperienceMonths", description));
-                                    }
-                                    if (part.getComputerExperienceMonths() == null) {
-                                        listing.addDataErrorMessage(msgUtil.getMessage(
-                                                "listing.sed.badParticipantComputerExperienceMonths", description));
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
         }
 
         for (CertificationResult cert : listing.getCertificationResults()) {
