@@ -152,6 +152,7 @@ public class DimensionalDataController {
         return dimensionalDataManager.getPracticeTypeNames();
     }
 
+    @Deprecated
     @DeprecatedApi(friendlyUrl = "/data/products", removalDate = "2024-06-01",
             message = "This endpoint is deprecated and will be removed.")
     @Operation(summary = "Get all possible product names in the CHPL",
@@ -166,6 +167,7 @@ public class DimensionalDataController {
         return null;
     }
 
+    @Deprecated
     @DeprecatedApi(friendlyUrl = "/data/developers", removalDate = "2024-06-01",
             message = "This endpoint is deprecated and will be removed. A list of developers can be found at /developers.")
     @Operation(summary = "Get all possible developer names in the CHPL",
