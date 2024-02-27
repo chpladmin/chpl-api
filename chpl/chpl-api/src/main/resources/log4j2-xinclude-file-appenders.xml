@@ -745,5 +745,31 @@
                 interval="1" modulate="true" />
         </Policies>
     </RollingFile>
-
+    
+    <RollingFile name="updatedCriteriaStatusReportCreatorJob"
+        fileName="${logDir}/updatedCriteriaStatusReportCreatorJob.log"
+        filePattern="${logDir}/scheduler/history/updatedCriteriaStatusReportCreatorJob-%d{yyyy-MM-dd}.log"
+        filePermissions="rw-rw-r--">
+        <PatternLayout>
+            <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
+        </PatternLayout>
+        <Policies>
+            <TimeBasedTriggeringPolicy
+                interval="1" modulate="true" />
+        </Policies>
+    </RollingFile>
+    
+    <RollingFile name="updatedCriteriaStatusReportEmailJob"
+        fileName="${logDir}/updatedCriteriaStatusReportEmailJob.log"
+        filePattern="${logDir}/scheduler/history/updatedCriteriaStatusReportEmailJob-%d{yyyy-MM-dd}.log"
+        filePermissions="rw-rw-r--">
+        <PatternLayout>
+            <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
+        </PatternLayout>
+        <Policies>
+            <TimeBasedTriggeringPolicy
+                interval="1" modulate="true" />
+        </Policies>
+    </RollingFile>
+    
 </Appenders>

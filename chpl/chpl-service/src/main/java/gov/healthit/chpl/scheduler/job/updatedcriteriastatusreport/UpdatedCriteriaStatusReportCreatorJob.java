@@ -36,7 +36,7 @@ import gov.healthit.chpl.search.domain.SearchSetOperator;
 import gov.healthit.chpl.standard.StandardManager;
 import lombok.extern.log4j.Log4j2;
 
-@Log4j2
+@Log4j2(topic = "updatedCriteriaStatusReportCreatorJobLogger")
 public class UpdatedCriteriaStatusReportCreatorJob extends QuartzJob {
 
     @Autowired
