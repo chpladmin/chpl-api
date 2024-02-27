@@ -58,6 +58,16 @@ public class UpdatedCriteriaStatusReportDAO extends BaseDAOImpl {
         }
     }
 
+
+    public List<Long> getCriteriaIdsFromUpdatedCritieriaStatusReport() {
+        return entityManager
+                .createQuery("SELECT DISTINCT ucsr.certificationCriterionId "
+                            + "FROM UpdatedCriteriaStatusReportEntity ucsr "
+                            + "WHERE (NOT ucsr.deleted = true) ", Long.class)
+                .getResultList();
+    }
+
+
     private List<UpdatedCriteriaStatusReportEntity> getUpdatedCriteriaStatusReportEntitiessByDate(LocalDate reportDate) {
         return entityManager
                 .createQuery("SELECT ucsr "

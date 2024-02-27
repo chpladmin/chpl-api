@@ -70,6 +70,7 @@ public class UpdatedCriteriaStatusReportEntity extends EntityAudit {
                 .id(id)
                 .certificationCriterionId(certificationCriterionId)
                 .reportDay(reportDay)
+                .listingsWithCriterionCount(listingsWithCriterionCount)
                 .fullyUpToDateCount(fullyUpToDateCount)
                 .functionalitiesTestedUpToDateCount(functionalitiesTestedUpToDateCount)
                 .standardsUpToDateCount(standardsUpToDateCount)
