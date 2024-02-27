@@ -286,7 +286,7 @@ public class Edition2015ListingValidator extends Validator {
 
     @Override
     public List<ComparisonReviewer> getComparisonReviewers() {
-            List<ComparisonReviewer> comparisonReviewers = new ArrayList<ComparisonReviewer>();
+        List<ComparisonReviewer> comparisonReviewers = new ArrayList<ComparisonReviewer>();
         comparisonReviewers.add(chplNumberComparisonReviewer);
         comparisonReviewers.add(devBanComparisonReviewer);
         comparisonReviewers.add(measureComparisonReviewer);
@@ -301,5 +301,9 @@ public class Edition2015ListingValidator extends Validator {
         comparisonReviewers.add(testingLabComparisonReviewer);
         comparisonReviewers.add(standardRemovalReviewer);
         return comparisonReviewers;
+    }
+
+    public List<ComparisonReviewer> getComparisonReviewersToAlwaysCheck() {
+        return List.of(devBanComparisonReviewer);
     }
 }
