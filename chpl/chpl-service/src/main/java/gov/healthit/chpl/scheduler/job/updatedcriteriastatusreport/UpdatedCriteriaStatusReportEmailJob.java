@@ -17,6 +17,8 @@ import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.email.ChplEmailFactory;
+import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
+import gov.healthit.chpl.email.footer.AdminFooter;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.scheduler.job.QuartzJob;
 import lombok.extern.log4j.Log4j2;
@@ -32,6 +34,9 @@ public class UpdatedCriteriaStatusReportEmailJob extends QuartzJob {
 
     @Autowired
     private ChplEmailFactory chplEmailFactory;
+
+    @Autowired
+    private ChplHtmlEmailBuilder chplHtmlEmailBuilder;
 
     @Autowired
     private JpaTransactionManager txManager;
@@ -57,7 +62,7 @@ public class UpdatedCriteriaStatusReportEmailJob extends QuartzJob {
 
                             sendEmail(context, attachments);
                         } catch (IOException ex) {
-                            LOGGER.error("Error creating charts spreadhseet", ex);
+                            LOGGER.error("Error creating charts spreadsheet", ex);
                         } catch (EmailNotSentException ex) {
                             LOGGER.error("Error sending email!", ex);
                         }
@@ -74,11 +79,18 @@ public class UpdatedCriteriaStatusReportEmailJob extends QuartzJob {
         LOGGER.info("Sending email to: " + emailAddress);
         chplEmailFactory.emailBuilder()
                 .recipient(emailAddress)
-                .subject("TEST")
-                .htmlMessage("TEST")
+                .subject(env.getProperty("updatedCriteriaStatusReport.subject"))
+                .htmlMessage(createHtmlMessage())
                 .fileAttachments(attachments)
                 .sendEmail();
         LOGGER.info("Completed Sending email to: " + emailAddress);
     }
 
+    private String createHtmlMessage() {
+        return chplHtmlEmailBuilder.initialize()
+                .heading(env.getProperty("updatedCriteriaStatusReport.subject"))
+                .paragraph("", env.getProperty("updatedCriteriaStatusReport.body"))
+                .footer(AdminFooter.class)
+                .build();
+    }
 }
