@@ -41,6 +41,9 @@ public class UpdatedCriteriaStatusReportWorkbook extends CuresSpreadsheet { //TO
                 .sorted(certificationCriterionComparator)
                 .forEach(crit ->  updatedCriteriaStatusReportSheet.generateSheetForCriteria(crit, workbook));
 
+        //Remove the template sheet
+        workbook.removeSheetAt(0);
+
         XSSFFormulaEvaluator.evaluateAllFormulaCells(workbook);
         return writeFileToDisk(workbook, newFile);
     }
