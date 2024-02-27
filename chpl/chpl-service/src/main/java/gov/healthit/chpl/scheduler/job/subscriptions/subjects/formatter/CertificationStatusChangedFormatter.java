@@ -53,18 +53,20 @@ public class CertificationStatusChangedFormatter extends ObservationSubjectForma
             = certStatusEventService.getAddedCertificationStatusEventsIgnoringReasonUpdates(before, after);
         //Include a status event added with status change of today
         addedStatusEvents.stream()
-            .filter(addedStatusEvent -> addedStatusEvent.getEventDay().isEqual(today))
+            .filter(addedStatusEvent -> addedStatusEvent.getEventDay().isEqual(today) || addedStatusEvent.getEventDay().isBefore(today))
             .forEach(addedStatusEvent -> {
                 //get the status of the listing on the day prior to this status event
                 CertificationStatusEvent yesterdaysStatusEvent = after.getStatusOnDate(DateUtil.toDate(addedStatusEvent.getEventDay().minusDays(1)));
-                formattedObservations.add(
-                    Stream.of(observation.getSubscription().getSubject().getSubject(),
-                        String.format(DESCRIPTION_UNFORMATTED, yesterdaysStatusEvent.getStatus().getName(),
-                            yesterdaysStatusEvent.getEventDay(),
-                            addedStatusEvent.getStatus().getName(),
-                            addedStatusEvent.getEventDay()),
-                        DateUtil.formatInEasternTime(activity.getActivityDate()))
-                    .toList());
+                if (!addedStatusEvent.getStatus().getName().equals(yesterdaysStatusEvent.getStatus().getName())) {
+                    formattedObservations.add(
+                        Stream.of(observation.getSubscription().getSubject().getSubject(),
+                            String.format(DESCRIPTION_UNFORMATTED, yesterdaysStatusEvent.getStatus().getName(),
+                                yesterdaysStatusEvent.getEventDay(),
+                                addedStatusEvent.getStatus().getName(),
+                                addedStatusEvent.getEventDay()),
+                            DateUtil.formatInEasternTime(activity.getActivityDate()))
+                        .toList());
+                }
             });
 
         return formattedObservations;

@@ -351,8 +351,7 @@ public class CertifiedProductManager extends SecuredManager {
                 updatedListing.getAccessibilityStandards());
         updateCertificationDate(updatedListing.getId(), new Date(existingListing.getCertificationDate()),
                 new Date(updatedListing.getCertificationDate()));
-        updateCertificationStatusEvents(updatedListing.getId(), existingListing.getCertificationEvents(),
-                updatedListing.getCertificationEvents());
+        updateCertificationStatusEvents(existingListing, updatedListing);
 
         if (!ff4j.check(FeatureList.EDITIONLESS)) {
             updateCuresUpdateEvents(updatedListing.getId(), existingListing.getCuresUpdate(), updatedListing);
@@ -925,61 +924,23 @@ public class CertifiedProductManager extends SecuredManager {
         }
     }
 
-    private int updateCertificationStatusEvents(Long listingId,
-            List<CertificationStatusEvent> existingStatusEvents,
-            List<CertificationStatusEvent> updatedStatusEvents)
+    private int updateCertificationStatusEvents(CertifiedProductSearchDetails existingListing,
+            CertifiedProductSearchDetails updatedListing)
             throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
 
         int numChanges = 0;
         List<CertificationStatusEvent> statusEventsToAdd = new ArrayList<CertificationStatusEvent>();
-        List<CertificationStatusEventPair> statusEventsToUpdate = new ArrayList<CertificationStatusEventPair>();
         List<Long> idsToRemove = new ArrayList<Long>();
 
-        // figure out which status events to add
-        if (updatedStatusEvents != null && updatedStatusEvents.size() > 0) {
-            if (existingStatusEvents == null || existingStatusEvents.size() == 0) {
-                // existing listing has none, add all from the update
-                for (CertificationStatusEvent updatedItem : updatedStatusEvents) {
-                    statusEventsToAdd.add(updatedItem);
-                }
-            } else if (existingStatusEvents.size() > 0) {
-                // existing listing has some, compare to the update to see if
-                // any are different
-                for (CertificationStatusEvent updatedItem : updatedStatusEvents) {
-                    boolean inExistingListing = false;
-                    for (CertificationStatusEvent existingItem : existingStatusEvents) {
-                        if (updatedItem.matches(existingItem)) {
-                            inExistingListing = true;
-                            statusEventsToUpdate.add(new CertificationStatusEventPair(existingItem, updatedItem));
-                        }
-                    }
+        List<CertificationStatusEvent> addedCertStatusEvents
+            = certStatusEventsService.getAddedCertificationStatusEvents(existingListing, updatedListing);
+        addedCertStatusEvents.stream()
+            .forEach(addedCertStatusEvent -> statusEventsToAdd.add(addedCertStatusEvent));
 
-                    if (!inExistingListing) {
-                        statusEventsToAdd.add(updatedItem);
-                    }
-                }
-            }
-        }
-
-        // figure out which status events to remove
-        if (existingStatusEvents != null && existingStatusEvents.size() > 0) {
-            // if the updated listing has none, remove them all from existing
-            if (updatedStatusEvents == null || updatedStatusEvents.size() == 0) {
-                for (CertificationStatusEvent existingItem : existingStatusEvents) {
-                    idsToRemove.add(existingItem.getId());
-                }
-            } else if (updatedStatusEvents.size() > 0) {
-                for (CertificationStatusEvent existingItem : existingStatusEvents) {
-                    boolean inUpdatedListing = false;
-                    for (CertificationStatusEvent updatedItem : updatedStatusEvents) {
-                        inUpdatedListing = !inUpdatedListing ? existingItem.matches(updatedItem) : inUpdatedListing;
-                    }
-                    if (!inUpdatedListing) {
-                        idsToRemove.add(existingItem.getId());
-                    }
-                }
-            }
-        }
+        List<CertificationStatusEvent> removedCertStatusEvents
+            = certStatusEventsService.getRemovedCertificationStatusEvents(existingListing, updatedListing);
+        removedCertStatusEvents.stream()
+            .forEach(removedCertStatusEvent -> idsToRemove.add(removedCertStatusEvent.getId()));
 
         numChanges = statusEventsToAdd.size() + idsToRemove.size();
         for (CertificationStatusEvent toAdd : statusEventsToAdd) {
@@ -1006,50 +967,7 @@ public class CertifiedProductManager extends SecuredManager {
                 }
                 statusEventToAdd.setStatus(status);
             }
-            statusEventDao.create(listingId, statusEventToAdd);
-        }
-
-        for (CertificationStatusEventPair toUpdate : statusEventsToUpdate) {
-            boolean hasChanged = false;
-            if (!Objects.equals(toUpdate.getOrig().getEventDate(), toUpdate.getUpdated().getEventDate())
-                    || !Objects.equals(toUpdate.getOrig().getStatus().getId(),
-                            toUpdate.getUpdated().getStatus().getId())
-                    || !Objects.equals(toUpdate.getOrig().getStatus().getName(),
-                            toUpdate.getUpdated().getStatus().getName())
-                    || !Objects.equals(toUpdate.getOrig().getReason(), toUpdate.getUpdated().getReason())) {
-                hasChanged = true;
-            }
-
-            if (hasChanged) {
-                CertificationStatusEvent cseToUpdate = toUpdate.getUpdated();
-                CertificationStatusEvent updatedStatusEvent = CertificationStatusEvent.builder()
-                        .id(cseToUpdate.getId())
-                        .eventDate(cseToUpdate.getEventDate())
-                        .reason(cseToUpdate.getReason())
-                        .build();
-                if (cseToUpdate.getStatus() == null) {
-                    String msg = msgUtil.getMessage("listing.missingCertificationStatus");
-                    throw new EntityRetrievalException(msg);
-                } else if (cseToUpdate.getStatus().getId() != null) {
-                    CertificationStatus status = certStatusDao.getById(cseToUpdate.getStatus().getId());
-                    if (status == null) {
-                        String msg = msgUtil.getMessage("listing.badCertificationStatusId",
-                                cseToUpdate.getStatus().getId());
-                        throw new EntityRetrievalException(msg);
-                    }
-                    updatedStatusEvent.setStatus(status);
-                } else if (!StringUtils.isEmpty(cseToUpdate.getStatus().getName())) {
-                    CertificationStatus status = certStatusDao.getByStatusName(cseToUpdate.getStatus().getName());
-                    if (status == null) {
-                        String msg = msgUtil.getMessage("listing.badCertificationStatusName",
-                                cseToUpdate.getStatus().getName());
-                        throw new EntityRetrievalException(msg);
-                    }
-                    updatedStatusEvent.setStatus(status);
-                }
-                statusEventDao.update(listingId, updatedStatusEvent);
-                numChanges++;
-            }
+            statusEventDao.create(updatedListing.getId(), statusEventToAdd);
         }
 
         for (Long idToRemove : idsToRemove) {
@@ -1254,9 +1172,7 @@ public class CertifiedProductManager extends SecuredManager {
         updateStatusJob.setJobDataMap(jobDataMap);
         updateStatusTrigger.setJob(updateStatusJob);
 
-        if (currentStatusUpdateDay.equals(LocalDate.now())) {
-            updateStatusTrigger.setRunDateMillis(System.currentTimeMillis() + SchedulerManager.FIVE_SECONDS_IN_MILLIS);
-        } else if (currentStatusUpdateDay.isAfter(LocalDate.now())) {
+        if (currentStatusUpdateDay.isAfter(LocalDate.now())) {
             sendFutureCertificationStatusNotification(updatedListing, currentStatusUpdateDay, activityId);
             LocalDateTime fiveAfterMidnightEastern = LocalDateTime.of(currentStatusUpdateDay, LocalTime.of(0, 5));
             updateStatusTrigger.setRunDateMillis(DateUtil.toEpochMillis(DateUtil.fromEasternToSystem(fiveAfterMidnightEastern)));
