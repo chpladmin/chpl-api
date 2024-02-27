@@ -36,7 +36,7 @@ import gov.healthit.chpl.standard.CertificationResultStandardDAO;
 import gov.healthit.chpl.util.DateUtil;
 import lombok.extern.log4j.Log4j2;
 
-@Log4j2()
+@Log4j2(topic = "updatedListingStatusReportCreatorJobLogger")
 public class UpdatedListingStatusReportCreatorJob extends QuartzJob {
 
     @Autowired
@@ -132,7 +132,6 @@ public class UpdatedListingStatusReportCreatorJob extends QuartzJob {
         return certifiedProductDetails.getCertificationResults().stream()
                 .filter(certResult -> !certResult.getCriterion().isRemoved()
                         && !isCriteriaUpdated(certResult))
-                .peek(x -> LOGGER.info("{} : {} - {}", x.getCriterion().getNumber(), isCriteriaUpdated(x), isCriteriaUpdatedNew(x)))
                 .count();
     }
 
