@@ -32,6 +32,7 @@ import gov.healthit.chpl.caching.ListingSearchCacheRefresh;
 import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
 import gov.healthit.chpl.certifiedproduct.service.CertificationResultSynchronizationService;
 import gov.healthit.chpl.certifiedproduct.service.CqmResultSynchronizationService;
+import gov.healthit.chpl.certifiedproduct.service.SedSynchronizationService;
 import gov.healthit.chpl.dao.CertificationStatusDAO;
 import gov.healthit.chpl.dao.CertificationStatusEventDAO;
 import gov.healthit.chpl.dao.CertifiedProductAccessibilityStandardDAO;
@@ -128,6 +129,7 @@ public class CertifiedProductManager extends SecuredManager {
     private PromotingInteroperabilityUserDAO piuDao;
     private CertificationResultSynchronizationService certResultService;
     private CqmResultSynchronizationService cqmResultService;
+    private SedSynchronizationService sedService;
     private CertificationStatusDAO certStatusDao;
     private ListingGraphDAO listingGraphDao;
     private ResourcePermissions resourcePermissions;
@@ -158,6 +160,7 @@ public class CertifiedProductManager extends SecuredManager {
             ProductManager productManager, ProductVersionManager versionManager, CertificationStatusEventDAO statusEventDao,
             CuresUpdateEventDAO curesUpdateDao, PromotingInteroperabilityUserDAO piuDao,
             CertificationResultSynchronizationService certResultService, CqmResultSynchronizationService cqmResultService,
+            SedSynchronizationService sedService,
             CertificationStatusDAO certStatusDao, ListingGraphDAO listingGraphDao, ResourcePermissions resourcePermissions,
             CertifiedProductDetailsManager certifiedProductDetailsManager,
             SchedulerManager schedulerManager, ActivityManager activityManager, ListingDetailsNormalizer listingNormalizer,
@@ -184,6 +187,7 @@ public class CertifiedProductManager extends SecuredManager {
         this.piuDao = piuDao;
         this.certResultService = certResultService;
         this.cqmResultService = cqmResultService;
+        this.sedService = sedService;
         this.certStatusDao = certStatusDao;
         this.listingGraphDao = listingGraphDao;
         this.resourcePermissions = resourcePermissions;
@@ -361,6 +365,7 @@ public class CertifiedProductManager extends SecuredManager {
                 existingListing.getCertificationResults(), updatedListing.getCertificationResults());
         copyCriterionIdsToCqmMappings(updatedListing);
         updateCqms(updatedListing, existingListing.getCqmResults(), updatedListing.getCqmResults());
+        updateSed(existingListing, updatedListing);
     }
 
     private void updateRwtEligibilityForListingAndChildren(CertifiedProductDTO listing) {
@@ -1253,6 +1258,13 @@ public class CertifiedProductManager extends SecuredManager {
             List<CQMResultDetails> updatedCqmDetails)
             throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
         return cqmResultService.synchronizeCqms(listing, existingCqmDetails, updatedCqmDetails);
+    }
+
+    private void updateSed(CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails updatedListing)
+            throws EntityCreationException, EntityRetrievalException {
+        sedService.synchronizeTestTasks(origListing, updatedListing,
+                origListing.getSed() == null || CollectionUtils.isEmpty(origListing.getSed().getTestTasks()) ? List.of() : origListing.getSed().getTestTasks(),
+                updatedListing.getSed() == null || CollectionUtils.isEmpty(updatedListing.getSed().getTestTasks()) ? List.of() : updatedListing.getSed().getTestTasks());
     }
 
     private void triggerDeveloperBan(CertifiedProductSearchDetails updatedListing, String reason) {

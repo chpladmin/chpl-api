@@ -28,6 +28,7 @@ import gov.healthit.chpl.accessibilityStandard.AccessibilityStandardDAO;
 import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
 import gov.healthit.chpl.certifiedproduct.service.CertificationResultSynchronizationService;
 import gov.healthit.chpl.certifiedproduct.service.CqmResultSynchronizationService;
+import gov.healthit.chpl.certifiedproduct.service.SedSynchronizationService;
 import gov.healthit.chpl.dao.CertificationStatusDAO;
 import gov.healthit.chpl.dao.CertificationStatusEventDAO;
 import gov.healthit.chpl.dao.CertifiedProductAccessibilityStandardDAO;
@@ -150,7 +151,9 @@ public class CertifiedProductManagerTest {
                  qmsDao,  targetedUserDao, asDao,  cpQmsDao, cpMeasureDao, cpTestingLabDao,
                 cpTargetedUserDao, cpAccStdDao,
                 developerDao,  devStatusDao, developerManager,  productManager, versionManager,
-                statusEventDao, curesUpdateDao, piuDao, certResultService, cqmResultService, certStatusDao,
+                statusEventDao, curesUpdateDao, piuDao, certResultService, cqmResultService,
+                Mockito.mock(SedSynchronizationService.class),
+                certStatusDao,
                 listingGraphDao, resourcePermissions,
                 certifiedProductDetailsManager,
                 Mockito.mock(SchedulerManager.class),

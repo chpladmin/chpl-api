@@ -8,7 +8,6 @@ import org.apache.commons.lang3.StringUtils;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseField;
-import gov.healthit.chpl.dto.TestParticipantDTO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -98,33 +97,6 @@ public class TestParticipant implements Serializable {
             + "participant. This variable is a string variable that does not take any "
             + "restrictions on formatting or values.")
     private String assistiveTechnologyNeeds;
-
-    public TestParticipant(TestParticipantDTO dto) {
-        this();
-        this.id = dto.getId();
-        this.gender = dto.getGender();
-        this.educationTypeId = dto.getEducationTypeId();
-        if (dto.getEducationType() != null) {
-            this.educationTypeName = dto.getEducationType().getName();
-        }
-        this.educationType = TestParticipantEducation.builder()
-                .id(dto.getEducationTypeId())
-                .name(dto.getEducationType() != null ? dto.getEducationType().getName() : null)
-                .build();
-        this.ageRangeId = dto.getAgeRangeId();
-        if (dto.getAgeRange() != null) {
-            this.ageRange = dto.getAgeRange().getAge();
-        }
-        this.age = TestParticipantAge.builder()
-                .id(dto.getAgeRangeId())
-                .name(dto.getAgeRange() != null ? dto.getAgeRange().getAge() : null)
-                .build();
-        this.occupation = dto.getOccupation();
-        this.professionalExperienceMonths = dto.getProfessionalExperienceMonths();
-        this.computerExperienceMonths = dto.getComputerExperienceMonths();
-        this.productExperienceMonths = dto.getProductExperienceMonths();
-        this.assistiveTechnologyNeeds = dto.getAssistiveTechnologyNeeds();
-    }
 
     @Override
     public boolean equals(Object other) {

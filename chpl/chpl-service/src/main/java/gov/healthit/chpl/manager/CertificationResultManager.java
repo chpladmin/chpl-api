@@ -1,11 +1,8 @@
 package gov.healthit.chpl.manager;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -17,13 +14,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.conformanceMethod.domain.CertificationResultConformanceMethod;
-import gov.healthit.chpl.dao.AgeRangeDAO;
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.dao.CertificationResultDAO;
-import gov.healthit.chpl.dao.EducationTypeDAO;
-import gov.healthit.chpl.dao.TestParticipantDAO;
 import gov.healthit.chpl.dao.TestStandardDAO;
-import gov.healthit.chpl.dao.TestTaskDAO;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultAdditionalSoftware;
 import gov.healthit.chpl.domain.CertificationResultTestData;
@@ -32,10 +25,7 @@ import gov.healthit.chpl.domain.CertificationResultTestStandard;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductUcdProcess;
-import gov.healthit.chpl.domain.TestParticipant;
 import gov.healthit.chpl.domain.TestStandard;
-import gov.healthit.chpl.domain.TestTask;
-import gov.healthit.chpl.dto.AgeRangeDTO;
 import gov.healthit.chpl.dto.CertificationResultAdditionalSoftwareDTO;
 import gov.healthit.chpl.dto.CertificationResultDTO;
 import gov.healthit.chpl.dto.CertificationResultTestDataDTO;
@@ -43,9 +33,6 @@ import gov.healthit.chpl.dto.CertificationResultTestProcedureDTO;
 import gov.healthit.chpl.dto.CertificationResultTestStandardDTO;
 import gov.healthit.chpl.dto.CertificationResultTestTaskDTO;
 import gov.healthit.chpl.dto.CertificationResultUcdProcessDTO;
-import gov.healthit.chpl.dto.EducationTypeDTO;
-import gov.healthit.chpl.dto.TestParticipantDTO;
-import gov.healthit.chpl.dto.TestTaskDTO;
 import gov.healthit.chpl.entity.listing.CertificationResultConformanceMethodEntity;
 import gov.healthit.chpl.entity.listing.CertificationResultOptionalStandardEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
@@ -68,10 +55,6 @@ public class CertificationResultManager extends SecuredManager {
     private CertificationCriterionDAO criteriaDao;
     private CertificationResultDAO certResultDAO;
     private TestStandardDAO testStandardDAO;
-    private TestParticipantDAO testParticipantDAO;
-    private AgeRangeDAO ageDao;
-    private EducationTypeDAO educDao;
-    private TestTaskDAO testTaskDAO;
     private CertificationResultTestToolService certResultTestToolService;
     private CertificationResultFunctionalityTestedService certResultFunctionalityTestedService;
     private CertificationResultStandardService certResultStandardService;
@@ -80,18 +63,14 @@ public class CertificationResultManager extends SecuredManager {
     @Autowired
     public CertificationResultManager(CertifiedProductUtil cpUtil, CertificationCriterionDAO criteriaDao,
             CertificationResultDAO certResultDAO, CertificationResultFunctionalityTestedDAO certResultFuncTestedDao,
-            TestStandardDAO testStandardDAO, FunctionalityTestedDAO functionalityTestedDao, TestParticipantDAO testParticipantDAO,
-            AgeRangeDAO ageDao, EducationTypeDAO educDao, TestTaskDAO testTaskDAO, CertificationResultTestToolService certResultTestToolService,
+            TestStandardDAO testStandardDAO, FunctionalityTestedDAO functionalityTestedDao,
+            CertificationResultTestToolService certResultTestToolService,
             CertificationResultFunctionalityTestedService certResultFunctionalityTestedService,
             CertificationResultStandardService certResultStandardService) {
         this.cpUtil = cpUtil;
         this.criteriaDao = criteriaDao;
         this.certResultDAO = certResultDAO;
         this.testStandardDAO = testStandardDAO;
-        this.testParticipantDAO = testParticipantDAO;
-        this.ageDao = ageDao;
-        this.educDao = educDao;
-        this.testTaskDAO = testTaskDAO;
         this.certResultTestToolService = certResultTestToolService;
         this.certResultFunctionalityTestedService = certResultFunctionalityTestedService;
         this.certResultStandardService = certResultStandardService;
@@ -181,96 +160,6 @@ public class CertificationResultManager extends SecuredManager {
             }
         }
         numChanges += updateUcdProcesses(updated, origUcdsForCriteria, updatedUcdsForCriteria);
-
-        List<TestTask> origTestTasksForCriteria = new ArrayList<TestTask>();
-        List<TestTask> updatedTestTasksForCriteria = new ArrayList<TestTask>();
-        if (existingListing.getSed() != null && existingListing.getSed().getTestTasks() != null
-                && existingListing.getSed().getTestTasks().size() > 0) {
-            for (TestTask existingTask : existingListing.getSed().getTestTasks()) {
-                boolean taskMeetsCriteria = false;
-                for (CertificationCriterion taskCriteria : existingTask.getCriteria()) {
-                    if (taskCriteria.getId().equals(updated.getCriterion().getId())
-                            && orig.getSed() != null && orig.getSed()) {
-                        taskMeetsCriteria = true;
-                    }
-                }
-                if (taskMeetsCriteria) {
-                    origTestTasksForCriteria.add(existingTask);
-                }
-            }
-        }
-        if (updatedListing.getSed() != null && updatedListing.getSed().getTestTasks() != null
-                && updatedListing.getSed().getTestTasks().size() > 0) {
-            // Go through all the updated test tasks and participants.
-            // With Angular listing edit: Any with a negative ID are new and need to be added and the negative ID could be repeated
-            // so a task/participant with a negative id needs to be added once and then that ID needs to be replaced with
-            // the created item's ID anywhere else that it is found.
-            // With React listing edit: Any null ID is a new task/participant and we will use the passed-in uniqueId to determine
-            // if that task is re-used across criteria or that participant is re-used across tasks.
-            for (TestTask task : updatedListing.getSed().getTestTasks()) {
-                //get rid of this "if" when we remove Angular listing edit but leave the "else if"
-                if (task.getId() != null && task.getId() < 0) {
-                    Long prevId = task.getId();
-                    TestTaskDTO createdTask = testTaskDAO.create(convert(task));
-                    for (TestTask otherTask : updatedListing.getSed().getTestTasks()) {
-                        if (otherTask.getId() != null && otherTask.getId().equals(prevId)) {
-                            otherTask.setId(createdTask.getId());
-                        }
-                    }
-                } else if (task.getId() == null && !StringUtils.isEmpty(task.getUniqueId())) {
-                    String prevId = task.getUniqueId();
-                    TestTaskDTO createdTask = testTaskDAO.create(convert(task));
-                    for (TestTask otherTask : updatedListing.getSed().getTestTasks()) {
-                        if (otherTask.getId() == null && !StringUtils.isEmpty(otherTask.getUniqueId())
-                                && StringUtils.equals(prevId, otherTask.getUniqueId())) {
-                            otherTask.setId(createdTask.getId());
-                        }
-                    }
-                }
-
-                for (TestParticipant participant : task.getTestParticipants()) {
-                    //get rid of this "if" when we remove Angular listing edit but leave the "else if"
-                    if (participant.getId() != null && participant.getId() < 0) {
-                        Long prevId = participant.getId();
-                        TestParticipantDTO createdParticipant = testParticipantDAO.create(convert(participant));
-                        for (TestTask otherTask : updatedListing.getSed().getTestTasks()) {
-                            for (TestParticipant otherParticipant : otherTask.getTestParticipants()) {
-                                if (otherParticipant.getId() != null && otherParticipant.getId().equals(prevId)) {
-                                    otherParticipant.setId(createdParticipant.getId());
-                                }
-                            }
-                        }
-                    } else if (participant.getId() == null && !StringUtils.isEmpty(participant.getUniqueId())) {
-                        String prevId = participant.getUniqueId();
-                        TestParticipantDTO createdParticipant = testParticipantDAO.create(convert(participant));
-                        for (TestTask otherTask : updatedListing.getSed().getTestTasks()) {
-                            for (TestParticipant otherParticipant : otherTask.getTestParticipants()) {
-                                if (otherParticipant.getId() == null && !StringUtils.isEmpty(otherParticipant.getUniqueId())
-                                        && StringUtils.equals(prevId, otherParticipant.getUniqueId())) {
-                                    otherParticipant.setId(createdParticipant.getId());
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            // now find appropriate test tasks for this certification result
-            for (TestTask updatedTask : updatedListing.getSed().getTestTasks()) {
-                boolean taskMeetsCriteria = false;
-                for (CertificationCriterion taskCriteria : updatedTask.getCriteria()) {
-                    if (taskCriteria.getId().equals(updated.getCriterion().getId())
-                            && updated.getSed() != null && updated.getSed()) {
-                        taskMeetsCriteria = true;
-                    }
-                }
-                if (taskMeetsCriteria) {
-                    updatedTestTasksForCriteria.add(updatedTask);
-                }
-            }
-            numChanges += updateTestTasks(updated, origTestTasksForCriteria, updatedTestTasksForCriteria);
-        }
-
         return numChanges;
     }
 
@@ -839,248 +728,6 @@ public class CertificationResultManager extends SecuredManager {
         return numChanges;
     }
 
-    private int updateTestTasks(CertificationResult certResult, List<TestTask> existingTestTasks,
-            List<TestTask> updatedTestTasks) throws EntityCreationException, EntityRetrievalException {
-        int numChanges = 0;
-        Set<TestTask> testTasksToAdd = new HashSet<TestTask>();
-        Set<TestTaskPair> testTasksToUpdate = new HashSet<TestTaskPair>();
-        Set<TestTask> testTasksToRemove = new HashSet<TestTask>();
-
-        // figure out which test tasks to add
-        if (updatedTestTasks != null && updatedTestTasks.size() > 0) {
-            if (existingTestTasks == null || existingTestTasks.size() == 0) {
-                // existing listing has none, add all from the update
-                for (TestTask updatedItem : updatedTestTasks) {
-                    testTasksToAdd.add(updatedItem);
-                }
-            } else if (existingTestTasks.size() > 0) {
-                // existing listing has some, compare to the update to see if
-                // any are different
-                for (TestTask updatedItem : updatedTestTasks) {
-                    boolean inExistingListing = false;
-                    for (TestTask existingItem : existingTestTasks) {
-                        if (!inExistingListing && updatedItem.matches(existingItem)) {
-                            inExistingListing = true;
-                            testTasksToUpdate.add(new TestTaskPair(existingItem, updatedItem));
-                        }
-                    }
-
-                    if (!inExistingListing) {
-                        testTasksToAdd.add(updatedItem);
-                    }
-                }
-            }
-        }
-
-        // figure out which test tasks to remove
-        if (existingTestTasks != null && existingTestTasks.size() > 0) {
-            // if the updated listing has none, remove them all from existing
-            if (updatedTestTasks == null || updatedTestTasks.size() == 0) {
-                for (TestTask existingItem : existingTestTasks) {
-                    testTasksToRemove.add(existingItem);
-                }
-            } else if (updatedTestTasks.size() > 0) {
-                for (TestTask existingItem : existingTestTasks) {
-                    boolean inUpdatedListing = false;
-                    for (TestTask updatedItem : updatedTestTasks) {
-                        if (!inUpdatedListing && updatedItem.matches(existingItem)) {
-                            inUpdatedListing = true;
-                        }
-                    }
-                    if (!inUpdatedListing) {
-                        testTasksToRemove.add(existingItem);
-                    }
-                }
-            }
-        }
-
-        for (TestTask toAdd : testTasksToAdd) {
-            numChanges += createTestTask(certResult, toAdd);
-        }
-
-        for (TestTask toRemove : testTasksToRemove) {
-            numChanges += deleteTestTask(certResult, toRemove);
-        }
-
-        for (TestTaskPair toUpdate : testTasksToUpdate) {
-            numChanges += updateTestTask(certResult, toUpdate.getOrig(), toUpdate.getUpdated());
-        }
-
-        return numChanges;
-    }
-
-    private int createTestTask(CertificationResult certResult, TestTask task)
-            throws EntityCreationException, EntityRetrievalException {
-        int numChanges = 1;
-        TestTaskDTO taskToCreate = convert(task);
-        TestTaskDTO createdTask = testTaskDAO.create(taskToCreate);
-        taskToCreate.setId(createdTask.getId());
-
-        CertificationResultTestTaskDTO certResultTask = new CertificationResultTestTaskDTO();
-        certResultTask.setCertificationResultId(certResult.getId());
-        certResultTask.setTestTaskId(taskToCreate.getId());
-        certResultTask.setTestTask(taskToCreate);
-        certResultTask = certResultDAO.addTestTaskMapping(certResultTask);
-
-        return numChanges;
-    }
-
-    private int deleteTestTask(CertificationResult certResult, TestTask task)
-            throws EntityCreationException, EntityRetrievalException {
-        int numChanges = 0;
-        certResultDAO.deleteTestTaskMapping(certResult.getId(), task.getId());
-        numChanges++;
-        return numChanges;
-    }
-
-    private int updateTestTask(CertificationResult certResult, TestTask existingTask, TestTask updatedTask)
-            throws EntityRetrievalException, EntityCreationException {
-        int numChanges = 0;
-        boolean isDifferent = false;
-        if (!StringUtils.equals(existingTask.getDescription(), updatedTask.getDescription())
-                || !StringUtils.equals(existingTask.getTaskRatingScale(), updatedTask.getTaskRatingScale())
-                || !Objects.equals(existingTask.getTaskErrors(), updatedTask.getTaskErrors())
-                || !Objects.equals(existingTask.getTaskErrorsStddev(), updatedTask.getTaskErrorsStddev())
-                || !Objects.equals(existingTask.getTaskPathDeviationObserved(),
-                        updatedTask.getTaskPathDeviationObserved())
-                || !Objects.equals(existingTask.getTaskPathDeviationOptimal(),
-                        updatedTask.getTaskPathDeviationOptimal())
-                || !Objects.equals(existingTask.getTaskRating(), updatedTask.getTaskRating())
-                || !StringUtils.equals(existingTask.getTaskRatingScale(), updatedTask.getTaskRatingScale())
-                || !Objects.equals(existingTask.getTaskRatingStddev(), updatedTask.getTaskRatingStddev())
-                || !Objects.equals(existingTask.getTaskSuccessAverage(), updatedTask.getTaskSuccessAverage())
-                || !Objects.equals(existingTask.getTaskSuccessStddev(), updatedTask.getTaskSuccessStddev())
-                || !Objects.equals(existingTask.getTaskTimeAvg(), updatedTask.getTaskTimeAvg())
-                || !Objects.equals(existingTask.getTaskTimeDeviationObservedAvg(),
-                        updatedTask.getTaskTimeDeviationObservedAvg())
-                || !Objects.equals(existingTask.getTaskTimeDeviationOptimalAvg(),
-                        updatedTask.getTaskTimeDeviationOptimalAvg())
-                || !Objects.equals(existingTask.getTaskTimeStddev(), updatedTask.getTaskTimeStddev())) {
-            isDifferent = true;
-        }
-
-        if (isDifferent) {
-            TestTaskDTO taskToUpdate = convert(updatedTask);
-            taskToUpdate.setId(existingTask.getId());
-            testTaskDAO.update(taskToUpdate);
-            numChanges++;
-        }
-
-        numChanges += updateTaskParticipants(existingTask, existingTask.getTestParticipants(),
-                updatedTask.getTestParticipants());
-        return numChanges;
-    }
-
-    private int updateTaskParticipants(TestTask testTask, Collection<TestParticipant> existingParticipants,
-            Collection<TestParticipant> updatedParticipants) throws EntityCreationException, EntityRetrievalException {
-        int numChanges = 0;
-        Set<TestParticipantDTO> participantsToAdd = new HashSet<TestParticipantDTO>();
-        Set<TestParticipantPair> participantsToUpdate = new HashSet<TestParticipantPair>();
-        Set<Long> idsToRemove = new HashSet<Long>();
-
-        // figure out which participants to add
-        if (updatedParticipants != null && updatedParticipants.size() > 0) {
-            // fill in potentially missing participant id
-            for (TestParticipant updatedItem : updatedParticipants) {
-                if (updatedItem.getId() == null) {
-                    TestParticipantDTO participantToAdd = convert(updatedItem);
-                    TestParticipantDTO addedParticipant = testParticipantDAO.create(participantToAdd);
-                    updatedItem.setId(addedParticipant.getId());
-                }
-            }
-
-            if (existingParticipants == null || existingParticipants.size() == 0) {
-                // existing listing has none, add all from the update
-                for (TestParticipant updatedItem : updatedParticipants) {
-                    if (updatedItem.getId() != null) {
-                        TestParticipantDTO toAdd = new TestParticipantDTO();
-                        toAdd.setId(updatedItem.getId());
-                        participantsToAdd.add(toAdd);
-                    }
-                }
-            } else if (existingParticipants.size() > 0) {
-                // existing listing has some, compare to the update to see if
-                // any are different
-                for (TestParticipant updatedItem : updatedParticipants) {
-                    boolean inExistingListing = false;
-                    for (TestParticipant existingItem : existingParticipants) {
-                        inExistingListing = !inExistingListing ? updatedItem.matches(existingItem) : inExistingListing;
-                        if (updatedItem.getId().longValue() == existingItem.getId().longValue()) {
-                            participantsToUpdate.add(new TestParticipantPair(existingItem, updatedItem));
-                        }
-                    }
-
-                    if (!inExistingListing) {
-                        if (updatedItem.getId() != null) {
-                            TestParticipantDTO toAdd = new TestParticipantDTO();
-                            toAdd.setId(updatedItem.getId());
-                            participantsToAdd.add(toAdd);
-                        }
-                    }
-                }
-            }
-        }
-
-        // figure out which participants to remove
-        if (existingParticipants != null && existingParticipants.size() > 0) {
-            // if the updated listing has none, remove them all from existing
-            if (updatedParticipants == null || updatedParticipants.size() == 0) {
-                for (TestParticipant existingItem : existingParticipants) {
-                    idsToRemove.add(existingItem.getId());
-                }
-            } else if (updatedParticipants.size() > 0) {
-                for (TestParticipant existingItem : existingParticipants) {
-                    boolean inUpdatedListing = false;
-                    for (TestParticipant updatedItem : updatedParticipants) {
-                        inUpdatedListing = !inUpdatedListing ? existingItem.matches(updatedItem) : inUpdatedListing;
-                    }
-                    if (!inUpdatedListing) {
-                        idsToRemove.add(existingItem.getId());
-                    }
-                }
-            }
-        }
-
-        numChanges = participantsToAdd.size() + idsToRemove.size();
-
-        for (TestParticipantDTO participantToAdd : participantsToAdd) {
-            certResultDAO.addTestParticipantMapping(convert(testTask), participantToAdd);
-        }
-
-        for (TestParticipantPair toUpdate : participantsToUpdate) {
-            boolean isDifferent = false;
-            TestParticipant existingPart = toUpdate.getOrig();
-            TestParticipant updatedPart = toUpdate.getUpdated();
-            if (!StringUtils.equals(existingPart.getAgeRange(), updatedPart.getAgeRange())
-                    || !StringUtils.equals(existingPart.getAge().getName(), updatedPart.getAge().getName())
-                    || !StringUtils.equals(existingPart.getAssistiveTechnologyNeeds(),
-                            updatedPart.getAssistiveTechnologyNeeds())
-                    || !Objects.equals(existingPart.getComputerExperienceMonths(),
-                            updatedPart.getComputerExperienceMonths())
-                    || !StringUtils.equals(existingPart.getEducationTypeName(), updatedPart.getEducationTypeName())
-                    || !StringUtils.equals(existingPart.getEducationType().getName(), updatedPart.getEducationType().getName())
-                    || !StringUtils.equals(existingPart.getGender(), updatedPart.getGender())
-                    || !StringUtils.equals(existingPart.getOccupation(), updatedPart.getOccupation())
-                    || !Objects.equals(existingPart.getProductExperienceMonths(),
-                            updatedPart.getProductExperienceMonths())
-                    || !Objects.equals(existingPart.getProfessionalExperienceMonths(),
-                            updatedPart.getProfessionalExperienceMonths())) {
-                isDifferent = true;
-            }
-
-            if (isDifferent) {
-                TestParticipantDTO toUpdateDto = convert(toUpdate.getUpdated());
-                testParticipantDAO.update(toUpdateDto);
-                numChanges++;
-            }
-        }
-
-        for (Long idToRemove : idsToRemove) {
-            certResultDAO.deleteTestParticipantMapping(testTask.getId(), idToRemove);
-        }
-        return numChanges;
-    }
-
     private int updateSvap(CertificationResult certResult, List<CertificationResultSvap> existingSvaps,
             List<CertificationResultSvap> updatedSvaps) {
         int updates = 0;
@@ -1130,84 +777,7 @@ public class CertificationResultManager extends SecuredManager {
         return result;
     }
 
-    private TestTaskDTO convert(TestTask task) {
-        TestTaskDTO result = new TestTaskDTO();
-        result.setId(task.getId());
-        result.setDescription(task.getDescription());
-        result.setTaskErrors(task.getTaskErrors());
-        result.setTaskErrorsStddev(task.getTaskErrorsStddev());
-        result.setTaskPathDeviationObserved(task.getTaskPathDeviationObserved());
-        result.setTaskPathDeviationOptimal(task.getTaskPathDeviationOptimal());
-        result.setTaskRating(task.getTaskRating());
-        result.setTaskRatingScale(task.getTaskRatingScale());
-        result.setTaskRatingStddev(task.getTaskRatingStddev());
-        result.setTaskSuccessAverage(task.getTaskSuccessAverage());
-        result.setTaskSuccessStddev(task.getTaskSuccessStddev());
-        result.setTaskTimeAvg(task.getTaskTimeAvg());
-        result.setTaskTimeDeviationObservedAvg(task.getTaskTimeDeviationObservedAvg());
-        result.setTaskTimeDeviationOptimalAvg(task.getTaskTimeDeviationOptimalAvg());
-        result.setTaskTimeStddev(task.getTaskTimeStddev());
-        if (task.getTestParticipants() != null && task.getTestParticipants().size() > 0) {
-            for (TestParticipant part : task.getTestParticipants()) {
-                result.getParticipants().add(convert(part));
-            }
-        }
-        return result;
-    }
-
-    private TestParticipantDTO convert(TestParticipant domain) {
-        TestParticipantDTO result = new TestParticipantDTO();
-        result.setId(domain.getId());
-        result.setAssistiveTechnologyNeeds(domain.getAssistiveTechnologyNeeds());
-        result.setComputerExperienceMonths(domain.getComputerExperienceMonths());
-        result.setGender(domain.getGender());
-        result.setOccupation(domain.getOccupation());
-        result.setProductExperienceMonths(domain.getProductExperienceMonths());
-        result.setProfessionalExperienceMonths(domain.getProfessionalExperienceMonths());
-        if (domain.getAgeRangeId() == null && !StringUtils.isEmpty(domain.getAgeRange())) {
-            AgeRangeDTO age = ageDao.getByName(domain.getAgeRange());
-            if (age != null) {
-                result.setAgeRangeId(age.getId());
-            } else {
-                LOGGER.error("Could not find matching age range for " + domain.getAgeRange());
-            }
-        } else if (domain.getAgeRangeId() != null) {
-            result.setAgeRangeId(domain.getAgeRangeId());
-        } else if (domain.getAge() != null && domain.getAge().getId() == null && !StringUtils.isEmpty(domain.getAge().getName())) {
-            AgeRangeDTO age = ageDao.getByName(domain.getAge().getName());
-            if (age != null) {
-                result.setAgeRangeId(age.getId());
-            } else {
-                LOGGER.error("Could not find matching age range for " + domain.getAge().getName());
-            }
-        } else if (domain.getAge() != null && domain.getAge().getId() != null) {
-            result.setAgeRangeId(domain.getAge().getId());
-        }
-
-        if (domain.getEducationTypeId() == null && !StringUtils.isEmpty(domain.getEducationTypeName())) {
-            EducationTypeDTO educ = educDao.getByName(domain.getEducationTypeName());
-            if (educ != null) {
-                result.setEducationTypeId(educ.getId());
-            } else {
-                LOGGER.error("Could not find matching education level " + domain.getEducationTypeName());
-            }
-        } else if (domain.getEducationTypeId() != null) {
-            result.setEducationTypeId(domain.getEducationTypeId());
-        } else if (domain.getEducationType() != null && domain.getEducationType().getId() == null
-                && !StringUtils.isEmpty(domain.getEducationType().getName())) {
-            EducationTypeDTO educ = educDao.getByName(domain.getEducationType().getName());
-            if (educ != null) {
-                result.setEducationTypeId(educ.getId());
-            } else {
-                LOGGER.error("Could not find matching education level " + domain.getEducationType().getName());
-            }
-        } else if (domain.getEducationType() != null && domain.getEducationType().getId() != null) {
-            result.setEducationTypeId(domain.getEducationType().getId());
-        }
-        return result;
-    }
-
-        public boolean getCertifiedProductHasAdditionalSoftware(Long certifiedProductId) {
+    public boolean getCertifiedProductHasAdditionalSoftware(Long certifiedProductId) {
         return certResultDAO.getCertifiedProductHasAdditionalSoftware(certifiedProductId);
     }
 
@@ -1274,42 +844,5 @@ public class CertificationResultManager extends SecuredManager {
         public CertificationResultTestData getUpdated() {
             return updated;
         }
-    }
-
-    private static class TestTaskPair {
-        private TestTask orig;
-        private TestTask updated;
-
-        TestTaskPair(final TestTask orig, final TestTask updated) {
-            this.orig = orig;
-            this.updated = updated;
-        }
-
-        public TestTask getOrig() {
-            return orig;
-        }
-
-        public TestTask getUpdated() {
-            return updated;
-        }
-    }
-
-    private static class TestParticipantPair {
-        private TestParticipant orig;
-        private TestParticipant updated;
-
-        TestParticipantPair(final TestParticipant orig, final TestParticipant updated) {
-            this.orig = orig;
-            this.updated = updated;
-        }
-
-        public TestParticipant getOrig() {
-            return orig;
-        }
-
-        public TestParticipant getUpdated() {
-            return updated;
-        }
-
     }
 }

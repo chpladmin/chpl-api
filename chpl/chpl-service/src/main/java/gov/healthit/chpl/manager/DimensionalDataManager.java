@@ -40,13 +40,13 @@ import gov.healthit.chpl.domain.Measure;
 import gov.healthit.chpl.domain.MeasureType;
 import gov.healthit.chpl.domain.NonconformityType;
 import gov.healthit.chpl.domain.Product;
+import gov.healthit.chpl.domain.TestParticipant.TestParticipantAge;
+import gov.healthit.chpl.domain.TestParticipant.TestParticipantEducation;
 import gov.healthit.chpl.domain.TestStandard;
 import gov.healthit.chpl.domain.surveillance.RequirementGroupType;
 import gov.healthit.chpl.domain.surveillance.RequirementType;
 import gov.healthit.chpl.domain.surveillance.SurveillanceResultType;
 import gov.healthit.chpl.domain.surveillance.SurveillanceType;
-import gov.healthit.chpl.dto.AgeRangeDTO;
-import gov.healthit.chpl.dto.EducationTypeDTO;
 import gov.healthit.chpl.dto.TargetedUserDTO;
 import gov.healthit.chpl.dto.TestDataCriteriaMapDTO;
 import gov.healthit.chpl.dto.TestProcedureCriteriaMapDTO;
@@ -139,27 +139,19 @@ public class DimensionalDataManager {
     @Transactional
     public Set<KeyValueModel> getEducationTypes() {
         LOGGER.debug("Getting all education types from the database (not cached).");
-        List<EducationTypeDTO> dtos = this.educationTypeDao.getAll();
-        Set<KeyValueModel> educationTypes = new HashSet<KeyValueModel>();
-
-        for (EducationTypeDTO dto : dtos) {
-            educationTypes.add(new KeyValueModel(dto.getId(), dto.getName()));
-        }
-
-        return educationTypes;
+        List<TestParticipantEducation> educationTypes = this.educationTypeDao.getAll();
+        return educationTypes.stream()
+                .map(et -> new KeyValueModel(et.getId(), et.getName()))
+                .collect(Collectors.toSet());
     }
 
     @Transactional
     public Set<KeyValueModel> getAgeRanges() {
         LOGGER.debug("Getting all age ranges from the database (not cached).");
-        List<AgeRangeDTO> dtos = this.ageRangeDao.getAll();
-        Set<KeyValueModel> ageRanges = new HashSet<KeyValueModel>();
-
-        for (AgeRangeDTO dto : dtos) {
-            ageRanges.add(new KeyValueModel(dto.getId(), dto.getAge()));
-        }
-
-        return ageRanges;
+        List<TestParticipantAge> ageRanges = this.ageRangeDao.getAll();
+        return ageRanges.stream()
+                .map(ar -> new KeyValueModel(ar.getId(), ar.getName()))
+                .collect(Collectors.toSet());
     }
 
     @Deprecated

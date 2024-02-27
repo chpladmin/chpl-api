@@ -2,17 +2,20 @@ package gov.healthit.chpl.dto;
 
 import java.io.Serializable;
 
+import gov.healthit.chpl.domain.TestTask;
 import gov.healthit.chpl.entity.listing.CertificationResultTestTaskEntity;
+import lombok.Data;
 
+@Data
 public class CertificationResultTestTaskDTO implements Serializable {
     private static final long serialVersionUID = -2963883181763817735L;
     private Long id;
     private Long certificationResultId;
     private Long testTaskId;
-    private TestTaskDTO testTask;
+    private TestTask testTask;
 
     public CertificationResultTestTaskDTO() {
-        this.testTask = new TestTaskDTO();
+        this.testTask = new TestTask();
     }
 
     public CertificationResultTestTaskDTO(CertificationResultTestTaskEntity entity) {
@@ -21,39 +24,7 @@ public class CertificationResultTestTaskDTO implements Serializable {
         this.certificationResultId = entity.getCertificationResultId();
         this.testTaskId = entity.getTestTaskId();
         if (entity.getTestTask() != null) {
-            this.testTask = new TestTaskDTO(entity.getTestTask());
+            this.testTask = entity.getTestTask().toDomain();
         }
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(final Long id) {
-        this.id = id;
-    }
-
-    public Long getCertificationResultId() {
-        return certificationResultId;
-    }
-
-    public void setCertificationResultId(final Long certificationResultId) {
-        this.certificationResultId = certificationResultId;
-    }
-
-    public Long getTestTaskId() {
-        return testTaskId;
-    }
-
-    public void setTestTaskId(final Long testTaskId) {
-        this.testTaskId = testTaskId;
-    }
-
-    public TestTaskDTO getTestTask() {
-        return testTask;
-    }
-
-    public void setTestTask(final TestTaskDTO testTask) {
-        this.testTask = testTask;
     }
 }
