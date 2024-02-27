@@ -18,6 +18,9 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
+import gov.healthit.chpl.attribute.AttributeType;
+import gov.healthit.chpl.attribute.AttributeUpToDate;
+import gov.healthit.chpl.attribute.AttributeUpToDateService;
 import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
@@ -33,7 +36,7 @@ import gov.healthit.chpl.standard.CertificationResultStandardDAO;
 import gov.healthit.chpl.util.DateUtil;
 import lombok.extern.log4j.Log4j2;
 
-@Log4j2(topic = "updatedListingStatusReportCreatorJobLogger")
+@Log4j2()
 public class UpdatedListingStatusReportCreatorJob extends QuartzJob {
 
     @Autowired
@@ -50,6 +53,9 @@ public class UpdatedListingStatusReportCreatorJob extends QuartzJob {
 
     @Autowired
     private CertificationResultFunctionalityTestedDAO certificationResultFunctionalityTestedDAO;
+
+    @Autowired
+    private AttributeUpToDateService attributeUpToDateService;
 
     @Autowired
     private JpaTransactionManager txManager;
@@ -125,25 +131,27 @@ public class UpdatedListingStatusReportCreatorJob extends QuartzJob {
     private Long getCriteriaRequireUpdateCount(CertifiedProductSearchDetails certifiedProductDetails) {
         return certifiedProductDetails.getCertificationResults().stream()
                 .filter(certResult -> !certResult.getCriterion().isRemoved()
-                        && isCriteriaUpdated(certResult))
-                .peek(x -> LOGGER.info(x.getCriterion().getNumber()))
+                        && !isCriteriaUpdated(certResult))
+                .peek(x -> LOGGER.info("{} : {} - {}", x.getCriterion().getNumber(), isCriteriaUpdated(x), isCriteriaUpdatedNew(x)))
                 .count();
     }
 
-    private boolean isCriteriaUpdated(CertificationResult certificationResult) {
-        Long updateRequired = 0L;
 
-        if (CollectionUtils.isNotEmpty(certificationResult.getStandards())) {
-            updateRequired = certificationResult.getStandards().stream()
-                    .filter(mergedCertResultStd -> mergedCertResultStd.getStandard().getEndDay() != null)
-                    .count();
+    private boolean isCriteriaUpdated(CertificationResult certificationResult) {
+        AttributeUpToDate standardsUpToDate = attributeUpToDateService.getAttributeUpToDate(
+                AttributeType.STANDARDS, certificationResult);
+
+        AttributeUpToDate functionalitiesTestedUpToDate = attributeUpToDateService.getAttributeUpToDate(
+                AttributeType.FUNCTIONALITIES_TESTED, certificationResult);
+
+        if (standardsUpToDate.getEligibleForAttribute() && !standardsUpToDate.getUpToDate()) {
+            return false;
         }
-        if (CollectionUtils.isNotEmpty(certificationResult.getFunctionalitiesTested())) {
-            updateRequired += certificationResult.getFunctionalitiesTested().stream()
-                    .filter(certResultFT -> certResultFT.getFunctionalityTested().getEndDay() != null)
-                    .count();
+        if (functionalitiesTestedUpToDate.getEligibleForAttribute() && !functionalitiesTestedUpToDate.getUpToDate()) {
+            return false;
         }
-        return updateRequired > 0L;
+
+        return true;
     }
 
     private Long getDaysUpdatedEarly(CertifiedProductSearchDetails certifiedProductDetails) {
