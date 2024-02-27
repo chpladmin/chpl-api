@@ -156,7 +156,10 @@ public class UpdatedCriteriaStatusReportCreatorJob extends QuartzJob {
         Set<CertificationCriterion> mergedCriteria = standardManager.getCertificationCriteriaForStandards().stream().collect(Collectors.toSet());
         mergedCriteria.addAll(functionalityTestedManager.getCertificationCriteriaForFunctionalitiesTested());
         //Need to add Code Sets in here
-        return mergedCriteria;
+
+        return mergedCriteria.stream()
+                .filter(crit -> crit .getStatus().equals(CriterionStatus.ACTIVE))
+                .collect(Collectors.toSet());
     }
 
     private void updateFullyUpToDate(UpdatedCriteriaStatusReport updatedCriteriaStatusReport, AttributeUpToDate standardsUpToDate, AttributeUpToDate functionalitiesTestedUpToDate) {
