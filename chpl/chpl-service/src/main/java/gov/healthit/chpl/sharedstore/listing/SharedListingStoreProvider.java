@@ -31,7 +31,9 @@ public class SharedListingStoreProvider extends SharedStoreProvider<Long, Certif
     @Override
     public CertifiedProductSearchDetails get(Long key, Supplier<CertifiedProductSearchDetails> s) {
         CertifiedProductSearchDetails listing = super.get(key, s);
-        filterListingDataForUser(listing);
+        if (listing != null) {
+            filterListingDataForUser(listing);
+        }
         return listing;
     }
 
