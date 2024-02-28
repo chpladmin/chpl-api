@@ -52,7 +52,7 @@ public class CognitoUserService {
     private DeveloperDAO developerDAO;
 
     @Autowired
-    public CognitoUserService( @Value("${cognito.accessKey}") String accessKey, @Value("${cognito.secretKey}") String secretKey,
+    public CognitoUserService(@Value("${cognito.accessKey}") String accessKey, @Value("${cognito.secretKey}") String secretKey,
             @Value("${cognito.region}") String region, @Value("${cognito.clientId}") String clientId, @Value("${cognito.userPoolId}") String userPoolId,
             @Value("${cognito.userPoolClientSecret}") String userPoolClientSecret, CertificationBodyDAO certificationBodyDAO, DeveloperDAO developerDAO) {
 

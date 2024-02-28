@@ -117,7 +117,7 @@ public class AuthenticationController {
     @Hidden
     @RequestMapping(value = "/keep-alive", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
-    public AuthenticationResponse keepAlive(@RequestHeader (name="Authorization") String token) throws JWTCreationException, UserRetrievalException, MultipleUserAccountsException {
+    public AuthenticationResponse keepAlive(@RequestHeader (name = "Authorization") String token) throws JWTCreationException, UserRetrievalException, MultipleUserAccountsException {
         //TODO Currently, keep-alive only works when logged in using CHPL id.  Cognito keep-alive will be implemented in the future
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String jwt = token.startsWith("Bearer") ? token.substring(7) : token;
