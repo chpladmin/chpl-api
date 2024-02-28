@@ -90,7 +90,12 @@ public class DatadogSyntheticsTestService {
                                 new SyntheticsAssertion(new SyntheticsAssertionTarget()
                                         .operator(SyntheticsAssertionOperator.IS)
                                         .target(HTTP_STATUS_OK)
-                                        .type(SyntheticsAssertionType.STATUS_CODE))))
+                                        .type(SyntheticsAssertionType.STATUS_CODE)),
+                                new SyntheticsAssertion(new SyntheticsAssertionTarget()
+                                        .operator(SyntheticsAssertionOperator.IS_NOT)
+                                        .target("0")
+                                        .type(SyntheticsAssertionType.HEADER)
+                                        .property("content-length"))))
                         .request(new SyntheticsTestRequest()
                                     .url(url)
                                     .method(HTTP_METHOD_GET)))
