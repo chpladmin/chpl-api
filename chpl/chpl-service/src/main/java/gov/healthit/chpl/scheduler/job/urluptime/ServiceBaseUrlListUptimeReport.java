@@ -1,7 +1,9 @@
 package gov.healthit.chpl.scheduler.job.urluptime;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import gov.healthit.chpl.domain.contact.PointOfContact;
 import lombok.Builder;
 import lombok.Data;
 
@@ -10,6 +12,7 @@ import lombok.Data;
 public class ServiceBaseUrlListUptimeReport {
     private String developerName;
     private Long developerId;
+    private List<PointOfContact> developerEmails;
     private String url;
     private Long totalTestCount;
     private Long totalSuccessfulTestCount;
@@ -22,6 +25,7 @@ public class ServiceBaseUrlListUptimeReport {
         return List.of(
                 developerName,
                 developerId.toString(),
+                formatContacts(developerEmails),
                 url,
                 totalTestCount.toString(),
                 totalSuccessfulTestCount.toString(),
@@ -35,6 +39,7 @@ public class ServiceBaseUrlListUptimeReport {
     public static List<String> getHeaders() {
         return List.of("Developer",
                 "Developer Id",
+                "User Email Addresses",
                 "URL",
                 "All Time Total Tests",
                 "All Time Successful Tests",
@@ -43,4 +48,12 @@ public class ServiceBaseUrlListUptimeReport {
                 "Past 7 Days Total Tests",
                 "Past 7 Days Successful Tests");
     }
+
+    private String formatContacts(List<PointOfContact> userContactList) {
+        List<String> contactStrings = new ArrayList<String>();
+        userContactList.stream()
+            .forEach(contact -> contactStrings.add(contact.getFullName() + " <" + contact.getEmail() + ">"));
+        return String.join("; ", contactStrings);
+    }
+
 }
