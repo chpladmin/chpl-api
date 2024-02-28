@@ -1,6 +1,5 @@
 package gov.healthit.chpl.auth.authentication;
 
-import org.apache.commons.lang3.NotImplementedException;
 import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -51,10 +50,20 @@ public class JWTUserConverterFacade implements JWTUserConverter {
 
     @Override
     public JWTAuthenticatedUser getImpersonatingUser(String jwt) throws JWTValidationException {
-        if (ff4j.check(FeatureList.SSO)) {
-            throw new NotImplementedException("CognitoJwtUserConverter.getImpersonatingUser() has not been implemented.");
-        } else {
+        //if (ff4j.check(FeatureList.SSO)) {
+        //    throw new NotImplementedException("CognitoJwtUserConverter.getImpersonatingUser() has not been implemented.");
+        //} else {
+        //    return chplJwtUserConverter.getImpersonatingUser(jwt);
+        //}
+
+        //Since we only support impersonating if logged in using a CHPL (not Cognito) user, always try to use the
+        //ChplJwtUserConverter.  If there is an error, i.e. the user is a Cognito user, return null and handle it
+        //in the controller.
+        try {
             return chplJwtUserConverter.getImpersonatingUser(jwt);
+        } catch (JWTValidationException e) {
+            LOGGER.error("Possibly tried to get the impersonating user that is not a CHPL user.", e);
+            return null;
         }
     }
 }

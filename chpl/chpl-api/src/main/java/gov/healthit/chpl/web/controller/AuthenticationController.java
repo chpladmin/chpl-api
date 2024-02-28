@@ -229,7 +229,15 @@ public class AuthenticationController {
     public AuthenticationResponse unimpersonateUser(@RequestHeader(value = "Authorization", required = true) String userJwt)
             throws JWTValidationException, JWTCreationException, UserRetrievalException, MultipleUserAccountsException {
         JWTAuthenticatedUser user = userConverterFacade.getImpersonatingUser(userJwt.split(" ")[1]);
-        String jwt = authenticationManager.unimpersonateUser(user);
+
+        String jwt = "";
+        if (user != null) {
+            jwt = authenticationManager.unimpersonateUser(user);
+        } else {
+            //This should be the scenario where someone tries to stop impersonating a Cognito user -- a scenario
+            //that is not currently supported.  Returning the passed in token should have no effect.
+            jwt = userJwt;
+        }
 
         return AuthenticationResponse.builder()
                 .token(jwt)
