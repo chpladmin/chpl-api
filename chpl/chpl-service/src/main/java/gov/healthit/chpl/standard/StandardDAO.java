@@ -214,9 +214,9 @@ public class StandardDAO extends BaseDAOImpl {
         return entityManager.createQuery("SELECT DISTINCT scm "
                         + "FROM StandardCriteriaMapEntity scm "
                         + "JOIN FETCH scm.criterion c "
-                        + "JOIN FETCH c.certificationEdition "
-                        + "JOIN FETCH c.rule "
-                        + "JOIN FETCH scm.standard ft "
+                        + "LEFT OUTER JOIN FETCH c.certificationEdition "
+                        + "LEFT OUTER JOIN FETCH c.rule "
+                        + "JOIN FETCH scm.standard s "
                         + "WHERE scm.deleted <> true "
                         + "AND c.deleted <> true ",
                         StandardCriteriaMapEntity.class)
