@@ -237,8 +237,7 @@ public class AuthenticationManager {
         return getJWT(impersonatedUser);
     }
 
-    public String unimpersonateUser(JWTAuthenticatedUser user) throws JWTCreationException, UserRetrievalException,
-    MultipleUserAccountsException {
+    public String unimpersonateUser(JWTAuthenticatedUser user) throws JWTCreationException, UserRetrievalException, MultipleUserAccountsException {
         return getJWT(getUserByNameOrEmail(user.getSubjectName()));
     }
 

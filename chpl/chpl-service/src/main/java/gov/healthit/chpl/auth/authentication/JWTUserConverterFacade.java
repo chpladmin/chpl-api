@@ -51,6 +51,10 @@ public class JWTUserConverterFacade implements JWTUserConverter {
 
     @Override
     public JWTAuthenticatedUser getImpersonatingUser(String jwt) throws JWTValidationException {
-        throw new NotImplementedException("CognitoJwtUserConverter.getImpersonatingUser() has not been implemented.");
+        if (ff4j.check(FeatureList.SSO)) {
+            throw new NotImplementedException("CognitoJwtUserConverter.getImpersonatingUser() has not been implemented.");
+        } else {
+            return chplJwtUserConverter.getImpersonatingUser(jwt);
+        }
     }
 }
