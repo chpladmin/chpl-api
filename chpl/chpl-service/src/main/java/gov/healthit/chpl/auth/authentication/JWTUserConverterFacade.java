@@ -50,12 +50,6 @@ public class JWTUserConverterFacade implements JWTUserConverter {
 
     @Override
     public JWTAuthenticatedUser getImpersonatingUser(String jwt) throws JWTValidationException {
-        //if (ff4j.check(FeatureList.SSO)) {
-        //    throw new NotImplementedException("CognitoJwtUserConverter.getImpersonatingUser() has not been implemented.");
-        //} else {
-        //    return chplJwtUserConverter.getImpersonatingUser(jwt);
-        //}
-
         //Since we only support impersonating if logged in using a CHPL (not Cognito) user, always try to use the
         //ChplJwtUserConverter.  If there is an error, i.e. the user is a Cognito user, return null and handle it
         //in the controller.
