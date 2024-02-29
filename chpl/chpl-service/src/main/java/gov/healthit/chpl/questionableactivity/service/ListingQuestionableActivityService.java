@@ -25,6 +25,7 @@ import gov.healthit.chpl.questionableactivity.listing.DeletedMeasuresActivity;
 import gov.healthit.chpl.questionableactivity.listing.DeletedRwtPlanActivity;
 import gov.healthit.chpl.questionableactivity.listing.DeletedRwtResultsActivity;
 import gov.healthit.chpl.questionableactivity.listing.DeletedSurveillanceActivity;
+import gov.healthit.chpl.questionableactivity.listing.FutureCertificationStatusAddedActivity;
 import gov.healthit.chpl.questionableactivity.listing.ListingActivity;
 import gov.healthit.chpl.questionableactivity.listing.NonActiveCertificateEdited;
 import gov.healthit.chpl.questionableactivity.listing.RwtPlansUpdatedOutsideNormalPeriod;
@@ -68,6 +69,7 @@ public class ListingQuestionableActivityService {
         } else if (origListing != null && newListing != null) {
             processListingActivity(UpdatedCertificationStatusWithdrawnByDeveloperUnderReviewActivity.class.getName(), origListing, newListing, activity, activityReason);
             processListingActivity(UpdatedCertificationStatusHistoryActivity.class.getName(), origListing, newListing, activity, activityReason);
+            processListingActivity(FutureCertificationStatusAddedActivity.class.getName(), origListing, newListing, activity, activityReason);
             processListingActivity(UpdatedTestingLabActivity.class.getName(), origListing, newListing, activity, activityReason);
             processListingActivity(DeletedRwtPlanActivity.class.getName(), origListing, newListing, activity, activityReason);
             processListingActivity(DeletedRwtResultsActivity.class.getName(), origListing, newListing, activity, activityReason);

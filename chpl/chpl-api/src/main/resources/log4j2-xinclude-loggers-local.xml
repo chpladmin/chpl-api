@@ -196,4 +196,7 @@
     <Logger name="updatedListingStatusReportCreatorJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="updatedListingStatusReporCreatortJob" />
     </Logger>
+    <Logger name="updateCurrentCertificationStatusJobLogger" level="INFO" additivity="false">
+        <AppenderRef ref="updateCurrentCertificationStatusJob" />
+    </Logger>
 </Loggers>
