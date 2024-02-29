@@ -13,8 +13,8 @@ import lombok.extern.log4j.Log4j2;
 public abstract class Validator {
 
     public abstract List<Reviewer> getReviewers();
-
     public abstract List<ComparisonReviewer> getComparisonReviewers();
+    public abstract List<ComparisonReviewer> getComparisonReviewersToAlwaysCheck();
 
     public synchronized void validate(CertifiedProductSearchDetails listing) {
         if (CollectionUtils.isEmpty(listing.getCertificationEvents()) || listing.isCertificateActive()) {
@@ -34,15 +34,18 @@ public abstract class Validator {
     }
 
     public void validate(CertifiedProductSearchDetails existingListing, CertifiedProductSearchDetails updatedListing) {
+        //validation only runs if the listing is Active. A user must be able to set a listing with errors to Withdrawn
+        //without having to make changes to get it to be "valid"
         if (CollectionUtils.isEmpty(updatedListing.getCertificationEvents()) || updatedListing.isCertificateActive()) {
             validate(updatedListing);
             for (ComparisonReviewer reviewer : getComparisonReviewers()) {
                 reviewer.review(existingListing, updatedListing);
             }
         }
-    }
 
-    private boolean doCertificationEventsExist(CertifiedProductSearchDetails listing) {
-        return !CollectionUtils.isEmpty(listing.getCertificationEvents());
+        //but there are some reviewers we need to always run, no matter the listing status
+        for (ComparisonReviewer reviewer : getComparisonReviewersToAlwaysCheck()) {
+            reviewer.review(existingListing, updatedListing);
+        }
     }
 }

@@ -195,6 +195,16 @@
             </job-data-map>
         </job>
 
+        <!-- Update Current Listing Status -->
+        <job>
+            <name>updateCurrentCertificationStatusJob</name>
+            <group>chplBackgroundJobs</group>
+            <description>Performs all the downstream actions as a result of a listing certification status change.</description>
+            <job-class>gov.healthit.chpl.scheduler.job.certificationStatus.UpdateCurrentCertificationStatusJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+        </job>
+
         <!-- Certification ID Email Background Job -->
         <job>
             <name>certificationIdEmailJob</name>
