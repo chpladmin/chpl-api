@@ -1,6 +1,7 @@
 package gov.healthit.chpl.scheduler.job.urluptime;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -26,7 +27,7 @@ public class ServiceBaseUrlListUptimeReport {
     private Map<Long, Boolean> applicableAcbsMap;
 
     public List<String> toListOfStrings(List<CertificationBody> activeAcbs) {
-        List<String> stringifiedData = List.of(
+        List<String> stringifiedData = new ArrayList<String>(Arrays.asList(
                 developerName,
                 developerId.toString(),
                 formatContacts(developerEmails),
@@ -36,7 +37,7 @@ public class ServiceBaseUrlListUptimeReport {
                 currentMonthTestCount.toString(),
                 currentMonthSuccessfulTestCount.toString(),
                 pastWeekTestCount.toString(),
-                pastWeekSuccessfulTestCount.toString());
+                pastWeekSuccessfulTestCount.toString()));
 
         Collections.sort(activeAcbs, (acb1, acb2) -> acb1.getName().compareTo(acb2.getName()));
         activeAcbs.forEach(acb -> stringifiedData.add(applicableAcbsMap.get(acb.getId()).toString()));
@@ -45,7 +46,7 @@ public class ServiceBaseUrlListUptimeReport {
     }
 
     public static List<String> getHeaders(List<CertificationBody> activeAcbs) {
-        List<String> headers = List.of("Developer",
+        List<String> headers =  new ArrayList<String>(Arrays.asList("Developer",
                 "Developer Id",
                 "User Email Addresses",
                 "URL",
@@ -54,7 +55,7 @@ public class ServiceBaseUrlListUptimeReport {
                 "Current Month Days Total Tests",
                 "Current Month Days Successful Tests",
                 "Past 7 Days Total Tests",
-                "Past 7 Days Successful Tests");
+                "Past 7 Days Successful Tests"));
         Collections.sort(activeAcbs, (acb1, acb2) -> acb1.getName().compareTo(acb2.getName()));
         activeAcbs.forEach(acb -> headers.add(acb.getName()));
         return headers;
