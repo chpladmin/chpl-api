@@ -139,7 +139,6 @@ public class JoinDeveloperJob implements Job {
 
     @ListingSearchCacheRefresh
     private void clearCachesRelatedToDevelopers() {
-        cacheManager.getCache(CacheNames.DEVELOPER_NAMES).invalidate();
         cacheManager.getCache(CacheNames.ALL_DEVELOPERS).invalidate();
         cacheManager.getCache(CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED).invalidate();
         cacheManager.getCache(CacheNames.COLLECTIONS_DEVELOPERS).invalidate();

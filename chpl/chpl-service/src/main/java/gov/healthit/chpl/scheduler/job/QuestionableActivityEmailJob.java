@@ -513,6 +513,12 @@ public class QuestionableActivityEmailJob extends QuartzJob {
             }
             currRow.set(ACTIVITY_CERT_STATUS_CHANGE_REASON_COL, activity.getCertificationStatusChangeReason());
         } else if (activity.getTrigger().getName()
+                .equals(QuestionableActivityTriggerConcept.FUTURE_CERTIFICATION_STATUS.getName())) {
+            if (activity.getBefore() == null) {
+                currRow.set(ACTIVITY_DESCRIPTION_COL, "Added " + activity.getAfter());
+            }
+            currRow.set(ACTIVITY_CERT_STATUS_CHANGE_REASON_COL, activity.getCertificationStatusChangeReason());
+        } else if (activity.getTrigger().getName()
                 .equals(QuestionableActivityTriggerConcept.TESTING_LAB_CHANGED.getName())) {
             if (!StringUtils.isEmpty(activity.getBefore()) && !StringUtils.isEmpty(activity.getAfter())) {
                 currRow.set(ACTIVITY_DESCRIPTION_COL, "From " + activity.getBefore() + " to " + activity.getAfter());

@@ -18,7 +18,6 @@ import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.CriteriaSpecificDescriptiveModel;
 import gov.healthit.chpl.domain.DimensionalData;
 import gov.healthit.chpl.domain.KeyValueModel;
-import gov.healthit.chpl.domain.KeyValueModelStatuses;
 import gov.healthit.chpl.domain.Measure;
 import gov.healthit.chpl.domain.MeasureType;
 import gov.healthit.chpl.domain.NonconformityType;
@@ -153,6 +152,9 @@ public class DimensionalDataController {
         return dimensionalDataManager.getPracticeTypeNames();
     }
 
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/data/products", removalDate = "2024-06-01",
+            message = "This endpoint is deprecated and will be removed.")
     @Operation(summary = "Get all possible product names in the CHPL",
             description = "This is useful for knowing what values one might possibly search for.",
             security = {
@@ -161,10 +163,13 @@ public class DimensionalDataController {
     @RequestMapping(value = "/products", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
-    public @ResponseBody Set<KeyValueModelStatuses> getProductNames() {
-        return dimensionalDataManager.getProducts();
+    public @ResponseBody Set<String> getProductNames() {
+        return null;
     }
 
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/data/developers", removalDate = "2024-06-01",
+            message = "This endpoint is deprecated and will be removed. A list of developers can be found at /developers.")
     @Operation(summary = "Get all possible developer names in the CHPL",
             description = "This is useful for knowing what values one might possibly search for.",
             security = {
@@ -173,8 +178,8 @@ public class DimensionalDataController {
     @RequestMapping(value = "/developers", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
-    public @ResponseBody Set<KeyValueModelStatuses> getDeveloperNames() {
-        return dimensionalDataManager.getDevelopers();
+    public @ResponseBody Set<String> getDeveloperNames() {
+        return null;
     }
 
     @Operation(summary = "Get all possible ACBs in the CHPL",
