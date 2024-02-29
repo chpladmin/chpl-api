@@ -160,8 +160,8 @@ public class StandardAllowedByCriteriaReviewer extends StandardGroupValidation {
 
     private boolean isStandardActiveAfterListingActiveDates(CertifiedProductSearchDetails listing, Standard standard) {
         LocalDate listingEndDay = listing.getDecertificationDay() == null ? LocalDate.now() : listing.getDecertificationDay();
-        LocalDate funcTestedStartDay = standard.getStartDay() == null ? LocalDate.MIN : standard.getStartDay();
-        return funcTestedStartDay.isAfter(listingEndDay);
+        LocalDate standardStartDay = standard.getStartDay() == null ? LocalDate.MIN : standard.getStartDay();
+        return standardStartDay.isAfter(listingEndDay);
     }
 
 }

@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.time.LocalDate;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
@@ -55,6 +57,16 @@ public class CertificationStatusEvent implements Serializable {
 
     @Schema(description = "The certification status for the listing on the eventDate.")
     private CertificationStatus status;
+
+    /**
+     * This property exists solely to be able to deserialize listing activity events from very old data.
+     * Since we care about certification status changes when categorizing listing activity we need to be able to read
+     * this value in old listing activity event data. Not all old listing properties need to be present
+     * for this reason. This property should not be visible in any response from an API call.
+     */
+    @Deprecated
+    @JsonProperty(access = Access.WRITE_ONLY)
+    private Long certificationStatusId;
 
     @Schema(description = "The user-provided reason that a change of certification status occurred.")
     private String reason;

@@ -246,4 +246,8 @@
         <AppenderRef ref="updatedListingStatusReportCreatorJob" />
         <AppenderRef ref="updatedListingStatusReportCreatorJobJson" />
     </Logger>
+    <Logger name="updateCurrentCertificationStatusJobLogger" level="INFO" additivity="false">
+        <AppenderRef ref="updateCurrentCertificationStatusJob" />
+        <AppenderRef ref="updateCurrentCertificationStatusJobJson" />
+    </Logger>
 </Loggers>

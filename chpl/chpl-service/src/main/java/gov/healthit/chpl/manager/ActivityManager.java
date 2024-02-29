@@ -58,7 +58,7 @@ public class ActivityManager extends SecuredManager {
     }
 
     @Transactional
-    public void addActivity(ActivityConcept concept, Long objectId, String activityDescription, Object originalData,
+    public Long addActivity(ActivityConcept concept, Long objectId, String activityDescription, Object originalData,
             Object newData) throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
 
         Long asUser = null;
@@ -73,10 +73,11 @@ public class ActivityManager extends SecuredManager {
             chplProductNumberChangedListener.recordChplProductNumberChanged(concept, objectId, originalData, newData, activityDate);
             subscriptionObserver.checkActivityForSubscriptions(activity, originalData, newData);
         }
+        return activity == null ? null : activity.getId();
     }
 
     @Transactional
-    public void addActivity(ActivityConcept concept, Long objectId, String activityDescription, Object originalData,
+    public Long addActivity(ActivityConcept concept, Long objectId, String activityDescription, Object originalData,
             Object newData, String reason) throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
 
         Long asUser = null;
@@ -91,10 +92,11 @@ public class ActivityManager extends SecuredManager {
             chplProductNumberChangedListener.recordChplProductNumberChanged(concept, objectId, originalData, newData, activityDate);
             subscriptionObserver.checkActivityForSubscriptions(activity, originalData, newData);
         }
+        return activity == null ? null : activity.getId();
     }
 
     @Transactional
-    public void addActivity(ActivityConcept concept, Long objectId, String activityDescription, Object originalData,
+    public Long addActivity(ActivityConcept concept, Long objectId, String activityDescription, Object originalData,
             Object newData, Long asUser) throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
 
         Date activityDate = new Date();
@@ -104,6 +106,7 @@ public class ActivityManager extends SecuredManager {
             chplProductNumberChangedListener.recordChplProductNumberChanged(concept, objectId, originalData, newData, activityDate);
             subscriptionObserver.checkActivityForSubscriptions(activity, originalData, newData);
         }
+        return activity == null ? null : activity.getId();
     }
 
     private ActivityDTO addActivity(ActivityConcept concept, Long objectId, String activityDescription, Object originalData,

@@ -125,7 +125,7 @@ public class CertifiedProductSummaryEntity extends EntityAudit {
     @Column(name = "vendor_code")
     private String developerCode;
 
-    @Column(name = "certification_status")
+    @Column(name = "certification_status_name")
     private String certificationStatus;
 
     @Column(name = "certification_date")
