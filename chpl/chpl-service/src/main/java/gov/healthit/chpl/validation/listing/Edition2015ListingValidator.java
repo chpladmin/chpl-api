@@ -42,6 +42,7 @@ import gov.healthit.chpl.validation.listing.reviewer.UnsupportedCharacterReviewe
 import gov.healthit.chpl.validation.listing.reviewer.UrlReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.ValidDataReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.AttestedCriteriaCqmReviewer;
+import gov.healthit.chpl.validation.listing.reviewer.edition2015.CodeSetReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.CqmAttestedCriteriaReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.FunctionalityTestedAllowedByCriteriaReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.FunctionalityTestedAllowedByRoleReviewer;
@@ -248,6 +249,9 @@ public class Edition2015ListingValidator extends Validator {
     @Autowired
     private StandardRemovalReviewer standardRemovalReviewer;
 
+    @Autowired
+    private CodeSetReviewer codeSetAllowedByCriteriaReviewer;
+
     @Override
     public synchronized List<Reviewer> getReviewers() {
         List<Reviewer> reviewers = new ArrayList<Reviewer>();
@@ -286,6 +290,7 @@ public class Edition2015ListingValidator extends Validator {
         reviewers.add(qmsStandardReviewer);
         reviewers.add(realWorldTestingReviewer);
         reviewers.add(privacyAndSecurityCriteriaReviewer);
+        reviewers.add(codeSetAllowedByCriteriaReviewer);
         return reviewers;
     }
 
