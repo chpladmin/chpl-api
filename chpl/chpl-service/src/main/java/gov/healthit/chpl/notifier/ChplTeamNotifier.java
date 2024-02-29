@@ -15,23 +15,40 @@ public class ChplTeamNotifier {
 
     private ChplEmailFactory chplEmailFactory;
 
-    private String notifcationAddress;
+    private String internalFutureCertificationStatusEmailRecipients;
+    private String internalErrorEmailRecipients;
 
-    public ChplTeamNotifier(ChplEmailFactory chplEmailFactory, @Value("${internalErrorEmailRecipients}") String notificationAddress) {
+    public ChplTeamNotifier(ChplEmailFactory chplEmailFactory,
+            @Value("${internalErrorEmailRecipients}") String internalErrorEmailRecipients,
+            @Value("${internalFutureCertificationStatusEmailRecipients}") String internalFutureCertificationStatusEmailRecipients) {
         this.chplEmailFactory = chplEmailFactory;
-        this.notifcationAddress = notificationAddress;
+        this.internalErrorEmailRecipients = internalErrorEmailRecipients;
+        this.internalFutureCertificationStatusEmailRecipients = internalFutureCertificationStatusEmailRecipients;
     }
 
     public void sendNotification(ChplTeamNotifierMessage message) {
         try {
             chplEmailFactory.emailBuilder()
-                    .recipients(List.of(notifcationAddress))
+                    .recipients(List.of(internalErrorEmailRecipients))
                     .subject(message.getSubject())
                     .fileAttachments(message.getFiles())
                     .htmlMessage(message.getMessage())
                     .sendEmail();
         } catch (EmailNotSentException msgEx) {
             LOGGER.error("Could not send email about failed listing upload: " + msgEx.getMessage(), msgEx);
+        }
+    }
+
+    public void sendFutureCertificationStatusUsedNotification(ChplTeamNotifierMessage message) {
+        try {
+            chplEmailFactory.emailBuilder()
+                    .recipients(List.of(internalFutureCertificationStatusEmailRecipients))
+                    .subject(message.getSubject())
+                    .fileAttachments(message.getFiles())
+                    .htmlMessage(message.getMessage())
+                    .sendEmail();
+        } catch (EmailNotSentException msgEx) {
+            LOGGER.error("Could not send email about future certification status: " + msgEx.getMessage(), msgEx);
         }
     }
 }
