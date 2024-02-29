@@ -27,7 +27,6 @@ public class FunctionalityTestedService {
 
     public void update(FunctionalityTested functionalityTested) throws EntityRetrievalException {
         FunctionalityTested originalFunctionalityTested = functionalityTestedDAO.getById(functionalityTested.getId());
-
         functionalityTestedDAO.update(functionalityTested);
         addNewCriteriaForExistingFunctionalityTested(functionalityTested, originalFunctionalityTested);
         deleteCriteriaRemovedFromFunctionalityTested(functionalityTested, originalFunctionalityTested);
