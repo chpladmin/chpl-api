@@ -40,4 +40,8 @@ public class AllowedListingValidator extends Validator {
     public List<ComparisonReviewer> getComparisonReviewers() {
         return comparisonReviewers;
     }
+
+    public List<ComparisonReviewer> getComparisonReviewersToAlwaysCheck() {
+        return comparisonReviewers;
+    }
 }

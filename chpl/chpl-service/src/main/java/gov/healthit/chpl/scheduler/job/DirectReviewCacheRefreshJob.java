@@ -11,7 +11,6 @@ import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.caching.ListingSearchCacheRefresh;
 import gov.healthit.chpl.compliance.directreview.DirectReviewCachingService;
 import gov.healthit.chpl.search.CertifiedProductSearchManager;
-import gov.healthit.chpl.search.ListingSearchManager;
 import lombok.extern.log4j.Log4j2;
 
 @DisallowConcurrentExecution
@@ -25,9 +24,6 @@ public class DirectReviewCacheRefreshJob extends QuartzJob {
 
     @Autowired
     private CertifiedProductSearchManager certifiedProductSearchManager;
-
-    @Autowired
-    private ListingSearchManager listingSearchManager;
 
     @Autowired
     private CacheManager cacheManager;
