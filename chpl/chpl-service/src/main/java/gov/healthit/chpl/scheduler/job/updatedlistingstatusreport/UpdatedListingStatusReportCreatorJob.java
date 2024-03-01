@@ -3,6 +3,7 @@ package gov.healthit.chpl.scheduler.job.updatedlistingstatusreport;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.OptionalLong;
 import java.util.Set;
@@ -22,6 +23,10 @@ import gov.healthit.chpl.attribute.AttributeType;
 import gov.healthit.chpl.attribute.AttributeUpToDate;
 import gov.healthit.chpl.attribute.AttributeUpToDateService;
 import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
+import gov.healthit.chpl.codeset.CertificationResultCodeSet;
+import gov.healthit.chpl.codeset.CertificationResultCodeSetDAO;
+import gov.healthit.chpl.codeset.CodeSet;
+import gov.healthit.chpl.codeset.CodeSetDAO;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -58,7 +63,15 @@ public class UpdatedListingStatusReportCreatorJob extends QuartzJob {
     private AttributeUpToDateService attributeUpToDateService;
 
     @Autowired
+    private CertificationResultCodeSetDAO certificationResultCodeSetDAO;
+
+    @Autowired
+    private CodeSetDAO codeSetDAO;
+
+    @Autowired
     private JpaTransactionManager txManager;
+
+    private Map<Long, List<CodeSet>> codeSetMaps;
 
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
@@ -77,6 +90,8 @@ public class UpdatedListingStatusReportCreatorJob extends QuartzJob {
                 @Override
                 protected void doInTransactionWithoutResult(TransactionStatus status) {
                     try {
+                        codeSetMaps = codeSetDAO.getCodeSetCriteriaMaps();
+
                         if (doStatisticsExistForDate(LocalDate.now())) {
                             deleteStatisticsForDate(LocalDate.now());
                         }
@@ -151,6 +166,16 @@ public class UpdatedListingStatusReportCreatorJob extends QuartzJob {
         }
 
         return true;
+        // TODO - Will need to determine for HTI-2 how to correctly handle this.  Possible
+        // future state is we will need to make sure the most recent and in the past codes set is
+        // attested to.
+
+        // Initially, we will just make sure that the cert result has attested to the same
+        // number of code sets as are available for the criteria.
+        //if (CollectionUtils.isNotEmpty(certificationResult.getCodeSets())
+        //        && certificationResult.getCodeSets().size() != codeSetMaps.get(certificationResult.getCriterion().getId()).size()) {
+        //    updateRequired += 1L;
+        //}
     }
 
     private Long getDaysUpdatedEarly(CertifiedProductSearchDetails certifiedProductDetails) {
@@ -165,16 +190,15 @@ public class UpdatedListingStatusReportCreatorJob extends QuartzJob {
     private Long getDaysUpdatedEarlyForCriteria(CertificationResult certificationResult) {
         OptionalLong standardsDaysEarly = getDaysUpdatedEarlyForCriteriaBasedOnStandards(certificationResult);
         OptionalLong functionalityTestedDaysEarly = getDaysUpdatedEarlyForCriteriaBasedOnFunctionalitiesTested(certificationResult);
+        OptionalLong codeSetsDaysEarly = getDaysUpdatedEarlyForCriteriaBasedOnCodeSets(certificationResult);
 
-        if (standardsDaysEarly.isPresent() && functionalityTestedDaysEarly.isEmpty()) {
-            return standardsDaysEarly.getAsLong();
-        } else if (standardsDaysEarly.isEmpty() && functionalityTestedDaysEarly.isPresent()) {
-            return functionalityTestedDaysEarly.getAsLong();
-        } else if (standardsDaysEarly.isPresent() && functionalityTestedDaysEarly.isPresent()) {
-            return standardsDaysEarly.getAsLong() > functionalityTestedDaysEarly.getAsLong() ? functionalityTestedDaysEarly.getAsLong() : standardsDaysEarly.getAsLong();
-        } else {
-            return 0L;
-        }
+
+        return List.of(standardsDaysEarly, functionalityTestedDaysEarly, codeSetsDaysEarly).stream()
+                .filter(OptionalLong::isPresent)
+                .map(OptionalLong::getAsLong)
+                .map(Long::valueOf)
+                .reduce(Long::min)
+                .orElse(0L);
     }
 
     private OptionalLong getDaysUpdatedEarlyForCriteriaBasedOnStandards(CertificationResult certificationResult) {
@@ -209,6 +233,25 @@ public class UpdatedListingStatusReportCreatorJob extends QuartzJob {
                     .min();
 
             LOGGER.info("FT Check {} - {}", certificationResult.getCriterion().getNumber(), daysUpdatedEarly);
+        }
+        return daysUpdatedEarly;
+    }
+
+    private OptionalLong getDaysUpdatedEarlyForCriteriaBasedOnCodeSets(CertificationResult certificationResult) {
+        //Get the CertificationResultCodeSet using DAO, so that we have the create date
+        List<CertificationResultCodeSet> certificationResultCodeSets =
+                certificationResultCodeSetDAO.getCodeSetsForCertificationResult(certificationResult.getId());
+
+        OptionalLong daysUpdatedEarly = OptionalLong.empty();
+        if (CollectionUtils.isNotEmpty(certificationResultCodeSets)) {
+            daysUpdatedEarly = certificationResultCodeSets.stream()
+                    .filter(certResultCS -> certResultCS.getCodeSet().getRequiredDay() != null
+                            && LocalDate.now().isBefore(certResultCS.getCodeSet().getRequiredDay())
+                            && DateUtil.toLocalDate(certResultCS.getCreationDate().getTime()).isBefore(certResultCS.getCodeSet().getRequiredDay()))
+                    .mapToLong(certResultFT -> ChronoUnit.DAYS.between(DateUtil.toLocalDate(certResultFT.getCreationDate().getTime()), certResultFT.getCodeSet().getRequiredDay()))
+                    .min();
+
+            LOGGER.info("Code Set Check {} - {}", certificationResult.getCriterion().getNumber(), daysUpdatedEarly);
         }
         return daysUpdatedEarly;
     }

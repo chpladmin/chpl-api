@@ -53,9 +53,9 @@ public class UpdatedCertificationStatusHistoryActivity implements ListingActivit
                 //is different and the newListing's first historical status event is equal to the "origListings"
                 //current status. We can exclude that first historical status event from the "newListing"
                 //from being checked for questionable activity because it is expected (i.e. NOT questionable)
-                origEvents.remove(origEvents.size() - 1);
-                updatedEvents.remove(updatedEvents.size() - 1);
-                updatedEvents.remove(updatedEvents.size() - 2);
+                origEvents.remove(origListingCurrentStatusEvent);
+                updatedEvents.remove(origListingCurrentStatusEvent);
+                updatedEvents.remove(newListingPrevStatusEvent);
             }
         } else if (origListing.getCurrentStatus().getStatus().getName().equals(CertificationStatusType.Active.getName())
                 && newListing.getCurrentStatus().getStatus().getName().equals(CertificationStatusType.Active.getName())

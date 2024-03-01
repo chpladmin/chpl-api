@@ -47,7 +47,6 @@ public class CertifiedProductDetailsDTO implements Serializable {
     private String otherAcb;
     private Long certificationStatusId;
     private String certificationStatusName;
-    private Date certificationStatusDate;
     private Boolean curesUpdate;
     private Long certificationEditionId;
     private String year;
@@ -104,7 +103,6 @@ public class CertifiedProductDetailsDTO implements Serializable {
         this.certificationEditionId = entity.getCertificationEditionId();
         this.certificationStatusId = entity.getCertificationStatusId();
         this.certificationStatusName = entity.getCertificationStatusName();
-        this.certificationStatusDate = entity.getCertificationStatusDate();
         this.curesUpdate = entity.getCuresUpdate();
         this.chplProductNumber = entity.getChplProductNumber();
         this.otherAcb = entity.getOtherAcb();
@@ -206,7 +204,6 @@ public class CertifiedProductDetailsDTO implements Serializable {
         this.certificationEditionId = entity.getCertificationEditionId();
         this.certificationStatusId = entity.getCertificationStatusId();
         this.certificationStatusName = entity.getCertificationStatusName();
-        this.certificationStatusDate = entity.getCertificationStatusDate();
         this.curesUpdate = entity.getCuresUpdate();
         this.chplProductNumber = entity.getChplProductNumber();
         this.otherAcb = entity.getOtherAcb();

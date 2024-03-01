@@ -46,6 +46,8 @@ public class CertificationResultDetailsDAO extends BaseDAOImpl {
             + "LEFT OUTER JOIN FETCH crsv.svap svap "
             + "LEFT OUTER JOIN FETCH crd.certificationResultStandards crs "
             + "LEFT OUTER JOIN FETCH crs.standard standard "
+            + "LEFT OUTER JOIN FETCH crd.certificationResultCodeSets crcs "
+            + "LEFT OUTER JOIN FETCH crcs.codeSet codeSet "
             + "WHERE crd.deleted = false ";
 
     @Transactional

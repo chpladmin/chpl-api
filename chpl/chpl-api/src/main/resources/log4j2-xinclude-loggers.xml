@@ -218,6 +218,10 @@
         <AppenderRef ref="fixupQuestionableActivityJob" />
         <AppenderRef ref="fixupQuestionableActivityJobJson" />
     </Logger>
+    <Logger name="removeDuplicateIcsRelationshipsJobLogger" level="DEBUG" additivity="false">
+        <AppenderRef ref="removeDuplicateIcsRelationshipsJob" />
+        <AppenderRef ref="removeDuplicateIcsRelationshipsJobJson" />
+    </Logger>
     <Logger name="fixupDeveloperAttestationActivityJobLogger" level="DEBUG" additivity="false">
         <AppenderRef ref="fixupDeveloperAttestationActivityJob" />
         <AppenderRef ref="fixupDeveloperAttestationActivityJobJson" />
@@ -249,5 +253,9 @@
     <Logger name="updatedCriteriaStatusReportEmailJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="updatedCriteriaStatusReportEmailJob" />
         <AppenderRef ref="updatedCriteriaStatusReportEmailJobJson" />
+    </Logger>
+    <Logger name="updateCurrentCertificationStatusJobLogger" level="INFO" additivity="false">
+        <AppenderRef ref="updateCurrentCertificationStatusJob" />
+        <AppenderRef ref="updateCurrentCertificationStatusJobJson" />
     </Logger>
 </Loggers>
