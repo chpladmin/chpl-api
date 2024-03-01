@@ -20,8 +20,6 @@ import lombok.Singular;
 public class QuarterlyReportRelevantListingDTO extends CertifiedProductDetailsDTO {
     private static final long serialVersionUID = -2198910382314894675L;
     private QuarterlyReportDTO quarterlyReport;
-    private boolean isExcluded;
-    private String exclusionReason;
     @Singular
     private List<PrivilegedSurveillanceDTO> surveillances;
 

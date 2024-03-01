@@ -3,7 +3,6 @@ package gov.healthit.chpl.web.controller;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
@@ -30,7 +29,6 @@ import gov.healthit.chpl.surveillance.report.domain.QuarterlyReport;
 import gov.healthit.chpl.surveillance.report.domain.RelevantListing;
 import gov.healthit.chpl.surveillance.report.dto.PrivilegedSurveillanceDTO;
 import gov.healthit.chpl.surveillance.report.dto.QuarterlyReportDTO;
-import gov.healthit.chpl.surveillance.report.dto.QuarterlyReportExclusionDTO;
 import gov.healthit.chpl.surveillance.report.dto.QuarterlyReportRelevantListingDTO;
 import gov.healthit.chpl.surveillance.report.dto.SurveillanceOutcomeDTO;
 import gov.healthit.chpl.surveillance.report.dto.SurveillanceProcessTypeDTO;
@@ -309,50 +307,6 @@ public class SurveillanceReportController {
         toUpdate.setSurveillanceProcessTypeOther(updateRequest.getSurveillanceProcessTypeOther());
         PrivilegedSurveillanceDTO updated = reportManager.createOrUpdateQuarterlyReportSurveillanceMap(toUpdate);
         return new PrivilegedSurveillance(updated);
-    }
-
-    @Operation(summary = "Updates whether a relevant listing is marked as excluded from a quarterly "
-            + "report. If it's being excluded then the reason is required.",
-            description = "Security Restrictions: ROLE_ADMIN or ROLE_ACB and administrative "
-                    + "authority on the ACB associated with the report.",
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
-            })
-    @RequestMapping(value = "/quarterly/{quarterlyReportId}/listings/{listingId}", method = RequestMethod.PUT, produces = "application/json; charset=utf-8")
-    public RelevantListing updateRelevantListing(@PathVariable Long quarterlyReportId,
-            @PathVariable Long listingId,
-            @RequestBody(required = true) RelevantListing updateExclusionRequest)
-            throws AccessDeniedException, InvalidArgumentsException, EntityRetrievalException, EntityCreationException,
-            JsonProcessingException {
-        QuarterlyReportDTO quarterlyReport = reportManager.getQuarterlyReport(quarterlyReportId);
-        if (updateExclusionRequest.isExcluded() && StringUtils.isEmpty(updateExclusionRequest.getReason())) {
-            throw new InvalidArgumentsException(
-                    msgUtil.getMessage("report.quarterlySurveillance.exclusion.missingReason", quarterlyReport.getQuarter().getName()));
-        }
-
-        // see if a current exclusion exists for this listing to determine if
-        // it's being
-        // newly created with this request or just updated
-        QuarterlyReportExclusionDTO existingExclusion = reportManager.getExclusion(quarterlyReport, listingId);
-        if (existingExclusion == null && updateExclusionRequest.isExcluded()) {
-            // no existing exclusion - create one
-            reportManager.createQuarterlyReportExclusion(quarterlyReport, listingId,
-                    updateExclusionRequest.getReason());
-        } else if (existingExclusion != null && updateExclusionRequest.isExcluded()) {
-            // found existing exclusion for this listing - update the reason
-            reportManager.updateQuarterlyReportExclusion(quarterlyReport, listingId, updateExclusionRequest.getReason());
-        } else if (existingExclusion != null && !updateExclusionRequest.isExcluded()) {
-            reportManager.deleteQuarterlyReportExclusion(quarterlyReportId, listingId);
-        }
-
-        // get the relevant listing with its new exclusion fields
-        QuarterlyReportRelevantListingDTO updatedRelevantListing = reportManager.getRelevantListing(quarterlyReport, listingId);
-        RelevantListing result = null;
-        if (updatedRelevantListing != null) {
-            result = new RelevantListing(updatedRelevantListing);
-        }
-        return result;
     }
 
     @Operation(summary = "Update an existing quarterly surveillance report.",
