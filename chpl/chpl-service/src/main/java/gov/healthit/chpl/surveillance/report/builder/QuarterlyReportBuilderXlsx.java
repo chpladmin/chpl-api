@@ -2,9 +2,9 @@ package gov.healthit.chpl.surveillance.report.builder;
 
 import java.io.IOException;
 
-import gov.healthit.chpl.surveillance.report.dto.QuarterlyReportDTO;
+import gov.healthit.chpl.surveillance.report.domain.QuarterlyReport;
 
 public interface QuarterlyReportBuilderXlsx {
 
-    SurveillanceReportWorkbookWrapper buildXlsx(QuarterlyReportDTO report) throws IOException;
+    SurveillanceReportWorkbookWrapper buildXlsx(QuarterlyReport report) throws IOException;
 }

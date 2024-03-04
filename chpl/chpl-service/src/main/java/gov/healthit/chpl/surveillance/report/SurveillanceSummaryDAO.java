@@ -3,6 +3,7 @@ package gov.healthit.chpl.surveillance.report;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.persistence.Query;
 
@@ -11,18 +12,18 @@ import org.springframework.stereotype.Repository;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.surveillance.SurveillanceType;
 import gov.healthit.chpl.dto.SurveillanceTypeDTO;
-import gov.healthit.chpl.entity.listing.ListingWithPrivilegedSurveillanceEntity;
-import gov.healthit.chpl.surveillance.report.dto.QuarterlyReportRelevantListingDTO;
-import gov.healthit.chpl.surveillance.report.dto.SurveillanceOutcomeDTO;
-import gov.healthit.chpl.surveillance.report.dto.SurveillanceProcessTypeDTO;
-import gov.healthit.chpl.surveillance.report.dto.SurveillanceSummaryDTO;
+import gov.healthit.chpl.surveillance.report.domain.RelevantListing;
+import gov.healthit.chpl.surveillance.report.domain.SurveillanceOutcome;
+import gov.healthit.chpl.surveillance.report.domain.SurveillanceProcessType;
+import gov.healthit.chpl.surveillance.report.domain.SurveillanceSummary;
+import gov.healthit.chpl.surveillance.report.entity.ListingWithPrivilegedSurveillanceEntity;
 import lombok.extern.log4j.Log4j2;
 
 @Repository("surveillanceSummaryDao")
 @Log4j2
 public class SurveillanceSummaryDAO extends BaseDAOImpl {
 
-    public SurveillanceSummaryDTO getCountOfListingsSurveilledByType(Long acbId, LocalDate startDate, LocalDate endDate) {
+    public SurveillanceSummary getCountOfListingsSurveilledByType(Long acbId, LocalDate startDate, LocalDate endDate) {
         String queryStr = "SELECT survType.name, COUNT(DISTINCT listing) "
                 + "FROM ListingWithPrivilegedSurveillanceEntity listing "
                 + "JOIN listing.surveillances surv "
@@ -38,7 +39,7 @@ public class SurveillanceSummaryDAO extends BaseDAOImpl {
         query.setParameter("startDate", startDate);
         query.setParameter("endDate", endDate);
 
-        SurveillanceSummaryDTO result = new SurveillanceSummaryDTO();
+        SurveillanceSummary result = new SurveillanceSummary();
         List<Object[]> entities = query.getResultList();
         for (Object[] entity : entities) {
             String survTypeName = (String) entity[0];
@@ -52,8 +53,8 @@ public class SurveillanceSummaryDAO extends BaseDAOImpl {
         return result;
     }
 
-    public SurveillanceSummaryDTO getCountOfSurveillanceProcessTypesBySurveillanceType(Long acbId,
-            List<SurveillanceProcessTypeDTO> procTypes, LocalDate startDate, LocalDate endDate) {
+    public SurveillanceSummary getCountOfSurveillanceProcessTypesBySurveillanceType(Long acbId,
+            List<SurveillanceProcessType> procTypes, LocalDate startDate, LocalDate endDate) {
         String queryStr = "SELECT survType.name, COUNT(DISTINCT surv.id) "
                 + "FROM ListingWithPrivilegedSurveillanceEntity listing "
                 + "JOIN listing.surveillances surv "
@@ -68,14 +69,14 @@ public class SurveillanceSummaryDAO extends BaseDAOImpl {
         Query query = entityManager.createQuery(queryStr);
         query.setParameter("acbId", acbId);
         List<Long> procTypeIds = new ArrayList<Long>(procTypes.size());
-        for (SurveillanceProcessTypeDTO procType : procTypes) {
+        for (SurveillanceProcessType procType : procTypes) {
             procTypeIds.add(procType.getId());
         }
         query.setParameter("procTypeIds", procTypeIds);
         query.setParameter("startDate", startDate);
         query.setParameter("endDate", endDate);
 
-        SurveillanceSummaryDTO result = new SurveillanceSummaryDTO();
+        SurveillanceSummary result = new SurveillanceSummary();
         List<Object[]> entities = query.getResultList();
         for (Object[] entity : entities) {
             String survTypeName = (String) entity[0];
@@ -89,8 +90,8 @@ public class SurveillanceSummaryDAO extends BaseDAOImpl {
         return result;
     }
 
-    public SurveillanceSummaryDTO getCountOfSurveillanceOutcomesBySurveillanceType(Long acbId,
-            List<SurveillanceOutcomeDTO> outcomes, LocalDate startDate, LocalDate endDate) {
+    public SurveillanceSummary getCountOfSurveillanceOutcomesBySurveillanceType(Long acbId,
+            List<SurveillanceOutcome> outcomes, LocalDate startDate, LocalDate endDate) {
         String queryStr = "SELECT survType.name, COUNT(DISTINCT surv.id) "
                 + "FROM ListingWithPrivilegedSurveillanceEntity listing "
                 + "JOIN listing.surveillances surv "
@@ -105,14 +106,14 @@ public class SurveillanceSummaryDAO extends BaseDAOImpl {
         Query query = entityManager.createQuery(queryStr);
         query.setParameter("acbId", acbId);
         List<Long> survOutcomeIds = new ArrayList<Long>(outcomes.size());
-        for (SurveillanceOutcomeDTO outcome : outcomes) {
+        for (SurveillanceOutcome outcome : outcomes) {
             survOutcomeIds.add(outcome.getId());
         }
         query.setParameter("survOutcomeIds", survOutcomeIds);
         query.setParameter("startDate", startDate);
         query.setParameter("endDate", endDate);
 
-        SurveillanceSummaryDTO result = new SurveillanceSummaryDTO();
+        SurveillanceSummary result = new SurveillanceSummary();
         List<Object[]> entities = query.getResultList();
         for (Object[] entity : entities) {
             String survTypeName = (String) entity[0];
@@ -126,7 +127,7 @@ public class SurveillanceSummaryDAO extends BaseDAOImpl {
         return result;
     }
 
-    public List<QuarterlyReportRelevantListingDTO> getListingsBySurveillanceType(Long acbId, SurveillanceTypeDTO survType,
+    public List<RelevantListing> getListingsBySurveillanceType(Long acbId, SurveillanceTypeDTO survType,
             LocalDate startDate, LocalDate endDate) {
         String queryStr = "SELECT DISTINCT listing "
                 + "FROM ListingWithPrivilegedSurveillanceEntity listing "
@@ -145,10 +146,8 @@ public class SurveillanceSummaryDAO extends BaseDAOImpl {
         query.setParameter("startDate", startDate);
         query.setParameter("endDate", endDate);
         List<ListingWithPrivilegedSurveillanceEntity> entities = query.getResultList();
-        List<QuarterlyReportRelevantListingDTO> result = new ArrayList<QuarterlyReportRelevantListingDTO>();
-        for (ListingWithPrivilegedSurveillanceEntity entity : entities) {
-            result.add(new QuarterlyReportRelevantListingDTO(entity));
-        }
-        return result;
+        return entities.stream()
+                .map(entity -> entity.toDomain())
+                .collect(Collectors.toList());
     }
 }

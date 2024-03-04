@@ -1,21 +1,23 @@
 package gov.healthit.chpl.surveillance.report;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.persistence.Query;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.compliance.surveillance.entity.SurveillanceEntity;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.entity.listing.CertifiedProductDetailsEntity;
-import gov.healthit.chpl.entity.listing.ListingWithPrivilegedSurveillanceEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.surveillance.report.dto.QuarterlyReportDTO;
-import gov.healthit.chpl.surveillance.report.dto.QuarterlyReportRelevantListingDTO;
+import gov.healthit.chpl.surveillance.report.domain.QuarterlyReport;
+import gov.healthit.chpl.surveillance.report.domain.RelevantListing;
+import gov.healthit.chpl.surveillance.report.entity.ListingWithPrivilegedSurveillanceEntity;
 import gov.healthit.chpl.surveillance.report.entity.QuarterlyReportEntity;
 import gov.healthit.chpl.util.AuthUtil;
 
@@ -28,7 +30,14 @@ public class QuarterlyReportDAO extends BaseDAOImpl {
             + " LEFT JOIN FETCH acb.address "
             + " WHERE qr.deleted = false ";
 
-    public QuarterlyReportDTO getByQuarterAndAcbAndYear(Long quarterId, Long acbId, Integer year) {
+    private QuarterDAO quarterDao;
+
+    @Autowired
+    public QuarterlyReportDAO(QuarterDAO quarterDao) {
+        this.quarterDao = quarterDao;
+    }
+
+    public QuarterlyReport getByQuarterAndAcbAndYear(Long quarterId, Long acbId, Integer year) {
         String queryStr = QUARTERLY_REPORT_HQL
                 + " AND qr.year = :year "
                 + " AND acb.id = :acbId "
@@ -38,14 +47,13 @@ public class QuarterlyReportDAO extends BaseDAOImpl {
         query.setParameter("year", year);
         query.setParameter("acbId", acbId);
         List<QuarterlyReportEntity> entityResults = query.getResultList();
-        QuarterlyReportDTO result = null;
-        if (entityResults != null && entityResults.size() > 0) {
-            result = new QuarterlyReportDTO(entityResults.get(0));
+        if (CollectionUtils.isEmpty(entityResults)) {
+            return null;
         }
-        return result;
+        return entityResults.get(0).toDomain();
     }
 
-    public List<QuarterlyReportDTO> getByAcbAndYear(Long acbId, Integer year) {
+    public List<QuarterlyReport> getByAcbAndYear(Long acbId, Integer year) {
         String queryStr = QUARTERLY_REPORT_HQL
                 + " AND qr.year = :year "
                 + " AND acb.id = :acbId";
@@ -53,46 +61,34 @@ public class QuarterlyReportDAO extends BaseDAOImpl {
         query.setParameter("year", year);
         query.setParameter("acbId", acbId);
         List<QuarterlyReportEntity> entityResults = query.getResultList();
-        List<QuarterlyReportDTO> results = new ArrayList<QuarterlyReportDTO>();
-        if (entityResults != null && entityResults.size() > 0) {
-            for (QuarterlyReportEntity entityResult : entityResults) {
-                results.add(new QuarterlyReportDTO(entityResult));
-            }
-        }
-        return results;
+        return entityResults.stream()
+            .map(entity -> entity.toDomain())
+            .collect(Collectors.toList());
     }
 
-    public List<QuarterlyReportDTO> getByAcb(Long acbId) {
+    public List<QuarterlyReport> getByAcb(Long acbId) {
         String queryStr = QUARTERLY_REPORT_HQL
                 + " AND acb.id = :acbId";
         Query query = entityManager.createQuery(queryStr);
         query.setParameter("acbId", acbId);
         List<QuarterlyReportEntity> entityResults = query.getResultList();
-        List<QuarterlyReportDTO> results = new ArrayList<QuarterlyReportDTO>();
-        if (entityResults != null && entityResults.size() > 0) {
-            for (QuarterlyReportEntity entityResult : entityResults) {
-                results.add(new QuarterlyReportDTO(entityResult));
-            }
-        }
-        return results;
+        return entityResults.stream()
+                .map(entity -> entity.toDomain())
+                .collect(Collectors.toList());
     }
 
-    public List<QuarterlyReportDTO> getAll() {
+    public List<QuarterlyReport> getAll() {
         Query query = entityManager.createQuery(QUARTERLY_REPORT_HQL);
         List<QuarterlyReportEntity> entityResults = query.getResultList();
-        List<QuarterlyReportDTO> results = new ArrayList<QuarterlyReportDTO>();
-        if (entityResults != null && entityResults.size() > 0) {
-            for (QuarterlyReportEntity entityResult : entityResults) {
-                results.add(new QuarterlyReportDTO(entityResult));
-            }
-        }
-        return results;
+        return entityResults.stream()
+                .map(entity -> entity.toDomain())
+                .collect(Collectors.toList());
     }
 
-    public QuarterlyReportDTO getById(Long id) throws EntityRetrievalException {
+    public QuarterlyReport getById(Long id) throws EntityRetrievalException {
         QuarterlyReportEntity entity = getEntityById(id);
         if (entity != null) {
-            return new QuarterlyReportDTO(entity);
+            return entity.toDomain();
         }
         return null;
     }
@@ -114,7 +110,7 @@ public class QuarterlyReportDAO extends BaseDAOImpl {
      * ACB that's relevant to the quarterly report
      * and was open during the reporting period; false otherwise.
      */
-    public boolean isSurveillanceRelevant(QuarterlyReportDTO quarterlyReport, Long survId) {
+    public boolean isSurveillanceRelevant(QuarterlyReport quarterlyReport, Long survId) {
         String queryStr = "SELECT surv "
                 + "FROM SurveillanceEntity surv "
                 + "JOIN FETCH surv.certifiedProduct listing "
@@ -125,8 +121,8 @@ public class QuarterlyReportDAO extends BaseDAOImpl {
         Query query = entityManager.createQuery(queryStr);
         query.setParameter("survId", survId);
         query.setParameter("acbId", quarterlyReport.getAcb().getId());
-        query.setParameter("startDate", quarterlyReport.getStartDate());
-        query.setParameter("endDate", quarterlyReport.getEndDate());
+        query.setParameter("startDate", quarterlyReport.getStartDay());
+        query.setParameter("endDate", quarterlyReport.getEndDay());
         List<SurveillanceEntity> entities = query.getResultList();
         return entities != null && entities.size() > 0;
     }
@@ -135,7 +131,7 @@ public class QuarterlyReportDAO extends BaseDAOImpl {
      * Returns listings with at least one surveillance that was in an open state during a time interval.
      */
     @Transactional(readOnly = true)
-    public List<QuarterlyReportRelevantListingDTO> getListingsWithRelevantSurveillance(QuarterlyReportDTO quarterlyReport) {
+    public List<RelevantListing> getListingsWithRelevantSurveillance(QuarterlyReport quarterlyReport) {
         String queryStr = "SELECT DISTINCT listing "
                 + "FROM ListingWithPrivilegedSurveillanceEntity listing "
                 + "JOIN FETCH listing.surveillances surv "
@@ -146,23 +142,20 @@ public class QuarterlyReportDAO extends BaseDAOImpl {
                 + "AND (surv.endDate IS NULL OR surv.endDate >= :startDate)";
         Query query = entityManager.createQuery(queryStr);
         query.setParameter("acbId", quarterlyReport.getAcb().getId());
-        query.setParameter("startDate", quarterlyReport.getStartDate());
-        query.setParameter("endDate", quarterlyReport.getEndDate());
+        query.setParameter("startDate", quarterlyReport.getStartDay());
+        query.setParameter("endDate", quarterlyReport.getEndDay());
 
         List<ListingWithPrivilegedSurveillanceEntity> listingsWithSurvEntities = query.getResultList();
-        List<QuarterlyReportRelevantListingDTO> result = new ArrayList<QuarterlyReportRelevantListingDTO>();
-        for (ListingWithPrivilegedSurveillanceEntity listingsWithSurvEntity : listingsWithSurvEntities) {
-            result.add(new QuarterlyReportRelevantListingDTO(listingsWithSurvEntity));
-        }
-        return result;
+        return listingsWithSurvEntities.stream()
+                .map(entity -> entity.toDomain())
+                .collect(Collectors.toList());
     }
 
     /**
      * Returns a relevant listing object if the listing is relevant during the dates specified.
      * Otherwise returns null.
      */
-    public QuarterlyReportRelevantListingDTO getRelevantListing(Long listingId,
-            QuarterlyReportDTO quarterlyReport) {
+    public RelevantListing getRelevantListing(Long listingId, QuarterlyReport quarterlyReport) {
         String queryStr = "SELECT DISTINCT listing "
                 + "FROM ListingWithPrivilegedSurveillanceEntity listing "
                 + "LEFT JOIN FETCH listing.surveillances surv "
@@ -174,19 +167,17 @@ public class QuarterlyReportDAO extends BaseDAOImpl {
         query.setParameter("listingId", listingId);
         query.setParameter("acbId", quarterlyReport.getAcb().getId());
         List<ListingWithPrivilegedSurveillanceEntity> entities = query.getResultList();
-
-        QuarterlyReportRelevantListingDTO relevantListing = null;
-        if (entities != null && entities.size() > 0) {
-            relevantListing = new QuarterlyReportRelevantListingDTO(entities.get(0));
+        if (CollectionUtils.isEmpty(entities)) {
+            return null;
         }
-        return relevantListing;
+        return entities.get(0).toDomain();
     }
 
     /**
      * Returns listings owned by the ACB
      */
     @Transactional(readOnly = true)
-    public List<QuarterlyReportRelevantListingDTO> getRelevantListings(QuarterlyReportDTO quarterlyReport) {
+    public List<RelevantListing> getRelevantListings(QuarterlyReport quarterlyReport) {
         String queryStr = "SELECT DISTINCT listing "
                 + "FROM ListingWithPrivilegedSurveillanceEntity listing "
                 + "LEFT JOIN FETCH listing.surveillances surv "
@@ -197,14 +188,12 @@ public class QuarterlyReportDAO extends BaseDAOImpl {
         query.setParameter("acbId", quarterlyReport.getAcb().getId());
 
         List<ListingWithPrivilegedSurveillanceEntity> entities = query.getResultList();
-        List<QuarterlyReportRelevantListingDTO> result = new ArrayList<QuarterlyReportRelevantListingDTO>();
-        for (ListingWithPrivilegedSurveillanceEntity entity : entities) {
-            result.add(new QuarterlyReportRelevantListingDTO(entity));
-        }
-        return result;
+        return entities.stream()
+                .map(entity -> entity.toDomain())
+                .collect(Collectors.toList());
     }
 
-    public QuarterlyReportDTO create(QuarterlyReportDTO toCreate) throws EntityCreationException {
+    public Long create(QuarterlyReport toCreate) throws EntityCreationException {
         if (toCreate.getAcb() == null || toCreate.getAcb().getId() == null) {
             throw new EntityCreationException("An ACB must be provided in order to create a quarterly report.");
         }
@@ -218,27 +207,26 @@ public class QuarterlyReportDAO extends BaseDAOImpl {
                 .certificationBodyId(toCreate.getAcb().getId())
                 .year(toCreate.getYear())
                 .prioritizedElementSummary(toCreate.getPrioritizedElementSummary())
-                .quarterId(toCreate.getQuarter().getId())
-                .activitiesOutcomesSummary(toCreate.getActivitiesOutcomesSummary())
+                .quarterId(quarterDao.getByName(toCreate.getQuarter()).getId())
+                .activitiesOutcomesSummary(toCreate.getSurveillanceActivitiesAndOutcomes())
                 .reactiveSurveillanceSummary(toCreate.getReactiveSurveillanceSummary())
                 .disclosureRequirementsSummary(toCreate.getDisclosureRequirementsSummary())
                 .build();
 
         super.create(toCreateEntity);
         toCreate.setId(toCreateEntity.getId());
-        return toCreate;
+        return toCreateEntity.getId();
     }
 
-    public QuarterlyReportDTO update(QuarterlyReportDTO toUpdate) throws EntityRetrievalException {
+    public void update(QuarterlyReport toUpdate) throws EntityRetrievalException {
         QuarterlyReportEntity toUpdateEntity = getEntityById(toUpdate.getId());
-        toUpdateEntity.setActivitiesOutcomesSummary(toUpdate.getActivitiesOutcomesSummary());
+        toUpdateEntity.setActivitiesOutcomesSummary(toUpdate.getSurveillanceActivitiesAndOutcomes());
         toUpdateEntity.setPrioritizedElementSummary(toUpdate.getPrioritizedElementSummary());
         toUpdateEntity.setReactiveSurveillanceSummary(toUpdate.getReactiveSurveillanceSummary());
         toUpdateEntity.setDisclosureRequirementsSummary(toUpdate.getDisclosureRequirementsSummary());
         toUpdateEntity.setLastModifiedUser(AuthUtil.getAuditId());
 
         super.update(toUpdateEntity);
-        return getById(toUpdateEntity.getId());
     }
 
     public void delete(Long idToDelete) throws EntityRetrievalException {

@@ -12,7 +12,7 @@ import gov.healthit.chpl.surveillance.report.builder.ListWorksheetBuilder;
 import gov.healthit.chpl.surveillance.report.builder.QuarterlyReportBuilderXlsx;
 import gov.healthit.chpl.surveillance.report.builder.SurveillanceReportWorkbookWrapper;
 import gov.healthit.chpl.surveillance.report.builder.SurveillanceSummaryWorksheetBuilder;
-import gov.healthit.chpl.surveillance.report.dto.QuarterlyReportDTO;
+import gov.healthit.chpl.surveillance.report.domain.QuarterlyReport;
 import lombok.NoArgsConstructor;
 
 @Component("quarterlyReportBuilder2019")
@@ -38,10 +38,10 @@ public class QuarterlyReportBuilder2019 implements QuarterlyReportBuilderXlsx {
         this.summaryWorksheetBuilder = summaryWorksheetBuilder;
     }
 
-    public SurveillanceReportWorkbookWrapper buildXlsx(QuarterlyReportDTO report) throws IOException {
+    public SurveillanceReportWorkbookWrapper buildXlsx(QuarterlyReport report) throws IOException {
         SurveillanceReportWorkbookWrapper workbook = new SurveillanceReportWorkbookWrapper();
 
-        List<QuarterlyReportDTO> reports = new ArrayList<QuarterlyReportDTO>();
+        List<QuarterlyReport> reports = new ArrayList<QuarterlyReport>();
         reports.add(report);
 
         listWorksheetBuilder.buildWorksheet(workbook);

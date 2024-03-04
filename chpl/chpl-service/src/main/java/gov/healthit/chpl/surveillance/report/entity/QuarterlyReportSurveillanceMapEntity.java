@@ -10,15 +10,21 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import org.apache.commons.beanutils.BeanUtils;
+
 import gov.healthit.chpl.compliance.surveillance.entity.SurveillanceBasicEntity;
+import gov.healthit.chpl.domain.surveillance.SurveillanceBasic;
 import gov.healthit.chpl.entity.EntityAudit;
+import gov.healthit.chpl.surveillance.report.domain.PrivilegedSurveillance;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 @Getter
 @Setter
 @ToString
@@ -102,4 +108,32 @@ public class QuarterlyReportSurveillanceMapEntity extends EntityAudit {
     @Column(name = "completed_cap_verification")
     private String completedCapVerification;
 
+    public PrivilegedSurveillance toDomain() {
+        PrivilegedSurveillance privilegedSurveillance = PrivilegedSurveillance.builder()
+                .quarterlyReport(this.getQuarterlyReport().toDomain())
+                .additionalCostsEvaluation(this.getAdditionalCostsEvaluation())
+                .completedCapVerification(this.getCompletedCapVerification())
+                .directionDeveloperResolution(this.getDirectionDeveloperResolution())
+                .groundsForInitiating(this.getGroundsForInitiating())
+                .k1Reviewed(this.getK1Reviewed())
+                .limitationsEvaluation(this.getLimitationsEvaluation())
+                .nonconformityCauses(this.getNonconformityCauses())
+                .nonconformityNature(this.getNonconformityNature())
+                .nondisclosureEvaluation(this.getNondisclosureEvaluation())
+                .stepsToEngage(this.getStepsToEngage())
+                .stepsToSurveil(this.getStepsToSurveil())
+                .surveillanceOutcome(this.getSurveillanceOutcome().toDomain())
+                .surveillanceOutcomeOther(this.getSurveillanceOutcomeOther())
+                .surveillanceProcessType(this.getSurveillanceProcessType().toDomain())
+                .surveillanceProcessTypeOther(this.getSurveillanceProcessTypeOther())
+                .build();
+
+        SurveillanceBasic relatedSurv = this.getSurveillance().buildSurveillanceBasic();
+        try {
+            BeanUtils.copyProperties(privilegedSurveillance, relatedSurv);
+        } catch (Exception ex) {
+            LOGGER.error("Cannot copy relatedSurv properties to PrivilegedSurveillance.", ex);
+        }
+        return privilegedSurveillance;
+    }
 }

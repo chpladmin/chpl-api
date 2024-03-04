@@ -102,7 +102,7 @@ public class AnnualReportGenerationJob implements Job {
                     AnnualReport report = null;
                     try {
                         report = reportManager.getAnnualReport(annualReportId);
-                    } catch (EntityRetrievalException ex) {
+                    } catch (Exception ex) {
                         String msg = msgUtil.getMessage("report.annualSurveillance.export.badId", annualReportId);
                         LOGGER.error(msg, ex);
                         sendEmail(user.getEmail(), env.getProperty("surveillance.annualReport.failure.subject"),

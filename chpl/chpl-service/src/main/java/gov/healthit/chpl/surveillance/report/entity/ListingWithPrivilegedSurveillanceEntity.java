@@ -1,4 +1,4 @@
-package gov.healthit.chpl.entity.listing;
+package gov.healthit.chpl.surveillance.report.entity;
 
 import java.util.Date;
 import java.util.HashSet;
@@ -15,7 +15,8 @@ import javax.persistence.Table;
 import org.hibernate.annotations.Immutable;
 import org.hibernate.annotations.Where;
 
-import gov.healthit.chpl.surveillance.report.entity.PrivilegedSurveillanceEntity;
+import gov.healthit.chpl.domain.CertificationBody;
+import gov.healthit.chpl.surveillance.report.domain.RelevantListing;
 import lombok.Data;
 import lombok.Singular;
 
@@ -92,4 +93,21 @@ public class ListingWithPrivilegedSurveillanceEntity {
     @Column(name = "certified_product_id", nullable = false)
     @Where(clause = "deleted <> 'true'")
     private Set<PrivilegedSurveillanceEntity> surveillances = new HashSet<PrivilegedSurveillanceEntity>();
+
+    public RelevantListing toDomain() {
+        RelevantListing listing = new RelevantListing();
+        listing.setAcb(CertificationBody.builder()
+                .id(this.getCertificationBodyId())
+                .name(this.getCertificationBodyName())
+                .acbCode(this.getCertificationBodyCode())
+                .build());
+        listing.setCertificationDate(this.getCertificationDate().getTime());
+        listing.setCertificationStatus(this.getCertificationStatusName());
+        listing.setChplProductNumber(this.getChplProductNumber());
+        listing.setCuresUpdate(this.getCuresUpdate());
+        listing.setEdition(this.getYear());
+        listing.setId(this.getId());
+        //TODO get privileged surv
+        return listing;
+    }
 }

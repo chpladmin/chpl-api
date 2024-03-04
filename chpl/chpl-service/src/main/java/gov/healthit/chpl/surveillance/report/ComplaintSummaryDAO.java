@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
-import gov.healthit.chpl.surveillance.report.dto.SurveillanceOutcomeDTO;
+import gov.healthit.chpl.surveillance.report.domain.SurveillanceOutcome;
 
 @Repository("complaintSummaryDao")
 public class ComplaintSummaryDAO extends BaseDAOImpl {
@@ -117,9 +117,9 @@ public class ComplaintSummaryDAO extends BaseDAOImpl {
                         + "AND privSurvMap.surveillanceOutcomeId IN (:outcomeIds) "
                 + ")",
                 Long.class);
-        List<SurveillanceOutcomeDTO> allOutcomes = survDao.getSurveillanceOutcomes();
+        List<SurveillanceOutcome> allOutcomes = survDao.getSurveillanceOutcomes();
         List<Long> relevantOutcomeIds = new ArrayList<Long>();
-        for (SurveillanceOutcomeDTO outcome : allOutcomes) {
+        for (SurveillanceOutcome outcome : allOutcomes) {
             if (outcome.getName().startsWith("Non-conformity substantiated")) {
                 relevantOutcomeIds.add(outcome.getId());
             }
@@ -152,9 +152,9 @@ public class ComplaintSummaryDAO extends BaseDAOImpl {
                     + "AND (c.closedDate IS NULL OR c.closedDate >= :startDate)"
                 + ")",
                 Long.class);
-        List<SurveillanceOutcomeDTO> allOutcomes = survDao.getSurveillanceOutcomes();
+        List<SurveillanceOutcome> allOutcomes = survDao.getSurveillanceOutcomes();
         List<Long> relevantOutcomeIds = new ArrayList<Long>();
-        for (SurveillanceOutcomeDTO outcome : allOutcomes) {
+        for (SurveillanceOutcome outcome : allOutcomes) {
             if (outcome.getName().startsWith("Non-conformity substantiated")) {
                 relevantOutcomeIds.add(outcome.getId());
             }
