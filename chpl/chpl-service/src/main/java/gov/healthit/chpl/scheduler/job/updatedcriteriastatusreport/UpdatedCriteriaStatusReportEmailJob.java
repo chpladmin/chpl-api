@@ -23,8 +23,7 @@ import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.scheduler.job.QuartzJob;
 import lombok.extern.log4j.Log4j2;
 
-//@Log4j2(topic = "updatedCriteriaStatusReportEmailJobLogger")
-@Log4j2
+@Log4j2(topic = "updatedCriteriaStatusReportEmailJobLogger")
 public class UpdatedCriteriaStatusReportEmailJob extends QuartzJob {
 
     @Autowired

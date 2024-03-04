@@ -31,14 +31,15 @@ public class AttributeUpToDateService {
     }
 
     public AttributeUpToDate getAttributeUpToDate(AttributeType attributeType, CertificationResult certificationResults, Logger logger) {
+        AttributeUpToDate attributeUpToDate = null;
         if (attributeType == AttributeType.STANDARDS) {
-            return standardsUpToDateService.getAttributeUpToDate(certificationResults, logger);
+            attributeUpToDate = standardsUpToDateService.getAttributeUpToDate(certificationResults);
         } else if (attributeType == AttributeType.FUNCTIONALITIES_TESTED) {
-            return functionalitiesTestedUpToDateService.getAttributeUpToDate(certificationResults, logger);
+            attributeUpToDate = functionalitiesTestedUpToDateService.getAttributeUpToDate(certificationResults);
         } else if (attributeType == AttributeType.CODE_SETS) {
-            return codeSetsUpToDateService.getAttributeUpToDate(certificationResults, logger);
-        } else {
-            return null;
+            attributeUpToDate = codeSetsUpToDateService.getAttributeUpToDate(certificationResults);
         }
+        logger.info(attributeUpToDate != null ? attributeUpToDate.toString() : "NULL");
+        return attributeUpToDate;
     }
 }

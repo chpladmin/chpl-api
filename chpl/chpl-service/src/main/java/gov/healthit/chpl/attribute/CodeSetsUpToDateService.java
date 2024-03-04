@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.OptionalLong;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.logging.log4j.Logger;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.codeset.CertificationResultCodeSet;
@@ -17,7 +16,9 @@ import gov.healthit.chpl.codeset.CodeSetDAO;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.DateUtil;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 public class CodeSetsUpToDateService {
 
     private CertificationResultRules certificationResultRules;
@@ -30,7 +31,7 @@ public class CodeSetsUpToDateService {
         this.certificationResultRules = certificationResultRules;
     }
 
-    public AttributeUpToDate getAttributeUpToDate(CertificationResult certificationResult, Logger logger) {
+    public AttributeUpToDate getAttributeUpToDate(CertificationResult certificationResult) {
         Boolean isCriteriaEligible = isCriteriaEligibleForCodeSets(certificationResult.getCriterion());
         Boolean upToDate = false;
         OptionalLong daysUpdatedEarly = OptionalLong.empty();
@@ -38,7 +39,7 @@ public class CodeSetsUpToDateService {
         if (isCriteriaEligible) {
             upToDate = areCodeSetsUpToDate(certificationResult);
             if (upToDate) {
-                daysUpdatedEarly = getDaysUpdatedEarlyForCriteriaBasedOnCodeSets(certificationResult, logger);
+                daysUpdatedEarly = getDaysUpdatedEarlyForCriteriaBasedOnCodeSets(certificationResult);
             }
         }
 
@@ -51,7 +52,7 @@ public class CodeSetsUpToDateService {
                 .build();
     }
 
-    private OptionalLong getDaysUpdatedEarlyForCriteriaBasedOnCodeSets(CertificationResult certificationResult, Logger logger) {
+    private OptionalLong getDaysUpdatedEarlyForCriteriaBasedOnCodeSets(CertificationResult certificationResult) {
         //Get the CertificationResultCodeSet using DAO, so that we have the create date
         List<CertificationResultCodeSet> certificationResultCodeSets =
                 certificationResultCodeSetDAO.getCodeSetsForCertificationResult(certificationResult.getId());
@@ -65,7 +66,6 @@ public class CodeSetsUpToDateService {
                     .mapToLong(certResultFT -> ChronoUnit.DAYS.between(DateUtil.toLocalDate(certResultFT.getCreationDate().getTime()), certResultFT.getCodeSet().getRequiredDay()))
                     .min();
 
-            logger.info("Code Set Check {} - {}", certificationResult.getCriterion().getNumber(), daysUpdatedEarly);
         }
         return daysUpdatedEarly;
     }

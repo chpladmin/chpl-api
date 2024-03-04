@@ -100,6 +100,8 @@ public class UpdatedListingStatusReportCreatorJob extends QuartzJob {
             daysUpdatedEarly = getDaysUpdatedEarly(certifiedProductDetails);
             LOGGER.info("Days updated early: {}", daysUpdatedEarly);
         }
+
+
         return UpdatedListingStatusReport.builder()
             .certifiedProductId(certifiedProductDetails.getId())
             .criteriaRequireUpdateCount(criteriaRequireUpdateCount)
@@ -116,6 +118,8 @@ public class UpdatedListingStatusReportCreatorJob extends QuartzJob {
             .build();
     }
 
+
+
     private Long getCriteriaRequireUpdateCount(CertifiedProductSearchDetails certifiedProductDetails) {
         return certifiedProductDetails.getCertificationResults().stream()
                 .filter(certResult -> !certResult.getCriterion().isRemoved()
@@ -126,13 +130,13 @@ public class UpdatedListingStatusReportCreatorJob extends QuartzJob {
 
     private boolean isCriteriaUpdated(CertificationResult certificationResult) {
         AttributeUpToDate standardsUpToDate = attributeUpToDateService.getAttributeUpToDate(
-                AttributeType.STANDARDS, certificationResult);
+                AttributeType.STANDARDS, certificationResult, LOGGER);
 
         AttributeUpToDate functionalitiesTestedUpToDate = attributeUpToDateService.getAttributeUpToDate(
-                AttributeType.FUNCTIONALITIES_TESTED, certificationResult);
+                AttributeType.FUNCTIONALITIES_TESTED, certificationResult, LOGGER);
 
         AttributeUpToDate codeSetsUpToDate = attributeUpToDateService.getAttributeUpToDate(
-                AttributeType.CODE_SETS, certificationResult);
+                AttributeType.CODE_SETS, certificationResult, LOGGER);
 
         if (standardsUpToDate.getEligibleForAttribute() && !standardsUpToDate.getUpToDate()) {
             return false;
@@ -158,13 +162,13 @@ public class UpdatedListingStatusReportCreatorJob extends QuartzJob {
 
     private Long getDaysUpdatedEarlyForCriteria(CertificationResult certificationResult) {
         AttributeUpToDate standardsUpToDate = attributeUpToDateService.getAttributeUpToDate(
-                AttributeType.STANDARDS, certificationResult);
+                AttributeType.STANDARDS, certificationResult, LOGGER);
 
         AttributeUpToDate functionalitiesTestedUpToDate = attributeUpToDateService.getAttributeUpToDate(
-                AttributeType.FUNCTIONALITIES_TESTED, certificationResult);
+                AttributeType.FUNCTIONALITIES_TESTED, certificationResult, LOGGER);
 
         AttributeUpToDate codeSetsUpToDate = attributeUpToDateService.getAttributeUpToDate(
-                AttributeType.CODE_SETS, certificationResult);
+                AttributeType.CODE_SETS, certificationResult, LOGGER);
 
         OptionalLong standardsDaysEarly = standardsUpToDate.getDaysUpdatedEarly();
         OptionalLong functionalityTestedDaysEarly = functionalitiesTestedUpToDate.getDaysUpdatedEarly();

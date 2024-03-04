@@ -7,7 +7,6 @@ import java.util.OptionalLong;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.logging.log4j.Logger;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
@@ -18,7 +17,9 @@ import gov.healthit.chpl.standard.Standard;
 import gov.healthit.chpl.standard.StandardDAO;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.DateUtil;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 public class StandardsUpToDateService {
 
     private StandardDAO standardDAO;
@@ -32,15 +33,15 @@ public class StandardsUpToDateService {
         this.certificationResultRules = certificationResultRules;
     }
 
-    public AttributeUpToDate getAttributeUpToDate(CertificationResult certificationResult, Logger logger) {
+    public AttributeUpToDate getAttributeUpToDate(CertificationResult certificationResult) {
         Boolean isCriteriaEligible = isCriteriaEligibleForStandards(certificationResult.getCriterion());
         Boolean upToDate = false;
         OptionalLong daysUpdatedEarly = OptionalLong.empty();
 
         if (isCriteriaEligible) {
-            upToDate = areStandardsUpToDate(certificationResult, logger);
+            upToDate = areStandardsUpToDate(certificationResult);
             if (upToDate) {
-                daysUpdatedEarly = getDaysUpdatedEarlyForCriteriaBasedOnStandards(certificationResult, logger);
+                daysUpdatedEarly = getDaysUpdatedEarlyForCriteriaBasedOnStandards(certificationResult);
             }
         }
 
@@ -52,7 +53,7 @@ public class StandardsUpToDateService {
                 .criterion(certificationResult.getCriterion())
                 .build();    }
 
-    private OptionalLong getDaysUpdatedEarlyForCriteriaBasedOnStandards(CertificationResult certificationResult, Logger logger) {
+    private OptionalLong getDaysUpdatedEarlyForCriteriaBasedOnStandards(CertificationResult certificationResult) {
         //Get the CertificationResultStandards using DAO, so that we have the create date
         List<CertificationResultStandard> certificationResultStandards = certificationResultStandardDAO.getStandardsForCertificationResult(certificationResult.getId());
         OptionalLong daysUpdatedEarly = OptionalLong.empty();
@@ -64,18 +65,17 @@ public class StandardsUpToDateService {
                     .mapToLong(certResultStd -> ChronoUnit.DAYS.between(DateUtil.toLocalDate(certResultStd.getCreationDate().getTime()), certResultStd.getStandard().getRequiredDay()))
                     .min();
 
-            logger.info("Standards Check {} - {}", certificationResult.getCriterion().getNumber(), daysUpdatedEarly);
         }
         return daysUpdatedEarly;
     }
 
-    private Boolean areStandardsUpToDate(CertificationResult certificationResult, Logger logger) {
+    private Boolean areStandardsUpToDate(CertificationResult certificationResult) {
         return areAttestedToStandardsUpToDate(certificationResult)
-                && areUnattestedStandardsUpToDate(certificationResult, logger);
+                && areUnattestedStandardsUpToDate(certificationResult);
     }
 
-    private Boolean areUnattestedStandardsUpToDate(CertificationResult certificationResult, Logger logger) {
-        return getUnattestedToStandards(certificationResult, logger).stream()
+    private Boolean areUnattestedStandardsUpToDate(CertificationResult certificationResult) {
+        return getUnattestedToStandards(certificationResult).stream()
                 .filter(std -> DateUtil.isDateBetweenInclusive(Pair.of(std.getStartDay(), std.getEndDay() == null ? LocalDate.MAX : std.getEndDay()), LocalDate.now()))
                 .findAny()
                 .isEmpty();
@@ -96,8 +96,8 @@ public class StandardsUpToDateService {
         return certificationResultRules.hasCertOption(criterion.getId(), CertificationResultRules.STANDARD);
     }
 
-    private List<Standard> getUnattestedToStandards(CertificationResult certificationResult, Logger logger) {
-        return getAllStandardsForCriterion(certificationResult.getCriterion(), logger).stream()
+    private List<Standard> getUnattestedToStandards(CertificationResult certificationResult) {
+        return getAllStandardsForCriterion(certificationResult.getCriterion()).stream()
                 .filter(std -> !isStandardInList(std, certificationResult.getStandards().stream().map(crs -> crs.getStandard()).toList()))
                 .toList();
     }
@@ -109,14 +109,14 @@ public class StandardsUpToDateService {
                 .isPresent();
     }
 
-    private List<Standard> getAllStandardsForCriterion(CertificationCriterion criterion, Logger logger) {
+    private List<Standard> getAllStandardsForCriterion(CertificationCriterion criterion) {
         try {
             return standardDAO.getAllStandardCriteriaMap().stream()
                     .filter(map -> map.getCriterion().getId().equals(criterion.getId()))
                     .map(map -> map.getStandard())
                     .toList();
         } catch (EntityRetrievalException e) {
-            logger.error("Could not retrieve Standards for Criterion.", e);
+            LOGGER.error("Could not retrieve Standards for Criterion.", e);
             return List.of();
         }
     }
