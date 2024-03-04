@@ -9,6 +9,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import gov.healthit.chpl.auth.user.AuthenticationSystem;
 import gov.healthit.chpl.auth.user.ChplSystemUsers;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.domain.auth.Authority;
@@ -62,7 +63,8 @@ public class AuthUtil {
         return toStr.toString();
     }
 
-    public static Authentication getInvitedUserAuthenticator(final Long id) {
+    //public static Authentication getInvitedUserAuthenticator(final Long id) {
+    public static JWTAuthenticatedUser getInvitedUserAuthenticator(final Long id) {
         JWTAuthenticatedUser authenticator = new JWTAuthenticatedUser() {
 
             @Override
@@ -109,6 +111,11 @@ public class AuthUtil {
             @Override
             public String getName() {
                 return "admin";
+            }
+
+            @Override
+            public AuthenticationSystem getAuthenticationSystem() {
+                return AuthenticationSystem.CHPL;
             }
 
         };
