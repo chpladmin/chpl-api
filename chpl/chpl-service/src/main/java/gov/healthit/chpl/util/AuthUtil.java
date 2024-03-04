@@ -63,7 +63,6 @@ public class AuthUtil {
         return toStr.toString();
     }
 
-    //public static Authentication getInvitedUserAuthenticator(final Long id) {
     public static JWTAuthenticatedUser getInvitedUserAuthenticator(final Long id) {
         JWTAuthenticatedUser authenticator = new JWTAuthenticatedUser() {
 
