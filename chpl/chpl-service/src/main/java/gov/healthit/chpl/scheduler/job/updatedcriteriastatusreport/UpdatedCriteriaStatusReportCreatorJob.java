@@ -106,14 +106,21 @@ public class UpdatedCriteriaStatusReportCreatorJob extends QuartzJob {
                             if (listing.isPresent()) {
                                 AttributeUpToDate standardsUpToDate = attributeUpToDateService.getAttributeUpToDate(
                                         AttributeType.STANDARDS,
-                                        getCertificationResult(listing.get(), criterion.getId()));
+                                        getCertificationResult(listing.get(), criterion.getId()),
+                                        LOGGER);
                                 AttributeUpToDate functionalitiesTestedUpToDate = attributeUpToDateService.getAttributeUpToDate(
                                         AttributeType.FUNCTIONALITIES_TESTED,
-                                        getCertificationResult(listing.get(), criterion.getId()));
+                                        getCertificationResult(listing.get(), criterion.getId()),
+                                        LOGGER);
+                                AttributeUpToDate codeSetsUpToDate = attributeUpToDateService.getAttributeUpToDate(
+                                        AttributeType.CODE_SETS,
+                                        getCertificationResult(listing.get(), criterion.getId()),
+                                        LOGGER);
 
-                                updateFullyUpToDate(updatedCriteriaStatusReport, standardsUpToDate, functionalitiesTestedUpToDate);
+                                updateFullyUpToDate(updatedCriteriaStatusReport, standardsUpToDate, functionalitiesTestedUpToDate, codeSetsUpToDate);
                                 updateStandardsUpToDate(updatedCriteriaStatusReport, standardsUpToDate);
                                 updateFunctionalitiesTestedUpToDate(updatedCriteriaStatusReport, functionalitiesTestedUpToDate);
+                                updateCodeSetsUpToDate(updatedCriteriaStatusReport, codeSetsUpToDate);
                             }
                         });
 
@@ -162,12 +169,17 @@ public class UpdatedCriteriaStatusReportCreatorJob extends QuartzJob {
                 .collect(Collectors.toSet());
     }
 
-    private void updateFullyUpToDate(UpdatedCriteriaStatusReport updatedCriteriaStatusReport, AttributeUpToDate standardsUpToDate, AttributeUpToDate functionalitiesTestedUpToDate) {
+    private void updateFullyUpToDate(UpdatedCriteriaStatusReport updatedCriteriaStatusReport, AttributeUpToDate standardsUpToDate,
+            AttributeUpToDate functionalitiesTestedUpToDate, AttributeUpToDate codeSetsUpToDate) {
         if (standardsUpToDate.getEligibleForAttribute() && !standardsUpToDate.getUpToDate()) {
             //Do not update
             return;
         }
         if (functionalitiesTestedUpToDate.getEligibleForAttribute() && !functionalitiesTestedUpToDate.getUpToDate()) {
+            //Do not update
+            return;
+        }
+        if (codeSetsUpToDate.getEligibleForAttribute() && !codeSetsUpToDate.getUpToDate()) {
             //Do not update
             return;
         }
@@ -183,6 +195,12 @@ public class UpdatedCriteriaStatusReportCreatorJob extends QuartzJob {
     private void updateFunctionalitiesTestedUpToDate(UpdatedCriteriaStatusReport updatedCriteriaStatusReport, AttributeUpToDate functionalitiesTestedUpToDate) {
         if (functionalitiesTestedUpToDate.getEligibleForAttribute() && functionalitiesTestedUpToDate.getUpToDate()) {
             updatedCriteriaStatusReport.setFunctionalitiesTestedUpToDateCount(updatedCriteriaStatusReport.getFunctionalitiesTestedUpToDateCount() + 1);
+        }
+    }
+
+    private void updateCodeSetsUpToDate(UpdatedCriteriaStatusReport updatedCriteriaStatusReport, AttributeUpToDate codeSetsUpToDate) {
+        if (codeSetsUpToDate.getEligibleForAttribute() && codeSetsUpToDate.getUpToDate()) {
+            updatedCriteriaStatusReport.setCodeSetsUpToDateCount(updatedCriteriaStatusReport.getCodeSetsUpToDateCount() + 1);
         }
     }
 

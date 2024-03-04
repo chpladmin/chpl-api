@@ -1,5 +1,7 @@
 package gov.healthit.chpl.attribute;
 
+import java.util.OptionalLong;
+
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,5 +17,6 @@ public class AttributeUpToDate {
     private CertificationCriterion criterion;
     private Boolean upToDate;
     private Boolean eligibleForAttribute;
+    private OptionalLong daysUpdatedEarly;
 
 }

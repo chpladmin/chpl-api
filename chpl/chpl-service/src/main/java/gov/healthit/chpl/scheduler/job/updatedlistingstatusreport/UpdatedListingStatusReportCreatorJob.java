@@ -1,14 +1,11 @@
 package gov.healthit.chpl.scheduler.job.updatedlistingstatusreport;
 
 import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.OptionalLong;
 import java.util.Set;
 
-import org.apache.commons.collections4.CollectionUtils;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,24 +20,14 @@ import gov.healthit.chpl.attribute.AttributeType;
 import gov.healthit.chpl.attribute.AttributeUpToDate;
 import gov.healthit.chpl.attribute.AttributeUpToDateService;
 import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
-import gov.healthit.chpl.codeset.CertificationResultCodeSet;
-import gov.healthit.chpl.codeset.CertificationResultCodeSetDAO;
-import gov.healthit.chpl.codeset.CodeSet;
-import gov.healthit.chpl.codeset.CodeSetDAO;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
-import gov.healthit.chpl.functionalitytested.CertificationResultFunctionalityTested;
-import gov.healthit.chpl.functionalitytested.CertificationResultFunctionalityTestedDAO;
 import gov.healthit.chpl.scheduler.job.QuartzJob;
 import gov.healthit.chpl.search.ListingSearchService;
 import gov.healthit.chpl.search.domain.SearchRequest;
-import gov.healthit.chpl.standard.CertificationResultStandard;
-import gov.healthit.chpl.standard.CertificationResultStandardDAO;
-import gov.healthit.chpl.util.DateUtil;
 import lombok.extern.log4j.Log4j2;
-
 @Log4j2(topic = "updatedListingStatusReportCreatorJobLogger")
 public class UpdatedListingStatusReportCreatorJob extends QuartzJob {
 
@@ -54,24 +41,10 @@ public class UpdatedListingStatusReportCreatorJob extends QuartzJob {
     private UpdatedListingStatusReportDAO updatedListingStatusReportDAO;
 
     @Autowired
-    private CertificationResultStandardDAO certificationResultStandardDAO;
-
-    @Autowired
-    private CertificationResultFunctionalityTestedDAO certificationResultFunctionalityTestedDAO;
-
-    @Autowired
     private AttributeUpToDateService attributeUpToDateService;
 
     @Autowired
-    private CertificationResultCodeSetDAO certificationResultCodeSetDAO;
-
-    @Autowired
-    private CodeSetDAO codeSetDAO;
-
-    @Autowired
     private JpaTransactionManager txManager;
-
-    private Map<Long, List<CodeSet>> codeSetMaps;
 
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
@@ -90,8 +63,6 @@ public class UpdatedListingStatusReportCreatorJob extends QuartzJob {
                 @Override
                 protected void doInTransactionWithoutResult(TransactionStatus status) {
                     try {
-                        codeSetMaps = codeSetDAO.getCodeSetCriteriaMaps();
-
                         if (doStatisticsExistForDate(LocalDate.now())) {
                             deleteStatisticsForDate(LocalDate.now());
                         }
@@ -123,9 +94,11 @@ public class UpdatedListingStatusReportCreatorJob extends QuartzJob {
 
     private UpdatedListingStatusReport calculateUpdatedListingStatusReport(CertifiedProductSearchDetails certifiedProductDetails) {
         Long criteriaRequireUpdateCount = getCriteriaRequireUpdateCount(certifiedProductDetails);
+        LOGGER.info("Criteria requiring update count: {}", criteriaRequireUpdateCount);
         Long daysUpdatedEarly = 0L;
         if (criteriaRequireUpdateCount.equals(0L)) {
             daysUpdatedEarly = getDaysUpdatedEarly(certifiedProductDetails);
+            LOGGER.info("Days updated early: {}", daysUpdatedEarly);
         }
         return UpdatedListingStatusReport.builder()
             .certifiedProductId(certifiedProductDetails.getId())
@@ -158,24 +131,20 @@ public class UpdatedListingStatusReportCreatorJob extends QuartzJob {
         AttributeUpToDate functionalitiesTestedUpToDate = attributeUpToDateService.getAttributeUpToDate(
                 AttributeType.FUNCTIONALITIES_TESTED, certificationResult);
 
+        AttributeUpToDate codeSetsUpToDate = attributeUpToDateService.getAttributeUpToDate(
+                AttributeType.CODE_SETS, certificationResult);
+
         if (standardsUpToDate.getEligibleForAttribute() && !standardsUpToDate.getUpToDate()) {
             return false;
         }
         if (functionalitiesTestedUpToDate.getEligibleForAttribute() && !functionalitiesTestedUpToDate.getUpToDate()) {
             return false;
         }
-
+        if (codeSetsUpToDate.getEligibleForAttribute() && !codeSetsUpToDate.getUpToDate()) {
+            return false;
+        }
+        LOGGER.info("{} is not up to date", certificationResult.getCriterion().getNumber());
         return true;
-        // TODO - Will need to determine for HTI-2 how to correctly handle this.  Possible
-        // future state is we will need to make sure the most recent and in the past codes set is
-        // attested to.
-
-        // Initially, we will just make sure that the cert result has attested to the same
-        // number of code sets as are available for the criteria.
-        //if (CollectionUtils.isNotEmpty(certificationResult.getCodeSets())
-        //        && certificationResult.getCodeSets().size() != codeSetMaps.get(certificationResult.getCriterion().getId()).size()) {
-        //    updateRequired += 1L;
-        //}
     }
 
     private Long getDaysUpdatedEarly(CertifiedProductSearchDetails certifiedProductDetails) {
@@ -188,9 +157,18 @@ public class UpdatedListingStatusReportCreatorJob extends QuartzJob {
     }
 
     private Long getDaysUpdatedEarlyForCriteria(CertificationResult certificationResult) {
-        OptionalLong standardsDaysEarly = getDaysUpdatedEarlyForCriteriaBasedOnStandards(certificationResult);
-        OptionalLong functionalityTestedDaysEarly = getDaysUpdatedEarlyForCriteriaBasedOnFunctionalitiesTested(certificationResult);
-        OptionalLong codeSetsDaysEarly = getDaysUpdatedEarlyForCriteriaBasedOnCodeSets(certificationResult);
+        AttributeUpToDate standardsUpToDate = attributeUpToDateService.getAttributeUpToDate(
+                AttributeType.STANDARDS, certificationResult);
+
+        AttributeUpToDate functionalitiesTestedUpToDate = attributeUpToDateService.getAttributeUpToDate(
+                AttributeType.FUNCTIONALITIES_TESTED, certificationResult);
+
+        AttributeUpToDate codeSetsUpToDate = attributeUpToDateService.getAttributeUpToDate(
+                AttributeType.CODE_SETS, certificationResult);
+
+        OptionalLong standardsDaysEarly = standardsUpToDate.getDaysUpdatedEarly();
+        OptionalLong functionalityTestedDaysEarly = functionalitiesTestedUpToDate.getDaysUpdatedEarly();
+        OptionalLong codeSetsDaysEarly = codeSetsUpToDate.getDaysUpdatedEarly();
 
 
         return List.of(standardsDaysEarly, functionalityTestedDaysEarly, codeSetsDaysEarly).stream()
@@ -199,61 +177,6 @@ public class UpdatedListingStatusReportCreatorJob extends QuartzJob {
                 .map(Long::valueOf)
                 .reduce(Long::min)
                 .orElse(0L);
-    }
-
-    private OptionalLong getDaysUpdatedEarlyForCriteriaBasedOnStandards(CertificationResult certificationResult) {
-        //Get the CertificationResultStandards using DAO, so that we have the create date
-        List<CertificationResultStandard> certificationResultStandards = certificationResultStandardDAO.getStandardsForCertificationResult(certificationResult.getId());
-        OptionalLong daysUpdatedEarly = OptionalLong.empty();
-        if (CollectionUtils.isNotEmpty(certificationResultStandards)) {
-            daysUpdatedEarly = certificationResultStandards.stream()
-                    .filter(certResultStd -> certResultStd.getStandard().getRequiredDay() != null
-                            && LocalDate.now().isBefore(certResultStd.getStandard().getRequiredDay())
-                            && DateUtil.toLocalDate(certResultStd.getCreationDate().getTime()).isBefore(certResultStd.getStandard().getRequiredDay()))
-                    .mapToLong(certResultStd -> ChronoUnit.DAYS.between(DateUtil.toLocalDate(certResultStd.getCreationDate().getTime()), certResultStd.getStandard().getRequiredDay()))
-                    .min();
-
-            LOGGER.info("Standards Check {} - {}", certificationResult.getCriterion().getNumber(), daysUpdatedEarly);
-        }
-        return daysUpdatedEarly;
-    }
-
-    private OptionalLong getDaysUpdatedEarlyForCriteriaBasedOnFunctionalitiesTested(CertificationResult certificationResult) {
-        //Get the CertificationResultFunctionalitiesTested using DAO, so that we have the create date
-        List<CertificationResultFunctionalityTested> certificationResultFunctionalitiesTested =
-                certificationResultFunctionalityTestedDAO.getFunctionalitiesTestedForCertificationResult(certificationResult.getId());
-
-        OptionalLong daysUpdatedEarly = OptionalLong.empty();
-        if (CollectionUtils.isNotEmpty(certificationResultFunctionalitiesTested)) {
-            daysUpdatedEarly = certificationResultFunctionalitiesTested.stream()
-                    .filter(certResultFT -> certResultFT.getFunctionalityTested().getRequiredDay() != null
-                            && LocalDate.now().isBefore(certResultFT.getFunctionalityTested().getRequiredDay())
-                            && DateUtil.toLocalDate(certResultFT.getCreationDate().getTime()).isBefore(certResultFT.getFunctionalityTested().getRequiredDay()))
-                    .mapToLong(certResultFT -> ChronoUnit.DAYS.between(DateUtil.toLocalDate(certResultFT.getCreationDate().getTime()), certResultFT.getFunctionalityTested().getRequiredDay()))
-                    .min();
-
-            LOGGER.info("FT Check {} - {}", certificationResult.getCriterion().getNumber(), daysUpdatedEarly);
-        }
-        return daysUpdatedEarly;
-    }
-
-    private OptionalLong getDaysUpdatedEarlyForCriteriaBasedOnCodeSets(CertificationResult certificationResult) {
-        //Get the CertificationResultCodeSet using DAO, so that we have the create date
-        List<CertificationResultCodeSet> certificationResultCodeSets =
-                certificationResultCodeSetDAO.getCodeSetsForCertificationResult(certificationResult.getId());
-
-        OptionalLong daysUpdatedEarly = OptionalLong.empty();
-        if (CollectionUtils.isNotEmpty(certificationResultCodeSets)) {
-            daysUpdatedEarly = certificationResultCodeSets.stream()
-                    .filter(certResultCS -> certResultCS.getCodeSet().getRequiredDay() != null
-                            && LocalDate.now().isBefore(certResultCS.getCodeSet().getRequiredDay())
-                            && DateUtil.toLocalDate(certResultCS.getCreationDate().getTime()).isBefore(certResultCS.getCodeSet().getRequiredDay()))
-                    .mapToLong(certResultFT -> ChronoUnit.DAYS.between(DateUtil.toLocalDate(certResultFT.getCreationDate().getTime()), certResultFT.getCodeSet().getRequiredDay()))
-                    .min();
-
-            LOGGER.info("Code Set Check {} - {}", certificationResult.getCriterion().getNumber(), daysUpdatedEarly);
-        }
-        return daysUpdatedEarly;
     }
 
     private Optional<CertifiedProductSearchDetails> getCertifiedProductDetails(Long id) {
