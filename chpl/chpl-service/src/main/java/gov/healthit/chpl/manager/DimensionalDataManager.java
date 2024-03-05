@@ -35,7 +35,6 @@ import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.DeveloperStatus;
 import gov.healthit.chpl.domain.DimensionalData;
 import gov.healthit.chpl.domain.KeyValueModel;
-import gov.healthit.chpl.domain.KeyValueModelStatuses;
 import gov.healthit.chpl.domain.Measure;
 import gov.healthit.chpl.domain.MeasureType;
 import gov.healthit.chpl.domain.NonconformityType;
@@ -354,15 +353,6 @@ public class DimensionalDataManager {
 
     public Set<KeyValueModel> getPracticeTypeNames() {
         return cacheableDimensionalDataManager.getPracticeTypeNames();
-    }
-
-    public Set<KeyValueModelStatuses> getProducts() {
-        return cacheableDimensionalDataManager.getProductsCached();
-    }
-
-    @Transactional
-    public Set<KeyValueModelStatuses> getDevelopers() {
-        return cacheableDimensionalDataManager.getDevelopers();
     }
 
     public Set<DescriptiveModel> getCQMCriterionNumbers(final Boolean simple) {

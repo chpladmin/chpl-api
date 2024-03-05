@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.junit.Before;
@@ -429,6 +430,6 @@ public class ListingStatusAndUserRoleReviewerTest {
                 .id(eventId)
                 .eventDate(sdf.parse(date).getTime())
                 .status(certificationStatusProvider.get(statusId))
-                .build()).toList();
+                .build()).collect(Collectors.toList());
     }
 }

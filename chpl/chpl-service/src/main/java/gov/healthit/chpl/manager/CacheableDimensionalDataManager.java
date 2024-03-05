@@ -22,7 +22,6 @@ import gov.healthit.chpl.domain.CertificationEdition;
 import gov.healthit.chpl.domain.CertificationStatus;
 import gov.healthit.chpl.domain.DescriptiveModel;
 import gov.healthit.chpl.domain.KeyValueModel;
-import gov.healthit.chpl.domain.KeyValueModelStatuses;
 import gov.healthit.chpl.domain.PracticeType;
 import gov.healthit.chpl.dto.ProductClassificationTypeDTO;
 import lombok.extern.log4j.Log4j2;
@@ -146,22 +145,5 @@ public class CacheableDimensionalDataManager {
             criterionNames.add(new DescriptiveModel(cqm.getCriterionId(), idNumber, cqm.getTitle()));
         }
         return criterionNames;
-    }
-
-    @Transactional
-    @Cacheable(CacheNames.PRODUCT_NAMES)
-    public Set<KeyValueModelStatuses> getProductsCached() {
-        return getProducts();
-    }
-
-    @Transactional
-    public Set<KeyValueModelStatuses> getProducts() {
-        return productDao.findAllWithStatuses();
-    }
-
-    @Transactional
-    @Cacheable(CacheNames.DEVELOPER_NAMES)
-    public Set<KeyValueModelStatuses> getDevelopers() {
-        return developerDao.findAllWithStatuses();
     }
 }

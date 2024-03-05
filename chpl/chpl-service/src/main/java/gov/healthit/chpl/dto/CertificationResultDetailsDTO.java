@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
+import gov.healthit.chpl.codeset.CertificationResultCodeSet;
 import gov.healthit.chpl.entity.listing.CertificationResultConformanceMethodEntity;
 import gov.healthit.chpl.entity.listing.CertificationResultDetailsEntity;
 import gov.healthit.chpl.functionalitytested.CertificationResultFunctionalityTested;
@@ -53,6 +54,7 @@ public class CertificationResultDetailsDTO implements Serializable {
     private List<CertificationResultAdditionalSoftwareDTO> additionalSoftware;
     private List<CertificationResultSvap> svaps;
     private List<CertificationResultStandard> standards;
+    private List<CertificationResultCodeSet> codeSets;
 
     public CertificationResultDetailsDTO(final CertificationResultDetailsEntity entity) {
         this.id = entity.getId();
@@ -132,6 +134,11 @@ public class CertificationResultDetailsDTO implements Serializable {
 
         if (entity.getCertificationResultStandards() != null) {
             this.standards = entity.getCertificationResultStandards().stream()
+                    .map(e -> e.toDomain())
+                    .collect(Collectors.toList());
+        }
+        if (entity.getCertificationResultCodeSets() != null) {
+            this.codeSets = entity.getCertificationResultCodeSets().stream()
                     .map(e -> e.toDomain())
                     .collect(Collectors.toList());
         }

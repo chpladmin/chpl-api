@@ -15,7 +15,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.MapsId;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
@@ -101,12 +100,6 @@ public class DeveloperEntity extends EntityAudit {
     @OneToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "contact_id", unique = true, nullable = true, insertable = false, updatable = false)
     private ContactEntity contact;
-
-    @Basic(optional = true)
-    @OneToOne(optional = true, fetch = FetchType.LAZY)
-    @MapsId("id")
-    @JoinColumn(name = "vendor_id", unique = true, nullable = true, insertable = false, updatable = false)
-    private DeveloperCertificationStatusesEntity developerCertificationStatuses;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "developerId")
     @Basic(optional = false)

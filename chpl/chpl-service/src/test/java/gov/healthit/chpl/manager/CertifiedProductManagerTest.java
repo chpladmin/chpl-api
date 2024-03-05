@@ -27,6 +27,7 @@ import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.accessibilityStandard.AccessibilityStandardDAO;
 import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
 import gov.healthit.chpl.certifiedproduct.service.CertificationResultSynchronizationService;
+import gov.healthit.chpl.certifiedproduct.service.CertificationStatusEventsService;
 import gov.healthit.chpl.certifiedproduct.service.CqmResultSynchronizationService;
 import gov.healthit.chpl.dao.CertificationStatusDAO;
 import gov.healthit.chpl.dao.CertificationStatusEventDAO;
@@ -66,6 +67,7 @@ import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.MissingReasonException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.listing.measure.ListingMeasureDAO;
+import gov.healthit.chpl.manager.auth.UserManager;
 import gov.healthit.chpl.notifier.ChplTeamNotifier;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.qmsStandard.QmsStandardDAO;
@@ -149,14 +151,17 @@ public class CertifiedProductManagerTest {
         certifiedProductManager = new CertifiedProductManager(msgUtil, cpDao,
                  qmsDao,  targetedUserDao, asDao,  cpQmsDao, cpMeasureDao, cpTestingLabDao,
                 cpTargetedUserDao, cpAccStdDao,
-                developerDao,  devStatusDao, developerManager,  productManager, versionManager,
+                productManager, versionManager,
                 statusEventDao, curesUpdateDao, piuDao, certResultService, cqmResultService, certStatusDao,
                 listingGraphDao, resourcePermissions,
                 certifiedProductDetailsManager,
                 Mockito.mock(SchedulerManager.class),
-                activityManager, Mockito.mock(ListingDetailsNormalizer.class),
+                activityManager,
+                Mockito.mock(UserManager.class),
+                Mockito.mock(ListingDetailsNormalizer.class),
                 validatorFactory, curesUpdateService,
                 Mockito.mock(ListingIcsSharedStoreHandler.class),
+                Mockito.mock(CertificationStatusEventsService.class),
                 Mockito.mock(ChplTeamNotifier.class),
                 Mockito.mock(Environment.class),
                 Mockito.mock(ChplHtmlEmailBuilder.class), ff4j);
