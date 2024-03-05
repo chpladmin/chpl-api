@@ -147,7 +147,7 @@ public class UpdatedListingStatusReportCreatorJob extends QuartzJob {
         if (codeSetsUpToDate.getEligibleForAttribute() && !codeSetsUpToDate.getUpToDate()) {
             return false;
         }
-        LOGGER.info("{} is not up to date", certificationResult.getCriterion().getNumber());
+        LOGGER.info("{} is up to date", certificationResult.getCriterion().getNumber());
         return true;
     }
 
