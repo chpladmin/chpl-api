@@ -16,7 +16,6 @@ import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.standard.CertificationResultStandard;
 import gov.healthit.chpl.standard.Standard;
 import gov.healthit.chpl.standard.StandardCriteriaMap;
@@ -37,8 +36,8 @@ public class BaselineStandardReviewer extends StandardGroupValidation {
 
     @Autowired
     public BaselineStandardReviewer(StandardGroupService standardGroupService, StandardDAO standardDao,
-            ErrorMessageUtil msgUtil, ResourcePermissions resourcePermissions) {
-        super(standardGroupService, msgUtil, resourcePermissions);
+            ErrorMessageUtil msgUtil) {
+        super(standardGroupService, msgUtil);
 
         this.standardGroupService = standardGroupService;
         this.standardDao = standardDao;
