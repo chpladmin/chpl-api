@@ -16,13 +16,13 @@ import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 @Component
-public abstract class StandardGroupValidation implements Reviewer {
+public abstract class StandardGroupReviewer implements Reviewer {
 
     private StandardGroupService standardGroupService;
     private ErrorMessageUtil msgUtil;
 
     @Autowired
-    public StandardGroupValidation(StandardGroupService standardGroupService, ErrorMessageUtil msgUtil) {
+    public StandardGroupReviewer(StandardGroupService standardGroupService, ErrorMessageUtil msgUtil) {
         this.standardGroupService = standardGroupService;
         this.msgUtil = msgUtil;
     }

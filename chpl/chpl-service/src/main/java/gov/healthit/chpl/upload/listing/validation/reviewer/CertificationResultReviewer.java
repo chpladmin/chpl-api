@@ -13,7 +13,6 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
 import gov.healthit.chpl.util.ValidationUtils;
 import gov.healthit.chpl.validation.listing.reviewer.ConformanceMethodReviewer;
-import gov.healthit.chpl.validation.listing.reviewer.StandardReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.GapAllowedReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.SedG32015Reviewer;
 
@@ -28,7 +27,7 @@ public class CertificationResultReviewer {
     private TestDataReviewer testDataReviewer;
     private ConformanceMethodReviewer conformanceMethodReviewer;
     private FunctionalityTestedReviewer functionalityTestedReviewer;
-    private StandardReviewer standardReviewer;
+    private StandardAsOfCertificationDayReviewer standardReviewer;
     private TestStandardReviewer testStandardReviewer;
     private OptionalStandardReviewer optionalStandardReviewer;
     private SvapReviewer svapReviewer;
@@ -49,7 +48,7 @@ public class CertificationResultReviewer {
             @Qualifier("listingUploadTestDataReviewer") TestDataReviewer testDataReviewer,
             @Qualifier("conformanceMethodReviewer") ConformanceMethodReviewer conformanceMethodReviewer,
             @Qualifier("listingUploadFunctionalityTestedReviewer") FunctionalityTestedReviewer functionalityTestedReviewer,
-            @Qualifier("standardReviewer") StandardReviewer standardReviewer,
+            @Qualifier("standardAsOfCertificationDayReviewer") StandardAsOfCertificationDayReviewer standardReviewer,
             @Qualifier("listingUploadTestStandardReviewer") TestStandardReviewer testStandardReviewer,
             @Qualifier("listingUploadOptionalStandardReviewer") OptionalStandardReviewer optionalStandardReviewer,
             @Qualifier("listingUploadSvapReviewer") SvapReviewer svapReviewer,

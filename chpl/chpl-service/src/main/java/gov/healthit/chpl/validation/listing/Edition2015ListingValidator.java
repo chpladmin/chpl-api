@@ -28,8 +28,8 @@ import gov.healthit.chpl.validation.listing.reviewer.ListingStatusAndUserRoleRev
 import gov.healthit.chpl.validation.listing.reviewer.OptionalStandardReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.RealWorldTestingReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.Reviewer;
+import gov.healthit.chpl.validation.listing.reviewer.StandardAsOfTodayReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.StandardRemovalReviewer;
-import gov.healthit.chpl.validation.listing.reviewer.StandardReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.SvapReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.TestProcedureReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.TestStandardRemovalReviewer;
@@ -233,7 +233,8 @@ public class Edition2015ListingValidator extends Validator {
     private QmsStandardReviewer qmsStandardReviewer;
 
     @Autowired
-    private StandardReviewer standardReviewer;
+    @Qualifier("standardAsOfTodayReviewer")
+    private StandardAsOfTodayReviewer standardReviewer;
 
     @Autowired
     @Qualifier("deprecatedFieldReviewer")
