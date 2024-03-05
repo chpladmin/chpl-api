@@ -11,7 +11,6 @@ import gov.healthit.chpl.upload.listing.validation.reviewer.AccessibilityStandar
 import gov.healthit.chpl.upload.listing.validation.reviewer.QmsStandardReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.TestToolReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.UcdProcessReviewer;
-import gov.healthit.chpl.validation.listing.reviewer.BaselineStandardReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.CertificationDateReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.CertificationStatusReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.ChplNumberComparisonReviewer;
@@ -234,9 +233,6 @@ public class Edition2015ListingValidator extends Validator {
     private QmsStandardReviewer qmsStandardReviewer;
 
     @Autowired
-    private BaselineStandardReviewer baselineStandardReviewer;
-
-    @Autowired
     private StandardReviewer standardReviewer;
 
     @Autowired
@@ -278,7 +274,6 @@ public class Edition2015ListingValidator extends Validator {
         reviewers.add(ttReviewer);
         reviewers.add(urlReviewer);
         reviewers.add(functionalityTestedReviewer);
-        reviewers.add(baselineStandardReviewer);
         reviewers.add(standardReviewer);
         reviewers.add(invalidCriteriaCombinationReviewer);
         reviewers.add(attestedCriteriaCqmReviewer);
