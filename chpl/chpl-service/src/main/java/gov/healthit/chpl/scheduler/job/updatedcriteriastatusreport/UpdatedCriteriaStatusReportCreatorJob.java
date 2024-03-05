@@ -23,6 +23,7 @@ import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterionComparator;
 import gov.healthit.chpl.certificationCriteria.CriterionStatus;
 import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
+import gov.healthit.chpl.codeset.CodeSetManager;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -50,6 +51,9 @@ public class UpdatedCriteriaStatusReportCreatorJob extends QuartzJob {
 
     @Autowired
     private FunctionalityTestedManager functionalityTestedManager;
+
+    @Autowired
+    private CodeSetManager codeSetManager;
 
     @Autowired
     private UpdatedCriteriaStatusReportDAO updatedCriteriaStatusReportDAO;
@@ -162,7 +166,7 @@ public class UpdatedCriteriaStatusReportCreatorJob extends QuartzJob {
     private Set<CertificationCriterion> getCriteriaListForReport() {
         Set<CertificationCriterion> mergedCriteria = standardManager.getCertificationCriteriaForStandards().stream().collect(Collectors.toSet());
         mergedCriteria.addAll(functionalityTestedManager.getCertificationCriteriaForFunctionalitiesTested());
-        //Need to add Code Sets in here
+        mergedCriteria.addAll(codeSetManager.getCertificationCriteriaForCodeSets());
 
         return mergedCriteria.stream()
                 .filter(crit -> crit .getStatus().equals(CriterionStatus.ACTIVE))
