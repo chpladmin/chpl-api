@@ -1,5 +1,23 @@
 # Release Notes
 
+## Version 43.5.0
+_5 March 2024_
+
+### Features
+* Add Code Set functionality to selected criteria
+* 'Updated Listing Status Report' should show 'Criteria Require Update Count' only for Active criteria
+* Create one-time job to remove ICS children
+* Add searchTermRecordCount to search API response
+* Create background job to handle future-dated cert status updates
+* Group all activities as STATUS_CHANGE if any status event changes
+* Detect questionable activity if cert status > 30 days in future
+* Deprecate GET /data/developers, /data/products
+
+### Bug Fixes
+* Change current status calculation for listing to use today
+
+---
+
 ## Version 43.4.0
 _20 February 2024_
 
