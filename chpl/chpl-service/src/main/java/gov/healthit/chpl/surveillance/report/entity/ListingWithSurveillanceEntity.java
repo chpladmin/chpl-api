@@ -3,7 +3,9 @@ package gov.healthit.chpl.surveillance.report.entity;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -13,6 +15,7 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.hibernate.annotations.Immutable;
 import org.hibernate.annotations.Where;
 
@@ -110,7 +113,26 @@ public class ListingWithSurveillanceEntity {
         listing.setCuresUpdate(this.getCuresUpdate());
         listing.setEdition(this.getYear());
         listing.setId(this.getId());
-        listing.setSurveillances(new ArrayList<PrivilegedSurveillance>());
+        listing.setSurveillances(toSurveillanceDomains());
         return listing;
+    }
+
+    private List<PrivilegedSurveillance> toSurveillanceDomains() {
+        if (CollectionUtils.isEmpty(this.surveillances)) {
+            return new ArrayList<PrivilegedSurveillance>();
+        }
+        return this.surveillances.stream()
+                .map(surv -> PrivilegedSurveillance.builder()
+                        .id(surv.getId())
+                        .certifiedProductId(surv.getCertifiedProductId())
+                        .chplProductNumber(surv.getChplProductNumber())
+                        .endDay(surv.getEndDate())
+                        .friendlyId(surv.getFriendlyId())
+                        .numClosedNonconformities(surv.getNumClosedNonconformities())
+                        .numOpenNonconformities(surv.getNumOpenNonconformities())
+                        .numRandomizedSites(surv.getNumRandomizedSites())
+                        .startDay(surv.getStartDate())
+                        .build())
+                .collect(Collectors.toList());
     }
 }

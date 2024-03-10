@@ -211,7 +211,9 @@ public class SurveillanceReportManager extends SecuredManager {
         reviewQuarterlyReportForDeprecatedFields(createRequest);
         reviewQuarterlyReportToCreate(createRequest);
         Long createdReportId = quarterlyDao.create(createRequest);
-        copyPreviousReportDataIntoNextReport(createRequest);
+
+        QuarterlyReport nextReport = quarterlyDao.getById(createdReportId);
+        copyPreviousReportDataIntoNextReport(nextReport);
         QuarterlyReport afterQuarterlyReport = quarterlyDao.getById(createdReportId);
         activityManager.addActivity(ActivityConcept.QUARTERLY_REPORT, createdReportId,
                 "Created quarterly report.", null, afterQuarterlyReport);
@@ -254,7 +256,7 @@ public class SurveillanceReportManager extends SecuredManager {
              quarterlySurvMapDao.create(toUpdate.getQuarterlyReport().getId(), toUpdate);
         } else {
             toUpdate.setMappingId(existing.getMappingId());
-             quarterlySurvMapDao.update(toUpdate.getQuarterlyReport().getId(), toUpdate.getId(), toUpdate);
+            quarterlySurvMapDao.update(existing, toUpdate);
         }
         RelevantListing afterRelevantListing = getRelevantListing(toUpdate.getQuarterlyReport(), toUpdate.getCertifiedProductId());
         activityManager.addActivity(ActivityConcept.QUARTERLY_REPORT_LISTING, toUpdate.getQuarterlyReport().getId(),
@@ -304,9 +306,11 @@ public class SurveillanceReportManager extends SecuredManager {
 
             List<PrivilegedSurveillance> privilegedSurvForReport = quarterlySurvMapDao.getByReport(report.getId());
             //inject privileged surv data into report
-            for (PrivilegedSurveillance privSurv : privilegedSurvForReport) {
-                if (relevantListing.getId().equals(privSurv.getCertifiedProductId())) {
-                    relevantListing.getSurveillances().add(privSurv);
+            for (PrivilegedSurveillance relevantListingSurv : relevantListing.getSurveillances()) {
+                for (PrivilegedSurveillance privSurv : privilegedSurvForReport) {
+                    if (relevantListingSurv.getId().equals(privSurv.getId())) {
+                        relevantListingSurv.copyPrivilegedFields(privSurv);
+                    }
                 }
             }
         }
@@ -325,9 +329,11 @@ public class SurveillanceReportManager extends SecuredManager {
 
         //inject privileged surv data into report
         for (RelevantListing relevantListing : relevantListings) {
-            for (PrivilegedSurveillance privSurv : privilegedSurvForReport) {
-                if (relevantListing.getId().equals(privSurv.getCertifiedProductId())) {
-                    relevantListing.getSurveillances().add(privSurv);
+            for (PrivilegedSurveillance relevantListingSurv : relevantListing.getSurveillances()) {
+                for (PrivilegedSurveillance privSurv : privilegedSurvForReport) {
+                    if (relevantListingSurv.getId().equals(privSurv.getId())) {
+                        relevantListingSurv.copyPrivilegedFields(privSurv);
+                    }
                 }
             }
         }
@@ -358,9 +364,11 @@ public class SurveillanceReportManager extends SecuredManager {
 
         //inject privileged surv data into report
         for (RelevantListing relevantListing : relevantListings) {
-            for (PrivilegedSurveillance privSurv : privilegedSurvForReport) {
-                if (relevantListing.getId().equals(privSurv.getCertifiedProductId())) {
-                    relevantListing.getSurveillances().add(privSurv);
+            for (PrivilegedSurveillance relevantListingSurv : relevantListing.getSurveillances()) {
+                for (PrivilegedSurveillance privSurv : privilegedSurvForReport) {
+                    if (relevantListingSurv.getId().equals(privSurv.getId())) {
+                        relevantListingSurv.copyPrivilegedFields(privSurv);
+                    }
                 }
             }
         }
@@ -494,9 +502,7 @@ public class SurveillanceReportManager extends SecuredManager {
                             nextReportSurv.setCompletedCapVerification(prevReportSurv.getCompletedCapVerification());
                             nextReportSurv.setSurveillanceOutcome(prevReportSurv.getSurveillanceOutcome());
                             nextReportSurv.setSurveillanceOutcomeOther(prevReportSurv.getSurveillanceOutcomeOther());
-                            nextReportSurv.setSurveillanceProcessType(prevReportSurv.getSurveillanceProcessType());
-                            nextReportSurv.setSurveillanceProcessTypeOther(
-                                    prevReportSurv.getSurveillanceProcessTypeOther());
+                            nextReportSurv.setSurveillanceProcessTypes(prevReportSurv.getSurveillanceProcessTypes());
                             try {
                                 quarterlySurvMapDao.create(nextReport.getId(), nextReportSurv);
                             } catch (Exception ex) {

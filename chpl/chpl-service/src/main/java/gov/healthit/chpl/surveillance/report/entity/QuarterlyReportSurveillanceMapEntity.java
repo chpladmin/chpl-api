@@ -1,5 +1,11 @@
 package gov.healthit.chpl.surveillance.report.entity;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -7,19 +13,23 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import org.apache.commons.beanutils.BeanUtils;
+import org.hibernate.annotations.Where;
 
 import gov.healthit.chpl.compliance.surveillance.entity.SurveillanceBasicEntity;
 import gov.healthit.chpl.domain.surveillance.SurveillanceBasic;
 import gov.healthit.chpl.entity.EntityAudit;
 import gov.healthit.chpl.surveillance.report.domain.PrivilegedSurveillance;
+import gov.healthit.chpl.surveillance.report.domain.SurveillanceProcessType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.Singular;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.log4j.Log4j2;
@@ -65,15 +75,12 @@ public class QuarterlyReportSurveillanceMapEntity extends EntityAudit {
     @Column(name = "surveillance_outcome_other")
     private String surveillanceOutcomeOther;
 
-    @Column(name = "surveillance_process_type_id")
-    private Long surveillanceProcessTypeId;
-
-    @OneToOne(optional = true, fetch = FetchType.LAZY)
-    @JoinColumn(name = "surveillance_process_type_id", insertable = false, updatable = false)
-    private SurveillanceProcessTypeEntity surveillanceProcessType;
-
-    @Column(name = "surveillance_process_type_other")
-    private String surveillanceProcessTypeOther;
+    @Singular
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "quarterlyReportSurveillanceMapId")
+    @Basic(optional = false)
+    @Column(name = "quarterly_report_surveillance_map_id", nullable = false)
+    @Where(clause = "deleted <> 'true'")
+    private Set<QuarterlyReportSurveillanceProcessTypeMapEntity> surveillanceProcessTypeMaps = new HashSet<QuarterlyReportSurveillanceProcessTypeMapEntity>();
 
     @Column(name = "k1_reviewed")
     private Boolean k1Reviewed;
@@ -109,6 +116,10 @@ public class QuarterlyReportSurveillanceMapEntity extends EntityAudit {
     private String completedCapVerification;
 
     public PrivilegedSurveillance toDomain() {
+        List<SurveillanceProcessType> processTypes = this.getSurveillanceProcessTypeMaps().stream()
+                .map(procTypeMap -> procTypeMap.toDomain())
+                .collect(Collectors.toList());
+
         PrivilegedSurveillance privilegedSurveillance = PrivilegedSurveillance.builder()
                 .quarterlyReport(this.getQuarterlyReport().toDomain())
                 .additionalCostsEvaluation(this.getAdditionalCostsEvaluation())
@@ -124,8 +135,7 @@ public class QuarterlyReportSurveillanceMapEntity extends EntityAudit {
                 .stepsToSurveil(this.getStepsToSurveil())
                 .surveillanceOutcome(this.getSurveillanceOutcome().toDomain())
                 .surveillanceOutcomeOther(this.getSurveillanceOutcomeOther())
-                .surveillanceProcessType(this.getSurveillanceProcessType().toDomain())
-                .surveillanceProcessTypeOther(this.getSurveillanceProcessTypeOther())
+                .surveillanceProcessTypes(processTypes)
                 .build();
 
         SurveillanceBasic relatedSurv = this.getSurveillance().buildSurveillanceBasic();

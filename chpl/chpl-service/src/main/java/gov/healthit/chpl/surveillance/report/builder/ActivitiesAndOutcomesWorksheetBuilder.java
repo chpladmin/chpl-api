@@ -10,6 +10,7 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -759,8 +760,8 @@ public abstract class ActivitiesAndOutcomesWorksheetBuilder {
             QuarterlyReport report = quarterlyReports.get(0);
             for (PrivilegedSurveillance currSurv : privilegedSurvData) {
                 if (currSurv.getQuarterlyReport().getId().longValue() == report.getId().longValue()
-                        && currSurv.getSurveillanceProcessType() != null) {
-                    result = currSurv.getSurveillanceProcessType().getName();
+                        && !CollectionUtils.isEmpty(currSurv.getSurveillanceProcessTypes())) {
+                    result = MultiLineWorksheetRecordUtil.buildMultiLineString(getProcessTypeNames(currSurv));
                 }
             }
         } else {
@@ -770,8 +771,8 @@ public abstract class ActivitiesAndOutcomesWorksheetBuilder {
             for (QuarterlyReport currReport : quarterlyReports) {
                 for (PrivilegedSurveillance currSurv : privilegedSurvData) {
                     if (currSurv.getQuarterlyReport().getId().longValue() == currReport.getId().longValue()
-                            && currSurv.getSurveillanceProcessType() != null) {
-                        String survProcTypeVal = currSurv.getSurveillanceProcessType().getName();
+                            && !CollectionUtils.isEmpty(currSurv.getSurveillanceProcessTypes())) {
+                        String survProcTypeVal = MultiLineWorksheetRecordUtil.buildMultiLineString(getProcessTypeNames(currSurv));
                         if (valueMap.get(survProcTypeVal) != null) {
                             valueMap.get(survProcTypeVal).add(currReport.getQuarter());
                         } else {
@@ -787,6 +788,13 @@ public abstract class ActivitiesAndOutcomesWorksheetBuilder {
         return result;
     }
 
+    private Set<String> getProcessTypeNames(PrivilegedSurveillance privSurv) {
+        return privSurv.getSurveillanceProcessTypes().stream()
+            .filter(procType -> StringUtils.isEmpty(procType.getOther()))
+            .map(procType -> procType.getName())
+            .collect(Collectors.toSet());
+    }
+
     private String generateSurveillanceProcessTypeOtherValue(List<QuarterlyReport> quarterlyReports,
             List<PrivilegedSurveillance> privilegedSurvData) {
         String result = "";
@@ -795,8 +803,8 @@ public abstract class ActivitiesAndOutcomesWorksheetBuilder {
             QuarterlyReport report = quarterlyReports.get(0);
             for (PrivilegedSurveillance currSurv : privilegedSurvData) {
                 if (currSurv.getQuarterlyReport().getId().longValue() == report.getId().longValue()
-                        && !StringUtils.isEmpty(currSurv.getSurveillanceProcessTypeOther())) {
-                    result = currSurv.getSurveillanceProcessTypeOther();
+                        && !CollectionUtils.isEmpty(currSurv.getSurveillanceProcessTypes())) {
+                    result = MultiLineWorksheetRecordUtil.buildMultiLineString(getProcessTypeOthers(currSurv));
                 }
             }
         } else {
@@ -806,8 +814,8 @@ public abstract class ActivitiesAndOutcomesWorksheetBuilder {
             for (QuarterlyReport currReport : quarterlyReports) {
                 for (PrivilegedSurveillance currSurv : privilegedSurvData) {
                     if (currSurv.getQuarterlyReport().getId().longValue() == currReport.getId().longValue()
-                            && !StringUtils.isEmpty(currSurv.getSurveillanceProcessTypeOther())) {
-                        String survProcTypeVal = currSurv.getSurveillanceProcessTypeOther();
+                            && !CollectionUtils.isEmpty(currSurv.getSurveillanceProcessTypes())) {
+                        String survProcTypeVal = MultiLineWorksheetRecordUtil.buildMultiLineString(getProcessTypeOthers(currSurv));
                         if (valueMap.get(survProcTypeVal) != null) {
                             valueMap.get(survProcTypeVal).add(currReport.getQuarter());
                         } else {
@@ -821,6 +829,13 @@ public abstract class ActivitiesAndOutcomesWorksheetBuilder {
             result = MultiQuarterWorksheetBuilderUtil.buildStringFromMap(valueMap);
         }
         return result;
+    }
+
+    private Set<String> getProcessTypeOthers(PrivilegedSurveillance privSurv) {
+        return privSurv.getSurveillanceProcessTypes().stream()
+            .filter(procType -> !StringUtils.isEmpty(procType.getOther()))
+            .map(procType -> procType.getOther())
+            .collect(Collectors.toSet());
     }
 
     private String generateGroundsForInitiatingValue(List<QuarterlyReport> quarterlyReports,

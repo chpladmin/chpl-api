@@ -1,10 +1,14 @@
 package gov.healthit.chpl.surveillance.report.domain;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import gov.healthit.chpl.domain.surveillance.SurveillanceBasic;
 import gov.healthit.chpl.dto.surveillance.SurveillanceBasicDTO;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
@@ -22,8 +26,8 @@ public class PrivilegedSurveillance extends SurveillanceBasic {
     private QuarterlyReport quarterlyReport;
     private SurveillanceOutcome surveillanceOutcome;
     private String surveillanceOutcomeOther;
-    private SurveillanceProcessType surveillanceProcessType;
-    private String surveillanceProcessTypeOther;
+    @Builder.Default
+    private List<SurveillanceProcessType> surveillanceProcessTypes = new ArrayList<SurveillanceProcessType>();
     private Boolean k1Reviewed;
     private String groundsForInitiating;
     private String nonconformityCauses;
@@ -38,26 +42,7 @@ public class PrivilegedSurveillance extends SurveillanceBasic {
 
     public PrivilegedSurveillance(SurveillanceBasicDTO dto) {
         super(dto);
-    }
-
-    public void clearPrivilegedFields() {
-        this.mappingId = null;
-        this.k1Reviewed = null;
-        this.groundsForInitiating = null;
-        this.nonconformityCauses = null;
-        this.nonconformityNature = null;
-        this.stepsToSurveil = null;
-        this.stepsToEngage = null;
-        this.additionalCostsEvaluation = null;
-        this.limitationsEvaluation = null;
-        this.nondisclosureEvaluation = null;
-        this.directionDeveloperResolution = null;
-        this.completedCapVerification = null;
-        this.quarterlyReport = null;
-        this.surveillanceOutcome = null;
-        this.surveillanceOutcomeOther = null;
-        this.surveillanceProcessType = null;
-        this.surveillanceProcessTypeOther = null;
+        this.surveillanceProcessTypes = new ArrayList<SurveillanceProcessType>();
     }
 
     public void copyPrivilegedFields(PrivilegedSurveillance another) {
@@ -76,7 +61,7 @@ public class PrivilegedSurveillance extends SurveillanceBasic {
         this.quarterlyReport = another.getQuarterlyReport();
         this.surveillanceOutcome = another.getSurveillanceOutcome();
         this.surveillanceOutcomeOther = another.getSurveillanceOutcomeOther();
-        this.surveillanceProcessType = another.getSurveillanceProcessType();
-        this.surveillanceProcessTypeOther = another.getSurveillanceProcessTypeOther();
+        this.surveillanceProcessTypes = new ArrayList<SurveillanceProcessType>(
+                another.getSurveillanceProcessTypes());
     }
 }

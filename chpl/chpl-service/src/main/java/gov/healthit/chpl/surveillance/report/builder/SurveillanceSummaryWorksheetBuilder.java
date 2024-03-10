@@ -44,7 +44,10 @@ public class SurveillanceSummaryWorksheetBuilder {
     private static final int LAST_DATA_ROW = 60;
     private static final String PROC_TYPE_IN_THE_FIELD = "In-the-Field";
     private static final String PROC_TYPE_CONTROLLED = "Controlled/Test Environment";
-    private static final String PROC_TYPE_CORRESPONDENCE = "Correspondence with Complainant/Developer";
+    private static final String PROC_TYPE_CORRESPONDENCE_WITH_COMP_DEV = "Correspondence with Complainant/Developer";
+    private static final String PROC_TYPE_CORRESPONDENCE_WITH_DEV = "Correspondence with Developer";
+    private static final String PROC_TYPE_CORRESPONDENCE_WITH_COMP = "Correspondence with Complainant";
+    private static final String PROC_TYPE_CORRESPONDENCE_WITH_USER = "Correspondence with End User";
     private static final String PROC_TYPE_REVIEW = "Review of Websites/Written Documentation";
     private static final String PROC_TYPE_OTHER = "Other";
 
@@ -160,55 +163,73 @@ public class SurveillanceSummaryWorksheetBuilder {
         createSurveillanceCountsDataRow(workbook, sheet, PROC_TYPE_CONTROLLED,
                 reactiveCount, randomizedCount, reactiveCount + randomizedCount, 6);
 
-        logger.info("Getting count of surveillances using process type " + PROC_TYPE_CORRESPONDENCE);
-        reactiveCount = getCountOfSurveillanceProcessTypesBySurveillanceType(relevantListings, SurveillanceType.REACTIVE, PROC_TYPE_CORRESPONDENCE);
-        randomizedCount = getCountOfSurveillanceProcessTypesBySurveillanceType(relevantListings, SurveillanceType.RANDOMIZED, PROC_TYPE_CORRESPONDENCE);
-        createSurveillanceCountsDataRow(workbook, sheet, PROC_TYPE_CORRESPONDENCE,
+        logger.info("Getting count of surveillances using process type " + PROC_TYPE_CORRESPONDENCE_WITH_COMP_DEV);
+        reactiveCount = getCountOfSurveillanceProcessTypesBySurveillanceType(relevantListings, SurveillanceType.REACTIVE, PROC_TYPE_CORRESPONDENCE_WITH_COMP_DEV);
+        randomizedCount = getCountOfSurveillanceProcessTypesBySurveillanceType(relevantListings, SurveillanceType.RANDOMIZED, PROC_TYPE_CORRESPONDENCE_WITH_COMP_DEV);
+        createSurveillanceCountsDataRow(workbook, sheet, PROC_TYPE_CORRESPONDENCE_WITH_COMP_DEV,
                 reactiveCount, randomizedCount, reactiveCount + randomizedCount, 7);
+
+        logger.info("Getting count of surveillances using process type " + PROC_TYPE_CORRESPONDENCE_WITH_COMP);
+        reactiveCount = getCountOfSurveillanceProcessTypesBySurveillanceType(relevantListings, SurveillanceType.REACTIVE, PROC_TYPE_CORRESPONDENCE_WITH_COMP);
+        randomizedCount = getCountOfSurveillanceProcessTypesBySurveillanceType(relevantListings, SurveillanceType.RANDOMIZED, PROC_TYPE_CORRESPONDENCE_WITH_COMP);
+        createSurveillanceCountsDataRow(workbook, sheet, PROC_TYPE_CORRESPONDENCE_WITH_COMP,
+                reactiveCount, randomizedCount, reactiveCount + randomizedCount, 8);
+
+        logger.info("Getting count of surveillances using process type " + PROC_TYPE_CORRESPONDENCE_WITH_DEV);
+        reactiveCount = getCountOfSurveillanceProcessTypesBySurveillanceType(relevantListings, SurveillanceType.REACTIVE, PROC_TYPE_CORRESPONDENCE_WITH_DEV);
+        randomizedCount = getCountOfSurveillanceProcessTypesBySurveillanceType(relevantListings, SurveillanceType.RANDOMIZED, PROC_TYPE_CORRESPONDENCE_WITH_DEV);
+        createSurveillanceCountsDataRow(workbook, sheet, PROC_TYPE_CORRESPONDENCE_WITH_DEV,
+                reactiveCount, randomizedCount, reactiveCount + randomizedCount, 9);
+
+        logger.info("Getting count of surveillances using process type " + PROC_TYPE_CORRESPONDENCE_WITH_USER);
+        reactiveCount = getCountOfSurveillanceProcessTypesBySurveillanceType(relevantListings, SurveillanceType.REACTIVE, PROC_TYPE_CORRESPONDENCE_WITH_USER);
+        randomizedCount = getCountOfSurveillanceProcessTypesBySurveillanceType(relevantListings, SurveillanceType.RANDOMIZED, PROC_TYPE_CORRESPONDENCE_WITH_USER);
+        createSurveillanceCountsDataRow(workbook, sheet, PROC_TYPE_CORRESPONDENCE_WITH_USER,
+                reactiveCount, randomizedCount, reactiveCount + randomizedCount, 10);
 
         logger.info("Getting count of surveillances using process type " + PROC_TYPE_REVIEW);
         reactiveCount = getCountOfSurveillanceProcessTypesBySurveillanceType(relevantListings, SurveillanceType.REACTIVE, PROC_TYPE_REVIEW);
         randomizedCount = getCountOfSurveillanceProcessTypesBySurveillanceType(relevantListings, SurveillanceType.RANDOMIZED, PROC_TYPE_REVIEW);
         createSurveillanceCountsDataRow(workbook, sheet, PROC_TYPE_REVIEW,
-                reactiveCount, randomizedCount, reactiveCount + randomizedCount, 8);
+                reactiveCount, randomizedCount, reactiveCount + randomizedCount, 11);
 
         logger.info("Getting count of surveillances using process type " + PROC_TYPE_OTHER);
         reactiveCount = getCountOfSurveillanceProcessTypesBySurveillanceType(relevantListings, SurveillanceType.REACTIVE, PROC_TYPE_OTHER);
         randomizedCount = getCountOfSurveillanceProcessTypesBySurveillanceType(relevantListings, SurveillanceType.RANDOMIZED, PROC_TYPE_OTHER);
         createSurveillanceCountsDataRow(workbook, sheet, PROC_TYPE_OTHER,
-                reactiveCount, randomizedCount, reactiveCount + randomizedCount, 9);
+                reactiveCount, randomizedCount, reactiveCount + randomizedCount, 12);
 
         //number of surveillances open during the period of time the reports cover with the listed outcome
         //a surveillance could potentially have one outcome during one report period
         //and a different outcome during another report period so in that case
         //the surveillance would be counted in more than one row
-        createSurveillanceCountsSubheadingRow(workbook, sheet, "Outcome of the Surveillance", 10);
+        createSurveillanceCountsSubheadingRow(workbook, sheet, "Outcome of the Surveillance", 13);
 
         logger.info("Getting count of surveillances with outcome " + OUTCOME_TYPE_NO_NC);
         reactiveCount = getCountOfSurveillanceOutcomesBySurveillanceType(relevantListings, SurveillanceType.REACTIVE, OUTCOME_TYPE_NO_NC);
         randomizedCount = getCountOfSurveillanceOutcomesBySurveillanceType(relevantListings, SurveillanceType.RANDOMIZED, OUTCOME_TYPE_NO_NC);
         createSurveillanceCountsDataRow(workbook, sheet, "Number of Surveillance with No Non-Conformities Found",
-                reactiveCount, randomizedCount, reactiveCount + randomizedCount, 11);
+                reactiveCount, randomizedCount, reactiveCount + randomizedCount, 14);
 
 
         logger.info("Getting count of surveillances with outcome " + OUTCOME_TYPE_NC);
         reactiveCount = getCountOfSurveillanceOutcomesBySurveillanceType(relevantListings, SurveillanceType.REACTIVE, OUTCOME_TYPE_NC);
         randomizedCount = getCountOfSurveillanceOutcomesBySurveillanceType(relevantListings, SurveillanceType.RANDOMIZED, OUTCOME_TYPE_NC);
         createSurveillanceCountsDataRow(workbook, sheet, "Number of Surveillance with Non-Conformities Found",
-                reactiveCount, randomizedCount, reactiveCount + randomizedCount, 12);
+                reactiveCount, randomizedCount, reactiveCount + randomizedCount, 15);
 
         logger.info("Getting count of surveillances with outcome " + OUTCOME_TYPE_CAP);
         reactiveCount = getCountOfSurveillanceOutcomesBySurveillanceType(relevantListings, SurveillanceType.REACTIVE, OUTCOME_TYPE_CAP);
         randomizedCount = getCountOfSurveillanceOutcomesBySurveillanceType(relevantListings, SurveillanceType.RANDOMIZED, OUTCOME_TYPE_CAP);
         createSurveillanceCountsDataRow(workbook, sheet, "Number of Corrective Action Plans",
-                reactiveCount, randomizedCount, reactiveCount + randomizedCount, 13);
+                reactiveCount, randomizedCount, reactiveCount + randomizedCount, 16);
 
         //number of listings with open surveillance during the period of time the reports
         //cover with the listed resultant status
         //a listing could have one resultant status during one report period
         //and a different resultant status during another report period so in that case
         //the listing would be counted in more than one row
-        createSurveillanceCountsSubheadingRow(workbook, sheet, "Certification Status Resultant of Surveillance", 14);
+        createSurveillanceCountsSubheadingRow(workbook, sheet, "Certification Status Resultant of Surveillance", 17);
 
         //get the listings with relevant surveillance of each type
         List<RelevantListing> listingsWithReactive = getListingsBySurveillanceType(relevantListings, SurveillanceType.REACTIVE);
@@ -232,7 +253,7 @@ public class SurveillanceSummaryWorksheetBuilder {
         }
         createSurveillanceCountsDataRow(workbook, sheet, "Number of Certificates Active",
                 reactiveSurvActiveStatusCount, randomizedSurvActiveStatusCount,
-                reactiveSurvActiveStatusCount + randomizedSurvActiveStatusCount, 15);
+                reactiveSurvActiveStatusCount + randomizedSurvActiveStatusCount, 18);
 
         listingStatuses.clear();
         listingStatuses.add(CertificationStatusType.SuspendedByAcb);
@@ -251,7 +272,7 @@ public class SurveillanceSummaryWorksheetBuilder {
         }
         createSurveillanceCountsDataRow(workbook, sheet, "Number of Certificates Suspended",
                 reactiveSurvSuspendedStatusCount, randomizedSurvSuspendedStatusCount,
-                reactiveSurvSuspendedStatusCount + randomizedSurvSuspendedStatusCount, 16);
+                reactiveSurvSuspendedStatusCount + randomizedSurvSuspendedStatusCount, 19);
 
         listingStatuses.clear();
         listingStatuses.add(CertificationStatusType.WithdrawnByDeveloper);
@@ -270,7 +291,7 @@ public class SurveillanceSummaryWorksheetBuilder {
         }
         createSurveillanceCountsDataRow(workbook, sheet, "Number of Certificates Withdrawn by Developer",
                 reactiveSurvWithdrawnStatusCount, randomizedSurvWithdrawnStatusCount,
-                reactiveSurvWithdrawnStatusCount + randomizedSurvWithdrawnStatusCount, 17);
+                reactiveSurvWithdrawnStatusCount + randomizedSurvWithdrawnStatusCount, 20);
 
         listingStatuses.clear();
         listingStatuses.add(CertificationStatusType.WithdrawnByAcb);
@@ -288,9 +309,9 @@ public class SurveillanceSummaryWorksheetBuilder {
         }
         createSurveillanceCountsDataRow(workbook, sheet, "Number of Certificates Withdrawn by ONC-ACB",
                 reactiveSurvWithdrawnAcbStatusCount, randomizedSurvWithdrawnAcbStatusCount,
-                reactiveSurvWithdrawnAcbStatusCount + randomizedSurvWithdrawnAcbStatusCount, 18);
+                reactiveSurvWithdrawnAcbStatusCount + randomizedSurvWithdrawnAcbStatusCount, 21);
 
-        pt.drawBorders(new CellRangeAddress(1, 18, 1, 4),
+        pt.drawBorders(new CellRangeAddress(1, 21, 1, 4),
                 BorderStyle.MEDIUM, BorderExtent.OUTSIDE);
     }
 
@@ -431,14 +452,22 @@ public class SurveillanceSummaryWorksheetBuilder {
     }
 
     private Long getCountOfSurveillanceProcessTypesBySurveillanceType(List<RelevantListing> listings, String survType, String processType) {
-        List<PrivilegedSurveillance> allSurvs = listings.stream()
+        //There could be more than one privileged surveillance for the same surveillance ID and process type
+        //if the surveillance was applied to multiple quarters and this is an annual report.
+        //I don't think we want to double-count it for summary purposes, so we have to do some de-duplication here.
+        List<PrivilegedSurveillance> survsOfType = listings.stream()
                 .flatMap(listing -> listing.getSurveillances().stream())
-                .filter(distinctByKey(surv -> surv.getId() + "" + surv.getSurveillanceProcessType().getName()))
+                .filter(surv -> surv.getSurveillanceType().getName().equals(survType))
+                .filter(surv -> hasProcessType(surv, processType))
+                .filter(distinctByKey(surv -> surv.getId()))
                 .collect(Collectors.toList());
-        return allSurvs.stream()
-            .filter(surv -> surv.getSurveillanceType().getName().equals(survType)
-                        && surv.getSurveillanceProcessType().getName().equals(processType))
-            .count();
+        return survsOfType.stream().count();
+    }
+
+    private boolean hasProcessType(PrivilegedSurveillance surv, String processType) {
+        return surv.getSurveillanceProcessTypes().stream()
+                .filter(procType -> procType.getName().equals(processType))
+                .findAny().isPresent();
     }
 
     private Long getCountOfSurveillanceOutcomesBySurveillanceType(List<RelevantListing> listings, String survType, String outcome) {
