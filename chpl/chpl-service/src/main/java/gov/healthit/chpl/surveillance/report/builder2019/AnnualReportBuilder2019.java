@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Comparator;
 import java.util.List;
 
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -46,7 +47,7 @@ public class AnnualReportBuilder2019 implements AnnualReportBuilderXlsx {
         this.survExprienceWorksheetBuilder = survExprienceWorksheetBuilder;
     }
 
-    public SurveillanceReportWorkbookWrapper buildXlsx(AnnualReport annualReport) throws IOException {
+    public SurveillanceReportWorkbookWrapper buildXlsx(AnnualReport annualReport, Logger logger) throws IOException {
         SurveillanceReportWorkbookWrapper workbook = new SurveillanceReportWorkbookWrapper();
 
         listWorksheetBuilder.buildWorksheet(workbook);
@@ -65,9 +66,9 @@ public class AnnualReportBuilder2019 implements AnnualReportBuilderXlsx {
                 }
             });
             reportInfoWorksheetBuilder.buildWorksheet(workbook, quarterlyReports);
-            activitiesAndOutcomesWorksheetBuilder.buildWorksheet(workbook, quarterlyReports);
+            activitiesAndOutcomesWorksheetBuilder.buildWorksheet(workbook, quarterlyReports, logger);
             complaintsWorksheetBuilder.buildWorksheet(workbook, quarterlyReports);
-            survSummaryWorksheetBuilder.buildWorksheet(workbook, quarterlyReports);
+            survSummaryWorksheetBuilder.buildWorksheet(workbook, quarterlyReports, logger);
         }
         survExprienceWorksheetBuilder.buildWorksheet(workbook, annualReport);
 

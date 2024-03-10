@@ -1,5 +1,6 @@
 package gov.healthit.chpl.surveillance.report.entity;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -15,7 +16,9 @@ import javax.persistence.Table;
 import org.hibernate.annotations.Immutable;
 import org.hibernate.annotations.Where;
 
+import gov.healthit.chpl.compliance.surveillance.entity.SurveillanceBasicEntity;
 import gov.healthit.chpl.domain.CertificationBody;
+import gov.healthit.chpl.surveillance.report.domain.PrivilegedSurveillance;
 import gov.healthit.chpl.surveillance.report.domain.RelevantListing;
 import lombok.Data;
 import lombok.Singular;
@@ -24,7 +27,7 @@ import lombok.Singular;
 @Entity
 @Immutable
 @Table(name = "certified_product_details")
-public class ListingWithPrivilegedSurveillanceEntity {
+public class ListingWithSurveillanceEntity {
     @Id
     @Basic(optional = false)
     @Column(name = "certified_product_id", nullable = false)
@@ -92,7 +95,7 @@ public class ListingWithPrivilegedSurveillanceEntity {
     @Basic(optional = false)
     @Column(name = "certified_product_id", nullable = false)
     @Where(clause = "deleted <> 'true'")
-    private Set<PrivilegedSurveillanceEntity> surveillances = new HashSet<PrivilegedSurveillanceEntity>();
+    private Set<SurveillanceBasicEntity> surveillances = new HashSet<SurveillanceBasicEntity>();
 
     public RelevantListing toDomain() {
         RelevantListing listing = new RelevantListing();
@@ -107,7 +110,7 @@ public class ListingWithPrivilegedSurveillanceEntity {
         listing.setCuresUpdate(this.getCuresUpdate());
         listing.setEdition(this.getYear());
         listing.setId(this.getId());
-        //TODO get privileged surv
+        listing.setSurveillances(new ArrayList<PrivilegedSurveillance>());
         return listing;
     }
 }

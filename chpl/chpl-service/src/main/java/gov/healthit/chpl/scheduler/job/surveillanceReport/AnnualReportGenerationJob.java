@@ -170,7 +170,7 @@ public class AnnualReportGenerationJob implements Job {
         try {
                 AnnualReportBuilderXlsx reportBuilder = reportBuilderFactory.getReportBuilder(report);
                 if (reportBuilder != null) {
-                    workbook = reportBuilder.buildXlsx(report);
+                    workbook = reportBuilder.buildXlsx(report, LOGGER);
                 } else {
                     String msg = msgUtil.getMessage("report.annualSurveillance.builderNotFound");
                     LOGGER.error(msg + " Report id " + report.getId());

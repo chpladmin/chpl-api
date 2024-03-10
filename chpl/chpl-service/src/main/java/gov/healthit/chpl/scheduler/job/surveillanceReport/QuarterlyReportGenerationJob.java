@@ -176,7 +176,7 @@ public class QuarterlyReportGenerationJob implements Job {
         try {
                 QuarterlyReportBuilderXlsx reportBuilder = reportBuilderFactory.getReportBuilder(report);
                 if (reportBuilder != null) {
-                    workbook = reportBuilder.buildXlsx(report);
+                    workbook = reportBuilder.buildXlsx(report, LOGGER);
                 } else {
                     String msg = msgUtil.getMessage("report.quarterlySurveillance.builderNotFound");
                     LOGGER.error(msg + " Report id " + report.getId());

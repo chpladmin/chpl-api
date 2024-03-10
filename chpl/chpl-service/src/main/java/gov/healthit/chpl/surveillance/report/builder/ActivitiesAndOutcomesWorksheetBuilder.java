@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.Logger;
 import org.apache.poi.ss.usermodel.BorderExtent;
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
@@ -49,9 +50,7 @@ import gov.healthit.chpl.surveillance.report.domain.QuarterlyReport;
 import gov.healthit.chpl.surveillance.report.domain.RelevantListing;
 import gov.healthit.chpl.util.DateUtil;
 import gov.healthit.chpl.util.NullSafeEvaluator;
-import lombok.extern.log4j.Log4j2;
 
-@Log4j2
 public abstract class ActivitiesAndOutcomesWorksheetBuilder {
     private static final int LAST_DATA_COLUMN = 37;
 
@@ -135,7 +134,7 @@ public abstract class ActivitiesAndOutcomesWorksheetBuilder {
         return lastDataRow <= 1 ? 2 : lastDataRow;
     }
 
-    public Sheet buildWorksheet(SurveillanceReportWorkbookWrapper workbook, List<QuarterlyReport> quarterlyReports)
+    public Sheet buildWorksheet(SurveillanceReportWorkbookWrapper workbook, List<QuarterlyReport> quarterlyReports, Logger logger)
             throws IOException {
         lastDataRow = 0;
         pt = new PropertyTemplate();
@@ -199,7 +198,7 @@ public abstract class ActivitiesAndOutcomesWorksheetBuilder {
         sheet.setColumnWidth(COL_COMPLETED_CAP, longTextColWidth);
 
         lastDataRow += addHeadingRow(workbook, sheet);
-        lastDataRow += addTableData(workbook, sheet, quarterlyReports);
+        lastDataRow += addTableData(workbook, sheet, quarterlyReports, logger);
 
         //some of the columns have dropdown lists of choices for the user - set those up
 
@@ -232,7 +231,7 @@ public abstract class ActivitiesAndOutcomesWorksheetBuilder {
         //k1 reviewed is a dropdown list of choices
         CellRangeAddressList addressList = new CellRangeAddressList(2, getLastDataRow(), COL_K1_REVIEWED, COL_K1_REVIEWED);
         XSSFDataValidationConstraint dvConstraint = (XSSFDataValidationConstraint)
-          dvHelper.createFormulaListConstraint("BooleanList");
+        dvHelper.createFormulaListConstraint("BooleanList");
         XSSFDataValidation validation = (XSSFDataValidation) dvHelper.createValidation(dvConstraint, addressList);
         validation.setSuppressDropDownArrow(true);
         validation.setShowErrorBox(false);
@@ -372,11 +371,11 @@ public abstract class ActivitiesAndOutcomesWorksheetBuilder {
         return 1;
     }
 
-    private int addTableData(SurveillanceReportWorkbookWrapper workbook, Sheet sheet, List<QuarterlyReport> quarterlyReports) {
+    private int addTableData(SurveillanceReportWorkbookWrapper workbook, Sheet sheet, List<QuarterlyReport> quarterlyReports, Logger logger) {
         int addedRows = 0;
         int rowNum = 2;
         //get some details (surveillance and status history) about each relevant listing for each quarterly report
-        List<CertifiedProductSearchDetails> relevantListings = getRelevantListingsDetails(quarterlyReports);
+        List<CertifiedProductSearchDetails> relevantListings = getRelevantListingsDetails(quarterlyReports, logger);
         //get all the surveillances relevant to the time period of the report from the listings
         List<Surveillance> relevantSuveillances = new ArrayList<Surveillance>();
         for (CertifiedProductSearchDetails listing : relevantListings) {
@@ -471,7 +470,7 @@ public abstract class ActivitiesAndOutcomesWorksheetBuilder {
         }
     }
 
-    private List<CertifiedProductSearchDetails> getRelevantListingsDetails(List<QuarterlyReport> quarterlyReports) {
+    private List<CertifiedProductSearchDetails> getRelevantListingsDetails(List<QuarterlyReport> quarterlyReports, Logger logger) {
         List<CertifiedProductSearchDetails> relevantListingDetails =
                 new ArrayList<CertifiedProductSearchDetails>();
         for (QuarterlyReport currReport : quarterlyReports) {
@@ -479,7 +478,7 @@ public abstract class ActivitiesAndOutcomesWorksheetBuilder {
             //the details object included on the quarterly report has some of the data that is needed
             //to build activities and outcomes worksheet but not all of it so we need to do
             //some other work to get the necessary data and put it all together
-            List<RelevantListing> qrRelevantListings = reportManager.getListingsWithRelevantSurveillance(currReport);
+            List<RelevantListing> qrRelevantListings = reportManager.getRelevantListings(currReport);
             List<RelevantListing> missingListings = new ArrayList<RelevantListing>();
             for (RelevantListing listingFromReport : qrRelevantListings) {
                 boolean alreadyGotDetails = false;
@@ -495,21 +494,21 @@ public abstract class ActivitiesAndOutcomesWorksheetBuilder {
             }
             //some listings will be relevant across multiple quarters so make sure
             //we don't take the extra time to get their details multiple times.
-            relevantListingDetails.addAll(getRelevantListingDetails(missingListings));
+            relevantListingDetails.addAll(getRelevantListingDetails(missingListings, logger));
         }
         return relevantListingDetails;
     }
 
-    private List<CertifiedProductSearchDetails> getRelevantListingDetails(List<RelevantListing> relevantListings) {
+    private List<CertifiedProductSearchDetails> getRelevantListingDetails(List<RelevantListing> relevantListings, Logger logger) {
         List<CertifiedProductSearchDetails> relevantListingDetails = new ArrayList<CertifiedProductSearchDetails>();
         for (RelevantListing relevantListing : relevantListings) {
-            LOGGER.info("Getting details for listing " + relevantListing.getChplProductNumber());
+            logger.info("Getting details for listing " + relevantListing.getChplProductNumber());
             try {
                 CertifiedProductSearchDetails completeListingDetails
                     = detailsManager.getCertifiedProductDetails(relevantListing.getId());
                 relevantListingDetails.add(completeListingDetails);
             } catch (Exception ex) {
-                LOGGER.error("Unable to gather details for listing " + relevantListing.getId(), ex);
+                logger.error("Unable to gather details for listing " + relevantListing.getId(), ex);
             }
         }
         return relevantListingDetails;

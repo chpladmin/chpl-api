@@ -91,6 +91,18 @@ public class PrivilegedSurveillanceDAO extends BaseDAOImpl {
                 .collect(Collectors.toList());
     }
 
+    public List<PrivilegedSurveillance> getByReports(List<Long> quarterlyReportIds) {
+        String queryStr = MAP_HQL
+                + " AND map.quarterlyReportId IN (:quarterlyReportIds) ";
+        Query query = entityManager.createQuery(queryStr);
+        query.setParameter("quarterlyReportIds", quarterlyReportIds);
+
+        List<QuarterlyReportSurveillanceMapEntity> entities = query.getResultList();
+        return entities.stream()
+                .map(entity -> entity.toDomain())
+                .collect(Collectors.toList());
+    }
+
     public List<PrivilegedSurveillance> getBySurveillance(Long surveillanceId) {
         String queryStr = MAP_HQL
                 + " AND map.surveillanceId = :surveillanceId";

@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.quartz.JobDataMap;
@@ -302,12 +303,10 @@ public class SurveillanceReportManager extends SecuredManager {
             relevantListing.setQuarterlyReport(report);
 
             List<PrivilegedSurveillance> privilegedSurvForReport = quarterlySurvMapDao.getByReport(report.getId());
-            //inject privileged surv data into relevant listing
-            for (PrivilegedSurveillance relevantListingSurv : relevantListing.getSurveillances()) {
-                for (PrivilegedSurveillance privSurv : privilegedSurvForReport) {
-                    if (relevantListingSurv.getId().equals(privSurv.getId())) {
-                        relevantListingSurv.copyPrivilegedFields(privSurv);
-                    }
+            //inject privileged surv data into report
+            for (PrivilegedSurveillance privSurv : privilegedSurvForReport) {
+                if (relevantListing.getId().equals(privSurv.getCertifiedProductId())) {
+                    relevantListing.getSurveillances().add(privSurv);
                 }
             }
         }
@@ -320,16 +319,15 @@ public class SurveillanceReportManager extends SecuredManager {
             + "T(gov.healthit.chpl.permissions.domains.SurveillanceReportDomainPermissions).GET_QUARTERLY,"
             + "#report)")
     public List<RelevantListing> getRelevantListings(QuarterlyReport report) {
-        List<RelevantListing> relevantListings = quarterlyDao.getRelevantListings(report);
+        List<RelevantListing> relevantListings = quarterlyDao.getListingsWithSurveillanceDuring(report.getAcb().getId(),
+                report.getStartDay(), report.getEndDay());
         List<PrivilegedSurveillance> privilegedSurvForReport = quarterlySurvMapDao.getByReport(report.getId());
 
         //inject privileged surv data into report
         for (RelevantListing relevantListing : relevantListings) {
-            for (PrivilegedSurveillance relevantListingSurv : relevantListing.getSurveillances()) {
-                for (PrivilegedSurveillance privSurv : privilegedSurvForReport) {
-                    if (relevantListingSurv.getId().equals(privSurv.getId())) {
-                        relevantListingSurv.copyPrivilegedFields(privSurv);
-                    }
+            for (PrivilegedSurveillance privSurv : privilegedSurvForReport) {
+                if (relevantListing.getId().equals(privSurv.getCertifiedProductId())) {
+                    relevantListing.getSurveillances().add(privSurv);
                 }
             }
         }
@@ -340,17 +338,29 @@ public class SurveillanceReportManager extends SecuredManager {
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SURVEILLANCE_REPORT, "
             + "T(gov.healthit.chpl.permissions.domains.SurveillanceReportDomainPermissions).GET_QUARTERLY,"
             + "#report)")
-    public List<RelevantListing> getListingsWithRelevantSurveillance(QuarterlyReport report) {
-        List<RelevantListing> relevantListings = quarterlyDao.getListingsWithRelevantSurveillance(report);
-        List<PrivilegedSurveillance> privilegedSurvForReport = quarterlySurvMapDao.getByReport(report.getId());
+    public List<RelevantListing> getRelevantListings(List<QuarterlyReport> quarterlyReports) {
+        Long acbId = quarterlyReports.get(0).getAcb().getId();
+        //find the date range encompassing all the reports
+        LocalDate startDay = quarterlyReports.get(0).getStartDay();
+        LocalDate endDay = quarterlyReports.get(0).getEndDay();
+        for (QuarterlyReport report : quarterlyReports) {
+            if (report.getStartDay().isBefore(startDay)) {
+                startDay = report.getStartDay();
+            }
+            if (report.getEndDay().isAfter(endDay)) {
+                endDay = report.getEndDay();
+            }
+        }
+
+        List<RelevantListing> relevantListings = quarterlyDao.getListingsWithSurveillanceDuring(acbId, startDay, endDay);
+        List<PrivilegedSurveillance> privilegedSurvForReport = quarterlySurvMapDao
+                .getByReports(quarterlyReports.stream().map(report -> report.getId()).collect(Collectors.toList()));
 
         //inject privileged surv data into report
         for (RelevantListing relevantListing : relevantListings) {
-            for (PrivilegedSurveillance relevantListingSurv : relevantListing.getSurveillances()) {
-                for (PrivilegedSurveillance privSurv : privilegedSurvForReport) {
-                    if (relevantListingSurv.getId().equals(privSurv.getId())) {
-                        relevantListingSurv.copyPrivilegedFields(privSurv);
-                    }
+            for (PrivilegedSurveillance privSurv : privilegedSurvForReport) {
+                if (relevantListing.getId().equals(privSurv.getCertifiedProductId())) {
+                    relevantListing.getSurveillances().add(privSurv);
                 }
             }
         }
@@ -462,7 +472,7 @@ public class SurveillanceReportManager extends SecuredManager {
             List<PrivilegedSurveillance> prevReportSurveillanceWithPrivilegedData =
                     quarterlySurvMapDao.getByReport(prevReport.getId());
             List<RelevantListing> nextReportListingsWithSurveillance =
-                    quarterlyDao.getListingsWithRelevantSurveillance(nextReport);
+                    quarterlyDao.getListingsWithSurveillanceDuring(nextReport.getAcb().getId(), nextReport.getStartDay(), nextReport.getEndDay());
             for (RelevantListing nextReportListingWithSurv : nextReportListingsWithSurveillance) {
                 for (PrivilegedSurveillance nextReportSurv : nextReportListingWithSurv.getSurveillances()) {
                     //for each surveillance relevant to the new report, see if it has

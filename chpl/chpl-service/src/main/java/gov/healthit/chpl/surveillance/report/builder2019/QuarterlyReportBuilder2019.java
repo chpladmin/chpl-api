@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -38,7 +39,7 @@ public class QuarterlyReportBuilder2019 implements QuarterlyReportBuilderXlsx {
         this.summaryWorksheetBuilder = summaryWorksheetBuilder;
     }
 
-    public SurveillanceReportWorkbookWrapper buildXlsx(QuarterlyReport report) throws IOException {
+    public SurveillanceReportWorkbookWrapper buildXlsx(QuarterlyReport report, Logger logger) throws IOException {
         SurveillanceReportWorkbookWrapper workbook = new SurveillanceReportWorkbookWrapper();
 
         List<QuarterlyReport> reports = new ArrayList<QuarterlyReport>();
@@ -46,9 +47,9 @@ public class QuarterlyReportBuilder2019 implements QuarterlyReportBuilderXlsx {
 
         listWorksheetBuilder.buildWorksheet(workbook);
         reportInfoWorksheetBuilder.buildWorksheet(workbook, reports);
-        activitiesAndOutcomesWorksheetBuilder.buildWorksheet(workbook, reports);
+        activitiesAndOutcomesWorksheetBuilder.buildWorksheet(workbook, reports, logger);
         complaintsWorksheetBuilder.buildWorksheet(workbook, reports);
-        summaryWorksheetBuilder.buildWorksheet(workbook, reports);
+        summaryWorksheetBuilder.buildWorksheet(workbook, reports, logger);
 
         //hide the ListSheet
         workbook.getWorkbook().setSheetHidden(0, true);

@@ -17,14 +17,19 @@ public class GetQuarterlyReportActionPermissions extends ActionPermissions {
 
     @Override
     public boolean hasAccess(Object obj) {
-        if (!(obj instanceof QuarterlyReport)) {
-            return false;
-        } else if (getResourcePermissions().isUserRoleAdmin()
+        if (getResourcePermissions().isUserRoleAdmin()
                 || getResourcePermissions().isUserRoleOnc()) {
             return true;
         } else if (getResourcePermissions().isUserRoleAcbAdmin()) {
-            QuarterlyReport report = (QuarterlyReport) obj;
-            return isAcbValidForCurrentUser(report.getAcb().getId());
+            if (obj instanceof QuarterlyReport) {
+                QuarterlyReport report = (QuarterlyReport) obj;
+                return isAcbValidForCurrentUser(report.getAcb().getId());
+            } else if (obj instanceof Long) {
+                Long acbId = (Long) obj;
+                return isAcbValidForCurrentUser(acbId);
+            } else {
+                return false;
+            }
         } else {
             return false;
         }

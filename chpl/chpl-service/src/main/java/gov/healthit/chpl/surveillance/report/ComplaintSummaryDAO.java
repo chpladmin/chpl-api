@@ -110,11 +110,10 @@ public class ComplaintSummaryDAO extends BaseDAOImpl {
                     + "AND c.receivedDate <= :endDate "
                     + "AND (c.closedDate IS NULL OR c.closedDate >= :startDate) "
                     + "AND survs.surveillanceId IN ("
-                        + "SELECT DISTINCT ps.id "
-                        + "FROM PrivilegedSurveillanceEntity ps "
-                        + "JOIN ps.privSurvMap privSurvMap "
-                        + "WHERE privSurvMap.deleted = false "
-                        + "AND privSurvMap.surveillanceOutcomeId IN (:outcomeIds) "
+                        + "SELECT DISTINCT qrSurv.surveillanceId "
+                        + "FROM QuarterlyReportSurveillanceMapEntity qrSurv "
+                        + "WHERE qrSurv.deleted = false "
+                        + "AND qrSurv.surveillanceOutcomeId IN (:outcomeIds) "
                 + ")",
                 Long.class);
         List<SurveillanceOutcome> allOutcomes = survDao.getSurveillanceOutcomes();
@@ -136,12 +135,11 @@ public class ComplaintSummaryDAO extends BaseDAOImpl {
     }
 
     public Long getTotalNonconformitiesRelatedToComplaints(Long acbId, LocalDate startDate, LocalDate endDate) {
-        Query query = entityManager.createQuery("SELECT COUNT(DISTINCT ps) "
-                + "FROM PrivilegedSurveillanceEntity ps "
-                + "JOIN ps.privSurvMap privSurvMap "
-                + "WHERE ps.deleted = false "
-                + "AND privSurvMap.surveillanceOutcomeId in (:outcomeIds) "
-                + "AND ps.id in ("
+        Query query = entityManager.createQuery("SELECT COUNT(DISTINCT qrSurv.surveillanceId) "
+                + "FROM QuarterlyReportSurveillanceMapEntity qrSurv "
+                + "WHERE qrSurv.deleted = false "
+                + "AND qrSurv.surveillanceOutcomeId in (:outcomeIds) "
+                + "AND qrSurv.surveillanceId in ("
                     + "SELECT DISTINCT survs.surveillanceId "
                     + "FROM ComplaintEntity c "
                     + "JOIN c.certificationBody "
