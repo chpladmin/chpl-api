@@ -16,5 +16,4 @@ public class CognitoConfirmEmailEmailer {
         this.htmlEmailBuilder = htmlEmailBuilder;
         this.chplEmailFactory = chplEmailFactory;
     }
-
 }
