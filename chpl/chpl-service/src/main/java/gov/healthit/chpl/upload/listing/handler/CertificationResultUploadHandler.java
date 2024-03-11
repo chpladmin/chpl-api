@@ -10,6 +10,8 @@ import org.apache.commons.csv.CSVRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.codeset.CertificationResultCodeSet;
+import gov.healthit.chpl.codeset.CodeSet;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.functionalitytested.CertificationResultFunctionalityTested;
@@ -73,6 +75,7 @@ public class CertificationResultUploadHandler {
                 .apiDocumentation(parseApiDocumentation(certHeadingRecord, certResultRecords))
                 .svaps(parseSvaps(certHeadingRecord, certResultRecords))
                 .standards(parseStandards(certHeadingRecord, certResultRecords))
+                .codeSets(parseCodeSets(certHeadingRecord, certResultRecords))
             .build();
         return certResult;
     }
@@ -225,4 +228,20 @@ public class CertificationResultUploadHandler {
         return standards;
     }
 
+    private List<CertificationResultCodeSet> parseCodeSets(CSVRecord certHeadingRecord, List<CSVRecord> certResultRecords) {
+        List<CertificationResultCodeSet> codeSets = new ArrayList<CertificationResultCodeSet>();
+            List<String> codeSetsText = uploadUtil.parseMultiRowFieldWithoutEmptyValues(
+                    Headings.CODE_SET, certHeadingRecord, certResultRecords);
+            if (!CollectionUtils.isEmpty(codeSetsText)) {
+                codeSetsText.stream().forEach(codeSetText -> {
+                    CertificationResultCodeSet codeSet = CertificationResultCodeSet.builder()
+                            .codeSet(CodeSet.builder()
+                                    .userEnteredName(codeSetText)
+                                    .build())
+                            .build();
+                    codeSets.add(codeSet);
+                });
+        }
+        return codeSets;
+    }
 }

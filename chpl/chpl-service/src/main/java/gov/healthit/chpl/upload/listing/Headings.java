@@ -102,6 +102,7 @@ public enum Headings {
     SVAP_REG_TEXT("SVAP Reg Text Citation", "Regulatory Text Citation", "SVAP_REG_TEXT"),
     RISK_MANAGEMENT_SUMMARY_INFORMATION("Risk Management Summary Information"),
     STANDARD("Standard", "Standards", "standard", "standards"),
+    CODE_SET("Code Set", "Code Sets", "Codeset", "CodeSet", "Codesets", "CodeSets", "codeset", "codesets"),
 
     //all below included so we don't give errors of unrecognized col; should not used anywhere
     CRITERIA_170_315_A_1("CRITERIA_170_315_A_1__C"),
