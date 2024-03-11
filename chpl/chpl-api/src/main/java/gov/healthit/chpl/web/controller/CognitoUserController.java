@@ -2,17 +2,27 @@ package gov.healthit.chpl.web.controller;
 
 import java.util.UUID;
 
-import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import gov.healthit.chpl.auth.user.CognitoUserCreationManager;
+import gov.healthit.chpl.auth.user.CognitoUserInvitation;
+import gov.healthit.chpl.domain.CreateUserFromInvitationRequest;
 import gov.healthit.chpl.domain.auth.User;
+import gov.healthit.chpl.exception.UserCreationException;
+import gov.healthit.chpl.exception.UserPermissionRetrievalException;
 import gov.healthit.chpl.exception.UserRetrievalException;
+import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.auth.CognitoAuthenticationManager;
+import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -24,12 +34,13 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 public class CognitoUserController {
 
     private CognitoAuthenticationManager cognitoAuthenticationManager;
-    private FF4j ff4j;
+    private CognitoUserCreationManager cognitoUserCreationManager;
+
 
     @Autowired
-    public CognitoUserController(CognitoAuthenticationManager cognitoAuthenticationManager, FF4j ff4j) {
+    public CognitoUserController(CognitoAuthenticationManager cognitoAuthenticationManager, CognitoUserCreationManager cognitoUserCreationManager) {
         this.cognitoAuthenticationManager = cognitoAuthenticationManager;
-        this.ff4j = ff4j;
+        this.cognitoUserCreationManager = cognitoUserCreationManager;
     }
 
     @Operation(summary = "View a specific user's details.",
@@ -44,4 +55,63 @@ public class CognitoUserController {
     public @ResponseBody User getUser(@PathVariable("ssoUserId") UUID ssoUserId) throws UserRetrievalException {
         return cognitoAuthenticationManager.getUserInfo(ssoUserId);
     }
+
+    //TODO Need to review this.
+    @Operation(summary = "Invite a user to the CHPL.",
+            description = "This request creates an invitation that is sent to the email address provided. "
+                    + "The recipient of this invitation can then choose to create a new account "
+                    + "or add the permissions contained within the invitation to an existing account "
+                    + "if they have one. Said another way, an invitation can be used to create or "
+                    + "modify CHPL user accounts." + "The correct order to call invitation requests is "
+                    + "the following: 1) /invite 2) /create or /authorize 3) /confirm. "
+                    + "Security Restrictions: ROLE_ADMIN and ROLE_ONC can invite users to any organization.  "
+                    + "ROLE_ACB can add users to their own organization.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
+    @RequestMapping(value = "/invite", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = "application/json; charset=utf-8")
+    public CognitoUserInvitation inviteUser(@RequestBody CognitoUserInvitation invitation) throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException {
+            //throws InvalidArgumentsException, UserCreationException, UserRetrievalException,
+            //UserPermissionRetrievalException, EmailNotSentException {
+
+        CognitoUserInvitation createdInvitiation = cognitoUserCreationManager.inviteAdmin(invitation.getEmail());
+
+        return createdInvitiation;
+    }
+
+    //TODO Need to review this.
+    @Operation(summary = "Create a new user account from an invitation.",
+            description = "An individual who has been invited to the CHPL has a special user key in their invitation email. "
+                    + "That user key along with all the information needed to create a new user's account "
+                    + "can be passed in here. The account is created but cannot be used until that user "
+                    + "confirms that their email address is valid. The correct order to call invitation requests is "
+                    + "the following: 1) /invite 2) /create or /authorize 3) /confirm ",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
+    @RequestMapping(value = "/create", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = "application/json; charset=utf-8")
+    public @ResponseBody User createUser(@RequestBody CreateUserFromInvitationRequest userInfo) throws ValidationException {
+            //throws ValidationException, EntityRetrievalException, InvalidArgumentsException,
+            //UserRetrievalException, MultipleUserAccountsException, UserCreationException,
+            //EmailNotSentException, JsonProcessingException, EntityCreationException {
+
+
+        CognitoUserInvitation invitation = cognitoUserCreationManager.getInvitation(UUID.fromString(userInfo.getHash()));
+        if (invitation != null) {
+            try {
+                //This should set the security context to user "admin" role
+                Authentication authenticator = AuthUtil.getInvitedUserAuthenticator(null);
+                SecurityContextHolder.getContext().setAuthentication(authenticator);
+                cognitoUserCreationManager.createUser(userInfo);
+            } finally {
+            SecurityContextHolder.getContext().setAuthentication(null);
+            }
+        }
+        return null;
+    }
+
+
 }

@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import gov.healthit.chpl.auth.user.CognitoUserInvitation;
 import gov.healthit.chpl.domain.auth.UserInvitation;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.email.ChplEmailFactory;
@@ -89,6 +90,31 @@ public class InvitationEmailer {
                 .htmlMessage(htmlMessage)
                 .sendEmail();
             LOGGER.info("Sent email to " + invitation.getEmailAddress());
+        } catch (EmailNotSentException ex) {
+            LOGGER.error(ex.getMessage(), ex);
+        }
+    }
+
+    public void emailInvitedUser(CognitoUserInvitation invitation) {
+        String htmlMessage = htmlEmailBuilder.initialize()
+                .heading(accountInvitationTitle)
+                .paragraph(accountInvitationHeading, accountInvitationParagraph1)
+                .paragraph(null, String.format(accountInvitationLink, chplUrlBegin, invitation.getToken()))
+                .paragraph(null, accountInvitationParagraph2)
+                .paragraph(null, chplEmailValediction)
+                .footer(PublicFooter.class)
+                .build();
+        String[] toEmails = {
+                invitation.getEmail()
+        };
+        LOGGER.info("Created HTML Message for " + invitation.getEmail());
+        try {
+            LOGGER.info("Created new email builder");
+            chplEmailFactory.emailBuilder().recipients(new ArrayList<String>(Arrays.asList(toEmails)))
+                .subject(accountInvitationTitle)
+                .htmlMessage(htmlMessage)
+                .sendEmail();
+            LOGGER.info("Sent email to " + invitation.getEmail());
         } catch (EmailNotSentException ex) {
             LOGGER.error(ex.getMessage(), ex);
         }

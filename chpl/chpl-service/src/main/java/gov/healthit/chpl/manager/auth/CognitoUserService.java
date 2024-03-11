@@ -19,6 +19,7 @@ import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.Organization;
 import gov.healthit.chpl.domain.auth.CognitoGroups;
+import gov.healthit.chpl.domain.auth.CreateUserRequest;
 import gov.healthit.chpl.domain.auth.LoginCredentials;
 import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -29,6 +30,10 @@ import software.amazon.awssdk.auth.credentials.AwsCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.cognitoidentityprovider.CognitoIdentityProviderClient;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminAddUserToGroupRequest;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminAddUserToGroupResponse;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminCreateUserRequest;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminCreateUserResponse;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminInitiateAuthRequest;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminInitiateAuthResponse;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminListGroupsForUserRequest;
@@ -38,6 +43,7 @@ import software.amazon.awssdk.services.cognitoidentityprovider.model.AuthFlowTyp
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AuthenticationResultType;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.ListUsersRequest;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.ListUsersResponse;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.MessageActionType;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.UserStatusType;
 
 @Log4j2
@@ -126,6 +132,30 @@ public class CognitoUserService {
         return user;
     }
 
+    public AdminCreateUserResponse createUser(CreateUserRequest userRequest) {
+        AdminCreateUserRequest request = AdminCreateUserRequest.builder()
+                .userPoolId(userPoolId)
+                .username(userRequest.getEmail())
+                .userAttributes(
+                        AttributeType.builder().name("name").value(userRequest.getFriendlyName()).build(),
+                        AttributeType.builder().name("email").value(userRequest.getEmail()).build())
+                .temporaryPassword("Temp-Password-1!")
+                .messageAction(MessageActionType.SUPPRESS)
+                .build();
+
+
+        return cognitoClient.adminCreateUser(request);
+    }
+
+    public AdminAddUserToGroupResponse addUserToAdminGroup(String email) {
+        AdminAddUserToGroupRequest request = AdminAddUserToGroupRequest.builder()
+                .userPoolId(userPoolId)
+                .groupName("chpl-admin")
+                .username(email)
+                .build();
+
+        return cognitoClient.adminAddUserToGroup(request);
+    }
 
     private CognitoIdentityProviderClient createCognitoClient(String accessKey, String secretKey, String region) {
         AwsCredentials awsCredentials = AwsBasicCredentials.create(accessKey, secretKey);

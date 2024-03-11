@@ -27,7 +27,7 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.SchedulerManager;
-import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.scheduler.job.TriggerDeveloperBanJob;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import lombok.extern.log4j.Log4j2;
@@ -41,18 +41,18 @@ public class TransactionalDeveloperBanHelper {
     private DeveloperDAO developerDao;
     private DeveloperStatusDAO devStatusDao;
     private ErrorMessageUtil msgUtil;
-    private ResourcePermissions resourcePermissions;
+    private ResourcePermissionsFactory resourcePermissionsFactory;
 
     @Autowired
     public TransactionalDeveloperBanHelper(DeveloperManager developerManager, SchedulerManager schedulerManager,
             DeveloperDAO developerDao,
-            DeveloperStatusDAO devStatusDao, ErrorMessageUtil msgUtil, ResourcePermissions resourcePermissions) {
+            DeveloperStatusDAO devStatusDao, ErrorMessageUtil msgUtil, ResourcePermissionsFactory resourcePermissionsFactory) {
         this.developerManager = developerManager;
         this.schedulerManager = schedulerManager;
         this.developerDao = developerDao;
         this.devStatusDao = devStatusDao;
         this.msgUtil = msgUtil;
-        this.resourcePermissions = resourcePermissions;
+        this.resourcePermissionsFactory = resourcePermissionsFactory;
     }
 
     @Transactional
@@ -64,7 +64,7 @@ public class TransactionalDeveloperBanHelper {
         case SuspendedByOnc:
         case TerminatedByOnc:
             // Only roles ONC or ADMIN can do this and it always triggers developer ban
-            if (resourcePermissions.isUserRoleAdmin() || resourcePermissions.isUserRoleOnc()) {
+            if (resourcePermissionsFactory.get().isUserRoleAdmin() || resourcePermissionsFactory.get().isUserRoleOnc()) {
                 LOGGER.info("Banning developer with ID " + listing.getDeveloper().getId());
                 banDeveloper(listing);
             } else {
