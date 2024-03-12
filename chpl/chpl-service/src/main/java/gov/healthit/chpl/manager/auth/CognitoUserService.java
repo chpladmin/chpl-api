@@ -33,6 +33,7 @@ import software.amazon.awssdk.services.cognitoidentityprovider.CognitoIdentityPr
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminAddUserToGroupRequest;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminAddUserToGroupResponse;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminCreateUserRequest;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminDeleteUserRequest;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminInitiateAuthRequest;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminInitiateAuthResponse;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminListGroupsForUserRequest;
@@ -106,9 +107,10 @@ public class CognitoUserService {
         User user = new User();
         user.setCognitoId(cognitoId);
         user.setSubjectName(getUserAttribute(response.users().get(0).attributes(), "email").value());
-        user.setFriendlyName(getUserAttribute(response.users().get(0).attributes(), "name").value());
+        user.setFriendlyName(getUserAttribute(response.users().get(0).attributes(), "nickname").value());
         user.setFullName(getUserAttribute(response.users().get(0).attributes(), "name").value());
         user.setEmail(getUserAttribute(response.users().get(0).attributes(), "email").value());
+        user.setTitle(getUserAttribute(response.users().get(0).attributes(), "custom:title").value());
         user.setAccountLocked(!response.users().get(0).enabled());
         user.setAccountEnabled(response.users().get(0).enabled());
         user.setCredentialsExpired(false);
@@ -163,6 +165,19 @@ public class CognitoUserService {
                 .build();
 
         return cognitoClient.adminAddUserToGroup(request);
+    }
+
+    public Boolean deleteUser(UUID cognitoId) {
+        try {
+            AdminDeleteUserRequest request = AdminDeleteUserRequest.builder()
+                    .userPoolId(userPoolId)
+                    .username(cognitoId.toString())
+                    .build();
+            cognitoClient.adminDeleteUser(request);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     private CognitoIdentityProviderClient createCognitoClient(String accessKey, String secretKey, String region) {
