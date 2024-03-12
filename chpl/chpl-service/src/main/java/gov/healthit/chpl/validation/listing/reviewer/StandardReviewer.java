@@ -41,7 +41,6 @@ public abstract class StandardReviewer extends StandardGroupReviewer {
     public StandardReviewer(CertificationResultRules certResultRules, ValidationUtils validationUtils,
             StandardDAO standardDao, StandardGroupService standardGroupService, ErrorMessageUtil msgUtil) {
         super(standardGroupService, msgUtil);
-
         this.certResultRules = certResultRules;
         this.validationUtils = validationUtils;
         this.standardGroupService = standardGroupService;

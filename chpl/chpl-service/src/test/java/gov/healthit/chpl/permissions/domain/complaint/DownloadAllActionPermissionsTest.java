@@ -13,6 +13,7 @@ import org.mockito.MockitoAnnotations;
 
 import gov.healthit.chpl.complaint.domain.Complaint;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.permissions.domain.ActionPermissionsBaseTest;
 import gov.healthit.chpl.permissions.domains.complaint.DownloadAllActionPermissions;
 
@@ -22,12 +23,16 @@ public class DownloadAllActionPermissionsTest extends ActionPermissionsBaseTest 
     @Mock
     private ResourcePermissions resourcePermissions;
 
+    @Mock
+    private ResourcePermissionsFactory resourcePermissionsFacotry;
+
     @InjectMocks
     private DownloadAllActionPermissions permissions;
 
     @Before
     public void setup() {
         closeableMocks = MockitoAnnotations.openMocks(this);
+        Mockito.when(resourcePermissionsFacotry.get()).thenReturn(resourcePermissions);
         Mockito.when(resourcePermissions.getAllAcbsForCurrentUser()).thenReturn(getAllAcbForUser(2L, 4L));
     }
 

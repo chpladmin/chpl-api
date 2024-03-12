@@ -10,7 +10,7 @@ public class DemographicsValidation extends ValidationRule<ChangeRequestValidati
 
     @Override
     public boolean isValid(ChangeRequestValidationContext context) {
-        if (context.getResourcePermissions().isUserRoleDeveloperAdmin()) {
+        if (context.getResourcePermissionsFactory().get().isUserRoleDeveloperAdmin()) {
             ChangeRequestDeveloperDemographics details = (ChangeRequestDeveloperDemographics) context.getNewChangeRequest().getDetails();
             if (details.getAddress() != null) {
                 boolean addressComponentsValid = true;

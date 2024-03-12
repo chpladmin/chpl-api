@@ -5,14 +5,14 @@ import gov.healthit.chpl.domain.DeveloperStatus;
 import gov.healthit.chpl.domain.DeveloperStatusEvent;
 import gov.healthit.chpl.entity.developer.DeveloperStatusType;
 import gov.healthit.chpl.manager.rules.ValidationRule;
-import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 public class DeveloperEditStatusHistoryValidation extends ValidationRule<DeveloperValidationContext> {
-    private ResourcePermissions resourcePermissions;
+    private ResourcePermissionsFactory resourcePermissionsFactory;
 
-    public DeveloperEditStatusHistoryValidation(final ResourcePermissions resourcePermissions) {
-        this.resourcePermissions = resourcePermissions;
+    public DeveloperEditStatusHistoryValidation(ResourcePermissionsFactory resourcePermissionsFactory) {
+        this.resourcePermissionsFactory = resourcePermissionsFactory;
     }
 
     /**
@@ -32,7 +32,7 @@ public class DeveloperEditStatusHistoryValidation extends ValidationRule<Develop
         if (devStatusHistoryUpdated
                 && newDevStatus.getStatus()
                         .equals(DeveloperStatusType.UnderCertificationBanByOnc.toString())
-                && !resourcePermissions.isUserRoleAdmin() && !resourcePermissions.isUserRoleOnc()) {
+                && !resourcePermissionsFactory.get().isUserRoleAdmin() && !resourcePermissionsFactory.get().isUserRoleOnc()) {
             String msg = msgUtil.getMessage("developer.statusChangeNotAllowedWithoutAdmin",
                     DeveloperStatusType.UnderCertificationBanByOnc.toString());
             getMessages().add(msg);
@@ -40,7 +40,7 @@ public class DeveloperEditStatusHistoryValidation extends ValidationRule<Develop
         } else if (devStatusHistoryUpdated
                 && !newDevStatus.getStatus()
                         .equals(DeveloperStatusType.UnderCertificationBanByOnc.toString())
-                && resourcePermissions.isUserRoleAdmin() && resourcePermissions.isUserRoleOnc()) {
+                && resourcePermissionsFactory.get().isUserRoleAdmin() && resourcePermissionsFactory.get().isUserRoleOnc()) {
             String msg = msgUtil.getMessage("developer.statusHistoryChangeNotAllowedWithoutAdmin");
             getMessages().add(msg);
             return false;

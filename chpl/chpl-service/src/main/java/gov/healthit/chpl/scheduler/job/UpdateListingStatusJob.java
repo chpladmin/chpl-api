@@ -13,16 +13,14 @@ import org.apache.logging.log4j.Logger;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
-import gov.healthit.chpl.auth.permission.GrantedPermission;
-import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
 import gov.healthit.chpl.domain.CertificationStatus;
 import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.ListingUpdateRequest;
+import gov.healthit.chpl.domain.auth.Authority;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 
@@ -40,7 +38,7 @@ public class UpdateListingStatusJob extends QuartzJob {
         LOGGER.info("********* Starting the Update Listing Status job. *********");
 
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
-        setSecurityContext();
+        setSecurityContext(Authority.ROLE_ADMIN);
 
         List<Long> listings = getListingIds(jobContext);
 
@@ -131,17 +129,5 @@ public class UpdateListingStatusJob extends QuartzJob {
                 .map(str -> str.trim())
                 .map(Long::parseLong)
                 .collect(Collectors.toList());
-    }
-
-    private void setSecurityContext() {
-        JWTAuthenticatedUser adminUser = new JWTAuthenticatedUser();
-        adminUser.setFullName("Administrator");
-        adminUser.setId(-2L);
-        adminUser.setFriendlyName("Admin");
-        adminUser.setSubjectName("admin");
-        adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
-
-        SecurityContextHolder.getContext().setAuthentication(adminUser);
-        SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);
     }
 }

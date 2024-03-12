@@ -53,9 +53,9 @@ public class AttestationResponseValidation extends ValidationRule<ChangeRequestV
     }
 
     private boolean shouldUserReceiveAcbResponseWarnings(ChangeRequestValidationContext context) {
-        return context.getResourcePermissions().isUserRoleAcbAdmin()
-                || context.getResourcePermissions().isUserRoleOnc()
-                || context.getResourcePermissions().isUserRoleAdmin();
+        return context.getResourcePermissionsFactory().get().isUserRoleAcbAdmin()
+                || context.getResourcePermissionsFactory().get().isUserRoleOnc()
+                || context.getResourcePermissionsFactory().get().isUserRoleAdmin();
     }
 
     private boolean isChangeRequestBeingAccepted(ChangeRequestValidationContext context) {

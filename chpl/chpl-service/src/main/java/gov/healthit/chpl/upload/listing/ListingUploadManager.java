@@ -353,7 +353,7 @@ public class ListingUploadManager {
             try {
                 UserDTO lastModifiedUserDto = userDao.getById(entity.getLastModifiedUser());
                 if (lastModifiedUserDto != null) {
-                    User lastModifiedUser = new User(lastModifiedUserDto);
+                    User lastModifiedUser = lastModifiedUserDto.toDomain();
                     alreadyHandledEx.setUser(lastModifiedUser);
                 } else {
                     alreadyHandledEx.setUser(null);

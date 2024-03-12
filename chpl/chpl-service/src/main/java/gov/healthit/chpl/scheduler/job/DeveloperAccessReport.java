@@ -32,12 +32,12 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.dao.CertificationBodyDAO;
+import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.contact.PointOfContact;
 import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.entity.CertificationStatusType;
-import gov.healthit.chpl.entity.auth.UserContactEntity;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.SchedulerManager;
@@ -51,6 +51,9 @@ public class DeveloperAccessReport extends QuartzJob {
 
     @Autowired
     private DeveloperAccessDAO developerAccessDao;
+
+    @Autowired
+    private DeveloperDAO developerDao;
 
     @Autowired
     private CertificationBodyDAO certificationBodyDAO;
@@ -184,7 +187,7 @@ public class DeveloperAccessReport extends QuartzJob {
         currRow.set(DEVELOPER_CONTACT_EMAIL, devAcbMap.getContactEmail());
         currRow.set(DEVELOPER_CONTACT_PHONE_NUMBER, devAcbMap.getContactPhoneNumber());
         currRow.set(DEVELOPER_USER_COUNT, developerAccessDao.getUserCountForDeveloper(devAcbMap.getDeveloperId()) + "");
-        List<PointOfContact> userContactList = developerAccessDao.getContactForDeveloperUsers(devAcbMap.developerId);
+        List<PointOfContact> userContactList = developerDao.getContactForDeveloperUsers(devAcbMap.developerId);
         currRow.set(DEVELOPER_USER_EMAILS, (userContactList == null) ? "" : formatContacts(userContactList));
         Date lastLoginDate = developerAccessDao.getLastLoginDateForDeveloper(devAcbMap.getDeveloperId());
         currRow.set(LAST_LOGIN_DATE, lastLoginDate == null ? "" : getTimestampFormatter().format(lastLoginDate));
@@ -341,35 +344,6 @@ public class DeveloperAccessReport extends QuartzJob {
                 }
             }
             return results;
-        }
-
-        @Transactional
-        public List<PointOfContact> getContactForDeveloperUsers(Long developerId) {
-            List<PointOfContact> contacts = new ArrayList<PointOfContact>();
-            Query query = entityManager.createQuery("SELECT contact "
-                    + "FROM UserDeveloperMapEntity udm "
-                    + "JOIN udm.developer developer "
-                    + "JOIN udm.user u "
-                    + "JOIN u.contact contact "
-                    + "WHERE udm.deleted = false "
-                    + "AND developer.deleted = false "
-                    + "AND u.deleted = false "
-                    + "AND u.accountExpired = false "
-                    + "AND u.accountEnabled = true "
-                    + "AND contact.deleted = false "
-                    + "AND (developer.id = :developerId)", UserContactEntity.class);
-            query.setParameter("developerId", developerId);
-            List<UserContactEntity> queryResults = query.getResultList();
-            if (queryResults == null || queryResults.size() == 0) {
-                return contacts;
-            }
-            for (UserContactEntity queryResult : queryResults) {
-                PointOfContact contact = new PointOfContact();
-                contact.setEmail(queryResult.getEmail());
-                contact.setFullName(queryResult.getFullName());
-                contacts.add(contact);
-            }
-            return contacts;
         }
 
         @Transactional

@@ -45,6 +45,7 @@ public class UserCertificationBodyMapDAO extends BaseDAOImpl {
         Query query = entityManager.createQuery(
                 "from UserCertificationBodyMapEntity ucbm "
                         + "join fetch ucbm.certificationBody acb "
+                        + "join fetch acb.address addr "
                         + "join fetch ucbm.user u "
                         + "join fetch u.permission perm "
                         + "join fetch u.contact contact "
@@ -62,11 +63,11 @@ public class UserCertificationBodyMapDAO extends BaseDAOImpl {
         return dtos;
     }
 
-
     public List<UserCertificationBodyMapDTO> getByAcbId(Long acbId) {
         Query query = entityManager.createQuery(
                 "from UserCertificationBodyMapEntity ucbm "
                         + "join fetch ucbm.certificationBody cb "
+                        + "join fetch cb.address addr "
                         + "join fetch ucbm.user u "
                         + "join fetch u.permission perm "
                         + "join fetch u.contact contact "
@@ -82,7 +83,6 @@ public class UserCertificationBodyMapDAO extends BaseDAOImpl {
         }
         return dtos;
     }
-
 
     public UserCertificationBodyMapDTO getById(Long id) {
         Query query = entityManager.createQuery(

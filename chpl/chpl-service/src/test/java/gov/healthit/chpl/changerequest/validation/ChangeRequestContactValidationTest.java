@@ -17,6 +17,7 @@ import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.contact.PointOfContact;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 
 public class ChangeRequestContactValidationTest {
 
@@ -24,9 +25,12 @@ public class ChangeRequestContactValidationTest {
     public void validateContact_AllData_ReturnsTrue() throws EntityRetrievalException {
         ResourcePermissions resourcePermissions = Mockito.mock(ResourcePermissions.class);
         Mockito.when(resourcePermissions.isUserRoleDeveloperAdmin()).thenReturn(true);
+        ResourcePermissionsFactory resourcePermissionsFactory = Mockito.mock(ResourcePermissionsFactory.class);
+        Mockito.when(resourcePermissionsFactory.get()).thenReturn(resourcePermissions);
+
         PointOfContact contact = buildContact(1L, "First M. Last", "Mr.", "444-444-4444", "first@gmail.com");
 
-        ChangeRequestValidationContext context = getValidationContext(contact, resourcePermissions);
+        ChangeRequestValidationContext context = getValidationContext(contact, resourcePermissionsFactory);
         ContactValidation crContactValidator = new ContactValidation();
 
         boolean result = crContactValidator.isValid(context);
@@ -38,9 +42,12 @@ public class ChangeRequestContactValidationTest {
     public void validateContact_ValidDataNoTitle_ReturnsTrue() throws EntityRetrievalException {
         ResourcePermissions resourcePermissions = Mockito.mock(ResourcePermissions.class);
         Mockito.when(resourcePermissions.isUserRoleDeveloperAdmin()).thenReturn(true);
+        ResourcePermissionsFactory resourcePermissionsFactory = Mockito.mock(ResourcePermissionsFactory.class);
+        Mockito.when(resourcePermissionsFactory.get()).thenReturn(resourcePermissions);
+
         PointOfContact contact = buildContact(1L, "First M. Last", null, "444-444-4444", "first@gmail.com");
 
-        ChangeRequestValidationContext context = getValidationContext(contact, resourcePermissions);
+        ChangeRequestValidationContext context = getValidationContext(contact, resourcePermissionsFactory);
         ContactValidation crContactValidator = new ContactValidation();
 
         boolean result = crContactValidator.isValid(context);
@@ -52,9 +59,12 @@ public class ChangeRequestContactValidationTest {
     public void validateContact_MissingName_ReturnsFalse() throws EntityRetrievalException {
         ResourcePermissions resourcePermissions = Mockito.mock(ResourcePermissions.class);
         Mockito.when(resourcePermissions.isUserRoleDeveloperAdmin()).thenReturn(true);
+        ResourcePermissionsFactory resourcePermissionsFactory = Mockito.mock(ResourcePermissionsFactory.class);
+        Mockito.when(resourcePermissionsFactory.get()).thenReturn(resourcePermissions);
+
         PointOfContact contact = buildContact(1L, null, null, "444-444-4444", "first@gmail.com");
 
-        ChangeRequestValidationContext context = getValidationContext(contact, resourcePermissions);
+        ChangeRequestValidationContext context = getValidationContext(contact, resourcePermissionsFactory);
         ContactValidation crContactValidator = new ContactValidation();
 
         boolean result = crContactValidator.isValid(context);
@@ -65,9 +75,12 @@ public class ChangeRequestContactValidationTest {
     public void validateContact_EmptyName_ReturnsFalse() throws EntityRetrievalException {
         ResourcePermissions resourcePermissions = Mockito.mock(ResourcePermissions.class);
         Mockito.when(resourcePermissions.isUserRoleDeveloperAdmin()).thenReturn(true);
+        ResourcePermissionsFactory resourcePermissionsFactory = Mockito.mock(ResourcePermissionsFactory.class);
+        Mockito.when(resourcePermissionsFactory.get()).thenReturn(resourcePermissions);
+
         PointOfContact contact = buildContact(1L, "", null, "444-444-4444", "first@gmail.com");
 
-        ChangeRequestValidationContext context = getValidationContext(contact, resourcePermissions);
+        ChangeRequestValidationContext context = getValidationContext(contact, resourcePermissionsFactory);
         ContactValidation crContactValidator = new ContactValidation();
 
         boolean result = crContactValidator.isValid(context);
@@ -78,9 +91,12 @@ public class ChangeRequestContactValidationTest {
     public void validateContact_MissingName_ReturnsExpectedError() throws EntityRetrievalException {
         ResourcePermissions resourcePermissions = Mockito.mock(ResourcePermissions.class);
         Mockito.when(resourcePermissions.isUserRoleDeveloperAdmin()).thenReturn(true);
+        ResourcePermissionsFactory resourcePermissionsFactory = Mockito.mock(ResourcePermissionsFactory.class);
+        Mockito.when(resourcePermissionsFactory.get()).thenReturn(resourcePermissions);
+
         PointOfContact contact = buildContact(1L, null, null, "444-444-4444", "first@gmail.com");
 
-        ChangeRequestValidationContext context = getValidationContext(contact, resourcePermissions);
+        ChangeRequestValidationContext context = getValidationContext(contact, resourcePermissionsFactory);
         ContactValidation crContactValidator = new ContactValidation();
 
         crContactValidator.isValid(context);
@@ -92,9 +108,12 @@ public class ChangeRequestContactValidationTest {
     public void validateContact_MissingPhoneNumber_ReturnsFalse() throws EntityRetrievalException {
         ResourcePermissions resourcePermissions = Mockito.mock(ResourcePermissions.class);
         Mockito.when(resourcePermissions.isUserRoleDeveloperAdmin()).thenReturn(true);
+        ResourcePermissionsFactory resourcePermissionsFactory = Mockito.mock(ResourcePermissionsFactory.class);
+        Mockito.when(resourcePermissionsFactory.get()).thenReturn(resourcePermissions);
+
         PointOfContact contact = buildContact(1L, "First M. Last", null, null, "test@gmail.com");
 
-        ChangeRequestValidationContext context = getValidationContext(contact, resourcePermissions);
+        ChangeRequestValidationContext context = getValidationContext(contact, resourcePermissionsFactory);
         ContactValidation crContactValidator = new ContactValidation();
 
         boolean result = crContactValidator.isValid(context);
@@ -105,9 +124,12 @@ public class ChangeRequestContactValidationTest {
     public void validateContact_EmptyPhoneNumber_ReturnsFalse() throws EntityRetrievalException {
         ResourcePermissions resourcePermissions = Mockito.mock(ResourcePermissions.class);
         Mockito.when(resourcePermissions.isUserRoleDeveloperAdmin()).thenReturn(true);
+        ResourcePermissionsFactory resourcePermissionsFactory = Mockito.mock(ResourcePermissionsFactory.class);
+        Mockito.when(resourcePermissionsFactory.get()).thenReturn(resourcePermissions);
+
         PointOfContact contact = buildContact(1L, "First M. Last", null, "", "test@gmail.com");
 
-        ChangeRequestValidationContext context = getValidationContext(contact, resourcePermissions);
+        ChangeRequestValidationContext context = getValidationContext(contact, resourcePermissionsFactory);
         ContactValidation crContactValidator = new ContactValidation();
 
         boolean result = crContactValidator.isValid(context);
@@ -118,9 +140,12 @@ public class ChangeRequestContactValidationTest {
     public void validateContact_MissingPhoneNumber_ReturnsExpectedError() throws EntityRetrievalException {
         ResourcePermissions resourcePermissions = Mockito.mock(ResourcePermissions.class);
         Mockito.when(resourcePermissions.isUserRoleDeveloperAdmin()).thenReturn(true);
+        ResourcePermissionsFactory resourcePermissionsFactory = Mockito.mock(ResourcePermissionsFactory.class);
+        Mockito.when(resourcePermissionsFactory.get()).thenReturn(resourcePermissions);
+
         PointOfContact contact = buildContact(1L, "First M. Last", null, null, "test@gmail.com");
 
-        ChangeRequestValidationContext context = getValidationContext(contact, resourcePermissions);
+        ChangeRequestValidationContext context = getValidationContext(contact, resourcePermissionsFactory);
         ContactValidation crContactValidator = new ContactValidation();
 
         crContactValidator.isValid(context);
@@ -132,9 +157,12 @@ public class ChangeRequestContactValidationTest {
     public void validateContact_MissingEmail_ReturnsFalse() throws EntityRetrievalException {
         ResourcePermissions resourcePermissions = Mockito.mock(ResourcePermissions.class);
         Mockito.when(resourcePermissions.isUserRoleDeveloperAdmin()).thenReturn(true);
+        ResourcePermissionsFactory resourcePermissionsFactory = Mockito.mock(ResourcePermissionsFactory.class);
+        Mockito.when(resourcePermissionsFactory.get()).thenReturn(resourcePermissions);
+
         PointOfContact contact = buildContact(1L, "First M. Last", null, "444-444-4444", null);
 
-        ChangeRequestValidationContext context = getValidationContext(contact, resourcePermissions);
+        ChangeRequestValidationContext context = getValidationContext(contact, resourcePermissionsFactory);
         ContactValidation crContactValidator = new ContactValidation();
 
         boolean result = crContactValidator.isValid(context);
@@ -145,9 +173,12 @@ public class ChangeRequestContactValidationTest {
     public void validateContact_EmptyEmail_ReturnsFalse() throws EntityRetrievalException {
         ResourcePermissions resourcePermissions = Mockito.mock(ResourcePermissions.class);
         Mockito.when(resourcePermissions.isUserRoleDeveloperAdmin()).thenReturn(true);
+        ResourcePermissionsFactory resourcePermissionsFactory = Mockito.mock(ResourcePermissionsFactory.class);
+        Mockito.when(resourcePermissionsFactory.get()).thenReturn(resourcePermissions);
+
         PointOfContact contact = buildContact(1L, "First M. Last", null, "444-444-4444", "");
 
-        ChangeRequestValidationContext context = getValidationContext(contact, resourcePermissions);
+        ChangeRequestValidationContext context = getValidationContext(contact, resourcePermissionsFactory);
         ContactValidation crContactValidator = new ContactValidation();
 
         boolean result = crContactValidator.isValid(context);
@@ -158,10 +189,13 @@ public class ChangeRequestContactValidationTest {
     public void validateContact_MissingEmail_ReturnsExpectedError() throws EntityRetrievalException {
         ResourcePermissions resourcePermissions = Mockito.mock(ResourcePermissions.class);
         Mockito.when(resourcePermissions.isUserRoleDeveloperAdmin()).thenReturn(true);
+        ResourcePermissionsFactory resourcePermissionsFactory = Mockito.mock(ResourcePermissionsFactory.class);
+        Mockito.when(resourcePermissionsFactory.get()).thenReturn(resourcePermissions);
+
         PointOfContact contact = buildContact(1L, "First M. Last", null, "444-444-4444", null);
 
 
-        ChangeRequestValidationContext context = getValidationContext(contact, resourcePermissions);
+        ChangeRequestValidationContext context = getValidationContext(contact, resourcePermissionsFactory);
         ContactValidation crContactValidator = new ContactValidation();
 
         crContactValidator.isValid(context);
@@ -214,7 +248,7 @@ public class ChangeRequestContactValidationTest {
         return contact;
     }
 
-    private ChangeRequestValidationContext getValidationContext(PointOfContact contact, ResourcePermissions resourcePermissions) {
+    private ChangeRequestValidationContext getValidationContext(PointOfContact contact, ResourcePermissionsFactory resourcePermissionsFactory) {
         return new ChangeRequestValidationContext(null,
                         getChangeRequestContact(contact),
                         null,
@@ -222,7 +256,7 @@ public class ChangeRequestContactValidationTest {
                         null,
                         null,
                         null,
-                        resourcePermissions,
+                        resourcePermissionsFactory,
                         null,
                         null,
                         null,

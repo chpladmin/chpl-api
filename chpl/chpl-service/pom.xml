@@ -15,7 +15,7 @@
 
     <properties>
       <azure.version>1.9.0-beta.3</azure.version>
-      <bitbucket.version>0.9.3</bitbucket.version>
+      <bitbucket.version>0.9.4</bitbucket.version>
       <commonmark.version>0.21.0</commonmark.version>
       <fuzzywuzzy.version>1.4.0</fuzzywuzzy.version>
       <itext.version>7.2.5</itext.version>

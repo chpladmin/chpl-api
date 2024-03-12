@@ -36,7 +36,7 @@ import gov.healthit.chpl.exception.UserPermissionRetrievalException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.manager.auth.UserManager;
 import gov.healthit.chpl.manager.impl.SecuredManager;
-import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.service.InvitationEmailer;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -52,7 +52,7 @@ public class InvitationManager extends SecuredManager {
     private UserPermissionsManager userPermissionsManager;
     private InvitationEmailer invitationEmailer;
     private ActivityManager activityManager;
-    private ResourcePermissions resourcePermissions;
+    private ResourcePermissionsFactory resourcePermissionsFactory;
     private ErrorMessageUtil msgUtil;
     private List<UserPermission> userPermissions;
 
@@ -61,14 +61,14 @@ public class InvitationManager extends SecuredManager {
     public InvitationManager(UserPermissionDAO userPermissionDao, InvitationDAO invitationDao,
             UserDAO userDao, UserManager userManager, UserPermissionsManager userPermissionsManager,
             InvitationEmailer invitationEmailer, ActivityManager activityManager,
-            ResourcePermissions resourcePermissions, ErrorMessageUtil msgUtil) {
+            ResourcePermissionsFactory resourcePermissionsFactory, ErrorMessageUtil msgUtil) {
         this.invitationDao = invitationDao;
         this.userDao = userDao;
         this.userManager = userManager;
         this.userPermissionsManager = userPermissionsManager;
         this.invitationEmailer = invitationEmailer;
         this.activityManager = activityManager;
-        this.resourcePermissions = resourcePermissions;
+        this.resourcePermissionsFactory = resourcePermissionsFactory;
         this.msgUtil = msgUtil;
         this.userPermissions = userPermissionDao.findAll();
     }
@@ -191,7 +191,7 @@ public class InvitationManager extends SecuredManager {
             invitationDao.update(invitation);
             invitationEmailer.emailNewUser(newUser, invitation);
 
-            User result = new User(newUser);
+            User result = newUser.toDomain();
             result.setHash(invitation.getConfirmationToken());
             return result;
         } finally {
@@ -238,7 +238,7 @@ public class InvitationManager extends SecuredManager {
             + "T(gov.healthit.chpl.permissions.domains.InvitationDomainPermissions).UPDATE_FROM_INVITATION, #userInvitation)")
     public UserDTO updateUserFromInvitation(UserInvitationDTO userInvitation)
             throws EntityRetrievalException, InvalidArgumentsException, UserRetrievalException {
-        gov.healthit.chpl.auth.user.User loggedInUser = gov.healthit.chpl.util.AuthUtil.getCurrentUser();
+        gov.healthit.chpl.auth.user.JWTAuthenticatedUser loggedInUser = gov.healthit.chpl.util.AuthUtil.getCurrentUser();
 
         // have to give temporary permission to see all ACBs
         // because the logged in user wouldn't already have permission on them
@@ -289,14 +289,14 @@ public class InvitationManager extends SecuredManager {
 
         if (!StringUtils.isEmpty(invitation.getRole()) && invitation.getRole().equals(Authority.ROLE_ACB)
                 && invitation.getPermissionObjectId() != null) {
-            userAcb = resourcePermissions.getAcbIfPermissionById(invitation.getPermissionObjectId());
+            userAcb = resourcePermissionsFactory.get().getAcbIfPermissionById(invitation.getPermissionObjectId());
             if (userAcb == null) {
                 throw new InvalidArgumentsException("Could not find ACB with id " + invitation.getPermissionObjectId());
             }
         } else if (!StringUtils.isEmpty(invitation.getRole())
                 && invitation.getRole().equals(Authority.ROLE_DEVELOPER)
                 && invitation.getPermissionObjectId() != null) {
-            userDeveloper = resourcePermissions.getDeveloperIfPermissionById(invitation.getPermissionObjectId());
+            userDeveloper = resourcePermissionsFactory.get().getDeveloperIfPermissionById(invitation.getPermissionObjectId());
             if (userDeveloper == null) {
                 throw new InvalidArgumentsException(
                         "Could not find the developer with id " + invitation.getPermissionObjectId());

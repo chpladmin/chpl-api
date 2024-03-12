@@ -8,18 +8,18 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Component("pendingPermissionBasedReviewer")
 public abstract class PermissionBasedReviewer implements Reviewer {
     protected ErrorMessageUtil msgUtil;
-    protected ResourcePermissions resourcePermissions;
+    protected ResourcePermissionsFactory resourcePermissionsFactory;
 
     @Autowired
-    public PermissionBasedReviewer(ErrorMessageUtil msgUtil, ResourcePermissions resourcePermissions) {
+    public PermissionBasedReviewer(ErrorMessageUtil msgUtil, ResourcePermissionsFactory resourcePermissionsFactory) {
         this.msgUtil = msgUtil;
-        this.resourcePermissions = resourcePermissions;
+        this.resourcePermissionsFactory = resourcePermissionsFactory;
     }
 
     public void addListingWarningsByPermission(CertifiedProductSearchDetails listing, List<String> errorMessages) {
@@ -35,7 +35,7 @@ public abstract class PermissionBasedReviewer implements Reviewer {
     }
 
     public void addListingWarningByPermission(CertifiedProductSearchDetails listing, String message) {
-        if (resourcePermissions.isUserRoleAdmin() || resourcePermissions.isUserRoleOnc()) {
+        if (resourcePermissionsFactory.get().isUserRoleAdmin() || resourcePermissionsFactory.get().isUserRoleOnc()) {
             listing.addWarningMessage(message);
             // ACBs do not get any error or warning about removed criteria validation issues
         }
