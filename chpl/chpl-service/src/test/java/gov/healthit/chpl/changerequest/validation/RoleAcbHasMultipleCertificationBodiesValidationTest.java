@@ -10,6 +10,7 @@ import org.mockito.Mockito;
 
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 
 public class RoleAcbHasMultipleCertificationBodiesValidationTest {
     private RoleAcbHasMultipleCertificationBodiesValidation validator;
@@ -25,9 +26,12 @@ public class RoleAcbHasMultipleCertificationBodiesValidationTest {
         Mockito.when(resourcePermissions.isUserRoleAcbAdmin()).thenReturn(true);
         Mockito.when(resourcePermissions.getAllAcbsForCurrentUser()).thenReturn(
                 Arrays.asList(CertificationBody.builder().build()));
+        ResourcePermissionsFactory resourcePermissionsFactory = Mockito.mock(ResourcePermissionsFactory.class);
+        Mockito.when(resourcePermissionsFactory.get()).thenReturn(resourcePermissions);
+
 
         ChangeRequestValidationContext context = ChangeRequestValidationContext.builder()
-                .resourcePermissions(resourcePermissions)
+                .resourcePermissionsFactory(resourcePermissionsFactory)
                 .build();
 
         Boolean isValid = validator.isValid(context);
@@ -41,9 +45,11 @@ public class RoleAcbHasMultipleCertificationBodiesValidationTest {
         Mockito.when(resourcePermissions.isUserRoleAcbAdmin()).thenReturn(false);
         Mockito.when(resourcePermissions.getAllAcbsForCurrentUser()).thenReturn(
                 Arrays.asList(CertificationBody.builder().build()));
+        ResourcePermissionsFactory resourcePermissionsFactory = Mockito.mock(ResourcePermissionsFactory.class);
+        Mockito.when(resourcePermissionsFactory.get()).thenReturn(resourcePermissions);
 
         ChangeRequestValidationContext context = ChangeRequestValidationContext.builder()
-                .resourcePermissions(resourcePermissions)
+                .resourcePermissionsFactory(resourcePermissionsFactory)
                 .build();
 
         Boolean isValid = validator.isValid(context);
@@ -59,9 +65,11 @@ public class RoleAcbHasMultipleCertificationBodiesValidationTest {
         Mockito.when(resourcePermissions.getAllAcbsForCurrentUser()).thenReturn(
                 Arrays.asList(CertificationBody.builder().build(),
                         CertificationBody.builder().build()));
+        ResourcePermissionsFactory resourcePermissionsFactory = Mockito.mock(ResourcePermissionsFactory.class);
+        Mockito.when(resourcePermissionsFactory.get()).thenReturn(resourcePermissions);
 
         ChangeRequestValidationContext context = ChangeRequestValidationContext.builder()
-                .resourcePermissions(resourcePermissions)
+                .resourcePermissionsFactory(resourcePermissionsFactory)
                 .build();
 
         Boolean isValid = validator.isValid(context);

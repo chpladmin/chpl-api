@@ -16,7 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.orm.jpa.JpaTransactionManager;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
@@ -25,7 +24,6 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.email.ChplEmailFactory;
@@ -36,6 +34,7 @@ import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.ActivityManager;
+import gov.healthit.chpl.scheduler.SecurityContextCapableJob;
 import gov.healthit.chpl.surveillance.report.SurveillanceReportManager;
 import gov.healthit.chpl.surveillance.report.builder.AnnualReportBuilderXlsx;
 import gov.healthit.chpl.surveillance.report.builder.ReportBuilderFactory;
@@ -46,7 +45,7 @@ import lombok.extern.log4j.Log4j2;
 
 @DisallowConcurrentExecution
 @Log4j2(topic = "annualReportGenerationJobLogger")
-public class AnnualReportGenerationJob implements Job {
+public class AnnualReportGenerationJob extends SecurityContextCapableJob implements Job {
     public static final String JOB_NAME = "annualReportGenerationJob";
     public static final String ANNUAL_REPORT_ID_KEY = "annualReportId";
     public static final String USER_KEY = "user";
@@ -214,18 +213,6 @@ public class AnnualReportGenerationJob implements Job {
 
     private String getFilename(AnnualReport report) {
         return report.getYear() + "-" + report.getAcb().getName() + "-annual-report";
-    }
-
-    private void setSecurityContext(UserDTO user) {
-        JWTAuthenticatedUser mergeUser = new JWTAuthenticatedUser();
-        mergeUser.setFullName(user.getFullName());
-        mergeUser.setId(user.getId());
-        mergeUser.setFriendlyName(user.getFriendlyName());
-        mergeUser.setSubjectName(user.getUsername());
-        mergeUser.getPermissions().add(user.getPermission().getGrantedPermission());
-
-        SecurityContextHolder.getContext().setAuthentication(mergeUser);
-        SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);
     }
 
     private void sendEmail(String recipientEmail, String subject, String htmlContent, List<File> attachments)  {

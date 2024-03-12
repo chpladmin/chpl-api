@@ -3,36 +3,33 @@ package gov.healthit.chpl.util;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.UUID;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 
-import gov.healthit.chpl.auth.permission.GrantedPermission;
-import gov.healthit.chpl.auth.user.CognitoAuthenticatedUser;
-import gov.healthit.chpl.auth.user.CognitoSystemUsers;
+import gov.healthit.chpl.auth.user.AuthenticationSystem;
+import gov.healthit.chpl.auth.user.ChplSystemUsers;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
-import gov.healthit.chpl.auth.user.SystemUsers;
-import gov.healthit.chpl.auth.user.User;
+import gov.healthit.chpl.domain.auth.Authority;
 
 public class AuthUtil {
     public static String getUsername() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
-        if (auth.getPrincipal() instanceof UserDetails) {
-            return ((UserDetails) auth.getPrincipal()).getUsername();
+        if (auth instanceof JWTAuthenticatedUser) {
+            return ((JWTAuthenticatedUser) auth).getSubjectName();
         } else {
-            return auth.getPrincipal().toString();
+            throw new RuntimeException("Canot determine the auth user type.");
         }
     }
 
-    public static User getCurrentUser() {
-        User user = null;
+    public static JWTAuthenticatedUser getCurrentUser() {
+        JWTAuthenticatedUser user = null;
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth instanceof User) {
-            user = (User) auth;
+        if (auth instanceof JWTAuthenticatedUser) {
+            user = (JWTAuthenticatedUser) auth;
         }
         return user;
     }
@@ -53,24 +50,9 @@ public class AuthUtil {
                 return user.getId();
             }
         }
-        return SystemUsers.DEFAULT_USER_ID;
+        return ChplSystemUsers.DEFAULT_USER_ID;
     }
 
-
-    public static UUID getAuditSsoUserId() {
-        CognitoAuthenticatedUser user = null;
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-
-        if (auth instanceof CognitoAuthenticatedUser) {
-            user = (CognitoAuthenticatedUser) auth;
-            //if (user.getImpersonatingUser() != null) {
-            //    return user.getImpersonatingUser().getId();
-            //} else {
-                return user.getSsoId();
-            //}
-        }
-        return CognitoSystemUsers.DEFAULT_USER_ID;
-    }
 
     public static Authentication getCurrentAuthentication() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -81,18 +63,18 @@ public class AuthUtil {
         return toStr.toString();
     }
 
-    public static Authentication getInvitedUserAuthenticator(final Long id) {
+    public static JWTAuthenticatedUser getInvitedUserAuthenticator(final Long id) {
         JWTAuthenticatedUser authenticator = new JWTAuthenticatedUser() {
 
             @Override
             public Long getId() {
-                return id == null ? Long.valueOf(SystemUsers.ADMIN_USER_ID) : id;
+                return id == null ? Long.valueOf(ChplSystemUsers.ADMIN_USER_ID) : id;
             }
 
             @Override
-            public Collection<? extends GrantedAuthority> getAuthorities() {
+            public Collection<GrantedAuthority> getAuthorities() {
                 List<GrantedAuthority> auths = new ArrayList<GrantedAuthority>();
-                auths.add(new GrantedPermission("ROLE_INVITED_USER_CREATOR"));
+                auths.add(new SimpleGrantedAuthority(Authority.ROLE_INVITED_USER_CREATOR));
                 return auths;
             }
 
@@ -128,6 +110,11 @@ public class AuthUtil {
             @Override
             public String getName() {
                 return "admin";
+            }
+
+            @Override
+            public AuthenticationSystem getAuthenticationSystem() {
+                return AuthenticationSystem.CHPL;
             }
 
         };

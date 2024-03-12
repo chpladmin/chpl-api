@@ -34,7 +34,6 @@ import gov.healthit.chpl.listing.ics.ListingIcsNode;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.DeveloperManager;
-import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
@@ -74,8 +73,7 @@ public class CertifiedProductController {
     })
     @Autowired
     public CertifiedProductController(CertifiedProductDetailsManager cpdManager, CertifiedProductManager cpManager,
-            IcsManager icsManager, ResourcePermissions resourcePermissions,
-            ActivityManager activityManager, ListingValidatorFactory validatorFactory,
+            IcsManager icsManager, ActivityManager activityManager, ListingValidatorFactory validatorFactory,
             ErrorMessageUtil msgUtil, ChplProductNumberUtil chplProductNumberUtil,
             DeveloperManager developerManager) {
         this.cpdManager = cpdManager;

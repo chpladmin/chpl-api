@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -31,7 +30,6 @@ import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
-import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.domain.schedule.ChplJob;
 import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
 import gov.healthit.chpl.domain.schedule.ChplRepeatableTrigger;
@@ -40,7 +38,7 @@ import gov.healthit.chpl.domain.schedule.TriggerSchedule;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.impl.SecuredManager;
-import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.scheduler.ChplRepeatableTriggerChangeEmailer;
 import gov.healthit.chpl.scheduler.ChplSchedulerReference;
 import gov.healthit.chpl.scheduler.job.QuartzJob;
@@ -59,15 +57,15 @@ public class SchedulerManager extends SecuredManager {
     public static final String SYSTEM_JOBS_KEY = "systemJobs";
 
     private ChplSchedulerReference chplScheduler;
-    private ResourcePermissions resourcePermissions;
+    private ResourcePermissionsFactory resourcePermissionsFactory;
     private ChplRepeatableTriggerChangeEmailer emailer;
 
     @Autowired
-    public SchedulerManager(ChplSchedulerReference chplScheduler, ResourcePermissions resourcePermissions,
+    public SchedulerManager(ChplSchedulerReference chplScheduler, ResourcePermissionsFactory resourcePermissionsFactory,
             ChplRepeatableTriggerChangeEmailer emailer) {
 
         this.chplScheduler = chplScheduler;
-        this.resourcePermissions = resourcePermissions;
+        this.resourcePermissionsFactory = resourcePermissionsFactory;
         this.emailer = emailer;
     }
 
@@ -422,23 +420,13 @@ public class SchedulerManager extends SecuredManager {
         if (jobDetail.getJobDataMap().containsKey("authorities")) {
             List<String> authorities = new ArrayList<String>(
                     Arrays.asList(jobDetail.getJobDataMap().get("authorities").toString().split(AUTHORITY_DELIMITER)));
-            Set<GrantedPermission> userRoles = AuthUtil.getCurrentUser().getPermissions();
-            for (GrantedPermission permission : userRoles) {
-                for (String authority : authorities) {
-                    if (permission.getAuthority().equalsIgnoreCase(authority)) {
-                        return true;
-                    }
-                }
-            }
+            return resourcePermissionsFactory.get().doesUserHaveRole(authorities);
         } else {
             // If no authorities are present, we assume there are no permissions
             // on the job
             // and everyone has access
             return true;
         }
-        // At this point we have fallen through all of the logic, and the user
-        // does not have the appropriate rights
-        return false;
     }
 
     private Boolean doesUserHavePermissionToTrigger(Trigger trigger) throws SchedulerException {
@@ -446,7 +434,7 @@ public class SchedulerManager extends SecuredManager {
         if (doesUserHavePermissionToJob(getScheduler().getJobDetail(trigger.getJobKey()))) {
             if (!StringUtils.isEmpty(trigger.getJobDataMap().getString("acb"))) {
                 // get acbs user has access to
-                List<Long> validAcbs = resourcePermissions.getAllAcbsForCurrentUser().stream()
+                List<Long> validAcbs = resourcePermissionsFactory.get().getAllAcbsForCurrentUser().stream()
                         .map(acb -> acb.getId())
                         .collect(Collectors.toList());
                 //get acbs that were selected

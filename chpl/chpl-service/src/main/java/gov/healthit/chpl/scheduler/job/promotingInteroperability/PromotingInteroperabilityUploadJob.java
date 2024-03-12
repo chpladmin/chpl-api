@@ -21,10 +21,8 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
-import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.ListingUpdateRequest;
@@ -35,12 +33,13 @@ import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.CertifiedProductManager;
+import gov.healthit.chpl.scheduler.SecurityContextCapableJob;
 import gov.healthit.chpl.util.DateUtil;
 import lombok.extern.log4j.Log4j2;
 
 @DisallowConcurrentExecution
 @Log4j2(topic = "promotingInteroperabilityUploadJobLogger")
-public class PromotingInteroperabilityUploadJob implements Job {
+public class PromotingInteroperabilityUploadJob extends SecurityContextCapableJob implements Job {
     public static final String JOB_NAME = "promotingInteroperabilityUploadJob";
     public static final String FILE_CONTENTS_KEY = "fileContents";
     public static final String ACCURATE_AS_OF_DATE_KEY = "accurateAsOfDate";
@@ -294,17 +293,5 @@ public class PromotingInteroperabilityUploadJob implements Job {
 
     private String getErrorMessageForHtmlList(PromotingInteroperabilityUserRecord piuRecord) {
         return "<li>" + piuRecord.getError() + "</li>";
-    }
-
-    private void setSecurityContext(UserDTO user) {
-        JWTAuthenticatedUser jobUser = new JWTAuthenticatedUser();
-        jobUser.setFullName(user.getFullName());
-        jobUser.setId(user.getId());
-        jobUser.setFriendlyName(user.getFriendlyName());
-        jobUser.setSubjectName(user.getUsername());
-        jobUser.getPermissions().add(user.getPermission().getGrantedPermission());
-
-        SecurityContextHolder.getContext().setAuthentication(jobUser);
-        SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);
     }
 }

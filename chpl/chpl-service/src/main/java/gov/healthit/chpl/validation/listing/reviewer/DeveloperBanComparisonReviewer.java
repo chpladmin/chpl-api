@@ -13,24 +13,24 @@ import gov.healthit.chpl.certifiedproduct.service.CertificationStatusEventsServi
 import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.entity.CertificationStatusType;
-import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
 
 @Component("developerBanComparisonReviewer")
 public class DeveloperBanComparisonReviewer implements ComparisonReviewer {
+    private ResourcePermissionsFactory resourcePermissionsFactory;
     private CertificationStatusEventsService certStatusEventsService;
-    private ResourcePermissions resourcePermissions;
     private ErrorMessageUtil msgUtil;
     private List<String> certStatusesRequiringOncRole;
 
     @Autowired
     public DeveloperBanComparisonReviewer(CertificationStatusEventsService certStatusEventsService,
-            ResourcePermissions resourcePermissions,
+            ResourcePermissionsFactory resourcePermissionsFactory,
             ErrorMessageUtil msgUtil) {
         this.certStatusEventsService = certStatusEventsService;
-        this.resourcePermissions = resourcePermissions;
+        this.resourcePermissionsFactory = resourcePermissionsFactory;
         this.msgUtil = msgUtil;
         this.certStatusesRequiringOncRole = Stream.of(
                 CertificationStatusType.SuspendedByOnc.getName(),
@@ -52,8 +52,8 @@ public class DeveloperBanComparisonReviewer implements ComparisonReviewer {
                 .collect(Collectors.toSet());
 
         //A non-ONC/ADMIN user should not be allowed to muck with the 'By ONC' status events
-        if (!resourcePermissions.isUserRoleOnc()
-                && !resourcePermissions.isUserRoleAdmin()
+        if (!resourcePermissionsFactory.get().isUserRoleOnc()
+                && !resourcePermissionsFactory.get().isUserRoleAdmin()
                 && !CollectionUtils.isEmpty(modifiedCertificationStatusesRequiringOncRole)) {
             updatedListing.addBusinessErrorMessage(msgUtil.getMessage("listing.certStatusChange.notAllowed",
                     AuthUtil.getUsername(),

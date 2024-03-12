@@ -6,7 +6,6 @@ import javax.persistence.PersistenceContext;
 import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 public class BaseDAOImpl {
@@ -29,16 +28,6 @@ public class BaseDAOImpl {
 
     public Session getSession() {
         return getEntityManager().unwrap(Session.class);
-    }
-
-    public Long getUserId(final Long defaultUserID) {
-        // If there is no user the current context, assume this is a system
-        // process
-        if (AuthUtil.getCurrentUser() == null || AuthUtil.getCurrentUser().getId() == null) {
-            return defaultUserID;
-        } else {
-            return AuthUtil.getCurrentUser().getId();
-        }
     }
 
     protected void create(final Object entity) {

@@ -11,6 +11,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import gov.healthit.chpl.domain.Organization;
+import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.domain.auth.UserPermission;
 import gov.healthit.chpl.dto.OrganizationDTO;
 import lombok.AllArgsConstructor;
@@ -54,6 +56,7 @@ public class UserDTO implements UserDetails {
      *
      * @return a null collection
      */
+    @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return null;
     }
@@ -88,4 +91,30 @@ public class UserDTO implements UserDetails {
     public String getPassword() {
         return null;
     }
+
+    public User toDomain() {
+        User user = new User();
+        user.setUserId(this.getId());
+        if (this.getPermission() != null) {
+            user.setRole(this.getPermission().getAuthority());
+        }
+        user.setSubjectName(this.getSubjectName());
+        user.setFullName(this.getFullName());
+        user.setFriendlyName(this.getFriendlyName());
+        user.setEmail(this.getEmail());
+        user.setPhoneNumber(this.getPhoneNumber());
+        user.setTitle(this.getTitle());
+        user.setAccountLocked(this.isAccountLocked());
+        user.setAccountEnabled(this.isAccountEnabled());
+        user.setCredentialsExpired(this.isCredentialsExpired());
+        user.setPasswordResetRequired(this.isPasswordResetRequired());
+        user.setLastLoggedInDate(this.getLastLoggedInDate());
+
+        for (OrganizationDTO orgDTO : this.getOrganizations()) {
+            user.getOrganizations().add(new Organization(orgDTO.getId(), orgDTO.getName()));
+        }
+
+        return user;
+    }
+
 }

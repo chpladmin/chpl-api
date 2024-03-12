@@ -3,8 +3,6 @@ package gov.healthit.chpl.permissions.domain.testinglab;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.util.stream.Stream;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -12,8 +10,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
-import gov.healthit.chpl.domain.TestingLab;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.permissions.domain.ActionPermissionsBaseTest;
 import gov.healthit.chpl.permissions.domains.testinglab.RetireActionPermissions;
 
@@ -21,15 +19,16 @@ public class RetireActionPermissionsTest extends ActionPermissionsBaseTest {
     @Mock
     private ResourcePermissions resourcePermissions;
 
+    @Mock
+    private ResourcePermissionsFactory resourcePermissionsFacotry;
+
     @InjectMocks
     private RetireActionPermissions permissions;
 
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-
-        Mockito.when(resourcePermissions.getAllAtlsForCurrentUser()).thenReturn(
-                Stream.of(TestingLab.builder().id(2L).build()).toList());
+        Mockito.when(resourcePermissionsFacotry.get()).thenReturn(resourcePermissions);
     }
 
     @Override

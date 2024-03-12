@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.manager.rules.ValidationRule;
-import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 
 @Component
 public class DeveloperValidationFactory {
@@ -24,12 +24,12 @@ public class DeveloperValidationFactory {
     public static final String STATUS_CHANGED = "STATUS_CHANGED";
 
     private DeveloperDAO developerDao;
-    private ResourcePermissions resourcePermissions;
+    private ResourcePermissionsFactory resourcePermissionsFactory;
 
     @Autowired
-    public DeveloperValidationFactory(DeveloperDAO developerDao, ResourcePermissions resourcePermissions) {
+    public DeveloperValidationFactory(DeveloperDAO developerDao, ResourcePermissionsFactory resourcePermissionsFactory) {
         this.developerDao = developerDao;
-        this.resourcePermissions = resourcePermissions;
+        this.resourcePermissionsFactory = resourcePermissionsFactory;
     }
 
     public ValidationRule<DeveloperValidationContext> getRule(String name) {
@@ -53,11 +53,11 @@ public class DeveloperValidationFactory {
         case STATUS_MISSING_BAN_REASON:
             return new DeveloperStatusMissingBanReasonValidation();
         case PRIOR_STATUS_ACTIVE:
-            return new DeveloperPriorStatusActiveValidation(resourcePermissions);
+            return new DeveloperPriorStatusActiveValidation(resourcePermissionsFactory);
         case EDIT_STATUS_HISTORY:
-            return new DeveloperEditStatusHistoryValidation(resourcePermissions);
+            return new DeveloperEditStatusHistoryValidation(resourcePermissionsFactory);
         case STATUS_CHANGED:
-            return new DeveloperStatusChangedValidation(resourcePermissions);
+            return new DeveloperStatusChangedValidation(resourcePermissionsFactory);
         default:
             return null;
         }

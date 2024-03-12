@@ -292,7 +292,7 @@ public class DeveloperController {
         List<UserDTO> users = developerManager.getAllUsersOnDeveloper(developerId);
         List<User> domainUsers = new ArrayList<User>(users.size());
         for (UserDTO userDto : users) {
-            User domainUser = new User(userDto);
+            User domainUser = userDto.toDomain();
             domainUsers.add(domainUser);
         }
 
