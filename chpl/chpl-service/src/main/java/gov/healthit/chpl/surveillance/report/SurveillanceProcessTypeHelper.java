@@ -11,7 +11,9 @@ import com.google.common.base.Objects;
 
 import gov.healthit.chpl.surveillance.report.domain.SurveillanceProcessType;
 
-public class SurveillanceProcessTypeHelper {
+public final class SurveillanceProcessTypeHelper {
+
+    private SurveillanceProcessTypeHelper() { }
 
     public static List<SurveillanceProcessType> getAddedSurveillanceProcessTypes(List<SurveillanceProcessType> existingProcessTypes,
             List<SurveillanceProcessType> updatedProcessTypes) {
@@ -38,5 +40,4 @@ public class SurveillanceProcessTypeHelper {
                 || (ObjectUtils.allNotNull(procType1.getName(), procType2.getName())
                         && StringUtils.equals(procType1.getName(), procType2.getName())));
     }
-
 }

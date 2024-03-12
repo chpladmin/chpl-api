@@ -466,7 +466,7 @@ public class SurveillanceSummaryWorksheetBuilder {
 
     private boolean hasProcessType(PrivilegedSurveillance surv, String processType) {
         return surv.getSurveillanceProcessTypes().stream()
-                .filter(procType -> procType.getName().equals(processType))
+                .filter(procType -> procType.getName().startsWith(processType))
                 .findAny().isPresent();
     }
 

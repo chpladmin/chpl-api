@@ -17,8 +17,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-import org.apache.commons.beanutils.BeanUtils;
 import org.hibernate.annotations.Where;
+import org.springframework.beans.BeanUtils;
 
 import gov.healthit.chpl.compliance.surveillance.entity.SurveillanceBasicEntity;
 import gov.healthit.chpl.domain.surveillance.SurveillanceBasic;
@@ -82,6 +82,9 @@ public class QuarterlyReportSurveillanceMapEntity extends EntityAudit {
     @Where(clause = "deleted <> 'true'")
     private Set<QuarterlyReportSurveillanceProcessTypeMapEntity> surveillanceProcessTypeMaps = new HashSet<QuarterlyReportSurveillanceProcessTypeMapEntity>();
 
+    @Column(name = "surveillance_process_type_other")
+    private String surveillanceProcessTypeOther;
+
     @Column(name = "k1_reviewed")
     private Boolean k1Reviewed;
 
@@ -121,6 +124,8 @@ public class QuarterlyReportSurveillanceMapEntity extends EntityAudit {
                 .collect(Collectors.toList());
 
         PrivilegedSurveillance privilegedSurveillance = PrivilegedSurveillance.builder()
+                .id(this.getSurveillanceId())
+                .mappingId(this.getId())
                 .quarterlyReport(this.getQuarterlyReport().toDomain())
                 .additionalCostsEvaluation(this.getAdditionalCostsEvaluation())
                 .completedCapVerification(this.getCompletedCapVerification())
@@ -136,6 +141,7 @@ public class QuarterlyReportSurveillanceMapEntity extends EntityAudit {
                 .surveillanceOutcome(this.getSurveillanceOutcome().toDomain())
                 .surveillanceOutcomeOther(this.getSurveillanceOutcomeOther())
                 .surveillanceProcessTypes(processTypes)
+                .surveillanceProcessTypeOther(this.getSurveillanceProcessTypeOther())
                 .build();
 
         SurveillanceBasic relatedSurv = this.getSurveillance().buildSurveillanceBasic();

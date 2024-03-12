@@ -132,6 +132,8 @@ public class ListingWithSurveillanceEntity {
                         .numOpenNonconformities(surv.getNumOpenNonconformities())
                         .numRandomizedSites(surv.getNumRandomizedSites())
                         .startDay(surv.getStartDate())
+                        .surveillanceType(surv.getSurveillanceType().buildSurveillanceType())
+                        .surveillanceTypeId(surv.getSurveillanceTypeId())
                         .build())
                 .collect(Collectors.toList());
     }

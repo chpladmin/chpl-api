@@ -7,7 +7,6 @@ import java.util.stream.Collectors;
 import javax.persistence.Query;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -34,7 +33,7 @@ public class PrivilegedSurveillanceDAO extends BaseDAOImpl {
         this.chplProductNumberUtil = chplProductNumberUtil;
     }
 
-    private static final String MAP_HQL = "SELECT map "
+    private static final String MAP_HQL = "SELECT DISTINCT map "
             + " FROM QuarterlyReportSurveillanceMapEntity map "
             + " LEFT JOIN FETCH map.surveillanceOutcome "
             + " LEFT JOIN FETCH map.surveillanceProcessTypeMaps procTypeMaps "
@@ -167,6 +166,7 @@ public class PrivilegedSurveillanceDAO extends BaseDAOImpl {
         entity.setNondisclosureEvaluation(toCreate.getNondisclosureEvaluation());
         entity.setDirectionDeveloperResolution(toCreate.getDirectionDeveloperResolution());
         entity.setCompletedCapVerification(toCreate.getCompletedCapVerification());
+        entity.setSurveillanceProcessTypeOther(toCreate.getSurveillanceProcessTypeOther());
         entity.setDeleted(false);
         create(entity);
 
@@ -180,7 +180,6 @@ public class PrivilegedSurveillanceDAO extends BaseDAOImpl {
         QuarterlyReportSurveillanceProcessTypeMapEntity procTypeMapEntity = QuarterlyReportSurveillanceProcessTypeMapEntity.builder()
                 .quarterlyReportSurveillanceMapId(parentId)
                 .surveillanceProcessTypeId(toCreate.getId())
-                .surveillanceProcessTypeOther(toCreate.getOther())
                 .build();
         create(procTypeMapEntity);
     }
@@ -218,6 +217,7 @@ public class PrivilegedSurveillanceDAO extends BaseDAOImpl {
         entity.setNondisclosureEvaluation(toUpdate.getNondisclosureEvaluation());
         entity.setDirectionDeveloperResolution(toUpdate.getDirectionDeveloperResolution());
         entity.setCompletedCapVerification(toUpdate.getCompletedCapVerification());
+        entity.setSurveillanceProcessTypeOther(toUpdate.getSurveillanceProcessTypeOther());
         update(entity);
         updateSurveillanceProcessTypes(entity,
                 existing.getSurveillanceProcessTypes(),
@@ -235,8 +235,7 @@ public class PrivilegedSurveillanceDAO extends BaseDAOImpl {
 
         for (SurveillanceProcessType procType : removedProcessTypes) {
             QuarterlyReportSurveillanceProcessTypeMapEntity toRemove = qrSurvMapEntity.getSurveillanceProcessTypeMaps().stream()
-                    .filter(entity -> procType.getId().equals(entity.getSurveillanceProcessTypeId())
-                            && StringUtils.equals(procType.getOther(), entity.getSurveillanceProcessTypeOther()))
+                    .filter(entity -> procType.getId().equals(entity.getSurveillanceProcessTypeId()))
                     .findAny().get();
             toRemove.setDeleted(true);
             update(toRemove);
@@ -246,7 +245,6 @@ public class PrivilegedSurveillanceDAO extends BaseDAOImpl {
             QuarterlyReportSurveillanceProcessTypeMapEntity toCreate = QuarterlyReportSurveillanceProcessTypeMapEntity.builder()
                     .quarterlyReportSurveillanceMapId(qrSurvMapId)
                     .surveillanceProcessTypeId(procType.getId())
-                    .surveillanceProcessTypeOther(procType.getOther())
                     .build();
             create(toCreate);
         }

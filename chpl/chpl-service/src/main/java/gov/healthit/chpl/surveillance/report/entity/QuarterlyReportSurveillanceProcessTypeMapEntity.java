@@ -18,9 +18,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import lombok.extern.log4j.Log4j2;
 
-@Log4j2
 @Getter
 @Setter
 @ToString
@@ -47,14 +45,10 @@ public class QuarterlyReportSurveillanceProcessTypeMapEntity extends EntityAudit
     @JoinColumn(name = "surveillance_process_type_id", insertable = false, updatable = false)
     private SurveillanceProcessTypeEntity surveillanceProcessType;
 
-    @Column(name = "surveillance_process_type_other")
-    private String surveillanceProcessTypeOther;
-
     public SurveillanceProcessType toDomain() {
         SurveillanceProcessType processType = SurveillanceProcessType.builder()
                 .id(surveillanceProcessTypeId)
                 .name(surveillanceProcessType.getName())
-                .other(surveillanceProcessTypeOther)
                 .build();
         return processType;
     }

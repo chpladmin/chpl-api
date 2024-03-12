@@ -6,7 +6,6 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import gov.healthit.chpl.domain.surveillance.SurveillanceBasic;
-import gov.healthit.chpl.dto.surveillance.SurveillanceBasicDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -28,6 +27,7 @@ public class PrivilegedSurveillance extends SurveillanceBasic {
     private String surveillanceOutcomeOther;
     @Builder.Default
     private List<SurveillanceProcessType> surveillanceProcessTypes = new ArrayList<SurveillanceProcessType>();
+    private String surveillanceProcessTypeOther;
     private Boolean k1Reviewed;
     private String groundsForInitiating;
     private String nonconformityCauses;
@@ -39,11 +39,6 @@ public class PrivilegedSurveillance extends SurveillanceBasic {
     private String nondisclosureEvaluation;
     private String directionDeveloperResolution;
     private String completedCapVerification;
-
-    public PrivilegedSurveillance(SurveillanceBasicDTO dto) {
-        super(dto);
-        this.surveillanceProcessTypes = new ArrayList<SurveillanceProcessType>();
-    }
 
     public void copyPrivilegedFields(PrivilegedSurveillance another) {
         this.mappingId = another.getMappingId();
@@ -63,5 +58,6 @@ public class PrivilegedSurveillance extends SurveillanceBasic {
         this.surveillanceOutcomeOther = another.getSurveillanceOutcomeOther();
         this.surveillanceProcessTypes = new ArrayList<SurveillanceProcessType>(
                 another.getSurveillanceProcessTypes());
+        this.surveillanceProcessTypeOther = another.getSurveillanceProcessTypeOther();
     }
 }
