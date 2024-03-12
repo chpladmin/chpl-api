@@ -33,7 +33,6 @@ import software.amazon.awssdk.services.cognitoidentityprovider.CognitoIdentityPr
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminAddUserToGroupRequest;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminAddUserToGroupResponse;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminCreateUserRequest;
-import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminCreateUserResponse;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminInitiateAuthRequest;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminInitiateAuthResponse;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminListGroupsForUserRequest;
@@ -132,25 +131,34 @@ public class CognitoUserService {
         return user;
     }
 
-    public AdminCreateUserResponse createUser(CreateUserRequest userRequest) {
+    public LoginCredentials createUser(CreateUserRequest userRequest) {
+        String tempPassword = "Password1!-" + (new Date()).getTime();
+
         AdminCreateUserRequest request = AdminCreateUserRequest.builder()
                 .userPoolId(userPoolId)
                 .username(userRequest.getEmail())
                 .userAttributes(
-                        AttributeType.builder().name("name").value(userRequest.getFriendlyName()).build(),
-                        AttributeType.builder().name("email").value(userRequest.getEmail()).build())
-                .temporaryPassword("Temp-Password-1!")
+                        AttributeType.builder().name("name").value(userRequest.getFullName()).build(),
+                        AttributeType.builder().name("email").value(userRequest.getEmail()).build(),
+                        AttributeType.builder().name("phone_number").value("+1" + userRequest.getPhoneNumber()).build(),
+                        AttributeType.builder().name("nickname").value(userRequest.getFriendlyName()).build(),
+                        AttributeType.builder().name("custom:title").value(userRequest.getTitle()).build())
+                .temporaryPassword(tempPassword)
                 .messageAction(MessageActionType.SUPPRESS)
                 .build();
 
+        cognitoClient.adminCreateUser(request);
 
-        return cognitoClient.adminCreateUser(request);
+        return LoginCredentials.builder()
+                .userName(userRequest.getEmail())
+                .password(tempPassword)
+                .build();
     }
 
     public AdminAddUserToGroupResponse addUserToAdminGroup(String email) {
         AdminAddUserToGroupRequest request = AdminAddUserToGroupRequest.builder()
                 .userPoolId(userPoolId)
-                .groupName("chpl-admin")
+                .groupName(CognitoGroups.CHPL_ADMIN.toString())
                 .username(email)
                 .build();
 

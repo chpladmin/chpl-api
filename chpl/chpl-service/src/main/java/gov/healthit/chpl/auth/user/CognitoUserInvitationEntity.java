@@ -45,7 +45,7 @@ public class CognitoUserInvitationEntity extends EntityAudit {
         return CognitoUserInvitation.builder()
                 .id(id)
                 .email(email)
-                .token(token)
+                .invitationToken(token)
                 .lastModifiedDate(getLastModifiedDate())
                 .creationDate(getCreationDate())
                 .lasModifiedSsoUser(getLastModifiedSsoUser())

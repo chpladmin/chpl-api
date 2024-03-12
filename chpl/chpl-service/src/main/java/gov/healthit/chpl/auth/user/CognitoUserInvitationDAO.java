@@ -17,7 +17,7 @@ public class CognitoUserInvitationDAO extends BaseDAOImpl {
     public CognitoUserInvitation create(CognitoUserInvitation userInvitation) {
         CognitoUserInvitationEntity entity = CognitoUserInvitationEntity.builder()
                 .email(userInvitation.getEmail())
-                .token(userInvitation.getToken())
+                .token(userInvitation.getInvitationToken())
                 .build();
 
         create(entity);

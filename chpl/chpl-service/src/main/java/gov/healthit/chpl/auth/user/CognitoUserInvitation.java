@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 public class CognitoUserInvitation {
     private Long id;
     private String email;
-    private UUID token;
+    private UUID invitationToken;
 
     @JsonIgnore
     private Date creationDate;
