@@ -22,7 +22,6 @@ import gov.healthit.chpl.auth.ChplAccountEmailNotConfirmedException;
 import gov.healthit.chpl.auth.ChplAccountStatusException;
 import gov.healthit.chpl.auth.jwt.JWTAuthor;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
-import gov.healthit.chpl.auth.user.User;
 import gov.healthit.chpl.dao.auth.UserDAO;
 import gov.healthit.chpl.domain.auth.LoginCredentials;
 import gov.healthit.chpl.domain.auth.UserInvitation;
@@ -166,10 +165,10 @@ public class AuthenticationManager {
     }
 
     public String refreshJWT() throws JWTCreationException, UserRetrievalException, MultipleUserAccountsException {
-        JWTAuthenticatedUser user = (JWTAuthenticatedUser) AuthUtil.getCurrentUser();
+        JWTAuthenticatedUser user = AuthUtil.getCurrentUser();
 
         if (user != null) {
-            UserDTO userDto = getUserByNameOrEmail(user.getEmail());
+            UserDTO userDto = getUserByNameOrEmail(user.getSubjectName());
             if (user.getImpersonatingUser() != null) {
                 userDto.setImpersonatedBy(user.getImpersonatingUser());
             }
@@ -227,7 +226,7 @@ public class AuthenticationManager {
             + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).IMPERSONATE_USER, #id)")
     public String impersonateUser(Long id)
             throws UserRetrievalException, JWTCreationException, UserManagementException, MultipleUserAccountsException {
-        JWTAuthenticatedUser user = (JWTAuthenticatedUser) AuthUtil.getCurrentUser();
+        JWTAuthenticatedUser user = AuthUtil.getCurrentUser();
         if (user.getImpersonatingUser() != null) {
             throw new UserManagementException(msgUtil.getMessage("user.impersonate.alreadyImpersonating"));
         }
@@ -238,8 +237,7 @@ public class AuthenticationManager {
         return getJWT(impersonatedUser);
     }
 
-    public String unimpersonateUser(User user) throws JWTCreationException, UserRetrievalException,
-    MultipleUserAccountsException {
+    public String unimpersonateUser(JWTAuthenticatedUser user) throws JWTCreationException, UserRetrievalException, MultipleUserAccountsException {
         return getJWT(getUserByNameOrEmail(user.getSubjectName()));
     }
 

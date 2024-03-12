@@ -10,7 +10,7 @@ import gov.healthit.chpl.domain.CertificationResultAdditionalSoftware;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.concept.PrivacyAndSecurityFrameworkConcept;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.util.CertifiedProductUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
@@ -21,8 +21,8 @@ public class ValidDataReviewer extends PermissionBasedReviewer {
 
     @Autowired
     public ValidDataReviewer(CertifiedProductUtil certifiedProductUtil, ErrorMessageUtil msgUtil,
-            ResourcePermissions resourcePermissions) {
-        super(msgUtil, resourcePermissions);
+            ResourcePermissionsFactory resourcePermissionsFactory) {
+        super(msgUtil, resourcePermissionsFactory);
         this.certifiedProductUtil = certifiedProductUtil;
     }
 

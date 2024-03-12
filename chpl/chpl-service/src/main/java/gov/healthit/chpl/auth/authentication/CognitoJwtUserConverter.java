@@ -2,9 +2,11 @@ package gov.healthit.chpl.auth.authentication;
 
 import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
@@ -13,16 +15,14 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.RSAKeyProvider;
 
 import gov.healthit.chpl.auth.jwt.CognitoRsaKeyProvider;
-import gov.healthit.chpl.auth.permission.GrantedPermission;
-import gov.healthit.chpl.auth.user.CognitoAuthenticatedUser;
-import gov.healthit.chpl.auth.user.User;
+import gov.healthit.chpl.auth.user.AuthenticationSystem;
+import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.exception.JWTValidationException;
 import gov.healthit.chpl.exception.MultipleUserAccountsException;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
-@Component
-public class CognitoJwtUserConverter {
+public class CognitoJwtUserConverter implements JWTUserConverter {
     private String region;
     private String userPoolId;
     private String clientId;
@@ -36,17 +36,30 @@ public class CognitoJwtUserConverter {
         this.tokenizeRsaKeyUrl = tokenizeRsaKeyUrl;
     }
 
-    public User getAuthenticatedUser(String jwt) throws JWTValidationException, MultipleUserAccountsException {
-        DecodedJWT decodeJwt = decodeJwt(jwt);
-        return CognitoAuthenticatedUser.builder()
-                .authenticated(true)
-                .ssoId(UUID.fromString(decodeJwt.getSubject()))
-                .fullName(decodeJwt.getClaim("name").asString())
-                .email(decodeJwt.getClaim("email").asString())
-                .permissions(decodeJwt.getClaim("cognito:groups").asList(String.class).stream()
-                        .map(group -> new GrantedPermission(group))
-                        .collect(Collectors.toSet()))
-                .build();
+    @Override
+    public JWTAuthenticatedUser getAuthenticatedUser(String jwt) throws JWTValidationException, MultipleUserAccountsException {
+        try {
+            DecodedJWT decodeJwt = decodeJwt(jwt);
+            return JWTAuthenticatedUser.builder()
+                    .authenticationSystem(AuthenticationSystem.COGNTIO)
+                    .authenticated(true)
+                    .cognitoId(UUID.fromString(decodeJwt.getSubject()))
+                    .subjectName(decodeJwt.getClaim("email").asString())
+                    .fullName(decodeJwt.getClaim("name").asString())
+                    .email(decodeJwt.getClaim("email").asString())
+                    .organizationIds(
+                            decodeJwt.getClaims().containsKey("custom:organizations")
+                                    ? Stream.of(decodeJwt.getClaim("custom:organizations").asString().split(","))
+                                            .map(Long::valueOf)
+                                            .toList()
+                                    : null)
+                    .authorities(decodeJwt.getClaim("cognito:groups").asList(String.class).stream()
+                            .map(group -> new SimpleGrantedAuthority(group))
+                            .collect(Collectors.toSet()))
+                    .build();
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     private DecodedJWT decodeJwt(String jwt) {
@@ -59,5 +72,10 @@ public class CognitoJwtUserConverter {
         DecodedJWT decodedJwt = jwtVerifier.verify(jwt);
 
         return decodedJwt;
+    }
+
+    @Override
+    public JWTAuthenticatedUser getImpersonatingUser(String jwt) throws JWTValidationException {
+        throw new NotImplementedException("CognitoJwtUserConverter.getImpersonatingUser() has not been implemented.");
     }
 }

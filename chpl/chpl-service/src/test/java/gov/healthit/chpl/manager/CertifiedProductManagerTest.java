@@ -70,6 +70,7 @@ import gov.healthit.chpl.listing.measure.ListingMeasureDAO;
 import gov.healthit.chpl.manager.auth.UserManager;
 import gov.healthit.chpl.notifier.ChplTeamNotifier;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.qmsStandard.QmsStandardDAO;
 import gov.healthit.chpl.service.CuresUpdateService;
 import gov.healthit.chpl.sharedstore.listing.ListingIcsSharedStoreHandler;
@@ -105,6 +106,7 @@ public class CertifiedProductManagerTest {
     private CertificationStatusDAO certStatusDao;
     private ListingGraphDAO listingGraphDao;
     private ResourcePermissions resourcePermissions;
+    private ResourcePermissionsFactory resourcePermissionsFactory;
     private CertifiedProductSearchResultDAO certifiedProductSearchResultDAO;
     private CertifiedProductDetailsManager certifiedProductDetailsManager;
     private ActivityManager activityManager;
@@ -139,6 +141,7 @@ public class CertifiedProductManagerTest {
         certStatusDao = Mockito.mock(CertificationStatusDAO.class);
         listingGraphDao = Mockito.mock(ListingGraphDAO.class);
         resourcePermissions = Mockito.mock(ResourcePermissions.class);
+        resourcePermissionsFactory = Mockito.mock(ResourcePermissionsFactory.class);
         certifiedProductSearchResultDAO = Mockito.mock(CertifiedProductSearchResultDAO.class);
         certifiedProductDetailsManager = Mockito.mock(CertifiedProductDetailsManager.class);
         activityManager = Mockito.mock(ActivityManager.class);
@@ -147,13 +150,14 @@ public class CertifiedProductManagerTest {
         ff4j = Mockito.mock(FF4j.class);
 
         Mockito.when(ff4j.check(FeatureList.EDITIONLESS)).thenReturn(false);
+        Mockito.when(resourcePermissionsFactory.get()).thenReturn(resourcePermissions);
 
         certifiedProductManager = new CertifiedProductManager(msgUtil, cpDao,
                  qmsDao,  targetedUserDao, asDao,  cpQmsDao, cpMeasureDao, cpTestingLabDao,
                 cpTargetedUserDao, cpAccStdDao,
                 productManager, versionManager,
                 statusEventDao, curesUpdateDao, piuDao, certResultService, cqmResultService, certStatusDao,
-                listingGraphDao, resourcePermissions,
+                listingGraphDao, resourcePermissionsFactory,
                 certifiedProductDetailsManager,
                 Mockito.mock(SchedulerManager.class),
                 activityManager,

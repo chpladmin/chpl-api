@@ -7,16 +7,14 @@ import org.apache.logging.log4j.Logger;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
-import gov.healthit.chpl.auth.permission.GrantedPermission;
-import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
 import gov.healthit.chpl.domain.CertificationStatus;
 import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.ListingUpdateRequest;
+import gov.healthit.chpl.domain.auth.Authority;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.scheduler.job.extra.JobResponse;
@@ -37,7 +35,7 @@ public class UpdateSingleListingStatusJob extends QuartzJob {
 
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
         setLogger(jobContext);
-        setSecurityContext();
+        setSecurityContext(Authority.ROLE_ADMIN);
 
         Long listing = jobContext.getMergedJobDataMap().getLong("listing");
         CertificationStatus certificationStatus = (CertificationStatus) jobContext.getMergedJobDataMap()
@@ -111,16 +109,5 @@ public class UpdateSingleListingStatusJob extends QuartzJob {
     private String getReason(final JobExecutionContext context) {
         return context.getMergedJobDataMap().containsKey("reason") ? context.getMergedJobDataMap().getString("reason")
                 : null;
-    }
-
-    private void setSecurityContext() {
-        JWTAuthenticatedUser adminUser = new JWTAuthenticatedUser();
-        adminUser.setFullName("Administrator");
-        adminUser.setId(-2L);
-        adminUser.setFriendlyName("Admin");
-        adminUser.setSubjectName("admin");
-        adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
-
-        SecurityContextHolder.getContext().setAuthentication(adminUser);
     }
 }

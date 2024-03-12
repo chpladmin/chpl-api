@@ -7,16 +7,16 @@ import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.DeveloperStatus;
 import gov.healthit.chpl.entity.developer.DeveloperStatusType;
 import gov.healthit.chpl.manager.rules.ValidationRule;
-import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 public class DeveloperPriorStatusActiveValidation extends ValidationRule<DeveloperValidationContext> {
     private static final Logger LOGGER = LogManager.getLogger(DeveloperPriorStatusActiveValidation.class);
-    private ResourcePermissions resourcePermissions;
+    private ResourcePermissionsFactory resourcePermissionsFactory;
 
-    public DeveloperPriorStatusActiveValidation(final ResourcePermissions resourcePermissions) {
-        this.resourcePermissions = resourcePermissions;
+    public DeveloperPriorStatusActiveValidation(ResourcePermissionsFactory resourcePermissionsFactory) {
+        this.resourcePermissionsFactory = resourcePermissionsFactory;;
     }
 
     @Override
@@ -25,7 +25,7 @@ public class DeveloperPriorStatusActiveValidation extends ValidationRule<Develop
         Developer beforeDev = context.getBeforeDev();
         DeveloperStatus currDevStatus = beforeDev.getStatus();
         if (!currDevStatus.getStatus().equals(DeveloperStatusType.Active.toString())
-                && !resourcePermissions.isUserRoleAdmin() && !resourcePermissions.isUserRoleOnc()) {
+                && !resourcePermissionsFactory.get().isUserRoleAdmin() && !resourcePermissionsFactory.get().isUserRoleOnc()) {
             String msg = msgUtil.getMessage("developer.notActiveNotAdminCantChangeStatus", AuthUtil.getUsername(),
                     beforeDev.getName());
             getMessages().add(msg);

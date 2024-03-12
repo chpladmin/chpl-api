@@ -2,10 +2,11 @@ package gov.healthit.chpl.attestation.service;
 
 import java.util.List;
 
+import org.ff4j.FF4j;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.form.Form;
-import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.scheduler.job.developer.attestation.AttestationFormMetaData;
 import gov.healthit.chpl.search.ListingSearchService;
 import gov.healthit.chpl.search.domain.ListingSearchResult;
@@ -18,14 +19,14 @@ public class AttestationResponseValidationService {
 
     private ListingApplicabilityService listingApplicabilityService;
     private ErrorMessageUtil msgUtil;
-    private ResourcePermissions resourcePermissions;
+    private ResourcePermissionsFactory resourcePermissionsFactory;
 
     public AttestationResponseValidationService(ListingApplicabilityService listingApplicabilityService,
             ListingSearchService listingSearchService, ErrorMessageUtil msgUtil,
-            ResourcePermissions resourcePermissions) {
+            ResourcePermissionsFactory resourcePermissionsFactory, FF4j ff4j) {
         this.listingApplicabilityService = listingApplicabilityService;
         this.msgUtil = msgUtil;
-        this.resourcePermissions = resourcePermissions;
+        this.resourcePermissionsFactory = resourcePermissionsFactory;
     }
 
     public String getApiResponseNotApplicableMessage(List<ListingSearchResult> allActiveListingsForDeveloper) {
@@ -153,12 +154,12 @@ public class AttestationResponseValidationService {
     }
 
     private boolean isDeveloper() {
-        return resourcePermissions.isUserRoleDeveloperAdmin();
+        return resourcePermissionsFactory.get().isUserRoleDeveloperAdmin();
     }
 
     private boolean isAcbOrAdmin() {
-        return resourcePermissions.isUserRoleAcbAdmin()
-                || resourcePermissions.isUserRoleOnc()
-                || resourcePermissions.isUserRoleAdmin();
+        return resourcePermissionsFactory.get().isUserRoleAcbAdmin()
+                || resourcePermissionsFactory.get().isUserRoleOnc()
+                || resourcePermissionsFactory.get().isUserRoleAdmin();
     }
 }

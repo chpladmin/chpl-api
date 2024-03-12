@@ -43,7 +43,6 @@ import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.SchedulerManager;
 import gov.healthit.chpl.manager.impl.SecuredManager;
-import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.scheduler.job.surveillancereportingactivity.SurveillanceReportingActivityJob;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.sharedstore.listing.ListingStoreRemove;
@@ -83,7 +82,7 @@ public class SurveillanceManager extends SecuredManager {
             SchedulerManager schedulerManager, SurveillanceReadValidator survReadValidator,
             SurveillanceCreationValidator survCreationValidator,
             SurveillanceUpdateValidator survUpdateValidator,
-            FileUtils fileUtils, Environment env, ResourcePermissions resourcePermissions,
+            FileUtils fileUtils, Environment env,
             UserDAO userDAO, CertificationCriterionService certificationCriterionService,
             @Value("${schemaBasicSurveillanceName}") String schemaBasicSurveillanceName) {
         this.survDao = survDao;

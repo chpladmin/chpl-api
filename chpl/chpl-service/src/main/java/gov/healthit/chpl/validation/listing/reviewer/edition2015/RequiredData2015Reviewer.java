@@ -18,7 +18,7 @@ import gov.healthit.chpl.domain.TestData;
 import gov.healthit.chpl.domain.TestParticipant;
 import gov.healthit.chpl.domain.TestTask;
 import gov.healthit.chpl.dto.TestDataDTO;
-import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
@@ -45,8 +45,8 @@ public class RequiredData2015Reviewer extends PermissionBasedReviewer {
     @Autowired
     @SuppressWarnings("checkstyle:parameternumber")
     public RequiredData2015Reviewer(CertificationResultRules certRules, ErrorMessageUtil msgUtil, TestDataDAO testDataDao,
-            ValidationUtils validationUtils, ResourcePermissions resourcePermissions, FF4j ff4j) {
-        super(msgUtil, resourcePermissions);
+            ValidationUtils validationUtils, ResourcePermissionsFactory resourcePermissionsFactory, FF4j ff4j) {
+        super(msgUtil, resourcePermissionsFactory);
         this.certRules = certRules;
         this.testDataDao = testDataDao;
         this.validationUtils = validationUtils;

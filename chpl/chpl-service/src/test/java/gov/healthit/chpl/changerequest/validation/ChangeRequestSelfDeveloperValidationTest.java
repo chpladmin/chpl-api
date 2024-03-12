@@ -16,6 +16,7 @@ import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 
 public class ChangeRequestSelfDeveloperValidationTest {
 
@@ -23,8 +24,10 @@ public class ChangeRequestSelfDeveloperValidationTest {
     public void validateSelfDeveloper_ValidData_ReturnsTrue() throws EntityRetrievalException {
         ResourcePermissions resourcePermissions = Mockito.mock(ResourcePermissions.class);
         Mockito.when(resourcePermissions.isUserRoleDeveloperAdmin()).thenReturn(true);
+        ResourcePermissionsFactory resourcePermissionsFactory = Mockito.mock(ResourcePermissionsFactory.class);
+        Mockito.when(resourcePermissionsFactory.get()).thenReturn(resourcePermissions);
 
-        ChangeRequestValidationContext context = getValidationContext(true, resourcePermissions);
+        ChangeRequestValidationContext context = getValidationContext(true, resourcePermissionsFactory);
         SelfDeveloperValidation crSelfDevValidator = new SelfDeveloperValidation();
 
         boolean result = crSelfDevValidator.isValid(context);
@@ -36,8 +39,11 @@ public class ChangeRequestSelfDeveloperValidationTest {
     public void validateSelfDeveloper_ValidDataFalse_ReturnsTrue() throws EntityRetrievalException {
         ResourcePermissions resourcePermissions = Mockito.mock(ResourcePermissions.class);
         Mockito.when(resourcePermissions.isUserRoleDeveloperAdmin()).thenReturn(true);
+        ResourcePermissionsFactory resourcePermissionsFactory = Mockito.mock(ResourcePermissionsFactory.class);
+        Mockito.when(resourcePermissionsFactory.get()).thenReturn(resourcePermissions);
 
-        ChangeRequestValidationContext context = getValidationContext(false, resourcePermissions);
+
+        ChangeRequestValidationContext context = getValidationContext(false, resourcePermissionsFactory);
         SelfDeveloperValidation crSelfDevValidator = new SelfDeveloperValidation();
 
         boolean result = crSelfDevValidator.isValid(context);
@@ -49,8 +55,10 @@ public class ChangeRequestSelfDeveloperValidationTest {
     public void validateSelfDeveloper_MissingData_ReturnsFalse() throws EntityRetrievalException {
         ResourcePermissions resourcePermissions = Mockito.mock(ResourcePermissions.class);
         Mockito.when(resourcePermissions.isUserRoleDeveloperAdmin()).thenReturn(true);
+        ResourcePermissionsFactory resourcePermissionsFactory = Mockito.mock(ResourcePermissionsFactory.class);
+        Mockito.when(resourcePermissionsFactory.get()).thenReturn(resourcePermissions);
 
-        ChangeRequestValidationContext context = getValidationContext(null, resourcePermissions);
+        ChangeRequestValidationContext context = getValidationContext(null, resourcePermissionsFactory);
         SelfDeveloperValidation crSelfDevValidator = new SelfDeveloperValidation();
 
         boolean result = crSelfDevValidator.isValid(context);
@@ -93,7 +101,7 @@ public class ChangeRequestSelfDeveloperValidationTest {
                 .build();
     }
 
-    private ChangeRequestValidationContext getValidationContext(Boolean  selfDeveloperValue, ResourcePermissions resourcePermissions) {
+    private ChangeRequestValidationContext getValidationContext(Boolean  selfDeveloperValue, ResourcePermissionsFactory resourcePermissionsFactory) {
         return new ChangeRequestValidationContext(null,
                         getChangeRequestSelfDeveloper(selfDeveloperValue),
                         null,
@@ -101,7 +109,7 @@ public class ChangeRequestSelfDeveloperValidationTest {
                         null,
                         null,
                         null,
-                        resourcePermissions,
+                        resourcePermissionsFactory,
                         null,
                         null,
                         null,
