@@ -23,9 +23,11 @@ import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.ComplaintSurveillanceMap;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 
 public class ComplaintSearchServiceTest {
     private ResourcePermissions resourcePermissions;
+    private ResourcePermissionsFactory resourcePermissionsFactory;
     private ComplaintDAO complaintDao;
     private ComplaintSearchService complaintSearchService;
 
@@ -44,7 +46,10 @@ public class ComplaintSearchServiceTest {
         Mockito.when(complaintDao.getAllComplaints())
             .thenReturn(buildMockComplaintList());
 
-        complaintSearchService = new ComplaintSearchService(complaintDao, searchRequestNormalizer, searchRequestValidator, resourcePermissions);
+        ResourcePermissionsFactory resourcePermissionsFactory = Mockito.mock(ResourcePermissionsFactory.class);
+        Mockito.when(resourcePermissionsFactory.get()).thenReturn(resourcePermissions);
+
+        complaintSearchService = new ComplaintSearchService(complaintDao, searchRequestNormalizer, searchRequestValidator, resourcePermissionsFactory);
     }
 
     @Test

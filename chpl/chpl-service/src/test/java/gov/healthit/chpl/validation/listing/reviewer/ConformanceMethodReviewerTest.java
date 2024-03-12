@@ -30,7 +30,7 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.InheritedCertificationStatus;
 import gov.healthit.chpl.domain.TestData;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.service.CertificationCriterionService.Criteria2015;
 import gov.healthit.chpl.testtool.CertificationResultTestTool;
@@ -57,7 +57,7 @@ public class ConformanceMethodReviewerTest {
     private CertificationResultDAO certResultDao;
     private ErrorMessageUtil msgUtil;
     private CertificationResultRules certResultRules;
-    private ResourcePermissions resourcePermissions;
+    private ResourcePermissionsFactory resourcePermissionsFactory;
     private ConformanceMethodReviewer conformanceMethodReviewer;
     private CertificationEdition edition2015;
 
@@ -189,10 +189,13 @@ public class ConformanceMethodReviewerTest {
         Mockito.when(criterionService.get(ArgumentMatchers.eq(Criteria2015.F_3)))
             .thenReturn(getF3());
 
+        resourcePermissionsFactory = Mockito.mock(ResourcePermissionsFactory.class);
+        Mockito.when(resourcePermissionsFactory.get()).thenReturn(null);
+
         certResultDao = Mockito.mock(CertificationResultDAO.class);
         conformanceMethodReviewer = new ConformanceMethodReviewer(conformanceMethodDao, certResultDao,
                 msgUtil, new ValidationUtils(), certResultRules, criterionService,
-                resourcePermissions);
+                resourcePermissionsFactory);
     }
 
     @Test

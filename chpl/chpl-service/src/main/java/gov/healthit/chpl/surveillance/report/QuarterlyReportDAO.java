@@ -20,7 +20,6 @@ import gov.healthit.chpl.surveillance.report.dto.QuarterlyReportExclusionDTO;
 import gov.healthit.chpl.surveillance.report.dto.QuarterlyReportRelevantListingDTO;
 import gov.healthit.chpl.surveillance.report.entity.QuarterlyReportEntity;
 import gov.healthit.chpl.surveillance.report.entity.QuarterlyReportExcludedListingMapEntity;
-import gov.healthit.chpl.util.AuthUtil;
 
 @Repository("quarterlyReportDao")
 public class QuarterlyReportDAO extends BaseDAOImpl {
@@ -291,7 +290,6 @@ public class QuarterlyReportDAO extends BaseDAOImpl {
         toUpdateEntity.setPrioritizedElementSummary(toUpdate.getPrioritizedElementSummary());
         toUpdateEntity.setReactiveSurveillanceSummary(toUpdate.getReactiveSurveillanceSummary());
         toUpdateEntity.setDisclosureRequirementsSummary(toUpdate.getDisclosureRequirementsSummary());
-        toUpdateEntity.setLastModifiedUser(AuthUtil.getAuditId());
 
         super.update(toUpdateEntity);
         return getById(toUpdateEntity.getId());

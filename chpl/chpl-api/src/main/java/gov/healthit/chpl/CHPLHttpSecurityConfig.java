@@ -1,6 +1,5 @@
 package gov.healthit.chpl;
 
-import org.ff4j.FF4j;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,8 +19,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import gov.healthit.chpl.api.ApiKeyManager;
-import gov.healthit.chpl.auth.authentication.CognitoJwtUserConverter;
-import gov.healthit.chpl.auth.authentication.JWTUserConverter;
+import gov.healthit.chpl.auth.authentication.JWTUserConverterFacade;
 import gov.healthit.chpl.filter.APIKeyAuthenticationFilter;
 import gov.healthit.chpl.filter.JWTAuthenticationFilter;
 import lombok.extern.log4j.Log4j2;
@@ -93,13 +91,7 @@ public class CHPLHttpSecurityConfig extends WebSecurityConfigurerAdapter {
         }
 
         @Autowired
-        private JWTUserConverter userConverter;
-
-        @Autowired
-        private CognitoJwtUserConverter cognitoUserConverter;
-
-        @Autowired
-        private FF4j ff4j;
+        private JWTUserConverterFacade userConverterFacade;
 
         @Autowired
         private ObjectFactory<ApiKeyManager> apiKeyManagerObjectFactory;
@@ -138,7 +130,7 @@ public class CHPLHttpSecurityConfig extends WebSecurityConfigurerAdapter {
             .antMatchers("/").permitAll().and()
             .addFilterBefore(apiKeyAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
             // custom Token based authentication based on the header previously given to the client
-            .addFilterBefore(new JWTAuthenticationFilter(userConverter, cognitoUserConverter, ff4j), UsernamePasswordAuthenticationFilter.class)
+            .addFilterBefore(new JWTAuthenticationFilter(userConverterFacade), UsernamePasswordAuthenticationFilter.class)
             .headers().cacheControl();
         }
     }

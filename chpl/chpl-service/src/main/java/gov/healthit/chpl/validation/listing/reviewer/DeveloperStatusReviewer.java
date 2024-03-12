@@ -11,7 +11,7 @@ import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.DeveloperStatus;
 import gov.healthit.chpl.entity.developer.DeveloperStatusType;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Component("developerStatusReviewer")
@@ -19,15 +19,15 @@ public class DeveloperStatusReviewer implements Reviewer {
     private static final Logger LOGGER = LogManager.getLogger(DeveloperStatusReviewer.class);
 
     private DeveloperDAO developerDao;
-    private ResourcePermissions resourcePermissions;
+    private ResourcePermissionsFactory resourcePermissionsFactory;
     private ErrorMessageUtil msgUtil;
 
     @Autowired
     public DeveloperStatusReviewer(DeveloperDAO developerDao,
-            ResourcePermissions resourcePermissions,
+            ResourcePermissionsFactory resourcePermissionsFactory,
             ErrorMessageUtil msgUtil) {
         this.developerDao = developerDao;
-        this.resourcePermissions = resourcePermissions;
+        this.resourcePermissionsFactory = resourcePermissionsFactory;
         this.msgUtil = msgUtil;
     }
 
@@ -42,7 +42,7 @@ public class DeveloperStatusReviewer implements Reviewer {
                         listing.addBusinessErrorMessage(msgUtil.getMessage(
                                 "listing.developer.noStatusFound.noUpdate", developer.getName()));
                     } else {
-                        if (resourcePermissions.isUserRoleAdmin() || resourcePermissions.isUserRoleOnc()) {
+                        if (resourcePermissionsFactory.get().isUserRoleAdmin() || resourcePermissionsFactory.get().isUserRoleOnc()) {
                             if (!checkAdminOrOncAllowedToEdit(developer)) {
                                 listing.addBusinessErrorMessage(msgUtil.getMessage(
                                         "listing.developer.notActiveOrBanned.noUpdate",

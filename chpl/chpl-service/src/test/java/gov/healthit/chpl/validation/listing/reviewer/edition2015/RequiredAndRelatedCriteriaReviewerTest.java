@@ -15,7 +15,9 @@ import org.mockito.Mockito;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.permissions.ChplResourcePermissions;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.service.CertificationCriterionService.Criteria2015;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -182,7 +184,7 @@ public class RequiredAndRelatedCriteriaReviewerTest {
         Mockito.when(certificationCriterionService.get(Criteria2015.H_1)).thenReturn(h1);
         Mockito.when(certificationCriterionService.get(Criteria2015.H_2)).thenReturn(h2);
 
-        resourcePermissions = Mockito.mock(ResourcePermissions.class);
+        resourcePermissions = Mockito.mock(ChplResourcePermissions.class);
         Mockito.when(resourcePermissions.doesUserHaveRole(ArgumentMatchers.any(List.class))).thenReturn(true);
         validationUtil = new ValidationUtils(certificationCriterionService);
         errorMessageUtil = Mockito.mock(ErrorMessageUtil.class);
@@ -192,8 +194,11 @@ public class RequiredAndRelatedCriteriaReviewerTest {
                 ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
                 .thenAnswer(i -> String.format(CRITERIA_COMPLEMENT_NOT_FOUND, i.getArgument(1), i.getArgument(2)));
 
+        ResourcePermissionsFactory resourcePermissionsFactory = Mockito.mock(ResourcePermissionsFactory.class);
+        Mockito.when(resourcePermissionsFactory.get()).thenReturn(resourcePermissions);
+
         reviewer = new RequiredAndRelatedCriteriaReviewer(certificationCriterionService, errorMessageUtil,
-                validationUtil, resourcePermissions);
+                validationUtil, resourcePermissionsFactory);
     }
 
     @Test

@@ -3,7 +3,6 @@ package gov.healthit.chpl.scheduler.job.certificationStatus;
 import java.time.LocalDate;
 
 import org.quartz.DisallowConcurrentExecution;
-import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -19,13 +18,14 @@ import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
 import gov.healthit.chpl.domain.CertificationStatus;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.auth.UserDTO;
+import gov.healthit.chpl.scheduler.job.QuartzJob;
 import gov.healthit.chpl.search.CertifiedProductSearchManager;
 import gov.healthit.chpl.util.DateUtil;
 import lombok.extern.log4j.Log4j2;
 
 @DisallowConcurrentExecution
 @Log4j2(topic = "updateCurrentCertificationStatusJobLogger")
-public class UpdateCurrentCertificationStatusJob implements Job {
+public class UpdateCurrentCertificationStatusJob extends QuartzJob {
     public static final String JOB_NAME = "updateCurrentCertificationStatusJob";
     public static final String LISTING_ID = "listingId";
     public static final String USER = "user";
@@ -75,10 +75,12 @@ public class UpdateCurrentCertificationStatusJob implements Job {
                 LOGGER.info("Listing ID " + currentListing.getId() + " has current status " + currentStatus.getName()
                     + " which is different from yesterday's status " + yesterdaysStatus.getName());
 
-                setSecurityContext();
+                setSecurityContext(user);
                 try {
                     LOGGER.info("Handling any necessary developer bans related to certification status change...");
-                    txDeveloperBanHelper.handleCertificationStatusChange(currentListing, user, reason);
+                    txDeveloperBanHelper.handleCertificationStatusChange(currentListing,
+                            (JWTAuthenticatedUser) SecurityContextHolder.getContext().getAuthentication(),
+                            reason);
                 } catch (Exception ex) {
                     LOGGER.error("There was a failure handling the certification status change of listing "
                             + currentListing.getId() + " from " + yesterdaysStatus.getName() + " to " + currentStatus.getName()
@@ -117,17 +119,5 @@ public class UpdateCurrentCertificationStatusJob implements Job {
         activityId = jobDataMap.getLong(ACTIVITY_ID);
         certificationStatusEventDay = (LocalDate) jobDataMap.get(CERTIFICATION_STATUS_EVENT_DAY);
         reason = jobDataMap.getString(USER_PROVIDED_REASON);
-    }
-
-    private void setSecurityContext() {
-        JWTAuthenticatedUser splitUser = new JWTAuthenticatedUser();
-        splitUser.setFullName(user.getFullName());
-        splitUser.setId(user.getId());
-        splitUser.setFriendlyName(user.getFriendlyName());
-        splitUser.setSubjectName(user.getUsername());
-        splitUser.getPermissions().add(user.getPermission().getGrantedPermission());
-
-        SecurityContextHolder.getContext().setAuthentication(splitUser);
-        SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);
     }
 }

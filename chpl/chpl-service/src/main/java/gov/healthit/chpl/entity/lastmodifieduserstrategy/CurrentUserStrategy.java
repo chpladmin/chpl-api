@@ -1,6 +1,7 @@
 package gov.healthit.chpl.entity.lastmodifieduserstrategy;
 
-import gov.healthit.chpl.FeatureList;
+import gov.healthit.chpl.auth.user.AuthenticationSystem;
+import gov.healthit.chpl.auth.user.CognitoSystemUsers;
 import gov.healthit.chpl.entity.EntityAudit;
 import gov.healthit.chpl.util.AuthUtil;
 
@@ -8,12 +9,17 @@ public class CurrentUserStrategy extends LastModifiedUserStrategy {
 
     @Override
     public void populateLastModifiedUser(EntityAudit entityAudit) {
-        if (getFF4j().check(FeatureList.SSO)) {
-            entityAudit.setLastModifiedSsoUser(AuthUtil.getAuditSsoUserId());
-            entityAudit.setLastModifiedUser(null);
+        if (AuthUtil.getCurrentUser() != null) {
+            if (AuthUtil.getCurrentUser().getAuthenticationSystem().equals(AuthenticationSystem.COGNTIO)) {
+                entityAudit.setLastModifiedSsoUser(AuthUtil.getCurrentUser().getCognitoId());
+                entityAudit.setLastModifiedUser(null);
+            } else {
+                entityAudit.setLastModifiedUser(AuthUtil.getCurrentUser().getId());
+                entityAudit.setLastModifiedSsoUser(null);
+            }
         } else {
-            entityAudit.setLastModifiedUser(AuthUtil.getAuditId());
-            entityAudit.setLastModifiedSsoUser(null);
+            entityAudit.setLastModifiedSsoUser(CognitoSystemUsers.DEFAULT_USER_ID);
+            entityAudit.setLastModifiedUser(null);
         }
     }
 

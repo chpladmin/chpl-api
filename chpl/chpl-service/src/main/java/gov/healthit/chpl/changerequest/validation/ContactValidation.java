@@ -10,7 +10,7 @@ public class ContactValidation extends ValidationRule<ChangeRequestValidationCon
 
     @Override
     public boolean isValid(ChangeRequestValidationContext context) {
-        if (context.getResourcePermissions().isUserRoleDeveloperAdmin()) {
+        if (context.getResourcePermissionsFactory().get().isUserRoleDeveloperAdmin()) {
             ChangeRequestDeveloperDemographics details = (ChangeRequestDeveloperDemographics) context.getNewChangeRequest().getDetails();
             if (details.getContact() != null) {
                 boolean contactComponentsValid = true;

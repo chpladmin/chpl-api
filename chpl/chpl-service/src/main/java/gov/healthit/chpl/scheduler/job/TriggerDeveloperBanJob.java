@@ -16,10 +16,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
+import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
 import gov.healthit.chpl.compliance.directreview.DirectReviewSearchService;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
 import gov.healthit.chpl.email.footer.AdminFooter;
@@ -74,9 +74,9 @@ public class TriggerDeveloperBanJob implements Job {
     @Value("${contact.publicUrl}")
     private String publicFeedbackUrl;
 
+    private JWTAuthenticatedUser userPerformingAction;
     private Long listingId;
     private CertifiedProductSearchDetails listing;
-    private UserDTO userPerformingAction;
     private Date listingChangeDate;
     private String userProvidedReason;
 
@@ -117,7 +117,7 @@ public class TriggerDeveloperBanJob implements Job {
             throw new RuntimeException();
         }
 
-        userPerformingAction = (UserDTO) jobDataMap.get(USER);
+        userPerformingAction = (JWTAuthenticatedUser) jobDataMap.get(USER);
         listingChangeDate = new Date(jobDataMap.getLong(CHANGE_DATE));
         userProvidedReason = jobDataMap.getString(USER_PROVIDED_REASON);
     }

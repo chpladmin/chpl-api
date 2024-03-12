@@ -15,12 +15,15 @@ import gov.healthit.chpl.changerequest.dao.ChangeRequestStatusTypeDAO;
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestStatus;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestStatusType;
+import gov.healthit.chpl.dao.auth.UserDAO;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
+import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.manager.ActivityManager;
-import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.util.AuthUtil;
 
 @Component
@@ -41,19 +44,20 @@ public class ChangeRequestStatusService {
     private ChangeRequestDAO crDAO;
     private ChangeRequestDetailsFactory crDetailsFactory;
     private ActivityManager activityManager;
-    private ResourcePermissions resourcePermissions;
+    private ResourcePermissionsFactory resourcePermissionsFactory;
+    private UserDAO userDAO;
 
     @Autowired
-    public ChangeRequestStatusService(final ChangeRequestStatusDAO crStatusDAO,
-            final ChangeRequestStatusTypeDAO crStatusTypeDAO, final ChangeRequestDAO crDAO,
-            final ChangeRequestDetailsFactory crDetailsFactory, final ActivityManager activityManager,
-            final ResourcePermissions resourcePermissions) {
+    public ChangeRequestStatusService(ChangeRequestStatusDAO crStatusDAO, ChangeRequestStatusTypeDAO crStatusTypeDAO, ChangeRequestDAO crDAO,
+            ChangeRequestDetailsFactory crDetailsFactory, ActivityManager activityManager, UserDAO userDAO,
+            ResourcePermissionsFactory resourcePermissionsFactory) {
         this.crStatusDAO = crStatusDAO;
         this.crStatusTypeDAO = crStatusTypeDAO;
         this.crDAO = crDAO;
         this.crDetailsFactory = crDetailsFactory;
         this.activityManager = activityManager;
-        this.resourcePermissions = resourcePermissions;
+        this.userDAO = userDAO;
+        this.resourcePermissionsFactory = resourcePermissionsFactory;
     }
 
     public ChangeRequestStatus saveInitialStatus(ChangeRequest cr) throws EntityRetrievalException {
@@ -63,7 +67,7 @@ public class ChangeRequestStatusService {
         ChangeRequestStatus crStatus = new ChangeRequestStatus();
         crStatus.setStatusChangeDateTime(LocalDateTime.now());
         crStatus.setChangeRequestStatusType(crStatusType);
-        crStatus.setUserPermission(resourcePermissions.getRoleByUserId(AuthUtil.getCurrentUser().getId()));
+        crStatus.setUserPermission(resourcePermissionsFactory.get().getRoleByUser(getUserById(AuthUtil.getCurrentUser().getId())));
 
         return crStatusDAO.create(cr, crStatus);
     }
@@ -145,8 +149,8 @@ public class ChangeRequestStatusService {
         crStatus.setChangeRequestStatusType(crStatusType);
         crStatus.setComment(comment);
         crStatus.setStatusChangeDateTime(LocalDateTime.now());
-        crStatus.setUserPermission(resourcePermissions.getRoleByUserId(AuthUtil.getCurrentUser().getId()));
-        if (resourcePermissions.isUserRoleAcbAdmin()) {
+        crStatus.setUserPermission(resourcePermissionsFactory.get().getRoleByUser(getUserById(AuthUtil.getCurrentUser().getId())));
+        if (resourcePermissionsFactory.get().isUserRoleAcbAdmin()) {
             crStatus.setCertificationBody(getCertificationBodyForCurrentUser());
         }
 
@@ -158,9 +162,9 @@ public class ChangeRequestStatusService {
     }
 
     private CertificationBody getCertificationBodyForCurrentUser() {
-        if (resourcePermissions.isUserRoleAcbAdmin()) {
-            if (resourcePermissions.getAllAcbsForCurrentUser().size() == 1) {
-                return resourcePermissions.getAllAcbsForCurrentUser().get(0);
+        if (resourcePermissionsFactory.get().isUserRoleAcbAdmin()) {
+            if (resourcePermissionsFactory.get().getAllAcbsForCurrentUser().size() == 1) {
+                return resourcePermissionsFactory.get().getAllAcbsForCurrentUser().get(0);
             } else {
                 String msg = "Cannot determine ACB for current user.  There are multiple ACBs for this user: "
                         + AuthUtil.getUsername();
@@ -171,4 +175,14 @@ public class ChangeRequestStatusService {
             return null;
         }
     }
+
+    private User getUserById(Long userId) {
+        try {
+            return userDAO.getById(userId).toDomain();
+        } catch (UserRetrievalException e) {
+            LOGGER.error("Could not retrieve user with ID: {}", userId, e);
+            return null;
+        }
+    }
+
 }
