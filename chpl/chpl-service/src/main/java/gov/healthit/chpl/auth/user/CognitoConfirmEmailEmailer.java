@@ -24,7 +24,7 @@ public class CognitoConfirmEmailEmailer {
         this.chplEmailFactory = chplEmailFactory;
     }
 
-    public void sendConfirmationEmail(LoginCredentials credentials) {
+    public void sendConfirmationEmail(LoginCredentials credentials) throws EmailNotSentException {
         String htmlMessage = htmlEmailBuilder.initialize()
                 .heading("Confirm CHPL Account")
                 .paragraph("Please go to the CHPL and login with this one-time password.",
@@ -33,15 +33,11 @@ public class CognitoConfirmEmailEmailer {
                 .build();
         LOGGER.info("Created HTML Message for " + credentials.getUserName());
 
-        try {
-            chplEmailFactory.emailBuilder()
-                .recipients(List.of(credentials.getUserName()))
-                .subject("Confirm CHPL Account")
-                .htmlMessage(htmlMessage)
-                .sendEmail();
-            LOGGER.info("Sent email to " + credentials.getUserName());
-        } catch (EmailNotSentException ex) {
-            LOGGER.error(ex.getMessage(), ex);
-        }
+        chplEmailFactory.emailBuilder()
+            .recipients(List.of(credentials.getUserName()))
+            .subject("Confirm CHPL Account")
+            .htmlMessage(htmlMessage)
+            .sendEmail();
+        LOGGER.info("Sent email to " + credentials.getUserName());
     }
 }

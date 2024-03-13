@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.DeveloperStatusDAO;
 import gov.healthit.chpl.domain.CertificationStatus;
@@ -19,7 +20,6 @@ import gov.healthit.chpl.domain.DeveloperStatus;
 import gov.healthit.chpl.domain.DeveloperStatusEvent;
 import gov.healthit.chpl.domain.schedule.ChplJob;
 import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
-import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.entity.developer.DeveloperStatusType;
 import gov.healthit.chpl.exception.EntityCreationException;
@@ -56,7 +56,7 @@ public class TransactionalDeveloperBanHelper {
     }
 
     @Transactional
-    public void handleCertificationStatusChange(CertifiedProductSearchDetails listing, UserDTO user, String reason)
+    public void handleCertificationStatusChange(CertifiedProductSearchDetails listing, JWTAuthenticatedUser user, String reason)
         throws EntityRetrievalException, ValidationException, EntityCreationException, JsonProcessingException {
 
         CertificationStatus currentStatus = listing.getCurrentStatus().getStatus();
@@ -115,7 +115,7 @@ public class TransactionalDeveloperBanHelper {
         }
     }
 
-    private void sendDeveloperBanEmail(CertifiedProductSearchDetails listing, UserDTO user, String reason) {
+    private void sendDeveloperBanEmail(CertifiedProductSearchDetails listing, JWTAuthenticatedUser user, String reason) {
         ChplOneTimeTrigger possibleDeveloperBanTrigger = new ChplOneTimeTrigger();
         ChplJob triggerDeveloperBanJob = new ChplJob();
         triggerDeveloperBanJob.setName(TriggerDeveloperBanJob.JOB_NAME);

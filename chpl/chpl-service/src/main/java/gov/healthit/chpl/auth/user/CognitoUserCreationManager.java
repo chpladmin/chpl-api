@@ -9,8 +9,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.domain.CreateUserFromInvitationRequest;
-import gov.healthit.chpl.domain.auth.LoginCredentials;
 import gov.healthit.chpl.domain.auth.User;
+import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.UserCreationException;
 import gov.healthit.chpl.exception.UserPermissionRetrievalException;
 import gov.healthit.chpl.exception.UserRetrievalException;
@@ -19,7 +19,6 @@ import gov.healthit.chpl.manager.auth.CognitoUserService;
 import gov.healthit.chpl.service.InvitationEmailer;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import lombok.extern.log4j.Log4j2;
-import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminAddUserToGroupResponse;
 
 @Log4j2
 @Component
@@ -55,29 +54,37 @@ public class CognitoUserCreationManager {
         return createUserInvitation(email);
     }
 
-    //TODO Need to add security
     @Transactional
-    public User createUser(CreateUserFromInvitationRequest userInfo) throws ValidationException {
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SECURED_USER, "
+            + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).CREATE)")
+    public User createUser(CreateUserFromInvitationRequest userInfo)
+            throws ValidationException, UserCreationException, EmailNotSentException {
+
         Set<String> errors = userCreationValidator.validate(userInfo);
         if (errors.size() > 0) {
             throw new ValidationException(errors, null);
         }
 
-        LoginCredentials credentials = cognitoUserService.createUser(userInfo.getUser());
-
-        AdminAddUserToGroupResponse adminAddUserToGroupResponse = cognitoUserService.addUserToAdminGroup(userInfo.getUser().getEmail());
-
-        LOGGER.info("AdminAddUserToGroupResponse: {}", adminAddUserToGroupResponse.toString());
-
-        cognitoConfirmEmailEmailer.sendConfirmationEmail(credentials);
-
-        userInvitationDAO.deleteByToken(UUID.fromString(userInfo.getHash()));
+        // Need to be able to rollback this whole thing if there is an error...
+        CognitoCredentials credentials = null;
+        try {
+            credentials = cognitoUserService.createUser(userInfo.getUser());
+            cognitoUserService.addUserToAdminGroup(userInfo.getUser().getEmail());
+            userInvitationDAO.deleteByToken(UUID.fromString(userInfo.getHash()));
+            cognitoConfirmEmailEmailer.sendConfirmationEmail(credentials);
+        } catch (EmailNotSentException e) {
+            //Invitation deletion should roll back due to @Transactional
+            if (credentials != null) {
+                cognitoUserService.deleteUser(credentials.getCognitoId());
+            }
+            throw e;
+        }
 
         return null;
     }
 
 
-    //TODO Does this make sense?  Can it be left w/o security??
+    //TODO Can it be left w/o security??
     public CognitoUserInvitation getInvitation(UUID token) {
         return userInvitationDAO.getByToken(token);
     }

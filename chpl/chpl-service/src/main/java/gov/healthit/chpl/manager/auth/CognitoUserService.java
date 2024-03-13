@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.CognitoSecretHash;
+import gov.healthit.chpl.auth.user.CognitoCredentials;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.domain.CertificationBody;
@@ -23,6 +24,7 @@ import gov.healthit.chpl.domain.auth.CreateUserRequest;
 import gov.healthit.chpl.domain.auth.LoginCredentials;
 import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.exception.UserCreationException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import lombok.extern.log4j.Log4j2;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
@@ -33,6 +35,7 @@ import software.amazon.awssdk.services.cognitoidentityprovider.CognitoIdentityPr
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminAddUserToGroupRequest;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminAddUserToGroupResponse;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminCreateUserRequest;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminCreateUserResponse;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminDeleteUserRequest;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminInitiateAuthRequest;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminInitiateAuthResponse;
@@ -133,28 +136,33 @@ public class CognitoUserService {
         return user;
     }
 
-    public LoginCredentials createUser(CreateUserRequest userRequest) {
-        String tempPassword = "Password1!-" + (new Date()).getTime();
+    public CognitoCredentials createUser(CreateUserRequest userRequest) throws UserCreationException {
+        try {
+            String tempPassword = "Password1!-" + (new Date()).getTime();
 
-        AdminCreateUserRequest request = AdminCreateUserRequest.builder()
-                .userPoolId(userPoolId)
-                .username(userRequest.getEmail())
-                .userAttributes(
-                        AttributeType.builder().name("name").value(userRequest.getFullName()).build(),
-                        AttributeType.builder().name("email").value(userRequest.getEmail()).build(),
-                        AttributeType.builder().name("phone_number").value("+1" + userRequest.getPhoneNumber()).build(),
-                        AttributeType.builder().name("nickname").value(userRequest.getFriendlyName()).build(),
-                        AttributeType.builder().name("custom:title").value(userRequest.getTitle()).build())
-                .temporaryPassword(tempPassword)
-                .messageAction(MessageActionType.SUPPRESS)
-                .build();
+            AdminCreateUserRequest request = AdminCreateUserRequest.builder()
+                    .userPoolId(userPoolId)
+                    .username(userRequest.getEmail())
+                    .userAttributes(
+                            AttributeType.builder().name("name").value(userRequest.getFullName()).build(),
+                            AttributeType.builder().name("email").value(userRequest.getEmail()).build(),
+                            AttributeType.builder().name("phone_number").value("+1" + userRequest.getPhoneNumber()).build(),
+                            AttributeType.builder().name("nickname").value(userRequest.getFriendlyName()).build(),
+                            AttributeType.builder().name("custom:title").value(userRequest.getTitle()).build())
+                    .temporaryPassword(tempPassword)
+                    .messageAction(MessageActionType.SUPPRESS)
+                    .build();
 
-        cognitoClient.adminCreateUser(request);
+            AdminCreateUserResponse response = cognitoClient.adminCreateUser(request);
 
-        return LoginCredentials.builder()
-                .userName(userRequest.getEmail())
-                .password(tempPassword)
-                .build();
+            return CognitoCredentials.builder()
+                    .cognitoId(UUID.fromString(response.user().username()))
+                    .userName(userRequest.getEmail())
+                    .password(tempPassword)
+                    .build();
+        } catch (Exception e) {
+            throw new UserCreationException(String.format("Error creating user with email %s in store.", userRequest.getEmail()));
+        }
     }
 
     public AdminAddUserToGroupResponse addUserToAdminGroup(String email) {

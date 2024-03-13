@@ -17,6 +17,7 @@ import gov.healthit.chpl.auth.user.CognitoUserCreationManager;
 import gov.healthit.chpl.auth.user.CognitoUserInvitation;
 import gov.healthit.chpl.domain.CreateUserFromInvitationRequest;
 import gov.healthit.chpl.domain.auth.User;
+import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.UserCreationException;
 import gov.healthit.chpl.exception.UserPermissionRetrievalException;
 import gov.healthit.chpl.exception.UserRetrievalException;
@@ -93,12 +94,7 @@ public class CognitoUserController {
             })
     @RequestMapping(value = "/create", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
-    public @ResponseBody User createUser(@RequestBody CreateUserFromInvitationRequest userInfo) throws ValidationException {
-            //throws ValidationException, EntityRetrievalException, InvalidArgumentsException,
-            //UserRetrievalException, MultipleUserAccountsException, UserCreationException,
-            //EmailNotSentException, JsonProcessingException, EntityCreationException {
-
-
+    public @ResponseBody User createUser(@RequestBody CreateUserFromInvitationRequest userInfo) throws ValidationException, EmailNotSentException, UserCreationException {
         CognitoUserInvitation invitation = cognitoUserCreationManager.getInvitation(UUID.fromString(userInfo.getHash()));
         if (invitation != null) {
             try {
