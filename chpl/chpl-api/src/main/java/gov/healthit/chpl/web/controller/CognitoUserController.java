@@ -20,7 +20,6 @@ import gov.healthit.chpl.exception.UserCreationException;
 import gov.healthit.chpl.exception.UserPermissionRetrievalException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
-import gov.healthit.chpl.manager.auth.CognitoAuthenticationManager;
 import gov.healthit.chpl.user.cognito.CognitoUserInvitation;
 import gov.healthit.chpl.user.cognito.CognitoUserManager;
 import gov.healthit.chpl.util.AuthUtil;
@@ -35,13 +34,11 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RequestMapping("/cognito/users")
 public class CognitoUserController {
 
-    private CognitoAuthenticationManager cognitoAuthenticationManager;
     private CognitoUserManager cognitoUserManager;
 
 
     @Autowired
-    public CognitoUserController(CognitoAuthenticationManager cognitoAuthenticationManager, CognitoUserManager cognitoUserManager) {
-        this.cognitoAuthenticationManager = cognitoAuthenticationManager;
+    public CognitoUserController(CognitoUserManager cognitoUserManager) {
         this.cognitoUserManager = cognitoUserManager;
     }
 
@@ -55,7 +52,7 @@ public class CognitoUserController {
     @RequestMapping(value = "/{ssoUserId}", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     public @ResponseBody User getUser(@PathVariable("ssoUserId") UUID ssoUserId) throws UserRetrievalException {
-        return cognitoAuthenticationManager.getUserInfo(ssoUserId);
+        return cognitoUserManager.getUserInfo(ssoUserId);
     }
 
     @Operation(summary = "Invite a user to the CHPL.",
