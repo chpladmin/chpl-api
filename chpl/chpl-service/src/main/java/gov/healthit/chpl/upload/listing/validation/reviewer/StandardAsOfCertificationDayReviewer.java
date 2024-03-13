@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.standard.BaselineStandardService;
 import gov.healthit.chpl.standard.StandardDAO;
 import gov.healthit.chpl.standard.StandardGroupService;
 import gov.healthit.chpl.util.CertificationResultRules;
@@ -20,8 +21,9 @@ public class StandardAsOfCertificationDayReviewer extends StandardReviewer {
 
     @Autowired
     public StandardAsOfCertificationDayReviewer(CertificationResultRules certResultRules, ValidationUtils validationUtils,
-            StandardDAO standardDao, StandardGroupService standardGroupService, ErrorMessageUtil msgUtil) {
-        super(certResultRules, validationUtils, standardDao, standardGroupService, msgUtil);
+            StandardDAO standardDao, BaselineStandardService baselineStandardService,
+            StandardGroupService standardGroupService, ErrorMessageUtil msgUtil) {
+        super(certResultRules, validationUtils, standardDao, baselineStandardService, standardGroupService, msgUtil);
     }
 
     public LocalDate getStandardsCheckDate(CertifiedProductSearchDetails listing) {

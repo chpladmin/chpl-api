@@ -10,6 +10,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.standard.BaselineStandardService;
 import gov.healthit.chpl.standard.CertificationResultStandard;
 import gov.healthit.chpl.standard.Standard;
 import gov.healthit.chpl.standard.StandardDAO;
@@ -26,15 +27,20 @@ public abstract class StandardReviewer extends StandardGroupReviewer {
     private CertificationResultRules certResultRules;
     private ValidationUtils validationUtils;
     private StandardDAO standardDao;
+    private BaselineStandardService baselineStandardService;
+    private StandardGroupService standardGroupService;
     private ErrorMessageUtil msgUtil;
 
 
     public StandardReviewer(CertificationResultRules certResultRules, ValidationUtils validationUtils,
-            StandardDAO standardDao, StandardGroupService standardGroupService, ErrorMessageUtil msgUtil) {
+            StandardDAO standardDao, BaselineStandardService baselineStandardService,
+            StandardGroupService standardGroupService, ErrorMessageUtil msgUtil) {
         super(standardGroupService, msgUtil);
         this.certResultRules = certResultRules;
         this.validationUtils = validationUtils;
         this.standardDao = standardDao;
+        this.standardGroupService = standardGroupService;
+        this.baselineStandardService = baselineStandardService;
         this.msgUtil = msgUtil;
     }
 
@@ -53,6 +59,7 @@ public abstract class StandardReviewer extends StandardGroupReviewer {
         reviewCriteriaCanHaveStandard(listing, certResult);
         removeStandardsWithoutIds(listing, certResult);
         removeStandardMismatchedToCriteria(listing, certResult);
+        reviewRequiredBaselineStandardsExist(listing, certResult);
         reviewStandardExistForEachGroup(listing, certResult, getStandardsCheckDate(listing));
         if (certResult.getStandards() != null && certResult.getStandards().size() > 0) {
             certResult.getStandards().stream()
@@ -128,6 +135,33 @@ public abstract class StandardReviewer extends StandardGroupReviewer {
                 .map(criterion -> Util.formatCriteriaNumber(criterion))
                 .collect(Collectors.toList());
         return Util.joinListGrammatically(criteriaNumbers);
+    }
+
+    private CertificationResult reviewRequiredBaselineStandardsExist(CertifiedProductSearchDetails listing, CertificationResult certResult) {
+        List<Standard> validStandardsForCriterionAndListing = baselineStandardService.getBaselineStandardsForCriteriaAndListing(
+                listing, certResult.getCriterion(), getStandardsCheckDate(listing));
+
+        validStandardsForCriterionAndListing
+                .forEach(std -> {
+                    List<Standard> standardsExistingInCertResult = certResult.getStandards().stream()
+                            .map(crs -> crs.getStandard())
+                            .toList();
+
+                    if (!isStandardInList(std, standardsExistingInCertResult)) {
+                        listing.addBusinessErrorMessage(msgUtil.getMessage("listing.criteria.standardNotSelected",
+                                Util.formatCriteriaNumber(certResult.getCriterion()),
+                                std.getRegulatoryTextCitation()));
+                    }
+                });
+
+        return certResult;
+    }
+
+    private Boolean isStandardInList(Standard standard, List<Standard> standards) {
+        return standards.stream()
+                .filter(std -> standard.getId().equals(std.getId()))
+                .findAny()
+                .isPresent();
     }
 
     private void reviewStandardFields(CertifiedProductSearchDetails listing,

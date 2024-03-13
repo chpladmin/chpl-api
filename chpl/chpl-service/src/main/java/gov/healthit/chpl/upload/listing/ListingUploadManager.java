@@ -55,7 +55,7 @@ import gov.healthit.chpl.manager.SchedulerManager;
 import gov.healthit.chpl.scheduler.job.ListingUploadValidationJob;
 import gov.healthit.chpl.upload.listing.handler.CertificationDateHandler;
 import gov.healthit.chpl.upload.listing.handler.ListingDetailsUploadHandler;
-import gov.healthit.chpl.upload.listing.normalizer.BaselineStandardNormalizer;
+import gov.healthit.chpl.upload.listing.normalizer.BaselineStandardAsOfCertificationDayNormalizer;
 import gov.healthit.chpl.upload.listing.normalizer.ListingDetailsNormalizer;
 import gov.healthit.chpl.upload.listing.validation.ListingUploadValidator;
 import gov.healthit.chpl.util.AuthUtil;
@@ -80,7 +80,7 @@ public class ListingUploadManager {
     private SchedulerManager schedulerManager;
     private ActivityManager activityManager;
     private ErrorMessageUtil msgUtil;
-    private BaselineStandardNormalizer baselineStandardNormalizer;
+    private BaselineStandardAsOfCertificationDayNormalizer baselineStandardNormalizer;
 
     @Autowired
     @SuppressWarnings("checkstyle:parameternumber")
@@ -91,7 +91,7 @@ public class ListingUploadManager {
             CertificationBodyDAO acbDao, UserDAO userDao,
             ListingConfirmationManager listingConfirmationManager, SchedulerManager schedulerManager,
             ActivityManager activityManager, ErrorMessageUtil msgUtil,
-            BaselineStandardNormalizer baselineStandardNormalizer) {
+            BaselineStandardAsOfCertificationDayNormalizer baselineStandardNormalizer) {
         this.listingDetailsHandler = listingDetailsHandler;
         this.certDateHandler = certDateHandler;
         this.listingNormalizer = listingNormalizer;
