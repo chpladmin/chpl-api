@@ -13,20 +13,20 @@ import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.entity.developer.DeveloperStatusType;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.rules.ValidationRule;
-import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 public class ProductOwnerValidation extends ValidationRule<ProductValidationContext> {
     private DeveloperDAO developerDao;
     private ProductDAO productDao;
-    private ResourcePermissions resourcePermissions;
+    private ResourcePermissionsFactory resourcePermissionsFactory;
 
     public ProductOwnerValidation(DeveloperDAO developerDao, ProductDAO productDao,
-            ResourcePermissions resourcePermissions) {
+            ResourcePermissionsFactory resourcePermissionsFactory) {
         this.developerDao = developerDao;
         this.productDao = productDao;
-        this.resourcePermissions = resourcePermissions;
+        this.resourcePermissionsFactory = resourcePermissionsFactory;
     }
 
     @Override
@@ -79,7 +79,7 @@ public class ProductOwnerValidation extends ValidationRule<ProductValidationCont
     }
 
     private boolean isUserAllowedToActOnInactiveDeveloper() {
-        return resourcePermissions.isUserRoleAdmin() || resourcePermissions.isUserRoleOnc();
+        return resourcePermissionsFactory.get().isUserRoleAdmin() || resourcePermissionsFactory.get().isUserRoleOnc();
     }
 
     private Product getExistingProduct(Long productId) {

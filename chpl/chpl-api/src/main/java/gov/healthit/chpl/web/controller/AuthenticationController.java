@@ -1,8 +1,11 @@
 package gov.healthit.chpl.web.controller;
 
+import org.apache.commons.lang3.StringUtils;
 import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -16,8 +19,9 @@ import com.nulabinc.zxcvbn.Strength;
 import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.auth.ChplAccountEmailNotConfirmedException;
 import gov.healthit.chpl.auth.ChplAccountStatusException;
-import gov.healthit.chpl.auth.authentication.JWTUserConverter;
-import gov.healthit.chpl.auth.user.User;
+import gov.healthit.chpl.auth.authentication.JWTUserConverterFacade;
+import gov.healthit.chpl.auth.user.AuthenticationSystem;
+import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.domain.auth.AuthenticationResponse;
 import gov.healthit.chpl.domain.auth.LoginCredentials;
 import gov.healthit.chpl.domain.auth.ResetPasswordRequest;
@@ -55,7 +59,7 @@ public class AuthenticationController {
     private UserAccountUpdateEmailer userAccountUpdateEmailer;
     private BCryptPasswordEncoder bCryptPasswordEncoder;
     private UserManager userManager;
-    private JWTUserConverter userConverter;
+    private JWTUserConverterFacade userConverterFacade;
     private ErrorMessageUtil msgUtil;
     private CognitoAuthenticationManager cognitoAuthenticationManager;
     private FF4j ff4j;
@@ -64,13 +68,13 @@ public class AuthenticationController {
     public AuthenticationController(AuthenticationManager authenticationManager,
             UserAccountUpdateEmailer userAccountUpdateEmailer,
             BCryptPasswordEncoder bCryptPasswordEncoder,
-            UserManager userManager, JWTUserConverter userConverter, ErrorMessageUtil msgUtil,
+            UserManager userManager, JWTUserConverterFacade userConverterFacade, ErrorMessageUtil msgUtil,
             FF4j ff4j, CognitoAuthenticationManager cognitoAuthenticationManager) {
         this.authenticationManager = authenticationManager;
         this.userAccountUpdateEmailer = userAccountUpdateEmailer;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.userManager = userManager;
-        this.userConverter = userConverter;
+        this.userConverterFacade = userConverterFacade;
         this.msgUtil = msgUtil;
         this.ff4j = ff4j;
         this.cognitoAuthenticationManager = cognitoAuthenticationManager;
@@ -88,13 +92,17 @@ public class AuthenticationController {
     @RequestMapping(value = "/authenticate", method = RequestMethod.POST,
             consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
     public AuthenticationResponse authenticateJSON(@RequestBody LoginCredentials credentials)
-            throws JWTCreationException, UserRetrievalException, MultipleUserAccountsException,
-            ChplAccountEmailNotConfirmedException {
-        String jwt = "";
+            throws JWTCreationException, UserRetrievalException, MultipleUserAccountsException, ChplAccountEmailNotConfirmedException {
 
+        String jwt = null;
+
+        //If SSO is turned on try to auth using cognito
         if (ff4j.check(FeatureList.SSO)) {
             jwt = cognitoAuthenticationManager.authenticate(credentials);
-        } else {
+        }
+
+        //If SSO is turned off or Cognito auth fails, use the CHPL auth
+        if (StringUtils.isEmpty(jwt)) {
             jwt = authenticationManager.authenticate(credentials);
         }
 
@@ -109,8 +117,16 @@ public class AuthenticationController {
     @Hidden
     @RequestMapping(value = "/keep-alive", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
-    public AuthenticationResponse keepAlive() throws JWTCreationException, UserRetrievalException, MultipleUserAccountsException {
-        String jwt = authenticationManager.refreshJWT();
+    public AuthenticationResponse keepAlive(@RequestHeader (name = "Authorization") String token) throws JWTCreationException, UserRetrievalException, MultipleUserAccountsException {
+        //TODO Currently, keep-alive only works when logged in using CHPL id.  Cognito keep-alive will be implemented in the future
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String jwt = token.startsWith("Bearer") ? token.substring(7) : token;
+        if (auth != null
+                && auth instanceof JWTAuthenticatedUser
+                && ((JWTAuthenticatedUser) auth).getAuthenticationSystem().equals(AuthenticationSystem.CHPL)) {
+
+            jwt = authenticationManager.refreshJWT();
+        }
         return AuthenticationResponse.builder()
                 .token(jwt)
                 .build();
@@ -212,8 +228,16 @@ public class AuthenticationController {
     @RequestMapping(value = "/unimpersonate", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public AuthenticationResponse unimpersonateUser(@RequestHeader(value = "Authorization", required = true) String userJwt)
             throws JWTValidationException, JWTCreationException, UserRetrievalException, MultipleUserAccountsException {
-        User user = userConverter.getImpersonatingUser(userJwt.split(" ")[1]);
-        String jwt = authenticationManager.unimpersonateUser(user);
+        JWTAuthenticatedUser user = userConverterFacade.getImpersonatingUser(userJwt.split(" ")[1]);
+
+        String jwt = "";
+        if (user != null) {
+            jwt = authenticationManager.unimpersonateUser(user);
+        } else {
+            //This should be the scenario where someone tries to stop impersonating a Cognito user -- a scenario
+            //that is not currently supported.  Returning the passed in token should have no effect.
+            jwt = userJwt;
+        }
 
         return AuthenticationResponse.builder()
                 .token(jwt)

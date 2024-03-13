@@ -117,7 +117,7 @@ public class RemoveDuplicateIcsRelationshipsJob extends QuartzJob {
         adminUser.setId(-2L);
         adminUser.setFriendlyName("Admin");
         adminUser.setSubjectName("admin");
-        adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
+        adminUser.getAuthorities().add(new GrantedPermission("ROLE_ADMIN"));
 
         SecurityContextHolder.getContext().setAuthentication(adminUser);
         SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);

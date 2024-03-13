@@ -8,9 +8,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.permissions.domain.ActionPermissionsBaseTest;
 
 public class DeleteActionPermissionsTest extends ActionPermissionsBaseTest {
@@ -19,12 +21,16 @@ public class DeleteActionPermissionsTest extends ActionPermissionsBaseTest {
     @Mock
     private ResourcePermissions resourcePermissions;
 
+    @Mock
+    private ResourcePermissionsFactory resourcePermissionsFacotry;
+
     @InjectMocks
     private DeleteActionPermissions permissions;
 
     @Before
     public void setup() {
         closeableMocks = MockitoAnnotations.openMocks(this);
+        Mockito.when(resourcePermissionsFacotry.get()).thenReturn(resourcePermissions);
     }
 
     @After

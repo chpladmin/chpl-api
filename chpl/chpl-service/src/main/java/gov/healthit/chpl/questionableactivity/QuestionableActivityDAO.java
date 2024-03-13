@@ -26,7 +26,6 @@ import gov.healthit.chpl.questionableactivity.entity.QuestionableActivityListing
 import gov.healthit.chpl.questionableactivity.entity.QuestionableActivityProductEntity;
 import gov.healthit.chpl.questionableactivity.entity.QuestionableActivityTriggerEntity;
 import gov.healthit.chpl.questionableactivity.entity.QuestionableActivityVersionEntity;
-import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.UserMapper;
 import lombok.extern.log4j.Log4j2;
 
@@ -80,8 +79,6 @@ public class QuestionableActivityDAO extends BaseDAOImpl {
         toCreate.setAfter(qa.getAfter());
         toCreate.setTriggerId(qa.getTrigger().getId());
         toCreate.setUserId(qa.getUserId());
-        toCreate.setDeleted(false);
-        toCreate.setLastModifiedUser(AuthUtil.getAuditId());
         entityManager.persist(toCreate);
         entityManager.flush();
         entityManager.clear();

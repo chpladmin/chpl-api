@@ -17,6 +17,7 @@ import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.ListingUpload;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.permissions.domain.ActionPermissionsBaseTest;
 import gov.healthit.chpl.permissions.domains.listingUpload.DeleteActionPermissions;
 import gov.healthit.chpl.upload.listing.ListingUploadDao;
@@ -28,6 +29,9 @@ public class DeleteActionPermissionsTest extends ActionPermissionsBaseTest {
     @Mock
     private ListingUploadDao listingUploadDao;
 
+    @Mock
+    private ResourcePermissionsFactory resourcePermissionsFacotry;
+
     @InjectMocks
     private DeleteActionPermissions permissions;
 
@@ -35,6 +39,7 @@ public class DeleteActionPermissionsTest extends ActionPermissionsBaseTest {
     @Before
     public void setup() throws EntityRetrievalException {
         MockitoAnnotations.initMocks(this);
+        Mockito.when(resourcePermissionsFacotry.get()).thenReturn(resourcePermissions);
         Mockito.when(resourcePermissions.getAllAcbsForCurrentUser()).thenReturn(getAllAcbForUser(2L));
         Mockito.when(listingUploadDao.getById(ArgumentMatchers.anyLong()))
             .thenAnswer(i -> buildListingUpload(i.getArgument(0)));

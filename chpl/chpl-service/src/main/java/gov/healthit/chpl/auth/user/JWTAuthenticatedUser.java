@@ -1,136 +1,54 @@
 package gov.healthit.chpl.auth.user;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 import java.util.UUID;
 
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
-import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.dto.auth.UserDTO;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
-public class JWTAuthenticatedUser implements User {
-    private static final long serialVersionUID = -4472262738122217527L;
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class JWTAuthenticatedUser implements UserDetails, Authentication {
+    private static final long serialVersionUID = -7558546038256722930L;
 
+    private AuthenticationSystem authenticationSystem;
+    private UUID cognitoId;
     private Long id;
-    private String email;
+    private List<Long> organizationIds;
+    private String subjectName;
     private String fullName;
     private String friendlyName;
-    private Set<GrantedPermission> permissions = new HashSet<GrantedPermission>();
-    private final boolean accountExpired = false;
-    private final boolean accountLocked = false;
-    private final boolean credentialsExpired = false;
-    private final boolean accountEnabled = true;
-    private boolean passwordResetRequired = false;
-    private boolean authenticated = true;
+    private String email;
+    private String passwordResetRequired;
+
     private UserDTO impersonatingUser;
 
-    /** Default constructor. */
-    public JWTAuthenticatedUser() {
-        this.email = null;
-    }
+    // UserDetails interface
+    private String password;
+    private String username;
+    private boolean accountNonExpired;
+    private boolean accountNonLocked;
+    private boolean credentialsNonExpired;
+    private boolean enabled;
 
-    @Override
-    public void addPermission(GrantedPermission permission) {
-        this.permissions.add(permission);
-    }
-
-    public void addPermission(String permissionValue) {
-        GrantedPermission permission = new GrantedPermission(permissionValue);
-        this.permissions.add(permission);
-    }
-
-    @Override
-    public void removePermission(String permissionValue) {
-        this.permissions.remove(new GrantedPermission(permissionValue));
-    }
-
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return this.getPermissions();
-    }
-
-    @Override
-    public Object getCredentials() {
-        return this.getPassword();
-    }
-
-    @Override
-    public Object getDetails() {
-        return this;
-    }
-
-    @Override
-    public Object getPrincipal() {
-        return this.getName();
-    }
-
-    @Override
-    public boolean isAuthenticated() {
-        return this.authenticated;
-    }
-
-    @Override
-    public void setAuthenticated(boolean arg0) throws IllegalArgumentException {
-        this.authenticated = arg0;
-    }
-
-    @Override
-    public String getName() {
-        return email;
-    }
-
-    @Override
-    public String getPassword() {
-        return null;
-    }
-
-    @Override
-    public String getUsername() {
-        return email;
-    }
-
-    @Override
-    public boolean isAccountNonExpired() {
-        return !accountExpired;
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return !accountLocked;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return !credentialsExpired;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return accountEnabled;
-    }
-
-    @Override
-    public boolean getPasswordResetRequired() {
-        return this.passwordResetRequired;
-    }
-
-    @Override
-    public String getSubjectName() {
-        return email;
-    }
-
-    @Override
-    public void setSubjectName(String subject) {
-        this.email = subject;
-    }
-
-    @Override
-    public UUID getSsoId() {
-        return null;
-    }
+    // Authentication Interface
+    @Builder.Default
+    private Collection<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
+    private Object credentials;
+    private Object details;
+    private Object principal;
+    private boolean authenticated;
+    private String name;
 
 }

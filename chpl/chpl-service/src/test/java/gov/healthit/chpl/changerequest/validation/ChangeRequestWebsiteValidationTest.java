@@ -17,6 +17,7 @@ import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.util.ValidationUtils;
 
 public class ChangeRequestWebsiteValidationTest {
@@ -24,11 +25,13 @@ public class ChangeRequestWebsiteValidationTest {
     public void validateSelfDeveloper_ValidData_ReturnsTrue() throws EntityRetrievalException {
         ResourcePermissions resourcePermissions = Mockito.mock(ResourcePermissions.class);
         Mockito.when(resourcePermissions.isUserRoleDeveloperAdmin()).thenReturn(true);
+        ResourcePermissionsFactory resourcePermissionsFactory = Mockito.mock(ResourcePermissionsFactory.class);
+        Mockito.when(resourcePermissionsFactory.get()).thenReturn(resourcePermissions);
 
         ValidationUtils validationUtils = Mockito.mock(ValidationUtils.class);
         Mockito.when(validationUtils.isWellFormedUrl(ArgumentMatchers.anyString())).thenReturn(true);
 
-        ChangeRequestValidationContext context = getValidationContext("http://www.abc.com", resourcePermissions);
+        ChangeRequestValidationContext context = getValidationContext("http://www.abc.com", resourcePermissionsFactory);
         context.setValidationUtils(validationUtils);
 
         WebsiteValidation crWebsiteValidator = new WebsiteValidation();
@@ -42,11 +45,13 @@ public class ChangeRequestWebsiteValidationTest {
     public void validateSelfDeveloper_InvalidUrl_ReturnsFalse() throws EntityRetrievalException {
         ResourcePermissions resourcePermissions = Mockito.mock(ResourcePermissions.class);
         Mockito.when(resourcePermissions.isUserRoleDeveloperAdmin()).thenReturn(true);
+        ResourcePermissionsFactory resourcePermissionsFactory = Mockito.mock(ResourcePermissionsFactory.class);
+        Mockito.when(resourcePermissionsFactory.get()).thenReturn(resourcePermissions);
 
         ValidationUtils validationUtils = Mockito.mock(ValidationUtils.class);
         Mockito.when(validationUtils.isWellFormedUrl(ArgumentMatchers.anyString())).thenReturn(false);
 
-        ChangeRequestValidationContext context = getValidationContext("www.abc", resourcePermissions);
+        ChangeRequestValidationContext context = getValidationContext("www.abc", resourcePermissionsFactory);
         context.setValidationUtils(validationUtils);
 
         WebsiteValidation crWebsiteValidator = new WebsiteValidation();
@@ -60,8 +65,10 @@ public class ChangeRequestWebsiteValidationTest {
     public void validateSelfDeveloper_MissingData_ReturnsFalse() throws EntityRetrievalException {
         ResourcePermissions resourcePermissions = Mockito.mock(ResourcePermissions.class);
         Mockito.when(resourcePermissions.isUserRoleDeveloperAdmin()).thenReturn(true);
+        ResourcePermissionsFactory resourcePermissionsFactory = Mockito.mock(ResourcePermissionsFactory.class);
+        Mockito.when(resourcePermissionsFactory.get()).thenReturn(resourcePermissions);
 
-        ChangeRequestValidationContext context = getValidationContext(null, resourcePermissions);
+        ChangeRequestValidationContext context = getValidationContext(null, resourcePermissionsFactory);
         WebsiteValidation crWebsiteValidator = new WebsiteValidation();
 
         boolean result = crWebsiteValidator.isValid(context);
@@ -104,7 +111,7 @@ public class ChangeRequestWebsiteValidationTest {
                 .build();
     }
 
-    private ChangeRequestValidationContext getValidationContext(String website, ResourcePermissions resourcePermissions) {
+    private ChangeRequestValidationContext getValidationContext(String website, ResourcePermissionsFactory resourcePermissionsFactory) {
         return new ChangeRequestValidationContext(null,
                         getChangeRequest(website),
                         null,
@@ -112,7 +119,7 @@ public class ChangeRequestWebsiteValidationTest {
                         null,
                         null,
                         null,
-                        resourcePermissions,
+                        resourcePermissionsFactory,
                         null,
                         null,
                         null,

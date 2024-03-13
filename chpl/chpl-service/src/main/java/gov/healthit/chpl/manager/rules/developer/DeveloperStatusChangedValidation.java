@@ -6,19 +6,19 @@ import gov.healthit.chpl.domain.DeveloperStatus;
 import gov.healthit.chpl.entity.developer.DeveloperStatusType;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.rules.ValidationRule;
-import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 public class DeveloperStatusChangedValidation extends ValidationRule<DeveloperValidationContext> {
-    private ResourcePermissions resourcePermissions;
+    private ResourcePermissionsFactory resourcePermissionsFactory;
 
-    public DeveloperStatusChangedValidation(final ResourcePermissions resourcePermissions) {
-        this.resourcePermissions = resourcePermissions;
+    public DeveloperStatusChangedValidation(ResourcePermissionsFactory resourcePermissionsFactory) {
+        this.resourcePermissionsFactory = resourcePermissionsFactory;
     }
 
-    public DeveloperStatusChangedValidation(final DeveloperManager developerManagerImpl,
-            final ResourcePermissions resourcePermissions, final DeveloperDAO developerDao) {
-        this.resourcePermissions = resourcePermissions;
+    public DeveloperStatusChangedValidation(DeveloperManager developerManagerImpl,
+            ResourcePermissionsFactory resourcePermissionsFactory, DeveloperDAO developerDao) {
+        this.resourcePermissionsFactory = resourcePermissionsFactory;
     }
 
     @Override
@@ -33,7 +33,7 @@ public class DeveloperStatusChangedValidation extends ValidationRule<DeveloperVa
         if (currentStatusChanged
                 && !newDevStatus.getStatus()
                         .equals(DeveloperStatusType.UnderCertificationBanByOnc.toString())
-                && !resourcePermissions.isUserRoleAdmin() && !resourcePermissions.isUserRoleOnc()) {
+                && !resourcePermissionsFactory.get().isUserRoleAdmin() && !resourcePermissionsFactory.get().isUserRoleOnc()) {
             String msg = msgUtil.getMessage("developer.statusChangeNotAllowedWithoutAdmin");
             getMessages().add(msg);
             return false;

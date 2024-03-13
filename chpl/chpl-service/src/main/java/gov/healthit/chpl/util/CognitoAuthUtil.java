@@ -6,11 +6,12 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import gov.healthit.chpl.auth.user.ChplSystemUsers;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
-import gov.healthit.chpl.auth.user.SystemUsers;
-import gov.healthit.chpl.auth.user.User;
 
-public class CognitoAuthUtil {
+public final class CognitoAuthUtil {
+    private CognitoAuthUtil() { }
+
     public static String getUsername() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
@@ -21,11 +22,11 @@ public class CognitoAuthUtil {
         }
     }
 
-    public static User getCurrentUser() {
-        User user = null;
+    public static JWTAuthenticatedUser getCurrentUser() {
+        JWTAuthenticatedUser user = null;
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth instanceof User) {
-            user = (User) auth;
+        if (auth instanceof JWTAuthenticatedUser) {
+            user = (JWTAuthenticatedUser) auth;
         }
         return user;
     }
@@ -46,12 +47,12 @@ public class CognitoAuthUtil {
                 return user.getId();
             }
         }
-        return SystemUsers.DEFAULT_USER_ID;
+        return ChplSystemUsers.DEFAULT_USER_ID;
     }
 
 
     //TODO - OCD-4377 - Need to figure out how to get this
-    public static UUID getAuditSsoUser() {
+    public static UUID getAuditCognitoUser() {
         //JWTAuthenticatedUser user = null;
         //Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 

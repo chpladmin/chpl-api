@@ -20,6 +20,7 @@ import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.permissions.domain.ActionPermissionsBaseTest;
 import gov.healthit.chpl.permissions.domains.changerequest.SearchActionPermissions;
 
@@ -27,6 +28,9 @@ public class SearchActionPermissionsTest extends ActionPermissionsBaseTest {
 
     @Mock
     private ResourcePermissions resourcePermissions;
+
+    @Mock
+    private ResourcePermissionsFactory resourcePermissionsFacotry;
 
     @Mock
     private DeveloperCertificationBodyMapDAO developerCertificationBodyMapDAO;
@@ -37,7 +41,7 @@ public class SearchActionPermissionsTest extends ActionPermissionsBaseTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-
+        Mockito.when(resourcePermissionsFacotry.get()).thenReturn(resourcePermissions);
         Mockito.when(resourcePermissions.getAllDevelopersForCurrentUser()).thenReturn(getAllDeveloperForUser(2L, 4L));
     }
 

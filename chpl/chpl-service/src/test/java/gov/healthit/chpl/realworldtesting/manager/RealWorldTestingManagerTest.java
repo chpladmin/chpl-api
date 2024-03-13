@@ -9,10 +9,11 @@ import org.mockito.Mockito;
 import org.quartz.SchedulerException;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import gov.healthit.chpl.auth.permission.GrantedPermission;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
+import gov.healthit.chpl.domain.auth.Authority;
 import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.exception.UserRetrievalException;
@@ -159,7 +160,8 @@ public class RealWorldTestingManagerTest {
         adminUser.setId(USER_ID);
         adminUser.setFriendlyName("Administrator");
         adminUser.setSubjectName("admin");
-        adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
+        adminUser.getAuthorities().add(new SimpleGrantedAuthority(Authority.ROLE_ADMIN));
+
         SecurityContextHolder.getContext().setAuthentication(adminUser);
     }
 }

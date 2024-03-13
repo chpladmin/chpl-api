@@ -23,7 +23,7 @@ import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.service.CertificationCriterionService.Criteria2015;
 import gov.healthit.chpl.util.CertificationResultRules;
@@ -51,13 +51,13 @@ public class ConformanceMethodReviewer extends PermissionBasedReviewer {
             ErrorMessageUtil msgUtil,
             ValidationUtils validationUtils, CertificationResultRules certResultRules,
             CertificationCriterionService criteriaService,
-            ResourcePermissions resourcePermissions) {
-        super(msgUtil, resourcePermissions);
+            ResourcePermissionsFactory resourcePermissionsFactory) {
+        super(msgUtil, resourcePermissionsFactory);
         this.msgUtil = msgUtil;
         this.certResultDao = certResultDao;
         this.validationUtils = validationUtils;
         this.certResultRules = certResultRules;
-        this.resourcePermissions = resourcePermissions;
+        this.resourcePermissionsFactory = resourcePermissionsFactory;
         f3 = criteriaService.get(Criteria2015.F_3);
 
         try {

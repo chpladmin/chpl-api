@@ -24,6 +24,7 @@ import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.permissions.domain.ActionPermissionsBaseTest;
 import gov.healthit.chpl.permissions.domains.changerequest.UpdateActionPermissions;
 
@@ -31,6 +32,9 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
 
     @Mock
     private ResourcePermissions resourcePermissions;
+
+    @Mock
+    private ResourcePermissionsFactory resourcePermissionsFacotry;
 
     @Mock
     private ChangeRequestDAO changeRequestDAO;
@@ -44,6 +48,8 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
     @Before
     public void setup() throws EntityRetrievalException {
         MockitoAnnotations.initMocks(this);
+
+        Mockito.when(resourcePermissionsFacotry.get()).thenReturn(resourcePermissions);
 
         Mockito.when(resourcePermissions.getAllDevelopersForCurrentUser()).thenReturn(getAllDeveloperForUser(2L, 4L));
 

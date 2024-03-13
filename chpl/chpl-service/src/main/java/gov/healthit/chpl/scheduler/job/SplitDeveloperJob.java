@@ -14,7 +14,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.quartz.DisallowConcurrentExecution;
-import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -24,12 +23,10 @@ import org.springframework.cache.CacheManager;
 import org.springframework.core.env.Environment;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.caching.ListingSearchCacheRefresh;
 import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
@@ -55,7 +52,7 @@ import gov.healthit.chpl.manager.ProductManager;
 import gov.healthit.chpl.util.DateUtil;
 
 @DisallowConcurrentExecution
-public class SplitDeveloperJob implements Job {
+public class SplitDeveloperJob extends QuartzJob {
     public static final String JOB_NAME = "splitDeveloperJob";
     public static final String OLD_DEVELOPER_KEY = "oldDeveloper";
     public static final String NEW_DEVELOPER_KEY = "newDeveloper";
@@ -152,18 +149,6 @@ public class SplitDeveloperJob implements Job {
             }
         }
         LOGGER.info("********* Completed the Split Developer job. *********");
-    }
-
-    private void setSecurityContext(UserDTO user) {
-        JWTAuthenticatedUser splitUser = new JWTAuthenticatedUser();
-        splitUser.setFullName(user.getFullName());
-        splitUser.setId(user.getId());
-        splitUser.setFriendlyName(user.getFriendlyName());
-        splitUser.setSubjectName(user.getUsername());
-        splitUser.getPermissions().add(user.getPermission().getGrantedPermission());
-
-        SecurityContextHolder.getContext().setAuthentication(splitUser);
-        SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);
     }
 
     private Developer splitDeveloper(Developer developerToCreate, List<Long> productIdsToMove)
