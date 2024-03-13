@@ -89,17 +89,18 @@ public class CognitoUserController {
     @RequestMapping(value = "/create", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
     public @ResponseBody BooleanResult createUser(@RequestBody CreateUserFromInvitationRequest userInfo) throws ValidationException, EmailNotSentException, UserCreationException {
-        CognitoUserInvitation invitation = cognitoUserManager.getInvitation(UUID.fromString(userInfo.getHash()));
+
         Boolean success = false;
-        if (invitation != null) {
-            try {
-                //This should set the security context to user "admin" role
-                Authentication authenticator = AuthUtil.getInvitedUserAuthenticator(null);
+        try {
+            //This should set the security context to user "admin" role
+            Authentication authenticator = AuthUtil.getInvitedUserAuthenticator(null);
+            CognitoUserInvitation invitation = cognitoUserManager.getInvitation(UUID.fromString(userInfo.getHash()));
+            if (invitation != null) {
                 SecurityContextHolder.getContext().setAuthentication(authenticator);
                 success = cognitoUserManager.createUser(userInfo);
-            } finally {
-            SecurityContextHolder.getContext().setAuthentication(null);
             }
+        } finally {
+        SecurityContextHolder.getContext().setAuthentication(null);
         }
         return BooleanResult.builder()
                 .success(success)
