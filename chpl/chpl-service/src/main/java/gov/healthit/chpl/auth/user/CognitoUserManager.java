@@ -51,7 +51,7 @@ public class CognitoUserManager {
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SECURED_USER, "
             + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).CREATE)")
-    public CognitoCredentials createUser(CreateUserFromInvitationRequest userInfo)
+    public Boolean createUser(CreateUserFromInvitationRequest userInfo)
             throws ValidationException, UserCreationException, EmailNotSentException {
 
         Set<String> errors = userCreationValidator.validate(userInfo);
@@ -74,7 +74,7 @@ public class CognitoUserManager {
             throw e;
         }
 
-        return credentials;
+        return true;
     }
 
     @Transactional
