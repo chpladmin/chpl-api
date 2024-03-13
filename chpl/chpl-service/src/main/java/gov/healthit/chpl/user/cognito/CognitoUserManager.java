@@ -14,7 +14,6 @@ import gov.healthit.chpl.exception.UserCreationException;
 import gov.healthit.chpl.exception.UserPermissionRetrievalException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
-import gov.healthit.chpl.manager.auth.CognitoUserService;
 import gov.healthit.chpl.service.InvitationEmailer;
 import lombok.extern.log4j.Log4j2;
 
@@ -26,18 +25,18 @@ public class CognitoUserManager {
     private CognitoUserCreationValidator userCreationValidator;
     private InvitationEmailer invitationEmailer;
     private CognitoConfirmEmailEmailer cognitoConfirmEmailEmailer;
-    private CognitoUserService cognitoUserService;
+    private CognitoApiWrapper cognitoApiWrapper;
 
 
     @Autowired
     public CognitoUserManager(CognitoUserInvitationDAO userInvitationDAO, CognitoUserCreationValidator userCreationValidator,
-            InvitationEmailer invitationEmailer, CognitoConfirmEmailEmailer cognitoConfirmEmailEmailer, CognitoUserService cognitoUserService) {
+            InvitationEmailer invitationEmailer, CognitoConfirmEmailEmailer cognitoConfirmEmailEmailer, CognitoApiWrapper cognitoApiWrapper) {
 
         this.userInvitationDAO = userInvitationDAO;
         this.userCreationValidator = userCreationValidator;
         this.invitationEmailer = invitationEmailer;
         this.cognitoConfirmEmailEmailer = cognitoConfirmEmailEmailer;
-        this.cognitoUserService = cognitoUserService;
+        this.cognitoApiWrapper = cognitoApiWrapper;
     }
 
     @Transactional
@@ -62,14 +61,14 @@ public class CognitoUserManager {
         // Need to be able to rollback this whole thing if there is an error...
         CognitoCredentials credentials = null;
         try {
-            credentials = cognitoUserService.createUser(userInfo.getUser());
-            cognitoUserService.addUserToAdminGroup(userInfo.getUser().getEmail());
+            credentials = cognitoApiWrapper.createUser(userInfo.getUser());
+            cognitoApiWrapper.addUserToAdminGroup(userInfo.getUser().getEmail());
             userInvitationDAO.deleteByToken(UUID.fromString(userInfo.getHash()));
             cognitoConfirmEmailEmailer.sendConfirmationEmail(credentials);
         } catch (EmailNotSentException e) {
             //Invitation deletion should roll back due to @Transactional
             if (credentials != null) {
-                cognitoUserService.deleteUser(credentials.getCognitoId());
+                cognitoApiWrapper.deleteUser(credentials.getCognitoId());
             }
             throw e;
         }

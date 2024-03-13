@@ -1,4 +1,4 @@
-package gov.healthit.chpl.manager.auth;
+package gov.healthit.chpl.user.cognito;
 
 import java.util.Date;
 import java.util.LinkedHashMap;
@@ -25,7 +25,6 @@ import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.UserCreationException;
 import gov.healthit.chpl.exception.UserRetrievalException;
-import gov.healthit.chpl.user.cognito.CognitoCredentials;
 import lombok.extern.log4j.Log4j2;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.AwsCredentials;
@@ -51,7 +50,7 @@ import software.amazon.awssdk.services.cognitoidentityprovider.model.UserStatusT
 
 @Log4j2
 @Component
-public class CognitoUserService {
+public class CognitoApiWrapper {
 
     private String clientId;
     private String userPoolId;
@@ -61,7 +60,7 @@ public class CognitoUserService {
     private DeveloperDAO developerDAO;
 
     @Autowired
-    public CognitoUserService(@Value("${cognito.accessKey}") String accessKey, @Value("${cognito.secretKey}") String secretKey,
+    public CognitoApiWrapper(@Value("${cognito.accessKey}") String accessKey, @Value("${cognito.secretKey}") String secretKey,
             @Value("${cognito.region}") String region, @Value("${cognito.clientId}") String clientId, @Value("${cognito.userPoolId}") String userPoolId,
             @Value("${cognito.userPoolClientSecret}") String userPoolClientSecret, CertificationBodyDAO certificationBodyDAO, DeveloperDAO developerDAO) {
 
