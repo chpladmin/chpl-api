@@ -13,8 +13,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import gov.healthit.chpl.auth.user.CognitoUserInvitation;
-import gov.healthit.chpl.auth.user.CognitoUserManager;
 import gov.healthit.chpl.domain.CreateUserFromInvitationRequest;
 import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.exception.EmailNotSentException;
@@ -23,6 +21,8 @@ import gov.healthit.chpl.exception.UserPermissionRetrievalException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.auth.CognitoAuthenticationManager;
+import gov.healthit.chpl.user.cognito.CognitoUserInvitation;
+import gov.healthit.chpl.user.cognito.CognitoUserManager;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import gov.healthit.chpl.web.controller.results.BooleanResult;
@@ -108,6 +108,4 @@ public class CognitoUserController {
                 .success(success)
                 .build();
     }
-
-
 }

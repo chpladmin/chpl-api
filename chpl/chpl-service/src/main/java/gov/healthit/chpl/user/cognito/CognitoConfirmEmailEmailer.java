@@ -1,4 +1,4 @@
-package gov.healthit.chpl.auth.user;
+package gov.healthit.chpl.user.cognito;
 
 import java.util.List;
 

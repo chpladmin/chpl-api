@@ -7,13 +7,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import gov.healthit.chpl.auth.user.CognitoUserInvitation;
 import gov.healthit.chpl.domain.auth.UserInvitation;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
 import gov.healthit.chpl.email.footer.PublicFooter;
 import gov.healthit.chpl.exception.EmailNotSentException;
+import gov.healthit.chpl.user.cognito.CognitoUserInvitation;
 import lombok.extern.log4j.Log4j2;
 
 @Service
