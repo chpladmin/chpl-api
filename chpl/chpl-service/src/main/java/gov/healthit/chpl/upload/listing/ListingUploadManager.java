@@ -53,10 +53,9 @@ import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.SchedulerManager;
 import gov.healthit.chpl.scheduler.job.ListingUploadValidationJob;
-import gov.healthit.chpl.standard.StandardDAO;
-import gov.healthit.chpl.standard.StandardGroupService;
 import gov.healthit.chpl.upload.listing.handler.CertificationDateHandler;
 import gov.healthit.chpl.upload.listing.handler.ListingDetailsUploadHandler;
+import gov.healthit.chpl.upload.listing.normalizer.BaselineStandardNormalizer;
 import gov.healthit.chpl.upload.listing.normalizer.ListingDetailsNormalizer;
 import gov.healthit.chpl.upload.listing.validation.ListingUploadValidator;
 import gov.healthit.chpl.util.AuthUtil;
@@ -77,12 +76,11 @@ public class ListingUploadManager {
     private ListingUploadValidator listingUploadValidator;
     private CertificationBodyDAO acbDao;
     private UserDAO userDao;
-    private StandardDAO standardDAO;
     private ListingConfirmationManager listingConfirmationManager;
     private SchedulerManager schedulerManager;
     private ActivityManager activityManager;
     private ErrorMessageUtil msgUtil;
-    private StandardGroupService standardGroupService;
+    private BaselineStandardNormalizer baselineStandardNormalizer;
 
     @Autowired
     @SuppressWarnings("checkstyle:parameternumber")
@@ -90,9 +88,10 @@ public class ListingUploadManager {
             CertificationDateHandler certDateHandler, ListingDetailsNormalizer listingNormalizer,
             ListingUploadValidator listingUploadValidator, ListingUploadHandlerUtil uploadUtil,
             ChplProductNumberUtil chplProductNumberUtil, ListingUploadDao listingUploadDao,
-            CertificationBodyDAO acbDao, UserDAO userDao, StandardDAO standardDAO,
+            CertificationBodyDAO acbDao, UserDAO userDao,
             ListingConfirmationManager listingConfirmationManager, SchedulerManager schedulerManager,
-            ActivityManager activityManager, ErrorMessageUtil msgUtil, StandardGroupService standardGroupService) {
+            ActivityManager activityManager, ErrorMessageUtil msgUtil,
+            BaselineStandardNormalizer baselineStandardNormalizer) {
         this.listingDetailsHandler = listingDetailsHandler;
         this.certDateHandler = certDateHandler;
         this.listingNormalizer = listingNormalizer;
@@ -102,12 +101,11 @@ public class ListingUploadManager {
         this.listingUploadDao = listingUploadDao;
         this.acbDao = acbDao;
         this.userDao = userDao;
-        this.standardDAO = standardDAO;
         this.listingConfirmationManager = listingConfirmationManager;
         this.schedulerManager = schedulerManager;
         this.activityManager = activityManager;
         this.msgUtil = msgUtil;
-        this.standardGroupService = standardGroupService;
+        this.baselineStandardNormalizer = baselineStandardNormalizer;
     }
 
     @Transactional
@@ -195,7 +193,7 @@ public class ListingUploadManager {
         CertifiedProductSearchDetails listing = listingDetailsHandler.parseAsListing(headingRecord, allListingRecords);
         listing.setId(id);
         LOGGER.debug("Converted listing upload with ID " + id + " into CertifiedProductSearchDetails object");
-        listingNormalizer.normalize(listing);
+        listingNormalizer.normalize(listing, List.of(baselineStandardNormalizer));
         LOGGER.debug("Normalized listing upload with ID " + id);
         listingUploadValidator.review(listingUpload, listing);
         LOGGER.debug("Validated listing upload with ID " + id);
@@ -311,7 +309,7 @@ public class ListingUploadManager {
 
     private void checkForErrorsOrUnacknowledgedWarnings(CertifiedProductSearchDetails listing,
             boolean acknowledgeWarnings) throws ValidationException {
-        listingNormalizer.normalize(listing);
+        listingNormalizer.normalize(listing, List.of(baselineStandardNormalizer));
         LOGGER.debug("Normalized listing for confirmation: " + listing.getChplProductNumber());
         listingUploadValidator.review(listing);
         LOGGER.debug("Validated listing for confirmation: " + listing.getChplProductNumber());
