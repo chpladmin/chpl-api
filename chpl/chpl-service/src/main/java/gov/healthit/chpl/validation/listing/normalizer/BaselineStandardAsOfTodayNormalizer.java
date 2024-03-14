@@ -31,6 +31,6 @@ public class BaselineStandardAsOfTodayNormalizer extends BaselineStandardNormali
             LOGGER.info("Updating listing " + listing.getId() + " and status is not an Active status, so no baseline standards will be added.");
             return;
         }
-        normalize(listing);
+        super.normalize(listing);
     }
 }
