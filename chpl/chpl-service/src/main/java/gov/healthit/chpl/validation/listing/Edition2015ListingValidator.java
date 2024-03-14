@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.upload.listing.validation.reviewer.AccessibilityStandardReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.QmsStandardReviewer;
+import gov.healthit.chpl.upload.listing.validation.reviewer.SedReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.TestToolReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.UcdProcessReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.CertificationDateReviewer;
@@ -101,6 +102,10 @@ public class Edition2015ListingValidator extends Validator {
     @Autowired
     @Qualifier("sedG32015Reviewer")
     private SedG32015Reviewer sedG3Reviewer;
+
+    @Autowired
+    @Qualifier("listingUploadSedReviewer")
+    private SedReviewer sedReviewer;
 
     @Autowired
     @Qualifier("certificationStatusReviewer")
@@ -261,6 +266,7 @@ public class Edition2015ListingValidator extends Validator {
         reviewers.add(testingLabReviewer);
         reviewers.add(validDataReviewer);
         reviewers.add(sedG3Reviewer);
+        reviewers.add(sedReviewer);
         reviewers.add(ucdProcessReviewer);
         reviewers.add(oldCriteriaWithoutIcsReviewer);
         reviewers.add(certStatusReviewer);
