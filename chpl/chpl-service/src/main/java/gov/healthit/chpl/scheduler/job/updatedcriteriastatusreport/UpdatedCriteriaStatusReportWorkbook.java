@@ -33,7 +33,7 @@ public class UpdatedCriteriaStatusReportWorkbook extends CuresSpreadsheet { //TO
     }
 
     public File generateSpreadsheet() throws IOException {
-        File newFile = copyTemplateFileToTemporaryFile(template, "CuresChartsOverTime");
+        File newFile = copyTemplateFileToTemporaryFile(template, "updated-criteria-status-report");
         Workbook workbook = getWorkbook(newFile);
 
         updatedCriteriaStatusReportDAO.getCriteriaIdsFromUpdatedCritieriaStatusReport().stream()
