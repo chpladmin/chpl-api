@@ -74,19 +74,19 @@ public class CognitoUserCreationValidator {
         Set<String> validationErrors = new HashSet<String>();
 
         if (StringUtils.isEmpty(request.getUser().getFullName())) {
-
+            validationErrors.add(msgUtil.getMessage("cognito.user.create.fullName.empty"));
         }
 
         if (StringUtils.isEmpty(request.getUser().getPhoneNumber())) {
-
+            validationErrors.add(msgUtil.getMessage("cognito.user.create.phoneNumber.empty"));
         } else if (!isPhoneNumberValid(request.getUser().getPhoneNumber())) {
-
+            validationErrors.add(msgUtil.getMessage("cognito.user.create.phoneNumber.invalid"));
         }
 
         if (StringUtils.isEmpty(request.getUser().getEmail())) {
-
+            validationErrors.add(msgUtil.getMessage("cognito.user.create.email.empty"));
         } else if (!Util.isEmailAddressValidFormat(request.getUser().getEmail())) {
-
+            validationErrors.add(msgUtil.getMessage("cognito.user.create.email.invalid"));
         }
 
         return validationErrors;
