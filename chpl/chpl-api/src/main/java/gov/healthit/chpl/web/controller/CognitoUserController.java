@@ -94,9 +94,9 @@ public class CognitoUserController {
         try {
             //This should set the security context to user "admin" role
             Authentication authenticator = AuthUtil.getInvitedUserAuthenticator(null);
+            SecurityContextHolder.getContext().setAuthentication(authenticator);
             CognitoUserInvitation invitation = cognitoUserManager.getInvitation(UUID.fromString(userInfo.getHash()));
             if (invitation != null) {
-                SecurityContextHolder.getContext().setAuthentication(authenticator);
                 success = cognitoUserManager.createUser(userInfo);
             }
         } finally {
@@ -106,4 +106,5 @@ public class CognitoUserController {
                 .success(success)
                 .build();
     }
+
 }
