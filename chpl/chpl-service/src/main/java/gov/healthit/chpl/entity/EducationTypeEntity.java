@@ -9,6 +9,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.validation.constraints.Size;
 
+import gov.healthit.chpl.domain.TestParticipant.TestParticipantEducation;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -38,4 +39,10 @@ public class EducationTypeEntity extends EntityAudit {
     @Column(name = "name")
     private String name;
 
+    public TestParticipantEducation toDomain() {
+        return TestParticipantEducation.builder()
+                .id(id)
+                .name(name)
+                .build();
+    }
 }

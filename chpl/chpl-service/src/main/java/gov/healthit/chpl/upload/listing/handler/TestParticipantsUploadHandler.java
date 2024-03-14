@@ -13,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.TestParticipant;
+import gov.healthit.chpl.domain.TestParticipant.TestParticipantAge;
+import gov.healthit.chpl.domain.TestParticipant.TestParticipantEducation;
 import gov.healthit.chpl.upload.listing.Headings;
 import gov.healthit.chpl.upload.listing.ListingUploadHandlerUtil;
 import lombok.extern.log4j.Log4j2;
@@ -110,7 +112,9 @@ public class TestParticipantsUploadHandler {
         return TestParticipant.builder()
                 .uniqueId(id)
                 .gender(gender)
+                .age(TestParticipantAge.builder().name(age).build())
                 .ageRange(age)
+                .educationType(TestParticipantEducation.builder().name(education).build())
                 .educationTypeName(education)
                 .occupation(occupation)
                 .professionalExperienceMonths(professionalExperienceMonths)

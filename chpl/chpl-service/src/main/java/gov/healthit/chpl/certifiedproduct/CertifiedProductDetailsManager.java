@@ -94,7 +94,9 @@ public class CertifiedProductDetailsManager {
     @Transactional(readOnly = true)
     public CertifiedProductSearchDetails getCertifiedProductDetailsBasic(Long certifiedProductId) throws EntityRetrievalException {
         CertifiedProductSearchDetails listing = listingService.createCertifiedProductSearchDetailsBasic(certifiedProductId);
-        filterListingDataForUser(listing);
+        if (listing != null) {
+            filterListingDataForUser(listing);
+        }
         return listing;
     }
 
