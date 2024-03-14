@@ -47,6 +47,7 @@ import software.amazon.awssdk.services.cognitoidentityprovider.model.ListUsersRe
 import software.amazon.awssdk.services.cognitoidentityprovider.model.ListUsersResponse;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.MessageActionType;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.UserStatusType;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.UserType;
 
 @Log4j2
 @Component
@@ -106,33 +107,25 @@ public class CognitoApiWrapper {
                 .limit(1)
                 .build());
 
-        User user = new User();
-        user.setCognitoId(cognitoId);
-        user.setSubjectName(getUserAttribute(response.users().get(0).attributes(), "email").value());
-        user.setFriendlyName(getUserAttribute(response.users().get(0).attributes(), "nickname").value());
-        user.setFullName(getUserAttribute(response.users().get(0).attributes(), "name").value());
-        user.setEmail(getUserAttribute(response.users().get(0).attributes(), "email").value());
-        user.setTitle(getUserAttribute(response.users().get(0).attributes(), "custom:title").value());
-        user.setAccountLocked(!response.users().get(0).enabled());
-        user.setAccountEnabled(response.users().get(0).enabled());
-        user.setCredentialsExpired(false);
-        user.setPasswordResetRequired(response.users().get(0).userStatus().equals(UserStatusType.RESET_REQUIRED));
-        user.setLastLoggedInDate(new Date());
-        AdminListGroupsForUserRequest groupsRequest = AdminListGroupsForUserRequest.builder()
-                .userPoolId(userPoolId)
-                .username(user.getEmail())
-                .build();
-        AdminListGroupsForUserResponse groupsResponse = cognitoClient.adminListGroupsForUser(groupsRequest);
-        user.setRole(groupsResponse.groups().get(0).groupName());
-
-        AttributeType orgIdsAttribute = getUserAttribute(response.users().get(0).attributes(), "custom:organizations");
-        if (orgIdsAttribute != null && StringUtils.isNotEmpty(orgIdsAttribute.value())) {
-            user.setOrganizations(getOrganizations(user.getRole(), Stream.of(orgIdsAttribute.value().split(","))
-                .map(Long::valueOf)
-                .toList()));
+        if (response.users().size() > 0) {
+            return createUserFromUserType(response.users().get(0));
+        } else {
+            return null;
         }
+    }
 
-        return user;
+    public User getUserInfo(String email) throws UserRetrievalException {
+        ListUsersResponse response = cognitoClient.listUsers(ListUsersRequest.builder()
+                .userPoolId(userPoolId)
+                .filter("email = \"" + email + "\"")
+                .limit(1)
+                .build());
+
+        if (response.users().size() > 0) {
+            return createUserFromUserType(response.users().get(0));
+        } else {
+            return null;
+        }
     }
 
     public CognitoCredentials createUser(CreateUserRequest userRequest) throws UserCreationException {
@@ -243,6 +236,35 @@ public class CognitoApiWrapper {
             LOGGER.error("Could not retrieve Developer: {}", developerId, e);
             return null;
         }
+    }
+
+    private User createUserFromUserType(UserType userType) {
+        User user = new User();
+        user.setCognitoId(UUID.fromString(userType.username()));
+        user.setSubjectName(getUserAttribute(userType.attributes(), "email").value());
+        user.setFriendlyName(getUserAttribute(userType.attributes(), "nickname").value());
+        user.setFullName(getUserAttribute(userType.attributes(), "name").value());
+        user.setEmail(getUserAttribute(userType.attributes(), "email").value());
+        user.setTitle(getUserAttribute(userType.attributes(), "custom:title").value());
+        user.setAccountLocked(!userType.enabled());
+        user.setAccountEnabled(userType.enabled());
+        user.setCredentialsExpired(false);
+        user.setPasswordResetRequired(userType.userStatus().equals(UserStatusType.RESET_REQUIRED));
+        user.setLastLoggedInDate(new Date());
+        AdminListGroupsForUserRequest groupsRequest = AdminListGroupsForUserRequest.builder()
+                .userPoolId(userPoolId)
+                .username(user.getEmail())
+                .build();
+        AdminListGroupsForUserResponse groupsResponse = cognitoClient.adminListGroupsForUser(groupsRequest);
+        user.setRole(groupsResponse.groups().get(0).groupName());
+
+        AttributeType orgIdsAttribute = getUserAttribute(userType.attributes(), "custom:organizations");
+        if (orgIdsAttribute != null && StringUtils.isNotEmpty(orgIdsAttribute.value())) {
+            user.setOrganizations(getOrganizations(user.getRole(), Stream.of(orgIdsAttribute.value().split(","))
+                .map(Long::valueOf)
+                .toList()));
+        }
+        return user;
     }
 
 }

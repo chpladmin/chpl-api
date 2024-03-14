@@ -92,7 +92,7 @@ public class CognitoUserController {
 
         Boolean success = false;
         try {
-            //This should set the security context to user "admin" role
+            //This should set the security context to user "invited user" role
             Authentication authenticator = AuthUtil.getInvitedUserAuthenticator(null);
             SecurityContextHolder.getContext().setAuthentication(authenticator);
             CognitoUserInvitation invitation = cognitoUserManager.getInvitation(UUID.fromString(userInfo.getHash()));
