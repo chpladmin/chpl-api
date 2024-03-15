@@ -6,6 +6,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -54,7 +56,12 @@ public class CodeSet implements Serializable {
     private String userEnteredName;
 
     public String getName() {
-        return getRequiredDay().format(DateTimeFormatter.ofPattern(CODE_SET_DATE_FORMAT));
+        String codeSetName = getRequiredDay() != null
+                ? getRequiredDay().format(DateTimeFormatter.ofPattern(CODE_SET_DATE_FORMAT)) : null;
+        if (codeSetName == null) {
+            codeSetName = !StringUtils.isEmpty(getUserEnteredName()) ? getUserEnteredName() : " '?' ";
+        }
+        return codeSetName;
     }
 
 }

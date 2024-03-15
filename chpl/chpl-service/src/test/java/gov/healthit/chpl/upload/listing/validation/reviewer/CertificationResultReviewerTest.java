@@ -42,6 +42,7 @@ public class CertificationResultReviewerTest {
                 Mockito.mock(TestToolReviewer.class),
                 Mockito.mock(TestDataReviewer.class),
                 Mockito.mock(ConformanceMethodReviewer.class),
+                Mockito.mock(CodeSetAsOfCertificationDayReviewer.class),
                 Mockito.mock(FunctionalityTestedReviewer.class),
                 Mockito.mock(StandardReviewer.class),
                 Mockito.mock(TestStandardReviewer.class),

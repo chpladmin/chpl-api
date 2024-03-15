@@ -16,7 +16,7 @@ import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 
 @Component
-public class CodeSetNormalizer {
+public class CodeSetNormalizer implements CertificationResultLevelNormalizer {
     private CodeSetDAO codeSetDao;
 
     @Autowired
