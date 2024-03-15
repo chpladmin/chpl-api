@@ -1,5 +1,8 @@
 package gov.healthit.chpl.upload.listing.normalizer;
 
+import java.time.YearMonth;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -17,11 +20,22 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 
 @Component
 public class CodeSetNormalizer implements CertificationResultLevelNormalizer {
+    private static final String[] ACCEPTED_DATE_FORMATS = {
+            "MM-yyyy", "MMM yyyy", "MMMM yyyy"
+    };
+    private DateTimeFormatter codeSetFormatter;
+    private List<DateTimeFormatter> formatters;
+
     private CodeSetDAO codeSetDao;
 
     @Autowired
     public CodeSetNormalizer(CodeSetDAO codeSetDao) {
         this.codeSetDao = codeSetDao;
+        codeSetFormatter = DateTimeFormatter.ofPattern(CodeSet.CODE_SET_DATE_FORMAT);
+        formatters = new ArrayList<DateTimeFormatter>();
+        for (String format : ACCEPTED_DATE_FORMATS) {
+            formatters.add(DateTimeFormatter.ofPattern(format));
+        }
     }
 
     public void normalize(CertifiedProductSearchDetails listing) {
@@ -70,8 +84,34 @@ public class CodeSetNormalizer implements CertificationResultLevelNormalizer {
         }
         List<CodeSet> codeSetsForCriterion = codeSetMappings.get(criterionId);
         Optional<CodeSet> codeSetOpt = codeSetsForCriterion.stream()
-            .filter(codeSet -> codeSet.getName().equalsIgnoreCase(codeSetText))
+            .filter(codeSet -> matchesCodeSetName(codeSet, codeSetText))
             .findAny();
         return codeSetOpt.isPresent() ? codeSetOpt.get() : null;
+    }
+
+    private boolean matchesCodeSetName(CodeSet codeSet, String codeSetText) {
+        if (codeSet.getName().equalsIgnoreCase(codeSetText)) {
+            return true;
+        }
+        //try parsing user-entered text in other date formats
+        YearMonth userEnteredCodeSetDate = parseAsYearMonth(codeSetText);
+        if (userEnteredCodeSetDate != null) {
+            String formattedUserEnteredCodeSet = userEnteredCodeSetDate.format(codeSetFormatter);
+            return codeSet.getName().equalsIgnoreCase(formattedUserEnteredCodeSet);
+        }
+        return false;
+    }
+
+    private YearMonth parseAsYearMonth(String value) {
+        YearMonth parsedYearMonth = null;
+        for (DateTimeFormatter formatter : formatters) {
+            try {
+                YearMonth ld = YearMonth.parse(value, formatter);
+                if (ld != null && parsedYearMonth == null) {
+                    parsedYearMonth = ld;
+                }
+            } catch (Exception ignore) { }
+        }
+        return parsedYearMonth;
     }
 }
