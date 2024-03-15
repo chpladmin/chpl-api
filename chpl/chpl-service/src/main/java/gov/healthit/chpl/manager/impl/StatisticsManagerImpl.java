@@ -7,16 +7,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.ApplicationObjectSupport;
 import org.springframework.stereotype.Service;
 
-import gov.healthit.chpl.dao.ListingCountStatisticsDAO;
+import gov.healthit.chpl.dao.AgeRangeDAO;
 import gov.healthit.chpl.dao.CriterionProductStatisticsDAO;
 import gov.healthit.chpl.dao.EducationTypeDAO;
 import gov.healthit.chpl.dao.IncumbentDevelopersStatisticsDAO;
+import gov.healthit.chpl.dao.ListingCountStatisticsDAO;
 import gov.healthit.chpl.dao.ParticipantAgeStatisticsDAO;
 import gov.healthit.chpl.dao.ParticipantEducationStatisticsDAO;
 import gov.healthit.chpl.dao.ParticipantExperienceStatisticsDAO;
 import gov.healthit.chpl.dao.ParticipantGenderStatisticsDAO;
 import gov.healthit.chpl.dao.SedParticipantStatisticsCountDAO;
-import gov.healthit.chpl.dao.TestParticipantAgeDAO;
 import gov.healthit.chpl.dao.statistics.NonconformityTypeStatisticsDAO;
 import gov.healthit.chpl.domain.CriterionProductStatistics;
 import gov.healthit.chpl.domain.IncumbentDevelopersStatistics;
@@ -25,17 +25,17 @@ import gov.healthit.chpl.domain.NonconformityTypeStatistics;
 import gov.healthit.chpl.domain.ParticipantAgeStatistics;
 import gov.healthit.chpl.domain.ParticipantEducationStatistics;
 import gov.healthit.chpl.domain.ParticipantExperienceStatistics;
-import gov.healthit.chpl.dto.ListingCountStatisticsDTO;
+import gov.healthit.chpl.domain.TestParticipant.TestParticipantAge;
+import gov.healthit.chpl.domain.TestParticipant.TestParticipantEducation;
 import gov.healthit.chpl.dto.CriterionProductStatisticsDTO;
-import gov.healthit.chpl.dto.EducationTypeDTO;
 import gov.healthit.chpl.dto.IncumbentDevelopersStatisticsDTO;
+import gov.healthit.chpl.dto.ListingCountStatisticsDTO;
 import gov.healthit.chpl.dto.NonconformityTypeStatisticsDTO;
 import gov.healthit.chpl.dto.ParticipantAgeStatisticsDTO;
 import gov.healthit.chpl.dto.ParticipantEducationStatisticsDTO;
 import gov.healthit.chpl.dto.ParticipantExperienceStatisticsDTO;
 import gov.healthit.chpl.dto.ParticipantGenderStatisticsDTO;
 import gov.healthit.chpl.dto.SedParticipantStatisticsCountDTO;
-import gov.healthit.chpl.dto.TestParticipantAgeDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.StatisticsManager;
 
@@ -79,7 +79,7 @@ public class StatisticsManagerImpl extends ApplicationObjectSupport implements S
     private SedParticipantStatisticsCountDAO sedParticipantStatisticsCountDAO;
 
     @Autowired
-    private TestParticipantAgeDAO testParticipantAgeDAO;
+    private AgeRangeDAO ageRangeDao;
 
     @Override
     public List<NonconformityTypeStatistics> getAllNonconformitiesByCriterion() {
@@ -154,9 +154,9 @@ public class StatisticsManagerImpl extends ApplicationObjectSupport implements S
 
         for (ParticipantAgeStatisticsDTO dto : dtos) {
             ParticipantAgeStatistics pas = new ParticipantAgeStatistics(dto);
-            TestParticipantAgeDTO testParticipantAgeDTO = testParticipantAgeDAO.getById(dto.getTestParticipantAgeId());
-            if (testParticipantAgeDTO != null && testParticipantAgeDTO.getAge() != null) {
-                pas.setAgeRange(testParticipantAgeDTO.getAge());
+            TestParticipantAge ageRange = ageRangeDao.getById(dto.getTestParticipantAgeId());
+            if (ageRange != null && ageRange.getName() != null) {
+                pas.setAgeRange(ageRange.getName());
             }
             result.add(pas);
         }
@@ -171,9 +171,9 @@ public class StatisticsManagerImpl extends ApplicationObjectSupport implements S
         for (ParticipantEducationStatisticsDTO dto : dtos) {
             ParticipantEducationStatistics pes = new ParticipantEducationStatistics(dto);
             try {
-                EducationTypeDTO educationTypeDTO = educationTypeDAO.getById(dto.getEducationTypeId());
-                if (educationTypeDTO != null && educationTypeDTO.getName() != null) {
-                    pes.setEducation(educationTypeDTO.getName());
+                TestParticipantEducation educationType = educationTypeDAO.getById(dto.getEducationTypeId());
+                if (educationType != null && educationType.getName() != null) {
+                    pes.setEducation(educationType.getName());
                 }
             } catch (EntityRetrievalException e) {
                 pes.setEducation("Unknown");

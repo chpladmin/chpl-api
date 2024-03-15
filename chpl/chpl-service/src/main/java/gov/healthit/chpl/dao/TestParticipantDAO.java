@@ -1,7 +1,7 @@
 package gov.healthit.chpl.dao;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.persistence.Query;
 
@@ -10,7 +10,6 @@ import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.TestParticipant;
-import gov.healthit.chpl.dto.TestParticipantDTO;
 import gov.healthit.chpl.entity.TestParticipantEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -30,10 +29,10 @@ public class TestParticipantDAO extends BaseDAOImpl {
     public Long create(TestParticipant participant) throws EntityCreationException {
         TestParticipantEntity entity = new TestParticipantEntity();
         try {
-            entity.setAgeRangeId(participant.getAgeRangeId());
+            entity.setAgeRangeId(participant.getAge() == null || participant.getAge().getId() == null ? participant.getAgeRangeId() : participant.getAge().getId());
             entity.setAssistiveTechnologyNeeds(participant.getAssistiveTechnologyNeeds());
             entity.setComputerExperienceMonths(participant.getComputerExperienceMonths());
-            entity.setEducationTypeId(participant.getEducationTypeId());
+            entity.setEducationTypeId(participant.getEducationType() == null || participant.getEducationType().getId() == null ? participant.getEducationTypeId() : participant.getEducationType().getId());
             entity.setGender(participant.getGender());
             entity.setOccupation(participant.getOccupation());
             entity.setProductExperienceMonths(participant.getProductExperienceMonths());
@@ -48,54 +47,22 @@ public class TestParticipantDAO extends BaseDAOImpl {
         return entity.getId();
     }
 
-    public TestParticipantDTO create(TestParticipantDTO dto) throws EntityCreationException {
-        TestParticipantEntity entity = null;
-        if (dto.getId() != null) {
-            entity = this.getEntityById(dto.getId());
-        }
+    public void update(TestParticipant participant) throws EntityRetrievalException {
+        TestParticipantEntity entity = this.getEntityById(participant.getId());
 
         if (entity == null) {
-            entity = new TestParticipantEntity();
-            entity.setDeleted(false);
-            entity.setAgeRangeId(dto.getAgeRangeId());
-            entity.setAssistiveTechnologyNeeds(dto.getAssistiveTechnologyNeeds());
-            entity.setComputerExperienceMonths(dto.getComputerExperienceMonths());
-            entity.setEducationTypeId(dto.getEducationTypeId());
-            entity.setGender(dto.getGender());
-            entity.setOccupation(dto.getOccupation());
-            entity.setProductExperienceMonths(dto.getProductExperienceMonths());
-            entity.setProfessionalExperienceMonths(dto.getProfessionalExperienceMonths());
-
-            try {
-                create(entity);
-            } catch (Exception ex) {
-                String msg = msgUtil.getMessage("listing.criteria.badTestParticipant",
-                        dto.getGender() + ": " + dto.getOccupation());
-                LOGGER.error(msg, ex);
-                throw new EntityCreationException(msg);
-            }
-        }
-        return new TestParticipantDTO(entity);
-    }
-
-    public TestParticipantDTO update(TestParticipantDTO dto) throws EntityRetrievalException {
-        TestParticipantEntity entity = this.getEntityById(dto.getId());
-
-        if (entity == null) {
-            throw new EntityRetrievalException("Entity with id " + dto.getId() + " does not exist");
+            throw new EntityRetrievalException("Entity with id " + participant.getId() + " does not exist");
         }
 
-        entity.setAgeRangeId(dto.getAgeRangeId());
-        entity.setAssistiveTechnologyNeeds(dto.getAssistiveTechnologyNeeds());
-        entity.setComputerExperienceMonths(dto.getComputerExperienceMonths());
-        entity.setEducationTypeId(dto.getEducationTypeId());
-        entity.setGender(dto.getGender());
-        entity.setOccupation(dto.getOccupation());
-        entity.setProductExperienceMonths(dto.getProductExperienceMonths());
-        entity.setProfessionalExperienceMonths(dto.getProfessionalExperienceMonths());
-
+        entity.setAgeRangeId(participant.getAge() != null ? participant.getAge().getId() : participant.getAgeRangeId());
+        entity.setAssistiveTechnologyNeeds(participant.getAssistiveTechnologyNeeds());
+        entity.setComputerExperienceMonths(participant.getComputerExperienceMonths());
+        entity.setEducationTypeId(participant.getEducationType() != null ? participant.getEducationType().getId() : participant.getEducationTypeId());
+        entity.setGender(participant.getGender());
+        entity.setOccupation(participant.getOccupation());
+        entity.setProductExperienceMonths(participant.getProductExperienceMonths());
+        entity.setProfessionalExperienceMonths(participant.getProfessionalExperienceMonths());
         update(entity);
-        return new TestParticipantDTO(entity);
     }
 
     public void delete(Long id) throws EntityRetrievalException {
@@ -106,43 +73,35 @@ public class TestParticipantDAO extends BaseDAOImpl {
         }
     }
 
-    public TestParticipantDTO getById(Long id) {
-        TestParticipantDTO dto = null;
+    public TestParticipant getById(Long id) {
         TestParticipantEntity entity = getEntityById(id);
-
         if (entity != null) {
-            dto = new TestParticipantDTO(entity);
+            return entity.toDomain();
         }
-        return dto;
+        return null;
     }
 
-    public List<TestParticipantDTO> findAll() {
+    public List<TestParticipant> findAll() {
         List<TestParticipantEntity> entities = getAllEntities();
-        List<TestParticipantDTO> dtos = new ArrayList<TestParticipantDTO>();
-
-        for (TestParticipantEntity entity : entities) {
-            TestParticipantDTO dto = new TestParticipantDTO(entity);
-            dtos.add(dto);
-        }
-        return dtos;
-
+        return entities.stream()
+                .map(entity -> entity.toDomain())
+                .collect(Collectors.toList());
     }
 
     private List<TestParticipantEntity> getAllEntities() {
         return entityManager.createQuery("SELECT tpe from TestParticipantEntity tpe "
                         + "LEFT OUTER JOIN FETCH tpe.ageRange "
                         + "LEFT OUTER JOIN FETCH tpe.education "
-                        + "where (NOT tpe.deleted = true) ",
+                        + "WHERE (NOT tpe.deleted = true) ",
                 TestParticipantEntity.class).getResultList();
     }
 
     private TestParticipantEntity getEntityById(Long id) {
         TestParticipantEntity entity = null;
-
         Query query = entityManager.createQuery("SELECT tpe from TestParticipantEntity tpe "
                 + "LEFT OUTER JOIN FETCH tpe.ageRange "
                 + "LEFT OUTER JOIN FETCH tpe.education "
-                + "where (NOT tpe.deleted = true) "
+                + "WHERE (NOT tpe.deleted = true) "
                 + "AND (tpe.id = :entityid)", TestParticipantEntity.class);
         query.setParameter("entityid", id);
         List<TestParticipantEntity> result = query.getResultList();
