@@ -39,7 +39,7 @@ public enum Headings {
     ACCESSIBILITY_STANDARD("Accessibility Standard"),
     K_1_URL("170.523(k)(1) URL", "170.523 (k)(1) URL"),
     SVAP_NOTICE_URL("SVAP Notice URL"),
-    RWT_PLANS_URL("RWT Plans URL, RWT_Plans_URL"),
+    RWT_PLANS_URL("RWT Plans URL", "RWT_Plans_URL"),
     RWT_PLANS_CHECK_DATE("RWT Plans Check Date"),
     RWT_RESULTS_URL("RWT Results URL", "RWT_Results_URL"),
     RWT_RESULTS_CHECK_DATE("RWT Results Check Date"),

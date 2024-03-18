@@ -21,7 +21,7 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 @Component
 public class CodeSetNormalizer implements CertificationResultLevelNormalizer {
     private static final String[] ACCEPTED_DATE_FORMATS = {
-            "MM-yyyy", "MMM yyyy", "MMMM yyyy"
+            "MM-yyyy", "MMM-yy", "MMM yyyy", "MMMM yyyy"
     };
     private DateTimeFormatter codeSetFormatter;
     private List<DateTimeFormatter> formatters;
@@ -106,9 +106,9 @@ public class CodeSetNormalizer implements CertificationResultLevelNormalizer {
         YearMonth parsedYearMonth = null;
         for (DateTimeFormatter formatter : formatters) {
             try {
-                YearMonth ld = YearMonth.parse(value, formatter);
-                if (ld != null && parsedYearMonth == null) {
-                    parsedYearMonth = ld;
+                YearMonth yearMonth = YearMonth.parse(value, formatter);
+                if (yearMonth != null && parsedYearMonth == null) {
+                    parsedYearMonth = yearMonth;
                 }
             } catch (Exception ignore) { }
         }

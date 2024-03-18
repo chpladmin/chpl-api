@@ -13,7 +13,7 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 public class RwtNormalizer {
     private static final String[] ACCEPTED_DATE_FORMATS = {
-            "MM/dd/yyyy", "MM-dd-yyyy", "yyyy-MM-dd", "MMM d, yyyy", "MMM dd, yyyy",
+            "MM/dd/yyyy", "MM/dd/yy", "MM-dd-yy", "MM-dd-yyyy", "yyyy-MM-dd", "MMM d, yyyy", "MMM dd, yyyy",
             "MMMM d, yyyy", "MMMM dd, yyyy"
     };
     private List<DateTimeFormatter> formatters;
