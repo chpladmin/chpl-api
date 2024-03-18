@@ -166,7 +166,7 @@ public class TestTaskReviewer {
     }
 
     private void reviewTaskUniqueId(CertifiedProductSearchDetails listing, TestTask testTask) {
-        if (StringUtils.isEmpty(testTask.getUniqueId())) {
+        if (testTask.getId() == null && StringUtils.isEmpty(testTask.getUniqueId())) {
             listing.addDataErrorMessage(msgUtil.getMessage("listing.criteria.missingTestTaskUniqueId", formatTaskCriteria(testTask)));
         }
     }

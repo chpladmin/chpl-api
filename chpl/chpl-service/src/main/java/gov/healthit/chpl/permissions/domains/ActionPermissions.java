@@ -12,10 +12,11 @@ import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 
 public abstract class ActionPermissions {
     @Autowired
-    private ResourcePermissions resourcePermissions;
+    private ResourcePermissionsFactory resourcePermissionsFactory;
 
     @Autowired
     private CertifiedProductDAO certifiedProductDAO;
@@ -32,7 +33,7 @@ public abstract class ActionPermissions {
             return false;
         }
 
-        List<CertificationBody> acbs = resourcePermissions.getAllAcbsForCurrentUser();
+        List<CertificationBody> acbs = resourcePermissionsFactory.get().getAllAcbsForCurrentUser();
         for (CertificationBody dto : acbs) {
             if (dto.getId().equals(acbId)) {
                 return true;
@@ -42,7 +43,7 @@ public abstract class ActionPermissions {
     }
 
     public boolean isDeveloperValidForCurrentUser(final Long developerId) {
-        List<Developer> developers = resourcePermissions.getAllDevelopersForCurrentUser();
+        List<Developer> developers = resourcePermissionsFactory.get().getAllDevelopersForCurrentUser();
         for (Developer dev : developers) {
             if (dev.getId().equals(developerId)) {
                 return true;
@@ -76,7 +77,7 @@ public abstract class ActionPermissions {
     public boolean isCurrentAcbUserAssociatedWithDeveloper(final Long developerId) {
         List<CertificationBody> developerAcbs = developerCertificationBodyMapDAO
                 .getCertificationBodiesForDeveloper(developerId);
-        List<CertificationBody> userAcbs = resourcePermissions.getAllAcbsForCurrentUser();
+        List<CertificationBody> userAcbs = resourcePermissionsFactory.get().getAllAcbsForCurrentUser();
 
         return developerAcbs.stream()
                 .anyMatch(developerAcb -> userAcbs.stream()
@@ -89,6 +90,6 @@ public abstract class ActionPermissions {
     }
 
     public ResourcePermissions getResourcePermissions() {
-        return resourcePermissions;
+        return resourcePermissionsFactory.get();
     }
 }

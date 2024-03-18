@@ -3,14 +3,14 @@ package gov.healthit.chpl.changerequest.validation;
 import gov.healthit.chpl.attestation.manager.AttestationManager;
 import gov.healthit.chpl.attestation.manager.AttestationPeriodService;
 import gov.healthit.chpl.attestation.service.AttestationResponseValidationService;
-import gov.healthit.chpl.auth.user.User;
+import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestDAO;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestStatusTypeDAO;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestTypeDAO;
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.form.validation.FormValidator;
-import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.search.ListingSearchService;
 import gov.healthit.chpl.util.ValidationUtils;
 import lombok.AllArgsConstructor;
@@ -23,7 +23,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ChangeRequestValidationContext {
-    private User currentUser;
+    private JWTAuthenticatedUser currentUser;
     private ChangeRequest newChangeRequest;
     private ChangeRequest origChangeRequest;
     private ValidationDAOs validationDAOs;
@@ -32,19 +32,19 @@ public class ChangeRequestValidationContext {
     private AttestationResponseValidationService attestationResponseValidationService;
     private AttestationPeriodService attestationPeriodService;
     private ListingSearchService listingSearchService;
-    private ResourcePermissions resourcePermissions;
+    private ResourcePermissionsFactory resourcePermissionsFactory;
     private ValidationUtils validationUtils;
     private ChangeRequestTypeIds changeRequestTypeIds;
     private ChangeRequestStatusIds changeRequestStatusIds;
 
-    public ChangeRequestValidationContext(User user,
+    public ChangeRequestValidationContext(JWTAuthenticatedUser user,
             ChangeRequest newChangeRequest,
             ChangeRequest origChangeRequest,
             FormValidator formValidator,
             AttestationResponseValidationService attestationResponseValidationService,
             AttestationPeriodService attestationPeriodService,
             ListingSearchService listingSearchService,
-            ResourcePermissions resourcePermissions,
+            ResourcePermissionsFactory resourcePermissionsFactory,
             ValidationUtils validationUtils,
             DeveloperDAO developerDAO,
             ChangeRequestDAO changeRequestDAO,
@@ -66,7 +66,7 @@ public class ChangeRequestValidationContext {
         this.attestationResponseValidationService = attestationResponseValidationService;
         this.attestationPeriodService = attestationPeriodService;
         this.listingSearchService = listingSearchService;
-        this.resourcePermissions = resourcePermissions;
+        this.resourcePermissionsFactory = resourcePermissionsFactory;
         this.validationUtils = validationUtils;
         this.validationDAOs = new ValidationDAOs(developerDAO, changeRequestDAO, changeRequestStatusTypeDAO, changeRequestTypeDAO);
         this.domainManagers = new DomainManagers(attestationManager);

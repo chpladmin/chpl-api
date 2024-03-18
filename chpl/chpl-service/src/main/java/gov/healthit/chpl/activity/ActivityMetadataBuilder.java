@@ -16,7 +16,6 @@ import gov.healthit.chpl.domain.activity.QuarterlyReportActivityMetadata;
 import gov.healthit.chpl.domain.activity.TestingLabActivityMetadata;
 import gov.healthit.chpl.domain.activity.UserMaintenanceActivityMetadata;
 import gov.healthit.chpl.domain.activity.VersionActivityMetadata;
-import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.dto.ActivityDTO;
 
 /**
@@ -53,7 +52,7 @@ public abstract class ActivityMetadataBuilder {
         metadata.setDate(dto.getActivityDate());
         metadata.setObjectId(dto.getActivityObjectId());
         metadata.setConcept(dto.getConcept());
-        metadata.setResponsibleUser(dto.getUser() == null ? null : new User(dto.getUser()));
+        metadata.setResponsibleUser(dto.getUser() == null ? null : dto.getUser().toDomain());
         metadata.setDescription(dto.getDescription());
     }
 

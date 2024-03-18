@@ -1,7 +1,7 @@
 package gov.healthit.chpl.dao;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.persistence.Query;
 
@@ -10,7 +10,6 @@ import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.TestTask;
-import gov.healthit.chpl.dto.TestTaskDTO;
 import gov.healthit.chpl.entity.TestTaskEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -53,65 +52,29 @@ public class TestTaskDAO extends BaseDAOImpl {
         return entity.getId();
     }
 
-    public TestTaskDTO create(TestTaskDTO dto) throws EntityCreationException {
-        TestTaskEntity entity = null;
-        if (dto.getId() != null) {
-            entity = this.getEntityById(dto.getId());
-        }
+    public void update(TestTask task) throws EntityRetrievalException {
+        TestTaskEntity entity = this.getEntityById(task.getId());
 
         if (entity == null) {
-            entity = new TestTaskEntity();
-            entity.setDeleted(false);
-            entity.setDescription(dto.getDescription());
-            entity.setTaskErrors(dto.getTaskErrors());
-            entity.setTaskErrorsStddev(dto.getTaskErrorsStddev());
-            entity.setTaskPathDeviationObserved(dto.getTaskPathDeviationObserved());
-            entity.setTaskPathDeviationOptimal(dto.getTaskPathDeviationOptimal());
-            entity.setTaskRating(dto.getTaskRating());
-            entity.setTaskRatingScale(dto.getTaskRatingScale());
-            entity.setTaskRatingStddev(dto.getTaskRatingStddev());
-            entity.setTaskSuccessAverage(dto.getTaskSuccessAverage());
-            entity.setTaskSuccessStddev(dto.getTaskSuccessStddev());
-            entity.setTaskTimeAvg(dto.getTaskTimeAvg());
-            entity.setTaskTimeDeviationObservedAvg(dto.getTaskTimeDeviationObservedAvg());
-            entity.setTaskTimeDeviationOptimalAvg(dto.getTaskTimeDeviationOptimalAvg());
-            entity.setTaskTimeStddev(dto.getTaskTimeStddev());
-
-            try {
-                create(entity);
-            } catch (Exception ex) {
-                String msg = msgUtil.getMessage("listing.criteria.badTestTask", dto.getDescription());
-                LOGGER.error(msg, ex);
-                throw new EntityCreationException(msg);
-            }
-        }
-        return new TestTaskDTO(entity);
-    }
-
-    public TestTaskDTO update(TestTaskDTO dto) throws EntityRetrievalException {
-        TestTaskEntity entity = this.getEntityById(dto.getId());
-
-        if (entity == null) {
-            throw new EntityRetrievalException("Entity with id " + dto.getId() + " does not exist");
+            throw new EntityRetrievalException("Entity with id " + task.getId() + " does not exist");
         }
 
-        entity.setDescription(dto.getDescription());
-        entity.setTaskErrors(dto.getTaskErrors());
-        entity.setTaskErrorsStddev(dto.getTaskErrorsStddev());
-        entity.setTaskPathDeviationObserved(dto.getTaskPathDeviationObserved());
-        entity.setTaskPathDeviationOptimal(dto.getTaskPathDeviationOptimal());
-        entity.setTaskRating(dto.getTaskRating());
-        entity.setTaskRatingScale(dto.getTaskRatingScale());
-        entity.setTaskRatingStddev(dto.getTaskRatingStddev());
-        entity.setTaskSuccessAverage(dto.getTaskSuccessAverage());
-        entity.setTaskSuccessStddev(dto.getTaskSuccessStddev());
-        entity.setTaskTimeAvg(dto.getTaskTimeAvg());
-        entity.setTaskTimeDeviationObservedAvg(dto.getTaskTimeDeviationObservedAvg());
-        entity.setTaskTimeDeviationOptimalAvg(dto.getTaskTimeDeviationOptimalAvg());
-        entity.setTaskTimeStddev(dto.getTaskTimeStddev());
+        entity.setDescription(task.getDescription());
+        entity.setTaskErrors(task.getTaskErrors());
+        entity.setTaskErrorsStddev(task.getTaskErrorsStddev());
+        entity.setTaskPathDeviationObserved(task.getTaskPathDeviationObserved());
+        entity.setTaskPathDeviationOptimal(task.getTaskPathDeviationOptimal());
+        entity.setTaskRating(task.getTaskRating());
+        entity.setTaskRatingScale(task.getTaskRatingScale());
+        entity.setTaskRatingStddev(task.getTaskRatingStddev());
+        entity.setTaskSuccessAverage(task.getTaskSuccessAverage());
+        entity.setTaskSuccessStddev(task.getTaskSuccessStddev());
+        entity.setTaskTimeAvg(task.getTaskTimeAvg());
+        entity.setTaskTimeDeviationObservedAvg(task.getTaskTimeDeviationObservedAvg());
+        entity.setTaskTimeDeviationOptimalAvg(task.getTaskTimeDeviationOptimalAvg());
+        entity.setTaskTimeStddev(task.getTaskTimeStddev());
 
         update(entity);
-        return new TestTaskDTO(entity);
     }
 
     public void delete(Long id) {
@@ -124,26 +87,19 @@ public class TestTaskDAO extends BaseDAOImpl {
         }
     }
 
-    public TestTaskDTO getById(Long id) {
-        TestTaskDTO dto = null;
+    public TestTask getById(Long id) {
         TestTaskEntity entity = getEntityById(id);
-
         if (entity != null) {
-            dto = new TestTaskDTO(entity);
+            return entity.toDomain();
         }
-        return dto;
+        return null;
     }
 
-    public List<TestTaskDTO> findAll() {
+    public List<TestTask> findAll() {
         List<TestTaskEntity> entities = getAllEntities();
-        List<TestTaskDTO> dtos = new ArrayList<TestTaskDTO>();
-
-        for (TestTaskEntity entity : entities) {
-            TestTaskDTO dto = new TestTaskDTO(entity);
-            dtos.add(dto);
-        }
-        return dtos;
-
+        return entities.stream()
+                .map(entity -> entity.toDomain())
+                .collect(Collectors.toList());
     }
 
     private List<TestTaskEntity> getAllEntities() {

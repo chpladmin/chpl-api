@@ -5,7 +5,9 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
 import gov.healthit.chpl.permissions.domains.ActionPermissions;
 import gov.healthit.chpl.scheduler.job.DirectReviewCacheRefreshJob;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 @Component(value = "schedulerCreateOneTimeTriggerActionPermissions")
 public class CreateOneTimeTriggerActionPermissions extends ActionPermissions {
 

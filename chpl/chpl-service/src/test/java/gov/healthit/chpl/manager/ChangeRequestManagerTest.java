@@ -35,6 +35,7 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 public class ChangeRequestManagerTest {
@@ -60,9 +61,12 @@ public class ChangeRequestManagerTest {
         Mockito.when(changeRequestDAO.get(ArgumentMatchers.anyLong()))
                 .thenReturn(getBasicChangeRequest());
 
+        ResourcePermissionsFactory resourcePermissionsFactory = Mockito.mock(ResourcePermissionsFactory.class);
+        Mockito.when(resourcePermissionsFactory.get()).thenReturn(null);
+
         ChangeRequestManager changeRequestManager = new ChangeRequestManager(null, null, changeRequestDAO,
                 null, null, null, null, null, null, null, null, null, null, null, null, null, null,
-                null, null, null, null, ff4j);
+                resourcePermissionsFactory, null, null, null, ff4j);
 
         // Run
         ChangeRequest cr = changeRequestManager.getChangeRequest(1L);
@@ -80,9 +84,12 @@ public class ChangeRequestManagerTest {
         Mockito.when(changeRequestDAO.get(ArgumentMatchers.anyLong()))
                 .thenThrow(EntityRetrievalException.class);
 
+        ResourcePermissionsFactory resourcePermissionsFactory = Mockito.mock(ResourcePermissionsFactory.class);
+        Mockito.when(resourcePermissionsFactory.get()).thenReturn(null);
+
         ChangeRequestManager changeRequestManager = new ChangeRequestManager(null, null, changeRequestDAO,
                 null, null, null, null, null, null, null, null, null, null, null, null,
-                null, null, null, null, null, null, ff4j);
+                null, null, resourcePermissionsFactory, null, null, null, ff4j);
 
         // Run
         changeRequestManager.getChangeRequest(11L);
@@ -104,6 +111,9 @@ public class ChangeRequestManagerTest {
 
         ResourcePermissions resourcePermissions = Mockito.mock(ResourcePermissions.class);
         Mockito.when(resourcePermissions.isUserRoleDeveloperAdmin()).thenReturn(true);
+
+        ResourcePermissionsFactory resourcePermissionsFactory = Mockito.mock(ResourcePermissionsFactory.class);
+        Mockito.when(resourcePermissionsFactory.get()).thenReturn(resourcePermissions);
 
         ChangeRequestDetailsFactory crDetailsFactory = Mockito.mock(ChangeRequestDetailsFactory.class);
         ChangeRequestDetailsService detailsService = Mockito.mock(ChangeRequestDetailsService.class);
@@ -130,7 +140,7 @@ public class ChangeRequestManagerTest {
                 null,
                 null,
                 null,
-                resourcePermissions,
+                resourcePermissionsFactory,
                 null,
                 null,
                 null,
@@ -158,6 +168,8 @@ public class ChangeRequestManagerTest {
         ChangeRequestValidationService crValidationService = Mockito.mock(ChangeRequestValidationService.class);
                 Mockito.when(crValidationService.getErrorMessages(ArgumentMatchers.any())).thenReturn(new ArrayList<String>(
                         Arrays.asList("This is an error.")));
+        ResourcePermissionsFactory resourcePermissionsFactory = Mockito.mock(ResourcePermissionsFactory.class);
+        Mockito.when(resourcePermissionsFactory.get()).thenReturn(null);
 
         ChangeRequestManager changeRequestManager = new ChangeRequestManager(null, null, changeRequestDAO,
                 null,
@@ -174,7 +186,7 @@ public class ChangeRequestManagerTest {
                 null,
                 null,
                 null,
-                null,
+                resourcePermissionsFactory,
                 null,
                 null,
                 null,
@@ -203,6 +215,9 @@ public class ChangeRequestManagerTest {
         ResourcePermissions resourcePermissions = Mockito.mock(ResourcePermissions.class);
         Mockito.when(resourcePermissions.isUserRoleDeveloperAdmin()).thenReturn(false);
 
+        ResourcePermissionsFactory resourcePermissionsFactory = Mockito.mock(ResourcePermissionsFactory.class);
+        Mockito.when(resourcePermissionsFactory.get()).thenReturn(resourcePermissions);
+
         ChangeRequestDetailsFactory crDetailsFactory = Mockito.mock(ChangeRequestDetailsFactory.class);
         ChangeRequestDetailsService detailsService = Mockito.mock(ChangeRequestDetailsService.class);
         // Return what was passed in...
@@ -228,7 +243,7 @@ public class ChangeRequestManagerTest {
                 null,
                 null,
                 null,
-                resourcePermissions,
+                resourcePermissionsFactory,
                 null,
                 null,
                 null,
@@ -259,6 +274,9 @@ public class ChangeRequestManagerTest {
         ResourcePermissions resourcePermissions = Mockito.mock(ResourcePermissions.class);
         Mockito.when(resourcePermissions.isUserRoleDeveloperAdmin()).thenReturn(true);
 
+        ResourcePermissionsFactory resourcePermissionsFactory = Mockito.mock(ResourcePermissionsFactory.class);
+        Mockito.when(resourcePermissionsFactory.get()).thenReturn(resourcePermissions);
+
         ChangeRequestDetailsFactory crDetailsFactory = Mockito.mock(ChangeRequestDetailsFactory.class);
         ChangeRequestDetailsService detailsService = Mockito.mock(ChangeRequestDetailsService.class);
         // Return what was passed in...
@@ -285,7 +303,7 @@ public class ChangeRequestManagerTest {
                 null,
                 null,
                 null,
-                resourcePermissions,
+                resourcePermissionsFactory,
                 errorMessageUtil,
                 null,
                 null,

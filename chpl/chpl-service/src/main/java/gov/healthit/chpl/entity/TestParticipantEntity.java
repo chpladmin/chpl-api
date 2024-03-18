@@ -11,6 +11,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import gov.healthit.chpl.domain.TestParticipant;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -66,5 +67,23 @@ public class TestParticipantEntity extends EntityAudit {
 
     @Column(name = "assistive_technology_needs", nullable = false)
     private String assistiveTechnologyNeeds;
+
+    public TestParticipant toDomain() {
+        return TestParticipant.builder()
+                .id(this.getId())
+                .gender(this.getGender())
+                .educationType(this.getEducation().toDomain())
+                .educationTypeId(this.getEducationTypeId())
+                .educationTypeName(this.getEducation().getName())
+                .age(this.getAgeRange().toDomain())
+                .ageRangeId(this.getAgeRangeId())
+                .ageRange(this.getAgeRange().getAge())
+                .occupation(this.getOccupation())
+                .professionalExperienceMonths(this.getProfessionalExperienceMonths())
+                .computerExperienceMonths(this.getComputerExperienceMonths())
+                .productExperienceMonths(this.getProductExperienceMonths())
+                .assistiveTechnologyNeeds(this.getAssistiveTechnologyNeeds())
+                .build();
+    }
 
 }

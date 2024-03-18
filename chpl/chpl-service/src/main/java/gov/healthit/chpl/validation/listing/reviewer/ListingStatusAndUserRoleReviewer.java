@@ -10,24 +10,24 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.util.CertificationStatusUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Component("listingStatusAndUserRoleReviewer")
 public class ListingStatusAndUserRoleReviewer implements ComparisonReviewer {
-    private ResourcePermissions resourcePermissions;
+    private ResourcePermissionsFactory resourcePermissionsFactory;
     private ErrorMessageUtil messages;
 
     @Autowired
-    public ListingStatusAndUserRoleReviewer(ResourcePermissions resourcePermissions, ErrorMessageUtil messages) {
-        this.resourcePermissions = resourcePermissions;
+    public ListingStatusAndUserRoleReviewer(ResourcePermissionsFactory resourcePermissionsFactory, ErrorMessageUtil messages) {
+        this.resourcePermissionsFactory = resourcePermissionsFactory;
         this.messages = messages;
     }
 
     @Override
     public void review(CertifiedProductSearchDetails existingListing, CertifiedProductSearchDetails updatedListing) {
-        if (resourcePermissions.isUserRoleAdmin() || resourcePermissions.isUserRoleOnc()) {
+        if (resourcePermissionsFactory.get().isUserRoleAdmin() || resourcePermissionsFactory.get().isUserRoleOnc()) {
             return;
         }
 

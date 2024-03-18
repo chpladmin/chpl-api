@@ -11,6 +11,7 @@ import org.mockito.Mockito;
 
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.sharedstore.SharedStore;
 import gov.healthit.chpl.sharedstore.SharedStoreDAO;
 import gov.healthit.chpl.sharedstore.listing.SharedListingStoreProvider;
@@ -18,14 +19,20 @@ import gov.healthit.chpl.sharedstore.listing.SharedListingStoreProvider;
 public class SharedListingStoreProviderTest {
     private static final Long ALT_ID = 5L;
 
+    private ResourcePermissionsFactory resourcePermissionsFactory;
+    private ResourcePermissions resourcePermissions;
     private SharedStoreDAO sharedStoreDAO;
     private SharedListingStoreProvider sharedListingStoreProvider;
 
     @Before
     public void setup() {
         sharedStoreDAO = Mockito.mock(SharedStoreDAO.class);
+        resourcePermissionsFactory = Mockito.mock(ResourcePermissionsFactory.class);
+        resourcePermissions = Mockito.mock(ResourcePermissions.class);
 
-        sharedListingStoreProvider = new SharedListingStoreProvider(Mockito.mock(ResourcePermissions.class), sharedStoreDAO);
+        Mockito.when(resourcePermissionsFactory.get()).thenReturn(resourcePermissions);
+
+        sharedListingStoreProvider = new SharedListingStoreProvider(resourcePermissionsFactory, sharedStoreDAO);
     }
 
     @Test

@@ -16,6 +16,7 @@ import gov.healthit.chpl.changerequest.validation.ChangeRequestValidationContext
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 
 public class CurrentStatusValidationTest {
     private static final Long PENDING_ACB_ACTION = 1L;
@@ -28,11 +29,15 @@ public class CurrentStatusValidationTest {
     private ChangeRequest newChangeRequest;
     private ChangeRequestStatusTypeDAO changeRequestStatusTypeDAO;
     private ResourcePermissions resourcePermissions;
+    private ResourcePermissionsFactory resourcePermissionsFactory;
 
     @Before
     public void before() throws EntityRetrievalException {
         validator = new CurrentStatusValidation();
         resourcePermissions = Mockito.mock(ResourcePermissions.class);
+        resourcePermissionsFactory = Mockito.mock(ResourcePermissionsFactory.class);
+        Mockito.when(resourcePermissionsFactory.get()).thenReturn(resourcePermissions);
+
 
         changeRequestStatusTypeDAO = Mockito.mock(ChangeRequestStatusTypeDAO.class);
         Mockito.when(changeRequestStatusTypeDAO.getChangeRequestStatusTypeById(ArgumentMatchers.anyLong()))
@@ -95,7 +100,7 @@ public class CurrentStatusValidationTest {
         ChangeRequestValidationContext context = ChangeRequestValidationContext.builder()
                 .newChangeRequest(newChangeRequest)
                 .changeRequestStatusIds(new ChangeRequestStatusIds(CANCELLED_BY_REQUESTER, ACCEPTED, REJECTED, PENDING_ACB_ACTION, PENDING_DEVELOPER_ACTION))
-                .resourcePermissions(resourcePermissions)
+                .resourcePermissionsFactory(resourcePermissionsFactory)
                 .validationDAOs(new ValidationDAOs(null, null, changeRequestStatusTypeDAO, null))
                 .build();
 
@@ -118,7 +123,7 @@ public class CurrentStatusValidationTest {
         ChangeRequestValidationContext context = ChangeRequestValidationContext.builder()
                 .newChangeRequest(newChangeRequest)
                 .changeRequestStatusIds(new ChangeRequestStatusIds(CANCELLED_BY_REQUESTER, ACCEPTED, REJECTED, PENDING_ACB_ACTION, PENDING_DEVELOPER_ACTION))
-                .resourcePermissions(resourcePermissions)
+                .resourcePermissionsFactory(resourcePermissionsFactory)
                 .validationDAOs(new ValidationDAOs(null, null, changeRequestStatusTypeDAO, null))
                 .build();
 
@@ -142,7 +147,7 @@ public class CurrentStatusValidationTest {
         ChangeRequestValidationContext context = ChangeRequestValidationContext.builder()
                 .newChangeRequest(newChangeRequest)
                 .changeRequestStatusIds(new ChangeRequestStatusIds(CANCELLED_BY_REQUESTER, ACCEPTED, REJECTED, PENDING_ACB_ACTION, PENDING_DEVELOPER_ACTION))
-                .resourcePermissions(resourcePermissions)
+                .resourcePermissionsFactory(resourcePermissionsFactory)
                 .validationDAOs(new ValidationDAOs(null, null, changeRequestStatusTypeDAO, null))
                 .build();
 
@@ -165,7 +170,7 @@ public class CurrentStatusValidationTest {
         ChangeRequestValidationContext context = ChangeRequestValidationContext.builder()
                 .newChangeRequest(newChangeRequest)
                 .changeRequestStatusIds(new ChangeRequestStatusIds(CANCELLED_BY_REQUESTER, ACCEPTED, REJECTED, PENDING_ACB_ACTION, PENDING_DEVELOPER_ACTION))
-                .resourcePermissions(resourcePermissions)
+                .resourcePermissionsFactory(resourcePermissionsFactory)
                 .validationDAOs(new ValidationDAOs(null, null, changeRequestStatusTypeDAO, null))
                 .build();
 
@@ -189,7 +194,7 @@ public class CurrentStatusValidationTest {
         ChangeRequestValidationContext context = ChangeRequestValidationContext.builder()
                 .newChangeRequest(newChangeRequest)
                 .changeRequestStatusIds(new ChangeRequestStatusIds(CANCELLED_BY_REQUESTER, ACCEPTED, REJECTED, PENDING_ACB_ACTION, PENDING_DEVELOPER_ACTION))
-                .resourcePermissions(resourcePermissions)
+                .resourcePermissionsFactory(resourcePermissionsFactory)
                 .validationDAOs(new ValidationDAOs(null, null, changeRequestStatusTypeDAO, null))
                 .build();
 
@@ -212,7 +217,7 @@ public class CurrentStatusValidationTest {
         ChangeRequestValidationContext context = ChangeRequestValidationContext.builder()
                 .newChangeRequest(newChangeRequest)
                 .changeRequestStatusIds(new ChangeRequestStatusIds(CANCELLED_BY_REQUESTER, ACCEPTED, REJECTED, PENDING_ACB_ACTION, PENDING_DEVELOPER_ACTION))
-                .resourcePermissions(resourcePermissions)
+                .resourcePermissionsFactory(resourcePermissionsFactory)
                 .validationDAOs(new ValidationDAOs(null, null, changeRequestStatusTypeDAO, null))
                 .build();
 
@@ -235,7 +240,7 @@ public class CurrentStatusValidationTest {
         ChangeRequestValidationContext context = ChangeRequestValidationContext.builder()
                 .newChangeRequest(newChangeRequest)
                 .changeRequestStatusIds(new ChangeRequestStatusIds(CANCELLED_BY_REQUESTER, ACCEPTED, REJECTED, PENDING_ACB_ACTION, PENDING_DEVELOPER_ACTION))
-                .resourcePermissions(resourcePermissions)
+                .resourcePermissionsFactory(resourcePermissionsFactory)
                 .validationDAOs(new ValidationDAOs(null, null, changeRequestStatusTypeDAO, null))
                 .build();
 
@@ -257,7 +262,7 @@ public class CurrentStatusValidationTest {
         ChangeRequestValidationContext context = ChangeRequestValidationContext.builder()
                 .newChangeRequest(newChangeRequest)
                 .changeRequestStatusIds(new ChangeRequestStatusIds(CANCELLED_BY_REQUESTER, ACCEPTED, REJECTED, PENDING_ACB_ACTION, PENDING_DEVELOPER_ACTION))
-                .resourcePermissions(resourcePermissions)
+                .resourcePermissionsFactory(resourcePermissionsFactory)
                 .validationDAOs(new ValidationDAOs(null, null, changeRequestStatusTypeDAO, null))
                 .build();
 
@@ -280,7 +285,7 @@ public class CurrentStatusValidationTest {
         ChangeRequestValidationContext context = ChangeRequestValidationContext.builder()
                 .newChangeRequest(newChangeRequest)
                 .changeRequestStatusIds(new ChangeRequestStatusIds(CANCELLED_BY_REQUESTER, ACCEPTED, REJECTED, PENDING_ACB_ACTION, PENDING_DEVELOPER_ACTION))
-                .resourcePermissions(resourcePermissions)
+                .resourcePermissionsFactory(resourcePermissionsFactory)
                 .validationDAOs(new ValidationDAOs(null, null, changeRequestStatusTypeDAO, null))
                 .build();
 
@@ -303,7 +308,7 @@ public class CurrentStatusValidationTest {
         ChangeRequestValidationContext context = ChangeRequestValidationContext.builder()
                 .newChangeRequest(newChangeRequest)
                 .changeRequestStatusIds(new ChangeRequestStatusIds(CANCELLED_BY_REQUESTER, ACCEPTED, REJECTED, PENDING_ACB_ACTION, PENDING_DEVELOPER_ACTION))
-                .resourcePermissions(resourcePermissions)
+                .resourcePermissionsFactory(resourcePermissionsFactory)
                 .validationDAOs(new ValidationDAOs(null, null, changeRequestStatusTypeDAO, null))
                 .build();
 

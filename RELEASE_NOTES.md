@@ -1,5 +1,16 @@
 # Release Notes
 
+## Version 43.6.0
+_18 March 2024_
+
+### Features
+* Add Roles chpl-onc, chpl-developer, chpl-onc-acb to Cognito
+* Service Base URL report - check that the response length is not 0 length
+* Accept educationType and age objects for test participants
+* Add associated ONC-ACBs and Developer Users to Service Base URL List email report
+
+---
+
 ## Version 43.5.0
 _5 March 2024_
 

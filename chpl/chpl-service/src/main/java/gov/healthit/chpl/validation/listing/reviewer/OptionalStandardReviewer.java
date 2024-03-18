@@ -18,7 +18,7 @@ import gov.healthit.chpl.optionalStandard.OptionalStandardDAO;
 import gov.healthit.chpl.optionalStandard.domain.CertificationResultOptionalStandard;
 import gov.healthit.chpl.optionalStandard.domain.OptionalStandard;
 import gov.healthit.chpl.optionalStandard.domain.OptionalStandardCriteriaMap;
-import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
@@ -28,8 +28,8 @@ public class OptionalStandardReviewer extends PermissionBasedReviewer implements
     private ErrorMessageUtil errorMessageUtil;
 
     @Autowired
-    public OptionalStandardReviewer(OptionalStandardDAO optionalStandardDAO, ErrorMessageUtil errorMessageUtil, ResourcePermissions resourcePermissions) {
-        super(errorMessageUtil, resourcePermissions);
+    public OptionalStandardReviewer(OptionalStandardDAO optionalStandardDAO, ErrorMessageUtil errorMessageUtil, ResourcePermissionsFactory resourcePermissionsFactory) {
+        super(errorMessageUtil, resourcePermissionsFactory);
         this.optionalStandardDAO = optionalStandardDAO;
         this.errorMessageUtil = errorMessageUtil;
     }

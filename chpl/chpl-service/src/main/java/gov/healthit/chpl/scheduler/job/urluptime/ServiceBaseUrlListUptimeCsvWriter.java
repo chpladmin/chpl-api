@@ -14,17 +14,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.dao.CertificationBodyDAO;
+import gov.healthit.chpl.domain.CertificationBody;
 import lombok.extern.log4j.Log4j2;
 
 @Component
 @Log4j2(topic = "serviceBaseUrlListUptimeEmailJobLogger")
 public class ServiceBaseUrlListUptimeCsvWriter {
-
+    private CertificationBodyDAO certificationBodyDAO;
     private String reportFileName;
 
     @Autowired
-    public ServiceBaseUrlListUptimeCsvWriter(@Value("${serviceBaseUrlListUptime.report.filename}") String reportFileName) {
+    public ServiceBaseUrlListUptimeCsvWriter(@Value("${serviceBaseUrlListUptime.report.filename}") String reportFileName, CertificationBodyDAO certificationBodyDAO) {
         this.reportFileName = reportFileName;
+        this.certificationBodyDAO = certificationBodyDAO;
     }
 
     public File generateFile(List<ServiceBaseUrlListUptimeReport> rows) {
@@ -36,12 +39,15 @@ public class ServiceBaseUrlListUptimeCsvWriter {
         try (OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(outputFile),
                 Charset.forName("UTF-8").newEncoder());
                 CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.EXCEL)) {
+
+            List<CertificationBody> activeAcbs = certificationBodyDAO.findAllActive();
+
             writer.write('\ufeff');
-            csvPrinter.printRecord(ServiceBaseUrlListUptimeReport.getHeaders());
+            csvPrinter.printRecord(ServiceBaseUrlListUptimeReport.getHeaders(activeAcbs));
             rows.stream()
                     .forEach(row -> {
                         try {
-                            csvPrinter.printRecord(row.toListOfStrings());
+                            csvPrinter.printRecord(row.toListOfStrings(activeAcbs));
                         } catch (Exception e) {
                             LOGGER.error(e);
                         }

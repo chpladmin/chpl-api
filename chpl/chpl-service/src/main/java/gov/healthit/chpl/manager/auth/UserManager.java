@@ -298,7 +298,7 @@ public class UserManager extends SecuredManager {
             + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).GET_BY_USER_NAME, returnObject)")
     public User getUserInfo(Long id) throws UserRetrievalException {
         UserDTO user = getById(id);
-        return new User(user);
+        return user.toDomain();
     }
 
     public Strength getPasswordStrength(UserDTO user, final String password) {

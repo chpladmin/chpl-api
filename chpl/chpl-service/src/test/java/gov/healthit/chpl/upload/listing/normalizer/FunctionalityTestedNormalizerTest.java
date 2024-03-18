@@ -22,6 +22,7 @@ import gov.healthit.chpl.functionalitytested.FunctionalityTested;
 import gov.healthit.chpl.functionalitytested.FunctionalityTestedDAO;
 import gov.healthit.chpl.functionalitytested.FunctionalityTestedManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 
 public class FunctionalityTestedNormalizerTest {
 
@@ -43,8 +44,11 @@ public class FunctionalityTestedNormalizerTest {
         resourcePermissions = Mockito.mock(ResourcePermissions.class);
         functionalityTestedManager = Mockito.mock(FunctionalityTestedManager.class);
 
+        ResourcePermissionsFactory resourcePermissionsFactory = Mockito.mock(ResourcePermissionsFactory.class);
+        Mockito.when(resourcePermissionsFactory.get()).thenReturn(resourcePermissions);
+
         normalizer = new FunctionalityTestedNormalizer(functionalityTestedDao,
-                resourcePermissions, RESTRICTED_FUNCTIONALITIES_TESTED_JSON);
+                resourcePermissionsFactory, RESTRICTED_FUNCTIONALITIES_TESTED_JSON);
     }
 
     @Test

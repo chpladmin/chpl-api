@@ -35,6 +35,7 @@ import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
 import gov.healthit.chpl.certifiedproduct.service.CertificationResultSynchronizationService;
 import gov.healthit.chpl.certifiedproduct.service.CertificationStatusEventsService;
 import gov.healthit.chpl.certifiedproduct.service.CqmResultSynchronizationService;
+import gov.healthit.chpl.certifiedproduct.service.SedSynchronizationService;
 import gov.healthit.chpl.dao.CertificationStatusDAO;
 import gov.healthit.chpl.dao.CertificationStatusEventDAO;
 import gov.healthit.chpl.dao.CertifiedProductAccessibilityStandardDAO;
@@ -88,7 +89,7 @@ import gov.healthit.chpl.manager.impl.SecuredManager;
 import gov.healthit.chpl.notifier.BusinessRulesOverrideNotifierMessage;
 import gov.healthit.chpl.notifier.ChplTeamNotifier;
 import gov.healthit.chpl.notifier.FutureCertificationStatusNotifierMessage;
-import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.qmsStandard.QmsStandard;
 import gov.healthit.chpl.qmsStandard.QmsStandardDAO;
 import gov.healthit.chpl.scheduler.job.certificationStatus.UpdateCurrentCertificationStatusJob;
@@ -127,9 +128,10 @@ public class CertifiedProductManager extends SecuredManager {
     private PromotingInteroperabilityUserDAO piuDao;
     private CertificationResultSynchronizationService certResultService;
     private CqmResultSynchronizationService cqmResultService;
+    private SedSynchronizationService sedService;
     private CertificationStatusDAO certStatusDao;
     private ListingGraphDAO listingGraphDao;
-    private ResourcePermissions resourcePermissions;
+    private ResourcePermissionsFactory resourcePermissionsFactory;
     private CertifiedProductDetailsManager certifiedProductDetailsManager;
     private SchedulerManager schedulerManager;
     private UserManager userManager;
@@ -159,7 +161,9 @@ public class CertifiedProductManager extends SecuredManager {
             ProductManager productManager, ProductVersionManager versionManager, CertificationStatusEventDAO statusEventDao,
             CuresUpdateEventDAO curesUpdateDao, PromotingInteroperabilityUserDAO piuDao,
             CertificationResultSynchronizationService certResultService, CqmResultSynchronizationService cqmResultService,
-            CertificationStatusDAO certStatusDao, ListingGraphDAO listingGraphDao, ResourcePermissions resourcePermissions,
+            SedSynchronizationService sedService,
+            CertificationStatusDAO certStatusDao, ListingGraphDAO listingGraphDao,
+            ResourcePermissionsFactory resourcePermissionsFactory,
             CertifiedProductDetailsManager certifiedProductDetailsManager,
             SchedulerManager schedulerManager, ActivityManager activityManager, UserManager userManager,
             ListingDetailsNormalizer listingNormalizer,
@@ -185,9 +189,10 @@ public class CertifiedProductManager extends SecuredManager {
         this.piuDao = piuDao;
         this.certResultService = certResultService;
         this.cqmResultService = cqmResultService;
+        this.sedService = sedService;
         this.certStatusDao = certStatusDao;
         this.listingGraphDao = listingGraphDao;
-        this.resourcePermissions = resourcePermissions;
+        this.resourcePermissionsFactory = resourcePermissionsFactory;
         this.certifiedProductDetailsManager = certifiedProductDetailsManager;
         this.schedulerManager = schedulerManager;
         this.activityManager = activityManager;
@@ -364,6 +369,7 @@ public class CertifiedProductManager extends SecuredManager {
                 existingListing.getCertificationResults(), updatedListing.getCertificationResults());
         copyCriterionIdsToCqmMappings(updatedListing);
         updateCqms(updatedListing, existingListing.getCqmResults(), updatedListing.getCqmResults());
+        updateSed(existingListing, updatedListing);
     }
 
     private void updateRwtEligibilityForListingAndChildren(CertifiedProductDTO listing) {
@@ -1113,6 +1119,13 @@ public class CertifiedProductManager extends SecuredManager {
         return cqmResultService.synchronizeCqms(listing, existingCqmDetails, updatedCqmDetails);
     }
 
+    private void updateSed(CertifiedProductSearchDetails origListing, CertifiedProductSearchDetails updatedListing)
+            throws EntityCreationException, EntityRetrievalException {
+        sedService.synchronizeTestTasks(origListing, updatedListing,
+                origListing.getSed() == null || CollectionUtils.isEmpty(origListing.getSed().getTestTasks()) ? List.of() : origListing.getSed().getTestTasks(),
+                updatedListing.getSed() == null || CollectionUtils.isEmpty(updatedListing.getSed().getTestTasks()) ? List.of() : updatedListing.getSed().getTestTasks());
+    }
+
     private void deleteTriggersForRemovedFutureListingStatusChanges(CertifiedProductSearchDetails existingListing,
             CertifiedProductSearchDetails updatedListing) {
         List<CertificationStatusEvent> removedStatusEvents
@@ -1234,27 +1247,13 @@ public class CertifiedProductManager extends SecuredManager {
     private boolean shouldValidationExceptionBeThrown(CertifiedProductSearchDetails listing, boolean acknowledgeBusinessErrors, boolean acknowledgeWarnings) {
         // return true when we want to throw ValidationException
         if (doErrorMessagesExist(listing)) {
-            if (resourcePermissions.isUserRoleAdmin() || resourcePermissions.isUserRoleOnc()) {
+            if (resourcePermissionsFactory.get().isUserRoleAdmin() || resourcePermissionsFactory.get().isUserRoleOnc()) {
                 return doDataErrorMessagesExist(listing) || (doBusinessErrorMessagesExist(listing) && !acknowledgeBusinessErrors);
             } else {
                 return true;
             }
         } else {
             return doWarningMessagesExist(listing) && !acknowledgeWarnings;
-        }
-    }
-
-    @Data
-    private static class CertificationStatusEventPair {
-        private CertificationStatusEvent orig;
-        private CertificationStatusEvent updated;
-
-        CertificationStatusEventPair() {
-        }
-
-        CertificationStatusEventPair(CertificationStatusEvent orig, CertificationStatusEvent updated) {
-            this.orig = orig;
-            this.updated = updated;
         }
     }
 

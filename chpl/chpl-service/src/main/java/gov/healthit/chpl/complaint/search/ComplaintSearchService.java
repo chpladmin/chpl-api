@@ -21,14 +21,14 @@ import gov.healthit.chpl.complaint.ComplaintDAO;
 import gov.healthit.chpl.complaint.domain.Complaint;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.exception.ValidationException;
-import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 @Service
 public class ComplaintSearchService {
     private ComplaintDAO complaintDao;
-    private ResourcePermissions resourcePermissions;
+    private ResourcePermissionsFactory resourcePermissionsFactory;
     private ComplaintSearchRequestValidator validator;
     private ComplaintSearchRequestNormalizer normalizer;
     private DateTimeFormatter dateFormatter;
@@ -37,9 +37,9 @@ public class ComplaintSearchService {
     public ComplaintSearchService(ComplaintDAO complaintDao,
             ComplaintSearchRequestNormalizer normalizer,
             ComplaintSearchRequestValidator validator,
-            ResourcePermissions resourcePermissions) {
+            ResourcePermissionsFactory resourcePermissionsFactory) {
         this.complaintDao = complaintDao;
-        this.resourcePermissions = resourcePermissions;
+        this.resourcePermissionsFactory = resourcePermissionsFactory;
         this.validator = validator;
         this.normalizer = normalizer;
         dateFormatter = DateTimeFormatter.ISO_LOCAL_DATE;
@@ -68,7 +68,7 @@ public class ComplaintSearchService {
     }
 
     private List<Complaint> filterResults(List<Complaint> allComplaints, ComplaintSearchRequest searchRequest) {
-        List<CertificationBody> allowedAcbs = resourcePermissions.getAllAcbsForCurrentUser();
+        List<CertificationBody> allowedAcbs = resourcePermissionsFactory.get().getAllAcbsForCurrentUser();
         List<Long> allowedAcbIds = allowedAcbs.stream().map(acb -> acb.getId()).toList();
 
         LOGGER.debug("Total complaints: " + allComplaints.size());

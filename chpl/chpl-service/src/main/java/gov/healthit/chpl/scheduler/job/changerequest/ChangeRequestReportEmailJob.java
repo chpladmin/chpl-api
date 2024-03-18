@@ -21,11 +21,9 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.FeatureList;
-import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestDAO;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestStatusTypeDAO;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestStatusType;
@@ -52,7 +50,7 @@ import gov.healthit.chpl.util.DateUtil;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2(topic = "changeRequestsReportJobLogger")
-public class ChangeRequestReportEmailJob  extends QuartzJob {
+public class ChangeRequestReportEmailJob extends QuartzJob {
     public static final String JOB_NAME = "changeRequestsReport";
     public static final String SEARCH_REQUEST = "searchRequest";
     public static final String USER_KEY = "user";
@@ -333,15 +331,4 @@ public class ChangeRequestReportEmailJob  extends QuartzJob {
         tempDemographicFile = demographicFilePath.toFile();
     }
 
-    private void setSecurityContext(UserDTO user) {
-        JWTAuthenticatedUser jobUser = new JWTAuthenticatedUser();
-        jobUser.setFullName(user.getFullName());
-        jobUser.setId(user.getId());
-        jobUser.setFriendlyName(user.getFriendlyName());
-        jobUser.setSubjectName(user.getUsername());
-        jobUser.getPermissions().add(user.getPermission().getGrantedPermission());
-
-        SecurityContextHolder.getContext().setAuthentication(jobUser);
-        SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);
-    }
 }

@@ -126,7 +126,7 @@ public class CertificationResultService {
             List<CertificationResultTestTaskDTO> testTask = certResultManager.getTestTasksForCertificationResult(certResult.getId());
             for (CertificationResultTestTaskDTO currResult : testTask) {
                 boolean alreadyExists = false;
-                TestTask newTestTask = new TestTask(currResult);
+                TestTask newTestTask = currResult.getTestTask();
                 for (TestTask currTestTask : searchDetails.getSed().getTestTasks()) {
                     if (newTestTask.matches(currTestTask)) {
                         alreadyExists = true;

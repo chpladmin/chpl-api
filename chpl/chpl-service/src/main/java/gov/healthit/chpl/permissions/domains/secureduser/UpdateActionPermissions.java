@@ -41,7 +41,7 @@ public class UpdateActionPermissions extends ActionPermissions {
                     return false;
                 }
             }
-            return getResourcePermissions().hasPermissionOnUser(user);
+            return getResourcePermissions().hasPermissionOnUser(user.toDomain());
         } else {
             return false;
         }

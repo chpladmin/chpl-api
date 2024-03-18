@@ -21,12 +21,14 @@ import gov.healthit.chpl.domain.CertificationStatus;
 import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.util.DateUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 public class DeveloperBanComparisonReviewerTest {
     private static final String ERROR_MESSAGE = "User %s does not have permission to modify certification status%s '%s' on the listing.";
     private CertificationStatusEventsService cseService;
+    private ResourcePermissionsFactory resourcePermissionsFactory;
     private ResourcePermissions resourcePermissions;
     private ErrorMessageUtil msgUtil;
     private DeveloperBanComparisonReviewer reviewer;
@@ -38,10 +40,12 @@ public class DeveloperBanComparisonReviewerTest {
                 Mockito.mock(CertificationStatusEventDAO.class),
                 Mockito.mock(CertificationStatusDAO.class));
         resourcePermissions = Mockito.mock(ResourcePermissions.class);
+        resourcePermissionsFactory = Mockito.mock(ResourcePermissionsFactory.class);
+        Mockito.when(resourcePermissionsFactory.get()).thenReturn(resourcePermissions);
         msgUtil = Mockito.mock(ErrorMessageUtil.class);
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.certStatusChange.notAllowed"), ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
                 .thenAnswer(i -> String.format(ERROR_MESSAGE, i.getArgument(1), i.getArgument(2), i.getArgument(3)));
-        reviewer = new DeveloperBanComparisonReviewer(cseService, resourcePermissions, msgUtil);
+        reviewer = new DeveloperBanComparisonReviewer(cseService, resourcePermissionsFactory, msgUtil);
     }
 
     @Test
@@ -469,7 +473,7 @@ public class DeveloperBanComparisonReviewerTest {
         acbUser.setId(3L);
         acbUser.setFriendlyName("User3");
         acbUser.setSubjectName("unit@test.com");
-        acbUser.getPermissions().add(new GrantedPermission("ROLE_ACB"));
+        acbUser.getAuthorities().add(new GrantedPermission("ROLE_ACB"));
         return acbUser;
     }
 }

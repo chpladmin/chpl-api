@@ -19,7 +19,7 @@ import gov.healthit.chpl.functionalitytested.CertificationResultFunctionalityTes
 import gov.healthit.chpl.functionalitytested.FunctionalityTested;
 import gov.healthit.chpl.functionalitytested.FunctionalityTestedDAO;
 import gov.healthit.chpl.functionalitytested.FunctionalityTestedManager;
-import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
 import gov.healthit.chpl.validation.listing.reviewer.PermissionBasedReviewer;
@@ -34,8 +34,8 @@ public class FunctionalityTestedAllowedByCriteriaReviewer extends PermissionBase
     @Autowired
     public FunctionalityTestedAllowedByCriteriaReviewer(FunctionalityTestedManager functionalityTestedManager,
             FunctionalityTestedDAO functionalityTestedDao,
-            ErrorMessageUtil msgUtil, ResourcePermissions resourcePermissions) {
-        super(msgUtil, resourcePermissions);
+            ErrorMessageUtil msgUtil, ResourcePermissionsFactory resourcePermissionsFactory) {
+        super(msgUtil, resourcePermissionsFactory);
         this.functionalityTestedManager = functionalityTestedManager;
         this.functionalityTestedDao = functionalityTestedDao;
     }

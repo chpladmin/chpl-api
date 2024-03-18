@@ -59,5 +59,4 @@ public class TestTaskParticipantMapEntity extends EntityAudit {
     @JoinColumn(name = "test_participant_id", unique = true, nullable = true, insertable = false, updatable = false)
     @Where(clause = "deleted <> 'true'")
     private TestParticipantEntity testParticipant;
-
 }

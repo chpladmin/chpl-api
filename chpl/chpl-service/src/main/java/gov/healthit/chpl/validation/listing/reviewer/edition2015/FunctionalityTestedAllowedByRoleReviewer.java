@@ -18,7 +18,7 @@ import com.fasterxml.jackson.databind.type.CollectionType;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.functionalitytested.CertificationResultFunctionalityTested;
-import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
 import gov.healthit.chpl.validation.listing.reviewer.ComparisonReviewer;
@@ -31,15 +31,15 @@ import lombok.extern.log4j.Log4j2;
 public class FunctionalityTestedAllowedByRoleReviewer implements ComparisonReviewer {
 
     private ErrorMessageUtil errorMessages;
-    private ResourcePermissions permissions;
+    private ResourcePermissionsFactory permissionsFactory;
     private String jsonRestrictions;
 
     @Autowired
-    public FunctionalityTestedAllowedByRoleReviewer(ResourcePermissions permissions, ErrorMessageUtil errorMessages,
+    public FunctionalityTestedAllowedByRoleReviewer(ResourcePermissionsFactory resourcePermissionsFactory, ErrorMessageUtil errorMessages,
             @Value("${functionalitiesTested.restrictions}") String jsonRestrictions) {
 
         this.errorMessages = errorMessages;
-        this.permissions = permissions;
+        this.permissionsFactory = resourcePermissionsFactory;
         this.jsonRestrictions = jsonRestrictions;
     }
 
@@ -111,7 +111,7 @@ public class FunctionalityTestedAllowedByRoleReviewer implements ComparisonRevie
         Optional<RestrictedFunctionalityTested> restrictedFunctionalityTested = findRestrictedFunctionalityTested(criteriaId,
                 functionalityTestedId);
         if (restrictedFunctionalityTested.isPresent()) {
-            return permissions.doesUserHaveRole(restrictedFunctionalityTested.get().getAllowedRoleNames());
+            return permissionsFactory.get().doesUserHaveRole(restrictedFunctionalityTested.get().getAllowedRoleNames());
         } else {
             return true;
         }

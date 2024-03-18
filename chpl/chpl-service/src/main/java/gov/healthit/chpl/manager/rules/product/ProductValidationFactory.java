@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.ProductDAO;
 import gov.healthit.chpl.manager.rules.ValidationRule;
-import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 
 @Component
 public class ProductValidationFactory {
@@ -16,14 +16,14 @@ public class ProductValidationFactory {
 
     private ProductDAO productDao;
     private DeveloperDAO developerDao;
-    private ResourcePermissions resourcePermissions;
+    private ResourcePermissionsFactory resourcePermissionsFactory;
 
     @Autowired
     public ProductValidationFactory(DeveloperDAO developerDao, ProductDAO productDao,
-            ResourcePermissions resourcePermissions) {
+            ResourcePermissionsFactory resourcePermissionsFactory) {
         this.developerDao = developerDao;
         this.productDao = productDao;
-        this.resourcePermissions = resourcePermissions;
+        this.resourcePermissionsFactory = resourcePermissionsFactory;
     }
 
     public ValidationRule<ProductValidationContext> getRule(String name) {
@@ -31,7 +31,7 @@ public class ProductValidationFactory {
         case NAME:
             return new ProductNameValidation();
         case OWNER:
-            return new ProductOwnerValidation(developerDao, productDao, resourcePermissions);
+            return new ProductOwnerValidation(developerDao, productDao, resourcePermissionsFactory);
         case OWNER_HISTORY:
             return new ProductOwnerHistoryValidation(developerDao, productDao);
         default:
