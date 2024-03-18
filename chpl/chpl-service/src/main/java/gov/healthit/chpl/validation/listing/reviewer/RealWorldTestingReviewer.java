@@ -75,7 +75,11 @@ public class RealWorldTestingReviewer implements Reviewer {
     }
 
     private void validateRwtPlansCheckDate(CertifiedProductSearchDetails listing) {
-        if (Objects.isNull(listing.getRwtPlansCheckDate())) {
+        if (Objects.isNull(listing.getRwtPlansCheckDate())
+                && !StringUtils.isEmpty(listing.getUserEnteredRwtPlansCheckDate())) {
+            listing.addBusinessErrorMessage(
+                    errorMessageUtil.getMessage("listing.realWorldTesting.plans.checkDate.invalid", listing.getUserEnteredRwtPlansCheckDate()));
+        } else if (Objects.isNull(listing.getRwtPlansCheckDate())) {
             listing.addBusinessErrorMessage(
                     errorMessageUtil.getMessage("listing.realWorldTesting.plans.checkDate.required"));
         }
@@ -92,7 +96,11 @@ public class RealWorldTestingReviewer implements Reviewer {
     }
 
     private void validateRwtResultsCheckDate(CertifiedProductSearchDetails listing) {
-        if (Objects.isNull(listing.getRwtResultsCheckDate())) {
+        if (Objects.isNull(listing.getRwtResultsCheckDate())
+                && !StringUtils.isEmpty(listing.getUserEnteredRwtResultsCheckDate())) {
+            listing.addBusinessErrorMessage(
+                    errorMessageUtil.getMessage("listing.realWorldTesting.results.checkDate.invalid", listing.getUserEnteredRwtResultsCheckDate()));
+        } else if (Objects.isNull(listing.getRwtResultsCheckDate())) {
             listing.addBusinessErrorMessage(
                     errorMessageUtil.getMessage("listing.realWorldTesting.results.checkDate.required"));
         }
