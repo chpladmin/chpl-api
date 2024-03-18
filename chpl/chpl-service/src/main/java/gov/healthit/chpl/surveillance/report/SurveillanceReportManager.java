@@ -343,7 +343,7 @@ public class SurveillanceReportManager extends SecuredManager {
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SURVEILLANCE_REPORT, "
             + "T(gov.healthit.chpl.permissions.domains.SurveillanceReportDomainPermissions).GET_QUARTERLY,"
-            + "#report)")
+            + "#quarterlyReports)")
     public List<RelevantListing> getRelevantListings(List<QuarterlyReport> quarterlyReports) {
         Long acbId = quarterlyReports.get(0).getAcb().getId();
         //find the date range encompassing all the reports

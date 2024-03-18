@@ -1,5 +1,7 @@
 package gov.healthit.chpl.permissions.domains.surveillance.report;
 
+import java.util.List;
+
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.permissions.domains.ActionPermissions;
@@ -21,7 +23,12 @@ public class GetQuarterlyReportActionPermissions extends ActionPermissions {
                 || getResourcePermissions().isUserRoleOnc()) {
             return true;
         } else if (getResourcePermissions().isUserRoleAcbAdmin()) {
-            if (obj instanceof QuarterlyReport) {
+            if (obj instanceof List) {
+                List<QuarterlyReport> reports = (List<QuarterlyReport>) obj;
+                return reports.stream()
+                    .filter(report -> !isAcbValidForCurrentUser(report.getAcb().getId()))
+                    .findAny().isEmpty();
+            } else if (obj instanceof QuarterlyReport) {
                 QuarterlyReport report = (QuarterlyReport) obj;
                 return isAcbValidForCurrentUser(report.getAcb().getId());
             } else if (obj instanceof Long) {

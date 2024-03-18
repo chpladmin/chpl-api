@@ -12,6 +12,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.logging.log4j.Logger;
 import org.apache.poi.ss.usermodel.BorderExtent;
 import org.apache.poi.ss.usermodel.BorderStyle;
@@ -465,6 +466,10 @@ public class SurveillanceSummaryWorksheetBuilder {
     }
 
     private boolean hasProcessType(PrivilegedSurveillance surv, String processType) {
+        if (CollectionUtils.isEmpty(surv.getSurveillanceProcessTypes())) {
+            return false;
+        }
+
         return surv.getSurveillanceProcessTypes().stream()
                 .filter(procType -> procType.getName().startsWith(processType))
                 .findAny().isPresent();
@@ -473,6 +478,7 @@ public class SurveillanceSummaryWorksheetBuilder {
     private Long getCountOfSurveillanceOutcomesBySurveillanceType(List<RelevantListing> listings, String survType, String outcome) {
         List<PrivilegedSurveillance> allSurvs = listings.stream()
                 .flatMap(listing -> listing.getSurveillances().stream())
+                .filter(surv -> surv.getSurveillanceOutcome() != null)
                 .filter(distinctByKey(surv -> surv.getId() + ""
                         + (surv.getSurveillanceOutcome().getName().contains(outcome) ? outcome : surv.getSurveillanceOutcome().getName())))
                 .collect(Collectors.toList());
