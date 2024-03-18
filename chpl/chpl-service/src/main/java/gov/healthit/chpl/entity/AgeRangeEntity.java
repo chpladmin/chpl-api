@@ -8,6 +8,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import gov.healthit.chpl.domain.TestParticipant.TestParticipantAge;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -34,5 +35,10 @@ public class AgeRangeEntity extends EntityAudit {
 
     @Column(name = "age")
     private String age;
-
+    public TestParticipantAge toDomain() {
+        return TestParticipantAge.builder()
+                .id(id)
+                .name(age)
+                .build();
+    }
 }

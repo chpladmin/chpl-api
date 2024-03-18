@@ -1,7 +1,9 @@
 package gov.healthit.chpl.entity;
 
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -15,6 +17,8 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.Where;
 
+import gov.healthit.chpl.domain.TestParticipant;
+import gov.healthit.chpl.domain.TestTask;
 import gov.healthit.chpl.entity.listing.TestTaskParticipantMapEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -88,4 +92,27 @@ public class TestTaskEntity extends EntityAudit {
     @Where(clause = "deleted <> 'true'")
     private Set<TestTaskParticipantMapEntity> testParticipants = new HashSet<TestTaskParticipantMapEntity>();
 
+    public TestTask toDomain() {
+        return TestTask.builder()
+                .description(this.getDescription())
+                .id(this.getId())
+                .taskErrors(this.getTaskErrors())
+                .taskErrorsStddev(this.getTaskErrorsStddev())
+                .taskPathDeviationObserved(this.getTaskPathDeviationObserved())
+                .taskPathDeviationOptimal(this.getTaskPathDeviationOptimal())
+                .taskRating(this.getTaskRating())
+                .taskRatingScale(this.getTaskRatingScale())
+                .taskRatingStddev(this.getTaskRatingStddev())
+                .taskSuccessAverage(this.getTaskSuccessAverage())
+                .taskSuccessStddev(this.getTaskSuccessStddev())
+                .taskTimeAvg(this.getTaskTimeAvg())
+                .taskTimeDeviationObservedAvg(this.getTaskTimeDeviationObservedAvg())
+                .taskTimeDeviationOptimalAvg(this.getTaskTimeDeviationOptimalAvg())
+                .taskTimeStddev(this.getTaskTimeStddev())
+                .testParticipants(this.getTestParticipants().stream()
+                        .map(tpMap -> tpMap.getTestParticipant().toDomain())
+                        .collect(Collectors.toCollection(LinkedHashSet<TestParticipant>::new)))
+                .build();
+
+    }
 }
