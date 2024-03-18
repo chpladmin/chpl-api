@@ -546,8 +546,6 @@ public class QuestionableActivityEmailJob extends QuartzJob {
             currRow.set(ACTIVITY_DESCRIPTION_COL, activity.getBefore() + " updated to " + activity.getAfter());
         } else if (activity.getTrigger().getName().equals(QuestionableActivityTriggerConcept.CURES_UPDATE_REMOVED.getName())) {
             currRow.set(ACTIVITY_DESCRIPTION_COL, activity.getBefore() + " updated to " + activity.getAfter());
-        } else if (activity.getTrigger().getName().equals(QuestionableActivityTriggerConcept.REMOVED_CODE_SET.getName())) {
-            currRow.set(ACTIVITY_DESCRIPTION_COL, "Removed " + activity.getBefore());
         }
         currRow.set(ACTIVITY_REASON_COL, activity.getReason());
     }
@@ -575,6 +573,8 @@ public class QuestionableActivityEmailJob extends QuartzJob {
             currActivityRowValue += formatCriteriaNumber(activity.getCertResult()) + ": from " + activity.getBefore() + " to " + activity.getAfter();
         } else if (activity.getTrigger().getName().equals(QuestionableActivityTriggerConcept.REPLACED_SVAP_ADDED.getName())) {
            currActivityRowValue += formatCriteriaNumber(activity.getCertResult()) + ": " + activity.getAfter();
+        } else if (activity.getTrigger().getName().equals(QuestionableActivityTriggerConcept.REMOVED_CODE_SET.getName())) {
+            currActivityRowValue += formatCriteriaNumber(activity.getCertResult()) + ": Removed " + activity.getBefore();
         }
 
         currRow.set(ACTIVITY_DESCRIPTION_COL, currActivityRowValue);
