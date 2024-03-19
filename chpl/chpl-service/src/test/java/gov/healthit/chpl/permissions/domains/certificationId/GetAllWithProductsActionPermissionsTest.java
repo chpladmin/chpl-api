@@ -13,6 +13,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.permissions.domain.ActionPermissionsBaseTest;
 
 public class GetAllWithProductsActionPermissionsTest extends ActionPermissionsBaseTest {
@@ -21,12 +22,16 @@ public class GetAllWithProductsActionPermissionsTest extends ActionPermissionsBa
     @Mock
     private ResourcePermissions resourcePermissions;
 
+    @Mock
+    private ResourcePermissionsFactory resourcePermissionsFacotry;
+
     @InjectMocks
     private GetAllWithProductsActionPermissions permissions;
 
     @Before
     public void setup() {
         mocks = MockitoAnnotations.openMocks(this);
+        Mockito.when(resourcePermissionsFacotry.get()).thenReturn(resourcePermissions);
         Mockito.when(resourcePermissions.getAllAcbsForCurrentUser()).thenReturn(getAllAcbForUser(2L, 4L));
     }
 

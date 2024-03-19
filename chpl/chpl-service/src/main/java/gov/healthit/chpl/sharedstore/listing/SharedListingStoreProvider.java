@@ -9,7 +9,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.sharedstore.SharedStoreDAO;
 import gov.healthit.chpl.sharedstore.SharedStoreProvider;
 import gov.healthit.chpl.util.AuthUtil;
@@ -18,20 +18,22 @@ import lombok.extern.log4j.Log4j2;
 @Component
 @Log4j2
 public class SharedListingStoreProvider extends SharedStoreProvider<Long, CertifiedProductSearchDetails> {
-    private ResourcePermissions resourcePermissions;
+    private ResourcePermissionsFactory resourcePermissionsFactory;
     private ObjectMapper mapper = new ObjectMapper();
 
     @Autowired
-    public SharedListingStoreProvider(ResourcePermissions resourcePermissions,
+    public SharedListingStoreProvider(ResourcePermissionsFactory resourcePermissionsFactory,
             SharedStoreDAO sharedStoreDAO) {
         super(sharedStoreDAO);
-        this.resourcePermissions = resourcePermissions;
+        this.resourcePermissionsFactory = resourcePermissionsFactory;
     }
 
     @Override
     public CertifiedProductSearchDetails get(Long key, Supplier<CertifiedProductSearchDetails> s) {
         CertifiedProductSearchDetails listing = super.get(key, s);
-        filterListingDataForUser(listing);
+        if (listing != null) {
+            filterListingDataForUser(listing);
+        }
         return listing;
     }
 
@@ -44,9 +46,9 @@ public class SharedListingStoreProvider extends SharedStoreProvider<Long, Certif
 
     private Boolean canUserViewCertificationEventReasons() {
         return AuthUtil.getCurrentUser() != null
-                && (resourcePermissions.isUserRoleAcbAdmin()
-                        || resourcePermissions.isUserRoleOnc()
-                        || resourcePermissions.isUserRoleAdmin());
+                && (resourcePermissionsFactory.get().isUserRoleAcbAdmin()
+                        || resourcePermissionsFactory.get().isUserRoleOnc()
+                        || resourcePermissionsFactory.get().isUserRoleAdmin());
     }
 
     @Override

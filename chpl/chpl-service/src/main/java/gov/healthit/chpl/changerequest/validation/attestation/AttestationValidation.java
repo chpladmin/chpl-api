@@ -40,7 +40,7 @@ public class AttestationValidation extends ValidationRule<ChangeRequestValidatio
             ChangeRequestAttestationSubmission attestationSubmission) {
         List<String> errors = new ArrayList<String>();
         //onc and admin can submit any time
-        if (context.getResourcePermissions().isUserRoleOnc() || context.getResourcePermissions().isUserRoleAdmin()) {
+        if (context.getResourcePermissionsFactory().get().isUserRoleOnc() || context.getResourcePermissionsFactory().get().isUserRoleAdmin()) {
             return errors;
         }
         try {

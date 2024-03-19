@@ -9,18 +9,13 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.ff4j.FF4j;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 import org.springframework.web.filter.GenericFilterBean;
 
-import gov.healthit.chpl.FeatureList;
-import gov.healthit.chpl.auth.authentication.CognitoJwtUserConverter;
-import gov.healthit.chpl.auth.authentication.JWTUserConverter;
-import gov.healthit.chpl.auth.user.User;
-import gov.healthit.chpl.exception.JWTValidationException;
-import gov.healthit.chpl.exception.MultipleUserAccountsException;
+import gov.healthit.chpl.auth.authentication.JWTUserConverterFacade;
+import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 
 public class JWTAuthenticationFilter extends GenericFilterBean {
 
@@ -28,15 +23,10 @@ public class JWTAuthenticationFilter extends GenericFilterBean {
             "/monitoring", "/ff4j-console", "/v3/api-docs"
     };
 
-    private FF4j ff4j;
-    private JWTUserConverter userConverter;
-    private CognitoJwtUserConverter cognitoJwtUserConverter;
+    private JWTUserConverterFacade userConverterFacade;
 
-    public JWTAuthenticationFilter(JWTUserConverter userConverter,  CognitoJwtUserConverter cognitoJwtUserConverter, FF4j ff4j) {
-        this.userConverter = userConverter;
-        this.cognitoJwtUserConverter = cognitoJwtUserConverter;
-        this.ff4j = ff4j;
-
+    public JWTAuthenticationFilter(JWTUserConverterFacade userConverterFacade) {
+        this.userConverterFacade = userConverterFacade;
     }
 
     @Override
@@ -62,7 +52,7 @@ public class JWTAuthenticationFilter extends GenericFilterBean {
             chain.doFilter(req, res); //continue
             SecurityContextHolder.getContext().setAuthentication(null);
         } else {
-            User authenticatedUser;
+            JWTAuthenticatedUser authenticatedUser;
             String jwt = null;
 
             try {
@@ -73,18 +63,12 @@ public class JWTAuthenticationFilter extends GenericFilterBean {
             }
 
             if (jwt != null) {
-                try {
-                    if (ff4j.check(FeatureList.SSO)) {
-                        authenticatedUser = cognitoJwtUserConverter.getAuthenticatedUser(jwt);
-
-                    } else {
-                        authenticatedUser = userConverter.getAuthenticatedUser(jwt);
-                    }
-
+                authenticatedUser = userConverterFacade.getAuthenticatedUser(jwt);
+                if (authenticatedUser != null) {
                     SecurityContextHolder.getContext().setAuthentication(authenticatedUser);
                     chain.doFilter(req, res); // continue
                     SecurityContextHolder.getContext().setAuthentication(null);
-                } catch (JWTValidationException | MultipleUserAccountsException e) {
+                } else {
                     HttpServletResponse response = (HttpServletResponse) res;
                     response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid JWT token");
                 }

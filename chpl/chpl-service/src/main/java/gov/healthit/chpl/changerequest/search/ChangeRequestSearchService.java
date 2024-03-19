@@ -20,7 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestDAO;
 import gov.healthit.chpl.domain.IdNamePair;
 import gov.healthit.chpl.exception.ValidationException;
-import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.util.DateUtil;
 import lombok.extern.log4j.Log4j2;
 
@@ -28,7 +28,7 @@ import lombok.extern.log4j.Log4j2;
 @Component
 public class ChangeRequestSearchService {
     private ChangeRequestDAO changeRequestDAO;
-    private ResourcePermissions resourcePermissions;
+    private ResourcePermissionsFactory resourcePermissionsFactory;
     private ChangeRequestSearchRequestValidator validator;
     private ChangeRequestSearchRequestNormalizer normalizer;
     private DateTimeFormatter dateFormatter;
@@ -36,9 +36,9 @@ public class ChangeRequestSearchService {
     @Autowired
     public ChangeRequestSearchService(ChangeRequestDAO changeRequestDAO,
             ChangeRequestSearchRequestValidator validator,
-            ResourcePermissions resourcePermissions) {
+            ResourcePermissionsFactory resourcePermissionsFactory) {
         this.changeRequestDAO = changeRequestDAO;
-        this.resourcePermissions = resourcePermissions;
+        this.resourcePermissionsFactory = resourcePermissionsFactory;
         this.validator = validator;
         this.normalizer = new ChangeRequestSearchRequestNormalizer();
         dateFormatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
@@ -53,15 +53,15 @@ public class ChangeRequestSearchService {
         validator.validate(searchRequest);
 
         List<ChangeRequestSearchResult> allChangeRequestsForUser = new ArrayList<ChangeRequestSearchResult>();
-        if (resourcePermissions.isUserRoleAcbAdmin()) {
-            allChangeRequestsForUser = changeRequestDAO.getAllForAcbs(resourcePermissions.getAllAcbsForCurrentUser().stream()
+        if (resourcePermissionsFactory.get().isUserRoleAcbAdmin()) {
+            allChangeRequestsForUser = changeRequestDAO.getAllForAcbs(resourcePermissionsFactory.get().getAllAcbsForCurrentUser().stream()
                     .map(acb -> acb.getId())
                     .toList());
-        } else if (resourcePermissions.isUserRoleDeveloperAdmin()) {
-            allChangeRequestsForUser = changeRequestDAO.getAllForDevelopers(resourcePermissions.getAllDevelopersForCurrentUser().stream()
+        } else if (resourcePermissionsFactory.get().isUserRoleDeveloperAdmin()) {
+            allChangeRequestsForUser = changeRequestDAO.getAllForDevelopers(resourcePermissionsFactory.get().getAllDevelopersForCurrentUser().stream()
                     .map(dev -> dev.getId())
                     .toList());
-        } else if (resourcePermissions.isUserRoleOnc() || resourcePermissions.isUserRoleAdmin()) {
+        } else if (resourcePermissionsFactory.get().isUserRoleOnc() || resourcePermissionsFactory.get().isUserRoleAdmin()) {
             allChangeRequestsForUser = changeRequestDAO.getAll();
         }
 

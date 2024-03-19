@@ -20,7 +20,7 @@ public class UpdatePasswordActionPermissions extends ActionPermissions {
         } else {
             return getResourcePermissions().isUserRoleAdmin()
                     || getResourcePermissions().isUserRoleOnc()
-                    || getResourcePermissions().hasPermissionOnUser((UserDTO) obj);
+                    || getResourcePermissions().hasPermissionOnUser(((UserDTO) obj).toDomain());
         }
     }
 

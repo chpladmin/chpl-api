@@ -30,14 +30,14 @@ public class CurrentStatusValidation extends ValidationRule<ChangeRequestValidat
 
         Long statusTypeId = context.getNewChangeRequest().getCurrentStatus().getChangeRequestStatusType().getId();
         // Is this a valid status change based on the user's role?
-        if (context.getResourcePermissions().isUserRoleDeveloperAdmin()
+        if (context.getResourcePermissionsFactory().get().isUserRoleDeveloperAdmin()
                 && !getValidStatusesForDeveloper(context).contains(statusTypeId)) {
 
             getMessages().add(getErrorMessage("changeRequest.statusType.invalid"));
             return false;
-        } else if ((context.getResourcePermissions().isUserRoleAcbAdmin()
-                || context.getResourcePermissions().isUserRoleOnc()
-                || context.getResourcePermissions().isUserRoleAdmin())
+        } else if ((context.getResourcePermissionsFactory().get().isUserRoleAcbAdmin()
+                || context.getResourcePermissionsFactory().get().isUserRoleOnc()
+                || context.getResourcePermissionsFactory().get().isUserRoleAdmin())
                 && !getValidStatusesForChangeRequestAdmin(context).contains(statusTypeId)) {
 
             getMessages().add(getErrorMessage("changeRequest.statusType.invalid"));

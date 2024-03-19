@@ -7,7 +7,6 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.quartz.DisallowConcurrentExecution;
-import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -15,10 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.CacheManager;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
-import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.caching.ListingSearchCacheRefresh;
 import gov.healthit.chpl.dao.DeveloperDAO;
@@ -30,11 +27,12 @@ import gov.healthit.chpl.email.footer.AdminFooter;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
+import gov.healthit.chpl.scheduler.job.QuartzJob;
 import lombok.extern.log4j.Log4j2;
 
 @DisallowConcurrentExecution
 @Log4j2(topic = "joinDeveloperJobLogger")
-public class JoinDeveloperJob implements Job {
+public class JoinDeveloperJob extends QuartzJob {
     public static final String JOB_NAME = "joinDeveloperJob";
     public static final String DEVELOPER_TO_JOIN = "toJoinDeveloper";
     public static final String JOINING_DEVELOPERS = "joiningDevelopers";
@@ -116,18 +114,6 @@ public class JoinDeveloperJob implements Job {
             }
         }
         LOGGER.info("********* Completed the Join Developer job. *********");
-    }
-
-    private void setSecurityContext(UserDTO user) {
-        JWTAuthenticatedUser joinUser = new JWTAuthenticatedUser();
-        joinUser.setFullName(user.getFullName());
-        joinUser.setId(user.getId());
-        joinUser.setFriendlyName(user.getFriendlyName());
-        joinUser.setSubjectName(user.getUsername());
-        joinUser.getPermissions().add(user.getPermission().getGrantedPermission());
-
-        SecurityContextHolder.getContext().setAuthentication(joinUser);
-        SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);
     }
 
     private void confirmDevelopersExistBeforeJoin() throws EntityRetrievalException {

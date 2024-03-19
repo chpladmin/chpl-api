@@ -12,9 +12,10 @@ import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
 import gov.healthit.chpl.util.ValidationUtils;
+import gov.healthit.chpl.validation.listing.reviewer.Reviewer;
 
 @Component("listingUploadSedReviewer")
-public class SedReviewer {
+public class SedReviewer implements Reviewer {
 
     private UcdProcessReviewer ucdProcessReviewer;
     private TestTaskReviewer testTaskReviewer;

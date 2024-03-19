@@ -15,6 +15,7 @@ import org.springframework.security.access.AccessDeniedException;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.permissions.domain.ActionPermissionsBaseTest;
 import gov.healthit.chpl.permissions.domains.product.SplitActionPermissions;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -24,13 +25,16 @@ public class SplitActionPermissionsTest extends ActionPermissionsBaseTest {
     private ErrorMessageUtil msgUtil;
     @Mock
     private ResourcePermissions resourcePermissions;
+    @Mock
+    private ResourcePermissionsFactory resourcePermissionsFacotry;
+
     @InjectMocks
     private SplitActionPermissions permissions;
 
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-
+        Mockito.when(resourcePermissionsFacotry.get()).thenReturn(resourcePermissions);
         Mockito.when(resourcePermissions.getAllAcbsForCurrentUser()).thenReturn(getAllAcbForUser(2L, 4L));
         Mockito.when(msgUtil.getMessage(
                 ArgumentMatchers.eq("product.split.notAllowedMultipleAcbs"),

@@ -18,6 +18,8 @@ import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductSed;
 import gov.healthit.chpl.domain.TestParticipant;
+import gov.healthit.chpl.domain.TestParticipant.TestParticipantAge;
+import gov.healthit.chpl.domain.TestParticipant.TestParticipantEducation;
 import gov.healthit.chpl.domain.TestTask;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
@@ -152,6 +154,7 @@ public class TestParticipantReviewerTest {
         TestParticipant testParticipant = buildValidTestParticipant("TP1").toBuilder()
                     .ageRange(null)
                     .ageRangeId(null)
+                    .age(null)
                 .build();
         listing.getSed().getTestTasks().add(buildTestTask("TT1", Stream.of(a1).collect(Collectors.toList())));
         listing.getSed().getTestTasks().get(0).setTestParticipants(
@@ -176,6 +179,7 @@ public class TestParticipantReviewerTest {
         TestParticipant testParticipant = buildValidTestParticipant("TP1").toBuilder()
                     .ageRange("")
                     .ageRangeId(null)
+                    .age(null)
                 .build();
         listing.getSed().getTestTasks().add(buildTestTask("TT1", Stream.of(a1).collect(Collectors.toList())));
         listing.getSed().getTestTasks().get(0).setTestParticipants(
@@ -200,6 +204,7 @@ public class TestParticipantReviewerTest {
         TestParticipant testParticipant = buildValidTestParticipant("TP1").toBuilder()
                     .ageRange("notanagerange")
                     .ageRangeId(null)
+                    .age(null)
                 .build();
         listing.getSed().getTestTasks().add(buildTestTask("TT1", Stream.of(a1).collect(Collectors.toList())));
         listing.getSed().getTestTasks().get(0).setTestParticipants(
@@ -224,6 +229,7 @@ public class TestParticipantReviewerTest {
         TestParticipant testParticipant = buildValidTestParticipant("TP1").toBuilder()
                     .educationTypeName(null)
                     .educationTypeId(null)
+                    .educationType(null)
                 .build();
         listing.getSed().getTestTasks().add(buildTestTask("TT1", Stream.of(a1).collect(Collectors.toList())));
         listing.getSed().getTestTasks().get(0).setTestParticipants(
@@ -248,6 +254,7 @@ public class TestParticipantReviewerTest {
         TestParticipant testParticipant = buildValidTestParticipant("TP1").toBuilder()
                     .educationTypeName("")
                     .educationTypeId(null)
+                    .educationType(null)
                 .build();
         listing.getSed().getTestTasks().add(buildTestTask("TT1", Stream.of(a1).collect(Collectors.toList())));
         listing.getSed().getTestTasks().get(0).setTestParticipants(
@@ -272,6 +279,7 @@ public class TestParticipantReviewerTest {
         TestParticipant testParticipant = buildValidTestParticipant("TP1").toBuilder()
                 .educationTypeName("notaneducation")
                 .educationTypeId(null)
+                .educationType(null)
             .build();
         listing.getSed().getTestTasks().add(buildTestTask("TT1", Stream.of(a1).collect(Collectors.toList())));
         listing.getSed().getTestTasks().get(0).setTestParticipants(
@@ -713,11 +721,19 @@ public class TestParticipantReviewerTest {
                 .uniqueId(uniqueId)
                 .ageRange("10-20")
                 .ageRangeId(1L)
+                .age(TestParticipantAge.builder()
+                        .id(1L)
+                        .name("10-20")
+                        .build())
                 .assistiveTechnologyNeeds("some needs")
                 .computerExperienceMonths(24)
                 .computerExperienceMonthsStr("24")
                 .educationTypeId(2L)
                 .educationTypeName("Bachelor's Degree")
+                .educationType(TestParticipantEducation.builder()
+                        .id(2L)
+                        .name("Bachelor's Degree")
+                        .build())
                 .gender("F")
                 .occupation("Teacher")
                 .productExperienceMonths(5)

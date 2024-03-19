@@ -33,8 +33,6 @@ import gov.healthit.chpl.dto.CertificationResultTestProcedureDTO;
 import gov.healthit.chpl.dto.CertificationResultTestStandardDTO;
 import gov.healthit.chpl.dto.CertificationResultTestTaskDTO;
 import gov.healthit.chpl.dto.CertificationResultUcdProcessDTO;
-import gov.healthit.chpl.dto.TestParticipantDTO;
-import gov.healthit.chpl.dto.TestTaskDTO;
 import gov.healthit.chpl.entity.TestParticipantEntity;
 import gov.healthit.chpl.entity.TestTaskEntity;
 import gov.healthit.chpl.entity.listing.CertificationResultAdditionalSoftwareEntity;
@@ -256,7 +254,6 @@ public class CertificationResultDAO extends BaseDAOImpl {
         mapping.setCertificationResultId(dto.getCertificationResultId());
         mapping.setUcdProcessId(dto.getUcdProcessId());
         mapping.setUcdProcessDetails(dto.getUcdProcessDetails());
-        mapping.setDeleted(false);
         try {
             create(mapping);
         } catch (Exception ex) {
@@ -372,7 +369,6 @@ public class CertificationResultDAO extends BaseDAOImpl {
         mapping.setVersion(dto.getVersion());
         mapping.setJustification(dto.getJustification());
         mapping.setGrouping(dto.getGrouping());
-        mapping.setDeleted(false);
 
         try {
             entityManager.persist(mapping);
@@ -513,7 +509,6 @@ public class CertificationResultDAO extends BaseDAOImpl {
         mapping.setCertificationResultId(entity.getCertificationResultId());
         mapping.setConformanceMethodId(entity.getConformanceMethodId());
         mapping.setVersion(entity.getVersion());
-        mapping.setDeleted(false);
         entityManager.persist(mapping);
         entityManager.flush();
 
@@ -582,7 +577,6 @@ public class CertificationResultDAO extends BaseDAOImpl {
         CertificationResultOptionalStandardEntity mapping = new CertificationResultOptionalStandardEntity();
         mapping.setCertificationResultId(entity.getCertificationResultId());
         mapping.setOptionalStandardId(entity.getOptionalStandardId());
-        mapping.setDeleted(false);
         entityManager.persist(mapping);
         entityManager.flush();
 
@@ -673,7 +667,6 @@ public class CertificationResultDAO extends BaseDAOImpl {
         CertificationResultTestStandardEntity mapping = new CertificationResultTestStandardEntity();
         mapping.setCertificationResultId(dto.getCertificationResultId());
         mapping.setTestStandardId(dto.getTestStandardId());
-        mapping.setDeleted(false);
         entityManager.persist(mapping);
         entityManager.flush();
 
@@ -762,7 +755,6 @@ public class CertificationResultDAO extends BaseDAOImpl {
         mapping.setCertificationResultId(certResultTestTool.getCertificationResultId());
         mapping.setTestTool(testToolDao.getEntityById(certResultTestTool.getTestTool().getId()));
         mapping.setVersion(certResultTestTool.getVersion());
-        mapping.setDeleted(false);
         try {
             entityManager.persist(mapping);
             entityManager.flush();
@@ -853,7 +845,6 @@ public class CertificationResultDAO extends BaseDAOImpl {
         mapping.setTestDataId(dto.getTestDataId());
         mapping.setTestDataVersion(dto.getVersion());
         mapping.setAlterationDescription(dto.getAlteration());
-        mapping.setDeleted(false);
         try {
             entityManager.persist(mapping);
             entityManager.flush();
@@ -968,7 +959,6 @@ public class CertificationResultDAO extends BaseDAOImpl {
         mapping.setCertificationResultId(dto.getCertificationResultId());
         mapping.setTestProcedureId(dto.getTestProcedureId());
         mapping.setVersion(dto.getVersion());
-        mapping.setDeleted(false);
         entityManager.persist(mapping);
         entityManager.flush();
 
@@ -1074,12 +1064,11 @@ public class CertificationResultDAO extends BaseDAOImpl {
         CertificationResultTestTaskEntity mapping = new CertificationResultTestTaskEntity();
         mapping.setCertificationResultId(dto.getCertificationResultId());
         mapping.setTestTaskId(dto.getTestTaskId());
-        mapping.setDeleted(false);
         entityManager.persist(mapping);
         entityManager.flush();
 
-        if (dto.getTestTask() != null && dto.getTestTask().getParticipants() != null) {
-            for (TestParticipantDTO participant : dto.getTestTask().getParticipants()) {
+        if (dto.getTestTask() != null && dto.getTestTask().getTestParticipants() != null) {
+            for (TestParticipant participant : dto.getTestTask().getTestParticipants()) {
                 addTestParticipantMapping(dto.getTestTask(), participant);
             }
         }
@@ -1133,13 +1122,15 @@ public class CertificationResultDAO extends BaseDAOImpl {
     }
 
     private List<CertificationResultTestTaskEntity> getTestTasksForCertification(Long certificationResultId) {
-        Query query = entityManager.createQuery(
-                "SELECT tp " + "FROM CertificationResultTestTaskEntity tp " + "LEFT OUTER JOIN FETCH tp.testTask task "
+        Query query = entityManager.createQuery("SELECT tp "
+                        + "FROM CertificationResultTestTaskEntity tp "
+                        + "LEFT OUTER JOIN FETCH tp.testTask task "
                         + "LEFT OUTER JOIN FETCH task.testParticipants participantMappings "
                         + "LEFT OUTER JOIN FETCH participantMappings.testParticipant participant "
                         + "LEFT OUTER JOIN FETCH participant.education education "
                         + "LEFT OUTER JOIN FETCH participant.ageRange ageRange "
-                        + "where (NOT tp.deleted = true) AND (certification_result_id = :certificationResultId) ",
+                        + "WHERE (NOT tp.deleted = true) "
+                        + "AND (certification_result_id = :certificationResultId) ",
                 CertificationResultTestTaskEntity.class);
         query.setParameter("certificationResultId", certificationResultId);
 
@@ -1190,20 +1181,24 @@ public class CertificationResultDAO extends BaseDAOImpl {
         return !CollectionUtils.isEmpty(existingMappings);
     }
 
-    public TestParticipantDTO addTestParticipantMapping(TestTaskDTO task, TestParticipantDTO participant)
+    public TestParticipant addTestParticipantMapping(TestTask task, TestParticipant participant)
             throws EntityCreationException {
         boolean createMapping = false;
-        if (participant.getId() == null) {
-            participant = participantDao.create(participant);
+        Long participantId = participant.getId();
+        if (participantId == null) {
+            participantId = participantDao.create(participant);
+            participant.setId(participantId);
             createMapping = true;
         } else {
             Query query = entityManager.createQuery(
-                    "SELECT participantMap " + "FROM TestTaskParticipantMapEntity participantMap "
-                            + "WHERE participantMap.deleted <> true " + "AND participantMap.testTaskId = :testTaskId "
+                    "SELECT participantMap "
+                            + "FROM TestTaskParticipantMapEntity participantMap "
+                            + "WHERE participantMap.deleted <> true "
+                            + "AND participantMap.testTaskId = :testTaskId "
                             + "AND participantMap.testParticipantId = :testParticipantId",
                     TestTaskParticipantMapEntity.class);
             query.setParameter("testTaskId", task.getId());
-            query.setParameter("testParticipantId", participant.getId());
+            query.setParameter("testParticipantId", participantId);
             List<TestTaskParticipantMapEntity> existingMappings = query.getResultList();
             if (existingMappings == null || existingMappings.size() == 0) {
                 createMapping = true;
@@ -1212,9 +1207,8 @@ public class CertificationResultDAO extends BaseDAOImpl {
 
         if (createMapping) {
             TestTaskParticipantMapEntity mapping = new TestTaskParticipantMapEntity();
-            mapping.setTestParticipantId(participant.getId());
+            mapping.setTestParticipantId(participantId);
             mapping.setTestTaskId(task.getId());
-            mapping.setDeleted(false);
             entityManager.persist(mapping);
             entityManager.flush();
         }
@@ -1286,7 +1280,6 @@ public class CertificationResultDAO extends BaseDAOImpl {
         CertificationResultSvapEntity entity = new CertificationResultSvapEntity();
         entity.setCertificationResultId(certificationResultId);
         entity.setSvapId(certificationResultSvapToAdd.getSvapId());
-        entity.setDeleted(false);
         entityManager.persist(entity);
         entityManager.flush();
         entityManager.refresh(entity);

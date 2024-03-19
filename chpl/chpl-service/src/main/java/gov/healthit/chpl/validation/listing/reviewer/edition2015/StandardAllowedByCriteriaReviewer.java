@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.standard.CertificationResultStandard;
 import gov.healthit.chpl.standard.Standard;
 import gov.healthit.chpl.standard.StandardDAO;
@@ -33,10 +33,9 @@ public class StandardAllowedByCriteriaReviewer extends StandardGroupValidation {
     private ErrorMessageUtil msgUtil;
 
     @Autowired
-    public StandardAllowedByCriteriaReviewer(StandardManager standardManager,
-            StandardDAO standardDAO, StandardGroupService standardGroupService,
-            ErrorMessageUtil msgUtil, ResourcePermissions resourcePermissions) {
-        super(standardGroupService, msgUtil, resourcePermissions);
+    public StandardAllowedByCriteriaReviewer(StandardManager standardManager, StandardDAO standardDAO, StandardGroupService standardGroupService,
+            ErrorMessageUtil msgUtil, ResourcePermissionsFactory resourcePermissionsFactory) {
+        super(standardGroupService, msgUtil, resourcePermissionsFactory);
         this.standardManager = standardManager;
         this.standardDAO = standardDAO;
         this.msgUtil = msgUtil;
