@@ -24,7 +24,6 @@ import gov.healthit.chpl.user.cognito.CognitoUserInvitation;
 import gov.healthit.chpl.user.cognito.CognitoUserManager;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
-import gov.healthit.chpl.web.controller.results.BooleanResult;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -88,23 +87,19 @@ public class CognitoUserController {
             })
     @RequestMapping(value = "/create", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
-    public @ResponseBody BooleanResult createUser(@RequestBody CreateUserFromInvitationRequest userInfo) throws ValidationException, EmailNotSentException, UserCreationException {
+    public void createUser(@RequestBody CreateUserFromInvitationRequest userInfo) throws ValidationException, EmailNotSentException, UserCreationException {
 
-        Boolean success = false;
         try {
             //This should set the security context to user "invited user" role
             Authentication authenticator = AuthUtil.getInvitedUserAuthenticator(null);
             SecurityContextHolder.getContext().setAuthentication(authenticator);
             CognitoUserInvitation invitation = cognitoUserManager.getInvitation(UUID.fromString(userInfo.getHash()));
             if (invitation != null) {
-                success = cognitoUserManager.createUser(userInfo);
+                cognitoUserManager.createUser(userInfo);
             }
         } finally {
         SecurityContextHolder.getContext().setAuthentication(null);
         }
-        return BooleanResult.builder()
-                .success(success)
-                .build();
     }
 
 }
