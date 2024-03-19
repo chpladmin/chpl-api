@@ -141,13 +141,11 @@ public class RealWorldTestingEligiblityService {
                         if (Integer.valueOf(cpParentDto.getIcsCode()) >= Integer.valueOf(cpChild.getIcsCode())) {
                             continue;
                         }
-                        if (listingIsWithdrawn(cpParentDto, logger)) {
-                            //If parent is withdrawn continue with calculating its eligibility year.... Uh-oh - possible recursion...
-                            RealWorldTestingEligibility parentEligibility = getRwtEligibilityYearForListing(cpParent.getId(), logger);
-                            if (parentEligibility.getEligibilityYear() != null
-                                    && doesListingAttestToEligibleCriteria(listing.get(), parentEligibility.getEligibilityYear())) {
-                                parentEligibilityYears.add(parentEligibility.getEligibilityYear());
-                            }
+                        //Uh-oh - possible recursion...
+                        RealWorldTestingEligibility parentEligibility = getRwtEligibilityYearForListing(cpParent.getId(), logger);
+                        if (parentEligibility.getEligibilityYear() != null
+                                && doesListingAttestToEligibleCriteria(listing.get(), parentEligibility.getEligibilityYear())) {
+                            parentEligibilityYears.add(parentEligibility.getEligibilityYear());
                         }
                     }
                     if (parentEligibilityYears.size() > 0) {
@@ -161,22 +159,6 @@ public class RealWorldTestingEligiblityService {
         } catch (EntityRetrievalException e) {
             return null;
         }
-    }
-
-    private boolean listingIsWithdrawn(CertifiedProductDTO listing, Logger logger) {
-        boolean result = false;
-        try {
-            CertificationStatusEvent currentStatusEvent = certStatusService.getCurrentCertificationStatusEvent(listing.getId());
-            logger.debug("Listing " + listing.getId() + " has current certification status of " + currentStatusEvent.getStatus().getName());
-            result = currentStatusEvent != null && withdrawnStatuses.stream()
-                    .map(status -> status.getName())
-                    .filter(statusName -> currentStatusEvent.getStatus().getName().equals(statusName))
-                    .findAny().isPresent();
-        } catch (EntityRetrievalException ex) {
-            logger.error("Unable to get current certification status event for listing  " + listing.getId(), ex);
-            return result;
-        }
-        return result;
     }
 
     private Optional<CertifiedProductSearchDetails> getListingAsOfDate(Long listingId, LocalDate asOfDate) {
