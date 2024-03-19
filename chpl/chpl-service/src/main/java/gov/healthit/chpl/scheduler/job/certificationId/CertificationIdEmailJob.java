@@ -10,10 +10,8 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
-import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.domain.SimpleCertificationId;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.email.ChplEmailFactory;
@@ -21,11 +19,12 @@ import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
 import gov.healthit.chpl.email.footer.PublicFooter;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.manager.CertificationIdManager;
-import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
+import gov.healthit.chpl.scheduler.SecurityContextCapableJob;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2(topic = "certificationIdEmailJobLogger")
-public class CertificationIdEmailJob  implements Job {
+public class CertificationIdEmailJob extends SecurityContextCapableJob implements Job {
     public static final String JOB_NAME = "certificationIdEmailJob";
     public static final String USER_KEY = "user";
 
@@ -36,7 +35,7 @@ public class CertificationIdEmailJob  implements Job {
     private ChplHtmlEmailBuilder chplHtmlEmailBuilder;
 
     @Autowired
-    private ResourcePermissions resourcePermissions;
+    private ResourcePermissionsFactory resourcePermissionsFactory;
 
     @Autowired
     private Environment env;
@@ -65,24 +64,12 @@ public class CertificationIdEmailJob  implements Job {
         LOGGER.info("********* Completed the Complaints Report Email job *********");
     }
 
-    private void setSecurityContext(UserDTO user) {
-        JWTAuthenticatedUser mergeUser = new JWTAuthenticatedUser();
-        mergeUser.setFullName(user.getFullName());
-        mergeUser.setId(user.getId());
-        mergeUser.setFriendlyName(user.getFriendlyName());
-        mergeUser.setSubjectName(user.getUsername());
-        mergeUser.getPermissions().add(user.getPermission().getGrantedPermission());
-
-        SecurityContextHolder.getContext().setAuthentication(mergeUser);
-        SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);
-    }
-
     private List<SimpleCertificationId> getReportData() {
         List<SimpleCertificationId> certificationIds = new ArrayList<SimpleCertificationId>();
-        if (resourcePermissions.isUserRoleAdmin() || resourcePermissions.isUserRoleOnc()) {
+        if (resourcePermissionsFactory.get().isUserRoleAdmin() || resourcePermissionsFactory.get().isUserRoleOnc()) {
             LOGGER.info("Getting all certification IDs with Products...");
             certificationIds = certificationIdManager.getAllWithProducts();
-        } else if (resourcePermissions.isUserRoleCmsStaff()) {
+        } else if (resourcePermissionsFactory.get().isUserRoleCmsStaff()) {
             LOGGER.info("Getting all certification IDs...");
             certificationIds = certificationIdManager.getAll();
         }

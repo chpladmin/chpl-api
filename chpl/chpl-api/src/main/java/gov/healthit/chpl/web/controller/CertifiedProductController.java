@@ -34,7 +34,6 @@ import gov.healthit.chpl.listing.ics.ListingIcsNode;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.DeveloperManager;
-import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
@@ -74,8 +73,7 @@ public class CertifiedProductController {
     })
     @Autowired
     public CertifiedProductController(CertifiedProductDetailsManager cpdManager, CertifiedProductManager cpManager,
-            IcsManager icsManager, ResourcePermissions resourcePermissions,
-            ActivityManager activityManager, ListingValidatorFactory validatorFactory,
+            IcsManager icsManager, ActivityManager activityManager, ListingValidatorFactory validatorFactory,
             ErrorMessageUtil msgUtil, ChplProductNumberUtil chplProductNumberUtil,
             DeveloperManager developerManager) {
         this.cpdManager = cpdManager;
@@ -99,6 +97,9 @@ public class CertifiedProductController {
             @PathVariable("certifiedProductId") Long certifiedProductId) throws EntityRetrievalException {
 
         CertifiedProductSearchDetails certifiedProduct = cpdManager.getCertifiedProductDetails(certifiedProductId);
+        if (certifiedProduct == null) {
+            throw new EntityRetrievalException();
+        }
         certifiedProduct = validateCertifiedProduct(certifiedProduct);
         return certifiedProduct;
     }
@@ -135,6 +136,9 @@ public class CertifiedProductController {
                 versionCode, icsCode, addlSoftwareCode, certDateCode);
 
         CertifiedProductSearchDetails certifiedProduct = cpdManager.getCertifiedProductDetailsByChplProductNumber(chplProductNumber);
+        if (certifiedProduct == null) {
+            throw new EntityRetrievalException();
+        }
 
         Validator validator = validatorFactory.getValidator(certifiedProduct);
         if (validator != null) {
@@ -159,8 +163,10 @@ public class CertifiedProductController {
             @PathVariable("identifier") String identifier) throws EntityRetrievalException {
 
         String chplProductNumber = chplProductNumberUtil.getChplProductNumber(chplPrefix, identifier);
-
         CertifiedProductSearchDetails certifiedProduct = cpdManager.getCertifiedProductDetailsByChplProductNumber(chplProductNumber);
+        if (certifiedProduct == null) {
+            throw new EntityRetrievalException();
+        }
         certifiedProduct = validateCertifiedProduct(certifiedProduct);
         return certifiedProduct;
     }
@@ -190,9 +196,10 @@ public class CertifiedProductController {
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody CertifiedProductSearchBasicDetails getCertifiedProductByIdBasic(
             @PathVariable("certifiedProductId") Long certifiedProductId) throws EntityRetrievalException {
-
         CertifiedProductSearchDetails certifiedProduct = cpdManager.getCertifiedProductDetailsBasic(certifiedProductId);
-
+        if (certifiedProduct == null) {
+            throw new EntityRetrievalException();
+        }
         return mapCertifiedProductDetailsToBasic.apply(certifiedProduct);
     }
 
@@ -240,7 +247,9 @@ public class CertifiedProductController {
                 versionCode, icsCode, addlSoftwareCode, certDateCode);
 
         CertifiedProductSearchDetails certifiedProduct = cpdManager.getCertifiedProductDetailsBasicByChplProductNumber(chplProductNumber);
-
+        if (certifiedProduct == null) {
+            throw new EntityRetrievalException();
+        }
         return mapCertifiedProductDetailsToBasic.apply(certifiedProduct);
     }
 
@@ -274,9 +283,10 @@ public class CertifiedProductController {
             @PathVariable("identifier") String identifier) throws EntityRetrievalException {
 
         String chplProductNumber = chplProductNumberUtil.getChplProductNumber(chplPrefix, identifier);
-
         CertifiedProductSearchDetails certifiedProduct = cpdManager.getCertifiedProductDetailsBasicByChplProductNumber(chplProductNumber);
-
+        if (certifiedProduct == null) {
+            throw new EntityRetrievalException();
+        }
         return mapCertifiedProductDetailsToBasic.apply(certifiedProduct);
     }
 

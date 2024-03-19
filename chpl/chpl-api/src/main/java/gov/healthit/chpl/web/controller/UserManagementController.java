@@ -182,7 +182,7 @@ public class UserManagementController {
                     confirmationLengthInDays == 1 ? "" : "s"));
         }
         UserDTO createdUser = invitationManager.confirmAccountEmail(invitation);
-        return new User(createdUser);
+        return createdUser.toDomain();
     }
 
     @Operation(summary = "Update an existing user account with new permissions.",
@@ -293,7 +293,7 @@ public class UserManagementController {
         }
 
         UserDTO updated = userManager.update(userInfo);
-        return new User(updated);
+        return updated.toDomain();
     }
 
     @Operation(summary = "Delete a user.",
@@ -335,7 +335,7 @@ public class UserManagementController {
         List<User> users = new ArrayList<User>(userList.size());
 
         for (UserDTO userDto : userList) {
-            User user = new User(userDto);
+            User user = userDto.toDomain();
             users.add(user);
         }
 

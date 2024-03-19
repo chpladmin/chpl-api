@@ -7,11 +7,13 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import gov.healthit.chpl.domain.schedule.ChplJob;
 import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.permissions.domain.ActionPermissionsBaseTest;
 import gov.healthit.chpl.permissions.domains.scheduler.CreateBackgroundJobTriggerActionPermissions;
 import gov.healthit.chpl.scheduler.job.RealWorldTestingUploadJob;
@@ -22,13 +24,16 @@ public class CreateBackgroundJobTriggerActionPermissionsTest extends ActionPermi
     @Mock
     private ResourcePermissions resourcePermissions;
 
+    @Mock
+    private ResourcePermissionsFactory resourcePermissionsFacotry;
+
     @InjectMocks
     private CreateBackgroundJobTriggerActionPermissions permissions;
 
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-
+        Mockito.when(resourcePermissionsFacotry.get()).thenReturn(resourcePermissions);
         permissions.init();
     }
 

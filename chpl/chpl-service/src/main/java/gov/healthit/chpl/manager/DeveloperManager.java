@@ -59,7 +59,7 @@ import gov.healthit.chpl.manager.impl.SecuredManager;
 import gov.healthit.chpl.manager.rules.ValidationRule;
 import gov.healthit.chpl.manager.rules.developer.DeveloperValidationContext;
 import gov.healthit.chpl.manager.rules.developer.DeveloperValidationFactory;
-import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.scheduler.job.SplitDeveloperJob;
 import gov.healthit.chpl.scheduler.job.developer.JoinDeveloperJob;
 import gov.healthit.chpl.sharedstore.listing.ListingStoreRemove;
@@ -85,7 +85,7 @@ public class DeveloperManager extends SecuredManager {
     private ChplProductNumberUtil chplProductNumberUtil;
     private ActivityManager activityManager;
     private ErrorMessageUtil msgUtil;
-    private ResourcePermissions resourcePermissions;
+    private ResourcePermissionsFactory resourcePermissionsFactory;
     private DeveloperValidationFactory developerValidationFactory;
     private SchedulerManager schedulerManager;
 
@@ -94,7 +94,7 @@ public class DeveloperManager extends SecuredManager {
     public DeveloperManager(DeveloperDAO developerDao, ProductManager productManager, ProductVersionManager versionManager,
             UserManager userManager, CertificationBodyManager acbManager,
             CertifiedProductDAO certifiedProductDAO, ChplProductNumberUtil chplProductNumberUtil,
-            ActivityManager activityManager, ErrorMessageUtil msgUtil, ResourcePermissions resourcePermissions,
+            ActivityManager activityManager, ErrorMessageUtil msgUtil, ResourcePermissionsFactory resourcePermissionsFactory,
             DeveloperValidationFactory developerValidationFactory,
             SchedulerManager schedulerManager) {
         this.developerDao = developerDao;
@@ -106,7 +106,7 @@ public class DeveloperManager extends SecuredManager {
         this.chplProductNumberUtil = chplProductNumberUtil;
         this.activityManager = activityManager;
         this.msgUtil = msgUtil;
-        this.resourcePermissions = resourcePermissions;
+        this.resourcePermissionsFactory = resourcePermissionsFactory;
         this.developerValidationFactory = developerValidationFactory;
         this.schedulerManager = schedulerManager;
     }
@@ -233,7 +233,7 @@ public class DeveloperManager extends SecuredManager {
             + "T(gov.healthit.chpl.permissions.domains.DeveloperDomainPermissions).GET_ALL_USERS, #devId)")
     public List<UserDTO> getAllUsersOnDeveloper(Long devId) throws EntityRetrievalException {
         Developer dev = getById(devId);
-        return resourcePermissions.getAllUsersOnDeveloper(dev);
+        return resourcePermissionsFactory.get().getAllUsersOnDeveloper(dev);
     }
 
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).DEVELOPER, "

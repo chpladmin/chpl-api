@@ -19,6 +19,7 @@ import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.manager.auth.UserManager;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.service.InvitationEmailer;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
@@ -51,9 +52,12 @@ public class InvitationManagerTest {
         userPermissionDao = Mockito.mock(UserPermissionDAO.class);
         Mockito.when(userPermissionDao.findAll()).thenReturn(new ArrayList<UserPermission>());
 
+        ResourcePermissionsFactory resourcePermissionsFactory = Mockito.mock(ResourcePermissionsFactory.class);
+        Mockito.when(resourcePermissionsFactory.get()).thenReturn(resourcePermissions);
+
         invitationManager = new InvitationManager(userPermissionDao, invitationDao, userDao,
                 userManager, userPermissionsManager, invitationEmailer, activityManager,
-                resourcePermissions, msgUtil);
+                resourcePermissionsFactory, msgUtil);
     }
 
     @Test

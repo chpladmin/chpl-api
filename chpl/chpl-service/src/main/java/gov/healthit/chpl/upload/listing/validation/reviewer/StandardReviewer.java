@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.standard.CertificationResultStandard;
 import gov.healthit.chpl.standard.Standard;
 import gov.healthit.chpl.standard.StandardDAO;
@@ -35,8 +35,8 @@ public class StandardReviewer extends StandardGroupValidation {
 
     @Autowired
     public StandardReviewer(CertificationResultRules certResultRules, ValidationUtils validationUtils,
-            StandardDAO standardDao, StandardGroupService standardGroupService, ErrorMessageUtil msgUtil, ResourcePermissions resourcePermissions) {
-        super(standardGroupService, msgUtil, resourcePermissions);
+            StandardDAO standardDao, StandardGroupService standardGroupService, ErrorMessageUtil msgUtil, ResourcePermissionsFactory resourcePermissionsFactory) {
+        super(standardGroupService, msgUtil, resourcePermissionsFactory);
 
         this.certResultRules = certResultRules;
         this.validationUtils = validationUtils;

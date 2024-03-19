@@ -19,12 +19,8 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
-import gov.healthit.chpl.auth.permission.GrantedPermission;
-import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
-import gov.healthit.chpl.auth.user.SystemUsers;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestDAO;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestStatusTypeDAO;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestStatusType;
@@ -36,6 +32,7 @@ import gov.healthit.chpl.changerequest.search.ChangeRequestSearchService;
 import gov.healthit.chpl.changerequest.search.OrderByOption;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.domain.CertificationBody;
+import gov.healthit.chpl.domain.auth.Authority;
 import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
 import gov.healthit.chpl.email.footer.AdminFooter;
@@ -106,7 +103,7 @@ public class PendingChangeRequestEmailJob extends QuartzJob {
         List<ChangeRequestSearchResult> searchResults = null;
         List<CertificationBody> acbs = null;
         try {
-            setSecurityContext();
+            setSecurityContext(Authority.ROLE_ADMIN);
             acbs = getAppropriateAcbs(jobContext);
             searchResults = getPendingChangeRequestSearchResults(getSearchRequest(acbs));
         } catch (ValidationException ex) {
@@ -254,15 +251,4 @@ public class PendingChangeRequestEmailJob extends QuartzJob {
         tempFile = tempFilePath.toFile();
     }
 
-    private void setSecurityContext() {
-        JWTAuthenticatedUser adminUser = new JWTAuthenticatedUser();
-        adminUser.setFullName("Administrator");
-        adminUser.setId(SystemUsers.ADMIN_USER_ID);
-        adminUser.setFriendlyName("Admin");
-        adminUser.setSubjectName("admin");
-        adminUser.getPermissions().add(new GrantedPermission("ROLE_ADMIN"));
-
-        SecurityContextHolder.getContext().setAuthentication(adminUser);
-        SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);
-    }
 }

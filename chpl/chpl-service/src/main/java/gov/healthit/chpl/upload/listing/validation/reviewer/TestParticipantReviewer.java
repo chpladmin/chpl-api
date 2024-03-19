@@ -55,31 +55,71 @@ public class TestParticipantReviewer {
     }
 
     private void reviewParticipantUniqueId(CertifiedProductSearchDetails listing, TestParticipant testParticipant) {
-        if (StringUtils.isEmpty(testParticipant.getUniqueId())) {
+        if (testParticipant.getId() == null && StringUtils.isEmpty(testParticipant.getUniqueId())) {
             listing.addDataErrorMessage(msgUtil.getMessage("listing.criteria.missingTestParticipantUniqueId"));
         }
     }
 
     private void reviewParticipantAgeRange(CertifiedProductSearchDetails listing, TestParticipant testParticipant) {
-        if (testParticipant.getAgeRangeId() == null && !StringUtils.isEmpty(testParticipant.getAgeRange())) {
+        if (!hasAgeId(testParticipant) && !hasDeprecatedAgeId(testParticipant)
+                && (hasAgeName(testParticipant) || hasDeprecatedAgeName(testParticipant))) {
+            String suppliedAgeName = hasAgeName(testParticipant) ? testParticipant.getAge().getName() : testParticipant.getAgeRange();
             listing.addDataErrorMessage(
                     msgUtil.getMessage("listing.criteria.invalidParticipantAgeRange",
-                            testParticipant.getAgeRange(), formatParticipantRef(testParticipant)));
-        } else if (testParticipant.getAgeRangeId() == null && StringUtils.isEmpty(testParticipant.getAgeRange())) {
+                            suppliedAgeName, formatParticipantRef(testParticipant)));
+        } else if (!hasAgeId(testParticipant) && !hasDeprecatedAgeId(testParticipant)
+                && !hasAgeName(testParticipant) && !hasDeprecatedAgeName(testParticipant)) {
             listing.addDataErrorMessage(
                     msgUtil.getMessage("listing.criteria.missingParticipantAgeRange", formatParticipantRef(testParticipant)));
         }
     }
 
+    private boolean hasAgeId(TestParticipant testParticipant) {
+        return testParticipant.getAge() != null && testParticipant.getAge().getId() != null;
+    }
+
+    private boolean hasAgeName(TestParticipant testParticipant) {
+        return testParticipant.getAge() != null
+                && !StringUtils.isEmpty(testParticipant.getAge().getName());
+    }
+
+    private boolean hasDeprecatedAgeId(TestParticipant testParticipant) {
+        return testParticipant.getAgeRangeId() != null;
+    }
+
+    private boolean hasDeprecatedAgeName(TestParticipant testParticipant) {
+        return !StringUtils.isEmpty(testParticipant.getAgeRange());
+    }
+
     private void reviewParticipantEducationLevel(CertifiedProductSearchDetails listing, TestParticipant testParticipant) {
-        if (testParticipant.getEducationTypeId() == null && !StringUtils.isEmpty(testParticipant.getEducationTypeName())) {
+        if (!hasEducationId(testParticipant) && !hasDeprecatedEducationId(testParticipant)
+                && (hasEducationName(testParticipant) || hasDeprecatedEducationName(testParticipant))) {
+            String suppliedEducationName = hasEducationName(testParticipant) ? testParticipant.getEducationType().getName() : testParticipant.getEducationTypeName();
             listing.addDataErrorMessage(
                     msgUtil.getMessage("listing.criteria.invalidParticipantEducationLevel",
-                            testParticipant.getEducationTypeName(), formatParticipantRef(testParticipant)));
-        } else if (testParticipant.getEducationTypeId() == null && StringUtils.isEmpty(testParticipant.getEducationTypeName())) {
+                            suppliedEducationName, formatParticipantRef(testParticipant)));
+        } else if (!hasEducationId(testParticipant) && !hasDeprecatedEducationId(testParticipant)
+                && !hasEducationName(testParticipant) && !hasDeprecatedEducationName(testParticipant)) {
             listing.addDataErrorMessage(
                     msgUtil.getMessage("listing.criteria.missingParticipantEducationLevel", formatParticipantRef(testParticipant)));
         }
+    }
+
+    private boolean hasEducationId(TestParticipant testParticipant) {
+        return testParticipant.getEducationType() != null && testParticipant.getEducationType().getId() != null;
+    }
+
+    private boolean hasEducationName(TestParticipant testParticipant) {
+        return testParticipant.getEducationType() != null
+                && !StringUtils.isEmpty(testParticipant.getEducationType().getName());
+    }
+
+    private boolean hasDeprecatedEducationId(TestParticipant testParticipant) {
+        return testParticipant.getEducationTypeId() != null;
+    }
+
+    private boolean hasDeprecatedEducationName(TestParticipant testParticipant) {
+        return !StringUtils.isEmpty(testParticipant.getEducationTypeName());
     }
 
     private void reviewParticipantGender(CertifiedProductSearchDetails listing, TestParticipant testParticipant) {

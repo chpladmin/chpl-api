@@ -15,9 +15,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
-import gov.healthit.chpl.dto.CertificationResultTestTaskDTO;
-import gov.healthit.chpl.dto.TestParticipantDTO;
-import gov.healthit.chpl.dto.TestTaskDTO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -145,35 +142,6 @@ public class TestTask implements Serializable {
         super();
         testParticipants = new LinkedHashSet<TestParticipant>();
         criteria = new LinkedHashSet<CertificationCriterion>();
-    }
-
-    public TestTask(TestTaskDTO dto) {
-        this();
-        this.id = dto.getId();
-        this.description = dto.getDescription();
-        this.taskSuccessAverage = dto.getTaskSuccessAverage();
-        this.taskSuccessStddev = dto.getTaskSuccessStddev();
-        this.taskPathDeviationObserved = dto.getTaskPathDeviationObserved();
-        this.taskPathDeviationOptimal = dto.getTaskPathDeviationOptimal();
-        this.taskTimeAvg = dto.getTaskTimeAvg();
-        this.taskTimeStddev = dto.getTaskTimeStddev();
-        this.taskTimeDeviationObservedAvg = dto.getTaskTimeDeviationObservedAvg();
-        this.taskTimeDeviationOptimalAvg = dto.getTaskTimeDeviationOptimalAvg();
-        this.taskErrors = dto.getTaskErrors();
-        this.taskErrorsStddev = dto.getTaskErrorsStddev();
-        this.taskRatingScale = dto.getTaskRatingScale();
-        this.taskRating = dto.getTaskRating();
-        this.taskRatingStddev = dto.getTaskRatingStddev();
-        if (dto.getParticipants() != null && dto.getParticipants().size() > 0) {
-            for (TestParticipantDTO participantDto : dto.getParticipants()) {
-                this.testParticipants.add(new TestParticipant(participantDto));
-            }
-        }
-    }
-
-    public TestTask(CertificationResultTestTaskDTO dto) {
-        this(dto.getTestTask());
-        this.id = dto.getTestTaskId();
     }
 
     @Override

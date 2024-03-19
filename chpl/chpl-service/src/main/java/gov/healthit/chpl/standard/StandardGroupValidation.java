@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
 import gov.healthit.chpl.validation.listing.reviewer.PermissionBasedReviewer;
@@ -23,8 +23,8 @@ public abstract class StandardGroupValidation extends PermissionBasedReviewer{
     private ErrorMessageUtil msgUtil;
 
     @Autowired
-    public StandardGroupValidation(StandardGroupService standardGroupService, ErrorMessageUtil msgUtil, ResourcePermissions resourcePermissions) {
-        super(msgUtil, resourcePermissions);
+    public StandardGroupValidation(StandardGroupService standardGroupService, ErrorMessageUtil msgUtil, ResourcePermissionsFactory resourcePermissionsFactory) {
+        super(msgUtil, resourcePermissionsFactory);
 
         this.standardGroupService = standardGroupService;
         this.msgUtil = msgUtil;

@@ -6,8 +6,8 @@ public class RoleAcbHasMultipleCertificationBodiesValidation extends ValidationR
 
     @Override
     public boolean isValid(ChangeRequestValidationContext context) {
-        if (context.getResourcePermissions().isUserRoleAcbAdmin()
-                && context.getResourcePermissions().getAllAcbsForCurrentUser().size() > 1) {
+        if (context.getResourcePermissionsFactory().get().isUserRoleAcbAdmin()
+                && context.getResourcePermissionsFactory().get().getAllAcbsForCurrentUser().size() > 1) {
             getMessages().add(getErrorMessage("changeRequest.multipleAcbs"));
             return false;
         }

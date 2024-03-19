@@ -12,12 +12,16 @@ import org.mockito.MockitoAnnotations;
 
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.permissions.domain.ActionPermissionsBaseTest;
 import gov.healthit.chpl.permissions.domains.listingUpload.ValidateByIdsActionPermissions;
 
 public class ValidateByIdsActionPermissionsTest extends ActionPermissionsBaseTest {
     @Mock
     private ResourcePermissions resourcePermissions;
+
+    @Mock
+    private ResourcePermissionsFactory resourcePermissionsFacotry;
 
     @InjectMocks
     private ValidateByIdsActionPermissions permissions;
@@ -26,6 +30,7 @@ public class ValidateByIdsActionPermissionsTest extends ActionPermissionsBaseTes
     @Before
     public void setup() throws EntityRetrievalException {
         MockitoAnnotations.initMocks(this);
+        Mockito.when(resourcePermissionsFacotry.get()).thenReturn(resourcePermissions);
         Mockito.when(resourcePermissions.getAllAcbsForCurrentUser()).thenReturn(getAllAcbForUser(2L));
     }
 
