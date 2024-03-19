@@ -26,6 +26,7 @@ public class CertificationResultReviewer {
     private TestToolReviewer testToolReviewer;
     private TestDataReviewer testDataReviewer;
     private ConformanceMethodReviewer conformanceMethodReviewer;
+    private CodeSetAsOfCertificationDayReviewer codeSetReviewer;
     private FunctionalityTestedReviewer functionalityTestedReviewer;
     private StandardAsOfCertificationDayReviewer standardReviewer;
     private TestStandardReviewer testStandardReviewer;
@@ -47,6 +48,7 @@ public class CertificationResultReviewer {
             @Qualifier("listingUploadTestToolReviewer") TestToolReviewer testToolReviewer,
             @Qualifier("listingUploadTestDataReviewer") TestDataReviewer testDataReviewer,
             @Qualifier("conformanceMethodReviewer") ConformanceMethodReviewer conformanceMethodReviewer,
+            CodeSetAsOfCertificationDayReviewer codeSetReviewer,
             @Qualifier("listingUploadFunctionalityTestedReviewer") FunctionalityTestedReviewer functionalityTestedReviewer,
             @Qualifier("standardAsOfCertificationDayReviewer") StandardAsOfCertificationDayReviewer standardReviewer,
             @Qualifier("listingUploadTestStandardReviewer") TestStandardReviewer testStandardReviewer,
@@ -63,6 +65,7 @@ public class CertificationResultReviewer {
         this.testToolReviewer = testToolReviewer;
         this.testDataReviewer = testDataReviewer;
         this.conformanceMethodReviewer = conformanceMethodReviewer;
+        this.codeSetReviewer = codeSetReviewer;
         this.functionalityTestedReviewer = functionalityTestedReviewer;
         this.standardReviewer = standardReviewer;
         this.testStandardReviewer = testStandardReviewer;
@@ -99,6 +102,7 @@ public class CertificationResultReviewer {
         additionalSoftwareReviewer.review(listing);
         gapAllowedReviewer.review(listing);
         conformanceMethodReviewer.review(listing);
+        codeSetReviewer.review(listing);
         testToolReviewer.review(listing);
         testDataReviewer.review(listing);
         functionalityTestedReviewer.review(listing);

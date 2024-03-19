@@ -39,6 +39,10 @@ public enum Headings {
     ACCESSIBILITY_STANDARD("Accessibility Standard"),
     K_1_URL("170.523(k)(1) URL", "170.523 (k)(1) URL"),
     SVAP_NOTICE_URL("SVAP Notice URL"),
+    RWT_PLANS_URL("RWT Plans URL", "RWT_Plans_URL"),
+    RWT_PLANS_CHECK_DATE("RWT Plans Check Date"),
+    RWT_RESULTS_URL("RWT Results URL", "RWT_Results_URL"),
+    RWT_RESULTS_CHECK_DATE("RWT Results Check Date"),
     CQM_NUMBER("CQM Number", "CQM_NUMBER"),
     CQM_VERSION("CQM Version", "CQM_VERSION"),
     CQM_CRITERIA("CQM Criteria", "CQM_CRITERIA"),
@@ -102,6 +106,7 @@ public enum Headings {
     SVAP_REG_TEXT("SVAP Reg Text Citation", "Regulatory Text Citation", "SVAP_REG_TEXT"),
     RISK_MANAGEMENT_SUMMARY_INFORMATION("Risk Management Summary Information"),
     STANDARD("Standard", "Standards", "standard", "standards"),
+    CODE_SET("Code Set", "Code Sets", "Codeset", "CodeSet", "Codesets", "CodeSets", "codeset", "codesets"),
 
     //all below included so we don't give errors of unrecognized col; should not used anywhere
     CRITERIA_170_315_A_1("CRITERIA_170_315_A_1__C"),
