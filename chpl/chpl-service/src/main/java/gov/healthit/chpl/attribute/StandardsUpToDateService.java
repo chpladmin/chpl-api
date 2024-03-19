@@ -51,7 +51,8 @@ public class StandardsUpToDateService {
                 .upToDate(upToDate)
                 .daysUpdatedEarly(daysUpdatedEarly)
                 .criterion(certificationResult.getCriterion())
-                .build();    }
+                .build();
+    }
 
     private OptionalLong getDaysUpdatedEarlyForCriteriaBasedOnStandards(CertificationResult certificationResult) {
         //Get the CertificationResultStandards using DAO, so that we have the create date

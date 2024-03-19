@@ -12,7 +12,9 @@ import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 @Component
 public class UpdatedCriteriaStatusReportSheet {
     private static final Integer TOTAL_NUMBER_OF_MONTHS = 12;
@@ -42,6 +44,8 @@ public class UpdatedCriteriaStatusReportSheet {
 
         for (int i = TOTAL_NUMBER_OF_MONTHS; i >= 1; --i) {
             UpdatedCriteriaStatusReport report = getDataFromOnOrAroundDate(reportDate, criterion);
+
+            LOGGER.info(report);
 
             CellUtil.getCell(CellUtil.getRow(DATE_ROW_IDX, sheet), i).setCellValue(report.getReportDay());
             CellUtil.getCell(CellUtil.getRow(FULLY_UP_TO_DATE_ROW_IDX, sheet), i).setCellValue(report.getFullyUpToDateCount());
