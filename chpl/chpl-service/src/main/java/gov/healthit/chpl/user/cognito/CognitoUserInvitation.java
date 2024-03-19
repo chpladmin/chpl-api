@@ -15,6 +15,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Data
 public class CognitoUserInvitation {
+    private static final Long MILLIS_IN_A_DAY = 24L * 60L * 60L * 1000L;
+
     private Long id;
     private String email;
     private UUID invitationToken;
@@ -32,7 +34,7 @@ public class CognitoUserInvitation {
     private UUID lasModifiedSsoUser;
 
     public boolean isOlderThan(long numDays) {
-        return isOlderThanMillis(numDays * 24L * 60L * 60L * 1000L);
+        return isOlderThanMillis(numDays * MILLIS_IN_A_DAY);
     }
 
     private boolean isOlderThanMillis(long numDaysInMillis) {
