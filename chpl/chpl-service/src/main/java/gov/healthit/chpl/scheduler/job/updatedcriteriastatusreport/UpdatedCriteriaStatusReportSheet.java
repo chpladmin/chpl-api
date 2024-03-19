@@ -45,8 +45,6 @@ public class UpdatedCriteriaStatusReportSheet {
         for (int i = TOTAL_NUMBER_OF_MONTHS; i >= 1; --i) {
             UpdatedCriteriaStatusReport report = getDataFromOnOrAroundDate(reportDate, criterion);
 
-            LOGGER.info(report);
-
             CellUtil.getCell(CellUtil.getRow(DATE_ROW_IDX, sheet), i).setCellValue(report.getReportDay());
             CellUtil.getCell(CellUtil.getRow(FULLY_UP_TO_DATE_ROW_IDX, sheet), i).setCellValue(report.getFullyUpToDateCount());
             CellUtil.getCell(CellUtil.getRow(CODE_SETS_UP_TP_DATE_ROW_IDX, sheet), i).setCellValue(report.getCodeSetsUpToDateCount());
