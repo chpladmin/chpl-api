@@ -29,6 +29,7 @@ import gov.healthit.chpl.validation.listing.reviewer.ListingStatusAndUserRoleRev
 import gov.healthit.chpl.validation.listing.reviewer.OptionalStandardReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.RealWorldTestingReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.Reviewer;
+import gov.healthit.chpl.validation.listing.reviewer.StandardAsOfTodayReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.StandardRemovalReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.SvapReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.TestProcedureReviewer;
@@ -54,7 +55,6 @@ import gov.healthit.chpl.validation.listing.reviewer.edition2015.PrivacyAndSecur
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.RequiredAndRelatedCriteriaReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.RequiredData2015Reviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.SedG32015Reviewer;
-import gov.healthit.chpl.validation.listing.reviewer.edition2015.StandardAllowedByCriteriaReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.UnavailableCriteriaComparisonReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.UnavailableCriteriaTestTaskComparisonReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.UnavailableCriteriaUcdComparisonReviewer;
@@ -238,7 +238,8 @@ public class Edition2015ListingValidator extends Validator {
     private QmsStandardReviewer qmsStandardReviewer;
 
     @Autowired
-    private StandardAllowedByCriteriaReviewer standardAllowedByCriteriaReviewer;
+    @Qualifier("standardAsOfTodayReviewer")
+    private StandardAsOfTodayReviewer standardReviewer;
 
     @Autowired
     @Qualifier("deprecatedFieldReviewer")
@@ -280,7 +281,7 @@ public class Edition2015ListingValidator extends Validator {
         reviewers.add(ttReviewer);
         reviewers.add(urlReviewer);
         reviewers.add(functionalityTestedReviewer);
-        reviewers.add(standardAllowedByCriteriaReviewer);
+        reviewers.add(standardReviewer);
         reviewers.add(invalidCriteriaCombinationReviewer);
         reviewers.add(attestedCriteriaCqmReviewer);
         reviewers.add(cqmAttestedCriteriaReviewer);

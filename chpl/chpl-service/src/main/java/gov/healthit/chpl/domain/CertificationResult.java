@@ -229,6 +229,7 @@ public class CertificationResult implements Serializable {
         this.conformanceMethods = new ArrayList<CertificationResultConformanceMethod>();
         this.testProcedures = new ArrayList<CertificationResultTestProcedure>();
         this.svaps = new ArrayList<CertificationResultSvap>();
+        this.standards = new ArrayList<CertificationResultStandard>();
 
         this.standardComparator = new CertificationResultStandardComparator();
         this.svapComparator = new CertificationResultSvapComparator();
