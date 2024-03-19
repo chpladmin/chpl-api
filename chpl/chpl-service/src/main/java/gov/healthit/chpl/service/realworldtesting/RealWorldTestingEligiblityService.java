@@ -101,7 +101,7 @@ public class RealWorldTestingEligiblityService {
         LocalDate currentRwtEligStartDate = rwtProgramStartDate;
         Integer currentRwtEligYear = rwtProgramFirstEligibilityYear;
         while (currentRwtEligStartDate.isBefore(LocalDate.now())) {
-            Optional<CertifiedProductSearchDetails> listing = getListingAsOfDate(listingId, currentRwtEligStartDate);
+            Optional<CertifiedProductSearchDetails> listing = getListingAsOfDateOrOriginalState(listingId, currentRwtEligStartDate);
             if (listing.isPresent() && isListingRwtEligible(listing.get(), currentRwtEligStartDate)) {
                 RealWorldTestingEligibility eligibility = new RealWorldTestingEligibility(RealWorldTestingEligiblityReason.SELF, currentRwtEligYear);
                 addCalculatedResultsToMemo(listingId, eligibility);
@@ -112,6 +112,14 @@ public class RealWorldTestingEligiblityService {
             currentRwtEligYear++;
         }
         return Optional.empty();
+    }
+
+    private Optional<CertifiedProductSearchDetails> getListingAsOfDateOrOriginalState(Long listingId, LocalDate asOfDate) {
+        Optional<CertifiedProductSearchDetails> listing = getListingAsOfDate(listingId, asOfDate);
+        if (listing.isEmpty()) {
+            listing = getListingInOriginalState(listingId);
+        }
+        return listing;
     }
 
     private Integer getRwtEligibilityYearBasedOnIcs(Long listingId, Logger logger) {
