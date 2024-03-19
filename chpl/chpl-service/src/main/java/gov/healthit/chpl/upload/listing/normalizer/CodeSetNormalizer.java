@@ -21,7 +21,7 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 @Component
 public class CodeSetNormalizer implements CertificationResultLevelNormalizer {
     private static final String[] ACCEPTED_DATE_FORMATS = {
-            "MM-yyyy", "MMM-yy", "MMM yyyy", "MMMM yyyy"
+            "yyyyMM", "MM-yyyy", "MM-yy", "MMM-yy", "MMM yyyy", "MMMM yyyy"
     };
     private DateTimeFormatter codeSetFormatter;
     private List<DateTimeFormatter> formatters;
