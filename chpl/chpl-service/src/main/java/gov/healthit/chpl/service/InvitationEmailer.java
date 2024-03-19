@@ -13,6 +13,7 @@ import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
 import gov.healthit.chpl.email.footer.PublicFooter;
 import gov.healthit.chpl.exception.EmailNotSentException;
+import gov.healthit.chpl.user.cognito.CognitoUserInvitation;
 import lombok.extern.log4j.Log4j2;
 
 @Service
@@ -89,6 +90,31 @@ public class InvitationEmailer {
                 .htmlMessage(htmlMessage)
                 .sendEmail();
             LOGGER.info("Sent email to " + invitation.getEmailAddress());
+        } catch (EmailNotSentException ex) {
+            LOGGER.error(ex.getMessage(), ex);
+        }
+    }
+
+    public void emailInvitedUser(CognitoUserInvitation invitation) {
+        String htmlMessage = htmlEmailBuilder.initialize()
+                .heading(accountInvitationTitle)
+                .paragraph(accountInvitationHeading, accountInvitationParagraph1)
+                .paragraph(null, String.format(accountInvitationLink, chplUrlBegin, invitation.getInvitationToken()))
+                .paragraph(null, accountInvitationParagraph2)
+                .paragraph(null, chplEmailValediction)
+                .footer(PublicFooter.class)
+                .build();
+        String[] toEmails = {
+                invitation.getEmail()
+        };
+        LOGGER.info("Created HTML Message for " + invitation.getEmail());
+        try {
+            LOGGER.info("Created new email builder");
+            chplEmailFactory.emailBuilder().recipients(new ArrayList<String>(Arrays.asList(toEmails)))
+                .subject(accountInvitationTitle)
+                .htmlMessage(htmlMessage)
+                .sendEmail();
+            LOGGER.info("Sent email to " + invitation.getEmail());
         } catch (EmailNotSentException ex) {
             LOGGER.error(ex.getMessage(), ex);
         }
