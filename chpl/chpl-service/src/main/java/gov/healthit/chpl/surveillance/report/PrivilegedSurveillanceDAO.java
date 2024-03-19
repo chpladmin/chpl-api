@@ -2,19 +2,22 @@ package gov.healthit.chpl.surveillance.report;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.persistence.Query;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.surveillance.report.dto.PrivilegedSurveillanceDTO;
-import gov.healthit.chpl.surveillance.report.dto.SurveillanceOutcomeDTO;
-import gov.healthit.chpl.surveillance.report.dto.SurveillanceProcessTypeDTO;
+import gov.healthit.chpl.surveillance.report.domain.PrivilegedSurveillance;
+import gov.healthit.chpl.surveillance.report.domain.SurveillanceOutcome;
+import gov.healthit.chpl.surveillance.report.domain.SurveillanceProcessType;
 import gov.healthit.chpl.surveillance.report.entity.QuarterlyReportSurveillanceMapEntity;
+import gov.healthit.chpl.surveillance.report.entity.QuarterlyReportSurveillanceProcessTypeMapEntity;
 import gov.healthit.chpl.surveillance.report.entity.SurveillanceOutcomeEntity;
 import gov.healthit.chpl.surveillance.report.entity.SurveillanceProcessTypeEntity;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
@@ -30,8 +33,11 @@ public class PrivilegedSurveillanceDAO extends BaseDAOImpl {
         this.chplProductNumberUtil = chplProductNumberUtil;
     }
 
-    private static final String MAP_HQL = "SELECT map "
+    private static final String MAP_HQL = "SELECT DISTINCT map "
             + " FROM QuarterlyReportSurveillanceMapEntity map "
+            + " LEFT JOIN FETCH map.surveillanceOutcome "
+            + " LEFT JOIN FETCH map.surveillanceProcessTypeMaps procTypeMaps "
+            + " LEFT JOIN FETCH procTypeMaps.surveillanceProcessType "
             + " JOIN FETCH map.quarterlyReport qr "
             + " JOIN FETCH qr.quarter "
             + " JOIN FETCH qr.acb acb "
@@ -46,10 +52,10 @@ public class PrivilegedSurveillanceDAO extends BaseDAOImpl {
      * Gets the mapping between a specific quarterly report and
      * a specific surveillance. Should only be one mapping.
      */
-    public PrivilegedSurveillanceDTO getByReportAndSurveillance(Long quarterlyReportId, Long surveillanceId) {
+    public PrivilegedSurveillance getByReportAndSurveillance(Long quarterlyReportId, Long surveillanceId) {
         List<Long> quarterlyReportIds = new ArrayList<Long>();
         quarterlyReportIds.add(quarterlyReportId);
-        List<PrivilegedSurveillanceDTO> result = getByReportsAndSurveillance(quarterlyReportIds, surveillanceId);
+        List<PrivilegedSurveillance> result = getByReportsAndSurveillance(quarterlyReportIds, surveillanceId);
         if (result != null && result.size() == 1) {
             return result.get(0);
         } else if (result != null && result.size() > 1) {
@@ -63,7 +69,7 @@ public class PrivilegedSurveillanceDAO extends BaseDAOImpl {
      * Gets the surveillance mapping data across multiple quarterly reports
      * (possibly useful when compiling annual report)
      */
-    public List<PrivilegedSurveillanceDTO> getByReportsAndSurveillance(List<Long> quarterlyReportIds,
+    public List<PrivilegedSurveillance> getByReportsAndSurveillance(List<Long> quarterlyReportIds,
             Long surveillanceId) {
         String queryStr = MAP_HQL
                 + " AND map.quarterlyReportId IN (:quarterlyReportIds) "
@@ -71,56 +77,49 @@ public class PrivilegedSurveillanceDAO extends BaseDAOImpl {
         Query query = entityManager.createQuery(queryStr);
         query.setParameter("quarterlyReportIds", quarterlyReportIds);
         query.setParameter("surveillanceId", surveillanceId);
-
-        List<PrivilegedSurveillanceDTO> result = new ArrayList<PrivilegedSurveillanceDTO>();
         List<QuarterlyReportSurveillanceMapEntity> entities = query.getResultList();
-        if (entities != null && entities.size() > 0) {
-            for (QuarterlyReportSurveillanceMapEntity entity : entities) {
-                result.add(new PrivilegedSurveillanceDTO(entity));
-            }
-        }
-        return result;
+        return entities.stream()
+                .map(entity -> entity.toDomain())
+                .collect(Collectors.toList());
     }
 
-    /**
-     * Get all surveillance mappings for a particular report.
-     */
-    public List<PrivilegedSurveillanceDTO> getByReport(Long quarterlyReportId) {
+    public List<PrivilegedSurveillance> getByReport(Long quarterlyReportId) {
         String queryStr = MAP_HQL
                 + " AND map.quarterlyReportId = :quarterlyReportId ";
         Query query = entityManager.createQuery(queryStr);
         query.setParameter("quarterlyReportId", quarterlyReportId);
 
-        List<PrivilegedSurveillanceDTO> result = new ArrayList<PrivilegedSurveillanceDTO>();
         List<QuarterlyReportSurveillanceMapEntity> entities = query.getResultList();
-        if (entities != null && entities.size() > 0) {
-            for (QuarterlyReportSurveillanceMapEntity entity : entities) {
-                result.add(new PrivilegedSurveillanceDTO(entity));
-            }
-        }
-        return result;
+        return entities.stream()
+                .map(entity -> entity.toDomain())
+                .collect(Collectors.toList());
     }
 
-    /**
-     * Get all quarterly report mappings for a particular surveillance.
-     */
-    public List<PrivilegedSurveillanceDTO> getBySurveillance(Long surveillanceId) {
+    public List<PrivilegedSurveillance> getByReports(List<Long> quarterlyReportIds) {
+        String queryStr = MAP_HQL
+                + " AND map.quarterlyReportId IN (:quarterlyReportIds) ";
+        Query query = entityManager.createQuery(queryStr);
+        query.setParameter("quarterlyReportIds", quarterlyReportIds);
+
+        List<QuarterlyReportSurveillanceMapEntity> entities = query.getResultList();
+        return entities.stream()
+                .map(entity -> entity.toDomain())
+                .collect(Collectors.toList());
+    }
+
+    public List<PrivilegedSurveillance> getBySurveillance(Long surveillanceId) {
         String queryStr = MAP_HQL
                 + " AND map.surveillanceId = :surveillanceId";
         Query query = entityManager.createQuery(queryStr);
         query.setParameter("surveillanceId", surveillanceId);
 
-        List<PrivilegedSurveillanceDTO> result = new ArrayList<PrivilegedSurveillanceDTO>();
         List<QuarterlyReportSurveillanceMapEntity> entities = query.getResultList();
-        if (entities != null && entities.size() > 0) {
-            for (QuarterlyReportSurveillanceMapEntity entity : entities) {
-                result.add(new PrivilegedSurveillanceDTO(entity));
-            }
-        }
-        return result;
+        return entities.stream()
+                .map(entity -> entity.toDomain())
+                .collect(Collectors.toList());
     }
 
-    public PrivilegedSurveillanceDTO getById(Long id) throws EntityRetrievalException {
+    public PrivilegedSurveillance getById(Long id) throws EntityRetrievalException {
         QuarterlyReportSurveillanceMapEntity entity = getEntityById(id);
         if (entity == null) {
             return null;
@@ -128,46 +127,34 @@ public class PrivilegedSurveillanceDAO extends BaseDAOImpl {
         String chplProductNumber = chplProductNumberUtil
                 .generate(entity.getSurveillance().getCertifiedProductId());
         entity.getSurveillance().setChplProductNumber(chplProductNumber);
-        return new PrivilegedSurveillanceDTO(entity);
+        return entity.toDomain();
     }
 
-    public List<SurveillanceOutcomeDTO> getSurveillanceOutcomes() {
+    public List<SurveillanceOutcome> getSurveillanceOutcomes() {
         List<SurveillanceOutcomeEntity> entities =
                 entityManager.createQuery("SELECT soe FROM SurveillanceOutcomeEntity soe WHERE deleted = false").getResultList();
-        List<SurveillanceOutcomeDTO> results = new ArrayList<SurveillanceOutcomeDTO>();
-        if (entities != null && entities.size() > 0) {
-            for (SurveillanceOutcomeEntity entity: entities) {
-                results.add(new SurveillanceOutcomeDTO(entity));
-            }
-        }
-        return results;
+        return entities.stream()
+                .map(entity -> entity.toDomain())
+                .collect(Collectors.toList());
     }
 
-    public List<SurveillanceProcessTypeDTO> getSurveillanceProcessTypes() {
+    public List<SurveillanceProcessType> getSurveillanceProcessTypes() {
         List<SurveillanceProcessTypeEntity> entities =
                 entityManager.createQuery("SELECT spte FROM SurveillanceProcessTypeEntity spte WHERE deleted = false").getResultList();
-        List<SurveillanceProcessTypeDTO> results = new ArrayList<SurveillanceProcessTypeDTO>();
-        if (entities != null && entities.size() > 0) {
-            for (SurveillanceProcessTypeEntity entity: entities) {
-                results.add(new SurveillanceProcessTypeDTO(entity));
-            }
-        }
-        return results;
+        return entities.stream()
+                .map(entity -> entity.toDomain())
+                .collect(Collectors.toList());
     }
 
-    public PrivilegedSurveillanceDTO create(PrivilegedSurveillanceDTO toCreate)
+    public Long create(Long quarterlyReportId, PrivilegedSurveillance toCreate)
             throws EntityCreationException {
         QuarterlyReportSurveillanceMapEntity entity = new QuarterlyReportSurveillanceMapEntity();
-        entity.setQuarterlyReportId(toCreate.getQuarterlyReport().getId());
+        entity.setQuarterlyReportId(quarterlyReportId);
         entity.setSurveillanceId(toCreate.getId());
         if (toCreate.getSurveillanceOutcome() != null) {
             entity.setSurveillanceOutcomeId(toCreate.getSurveillanceOutcome().getId());
         }
         entity.setSurveillanceOutcomeOther(toCreate.getSurveillanceOutcomeOther());
-        if (toCreate.getSurveillanceProcessType() != null) {
-            entity.setSurveillanceProcessTypeId(toCreate.getSurveillanceProcessType().getId());
-        }
-        entity.setSurveillanceProcessTypeOther(toCreate.getSurveillanceProcessTypeOther());
         entity.setK1Reviewed(toCreate.getK1Reviewed());
         entity.setGroundsForInitiating(toCreate.getGroundsForInitiating());
         entity.setNonconformityCauses(toCreate.getNonconformityCauses());
@@ -179,35 +166,46 @@ public class PrivilegedSurveillanceDAO extends BaseDAOImpl {
         entity.setNondisclosureEvaluation(toCreate.getNondisclosureEvaluation());
         entity.setDirectionDeveloperResolution(toCreate.getDirectionDeveloperResolution());
         entity.setCompletedCapVerification(toCreate.getCompletedCapVerification());
+        entity.setSurveillanceProcessTypeOther(toCreate.getSurveillanceProcessTypeOther());
         entity.setDeleted(false);
         create(entity);
 
-        PrivilegedSurveillanceDTO result = null;
-        try {
-            result = getById(entity.getId());
-        } catch (EntityRetrievalException ex) {
-            LOGGER.error("Cannot find newly created entity with id " + entity.getId(), ex);
-        }
-        return result;
+        Long qrSurveillanceMapEntityId = entity.getId();
+        toCreate.getSurveillanceProcessTypes().stream()
+            .forEach(procType -> createSurveillanceProcessTypeMaps(qrSurveillanceMapEntityId, procType));
+        return qrSurveillanceMapEntityId;
     }
 
-    public PrivilegedSurveillanceDTO update(PrivilegedSurveillanceDTO toUpdate)
+    private void createSurveillanceProcessTypeMaps(Long parentId, SurveillanceProcessType toCreate) {
+        QuarterlyReportSurveillanceProcessTypeMapEntity procTypeMapEntity = QuarterlyReportSurveillanceProcessTypeMapEntity.builder()
+                .quarterlyReportSurveillanceMapId(parentId)
+                .surveillanceProcessTypeId(toCreate.getId())
+                .build();
+        create(procTypeMapEntity);
+    }
+
+    public void update(PrivilegedSurveillance existing, PrivilegedSurveillance toUpdate)
             throws EntityRetrievalException {
-        QuarterlyReportSurveillanceMapEntity entity = getEntityById(toUpdate.getMappingId());
+        String queryStr = MAP_HQL
+                + " AND map.quarterlyReportId = :quarterlyReportId "
+                + " AND map.surveillanceId = :surveillanceId ";
+        Query query = entityManager.createQuery(queryStr);
+        query.setParameter("quarterlyReportId", existing.getQuarterlyReport().getId());
+        query.setParameter("surveillanceId", existing.getId());
+        List<QuarterlyReportSurveillanceMapEntity> entities = query.getResultList();
+        if (CollectionUtils.isEmpty(entities)) {
+            LOGGER.error("No surveillance entries exist for quarterly report: " + existing.getQuarterlyReport().getId()
+                    + " and surveillance: " + existing.getId());
+            return;
+        }
+
+        QuarterlyReportSurveillanceMapEntity entity = entities.get(0);
         if (toUpdate.getSurveillanceOutcome() != null) {
             entity.setSurveillanceOutcomeId(toUpdate.getSurveillanceOutcome().getId());
         } else {
             entity.setSurveillanceOutcomeId(null);
         }
         entity.setSurveillanceOutcomeOther(toUpdate.getSurveillanceOutcomeOther());
-
-        if (toUpdate.getSurveillanceProcessType() != null) {
-            entity.setSurveillanceProcessTypeId(toUpdate.getSurveillanceProcessType().getId());
-        } else {
-            entity.setSurveillanceProcessTypeId(null);
-        }
-        entity.setSurveillanceProcessTypeOther(toUpdate.getSurveillanceProcessTypeOther());
-
         entity.setK1Reviewed(toUpdate.getK1Reviewed());
         entity.setGroundsForInitiating(toUpdate.getGroundsForInitiating());
         entity.setNonconformityCauses(toUpdate.getNonconformityCauses());
@@ -219,15 +217,37 @@ public class PrivilegedSurveillanceDAO extends BaseDAOImpl {
         entity.setNondisclosureEvaluation(toUpdate.getNondisclosureEvaluation());
         entity.setDirectionDeveloperResolution(toUpdate.getDirectionDeveloperResolution());
         entity.setCompletedCapVerification(toUpdate.getCompletedCapVerification());
+        entity.setSurveillanceProcessTypeOther(toUpdate.getSurveillanceProcessTypeOther());
         update(entity);
+        updateSurveillanceProcessTypes(entity,
+                existing.getSurveillanceProcessTypes(),
+                toUpdate.getSurveillanceProcessTypes());
+    }
 
-        PrivilegedSurveillanceDTO result = null;
-        try {
-            result = getById(entity.getId());
-        } catch (EntityRetrievalException ex) {
-            LOGGER.error("Cannot find updated entity with id " + entity.getId(), ex);
+    private void updateSurveillanceProcessTypes(QuarterlyReportSurveillanceMapEntity qrSurvMapEntity,
+            List<SurveillanceProcessType> existingProcessTypes,
+            List<SurveillanceProcessType> updatedProcessTypes) {
+        Long qrSurvMapId = qrSurvMapEntity.getId();
+        List<SurveillanceProcessType> addedProcessTypes = SurveillanceProcessTypeHelper.getAddedSurveillanceProcessTypes(
+                existingProcessTypes, updatedProcessTypes);
+        List<SurveillanceProcessType> removedProcessTypes = SurveillanceProcessTypeHelper.getRemovedSurveillanceProcessTypes(
+                existingProcessTypes, updatedProcessTypes);
+
+        for (SurveillanceProcessType procType : removedProcessTypes) {
+            QuarterlyReportSurveillanceProcessTypeMapEntity toRemove = qrSurvMapEntity.getSurveillanceProcessTypeMaps().stream()
+                    .filter(entity -> procType.getId().equals(entity.getSurveillanceProcessTypeId()))
+                    .findAny().get();
+            toRemove.setDeleted(true);
+            update(toRemove);
         }
-        return result;
+
+        for (SurveillanceProcessType procType : addedProcessTypes) {
+            QuarterlyReportSurveillanceProcessTypeMapEntity toCreate = QuarterlyReportSurveillanceProcessTypeMapEntity.builder()
+                    .quarterlyReportSurveillanceMapId(qrSurvMapId)
+                    .surveillanceProcessTypeId(procType.getId())
+                    .build();
+            create(toCreate);
+        }
     }
 
     public void delete(Long idToDelete) throws EntityRetrievalException {

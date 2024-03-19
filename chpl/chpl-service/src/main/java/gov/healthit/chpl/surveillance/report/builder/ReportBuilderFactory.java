@@ -9,7 +9,7 @@ import gov.healthit.chpl.surveillance.report.builder2019.QuarterlyReportBuilder2
 import gov.healthit.chpl.surveillance.report.builder2021.AnnualReportBuilder2021;
 import gov.healthit.chpl.surveillance.report.builder2021.QuarterlyReportBuilder2021;
 import gov.healthit.chpl.surveillance.report.domain.AnnualReport;
-import gov.healthit.chpl.surveillance.report.dto.QuarterlyReportDTO;
+import gov.healthit.chpl.surveillance.report.domain.QuarterlyReport;
 
 @Component
 public class ReportBuilderFactory {
@@ -32,7 +32,7 @@ public class ReportBuilderFactory {
         this.quarterlyReportBuilder2021 = quarterlyReportBuilder2021;
     }
 
-    public QuarterlyReportBuilderXlsx getReportBuilder(QuarterlyReportDTO quarterlyReport)
+    public QuarterlyReportBuilderXlsx getReportBuilder(QuarterlyReport quarterlyReport)
         throws InvalidArgumentsException {
         if (quarterlyReport == null || quarterlyReport.getYear() == null) {
             throw new InvalidArgumentsException("Invalid quarterly report or year.");

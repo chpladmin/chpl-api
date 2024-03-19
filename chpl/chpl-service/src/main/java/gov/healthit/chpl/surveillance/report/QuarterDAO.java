@@ -1,7 +1,7 @@
 package gov.healthit.chpl.surveillance.report;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.persistence.Query;
 
@@ -20,13 +20,9 @@ public class QuarterDAO extends BaseDAOImpl {
                 "SELECT q "
                 + " FROM QuarterEntity q "
                 + " WHERE q.deleted = false").getResultList();
-        List<Quarter> results = new ArrayList<Quarter>();
-        if (resultEntities != null && resultEntities.size() > 0) {
-            for (QuarterEntity resultEntity : resultEntities) {
-                results.add(new Quarter(resultEntity));
-            }
-        }
-        return results;
+        return resultEntities.stream()
+                .map(entity -> entity.toDomain())
+                .collect(Collectors.toList());
     }
 
     public Quarter getById(Long id) throws EntityRetrievalException {
@@ -34,7 +30,7 @@ public class QuarterDAO extends BaseDAOImpl {
         if (entity == null) {
             throw new EntityRetrievalException("No quarter exists with database ID " + id);
         }
-        return new Quarter(entity);
+        return entity.toDomain();
     }
 
     public Quarter getByName(String name) {
@@ -47,7 +43,7 @@ public class QuarterDAO extends BaseDAOImpl {
         List<QuarterEntity> resultEntities = query.getResultList();
         Quarter result = null;
         if (resultEntities != null && resultEntities.size() > 0) {
-            result = new Quarter(resultEntities.get(0));
+            result = resultEntities.get(0).toDomain();
         }
         return result;
     }

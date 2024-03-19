@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Comparator;
 import java.util.List;
 
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -15,7 +16,7 @@ import gov.healthit.chpl.surveillance.report.builder.SurveillanceExperienceWorks
 import gov.healthit.chpl.surveillance.report.builder.SurveillanceReportWorkbookWrapper;
 import gov.healthit.chpl.surveillance.report.builder.SurveillanceSummaryWorksheetBuilder;
 import gov.healthit.chpl.surveillance.report.domain.AnnualReport;
-import gov.healthit.chpl.surveillance.report.dto.QuarterlyReportDTO;
+import gov.healthit.chpl.surveillance.report.domain.QuarterlyReport;
 import lombok.NoArgsConstructor;
 
 @Component("annualReportBuilder2019")
@@ -46,28 +47,28 @@ public class AnnualReportBuilder2019 implements AnnualReportBuilderXlsx {
         this.survExprienceWorksheetBuilder = survExprienceWorksheetBuilder;
     }
 
-    public SurveillanceReportWorkbookWrapper buildXlsx(AnnualReport annualReport) throws IOException {
+    public SurveillanceReportWorkbookWrapper buildXlsx(AnnualReport annualReport, Logger logger) throws IOException {
         SurveillanceReportWorkbookWrapper workbook = new SurveillanceReportWorkbookWrapper();
 
         listWorksheetBuilder.buildWorksheet(workbook);
 
-        List<QuarterlyReportDTO> quarterlyReports =
+        List<QuarterlyReport> quarterlyReports =
                 reportManager.getQuarterlyReports(annualReport.getAcb().getId(), annualReport.getYear());
         if (quarterlyReports != null && quarterlyReports.size() > 0) {
             //order the quarterly reports by date so they show up in the right order in each sheet
-            quarterlyReports.sort(new Comparator<QuarterlyReportDTO>() {
+            quarterlyReports.sort(new Comparator<QuarterlyReport>() {
                 @Override
-                public int compare(final QuarterlyReportDTO o1, final QuarterlyReportDTO o2) {
-                    if (o1.getStartDate() == null || o2.getStartDate() == null) {
+                public int compare(final QuarterlyReport o1, final QuarterlyReport o2) {
+                    if (o1.getStartDay() == null || o2.getStartDay() == null) {
                         return 0;
                     }
-                    return o1.getStartDate().compareTo(o2.getStartDate());
+                    return o1.getStartDay().compareTo(o2.getStartDay());
                 }
             });
             reportInfoWorksheetBuilder.buildWorksheet(workbook, quarterlyReports);
-            activitiesAndOutcomesWorksheetBuilder.buildWorksheet(workbook, quarterlyReports);
+            activitiesAndOutcomesWorksheetBuilder.buildWorksheet(workbook, quarterlyReports, logger);
             complaintsWorksheetBuilder.buildWorksheet(workbook, quarterlyReports);
-            survSummaryWorksheetBuilder.buildWorksheet(workbook, quarterlyReports);
+            survSummaryWorksheetBuilder.buildWorksheet(workbook, quarterlyReports, logger);
         }
         survExprienceWorksheetBuilder.buildWorksheet(workbook, annualReport);
 

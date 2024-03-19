@@ -40,8 +40,8 @@ import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.surveillance.report.PrivilegedSurveillanceDAO;
-import gov.healthit.chpl.surveillance.report.dto.PrivilegedSurveillanceDTO;
-import gov.healthit.chpl.surveillance.report.dto.QuarterlyReportDTO;
+import gov.healthit.chpl.surveillance.report.domain.PrivilegedSurveillance;
+import gov.healthit.chpl.surveillance.report.domain.QuarterlyReport;
 import lombok.extern.log4j.Log4j2;
 
 @Component
@@ -105,7 +105,7 @@ public class ComplaintsWorksheetBuilder {
         return lastDataRow <= 1 ? 2 : lastDataRow;
     }
 
-    public Sheet buildWorksheet(SurveillanceReportWorkbookWrapper workbook, List<QuarterlyReportDTO> quarterlyReports)
+    public Sheet buildWorksheet(SurveillanceReportWorkbookWrapper workbook, List<QuarterlyReport> quarterlyReports)
             throws IOException {
         pt = new PropertyTemplate();
         lastDataRow = 0;
@@ -256,16 +256,16 @@ public class ComplaintsWorksheetBuilder {
         return 1;
     }
 
-    private int addTableData(SurveillanceReportWorkbookWrapper workbook, Sheet sheet, List<QuarterlyReportDTO> quarterlyReports) {
+    private int addTableData(SurveillanceReportWorkbookWrapper workbook, Sheet sheet, List<QuarterlyReport> quarterlyReports) {
         int addedRows = 0;
         int rowNum = 2;
 
         List<Complaint> uniqueComplaints = new ArrayList<Complaint>();
         // get the complaints for each quarterly report
         // a complaint could be relevant to multiple quarterly reports so filter out duplicates
-        for (QuarterlyReportDTO report : quarterlyReports) {
+        for (QuarterlyReport report : quarterlyReports) {
             List<Complaint> complaintsRelevantToReport = complaintManager.getAllComplaintsBetweenDates(
-                    report.getAcb(), report.getStartDate(), report.getEndDate());
+                    report.getAcb(), report.getStartDay(), report.getEndDay());
             for (Complaint relevantComplaint : complaintsRelevantToReport) {
                 if (!uniqueComplaints.contains(relevantComplaint)) {
                     uniqueComplaints.add(relevantComplaint);
@@ -276,7 +276,8 @@ public class ComplaintsWorksheetBuilder {
         uniqueComplaints.sort(new Comparator<Complaint>() {
             @Override
             public int compare(final Complaint o1, final Complaint o2) {
-                return o1.getReceivedDate().compareTo(o2.getReceivedDate());            }
+                return o1.getReceivedDate().compareTo(o2.getReceivedDate());
+            }
         });
 
         for (Complaint complaint : uniqueComplaints) {
@@ -460,29 +461,29 @@ public class ComplaintsWorksheetBuilder {
         return result.toString();
     }
 
-    private String getSurveillanceOutcome(List<QuarterlyReportDTO> reports, Long survId) {
+    private String getSurveillanceOutcome(List<QuarterlyReport> reports, Long survId) {
         List<Long> reportIds = new ArrayList<Long>();
-        for (QuarterlyReportDTO report : reports) {
+        for (QuarterlyReport report : reports) {
             reportIds.add(report.getId());
         }
         String result = "";
-        List<PrivilegedSurveillanceDTO> privSurvs = privilegedSurvDao.getByReportsAndSurveillance(reportIds, survId);
+        List<PrivilegedSurveillance> privSurvs = privilegedSurvDao.getByReportsAndSurveillance(reportIds, survId);
         if (reportIds.size() == 1 && privSurvs.size() > 0) {
-            PrivilegedSurveillanceDTO privSurv = privSurvs.get(0);
+            PrivilegedSurveillance privSurv = privSurvs.get(0);
             result = (privSurv.getSurveillanceOutcome() != null
                     ? privSurv.getSurveillanceOutcome().getName()
                     : "");
         } else if (privSurvs.size() > 0) {
             Map<String, ArrayList<String>> outcomeToQuarterMap = new LinkedHashMap<String, ArrayList<String>>();
-            for (PrivilegedSurveillanceDTO privSurv : privSurvs) {
+            for (PrivilegedSurveillance privSurv : privSurvs) {
                 String outcomeStr = (privSurv.getSurveillanceOutcome() != null
                         ? privSurv.getSurveillanceOutcome().getName()
                         : "");
                 if (outcomeToQuarterMap.get(outcomeStr) != null) {
-                    outcomeToQuarterMap.get(outcomeStr).add(privSurv.getQuarterlyReport().getQuarter().getName());
+                    outcomeToQuarterMap.get(outcomeStr).add(privSurv.getQuarterlyReport().getQuarter());
                 } else {
                     ArrayList<String> quarterNames = new ArrayList<String>();
-                    quarterNames.add(privSurv.getQuarterlyReport().getQuarter().getName());
+                    quarterNames.add(privSurv.getQuarterlyReport().getQuarter());
                     outcomeToQuarterMap.put(outcomeStr, quarterNames);
                 }
             }

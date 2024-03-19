@@ -1,17 +1,32 @@
 package gov.healthit.chpl.surveillance.report.domain;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import gov.healthit.chpl.domain.surveillance.SurveillanceBasic;
-import gov.healthit.chpl.dto.surveillance.SurveillanceBasicDTO;
-import gov.healthit.chpl.surveillance.report.dto.PrivilegedSurveillanceDTO;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@SuperBuilder
 public class PrivilegedSurveillance extends SurveillanceBasic {
     private static final long serialVersionUID = 2839806198924296871L;
 
+    @JsonIgnore
+    private Long mappingId;
+    @JsonIgnore
+    private QuarterlyReport quarterlyReport;
     private SurveillanceOutcome surveillanceOutcome;
     private String surveillanceOutcomeOther;
-    private SurveillanceProcessType surveillanceProcessType;
+    @Builder.Default
+    private List<SurveillanceProcessType> surveillanceProcessTypes = new ArrayList<SurveillanceProcessType>();
     private String surveillanceProcessTypeOther;
     private Boolean k1Reviewed;
     private String groundsForInitiating;
@@ -25,34 +40,24 @@ public class PrivilegedSurveillance extends SurveillanceBasic {
     private String directionDeveloperResolution;
     private String completedCapVerification;
 
-    public PrivilegedSurveillance() {
-        super();
-    }
-
-    public PrivilegedSurveillance(SurveillanceBasicDTO dto) {
-        super(dto);
-    }
-
-    public PrivilegedSurveillance(PrivilegedSurveillanceDTO dto) {
-        super(dto);
-        this.k1Reviewed = dto.getK1Reviewed();
-        this.groundsForInitiating = dto.getGroundsForInitiating();
-        this.nonconformityCauses = dto.getNonconformityCauses();
-        this.nonconformityNature = dto.getNonconformityNature();
-        this.stepsToSurveil = dto.getStepsToSurveil();
-        this.stepsToEngage = dto.getStepsToEngage();
-        this.additionalCostsEvaluation = dto.getAdditionalCostsEvaluation();
-        this.limitationsEvaluation = dto.getLimitationsEvaluation();
-        this.nondisclosureEvaluation = dto.getNondisclosureEvaluation();
-        this.directionDeveloperResolution = dto.getDirectionDeveloperResolution();
-        this.completedCapVerification = dto.getCompletedCapVerification();
-        if (dto.getSurveillanceOutcome() != null) {
-            this.surveillanceOutcome = new SurveillanceOutcome(dto.getSurveillanceOutcome());
-        }
-        this.surveillanceOutcomeOther = dto.getSurveillanceOutcomeOther();
-        if (dto.getSurveillanceProcessType() != null) {
-            this.surveillanceProcessType = new SurveillanceProcessType(dto.getSurveillanceProcessType());
-        }
-        this.surveillanceProcessTypeOther = dto.getSurveillanceProcessTypeOther();
+    public void copyPrivilegedFields(PrivilegedSurveillance another) {
+        this.mappingId = another.getMappingId();
+        this.k1Reviewed = another.getK1Reviewed();
+        this.groundsForInitiating = another.getGroundsForInitiating();
+        this.nonconformityCauses = another.getNonconformityCauses();
+        this.nonconformityNature = another.getNonconformityNature();
+        this.stepsToSurveil = another.getStepsToSurveil();
+        this.stepsToEngage = another.getStepsToEngage();
+        this.additionalCostsEvaluation = another.getAdditionalCostsEvaluation();
+        this.limitationsEvaluation = another.getLimitationsEvaluation();
+        this.nondisclosureEvaluation = another.getNondisclosureEvaluation();
+        this.directionDeveloperResolution = another.getDirectionDeveloperResolution();
+        this.completedCapVerification = another.getCompletedCapVerification();
+        this.quarterlyReport = another.getQuarterlyReport();
+        this.surveillanceOutcome = another.getSurveillanceOutcome();
+        this.surveillanceOutcomeOther = another.getSurveillanceOutcomeOther();
+        this.surveillanceProcessTypes = new ArrayList<SurveillanceProcessType>(
+                another.getSurveillanceProcessTypes());
+        this.surveillanceProcessTypeOther = another.getSurveillanceProcessTypeOther();
     }
 }

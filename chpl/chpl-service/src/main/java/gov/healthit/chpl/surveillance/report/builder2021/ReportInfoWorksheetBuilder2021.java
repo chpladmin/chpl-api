@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.surveillance.report.builder.ReportInfoWorksheetBuilder;
 import gov.healthit.chpl.surveillance.report.builder.SurveillanceReportWorkbookWrapper;
-import gov.healthit.chpl.surveillance.report.dto.QuarterlyReportDTO;
+import gov.healthit.chpl.surveillance.report.domain.QuarterlyReport;
 import lombok.NoArgsConstructor;
 
 @Component
@@ -55,7 +55,7 @@ public class ReportInfoWorksheetBuilder2021 extends ReportInfoWorksheetBuilder {
 
     @Override
     protected int addExclusionAndExhaustionSection(SurveillanceReportWorkbookWrapper workbook,
-            Sheet sheet, List<QuarterlyReportDTO> reports, int beginRow) {
+            Sheet sheet, List<QuarterlyReport> reports, int beginRow) {
         return beginRow;
     }
 }

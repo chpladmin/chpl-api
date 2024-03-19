@@ -17,7 +17,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.PropertyTemplate;
 
-import gov.healthit.chpl.surveillance.report.dto.QuarterlyReportDTO;
+import gov.healthit.chpl.surveillance.report.domain.QuarterlyReport;
 
 public abstract class ReportInfoWorksheetBuilder {
     private static final int LAST_DATA_COLUMN = 6;
@@ -26,7 +26,7 @@ public abstract class ReportInfoWorksheetBuilder {
     protected PropertyTemplate pt;
 
     protected abstract int addExclusionAndExhaustionSection(SurveillanceReportWorkbookWrapper workbook,
-            Sheet sheet, List<QuarterlyReportDTO> reports, int beginRow);
+            Sheet sheet, List<QuarterlyReport> reports, int beginRow);
 
     protected abstract String getReportingAcbDescription();
 
@@ -49,7 +49,7 @@ public abstract class ReportInfoWorksheetBuilder {
     }
 
     protected int createHeader(SurveillanceReportWorkbookWrapper workbook,
-            Sheet sheet, List<QuarterlyReportDTO> reports, int beginRow) {
+            Sheet sheet, List<QuarterlyReport> reports, int beginRow) {
         int currRow = beginRow;
         Row row = workbook.getRow(sheet, currRow++);
         Cell cell = workbook.createCell(row, 1, workbook.getBoldStyle());
@@ -60,7 +60,7 @@ public abstract class ReportInfoWorksheetBuilder {
         return row.getRowNum() + 1;
     }
 
-    public Sheet buildWorksheet(SurveillanceReportWorkbookWrapper workbook, List<QuarterlyReportDTO> reports) throws IOException {
+    public Sheet buildWorksheet(SurveillanceReportWorkbookWrapper workbook, List<QuarterlyReport> reports) throws IOException {
         lastDataRow = 0;
         pt = new PropertyTemplate();
         //create sheet or get the sheet if it already exists
@@ -90,7 +90,7 @@ public abstract class ReportInfoWorksheetBuilder {
         return sheet;
     }
 
-    private int createAcbSection(SurveillanceReportWorkbookWrapper workbook, Sheet sheet, List<QuarterlyReportDTO> reports,
+    private int createAcbSection(SurveillanceReportWorkbookWrapper workbook, Sheet sheet, List<QuarterlyReport> reports,
             int beginRow) {
         int currRow = beginRow;
         Row row = workbook.getRow(sheet, currRow++);
@@ -108,7 +108,7 @@ public abstract class ReportInfoWorksheetBuilder {
         //make sure we start with a unique set of ACB names
         //and build the report's ACB name from that (in reality i think all acb names will be the same)
         Set<String> acbNames = new HashSet<String>();
-        for (QuarterlyReportDTO report : reports) {
+        for (QuarterlyReport report : reports) {
             acbNames.add(report.getAcb().getName());
         }
         StringBuffer buf = new StringBuffer();
@@ -125,7 +125,7 @@ public abstract class ReportInfoWorksheetBuilder {
     }
 
     private int createReportingPeriodSection(SurveillanceReportWorkbookWrapper workbook, Sheet sheet,
-             List<QuarterlyReportDTO> reports, int beginRow) {
+             List<QuarterlyReport> reports, int beginRow) {
         int currRow = beginRow;
         Row row = workbook.getRow(sheet, currRow++);
         Cell cell = workbook.createCell(row, 0, workbook.getSectionNumberingStyle());
@@ -142,12 +142,12 @@ public abstract class ReportInfoWorksheetBuilder {
         //calculate the minimum start date and maximum end dates out of all reports passed in
         LocalDate minDate = null;
         LocalDate maxDate = null;
-        for (QuarterlyReportDTO report : reports) {
-            if (minDate == null || report.getStartDate().isBefore(minDate)) {
-                minDate = report.getStartDate();
+        for (QuarterlyReport report : reports) {
+            if (minDate == null || report.getStartDay().isBefore(minDate)) {
+                minDate = report.getStartDay();
             }
-            if (maxDate == null || report.getEndDate().isAfter(maxDate)) {
-                maxDate = report.getEndDate();
+            if (maxDate == null || report.getEndDay().isAfter(maxDate)) {
+                maxDate = report.getEndDay();
             }
         }
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("d MMMM yyyy");
@@ -158,7 +158,7 @@ public abstract class ReportInfoWorksheetBuilder {
     }
 
     private int createActivitiesAndOutcomesSection(SurveillanceReportWorkbookWrapper workbook, Sheet sheet,
-            List<QuarterlyReportDTO> reports, int beginRow) {
+            List<QuarterlyReport> reports, int beginRow) {
         int currRow = beginRow;
         Row row = workbook.getRow(sheet, currRow++);
         Cell cell = workbook.createCell(row, 0, workbook.getSectionNumberingStyle());
@@ -174,13 +174,13 @@ public abstract class ReportInfoWorksheetBuilder {
         row = workbook.getRow(sheet, currRow++);
         cell = workbook.createCell(row, 1, workbook.getTopAlignedWrappedStyle());
         if (reports.size() == 1) {
-            cell.setCellValue(reports.get(0).getActivitiesOutcomesSummary());
+            cell.setCellValue(reports.get(0).getSurveillanceActivitiesAndOutcomes());
         } else {
             StringBuffer buf = new StringBuffer();
-            for (QuarterlyReportDTO report : reports) {
-                if (!StringUtils.isEmpty(report.getActivitiesOutcomesSummary())) {
-                    buf.append(report.getQuarter().getName()).append(":")
-                        .append(report.getActivitiesOutcomesSummary())
+            for (QuarterlyReport report : reports) {
+                if (!StringUtils.isEmpty(report.getSurveillanceActivitiesAndOutcomes())) {
+                    buf.append(report.getQuarter()).append(":")
+                        .append(report.getSurveillanceActivitiesAndOutcomes())
                         .append("\n");
                 }
             }
@@ -206,7 +206,7 @@ public abstract class ReportInfoWorksheetBuilder {
     }
 
     private int createSelectingAndSamplingSection(SurveillanceReportWorkbookWrapper workbook,
-            Sheet sheet, List<QuarterlyReportDTO> reports, int beginRow) {
+            Sheet sheet, List<QuarterlyReport> reports, int beginRow) {
         int currRow = beginRow;
         Row row = workbook.getRow(sheet, currRow++);
         Cell cell = workbook.createCell(row, 0, workbook.getSectionNumberingStyle());
@@ -229,12 +229,12 @@ public abstract class ReportInfoWorksheetBuilder {
             cell.setCellValue(reports.get(0).getReactiveSurveillanceSummary());
         } else {
             StringBuffer buf = new StringBuffer();
-            for (QuarterlyReportDTO report : reports) {
+            for (QuarterlyReport report : reports) {
                 if (!StringUtils.isEmpty(report.getReactiveSurveillanceSummary())) {
                     if (buf.length() > 0) {
                         buf.append("\n");
                     }
-                    buf.append(report.getQuarter().getName()).append(":")
+                    buf.append(report.getQuarter()).append(":")
                         .append(report.getReactiveSurveillanceSummary());
                 }
             }
@@ -251,7 +251,7 @@ public abstract class ReportInfoWorksheetBuilder {
     }
 
     private int createPrioritizedSurveillanceSection(SurveillanceReportWorkbookWrapper workbook, Sheet sheet,
-            List<QuarterlyReportDTO> reports, int beginRow) {
+            List<QuarterlyReport> reports, int beginRow) {
         int currRow = beginRow;
         Row row = workbook.getRow(sheet, currRow++);
         Cell cell = workbook.createCell(row, 0, workbook.getSectionNumberingStyle());
@@ -276,9 +276,9 @@ public abstract class ReportInfoWorksheetBuilder {
             cell.setCellValue(reports.get(0).getPrioritizedElementSummary());
         } else {
             StringBuffer buf = new StringBuffer();
-            for (QuarterlyReportDTO report : reports) {
+            for (QuarterlyReport report : reports) {
                 if (!StringUtils.isEmpty(report.getPrioritizedElementSummary())) {
-                    buf.append(report.getQuarter().getName()).append(":")
+                    buf.append(report.getQuarter()).append(":")
                         .append(report.getPrioritizedElementSummary())
                         .append("\n");
                 }
@@ -312,9 +312,9 @@ public abstract class ReportInfoWorksheetBuilder {
             cell.setCellValue(reports.get(0).getDisclosureRequirementsSummary());
         } else {
             StringBuffer buf = new StringBuffer();
-            for (QuarterlyReportDTO report : reports) {
+            for (QuarterlyReport report : reports) {
                 if (!StringUtils.isEmpty(report.getDisclosureRequirementsSummary())) {
-                    buf.append(report.getQuarter().getName()).append(":")
+                    buf.append(report.getQuarter()).append(":")
                         .append(report.getDisclosureRequirementsSummary())
                         .append("\n");
                 }
@@ -344,7 +344,7 @@ public abstract class ReportInfoWorksheetBuilder {
         return row.getRowNum()+1;
     }
 
-    protected int determineYear(List<QuarterlyReportDTO> quarterlyReports) {
+    protected int determineYear(List<QuarterlyReport> quarterlyReports) {
         return quarterlyReports.get(0).getYear();
     }
 }

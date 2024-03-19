@@ -68,6 +68,9 @@ public class SurveillanceBasicEntity extends EntityAudit {
     @Column(name = "closed_nonconformity_count")
     private Integer numClosedNonconformities;
 
+    @Column(name = "deleted")
+    private Boolean deleted;
+
     public SurveillanceBasic buildSurveillanceBasic() {
         return SurveillanceBasic.builder()
                 .certifiedProductId(this.getCertifiedProductId())

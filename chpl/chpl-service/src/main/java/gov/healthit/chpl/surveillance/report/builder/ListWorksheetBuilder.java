@@ -14,8 +14,8 @@ import gov.healthit.chpl.complaint.domain.ComplainantType;
 import gov.healthit.chpl.complaint.domain.Complaint;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.surveillance.report.PrivilegedSurveillanceDAO;
-import gov.healthit.chpl.surveillance.report.dto.SurveillanceOutcomeDTO;
-import gov.healthit.chpl.surveillance.report.dto.SurveillanceProcessTypeDTO;
+import gov.healthit.chpl.surveillance.report.domain.SurveillanceOutcome;
+import gov.healthit.chpl.surveillance.report.domain.SurveillanceProcessType;
 
 /**
  * A hidden worksheet that contains values used to populate drop-down lists elsewhere in the workbook.
@@ -65,8 +65,8 @@ public class ListWorksheetBuilder {
 
         int outcomeCol = 0;
         int outcomeRow = 0;
-        List<SurveillanceOutcomeDTO> outcomes = reportMapDao.getSurveillanceOutcomes();
-        for (SurveillanceOutcomeDTO outcome : outcomes) {
+        List<SurveillanceOutcome> outcomes = reportMapDao.getSurveillanceOutcomes();
+        for (SurveillanceOutcome outcome : outcomes) {
             choicesRow = workbook.getRow(sheet, outcomeRow++);
             choicesCell = choicesRow.createCell(outcomeCol);
             choicesCell.setCellValue(outcome.getName());
@@ -74,8 +74,8 @@ public class ListWorksheetBuilder {
 
         int processTypeCol = 1;
         int processTypeRow = 0;
-        List<SurveillanceProcessTypeDTO> processTypes = reportMapDao.getSurveillanceProcessTypes();
-        for (SurveillanceProcessTypeDTO procType : processTypes) {
+        List<SurveillanceProcessType> processTypes = reportMapDao.getSurveillanceProcessTypes();
+        for (SurveillanceProcessType procType : processTypes) {
             choicesRow = workbook.getRow(sheet, processTypeRow++);
             choicesCell = choicesRow.createCell(processTypeCol);
             choicesCell.setCellValue(procType.getName());
