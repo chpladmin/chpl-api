@@ -42,7 +42,6 @@ import gov.healthit.chpl.domain.comparator.CertifiedProductAccessibilityStandard
 import gov.healthit.chpl.domain.comparator.CertifiedProductComparator;
 import gov.healthit.chpl.domain.comparator.CertifiedProductQmsStandardComparator;
 import gov.healthit.chpl.domain.comparator.CertifiedProductTargetedUserComparator;
-import gov.healthit.chpl.domain.comparator.CertifiedProductTestingLabComparator;
 import gov.healthit.chpl.domain.comparator.CertifiedProductUcdProcessComparator;
 import gov.healthit.chpl.domain.comparator.ChplProductNumberHistoryComparator;
 import gov.healthit.chpl.domain.comparator.TestParticipantComparator;
@@ -80,7 +79,6 @@ public class ListingService {
     private CertificationCriterionComparator criteriaComparator;
 
     private CertifiedProductComparator cpComparator;
-    private CertifiedProductTestingLabComparator atlComparator;
     private CertifiedProductQmsStandardComparator qmsComparator;
     private CertifiedProductTargetedUserComparator tuComparator;
     private CertifiedProductAccessibilityStandardComparator asComparator;
@@ -131,7 +129,6 @@ public class ListingService {
         this.criteriaComparator = criteriaComparator;
 
         this.cpComparator = new CertifiedProductComparator();
-        this.atlComparator = new CertifiedProductTestingLabComparator();
         this.qmsComparator = new CertifiedProductQmsStandardComparator();
         this.tuComparator = new CertifiedProductTargetedUserComparator();
         this.asComparator = new CertifiedProductAccessibilityStandardComparator();
@@ -167,10 +164,8 @@ public class ListingService {
                 .id(dto.getId())
                 .acbCertificationId(dto.getAcbCertificationId())
                 .certificationDate(dto.getCertificationDate() != null ? dto.getCertificationDate().getTime() : null)
-                .decertificationDate(dto.getDecertificationDate() != null ? dto.getDecertificationDate().getTime() : null)
                 .decertificationDay(dto.getDecertificationDay() != null ? dto.getDecertificationDay() : null)
                 .curesUpdate(dto.getCuresUpdate())
-                .certificationEdition(getCertificationEditionDeprecated(dto))
                 .edition(getCertificationEdition(dto))
                 .chplProductNumber(getChplProductNumber(dto))
                 .certifyingBody(getCertifyingBody(dto))
@@ -324,21 +319,8 @@ public class ListingService {
         }
         return CertificationEdition.builder()
                 .id(dto.getCertificationEditionId())
-                .certificationEditionId(dto.getCertificationEditionId())
                 .name(dto.getYear())
-                .year(dto.getYear())
                 .build();
-    }
-
-    @Deprecated
-    private Map<String, Object> getCertificationEditionDeprecated(CertifiedProductDetailsDTO dto) {
-        if (dto.getCertificationEditionId() == null) {
-            return null;
-        }
-        Map<String, Object> certificationEdition = new HashMap<String, Object>();
-        certificationEdition.put("id", dto.getCertificationEditionId());
-        certificationEdition.put("name", dto.getYear());
-        return certificationEdition;
     }
 
     private Map<String, Object> getCertifyingBody(CertifiedProductDetailsDTO dto) {

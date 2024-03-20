@@ -1,7 +1,6 @@
 package gov.healthit.chpl.upload.listing.normalizer;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
@@ -12,8 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.domain.TestToolCriteriaMap;
-import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.testtool.CertificationResultTestTool;
 import gov.healthit.chpl.testtool.TestTool;
 import gov.healthit.chpl.testtool.TestToolDAO;
@@ -54,19 +51,7 @@ public class TestToolNormalizer {
     }
 
     private void fillInTestToolData(CertificationResult certResult) {
-        populateAllowedTestTools(certResult);
         populateTestToolIds(certResult.getTestToolsUsed());
-    }
-
-    private void populateAllowedTestTools(CertificationResult certResult) {
-        if (certResult != null && certResult.getCriterion() != null
-                && certResult.getCriterion().getId() != null) {
-            List<TestTool> allowedTestTools = getTestToolCriteriaMaps().stream()
-                .filter(ttcm -> ttcm.getCriterion().getId().equals(certResult.getCriterion().getId()))
-                .map(ttm -> ttm.getTestTool())
-                .collect(Collectors.toList());
-            certResult.setAllowedTestTools(allowedTestTools);
-        }
     }
 
     private void populateTestToolIds(List<CertificationResultTestTool> testTools) {
@@ -83,15 +68,6 @@ public class TestToolNormalizer {
             if (testToolFromDb != null) {
                 testTool.setTestTool(testToolFromDb);
             }
-        }
-    }
-
-    private List<TestToolCriteriaMap> getTestToolCriteriaMaps() {
-        try {
-            return testToolDao.getAllTestToolCriteriaMaps();
-        } catch (EntityRetrievalException e) {
-            LOGGER.error("Could not retrieve TestToolCriteriaMaps", e);
-            return List.of();
         }
     }
 }

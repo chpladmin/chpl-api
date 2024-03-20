@@ -146,37 +146,7 @@ public class OptionalStandardNormalizerTest {
         assertEquals(1L, listing.getCertificationResults().get(0).getOptionalStandards().get(0).getOptionalStandardId());
     }
 
-    @Test
-    public void normalize_criterionHasAllowedOptionalStandards_addsAllowedOptionalStandardsToCertificationResult() {
-        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .certificationResult(CertificationResult.builder()
-                        .criterion(CertificationCriterion.builder()
-                                    .id(1L)
-                                    .number("170.315 (a)(1)")
-                                    .build())
-                        .optionalStandards(new ArrayList<CertificationResultOptionalStandard>())
-                        .build())
-                .build();
-        normalizer.normalize(listing);
-        assertEquals(2, listing.getCertificationResults().get(0).getAllowedOptionalStandards().size());
-    }
-
-    @Test
-    public void normalize_criterionHasNoAllowedOptionalStandards_noAllowedOptionalStandardsAdded() {
-        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .certificationResult(CertificationResult.builder()
-                        .criterion(CertificationCriterion.builder()
-                                    .id(2L)
-                                    .number("170.315 (a)(2)")
-                                    .build())
-                        .optionalStandards(new ArrayList<CertificationResultOptionalStandard>())
-                        .build())
-                .build();
-        normalizer.normalize(listing);
-        assertEquals(0, listing.getCertificationResults().get(0).getAllowedOptionalStandards().size());
-    }
-
-    private CertificationEdition create2015Edition() {
+        private CertificationEdition create2015Edition() {
         return CertificationEdition.builder()
                 .id(3L)
                 .name("2015")
