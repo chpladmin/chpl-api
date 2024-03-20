@@ -204,6 +204,28 @@ public class CodeSetNormalizerTest {
     }
 
     @Test
+    public void normalize_userEnteredNameMatchesDateFormatyyyyMM_setsId() {
+        List<CertificationResultCodeSet> userEnteredCodeSets = new ArrayList<CertificationResultCodeSet>();
+        userEnteredCodeSets.add(CertificationResultCodeSet.builder()
+                    .codeSet(CodeSet.builder()
+                            .userEnteredName("300012")
+                            .build())
+                    .build());
+
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .criterion(a1)
+                        .success(true)
+                        .codeSets(userEnteredCodeSets)
+                        .build())
+                .build();
+
+        normalizer.normalize(listing);
+        assertEquals(a1a2CodeSet.getId(),
+                listing.getCertificationResults().get(0).getCodeSets().get(0).getCodeSet().getId());
+    }
+
+    @Test
     public void normalize_userEnteredNameUnknownFormat_idIsNull() {
         List<CertificationResultCodeSet> userEnteredCodeSets = new ArrayList<CertificationResultCodeSet>();
         userEnteredCodeSets.add(CertificationResultCodeSet.builder()

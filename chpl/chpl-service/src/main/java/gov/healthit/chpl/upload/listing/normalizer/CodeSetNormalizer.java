@@ -5,7 +5,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -83,10 +82,10 @@ public class CodeSetNormalizer implements CertificationResultLevelNormalizer {
             return null;
         }
         List<CodeSet> codeSetsForCriterion = codeSetMappings.get(criterionId);
-        Optional<CodeSet> codeSetOpt = codeSetsForCriterion.stream()
+        return codeSetsForCriterion.stream()
             .filter(codeSet -> matchesCodeSetName(codeSet, codeSetText))
-            .findAny();
-        return codeSetOpt.isPresent() ? codeSetOpt.get() : null;
+            .findAny()
+            .orElse(null);
     }
 
     private boolean matchesCodeSetName(CodeSet codeSet, String codeSetText) {
