@@ -7,7 +7,6 @@ import org.apache.commons.lang3.StringUtils;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseField;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -38,27 +37,6 @@ public class CertificationResultTestTool implements Serializable {
 
     @JsonIgnore
     private Long certificationResultId;
-
-    @Deprecated
-    @DeprecatedResponseField(message = "This field is deprecated and will be removed. This data can be found testTool.testTool.id",
-            removalDate = "2024-01-01")
-    private Long testToolId;
-
-    @Deprecated
-    @DeprecatedResponseField(message = "This field is deprecated and will be removed. This data can be found testTool.testTool.value",
-            removalDate = "2024-01-01")
-    private String testToolName;
-
-    @Deprecated
-    @DeprecatedResponseField(message = "This field is deprecated and will be removed. This data can be found testTool.version",
-            removalDate = "2024-01-01")
-    private String testToolVersion;
-
-    @Deprecated
-    @DeprecatedResponseField(message = "This field is deprecated and will be removed. This data can be found testTool.testTool.retired",
-            removalDate = "2024-01-01")
-    @Schema(description = "Whether or not the test tool has been retired.")
-    private Boolean retired;
 
     public boolean matches(final CertificationResultTestTool anotherTool) {
         boolean result = false;

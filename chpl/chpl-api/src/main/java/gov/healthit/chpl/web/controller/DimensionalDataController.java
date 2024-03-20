@@ -1,6 +1,5 @@
 package gov.healthit.chpl.web.controller;
 
-import java.util.List;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,8 +9,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import gov.healthit.chpl.certificationCriteria.CertificationCriteriaManager;
-import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.changerequest.manager.ChangeRequestManager;
 import gov.healthit.chpl.complaint.ComplaintManager;
 import gov.healthit.chpl.domain.CertificationBody;
@@ -26,7 +23,6 @@ import gov.healthit.chpl.domain.TestStandard;
 import gov.healthit.chpl.domain.surveillance.RequirementType;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.DimensionalDataManager;
-import gov.healthit.chpl.optionalStandard.domain.OptionalStandard;
 import gov.healthit.chpl.surveillance.report.SurveillanceReportManager;
 import gov.healthit.chpl.svap.manager.SvapManager;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
@@ -35,7 +31,6 @@ import gov.healthit.chpl.web.controller.annotation.CacheMaxAge;
 import gov.healthit.chpl.web.controller.annotation.CachePolicy;
 import gov.healthit.chpl.web.controller.annotation.DeprecatedApi;
 import gov.healthit.chpl.web.controller.annotation.DeprecatedApiResponseFields;
-import gov.healthit.chpl.web.controller.results.CertificationCriterionResults;
 import gov.healthit.chpl.web.controller.results.SvapResults;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -46,7 +41,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RequestMapping("/data")
 public class DimensionalDataController {
     private DimensionalDataManager dimensionalDataManager;
-    private CertificationCriteriaManager certificationCriteriaManager;
     private ComplaintManager complaintManager;
     private SurveillanceReportManager survReportManager;
     private ChangeRequestManager changeRequestManager;
@@ -54,13 +48,11 @@ public class DimensionalDataController {
 
     @Autowired
     public DimensionalDataController(DimensionalDataManager dimensionalDataManager,
-            CertificationCriteriaManager certificationCriteriaManager,
             ComplaintManager complaintManager,
             SurveillanceReportManager survReportManager,
             ChangeRequestManager changeRequestManager,
             SvapManager svapManager) {
         this.dimensionalDataManager = dimensionalDataManager;
-        this.certificationCriteriaManager = certificationCriteriaManager;
         this.complaintManager = complaintManager;
         this.survReportManager = survReportManager;
         this.changeRequestManager = changeRequestManager;
@@ -220,25 +212,6 @@ public class DimensionalDataController {
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody SearchOption getAgeRanges() {
         Set<KeyValueModel> data = dimensionalDataManager.getAgeRanges();
-        SearchOption result = new SearchOption();
-        result.setExpandable(false);
-        result.setData(data);
-        return result;
-    }
-
-    @DeprecatedApi(friendlyUrl = "/data/optional-standards", message = "This endpoint is being replaced with a GET from /optional-standards.",
-            removalDate = "2024-01-01")
-    @Deprecated
-    @Operation(summary = "Get all possible optional standard options in the CHPL",
-            description = "This is useful for knowing what values one might possibly search for.",
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
-    @RequestMapping(value = "/optional-standards", method = RequestMethod.GET,
-            produces = "application/json; charset=utf-8")
-    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
-    public @ResponseBody SearchOption getOptionalStandards() {
-        Set<OptionalStandard> data = dimensionalDataManager.getOptionalStandards();
         SearchOption result = new SearchOption();
         result.setExpandable(false);
         result.setData(data);
@@ -462,26 +435,6 @@ public class DimensionalDataController {
         SearchOption result = new SearchOption();
         result.setExpandable(false);
         result.setData(data);
-        return result;
-    }
-
-    @Deprecated
-    @DeprecatedApi(friendlyUrl = "/data/certification-criteria",
-        message = "This endpoint will be removed. Please GET from /certification-criteria.",
-        removalDate = "2024-01-01")
-    @Operation(summary = "Get all possible certification criteria in the CHPL",
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
-    @RequestMapping(value = "/certification-criteria", method = RequestMethod.GET,
-            produces = "application/json; charset=utf-8")
-    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
-    public @ResponseBody CertificationCriterionResults getCertificationCriteria() {
-        List<CertificationCriterion> criteria = certificationCriteriaManager.getAll();
-        CertificationCriterionResults result = new CertificationCriterionResults();
-        for (CertificationCriterion criterion : criteria) {
-            result.getCriteria().add(criterion);
-        }
         return result;
     }
 
