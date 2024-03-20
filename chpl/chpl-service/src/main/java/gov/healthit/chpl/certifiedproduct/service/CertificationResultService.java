@@ -7,9 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
-import gov.healthit.chpl.conformanceMethod.ConformanceMethodComparator;
 import gov.healthit.chpl.conformanceMethod.ConformanceMethodDAO;
-import gov.healthit.chpl.conformanceMethod.domain.ConformanceMethod;
 import gov.healthit.chpl.conformanceMethod.domain.ConformanceMethodCriteriaMap;
 import gov.healthit.chpl.dao.CertificationResultDetailsDAO;
 import gov.healthit.chpl.domain.CertificationResult;
@@ -22,17 +20,10 @@ import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
 import gov.healthit.chpl.dto.CertificationResultTestTaskDTO;
 import gov.healthit.chpl.dto.CertificationResultUcdProcessDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.functionalitytested.FunctionalityTested;
-import gov.healthit.chpl.functionalitytested.FunctionalityTestedComparator;
-import gov.healthit.chpl.functionalitytested.FunctionalityTestedManager;
 import gov.healthit.chpl.manager.CertificationResultManager;
-import gov.healthit.chpl.optionalStandard.OptionalStandardComparator;
 import gov.healthit.chpl.optionalStandard.OptionalStandardDAO;
-import gov.healthit.chpl.optionalStandard.domain.OptionalStandard;
 import gov.healthit.chpl.optionalStandard.domain.OptionalStandardCriteriaMap;
 import gov.healthit.chpl.svap.dao.SvapDAO;
-import gov.healthit.chpl.svap.domain.Svap;
-import gov.healthit.chpl.svap.domain.SvapComparator;
 import gov.healthit.chpl.svap.domain.SvapCriteriaMap;
 import gov.healthit.chpl.testtool.TestTool;
 import gov.healthit.chpl.testtool.TestToolComparator;
@@ -43,7 +34,6 @@ import gov.healthit.chpl.util.CertificationResultRules;
 public class CertificationResultService {
     private CertificationResultRules certRules;
     private CertificationResultManager certResultManager;
-    private FunctionalityTestedManager functionalityTestedManager;
     private CertificationResultDetailsDAO certificationResultDetailsDAO;
     private SvapDAO svapDao;
     private OptionalStandardDAO optionalStandardDAO;
@@ -51,21 +41,16 @@ public class CertificationResultService {
     private TestToolDAO testToolDAO;
 
     private CertificationResultComparator certResultComparator;
-    private ConformanceMethodComparator conformanceMethodComparator;
-    private OptionalStandardComparator optionalStandardComparator;
-    private SvapComparator svapComparator;
-    private FunctionalityTestedComparator funcTestedComparator;
     private TestToolComparator testToolComparator;
 
     @Autowired
     public CertificationResultService(CertificationResultRules certRules, CertificationResultManager certResultManager,
-            FunctionalityTestedManager functionalityTestedManager, CertificationResultDetailsDAO certificationResultDetailsDAO,
+            CertificationResultDetailsDAO certificationResultDetailsDAO,
             SvapDAO svapDAO, OptionalStandardDAO optionalStandardDAO, TestToolDAO testToolDAO,
             ConformanceMethodDAO conformanceMethodDAO,
             CertificationResultComparator certResultComparator) {
         this.certRules = certRules;
         this.certResultManager = certResultManager;
-        this.functionalityTestedManager = functionalityTestedManager;
         this.certificationResultDetailsDAO = certificationResultDetailsDAO;
         this.svapDao = svapDAO;
         this.optionalStandardDAO = optionalStandardDAO;
@@ -73,10 +58,6 @@ public class CertificationResultService {
         this.testToolDAO = testToolDAO;
         this.certResultComparator = certResultComparator;
 
-        this.conformanceMethodComparator = new ConformanceMethodComparator();
-        this.optionalStandardComparator = new OptionalStandardComparator();
-        this.svapComparator = new SvapComparator();
-        this.funcTestedComparator = new FunctionalityTestedComparator();
         this.testToolComparator = new TestToolComparator();
     }
 
@@ -114,10 +95,6 @@ public class CertificationResultService {
         populateSed(certResult, searchDetails, result, criteria);
         populateTestTasks(certResult, searchDetails, criteria);
 
-        result.setAllowedConformanceMethods(getAvailableConformanceMethodsForCriteria(result, conformanceMethodCriteriaMap));
-        result.setAllowedOptionalStandards(getAvailableOptionalStandardsForCriteria(result, optionalStandardCriteriaMap));
-        result.setAllowedSvaps(getAvailableSvapForCriteria(result, svapCriteriaMap));
-        result.setAllowedTestTools(getAvailableTestToolForCriteria(result, testToolCriteriaMap));
         return result;
     }
 
@@ -161,42 +138,6 @@ public class CertificationResultService {
         } else {
             result.setSed(null);
         }
-    }
-
-    private List<ConformanceMethod> getAvailableConformanceMethodsForCriteria(CertificationResult result, List<ConformanceMethodCriteriaMap> conformanceMethodCriteriaMap) {
-        return conformanceMethodCriteriaMap.stream()
-                .filter(cmcm -> cmcm.getCriterion().getId().equals(result.getCriterion().getId()))
-                .map(cmcm -> cmcm.getConformanceMethod())
-                .sorted(conformanceMethodComparator)
-                .collect(Collectors.toList());
-    }
-
-    private List<OptionalStandard> getAvailableOptionalStandardsForCriteria(CertificationResult result, List<OptionalStandardCriteriaMap> optionalStandardCriteriaMap) {
-        return optionalStandardCriteriaMap.stream()
-                .filter(osm -> osm.getCriterion().getId().equals(result.getCriterion().getId()))
-                .map(osm -> osm.getOptionalStandard())
-                .sorted(optionalStandardComparator)
-                .collect(Collectors.toList());
-    }
-
-    private List<Svap> getAvailableSvapForCriteria(CertificationResult result, List<SvapCriteriaMap> svapCriteriaMap) {
-        return svapCriteriaMap.stream()
-                .filter(scm -> scm.getCriterion().getId().equals(result.getCriterion().getId()))
-                .map(scm -> scm.getSvap())
-                .sorted(svapComparator)
-                .collect(Collectors.toList());
-    }
-
-    private List<FunctionalityTested> getAvailableFunctionalitiesTested(CertificationResult cr, CertifiedProductSearchDetails cp) {
-        Long practiceTypeId = null;
-        if (cp.getPracticeType().containsKey("id")) {
-            if (cp.getPracticeType().get("id") != null) {
-                practiceTypeId = Long.valueOf(cp.getPracticeType().get("id").toString());
-            }
-        }
-        return functionalityTestedManager.getFunctionalitiesTested(cr.getCriterion().getId(), practiceTypeId).stream()
-                .sorted(funcTestedComparator)
-                .collect(Collectors.toList());
     }
 
     private List<TestTool> getAvailableTestToolForCriteria(CertificationResult result, List<TestToolCriteriaMap> testToolCriteriaMap) {

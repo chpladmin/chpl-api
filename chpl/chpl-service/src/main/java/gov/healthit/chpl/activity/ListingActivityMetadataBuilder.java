@@ -1,7 +1,6 @@
 package gov.healthit.chpl.activity;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections4.MapUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -90,9 +89,6 @@ public class ListingActivityMetadataBuilder extends ActivityMetadataBuilder {
         }
         if (listing.getEdition() != null) {
             listingMetadata.setEdition(listing.getEdition().getName());
-        } else if (listing.getCertificationEdition() != null
-                && MapUtils.getString(listing.getCertificationEdition(), CertifiedProductSearchDetails.EDITION_NAME_KEY) != null) {
-            listingMetadata.setEdition(MapUtils.getString(listing.getCertificationEdition(), CertifiedProductSearchDetails.EDITION_NAME_KEY));
         }
         if (listing.getCuresUpdate() != null) {
             listingMetadata.setCuresUpdate(listing.getCuresUpdate());

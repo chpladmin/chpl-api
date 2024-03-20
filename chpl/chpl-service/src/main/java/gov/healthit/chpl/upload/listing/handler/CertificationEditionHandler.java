@@ -30,9 +30,7 @@ public class CertificationEditionHandler {
         }
         return CertificationEdition.builder()
                 .id(null)
-                .certificationEditionId(null)
                 .name(certificationYear)
-                .year(certificationYear)
                 .build();
     }
 
