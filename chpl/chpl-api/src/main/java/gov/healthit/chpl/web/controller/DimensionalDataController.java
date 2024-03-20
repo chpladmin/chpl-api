@@ -17,10 +17,8 @@ import gov.healthit.chpl.domain.DimensionalData;
 import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.domain.Measure;
 import gov.healthit.chpl.domain.MeasureType;
-import gov.healthit.chpl.domain.NonconformityType;
 import gov.healthit.chpl.domain.SearchOption;
 import gov.healthit.chpl.domain.TestStandard;
-import gov.healthit.chpl.domain.surveillance.RequirementType;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.DimensionalDataManager;
 import gov.healthit.chpl.surveillance.report.SurveillanceReportManager;
@@ -30,7 +28,6 @@ import gov.healthit.chpl.web.controller.annotation.CacheControl;
 import gov.healthit.chpl.web.controller.annotation.CacheMaxAge;
 import gov.healthit.chpl.web.controller.annotation.CachePolicy;
 import gov.healthit.chpl.web.controller.annotation.DeprecatedApi;
-import gov.healthit.chpl.web.controller.annotation.DeprecatedApiResponseFields;
 import gov.healthit.chpl.web.controller.results.SvapResults;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -179,7 +176,6 @@ public class DimensionalDataController {
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
-    @DeprecatedApiResponseFields(friendlyUrl = "/data/certification_bodies", responseClass = CertificationBody.class)
     @RequestMapping(value = "/certification_bodies", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     public @ResponseBody Set<CertificationBody> getCertificationBodies() {
@@ -218,7 +214,6 @@ public class DimensionalDataController {
         return result;
     }
 
-    @DeprecatedApiResponseFields(friendlyUrl = "/data/test_procedures", responseClass = CriteriaSpecificDescriptiveModel.class)
     @Operation(summary = "Get all possible test procedure options in the CHPL",
             description = "This is useful for knowing what values one might possibly search for.",
             security = {
@@ -235,7 +230,6 @@ public class DimensionalDataController {
         return result;
     }
 
-    @DeprecatedApiResponseFields(friendlyUrl = "/data/test_data", responseClass = CriteriaSpecificDescriptiveModel.class)
     @Operation(summary = "Get all possible test data options in the CHPL",
             description = "This is useful for knowing what values one might possibly search for.",
             security = {
@@ -284,7 +278,6 @@ public class DimensionalDataController {
         return result;
     }
 
-    @DeprecatedApiResponseFields(friendlyUrl = "/data/measures", responseClass = Measure.class)
     @Operation(summary = "Get all possible measure options in the CHPL",
             description = "This is useful for knowing what values one might possibly search for.",
             security = {
@@ -381,7 +374,6 @@ public class DimensionalDataController {
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
-    @DeprecatedApiResponseFields(friendlyUrl = "/data/requirement-types", responseClass = RequirementType.class)
     @RequestMapping(value = "/requirement-types", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
@@ -396,7 +388,6 @@ public class DimensionalDataController {
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
-    @DeprecatedApiResponseFields(friendlyUrl = "/data/nonconformity-types/v2", responseClass = NonconformityType.class)
     @RequestMapping(value = "/nonconformity-types/v2", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
@@ -407,8 +398,6 @@ public class DimensionalDataController {
         return result;
     }
 
-    @DeprecatedApiResponseFields(friendlyUrl = "/data/search-options",
-            responseClass = DimensionalData.class)
     @Operation(summary = "Get all search options in the CHPL",
             description = "This returns all of the other /data/{something} results in one single response.",
             security = {
