@@ -15,8 +15,6 @@ import lombok.extern.log4j.Log4j2;
 @Component("realWorldTestingReviewer")
 public class RealWorldTestingReviewer implements Reviewer {
 
-    private static final String EDITION_2015 = "2015";
-
     private ValidationUtils validationUtils;
     private ErrorMessageUtil errorMessageUtil;
 
@@ -28,27 +26,15 @@ public class RealWorldTestingReviewer implements Reviewer {
 
     @Override
     public void review(CertifiedProductSearchDetails updatedListing) {
-        if (isListingCurrentlyRwtEligible(updatedListing)) {
-            if (isRwtPlansDataSubmitted(updatedListing)) {
-                validateRwtPlansUrl(updatedListing);
-                validateRwtPlansCheckDate(updatedListing);
+        if (isRwtPlansDataSubmitted(updatedListing)) {
+            validateRwtPlansUrl(updatedListing);
+            validateRwtPlansCheckDate(updatedListing);
 
-            }
-            if (isRwtResultsDataSubmitted(updatedListing)) {
-                validateRwtResultsUrl(updatedListing);
-                validateRwtResultsCheckDate(updatedListing);
-            }
-        } else if (isRwtPlansDataSubmitted(updatedListing) || isRwtResultsDataSubmitted(updatedListing)) {
-            updatedListing.addBusinessErrorMessage(errorMessageUtil.getMessage("listing.realWorldTesting.notEligible"));
         }
-    }
-
-    private boolean isListingCurrentlyRwtEligible(CertifiedProductSearchDetails listing) {
-        return isListing2015Edition(listing);
-    }
-
-    private boolean isListing2015Edition(CertifiedProductSearchDetails listing) {
-        return listing.getEdition() == null || listing.getEdition().getName().equals(EDITION_2015);
+        if (isRwtResultsDataSubmitted(updatedListing)) {
+            validateRwtResultsUrl(updatedListing);
+            validateRwtResultsCheckDate(updatedListing);
+        }
     }
 
     private void validateRwtPlansUrl(CertifiedProductSearchDetails listing) {
