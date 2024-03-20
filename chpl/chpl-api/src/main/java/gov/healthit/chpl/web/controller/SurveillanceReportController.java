@@ -36,7 +36,6 @@ import gov.healthit.chpl.surveillance.report.dto.SurveillanceOutcomeDTO;
 import gov.healthit.chpl.surveillance.report.dto.SurveillanceProcessTypeDTO;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
-import gov.healthit.chpl.web.controller.annotation.DeprecatedApiResponseFields;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -191,7 +190,6 @@ public class SurveillanceReportController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
     @RequestMapping(value = "/quarterly", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    @DeprecatedApiResponseFields(friendlyUrl = "/surveillance-report/quarterly", responseClass = QuarterlyReport.class)
     public @ResponseBody List<QuarterlyReport> getAllQuarterlyReports() throws AccessDeniedException {
         List<QuarterlyReportDTO> allReports = reportManager.getQuarterlyReports();
         List<QuarterlyReport> response = new ArrayList<QuarterlyReport>();
@@ -210,8 +208,6 @@ public class SurveillanceReportController {
             })
     @RequestMapping(value = "/quarterly/{quarterlyReportId}",
             method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    @DeprecatedApiResponseFields(friendlyUrl = "/surveillance-report/quarterly/{quarterlyReportId}",
-        responseClass = QuarterlyReport.class)
     public @ResponseBody QuarterlyReport getQuarterlyReport(@PathVariable Long quarterlyReportId)
             throws AccessDeniedException, EntityRetrievalException {
         QuarterlyReportDTO reportDto = reportManager.getQuarterlyReport(quarterlyReportId);
@@ -251,8 +247,6 @@ public class SurveillanceReportController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
     @RequestMapping(value = "/quarterly", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
-    @DeprecatedApiResponseFields(friendlyUrl = "/surveillance-report/quarterly", httpMethod = "POST",
-        responseClass = QuarterlyReport.class)
     public QuarterlyReport createQuarterlyReport(
             @RequestBody(required = true) QuarterlyReport createRequest)
             throws AccessDeniedException, InvalidArgumentsException, EntityCreationException,
@@ -364,8 +358,6 @@ public class SurveillanceReportController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
     @RequestMapping(value = "/quarterly", method = RequestMethod.PUT, produces = "application/json; charset=utf-8")
-    @DeprecatedApiResponseFields(friendlyUrl = "/surveillance-report/quarterly", httpMethod = "PUT",
-        responseClass = QuarterlyReport.class)
     public QuarterlyReport updateQuarterlyReport(
             @RequestBody(required = true) QuarterlyReport updateRequest)
             throws AccessDeniedException, InvalidArgumentsException, EntityRetrievalException, JsonProcessingException,
