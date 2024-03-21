@@ -471,7 +471,7 @@ public class SurveillanceSummaryWorksheetBuilder {
         }
 
         return surv.getSurveillanceProcessTypes().stream()
-                .filter(procType -> procType.getName().startsWith(processType))
+                .filter(procType -> procType.getName().equals(processType))
                 .findAny().isPresent();
     }
 
