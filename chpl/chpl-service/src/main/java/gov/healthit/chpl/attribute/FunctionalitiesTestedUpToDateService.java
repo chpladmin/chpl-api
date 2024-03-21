@@ -50,6 +50,7 @@ public class FunctionalitiesTestedUpToDateService {
                 .upToDate(upToDate)
                 .daysUpdatedEarly(daysUpdatedEarly)
                 .criterion(certificationResult.getCriterion())
+                .attributesExistForCriteria(Boolean.valueOf(CollectionUtils.isNotEmpty(getAllFunctionalitiesTestedForCriterion(certificationResult.getCriterion()))))
                 .build();    }
 
     private OptionalLong getDaysUpdatedEarlyForCriteriaBasedOnFunctionalitiesTested(CertificationResult certificationResult) {
@@ -71,8 +72,9 @@ public class FunctionalitiesTestedUpToDateService {
     }
 
     private Boolean areFunctionalitiesTestedUpToDate(CertificationResult certificationResult) {
-        return areAttestedToFunctionalitiesTestedUpToDate(certificationResult)
-                && areUnattestedFunctionalitiesTestedUpToDate(certificationResult);
+        return (areAttestedToFunctionalitiesTestedUpToDate(certificationResult)
+                && areUnattestedFunctionalitiesTestedUpToDate(certificationResult))
+                || CollectionUtils.isEmpty(getAllFunctionalitiesTestedForCriterion(certificationResult.getCriterion()));
     }
 
     private Boolean areUnattestedFunctionalitiesTestedUpToDate(CertificationResult certificationResult) {
