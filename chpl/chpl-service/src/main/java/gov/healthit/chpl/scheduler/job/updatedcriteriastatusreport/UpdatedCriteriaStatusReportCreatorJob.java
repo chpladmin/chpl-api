@@ -175,19 +175,17 @@ public class UpdatedCriteriaStatusReportCreatorJob extends QuartzJob {
 
     private void updateFullyUpToDate(UpdatedCriteriaStatusReport updatedCriteriaStatusReport, AttributeUpToDate standardsUpToDate,
             AttributeUpToDate functionalitiesTestedUpToDate, AttributeUpToDate codeSetsUpToDate) {
-        if (standardsUpToDate.getEligibleForAttribute() && !standardsUpToDate.getUpToDate()) {
-            //Do not update
-            return;
+        if (isAttributeUpToDate(standardsUpToDate)
+                && isAttributeUpToDate(functionalitiesTestedUpToDate)
+                && isAttributeUpToDate(codeSetsUpToDate)) {
+            updatedCriteriaStatusReport.setFullyUpToDateCount(updatedCriteriaStatusReport.getFullyUpToDateCount() + 1);
         }
-        if (functionalitiesTestedUpToDate.getEligibleForAttribute() && !functionalitiesTestedUpToDate.getUpToDate()) {
-            //Do not update
-            return;
-        }
-        if (codeSetsUpToDate.getEligibleForAttribute() && !codeSetsUpToDate.getUpToDate()) {
-            //Do not update
-            return;
-        }
-        updatedCriteriaStatusReport.setFullyUpToDateCount(updatedCriteriaStatusReport.getFullyUpToDateCount() + 1);
+    }
+
+    private Boolean isAttributeUpToDate(AttributeUpToDate attributeUpToDate) {
+        return attributeUpToDate.getEligibleForAttribute()
+                && !attributeUpToDate.getAttributesDoNotExistForCriteria()
+                && attributeUpToDate.getUpToDate();
     }
 
     private void updateStandardsUpToDate(UpdatedCriteriaStatusReport updatedCriteriaStatusReport, AttributeUpToDate standardsUpToDate) {

@@ -17,6 +17,7 @@ public class AttributeUpToDate {
     private CertificationCriterion criterion;
     private Boolean upToDate;
     private Boolean eligibleForAttribute;
+    private Boolean attributesDoNotExistForCriteria;
     private OptionalLong daysUpdatedEarly;
 
 }
