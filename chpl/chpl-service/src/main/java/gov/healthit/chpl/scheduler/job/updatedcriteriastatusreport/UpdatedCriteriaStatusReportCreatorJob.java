@@ -70,7 +70,7 @@ public class UpdatedCriteriaStatusReportCreatorJob extends QuartzJob {
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
-        LOGGER.info("********* Starting the Updated Listing Status Report Creator job. *********");
+        LOGGER.info("********* Starting the Updated Criteria Status Report Creator job. *********");
         try {
             // We need to manually create a transaction in this case because of how AOP works. When a method is
             // annotated with @Transactional, the transaction wrapper is only added if the object's proxy is called.
@@ -91,7 +91,7 @@ public class UpdatedCriteriaStatusReportCreatorJob extends QuartzJob {
         } catch (Exception e) {
             LOGGER.error(e);
         } finally {
-            LOGGER.info("********* Completed the Updated Listing Status Report Creator job. *********");
+            LOGGER.info("********* Completed the Updated Criteria Status Report Creator job. *********");
         }
     }
 
@@ -183,9 +183,9 @@ public class UpdatedCriteriaStatusReportCreatorJob extends QuartzJob {
     }
 
     private Boolean isAttributeUpToDate(AttributeUpToDate attributeUpToDate) {
-        return attributeUpToDate.getEligibleForAttribute()
-                && !attributeUpToDate.getAttributesDoNotExistForCriteria()
-                && attributeUpToDate.getUpToDate();
+        return (attributeUpToDate.getEligibleForAttribute()
+                && attributeUpToDate.getUpToDate())
+                || !attributeUpToDate.getAttributesExistForCriteria();
     }
 
     private void updateStandardsUpToDate(UpdatedCriteriaStatusReport updatedCriteriaStatusReport, AttributeUpToDate standardsUpToDate) {

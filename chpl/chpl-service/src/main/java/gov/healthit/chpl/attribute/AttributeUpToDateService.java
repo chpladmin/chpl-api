@@ -39,7 +39,6 @@ public class AttributeUpToDateService {
         } else if (attributeType == AttributeType.CODE_SETS) {
             attributeUpToDate = codeSetsUpToDateService.getAttributeUpToDate(certificationResults);
         }
-        logger.info(attributeUpToDate != null ? attributeUpToDate.toString() : "NULL");
         return attributeUpToDate;
     }
 }
