@@ -71,8 +71,9 @@ public class StandardsUpToDateService {
     }
 
     private Boolean areStandardsUpToDate(CertificationResult certificationResult) {
-        return areAttestedToStandardsUpToDate(certificationResult)
-                && areUnattestedStandardsUpToDate(certificationResult);
+        return (areAttestedToStandardsUpToDate(certificationResult)
+                && areUnattestedStandardsUpToDate(certificationResult))
+                || CollectionUtils.isEmpty(getAllStandardsForCriterion(certificationResult.getCriterion()));
     }
 
     private Boolean areUnattestedStandardsUpToDate(CertificationResult certificationResult) {

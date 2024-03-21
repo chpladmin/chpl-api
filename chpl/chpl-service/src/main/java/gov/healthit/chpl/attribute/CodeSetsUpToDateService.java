@@ -77,13 +77,22 @@ public class CodeSetsUpToDateService {
 
         // Initially, we will just make sure that the cert result has attested to the same
         // number of code sets as are available for the criteria.
-        return CollectionUtils.isNotEmpty(certificationResult.getCodeSets())
-                && certificationResult.getCodeSets().size() == codeSetMaps.get(certificationResult.getCriterion().getId()).size();
+        return (CollectionUtils.isNotEmpty(certificationResult.getCodeSets())
+                && certificationResult.getCodeSets().size() == codeSetMaps.get(certificationResult.getCriterion().getId()).size())
+                || CollectionUtils.isEmpty(getAllCodeSetsForCriterion(certificationResult.getCriterion()));
     }
 
 
     private Boolean isCriteriaEligibleForCodeSets(CertificationCriterion criterion) {
         return certificationResultRules.hasCertOption(criterion.getId(), CertificationResultRules.CODE_SET);
+    }
+
+    private List<CodeSet> getAllCodeSetsForCriterion(CertificationCriterion criterion) {
+        if (codeSetMaps.containsKey(criterion.getId())) {
+            return codeSetMaps.get(criterion.getId());
+        } else {
+            return List.of();
+        }
     }
 
 }

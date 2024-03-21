@@ -71,8 +71,9 @@ public class FunctionalitiesTestedUpToDateService {
     }
 
     private Boolean areFunctionalitiesTestedUpToDate(CertificationResult certificationResult) {
-        return areAttestedToFunctionalitiesTestedUpToDate(certificationResult)
-                && areUnattestedFunctionalitiesTestedUpToDate(certificationResult);
+        return (areAttestedToFunctionalitiesTestedUpToDate(certificationResult)
+                && areUnattestedFunctionalitiesTestedUpToDate(certificationResult))
+                || CollectionUtils.isEmpty(getAllFunctionalitiesTestedForCriterion(certificationResult.getCriterion()));
     }
 
     private Boolean areUnattestedFunctionalitiesTestedUpToDate(CertificationResult certificationResult) {
