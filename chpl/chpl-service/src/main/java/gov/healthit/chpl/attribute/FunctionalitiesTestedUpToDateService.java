@@ -50,7 +50,7 @@ public class FunctionalitiesTestedUpToDateService {
                 .upToDate(upToDate)
                 .daysUpdatedEarly(daysUpdatedEarly)
                 .criterion(certificationResult.getCriterion())
-                .attributesDoNotExistForCriteria(Boolean.valueOf(CollectionUtils.isEmpty(getAllFunctionalitiesTestedForCriterion(certificationResult.getCriterion()))))
+                .attributesExistForCriteria(Boolean.valueOf(CollectionUtils.isNotEmpty(getAllFunctionalitiesTestedForCriterion(certificationResult.getCriterion()))))
                 .build();    }
 
     private OptionalLong getDaysUpdatedEarlyForCriteriaBasedOnFunctionalitiesTested(CertificationResult certificationResult) {

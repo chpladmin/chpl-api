@@ -49,7 +49,7 @@ public class CodeSetsUpToDateService {
                 .upToDate(upToDate)
                 .daysUpdatedEarly(daysUpdatedEarly)
                 .criterion(certificationResult.getCriterion())
-                .attributesDoNotExistForCriteria(Boolean.valueOf(CollectionUtils.isEmpty(getAllCodeSetsForCriterion(certificationResult.getCriterion()))))
+                .attributesExistForCriteria(Boolean.valueOf(CollectionUtils.isNotEmpty(getAllCodeSetsForCriterion(certificationResult.getCriterion()))))
                 .build();
     }
 
