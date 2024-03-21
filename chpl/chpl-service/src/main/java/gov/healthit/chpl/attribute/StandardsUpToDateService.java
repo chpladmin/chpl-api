@@ -51,6 +51,7 @@ public class StandardsUpToDateService {
                 .upToDate(upToDate)
                 .daysUpdatedEarly(daysUpdatedEarly)
                 .criterion(certificationResult.getCriterion())
+                .attributesDoNotExistForCriteria(Boolean.valueOf(CollectionUtils.isEmpty(getAllStandardsForCriterion(certificationResult.getCriterion()))))
                 .build();
     }
 
@@ -72,8 +73,7 @@ public class StandardsUpToDateService {
 
     private Boolean areStandardsUpToDate(CertificationResult certificationResult) {
         return (areAttestedToStandardsUpToDate(certificationResult)
-                && areUnattestedStandardsUpToDate(certificationResult))
-                || CollectionUtils.isEmpty(getAllStandardsForCriterion(certificationResult.getCriterion()));
+                && areUnattestedStandardsUpToDate(certificationResult)));
     }
 
     private Boolean areUnattestedStandardsUpToDate(CertificationResult certificationResult) {
