@@ -100,6 +100,16 @@ public class CertifiedProductSearchDetails implements Serializable {
     @Schema(description = "The version of the product being uploaded.")
     private ProductVersion version;
 
+    /**
+     * This property exists solely to be able to deserialize listing activity events from very old data.
+     * Since we care about certification status changes when categorizing listing activity we need to be able to read
+     * this value in old listing activity event data. Not all old listing properties need to be present
+     * for this reason. This property should not be visible in any response from an API call.
+     */
+    @Deprecated
+    @JsonProperty(access = Access.WRITE_ONLY)
+    private Map<String, Object> certificationEdition = new HashMap<String, Object>();
+
     @Schema(description = "The certification edition. It takes a value of 2011, 2014, 2015, or null.")
     private CertificationEdition edition;
 
