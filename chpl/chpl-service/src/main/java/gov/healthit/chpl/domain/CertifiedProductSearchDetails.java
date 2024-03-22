@@ -102,7 +102,7 @@ public class CertifiedProductSearchDetails implements Serializable {
 
     /**
      * This property exists solely to be able to deserialize listing activity events from very old data.
-     * Since we care about certification status changes when categorizing listing activity we need to be able to read
+     * Since we care about listing editions when returning activity metadata we need to be able to read
      * this value in old listing activity event data. Not all old listing properties need to be present
      * for this reason. This property should not be visible in any response from an API call.
      */
