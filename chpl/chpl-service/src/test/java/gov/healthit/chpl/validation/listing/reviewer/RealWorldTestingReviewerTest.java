@@ -11,7 +11,6 @@ import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
-import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
 import gov.healthit.chpl.domain.CertificationEdition;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -20,23 +19,15 @@ import gov.healthit.chpl.util.ValidationUtils;
 
 public class RealWorldTestingReviewerTest {
 
-    private CertifiedProductDetailsManager certifiedProductDetailsManager;
     private ValidationUtils validationUtils;
     private ErrorMessageUtil errorMessageUtil;
     private RealWorldTestingReviewer reviewer;
 
     @Before
     public void setup() throws EntityRetrievalException {
-        certifiedProductDetailsManager = Mockito.mock(CertifiedProductDetailsManager.class);
-
-        CertifiedProductSearchDetails listing = new CertifiedProductSearchDetails();
-        listing.setEdition(CertificationEdition.builder().name("2015").build());
-        Mockito.when(certifiedProductDetailsManager.getCertifiedProductDetails(ArgumentMatchers.anyLong()))
-                .thenReturn(listing);
-
         validationUtils = Mockito.mock(ValidationUtils.class);
         errorMessageUtil = Mockito.mock(ErrorMessageUtil.class);
-        reviewer = new RealWorldTestingReviewer(certifiedProductDetailsManager, validationUtils, errorMessageUtil);
+        reviewer = new RealWorldTestingReviewer(validationUtils, errorMessageUtil);
     }
 
     @Test
@@ -47,7 +38,7 @@ public class RealWorldTestingReviewerTest {
                 .thenReturn(true);
 
         CertifiedProductSearchDetails updated = new CertifiedProductSearchDetails();
-        updated.setId(1l);
+        updated.setId(1L);
         updated.setEdition(CertificationEdition.builder().name("2015").build());
         updated.setRwtPlansUrl("");
         updated.setRwtPlansCheckDate(LocalDate.parse("2020-08-08"));
@@ -66,7 +57,7 @@ public class RealWorldTestingReviewerTest {
                 .thenReturn(false);
 
         CertifiedProductSearchDetails updated = new CertifiedProductSearchDetails();
-        updated.setId(1l);
+        updated.setId(1L);
         updated.setEdition(CertificationEdition.builder().name("2015").build());
         updated.setRwtPlansUrl("not a valid URL");
         updated.setRwtPlansCheckDate(LocalDate.parse("2020-08-08"));
@@ -85,7 +76,7 @@ public class RealWorldTestingReviewerTest {
                 .thenReturn(true);
 
         CertifiedProductSearchDetails updated = new CertifiedProductSearchDetails();
-        updated.setId(1l);
+        updated.setId(1L);
         updated.setEdition(CertificationEdition.builder().name("2015").build());
         updated.setRwtPlansUrl("http://www.abc.com");
         updated.setRwtPlansCheckDate(null);
@@ -104,7 +95,7 @@ public class RealWorldTestingReviewerTest {
                 .thenReturn(true);
 
         CertifiedProductSearchDetails updated = new CertifiedProductSearchDetails();
-        updated.setId(1l);
+        updated.setId(1L);
         updated.setEdition(CertificationEdition.builder().name("2015").build());
         updated.setRwtResultsUrl("");
         updated.setRwtResultsCheckDate(LocalDate.parse("2022-01-08"));
@@ -123,7 +114,7 @@ public class RealWorldTestingReviewerTest {
                 .thenReturn(false);
 
         CertifiedProductSearchDetails updated = new CertifiedProductSearchDetails();
-        updated.setId(1l);
+        updated.setId(1L);
         updated.setEdition(CertificationEdition.builder().name("2015").build());
         updated.setRwtResultsUrl("not a valid URL");
         updated.setRwtResultsCheckDate(LocalDate.parse("2022-01-08"));
@@ -142,7 +133,7 @@ public class RealWorldTestingReviewerTest {
                 .thenReturn(true);
 
         CertifiedProductSearchDetails updated = new CertifiedProductSearchDetails();
-        updated.setId(1l);
+        updated.setId(1L);
         updated.setEdition(CertificationEdition.builder().name("2015").build());
         updated.setRwtResultsUrl("http://www.abc.com");
         updated.setRwtResultsCheckDate(null);

@@ -10,6 +10,7 @@ import gov.healthit.chpl.util.ValidationUtils;
 import gov.healthit.chpl.validation.listing.reviewer.duplicate.AccessibilityStandardDuplicateReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.duplicate.AdditionalSoftwareDuplicateReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.duplicate.AtlDuplicateReviewer;
+import gov.healthit.chpl.validation.listing.reviewer.duplicate.CodeSetDuplicateReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.duplicate.ConformanceMethodDuplicateReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.duplicate.FunctionalityTestedDuplicateReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.duplicate.IcsSourceDuplicateReviewer;
@@ -43,6 +44,7 @@ public class DuplicateDataReviewer implements Reviewer {
     private IcsSourceDuplicateReviewer icsSourceDuplicateReviewer;
     private AtlDuplicateReviewer atlDuplicateReviewer;
     private TargetedUserDuplicateReviewer targetedUserDuplicateReviewer;
+    private CodeSetDuplicateReviewer codeSetDuplicateReviewer;
     private PromotingInteroperabilityUserCountReviewer piuReviewer;
     private ValidationUtils validationUtils;
 
@@ -65,6 +67,7 @@ public class DuplicateDataReviewer implements Reviewer {
             @Qualifier("icsSourceDuplicateReviewer") IcsSourceDuplicateReviewer icsSourceDuplicateReviewer,
             @Qualifier("atlDuplicateReviewer") AtlDuplicateReviewer atlDuplicateReviewer,
             @Qualifier("targetedUserDuplicateReviewer") TargetedUserDuplicateReviewer targetedUserDuplicateReviewer,
+            CodeSetDuplicateReviewer codeSetDuplicateReviewer,
             @Qualifier("promotingInteroperabilityUserCountDuplicateReviewer") PromotingInteroperabilityUserCountReviewer piuReviewer,
             ValidationUtils validationUtils) {
         this.functionalityTestedDuplicateReviewer = functionalityTestedDuplicateReviewer;
@@ -83,6 +86,7 @@ public class DuplicateDataReviewer implements Reviewer {
         this.icsSourceDuplicateReviewer = icsSourceDuplicateReviewer;
         this.atlDuplicateReviewer = atlDuplicateReviewer;
         this.targetedUserDuplicateReviewer = targetedUserDuplicateReviewer;
+        this.codeSetDuplicateReviewer = codeSetDuplicateReviewer;
         this.piuReviewer = piuReviewer;
         this.validationUtils = validationUtils;
     }
@@ -109,6 +113,7 @@ public class DuplicateDataReviewer implements Reviewer {
                 svapDuplicateReviewer.review(listing, cr);
                 functionalityTestedDuplicateReviewer.review(listing, cr);
                 standardDuplicateReviewer.review(listing, cr);
+                codeSetDuplicateReviewer.review(listing, cr);
             }
         }
     }

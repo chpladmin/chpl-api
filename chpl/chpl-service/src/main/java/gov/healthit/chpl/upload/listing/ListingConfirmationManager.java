@@ -24,6 +24,7 @@ import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.caching.ListingSearchCacheRefresh;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
+import gov.healthit.chpl.codeset.CertificationResultCodeSetDAO;
 import gov.healthit.chpl.dao.CQMResultDAO;
 import gov.healthit.chpl.dao.CertificationResultDAO;
 import gov.healthit.chpl.dao.CertificationStatusDAO;
@@ -73,6 +74,7 @@ public class ListingConfirmationManager {
     private CertificationResultDAO certResultDao;
     private CertificationResultFunctionalityTestedDAO certResultFuncTestedDao;
     private CertificationResultStandardDAO certResultStandardDao;
+    private CertificationResultCodeSetDAO certResultCodeSetDao;
     private CQMResultDAO cqmResultDao;
     private CertificationStatusEventDAO statusEventDao;
     private CuresUpdateEventDAO curesUpdateDao;
@@ -98,6 +100,7 @@ public class ListingConfirmationManager {
             CuresUpdateEventDAO curesUpdateDao,
             CertifiedProductDetailsManager cpDetailsManager, CuresUpdateService curesUpdateService,
             ActivityManager activityManager, CertificationResultStandardDAO certResultStandardDao,
+            CertificationResultCodeSetDAO certResultCodeSetDao,
             FF4j ff4j) {
         this.developerManager = developerManager;
         this.productManager = productManager;
@@ -118,6 +121,7 @@ public class ListingConfirmationManager {
         this.curesUpdateService = curesUpdateService;
         this.activityManager = activityManager;
         this.certResultStandardDao = certResultStandardDao;
+        this.certResultCodeSetDao = certResultCodeSetDao;
         this.ff4j = ff4j;
 
         activeStatus = certStatusDao.getByStatusName(CertificationStatusType.Active.toString());
@@ -242,6 +246,7 @@ public class ListingConfirmationManager {
             saveTestProcedures(certResult);
             saveFunctionalitiesTested(certResult);
             saveStandards(certResult);
+            saveCodeSets(certResult);
             saveTestTools(certResult);
             saveConformanceMethods(certResult);
             saveSvaps(certResult);
@@ -287,6 +292,13 @@ public class ListingConfirmationManager {
         if (!CollectionUtils.isEmpty(certResult.getStandards())) {
             certResult.getStandards().stream()
                 .forEach(rethrowConsumer(standard -> certResultStandardDao.createStandardMapping(certResult.getId(), standard)));
+        }
+    }
+
+    private void saveCodeSets(CertificationResult certResult) throws EntityCreationException {
+        if (!CollectionUtils.isEmpty(certResult.getCodeSets())) {
+            certResult.getCodeSets().stream()
+                .forEach(rethrowConsumer(codeSet -> certResultCodeSetDao.createCodeSetMapping(certResult.getId(), codeSet)));
         }
     }
 

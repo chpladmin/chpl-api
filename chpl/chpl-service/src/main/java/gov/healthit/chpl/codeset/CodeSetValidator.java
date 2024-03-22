@@ -65,7 +65,7 @@ public class CodeSetValidator {
             messages.add(errorMessageUtil.getMessage("codeSet.edit.noCriteria"));
         }
 
-        if (isCodeSetdDuplicateOnAdd(codeSet)) {
+        if (isCodeSetDuplicateOnAdd(codeSet)) {
             messages.add(errorMessageUtil.getMessage("codeSet.edit.duplicate", "Code Set"));
         }
 
@@ -144,7 +144,7 @@ public class CodeSetValidator {
                 .isPresent();
     }
 
-    private boolean isCodeSetdDuplicateOnAdd(CodeSet codeSet) throws EntityRetrievalException {
+    private boolean isCodeSetDuplicateOnAdd(CodeSet codeSet) throws EntityRetrievalException {
         LocalDate updatedRequiredDay = codeSet.getRequiredDay() != null ? codeSet.getRequiredDay() : LocalDate.MAX;
 
         return codeSetDAO.getAllCodeSetCriteriaMap().stream()
