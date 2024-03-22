@@ -21,7 +21,7 @@ public class CodeSetRemovedActivity implements CertificationResultActivity {
 
         if (CollectionUtils.isNotEmpty(origCertResult.getCodeSets())) {
             questionableActivityCertificationResults = origCertResult.getCodeSets().stream()
-                    .filter(csCertResult -> !doesCodeSetExistInCodeSetCertifcationResults(csCertResult.getCodeSet(), newCertResult.getCodeSets()))
+                    .filter(csCertResult -> !doesCodeSetExistInCertifcationResultCodeSets(csCertResult.getCodeSet(), newCertResult.getCodeSets()))
                     .map(csCertResult -> {
                         QuestionableActivityCertificationResult questAct = new QuestionableActivityCertificationResult();
                         questAct.setBefore(csCertResult.getCodeSet().getRequiredDay().toString());
@@ -33,10 +33,10 @@ public class CodeSetRemovedActivity implements CertificationResultActivity {
         return questionableActivityCertificationResults;
     }
 
-    private Boolean doesCodeSetExistInCodeSetCertifcationResults(CodeSet codeSet, List<CertificationResultCodeSet> results) {
+    private Boolean doesCodeSetExistInCertifcationResultCodeSets(CodeSet codeSet, List<CertificationResultCodeSet> results) {
         if (CollectionUtils.isNotEmpty(results)) {
             return results.stream()
-                    .filter(cs -> cs.getId().equals(codeSet.getId()))
+                    .filter(cs -> cs.getCodeSet().getId().equals(codeSet.getId()))
                     .findAny()
                     .isPresent();
         } else {
