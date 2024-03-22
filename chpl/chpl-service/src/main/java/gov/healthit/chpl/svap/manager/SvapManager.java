@@ -17,11 +17,16 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.dao.CertificationCriterionAttributeDAO;
+import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
+import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
+import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.sharedstore.listing.ListingStoreRemove;
 import gov.healthit.chpl.sharedstore.listing.RemoveBy;
@@ -39,6 +44,7 @@ public class SvapManager {
     private CertificationCriterionAttributeDAO certificationCriterionAttributeDAO;
     private FileUtils fileUtils;
     private ErrorMessageUtil errorMessageUtil;
+    private ActivityManager activityManager;
     private String svapReportName = null;
     private String svapReportSchemaName;
 
@@ -46,12 +52,14 @@ public class SvapManager {
     public SvapManager(SvapDAO svapDao, FileUtils fileUtils,
             ErrorMessageUtil errorMessageUtil,
             CertificationCriterionAttributeDAO certificationCriterionAttributeDAO,
+            ActivityManager activityManager,
             @Value("${svapReportName}") String svapReportName,
             @Value("${schemaSvapReportName}") String svapReportSchemaName) {
         this.svapDao = svapDao;
         this.fileUtils = fileUtils;
         this.errorMessageUtil = errorMessageUtil;
         this.certificationCriterionAttributeDAO = certificationCriterionAttributeDAO;
+        this.activityManager = activityManager;
         this.svapReportName = svapReportName;
         this.svapReportSchemaName = svapReportSchemaName;
     }
@@ -88,7 +96,16 @@ public class SvapManager {
         updateSvap(svap);
         addNewCriteriaForExistingSvap(svap, originalSvap);
         deleteCriteriaRemovedFromSvap(svap, originalSvap);
-        return getSvap(svap.getSvapId());
+        Svap updatedSvap = getSvap(svap.getSvapId());
+        if (updatedSvap != null) {
+            try {
+                activityManager.addActivity(ActivityConcept.SVAP, updatedSvap.getSvapId(), "An SVAP was updated.",
+                    originalSvap, updatedSvap);
+            } catch (JsonProcessingException | EntityCreationException ex) {
+                LOGGER.error("Error adding activity about updating SVAP " + originalSvap.getRegulatoryTextCitation(), ex);
+            }
+        }
+        return updatedSvap;
     }
 
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SVAP, "
@@ -98,7 +115,16 @@ public class SvapManager {
         validateForAdd(svap);
         Svap newSvap = addSvap(svap);
         addNewCriteriaForNewSvap(newSvap, svap.getCriteria());
-        return getSvap(newSvap.getSvapId());
+        Svap createdSvap = getSvap(newSvap.getSvapId());
+        if (createdSvap != null && createdSvap.getSvapId() != null) {
+            try {
+                activityManager.addActivity(ActivityConcept.SVAP, createdSvap.getSvapId(), "An SVAP was created.",
+                    null, createdSvap);
+            } catch (JsonProcessingException | EntityCreationException ex) {
+                LOGGER.error("Error adding activity about creating an SVAP " + createdSvap.getRegulatoryTextCitation(), ex);
+            }
+        }
+        return createdSvap;
     }
 
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SVAP, "
@@ -109,6 +135,13 @@ public class SvapManager {
         validateForDelete(originalSvap);
         deleteAllCriteriaFromSvap(originalSvap);
         deleteSvap(originalSvap);
+
+        try {
+            activityManager.addActivity(ActivityConcept.SVAP, originalSvap.getSvapId(), "An SVAP was deleted.",
+                    originalSvap, null);
+        } catch (JsonProcessingException | EntityCreationException ex) {
+            LOGGER.error("Error adding activity about deleting SVAP with ID " + svapId, ex);
+        }
     }
 
     private Svap getSvap(Long svapId) throws EntityRetrievalException {
