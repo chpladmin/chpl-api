@@ -54,9 +54,6 @@ public class CertifiedProductTestingLabMapEntity extends EntityAudit {
     public CertifiedProductTestingLab toDomain() {
         return CertifiedProductTestingLab.builder()
                 .id(id)
-                .testingLabId(testingLabId)
-                .testingLabName(testingLab.getName())
-                .testingLabCode(testingLab.getTestingLabCode())
                 .testingLab(testingLab.toDomain())
                 .build();
     }

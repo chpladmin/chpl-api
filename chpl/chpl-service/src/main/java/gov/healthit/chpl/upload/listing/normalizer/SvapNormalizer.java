@@ -2,7 +2,6 @@ package gov.healthit.chpl.upload.listing.normalizer;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +13,6 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.svap.dao.SvapDAO;
 import gov.healthit.chpl.svap.domain.CertificationResultSvap;
-import gov.healthit.chpl.svap.domain.Svap;
 import gov.healthit.chpl.svap.domain.SvapCriteriaMap;
 import gov.healthit.chpl.util.Util;
 import lombok.extern.log4j.Log4j2;
@@ -42,19 +40,7 @@ public class SvapNormalizer {
     }
 
     private void fillInSvapData(CertificationResult certResult, List<SvapCriteriaMap> svapCriteriaMap) {
-        populateAllowedSvaps(certResult, svapCriteriaMap);
         populateSvapsFields(certResult.getCriterion(), certResult.getSvaps(), svapCriteriaMap);
-    }
-
-    private void populateAllowedSvaps(CertificationResult certResult, List<SvapCriteriaMap> svapCriteriaMap) {
-        if (certResult != null && certResult.getCriterion() != null
-                && certResult.getCriterion().getId() != null) {
-            List<Svap> allowedSvaps = svapCriteriaMap.stream()
-                    .filter(scm -> scm.getCriterion().getId().equals(certResult.getCriterion().getId()))
-                    .map(scm -> scm.getSvap())
-                    .collect(Collectors.toList());
-            certResult.setAllowedSvaps(allowedSvaps);
-        }
     }
 
     private void populateSvapsFields(CertificationCriterion criterion, List<CertificationResultSvap> svaps, List<SvapCriteriaMap> svapCriteriaMap) {

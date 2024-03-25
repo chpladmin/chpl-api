@@ -56,20 +56,8 @@ public class ConformanceMethodNormalizer {
     }
 
     private void fillInConformanceMethodData(CertifiedProductSearchDetails listing, CertificationResult certResult) {
-        populateAllowedConformanceMethods(certResult);
         populateConformanceMethodIds(certResult.getCriterion(), certResult.getConformanceMethods());
         populateConformanceMethodRemovalDates(certResult.getCriterion(), certResult.getConformanceMethods());
-    }
-
-    private void populateAllowedConformanceMethods(CertificationResult certResult) {
-        if (certResult != null && certResult.getCriterion() != null
-                && certResult.getCriterion().getId() != null) {
-            List<ConformanceMethod> allowedConformanceMethds = conformanceMethodCriteriaMap.stream()
-                    .filter(cmcm -> cmcm.getCriterion().getId().equals(certResult.getCriterion().getId()))
-                    .map(cmcm -> cmcm.getConformanceMethod())
-                    .collect(Collectors.toList());
-            certResult.setAllowedConformanceMethods(allowedConformanceMethds);
-        }
     }
 
     private void populateConformanceMethodIds(CertificationCriterion criterion, List<CertificationResultConformanceMethod> conformanceMethods) {
