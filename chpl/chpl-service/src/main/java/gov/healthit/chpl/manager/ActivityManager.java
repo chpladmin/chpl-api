@@ -187,13 +187,23 @@ public class ActivityManager extends SecuredManager {
             + "T(gov.healthit.chpl.permissions.domains.ActivityDomainPermissions).GET_ACTIVITY_DETAILS, returnObject)")
     @Transactional
     public ActivityDetails getActivityById(Long activityId)
-            throws EntityRetrievalException, JsonParseException, IOException {
+            throws EntityRetrievalException, JsonParseException, IOException, UserRetrievalException {
         ActivityDTO result = activityDAO.getById(activityId);
         ActivityDetails event = getActivityDetailsFromDTO(result);
         return event;
     }
 
-    private ActivityDetails getActivityDetailsFromDTO(ActivityDTO dto) throws JsonParseException, IOException {
+    private User getUserFromActivityDTO(ActivityDTO activityDTO) throws UserRetrievalException {
+        User currentUser = null;
+        if (activityDTO.getLastModifiedUser() != null) {
+            currentUser = userDAO.getById(activityDTO.getLastModifiedUser()).toDomain();
+        } else if (activityDTO.getLastModifiedSsoUser() != null) {
+            currentUser = cognitoUserService.getUserInfo(activityDTO.getLastModifiedSsoUser());
+        }
+        return currentUser;
+    }
+
+    private ActivityDetails getActivityDetailsFromDTO(ActivityDTO dto) throws UserRetrievalException, JsonParseException, IOException {
         ActivityDetails event = null;
         if (dto.getConcept() == ActivityConcept.PRODUCT) {
             event = new ProductActivityDetails();
@@ -206,7 +216,7 @@ public class ActivityManager extends SecuredManager {
         event.setActivityDate(dto.getActivityDate());
         event.setActivityObjectId(dto.getActivityObjectId());
         event.setConcept(dto.getConcept());
-        event.setResponsibleUser(dto.getUser() == null ? null : dto.getUser());
+        event.setResponsibleUser(getUserFromActivityDTO(dto));
 
         JsonNode originalJSON = null;
         if (dto.getOriginalData() != null) {

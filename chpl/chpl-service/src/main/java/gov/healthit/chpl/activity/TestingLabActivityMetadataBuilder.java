@@ -6,22 +6,25 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import gov.healthit.chpl.dao.auth.UserDAO;
 import gov.healthit.chpl.domain.TestingLab;
 import gov.healthit.chpl.domain.activity.ActivityCategory;
 import gov.healthit.chpl.domain.activity.ActivityMetadata;
 import gov.healthit.chpl.domain.activity.TestingLabActivityMetadata;
 import gov.healthit.chpl.dto.ActivityDTO;
+import gov.healthit.chpl.manager.auth.CognitoUserService;
 
 @Component("atlActivityMetadataBuilder")
 public class TestingLabActivityMetadataBuilder extends ActivityMetadataBuilder {
     private static final Logger LOGGER = LogManager.getLogger(TestingLabActivityMetadataBuilder.class);
     private ObjectMapper jsonMapper;
 
-    public TestingLabActivityMetadataBuilder() {
-        super();
+    public TestingLabActivityMetadataBuilder(CognitoUserService cognitoUserService, UserDAO userDAO) {
+        super(cognitoUserService, userDAO);
         jsonMapper = new ObjectMapper();
     }
 
+    @Override
     protected void addConceptSpecificMetadata(final ActivityDTO dto, final ActivityMetadata metadata) {
         if (!(metadata instanceof TestingLabActivityMetadata)) {
             return;

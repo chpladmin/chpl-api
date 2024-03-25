@@ -10,6 +10,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.ProductDAO;
+import gov.healthit.chpl.dao.auth.UserDAO;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.activity.ActivityCategory;
@@ -17,6 +18,7 @@ import gov.healthit.chpl.domain.activity.ActivityMetadata;
 import gov.healthit.chpl.domain.activity.VersionActivityMetadata;
 import gov.healthit.chpl.dto.ActivityDTO;
 import gov.healthit.chpl.dto.ProductVersionDTO;
+import gov.healthit.chpl.manager.auth.CognitoUserService;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -27,13 +29,14 @@ public class VersionActivityMetadataBuilder extends ActivityMetadataBuilder {
     private ProductDAO productDao;
 
     @Autowired
-    public VersionActivityMetadataBuilder(DeveloperDAO developerDao, ProductDAO productDao) {
-        super();
+    public VersionActivityMetadataBuilder(DeveloperDAO developerDao, ProductDAO productDao, CognitoUserService cognitoUserService, UserDAO userDAO) {
+        super(cognitoUserService, userDAO);
         jsonMapper = new ObjectMapper();
         this.developerDao = developerDao;
         this.productDao = productDao;
     }
 
+    @Override
     protected void addConceptSpecificMetadata(ActivityDTO activity, ActivityMetadata metadata) {
         if (!(metadata instanceof VersionActivityMetadata)) {
             return;

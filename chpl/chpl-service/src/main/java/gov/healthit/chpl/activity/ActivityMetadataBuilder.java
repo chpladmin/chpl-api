@@ -1,5 +1,6 @@
 package gov.healthit.chpl.activity;
 
+import gov.healthit.chpl.dao.auth.UserDAO;
 import gov.healthit.chpl.domain.activity.ActivityMetadata;
 import gov.healthit.chpl.domain.activity.AnnouncementActivityMetadata;
 import gov.healthit.chpl.domain.activity.AnnualReportActivityMetadata;
@@ -16,27 +17,24 @@ import gov.healthit.chpl.domain.activity.QuarterlyReportActivityMetadata;
 import gov.healthit.chpl.domain.activity.TestingLabActivityMetadata;
 import gov.healthit.chpl.domain.activity.UserMaintenanceActivityMetadata;
 import gov.healthit.chpl.domain.activity.VersionActivityMetadata;
+import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.dto.ActivityDTO;
+import gov.healthit.chpl.exception.UserRetrievalException;
+import gov.healthit.chpl.manager.auth.CognitoUserService;
+import lombok.extern.log4j.Log4j2;
 
-/**
- * Builds an appropriate metadata object for the type of activity that is
- * provided.
- *
- * @author kekey
- *
- */
+@Log4j2
 public abstract class ActivityMetadataBuilder {
 
-    /**
-     * Create an activity metadata object from activity DTO. Fill in the basic
-     * fields that all metadata will have (date, id, etc) and then add fields
-     * specific to the type of activity. Finally, categorize the activity based
-     * on what actually happened.
-     *
-     * @param dto
-     * @return parsed metadata object
-     */
-    public ActivityMetadata build(final ActivityDTO dto) {
+    private CognitoUserService cognitoUserService;
+    private UserDAO userDAO;
+
+    public ActivityMetadataBuilder(CognitoUserService cognitoUserService, UserDAO userDAO) {
+        this.cognitoUserService = cognitoUserService;
+        this.userDAO = userDAO;
+    }
+
+   public ActivityMetadata build(final ActivityDTO dto) {
         ActivityMetadata metadata = createMetadataObject(dto);
         if (metadata != null) {
             addGenericMetadata(dto, metadata);
@@ -47,16 +45,16 @@ public abstract class ActivityMetadataBuilder {
 
     protected abstract void addConceptSpecificMetadata(ActivityDTO dto, ActivityMetadata metadata);
 
-    protected void addGenericMetadata(final ActivityDTO dto, final ActivityMetadata metadata) {
+    protected void addGenericMetadata(ActivityDTO dto, ActivityMetadata metadata) {
         metadata.setId(dto.getId());
         metadata.setDate(dto.getActivityDate());
         metadata.setObjectId(dto.getActivityObjectId());
         metadata.setConcept(dto.getConcept());
-        metadata.setResponsibleUser(dto.getUser() == null ? null : dto.getUser());
+        metadata.setResponsibleUser(getUserFromActivityDTO(dto));
         metadata.setDescription(dto.getDescription());
     }
 
-    private ActivityMetadata createMetadataObject(final ActivityDTO dto) {
+    private ActivityMetadata createMetadataObject(ActivityDTO dto) {
         ActivityMetadata metadata = null;
         switch (dto.getConcept()) {
         case CERTIFIED_PRODUCT:
@@ -110,4 +108,23 @@ public abstract class ActivityMetadataBuilder {
         }
         return metadata;
     }
+
+    protected User getUserFromActivityDTO(ActivityDTO activityDTO) {
+            User currentUser = null;
+            if (activityDTO.getLastModifiedUser() != null) {
+                try {
+                    currentUser = userDAO.getById(activityDTO.getLastModifiedUser()).toDomain();
+                } catch (UserRetrievalException e) {
+                    LOGGER.error("Could not retreive user with ID: {}", activityDTO.getLastModifiedUser(), e);
+                }
+            } else if (activityDTO.getLastModifiedSsoUser() != null) {
+                try {
+                    currentUser = cognitoUserService.getUserInfo(activityDTO.getLastModifiedSsoUser());
+                } catch (UserRetrievalException e) {
+                    LOGGER.error("Could not retreive user with ID: {}", activityDTO.getLastModifiedSsoUser(), e);
+                }
+            }
+            return currentUser;
+    }
+
 }

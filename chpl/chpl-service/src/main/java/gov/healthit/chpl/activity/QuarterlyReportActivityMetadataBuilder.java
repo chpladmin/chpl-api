@@ -1,21 +1,28 @@
 package gov.healthit.chpl.activity;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import gov.healthit.chpl.dao.auth.UserDAO;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.domain.activity.ActivityMetadata;
 import gov.healthit.chpl.domain.activity.QuarterlyReportActivityMetadata;
 import gov.healthit.chpl.dto.ActivityDTO;
+import gov.healthit.chpl.manager.auth.CognitoUserService;
 import gov.healthit.chpl.surveillance.report.dto.QuarterlyReportDTO;
 import gov.healthit.chpl.surveillance.report.dto.QuarterlyReportRelevantListingDTO;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 @Component("quarterlyReportActivityMetadataBuilder")
 public class QuarterlyReportActivityMetadataBuilder extends ActivityMetadataBuilder {
-    private static final Logger LOGGER = LogManager.getLogger(QuarterlyReportActivityMetadataBuilder.class);
+
+    @Autowired
+    public QuarterlyReportActivityMetadataBuilder(CognitoUserService cognitoUserService, UserDAO userDAO) {
+        super(cognitoUserService, userDAO);
+    }
 
     @Override
     protected void addConceptSpecificMetadata(final ActivityDTO dto, final ActivityMetadata metadata) {

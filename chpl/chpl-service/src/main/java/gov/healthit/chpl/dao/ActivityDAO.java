@@ -260,7 +260,7 @@ public class ActivityDAO extends BaseDAOImpl {
         String queryStr = "SELECT ae "
                 + "FROM ActivityEntity ae "
                 + "JOIN FETCH ae.concept "
-                + "LEFT OUTER JOIN FETCH ae.user "
+                //+ "LEFT OUTER JOIN FETCH ae.user "
                 + "WHERE (ae.id = :entityid) ";
         Query query = entityManager.createQuery(queryStr);
         query.setParameter("entityid", id);
@@ -281,7 +281,7 @@ public class ActivityDAO extends BaseDAOImpl {
         String queryStr = "SELECT ae "
                 + "FROM ActivityEntity ae "
                 + "JOIN FETCH ae.concept ac "
-                + "LEFT OUTER JOIN FETCH ae.user "
+                //+ "LEFT OUTER JOIN FETCH ae.user "
                 + "WHERE ae.activityObjectId IN (:objectIds) "
                 + "AND ac.concept = :conceptName ";
         if (startDate != null) {
@@ -309,7 +309,7 @@ public class ActivityDAO extends BaseDAOImpl {
         String queryStr = "SELECT ae "
                 + "FROM ActivityEntity ae "
                 + "JOIN FETCH ae.concept ac "
-                + "LEFT OUTER JOIN FETCH ae.user "
+                //+ "LEFT OUTER JOIN FETCH ae.user "
                 + "WHERE (ac.concept = :conceptName) "
                 + "AND (ae.activityObjectId = :objectid) ";
         if (startDate != null) {
@@ -336,7 +336,7 @@ public class ActivityDAO extends BaseDAOImpl {
         String queryStr = "SELECT ae "
                 + "FROM ActivityEntity ae "
                 + "JOIN FETCH ae.concept ac "
-                + "LEFT OUTER JOIN FETCH ae.user "
+                //+ "LEFT OUTER JOIN FETCH ae.user "
                 + "WHERE (ac.concept = :conceptName) ";
         if (startDate != null) {
             queryStr += "AND (ae.activityDate >= :startDate) ";
@@ -360,7 +360,7 @@ public class ActivityDAO extends BaseDAOImpl {
         String queryStr = "SELECT ae "
                 + "FROM ActivityEntity ae "
                 + "JOIN FETCH ae.concept "
-                + "LEFT OUTER JOIN FETCH ae.user "
+                //+ "LEFT OUTER JOIN FETCH ae.user "
                 + "WHERE ";
         if (startDate != null) {
             if (!queryStr.endsWith("WHERE ")) {
@@ -388,9 +388,9 @@ public class ActivityDAO extends BaseDAOImpl {
 
     private ActivityDTO mapEntityToDto(ActivityEntity entity) {
         ActivityDTO activity = entity.toDomain();
-        if (entity.getUser() != null) {
-            activity.setUser(userMapper.from(entity.getUser()).toDomain());
-        }
+        //if (entity.getUser() != null) {
+        //    activity.setUser(userMapper.from(entity.getUser()).toDomain());
+        //}
         return activity;
     }
 }

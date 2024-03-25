@@ -1,20 +1,22 @@
 package gov.healthit.chpl.activity;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.dao.auth.UserDAO;
 import gov.healthit.chpl.domain.activity.ActivityMetadata;
 import gov.healthit.chpl.domain.activity.AnnouncementActivityMetadata;
 import gov.healthit.chpl.dto.ActivityDTO;
+import gov.healthit.chpl.manager.auth.CognitoUserService;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 @Component("announcementActivityMetadataBuilder")
 public class AnnouncementActivityMetadataBuilder extends ActivityMetadataBuilder {
 
-    private static final Logger LOGGER = LogManager.getLogger(AnnouncementActivityMetadataBuilder.class);
-
-    public AnnouncementActivityMetadataBuilder() {
-        super();
+    @Autowired
+    public AnnouncementActivityMetadataBuilder(CognitoUserService cognitoUserService, UserDAO userDAO) {
+        super(cognitoUserService, userDAO);
     }
 
     @Override
