@@ -35,11 +35,11 @@ import gov.healthit.chpl.domain.compliance.DirectReview;
 import gov.healthit.chpl.domain.developer.hierarchy.DeveloperTree;
 import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
 import gov.healthit.chpl.dto.auth.UserDTO;
+import gov.healthit.chpl.exception.ActivityException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.JiraRequestFailedException;
-import gov.healthit.chpl.exception.MissingReasonException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.DeveloperManager;
@@ -171,10 +171,9 @@ public class DeveloperController {
     @DeprecatedApiResponseFields(responseClass = Developer.class, httpMethod = "PUT", friendlyUrl = "/developers/{developerId}")
     @RequestMapping(value = "/{developerId}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
-    public ResponseEntity<Developer> update(@PathVariable("developerId") Long developerId,
-            @RequestBody(required = true) Developer developerToUpdate)
-            throws InvalidArgumentsException, EntityCreationException, EntityRetrievalException,
-            JsonProcessingException, ValidationException, MissingReasonException {
+    public ResponseEntity<Developer> update(@PathVariable("developerId") Long developerId, @RequestBody(required = true) Developer developerToUpdate)
+            throws EntityRetrievalException, ValidationException, EntityCreationException, ActivityException {
+
         developerToUpdate.setId(developerId);
 
         Developer result = developerManager.update(developerToUpdate, true);
@@ -268,9 +267,9 @@ public class DeveloperController {
             })
     @RequestMapping(value = "{developerId}/users/{userId}", method = RequestMethod.DELETE,
             produces = "application/json; charset=utf-8")
-    public PermissionDeletedResponse deleteUserFromDeveloper(
-            @PathVariable Long developerId, @PathVariable Long userId)
-            throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
+    public PermissionDeletedResponse deleteUserFromDeveloper(@PathVariable Long developerId, @PathVariable Long userId)
+            throws JsonProcessingException, EntityRetrievalException, EntityCreationException, ActivityException {
+
         // delete all permissions on that developer
         userPermissionsManager.deleteDeveloperPermission(developerId, userId);
         PermissionDeletedResponse response = new PermissionDeletedResponse();

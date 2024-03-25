@@ -25,6 +25,7 @@ import gov.healthit.chpl.domain.schedule.ChplJob;
 import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
+import gov.healthit.chpl.exception.ActivityException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
@@ -115,9 +116,9 @@ public class SurveillanceReportManager extends SecuredManager {
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SURVEILLANCE_REPORT, "
             + "T(gov.healthit.chpl.permissions.domains.SurveillanceReportDomainPermissions).CREATE_ANNUAL, #toCreate)")
     public AnnualReport createAnnualReport(AnnualReport toCreate)
-    throws EntityCreationException, InvalidArgumentsException, JsonProcessingException, EntityRetrievalException {
-        //Annual report has to be associated with a year and an ACB
+            throws InvalidArgumentsException, EntityCreationException, EntityRetrievalException, ActivityException {
 
+        //Annual report has to be associated with a year and an ACB
         if (toCreate == null || toCreate.getYear() == null) {
             throw new InvalidArgumentsException(msgUtil.getMessage("report.annualSurveillance.missingYear"));
         } else if (toCreate.getAcb() == null || toCreate.getAcb().getId() == null) {
@@ -141,24 +142,20 @@ public class SurveillanceReportManager extends SecuredManager {
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SURVEILLANCE_REPORT, "
             + "T(gov.healthit.chpl.permissions.domains.SurveillanceReportDomainPermissions).UPDATE_ANNUAL, #toUpdate)")
-    public AnnualReport updateAnnualReport(AnnualReport toUpdate)
-    throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
+    public AnnualReport updateAnnualReport(AnnualReport toUpdate) throws EntityRetrievalException, ActivityException  {
         AnnualReport before = annualDao.getById(toUpdate.getId());
         AnnualReport updated = annualDao.update(toUpdate);
-        activityManager.addActivity(ActivityConcept.ANNUAL_REPORT, updated.getId(),
-                "Updated annual report.", before, updated);
+        activityManager.addActivity(ActivityConcept.ANNUAL_REPORT, updated.getId(), "Updated annual report.", before, updated);
         return updated;
     }
 
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SURVEILLANCE_REPORT, "
             + "T(gov.healthit.chpl.permissions.domains.SurveillanceReportDomainPermissions).DELETE_ANNUAL, #id)")
-    public void deleteAnnualReport(Long id)
-            throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
+    public void deleteAnnualReport(Long id) throws EntityRetrievalException, ActivityException  {
         AnnualReport before = annualDao.getById(id);
         annualDao.delete(id);
-        activityManager.addActivity(ActivityConcept.ANNUAL_REPORT, id,
-                "Deleted annual report.", before, null);
+        activityManager.addActivity(ActivityConcept.ANNUAL_REPORT, id,  "Deleted annual report.", before, null);
     }
 
     @Transactional
@@ -210,7 +207,7 @@ public class SurveillanceReportManager extends SecuredManager {
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SURVEILLANCE_REPORT, "
             + "T(gov.healthit.chpl.permissions.domains.SurveillanceReportDomainPermissions).CREATE_QUARTERLY, #createRequest)")
     public QuarterlyReportDTO createQuarterlyReport(QuarterlyReport createRequest)
-    throws EntityCreationException, InvalidArgumentsException, JsonProcessingException, EntityRetrievalException, ValidationException {
+            throws JsonProcessingException, EntityCreationException, InvalidArgumentsException, EntityRetrievalException, ActivityException, ValidationException {
 
         reviewQuarterlyReportForDeprecatedFields(createRequest);
         //create the report
@@ -239,9 +236,9 @@ public class SurveillanceReportManager extends SecuredManager {
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SURVEILLANCE_REPORT, "
             + "T(gov.healthit.chpl.permissions.domains.SurveillanceReportDomainPermissions).CREATE_QUARTERLY, #report)")
-    public QuarterlyReportExclusionDTO createQuarterlyReportExclusion(QuarterlyReportDTO report,
-            Long listingId, String reason)
-            throws EntityCreationException, InvalidArgumentsException, JsonProcessingException, EntityRetrievalException {
+    public QuarterlyReportExclusionDTO createQuarterlyReportExclusion(QuarterlyReportDTO report, Long listingId, String reason)
+            throws EntityCreationException, ActivityException {
+
         //make sure there's not already an exclusion for this report and listing
         QuarterlyReportExclusionDTO existingExclusion =
                 quarterlyDao.getExclusion(report.getId(), listingId);
@@ -273,7 +270,8 @@ public class SurveillanceReportManager extends SecuredManager {
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SURVEILLANCE_REPORT, "
             + "T(gov.healthit.chpl.permissions.domains.SurveillanceReportDomainPermissions).UPDATE_QUARTERLY, #updateRequest)")
     public QuarterlyReport updateQuarterlyReport(QuarterlyReport updateRequest)
-    throws EntityRetrievalException, JsonProcessingException, EntityCreationException, ValidationException {
+            throws EntityRetrievalException, ValidationException, ActivityException {
+
         QuarterlyReportDTO reportToUpdate = getQuarterlyReport(updateRequest.getId());
         reviewQuarterlyReportForDeprecatedFields(updateRequest, reportToUpdate);
         //above line throws entity retrieval exception if bad id
@@ -291,9 +289,9 @@ public class SurveillanceReportManager extends SecuredManager {
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SURVEILLANCE_REPORT, "
             + "T(gov.healthit.chpl.permissions.domains.SurveillanceReportDomainPermissions).UPDATE_QUARTERLY, #report)")
-    public QuarterlyReportExclusionDTO updateQuarterlyReportExclusion(QuarterlyReportDTO report,
-            Long listingId, String reason)
-                    throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
+    public QuarterlyReportExclusionDTO updateQuarterlyReportExclusion(QuarterlyReportDTO report, Long listingId, String reason)
+            throws EntityRetrievalException, ActivityException {
+
         //make sure there is already an exclusion for this report and listing
         QuarterlyReportExclusionDTO existingExclusion =
                 quarterlyDao.getExclusion(report.getId(), listingId);
@@ -314,9 +312,9 @@ public class SurveillanceReportManager extends SecuredManager {
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SURVEILLANCE_REPORT, "
             + "T(gov.healthit.chpl.permissions.domains.SurveillanceReportDomainPermissions).UPDATE_QUARTERLY, #toUpdate.quarterlyReport)")
-    public PrivilegedSurveillanceDTO createOrUpdateQuarterlyReportSurveillanceMap(
-            PrivilegedSurveillanceDTO toUpdate)
-            throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
+    public PrivilegedSurveillanceDTO createOrUpdateQuarterlyReportSurveillanceMap(PrivilegedSurveillanceDTO toUpdate)
+            throws EntityCreationException, EntityRetrievalException, ActivityException {
+
         // make sure passed-in surveillance is relevant to the report i.e. that it was open at some point
         //during the reporting period
         if (!quarterlyDao.isSurveillanceRelevant(toUpdate.getQuarterlyReport(), toUpdate.getId())) {
@@ -347,8 +345,7 @@ public class SurveillanceReportManager extends SecuredManager {
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SURVEILLANCE_REPORT, "
             + "T(gov.healthit.chpl.permissions.domains.SurveillanceReportDomainPermissions).DELETE_QUARTERLY, #id)")
-    public void deleteQuarterlyReport(Long id)
-            throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
+    public void deleteQuarterlyReport(Long id) throws EntityRetrievalException, ActivityException {
         QuarterlyReportDTO report = quarterlyDao.getById(id);
         quarterlyDao.delete(id);
         activityManager.addActivity(ActivityConcept.QUARTERLY_REPORT, id,
@@ -358,8 +355,7 @@ public class SurveillanceReportManager extends SecuredManager {
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SURVEILLANCE_REPORT, "
             + "T(gov.healthit.chpl.permissions.domains.SurveillanceReportDomainPermissions).DELETE_QUARTERLY, #reportId)")
-    public void deleteQuarterlyReportExclusion(Long reportId, Long listingId)
-        throws JsonProcessingException, EntityRetrievalException, EntityCreationException {
+    public void deleteQuarterlyReportExclusion(Long reportId, Long listingId) throws EntityRetrievalException, ActivityException {
         QuarterlyReportDTO report = quarterlyDao.getById(reportId);
         //make sure there is already an exclusion for this report and listing
         QuarterlyReportExclusionDTO existingExclusion =

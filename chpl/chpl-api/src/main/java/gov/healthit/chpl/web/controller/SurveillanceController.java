@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,18 +16,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.compliance.surveillance.SurveillanceManager;
 import gov.healthit.chpl.domain.SimpleExplainableAction;
 import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
-import gov.healthit.chpl.exception.CertificationBodyAccessException;
-import gov.healthit.chpl.exception.EntityCreationException;
+import gov.healthit.chpl.exception.ActivityException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
-import gov.healthit.chpl.exception.MissingReasonException;
 import gov.healthit.chpl.exception.UserPermissionRetrievalException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
@@ -69,10 +64,9 @@ public class SurveillanceController {
             })
     @DeprecatedApiResponseFields(responseClass = Surveillance.class, httpMethod = "POST", friendlyUrl = "/surveillance")
     @RequestMapping(value = "", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
-    public ResponseEntity<Surveillance> createSurveillance(
-            @RequestBody(required = true) Surveillance survToInsert) throws ValidationException,
-            EntityRetrievalException, CertificationBodyAccessException, UserPermissionRetrievalException,
-            EntityCreationException, JsonProcessingException {
+    public ResponseEntity<Surveillance> createSurveillance(@RequestBody(required = true) Surveillance survToInsert)
+            throws EntityRetrievalException, UserPermissionRetrievalException, ActivityException, ValidationException {
+
         HttpHeaders responseHeaders = new HttpHeaders();
         Long insertedSurv = null;
         try {
@@ -99,9 +93,9 @@ public class SurveillanceController {
     @DeprecatedApiResponseFields(responseClass = Surveillance.class, httpMethod = "PUT", friendlyUrl = "/surveillance/{surveillanceId}")
     @RequestMapping(value = "/{surveillanceId}", method = RequestMethod.PUT,
             produces = "application/json; charset=utf-8")
-    public ResponseEntity<Surveillance> updateSurveillance(
-            @RequestBody(required = true) Surveillance survToUpdate) throws InvalidArgumentsException, ValidationException, EntityCreationException, EntityRetrievalException,
-            JsonProcessingException {
+    public ResponseEntity<Surveillance> updateSurveillance(@RequestBody(required = true) Surveillance survToUpdate)
+            throws EntityRetrievalException, ActivityException, ValidationException {
+
         // update the surveillance
         HttpHeaders responseHeaders = new HttpHeaders();
         try {
@@ -126,10 +120,10 @@ public class SurveillanceController {
             })
     @RequestMapping(value = "/{surveillanceId}", method = RequestMethod.DELETE,
             produces = "application/json; charset=utf-8")
-    public @ResponseBody ResponseEntity<String> deleteSurveillance(
-            @PathVariable(value = "surveillanceId") Long surveillanceId,
-            @RequestBody(required = false) SimpleExplainableAction requestBody) throws InvalidArgumentsException, ValidationException, EntityCreationException, EntityRetrievalException,
-            JsonProcessingException, AccessDeniedException, MissingReasonException {
+    public @ResponseBody ResponseEntity<String> deleteSurveillance(@PathVariable(value = "surveillanceId") Long surveillanceId,
+            @RequestBody(required = false) SimpleExplainableAction requestBody)
+                    throws InvalidArgumentsException, EntityRetrievalException, ActivityException {
+
         Surveillance survToDelete = null;
         try {
             survToDelete = survManager.getById(surveillanceId);

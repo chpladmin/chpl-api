@@ -87,7 +87,7 @@ public class CertificationResultQuestionableActivityService {
          questionableActivity.setActivityId(activity.getId());
          questionableActivity.setCertResultId(certResultId);
          questionableActivity.setActivityDate(activity.getActivityDate());
-         questionableActivity.setUserId(activity.getUser().getId());
+         questionableActivity.setUserId(activity.getUser().getUserId());
          questionableActivity.setReason(activityReason);
          QuestionableActivityTrigger trigger = getTrigger(triggerConcept);
          questionableActivity.setTrigger(trigger);

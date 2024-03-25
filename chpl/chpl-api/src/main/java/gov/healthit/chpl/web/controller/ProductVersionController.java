@@ -17,14 +17,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.ProductVersion;
 import gov.healthit.chpl.domain.SplitVersionsRequest;
 import gov.healthit.chpl.domain.UpdateVersionsRequest;
 import gov.healthit.chpl.dto.ProductVersionDTO;
+import gov.healthit.chpl.exception.ActivityException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
@@ -120,10 +119,8 @@ public class ProductVersionController {
     @DeprecatedApiResponseFields(responseClass = ProductVersion.class, httpMethod = "PUT", friendlyUrl = "/versions")
     @RequestMapping(value = "", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
-    public ResponseEntity<ProductVersion> updateVersion(
-            @RequestBody(required = true) final UpdateVersionsRequest versionInfo)
-            throws EntityCreationException, EntityRetrievalException, InvalidArgumentsException,
-            JsonProcessingException {
+    public ResponseEntity<ProductVersion> updateVersion(@RequestBody(required = true) final UpdateVersionsRequest versionInfo)
+            throws InvalidArgumentsException, EntityRetrievalException, EntityCreationException, ActivityException {
 
         ProductVersionDTO result = null;
         HttpHeaders responseHeaders = new HttpHeaders();
@@ -189,8 +186,8 @@ public class ProductVersionController {
             consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
     public ResponseEntity<SplitVersionResponse> splitVersion(@PathVariable("versionId") final Long versionId,
             @RequestBody(required = true) final SplitVersionsRequest splitRequest)
-            throws EntityCreationException, EntityRetrievalException, InvalidArgumentsException,
-            JsonProcessingException {
+                    throws InvalidArgumentsException, EntityRetrievalException, EntityCreationException, ActivityException {
+
         if (splitRequest.getNewVersionCode() != null) {
             splitRequest.setNewVersionCode(splitRequest.getNewVersionCode().trim());
         }

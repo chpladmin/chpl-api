@@ -35,6 +35,7 @@ import gov.healthit.chpl.domain.SplitProductsRequest;
 import gov.healthit.chpl.domain.UpdateProductsRequest;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.ProductVersionDTO;
+import gov.healthit.chpl.exception.ActivityException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
@@ -135,10 +136,9 @@ public class ProductController {
     @RequestMapping(value = "", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
     @DeprecatedApiResponseFields(responseClass = Product.class, httpMethod = "PUT", friendlyUrl = "/products")
-    public ResponseEntity<Product> updateProduct(
-            @RequestBody(required = true) final UpdateProductsRequest productInfo)
-            throws EntityCreationException, EntityRetrievalException, InvalidArgumentsException,
-            JsonProcessingException, ValidationException {
+    public ResponseEntity<Product> updateProduct(@RequestBody(required = true) final UpdateProductsRequest productInfo)
+            throws InvalidArgumentsException, JsonProcessingException, ValidationException, EntityRetrievalException, EntityCreationException, ActivityException {
+
         Product result = null;
         HttpHeaders responseHeaders = new HttpHeaders();
 
@@ -307,10 +307,10 @@ public class ProductController {
     @RequestMapping(value = "/{productId}/split", method = RequestMethod.POST,
             consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
     @DeprecatedApiResponseFields(responseClass = SplitProductResponse.class, httpMethod = "POST", friendlyUrl = "/products/{productId}/split")
-    public ResponseEntity<SplitProductResponse> splitProduct(@PathVariable("productId") final Long productId,
-            @RequestBody(required = true) final SplitProductsRequest splitRequest)
-            throws EntityCreationException, EntityRetrievalException, InvalidArgumentsException,
-            ValidationException, JsonProcessingException {
+    public ResponseEntity<SplitProductResponse> splitProduct(@PathVariable("productId") Long productId,
+            @RequestBody(required = true) SplitProductsRequest splitRequest)
+                    throws InvalidArgumentsException, EntityRetrievalException, JsonProcessingException, ValidationException,
+                    EntityCreationException, ActivityException  {
 
         if (splitRequest.getNewProductCode() != null) {
             splitRequest.setNewProductCode(splitRequest.getNewProductCode().trim());
@@ -381,8 +381,8 @@ public class ProductController {
         return new ResponseEntity<SplitProductResponse>(response, responseHeaders, HttpStatus.OK);
     }
 
-    private Product mergeProducts(UpdateProductsRequest productInfo) throws ValidationException,
-        JsonProcessingException, EntityRetrievalException, EntityCreationException {
+    private Product mergeProducts(UpdateProductsRequest productInfo)
+            throws JsonProcessingException, EntityRetrievalException, ValidationException, EntityCreationException, ActivityException {
         return productManager.merge(productInfo.getProductIds(), productInfo.getProduct());
     }
 

@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,18 +15,23 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import gov.healthit.chpl.auth.user.AuthenticationSystem;
 import gov.healthit.chpl.dao.ActivityDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
+import gov.healthit.chpl.dao.auth.UserDAO;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.domain.activity.ActivityDetails;
 import gov.healthit.chpl.domain.activity.ProductActivityDetails;
+import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.dto.ActivityDTO;
-import gov.healthit.chpl.dto.auth.UserDTO;
+import gov.healthit.chpl.exception.ActivityException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.listener.ChplProductNumberChangedListener;
 import gov.healthit.chpl.listener.QuestionableActivityListener;
+import gov.healthit.chpl.manager.auth.CognitoUserService;
 import gov.healthit.chpl.manager.impl.SecuredManager;
 import gov.healthit.chpl.subscription.SubscriptionObserver;
 import gov.healthit.chpl.util.AuthUtil;
@@ -44,73 +48,94 @@ public class ActivityManager extends SecuredManager {
     private QuestionableActivityListener questionableActivityListener;
     private ChplProductNumberChangedListener chplProductNumberChangedListener;
     private SubscriptionObserver subscriptionObserver;
+    private CognitoUserService cognitoUserService;
+    private UserDAO userDAO;
 
     @Autowired
-    public ActivityManager(@Qualifier("activityDAO") ActivityDAO activityDAO, DeveloperDAO devDao,
+    public ActivityManager(ActivityDAO activityDAO, DeveloperDAO devDao,
             QuestionableActivityListener questionableActivityListener,
             ChplProductNumberChangedListener chplProductNumberChangedListener,
-            SubscriptionObserver subscriptionObserver) {
+            SubscriptionObserver subscriptionObserver,
+            CognitoUserService cognitoUserService,
+            UserDAO userDAO) {
         this.activityDAO = activityDAO;
         this.devDao = devDao;
         this.questionableActivityListener = questionableActivityListener;
         this.chplProductNumberChangedListener = chplProductNumberChangedListener;
         this.subscriptionObserver = subscriptionObserver;
+        this.cognitoUserService = cognitoUserService;
+        this.userDAO = userDAO;
     }
 
     @Transactional
-    public Long addActivity(ActivityConcept concept, Long objectId, String activityDescription, Object originalData,
-            Object newData) throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
+    public Long addActivity(ActivityConcept concept, Long objectId, String activityDescription, Object originalData, Object newData)
+            throws ActivityException {
 
-        Long asUser = null;
-        if (AuthUtil.getCurrentUser() != null) {
-            asUser = AuthUtil.getAuditId();
+        try {
+            Date activityDate = new Date();
+            ActivityDTO activity = addActivity(concept, objectId, activityDescription, originalData, newData, null, activityDate, getCurrentUser());
+            if (activity != null) {
+                questionableActivityListener.checkQuestionableActivity(activity, originalData, newData);
+                chplProductNumberChangedListener.recordChplProductNumberChanged(concept, objectId, originalData, newData, activityDate);
+                subscriptionObserver.checkActivityForSubscriptions(activity, originalData, newData);
+            }
+            return activity == null ? null : activity.getId();
+        } catch (Exception e) {
+            LOGGER.error("Error adding activity.", e);
+            throw new ActivityException(e);
         }
-
-        Date activityDate = new Date();
-        ActivityDTO activity = addActivity(concept, objectId, activityDescription, originalData, newData, null, activityDate, asUser);
-        if (activity != null) {
-            questionableActivityListener.checkQuestionableActivity(activity, originalData, newData);
-            chplProductNumberChangedListener.recordChplProductNumberChanged(concept, objectId, originalData, newData, activityDate);
-            subscriptionObserver.checkActivityForSubscriptions(activity, originalData, newData);
-        }
-        return activity == null ? null : activity.getId();
     }
 
     @Transactional
-    public Long addActivity(ActivityConcept concept, Long objectId, String activityDescription, Object originalData,
-            Object newData, String reason) throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
+    public Long addActivity(ActivityConcept concept, Long objectId, String activityDescription, Object originalData, Object newData, String reason)
+            throws ActivityException {
 
-        Long asUser = null;
-        if (AuthUtil.getCurrentUser() != null) {
-            asUser = AuthUtil.getAuditId();
+        try {
+            Date activityDate = new Date();
+            ActivityDTO activity = addActivity(concept, objectId, activityDescription, originalData, newData, reason, activityDate, getCurrentUser());
+            if (activity != null) {
+                questionableActivityListener.checkQuestionableActivity(activity, originalData, newData, reason);
+                chplProductNumberChangedListener.recordChplProductNumberChanged(concept, objectId, originalData, newData, activityDate);
+                subscriptionObserver.checkActivityForSubscriptions(activity, originalData, newData);
+            }
+            return activity == null ? null : activity.getId();
+        } catch (Exception e) {
+            LOGGER.error("Error adding activity.", e);
+            throw new ActivityException(e);
         }
-
-        Date activityDate = new Date();
-        ActivityDTO activity = addActivity(concept, objectId, activityDescription, originalData, newData, reason, activityDate, asUser);
-        if (activity != null) {
-            questionableActivityListener.checkQuestionableActivity(activity, originalData, newData, reason);
-            chplProductNumberChangedListener.recordChplProductNumberChanged(concept, objectId, originalData, newData, activityDate);
-            subscriptionObserver.checkActivityForSubscriptions(activity, originalData, newData);
-        }
-        return activity == null ? null : activity.getId();
     }
 
     @Transactional
-    public Long addActivity(ActivityConcept concept, Long objectId, String activityDescription, Object originalData,
-            Object newData, Long asUser) throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
+    public Long addActivity(ActivityConcept concept, Long objectId, String activityDescription, Object originalData, Object newData, User asUser)
+            throws ActivityException {
 
-        Date activityDate = new Date();
-        ActivityDTO activity = addActivity(concept, objectId, activityDescription, originalData, newData, null, activityDate, asUser);
-        if (activity != null) {
-            questionableActivityListener.checkQuestionableActivity(activity, originalData, newData);
-            chplProductNumberChangedListener.recordChplProductNumberChanged(concept, objectId, originalData, newData, activityDate);
-            subscriptionObserver.checkActivityForSubscriptions(activity, originalData, newData);
+        try {
+            Date activityDate = new Date();
+            ActivityDTO activity = addActivity(concept, objectId, activityDescription, originalData, newData, null, activityDate, asUser);
+            if (activity != null) {
+                questionableActivityListener.checkQuestionableActivity(activity, originalData, newData);
+                chplProductNumberChangedListener.recordChplProductNumberChanged(concept, objectId, originalData, newData, activityDate);
+                subscriptionObserver.checkActivityForSubscriptions(activity, originalData, newData);
+            }
+            return activity == null ? null : activity.getId();
+        } catch (Exception e) {
+            LOGGER.error("Error adding activity.", e);
+            throw new ActivityException(e);
         }
-        return activity == null ? null : activity.getId();
+    }
+
+    private User getCurrentUser() throws UserRetrievalException {
+        User currentUser = null;
+        if (AuthUtil.getCurrentUser().getAuthenticationSystem().equals(AuthenticationSystem.CHPL)) {
+            currentUser = userDAO.getById(AuthUtil.getAuditId()).toDomain();
+        } else if (AuthUtil.getCurrentUser().getAuthenticationSystem().equals(AuthenticationSystem.COGNTIO)) {
+            currentUser = cognitoUserService.getUserInfo(AuthUtil.getCurrentUser().getCognitoId());
+        }
+        return currentUser;
     }
 
     private ActivityDTO addActivity(ActivityConcept concept, Long objectId, String activityDescription, Object originalData,
-            Object newData, String reason, Date timestamp, Long asUser)
+            Object newData, String reason, Date timestamp, User asUser)
             throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
 
         String originalDataStr = null;
@@ -145,8 +170,11 @@ public class ActivityManager extends SecuredManager {
             dto.setReason(reason);
             dto.setCreationDate(new Date());
             dto.setLastModifiedDate(new Date());
-            dto.setLastModifiedUser(asUser);
-            dto.setUser(UserDTO.builder().id(asUser).build());
+
+            dto.setLastModifiedUser(asUser.getUserId());
+            dto.setLastModifiedSsoUser(asUser.getCognitoId());
+            dto.setUser(asUser);
+
             dto.setDeleted(false);
             Long activityId = activityDAO.create(dto);
             dto.setId(activityId);
@@ -178,7 +206,7 @@ public class ActivityManager extends SecuredManager {
         event.setActivityDate(dto.getActivityDate());
         event.setActivityObjectId(dto.getActivityObjectId());
         event.setConcept(dto.getConcept());
-        event.setResponsibleUser(dto.getUser() == null ? null : dto.getUser().toDomain());
+        event.setResponsibleUser(dto.getUser() == null ? null : dto.getUser());
 
         JsonNode originalJSON = null;
         if (dto.getOriginalData() != null) {

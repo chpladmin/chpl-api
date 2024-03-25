@@ -389,7 +389,7 @@ public class ActivityDAO extends BaseDAOImpl {
     private ActivityDTO mapEntityToDto(ActivityEntity entity) {
         ActivityDTO activity = entity.toDomain();
         if (entity.getUser() != null) {
-            activity.setUser(userMapper.from(entity.getUser()));
+            activity.setUser(userMapper.from(entity.getUser()).toDomain());
         }
         return activity;
     }

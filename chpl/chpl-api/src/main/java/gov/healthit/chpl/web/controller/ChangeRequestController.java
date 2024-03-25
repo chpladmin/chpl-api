@@ -19,6 +19,7 @@ import gov.healthit.chpl.changerequest.domain.ChangeRequestUpdateRequest;
 import gov.healthit.chpl.changerequest.manager.ChangeRequestManager;
 import gov.healthit.chpl.changerequest.search.ChangeRequestSearchRequest;
 import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
+import gov.healthit.chpl.exception.ActivityException;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -81,8 +82,8 @@ public class ChangeRequestController {
             produces = "application/json; charset=utf-8")
     @DeprecatedApiResponseFields(responseClass = ChangeRequestResults.class, httpMethod = "POST", friendlyUrl = "/change-requests")
     public ChangeRequestResults createChangeRequest(@RequestBody final ChangeRequest cr)
-            throws EntityRetrievalException, ValidationException, JsonProcessingException, EntityCreationException,
-            InvalidArgumentsException {
+            throws InvalidArgumentsException, EntityRetrievalException, ValidationException, ActivityException {
+
         List<ChangeRequest> createdCrs = List.of(changeRequestManager.createChangeRequest(cr));
         ChangeRequestResults results = new ChangeRequestResults();
         results.getResults().addAll(createdCrs);

@@ -8,8 +8,6 @@ import org.quartz.JobDataMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.DeveloperStatusDAO;
@@ -22,6 +20,7 @@ import gov.healthit.chpl.domain.schedule.ChplJob;
 import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.entity.developer.DeveloperStatusType;
+import gov.healthit.chpl.exception.ActivityException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
@@ -57,7 +56,7 @@ public class TransactionalDeveloperBanHelper {
 
     @Transactional
     public void handleCertificationStatusChange(CertifiedProductSearchDetails listing, JWTAuthenticatedUser user, String reason)
-        throws EntityRetrievalException, ValidationException, EntityCreationException, JsonProcessingException {
+            throws EntityRetrievalException, ValidationException, EntityCreationException, ActivityException {
 
         CertificationStatus currentStatus = listing.getCurrentStatus().getStatus();
         switch (CertificationStatusType.getValue(currentStatus.getName())) {
@@ -86,7 +85,8 @@ public class TransactionalDeveloperBanHelper {
     }
 
     private void banDeveloper(CertifiedProductSearchDetails listing)
-        throws EntityRetrievalException, ValidationException, EntityCreationException, JsonProcessingException {
+            throws EntityRetrievalException, ValidationException, EntityCreationException, ActivityException {
+
         CertificationStatus currentListingStatus = listing.getCurrentStatus().getStatus();
         Developer developer = developerDao.getById(listing.getDeveloper().getId());
         DeveloperStatus newDeveloperStatus = null;

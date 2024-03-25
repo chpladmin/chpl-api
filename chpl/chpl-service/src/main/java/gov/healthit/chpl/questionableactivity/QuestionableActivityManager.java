@@ -165,7 +165,7 @@ public class QuestionableActivityManager {
         questionableActivity.setActivityId(activity.getId());
         questionableActivity.setDeveloperId(developerId);
         questionableActivity.setActivityDate(activity.getActivityDate());
-        questionableActivity.setUserId(activity.getUser().getId());
+        questionableActivity.setUserId(activity.getUser().getUserId());
         questionableActivity.setReason(reason);
         QuestionableActivityTrigger trigger = getTrigger(triggerConcept);
         questionableActivity.setTrigger(trigger);
@@ -182,7 +182,7 @@ public class QuestionableActivityManager {
         questionableActivity.setActivityId(activity.getId());
         questionableActivity.setProductId(productId);
         questionableActivity.setActivityDate(activity.getActivityDate());
-        questionableActivity.setUserId(activity.getUser().getId());
+        questionableActivity.setUserId(activity.getUser().getUserId());
         QuestionableActivityTrigger trigger = getTrigger(triggerConcept);
         questionableActivity.setTrigger(trigger);
         questionableActivityDao.create(questionableActivity);
@@ -193,7 +193,7 @@ public class QuestionableActivityManager {
         questionableActivity.setActivityId(activity.getId());
         questionableActivity.setVersionId(versionId);
         questionableActivity.setActivityDate(activity.getActivityDate());
-        questionableActivity.setUserId(activity.getUser().getId());
+        questionableActivity.setUserId(activity.getUser().getUserId());
         QuestionableActivityTrigger trigger = getTrigger(triggerConcept);
         questionableActivity.setTrigger(trigger);
         questionableActivityDao.create(questionableActivity);

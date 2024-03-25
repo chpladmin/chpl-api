@@ -9,12 +9,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-
 import gov.healthit.chpl.complaint.ComplaintManager;
 import gov.healthit.chpl.complaint.domain.Complaint;
 import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
-import gov.healthit.chpl.exception.EntityCreationException;
+import gov.healthit.chpl.exception.ActivityException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -45,7 +43,7 @@ public class ComplaintController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
     @RequestMapping(value = "", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
-    public @ResponseBody Complaint create(@RequestBody Complaint complaint) throws EntityRetrievalException, ValidationException, JsonProcessingException, EntityCreationException {
+    public @ResponseBody Complaint create(@RequestBody Complaint complaint) throws ValidationException, EntityRetrievalException, ActivityException {
         // Make sure there is an ACB
         if (complaint.getCertificationBody() == null || complaint.getCertificationBody().getId() == null) {
             throw new ValidationException(errorMessageUtil.getMessage("complaints.create.acbRequired"));
@@ -63,8 +61,7 @@ public class ComplaintController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
     @RequestMapping(value = "/{complaintId}", method = RequestMethod.PUT, produces = "application/json; charset=utf-8")
-    public @ResponseBody Complaint update(@RequestBody Complaint complaint)
-            throws EntityRetrievalException, ValidationException, JsonProcessingException, EntityCreationException {
+    public @ResponseBody Complaint update(@RequestBody Complaint complaint) throws ValidationException, EntityRetrievalException, ActivityException {
         if (complaint.getCertificationBody() == null || complaint.getCertificationBody().getId() == null) {
             throw new ValidationException(errorMessageUtil.getMessage("complaints.update.acbRequired"));
         }
@@ -78,8 +75,7 @@ public class ComplaintController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
     @RequestMapping(value = "/{complaintId}", method = RequestMethod.DELETE, produces = "application/json; charset=utf-8")
-    public void delete(@PathVariable("complaintId") Long complaintId)
-            throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
+    public void delete(@PathVariable("complaintId") Long complaintId) throws EntityRetrievalException, ActivityException {
         complaintManager.delete(complaintId);
     }
 

@@ -52,7 +52,7 @@ public abstract class ActivityMetadataBuilder {
         metadata.setDate(dto.getActivityDate());
         metadata.setObjectId(dto.getActivityObjectId());
         metadata.setConcept(dto.getConcept());
-        metadata.setResponsibleUser(dto.getUser() == null ? null : dto.getUser().toDomain());
+        metadata.setResponsibleUser(dto.getUser() == null ? null : dto.getUser());
         metadata.setDescription(dto.getDescription());
     }
 
