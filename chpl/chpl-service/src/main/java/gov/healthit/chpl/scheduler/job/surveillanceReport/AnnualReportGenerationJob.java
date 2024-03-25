@@ -101,7 +101,7 @@ public class AnnualReportGenerationJob extends SecurityContextCapableJob impleme
                     AnnualReport report = null;
                     try {
                         report = reportManager.getAnnualReport(annualReportId);
-                    } catch (EntityRetrievalException ex) {
+                    } catch (Exception ex) {
                         String msg = msgUtil.getMessage("report.annualSurveillance.export.badId", annualReportId);
                         LOGGER.error(msg, ex);
                         sendEmail(user.getEmail(), env.getProperty("surveillance.annualReport.failure.subject"),
@@ -169,7 +169,7 @@ public class AnnualReportGenerationJob extends SecurityContextCapableJob impleme
         try {
                 AnnualReportBuilderXlsx reportBuilder = reportBuilderFactory.getReportBuilder(report);
                 if (reportBuilder != null) {
-                    workbook = reportBuilder.buildXlsx(report);
+                    workbook = reportBuilder.buildXlsx(report, LOGGER);
                 } else {
                     String msg = msgUtil.getMessage("report.annualSurveillance.builderNotFound");
                     LOGGER.error(msg + " Report id " + report.getId());

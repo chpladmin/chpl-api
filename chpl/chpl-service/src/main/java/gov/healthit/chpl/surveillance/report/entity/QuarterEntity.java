@@ -10,6 +10,7 @@ import javax.persistence.Table;
 import org.hibernate.annotations.Immutable;
 
 import gov.healthit.chpl.entity.EntityAudit;
+import gov.healthit.chpl.surveillance.report.domain.Quarter;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -49,4 +50,14 @@ public class QuarterEntity extends EntityAudit {
     @Column(name = "quarter_end_day")
     private Integer quarterEndDay;
 
+    public Quarter toDomain() {
+        return Quarter.builder()
+                .endDay(this.getQuarterEndDay())
+                .endMonth(this.getQuarterEndMonth())
+                .id(this.getId())
+                .name(this.getName())
+                .startDay(this.getQuarterBeginDay())
+                .startMonth(this.getQuarterBeginMonth())
+                .build();
+    }
 }
