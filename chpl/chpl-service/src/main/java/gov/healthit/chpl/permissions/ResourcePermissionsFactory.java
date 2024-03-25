@@ -10,7 +10,7 @@ import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.UserCertificationBodyMapDAO;
 import gov.healthit.chpl.dao.UserDeveloperMapDAO;
 import gov.healthit.chpl.dao.auth.UserDAO;
-import gov.healthit.chpl.manager.auth.CognitoUserService;
+import gov.healthit.chpl.user.cognito.CognitoApiWrapper;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import lombok.extern.log4j.Log4j2;
@@ -23,12 +23,12 @@ public class ResourcePermissionsFactory {
 
 
     @Autowired
-    public ResourcePermissionsFactory(CertificationBodyDAO certificationBodyDAO, DeveloperDAO developerDAO, CognitoUserService cognitoUserService,
+    public ResourcePermissionsFactory(CertificationBodyDAO certificationBodyDAO, DeveloperDAO developerDAO, CognitoApiWrapper cognitoApiWrapper,
             UserCertificationBodyMapDAO userCertificationBodyMapDAO, UserDeveloperMapDAO userDeveloperMapDAO,
             CertificationBodyDAO acbDAO, ErrorMessageUtil errorMessageUtil, UserDAO userDAO) {
 
         this.chplResourcePermissions = new ChplResourcePermissions(userCertificationBodyMapDAO, userDeveloperMapDAO, acbDAO, errorMessageUtil, userDAO, developerDAO);
-        this.cognitoResourcePermissions = new CognitoResourcePermissions(certificationBodyDAO, developerDAO, cognitoUserService);
+        this.cognitoResourcePermissions = new CognitoResourcePermissions(certificationBodyDAO, developerDAO, cognitoApiWrapper);
     }
 
     public ResourcePermissions get() {

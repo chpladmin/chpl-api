@@ -18,7 +18,7 @@ import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.entity.developer.DeveloperStatusType;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.UserRetrievalException;
-import gov.healthit.chpl.manager.auth.CognitoUserService;
+import gov.healthit.chpl.user.cognito.CognitoApiWrapper;
 import gov.healthit.chpl.util.AuthUtil;
 import lombok.extern.log4j.Log4j2;
 
@@ -26,13 +26,13 @@ import lombok.extern.log4j.Log4j2;
 public class CognitoResourcePermissions implements ResourcePermissions {
     private CertificationBodyDAO certificationBodyDAO;
     private DeveloperDAO developerDAO;
-    private CognitoUserService cognitoUserService;
+    private CognitoApiWrapper cognitoApiWrapper;
 
     @Autowired
-    public CognitoResourcePermissions(CertificationBodyDAO certificationBodyDAO, DeveloperDAO developerDAO, CognitoUserService cognitoUserService) {
+    public CognitoResourcePermissions(CertificationBodyDAO certificationBodyDAO, DeveloperDAO developerDAO, CognitoApiWrapper cognitoApiWrapper) {
         this.certificationBodyDAO = certificationBodyDAO;
         this.developerDAO = developerDAO;
-        this.cognitoUserService = cognitoUserService;
+        this.cognitoApiWrapper = cognitoApiWrapper;
     }
 
     @Override
@@ -62,7 +62,7 @@ public class CognitoResourcePermissions implements ResourcePermissions {
     @Override
     public List<CertificationBody> getAllAcbsForCurrentUser() {
         try {
-            User user = cognitoUserService.getUserInfo(AuthUtil.getCurrentUser().getCognitoId());
+            User user = cognitoApiWrapper.getUserInfo(AuthUtil.getCurrentUser().getCognitoId());
             if (user != null) {
                 if (isUserRoleAdmin() || isUserRoleOnc()) {
                     return certificationBodyDAO.findAll();
@@ -90,7 +90,7 @@ public class CognitoResourcePermissions implements ResourcePermissions {
     @Override
     public List<Developer> getAllDevelopersForCurrentUser() {
         try {
-            User user = cognitoUserService.getUserInfo(AuthUtil.getCurrentUser().getCognitoId());
+            User user = cognitoApiWrapper.getUserInfo(AuthUtil.getCurrentUser().getCognitoId());
             return getAllDevelopersForUser(user);
         } catch (UserRetrievalException e) {
             LOGGER.error("Could not retrieve all developers for current user.", e);
