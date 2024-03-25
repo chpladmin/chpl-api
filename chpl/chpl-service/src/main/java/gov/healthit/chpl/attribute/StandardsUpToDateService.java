@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.OptionalLong;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
@@ -15,8 +16,10 @@ import gov.healthit.chpl.standard.CertificationResultStandard;
 import gov.healthit.chpl.standard.CertificationResultStandardDAO;
 import gov.healthit.chpl.standard.Standard;
 import gov.healthit.chpl.standard.StandardDAO;
+import gov.healthit.chpl.standard.StandardGroupService;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.DateUtil;
+import jodd.mutable.MutableBoolean;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -25,12 +28,14 @@ public class StandardsUpToDateService {
     private StandardDAO standardDAO;
     private CertificationResultStandardDAO certificationResultStandardDAO;
     private CertificationResultRules certificationResultRules;
+    private StandardGroupService standardGroupService;
 
     public StandardsUpToDateService(StandardDAO standardDAO, CertificationResultStandardDAO certificationResultStandardDAO,
-            CertificationResultRules certificationResultRules) {
+            CertificationResultRules certificationResultRules, StandardGroupService standardGroupService) {
         this.standardDAO = standardDAO;
         this.certificationResultStandardDAO = certificationResultStandardDAO;
         this.certificationResultRules = certificationResultRules;
+        this.standardGroupService = standardGroupService;
     }
 
     public AttributeUpToDate getAttributeUpToDate(CertificationResult certificationResult) {
@@ -78,20 +83,26 @@ public class StandardsUpToDateService {
 
     private Boolean areUnattestedStandardsUpToDate(CertificationResult certificationResult) {
         return getUnattestedToStandards(certificationResult).stream()
-                .filter(std -> DateUtil.isDateBetweenInclusive(Pair.of(std.getStartDay(), std.getEndDay() == null ? LocalDate.MAX : std.getEndDay()), LocalDate.now()))
+                .filter(std -> DateUtil.isDateBetweenInclusive(Pair.of(std.getStartDay(), std.getEndDay() == null ? LocalDate.MAX : std.getEndDay()), LocalDate.now())
+                        && StringUtils.isEmpty(std.getGroupName()))
                 .findAny()
                 .isEmpty();
     }
 
     private Boolean areAttestedToStandardsUpToDate(CertificationResult certificationResult) {
-        Boolean upToDate = false;
+        Boolean areAttestedToStandardsToDate = false;
+        Boolean areGroupedStandardsUpToDate = false;
+
         if (CollectionUtils.isNotEmpty(certificationResult.getStandards())) {
-            upToDate = certificationResult.getStandards().stream()
+            areAttestedToStandardsToDate = certificationResult.getStandards().stream()
                     .filter(certResultStandard -> certResultStandard.getStandard().getEndDay() != null)
                     .findAny()
                     .isEmpty();
+
+            areGroupedStandardsUpToDate = doesStandardExistForEachGroup(certificationResult, LocalDate.now());
         }
-        return upToDate;
+        return areAttestedToStandardsToDate
+                && areGroupedStandardsUpToDate;
     }
 
     private Boolean isCriteriaEligibleForStandards(CertificationCriterion criterion) {
@@ -122,4 +133,25 @@ public class StandardsUpToDateService {
             return List.of();
         }
     }
+
+    public Boolean doesStandardExistForEachGroup(CertificationResult certResult, LocalDate validAsOfDate) {
+        MutableBoolean doesStandardExistForEachGroup = MutableBoolean.of(true);
+        standardGroupService.getGroupedStandardsForCriteria(certResult.getCriterion(), validAsOfDate).entrySet().stream()
+                .filter(standardGroup -> standardGroup.getValue().size() >= 2)
+                .takeWhile(standatdGroup -> doesStandardExistForEachGroup.value)
+                .forEach(standardGroup -> {
+                    if (!doesAtLeastOneStandardForGroupExistForCriterion(standardGroup.getValue(), certResult)) {
+                        doesStandardExistForEachGroup.set(false);
+                    }
+                });
+        return doesStandardExistForEachGroup.value;
+    }
+
+    private boolean doesAtLeastOneStandardForGroupExistForCriterion(List<Standard> groupedStandards, CertificationResult certResult) {
+        return groupedStandards.stream()
+                .filter(standardFromGroup -> isStandardInList(standardFromGroup, certResult.getStandards().stream().map(certResultStd -> certResultStd.getStandard()).toList()))
+                .count() >= 1;
+    }
+
+
 }
