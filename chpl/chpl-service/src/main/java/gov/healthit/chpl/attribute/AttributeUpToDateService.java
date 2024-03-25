@@ -11,6 +11,7 @@ import gov.healthit.chpl.functionalitytested.CertificationResultFunctionalityTes
 import gov.healthit.chpl.functionalitytested.FunctionalityTestedDAO;
 import gov.healthit.chpl.standard.CertificationResultStandardDAO;
 import gov.healthit.chpl.standard.StandardDAO;
+import gov.healthit.chpl.standard.StandardGroupService;
 import gov.healthit.chpl.util.CertificationResultRules;
 
 @Component
@@ -24,8 +25,8 @@ public class AttributeUpToDateService {
     public AttributeUpToDateService(StandardDAO standardDAO, CertificationResultStandardDAO certificationResultStandardDAO,
             FunctionalityTestedDAO functionalityTestedDAO, CertificationResultFunctionalityTestedDAO certificationResultFunctionalityTestedDAO,
             CodeSetDAO codeSetDAO, CertificationResultCodeSetDAO certificationResultCodeSetDAO,
-            CertificationResultRules certificationResultRules) {
-        standardsUpToDateService = new StandardsUpToDateService(standardDAO, certificationResultStandardDAO, certificationResultRules);
+            CertificationResultRules certificationResultRules, StandardGroupService standardGroupoService) {
+        standardsUpToDateService = new StandardsUpToDateService(standardDAO, certificationResultStandardDAO, certificationResultRules, standardGroupoService);
         functionalitiesTestedUpToDateService = new FunctionalitiesTestedUpToDateService(functionalityTestedDAO, certificationResultFunctionalityTestedDAO, certificationResultRules);
         codeSetsUpToDateService = new CodeSetsUpToDateService(codeSetDAO, certificationResultCodeSetDAO, certificationResultRules);
     }
