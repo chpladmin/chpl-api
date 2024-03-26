@@ -255,7 +255,7 @@ public class ActivityDAO extends BaseDAOImpl {
         return activityByUser;
     }
 
-    private ActivityEntity getEntityById(Long id) throws EntityRetrievalException {
+    public ActivityEntity getEntityById(Long id) throws EntityRetrievalException {
         ActivityEntity entity = null;
         String queryStr = "SELECT ae "
                 + "FROM ActivityEntity ae "

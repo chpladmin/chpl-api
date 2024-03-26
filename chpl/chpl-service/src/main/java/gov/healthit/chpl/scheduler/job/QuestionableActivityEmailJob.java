@@ -460,7 +460,7 @@ public class QuestionableActivityEmailJob extends QuartzJob {
         currRow.set(STATUS_COL, activity.getListing().getCertificationStatusName());
         currRow.set(LINK_COL, env.getProperty("chplUrlBegin") + env.getProperty("listingReportsUrlPart") + "/"
                 + activity.getListing().getId());
-        currRow.set(ACTIVITY_USER_COL, activity.getUser().getUsername());
+        currRow.set(ACTIVITY_USER_COL, activity.getUser().getEmail());
 
         if (activity.getTrigger().getName()
                 .equals(QuestionableActivityTriggerConcept.CRITERIA_REMOVED.getName())) {
@@ -560,7 +560,7 @@ public class QuestionableActivityEmailJob extends QuartzJob {
         currRow.set(LISTING_COL, activity.getListing().getChplProductNumber());
         currRow.set(STATUS_COL, activity.getListing().getCertificationStatusName());
         currRow.set(LINK_COL, env.getProperty("chplUrlBegin") + env.getProperty("listingReportsUrlPart") + "/" + activity.getListing().getId());
-        currRow.set(ACTIVITY_USER_COL, activity.getUser().getUsername());
+        currRow.set(ACTIVITY_USER_COL, activity.getUser().getEmail());
 
         String currActivityRowValue = currRow.get(ACTIVITY_DESCRIPTION_COL);
         if (!StringUtils.isEmpty(currActivityRowValue)) {
@@ -581,7 +581,7 @@ public class QuestionableActivityEmailJob extends QuartzJob {
 
     private void putDeveloperActivityInRow(QuestionableActivityDeveloper developerActivity, List<String> activityRow) {
         activityRow.set(DEVELOPER_COL, developerActivity.getDeveloper().getName());
-        activityRow.set(ACTIVITY_USER_COL, developerActivity.getUser().getUsername());
+        activityRow.set(ACTIVITY_USER_COL, developerActivity.getUser().getEmail());
         if (developerActivity.getReason() != null) {
             activityRow.set(ACTIVITY_CERT_STATUS_CHANGE_REASON_COL, developerActivity.getReason());
         }
@@ -629,7 +629,7 @@ public class QuestionableActivityEmailJob extends QuartzJob {
     private void putProductActivityInRow(QuestionableActivityProduct activity, List<String> activityRow) {
         activityRow.set(DEVELOPER_COL, activity.getProduct().getOwner().getName());
         activityRow.set(PRODUCT_COL, activity.getProduct().getName());
-        activityRow.set(ACTIVITY_USER_COL, activity.getUser().getUsername());
+        activityRow.set(ACTIVITY_USER_COL, activity.getUser().getEmail());
 
         if (activity.getTrigger().getName().equals(QuestionableActivityTriggerConcept.PRODUCT_NAME_EDITED.getName())) {
             activityRow.set(ACTIVITY_DESCRIPTION_COL, "From " + activity.getBefore() + " to " + activity.getAfter());
@@ -672,7 +672,7 @@ public class QuestionableActivityEmailJob extends QuartzJob {
         activityRow.set(DEVELOPER_COL, activity.getVersion().getDeveloperName());
         activityRow.set(PRODUCT_COL, activity.getVersion().getProductName());
         activityRow.set(VERSION_COL, activity.getVersion().getVersion());
-        activityRow.set(ACTIVITY_USER_COL, activity.getUser().getUsername());
+        activityRow.set(ACTIVITY_USER_COL, activity.getUser().getEmail());
 
         if (activity.getTrigger().getName().equals(QuestionableActivityTriggerConcept.VERSION_NAME_EDITED.getName())) {
             activityRow.set(ACTIVITY_DESCRIPTION_COL, "From " + activity.getBefore() + " to " + activity.getAfter());

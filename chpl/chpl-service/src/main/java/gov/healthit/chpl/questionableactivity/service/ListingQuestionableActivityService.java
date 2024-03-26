@@ -123,9 +123,8 @@ public class ListingQuestionableActivityService {
     private void createListingActivity(QuestionableActivityListing questionableActivity, Long listingId,
             QuestionableActivityTriggerConcept triggerConcept, ActivityDTO activity, String activityReason) {
         questionableActivity.setListingId(listingId);
-        questionableActivity.setUserId(activity.getUser().getUserId());
         questionableActivity.setActivityDate(activity.getActivityDate());
-        questionableActivity.setActivityId(activity.getId());
+        questionableActivity.setActivity(activity);
         questionableActivity.setReason(activityReason);
         QuestionableActivityTrigger trigger = getTrigger(triggerConcept);
         questionableActivity.setTrigger(trigger);
