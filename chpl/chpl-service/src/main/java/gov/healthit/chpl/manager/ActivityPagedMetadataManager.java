@@ -68,12 +68,7 @@ public class ActivityPagedMetadataManager extends SecuredManager {
             + "T(gov.healthit.chpl.permissions.domains.ActivityDomainPermissions).GET_ACTIVITY_METADATA_BY_CONCEPT, #concept)")
     public ActivityMetadataPage getActivityMetadataByConcept(ActivityConcept concept, Long startMillis, Long endMillis,
             Integer pageNum, Integer pageSize) throws ValidationException, JsonParseException, IOException {
-        Set<String> errors = new HashSet<String>();
-        errors.addAll(validateActivityDates(startMillis, endMillis));
-        errors.addAll(validatePagingParameters(pageNum, pageSize));
-        if (errors.size() > 0) {
-            throw new ValidationException(errors);
-        }
+        validateSearchParameters(startMillis, endMillis, pageNum, pageSize);
         return getActivityMetadataPageByConcept(concept, startMillis, endMillis, pageNum, pageSize);
     }
 
@@ -82,12 +77,7 @@ public class ActivityPagedMetadataManager extends SecuredManager {
     @Transactional
     public ActivityMetadataPage getCertificationBodyActivityMetadata(Long startMillis, Long endMillis,
             Integer pageNum, Integer pageSize) throws ValidationException, JsonParseException, IOException {
-        Set<String> errors = new HashSet<String>();
-        errors.addAll(validateActivityDates(startMillis, endMillis));
-        errors.addAll(validatePagingParameters(pageNum, pageSize));
-        if (errors.size() > 0) {
-            throw new ValidationException(errors);
-        }
+        validateSearchParameters(startMillis, endMillis, pageNum, pageSize);
         return getActivityMetadataPageByConcept(ActivityConcept.CERTIFICATION_BODY,
                 startMillis, endMillis, pageNum, pageSize);
     }
@@ -97,12 +87,7 @@ public class ActivityPagedMetadataManager extends SecuredManager {
     @Transactional
     public ActivityMetadataPage getTestingLabActivityMetadata(Long startMillis, Long endMillis,
             Integer pageNum, Integer pageSize) throws ValidationException, JsonParseException, IOException {
-        Set<String> errors = new HashSet<String>();
-        errors.addAll(validateActivityDates(startMillis, endMillis));
-        errors.addAll(validatePagingParameters(pageNum, pageSize));
-        if (errors.size() > 0) {
-            throw new ValidationException(errors);
-        }
+        validateSearchParameters(startMillis, endMillis, pageNum, pageSize);
         return getActivityMetadataPageByConcept(ActivityConcept.TESTING_LAB,
                 startMillis, endMillis, pageNum, pageSize);
     }
@@ -112,12 +97,7 @@ public class ActivityPagedMetadataManager extends SecuredManager {
             + "T(gov.healthit.chpl.permissions.domains.ActivityDomainPermissions).GET_API_KEY_MANAGEMENT_METADATA)")
     public ActivityMetadataPage getApiKeyManagementMetadata(Long startMillis, Long endMillis,
         Integer pageNum, Integer pageSize) throws ValidationException, JsonParseException, IOException {
-        Set<String> errors = new HashSet<String>();
-        errors.addAll(validateActivityDates(startMillis, endMillis));
-        errors.addAll(validatePagingParameters(pageNum, pageSize));
-        if (errors.size() > 0) {
-            throw new ValidationException(errors);
-        }
+        validateSearchParameters(startMillis, endMillis, pageNum, pageSize);
         return getActivityMetadataPageByConcept(ActivityConcept.API_KEY, startMillis, endMillis, pageNum, pageSize);
     }
 
@@ -126,12 +106,7 @@ public class ActivityPagedMetadataManager extends SecuredManager {
             + "T(gov.healthit.chpl.permissions.domains.ActivityDomainPermissions).GET_USER_MAINTENANCE_METADATA)")
     public ActivityMetadataPage getUserMaintenanceActivityMetadata(Long startMillis, Long endMillis,
             Integer pageNum, Integer pageSize) throws ValidationException, JsonParseException, IOException {
-        Set<String> errors = new HashSet<String>();
-        errors.addAll(validateActivityDates(startMillis, endMillis));
-        errors.addAll(validatePagingParameters(pageNum, pageSize));
-        if (errors.size() > 0) {
-            throw new ValidationException(errors);
-        }
+        validateSearchParameters(startMillis, endMillis, pageNum, pageSize);
         if (resourcePermissionsFactory.get().isUserRoleAdmin() || resourcePermissionsFactory.get().isUserRoleOnc()) {
             return getActivityMetadataPageByConcept(ActivityConcept.USER, startMillis, endMillis, pageNum, pageSize);
         } else {
@@ -147,12 +122,7 @@ public class ActivityPagedMetadataManager extends SecuredManager {
     @Transactional
     public ActivityMetadataPage getAnnouncementActivityMetadata(Long startMillis, Long endMillis,
             Integer pageNum, Integer pageSize) throws ValidationException, JsonParseException, IOException {
-        Set<String> errors = new HashSet<String>();
-        errors.addAll(validateActivityDates(startMillis, endMillis));
-        errors.addAll(validatePagingParameters(pageNum, pageSize));
-        if (errors.size() > 0) {
-            throw new ValidationException(errors);
-        }
+        validateSearchParameters(startMillis, endMillis, pageNum, pageSize);
         if (resourcePermissionsFactory.get().isUserAnonymous()) {
             List<Announcement> publicAnnouncements = announcementDao.findAll(true, false);
             List<Long> publicAnnouncementIds = publicAnnouncements.stream()
@@ -170,7 +140,45 @@ public class ActivityPagedMetadataManager extends SecuredManager {
     @Transactional
     public ActivityMetadataPage getPendingSurveillanceActivityMetadata(Long startMillis, Long endMillis,
             Integer pageNum, Integer pageSize) throws ValidationException, JsonParseException, IOException {
-        return getActivityMetadataByConcept(ActivityConcept.PENDING_SURVEILLANCE, startMillis, endMillis, pageNum, pageSize);
+        validateSearchParameters(startMillis, endMillis, pageNum, pageSize);
+        return getActivityMetadataPageByConcept(ActivityConcept.PENDING_SURVEILLANCE, startMillis, endMillis, pageNum, pageSize);
+    }
+
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ACTIVITY, "
+            + "T(gov.healthit.chpl.permissions.domains.ActivityDomainPermissions).GET_FUNCTIONALITY_TESTED_METADATA)")
+    @Transactional
+    public ActivityMetadataPage getFunctionalityTestedActivityMetadata(Long startMillis, Long endMillis,
+            Integer pageNum, Integer pageSize) throws ValidationException, JsonParseException, IOException {
+        validateSearchParameters(startMillis, endMillis, pageNum, pageSize);
+        return getActivityMetadataPageByConcept(ActivityConcept.FUNCTIONALITY_TESTED, startMillis, endMillis, pageNum, pageSize);
+    }
+
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ACTIVITY, "
+            + "T(gov.healthit.chpl.permissions.domains.ActivityDomainPermissions).GET_STANDARD_METADATA)")
+    @Transactional
+    public ActivityMetadataPage getStandardActivityMetadata(Long startMillis, Long endMillis,
+            Integer pageNum, Integer pageSize) throws ValidationException, JsonParseException, IOException {
+        validateSearchParameters(startMillis, endMillis, pageNum, pageSize);
+        return getActivityMetadataPageByConcept(ActivityConcept.STANDARD, startMillis, endMillis, pageNum, pageSize);
+    }
+
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ACTIVITY, "
+            + "T(gov.healthit.chpl.permissions.domains.ActivityDomainPermissions).GET_SVAP_METADATA)")
+    @Transactional
+    public ActivityMetadataPage getSvapActivityMetadata(Long startMillis, Long endMillis,
+            Integer pageNum, Integer pageSize) throws ValidationException, JsonParseException, IOException {
+        validateSearchParameters(startMillis, endMillis, pageNum, pageSize);
+        return getActivityMetadataPageByConcept(ActivityConcept.SVAP, startMillis, endMillis, pageNum, pageSize);
+    }
+
+    private void validateSearchParameters(Long startMillis, Long endMillis,
+            Integer pageNum, Integer pageSize) throws ValidationException {
+        Set<String> errors = new HashSet<String>();
+        errors.addAll(validateActivityDates(startMillis, endMillis));
+        errors.addAll(validatePagingParameters(pageNum, pageSize));
+        if (errors.size() > 0) {
+            throw new ValidationException(errors);
+        }
     }
 
     private ActivityMetadataPage getActivityMetadataPageByConcept(ActivityConcept concept,

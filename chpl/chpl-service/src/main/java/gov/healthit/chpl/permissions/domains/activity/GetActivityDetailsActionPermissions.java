@@ -126,6 +126,10 @@ public class GetActivityDetailsActionPermissions extends ActionPermissions {
                     return hasAccessToChangeRequest(details.getOriginalData());
                 }
                 break;
+            case FUNCTIONALITY_TESTED:
+            case SVAP:
+            case STANDARD:
+                return false;
             default:
                 // all other types of activity
                 // are accessible to any logged-in or anonymous user

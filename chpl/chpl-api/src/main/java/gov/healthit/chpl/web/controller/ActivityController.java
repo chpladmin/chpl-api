@@ -615,6 +615,54 @@ public class ActivityController {
         return pagedMetadataManager.getApiKeyManagementMetadata(start, end, pageNum, pageSize);
     }
 
+    @Operation(summary = "Get metadata about auditable records in the system for the management of Functionality Tested.",
+            description = "All parameters are optional and will default to the first page of activity "
+                    + "with a page size of the maximum allowed. Page number is 0-based. Activities will be returned "
+                    + "with the most recent activity first. Only accessible to ROLE_ADMIN or ROLE_ONC.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
+    @RequestMapping(value = "/metadata/functionalities-tested", method = RequestMethod.GET,
+            produces = "application/json; charset=utf-8")
+    public ActivityMetadataPage metadataForFunctionalitiesTested(@RequestParam(required = false) Long start,
+            @RequestParam(required = false) Long end, @RequestParam(required = false) Integer pageNum,
+            @RequestParam(required = false) Integer pageSize) throws JsonParseException, IOException, ValidationException {
+        return pagedMetadataManager.getFunctionalityTestedActivityMetadata(start, end, pageNum, pageSize);
+    }
+
+    @Operation(summary = "Get metadata about auditable records in the system for the management of Standards.",
+            description = "All parameters are optional and will default to the first page of activity "
+                    + "with a page size of the maximum allowed. Page number is 0-based. Activities will be returned "
+                    + "with the most recent activity first. Only accessible to ROLE_ADMIN or ROLE_ONC.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
+    @RequestMapping(value = "/metadata/standards", method = RequestMethod.GET,
+            produces = "application/json; charset=utf-8")
+    public ActivityMetadataPage metadataForStandards(@RequestParam(required = false) Long start,
+            @RequestParam(required = false) Long end, @RequestParam(required = false) Integer pageNum,
+            @RequestParam(required = false) Integer pageSize) throws JsonParseException, IOException, ValidationException {
+        return pagedMetadataManager.getStandardActivityMetadata(start, end, pageNum, pageSize);
+    }
+
+    @Operation(summary = "Get metadata about auditable records in the system for the management of SVAPs.",
+            description = "All parameters are optional and will default to the first page of activity "
+                    + "with a page size of the maximum allowed. Page number is 0-based. Activities will be returned "
+                    + "with the most recent activity first. Only accessible to ROLE_ADMIN or ROLE_ONC.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
+    @RequestMapping(value = "/metadata/svaps", method = RequestMethod.GET,
+            produces = "application/json; charset=utf-8")
+    public ActivityMetadataPage metadataForSvaps(@RequestParam(required = false) Long start,
+            @RequestParam(required = false) Long end, @RequestParam(required = false) Integer pageNum,
+            @RequestParam(required = false) Integer pageSize) throws JsonParseException, IOException, ValidationException {
+        return pagedMetadataManager.getSvapActivityMetadata(start, end, pageNum, pageSize);
+    }
+
     private void validateActivityDates(final Long startDate, final Long endDate) throws IllegalArgumentException {
         LocalDate startDateUtc = Instant.ofEpochMilli(startDate).atZone(ZoneId.of("UTC")).toLocalDate();
         LocalDate endDateUtc = Instant.ofEpochMilli(endDate).atZone(ZoneId.of("UTC")).toLocalDate();

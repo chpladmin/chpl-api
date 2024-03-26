@@ -14,8 +14,11 @@ import gov.healthit.chpl.permissions.domains.activity.GetApiKeyManagementActivit
 import gov.healthit.chpl.permissions.domains.activity.GetAtlActivityMetadataActionPermissions;
 import gov.healthit.chpl.permissions.domains.activity.GetChangeRequestActivityMetadataActionPermissions;
 import gov.healthit.chpl.permissions.domains.activity.GetComplaintActivityMetadataActionPermissions;
+import gov.healthit.chpl.permissions.domains.activity.GetFunctionalityTestedMetadataActionPermissions;
 import gov.healthit.chpl.permissions.domains.activity.GetPendingSurveillanceMetadataActionPermissions;
 import gov.healthit.chpl.permissions.domains.activity.GetQuarterlyReportActivityMetadataActionPermissions;
+import gov.healthit.chpl.permissions.domains.activity.GetStandardMetadataActionPermissions;
+import gov.healthit.chpl.permissions.domains.activity.GetSvapMetadataActionPermissions;
 import gov.healthit.chpl.permissions.domains.activity.GetUserMaintenanceMetadataActionPermissions;
 
 @Component
@@ -34,6 +37,10 @@ public class ActivityDomainPermissions extends DomainPermissions {
     public static final String GET_ANNUAL_REPORT_METADATA = "GET_ANNUAL_REPORT_METADATA";
     public static final String GET_CHANGE_REQUEST_METADATA = "GET_CHANGE_REQUEST_METADATA";
     public static final String GET_API_KEY_MANAGEMENT_METADATA = "GET_API_KEY_MANAGEMENT_METADATA";
+    public static final String GET_FUNCTIONALITY_TESTED_METADATA = "GET_FUNCTIONALITY_TESTED_METADATA";
+    public static final String GET_STANDARD_METADATA = "GET_STANDARD_METADATA";
+    public static final String GET_SVAP_METADATA = "GET_SVAP_METADATA";
+
 
     @Autowired
     public ActivityDomainPermissions(
@@ -49,7 +56,10 @@ public class ActivityDomainPermissions extends DomainPermissions {
             @Qualifier("activityGetQuarterlyReportActivityMetadataActionPermissions") GetQuarterlyReportActivityMetadataActionPermissions getQuarterlyReportActivityMetadataActionPermissions,
             @Qualifier("activityGetAnnualReportActivityMetadataActionPermissions") GetAnnualReportActivityMetadataActionPermissions getAnnualReportActivityMetadataActionPermissions,
             @Qualifier("activityGetChangeRequestActivityMetadataActionPermissions") GetChangeRequestActivityMetadataActionPermissions getChangeRequestActivityMetadataActionPermissions,
-            @Qualifier("activityGetApiKeyManagementActivityMetadataActionPermissions") GetApiKeyManagementActivityMetadataActionPermissions getApiKeyManagementMetadataActionPermissions){
+            @Qualifier("activityGetApiKeyManagementActivityMetadataActionPermissions") GetApiKeyManagementActivityMetadataActionPermissions getApiKeyManagementMetadataActionPermissions,
+            @Qualifier("getFunctionalityTestedActivityMetadataActionPermissions") GetFunctionalityTestedMetadataActionPermissions getFunctionalityTestedMetadataActionPermissions,
+            @Qualifier("getStandardActivityMetadataActionPermissions") GetStandardMetadataActionPermissions getStandardMetadataActionPermissions,
+            @Qualifier("getSvapActivityMetadataActionPermissions") GetSvapMetadataActionPermissions getSvapMetadataActionPermissions){
 
         getActionPermissions().put(GET_ACB_METADATA, getAcbActivityMetadataActionPermissions);
         getActionPermissions().put(GET_METADATA_BY_ACB, getActivityMetadataByAcbActionPermissions);
@@ -64,5 +74,8 @@ public class ActivityDomainPermissions extends DomainPermissions {
         getActionPermissions().put(GET_ANNUAL_REPORT_METADATA, getAnnualReportActivityMetadataActionPermissions);
         getActionPermissions().put(GET_CHANGE_REQUEST_METADATA, getChangeRequestActivityMetadataActionPermissions);
         getActionPermissions().put(GET_API_KEY_MANAGEMENT_METADATA, getApiKeyManagementMetadataActionPermissions);
+        getActionPermissions().put(GET_FUNCTIONALITY_TESTED_METADATA, getFunctionalityTestedMetadataActionPermissions);
+        getActionPermissions().put(GET_STANDARD_METADATA, getStandardMetadataActionPermissions);
+        getActionPermissions().put(GET_SVAP_METADATA, getSvapMetadataActionPermissions);
     }
 }

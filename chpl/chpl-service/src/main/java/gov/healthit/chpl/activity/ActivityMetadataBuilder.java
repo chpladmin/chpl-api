@@ -1,16 +1,12 @@
 package gov.healthit.chpl.activity;
 
 import gov.healthit.chpl.domain.activity.ActivityMetadata;
-import gov.healthit.chpl.domain.activity.AnnouncementActivityMetadata;
 import gov.healthit.chpl.domain.activity.AnnualReportActivityMetadata;
-import gov.healthit.chpl.domain.activity.ApiKeyManagementActivityMetadata;
 import gov.healthit.chpl.domain.activity.CertificationBodyActivityMetadata;
 import gov.healthit.chpl.domain.activity.ChangeRequestActivityMetadata;
 import gov.healthit.chpl.domain.activity.ComplaintActivityMetadata;
-import gov.healthit.chpl.domain.activity.CorrectiveActionPlanActivityMetadata;
 import gov.healthit.chpl.domain.activity.DeveloperActivityMetadata;
 import gov.healthit.chpl.domain.activity.ListingActivityMetadata;
-import gov.healthit.chpl.domain.activity.PendingSurveillanceActivityMetadata;
 import gov.healthit.chpl.domain.activity.ProductActivityMetadata;
 import gov.healthit.chpl.domain.activity.QuarterlyReportActivityMetadata;
 import gov.healthit.chpl.domain.activity.TestingLabActivityMetadata;
@@ -18,25 +14,9 @@ import gov.healthit.chpl.domain.activity.UserMaintenanceActivityMetadata;
 import gov.healthit.chpl.domain.activity.VersionActivityMetadata;
 import gov.healthit.chpl.dto.ActivityDTO;
 
-/**
- * Builds an appropriate metadata object for the type of activity that is
- * provided.
- *
- * @author kekey
- *
- */
-public abstract class ActivityMetadataBuilder {
+public class ActivityMetadataBuilder {
 
-    /**
-     * Create an activity metadata object from activity DTO. Fill in the basic
-     * fields that all metadata will have (date, id, etc) and then add fields
-     * specific to the type of activity. Finally, categorize the activity based
-     * on what actually happened.
-     *
-     * @param dto
-     * @return parsed metadata object
-     */
-    public ActivityMetadata build(final ActivityDTO dto) {
+    public ActivityMetadata build(ActivityDTO dto) {
         ActivityMetadata metadata = createMetadataObject(dto);
         if (metadata != null) {
             addGenericMetadata(dto, metadata);
@@ -45,9 +25,11 @@ public abstract class ActivityMetadataBuilder {
         return metadata;
     }
 
-    protected abstract void addConceptSpecificMetadata(ActivityDTO dto, ActivityMetadata metadata);
+    protected void addConceptSpecificMetadata(ActivityDTO dto, ActivityMetadata metadata) {
+        //can be implemented by subclasses to add other info to the metadata
+    }
 
-    protected void addGenericMetadata(final ActivityDTO dto, final ActivityMetadata metadata) {
+    protected void addGenericMetadata(ActivityDTO dto, ActivityMetadata metadata) {
         metadata.setId(dto.getId());
         metadata.setDate(dto.getActivityDate());
         metadata.setObjectId(dto.getActivityObjectId());
@@ -56,7 +38,7 @@ public abstract class ActivityMetadataBuilder {
         metadata.setDescription(dto.getDescription());
     }
 
-    private ActivityMetadata createMetadataObject(final ActivityDTO dto) {
+    private ActivityMetadata createMetadataObject(ActivityDTO dto) {
         ActivityMetadata metadata = null;
         switch (dto.getConcept()) {
         case CERTIFIED_PRODUCT:
@@ -80,15 +62,6 @@ public abstract class ActivityMetadataBuilder {
         case USER:
             metadata = new UserMaintenanceActivityMetadata();
             break;
-        case ANNOUNCEMENT:
-            metadata = new AnnouncementActivityMetadata();
-            break;
-        case CORRECTIVE_ACTION_PLAN:
-            metadata = new CorrectiveActionPlanActivityMetadata();
-            break;
-        case PENDING_SURVEILLANCE:
-            metadata = new PendingSurveillanceActivityMetadata();
-            break;
         case COMPLAINT:
             metadata = new ComplaintActivityMetadata();
             break;
@@ -102,8 +75,14 @@ public abstract class ActivityMetadataBuilder {
         case CHANGE_REQUEST:
             metadata = new ChangeRequestActivityMetadata();
             break;
+        case ANNOUNCEMENT:
+        case CORRECTIVE_ACTION_PLAN:
+        case PENDING_SURVEILLANCE:
         case API_KEY:
-            metadata = new ApiKeyManagementActivityMetadata();
+        case FUNCTIONALITY_TESTED:
+        case STANDARD:
+        case SVAP:
+            metadata = new ActivityMetadata();
             break;
         default:
             break;
