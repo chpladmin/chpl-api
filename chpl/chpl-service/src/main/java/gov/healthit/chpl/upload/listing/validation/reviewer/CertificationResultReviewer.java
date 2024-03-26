@@ -27,7 +27,7 @@ public class CertificationResultReviewer {
     private TestDataReviewer testDataReviewer;
     private ConformanceMethodReviewer conformanceMethodReviewer;
     private FunctionalityTestedReviewer functionalityTestedReviewer;
-    private StandardReviewer standardReviewer;
+    private StandardAsOfCertificationDayReviewer standardReviewer;
     private TestStandardReviewer testStandardReviewer;
     private OptionalStandardReviewer optionalStandardReviewer;
     private SvapReviewer svapReviewer;
@@ -48,7 +48,7 @@ public class CertificationResultReviewer {
             @Qualifier("listingUploadTestDataReviewer") TestDataReviewer testDataReviewer,
             @Qualifier("conformanceMethodReviewer") ConformanceMethodReviewer conformanceMethodReviewer,
             @Qualifier("listingUploadFunctionalityTestedReviewer") FunctionalityTestedReviewer functionalityTestedReviewer,
-            @Qualifier("listingUploadStandardReviewer") StandardReviewer standardReviewer,
+            @Qualifier("standardAsOfCertificationDayReviewer") StandardAsOfCertificationDayReviewer standardReviewer,
             @Qualifier("listingUploadTestStandardReviewer") TestStandardReviewer testStandardReviewer,
             @Qualifier("listingUploadOptionalStandardReviewer") OptionalStandardReviewer optionalStandardReviewer,
             @Qualifier("listingUploadSvapReviewer") SvapReviewer svapReviewer,
