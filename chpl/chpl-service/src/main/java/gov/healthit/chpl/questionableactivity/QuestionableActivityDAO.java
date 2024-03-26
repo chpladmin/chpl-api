@@ -264,17 +264,19 @@ public class QuestionableActivityDAO extends BaseDAOImpl {
 
     private User getUserFromActivtyEntity(ActivityEntity entity) {
         User currentUser = null;
-        if (entity.getLastModifiedUser() != null) {
-            try {
-                currentUser = userDAO.getById(entity.getLastModifiedUser()).toDomain();
-            } catch (UserRetrievalException e) {
-                LOGGER.error("Could not retreive user with ID: {}", entity.getLastModifiedUser(), e);
-            }
-        } else if (entity.getLastModifiedSsoUser() != null) {
-            try {
-                currentUser = cognitoUserService.getUserInfo(entity.getLastModifiedSsoUser());
-            } catch (UserRetrievalException e) {
-                LOGGER.error("Could not retreive user with ID: {}", entity.getLastModifiedSsoUser(), e);
+        if (entity != null) {
+            if (entity.getLastModifiedUser() != null) {
+                try {
+                    currentUser = userDAO.getById(entity.getLastModifiedUser()).toDomain();
+                } catch (UserRetrievalException e) {
+                    LOGGER.error("Could not retreive user with ID: {}", entity.getLastModifiedUser(), e);
+                }
+            } else if (entity.getLastModifiedSsoUser() != null) {
+                try {
+                    currentUser = cognitoUserService.getUserInfo(entity.getLastModifiedSsoUser());
+                } catch (UserRetrievalException e) {
+                    LOGGER.error("Could not retreive user with ID: {}", entity.getLastModifiedSsoUser(), e);
+                }
             }
         }
         return currentUser;

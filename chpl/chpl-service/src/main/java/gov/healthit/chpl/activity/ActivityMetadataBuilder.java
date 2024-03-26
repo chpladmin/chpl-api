@@ -113,7 +113,7 @@ public abstract class ActivityMetadataBuilder {
             User currentUser = null;
             if (activityDTO.getLastModifiedUser() != null) {
                 try {
-                    currentUser = userDAO.getById(activityDTO.getLastModifiedUser()).toDomain();
+                    currentUser = userDAO.getById(activityDTO.getLastModifiedUser(), true).toDomain();
                 } catch (UserRetrievalException e) {
                     LOGGER.error("Could not retreive user with ID: {}", activityDTO.getLastModifiedUser(), e);
                 }
