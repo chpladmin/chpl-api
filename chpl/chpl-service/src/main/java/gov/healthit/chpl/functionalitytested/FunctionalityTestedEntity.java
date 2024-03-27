@@ -94,8 +94,6 @@ public class FunctionalityTestedEntity extends EntityAudit {
     public FunctionalityTested toDomain() {
         return FunctionalityTested.builder()
                 .id(this.getId())
-                .description(this.getName())
-                .name(this.getNumber())
                 .value(this.getValue())
                 .regulatoryTextCitation(this.regulatoryTextCitation)
                 .additionalInformation(additionalInformation)
@@ -110,8 +108,6 @@ public class FunctionalityTestedEntity extends EntityAudit {
     public FunctionalityTested toDomainWithCriteria() {
         return FunctionalityTested.builder()
                 .id(this.getId())
-                .description(this.getName())
-                .name(this.getNumber())
                 .value(this.getValue())
                 .regulatoryTextCitation(this.regulatoryTextCitation)
                 .additionalInformation(additionalInformation)

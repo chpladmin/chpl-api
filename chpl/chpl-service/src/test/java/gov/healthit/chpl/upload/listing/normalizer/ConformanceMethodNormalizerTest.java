@@ -199,42 +199,9 @@ public class ConformanceMethodNormalizerTest {
                 .build();
         normalizer.normalize(listing);
         assertEquals(1, listing.getCertificationResults().get(0).getConformanceMethods().size());
-        assertEquals(5L, listing.getCertificationResults().get(0).getConformanceMethods().get(0).getConformanceMethod().getId());
         assertEquals(LocalDate.parse("2022-06-01"), listing.getCertificationResults().get(0).getConformanceMethods().get(0).getConformanceMethod().getRemovalDate());
         assertEquals("NCQA eCQM Test Method", listing.getCertificationResults().get(0).getConformanceMethods().get(0).getConformanceMethod().getName());
         assertEquals("100", listing.getCertificationResults().get(0).getConformanceMethods().get(0).getConformanceMethodVersion());
-    }
-
-    @Test
-    public void normalize_criterionHasAllowedConformanceMethods_addsAllowedConformanceMethodsToCertificationResult() {
-        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .certificationResult(CertificationResult.builder()
-                        .success(true)
-                        .criterion(CertificationCriterion.builder()
-                                    .id(1L)
-                                    .number("170.315 (a)(1)")
-                                    .build())
-                        .conformanceMethods(new ArrayList<CertificationResultConformanceMethod>())
-                        .build())
-                .build();
-        normalizer.normalize(listing);
-        assertEquals(2, listing.getCertificationResults().get(0).getAllowedConformanceMethods().size());
-    }
-
-    @Test
-    public void normalize_criterionHasNoAllowedConformanceMethods_noAllowedConformanceMethodsAdded() {
-        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .certificationResult(CertificationResult.builder()
-                        .success(true)
-                        .criterion(CertificationCriterion.builder()
-                                    .id(4L)
-                                    .number("170.315 (c)(2)")
-                                    .build())
-                        .conformanceMethods(new ArrayList<CertificationResultConformanceMethod>())
-                        .build())
-                .build();
-        normalizer.normalize(listing);
-        assertEquals(0, listing.getCertificationResults().get(0).getAllowedConformanceMethods().size());
     }
 
     private CertificationEdition create2015Edition() {

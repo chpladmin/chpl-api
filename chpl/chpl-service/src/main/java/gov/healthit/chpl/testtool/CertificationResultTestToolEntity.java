@@ -58,9 +58,6 @@ public class CertificationResultTestToolEntity extends EntityAudit {
         return CertificationResultTestTool.builder()
                 .id(id)
                 .certificationResultId(certificationResultId)
-                .testToolId(testTool.getId())
-                .testToolName(testTool.getValue())
-                .testToolVersion(version)
                 .testTool(testTool.toDomain())
                 .version(version)
                 .build();
