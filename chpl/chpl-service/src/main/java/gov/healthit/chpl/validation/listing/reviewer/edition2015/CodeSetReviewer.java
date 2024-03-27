@@ -77,7 +77,7 @@ public abstract class CodeSetReviewer implements Reviewer {
     }
 
     private void removeInvalidCodeSets(CertificationResult certResult, List<CertificationResultCodeSet> invalidCodeSetsToRemove) {
-        if (!CollectionUtils.isEmpty(invalidCodeSetsToRemove)) {
+        if (!CollectionUtils.isEmpty(invalidCodeSetsToRemove) && !CollectionUtils.isEmpty(certResult.getCodeSets())) {
             Iterator<CertificationResultCodeSet> codeSetIter = certResult.getCodeSets().iterator();
             while (codeSetIter.hasNext()) {
                 CertificationResultCodeSet crCodeSet = codeSetIter.next();
