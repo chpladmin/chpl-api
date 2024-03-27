@@ -246,6 +246,14 @@
         <AppenderRef ref="updatedListingStatusReportCreatorJob" />
         <AppenderRef ref="updatedListingStatusReportCreatorJobJson" />
     </Logger>
+    <Logger name="updatedCriteriaStatusReportCreatorJobLogger" level="INFO" additivity="false">
+        <AppenderRef ref="updatedCriteriaStatusReportCreatorJob" />
+        <AppenderRef ref="updatedCriteriaStatusReportCreatorJobJson" />
+    </Logger>
+    <Logger name="updatedCriteriaStatusReportEmailJobLogger" level="INFO" additivity="false">
+        <AppenderRef ref="updatedCriteriaStatusReportEmailJob" />
+        <AppenderRef ref="updatedCriteriaStatusReportEmailJobJson" />
+    </Logger>
     <Logger name="updateCurrentCertificationStatusJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="updateCurrentCertificationStatusJob" />
         <AppenderRef ref="updateCurrentCertificationStatusJobJson" />
