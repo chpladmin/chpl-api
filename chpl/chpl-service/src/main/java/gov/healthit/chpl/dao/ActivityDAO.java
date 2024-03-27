@@ -334,7 +334,6 @@ public class ActivityDAO extends BaseDAOImpl {
         String queryStr = "SELECT ae "
                 + "FROM ActivityEntity ae "
                 + "JOIN FETCH ae.concept ac "
-                //+ "LEFT OUTER JOIN FETCH ae.user "
                 + "WHERE (ac.concept = :conceptName) ";
         if (startDate != null) {
             queryStr += "AND (ae.activityDate >= :startDate) ";

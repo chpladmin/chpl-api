@@ -109,8 +109,6 @@ public class QuestionableActivitySearchResultEntity {
                 .before(before)
                 .after(after)
                 .activityDate(DateUtil.toLocalDateTime(activityDate.getTime()))
-                //.userId(userId)
-                //.username(username)
                 .certificationStatusChangeReason(certificationStatusChangeReason)
                 .reason(reason)
                 .developerId(developerId)

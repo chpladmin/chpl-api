@@ -46,7 +46,6 @@ public class QuestionableActivitySearchResult implements Serializable {
     @JsonDeserialize(using = EasternToSystemLocalDateTimeDeserializer.class)
     @JsonSerialize(using = SystemToEasternLocalDateTimeSerializer.class)
     private LocalDateTime activityDate;
-    //private Long userId;
     private User user;
     private String username;
     private String certificationStatusChangeReason;
