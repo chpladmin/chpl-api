@@ -1,6 +1,7 @@
 package gov.healthit.chpl.questionableactivity.entity;
 
 import java.util.Date;
+import java.util.UUID;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -48,8 +49,11 @@ public class QuestionableActivitySearchResultEntity {
     @Column(name = "activity_user_id")
     private Long userId;
 
-    @Column(name = "user_contact_info")
-    private String username;
+    @Column(name = "activity_sso_user_id")
+    private UUID ssoUserId;
+
+    //@Column(name = "user_contact_info")
+    //private String username;
 
     @Column(name = "certification_status_change_reason")
     private String certificationStatusChangeReason;
@@ -105,8 +109,8 @@ public class QuestionableActivitySearchResultEntity {
                 .before(before)
                 .after(after)
                 .activityDate(DateUtil.toLocalDateTime(activityDate.getTime()))
-                .userId(userId)
-                .username(username)
+                //.userId(userId)
+                //.username(username)
                 .certificationStatusChangeReason(certificationStatusChangeReason)
                 .reason(reason)
                 .developerId(developerId)

@@ -7,11 +7,10 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
-import gov.healthit.chpl.dao.auth.UserDAO;
 import gov.healthit.chpl.domain.activity.ActivityMetadata;
 import gov.healthit.chpl.domain.activity.ChangeRequestActivityMetadata;
 import gov.healthit.chpl.dto.ActivityDTO;
-import gov.healthit.chpl.manager.auth.CognitoUserService;
+import gov.healthit.chpl.util.ChplUserToCognitoUserUtil;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -19,8 +18,8 @@ import lombok.extern.log4j.Log4j2;
 public class ChangeRequestActivityMetadataBuilder extends ActivityMetadataBuilder {
 
     @Autowired
-    public ChangeRequestActivityMetadataBuilder(CognitoUserService cognitoUserService, UserDAO userDAO) {
-        super(cognitoUserService, userDAO);
+    public ChangeRequestActivityMetadataBuilder(ChplUserToCognitoUserUtil chplUserToCognitoUserUtil) {
+        super(chplUserToCognitoUserUtil);
     }
 
     @Override

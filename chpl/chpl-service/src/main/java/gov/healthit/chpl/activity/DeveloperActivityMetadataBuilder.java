@@ -7,13 +7,12 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import gov.healthit.chpl.dao.auth.UserDAO;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.activity.ActivityCategory;
 import gov.healthit.chpl.domain.activity.ActivityMetadata;
 import gov.healthit.chpl.domain.activity.DeveloperActivityMetadata;
 import gov.healthit.chpl.dto.ActivityDTO;
-import gov.healthit.chpl.manager.auth.CognitoUserService;
+import gov.healthit.chpl.util.ChplUserToCognitoUserUtil;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -22,8 +21,8 @@ public class DeveloperActivityMetadataBuilder extends ActivityMetadataBuilder {
     private ObjectMapper jsonMapper;
 
     @Autowired
-    public DeveloperActivityMetadataBuilder(CognitoUserService cognitoUserService, UserDAO userDAO) {
-        super(cognitoUserService, userDAO);
+    public DeveloperActivityMetadataBuilder(ChplUserToCognitoUserUtil chplUserToCognitoUserUtil) {
+        super(chplUserToCognitoUserUtil);
         jsonMapper = new ObjectMapper();
     }
 

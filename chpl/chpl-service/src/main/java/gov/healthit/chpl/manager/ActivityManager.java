@@ -193,16 +193,6 @@ public class ActivityManager extends SecuredManager {
         return event;
     }
 
-    private User getUserFromActivityDTO(ActivityDTO activityDTO) throws UserRetrievalException {
-        User currentUser = null;
-        if (activityDTO.getLastModifiedUser() != null) {
-            currentUser = userDAO.getById(activityDTO.getLastModifiedUser()).toDomain();
-        } else if (activityDTO.getLastModifiedSsoUser() != null) {
-            currentUser = cognitoUserService.getUserInfo(activityDTO.getLastModifiedSsoUser());
-        }
-        return currentUser;
-    }
-
     private ActivityDetails getActivityDetailsFromDTO(ActivityDTO dto) throws UserRetrievalException, JsonParseException, IOException {
         ActivityDetails event = null;
         if (dto.getConcept() == ActivityConcept.PRODUCT) {
@@ -216,7 +206,7 @@ public class ActivityManager extends SecuredManager {
         event.setActivityDate(dto.getActivityDate());
         event.setActivityObjectId(dto.getActivityObjectId());
         event.setConcept(dto.getConcept());
-        event.setResponsibleUser(getUserFromActivityDTO(dto));
+        event.setResponsibleUser(dto.getUser());
 
         JsonNode originalJSON = null;
         if (dto.getOriginalData() != null) {

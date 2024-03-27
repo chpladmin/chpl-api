@@ -10,14 +10,13 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.healthit.chpl.certifiedproduct.service.CertificationStatusEventsService;
-import gov.healthit.chpl.dao.auth.UserDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.activity.ActivityCategory;
 import gov.healthit.chpl.domain.activity.ActivityMetadata;
 import gov.healthit.chpl.domain.activity.ListingActivityMetadata;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.dto.ActivityDTO;
-import gov.healthit.chpl.manager.auth.CognitoUserService;
+import gov.healthit.chpl.util.ChplUserToCognitoUserUtil;
 
 @Component("listingActivityMetadataBuilder")
 public class ListingActivityMetadataBuilder extends ActivityMetadataBuilder {
@@ -27,8 +26,8 @@ public class ListingActivityMetadataBuilder extends ActivityMetadataBuilder {
     private ObjectMapper jsonMapper;
 
     @Autowired
-    public ListingActivityMetadataBuilder(CertificationStatusEventsService cseService, CognitoUserService cognitoUserService, UserDAO userDAO) {
-        super(cognitoUserService, userDAO);
+    public ListingActivityMetadataBuilder(CertificationStatusEventsService cseService, ChplUserToCognitoUserUtil chplUserToCognitoUserUtil) {
+        super(chplUserToCognitoUserUtil);
         this.cseService = cseService;
         jsonMapper = new ObjectMapper();
     }

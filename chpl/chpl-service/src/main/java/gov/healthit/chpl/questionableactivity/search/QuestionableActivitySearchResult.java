@@ -12,6 +12,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
+import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.util.DateUtil;
 import gov.healthit.chpl.util.EasternToSystemLocalDateTimeDeserializer;
 import gov.healthit.chpl.util.SystemToEasternLocalDateTimeSerializer;
@@ -45,7 +46,8 @@ public class QuestionableActivitySearchResult implements Serializable {
     @JsonDeserialize(using = EasternToSystemLocalDateTimeDeserializer.class)
     @JsonSerialize(using = SystemToEasternLocalDateTimeSerializer.class)
     private LocalDateTime activityDate;
-    private Long userId;
+    //private Long userId;
+    private User user;
     private String username;
     private String certificationStatusChangeReason;
     private String reason;

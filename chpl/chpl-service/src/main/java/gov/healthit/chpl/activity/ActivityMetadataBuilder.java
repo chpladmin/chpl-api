@@ -1,6 +1,5 @@
 package gov.healthit.chpl.activity;
 
-import gov.healthit.chpl.dao.auth.UserDAO;
 import gov.healthit.chpl.domain.activity.ActivityMetadata;
 import gov.healthit.chpl.domain.activity.AnnouncementActivityMetadata;
 import gov.healthit.chpl.domain.activity.AnnualReportActivityMetadata;
@@ -17,21 +16,17 @@ import gov.healthit.chpl.domain.activity.QuarterlyReportActivityMetadata;
 import gov.healthit.chpl.domain.activity.TestingLabActivityMetadata;
 import gov.healthit.chpl.domain.activity.UserMaintenanceActivityMetadata;
 import gov.healthit.chpl.domain.activity.VersionActivityMetadata;
-import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.dto.ActivityDTO;
-import gov.healthit.chpl.exception.UserRetrievalException;
-import gov.healthit.chpl.manager.auth.CognitoUserService;
+import gov.healthit.chpl.util.ChplUserToCognitoUserUtil;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 public abstract class ActivityMetadataBuilder {
 
-    private CognitoUserService cognitoUserService;
-    private UserDAO userDAO;
+    private ChplUserToCognitoUserUtil chplUserToCognitoUserUtil;
 
-    public ActivityMetadataBuilder(CognitoUserService cognitoUserService, UserDAO userDAO) {
-        this.cognitoUserService = cognitoUserService;
-        this.userDAO = userDAO;
+    public ActivityMetadataBuilder(ChplUserToCognitoUserUtil chplUserToCognitoUserUtil) {
+        this.chplUserToCognitoUserUtil = chplUserToCognitoUserUtil;
     }
 
    public ActivityMetadata build(final ActivityDTO dto) {
@@ -50,7 +45,7 @@ public abstract class ActivityMetadataBuilder {
         metadata.setDate(dto.getActivityDate());
         metadata.setObjectId(dto.getActivityObjectId());
         metadata.setConcept(dto.getConcept());
-        metadata.setResponsibleUser(getUserFromActivityDTO(dto));
+        metadata.setResponsibleUser(chplUserToCognitoUserUtil.getUser(dto.getLastModifiedUser(), dto.getLastModifiedSsoUser()));
         metadata.setDescription(dto.getDescription());
     }
 
@@ -108,23 +103,4 @@ public abstract class ActivityMetadataBuilder {
         }
         return metadata;
     }
-
-    protected User getUserFromActivityDTO(ActivityDTO activityDTO) {
-            User currentUser = null;
-            if (activityDTO.getLastModifiedUser() != null) {
-                try {
-                    currentUser = userDAO.getById(activityDTO.getLastModifiedUser(), true).toDomain();
-                } catch (UserRetrievalException e) {
-                    LOGGER.error("Could not retreive user with ID: {}", activityDTO.getLastModifiedUser(), e);
-                }
-            } else if (activityDTO.getLastModifiedSsoUser() != null) {
-                try {
-                    currentUser = cognitoUserService.getUserInfo(activityDTO.getLastModifiedSsoUser());
-                } catch (UserRetrievalException e) {
-                    LOGGER.error("Could not retreive user with ID: {}", activityDTO.getLastModifiedSsoUser(), e);
-                }
-            }
-            return currentUser;
-    }
-
 }
