@@ -250,6 +250,9 @@ public class CertifiedProductSearchDetails implements Serializable {
     @JsonSerialize(using = LocalDateSerializer.class)
     private LocalDate rwtPlansCheckDate;
 
+    @JsonIgnore
+    private String userEnteredRwtPlansCheckDate;
+
     @Schema(description = "URL where the listings Real World Testing Results is located")
     private String rwtResultsUrl;
 
@@ -257,6 +260,9 @@ public class CertifiedProductSearchDetails implements Serializable {
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
     private LocalDate rwtResultsCheckDate;
+
+    @JsonIgnore
+    private String userEnteredRwtResultsCheckDate;
 
     @Schema(description = "URL where the Listings SVAP Notice URL is located")
     private String svapNoticeUrl;

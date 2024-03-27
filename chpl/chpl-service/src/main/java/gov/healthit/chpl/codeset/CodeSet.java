@@ -2,9 +2,13 @@ package gov.healthit.chpl.codeset;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -30,6 +34,7 @@ import lombok.ToString;
 @AllArgsConstructor
 public class CodeSet implements Serializable {
     private static final long serialVersionUID = 8827071245268602313L;
+    public static final String CODE_SET_DATE_FORMAT = "MMM yyyy";
 
     private Long id;
 
@@ -46,5 +51,17 @@ public class CodeSet implements Serializable {
     @JsonInclude(value = Include.NON_EMPTY)
     @Builder.Default
     private List<CertificationCriterion> criteria = new ArrayList<CertificationCriterion>();
+
+    @JsonIgnore
+    private String userEnteredName;
+
+    public String getName() {
+        String codeSetName = getRequiredDay() != null
+                ? getRequiredDay().format(DateTimeFormatter.ofPattern(CODE_SET_DATE_FORMAT)) : null;
+        if (codeSetName == null) {
+            codeSetName = !StringUtils.isEmpty(getUserEnteredName()) ? getUserEnteredName() : " '?' ";
+        }
+        return codeSetName;
+    }
 
 }

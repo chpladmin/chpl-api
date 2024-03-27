@@ -16,6 +16,7 @@ public class ListingDetailsNormalizer {
     private CertificationEditionNormalizer editionNormalizer;
     private CertificationBodyNormalizer acbNormalizer;
     private TestingLabNormalizer atlNormalizer;
+    private RwtNormalizer rwtNormalizer;
     private DeveloperNormalizer developerNormalizer;
     private ProductAndVersionNormalizer productVersionNormalizer;
     private IcsNormalizer icsNormalizer;
@@ -47,6 +48,7 @@ public class ListingDetailsNormalizer {
         this.editionNormalizer = editionNormalizer;
         this.acbNormalizer = acbNormalizer;
         this.atlNormalizer = atlNormalizer;
+        this.rwtNormalizer = new RwtNormalizer();
         this.developerNormalizer = developerNormalizer;
         this.productVersionNormalizer = productVersionNormalizer;
         this.icsNormalizer = icsNormalizer;
@@ -74,6 +76,7 @@ public class ListingDetailsNormalizer {
         }
         this.acbNormalizer.normalize(listing);
         this.atlNormalizer.normalize(listing);
+        this.rwtNormalizer.normalize(listing);
         this.developerNormalizer.normalize(listing);
         this.productVersionNormalizer.normalize(listing);
         this.icsNormalizer.normalize(listing);

@@ -6,9 +6,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.ValidationUtils;
 import lombok.extern.log4j.Log4j2;
@@ -17,50 +15,25 @@ import lombok.extern.log4j.Log4j2;
 @Component("realWorldTestingReviewer")
 public class RealWorldTestingReviewer implements Reviewer {
 
-    private static final String EDITION_2015 = "2015";
-
-    private CertifiedProductDetailsManager certifiedProductDetailsManager;
     private ValidationUtils validationUtils;
     private ErrorMessageUtil errorMessageUtil;
 
     @Autowired
-    public RealWorldTestingReviewer(CertifiedProductDetailsManager certifiedProductDetailsManager,
-            ValidationUtils validationUtils, ErrorMessageUtil errorMessageUtil) {
-
-        this.certifiedProductDetailsManager = certifiedProductDetailsManager;
+    public RealWorldTestingReviewer(ValidationUtils validationUtils, ErrorMessageUtil errorMessageUtil) {
         this.validationUtils = validationUtils;
         this.errorMessageUtil = errorMessageUtil;
     }
 
     @Override
     public void review(CertifiedProductSearchDetails updatedListing) {
+        if (isRwtPlansDataSubmitted(updatedListing)) {
+            validateRwtPlansUrl(updatedListing);
+            validateRwtPlansCheckDate(updatedListing);
 
-        if (isListingCurrentlyRwtEligible(updatedListing)) {
-            if (isRwtPlansDataSubmitted(updatedListing)) {
-                validateRwtPlansUrl(updatedListing);
-                validateRwtPlansCheckDate(updatedListing);
-
-            }
-            if (isRwtResultsDataSubmitted(updatedListing)) {
-                validateRwtResultsUrl(updatedListing);
-                validateRwtResultsCheckDate(updatedListing);
-            }
-        } else if (isRwtPlansDataSubmitted(updatedListing) || isRwtResultsDataSubmitted(updatedListing)) {
-            updatedListing.addBusinessErrorMessage(errorMessageUtil.getMessage("listing.realWorldTesting.notEligible"));
         }
-    }
-
-    private boolean isListingCurrentlyRwtEligible(CertifiedProductSearchDetails listing) {
-        return isListing2015Edition(listing);
-    }
-
-    private boolean isListing2015Edition(CertifiedProductSearchDetails listing) {
-        try {
-            CertifiedProductSearchDetails cpsd = certifiedProductDetailsManager.getCertifiedProductDetails(listing.getId());
-            return cpsd.getEdition() == null || cpsd.getEdition().getName().equals(EDITION_2015);
-        } catch (EntityRetrievalException e) {
-            LOGGER.error("Could not determine the edition of listing {}", listing.getId(), e);
-            return false;
+        if (isRwtResultsDataSubmitted(updatedListing)) {
+            validateRwtResultsUrl(updatedListing);
+            validateRwtResultsCheckDate(updatedListing);
         }
     }
 
@@ -75,7 +48,11 @@ public class RealWorldTestingReviewer implements Reviewer {
     }
 
     private void validateRwtPlansCheckDate(CertifiedProductSearchDetails listing) {
-        if (Objects.isNull(listing.getRwtPlansCheckDate())) {
+        if (Objects.isNull(listing.getRwtPlansCheckDate())
+                && !StringUtils.isEmpty(listing.getUserEnteredRwtPlansCheckDate())) {
+            listing.addBusinessErrorMessage(
+                    errorMessageUtil.getMessage("listing.realWorldTesting.plans.checkDate.invalid", listing.getUserEnteredRwtPlansCheckDate()));
+        } else if (Objects.isNull(listing.getRwtPlansCheckDate())) {
             listing.addBusinessErrorMessage(
                     errorMessageUtil.getMessage("listing.realWorldTesting.plans.checkDate.required"));
         }
@@ -92,7 +69,11 @@ public class RealWorldTestingReviewer implements Reviewer {
     }
 
     private void validateRwtResultsCheckDate(CertifiedProductSearchDetails listing) {
-        if (Objects.isNull(listing.getRwtResultsCheckDate())) {
+        if (Objects.isNull(listing.getRwtResultsCheckDate())
+                && !StringUtils.isEmpty(listing.getUserEnteredRwtResultsCheckDate())) {
+            listing.addBusinessErrorMessage(
+                    errorMessageUtil.getMessage("listing.realWorldTesting.results.checkDate.invalid", listing.getUserEnteredRwtResultsCheckDate()));
+        } else if (Objects.isNull(listing.getRwtResultsCheckDate())) {
             listing.addBusinessErrorMessage(
                     errorMessageUtil.getMessage("listing.realWorldTesting.results.checkDate.required"));
         }

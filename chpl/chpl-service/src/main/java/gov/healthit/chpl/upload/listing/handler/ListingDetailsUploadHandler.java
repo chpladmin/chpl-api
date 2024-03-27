@@ -92,6 +92,10 @@ public class ListingDetailsUploadHandler {
                 .qmsStandards(qmsHandler.handle(headingRecord, listingRecords))
                 .ics(icsHandler.handle(headingRecord, listingRecords))
                 .svapNoticeUrl(parseSvapNoticeUrl(headingRecord, listingRecords))
+                .rwtPlansUrl(parseRwtPlansUrl(headingRecord, listingRecords))
+                .userEnteredRwtPlansCheckDate(parseRwtPlansCheckDate(headingRecord, listingRecords))
+                .rwtResultsUrl(parseRwtResultsUrl(headingRecord, listingRecords))
+                .userEnteredRwtResultsCheckDate(parseRwtResultsCheckDate(headingRecord, listingRecords))
                 .cqmResults(cqmHandler.handle(headingRecord, listingRecords))
                 .measures(measuresUploadHandler.parseAsMeasures(headingRecord, listingRecords))
                 .sedReportFileLocation(parseSedReportLocationUrl(headingRecord, listingRecords))
@@ -230,6 +234,22 @@ public class ListingDetailsUploadHandler {
 
     private String parseSvapNoticeUrl(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
         return uploadUtil.parseSingleRowField(Headings.SVAP_NOTICE_URL, headingRecord, listingRecords);
+    }
+
+    private String parseRwtPlansUrl(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
+        return uploadUtil.parseSingleRowField(Headings.RWT_PLANS_URL, headingRecord, listingRecords);
+    }
+
+    private String parseRwtPlansCheckDate(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
+        return uploadUtil.parseSingleRowField(Headings.RWT_PLANS_CHECK_DATE, headingRecord, listingRecords);
+    }
+
+    private String parseRwtResultsUrl(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
+        return uploadUtil.parseSingleRowField(Headings.RWT_RESULTS_URL, headingRecord, listingRecords);
+    }
+
+    private String parseRwtResultsCheckDate(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
+        return uploadUtil.parseSingleRowField(Headings.RWT_RESULTS_CHECK_DATE, headingRecord, listingRecords);
     }
 
     private String parseSedReportLocationUrl(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
