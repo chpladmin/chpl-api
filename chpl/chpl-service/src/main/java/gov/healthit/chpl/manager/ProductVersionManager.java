@@ -29,6 +29,7 @@ import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.ProductVersionDTO;
 import gov.healthit.chpl.entity.ProductVersionEntity;
+import gov.healthit.chpl.exception.ActivityException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.impl.SecuredManager;
@@ -110,8 +111,7 @@ public class ProductVersionManager extends SecuredManager {
             CacheNames.COLLECTIONS_LISTINGS
     }, allEntries = true)
     @ListingSearchCacheRefresh
-    public Long create(Long productId, ProductVersion version)
-            throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
+    public Long create(Long productId, ProductVersion version) throws EntityCreationException, EntityRetrievalException, ActivityException {
         // check that the developer of this version is Active
         if (productId == null) {
             throw new EntityCreationException("Cannot create a version without a product ID.");
@@ -147,8 +147,7 @@ public class ProductVersionManager extends SecuredManager {
             CacheNames.COLLECTIONS_LISTINGS
     }, allEntries = true)
     @ListingSearchCacheRefresh
-    public ProductVersionDTO create(ProductVersionDTO dto)
-            throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
+    public ProductVersionDTO create(ProductVersionDTO dto) throws EntityCreationException, EntityRetrievalException, ActivityException {
         // check that the developer of this version is Active
         if (dto.getProductId() == null) {
             throw new EntityCreationException("Cannot create a version without a product ID.");
@@ -183,8 +182,7 @@ public class ProductVersionManager extends SecuredManager {
     }, allEntries = true)
     @ListingSearchCacheRefresh
     @ListingStoreRemove(removeBy = RemoveBy.VERSION_ID, id = "#version.id")
-    public ProductVersionDTO update(ProductVersionDTO version)
-            throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
+    public ProductVersionDTO update(ProductVersionDTO version) throws EntityRetrievalException, EntityCreationException, ActivityException {
 
         ProductVersionDTO beforeVersion = versionDao.getById(version.getId());
 
@@ -229,8 +227,7 @@ public class ProductVersionManager extends SecuredManager {
     }, allEntries = true)
     @ListingSearchCacheRefresh
     @ListingStoreRemove(removeBy = RemoveBy.VERSION_ID, id = "#toCreate.id")
-    public ProductVersionDTO merge(List<Long> versionIdsToMerge, ProductVersionDTO toCreate)
-            throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
+    public ProductVersionDTO merge(List<Long> versionIdsToMerge, ProductVersionDTO toCreate) throws EntityRetrievalException, EntityCreationException, ActivityException {
 
         List<ProductVersionDTO> beforeVersions = new ArrayList<ProductVersionDTO>();
         for (Long versionId : versionIdsToMerge) {
@@ -275,9 +272,8 @@ public class ProductVersionManager extends SecuredManager {
     }, allEntries = true)
     @ListingSearchCacheRefresh
     @ListingStoreRemove(removeBy = RemoveBy.VERSION_ID, id = "#newVersion.id")
-    public ProductVersionDTO split(ProductVersionDTO oldVersion, ProductVersionDTO newVersion,
-            String newVersionCode, List<Long> newVersionListingIds)
-            throws AccessDeniedException, EntityRetrievalException, EntityCreationException, JsonProcessingException {
+    public ProductVersionDTO split(ProductVersionDTO oldVersion, ProductVersionDTO newVersion, String newVersionCode, List<Long> newVersionListingIds)
+            throws EntityCreationException, EntityRetrievalException, ActivityException {
 
         // create the new version and log activity
         // this method checks that the related developer is Active and will

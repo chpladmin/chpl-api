@@ -162,10 +162,9 @@ public class QuestionableActivityManager {
 
     private void createDeveloperActivity(QuestionableActivityDeveloper questionableActivity, Long developerId,
             ActivityDTO activity, QuestionableActivityTriggerConcept triggerConcept, String reason) {
-        questionableActivity.setActivityId(activity.getId());
+        questionableActivity.setActivity(activity);
         questionableActivity.setDeveloperId(developerId);
         questionableActivity.setActivityDate(activity.getActivityDate());
-        questionableActivity.setUserId(activity.getUser().getId());
         questionableActivity.setReason(reason);
         QuestionableActivityTrigger trigger = getTrigger(triggerConcept);
         questionableActivity.setTrigger(trigger);
@@ -179,10 +178,9 @@ public class QuestionableActivityManager {
 
     private void createProductActivity(QuestionableActivityProduct questionableActivity, Long productId,
             ActivityDTO activity, QuestionableActivityTriggerConcept triggerConcept) {
-        questionableActivity.setActivityId(activity.getId());
+        questionableActivity.setActivity(activity);
         questionableActivity.setProductId(productId);
         questionableActivity.setActivityDate(activity.getActivityDate());
-        questionableActivity.setUserId(activity.getUser().getId());
         QuestionableActivityTrigger trigger = getTrigger(triggerConcept);
         questionableActivity.setTrigger(trigger);
         questionableActivityDao.create(questionableActivity);
@@ -190,10 +188,9 @@ public class QuestionableActivityManager {
 
     private void createVersionActivity(QuestionableActivityVersion questionableActivity, Long versionId,
             ActivityDTO activity, QuestionableActivityTriggerConcept triggerConcept) {
-        questionableActivity.setActivityId(activity.getId());
+        questionableActivity.setActivity(activity);
         questionableActivity.setVersionId(versionId);
         questionableActivity.setActivityDate(activity.getActivityDate());
-        questionableActivity.setUserId(activity.getUser().getId());
         QuestionableActivityTrigger trigger = getTrigger(triggerConcept);
         questionableActivity.setTrigger(trigger);
         questionableActivityDao.create(questionableActivity);

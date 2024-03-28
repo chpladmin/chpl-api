@@ -14,14 +14,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.domain.TestingLab;
+import gov.healthit.chpl.exception.ActivityException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
-import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.manager.TestingLabManager;
 import gov.healthit.chpl.manager.impl.UpdateTestingLabException;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
@@ -74,9 +72,7 @@ public class TestingLabController {
             })
     @RequestMapping(value = "", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
-    public TestingLab createAtl(@RequestBody final TestingLab atlInfo)
-            throws InvalidArgumentsException, UserRetrievalException, EntityRetrievalException,
-            EntityCreationException, JsonProcessingException {
+    public TestingLab createAtl(@RequestBody final TestingLab atlInfo) throws InvalidArgumentsException, EntityCreationException, EntityRetrievalException, ActivityException {
         TestingLab toCreate = new TestingLab();
         toCreate.setAtlCode(atlInfo.getAtlCode());
         if (StringUtils.isEmpty(atlInfo.getName())) {
@@ -102,8 +98,8 @@ public class TestingLabController {
     @RequestMapping(value = "/{atlId}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
     public ResponseEntity<TestingLab> updateAtl(@RequestBody TestingLab updatedAtl)
-            throws InvalidArgumentsException, EntityRetrievalException, JsonProcessingException,
-            EntityCreationException, UpdateTestingLabException {
+            throws EntityRetrievalException, UpdateTestingLabException, ActivityException, InvalidArgumentsException {
+
         TestingLab existingAtl = atlManager.getById(updatedAtl.getId());
         if (updatedAtl.isRetired()) {
             // we are retiring this ATL and no other changes can be made

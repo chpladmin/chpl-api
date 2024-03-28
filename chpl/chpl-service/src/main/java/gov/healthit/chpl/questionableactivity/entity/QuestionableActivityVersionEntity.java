@@ -13,6 +13,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import gov.healthit.chpl.dto.ProductVersionDTO;
+import gov.healthit.chpl.entity.ActivityEntity;
 import gov.healthit.chpl.entity.EntityAudit;
 import gov.healthit.chpl.entity.ProductVersionEntity;
 import gov.healthit.chpl.entity.auth.UserEntity;
@@ -48,8 +49,9 @@ public class QuestionableActivityVersionEntity extends EntityAudit implements Qu
     @JoinColumn(name = "questionable_activity_trigger_id", insertable = false, updatable = false)
     private QuestionableActivityTriggerEntity trigger;
 
-    @Column(name = "activity_id")
-    private Long activityId;
+    @OneToOne(optional = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "activity_id", insertable = true, updatable = false)
+    private ActivityEntity activity;
 
     @Column(name = "version_id")
     private Long versionId;
@@ -77,14 +79,13 @@ public class QuestionableActivityVersionEntity extends EntityAudit implements Qu
     public QuestionableActivityVersion toDomain() {
         return QuestionableActivityVersion.builder()
                 .id(this.getId())
-                .activityId(this.getActivityId())
+                .activity(this.getActivity().toDomain())
                 .trigger(this.getTrigger() == null
                     ? QuestionableActivityTrigger.builder().id(this.getTriggerId()).build()
                         : this.getTrigger().toDomain())
                 .before(this.getBefore())
                 .after(this.getAfter())
                 .activityDate(this.getActivityDate())
-                .userId(this.getUserId())
                 .versionId(this.getVersionId())
                 .version(this.getVersion() == null
                     ? ProductVersionDTO.builder().id(this.getVersionId()).build()

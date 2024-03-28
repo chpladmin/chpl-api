@@ -149,11 +149,15 @@ public class UserDAO extends BaseDAOImpl {
     }
 
     private UserEntity getEntityById(Long userId) throws UserRetrievalException {
+        return getEntityById(userId, false);
+    }
+
+    private UserEntity getEntityById(Long userId, boolean includeDeleted) throws UserRetrievalException {
         Query query = entityManager.createQuery("from UserEntity u "
                 + "JOIN FETCH u.contact "
                 + "JOIN FETCH u.permission "
-                + "WHERE (NOT u.deleted = true) "
-                + "AND (u.id = :userid) ",
+                + "WHERE (u.id = :userid)  "
+                + (includeDeleted ? "" : "AND (NOT u.deleted = false) "),
                 UserEntity.class);
         query.setParameter("userid", userId);
         List<UserEntity> result = query.getResultList();
@@ -193,7 +197,11 @@ public class UserDAO extends BaseDAOImpl {
     }
 
     public UserDTO getById(Long userId) throws UserRetrievalException {
-        UserEntity userEntity = this.getEntityById(userId);
+        return getById(userId, false);
+    }
+
+    public UserDTO getById(Long userId, boolean includeDelete) throws UserRetrievalException {
+        UserEntity userEntity = this.getEntityById(userId, includeDelete);
         if (userEntity == null) {
             return null;
         }

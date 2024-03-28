@@ -8,8 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-
 import gov.healthit.chpl.attestation.domain.AttestationPeriod;
 import gov.healthit.chpl.attestation.domain.AttestationPeriodForm;
 import gov.healthit.chpl.attestation.domain.AttestationSubmission;
@@ -29,6 +27,7 @@ import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.auth.UserDTO;
+import gov.healthit.chpl.exception.ActivityException;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -177,7 +176,7 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
         try {
             activityManager.addActivity(ActivityConcept.DEVELOPER, updatedDeveloper.getId(),
                 "Developer attestation created.", beforeDeveloper, updatedDeveloper);
-        } catch (JsonProcessingException ex) {
+        } catch (ActivityException ex) {
             LOGGER.error("Error writing activity about attestation submission approval.", ex);
         }
         return cr;

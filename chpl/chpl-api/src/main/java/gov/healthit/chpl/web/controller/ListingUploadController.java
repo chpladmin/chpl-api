@@ -16,7 +16,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.persistence.EntityNotFoundException;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.csv.CSVFormat;
@@ -35,7 +34,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -45,6 +43,7 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.ConfirmListingRequest;
 import gov.healthit.chpl.domain.ListingUpload;
 import gov.healthit.chpl.email.ChplEmailFactory;
+import gov.healthit.chpl.exception.ActivityException;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -149,7 +148,7 @@ public class ListingUploadController {
             security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
     @RequestMapping(value = "/upload", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
-    public ResponseEntity<ListingUploadResponse> upload(@RequestParam("file") MultipartFile file) throws ValidationException, MaxUploadSizeExceededException {
+    public ResponseEntity<ListingUploadResponse> upload(@RequestParam("file") MultipartFile file) throws ValidationException, ActivityException {
         List<ListingUpload> successfulListingUploads = new ArrayList<ListingUpload>();
         List<ListingUpload> listingsToAdd = new ArrayList<ListingUpload>();
         try {
@@ -176,8 +175,7 @@ public class ListingUploadController {
                     //don't send an email for this exception because it's one that we create and
                     //we expect it to provide a decent error message for the user
                     processedListingErrorMap.put(listingToAdd.getChplProductNumber(), ex.getMessage());
-                } catch (AccessDeniedException | NullPointerException | IndexOutOfBoundsException
-                        | JsonProcessingException | EntityRetrievalException | EntityCreationException ex) {
+                } catch (AccessDeniedException | NullPointerException | IndexOutOfBoundsException ex) {
                     LOGGER.error("Error uploading listing(s) from file " + file.getOriginalFilename() + ". " + ex.getMessage());
                     //send an email that something weird happened since the error message coming back
                     //from the caught exception might not be that helpful to the user
@@ -236,8 +234,9 @@ public class ListingUploadController {
     @RequestMapping(value = "/pending/{id:^-?\\d+$}", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     public ResponseEntity<CertifiedProductSearchDetails> confirmLisitngUpload(@PathVariable("id") Long id,
             @RequestBody(required = true) ConfirmListingRequest confirmListingRequest)
-                    throws ValidationException, EntityCreationException, EntityRetrievalException,
-                    JsonProcessingException, InvalidArgumentsException {
+                    throws JsonProcessingException, InvalidArgumentsException, EntityRetrievalException, EntityCreationException,
+                    ValidationException, ActivityException {
+
         CertifiedProductSearchDetails createdListing = listingUploadManager.confirm(id, confirmListingRequest);
 
         //note - once all collections pages are converted to use the search/beta endpoint instead of the
@@ -264,9 +263,7 @@ public class ListingUploadController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
     @RequestMapping(value = "/pending/{id:^-?\\d+$}", method = RequestMethod.DELETE,
     produces = "application/json; charset=utf-8")
-    public void rejectListingUpload(@PathVariable("id") Long id)
-            throws EntityRetrievalException, JsonProcessingException, EntityCreationException, EntityNotFoundException,
-            AccessDeniedException, ObjectMissingValidationException {
+    public void rejectListingUpload(@PathVariable("id") Long id) throws EntityRetrievalException, ObjectMissingValidationException, ActivityException {
         //call the GET to return bad request if the id is not something that can be deleted
         listingUploadManager.getById(id);
         //perform delete

@@ -15,19 +15,17 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
 import gov.healthit.chpl.domain.CertifiedProductSearchBasicDetails;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.ListingUpdateRequest;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
+import gov.healthit.chpl.exception.ActivityException;
 import gov.healthit.chpl.exception.CertifiedProductUpdateException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
-import gov.healthit.chpl.exception.MissingReasonException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.listing.ics.IcsManager;
 import gov.healthit.chpl.listing.ics.ListingIcsNode;
@@ -665,15 +663,14 @@ public class CertifiedProductController {
     @DeprecatedApiResponseFields(responseClass = CertifiedProductSearchDetails.class, httpMethod = "PUT", friendlyUrl = "/certified_products/{certifiedProductId}")
     public ResponseEntity<CertifiedProductSearchDetails> updateCertifiedProduct(
             @RequestBody(required = true) ListingUpdateRequest updateRequest)
-            throws EntityCreationException, EntityRetrievalException, InvalidArgumentsException,
-            JsonProcessingException, IOException, ValidationException, MissingReasonException, CertifiedProductUpdateException {
+                    throws EntityRetrievalException, EntityCreationException, CertifiedProductUpdateException, ActivityException,
+                    ValidationException, InvalidArgumentsException, IOException {
 
         return update(updateRequest);
     }
 
     private ResponseEntity<CertifiedProductSearchDetails> update(ListingUpdateRequest updateRequest)
-            throws EntityCreationException, EntityRetrievalException, InvalidArgumentsException,
-            JsonProcessingException, IOException, ValidationException, MissingReasonException, CertifiedProductUpdateException {
+            throws EntityRetrievalException, EntityCreationException, CertifiedProductUpdateException, ActivityException, ValidationException, InvalidArgumentsException, IOException {
 
         CertifiedProductSearchDetails updatedListing = updateRequest.getListing();
 

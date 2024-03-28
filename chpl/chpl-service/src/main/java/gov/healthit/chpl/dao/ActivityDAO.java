@@ -16,23 +16,24 @@ import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.TestingLab;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
+import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.dto.ActivityDTO;
 import gov.healthit.chpl.entity.ActivityConceptEntity;
 import gov.healthit.chpl.entity.ActivityEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.util.UserMapper;
+import gov.healthit.chpl.util.ChplUserToCognitoUserUtil;
 import lombok.extern.log4j.Log4j2;
 
 @Repository("activityDAO")
 @Log4j2
 public class ActivityDAO extends BaseDAOImpl {
 
-    private UserMapper userMapper;
+    private ChplUserToCognitoUserUtil chplUserToCognitoUserUtil;
 
     @Autowired
-    public ActivityDAO(UserMapper userMapper) {
-        this.userMapper = userMapper;
+    public ActivityDAO(ChplUserToCognitoUserUtil chplUserToCognitoUserUtil) {
+        this.chplUserToCognitoUserUtil = chplUserToCognitoUserUtil;
     }
 
     public Long create(ActivityDTO dto) throws EntityCreationException, EntityRetrievalException {
@@ -255,12 +256,11 @@ public class ActivityDAO extends BaseDAOImpl {
         return activityByUser;
     }
 
-    private ActivityEntity getEntityById(Long id) throws EntityRetrievalException {
+    public ActivityEntity getEntityById(Long id) throws EntityRetrievalException {
         ActivityEntity entity = null;
         String queryStr = "SELECT ae "
                 + "FROM ActivityEntity ae "
                 + "JOIN FETCH ae.concept "
-                + "LEFT OUTER JOIN FETCH ae.user "
                 + "WHERE (ae.id = :entityid) ";
         Query query = entityManager.createQuery(queryStr);
         query.setParameter("entityid", id);
@@ -281,7 +281,6 @@ public class ActivityDAO extends BaseDAOImpl {
         String queryStr = "SELECT ae "
                 + "FROM ActivityEntity ae "
                 + "JOIN FETCH ae.concept ac "
-                + "LEFT OUTER JOIN FETCH ae.user "
                 + "WHERE ae.activityObjectId IN (:objectIds) "
                 + "AND ac.concept = :conceptName ";
         if (startDate != null) {
@@ -309,7 +308,6 @@ public class ActivityDAO extends BaseDAOImpl {
         String queryStr = "SELECT ae "
                 + "FROM ActivityEntity ae "
                 + "JOIN FETCH ae.concept ac "
-                + "LEFT OUTER JOIN FETCH ae.user "
                 + "WHERE (ac.concept = :conceptName) "
                 + "AND (ae.activityObjectId = :objectid) ";
         if (startDate != null) {
@@ -336,7 +334,6 @@ public class ActivityDAO extends BaseDAOImpl {
         String queryStr = "SELECT ae "
                 + "FROM ActivityEntity ae "
                 + "JOIN FETCH ae.concept ac "
-                + "LEFT OUTER JOIN FETCH ae.user "
                 + "WHERE (ac.concept = :conceptName) ";
         if (startDate != null) {
             queryStr += "AND (ae.activityDate >= :startDate) ";
@@ -360,7 +357,6 @@ public class ActivityDAO extends BaseDAOImpl {
         String queryStr = "SELECT ae "
                 + "FROM ActivityEntity ae "
                 + "JOIN FETCH ae.concept "
-                + "LEFT OUTER JOIN FETCH ae.user "
                 + "WHERE ";
         if (startDate != null) {
             if (!queryStr.endsWith("WHERE ")) {
@@ -388,9 +384,12 @@ public class ActivityDAO extends BaseDAOImpl {
 
     private ActivityDTO mapEntityToDto(ActivityEntity entity) {
         ActivityDTO activity = entity.toDomain();
-        if (entity.getUser() != null) {
-            activity.setUser(userMapper.from(entity.getUser()));
-        }
+        activity.setUser(getUserFromActivtyEntity(entity));
         return activity;
     }
+
+    private User getUserFromActivtyEntity(ActivityEntity entity) {
+        return chplUserToCognitoUserUtil.getUser(entity.getLastModifiedUser(), entity.getLastModifiedSsoUser());
+    }
+
 }

@@ -7,11 +7,14 @@ import java.util.stream.Collectors;
 import javax.persistence.Query;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import gov.healthit.chpl.dao.ActivityDAO;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
+import gov.healthit.chpl.domain.auth.User;
+import gov.healthit.chpl.entity.ActivityEntity;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.questionableactivity.domain.QuestionableActivityBase;
 import gov.healthit.chpl.questionableactivity.domain.QuestionableActivityCertificationResult;
 import gov.healthit.chpl.questionableactivity.domain.QuestionableActivityDeveloper;
@@ -26,17 +29,19 @@ import gov.healthit.chpl.questionableactivity.entity.QuestionableActivityListing
 import gov.healthit.chpl.questionableactivity.entity.QuestionableActivityProductEntity;
 import gov.healthit.chpl.questionableactivity.entity.QuestionableActivityTriggerEntity;
 import gov.healthit.chpl.questionableactivity.entity.QuestionableActivityVersionEntity;
-import gov.healthit.chpl.util.UserMapper;
+import gov.healthit.chpl.util.ChplUserToCognitoUserUtil;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 @Repository("questionableActivityDao")
 public class QuestionableActivityDAO extends BaseDAOImpl {
-    private UserMapper userMapper;
+    private ActivityDAO activityDAO;
+    private ChplUserToCognitoUserUtil chplUserToCognitoUserUtil;
 
     @Autowired
-    public QuestionableActivityDAO(@Lazy UserMapper userMapper) {
-        this.userMapper = userMapper;
+    public QuestionableActivityDAO(ChplUserToCognitoUserUtil chplUserToCognitoUserUtil, ActivityDAO activityDAO) {
+        this.chplUserToCognitoUserUtil = chplUserToCognitoUserUtil;
+        this.activityDAO = activityDAO;
     }
 
     @Transactional
@@ -73,12 +78,12 @@ public class QuestionableActivityDAO extends BaseDAOImpl {
             return null;
         }
 
-        toCreate.setActivityId(qa.getActivityId());
+        toCreate.setActivity(getActivityEntity(qa.getActivity().getId()));
+
         toCreate.setActivityDate(qa.getActivityDate());
         toCreate.setBefore(qa.getBefore());
         toCreate.setAfter(qa.getAfter());
         toCreate.setTriggerId(qa.getTrigger().getId());
-        toCreate.setUserId(qa.getUserId());
         entityManager.persist(toCreate);
         entityManager.flush();
         entityManager.clear();
@@ -115,8 +120,7 @@ public class QuestionableActivityDAO extends BaseDAOImpl {
                 + "FROM QuestionableActivityVersionEntity activity "
                 + "LEFT OUTER JOIN FETCH activity.version "
                 + "LEFT OUTER JOIN FETCH activity.trigger "
-                + "LEFT OUTER JOIN FETCH activity.user activityUser "
-                + "LEFT OUTER JOIN FETCH activityUser.contact "
+                + "LEFT OUTER JOIN FETCH activity.activity "
                 + "WHERE activity.deleted <> true "
                 + "AND activity.activityDate >= :startDate "
                 + "AND activity.activityDate <= :endDate",
@@ -135,8 +139,7 @@ public class QuestionableActivityDAO extends BaseDAOImpl {
                 + "FROM QuestionableActivityProductEntity activity "
                 + "LEFT OUTER JOIN FETCH activity.product "
                 + "LEFT OUTER JOIN FETCH activity.trigger "
-                + "LEFT OUTER JOIN FETCH activity.user activityUser "
-                + "LEFT OUTER JOIN FETCH activityUser.contact "
+                + "LEFT OUTER JOIN FETCH activity.activity "
                 + "WHERE activity.deleted <> true "
                 + "AND activity.activityDate >= :startDate "
                 + "AND activity.activityDate <= :endDate",
@@ -155,8 +158,7 @@ public class QuestionableActivityDAO extends BaseDAOImpl {
                 + "FROM QuestionableActivityDeveloperEntity activity "
                 + "LEFT OUTER JOIN FETCH activity.developer "
                 + "LEFT OUTER JOIN FETCH activity.trigger "
-                + "LEFT OUTER JOIN FETCH activity.user activityUser "
-                + "LEFT OUTER JOIN FETCH activityUser.contact "
+                + "LEFT OUTER JOIN FETCH activity.activity "
                 + "WHERE activity.deleted <> true "
                 + "AND activity.activityDate >= :startDate "
                 + "AND activity.activityDate <= :endDate",
@@ -175,8 +177,7 @@ public class QuestionableActivityDAO extends BaseDAOImpl {
                 + "FROM QuestionableActivityListingEntity activity "
                 + "LEFT OUTER JOIN FETCH activity.listing "
                 + "LEFT OUTER JOIN FETCH activity.trigger "
-                + "LEFT OUTER JOIN FETCH activity.user activityUser "
-                + "LEFT OUTER JOIN FETCH activityUser.contact "
+                + "LEFT OUTER JOIN FETCH activity.activity "
                 + "WHERE activity.deleted <> true "
                 + "AND activity.activityDate >= :startDate "
                 + "AND activity.activityDate <= :endDate",
@@ -197,8 +198,7 @@ public class QuestionableActivityDAO extends BaseDAOImpl {
                 + "LEFT OUTER JOIN FETCH activity.certResult certResult "
                 + "LEFT OUTER JOIN FETCH certResult.listing "
                 + "LEFT OUTER JOIN FETCH activity.trigger "
-                + "LEFT OUTER JOIN FETCH activity.user activityUser "
-                + "LEFT OUTER JOIN FETCH activityUser.contact "
+                + "LEFT OUTER JOIN FETCH activity.activity "
                 + "WHERE activity.deleted <> true "
                 + "AND activity.activityDate >= :startDate "
                 + "AND activity.activityDate <= :endDate",
@@ -213,32 +213,44 @@ public class QuestionableActivityDAO extends BaseDAOImpl {
 
     private QuestionableActivityVersion mapEntityToDomain(QuestionableActivityVersionEntity entity) {
         QuestionableActivityVersion qa = entity.toDomain();
-        qa.setUser(userMapper.from(entity.getUser()));
+        qa.setUser(getUserFromActivtyEntity(entity.getActivity()));
         return qa;
     }
 
     private QuestionableActivityProduct mapEntityToDomain(QuestionableActivityProductEntity entity) {
         QuestionableActivityProduct qa = entity.toDomain();
-        qa.setUser(userMapper.from(entity.getUser()));
+        qa.setUser(getUserFromActivtyEntity(entity.getActivity()));
         return qa;
     }
 
     private QuestionableActivityDeveloper mapEntityToDomain(QuestionableActivityDeveloperEntity entity) {
         QuestionableActivityDeveloper qa = entity.toDomain();
-        qa.setUser(userMapper.from(entity.getUser()));
+        qa.setUser(getUserFromActivtyEntity(entity.getActivity()));
         return qa;
     }
 
     private QuestionableActivityListing mapEntityToDomain(QuestionableActivityListingEntity entity) {
         QuestionableActivityListing qa = entity.toDomain();
-        qa.setUser(userMapper.from(entity.getUser()));
+        qa.setUser(getUserFromActivtyEntity(entity.getActivity()));
         return qa;
     }
 
     private QuestionableActivityCertificationResult mapEntityToDomain(QuestionableActivityCertificationResultEntity entity) {
         QuestionableActivityCertificationResult qa = entity.toDomain();
-        qa.setUser(userMapper.from(entity.getUser()));
+        qa.setUser(getUserFromActivtyEntity(entity.getActivity()));
         return qa;
     }
 
+    private User getUserFromActivtyEntity(ActivityEntity entity) {
+        return chplUserToCognitoUserUtil.getUser(entity.getLastModifiedUser(), entity.getLastModifiedSsoUser());
+    }
+
+    private ActivityEntity getActivityEntity(Long activityId) {
+        try {
+            return activityDAO.getEntityById(activityId);
+        } catch (EntityRetrievalException e) {
+            LOGGER.error("Could not retrieve activity with Id: {}", activityId, e);
+            return null;
+        }
+    }
 }

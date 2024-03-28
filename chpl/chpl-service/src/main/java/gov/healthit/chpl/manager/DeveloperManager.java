@@ -49,6 +49,7 @@ import gov.healthit.chpl.dto.DeveloperStatusEventPair;
 import gov.healthit.chpl.dto.ProductVersionDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.entity.developer.DeveloperStatusType;
+import gov.healthit.chpl.exception.ActivityException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.UserRetrievalException;
@@ -250,7 +251,8 @@ public class DeveloperManager extends SecuredManager {
     @ListingStoreRemove(removeBy = RemoveBy.DEVELOPER_ID, id = "#updatedDev.id")
     @ListingSearchCacheRefresh
     public Developer update(Developer updatedDev, boolean doUpdateValidations)
-            throws EntityRetrievalException, JsonProcessingException, EntityCreationException, ValidationException {
+            throws EntityRetrievalException, ValidationException, EntityCreationException, ActivityException {
+
         Developer beforeDev = getById(updatedDev.getId());
         normalizeSpaces(updatedDev);
 
@@ -334,8 +336,7 @@ public class DeveloperManager extends SecuredManager {
             CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED,
             CacheNames.COLLECTIONS_DEVELOPERS
     }, allEntries = true)
-    public Long create(Developer developer)
-            throws EntityCreationException, EntityRetrievalException, JsonProcessingException, ValidationException {
+    public Long create(Developer developer) throws ValidationException, EntityCreationException, EntityRetrievalException, ActivityException {
         normalizeSpaces(developer);
         Set<String> errors = runCreateValidations(developer, null);
         if (!CollectionUtils.isEmpty(errors)) {

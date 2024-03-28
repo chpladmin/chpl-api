@@ -25,14 +25,12 @@ import gov.healthit.chpl.domain.auth.UpdatePasswordResponse;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.dto.auth.UserResetTokenDTO;
 import gov.healthit.chpl.entity.auth.UserEntity;
+import gov.healthit.chpl.exception.ActivityException;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.MultipleUserAccountsException;
-import gov.healthit.chpl.exception.UserAccountExistsException;
 import gov.healthit.chpl.exception.UserCreationException;
-import gov.healthit.chpl.exception.UserManagementException;
-import gov.healthit.chpl.exception.UserPermissionRetrievalException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ActivityManager;
@@ -54,9 +52,7 @@ public class UserManagerTest {
     private UserResetTokenDAO userResetTokenDAO;
 
     @Before
-    public void setup()
-            throws UserCreationException, UserRetrievalException, JsonProcessingException, EntityCreationException,
-            EntityRetrievalException, MultipleUserAccountsException {
+    public void setup() throws UserCreationException, UserRetrievalException, MultipleUserAccountsException, ActivityException {
 
         userDAO = Mockito.mock(UserDAO.class);
         bCryptPasswordEncoder = Mockito.mock(BCryptPasswordEncoder.class);
@@ -112,7 +108,7 @@ public class UserManagerTest {
     }
 
     @Test
-    public void create_GoodData_Success() throws UserCreationException, EntityCreationException, EntityRetrievalException, JsonProcessingException {
+    public void create_GoodData_Success() throws UserCreationException, EntityCreationException, EntityRetrievalException, JsonProcessingException, ActivityException {
 
         UserDTO user = getUserDTO(1L);
         UserManager userManager = new UserManager(null, userDAO, null, bCryptPasswordEncoder,  null, activityManager, null, Mockito.mock(UserMapper.class));
@@ -123,7 +119,7 @@ public class UserManagerTest {
     }
 
     @Test(expected = UserCreationException.class)
-    public void create_WeakPassword_UserCreationException() throws UserCreationException, EntityCreationException, EntityRetrievalException, JsonProcessingException {
+    public void create_WeakPassword_UserCreationException() throws UserCreationException, EntityCreationException, EntityRetrievalException, JsonProcessingException, ActivityException {
         Mockito.when(userDAO.create(ArgumentMatchers.any(UserDTO.class), ArgumentMatchers.anyString()))
                 .thenThrow(new UserCreationException());
 
@@ -137,9 +133,7 @@ public class UserManagerTest {
     }
 
     @Test
-    public void update_GoodData_SuccessAndActivityWritten()
-            throws UserRetrievalException, JsonProcessingException, EntityCreationException, EntityRetrievalException,
-            ValidationException, MultipleUserAccountsException, UserAccountExistsException {
+    public void update_GoodData_SuccessAndActivityWritten() throws ValidationException, UserRetrievalException, MultipleUserAccountsException, ActivityException {
 
         UserManager userManager = new UserManager(null, userDAO, null, null, null, activityManager, null, Mockito.mock(UserMapper.class));
 
@@ -154,8 +148,7 @@ public class UserManagerTest {
 
     @Test(expected = ValidationException.class)
     public void update_MissingFullName_ValidationExceptionThrown()
-            throws UserRetrievalException, JsonProcessingException, EntityCreationException, EntityRetrievalException,
-            ValidationException, MultipleUserAccountsException, UserAccountExistsException {
+            throws ValidationException, UserRetrievalException, MultipleUserAccountsException, ActivityException {
 
         UserManager userManager = new UserManager(null, null, null, null, errorMessageUtil, null, null, Mockito.mock(UserMapper.class));
 
@@ -167,9 +160,7 @@ public class UserManagerTest {
     }
 
     @Test(expected = ValidationException.class)
-    public void update_MissingEmail_ValidationExceptionThrown()
-            throws UserRetrievalException, JsonProcessingException, EntityCreationException, EntityRetrievalException,
-            ValidationException, MultipleUserAccountsException, UserAccountExistsException {
+    public void update_MissingEmail_ValidationExceptionThrown() throws ValidationException, UserRetrievalException, MultipleUserAccountsException, ActivityException {
 
         UserManager userManager = new UserManager(null, null, null, null, errorMessageUtil, null, null, Mockito.mock(UserMapper.class));
 
@@ -181,9 +172,7 @@ public class UserManagerTest {
     }
 
     @Test()
-    public void update_MissingEmailAndPhoneNumber_ValidationExceptionThrown()
-            throws JsonProcessingException, UserRetrievalException, EntityCreationException,
-            EntityRetrievalException, MultipleUserAccountsException, UserAccountExistsException {
+    public void update_MissingEmailAndPhoneNumber_ValidationExceptionThrown() throws UserRetrievalException, MultipleUserAccountsException, ActivityException {
 
         UserManager userManager = new UserManager(null, null, null, null, errorMessageUtil, null, null, Mockito.mock(UserMapper.class));
 
@@ -200,9 +189,7 @@ public class UserManagerTest {
     }
 
     @Test(expected = ValidationException.class)
-    public void update_ChangedEmailAddress_ValidationExceptionThrown()
-            throws UserRetrievalException, JsonProcessingException, EntityCreationException, EntityRetrievalException,
-            ValidationException, MultipleUserAccountsException, UserAccountExistsException {
+    public void update_ChangedEmailAddress_ValidationExceptionThrown() throws ValidationException, UserRetrievalException, MultipleUserAccountsException, ActivityException {
         UserManager userManager = new UserManager(null, userDAO, null, null, errorMessageUtil, null, null, Mockito.mock(UserMapper.class));
 
         UserDTO user = getUserDTO(1L);
@@ -213,9 +200,7 @@ public class UserManagerTest {
     }
 
     @Test()
-    public void delete_GoodData_Success()
-            throws UserRetrievalException, UserPermissionRetrievalException, UserManagementException,
-            EntityRetrievalException, EntityCreationException, JsonProcessingException{
+    public void delete_GoodData_Success() throws UserRetrievalException, ActivityException {
 
         UserManager userManager = new UserManager(null, userDAO, null, null, null, activityManager, null, Mockito.mock(UserMapper.class));
         userManager.delete(getUserDTO(1L));
@@ -224,9 +209,7 @@ public class UserManagerTest {
     }
 
     @Test(expected = UserRetrievalException.class)
-    public void delete_UserNotValid_UserRetrievalExceptionThrown()
-            throws UserRetrievalException, UserPermissionRetrievalException, UserManagementException,
-            EntityRetrievalException, EntityCreationException, JsonProcessingException {
+    public void delete_UserNotValid_UserRetrievalExceptionThrown() throws UserRetrievalException, ActivityException {
         Mockito.doThrow(UserRetrievalException.class).when(userDAO).delete(ArgumentMatchers.anyLong());
 
         UserManager userManager = new UserManager(null, userDAO, null, null, null, null, null, Mockito.mock(UserMapper.class));

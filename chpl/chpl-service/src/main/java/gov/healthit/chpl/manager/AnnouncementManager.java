@@ -10,14 +10,12 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-
 import gov.healthit.chpl.dao.AnnouncementDAO;
 import gov.healthit.chpl.domain.Announcement;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
+import gov.healthit.chpl.exception.ActivityException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.exception.UserRetrievalException;
 
 @Service
 public class AnnouncementManager extends ApplicationObjectSupport {
@@ -34,8 +32,7 @@ public class AnnouncementManager extends ApplicationObjectSupport {
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ANNOUNCEMENT, "
             + "T(gov.healthit.chpl.permissions.domains.AnnouncementDomainPermissions).CREATE)")
-    public Announcement create(Announcement announcement)
-            throws UserRetrievalException, EntityCreationException, EntityRetrievalException, JsonProcessingException {
+    public Announcement create(Announcement announcement) throws ActivityException, EntityRetrievalException, EntityCreationException {
         Announcement result = announcementDAO.create(announcement);
 
         String activityMsg = "Created announcement: " + announcement.getTitle();
@@ -48,8 +45,7 @@ public class AnnouncementManager extends ApplicationObjectSupport {
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ANNOUNCEMENT, "
             + "T(gov.healthit.chpl.permissions.domains.AnnouncementDomainPermissions).UPDATE)")
-    public Announcement update(Announcement announcement)
-            throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
+    public Announcement update(Announcement announcement) throws ActivityException, EntityRetrievalException {
         Announcement result = null;
         Announcement toUpdate = announcementDAO.getById(announcement.getId(), false);
         result = announcementDAO.update(announcement, false);
@@ -64,8 +60,7 @@ public class AnnouncementManager extends ApplicationObjectSupport {
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ANNOUNCEMENT, "
             + "T(gov.healthit.chpl.permissions.domains.AnnouncementDomainPermissions).DELETE)")
-    public void delete(Announcement announcement)
-            throws JsonProcessingException, EntityCreationException, EntityRetrievalException, UserRetrievalException {
+    public void delete(Announcement announcement) throws ActivityException {
 
         // mark the announcement deleted
         announcementDAO.delete(announcement.getId());

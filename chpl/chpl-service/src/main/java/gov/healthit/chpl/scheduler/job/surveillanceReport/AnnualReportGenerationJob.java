@@ -22,16 +22,14 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
 import gov.healthit.chpl.email.EmailBuilder;
 import gov.healthit.chpl.email.footer.AdminFooter;
+import gov.healthit.chpl.exception.ActivityException;
 import gov.healthit.chpl.exception.EmailNotSentException;
-import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.scheduler.SecurityContextCapableJob;
@@ -129,7 +127,7 @@ public class AnnualReportGenerationJob extends SecurityContextCapableJob impleme
                                 try {
                                     activityManager.addActivity(ActivityConcept.ANNUAL_REPORT, annualReportId,
                                         "Exported annual report.", null, report);
-                                } catch (JsonProcessingException | EntityRetrievalException | EntityCreationException ex) {
+                                } catch (ActivityException ex) {
                                     LOGGER.error("Error adding annual report activity.", ex);
                                 }
                             }

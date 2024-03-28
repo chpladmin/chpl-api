@@ -21,8 +21,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.caching.ListingSearchCacheRefresh;
 import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
@@ -34,7 +32,7 @@ import gov.healthit.chpl.domain.schedule.ChplJob;
 import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.dto.auth.UserDTO;
-import gov.healthit.chpl.exception.EntityCreationException;
+import gov.healthit.chpl.exception.ActivityException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.UserPermissionRetrievalException;
@@ -147,9 +145,7 @@ public class SurveillanceManager extends SecuredManager {
     }, allEntries = true)
     @ListingSearchCacheRefresh
     @ListingStoreRemove(removeBy = RemoveBy.LISTING_ID, id = "#survToInsert.certifiedProduct.id")
-    public Long createSurveillance(Surveillance survToInsert)
-            throws UserPermissionRetrievalException, EntityRetrievalException, JsonProcessingException, EntityCreationException,
-            ValidationException {
+    public Long createSurveillance(Surveillance survToInsert) throws EntityRetrievalException, ValidationException, UserPermissionRetrievalException, ActivityException {
         CertifiedProductSearchDetails beforeListing = cpDetailsManager
                 .getCertifiedProductDetails(survToInsert.getCertifiedProduct().getId());
 
@@ -178,8 +174,7 @@ public class SurveillanceManager extends SecuredManager {
     }, allEntries = true)
     @ListingSearchCacheRefresh
     @ListingStoreRemove(removeBy = RemoveBy.LISTING_ID, id = "#survToUpdate.certifiedProduct.id")
-    public void updateSurveillance(final Surveillance survToUpdate) throws EntityRetrievalException,
-            EntityCreationException, JsonProcessingException, ValidationException {
+    public void updateSurveillance(final Surveillance survToUpdate) throws EntityRetrievalException, ValidationException, ActivityException {
         CertifiedProductSearchDetails beforeListing = cpDetailsManager
                 .getCertifiedProductDetails(survToUpdate.getCertifiedProduct().getId());
 
@@ -206,7 +201,8 @@ public class SurveillanceManager extends SecuredManager {
     @ListingSearchCacheRefresh
     @ListingStoreRemove(removeBy = RemoveBy.LISTING_ID, id = "#survToDelete.certifiedProduct.id")
     public void deleteSurveillance(Surveillance survToDelete, String reason)
-            throws InvalidArgumentsException, EntityRetrievalException, EntityCreationException, JsonProcessingException {
+            throws InvalidArgumentsException, EntityRetrievalException, ActivityException {
+
         if (survToDelete == null) {
             throw new InvalidArgumentsException("Cannot find surveillance with id " + survToDelete.getId() + " to delete.");
         }
@@ -281,16 +277,14 @@ public class SurveillanceManager extends SecuredManager {
                 "^" + env.getProperty("surveillanceNonconformitiesReportName") + "-.+\\.csv$");
     }
 
-    private void logSurveillanceUpdateActivity(CertifiedProductSearchDetails existingListing)
-            throws JsonProcessingException, EntityCreationException, EntityRetrievalException {
+    private void logSurveillanceUpdateActivity(CertifiedProductSearchDetails existingListing) throws EntityRetrievalException, ActivityException {
         CertifiedProductSearchDetails changedListing = cpDetailsManager.getCertifiedProductDetailsNoCache(existingListing.getId());
         activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, existingListing.getId(),
                 "Surveillance was updated on certified product " + changedListing.getChplProductNumber(),
                 existingListing, changedListing);
     }
 
-    private void logSurveillanceCreationActivity(CertifiedProductSearchDetails existingListing)
-            throws JsonProcessingException, EntityCreationException, EntityRetrievalException {
+    private void logSurveillanceCreationActivity(CertifiedProductSearchDetails existingListing) throws EntityRetrievalException, ActivityException {
         CertifiedProductSearchDetails changedListing = cpDetailsManager.getCertifiedProductDetailsNoCache(existingListing.getId());
         activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, existingListing.getId(),
                 "Surveillance was added to certified product " + changedListing.getChplProductNumber(),

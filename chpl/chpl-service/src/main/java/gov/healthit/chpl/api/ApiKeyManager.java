@@ -10,8 +10,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-
 import gov.healthit.chpl.api.dao.ApiKeyDAO;
 import gov.healthit.chpl.api.dao.ApiKeyRequestDAO;
 import gov.healthit.chpl.api.domain.ApiKey;
@@ -24,6 +22,7 @@ import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
 import gov.healthit.chpl.email.EmailBuilder;
 import gov.healthit.chpl.email.footer.PublicFooter;
+import gov.healthit.chpl.exception.ActivityException;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -95,7 +94,7 @@ public class ApiKeyManager {
     }
 
     @Transactional
-    public ApiKey confirmRequest(String token) throws ValidationException, JsonProcessingException, EntityCreationException, EntityRetrievalException, EmailNotSentException {
+    public ApiKey confirmRequest(String token) throws ValidationException, EntityCreationException, ActivityException, EmailNotSentException  {
         Optional<ApiKeyRequest> request = apiKeyRequestDAO.getByApiRequestToken(token);
         if (!request.isPresent()) {
             throw new ValidationException(errorMessages.getMessage("apiKeyRequest.notFound"));
@@ -130,8 +129,7 @@ public class ApiKeyManager {
         return apiKey;
     }
 
-    private ApiKey createKey(ApiKey toCreate)
-            throws EntityCreationException, JsonProcessingException, EntityRetrievalException {
+    private ApiKey createKey(ApiKey toCreate) throws EntityCreationException, ActivityException {
 
         ApiKey created = apiKeyDAO.create(toCreate);
         String activityMsg = "API Key " + created.getKey() + " was created.";
@@ -143,7 +141,7 @@ public class ApiKeyManager {
 
     @Transactional
     @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")
-    public void deleteKey(String keyString) throws JsonProcessingException, EntityCreationException, EntityRetrievalException {
+    public void deleteKey(String keyString) throws EntityRetrievalException, ActivityException  {
         ApiKey toDelete = apiKeyDAO.getByKey(keyString);
         String activityMsg = "API Key " + toDelete.getKey() + " was revoked.";
         apiKeyDAO.delete(toDelete.getId());

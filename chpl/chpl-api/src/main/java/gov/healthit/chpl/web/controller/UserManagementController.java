@@ -34,15 +34,14 @@ import gov.healthit.chpl.domain.auth.UserInvitation;
 import gov.healthit.chpl.domain.auth.UsersResponse;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.dto.auth.UserInvitationDTO;
+import gov.healthit.chpl.exception.ActivityException;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.JWTCreationException;
 import gov.healthit.chpl.exception.MultipleUserAccountsException;
-import gov.healthit.chpl.exception.UserAccountExistsException;
 import gov.healthit.chpl.exception.UserCreationException;
-import gov.healthit.chpl.exception.UserManagementException;
 import gov.healthit.chpl.exception.UserPermissionRetrievalException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
@@ -107,9 +106,8 @@ public class UserManagementController {
     @RequestMapping(value = "/create", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
     public @ResponseBody User createUser(@RequestBody CreateUserFromInvitationRequest userInfo)
-            throws ValidationException, EntityRetrievalException, InvalidArgumentsException,
-            UserRetrievalException, MultipleUserAccountsException, UserCreationException,
-            EmailNotSentException, JsonProcessingException, EntityCreationException {
+            throws ValidationException, InvalidArgumentsException, UserCreationException, ActivityException,
+            EntityRetrievalException, UserRetrievalException {
 
         if (userInfo.getUser() == null || userInfo.getUser().getEmail() == null) {
             throw new ValidationException(msgUtil.getMessage("user.email.required"));
@@ -205,7 +203,7 @@ public class UserManagementController {
             throw new InvalidArgumentsException("User key is required.");
         }
 
-        JWTAuthenticatedUser loggedInUser = (JWTAuthenticatedUser) AuthUtil.getCurrentUser();
+        JWTAuthenticatedUser loggedInUser = AuthUtil.getCurrentUser();
         if (loggedInUser == null
                 && (StringUtils.isEmpty(credentials.getUserName()) || StringUtils.isEmpty(credentials.getPassword()))) {
             throw new InvalidArgumentsException(
@@ -227,7 +225,7 @@ public class UserManagementController {
             }
             Authentication invitedUserAuthenticator = AuthUtil.getInvitedUserAuthenticator(user.getId());
             SecurityContextHolder.getContext().setAuthentication(invitedUserAuthenticator);
-            loggedInUser = (JWTAuthenticatedUser) AuthUtil.getCurrentUser();
+            loggedInUser = AuthUtil.getCurrentUser();
         }
 
         UserDTO userToUpdate = userManager.getById(loggedInUser.getId());
@@ -284,9 +282,7 @@ public class UserManagementController {
     @RequestMapping(value = "/{userId}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
     public User updateUserDetails(@RequestBody User userInfo)
-            throws UserRetrievalException, UserPermissionRetrievalException, JsonProcessingException,
-            EntityCreationException, EntityRetrievalException, ValidationException, UserAccountExistsException,
-            MultipleUserAccountsException {
+            throws UserRetrievalException, ValidationException, MultipleUserAccountsException, ActivityException {
 
         if (userInfo.getUserId() <= 0) {
             throw new UserRetrievalException("Cannot update user with ID less than 0");
@@ -305,9 +301,7 @@ public class UserManagementController {
             })
     @RequestMapping(value = "/{userId}", method = RequestMethod.DELETE,
     produces = "application/json; charset=utf-8")
-    public DeletedUser deleteUser(@PathVariable("userId") Long userId)
-            throws UserRetrievalException, UserManagementException, UserPermissionRetrievalException,
-            JsonProcessingException, EntityCreationException, EntityRetrievalException {
+    public DeletedUser deleteUser(@PathVariable("userId") Long userId) throws UserRetrievalException, ActivityException {
 
         if (userId <= 0) {
             throw new UserRetrievalException("Cannot delete user with ID less than 0");

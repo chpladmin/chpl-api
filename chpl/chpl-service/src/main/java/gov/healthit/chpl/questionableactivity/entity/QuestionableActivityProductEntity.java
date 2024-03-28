@@ -13,6 +13,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import gov.healthit.chpl.domain.Product;
+import gov.healthit.chpl.entity.ActivityEntity;
 import gov.healthit.chpl.entity.EntityAudit;
 import gov.healthit.chpl.entity.ProductEntity;
 import gov.healthit.chpl.entity.auth.UserEntity;
@@ -44,8 +45,9 @@ public class QuestionableActivityProductEntity extends EntityAudit implements Qu
     @Column(name = "questionable_activity_trigger_id")
     private Long triggerId;
 
-    @Column(name = "activity_id")
-    private Long activityId;
+    @OneToOne(optional = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "activity_id", insertable = true, updatable = false)
+    private ActivityEntity activity;
 
     @OneToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "questionable_activity_trigger_id", insertable = false, updatable = false)
@@ -77,14 +79,13 @@ public class QuestionableActivityProductEntity extends EntityAudit implements Qu
     public QuestionableActivityProduct toDomain() {
         return QuestionableActivityProduct.builder()
                 .id(this.getId())
-                .activityId(this.getActivityId())
+                .activity(this.getActivity().toDomain())
                 .trigger(this.getTrigger() == null
                     ? QuestionableActivityTrigger.builder().id(this.getTriggerId()).build()
                         : this.getTrigger().toDomain())
                 .before(this.getBefore())
                 .after(this.getAfter())
                 .activityDate(this.getActivityDate())
-                .userId(this.getUserId())
                 .productId(this.getProductId())
                 .product(this.getProduct() == null
                     ? Product.builder().id(this.getProductId()).build()

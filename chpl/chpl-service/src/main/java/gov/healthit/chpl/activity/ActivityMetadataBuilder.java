@@ -17,26 +17,19 @@ import gov.healthit.chpl.domain.activity.TestingLabActivityMetadata;
 import gov.healthit.chpl.domain.activity.UserMaintenanceActivityMetadata;
 import gov.healthit.chpl.domain.activity.VersionActivityMetadata;
 import gov.healthit.chpl.dto.ActivityDTO;
+import gov.healthit.chpl.util.ChplUserToCognitoUserUtil;
+import lombok.extern.log4j.Log4j2;
 
-/**
- * Builds an appropriate metadata object for the type of activity that is
- * provided.
- *
- * @author kekey
- *
- */
+@Log4j2
 public abstract class ActivityMetadataBuilder {
 
-    /**
-     * Create an activity metadata object from activity DTO. Fill in the basic
-     * fields that all metadata will have (date, id, etc) and then add fields
-     * specific to the type of activity. Finally, categorize the activity based
-     * on what actually happened.
-     *
-     * @param dto
-     * @return parsed metadata object
-     */
-    public ActivityMetadata build(final ActivityDTO dto) {
+    private ChplUserToCognitoUserUtil chplUserToCognitoUserUtil;
+
+    public ActivityMetadataBuilder(ChplUserToCognitoUserUtil chplUserToCognitoUserUtil) {
+        this.chplUserToCognitoUserUtil = chplUserToCognitoUserUtil;
+    }
+
+   public ActivityMetadata build(final ActivityDTO dto) {
         ActivityMetadata metadata = createMetadataObject(dto);
         if (metadata != null) {
             addGenericMetadata(dto, metadata);
@@ -47,16 +40,16 @@ public abstract class ActivityMetadataBuilder {
 
     protected abstract void addConceptSpecificMetadata(ActivityDTO dto, ActivityMetadata metadata);
 
-    protected void addGenericMetadata(final ActivityDTO dto, final ActivityMetadata metadata) {
+    protected void addGenericMetadata(ActivityDTO dto, ActivityMetadata metadata) {
         metadata.setId(dto.getId());
         metadata.setDate(dto.getActivityDate());
         metadata.setObjectId(dto.getActivityObjectId());
         metadata.setConcept(dto.getConcept());
-        metadata.setResponsibleUser(dto.getUser() == null ? null : dto.getUser().toDomain());
+        metadata.setResponsibleUser(chplUserToCognitoUserUtil.getUser(dto.getLastModifiedUser(), dto.getLastModifiedSsoUser()));
         metadata.setDescription(dto.getDescription());
     }
 
-    private ActivityMetadata createMetadataObject(final ActivityDTO dto) {
+    private ActivityMetadata createMetadataObject(ActivityDTO dto) {
         ActivityMetadata metadata = null;
         switch (dto.getConcept()) {
         case CERTIFIED_PRODUCT:
