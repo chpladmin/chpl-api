@@ -31,9 +31,9 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.listener.ChplProductNumberChangedListener;
 import gov.healthit.chpl.listener.QuestionableActivityListener;
-import gov.healthit.chpl.manager.auth.CognitoUserService;
 import gov.healthit.chpl.manager.impl.SecuredManager;
 import gov.healthit.chpl.subscription.SubscriptionObserver;
+import gov.healthit.chpl.user.cognito.CognitoApiWrapper;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.JSONUtils;
 import lombok.extern.log4j.Log4j2;
@@ -48,7 +48,7 @@ public class ActivityManager extends SecuredManager {
     private QuestionableActivityListener questionableActivityListener;
     private ChplProductNumberChangedListener chplProductNumberChangedListener;
     private SubscriptionObserver subscriptionObserver;
-    private CognitoUserService cognitoUserService;
+    private CognitoApiWrapper cognitoApiWrapper;
     private UserDAO userDAO;
 
     @Autowired
@@ -56,14 +56,14 @@ public class ActivityManager extends SecuredManager {
             QuestionableActivityListener questionableActivityListener,
             ChplProductNumberChangedListener chplProductNumberChangedListener,
             SubscriptionObserver subscriptionObserver,
-            CognitoUserService cognitoUserService,
+            CognitoApiWrapper cognitoApiWrapper,
             UserDAO userDAO) {
         this.activityDAO = activityDAO;
         this.devDao = devDao;
         this.questionableActivityListener = questionableActivityListener;
         this.chplProductNumberChangedListener = chplProductNumberChangedListener;
         this.subscriptionObserver = subscriptionObserver;
-        this.cognitoUserService = cognitoUserService;
+        this.cognitoApiWrapper = cognitoApiWrapper;
         this.userDAO = userDAO;
     }
 
@@ -129,7 +129,7 @@ public class ActivityManager extends SecuredManager {
         if (AuthUtil.getCurrentUser().getAuthenticationSystem().equals(AuthenticationSystem.CHPL)) {
             currentUser = userDAO.getById(AuthUtil.getAuditId()).toDomain();
         } else if (AuthUtil.getCurrentUser().getAuthenticationSystem().equals(AuthenticationSystem.COGNTIO)) {
-            currentUser = cognitoUserService.getUserInfo(AuthUtil.getCurrentUser().getCognitoId());
+            currentUser = cognitoApiWrapper.getUserInfo(AuthUtil.getCurrentUser().getCognitoId());
         }
         return currentUser;
     }

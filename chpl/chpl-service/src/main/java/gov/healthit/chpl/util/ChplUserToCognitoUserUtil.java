@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.dao.auth.UserDAO;
 import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.exception.UserRetrievalException;
-import gov.healthit.chpl.manager.auth.CognitoUserService;
+import gov.healthit.chpl.user.cognito.CognitoApiWrapper;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -16,11 +16,11 @@ import lombok.extern.log4j.Log4j2;
 public class ChplUserToCognitoUserUtil {
 
     private UserDAO userDAO;
-    private CognitoUserService cognitoUserService;
+    private CognitoApiWrapper cognitoApiWrapper;
 
     @Autowired
-    public ChplUserToCognitoUserUtil(UserDAO userDAO, CognitoUserService cognitoUserService) {
-        this.cognitoUserService = cognitoUserService;
+    public ChplUserToCognitoUserUtil(UserDAO userDAO, CognitoApiWrapper cognitoApiWrapper) {
+        this.cognitoApiWrapper = cognitoApiWrapper;
         this.userDAO = userDAO;
     }
 
@@ -32,9 +32,9 @@ public class ChplUserToCognitoUserUtil {
             } catch (UserRetrievalException e) {
                 LOGGER.error("Could not retreive user with ID: {}", chplUserId, e);
             }
-        } else if (cognitoUserId!= null) {
+        } else if (cognitoUserId != null) {
             try {
-                currentUser = cognitoUserService.getUserInfo(cognitoUserId);
+                currentUser = cognitoApiWrapper.getUserInfo(cognitoUserId);
             } catch (UserRetrievalException e) {
                 LOGGER.error("Could not retreive user with ID: {}", cognitoUserId, e);
             }
