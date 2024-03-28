@@ -99,7 +99,8 @@ public class SvapManager {
         Svap updatedSvap = getSvap(svap.getSvapId());
         if (updatedSvap != null) {
             try {
-                activityManager.addActivity(ActivityConcept.SVAP, updatedSvap.getSvapId(), "An SVAP was updated.",
+                activityManager.addActivity(ActivityConcept.SVAP, updatedSvap.getSvapId(),
+                        originalSvap.getRegulatoryTextCitation() + " was updated.",
                     originalSvap, updatedSvap);
             } catch (JsonProcessingException | EntityCreationException ex) {
                 LOGGER.error("Error adding activity about updating SVAP " + originalSvap.getRegulatoryTextCitation(), ex);
@@ -118,8 +119,10 @@ public class SvapManager {
         Svap createdSvap = getSvap(newSvap.getSvapId());
         if (createdSvap != null && createdSvap.getSvapId() != null) {
             try {
-                activityManager.addActivity(ActivityConcept.SVAP, createdSvap.getSvapId(), "An SVAP was created.",
-                    null, createdSvap);
+                activityManager.addActivity(ActivityConcept.SVAP,
+                        createdSvap.getSvapId(),
+                        createdSvap.getRegulatoryTextCitation() + " was created.",
+                        null, createdSvap);
             } catch (JsonProcessingException | EntityCreationException ex) {
                 LOGGER.error("Error adding activity about creating an SVAP " + createdSvap.getRegulatoryTextCitation(), ex);
             }
@@ -137,7 +140,8 @@ public class SvapManager {
         deleteSvap(originalSvap);
 
         try {
-            activityManager.addActivity(ActivityConcept.SVAP, originalSvap.getSvapId(), "An SVAP was deleted.",
+            activityManager.addActivity(ActivityConcept.SVAP, originalSvap.getSvapId(),
+                    originalSvap.getRegulatoryTextCitation() + " was deleted.",
                     originalSvap, null);
         } catch (JsonProcessingException | EntityCreationException ex) {
             LOGGER.error("Error adding activity about deleting SVAP with ID " + svapId, ex);

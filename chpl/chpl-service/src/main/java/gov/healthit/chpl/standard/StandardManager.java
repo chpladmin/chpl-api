@@ -79,7 +79,8 @@ public class StandardManager {
         Standard updatedStandard = standardDAO.getById(standard.getId());
 
         try {
-            activityManager.addActivity(ActivityConcept.STANDARD, origStandard.getId(), "A Standard was updated.",
+            activityManager.addActivity(ActivityConcept.STANDARD, origStandard.getId(),
+                    origStandard.getRegulatoryTextCitation() + " was updated.",
                     origStandard, updatedStandard);
         } catch (JsonProcessingException | EntityCreationException ex) {
             LOGGER.error("Error adding activity about updating Standard " + origStandard.getRegulatoryTextCitation(), ex);
@@ -96,7 +97,8 @@ public class StandardManager {
         Standard createdStandard = standardService.add(standard);
 
         try {
-            activityManager.addActivity(ActivityConcept.STANDARD, createdStandard.getId(), "A Standard was created.",
+            activityManager.addActivity(ActivityConcept.STANDARD, createdStandard.getId(),
+                    createdStandard.getRegulatoryTextCitation() + " was created.",
                     null, createdStandard);
         } catch (JsonProcessingException | EntityCreationException ex) {
             LOGGER.error("Error adding activity about creating Standard " + createdStandard.getRegulatoryTextCitation(), ex);
@@ -119,7 +121,8 @@ public class StandardManager {
         standardService.delete(standard);
 
         try {
-            activityManager.addActivity(ActivityConcept.STANDARD, standard.getId(), "A Standard was deleted.",
+            activityManager.addActivity(ActivityConcept.STANDARD, standard.getId(),
+                    standard.getRegulatoryTextCitation() + " was deleted.",
                     standard, null);
         } catch (JsonProcessingException | EntityCreationException ex) {
             LOGGER.error("Error adding activity about deleting standard with ID " + standardId, ex);

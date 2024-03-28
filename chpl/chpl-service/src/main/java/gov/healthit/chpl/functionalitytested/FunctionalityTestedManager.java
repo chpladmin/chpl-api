@@ -81,7 +81,8 @@ public class FunctionalityTestedManager {
 
         try {
             activityManager.addActivity(ActivityConcept.FUNCTIONALITY_TESTED,
-                    origFuncTested.getId(), "A Functionality Tested was updated.",
+                    origFuncTested.getId(),
+                    origFuncTested.getRegulatoryTextCitation() + " was updated.",
                     origFuncTested, updatedFuncTested);
         } catch (JsonProcessingException | EntityCreationException ex) {
             LOGGER.error("Error adding activity about updating functionality tested " + origFuncTested.getRegulatoryTextCitation(), ex);
@@ -99,7 +100,8 @@ public class FunctionalityTestedManager {
 
         try {
             activityManager.addActivity(ActivityConcept.FUNCTIONALITY_TESTED,
-                    createdFuncTested.getId(), "A Functionality Tested was created.",
+                    createdFuncTested.getId(),
+                    createdFuncTested.getRegulatoryTextCitation() + " was created.",
                     null, createdFuncTested);
         } catch (JsonProcessingException | EntityCreationException ex) {
             LOGGER.error("Error adding activity about creating functionality tested " + createdFuncTested.getRegulatoryTextCitation(), ex);
@@ -123,7 +125,8 @@ public class FunctionalityTestedManager {
 
         try {
             activityManager.addActivity(ActivityConcept.FUNCTIONALITY_TESTED,
-                    functionalityTested.getId(), "A Functionality Tested was deleted.",
+                    functionalityTested.getId(),
+                    functionalityTested.getRegulatoryTextCitation() + " was deleted.",
                     functionalityTested, null);
         } catch (JsonProcessingException | EntityCreationException ex) {
             LOGGER.error("Error adding activity about deleting functionality tested with ID " + functionalityTestedId, ex);
