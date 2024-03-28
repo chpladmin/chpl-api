@@ -204,7 +204,7 @@ public class CognitoApiWrapper {
         return attributes.stream()
             .filter(att -> att.name().equals(name))
             .findAny()
-            .orElse(null);
+            .orElse(AttributeType.builder().value("").build());
 
     }
 
