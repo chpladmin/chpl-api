@@ -887,6 +887,30 @@
                 </entry>
             </job-data-map>
         </job>
+
+        <job>
+            <name>updatedCriteriaStatusReportCreatorJob</name>
+            <group>systemJobs</group>
+            <description>Updated Criteria Status Report Creator Job</description>
+            <job-class>gov.healthit.chpl.scheduler.job.updatedcriteriastatusreport.UpdatedCriteriaStatusReportCreatorJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+        </job>
+
+        <job>
+            <name>Updated Criteria Status Report</name>
+            <group>chplJobs</group>
+            <description>Sends the Updated Criteria Status Report</description>
+            <job-class>gov.healthit.chpl.scheduler.job.updatedcriteriastatusreport.UpdatedCriteriaStatusReportEmailJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+            <job-data-map>
+                <entry>
+                    <key>authorities</key>
+                    <value>ROLE_ADMIN;ROLE_ONC;</value>
+                </entry>
+            </job-data-map>
+        </job>
         
     </schedule>
 </job-scheduling-data>

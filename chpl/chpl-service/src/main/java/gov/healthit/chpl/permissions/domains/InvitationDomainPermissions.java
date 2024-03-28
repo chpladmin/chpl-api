@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.permissions.domains.invitation.GetActionPermissions;
 import gov.healthit.chpl.permissions.domains.invitation.InviteAcbActionPermissions;
 import gov.healthit.chpl.permissions.domains.invitation.InviteAdminActionPermissions;
 import gov.healthit.chpl.permissions.domains.invitation.InviteCmsActionPermissions;
@@ -19,6 +20,7 @@ public class InvitationDomainPermissions extends DomainPermissions {
     public static final String INVITE_CMS = "INVITE_CMS";
     public static final String INVITE_DEVELOPER = "INVITE_DEVELOPER";
     public static final String UPDATE_FROM_INVITATION = "UPDATE_FROM_INVITATION";
+    public static final String GET = "GET";
 
     @Autowired
     @SuppressWarnings({"checkstyle:linelength", "checkstyle:parameternumber"})
@@ -28,7 +30,8 @@ public class InvitationDomainPermissions extends DomainPermissions {
             @Qualifier("invitationInviteCmsActionPermissions") InviteCmsActionPermissions inviteCmsActionPermissions,
             @Qualifier("invitationInviteAcbActionPermissions") InviteAcbActionPermissions inviteAcbActionPermissions,
             @Qualifier("invitationInviteDeveloperActionPermissions") InviteDeveloperActionPermissions inviteDeveloperActionPermissions,
-            @Qualifier("invitationUpdateFromInvitationActionPermissions") UpdateFromInvitationActionPermissions updateFromInvitationActionPermissions) {
+            @Qualifier("invitationUpdateFromInvitationActionPermissions") UpdateFromInvitationActionPermissions updateFromInvitationActionPermissions,
+            @Qualifier("invitationGetActionPermissions") GetActionPermissions getActionPermissions) {
 
         getActionPermissions().put(INVITE_ADMIN, inviteAdminActionPermissions);
         getActionPermissions().put(INVITE_ONC, inviteOncActionPermissions);
@@ -36,5 +39,6 @@ public class InvitationDomainPermissions extends DomainPermissions {
         getActionPermissions().put(INVITE_ACB, inviteAcbActionPermissions);
         getActionPermissions().put(INVITE_DEVELOPER, inviteDeveloperActionPermissions);
         getActionPermissions().put(UPDATE_FROM_INVITATION, updateFromInvitationActionPermissions);
+        getActionPermissions().put(GET, getActionPermissions);
     }
 }
