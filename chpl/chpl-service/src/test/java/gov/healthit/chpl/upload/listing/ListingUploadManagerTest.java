@@ -38,10 +38,9 @@ import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.SchedulerManager;
-import gov.healthit.chpl.standard.StandardDAO;
-import gov.healthit.chpl.standard.StandardGroupService;
 import gov.healthit.chpl.upload.listing.handler.CertificationDateHandler;
 import gov.healthit.chpl.upload.listing.handler.ListingDetailsUploadHandler;
+import gov.healthit.chpl.upload.listing.normalizer.BaselineStandardAsOfCertificationDayNormalizer;
 import gov.healthit.chpl.upload.listing.normalizer.ListingDetailsNormalizer;
 import gov.healthit.chpl.upload.listing.validation.ListingUploadValidator;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
@@ -94,11 +93,10 @@ public class ListingUploadManagerTest {
                 listingUploadValidator,
                 uploadUtil, chplProductNumberUtil, listingUploadDao, acbDao,
                 Mockito.mock(UserDAO.class),
-                Mockito.mock(StandardDAO.class),
                 listingConfirmationManager,
                 Mockito.mock(SchedulerManager.class),
                 Mockito.mock(ActivityManager.class), msgUtil,
-                Mockito.mock(StandardGroupService.class));
+                Mockito.mock(BaselineStandardAsOfCertificationDayNormalizer.class));
     }
 
     @Test(expected = ValidationException.class)

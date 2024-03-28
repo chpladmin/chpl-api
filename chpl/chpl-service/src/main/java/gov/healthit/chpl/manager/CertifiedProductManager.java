@@ -104,6 +104,7 @@ import gov.healthit.chpl.util.DateUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.validation.listing.ListingValidatorFactory;
 import gov.healthit.chpl.validation.listing.Validator;
+import gov.healthit.chpl.validation.listing.normalizer.BaselineStandardAsOfTodayNormalizer;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -137,6 +138,7 @@ public class CertifiedProductManager extends SecuredManager {
     private UserManager userManager;
     private ActivityManager activityManager;
     private ListingDetailsNormalizer listingNormalizer;
+    private BaselineStandardAsOfTodayNormalizer baselineStandardNormalizer;
     private ListingValidatorFactory validatorFactory;
     private CuresUpdateService curesUpdateService;
     private ListingIcsSharedStoreHandler icsSharedStoreHandler;
@@ -167,6 +169,7 @@ public class CertifiedProductManager extends SecuredManager {
             CertifiedProductDetailsManager certifiedProductDetailsManager,
             SchedulerManager schedulerManager, ActivityManager activityManager, UserManager userManager,
             ListingDetailsNormalizer listingNormalizer,
+            BaselineStandardAsOfTodayNormalizer baselineStandardNormalizer,
             ListingValidatorFactory validatorFactory, CuresUpdateService curesUpdateService,
             @Lazy ListingIcsSharedStoreHandler icsSharedStoreHandler,
             CertificationStatusEventsService certStatusEventsService, ChplTeamNotifier chplteamNotifier,
@@ -198,6 +201,7 @@ public class CertifiedProductManager extends SecuredManager {
         this.activityManager = activityManager;
         this.userManager = userManager;
         this.listingNormalizer = listingNormalizer;
+        this.baselineStandardNormalizer = baselineStandardNormalizer;
         this.validatorFactory = validatorFactory;
         this.curesUpdateService = curesUpdateService;
         this.icsSharedStoreHandler = icsSharedStoreHandler;
@@ -284,7 +288,7 @@ public class CertifiedProductManager extends SecuredManager {
             CertifiedProductSearchDetails updatedListing = updateRequest.getListing();
             existingListing = certifiedProductDetailsManager.getCertifiedProductDetails(updatedListing.getId());
 
-            listingNormalizer.normalize(updatedListing);
+            listingNormalizer.normalize(updatedListing, List.of(baselineStandardNormalizer));
 
             // validate - throws ValidationException if the listing cannot be updated
             validateListingForUpdate(existingListing, updatedListing, updateRequest.isAcknowledgeWarnings(), updateRequest.isAcknowledgeBusinessErrors());

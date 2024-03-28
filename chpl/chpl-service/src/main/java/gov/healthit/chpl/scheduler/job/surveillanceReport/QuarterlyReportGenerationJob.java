@@ -35,7 +35,7 @@ import gov.healthit.chpl.surveillance.report.SurveillanceReportManager;
 import gov.healthit.chpl.surveillance.report.builder.QuarterlyReportBuilderXlsx;
 import gov.healthit.chpl.surveillance.report.builder.ReportBuilderFactory;
 import gov.healthit.chpl.surveillance.report.builder.SurveillanceReportWorkbookWrapper;
-import gov.healthit.chpl.surveillance.report.dto.QuarterlyReportDTO;
+import gov.healthit.chpl.surveillance.report.domain.QuarterlyReport;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import lombok.extern.log4j.Log4j2;
 
@@ -100,10 +100,10 @@ public class QuarterlyReportGenerationJob extends QuartzJob {
             txTemplate.execute(new TransactionCallbackWithoutResult() {
                 @Override
                 protected void doInTransactionWithoutResult(TransactionStatus status) {
-                    QuarterlyReportDTO report = null;
+                    QuarterlyReport report = null;
                     try {
                         report = reportManager.getQuarterlyReport(quarterlyReportId);
-                    } catch (EntityRetrievalException ex) {
+                    } catch (Exception ex) {
                         String msg = msgUtil.getMessage("report.quarterlySurveillance.export.badId", quarterlyReportId);
                         LOGGER.error(msg, ex);
                         sendEmail(user.getEmail(), quarterlyReportFailureSubject,
@@ -127,7 +127,7 @@ public class QuarterlyReportGenerationJob extends QuartzJob {
                                 }
                                 LOGGER.info("Sending success email to " + user.getEmail());
                                 sendEmail(user.getEmail(),
-                                        String.format(quarterlyReportSubject, report.getQuarter().getName()),
+                                        String.format(quarterlyReportSubject, report.getQuarter()),
                                         env.getProperty("surveillance.quarterlyReport.success.htmlBody"), fileAttachments);
                                 try {
                                     activityManager.addActivity(ActivityConcept.QUARTERLY_REPORT, quarterlyReportId,
@@ -167,12 +167,12 @@ public class QuarterlyReportGenerationJob extends QuartzJob {
         return isValid;
     }
 
-    private SurveillanceReportWorkbookWrapper createWorkbook(QuarterlyReportDTO report) {
+    private SurveillanceReportWorkbookWrapper createWorkbook(QuarterlyReport report) {
         SurveillanceReportWorkbookWrapper workbook = null;
         try {
                 QuarterlyReportBuilderXlsx reportBuilder = reportBuilderFactory.getReportBuilder(report);
                 if (reportBuilder != null) {
-                    workbook = reportBuilder.buildXlsx(report);
+                    workbook = reportBuilder.buildXlsx(report, LOGGER);
                 } else {
                     String msg = msgUtil.getMessage("report.quarterlySurveillance.builderNotFound");
                     LOGGER.error(msg + " Report id " + report.getId());
@@ -188,7 +188,7 @@ public class QuarterlyReportGenerationJob extends QuartzJob {
         return workbook;
     }
 
-    private File writeWorkbookAsFile(QuarterlyReportDTO report, SurveillanceReportWorkbookWrapper workbookWrapper) {
+    private File writeWorkbookAsFile(QuarterlyReport report, SurveillanceReportWorkbookWrapper workbookWrapper) {
         File writtenFile = null;
         String filename = getFilename(report);
         //write out the workbook contents to this file
@@ -214,8 +214,8 @@ public class QuarterlyReportGenerationJob extends QuartzJob {
         return writtenFile;
     }
 
-    private String getFilename(QuarterlyReportDTO report) {
-        return report.getQuarter().getName() + "-" + report.getYear() + "-" + report.getAcb().getName() + "-quarterly-report";
+    private String getFilename(QuarterlyReport report) {
+        return report.getQuarter() + "-" + report.getYear() + "-" + report.getAcb().getName() + "-quarterly-report";
     }
 
     private void sendEmail(String recipientEmail, String subject, String htmlContent, List<File> attachments)  {

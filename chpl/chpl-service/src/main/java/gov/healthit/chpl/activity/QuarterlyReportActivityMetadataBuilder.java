@@ -9,8 +9,8 @@ import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.domain.activity.ActivityMetadata;
 import gov.healthit.chpl.domain.activity.QuarterlyReportActivityMetadata;
 import gov.healthit.chpl.dto.ActivityDTO;
-import gov.healthit.chpl.surveillance.report.dto.QuarterlyReportDTO;
-import gov.healthit.chpl.surveillance.report.dto.QuarterlyReportRelevantListingDTO;
+import gov.healthit.chpl.surveillance.report.domain.QuarterlyReport;
+import gov.healthit.chpl.surveillance.report.domain.RelevantListing;
 import gov.healthit.chpl.util.ChplUserToCognitoUserUtil;
 import lombok.extern.log4j.Log4j2;
 
@@ -24,45 +24,45 @@ public class QuarterlyReportActivityMetadataBuilder extends ActivityMetadataBuil
     }
 
     @Override
-    protected void addConceptSpecificMetadata(final ActivityDTO dto, final ActivityMetadata metadata) {
+    protected void addConceptSpecificMetadata(ActivityDTO activity, ActivityMetadata metadata) {
         QuarterlyReportActivityMetadata quarterlyReportActivityMetadata = (QuarterlyReportActivityMetadata) metadata;
         ObjectMapper jsonMapper = new ObjectMapper();
 
         //either a report object or relevant listing object is in the activity
-        QuarterlyReportDTO report = null;
-        QuarterlyReportRelevantListingDTO listing = null;
-        if (dto.getNewData() != null) {
-            if (dto.getConcept() == ActivityConcept.QUARTERLY_REPORT_LISTING) {
+        QuarterlyReport report = null;
+        RelevantListing listing = null;
+        if (activity.getNewData() != null) {
+            if (activity.getConcept() == ActivityConcept.QUARTERLY_REPORT_LISTING) {
                 try {
-                    listing = jsonMapper.readValue(dto.getNewData(), QuarterlyReportRelevantListingDTO.class);
+                    listing = jsonMapper.readValue(activity.getNewData(), RelevantListing.class);
                 } catch (Exception e) {
-                    LOGGER.warn("Could not parse activity ID " + dto.getId()
-                            + " new data " + "as QuarterlyReportRelevantListingDTO. "
-                            + "JSON was: " + dto.getNewData());
+                    LOGGER.warn("Could not parse activity ID " + activity.getId()
+                            + " new data " + "as RelevantListing. "
+                            + "JSON was: " + activity.getNewData());
                 }
-            } else if (dto.getConcept() == ActivityConcept.QUARTERLY_REPORT) {
+            } else if (activity.getConcept() == ActivityConcept.QUARTERLY_REPORT) {
                 try {
-                    report = jsonMapper.readValue(dto.getNewData(), QuarterlyReportDTO.class);
+                    report = jsonMapper.readValue(activity.getNewData(), QuarterlyReport.class);
                 } catch (Exception e) {
-                    LOGGER.warn("Could not parse activity ID " + dto.getId() + " new data " + "as QuarterlyReportDTO. "
-                            + "JSON was: " + dto.getNewData());
+                    LOGGER.warn("Could not parse activity ID " + activity.getId() + " new data " + "as QuarterlyReport. "
+                            + "JSON was: " + activity.getNewData());
                 }
             }
-        } else if (dto.getOriginalData() != null) {
-            if (dto.getConcept() == ActivityConcept.QUARTERLY_REPORT_LISTING) {
+        } else if (activity.getOriginalData() != null) {
+            if (activity.getConcept() == ActivityConcept.QUARTERLY_REPORT_LISTING) {
                 try {
-                    listing = jsonMapper.readValue(dto.getOriginalData(), QuarterlyReportRelevantListingDTO.class);
+                    listing = jsonMapper.readValue(activity.getOriginalData(), RelevantListing.class);
                 } catch (Exception e) {
-                    LOGGER.warn("Could not parse activity ID " + dto.getId()
-                            + " original data " + "as QuarterlyReportRelevantListingDTO. "
-                            + "JSON was: " + dto.getOriginalData());
+                    LOGGER.warn("Could not parse activity ID " + activity.getId()
+                            + " original data " + "as RelevantListing. "
+                            + "JSON was: " + activity.getOriginalData());
                 }
-            } else if (dto.getConcept() == ActivityConcept.QUARTERLY_REPORT) {
+            } else if (activity.getConcept() == ActivityConcept.QUARTERLY_REPORT) {
                 try {
-                    report = jsonMapper.readValue(dto.getOriginalData(), QuarterlyReportDTO.class);
+                    report = jsonMapper.readValue(activity.getOriginalData(), QuarterlyReport.class);
                 } catch (Exception e) {
-                    LOGGER.warn("Could not parse activity ID " + dto.getId() + " original data " + "as QuarterlyReportDTO. "
-                            + "JSON was: " + dto.getOriginalData());
+                    LOGGER.warn("Could not parse activity ID " + activity.getId() + " original data " + "as QuarterlyReport. "
+                            + "JSON was: " + activity.getOriginalData());
                 }
             }
         }
@@ -74,19 +74,18 @@ public class QuarterlyReportActivityMetadataBuilder extends ActivityMetadataBuil
         }
     }
 
-    private void parseReportMetadata(final QuarterlyReportActivityMetadata metadata, final QuarterlyReportDTO report) {
+    private void parseReportMetadata(QuarterlyReportActivityMetadata metadata, QuarterlyReport report) {
         if (report.getAcb() != null) {
             metadata.setAcb(report.getAcb());
         }
         if (report.getQuarter() != null) {
-            metadata.setQuarterName(report.getQuarter().getName());
+            metadata.setQuarterName(report.getQuarter());
         }
         metadata.setYear(report.getYear());
     }
 
-    private void parseRelevantListingMetadata(final QuarterlyReportActivityMetadata metadata,
-            final QuarterlyReportRelevantListingDTO listing) {
-        QuarterlyReportDTO report = listing.getQuarterlyReport();
+    private void parseRelevantListingMetadata(QuarterlyReportActivityMetadata metadata, RelevantListing listing) {
+        QuarterlyReport report = listing.getQuarterlyReport();
         if (report != null) {
             parseReportMetadata(metadata, report);
         }

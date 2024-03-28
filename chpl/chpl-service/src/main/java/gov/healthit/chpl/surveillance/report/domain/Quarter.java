@@ -1,6 +1,5 @@
 package gov.healthit.chpl.surveillance.report.domain;
 
-import gov.healthit.chpl.surveillance.report.entity.QuarterEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,13 +17,4 @@ public class Quarter {
     private Integer startDay;
     private Integer endMonth;
     private Integer endDay;
-
-    public Quarter(QuarterEntity entity) {
-        this.id = entity.getId();
-        this.name = entity.getName();
-        this.startMonth = entity.getQuarterBeginMonth();
-        this.startDay = entity.getQuarterBeginDay();
-        this.endMonth = entity.getQuarterEndMonth();
-        this.endDay = entity.getQuarterEndDay();
-    }
 }

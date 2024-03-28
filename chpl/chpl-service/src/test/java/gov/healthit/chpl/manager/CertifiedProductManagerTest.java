@@ -72,6 +72,7 @@ import gov.healthit.chpl.upload.listing.normalizer.ListingDetailsNormalizer;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.validation.listing.ListingValidatorFactory;
 import gov.healthit.chpl.validation.listing.Validator;
+import gov.healthit.chpl.validation.listing.normalizer.BaselineStandardAsOfTodayNormalizer;
 
 
 public class CertifiedProductManagerTest {
@@ -149,6 +150,7 @@ public class CertifiedProductManagerTest {
                 activityManager,
                 Mockito.mock(UserManager.class),
                 Mockito.mock(ListingDetailsNormalizer.class),
+                Mockito.mock(BaselineStandardAsOfTodayNormalizer.class),
                 validatorFactory, curesUpdateService,
                 Mockito.mock(ListingIcsSharedStoreHandler.class),
                 Mockito.mock(CertificationStatusEventsService.class),
