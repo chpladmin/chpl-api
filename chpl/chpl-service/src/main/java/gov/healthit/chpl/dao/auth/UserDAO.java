@@ -157,7 +157,7 @@ public class UserDAO extends BaseDAOImpl {
                 + "JOIN FETCH u.contact "
                 + "JOIN FETCH u.permission "
                 + "WHERE (u.id = :userid)  "
-                + (includeDeleted ? "" : "AND (NOT u.deleted = false) "),
+                + (includeDeleted ? "" : "AND (u.deleted = false) "),
                 UserEntity.class);
         query.setParameter("userid", userId);
         List<UserEntity> result = query.getResultList();
