@@ -21,8 +21,8 @@ import gov.healthit.chpl.permissions.domains.ActionPermissions;
 import gov.healthit.chpl.surveillance.report.AnnualReportDAO;
 import gov.healthit.chpl.surveillance.report.QuarterlyReportDAO;
 import gov.healthit.chpl.surveillance.report.domain.AnnualReport;
-import gov.healthit.chpl.surveillance.report.dto.QuarterlyReportDTO;
-import gov.healthit.chpl.surveillance.report.dto.QuarterlyReportRelevantListingDTO;
+import gov.healthit.chpl.surveillance.report.domain.QuarterlyReport;
+import gov.healthit.chpl.surveillance.report.domain.RelevantListing;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -159,7 +159,7 @@ public class GetActivityDetailsActionPermissions extends ActionPermissions {
             // data could be a QuarterlyReportDTO or a UserDTO if the action was
             // to export the report
             try {
-                QuarterlyReportDTO report = jsonMapper.convertValue(quarterlyReportJson, QuarterlyReportDTO.class);
+                QuarterlyReport report = jsonMapper.convertValue(quarterlyReportJson, QuarterlyReport.class);
                 return isAcbValidForCurrentUser(report.getAcb().getId());
             } catch (Exception e) {
                 LOGGER.warn(
@@ -169,7 +169,7 @@ public class GetActivityDetailsActionPermissions extends ActionPermissions {
             // so must be an export action - look up the quarterly report by id
             // to see if the user has access
             try {
-                QuarterlyReportDTO report = quarterlyReportDao.getById(reportId);
+                QuarterlyReport report = quarterlyReportDao.getById(reportId);
                 return isAcbValidForCurrentUser(report.getAcb().getId());
             } catch (Exception ignore) {
                 LOGGER.warn("Could find quarterly report with ID " + reportId);
@@ -184,10 +184,10 @@ public class GetActivityDetailsActionPermissions extends ActionPermissions {
         if (getResourcePermissions().isUserRoleAdmin() || getResourcePermissions().isUserRoleOnc()) {
             return true;
         } else if (getResourcePermissions().isUserRoleAcbAdmin()) {
-            QuarterlyReportRelevantListingDTO listing = null;
+            RelevantListing listing = null;
             try {
-                listing = jsonMapper.convertValue(quarterlyReportListingJson, QuarterlyReportRelevantListingDTO.class);
-                return isAcbValidForCurrentUser(listing.getCertificationBodyId());
+                listing = jsonMapper.convertValue(quarterlyReportListingJson, RelevantListing.class);
+                return isAcbValidForCurrentUser(listing.getAcb().getId());
             } catch (Exception e) {
                 LOGGER.error("Could not parse complaint activity as QuarterlyReportRelevantListingDTO. JSON was: "
                         + quarterlyReportListingJson);
