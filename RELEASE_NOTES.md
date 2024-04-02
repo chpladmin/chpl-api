@@ -1,5 +1,22 @@
 # Release Notes
 
+## Version 43.7.0
+_1 April 2024_
+
+### Features
+* Create/invite new ADMIN Cognito users that can login to CHPL
+* Add Criteria Update report by Criteria Details (Attribute)
+* Mark "removing code sets" as questionable activity
+* Allow multiple surveillance process types for quarterly reports
+* Remove code, endpoints related to quarterly report exclusions
+* Add validations for required Standards during Listing Confirm and Edit workflows
+
+### Bug Fixes
+* Use left join for criteria editon when getting standard groups
+* Handle attesting criteria during edit w/o selecting standards
+
+---
+
 ## Version 43.6.0
 _18 March 2024_
 
