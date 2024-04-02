@@ -115,7 +115,9 @@ public abstract class CodeSetReviewer implements Reviewer {
 
     private boolean doesCertResultContainCodeSet(CertificationResult certResult, CodeSet codeSet) {
         return certResult.getCodeSets().stream()
-                .filter(crCodeSet -> crCodeSet.getCodeSet().getId().equals(codeSet.getId()))
+                .filter(crCodeSet -> crCodeSet.getCodeSet() != null
+                        && crCodeSet.getCodeSet().getId() != null
+                        && crCodeSet.getCodeSet().getId().equals(codeSet.getId()))
                 .findAny().isPresent();
     }
 
