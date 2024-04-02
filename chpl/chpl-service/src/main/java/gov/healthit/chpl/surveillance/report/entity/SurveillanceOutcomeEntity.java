@@ -8,6 +8,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 import gov.healthit.chpl.entity.EntityAudit;
+import gov.healthit.chpl.surveillance.report.domain.SurveillanceOutcome;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -34,4 +35,10 @@ public class SurveillanceOutcomeEntity extends EntityAudit {
     @Column(name = "name")
     private String name;
 
+    public SurveillanceOutcome toDomain() {
+        return SurveillanceOutcome.builder()
+                .id(this.getId())
+                .name(this.getName())
+                .build();
+    }
 }

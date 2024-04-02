@@ -11,6 +11,7 @@ import gov.healthit.chpl.dto.ActivityDTO;
 import gov.healthit.chpl.questionableactivity.QuestionableActivityDAO;
 import gov.healthit.chpl.questionableactivity.QuestionableActivityTriggerConcept;
 import gov.healthit.chpl.questionableactivity.certificationResult.CertificationResultActivity;
+import gov.healthit.chpl.questionableactivity.certificationResult.CodeSetRemovedActivity;
 import gov.healthit.chpl.questionableactivity.certificationResult.ExpiredFunctionalityTestedAddedActivity;
 import gov.healthit.chpl.questionableactivity.certificationResult.ExpiredStandardAddedActivity;
 import gov.healthit.chpl.questionableactivity.certificationResult.ExpiredTestToolAddedActivity;
@@ -51,6 +52,7 @@ public class CertificationResultQuestionableActivityService {
         processCertificationResultActivity(ExpiredTestToolAddedActivity.class.getName(), origCertResult, newCertResult, activity, activityReason);
         processCertificationResultActivity(ExpiredFunctionalityTestedAddedActivity.class.getName(), origCertResult, newCertResult, activity, activityReason);
         processCertificationResultActivity(ExpiredStandardAddedActivity.class.getName(), origCertResult, newCertResult, activity, activityReason);
+        processCertificationResultActivity(CodeSetRemovedActivity.class.getName(), origCertResult, newCertResult, activity, activityReason);
     }
 
     public void processQuestionableActivity(CertificationResult newCertResult, ActivityDTO activity, String activityReason) {

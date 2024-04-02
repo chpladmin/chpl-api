@@ -9,23 +9,20 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
-import gov.healthit.chpl.validation.listing.reviewer.PermissionBasedReviewer;
+import gov.healthit.chpl.validation.listing.reviewer.Reviewer;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 @Component
-public abstract class StandardGroupValidation extends PermissionBasedReviewer{
+public abstract class StandardGroupReviewer implements Reviewer {
 
     private StandardGroupService standardGroupService;
     private ErrorMessageUtil msgUtil;
 
     @Autowired
-    public StandardGroupValidation(StandardGroupService standardGroupService, ErrorMessageUtil msgUtil, ResourcePermissionsFactory resourcePermissionsFactory) {
-        super(msgUtil, resourcePermissionsFactory);
-
+    public StandardGroupReviewer(StandardGroupService standardGroupService, ErrorMessageUtil msgUtil) {
         this.standardGroupService = standardGroupService;
         this.msgUtil = msgUtil;
     }

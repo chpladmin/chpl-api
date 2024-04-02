@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
-import gov.healthit.chpl.surveillance.report.dto.SurveillanceOutcomeDTO;
+import gov.healthit.chpl.surveillance.report.domain.SurveillanceOutcome;
 
 @Repository("complaintSummaryDao")
 public class ComplaintSummaryDAO extends BaseDAOImpl {
@@ -110,16 +110,15 @@ public class ComplaintSummaryDAO extends BaseDAOImpl {
                     + "AND c.receivedDate <= :endDate "
                     + "AND (c.closedDate IS NULL OR c.closedDate >= :startDate) "
                     + "AND survs.surveillanceId IN ("
-                        + "SELECT DISTINCT ps.id "
-                        + "FROM PrivilegedSurveillanceEntity ps "
-                        + "JOIN ps.privSurvMap privSurvMap "
-                        + "WHERE privSurvMap.deleted = false "
-                        + "AND privSurvMap.surveillanceOutcomeId IN (:outcomeIds) "
+                        + "SELECT DISTINCT qrSurv.surveillanceId "
+                        + "FROM QuarterlyReportSurveillanceMapEntity qrSurv "
+                        + "WHERE qrSurv.deleted = false "
+                        + "AND qrSurv.surveillanceOutcomeId IN (:outcomeIds) "
                 + ")",
                 Long.class);
-        List<SurveillanceOutcomeDTO> allOutcomes = survDao.getSurveillanceOutcomes();
+        List<SurveillanceOutcome> allOutcomes = survDao.getSurveillanceOutcomes();
         List<Long> relevantOutcomeIds = new ArrayList<Long>();
-        for (SurveillanceOutcomeDTO outcome : allOutcomes) {
+        for (SurveillanceOutcome outcome : allOutcomes) {
             if (outcome.getName().startsWith("Non-conformity substantiated")) {
                 relevantOutcomeIds.add(outcome.getId());
             }
@@ -136,12 +135,11 @@ public class ComplaintSummaryDAO extends BaseDAOImpl {
     }
 
     public Long getTotalNonconformitiesRelatedToComplaints(Long acbId, LocalDate startDate, LocalDate endDate) {
-        Query query = entityManager.createQuery("SELECT COUNT(DISTINCT ps) "
-                + "FROM PrivilegedSurveillanceEntity ps "
-                + "JOIN ps.privSurvMap privSurvMap "
-                + "WHERE ps.deleted = false "
-                + "AND privSurvMap.surveillanceOutcomeId in (:outcomeIds) "
-                + "AND ps.id in ("
+        Query query = entityManager.createQuery("SELECT COUNT(DISTINCT qrSurv.surveillanceId) "
+                + "FROM QuarterlyReportSurveillanceMapEntity qrSurv "
+                + "WHERE qrSurv.deleted = false "
+                + "AND qrSurv.surveillanceOutcomeId in (:outcomeIds) "
+                + "AND qrSurv.surveillanceId in ("
                     + "SELECT DISTINCT survs.surveillanceId "
                     + "FROM ComplaintEntity c "
                     + "JOIN c.certificationBody "
@@ -152,9 +150,9 @@ public class ComplaintSummaryDAO extends BaseDAOImpl {
                     + "AND (c.closedDate IS NULL OR c.closedDate >= :startDate)"
                 + ")",
                 Long.class);
-        List<SurveillanceOutcomeDTO> allOutcomes = survDao.getSurveillanceOutcomes();
+        List<SurveillanceOutcome> allOutcomes = survDao.getSurveillanceOutcomes();
         List<Long> relevantOutcomeIds = new ArrayList<Long>();
-        for (SurveillanceOutcomeDTO outcome : allOutcomes) {
+        for (SurveillanceOutcome outcome : allOutcomes) {
             if (outcome.getName().startsWith("Non-conformity substantiated")) {
                 relevantOutcomeIds.add(outcome.getId());
             }
