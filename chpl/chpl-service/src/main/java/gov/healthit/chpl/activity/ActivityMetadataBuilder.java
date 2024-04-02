@@ -1,6 +1,11 @@
 package gov.healthit.chpl.activity;
 
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Component;
+
+import gov.healthit.chpl.domain.activity.ActivityCategory;
 import gov.healthit.chpl.domain.activity.ActivityMetadata;
+import gov.healthit.chpl.domain.activity.ActivityMetadata.ActivityObject;
 import gov.healthit.chpl.domain.activity.AnnualReportActivityMetadata;
 import gov.healthit.chpl.domain.activity.CertificationBodyActivityMetadata;
 import gov.healthit.chpl.domain.activity.ChangeRequestActivityMetadata;
@@ -14,6 +19,7 @@ import gov.healthit.chpl.domain.activity.UserMaintenanceActivityMetadata;
 import gov.healthit.chpl.domain.activity.VersionActivityMetadata;
 import gov.healthit.chpl.dto.ActivityDTO;
 
+@Component("activityMetadataBuilder")
 public class ActivityMetadataBuilder {
 
     public ActivityMetadata build(ActivityDTO dto) {
@@ -33,9 +39,22 @@ public class ActivityMetadataBuilder {
         metadata.setId(dto.getId());
         metadata.setDate(dto.getActivityDate());
         metadata.setObjectId(dto.getActivityObjectId());
+        metadata.setObject(ActivityObject.builder()
+                .id(dto.getActivityObjectId())
+                .build());
         metadata.setConcept(dto.getConcept());
         metadata.setResponsibleUser(dto.getUser() == null ? null : dto.getUser().toDomain());
         metadata.setDescription(dto.getDescription());
+        metadata.getCategories().add(getCrudCategory(dto));
+    }
+
+    private ActivityCategory getCrudCategory(ActivityDTO dto) {
+        if (StringUtils.isEmpty(dto.getOriginalData())) {
+            return ActivityCategory.CREATE;
+        } else if (StringUtils.isEmpty(dto.getNewData())) {
+            return ActivityCategory.DELETE;
+        }
+        return ActivityCategory.UPDATE;
     }
 
     private ActivityMetadata createMetadataObject(ActivityDTO dto) {

@@ -140,6 +140,7 @@ public class ProductActivityMetadataBuilder extends ActivityMetadataBuilder {
             }
         }
         productMetadata.setProductName(product.getName());
+        productMetadata.getObject().setName(product.getName());
     }
 
     private void parseProductMetadata(ProductActivityMetadata productMetadata, ActivityDTO activity,

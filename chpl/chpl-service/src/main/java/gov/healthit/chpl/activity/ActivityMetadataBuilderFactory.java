@@ -9,6 +9,9 @@ import gov.healthit.chpl.dto.ActivityDTO;
 @Component
 public class ActivityMetadataBuilderFactory {
     private ActivityMetadataBuilder defaultBuilder;
+    private FunctionalityTestedActivityMetadataBuilder funcTestedBuilder;
+    private StandardActivityMetadataBuilder standardBuilder;
+    private SvapActivityMetadataBuilder svapBuilder;
     private ListingActivityMetadataBuilder listingBuilder;
     private DeveloperActivityMetadataBuilder developerBuilder;
     private ProductActivityMetadataBuilder productBuilder;
@@ -20,10 +23,14 @@ public class ActivityMetadataBuilderFactory {
     private QuarterlyReportActivityMetadataBuilder quarterlyReportActivityMetadataBuilder;
     private AnnualReportActivityMetadataBuilder annualReportActivityMetadataBuilder;
     private ChangeRequestActivityMetadataBuilder changeRequestActivityMetadataBuilder;
+    private ApiKeyActivityMetadataBuilder apiKeyBuilder;
 
     @Autowired
     public ActivityMetadataBuilderFactory (
-            ActivityMetadataBuilder defaultBuilder,
+            @Qualifier("activityMetadataBuilder") ActivityMetadataBuilder defaultBuilder,
+            @Qualifier("functionalityTestedActivityMetadataBuilder") FunctionalityTestedActivityMetadataBuilder funcTestedBuilder,
+            @Qualifier("standardActivityMetadataBuilder") StandardActivityMetadataBuilder standardBuilder,
+            @Qualifier("svapActivityMetadataBuilder") SvapActivityMetadataBuilder svapBuilder,
             @Qualifier("listingActivityMetadataBuilder") ListingActivityMetadataBuilder listingBuilder,
             @Qualifier("developerActivityMetadataBuilder") DeveloperActivityMetadataBuilder developerBuilder,
             @Qualifier("productActivityMetadataBuilder") ProductActivityMetadataBuilder productBuilder,
@@ -34,8 +41,12 @@ public class ActivityMetadataBuilderFactory {
             @Qualifier("complaintActivityMetadataBuilder") ComplaintActivityMetadataBuilder complaintActivityMetadataBuilder,
             @Qualifier("quarterlyReportActivityMetadataBuilder") QuarterlyReportActivityMetadataBuilder quarterlyReportActivityMetadataBuilder,
             @Qualifier("annualReportActivityMetadataBuilder") AnnualReportActivityMetadataBuilder annualReportActivityMetadataBuilder,
-            @Qualifier("changeRequestActivityMetadataBuilder") ChangeRequestActivityMetadataBuilder changeRequestActivityMetadataBuilder) {
+            @Qualifier("changeRequestActivityMetadataBuilder") ChangeRequestActivityMetadataBuilder changeRequestActivityMetadataBuilder,
+            @Qualifier("apiKeyActivityMetadataBuilder") ApiKeyActivityMetadataBuilder apiKeyBuilder) {
         this.defaultBuilder = defaultBuilder;
+        this.funcTestedBuilder = funcTestedBuilder;
+        this.standardBuilder = standardBuilder;
+        this.svapBuilder = svapBuilder;
         this.listingBuilder = listingBuilder;
         this.developerBuilder = developerBuilder;
         this.productBuilder = productBuilder;
@@ -47,6 +58,7 @@ public class ActivityMetadataBuilderFactory {
         this.quarterlyReportActivityMetadataBuilder = quarterlyReportActivityMetadataBuilder;
         this.annualReportActivityMetadataBuilder = annualReportActivityMetadataBuilder;
         this.changeRequestActivityMetadataBuilder = changeRequestActivityMetadataBuilder;
+        this.apiKeyBuilder = apiKeyBuilder;
     }
 
     public ActivityMetadataBuilder getBuilder(ActivityDTO dto) {
@@ -86,13 +98,21 @@ public class ActivityMetadataBuilderFactory {
         case CHANGE_REQUEST:
             builder = changeRequestActivityMetadataBuilder;
             break;
+        case FUNCTIONALITY_TESTED:
+            builder = funcTestedBuilder;
+            break;
+        case STANDARD:
+            builder = standardBuilder;
+            break;
+        case SVAP:
+            builder = svapBuilder;
+            break;
+        case API_KEY:
+            builder = apiKeyBuilder;
+            break;
         case ANNOUNCEMENT:
         case CORRECTIVE_ACTION_PLAN:
         case PENDING_SURVEILLANCE:
-        case API_KEY:
-        case FUNCTIONALITY_TESTED:
-        case STANDARD:
-        case SVAP:
             builder = defaultBuilder;
             break;
         default:

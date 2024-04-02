@@ -75,6 +75,7 @@ public class ListingActivityMetadataBuilder extends ActivityMetadataBuilder {
     private void parseListingMetadata(
             final ListingActivityMetadata listingMetadata, final CertifiedProductSearchDetails listing) {
         listingMetadata.setChplProductNumber(listing.getChplProductNumber());
+        listingMetadata.getObject().setName(listing.getChplProductNumber());
         if (listing.getCertifyingBody() != null
                 && listing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_NAME_KEY) != null
                 && listing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_ID_KEY) != null) {

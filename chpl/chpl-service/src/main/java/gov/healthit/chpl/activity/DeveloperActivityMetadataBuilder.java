@@ -117,6 +117,7 @@ public class DeveloperActivityMetadataBuilder extends ActivityMetadataBuilder {
 
     private void parseDeveloperMetadata(DeveloperActivityMetadata developerMetadata, Developer developer) {
         developerMetadata.setDeveloperName(developer.getName());
+        developerMetadata.getObject().setName(developer.getName());
         developerMetadata.setDeveloperCode(developer.getDeveloperCode());
     }
 
