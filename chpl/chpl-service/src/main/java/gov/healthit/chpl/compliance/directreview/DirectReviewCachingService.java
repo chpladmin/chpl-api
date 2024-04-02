@@ -139,6 +139,7 @@ public class DirectReviewCachingService {
         Cache drCache = getDirectReviewsCache();
 
         drContainers = ((List) redisUtil.getAllValuesForCache(drCache)).stream()
+                .filter(objValue -> objValue != null && objValue instanceof DirectReviewContainer)
                 .map(objValue -> (DirectReviewContainer) objValue)
                 .toList();
 

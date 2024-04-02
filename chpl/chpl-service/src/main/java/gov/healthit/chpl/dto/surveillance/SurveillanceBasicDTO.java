@@ -9,7 +9,6 @@ import org.springframework.beans.BeanUtils;
 import gov.healthit.chpl.compliance.surveillance.entity.SurveillanceBasicEntity;
 import gov.healthit.chpl.domain.surveillance.SurveillanceBasic;
 import gov.healthit.chpl.dto.SurveillanceTypeDTO;
-import gov.healthit.chpl.surveillance.report.entity.PrivilegedSurveillanceEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -40,13 +39,6 @@ public class SurveillanceBasicDTO implements Serializable {
     private String chplProductNumber;
 
     public SurveillanceBasicDTO(SurveillanceBasicEntity entity) {
-        BeanUtils.copyProperties(entity, this);
-        if (entity.getSurveillanceType() != null) {
-            this.surveillanceType = new SurveillanceTypeDTO(entity.getSurveillanceType());
-        }
-    }
-
-    public SurveillanceBasicDTO(PrivilegedSurveillanceEntity entity) {
         BeanUtils.copyProperties(entity, this);
         if (entity.getSurveillanceType() != null) {
             this.surveillanceType = new SurveillanceTypeDTO(entity.getSurveillanceType());
