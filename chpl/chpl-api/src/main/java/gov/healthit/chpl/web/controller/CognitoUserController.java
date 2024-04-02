@@ -70,9 +70,21 @@ public class CognitoUserController {
     @RequestMapping(value = "/invite", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
     public CognitoUserInvitation inviteUser(@RequestBody CognitoUserInvitation invitation) throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException {
-
-        CognitoUserInvitation createdInvitiation = cognitoUserManager.inviteAdmin(invitation.getEmail());
-
+        CognitoUserInvitation createdInvitiation = null;
+        switch (invitation.getGroupName()) {
+            case "chpl-admin":
+                createdInvitiation = cognitoUserManager.inviteAdminUser(invitation);
+                break;
+            case "chpl-onc":
+                createdInvitiation = cognitoUserManager.inviteOncUser(invitation);
+                break;
+            case "chpl-onc-acb":
+                createdInvitiation = cognitoUserManager.inviteOncAcbUser(invitation);
+                break;
+            case "chpl-developer":
+                createdInvitiation = cognitoUserManager.inviteOncUser(invitation);
+                break;
+        }
         return createdInvitiation;
     }
 

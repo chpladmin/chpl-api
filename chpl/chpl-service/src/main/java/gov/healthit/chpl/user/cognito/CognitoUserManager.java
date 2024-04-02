@@ -52,10 +52,35 @@ public class CognitoUserManager {
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).INVITATION, "
             + "T(gov.healthit.chpl.permissions.domains.InvitationDomainPermissions).INVITE_ADMIN)")
-    public CognitoUserInvitation inviteAdmin(String email)
+    public CognitoUserInvitation inviteAdminUser(CognitoUserInvitation invititation)
             throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException {
-        return createUserInvitation(email);
+        return createUserInvitation(invititation);
     }
+
+    @Transactional
+    //@PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).INVITATION, "
+    //        + "T(gov.healthit.chpl.permissions.domains.InvitationDomainPermissions).INVITE_ADMIN)")
+    public CognitoUserInvitation inviteOncUser(CognitoUserInvitation invitation)
+            throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException {
+        return createUserInvitation(invitation);
+    }
+
+    @Transactional
+    //@PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).INVITATION, "
+    //        + "T(gov.healthit.chpl.permissions.domains.InvitationDomainPermissions).INVITE_ADMIN)")
+    public CognitoUserInvitation inviteOncAcbUser(CognitoUserInvitation invitation)
+            throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException {
+        return createUserInvitation(invitation);
+    }
+
+    @Transactional
+    //@PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).INVITATION, "
+    //        + "T(gov.healthit.chpl.permissions.domains.InvitationDomainPermissions).INVITE_ADMIN)")
+    public CognitoUserInvitation inviteDeveloperUser(CognitoUserInvitation invitation)
+            throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException {
+        return createUserInvitation(invitation);
+    }
+
 
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SECURED_USER, "
@@ -93,11 +118,10 @@ public class CognitoUserManager {
         return userInvitationDAO.getByToken(token);
     }
 
-    private CognitoUserInvitation createUserInvitation(String email) {
-        CognitoUserInvitation invitation = userInvitationDAO.create(CognitoUserInvitation.builder()
-                .email(email)
-                .invitationToken(UUID.randomUUID())
-                .build());
+    private CognitoUserInvitation createUserInvitation(CognitoUserInvitation origInvitation) {
+        origInvitation.setInvitationToken(UUID.randomUUID());
+
+        CognitoUserInvitation invitation = userInvitationDAO.create(origInvitation);
 
         invitationEmailer.emailInvitedUser(invitation);
         return invitation;

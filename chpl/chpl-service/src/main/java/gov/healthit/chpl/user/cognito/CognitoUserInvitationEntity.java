@@ -40,12 +40,21 @@ public class CognitoUserInvitationEntity extends EntityAudit {
     @Column(name = "token")
     private UUID token;
 
+    @Basic(optional = false)
+    @Column(name = "group_name")
+    private String groupName;
+
+    @Basic(optional = false)
+    @Column(name = "organization_id")
+    private Long organizationId;
 
     public CognitoUserInvitation toDomain() {
         return CognitoUserInvitation.builder()
                 .id(id)
                 .email(email)
                 .invitationToken(token)
+                .groupName(groupName)
+                .organizationId(organizationId)
                 .lastModifiedDate(getLastModifiedDate())
                 .creationDate(getCreationDate())
                 .lasModifiedSsoUser(getLastModifiedSsoUser())
