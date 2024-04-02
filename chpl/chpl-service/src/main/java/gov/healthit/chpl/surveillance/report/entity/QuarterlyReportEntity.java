@@ -1,5 +1,7 @@
 package gov.healthit.chpl.surveillance.report.entity;
 
+import java.time.LocalDate;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -10,8 +12,10 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.entity.CertificationBodyEntity;
 import gov.healthit.chpl.entity.EntityAudit;
+import gov.healthit.chpl.surveillance.report.domain.QuarterlyReport;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -64,4 +68,27 @@ public class QuarterlyReportEntity extends EntityAudit {
     @Column(name = "disclosure_requirements_summary")
     private String disclosureRequirementsSummary;
 
+    public QuarterlyReport toDomain() {
+        CertificationBody reportAcb = null;
+        if (this.getAcb() != null) {
+            reportAcb = this.getAcb().toDomain();
+        } else if (this.getCertificationBodyId() != null) {
+            reportAcb = CertificationBody.builder()
+                    .id(this.getCertificationBodyId())
+                    .build();
+        }
+        return QuarterlyReport.builder()
+                .acb(reportAcb)
+                .disclosureRequirementsSummary(this.getDisclosureRequirementsSummary())
+                .endDay(LocalDate.of(getYear(), this.getQuarter().getQuarterEndMonth(), this.getQuarter().getQuarterEndDay()))
+                .id(this.getId())
+                .prioritizedElementSummary(this.getPrioritizedElementSummary())
+                .quarter(this.getQuarter().toDomain().getName())
+                .reactiveSurveillanceSummary(this.getReactiveSurveillanceSummary())
+                .startDay(LocalDate.of(getYear(), this.getQuarter().getQuarterBeginMonth(), this.getQuarter().getQuarterBeginDay()))
+                .surveillanceActivitiesAndOutcomes(this.getActivitiesOutcomesSummary())
+                .year(this.getYear())
+                .build();
+
+    }
 }

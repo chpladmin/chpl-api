@@ -190,11 +190,17 @@
     <Logger name="serviceBaseUrlListUptimeEmailJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="serviceBaseUrlListUptimeEmailJob" />
     </Logger>
-    <Logger name="updatedListingStatusReportJobLogger" level="INFO" additivity="false">
-        <AppenderRef ref="updatedListingStatusReporJob" />
+    <Logger name="updatedListingStatusReportEmailJobLogger" level="INFO" additivity="false">
+        <AppenderRef ref="updatedListingStatusReportEmailJob" />
     </Logger>
     <Logger name="updatedListingStatusReportCreatorJobLogger" level="INFO" additivity="false">
-        <AppenderRef ref="updatedListingStatusReporCreatortJob" />
+        <AppenderRef ref="updatedListingStatusReportCreatorJob" />
+    </Logger>
+    <Logger name="updatedCriteriaStatusReportCreatorJobLogger" level="INFO" additivity="false">
+        <AppenderRef ref="updatedCriteriaStatusReportCreatorJob" />
+    </Logger>
+    <Logger name="updatedCriteriaStatusReportEmailJobLogger" level="INFO" additivity="false">
+        <AppenderRef ref="updatedCriteriaStatusReportEmailJob" />
     </Logger>
     <Logger name="updateCurrentCertificationStatusJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="updateCurrentCertificationStatusJob" />

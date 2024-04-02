@@ -1,4 +1,4 @@
-package gov.healthit.chpl.upload.listing.validation.reviewer;
+package gov.healthit.chpl.validation.listing.reviewer;
 
 import java.time.LocalDate;
 import java.util.Iterator;
@@ -7,17 +7,15 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
+import gov.healthit.chpl.standard.BaselineStandardService;
 import gov.healthit.chpl.standard.CertificationResultStandard;
 import gov.healthit.chpl.standard.Standard;
 import gov.healthit.chpl.standard.StandardDAO;
+import gov.healthit.chpl.standard.StandardGroupReviewer;
 import gov.healthit.chpl.standard.StandardGroupService;
-import gov.healthit.chpl.standard.StandardGroupValidation;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
@@ -25,24 +23,28 @@ import gov.healthit.chpl.util.ValidationUtils;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
-@Component("listingUploadStandardReviewer")
-public class StandardReviewer extends StandardGroupValidation {
+public abstract class StandardReviewer extends StandardGroupReviewer {
     private CertificationResultRules certResultRules;
     private ValidationUtils validationUtils;
     private StandardDAO standardDao;
+    private BaselineStandardService baselineStandardService;
+    private StandardGroupService standardGroupService;
     private ErrorMessageUtil msgUtil;
 
 
-    @Autowired
     public StandardReviewer(CertificationResultRules certResultRules, ValidationUtils validationUtils,
-            StandardDAO standardDao, StandardGroupService standardGroupService, ErrorMessageUtil msgUtil, ResourcePermissionsFactory resourcePermissionsFactory) {
-        super(standardGroupService, msgUtil, resourcePermissionsFactory);
-
+            StandardDAO standardDao, BaselineStandardService baselineStandardService,
+            StandardGroupService standardGroupService, ErrorMessageUtil msgUtil) {
+        super(standardGroupService, msgUtil);
         this.certResultRules = certResultRules;
         this.validationUtils = validationUtils;
         this.standardDao = standardDao;
+        this.standardGroupService = standardGroupService;
+        this.baselineStandardService = baselineStandardService;
         this.msgUtil = msgUtil;
     }
+
+    public abstract LocalDate getStandardsCheckDate(CertifiedProductSearchDetails listing);
 
     @Override
     public void review(CertifiedProductSearchDetails listing) {
@@ -57,7 +59,8 @@ public class StandardReviewer extends StandardGroupValidation {
         reviewCriteriaCanHaveStandard(listing, certResult);
         removeStandardsWithoutIds(listing, certResult);
         removeStandardMismatchedToCriteria(listing, certResult);
-        reviewStandardExistForEachGroup(listing, certResult, listing.getCertificationDay());
+        reviewRequiredBaselineStandardsExist(listing, certResult);
+        reviewStandardExistForEachGroup(listing, certResult, getStandardsCheckDate(listing));
         if (certResult.getStandards() != null && certResult.getStandards().size() > 0) {
             certResult.getStandards().stream()
                     .forEach(standard -> reviewStandardFields(listing, certResult, standard));
@@ -134,6 +137,33 @@ public class StandardReviewer extends StandardGroupValidation {
         return Util.joinListGrammatically(criteriaNumbers);
     }
 
+    private CertificationResult reviewRequiredBaselineStandardsExist(CertifiedProductSearchDetails listing, CertificationResult certResult) {
+        List<Standard> validStandardsForCriterionAndListing = baselineStandardService.getBaselineStandardsForCriteriaAndListing(
+                listing, certResult.getCriterion(), getStandardsCheckDate(listing));
+
+        validStandardsForCriterionAndListing
+                .forEach(std -> {
+                    List<Standard> standardsExistingInCertResult = certResult.getStandards().stream()
+                            .map(crs -> crs.getStandard())
+                            .toList();
+
+                    if (!isStandardInList(std, standardsExistingInCertResult)) {
+                        listing.addBusinessErrorMessage(msgUtil.getMessage("listing.criteria.standardNotSelected",
+                                Util.formatCriteriaNumber(certResult.getCriterion()),
+                                std.getRegulatoryTextCitation()));
+                    }
+                });
+
+        return certResult;
+    }
+
+    private Boolean isStandardInList(Standard standard, List<Standard> standards) {
+        return standards.stream()
+                .filter(std -> standard.getId().equals(std.getId()))
+                .findAny()
+                .isPresent();
+    }
+
     private void reviewStandardFields(CertifiedProductSearchDetails listing,
             CertificationResult certResult, CertificationResultStandard standard) {
         reviewStandardName(listing, certResult, standard);
@@ -177,5 +207,4 @@ public class StandardReviewer extends StandardGroupValidation {
         LocalDate standardStartDay = standard.getStartDay() == null ? LocalDate.MIN : standard.getStartDay();
         return standardStartDay.isAfter(listingEndDay);
     }
-
 }
