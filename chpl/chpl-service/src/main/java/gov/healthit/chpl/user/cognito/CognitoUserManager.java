@@ -116,6 +116,20 @@ public class CognitoUserManager {
         return createUserInvitation(invitation);
     }
 
+    @Transactional
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).INVITATION, "
+            + "T(gov.healthit.chpl.permissions.domains.InvitationDomainPermissions).INVITE_CMS)")
+    public CognitoUserInvitation inviteCmsUser(CognitoUserInvitation invitation)
+            throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException, ValidationException {
+
+        validateUserInvitation(invitation, List.of(
+                CognitoInvitationValidator.InvitationValidationRules.EmailRequired,
+                CognitoInvitationValidator.InvitationValidationRules.EmailValid,
+                CognitoInvitationValidator.InvitationValidationRules.GroupNameRequired,
+                CognitoInvitationValidator.InvitationValidationRules.GroupNameValid));
+
+        return createUserInvitation(invitation);
+    }
 
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SECURED_USER, "
