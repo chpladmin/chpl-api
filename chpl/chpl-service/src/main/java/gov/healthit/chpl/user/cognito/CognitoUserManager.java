@@ -128,8 +128,12 @@ public class CognitoUserManager {
         // Need to be able to rollback this whole thing if there is an error...
         CognitoCredentials credentials = null;
         try {
+            CognitoUserInvitation invitation = userInvitationDAO.getByToken(UUID.fromString(userInfo.getHash()));
+            if (invitation.getOrganizationId() != null) {
+                userInfo.getUser().setOrganizationId(invitation.getOrganizationId());
+            }
             credentials = cognitoApiWrapper.createUser(userInfo.getUser());
-            cognitoApiWrapper.addUserToAdminGroup(userInfo.getUser().getEmail());
+            cognitoApiWrapper.addUserToGroup(userInfo.getUser().getEmail(), invitation.getGroupName());
             userInvitationDAO.deleteByToken(UUID.fromString(userInfo.getHash()));
             cognitoConfirmEmailEmailer.sendConfirmationEmail(credentials);
         } catch (EmailNotSentException e) {
@@ -139,7 +143,6 @@ public class CognitoUserManager {
             }
             throw e;
         }
-
         return true;
     }
 
