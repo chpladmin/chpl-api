@@ -67,8 +67,8 @@ public class CognitoUserManager {
     }
 
     @Transactional
-    //@PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).INVITATION, "
-    //        + "T(gov.healthit.chpl.permissions.domains.InvitationDomainPermissions).INVITE_ADMIN)")
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).INVITATION, "
+            + "T(gov.healthit.chpl.permissions.domains.InvitationDomainPermissions).INVITE_ONC)")
     public CognitoUserInvitation inviteOncUser(CognitoUserInvitation invitation)
             throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException, ValidationException {
 
@@ -82,8 +82,8 @@ public class CognitoUserManager {
     }
 
     @Transactional
-    //@PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).INVITATION, "
-    //        + "T(gov.healthit.chpl.permissions.domains.InvitationDomainPermissions).INVITE_ADMIN)")
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).INVITATION, "
+            + "T(gov.healthit.chpl.permissions.domains.InvitationDomainPermissions).INVITE_ACB, #invitation.organizationId)")
     public CognitoUserInvitation inviteOncAcbUser(CognitoUserInvitation invitation)
             throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException, ValidationException {
 
@@ -98,8 +98,8 @@ public class CognitoUserManager {
     }
 
     @Transactional
-    //@PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).INVITATION, "
-    //        + "T(gov.healthit.chpl.permissions.domains.InvitationDomainPermissions).INVITE_ADMIN)")
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).INVITATION, "
+            + "T(gov.healthit.chpl.permissions.domains.InvitationDomainPermissions).INVITE_DEVELOPER, #invitation.organizationId)")
     public CognitoUserInvitation inviteDeveloperUser(CognitoUserInvitation invitation)
             throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException, ValidationException {
 
