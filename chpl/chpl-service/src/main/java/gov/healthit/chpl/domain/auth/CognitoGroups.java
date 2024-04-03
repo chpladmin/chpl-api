@@ -14,7 +14,6 @@ public final class CognitoGroups {
     public static final String CHPL_INVITED_USER_CREATOR = "chpl-invited-user-creator";
     public static final String CHPL_STARTUP = "chpl-startup";
 
-
     public static List<String> getAll() {
         return List.of(
                 CHPL_ADMIN,

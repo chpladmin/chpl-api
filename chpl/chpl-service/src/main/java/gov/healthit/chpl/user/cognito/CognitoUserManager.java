@@ -30,17 +30,20 @@ public class CognitoUserManager {
     private InvitationEmailer invitationEmailer;
     private CognitoConfirmEmailEmailer cognitoConfirmEmailEmailer;
     private CognitoApiWrapper cognitoApiWrapper;
+    private CognitoInvitationValidator cognitoInvitationValidator;
 
 
     @Autowired
     public CognitoUserManager(CognitoUserInvitationDAO userInvitationDAO, CognitoUserCreationValidator userCreationValidator,
-            InvitationEmailer invitationEmailer, CognitoConfirmEmailEmailer cognitoConfirmEmailEmailer, CognitoApiWrapper cognitoApiWrapper) {
+            InvitationEmailer invitationEmailer, CognitoConfirmEmailEmailer cognitoConfirmEmailEmailer, CognitoApiWrapper cognitoApiWrapper,
+            CognitoInvitationValidator cognitoInvitationValidator) {
 
         this.userInvitationDAO = userInvitationDAO;
         this.userCreationValidator = userCreationValidator;
         this.invitationEmailer = invitationEmailer;
         this.cognitoConfirmEmailEmailer = cognitoConfirmEmailEmailer;
         this.cognitoApiWrapper = cognitoApiWrapper;
+        this.cognitoInvitationValidator = cognitoInvitationValidator;
     }
 
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SECURED_USER, "
@@ -165,7 +168,7 @@ public class CognitoUserManager {
     private void validateUserInvitation(CognitoUserInvitation invitation, List<CognitoInvitationValidator.InvitationValidationRules> rules)
             throws ValidationException {
 
-        List<String> errors = CognitoInvitationValidator.validate(invitation, rules);
+        List<String> errors = cognitoInvitationValidator.validate(invitation, rules);
         if (CollectionUtils.isNotEmpty(errors)) {
             throw new ValidationException(errors);
         }

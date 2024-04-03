@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import gov.healthit.chpl.domain.CreateUserFromInvitationRequest;
+import gov.healthit.chpl.domain.auth.CognitoGroups;
 import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.UserCreationException;
@@ -74,16 +75,16 @@ public class CognitoUserController {
 
         CognitoUserInvitation createdInvitiation = null;
         switch (invitation.getGroupName()) {
-            case "chpl-admin":
+            case CognitoGroups.CHPL_ADMIN:
                 createdInvitiation = cognitoUserManager.inviteAdminUser(invitation);
                 break;
-            case "chpl-onc":
+            case CognitoGroups.CHPL_ONC:
                 createdInvitiation = cognitoUserManager.inviteOncUser(invitation);
                 break;
-            case "chpl-onc-acb":
+            case CognitoGroups.CHPL_ACB:
                 createdInvitiation = cognitoUserManager.inviteOncAcbUser(invitation);
                 break;
-            case "chpl-developer":
+            case CognitoGroups.CHPL_DEVELOPER:
                 createdInvitiation = cognitoUserManager.inviteOncUser(invitation);
                 break;
         }
