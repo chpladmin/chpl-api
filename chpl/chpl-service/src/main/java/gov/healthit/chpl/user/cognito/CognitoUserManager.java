@@ -1,8 +1,10 @@
 package gov.healthit.chpl.user.cognito;
 
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -52,16 +54,30 @@ public class CognitoUserManager {
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).INVITATION, "
             + "T(gov.healthit.chpl.permissions.domains.InvitationDomainPermissions).INVITE_ADMIN)")
-    public CognitoUserInvitation inviteAdminUser(CognitoUserInvitation invititation)
-            throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException {
-        return createUserInvitation(invititation);
+    public CognitoUserInvitation inviteAdminUser(CognitoUserInvitation invitation)
+            throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException, ValidationException {
+
+        validateUserInvitation(invitation, List.of(
+                CognitoInvitationValidator.InvitationValidationRules.EmailRequired,
+                CognitoInvitationValidator.InvitationValidationRules.EmailValid,
+                CognitoInvitationValidator.InvitationValidationRules.GroupNameRequired,
+                CognitoInvitationValidator.InvitationValidationRules.GroupNameValid));
+
+        return createUserInvitation(invitation);
     }
 
     @Transactional
     //@PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).INVITATION, "
     //        + "T(gov.healthit.chpl.permissions.domains.InvitationDomainPermissions).INVITE_ADMIN)")
     public CognitoUserInvitation inviteOncUser(CognitoUserInvitation invitation)
-            throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException {
+            throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException, ValidationException {
+
+        validateUserInvitation(invitation, List.of(
+                CognitoInvitationValidator.InvitationValidationRules.EmailRequired,
+                CognitoInvitationValidator.InvitationValidationRules.EmailValid,
+                CognitoInvitationValidator.InvitationValidationRules.GroupNameRequired,
+                CognitoInvitationValidator.InvitationValidationRules.GroupNameValid));
+
         return createUserInvitation(invitation);
     }
 
@@ -69,7 +85,15 @@ public class CognitoUserManager {
     //@PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).INVITATION, "
     //        + "T(gov.healthit.chpl.permissions.domains.InvitationDomainPermissions).INVITE_ADMIN)")
     public CognitoUserInvitation inviteOncAcbUser(CognitoUserInvitation invitation)
-            throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException {
+            throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException, ValidationException {
+
+        validateUserInvitation(invitation, List.of(
+                CognitoInvitationValidator.InvitationValidationRules.EmailRequired,
+                CognitoInvitationValidator.InvitationValidationRules.EmailValid,
+                CognitoInvitationValidator.InvitationValidationRules.GroupNameRequired,
+                CognitoInvitationValidator.InvitationValidationRules.GroupNameValid,
+                CognitoInvitationValidator.InvitationValidationRules.OrganizationRequired));
+
         return createUserInvitation(invitation);
     }
 
@@ -77,7 +101,15 @@ public class CognitoUserManager {
     //@PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).INVITATION, "
     //        + "T(gov.healthit.chpl.permissions.domains.InvitationDomainPermissions).INVITE_ADMIN)")
     public CognitoUserInvitation inviteDeveloperUser(CognitoUserInvitation invitation)
-            throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException {
+            throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException, ValidationException {
+
+        validateUserInvitation(invitation, List.of(
+                CognitoInvitationValidator.InvitationValidationRules.EmailRequired,
+                CognitoInvitationValidator.InvitationValidationRules.EmailValid,
+                CognitoInvitationValidator.InvitationValidationRules.GroupNameRequired,
+                CognitoInvitationValidator.InvitationValidationRules.GroupNameValid,
+                CognitoInvitationValidator.InvitationValidationRules.OrganizationRequired));
+
         return createUserInvitation(invitation);
     }
 
@@ -127,4 +159,12 @@ public class CognitoUserManager {
         return invitation;
     }
 
+    private void validateUserInvitation(CognitoUserInvitation invitation, List<CognitoInvitationValidator.InvitationValidationRules> rules)
+            throws ValidationException {
+
+        List<String> errors = CognitoInvitationValidator.validate(invitation, rules);
+        if (CollectionUtils.isNotEmpty(errors)) {
+            throw new ValidationException(errors);
+        }
+    }
 }

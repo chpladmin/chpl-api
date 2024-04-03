@@ -69,7 +69,9 @@ public class CognitoUserController {
             })
     @RequestMapping(value = "/invite", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
-    public CognitoUserInvitation inviteUser(@RequestBody CognitoUserInvitation invitation) throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException {
+    public CognitoUserInvitation inviteUser(@RequestBody CognitoUserInvitation invitation)
+            throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException, ValidationException {
+
         CognitoUserInvitation createdInvitiation = null;
         switch (invitation.getGroupName()) {
             case "chpl-admin":
