@@ -5,6 +5,449 @@
 	},
 	"item": [
 		{
+			"name": "ROLE_ONC",
+			"item": [
+				{
+					"name": "GET /activity/metadata/functionalities-tested - ONC user gets 200 status and valid response",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"ONC user gets 200 status and valid response from /activity/metadata/functionalities-tested end point\", function () {\r",
+									"    var actualResponseBody = pm.response.json();\r",
+									"    pm.response.to.have.status(200);\r",
+									"    pm.expect(actualResponseBody).not.eql(null);\r",
+									"    pm.expect(pm.response.text()).to.include(\"FUNCTIONALITY_TESTED\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "API-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/rest/activity/metadata/functionalities-tested",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"activity",
+								"metadata",
+								"functionalities-tested"
+							]
+						},
+						"description": "GET /activity/metadata/functionalities-tested - ONC user gets 200 status and valid response"
+					},
+					"response": []
+				},
+				{
+					"name": "GET /activity/metadata/svaps - ONC user gets 200 status and valid response",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"ONC user gets 200 status and valid response from /activity/metadata/svaps end point\", function () {\r",
+									"    var actualResponseBody = pm.response.json();\r",
+									"    pm.response.to.have.status(200);\r",
+									"    pm.expect(actualResponseBody).not.eql(null);\r",
+									"    pm.expect(pm.response.text()).to.include(\"SVAP\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "API-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/rest/activity/metadata/svaps",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"activity",
+								"metadata",
+								"svaps"
+							]
+						},
+						"description": "GET /activity/metadata/svap - ONC user gets 200 status and valid response"
+					},
+					"response": []
+				},
+				{
+					"name": "GET /activity/metadata/standards -ONC user gets 200 status and response",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"ONC user gets 200 status and valid response from /activity/metadata/standards end point\", function () {\r",
+									"    var actualResponseBody = pm.response.json();\r",
+									"    pm.response.to.have.status(200);\r",
+									"    pm.expect(actualResponseBody).not.eql(null);\r",
+									"    pm.expect(pm.response.text()).to.include(\"STANDARD\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "API-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/rest/activity/metadata/standards",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"activity",
+								"metadata",
+								"standards"
+							]
+						},
+						"description": "GET /activity/metadata/standards -ONC user gets 200 status and response"
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							"var ReqBody= {\r",
+							"        userName:pm.environment.get(\"emailONC\"),password:pm.environment.get(\"passwordONC\")\r",
+							"    };\r",
+							"pm.sendRequest({\r",
+							"    url: pm.environment.get(\"authurl\"),\r",
+							"    method: \"POST\",\r",
+							"    header: {\r",
+							"        \"Content-Type\": \"application/json\",\r",
+							"        \"API-KEY\": pm.environment.get(\"apiKey\")\r",
+							"    },\r",
+							"    body: JSON.stringify(ReqBody)\r",
+							"}, function (err, response) {\r",
+							"   var jsonData = response.json();\r",
+							"   pm.environment.set(\"token\",jsonData[\"token\"])\r",
+							"});"
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "ROLE_ACB",
+			"item": [
+				{
+					"name": "GET /activity/metadata/svaps - ACB user gets 401 status and no response",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"ACB user gets 401 status and valid response from /activity/metadata/svaps end point\", function () {\r",
+									"    var actualResponseBody = pm.response.json();\r",
+									"    pm.response.to.have.status(401);\r",
+									"    pm.expect(pm.response.text()).to.include(\"Access is denied\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "API-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/rest/activity/metadata/svaps",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"activity",
+								"metadata",
+								"svaps"
+							]
+						},
+						"description": "GET /activity/metadata/svaps - ACB user gets 401 status and no response"
+					},
+					"response": []
+				},
+				{
+					"name": "GET /activity/metadata/standards - ACB user gets 401 status and no response",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"ACB user gets 401 status and valid response from /activity/metadata/standards end point\", function () {\r",
+									"    var actualResponseBody = pm.response.json();\r",
+									"    pm.response.to.have.status(401);\r",
+									"    pm.expect(pm.response.text()).to.include(\"Access is denied\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "API-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/rest/activity/metadata/standards",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"activity",
+								"metadata",
+								"standards"
+							]
+						},
+						"description": "GET /activity/metadata/standards - ACB user gets 401 status and no response"
+					},
+					"response": []
+				},
+				{
+					"name": "GET /activity/metadata/functionalities-tested - ACB user gets 401 status and no response",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"ACB user gets 401 status and valid response from /activity/metadata/functionalities-tested end point\", function () {\r",
+									"    var actualResponseBody = pm.response.json();\r",
+									"    pm.response.to.have.status(401);\r",
+									"    pm.expect(pm.response.text()).to.include(\"Access is denied\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "API-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/rest/activity/metadata/functionalities-tested",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"activity",
+								"metadata",
+								"functionalities-tested"
+							]
+						},
+						"description": "GET /activity/metadata/functionalities-tested - ACB user gets 401 status and no response"
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							"var ReqBody= {\r",
+							"        userName:pm.environment.get(\"emailACB\"),password:pm.environment.get(\"passwordACB\")\r",
+							"    };\r",
+							"pm.sendRequest({\r",
+							"    url: pm.environment.get(\"authurl\"),\r",
+							"    method: \"POST\",\r",
+							"    header: {\r",
+							"        \"Content-Type\": \"application/json\",\r",
+							"        \"API-KEY\": pm.environment.get(\"apiKey\")\r",
+							"    },\r",
+							"    body: JSON.stringify(ReqBody)\r",
+							"}, function (err, response) {\r",
+							"   var jsonData = response.json();\r",
+							"   pm.environment.set(\"token\",jsonData[\"token\"])\r",
+							"});"
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
 			"name": "GET /activity/metadata/listings/{id}",
 			"event": [
 				{
