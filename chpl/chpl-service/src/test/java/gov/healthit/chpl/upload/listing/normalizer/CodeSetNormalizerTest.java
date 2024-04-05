@@ -55,7 +55,7 @@ public class CodeSetNormalizerTest {
                 .id(1L)
                 .startDay(LocalDate.parse("2025-03-11"))
                 //setting this way in the future so the CHPL is long gone by the time any tests would start failing
-                .requiredDay(LocalDate.parse("3000-12-31"))
+                .requiredDay(LocalDate.parse("2050-12-31"))
                 .build();
 
         codeSetDao = Mockito.mock(CodeSetDAO.class);
@@ -142,7 +142,7 @@ public class CodeSetNormalizerTest {
         List<CertificationResultCodeSet> userEnteredCodeSets = new ArrayList<CertificationResultCodeSet>();
         userEnteredCodeSets.add(CertificationResultCodeSet.builder()
                     .codeSet(CodeSet.builder()
-                            .userEnteredName("12-3000")
+                            .userEnteredName("12-2050")
                             .build())
                     .build());
 
@@ -164,7 +164,7 @@ public class CodeSetNormalizerTest {
         List<CertificationResultCodeSet> userEnteredCodeSets = new ArrayList<CertificationResultCodeSet>();
         userEnteredCodeSets.add(CertificationResultCodeSet.builder()
                     .codeSet(CodeSet.builder()
-                            .userEnteredName("Dec 3000")
+                            .userEnteredName("Dec 2050")
                             .build())
                     .build());
 
@@ -186,7 +186,7 @@ public class CodeSetNormalizerTest {
         List<CertificationResultCodeSet> userEnteredCodeSets = new ArrayList<CertificationResultCodeSet>();
         userEnteredCodeSets.add(CertificationResultCodeSet.builder()
                     .codeSet(CodeSet.builder()
-                            .userEnteredName("December 3000")
+                            .userEnteredName("December 2050")
                             .build())
                     .build());
 
@@ -208,7 +208,29 @@ public class CodeSetNormalizerTest {
         List<CertificationResultCodeSet> userEnteredCodeSets = new ArrayList<CertificationResultCodeSet>();
         userEnteredCodeSets.add(CertificationResultCodeSet.builder()
                     .codeSet(CodeSet.builder()
-                            .userEnteredName("300012")
+                            .userEnteredName("205012")
+                            .build())
+                    .build());
+
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .criterion(a1)
+                        .success(true)
+                        .codeSets(userEnteredCodeSets)
+                        .build())
+                .build();
+
+        normalizer.normalize(listing);
+        assertEquals(a1a2CodeSet.getId(),
+                listing.getCertificationResults().get(0).getCodeSets().get(0).getCodeSet().getId());
+    }
+
+    @Test
+    public void normalize_userEnteredNameMatchesDateFormatyyDashMMM_setsId() {
+        List<CertificationResultCodeSet> userEnteredCodeSets = new ArrayList<CertificationResultCodeSet>();
+        userEnteredCodeSets.add(CertificationResultCodeSet.builder()
+                    .codeSet(CodeSet.builder()
+                            .userEnteredName("50-Dec")
                             .build())
                     .build());
 
@@ -230,7 +252,7 @@ public class CodeSetNormalizerTest {
         List<CertificationResultCodeSet> userEnteredCodeSets = new ArrayList<CertificationResultCodeSet>();
         userEnteredCodeSets.add(CertificationResultCodeSet.builder()
                     .codeSet(CodeSet.builder()
-                            .userEnteredName("December 31, 3000")
+                            .userEnteredName("December 31, 2050")
                             .build())
                     .build());
 
