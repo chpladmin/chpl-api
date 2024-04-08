@@ -15,7 +15,6 @@ import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseField;
 import gov.healthit.chpl.domain.compliance.DirectReview;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.util.LocalDateDeserializer;
@@ -77,11 +76,6 @@ public class CertifiedProductSearchBasicDetails implements Serializable {
     @Schema(description = "The version of the product being uploaded.")
     private ProductVersion version;
 
-    @Deprecated
-    @DeprecatedResponseField(message = "Please use the 'edition' field.", removalDate = "2024-01-01")
-    @Schema(description = "The certification edition. It takes a value of 2011, 2014, 2015, or null.")
-    private Map<String, Object> certificationEdition = new HashMap<String, Object>();
-
     @Schema(description = "The certification edition.")
     private CertificationEdition edition;
 
@@ -97,11 +91,6 @@ public class CertifiedProductSearchBasicDetails implements Serializable {
 
     @Schema(description = "Certification date represented in milliseconds since epoch")
     private Long certificationDate;
-
-    @Deprecated
-    @DeprecatedResponseField(message = "Please use the 'decertificationDay' field.", removalDate = "2024-01-01")
-    @Schema(description = "Decertification date represented in milliseconds since epoch")
-    private Long decertificationDate;
 
     @Schema(description = "Decertification day")
     @JsonDeserialize(using = LocalDateDeserializer.class)

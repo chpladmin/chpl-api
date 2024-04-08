@@ -8,7 +8,6 @@ import org.apache.commons.lang3.StringUtils;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseField;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -32,21 +31,6 @@ public class CertificationResultFunctionalityTested implements Serializable {
 
     @Schema(description = "Functionality tested internal ID")
     private FunctionalityTested functionalityTested;
-
-    @Deprecated
-    @DeprecatedResponseField(message = "This field is deprecated and will be removed. This data can be found functionalityTested.id",
-            removalDate = "2024-01-01")
-    private Long functionalityTestedId;
-
-    @Deprecated
-    @DeprecatedResponseField(message = "This field is deprecated and will be removed. This data can be found functionalityTested.value",
-            removalDate = "2024-01-01")
-    private String description;
-
-    @Deprecated
-    @DeprecatedResponseField(message = "This field is deprecated and will be removed. This data can be found functionalityTested.regulatoryTextCitation",
-            removalDate = "2024-01-01")
-    private String name;
 
     @JsonIgnore
     private Long certificationResultId;

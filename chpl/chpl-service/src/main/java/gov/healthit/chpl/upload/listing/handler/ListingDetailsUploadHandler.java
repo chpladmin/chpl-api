@@ -84,7 +84,6 @@ public class ListingDetailsUploadHandler {
                 .developer(devDetailsUploadHandler.handle(headingRecord, listingRecords))
                 .product(parseProduct(headingRecord, listingRecords))
                 .version(parseVersion(headingRecord, listingRecords))
-                .certificationEdition(null)
                 .edition(null)
                 .mandatoryDisclosures(parseMandatoryDisclosures(headingRecord, listingRecords))
                 .targetedUsers(targetedUserUploadHandler.handle(headingRecord, listingRecords))
@@ -106,7 +105,6 @@ public class ListingDetailsUploadHandler {
 
         if (!ff4j.check(FeatureList.EDITIONLESS)) {
             listing.setEdition(editionHandler.handle(headingRecord, listingRecords));
-            listing.setCertificationEdition(editionHandler.handleDeprecated(headingRecord, listingRecords));
         }
 
         listing.setSed(sedUploadHandler.parseAsSed(headingRecord, listingRecords, listing));

@@ -12,7 +12,6 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseField;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.criteriaattribute.rule.Rule;
 import gov.healthit.chpl.domain.PracticeType;
@@ -39,16 +38,6 @@ public class FunctionalityTested implements Serializable {
     private static final long serialVersionUID = 620315627813874301L;
 
     private Long id;
-
-    @Deprecated
-    @DeprecatedResponseField(message = "This field is deprecated and will be removed. This data can be found value",
-            removalDate = "2024-01-01")
-    private String name;
-
-    @Deprecated
-    @DeprecatedResponseField(message = "This field is deprecated and will be removed. This data can be found regulatoryTextCitation",
-            removalDate = "2024-01-01")
-    private String description;
 
     @Schema(description = "A string value to represent the value to be used for the Criteria Attribute.")
     private String value;
