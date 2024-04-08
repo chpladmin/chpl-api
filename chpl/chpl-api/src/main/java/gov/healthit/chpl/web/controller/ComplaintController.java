@@ -19,7 +19,6 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
-import gov.healthit.chpl.web.controller.annotation.DeprecatedApiResponseFields;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -37,7 +36,6 @@ public class ComplaintController {
         this.errorMessageUtil = errorMessageUtil;
     }
 
-    @DeprecatedApiResponseFields(friendlyUrl = "/complaints", httpMethod = "POST", responseClass = Complaint.class)
     @Operation(summary = "Save complaint for use in Surveillance Quarterly Report.",
             description = "",
             security = {
@@ -54,8 +52,6 @@ public class ComplaintController {
         return complaintManager.create(complaint);
     }
 
-    @DeprecatedApiResponseFields(friendlyUrl = "/complaints/{complaintId}",
-            httpMethod = "PUT", responseClass = Complaint.class)
     @Operation(summary = "Update complaint for use in Surveillance Quarterly Report.",
             description = "",
             security = {

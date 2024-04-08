@@ -53,9 +53,6 @@ public class CertificationResultFunctionalityTestedEntity extends EntityAudit {
                 .id(this.getId())
                 .certificationResultId(certificationResultId)
                 .functionalityTested(this.functionalityTested.toDomain())
-                .functionalityTestedId(this.getFunctionalityTested() != null ? this.getFunctionalityTested().getId() : null)
-                .name(this.getFunctionalityTested() != null ? this.getFunctionalityTested().getRegulatoryTextCitation() : null)
-                .description(this.getFunctionalityTested() != null ? this.getFunctionalityTested().getValue() : null)
                 .creationDate(getCreationDate())
                 .build();
     }

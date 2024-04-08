@@ -94,6 +94,46 @@ public class CertificationCriterionUploadHandlerTest {
     }
 
     @Test
+    public void parseCriterion_SingleUnderscoreCriterionFormatWithActiveMatch_ReturnsCriterion() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationDate(DateUtil.toEpochMillis(LocalDate.parse("2023-01-01")))
+                .build();
+
+        List<CertificationCriterion> matchingCriteria = new ArrayList<CertificationCriterion>();
+        matchingCriteria.add(createCriterion(1L, "170.315 (d)(4)", "test title", "2022-06-01", null));
+        Mockito.when(criterionDao.getAllByNumber(ArgumentMatchers.eq("170.315 (d)(4)")))
+            .thenReturn(matchingCriteria);
+
+        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString("CRITERIA_170_315_D_4_C").get(0);
+        assertNotNull(headingRecord);
+
+        CertificationCriterion parsedCriterion = handler.handle(headingRecord, listing);
+        assertNotNull(parsedCriterion);
+        assertEquals(1L, parsedCriterion.getId());
+        assertEquals("170.315 (d)(4)", parsedCriterion.getNumber());
+    }
+
+    @Test
+    public void parseCriterion_TripleUnderscoreCriterionFormatWithActiveMatch_ReturnsCriterion() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationDate(DateUtil.toEpochMillis(LocalDate.parse("2023-01-01")))
+                .build();
+
+        List<CertificationCriterion> matchingCriteria = new ArrayList<CertificationCriterion>();
+        matchingCriteria.add(createCriterion(1L, "170.315 (d)(4)", "test title", "2022-06-01", null));
+        Mockito.when(criterionDao.getAllByNumber(ArgumentMatchers.eq("170.315 (d)(4)")))
+            .thenReturn(matchingCriteria);
+
+        CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString("CRITERIA_170_315_D_4___C").get(0);
+        assertNotNull(headingRecord);
+
+        CertificationCriterion parsedCriterion = handler.handle(headingRecord, listing);
+        assertNotNull(parsedCriterion);
+        assertEquals(1L, parsedCriterion.getId());
+        assertEquals("170.315 (d)(4)", parsedCriterion.getNumber());
+    }
+
+    @Test
     public void parseCriterion_ValidCriterionFormatWithSingleMatchInactive_ReturnsCriterion() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .certificationDate(DateUtil.toEpochMillis(LocalDate.parse("2023-01-01")))

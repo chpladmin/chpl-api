@@ -12,7 +12,6 @@ import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseField;
 import gov.healthit.chpl.criteriaattribute.rule.Rule;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
@@ -59,11 +58,6 @@ public class CertificationCriterion implements Serializable {
     private Rule rule;
 
     private String companionGuideLink;
-
-    @Deprecated
-    @DeprecatedResponseField(message = "This property will be removed. It can be derived based on the endDay.",
-        removalDate = "2024-01-01")
-    private Boolean removed;
 
     @JsonProperty(access = Access.READ_ONLY)
     public CriterionStatus getStatus() {
