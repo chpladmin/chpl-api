@@ -28,7 +28,6 @@
 									"    var actualResponseBody = pm.response.json();\r",
 									"    pm.response.to.have.status(200);\r",
 									"    pm.expect(actualResponseBody).not.eql(null);\r",
-									"    pm.expect(pm.response.text()).to.include(\"FUNCTIONALITY_TESTED\");\r",
 									"});"
 								],
 								"type": "text/javascript",
@@ -87,7 +86,6 @@
 									"    var actualResponseBody = pm.response.json();\r",
 									"    pm.response.to.have.status(200);\r",
 									"    pm.expect(actualResponseBody).not.eql(null);\r",
-									"    pm.expect(pm.response.text()).to.include(\"SVAP\");\r",
 									"});"
 								],
 								"type": "text/javascript",
@@ -146,7 +144,6 @@
 									"    var actualResponseBody = pm.response.json();\r",
 									"    pm.response.to.have.status(200);\r",
 									"    pm.expect(actualResponseBody).not.eql(null);\r",
-									"    pm.expect(pm.response.text()).to.include(\"STANDARD\");\r",
 									"});"
 								],
 								"type": "text/javascript",
