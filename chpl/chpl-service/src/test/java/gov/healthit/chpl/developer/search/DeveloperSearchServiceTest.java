@@ -15,8 +15,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import gov.healthit.chpl.dao.CertificationBodyDAO;
-import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.IdNamePair;
 import gov.healthit.chpl.entity.developer.DeveloperStatusType;
 import gov.healthit.chpl.exception.ValidationException;
@@ -25,35 +23,26 @@ import gov.healthit.chpl.manager.DeveloperManager;
 public class DeveloperSearchServiceTest {
 
     private DeveloperManager developerManager;
-    private DeveloperSearchService developerSearchService;
+    private DeveloperSearchServiceV2 developerSearchService;
 
     @Before
     public void setup() {
         SearchRequestValidator searchRequestValidator = Mockito.mock(SearchRequestValidator.class);
-        CertificationBodyDAO acbDao = Mockito.mock(CertificationBodyDAO.class);
         developerManager = Mockito.mock(DeveloperManager.class);
 
-        Mockito.when(acbDao.findAll()).thenReturn(Stream.of(
-                CertificationBody.builder().id(1L).name("ACB 1").build(),
-                CertificationBody.builder().id(2L).name("ACB 2").build(),
-                CertificationBody.builder().id(3L).name("ACB 3").build(),
-                CertificationBody.builder().id(4L).name("ACB 4").build(),
-                CertificationBody.builder().id(5L).name("ACB 5").build())
-                .toList());
-
-        developerSearchService = new DeveloperSearchService(searchRequestValidator,
-                developerManager, acbDao);
+        developerSearchService = new DeveloperSearchServiceV2(searchRequestValidator,
+                developerManager);
     }
 
     @Test
     public void search_validEmptySearchRequest_findsAllDevelopers() throws ValidationException {
-        Mockito.when(developerManager.getDeveloperSearchResults())
+        Mockito.when(developerManager.getDeveloperSearchResultsV2())
             .thenReturn(createDeveloperSearchResultCollection(100));
         SearchRequest searchRequest = SearchRequest.builder()
             .pageNumber(0)
             .pageSize(10)
         .build();
-        DeveloperSearchResponse searchResponse = developerSearchService.findDevelopers(searchRequest);
+        DeveloperSearchResponseV2 searchResponse = developerSearchService.findDevelopers(searchRequest);
 
         assertNotNull(searchResponse);
         assertEquals(100, searchResponse.getRecordCount());
@@ -62,13 +51,13 @@ public class DeveloperSearchServiceTest {
 
     @Test
     public void search_pageOutOfRangeSearchRequest_returnsEmptyResponse() throws ValidationException {
-        Mockito.when(developerManager.getDeveloperSearchResults())
+        Mockito.when(developerManager.getDeveloperSearchResultsV2())
             .thenReturn(createDeveloperSearchResultCollection(100));
         SearchRequest searchRequest = SearchRequest.builder()
             .pageNumber(2)
             .pageSize(100)
         .build();
-        DeveloperSearchResponse searchResponse = developerSearchService.findDevelopers(searchRequest);
+        DeveloperSearchResponseV2 searchResponse = developerSearchService.findDevelopers(searchRequest);
 
         assertNotNull(searchResponse);
         assertEquals(100, searchResponse.getRecordCount());
@@ -77,20 +66,20 @@ public class DeveloperSearchServiceTest {
 
     @Test
     public void search_sortByDeveloperAscending_ordersResults() throws ValidationException {
-        List<DeveloperSearchResult> allDevelopers = createDeveloperSearchResultCollection(5);
+        List<DeveloperSearchResultV2> allDevelopers = createDeveloperSearchResultCollection(5);
         allDevelopers.get(0).setName("z");
         allDevelopers.get(1).setName("b");
         allDevelopers.get(2).setName("d");
         allDevelopers.get(3).setName("f");
         allDevelopers.get(4).setName("y");
-        Mockito.when(developerManager.getDeveloperSearchResults()).thenReturn(allDevelopers);
+        Mockito.when(developerManager.getDeveloperSearchResultsV2()).thenReturn(allDevelopers);
         SearchRequest searchRequest = SearchRequest.builder()
             .sortDescending(false)
             .orderBy(OrderByOption.DEVELOPER)
             .pageNumber(0)
             .pageSize(10)
         .build();
-        DeveloperSearchResponse searchResponse = developerSearchService.findDevelopers(searchRequest);
+        DeveloperSearchResponseV2 searchResponse = developerSearchService.findDevelopers(searchRequest);
 
         assertNotNull(searchResponse);
         assertEquals(5, searchResponse.getRecordCount());
@@ -104,20 +93,20 @@ public class DeveloperSearchServiceTest {
 
     @Test
     public void search_sortByDeveloperDescending_ordersResults() throws ValidationException {
-        List<DeveloperSearchResult> allDevelopers = createDeveloperSearchResultCollection(5);
+        List<DeveloperSearchResultV2> allDevelopers = createDeveloperSearchResultCollection(5);
         allDevelopers.get(0).setName("z");
         allDevelopers.get(1).setName("b");
         allDevelopers.get(2).setName("d");
         allDevelopers.get(3).setName("f");
         allDevelopers.get(4).setName("y");
-        Mockito.when(developerManager.getDeveloperSearchResults()).thenReturn(allDevelopers);
+        Mockito.when(developerManager.getDeveloperSearchResultsV2()).thenReturn(allDevelopers);
         SearchRequest searchRequest = SearchRequest.builder()
             .sortDescending(true)
             .orderBy(OrderByOption.DEVELOPER)
             .pageNumber(0)
             .pageSize(10)
         .build();
-        DeveloperSearchResponse searchResponse = developerSearchService.findDevelopers(searchRequest);
+        DeveloperSearchResponseV2 searchResponse = developerSearchService.findDevelopers(searchRequest);
 
         assertNotNull(searchResponse);
         assertEquals(5, searchResponse.getRecordCount());
@@ -131,20 +120,20 @@ public class DeveloperSearchServiceTest {
 
     @Test
     public void search_sortByDecertificationDateDescending_ordersResults() throws ValidationException {
-        List<DeveloperSearchResult> allDevelopers = createDeveloperSearchResultCollection(5);
+        List<DeveloperSearchResultV2> allDevelopers = createDeveloperSearchResultCollection(5);
         allDevelopers.get(0).setDecertificationDate(LocalDate.parse("1970-01-01"));
         allDevelopers.get(1).setDecertificationDate(LocalDate.parse("1980-01-01"));
         allDevelopers.get(2).setDecertificationDate(LocalDate.parse("1970-02-01"));
         allDevelopers.get(3).setDecertificationDate(LocalDate.parse("2022-01-01"));
         allDevelopers.get(4).setDecertificationDate(LocalDate.parse("1970-01-15"));
-        Mockito.when(developerManager.getDeveloperSearchResults()).thenReturn(allDevelopers);
+        Mockito.when(developerManager.getDeveloperSearchResultsV2()).thenReturn(allDevelopers);
         SearchRequest searchRequest = SearchRequest.builder()
             .sortDescending(true)
             .orderBy(OrderByOption.DECERTIFICATION_DATE)
             .pageNumber(0)
             .pageSize(10)
         .build();
-        DeveloperSearchResponse searchResponse = developerSearchService.findDevelopers(searchRequest);
+        DeveloperSearchResponseV2 searchResponse = developerSearchService.findDevelopers(searchRequest);
 
         assertNotNull(searchResponse);
         assertEquals(5, searchResponse.getRecordCount());
@@ -158,20 +147,20 @@ public class DeveloperSearchServiceTest {
 
     @Test
     public void search_sortByDecertificationDateAscending_ordersResults() throws ValidationException {
-        List<DeveloperSearchResult> allDevelopers = createDeveloperSearchResultCollection(5);
+        List<DeveloperSearchResultV2> allDevelopers = createDeveloperSearchResultCollection(5);
         allDevelopers.get(0).setDecertificationDate(LocalDate.parse("1970-01-01"));
         allDevelopers.get(1).setDecertificationDate(LocalDate.parse("1980-01-01"));
         allDevelopers.get(2).setDecertificationDate(LocalDate.parse("1970-02-01"));
         allDevelopers.get(3).setDecertificationDate(LocalDate.parse("2022-01-01"));
         allDevelopers.get(4).setDecertificationDate(LocalDate.parse("1970-01-15"));
-        Mockito.when(developerManager.getDeveloperSearchResults()).thenReturn(allDevelopers);
+        Mockito.when(developerManager.getDeveloperSearchResultsV2()).thenReturn(allDevelopers);
         SearchRequest searchRequest = SearchRequest.builder()
             .sortDescending(false)
             .orderBy(OrderByOption.DECERTIFICATION_DATE)
             .pageNumber(0)
             .pageSize(10)
         .build();
-        DeveloperSearchResponse searchResponse = developerSearchService.findDevelopers(searchRequest);
+        DeveloperSearchResponseV2 searchResponse = developerSearchService.findDevelopers(searchRequest);
 
         assertNotNull(searchResponse);
         assertEquals(5, searchResponse.getRecordCount());
@@ -185,20 +174,20 @@ public class DeveloperSearchServiceTest {
 
     @Test
     public void search_sortByStatusAscending_ordersResults() throws ValidationException {
-        List<DeveloperSearchResult> allDevelopers = createDeveloperSearchResultCollection(5);
+        List<DeveloperSearchResultV2> allDevelopers = createDeveloperSearchResultCollection(5);
         allDevelopers.get(0).setStatus(status(DeveloperStatusType.Active.getName()));
         allDevelopers.get(1).setStatus(status(DeveloperStatusType.SuspendedByOnc.getName()));
         allDevelopers.get(2).setStatus(status(DeveloperStatusType.Active.getName()));
         allDevelopers.get(3).setStatus(status(DeveloperStatusType.Active.getName()));
         allDevelopers.get(4).setStatus(status(DeveloperStatusType.UnderCertificationBanByOnc.getName()));
-        Mockito.when(developerManager.getDeveloperSearchResults()).thenReturn(allDevelopers);
+        Mockito.when(developerManager.getDeveloperSearchResultsV2()).thenReturn(allDevelopers);
         SearchRequest searchRequest = SearchRequest.builder()
             .sortDescending(false)
             .orderBy(OrderByOption.STATUS)
             .pageNumber(0)
             .pageSize(10)
         .build();
-        DeveloperSearchResponse searchResponse = developerSearchService.findDevelopers(searchRequest);
+        DeveloperSearchResponseV2 searchResponse = developerSearchService.findDevelopers(searchRequest);
 
         assertNotNull(searchResponse);
         assertEquals(5, searchResponse.getRecordCount());
@@ -212,20 +201,20 @@ public class DeveloperSearchServiceTest {
 
     @Test
     public void search_sortByCertificationStatusDescending_ordersResults() throws ValidationException {
-        List<DeveloperSearchResult> allDevelopers = createDeveloperSearchResultCollection(5);
+        List<DeveloperSearchResultV2> allDevelopers = createDeveloperSearchResultCollection(5);
         allDevelopers.get(0).setStatus(status(DeveloperStatusType.Active.getName()));
         allDevelopers.get(1).setStatus(status(DeveloperStatusType.SuspendedByOnc.getName()));
         allDevelopers.get(2).setStatus(status(DeveloperStatusType.Active.getName()));
         allDevelopers.get(3).setStatus(status(DeveloperStatusType.Active.getName()));
         allDevelopers.get(4).setStatus(status(DeveloperStatusType.UnderCertificationBanByOnc.getName()));
-        Mockito.when(developerManager.getDeveloperSearchResults()).thenReturn(allDevelopers);
+        Mockito.when(developerManager.getDeveloperSearchResultsV2()).thenReturn(allDevelopers);
         SearchRequest searchRequest = SearchRequest.builder()
             .sortDescending(true)
             .orderBy(OrderByOption.STATUS)
             .pageNumber(0)
             .pageSize(10)
         .build();
-        DeveloperSearchResponse searchResponse = developerSearchService.findDevelopers(searchRequest);
+        DeveloperSearchResponseV2 searchResponse = developerSearchService.findDevelopers(searchRequest);
 
         assertNotNull(searchResponse);
         assertEquals(5, searchResponse.getRecordCount());
@@ -239,11 +228,11 @@ public class DeveloperSearchServiceTest {
 
     @Test
     public void search_singleAcbNameProvidedAndDeveloperHasSingleAcb_findsMatches() throws ValidationException {
-        List<DeveloperSearchResult> allDevelopers = createDeveloperSearchResultCollection(50);
-        allDevelopers.get(0).setAcbsForAllListings(Stream.of(1L).collect(Collectors.toSet()));
-        allDevelopers.get(1).setAcbsForAllListings(Stream.of(2L).collect(Collectors.toSet()));
+        List<DeveloperSearchResultV2> allDevelopers = createDeveloperSearchResultCollection(50);
+        allDevelopers.get(0).setAssociatedAcbs(Stream.of(acb("ACB 1")).collect(Collectors.toSet()));
+        allDevelopers.get(1).setAssociatedAcbs(Stream.of(acb("ACB 2")).collect(Collectors.toSet()));
 
-        Mockito.when(developerManager.getDeveloperSearchResults()).thenReturn(allDevelopers);
+        Mockito.when(developerManager.getDeveloperSearchResultsV2()).thenReturn(allDevelopers);
         Set<String> acbNames = new LinkedHashSet<String>();
         acbNames.add("ACB 1");
         SearchRequest searchRequest = SearchRequest.builder()
@@ -251,7 +240,7 @@ public class DeveloperSearchServiceTest {
             .pageNumber(0)
             .pageSize(10)
         .build();
-        DeveloperSearchResponse searchResponse = developerSearchService.findDevelopers(searchRequest);
+        DeveloperSearchResponseV2 searchResponse = developerSearchService.findDevelopers(searchRequest);
 
         assertNotNull(searchResponse);
         assertEquals(1, searchResponse.getRecordCount());
@@ -260,13 +249,13 @@ public class DeveloperSearchServiceTest {
 
     @Test
     public void search_singleAcbNameProvidedAndDeveloperHasMultipleAcbs_findsMatches() throws ValidationException {
-        List<DeveloperSearchResult> allDevelopers = createDeveloperSearchResultCollection(50);
-        allDevelopers.get(0).setAcbsForAllListings(Stream.of(1L).collect(Collectors.toSet()));
-        allDevelopers.get(1).setAcbsForAllListings(Stream.of(2L, 1L).collect(Collectors.toSet()));
-        allDevelopers.get(2).setAcbsForAllListings(Stream.of(2L).collect(Collectors.toSet()));
-        allDevelopers.get(3).setAcbsForAllListings(Stream.of(2L, 3L).collect(Collectors.toSet()));
+        List<DeveloperSearchResultV2> allDevelopers = createDeveloperSearchResultCollection(50);
+        allDevelopers.get(0).setAssociatedAcbs(Stream.of(acb("ACB 1")).collect(Collectors.toSet()));
+        allDevelopers.get(1).setAssociatedAcbs(Stream.of(acb("ACB 2"), acb("ACB 1")).collect(Collectors.toSet()));
+        allDevelopers.get(2).setAssociatedAcbs(Stream.of(acb("ACB 2")).collect(Collectors.toSet()));
+        allDevelopers.get(3).setAssociatedAcbs(Stream.of(acb("ACB 2"), acb("ACB 3")).collect(Collectors.toSet()));
 
-        Mockito.when(developerManager.getDeveloperSearchResults()).thenReturn(allDevelopers);
+        Mockito.when(developerManager.getDeveloperSearchResultsV2()).thenReturn(allDevelopers);
         Set<String> acbNames = new LinkedHashSet<String>();
         acbNames.add("ACB 1");
         SearchRequest searchRequest = SearchRequest.builder()
@@ -274,7 +263,7 @@ public class DeveloperSearchServiceTest {
             .pageNumber(0)
             .pageSize(10)
         .build();
-        DeveloperSearchResponse searchResponse = developerSearchService.findDevelopers(searchRequest);
+        DeveloperSearchResponseV2 searchResponse = developerSearchService.findDevelopers(searchRequest);
 
         assertNotNull(searchResponse);
         assertEquals(2, searchResponse.getRecordCount());
@@ -283,13 +272,13 @@ public class DeveloperSearchServiceTest {
 
     @Test
     public void search_mutlipleAcbNamesProvidedDeveloperHasSingleAcb_findsMatches() throws ValidationException {
-        List<DeveloperSearchResult> allDevelopers = createDeveloperSearchResultCollection(50);
-        allDevelopers.get(0).setAcbsForAllListings(Stream.of(1L).collect(Collectors.toSet()));
-        allDevelopers.get(1).setAcbsForAllListings(Stream.of(2L).collect(Collectors.toSet()));
-        allDevelopers.get(2).setAcbsForAllListings(Stream.of(1L).collect(Collectors.toSet()));
-        allDevelopers.get(3).setAcbsForAllListings(Stream.of(5L).collect(Collectors.toSet()));
+        List<DeveloperSearchResultV2> allDevelopers = createDeveloperSearchResultCollection(50);
+        allDevelopers.get(0).setAssociatedAcbs(Stream.of(acb("ACB 1")).collect(Collectors.toSet()));
+        allDevelopers.get(1).setAssociatedAcbs(Stream.of(acb("ACB 2")).collect(Collectors.toSet()));
+        allDevelopers.get(2).setAssociatedAcbs(Stream.of(acb("ACB 1")).collect(Collectors.toSet()));
+        allDevelopers.get(3).setAssociatedAcbs(Stream.of(acb("ACB 5")).collect(Collectors.toSet()));
 
-        Mockito.when(developerManager.getDeveloperSearchResults()).thenReturn(allDevelopers);
+        Mockito.when(developerManager.getDeveloperSearchResultsV2()).thenReturn(allDevelopers);
         Set<String> acbNames = new LinkedHashSet<String>();
         acbNames.add("ACB 1");
         acbNames.add("ACB 2");
@@ -299,7 +288,7 @@ public class DeveloperSearchServiceTest {
             .pageNumber(0)
             .pageSize(10)
         .build();
-        DeveloperSearchResponse searchResponse = developerSearchService.findDevelopers(searchRequest);
+        DeveloperSearchResponseV2 searchResponse = developerSearchService.findDevelopers(searchRequest);
 
         assertNotNull(searchResponse);
         assertEquals(3, searchResponse.getRecordCount());
@@ -308,14 +297,14 @@ public class DeveloperSearchServiceTest {
 
     @Test
     public void search_mutlipleAcbNamesProvidedDeveloperHasMultipleAcbs_findsMatches() throws ValidationException {
-        List<DeveloperSearchResult> allDevelopers = createDeveloperSearchResultCollection(50);
-        allDevelopers.get(0).setAcbsForAllListings(Stream.of(1L).collect(Collectors.toSet()));
-        allDevelopers.get(1).setAcbsForAllListings(Stream.of(2L, 3L).collect(Collectors.toSet()));
-        allDevelopers.get(2).setAcbsForAllListings(Stream.of(1L).collect(Collectors.toSet()));
-        allDevelopers.get(3).setAcbsForAllListings(Stream.of(5L, 1L).collect(Collectors.toSet()));
-        allDevelopers.get(4).setAcbsForAllListings(Stream.of(4L, 5L).collect(Collectors.toSet()));
+        List<DeveloperSearchResultV2> allDevelopers = createDeveloperSearchResultCollection(50);
+        allDevelopers.get(0).setAssociatedAcbs(Stream.of(acb("ACB 1")).collect(Collectors.toSet()));
+        allDevelopers.get(1).setAssociatedAcbs(Stream.of(acb("ACB 2"), acb("ACB 3")).collect(Collectors.toSet()));
+        allDevelopers.get(2).setAssociatedAcbs(Stream.of(acb("ACB 1")).collect(Collectors.toSet()));
+        allDevelopers.get(3).setAssociatedAcbs(Stream.of(acb("ACB 5"), acb("ACB 1")).collect(Collectors.toSet()));
+        allDevelopers.get(4).setAssociatedAcbs(Stream.of(acb("ACB 0"), acb("ACB 7")).collect(Collectors.toSet()));
 
-        Mockito.when(developerManager.getDeveloperSearchResults()).thenReturn(allDevelopers);
+        Mockito.when(developerManager.getDeveloperSearchResultsV2()).thenReturn(allDevelopers);
         Set<String> acbNames = new LinkedHashSet<String>();
         acbNames.add("ACB 1");
         acbNames.add("ACB 2");
@@ -325,7 +314,7 @@ public class DeveloperSearchServiceTest {
             .pageNumber(0)
             .pageSize(10)
         .build();
-        DeveloperSearchResponse searchResponse = developerSearchService.findDevelopers(searchRequest);
+        DeveloperSearchResponseV2 searchResponse = developerSearchService.findDevelopers(searchRequest);
 
         assertNotNull(searchResponse);
         assertEquals(4, searchResponse.getRecordCount());
@@ -334,11 +323,11 @@ public class DeveloperSearchServiceTest {
 
     @Test
     public void search_singleStatusProvided_findsMatches() throws ValidationException {
-        List<DeveloperSearchResult> allDevelopers = createDeveloperSearchResultCollection(50);
+        List<DeveloperSearchResultV2> allDevelopers = createDeveloperSearchResultCollection(50);
         allDevelopers.get(0).setStatus(status(DeveloperStatusType.Active.getName()));
         allDevelopers.get(1).setStatus(status(DeveloperStatusType.SuspendedByOnc.getName()));
 
-        Mockito.when(developerManager.getDeveloperSearchResults()).thenReturn(allDevelopers);
+        Mockito.when(developerManager.getDeveloperSearchResultsV2()).thenReturn(allDevelopers);
         Set<String> statusNames = new LinkedHashSet<String>();
         statusNames.add(DeveloperStatusType.SuspendedByOnc.getName());
         SearchRequest searchRequest = SearchRequest.builder()
@@ -346,7 +335,7 @@ public class DeveloperSearchServiceTest {
             .pageNumber(0)
             .pageSize(10)
         .build();
-        DeveloperSearchResponse searchResponse = developerSearchService.findDevelopers(searchRequest);
+        DeveloperSearchResponseV2 searchResponse = developerSearchService.findDevelopers(searchRequest);
 
         assertNotNull(searchResponse);
         assertEquals(1, searchResponse.getRecordCount());
@@ -355,13 +344,13 @@ public class DeveloperSearchServiceTest {
 
     @Test
     public void search_multipleStatusesProvided_findsMatches() throws ValidationException {
-        List<DeveloperSearchResult> allDevelopers = createDeveloperSearchResultCollection(50);
+        List<DeveloperSearchResultV2> allDevelopers = createDeveloperSearchResultCollection(50);
         allDevelopers.get(0).setStatus(status(DeveloperStatusType.Active.getName()));
         allDevelopers.get(1).setStatus(status(DeveloperStatusType.SuspendedByOnc.getName()));
         allDevelopers.get(2).setStatus(status(DeveloperStatusType.Active.getName()));
         allDevelopers.get(3).setStatus(status(DeveloperStatusType.UnderCertificationBanByOnc.getName()));
 
-        Mockito.when(developerManager.getDeveloperSearchResults()).thenReturn(allDevelopers);
+        Mockito.when(developerManager.getDeveloperSearchResultsV2()).thenReturn(allDevelopers);
         Set<String> statusNames = new LinkedHashSet<String>();
         statusNames.add(DeveloperStatusType.SuspendedByOnc.getName());
         statusNames.add(DeveloperStatusType.Active.getName());
@@ -371,7 +360,7 @@ public class DeveloperSearchServiceTest {
             .pageNumber(0)
             .pageSize(10)
         .build();
-        DeveloperSearchResponse searchResponse = developerSearchService.findDevelopers(searchRequest);
+        DeveloperSearchResponseV2 searchResponse = developerSearchService.findDevelopers(searchRequest);
 
         assertNotNull(searchResponse);
         assertEquals(3, searchResponse.getRecordCount());
@@ -380,18 +369,18 @@ public class DeveloperSearchServiceTest {
 
     @Test
     public void search_searchTermProvided_findsMatchesOnDeveloperName() throws ValidationException {
-        List<DeveloperSearchResult> allDevelopers = createDeveloperSearchResultCollection(50);
+        List<DeveloperSearchResultV2> allDevelopers = createDeveloperSearchResultCollection(50);
         allDevelopers.get(0).setName("dev name");
         allDevelopers.get(1).setName("long DEV name here");
         allDevelopers.get(2).setName("doesn't match");
 
-        Mockito.when(developerManager.getDeveloperSearchResults()).thenReturn(allDevelopers);
+        Mockito.when(developerManager.getDeveloperSearchResultsV2()).thenReturn(allDevelopers);
         SearchRequest searchRequest = SearchRequest.builder()
             .searchTerm("dev name")
             .pageNumber(0)
             .pageSize(10)
         .build();
-        DeveloperSearchResponse searchResponse = developerSearchService.findDevelopers(searchRequest);
+        DeveloperSearchResponseV2 searchResponse = developerSearchService.findDevelopers(searchRequest);
 
         assertNotNull(searchResponse);
         assertEquals(2, searchResponse.getRecordCount());
@@ -400,18 +389,18 @@ public class DeveloperSearchServiceTest {
 
     @Test
     public void search_searchTermProvided_findsMatchesOnDeveloperCode() throws ValidationException {
-        List<DeveloperSearchResult> allDevelopers = createDeveloperSearchResultCollection(50);
+        List<DeveloperSearchResultV2> allDevelopers = createDeveloperSearchResultCollection(50);
         allDevelopers.get(0).setCode("dev name");
         allDevelopers.get(1).setCode("long DEV name here");
         allDevelopers.get(2).setCode("doesn't match");
 
-        Mockito.when(developerManager.getDeveloperSearchResults()).thenReturn(allDevelopers);
+        Mockito.when(developerManager.getDeveloperSearchResultsV2()).thenReturn(allDevelopers);
         SearchRequest searchRequest = SearchRequest.builder()
             .searchTerm("dev name")
             .pageNumber(0)
             .pageSize(10)
         .build();
-        DeveloperSearchResponse searchResponse = developerSearchService.findDevelopers(searchRequest);
+        DeveloperSearchResponseV2 searchResponse = developerSearchService.findDevelopers(searchRequest);
 
         assertNotNull(searchResponse);
         assertEquals(2, searchResponse.getRecordCount());
@@ -420,19 +409,19 @@ public class DeveloperSearchServiceTest {
 
     @Test
     public void search_searchTermProvided_findsMatchesOnDeveloperNameAndCode() throws ValidationException {
-        List<DeveloperSearchResult> allDevelopers = createDeveloperSearchResultCollection(50);
+        List<DeveloperSearchResultV2> allDevelopers = createDeveloperSearchResultCollection(50);
         allDevelopers.get(0).setCode("dev name");
         allDevelopers.get(1).setCode("long DEV name here");
         allDevelopers.get(2).setCode("doesn't match");
         allDevelopers.get(2).setName("dev name 2");
 
-        Mockito.when(developerManager.getDeveloperSearchResults()).thenReturn(allDevelopers);
+        Mockito.when(developerManager.getDeveloperSearchResultsV2()).thenReturn(allDevelopers);
         SearchRequest searchRequest = SearchRequest.builder()
             .searchTerm("dev name")
             .pageNumber(0)
             .pageSize(10)
         .build();
-        DeveloperSearchResponse searchResponse = developerSearchService.findDevelopers(searchRequest);
+        DeveloperSearchResponseV2 searchResponse = developerSearchService.findDevelopers(searchRequest);
 
         assertNotNull(searchResponse);
         assertEquals(3, searchResponse.getRecordCount());
@@ -441,18 +430,18 @@ public class DeveloperSearchServiceTest {
 
     @Test
     public void search_developeNameProvided_findsMatches() throws ValidationException {
-        List<DeveloperSearchResult> allDevelopers = createDeveloperSearchResultCollection(50);
+        List<DeveloperSearchResultV2> allDevelopers = createDeveloperSearchResultCollection(50);
         allDevelopers.get(0).setName("dev name");
         allDevelopers.get(1).setName("long DEV name here");
         allDevelopers.get(2).setName("doesn't match");
 
-        Mockito.when(developerManager.getDeveloperSearchResults()).thenReturn(allDevelopers);
+        Mockito.when(developerManager.getDeveloperSearchResultsV2()).thenReturn(allDevelopers);
         SearchRequest searchRequest = SearchRequest.builder()
             .developerName("dev name")
             .pageNumber(0)
             .pageSize(10)
         .build();
-        DeveloperSearchResponse searchResponse = developerSearchService.findDevelopers(searchRequest);
+        DeveloperSearchResponseV2 searchResponse = developerSearchService.findDevelopers(searchRequest);
 
         assertNotNull(searchResponse);
         assertEquals(2, searchResponse.getRecordCount());
@@ -461,18 +450,18 @@ public class DeveloperSearchServiceTest {
 
     @Test
     public void search_developeCodeProvided_findsMatches() throws ValidationException {
-        List<DeveloperSearchResult> allDevelopers = createDeveloperSearchResultCollection(50);
+        List<DeveloperSearchResultV2> allDevelopers = createDeveloperSearchResultCollection(50);
         allDevelopers.get(0).setCode("1234");
         allDevelopers.get(1).setCode("2345");
         allDevelopers.get(2).setCode("0000");
 
-        Mockito.when(developerManager.getDeveloperSearchResults()).thenReturn(allDevelopers);
+        Mockito.when(developerManager.getDeveloperSearchResultsV2()).thenReturn(allDevelopers);
         SearchRequest searchRequest = SearchRequest.builder()
             .developerCode("2345")
             .pageNumber(0)
             .pageSize(10)
         .build();
-        DeveloperSearchResponse searchResponse = developerSearchService.findDevelopers(searchRequest);
+        DeveloperSearchResponseV2 searchResponse = developerSearchService.findDevelopers(searchRequest);
 
         assertNotNull(searchResponse);
         assertEquals(1, searchResponse.getRecordCount());
@@ -481,19 +470,19 @@ public class DeveloperSearchServiceTest {
 
     @Test
     public void search_decertificationStartDateAfterDecertificationDateEnd_noMatches() throws ValidationException {
-        List<DeveloperSearchResult> allDevelopers = createDeveloperSearchResultCollection(50);
+        List<DeveloperSearchResultV2> allDevelopers = createDeveloperSearchResultCollection(50);
         allDevelopers.get(0).setDecertificationDate(LocalDate.parse("2020-06-25"));
         allDevelopers.get(1).setDecertificationDate(LocalDate.parse("2020-06-01"));
         allDevelopers.get(1).setDecertificationDate(LocalDate.parse("2020-07-01"));
 
-        Mockito.when(developerManager.getDeveloperSearchResults()).thenReturn(allDevelopers);
+        Mockito.when(developerManager.getDeveloperSearchResultsV2()).thenReturn(allDevelopers);
         SearchRequest searchRequest = SearchRequest.builder()
             .decertificationDateStart("2020-07-01")
             .decertificationDateEnd("2020-06-01")
             .pageNumber(0)
             .pageSize(10)
         .build();
-        DeveloperSearchResponse searchResponse = developerSearchService.findDevelopers(searchRequest);
+        DeveloperSearchResponseV2 searchResponse = developerSearchService.findDevelopers(searchRequest);
 
         assertNotNull(searchResponse);
         assertEquals(0, searchResponse.getRecordCount());
@@ -502,17 +491,17 @@ public class DeveloperSearchServiceTest {
 
     @Test
     public void search_decertificationStartDateEqualsDeveloperDecertificationDate_findsMatches() throws ValidationException {
-        List<DeveloperSearchResult> allDevelopers = createDeveloperSearchResultCollection(50);
+        List<DeveloperSearchResultV2> allDevelopers = createDeveloperSearchResultCollection(50);
         allDevelopers.get(0).setDecertificationDate(LocalDate.parse("2020-06-25"));
         allDevelopers.get(1).setDecertificationDate(LocalDate.parse("2020-06-01"));
 
-        Mockito.when(developerManager.getDeveloperSearchResults()).thenReturn(allDevelopers);
+        Mockito.when(developerManager.getDeveloperSearchResultsV2()).thenReturn(allDevelopers);
         SearchRequest searchRequest = SearchRequest.builder()
             .decertificationDateStart("2020-06-25")
             .pageNumber(0)
             .pageSize(10)
         .build();
-        DeveloperSearchResponse searchResponse = developerSearchService.findDevelopers(searchRequest);
+        DeveloperSearchResponseV2 searchResponse = developerSearchService.findDevelopers(searchRequest);
 
         assertNotNull(searchResponse);
         assertEquals(1, searchResponse.getRecordCount());
@@ -521,17 +510,17 @@ public class DeveloperSearchServiceTest {
 
     @Test
     public void search_decertificationStartDateBeforeDeveloperDecertificationDate_findsMatches() throws ValidationException {
-        List<DeveloperSearchResult> allDevelopers = createDeveloperSearchResultCollection(50);
+        List<DeveloperSearchResultV2> allDevelopers = createDeveloperSearchResultCollection(50);
         allDevelopers.get(0).setDecertificationDate(LocalDate.parse("2020-06-25"));
         allDevelopers.get(1).setDecertificationDate(LocalDate.parse("2020-06-01"));
 
-        Mockito.when(developerManager.getDeveloperSearchResults()).thenReturn(allDevelopers);
+        Mockito.when(developerManager.getDeveloperSearchResultsV2()).thenReturn(allDevelopers);
         SearchRequest searchRequest = SearchRequest.builder()
             .decertificationDateStart("2020-06-24")
             .pageNumber(0)
             .pageSize(10)
         .build();
-        DeveloperSearchResponse searchResponse = developerSearchService.findDevelopers(searchRequest);
+        DeveloperSearchResponseV2 searchResponse = developerSearchService.findDevelopers(searchRequest);
 
         assertNotNull(searchResponse);
         assertEquals(1, searchResponse.getRecordCount());
@@ -540,17 +529,17 @@ public class DeveloperSearchServiceTest {
 
     @Test
     public void search_decertificationEndDateEqualsDeveloperDecertificationDate_findsMatches() throws ValidationException {
-        List<DeveloperSearchResult> allDevelopers = createDeveloperSearchResultCollection(50);
+        List<DeveloperSearchResultV2> allDevelopers = createDeveloperSearchResultCollection(50);
         allDevelopers.get(0).setDecertificationDate(LocalDate.parse("2020-06-25"));
         allDevelopers.get(1).setDecertificationDate(LocalDate.parse("2020-06-27"));
 
-        Mockito.when(developerManager.getDeveloperSearchResults()).thenReturn(allDevelopers);
+        Mockito.when(developerManager.getDeveloperSearchResultsV2()).thenReturn(allDevelopers);
         SearchRequest searchRequest = SearchRequest.builder()
             .decertificationDateEnd("2020-06-25")
             .pageNumber(0)
             .pageSize(10)
         .build();
-        DeveloperSearchResponse searchResponse = developerSearchService.findDevelopers(searchRequest);
+        DeveloperSearchResponseV2 searchResponse = developerSearchService.findDevelopers(searchRequest);
 
         assertNotNull(searchResponse);
         assertEquals(1, searchResponse.getRecordCount());
@@ -559,17 +548,17 @@ public class DeveloperSearchServiceTest {
 
     @Test
     public void search_decertificationEndDateAfterDeveloperDecertificationDate_findsMatches() throws ValidationException {
-        List<DeveloperSearchResult> allDevelopers = createDeveloperSearchResultCollection(50);
+        List<DeveloperSearchResultV2> allDevelopers = createDeveloperSearchResultCollection(50);
         allDevelopers.get(0).setDecertificationDate(LocalDate.parse("2020-06-25"));
         allDevelopers.get(1).setDecertificationDate(LocalDate.parse("2020-06-27"));
 
-        Mockito.when(developerManager.getDeveloperSearchResults()).thenReturn(allDevelopers);
+        Mockito.when(developerManager.getDeveloperSearchResultsV2()).thenReturn(allDevelopers);
         SearchRequest searchRequest = SearchRequest.builder()
             .decertificationDateEnd("2020-06-26")
             .pageNumber(0)
             .pageSize(10)
         .build();
-        DeveloperSearchResponse searchResponse = developerSearchService.findDevelopers(searchRequest);
+        DeveloperSearchResponseV2 searchResponse = developerSearchService.findDevelopers(searchRequest);
 
         assertNotNull(searchResponse);
         assertEquals(1, searchResponse.getRecordCount());
@@ -578,18 +567,18 @@ public class DeveloperSearchServiceTest {
 
     @Test
     public void search_developerDecertificationDateBetweenStartAndEnd_findsMatches() throws ValidationException {
-        List<DeveloperSearchResult> allDevelopers = createDeveloperSearchResultCollection(50);
+        List<DeveloperSearchResultV2> allDevelopers = createDeveloperSearchResultCollection(50);
         allDevelopers.get(0).setDecertificationDate(LocalDate.parse("2020-06-25"));
         allDevelopers.get(1).setDecertificationDate(LocalDate.parse("2020-06-27"));
 
-        Mockito.when(developerManager.getDeveloperSearchResults()).thenReturn(allDevelopers);
+        Mockito.when(developerManager.getDeveloperSearchResultsV2()).thenReturn(allDevelopers);
         SearchRequest searchRequest = SearchRequest.builder()
             .decertificationDateStart("2020-06-24")
             .decertificationDateEnd("2020-06-26")
             .pageNumber(0)
             .pageSize(10)
         .build();
-        DeveloperSearchResponse searchResponse = developerSearchService.findDevelopers(searchRequest);
+        DeveloperSearchResponseV2 searchResponse = developerSearchService.findDevelopers(searchRequest);
 
         assertNotNull(searchResponse);
         assertEquals(1, searchResponse.getRecordCount());
@@ -598,18 +587,18 @@ public class DeveloperSearchServiceTest {
 
     @Test
     public void search_developerDecertificationDateEqualsStartAndBeforeEnd_findsMatches() throws ValidationException {
-        List<DeveloperSearchResult> allDevelopers = createDeveloperSearchResultCollection(50);
+        List<DeveloperSearchResultV2> allDevelopers = createDeveloperSearchResultCollection(50);
         allDevelopers.get(0).setDecertificationDate(LocalDate.parse("2020-06-25"));
         allDevelopers.get(1).setDecertificationDate(LocalDate.parse("2020-06-27"));
 
-        Mockito.when(developerManager.getDeveloperSearchResults()).thenReturn(allDevelopers);
+        Mockito.when(developerManager.getDeveloperSearchResultsV2()).thenReturn(allDevelopers);
         SearchRequest searchRequest = SearchRequest.builder()
             .decertificationDateStart("2020-06-25")
             .decertificationDateEnd("2020-06-26")
             .pageNumber(0)
             .pageSize(10)
         .build();
-        DeveloperSearchResponse searchResponse = developerSearchService.findDevelopers(searchRequest);
+        DeveloperSearchResponseV2 searchResponse = developerSearchService.findDevelopers(searchRequest);
 
         assertNotNull(searchResponse);
         assertEquals(1, searchResponse.getRecordCount());
@@ -618,18 +607,18 @@ public class DeveloperSearchServiceTest {
 
     @Test
     public void search_developerDecertificationDateEqualsEndAndAfterStart_findsMatches() throws ValidationException {
-        List<DeveloperSearchResult> allDevelopers = createDeveloperSearchResultCollection(50);
+        List<DeveloperSearchResultV2> allDevelopers = createDeveloperSearchResultCollection(50);
         allDevelopers.get(0).setDecertificationDate(LocalDate.parse("2020-06-25"));
         allDevelopers.get(1).setDecertificationDate(LocalDate.parse("2020-06-27"));
 
-        Mockito.when(developerManager.getDeveloperSearchResults()).thenReturn(allDevelopers);
+        Mockito.when(developerManager.getDeveloperSearchResultsV2()).thenReturn(allDevelopers);
         SearchRequest searchRequest = SearchRequest.builder()
             .decertificationDateStart("2020-06-24")
             .decertificationDateEnd("2020-06-25")
             .pageNumber(0)
             .pageSize(10)
         .build();
-        DeveloperSearchResponse searchResponse = developerSearchService.findDevelopers(searchRequest);
+        DeveloperSearchResponseV2 searchResponse = developerSearchService.findDevelopers(searchRequest);
 
         assertNotNull(searchResponse);
         assertEquals(1, searchResponse.getRecordCount());
@@ -638,28 +627,28 @@ public class DeveloperSearchServiceTest {
 
     @Test
     public void search_developerDecertificationDateEqualsEndAndStart_findsMatches() throws ValidationException {
-        List<DeveloperSearchResult> allDevelopers = createDeveloperSearchResultCollection(50);
+        List<DeveloperSearchResultV2> allDevelopers = createDeveloperSearchResultCollection(50);
         allDevelopers.get(0).setDecertificationDate(LocalDate.parse("2020-06-25"));
         allDevelopers.get(1).setDecertificationDate(LocalDate.parse("2020-06-27"));
 
-        Mockito.when(developerManager.getDeveloperSearchResults()).thenReturn(allDevelopers);
+        Mockito.when(developerManager.getDeveloperSearchResultsV2()).thenReturn(allDevelopers);
         SearchRequest searchRequest = SearchRequest.builder()
             .decertificationDateStart("2020-06-25")
             .decertificationDateEnd("2020-06-25")
             .pageNumber(0)
             .pageSize(10)
         .build();
-        DeveloperSearchResponse searchResponse = developerSearchService.findDevelopers(searchRequest);
+        DeveloperSearchResponseV2 searchResponse = developerSearchService.findDevelopers(searchRequest);
 
         assertNotNull(searchResponse);
         assertEquals(1, searchResponse.getRecordCount());
         assertEquals(1, searchResponse.getResults().size());
     }
 
-    private List<DeveloperSearchResult> createDeveloperSearchResultCollection(int collectionSize) {
-        List<DeveloperSearchResult> developers = new ArrayList<DeveloperSearchResult>();
+    private List<DeveloperSearchResultV2> createDeveloperSearchResultCollection(int collectionSize) {
+        List<DeveloperSearchResultV2> developers = new ArrayList<DeveloperSearchResultV2>();
         for (int i = 0; i < collectionSize; i++) {
-            developers.add(new DeveloperSearchResult());
+            developers.add(new DeveloperSearchResultV2());
         }
         return developers;
     }

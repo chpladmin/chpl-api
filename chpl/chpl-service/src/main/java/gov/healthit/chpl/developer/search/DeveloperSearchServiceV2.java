@@ -10,75 +10,69 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.dao.CertificationBodyDAO;
-import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.DeveloperManager;
 import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
-@Component("developerSearchService")
+@Component("developerSearchServiceV2")
 @NoArgsConstructor
 @Log4j2
-public class DeveloperSearchService {
+public class DeveloperSearchServiceV2 {
     private SearchRequestValidator searchRequestValidator;
     private SearchRequestNormalizer searchRequestNormalizer;
     private DeveloperManager developerManager;
-    private CertificationBodyDAO acbDao;
     private DateTimeFormatter dateFormatter;
 
     @Autowired
-    public DeveloperSearchService(@Qualifier("developerSearchRequestValidator") SearchRequestValidator searchRequestValidator,
-            DeveloperManager developerManager, CertificationBodyDAO acbDao) {
+    public DeveloperSearchServiceV2(@Qualifier("developerSearchRequestValidator") SearchRequestValidator searchRequestValidator,
+            DeveloperManager developerManager) {
         this.searchRequestValidator = searchRequestValidator;
         this.developerManager = developerManager;
-        this.acbDao = acbDao;
         this.searchRequestNormalizer = new SearchRequestNormalizer();
         dateFormatter = DateTimeFormatter.ofPattern(SearchRequest.DATE_SEARCH_FORMAT);
     }
 
-    public DeveloperSearchResponse findDevelopers(SearchRequest searchRequest) throws ValidationException {
+    public DeveloperSearchResponseV2 findDevelopers(SearchRequest searchRequest) throws ValidationException {
         searchRequestNormalizer.normalize(searchRequest);
         searchRequestValidator.validate(searchRequest);
 
-        List<DeveloperSearchResult> developers = developerManager.getDeveloperSearchResults();
-
-        List<DeveloperSearchResult> matchedDevelopers = developers.stream()
+        List<DeveloperSearchResultV2> developers = developerManager.getDeveloperSearchResultsV2();
+        LOGGER.debug("Total developers: " + developers.size());
+        List<DeveloperSearchResultV2> matchedDevelopers = developers.stream()
             .filter(dev -> matchesSearchTerm(dev, searchRequest.getSearchTerm()))
             .filter(dev -> matchesDeveloperName(dev, searchRequest.getDeveloperName()))
             .filter(dev -> matchesDeveloperCode(dev, searchRequest.getDeveloperCode()))
             .filter(dev -> matchesAcbNames(dev, searchRequest.getCertificationBodies()))
             .filter(dev -> matchesStatuses(dev, searchRequest.getStatuses()))
-            .filter(dev -> matchesHasActiveListings(dev, searchRequest.getHasActiveListings()))
-            .filter(dev -> matchesAttestationsSubmitted(dev, searchRequest.getNeedsToSubmitAttestations()))
             .filter(dev -> matchesDecertificationDateRange(dev, searchRequest.getDecertificationDateStart(), searchRequest.getDecertificationDateEnd()))
             .collect(Collectors.toList());
+        LOGGER.debug("Total matched developers: " + matchedDevelopers.size());
 
-        DeveloperSearchResponse response = new DeveloperSearchResponse();
+        DeveloperSearchResponseV2 response = new DeveloperSearchResponseV2();
         response.setRecordCount(matchedDevelopers.size());
         response.setPageNumber(searchRequest.getPageNumber());
         response.setPageSize(searchRequest.getPageSize());
 
         sort(matchedDevelopers, searchRequest.getOrderBy(), searchRequest.getSortDescending());
-        List<DeveloperSearchResult> pageOfDevelopers
+        List<DeveloperSearchResultV2> pageOfDevelopers
             = getPage(matchedDevelopers, getBeginIndex(searchRequest), getEndIndex(searchRequest));
         response.setResults(pageOfDevelopers);
         return response;
     }
 
-    private boolean matchesSearchTerm(DeveloperSearchResult developer, String searchTerm) {
+    private boolean matchesSearchTerm(DeveloperSearchResultV2 developer, String searchTerm) {
         return matchesDeveloperName(developer, searchTerm)
                 || matchesDeveloperCode(developer, searchTerm);
     }
 
-    private boolean matchesDeveloperName(DeveloperSearchResult developer, String developerName) {
+    private boolean matchesDeveloperName(DeveloperSearchResultV2 developer, String developerName) {
         if (StringUtils.isEmpty(developerName)) {
             return true;
         }
@@ -87,7 +81,7 @@ public class DeveloperSearchService {
                 && developer.getName().toUpperCase().contains(developerName.toUpperCase());
     }
 
-    private boolean matchesDeveloperCode(DeveloperSearchResult developer, String developerCode) {
+    private boolean matchesDeveloperCode(DeveloperSearchResultV2 developer, String developerCode) {
         if (StringUtils.isEmpty(developerCode)) {
             return true;
         }
@@ -96,30 +90,23 @@ public class DeveloperSearchService {
                 && developer.getCode().toUpperCase().contains(developerCode.toUpperCase());
     }
 
-    private boolean matchesAcbNames(DeveloperSearchResult developer, Set<String> acbNames) {
+    private boolean matchesAcbNames(DeveloperSearchResultV2 developer, Set<String> acbNames) {
         if (CollectionUtils.isEmpty(acbNames)) {
             return true;
         }
 
         List<String> acbNamesUpperCase = acbNames.stream().map(acbName -> acbName.toUpperCase()).collect(Collectors.toList());
-        if (CollectionUtils.isEmpty(developer.getAcbsForAllListings())) {
+        if (CollectionUtils.isEmpty(developer.getAssociatedAcbs())) {
             return false;
         }
-        List<CertificationBody> acbs = acbDao.findAll();
-        Set<String> developerAcbNamesUpperCase = developer.getAcbsForAllListings().stream()
-                .map(acbId -> getAcb(acbs, acbId).getName().toUpperCase())
+        Set<String> developerAcbNamesUpperCase = developer.getAssociatedAcbs().stream()
+                .map(acb -> acb.getName().toUpperCase())
                 .collect(Collectors.toSet());
         developerAcbNamesUpperCase.retainAll(acbNamesUpperCase);
         return !CollectionUtils.isEmpty(developerAcbNamesUpperCase);
     }
 
-    private CertificationBody getAcb(List<CertificationBody> acbs, Long acbId) {
-        return acbs.stream()
-            .filter(acb -> acb.getId().equals(acbId))
-            .findAny().get();
-    }
-
-    private boolean matchesStatuses(DeveloperSearchResult developer, Set<String> statuses) {
+    private boolean matchesStatuses(DeveloperSearchResultV2 developer, Set<String> statuses) {
         if (CollectionUtils.isEmpty(statuses)) {
             return true;
         }
@@ -130,22 +117,7 @@ public class DeveloperSearchService {
                 && statusesUpperCase.contains(developer.getStatus().getName().toUpperCase());
     }
 
-    private boolean matchesHasActiveListings(DeveloperSearchResult developer, Boolean hasActiveListings) {
-        if (BooleanUtils.isTrue(hasActiveListings)) {
-            return developer.getCurrentActiveListingCount() > 0;
-        }
-        return true;
-    }
-
-    private boolean matchesAttestationsSubmitted(DeveloperSearchResult developer, Boolean needsToSubmit) {
-        //TODO
-        // logic would be : developers that currently have active listings
-        // && had an active listing during the last attestation period
-        // && has not submitted attestations for the most recent past period
-        return true;
-    }
-
-    private boolean matchesDecertificationDateRange(DeveloperSearchResult developer, String decertificationDateRangeStart,
+    private boolean matchesDecertificationDateRange(DeveloperSearchResultV2 developer, String decertificationDateRangeStart,
             String decertificationDateRangeEnd) {
         if (StringUtils.isAllEmpty(decertificationDateRangeStart, decertificationDateRangeEnd)) {
             return true;
@@ -179,12 +151,12 @@ public class DeveloperSearchService {
         return date;
     }
 
-    private List<DeveloperSearchResult> getPage(List<DeveloperSearchResult> developers, int beginIndex, int endIndex) {
+    private List<DeveloperSearchResultV2> getPage(List<DeveloperSearchResultV2> developers, int beginIndex, int endIndex) {
         if (endIndex > developers.size()) {
             endIndex = developers.size();
         }
         if (endIndex <= beginIndex) {
-            return new ArrayList<DeveloperSearchResult>();
+            return new ArrayList<DeveloperSearchResultV2>();
         }
         LOGGER.debug("Getting filtered developer results between [" + beginIndex + ", " + endIndex + ")");
         return developers.subList(beginIndex, endIndex);
@@ -198,7 +170,7 @@ public class DeveloperSearchService {
         return getBeginIndex(searchRequest) + searchRequest.getPageSize();
     }
 
-    private void sort(List<DeveloperSearchResult> developers, OrderByOption orderBy, boolean descending) {
+    private void sort(List<DeveloperSearchResultV2> developers, OrderByOption orderBy, boolean descending) {
         if (orderBy == null) {
             return;
         }
@@ -219,7 +191,7 @@ public class DeveloperSearchService {
         }
     }
 
-    private class DeveloperComparator implements Comparator<DeveloperSearchResult> {
+    private class DeveloperComparator implements Comparator<DeveloperSearchResultV2> {
         private boolean descending = false;
 
         DeveloperComparator(boolean descending) {
@@ -227,7 +199,7 @@ public class DeveloperSearchService {
         }
 
         @Override
-        public int compare(DeveloperSearchResult dev1, DeveloperSearchResult dev2) {
+        public int compare(DeveloperSearchResultV2 dev1, DeveloperSearchResultV2 dev2) {
             if (ObjectUtils.anyNull(dev1, dev2)
                     || StringUtils.isAnyEmpty(dev1.getName(), dev2.getName())) {
                 return 0;
@@ -237,7 +209,7 @@ public class DeveloperSearchService {
         }
     }
 
-    private class DecertificationDateComparator implements Comparator<DeveloperSearchResult> {
+    private class DecertificationDateComparator implements Comparator<DeveloperSearchResultV2> {
         private boolean descending = false;
 
         DecertificationDateComparator(boolean descending) {
@@ -245,7 +217,7 @@ public class DeveloperSearchService {
         }
 
         @Override
-        public int compare(DeveloperSearchResult dev1, DeveloperSearchResult dev2) {
+        public int compare(DeveloperSearchResultV2 dev1, DeveloperSearchResultV2 dev2) {
             if (dev1.getDecertificationDate() == null ||  dev2.getDecertificationDate() == null) {
                 return 0;
             }
@@ -254,7 +226,7 @@ public class DeveloperSearchService {
         }
     }
 
-    private class StatusComparator implements Comparator<DeveloperSearchResult> {
+    private class StatusComparator implements Comparator<DeveloperSearchResultV2> {
         private boolean descending = false;
 
         StatusComparator(boolean descending) {
@@ -262,7 +234,7 @@ public class DeveloperSearchService {
         }
 
         @Override
-        public int compare(DeveloperSearchResult dev1, DeveloperSearchResult dev2) {
+        public int compare(DeveloperSearchResultV2 dev1, DeveloperSearchResultV2 dev2) {
             if (ObjectUtils.anyNull(dev1.getStatus(), dev2.getStatus())
                     || StringUtils.isAnyEmpty(dev1.getStatus().getName(), dev2.getStatus().getName())) {
                 return 0;

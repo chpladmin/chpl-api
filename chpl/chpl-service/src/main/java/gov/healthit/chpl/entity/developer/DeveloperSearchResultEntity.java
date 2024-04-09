@@ -148,9 +148,8 @@ public class DeveloperSearchResultEntity implements Serializable {
                 .currentActiveListingCount(this.getCurrentActiveListingCount())
                 .mostRecentPastAttestationPeriodActiveListingCount(this.getMostRecentPastAttestationPeriodActiveListingCount())
                 .submittedAttestationsForMostRecentPastPeriod(this.getMostRecentPastAttestationPeriodSubmissionId() != null)
-                .acbsForAllListings(buildSetOfAcbIds(this.getAcbsForDeveloperAllListings()))
-                .acbsForActiveListings(buildSetOfAcbIds(this.getAcbsForDeveloperActiveListings()))
-                .associatedAcbs(buildSetOfIdNamePairs(this.getAcbsForDeveloperAllListings()))
+                .acbsForAllListings(buildSetOfIdNamePairs(this.getAcbsForDeveloperAllListings()))
+                .acbsForActiveListings(buildSetOfIdNamePairs(this.getAcbsForDeveloperActiveListings()))
                 .creationDate(this.getCreationDate())
                 .build();
     }
@@ -160,18 +159,6 @@ public class DeveloperSearchResultEntity implements Serializable {
             return DateUtil.toLocalDate(statusChangeDate.getTime());
         }
         return null;
-    }
-
-    private Set<Long> buildSetOfAcbIds(String acbIdNamePairs) {
-        if (StringUtils.isEmpty(acbIdNamePairs)) {
-            return new HashSet<Long>();
-        }
-
-        String[] acbs = acbIdNamePairs.split(ACB_SEPARATOR_CHAR);
-        return Stream.of(acbs)
-            .map(acbIdNamePair -> acbIdNamePair.split(ID_NAME_SEPARATOR_CHAR))
-            .map(idNameArr -> Long.parseLong(idNameArr[0]))
-            .collect(Collectors.toSet());
     }
 
     private Set<IdNamePair> buildSetOfIdNamePairs(String acbIdNamePairs) {

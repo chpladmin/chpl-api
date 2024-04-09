@@ -14,13 +14,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import gov.healthit.chpl.developer.search.DeveloperSearchResponse;
-import gov.healthit.chpl.developer.search.DeveloperSearchService;
+import gov.healthit.chpl.developer.search.DeveloperSearchResponseV2;
+import gov.healthit.chpl.developer.search.DeveloperSearchServiceV2;
 import gov.healthit.chpl.developer.search.SearchRequest;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
-import gov.healthit.chpl.web.controller.annotation.DeprecatedApiResponseFields;
+import gov.healthit.chpl.web.controller.annotation.DeprecatedApi;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -34,11 +34,11 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 public class SearchDevelopersController {
 
-    private DeveloperSearchService developerSearchService;
+    private DeveloperSearchServiceV2 developerSearchServiceV2;
 
     @Autowired
-    public SearchDevelopersController(DeveloperSearchService developerSearchService) {
-        this.developerSearchService = developerSearchService;
+    public SearchDevelopersController(DeveloperSearchServiceV2 developerSearchServiceV2) {
+        this.developerSearchServiceV2 = developerSearchServiceV2;
     }
 
     @SuppressWarnings({
@@ -50,8 +50,7 @@ public class SearchDevelopersController {
                 + "current documentation, see /developers/search/v2.",
         security = {@SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    @DeprecatedApiResponseFields(friendlyUrl = "/developers/search", responseClass = DeveloperSearchResponse.class)
-    public @ResponseBody DeveloperSearchResponse search(
+    public @ResponseBody DeveloperSearchResponseV2 search(
         @Parameter(description = "Developer name or developer code", allowEmptyValue = true, in = ParameterIn.QUERY, name = "searchTerm")
             @RequestParam(value = "searchTerm", required = false, defaultValue = "") String searchTerm,
         @Parameter(description = "A comma-separated list of certification body names to be 'or'ed together "
@@ -68,15 +67,6 @@ public class SearchDevelopersController {
         @Parameter(description = "To return only developers decertified before this date. Required format is " + SearchRequest.DATE_SEARCH_FORMAT,
                 allowEmptyValue = true, in = ParameterIn.QUERY, name = "decertificationDateEnd")
             @RequestParam(value = "decertificationDateEnd", required = false, defaultValue = "") String decertificationDateEnd,
-        @Parameter(description = "Return only developers that currently have at least one active listing.",
-        //TODO how to distinguish between checkbox the user made empty on purpose (false) and checkbox the user did not
-        //care to include in the query (null)??
-                allowEmptyValue = true, in = ParameterIn.QUERY, name = "hasActiveListings")
-            @RequestParam(value = "needsToSubmitAttestations", required = false, defaultValue = "false") Boolean hasActiveListings,
-        @Parameter(description = "Return only developers that should have submitted attestations during the current submission window but have not."
-                + "These developers had at least one active listings during the previous attestation period. ",
-                allowEmptyValue = true, in = ParameterIn.QUERY, name = "needsToSubmitAttestations")
-            @RequestParam(value = "needsToSubmitAttestations", required = false, defaultValue = "null") Boolean needsToSubmitAttestations,
         @Parameter(description = "Zero-based page number used in concert with pageSize. Defaults to 0.",
                 allowEmptyValue = true, in = ParameterIn.QUERY, name = "pageNumber")
             @RequestParam(value = "pageNumber", required = false, defaultValue = "0") Integer pageNumber,
@@ -94,13 +84,14 @@ public class SearchDevelopersController {
         throws InvalidArgumentsException, ValidationException {
 
         return searchV2(searchTerm, certificationBodiesDelimited, statusesDelimited, decertificationDateStart,
-                decertificationDateEnd, hasActiveListings, needsToSubmitAttestations, pageNumber, pageSize, orderBy, sortDescending);
+                decertificationDateEnd, pageNumber, pageSize, orderBy, sortDescending);
     }
 
     @SuppressWarnings({
         "checkstyle:methodlength", "checkstyle:parameternumber"
     })
-    @Operation(summary = "Search the set of developers in the CHPL.",
+    @Operation(summary = "This endpoint will be removed on or about 10-31-2024. Please begin to use /search/developers/v3. "
+            + "Search the set of developers in the CHPL.",
             description = "If paging parameters are not specified, the first 20 records are returned by default. "
                     + "All parameters are optional. "
                     + "Any parameter that can accept multiple things (i.e. certificationBodies) expects "
@@ -111,8 +102,9 @@ public class SearchDevelopersController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
     @RequestMapping(value = "/v2", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    @DeprecatedApiResponseFields(friendlyUrl = "/developers/search/v2", responseClass = DeveloperSearchResponse.class)
-    public @ResponseBody DeveloperSearchResponse searchV2(
+    @DeprecatedApi(friendlyUrl = "/developers/search/v2", message = "This version of developer search has been deprecated and will be removed. "
+            + "Please use developers/search/v3", removalDate = "2024-10-31")
+    public @ResponseBody DeveloperSearchResponseV2 searchV2(
         @Parameter(description = "Developer name or developer code", allowEmptyValue = true, in = ParameterIn.QUERY, name = "searchTerm")
             @RequestParam(value = "searchTerm", required = false, defaultValue = "") String searchTerm,
         @Parameter(description = "A comma-separated list of certification body names to be 'or'ed together "
@@ -129,17 +121,6 @@ public class SearchDevelopersController {
         @Parameter(description = "To return only developers decertified on or before this date. Required format is " + SearchRequest.DATE_SEARCH_FORMAT,
                 allowEmptyValue = true, in = ParameterIn.QUERY, name = "decertificationDateEnd")
             @RequestParam(value = "decertificationDateEnd", required = false, defaultValue = "") String decertificationDateEnd,
-        @Parameter(description = "Return only developers that currently have at least one active listing.",
-        //TODO how to distinguish between checkbox the user made empty on purpose (false) and checkbox the user did not
-        //care to include in the query (null)??
-                allowEmptyValue = true, in = ParameterIn.QUERY, name = "hasActiveListings")
-            @RequestParam(value = "needsToSubmitAttestations", required = false, defaultValue = "false") Boolean hasActiveListings,
-        @Parameter(description = "Return only developers that should have submitted attestations during the current submission window but have not."
-                + "These developers have at least one current active listings and had at least one active listing during the previous attestation period. ",
-              //TODO how to distinguish between checkbox the user made empty on purpose (false) and checkbox the user did not
-                //care to include in the query (null)??
-                allowEmptyValue = true, in = ParameterIn.QUERY, name = "needsToSubmitAttestations")
-            @RequestParam(value = "needsToSubmitAttestations", required = false, defaultValue = "false") Boolean needsToSubmitAttestations,
         @Parameter(description = "Zero-based page number used in concert with pageSize. Defaults to 0.",
                 allowEmptyValue = true, in = ParameterIn.QUERY, name = "pageNumber")
             @RequestParam(value = "pageNumber", required = false, defaultValue = "0") Integer pageNumber,
@@ -162,14 +143,12 @@ public class SearchDevelopersController {
                 .certificationBodies(convertToSetWithDelimeter(certificationBodiesDelimited, ","))
                 .decertificationDateStart(decertificationDateStart)
                 .decertificationDateEnd(decertificationDateEnd)
-                .hasActiveListings(hasActiveListings)
-                .needsToSubmitAttestations(needsToSubmitAttestations)
                 .pageSize(pageSize)
                 .pageNumber(pageNumber)
                 .orderByString(orderBy)
                 .sortDescending(sortDescending)
                 .build();
-        return developerSearchService.findDevelopers(searchRequest);
+        return developerSearchServiceV2.findDevelopers(searchRequest);
     }
 
     private Set<String> convertToSetWithDelimeter(String delimitedString, String delimeter) {
