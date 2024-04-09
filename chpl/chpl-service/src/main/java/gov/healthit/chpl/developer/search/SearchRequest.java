@@ -34,6 +34,9 @@ public class SearchRequest implements Serializable {
     private String decertificationDateStart;
     private String decertificationDateEnd;
 
+    private Boolean hasActiveListings;
+    private Boolean needsToSubmitAttestations;
+
     @JsonIgnore
     private String orderByString;
     private OrderByOption orderBy;

@@ -57,10 +57,13 @@ public class MissingAttestationChangeRequestDeveloperCollector extends SecurityC
     }
 
     private Boolean hasDeveloperSubmittedChangeRequestForPeriod(Developer developer, AttestationPeriod mostRecentPastPeriod) {
-        return getAllAttestationChangeRequestsForDeveloper(developer).stream()
+        LOGGER.info("Has developer " + developer.getId() + " submitted a change request for this period?");
+        Boolean result = getAllAttestationChangeRequestsForDeveloper(developer).stream()
                 .filter(attestationSubmission -> attestationSubmission.getAttestationPeriod().getId().equals(mostRecentPastPeriod.getId()))
                 .findAny()
                 .isPresent();
+        LOGGER.info("Result: " + result);
+        return result;
     }
 
     private List<ChangeRequestAttestationSubmission> getAllAttestationChangeRequestsForDeveloper(Developer developer) {
@@ -83,7 +86,7 @@ public class MissingAttestationChangeRequestDeveloperCollector extends SecurityC
                     .map(result -> getAttestationSubmission(getChangeRequest(result.getId())))
                     .toList();
 
-            LOGGER.debug("Found {} Attestation Change Requests for {}", changeRequestAttestationSubmissions.size(), developer.getName());
+            LOGGER.info("Found {} Attestation Change Requests for {}", changeRequestAttestationSubmissions.size(), developer.getName());
             return changeRequestAttestationSubmissions;
         } catch (ValidationException e) {
             LOGGER.error("Error getting change requests for developer: {} {}", developer.getId(), developer.getName());

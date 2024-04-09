@@ -15,6 +15,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import gov.healthit.chpl.dao.CertificationBodyDAO;
+import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.IdNamePair;
 import gov.healthit.chpl.entity.developer.DeveloperStatusType;
 import gov.healthit.chpl.exception.ValidationException;
@@ -28,10 +30,19 @@ public class DeveloperSearchServiceTest {
     @Before
     public void setup() {
         SearchRequestValidator searchRequestValidator = Mockito.mock(SearchRequestValidator.class);
+        CertificationBodyDAO acbDao = Mockito.mock(CertificationBodyDAO.class);
         developerManager = Mockito.mock(DeveloperManager.class);
 
+        Mockito.when(acbDao.findAll()).thenReturn(Stream.of(
+                CertificationBody.builder().id(1L).name("ACB 1").build(),
+                CertificationBody.builder().id(2L).name("ACB 2").build(),
+                CertificationBody.builder().id(3L).name("ACB 3").build(),
+                CertificationBody.builder().id(4L).name("ACB 4").build(),
+                CertificationBody.builder().id(5L).name("ACB 5").build())
+                .toList());
+
         developerSearchService = new DeveloperSearchService(searchRequestValidator,
-                developerManager);
+                developerManager, acbDao);
     }
 
     @Test
@@ -229,8 +240,8 @@ public class DeveloperSearchServiceTest {
     @Test
     public void search_singleAcbNameProvidedAndDeveloperHasSingleAcb_findsMatches() throws ValidationException {
         List<DeveloperSearchResult> allDevelopers = createDeveloperSearchResultCollection(50);
-        allDevelopers.get(0).setAssociatedAcbs(Stream.of(acb("ACB 1")).collect(Collectors.toSet()));
-        allDevelopers.get(1).setAssociatedAcbs(Stream.of(acb("ACB 2")).collect(Collectors.toSet()));
+        allDevelopers.get(0).setAcbsForAllListings(Stream.of(1L).collect(Collectors.toSet()));
+        allDevelopers.get(1).setAcbsForAllListings(Stream.of(2L).collect(Collectors.toSet()));
 
         Mockito.when(developerManager.getDeveloperSearchResults()).thenReturn(allDevelopers);
         Set<String> acbNames = new LinkedHashSet<String>();
@@ -250,10 +261,10 @@ public class DeveloperSearchServiceTest {
     @Test
     public void search_singleAcbNameProvidedAndDeveloperHasMultipleAcbs_findsMatches() throws ValidationException {
         List<DeveloperSearchResult> allDevelopers = createDeveloperSearchResultCollection(50);
-        allDevelopers.get(0).setAssociatedAcbs(Stream.of(acb("ACB 1")).collect(Collectors.toSet()));
-        allDevelopers.get(1).setAssociatedAcbs(Stream.of(acb("ACB 2"), acb("ACB 1")).collect(Collectors.toSet()));
-        allDevelopers.get(2).setAssociatedAcbs(Stream.of(acb("ACB 2")).collect(Collectors.toSet()));
-        allDevelopers.get(3).setAssociatedAcbs(Stream.of(acb("ACB 2"), acb("ACB 3")).collect(Collectors.toSet()));
+        allDevelopers.get(0).setAcbsForAllListings(Stream.of(1L).collect(Collectors.toSet()));
+        allDevelopers.get(1).setAcbsForAllListings(Stream.of(2L, 1L).collect(Collectors.toSet()));
+        allDevelopers.get(2).setAcbsForAllListings(Stream.of(2L).collect(Collectors.toSet()));
+        allDevelopers.get(3).setAcbsForAllListings(Stream.of(2L, 3L).collect(Collectors.toSet()));
 
         Mockito.when(developerManager.getDeveloperSearchResults()).thenReturn(allDevelopers);
         Set<String> acbNames = new LinkedHashSet<String>();
@@ -273,10 +284,10 @@ public class DeveloperSearchServiceTest {
     @Test
     public void search_mutlipleAcbNamesProvidedDeveloperHasSingleAcb_findsMatches() throws ValidationException {
         List<DeveloperSearchResult> allDevelopers = createDeveloperSearchResultCollection(50);
-        allDevelopers.get(0).setAssociatedAcbs(Stream.of(acb("ACB 1")).collect(Collectors.toSet()));
-        allDevelopers.get(1).setAssociatedAcbs(Stream.of(acb("ACB 2")).collect(Collectors.toSet()));
-        allDevelopers.get(2).setAssociatedAcbs(Stream.of(acb("ACB 1")).collect(Collectors.toSet()));
-        allDevelopers.get(3).setAssociatedAcbs(Stream.of(acb("ACB 5")).collect(Collectors.toSet()));
+        allDevelopers.get(0).setAcbsForAllListings(Stream.of(1L).collect(Collectors.toSet()));
+        allDevelopers.get(1).setAcbsForAllListings(Stream.of(2L).collect(Collectors.toSet()));
+        allDevelopers.get(2).setAcbsForAllListings(Stream.of(1L).collect(Collectors.toSet()));
+        allDevelopers.get(3).setAcbsForAllListings(Stream.of(5L).collect(Collectors.toSet()));
 
         Mockito.when(developerManager.getDeveloperSearchResults()).thenReturn(allDevelopers);
         Set<String> acbNames = new LinkedHashSet<String>();
@@ -298,11 +309,11 @@ public class DeveloperSearchServiceTest {
     @Test
     public void search_mutlipleAcbNamesProvidedDeveloperHasMultipleAcbs_findsMatches() throws ValidationException {
         List<DeveloperSearchResult> allDevelopers = createDeveloperSearchResultCollection(50);
-        allDevelopers.get(0).setAssociatedAcbs(Stream.of(acb("ACB 1")).collect(Collectors.toSet()));
-        allDevelopers.get(1).setAssociatedAcbs(Stream.of(acb("ACB 2"), acb("ACB 3")).collect(Collectors.toSet()));
-        allDevelopers.get(2).setAssociatedAcbs(Stream.of(acb("ACB 1")).collect(Collectors.toSet()));
-        allDevelopers.get(3).setAssociatedAcbs(Stream.of(acb("ACB 5"), acb("ACB 1")).collect(Collectors.toSet()));
-        allDevelopers.get(4).setAssociatedAcbs(Stream.of(acb("ACB 0"), acb("ACB 7")).collect(Collectors.toSet()));
+        allDevelopers.get(0).setAcbsForAllListings(Stream.of(1L).collect(Collectors.toSet()));
+        allDevelopers.get(1).setAcbsForAllListings(Stream.of(2L, 3L).collect(Collectors.toSet()));
+        allDevelopers.get(2).setAcbsForAllListings(Stream.of(1L).collect(Collectors.toSet()));
+        allDevelopers.get(3).setAcbsForAllListings(Stream.of(5L, 1L).collect(Collectors.toSet()));
+        allDevelopers.get(4).setAcbsForAllListings(Stream.of(4L, 5L).collect(Collectors.toSet()));
 
         Mockito.when(developerManager.getDeveloperSearchResults()).thenReturn(allDevelopers);
         Set<String> acbNames = new LinkedHashSet<String>();

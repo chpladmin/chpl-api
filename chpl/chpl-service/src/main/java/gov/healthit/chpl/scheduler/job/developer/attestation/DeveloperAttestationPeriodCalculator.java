@@ -49,7 +49,10 @@ public class DeveloperAttestationPeriodCalculator {
         AttestationPeriod mostRecentPastPeriod = attestationPeriodService.getMostRecentPastAttestationPeriod();
         logger.info("Most recent past attestation period: {} - {} ", mostRecentPastPeriod.getPeriodStart().toString(), mostRecentPastPeriod.getPeriodEnd().toString());
 
-        return getDevelopersWithActiveListingsDuringAttestationPeriod(mostRecentPastPeriod, logger);
+        List<Developer> devsWithActiveListings = getDevelopersWithActiveListingsDuringAttestationPeriod(mostRecentPastPeriod, logger);
+        logger.info("Found {} developers with active listings during the last attestation period ", devsWithActiveListings.size() + "");
+        return devsWithActiveListings;
+
     }
 
     public List<Developer> getDevelopersWithActiveListingsDuringAttestationPeriod(AttestationPeriod period, Logger logger) {
@@ -128,6 +131,7 @@ public class DeveloperAttestationPeriodCalculator {
     }
 
     private List<ListingSearchResult> getListingDataForDeveloper(Developer developer, Map<Long, List<ListingSearchResult>> listingsByDeveloper, Logger logger) {
+        logger.info("Getting listing data for developer " + developer.getId());
         if (listingsByDeveloper.containsKey(developer.getId())) {
             return listingsByDeveloper.get(developer.getId());
         } else {
@@ -147,6 +151,8 @@ public class DeveloperAttestationPeriodCalculator {
                 .pageSize(MAX_PAGE_SIZE)
                 .pageNumber(0)
                 .build();
-        return listingSearchService.getAllPagesOfSearchResults(searchRequest, logger);
+        List<ListingSearchResult> activeListings = listingSearchService.getAllPagesOfSearchResults(searchRequest, logger);
+        logger.info("Found " + activeListings.size() + " active listings");
+        return activeListings;
     }
 }

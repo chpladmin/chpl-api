@@ -20,6 +20,7 @@ import gov.healthit.chpl.developer.search.SearchRequest;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
+import gov.healthit.chpl.web.controller.annotation.DeprecatedApiResponseFields;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -49,11 +50,12 @@ public class SearchDevelopersController {
                 + "current documentation, see /developers/search/v2.",
         security = {@SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    @DeprecatedApiResponseFields(friendlyUrl = "/developers/search", responseClass = DeveloperSearchResponse.class)
     public @ResponseBody DeveloperSearchResponse search(
         @Parameter(description = "Developer name or developer code", allowEmptyValue = true, in = ParameterIn.QUERY, name = "searchTerm")
             @RequestParam(value = "searchTerm", required = false, defaultValue = "") String searchTerm,
         @Parameter(description = "A comma-separated list of certification body names to be 'or'ed together "
-                + "(ex: \"Drummond,ICSA\" finds developers with at least one listing belonging to either Drummond or ICSA).",
+                + "(ex: \"Drummond,ICSA\" finds developers with at least one active certificate belonging to either Drummond or ICSA).",
                 allowEmptyValue = true, in = ParameterIn.QUERY, name = "certificationBodies")
             @RequestParam(value = "certificationBodies", required = false, defaultValue = "") String certificationBodiesDelimited,
         @Parameter(description = "A comma-separated list of developer statuses to be 'or'ed together "
@@ -66,6 +68,15 @@ public class SearchDevelopersController {
         @Parameter(description = "To return only developers decertified before this date. Required format is " + SearchRequest.DATE_SEARCH_FORMAT,
                 allowEmptyValue = true, in = ParameterIn.QUERY, name = "decertificationDateEnd")
             @RequestParam(value = "decertificationDateEnd", required = false, defaultValue = "") String decertificationDateEnd,
+        @Parameter(description = "Return only developers that currently have at least one active listing.",
+        //TODO how to distinguish between checkbox the user made empty on purpose (false) and checkbox the user did not
+        //care to include in the query (null)??
+                allowEmptyValue = true, in = ParameterIn.QUERY, name = "hasActiveListings")
+            @RequestParam(value = "needsToSubmitAttestations", required = false, defaultValue = "false") Boolean hasActiveListings,
+        @Parameter(description = "Return only developers that should have submitted attestations during the current submission window but have not."
+                + "These developers had at least one active listings during the previous attestation period. ",
+                allowEmptyValue = true, in = ParameterIn.QUERY, name = "needsToSubmitAttestations")
+            @RequestParam(value = "needsToSubmitAttestations", required = false, defaultValue = "null") Boolean needsToSubmitAttestations,
         @Parameter(description = "Zero-based page number used in concert with pageSize. Defaults to 0.",
                 allowEmptyValue = true, in = ParameterIn.QUERY, name = "pageNumber")
             @RequestParam(value = "pageNumber", required = false, defaultValue = "0") Integer pageNumber,
@@ -83,7 +94,7 @@ public class SearchDevelopersController {
         throws InvalidArgumentsException, ValidationException {
 
         return searchV2(searchTerm, certificationBodiesDelimited, statusesDelimited, decertificationDateStart,
-                decertificationDateEnd, pageNumber, pageSize, orderBy, sortDescending);
+                decertificationDateEnd, hasActiveListings, needsToSubmitAttestations, pageNumber, pageSize, orderBy, sortDescending);
     }
 
     @SuppressWarnings({
@@ -100,11 +111,12 @@ public class SearchDevelopersController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
     @RequestMapping(value = "/v2", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    @DeprecatedApiResponseFields(friendlyUrl = "/developers/search/v2", responseClass = DeveloperSearchResponse.class)
     public @ResponseBody DeveloperSearchResponse searchV2(
         @Parameter(description = "Developer name or developer code", allowEmptyValue = true, in = ParameterIn.QUERY, name = "searchTerm")
             @RequestParam(value = "searchTerm", required = false, defaultValue = "") String searchTerm,
         @Parameter(description = "A comma-separated list of certification body names to be 'or'ed together "
-                + "(ex: \"Drummond,ICSA\" finds developers with at least one listing belonging to either Drummond or ICSA).",
+                + "(ex: \"Drummond,ICSA\" finds developers with at least one active certificate belonging to either Drummond or ICSA).",
                 allowEmptyValue = true, in = ParameterIn.QUERY, name = "certificationBodies")
             @RequestParam(value = "certificationBodies", required = false, defaultValue = "") String certificationBodiesDelimited,
         @Parameter(description = "A comma-separated list of developer statuses to be 'or'ed together "
@@ -117,6 +129,17 @@ public class SearchDevelopersController {
         @Parameter(description = "To return only developers decertified on or before this date. Required format is " + SearchRequest.DATE_SEARCH_FORMAT,
                 allowEmptyValue = true, in = ParameterIn.QUERY, name = "decertificationDateEnd")
             @RequestParam(value = "decertificationDateEnd", required = false, defaultValue = "") String decertificationDateEnd,
+        @Parameter(description = "Return only developers that currently have at least one active listing.",
+        //TODO how to distinguish between checkbox the user made empty on purpose (false) and checkbox the user did not
+        //care to include in the query (null)??
+                allowEmptyValue = true, in = ParameterIn.QUERY, name = "hasActiveListings")
+            @RequestParam(value = "needsToSubmitAttestations", required = false, defaultValue = "false") Boolean hasActiveListings,
+        @Parameter(description = "Return only developers that should have submitted attestations during the current submission window but have not."
+                + "These developers have at least one current active listings and had at least one active listing during the previous attestation period. ",
+              //TODO how to distinguish between checkbox the user made empty on purpose (false) and checkbox the user did not
+                //care to include in the query (null)??
+                allowEmptyValue = true, in = ParameterIn.QUERY, name = "needsToSubmitAttestations")
+            @RequestParam(value = "needsToSubmitAttestations", required = false, defaultValue = "false") Boolean needsToSubmitAttestations,
         @Parameter(description = "Zero-based page number used in concert with pageSize. Defaults to 0.",
                 allowEmptyValue = true, in = ParameterIn.QUERY, name = "pageNumber")
             @RequestParam(value = "pageNumber", required = false, defaultValue = "0") Integer pageNumber,
@@ -139,6 +162,8 @@ public class SearchDevelopersController {
                 .certificationBodies(convertToSetWithDelimeter(certificationBodiesDelimited, ","))
                 .decertificationDateStart(decertificationDateStart)
                 .decertificationDateEnd(decertificationDateEnd)
+                .hasActiveListings(hasActiveListings)
+                .needsToSubmitAttestations(needsToSubmitAttestations)
                 .pageSize(pageSize)
                 .pageNumber(pageNumber)
                 .orderByString(orderBy)

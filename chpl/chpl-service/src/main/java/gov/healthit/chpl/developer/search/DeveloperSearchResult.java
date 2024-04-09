@@ -2,6 +2,7 @@ package gov.healthit.chpl.developer.search;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -11,6 +12,7 @@ import org.apache.commons.lang3.ObjectUtils;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
+import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseField;
 import gov.healthit.chpl.domain.Address;
 import gov.healthit.chpl.domain.IdNamePair;
 import gov.healthit.chpl.domain.contact.PointOfContact;
@@ -32,17 +34,32 @@ public class DeveloperSearchResult implements Serializable {
     private Long id;
     private String code;
     private String name;
+    private String website;
+    private Boolean selfDeveloper;
     private Address address;
     private PointOfContact contact;
     private IdNamePair status;
-
+    private Date mostRecentStatusEvent;
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
     private LocalDate decertificationDate;
+    private Integer currentActiveListingCount;
+    private Integer mostRecentPastAttestationPeriodActiveListingCount;
+    private Boolean submittedAttestationsForMostRecentPastPeriod;
 
+    private Set<Long> acbsForAllListings;
+    private Set<Long> acbsForActiveListings;
+
+    @DeprecatedResponseField(message = "This field is deprecated and will be removed. Use acbsForAllListings to get similar data.",
+            removalDate = "2024-10-31")
+    @Deprecated
     private Set<IdNamePair> associatedAcbs;
 
+    private Date creationDate;
+
     public DeveloperSearchResult() {
+        acbsForAllListings = new HashSet<Long>();
+        acbsForActiveListings = new HashSet<Long>();
         associatedAcbs = new HashSet<IdNamePair>();
     }
 

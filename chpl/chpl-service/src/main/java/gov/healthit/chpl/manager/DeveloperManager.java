@@ -128,6 +128,13 @@ public class DeveloperManager extends SecuredManager {
     @Transactional(readOnly = true)
     @Cacheable(CacheNames.COLLECTIONS_DEVELOPERS)
     public List<DeveloperSearchResult> getDeveloperSearchResults() {
+        List<DeveloperSearchResult> allDevelopers = developerDao.getAllSearchResults();
+        return allDevelopers;
+    }
+
+    @Transactional(readOnly = true)
+    @Deprecated
+    public List<DeveloperSearchResult> getDeveloperSearchResultsDeprecated() {
         Map<Developer, Set<CertificationBody>> allDevelopersWithAcbs = developerDao.findAllDevelopersWithAcbs();
         return allDevelopersWithAcbs.keySet().stream()
                 .map(developer -> convertToSearchResult(developer, allDevelopersWithAcbs.get(developer)))
@@ -141,11 +148,8 @@ public class DeveloperManager extends SecuredManager {
                 .code(developer.getDeveloperCode())
                 .address(developer.getAddress())
                 .contact(developer.getContact())
-                .associatedAcbs(acbs.stream()
-                        .map(acb -> IdNamePair.builder()
-                                .id(acb.getId())
-                                .name(acb.getName())
-                                .build())
+                .acbsForAllListings(acbs.stream()
+                        .map(acb -> acb.getId())
                         .collect(Collectors.toSet()))
                 .status(IdNamePair.builder()
                         .id(developer.getStatus().getId())

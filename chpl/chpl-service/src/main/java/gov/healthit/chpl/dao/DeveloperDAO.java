@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.persistence.Query;
 
@@ -19,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import gov.healthit.chpl.attestation.dao.AttestationDAO;
 import gov.healthit.chpl.attestation.entity.AttestationPeriodEntity;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
+import gov.healthit.chpl.developer.search.DeveloperSearchResult;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.DeveloperStatusEvent;
@@ -27,6 +29,7 @@ import gov.healthit.chpl.entity.UserDeveloperMapEntity;
 import gov.healthit.chpl.entity.auth.UserContactEntity;
 import gov.healthit.chpl.entity.developer.DeveloperEntity;
 import gov.healthit.chpl.entity.developer.DeveloperEntitySimple;
+import gov.healthit.chpl.entity.developer.DeveloperSearchResultEntity;
 import gov.healthit.chpl.entity.developer.DeveloperStatusEntity;
 import gov.healthit.chpl.entity.developer.DeveloperStatusEventEntity;
 import gov.healthit.chpl.entity.developer.DeveloperStatusType;
@@ -255,6 +258,14 @@ public class DeveloperDAO extends BaseDAOImpl {
         return entities.stream()
                 .map(entity -> entity.toDomain())
                 .toList();
+    }
+
+    public List<DeveloperSearchResult> getAllSearchResults() {
+        Query query = entityManager.createQuery("SELECT dsr FROM DeveloperSearchResultEntity", DeveloperSearchResultEntity.class);
+        List<DeveloperSearchResultEntity> entities = query.getResultList();
+        return entities.stream()
+                .map(entity -> entity.toDomain())
+                .collect(Collectors.toList());
     }
 
     public Map<Developer, Set<CertificationBody>> findAllDevelopersWithAcbs() {
