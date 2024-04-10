@@ -141,7 +141,8 @@ public class CognitoApiWrapper {
                             AttributeType.builder().name("phone_number").value("+1" + userRequest.getPhoneNumber().replaceAll("[^0-9.]", "")).build(),
                             AttributeType.builder().name("nickname").value(userRequest.getFriendlyName()).build(),
                             AttributeType.builder().name("custom:title").value(userRequest.getTitle()).build(),
-                            AttributeType.builder().name("custom:organizations").value(userRequest.getOrganizationId().toString()).build())
+                            AttributeType.builder().name("custom:organizations").value(
+                                    userRequest.getOrganizationId() != null ? userRequest.getOrganizationId().toString() : "").build())
                     .temporaryPassword(tempPassword)
                     .messageAction(MessageActionType.SUPPRESS)
                     .build();
@@ -154,7 +155,7 @@ public class CognitoApiWrapper {
                     .password(tempPassword)
                     .build();
         } catch (Exception e) {
-            throw new UserCreationException(String.format("Error creating user with email %s in store.", userRequest.getEmail()));
+            throw new UserCreationException(String.format("Error creating user with email %s in store.", userRequest.getEmail()), e);
         }
     }
 
