@@ -39,7 +39,7 @@ import lombok.ToString;
 @Table(name = "developer_search")
 public class DeveloperSearchResultEntity implements Serializable {
     private static final long serialVersionUID = -1396979009490864864L;
-    private static final String ACB_SEPARATOR_CHAR = "|";
+    private static final String ACB_SEPARATOR_CHAR = "\\|";
     private static final String ID_NAME_SEPARATOR_CHAR = ":";
 
     @Id

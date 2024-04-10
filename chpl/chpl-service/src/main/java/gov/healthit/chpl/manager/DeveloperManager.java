@@ -130,6 +130,7 @@ public class DeveloperManager extends SecuredManager {
     @Cacheable(CacheNames.COLLECTIONS_DEVELOPERS)
     public List<DeveloperSearchResult> getDeveloperSearchResults() {
         List<DeveloperSearchResult> allDevelopers = developerDao.getAllSearchResults();
+        LOGGER.info("Converted all developers to domain result objects");
         return allDevelopers;
     }
 

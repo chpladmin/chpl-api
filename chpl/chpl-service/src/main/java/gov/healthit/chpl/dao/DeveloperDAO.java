@@ -261,8 +261,11 @@ public class DeveloperDAO extends BaseDAOImpl {
     }
 
     public List<DeveloperSearchResult> getAllSearchResults() {
-        Query query = entityManager.createQuery("SELECT dsr FROM DeveloperSearchResultEntity", DeveloperSearchResultEntity.class);
+        LOGGER.info("Getting all developers from developer_search");
+        Query query = entityManager.createQuery("SELECT dsr FROM DeveloperSearchResultEntity dsr",
+                DeveloperSearchResultEntity.class);
         List<DeveloperSearchResultEntity> entities = query.getResultList();
+        LOGGER.info("Got all developers from db. Converting to Domain..");
         return entities.stream()
                 .map(entity -> entity.toDomain())
                 .collect(Collectors.toList());

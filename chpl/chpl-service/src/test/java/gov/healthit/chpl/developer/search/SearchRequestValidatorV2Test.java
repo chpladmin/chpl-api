@@ -18,7 +18,7 @@ import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.DimensionalDataManager;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
-public class SearchRequestValidatorTest {
+public class SearchRequestValidatorV2Test {
     private static final String INVALID_STATUS = "Could not find developer status with value '%s'. Value must be one of %s.";
     private static final String INVALID_ACB = "Could not find certification body with value '%s'.";
     private static final String INVALID_DECERTIFICATION_DATE = "Could not parse '%s' as date in the format %s.";
@@ -26,7 +26,7 @@ public class SearchRequestValidatorTest {
 
     private DimensionalDataManager dimensionalDataManager;
     private ErrorMessageUtil msgUtil;
-    private SearchRequestValidator validator;
+    private SearchRequestValidatorV2 validator;
 
     @Before
     public void setup() {
@@ -37,17 +37,17 @@ public class SearchRequestValidatorTest {
             .thenAnswer(i -> String.format(INVALID_STATUS, i.getArgument(1), i.getArgument(2)));
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("search.certificationBodies.invalid"), ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(INVALID_ACB, i.getArgument(1), ""));
-        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("search.developer.decertificationDate.invalid"), ArgumentMatchers.anyString(), ArgumentMatchers.eq(SearchRequest.DATE_SEARCH_FORMAT)))
+        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("search.developer.decertificationDate.invalid"), ArgumentMatchers.anyString(), ArgumentMatchers.eq(DeveloperSearchRequestV2.DATE_SEARCH_FORMAT)))
             .thenAnswer(i -> String.format(INVALID_DECERTIFICATION_DATE, i.getArgument(1), i.getArgument(2)));
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("search.orderBy.invalid"), ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(INVALID_ORDER_BY, i.getArgument(1), i.getArgument(2)));
 
-        validator = new SearchRequestValidator(dimensionalDataManager, msgUtil);
+        validator = new SearchRequestValidatorV2(dimensionalDataManager, msgUtil);
     }
 
     @Test
     public void validate_invalidStatusNullDimensionalData_addsError() {
-        SearchRequest request = SearchRequest.builder()
+        DeveloperSearchRequestV2 request = DeveloperSearchRequestV2.builder()
             .statuses(Stream.of("Active").collect(Collectors.toSet()))
             .build();
         Mockito.when(dimensionalDataManager.getDeveloperStatuses())
@@ -65,7 +65,7 @@ public class SearchRequestValidatorTest {
 
     @Test
     public void validate_invalidStatusDimensionalDataExists_addsError() {
-        SearchRequest request = SearchRequest.builder()
+        DeveloperSearchRequestV2 request = DeveloperSearchRequestV2.builder()
             .statuses(Stream.of("Active").collect(Collectors.toSet()))
             .build();
         Mockito.when(dimensionalDataManager.getDeveloperStatuses())
@@ -83,7 +83,7 @@ public class SearchRequestValidatorTest {
 
     @Test
     public void validate_validStatus_noErrors() {
-        SearchRequest request = SearchRequest.builder()
+        DeveloperSearchRequestV2 request = DeveloperSearchRequestV2.builder()
             .statuses(Stream.of("Active").collect(Collectors.toSet()))
             .build();
         Mockito.when(dimensionalDataManager.getDeveloperStatuses())
@@ -98,7 +98,7 @@ public class SearchRequestValidatorTest {
 
     @Test
     public void validate_validStatusIgnoreCase_noErrors() {
-        SearchRequest request = SearchRequest.builder()
+        DeveloperSearchRequestV2 request = DeveloperSearchRequestV2.builder()
             .statuses(Stream.of("Active").collect(Collectors.toSet()))
             .build();
         Mockito.when(dimensionalDataManager.getDeveloperStatuses())
@@ -113,7 +113,7 @@ public class SearchRequestValidatorTest {
 
     @Test
     public void validate_invalidAcbNullDimensionalData_addsError() {
-        SearchRequest request = SearchRequest.builder()
+        DeveloperSearchRequestV2 request = DeveloperSearchRequestV2.builder()
             .certificationBodies(Stream.of("ICSA").collect(Collectors.toSet()))
             .build();
         Mockito.when(dimensionalDataManager.getAllAcbs())
@@ -131,7 +131,7 @@ public class SearchRequestValidatorTest {
 
     @Test
     public void validate_invalidAcbDimensionalDataExists_addsError() {
-        SearchRequest request = SearchRequest.builder()
+        DeveloperSearchRequestV2 request = DeveloperSearchRequestV2.builder()
             .certificationBodies(Stream.of("ICSA").collect(Collectors.toSet()))
             .build();
         Mockito.when(dimensionalDataManager.getAllAcbs())
@@ -151,7 +151,7 @@ public class SearchRequestValidatorTest {
 
     @Test
     public void validate_validAcb_noErrors() {
-        SearchRequest request = SearchRequest.builder()
+        DeveloperSearchRequestV2 request = DeveloperSearchRequestV2.builder()
             .certificationBodies(Stream.of("ICSA").collect(Collectors.toSet()))
             .build();
         Mockito.when(dimensionalDataManager.getAllAcbs())
@@ -168,7 +168,7 @@ public class SearchRequestValidatorTest {
 
     @Test
     public void validate_invalidDecertificationDateStartFormat_addsError() {
-        SearchRequest request = SearchRequest.builder()
+        DeveloperSearchRequestV2 request = DeveloperSearchRequestV2.builder()
             .decertificationDateStart("12345")
             .build();
 
@@ -176,7 +176,7 @@ public class SearchRequestValidatorTest {
             validator.validate(request);
         } catch (ValidationException ex) {
             assertEquals(1, ex.getErrorMessages().size());
-            assertTrue(ex.getErrorMessages().contains(String.format(INVALID_DECERTIFICATION_DATE, "12345", SearchRequest.DATE_SEARCH_FORMAT)));
+            assertTrue(ex.getErrorMessages().contains(String.format(INVALID_DECERTIFICATION_DATE, "12345", DeveloperSearchRequestV2.DATE_SEARCH_FORMAT)));
             return;
         }
         fail("Should not execute.");
@@ -184,7 +184,7 @@ public class SearchRequestValidatorTest {
 
     @Test
     public void validate_invalidDecertificationDateEndFormat_addsError() {
-        SearchRequest request = SearchRequest.builder()
+        DeveloperSearchRequestV2 request = DeveloperSearchRequestV2.builder()
             .decertificationDateEnd("12345")
             .build();
 
@@ -192,7 +192,7 @@ public class SearchRequestValidatorTest {
             validator.validate(request);
         } catch (ValidationException ex) {
             assertEquals(1, ex.getErrorMessages().size());
-            assertTrue(ex.getErrorMessages().contains(String.format(INVALID_DECERTIFICATION_DATE, "12345", SearchRequest.DATE_SEARCH_FORMAT)));
+            assertTrue(ex.getErrorMessages().contains(String.format(INVALID_DECERTIFICATION_DATE, "12345", DeveloperSearchRequestV2.DATE_SEARCH_FORMAT)));
             return;
         }
         fail("Should not execute.");
@@ -200,7 +200,7 @@ public class SearchRequestValidatorTest {
 
     @Test
     public void validate_backwardsDecertificationDateOrder_noError() {
-        SearchRequest request = SearchRequest.builder()
+        DeveloperSearchRequestV2 request = DeveloperSearchRequestV2.builder()
             .decertificationDateStart("2015-12-31")
             .decertificationDateEnd("2015-01-01")
             .build();
@@ -214,7 +214,7 @@ public class SearchRequestValidatorTest {
 
     @Test
     public void validate_emptyCertificationDateStartAndEnd_noError() {
-        SearchRequest request = SearchRequest.builder()
+        DeveloperSearchRequestV2 request = DeveloperSearchRequestV2.builder()
             .decertificationDateStart("")
             .decertificationDateEnd("")
             .build();
@@ -228,7 +228,7 @@ public class SearchRequestValidatorTest {
 
     @Test
     public void validate_validDecertificationDateStartEmptyEnd_noError() {
-        SearchRequest request = SearchRequest.builder()
+        DeveloperSearchRequestV2 request = DeveloperSearchRequestV2.builder()
             .decertificationDateStart("2015-01-01")
             .decertificationDateEnd("")
             .build();
@@ -242,7 +242,7 @@ public class SearchRequestValidatorTest {
 
     @Test
     public void validate_validDecertificationDateEndEmptyStart_noError() {
-        SearchRequest request = SearchRequest.builder()
+        DeveloperSearchRequestV2 request = DeveloperSearchRequestV2.builder()
             .decertificationDateEnd("")
             .decertificationDateEnd("2015-12-31")
             .build();
@@ -256,7 +256,7 @@ public class SearchRequestValidatorTest {
 
     @Test
     public void validate_validDecertificationDateStartAndEnd_noError() {
-        SearchRequest request = SearchRequest.builder()
+        DeveloperSearchRequestV2 request = DeveloperSearchRequestV2.builder()
             .decertificationDateStart("2015-01-01")
             .decertificationDateEnd("2015-12-31")
             .build();
@@ -270,7 +270,7 @@ public class SearchRequestValidatorTest {
 
     @Test
     public void validate_invalidOrderBy_addsError() {
-        SearchRequest request = SearchRequest.builder()
+        DeveloperSearchRequestV2 request = DeveloperSearchRequestV2.builder()
             .orderBy(null)
             .orderByString("NOTVALID")
             .build();
@@ -289,7 +289,7 @@ public class SearchRequestValidatorTest {
 
     @Test
     public void validate_validOrderByParsedFromString_noErrors() {
-        SearchRequest request = SearchRequest.builder()
+        DeveloperSearchRequestV2 request = DeveloperSearchRequestV2.builder()
             .orderBy(OrderByOption.DECERTIFICATION_DATE)
             .orderByString("DECERTIFICATION_DATE")
             .build();
@@ -302,7 +302,7 @@ public class SearchRequestValidatorTest {
 
     @Test
     public void validate_validOrderByWithoutString_noErrors() {
-        SearchRequest request = SearchRequest.builder()
+        DeveloperSearchRequestV2 request = DeveloperSearchRequestV2.builder()
             .orderBy(OrderByOption.DECERTIFICATION_DATE)
             .orderByString(null)
             .build();

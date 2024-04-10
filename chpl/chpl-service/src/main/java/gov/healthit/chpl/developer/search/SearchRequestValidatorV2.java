@@ -18,30 +18,27 @@ import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.DimensionalDataManager;
-import gov.healthit.chpl.search.domain.SearchSetOperator;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
-@Component("developerSearchRequestValidator")
-public class SearchRequestValidator {
+@Component("developerSearchRequestValidatorV2")
+public class SearchRequestValidatorV2 {
     private DimensionalDataManager dimensionalDataManager;
     private ErrorMessageUtil msgUtil;
     private DateTimeFormatter dateFormatter;
 
     @Autowired
-    public SearchRequestValidator(DimensionalDataManager dimensionalDataManager,
+    public SearchRequestValidatorV2(DimensionalDataManager dimensionalDataManager,
             ErrorMessageUtil msgUtil) {
         this.dimensionalDataManager = dimensionalDataManager;
         this.msgUtil = msgUtil;
-        dateFormatter = DateTimeFormatter.ofPattern(DeveloperSearchRequest.DATE_SEARCH_FORMAT);
+        dateFormatter = DateTimeFormatter.ofPattern(DeveloperSearchRequestV2.DATE_SEARCH_FORMAT);
     }
 
-    public void validate(DeveloperSearchRequest request) throws ValidationException {
+    public void validate(DeveloperSearchRequestV2 request) throws ValidationException {
         Set<String> errors = new LinkedHashSet<String>();
         errors.addAll(getStatusErrors(request.getStatuses()));
-        errors.addAll(getAcbErrors(request.getAcbsForActiveListings()));
-        errors.addAll(getAcbErrors(request.getAcbsForAllListings()));
+        errors.addAll(getAcbErrors(request.getCertificationBodies()));
         errors.addAll(getDecertificationDateErrors(request.getDecertificationDateStart(), request.getDecertificationDateEnd()));
-        errors.addAll(getActiveListingsFilterErrors(request));
         errors.addAll(getPageSizeErrors(request.getPageSize()));
         errors.addAll(getOrderByErrors(request));
         if (errors != null && errors.size() > 0) {
@@ -87,9 +84,10 @@ public class SearchRequestValidator {
         }
 
         Set<String> errors = new LinkedHashSet<String>();
+        LocalDate startDate = null, endDate = null;
         if (!StringUtils.isEmpty(decertificationDateStart)) {
             try {
-                LocalDate.parse(decertificationDateStart, dateFormatter);
+                startDate = LocalDate.parse(decertificationDateStart, dateFormatter);
             } catch (DateTimeParseException ex) {
                 errors.add(msgUtil.getMessage("search.developer.decertificationDate.invalid", decertificationDateStart, DeveloperSearchRequestV2.DATE_SEARCH_FORMAT));
             }
@@ -97,69 +95,13 @@ public class SearchRequestValidator {
 
         if (!StringUtils.isEmpty(decertificationDateEnd)) {
             try {
-                LocalDate.parse(decertificationDateEnd, dateFormatter);
+                endDate = LocalDate.parse(decertificationDateEnd, dateFormatter);
             } catch (DateTimeParseException ex) {
                 errors.add(msgUtil.getMessage("search.developer.decertificationDate.invalid", decertificationDateEnd, DeveloperSearchRequestV2.DATE_SEARCH_FORMAT));
             }
         }
 
         return errors;
-    }
-
-    private Set<String> getActiveListingsFilterErrors(DeveloperSearchRequest searchRequest) {
-        Set<String> errors = new LinkedHashSet<String>();
-        errors.addAll(getActiveListingsOptionsOperatorErrors(searchRequest));
-        errors.addAll(getActiveListingsOptionsErrors(searchRequest));
-        return errors;
-    }
-
-    private Set<String> getActiveListingsOptionsOperatorErrors(DeveloperSearchRequest searchRequest) {
-        if (searchRequest.getActiveListingsOptionsOperator() == null
-                && !StringUtils.isBlank(searchRequest.getActiveListingsOptionsOperatorString())) {
-            return Stream.of(msgUtil.getMessage("search.searchOperator.invalid",
-                    searchRequest.getActiveListingsOptionsOperatorString(),
-                    Stream.of(SearchSetOperator.values())
-                        .map(value -> value.name())
-                        .collect(Collectors.joining(","))))
-                    .collect(Collectors.toSet());
-        } else if (isMissingOptionsOperator(searchRequest)
-                && hasMultipleOptions(searchRequest)) {
-            return Stream.of(msgUtil.getMessage("search.developer.missingActiveListingsOperator")).collect(Collectors.toSet());
-        }
-        return Collections.emptySet();
-    }
-
-    private boolean isMissingOptionsOperator(DeveloperSearchRequest searchRequest) {
-        return searchRequest.getActiveListingsOptionsOperator() == null;
-    }
-
-    private boolean hasMultipleOptions(DeveloperSearchRequest searchRequest) {
-        return searchRequest.getActiveListingsOptions() != null && searchRequest.getActiveListingsOptions().size() > 1;
-    }
-
-    private Set<String> getActiveListingsOptionsErrors(DeveloperSearchRequest searchRequest) {
-        if (searchRequest.getActiveListingsOptionsStrings() != null && searchRequest.getActiveListingsOptionsStrings().size() > 0) {
-            return searchRequest.getActiveListingsOptionsStrings().stream()
-                .filter(option -> !StringUtils.isBlank(option))
-                .filter(option -> !isActiveListingsSearchOption(option))
-                .map(option -> msgUtil.getMessage("search.developer.activeListingsSearchOption.invalid",
-                        option,
-                        Stream.of(ActiveListingSearchOptions.values())
-                        .map(value -> value.name())
-                        .collect(Collectors.joining(","))))
-                .collect(Collectors.toSet());
-        }
-        return Collections.emptySet();
-    }
-
-    private boolean isActiveListingsSearchOption(String option) {
-        boolean result = true;
-        try {
-            ActiveListingSearchOptions.valueOf(option.toUpperCase().trim());
-        } catch (Exception ex) {
-            result = false;
-        }
-        return result;
     }
 
     private Set<String> getPageSizeErrors(Integer pageSize) {
@@ -170,7 +112,7 @@ public class SearchRequestValidator {
         return Collections.emptySet();
     }
 
-    private Set<String> getOrderByErrors(DeveloperSearchRequest searchRequest) {
+    private Set<String> getOrderByErrors(DeveloperSearchRequestV2 searchRequest) {
         if (searchRequest.getOrderBy() == null
                 && !StringUtils.isBlank(searchRequest.getOrderByString())) {
             return Stream.of(msgUtil.getMessage("search.orderBy.invalid",

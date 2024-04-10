@@ -11,25 +11,25 @@ import java.util.stream.Stream;
 import org.junit.Before;
 import org.junit.Test;
 
-public class SearchRequestNormalizerTest {
+public class SearchRequestNormalizerV2Test {
 
-    private SearchRequestNormalizer normalizer;
+    private SearchRequestNormalizerV2 normalizer;
 
     @Before
     public void setup() {
-        normalizer = new SearchRequestNormalizer();
+        normalizer = new SearchRequestNormalizerV2();
     }
 
     @Test
     public void normalize_emptySearchRequest_doesNotFail() {
-        SearchRequest searchRequest = SearchRequest.builder().build();
+        DeveloperSearchRequestV2 searchRequest = DeveloperSearchRequestV2.builder().build();
         normalizer.normalize(searchRequest);
         assertNotNull(searchRequest);
     }
 
     @Test
     public void normalize_searchTerm_trimsCorrectly() {
-        SearchRequest searchRequest = SearchRequest.builder()
+        DeveloperSearchRequestV2 searchRequest = DeveloperSearchRequestV2.builder()
                 .searchTerm("   test ")
                 .build();
         normalizer.normalize(searchRequest);
@@ -39,7 +39,7 @@ public class SearchRequestNormalizerTest {
 
     @Test
     public void normalize_developerName_trimsCorrectly() {
-        SearchRequest searchRequest = SearchRequest.builder()
+        DeveloperSearchRequestV2 searchRequest = DeveloperSearchRequestV2.builder()
                 .developerName("   test ")
                 .build();
         normalizer.normalize(searchRequest);
@@ -49,7 +49,7 @@ public class SearchRequestNormalizerTest {
 
     @Test
     public void normalize_developerCode_trimsCorrectly() {
-        SearchRequest searchRequest = SearchRequest.builder()
+        DeveloperSearchRequestV2 searchRequest = DeveloperSearchRequestV2.builder()
                 .developerCode("   0123 ")
                 .build();
         normalizer.normalize(searchRequest);
@@ -59,7 +59,7 @@ public class SearchRequestNormalizerTest {
 
     @Test
     public void normalize_certificationBodies_trimsCorrectly() {
-        SearchRequest searchRequest = SearchRequest.builder()
+        DeveloperSearchRequestV2 searchRequest = DeveloperSearchRequestV2.builder()
                 .certificationBodies(Stream.of("ICSA Labs ", " Drummond ", "", " ", null, "test").collect(Collectors.toSet()))
                 .build();
         normalizer.normalize(searchRequest);
@@ -72,7 +72,7 @@ public class SearchRequestNormalizerTest {
 
     @Test
     public void normalize_statuses_trimsCorrectly() {
-        SearchRequest searchRequest = SearchRequest.builder()
+        DeveloperSearchRequestV2 searchRequest = DeveloperSearchRequestV2.builder()
                 .statuses(Stream.of("Active ", " Under certification ban ", "", " ", null, "Suspended").collect(Collectors.toSet()))
                 .build();
         normalizer.normalize(searchRequest);
@@ -85,7 +85,7 @@ public class SearchRequestNormalizerTest {
 
     @Test
     public void normalize_decertificationDateStartNull_noEffect() {
-        SearchRequest searchRequest = SearchRequest.builder()
+        DeveloperSearchRequestV2 searchRequest = DeveloperSearchRequestV2.builder()
                 .decertificationDateStart(null)
                 .build();
         normalizer.normalize(searchRequest);
@@ -95,7 +95,7 @@ public class SearchRequestNormalizerTest {
 
     @Test
     public void normalize_decertificationDateStartWhitespace_trimsCorrectly() {
-        SearchRequest searchRequest = SearchRequest.builder()
+        DeveloperSearchRequestV2 searchRequest = DeveloperSearchRequestV2.builder()
                 .decertificationDateStart(" ")
                 .build();
         normalizer.normalize(searchRequest);
@@ -105,7 +105,7 @@ public class SearchRequestNormalizerTest {
 
     @Test
     public void normalize_decertificationDateStartWhitespaceAround_trimsCorrectly() {
-        SearchRequest searchRequest = SearchRequest.builder()
+        DeveloperSearchRequestV2 searchRequest = DeveloperSearchRequestV2.builder()
                 .decertificationDateStart(" 2015-01-01 ")
                 .build();
         normalizer.normalize(searchRequest);
@@ -115,7 +115,7 @@ public class SearchRequestNormalizerTest {
 
     @Test
     public void normalize_decertificationDateEndNull_noEffect() {
-        SearchRequest searchRequest = SearchRequest.builder()
+        DeveloperSearchRequestV2 searchRequest = DeveloperSearchRequestV2.builder()
                 .decertificationDateEnd(null)
                 .build();
         normalizer.normalize(searchRequest);
@@ -125,7 +125,7 @@ public class SearchRequestNormalizerTest {
 
     @Test
     public void normalize_decertificationDateEndWhitespace_trimsCorrectly() {
-        SearchRequest searchRequest = SearchRequest.builder()
+        DeveloperSearchRequestV2 searchRequest = DeveloperSearchRequestV2.builder()
                 .decertificationDateEnd(" ")
                 .build();
         normalizer.normalize(searchRequest);
@@ -135,7 +135,7 @@ public class SearchRequestNormalizerTest {
 
     @Test
     public void normalize_decertificationDateEndWhitespaceAround_trimsCorrectly() {
-        SearchRequest searchRequest = SearchRequest.builder()
+        DeveloperSearchRequestV2 searchRequest = DeveloperSearchRequestV2.builder()
                 .decertificationDateEnd(" 2015-01-01 ")
                 .build();
         normalizer.normalize(searchRequest);
@@ -145,7 +145,7 @@ public class SearchRequestNormalizerTest {
 
     @Test
     public void normalize_orderByStringValid_resolvesCorrectly() {
-        SearchRequest searchRequest = SearchRequest.builder()
+        DeveloperSearchRequestV2 searchRequest = DeveloperSearchRequestV2.builder()
                 .orderByString("DEVELOPER")
                 .build();
         normalizer.normalize(searchRequest);
@@ -155,7 +155,7 @@ public class SearchRequestNormalizerTest {
 
     @Test
     public void normalize_orderByStringLowercase_resolvesCorrectly() {
-        SearchRequest searchRequest = SearchRequest.builder()
+        DeveloperSearchRequestV2 searchRequest = DeveloperSearchRequestV2.builder()
                 .orderByString("developer")
                 .build();
         normalizer.normalize(searchRequest);
@@ -165,7 +165,7 @@ public class SearchRequestNormalizerTest {
 
     @Test
     public void normalize_orderByDeveloper_noChanges() {
-        SearchRequest searchRequest = SearchRequest.builder()
+        DeveloperSearchRequestV2 searchRequest = DeveloperSearchRequestV2.builder()
                 .orderBy(OrderByOption.DEVELOPER)
                 .build();
         normalizer.normalize(searchRequest);
@@ -175,7 +175,7 @@ public class SearchRequestNormalizerTest {
 
     @Test
     public void normalize_orderByStringInvalid_setsFieldNull() {
-        SearchRequest searchRequest = SearchRequest.builder()
+        DeveloperSearchRequestV2 searchRequest = DeveloperSearchRequestV2.builder()
                 .orderByString("NOTVALID")
                 .build();
         normalizer.normalize(searchRequest);

@@ -20,14 +20,14 @@ import gov.healthit.chpl.entity.developer.DeveloperStatusType;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.DeveloperManager;
 
-public class DeveloperSearchServiceTest {
+public class DeveloperSearchServiceV2Test {
 
     private DeveloperManager developerManager;
     private DeveloperSearchServiceV2 developerSearchService;
 
     @Before
     public void setup() {
-        SearchRequestValidator searchRequestValidator = Mockito.mock(SearchRequestValidator.class);
+        SearchRequestValidatorV2 searchRequestValidator = Mockito.mock(SearchRequestValidatorV2.class);
         developerManager = Mockito.mock(DeveloperManager.class);
 
         developerSearchService = new DeveloperSearchServiceV2(searchRequestValidator,
@@ -38,7 +38,7 @@ public class DeveloperSearchServiceTest {
     public void search_validEmptySearchRequest_findsAllDevelopers() throws ValidationException {
         Mockito.when(developerManager.getDeveloperSearchResultsV2())
             .thenReturn(createDeveloperSearchResultCollection(100));
-        SearchRequest searchRequest = SearchRequest.builder()
+        DeveloperSearchRequestV2 searchRequest = DeveloperSearchRequestV2.builder()
             .pageNumber(0)
             .pageSize(10)
         .build();
@@ -53,7 +53,7 @@ public class DeveloperSearchServiceTest {
     public void search_pageOutOfRangeSearchRequest_returnsEmptyResponse() throws ValidationException {
         Mockito.when(developerManager.getDeveloperSearchResultsV2())
             .thenReturn(createDeveloperSearchResultCollection(100));
-        SearchRequest searchRequest = SearchRequest.builder()
+        DeveloperSearchRequestV2 searchRequest = DeveloperSearchRequestV2.builder()
             .pageNumber(2)
             .pageSize(100)
         .build();
@@ -73,7 +73,7 @@ public class DeveloperSearchServiceTest {
         allDevelopers.get(3).setName("f");
         allDevelopers.get(4).setName("y");
         Mockito.when(developerManager.getDeveloperSearchResultsV2()).thenReturn(allDevelopers);
-        SearchRequest searchRequest = SearchRequest.builder()
+        DeveloperSearchRequestV2 searchRequest = DeveloperSearchRequestV2.builder()
             .sortDescending(false)
             .orderBy(OrderByOption.DEVELOPER)
             .pageNumber(0)
@@ -100,7 +100,7 @@ public class DeveloperSearchServiceTest {
         allDevelopers.get(3).setName("f");
         allDevelopers.get(4).setName("y");
         Mockito.when(developerManager.getDeveloperSearchResultsV2()).thenReturn(allDevelopers);
-        SearchRequest searchRequest = SearchRequest.builder()
+        DeveloperSearchRequestV2 searchRequest = DeveloperSearchRequestV2.builder()
             .sortDescending(true)
             .orderBy(OrderByOption.DEVELOPER)
             .pageNumber(0)
@@ -127,7 +127,7 @@ public class DeveloperSearchServiceTest {
         allDevelopers.get(3).setDecertificationDate(LocalDate.parse("2022-01-01"));
         allDevelopers.get(4).setDecertificationDate(LocalDate.parse("1970-01-15"));
         Mockito.when(developerManager.getDeveloperSearchResultsV2()).thenReturn(allDevelopers);
-        SearchRequest searchRequest = SearchRequest.builder()
+        DeveloperSearchRequestV2 searchRequest = DeveloperSearchRequestV2.builder()
             .sortDescending(true)
             .orderBy(OrderByOption.DECERTIFICATION_DATE)
             .pageNumber(0)
@@ -154,7 +154,7 @@ public class DeveloperSearchServiceTest {
         allDevelopers.get(3).setDecertificationDate(LocalDate.parse("2022-01-01"));
         allDevelopers.get(4).setDecertificationDate(LocalDate.parse("1970-01-15"));
         Mockito.when(developerManager.getDeveloperSearchResultsV2()).thenReturn(allDevelopers);
-        SearchRequest searchRequest = SearchRequest.builder()
+        DeveloperSearchRequestV2 searchRequest = DeveloperSearchRequestV2.builder()
             .sortDescending(false)
             .orderBy(OrderByOption.DECERTIFICATION_DATE)
             .pageNumber(0)
@@ -181,7 +181,7 @@ public class DeveloperSearchServiceTest {
         allDevelopers.get(3).setStatus(status(DeveloperStatusType.Active.getName()));
         allDevelopers.get(4).setStatus(status(DeveloperStatusType.UnderCertificationBanByOnc.getName()));
         Mockito.when(developerManager.getDeveloperSearchResultsV2()).thenReturn(allDevelopers);
-        SearchRequest searchRequest = SearchRequest.builder()
+        DeveloperSearchRequestV2 searchRequest = DeveloperSearchRequestV2.builder()
             .sortDescending(false)
             .orderBy(OrderByOption.STATUS)
             .pageNumber(0)
@@ -208,7 +208,7 @@ public class DeveloperSearchServiceTest {
         allDevelopers.get(3).setStatus(status(DeveloperStatusType.Active.getName()));
         allDevelopers.get(4).setStatus(status(DeveloperStatusType.UnderCertificationBanByOnc.getName()));
         Mockito.when(developerManager.getDeveloperSearchResultsV2()).thenReturn(allDevelopers);
-        SearchRequest searchRequest = SearchRequest.builder()
+        DeveloperSearchRequestV2 searchRequest = DeveloperSearchRequestV2.builder()
             .sortDescending(true)
             .orderBy(OrderByOption.STATUS)
             .pageNumber(0)
@@ -235,7 +235,7 @@ public class DeveloperSearchServiceTest {
         Mockito.when(developerManager.getDeveloperSearchResultsV2()).thenReturn(allDevelopers);
         Set<String> acbNames = new LinkedHashSet<String>();
         acbNames.add("ACB 1");
-        SearchRequest searchRequest = SearchRequest.builder()
+        DeveloperSearchRequestV2 searchRequest = DeveloperSearchRequestV2.builder()
             .certificationBodies(acbNames)
             .pageNumber(0)
             .pageSize(10)
@@ -258,7 +258,7 @@ public class DeveloperSearchServiceTest {
         Mockito.when(developerManager.getDeveloperSearchResultsV2()).thenReturn(allDevelopers);
         Set<String> acbNames = new LinkedHashSet<String>();
         acbNames.add("ACB 1");
-        SearchRequest searchRequest = SearchRequest.builder()
+        DeveloperSearchRequestV2 searchRequest = DeveloperSearchRequestV2.builder()
             .certificationBodies(acbNames)
             .pageNumber(0)
             .pageSize(10)
@@ -283,7 +283,7 @@ public class DeveloperSearchServiceTest {
         acbNames.add("ACB 1");
         acbNames.add("ACB 2");
         acbNames.add("ACB 3");
-        SearchRequest searchRequest = SearchRequest.builder()
+        DeveloperSearchRequestV2 searchRequest = DeveloperSearchRequestV2.builder()
             .certificationBodies(acbNames)
             .pageNumber(0)
             .pageSize(10)
@@ -309,7 +309,7 @@ public class DeveloperSearchServiceTest {
         acbNames.add("ACB 1");
         acbNames.add("ACB 2");
         acbNames.add("ACB 3");
-        SearchRequest searchRequest = SearchRequest.builder()
+        DeveloperSearchRequestV2 searchRequest = DeveloperSearchRequestV2.builder()
             .certificationBodies(acbNames)
             .pageNumber(0)
             .pageSize(10)
@@ -330,7 +330,7 @@ public class DeveloperSearchServiceTest {
         Mockito.when(developerManager.getDeveloperSearchResultsV2()).thenReturn(allDevelopers);
         Set<String> statusNames = new LinkedHashSet<String>();
         statusNames.add(DeveloperStatusType.SuspendedByOnc.getName());
-        SearchRequest searchRequest = SearchRequest.builder()
+        DeveloperSearchRequestV2 searchRequest = DeveloperSearchRequestV2.builder()
             .statuses(statusNames)
             .pageNumber(0)
             .pageSize(10)
@@ -355,7 +355,7 @@ public class DeveloperSearchServiceTest {
         statusNames.add(DeveloperStatusType.SuspendedByOnc.getName());
         statusNames.add(DeveloperStatusType.Active.getName());
 
-        SearchRequest searchRequest = SearchRequest.builder()
+        DeveloperSearchRequestV2 searchRequest = DeveloperSearchRequestV2.builder()
             .statuses(statusNames)
             .pageNumber(0)
             .pageSize(10)
@@ -375,7 +375,7 @@ public class DeveloperSearchServiceTest {
         allDevelopers.get(2).setName("doesn't match");
 
         Mockito.when(developerManager.getDeveloperSearchResultsV2()).thenReturn(allDevelopers);
-        SearchRequest searchRequest = SearchRequest.builder()
+        DeveloperSearchRequestV2 searchRequest = DeveloperSearchRequestV2.builder()
             .searchTerm("dev name")
             .pageNumber(0)
             .pageSize(10)
@@ -395,7 +395,7 @@ public class DeveloperSearchServiceTest {
         allDevelopers.get(2).setCode("doesn't match");
 
         Mockito.when(developerManager.getDeveloperSearchResultsV2()).thenReturn(allDevelopers);
-        SearchRequest searchRequest = SearchRequest.builder()
+        DeveloperSearchRequestV2 searchRequest = DeveloperSearchRequestV2.builder()
             .searchTerm("dev name")
             .pageNumber(0)
             .pageSize(10)
@@ -416,7 +416,7 @@ public class DeveloperSearchServiceTest {
         allDevelopers.get(2).setName("dev name 2");
 
         Mockito.when(developerManager.getDeveloperSearchResultsV2()).thenReturn(allDevelopers);
-        SearchRequest searchRequest = SearchRequest.builder()
+        DeveloperSearchRequestV2 searchRequest = DeveloperSearchRequestV2.builder()
             .searchTerm("dev name")
             .pageNumber(0)
             .pageSize(10)
@@ -436,7 +436,7 @@ public class DeveloperSearchServiceTest {
         allDevelopers.get(2).setName("doesn't match");
 
         Mockito.when(developerManager.getDeveloperSearchResultsV2()).thenReturn(allDevelopers);
-        SearchRequest searchRequest = SearchRequest.builder()
+        DeveloperSearchRequestV2 searchRequest = DeveloperSearchRequestV2.builder()
             .developerName("dev name")
             .pageNumber(0)
             .pageSize(10)
@@ -456,7 +456,7 @@ public class DeveloperSearchServiceTest {
         allDevelopers.get(2).setCode("0000");
 
         Mockito.when(developerManager.getDeveloperSearchResultsV2()).thenReturn(allDevelopers);
-        SearchRequest searchRequest = SearchRequest.builder()
+        DeveloperSearchRequestV2 searchRequest = DeveloperSearchRequestV2.builder()
             .developerCode("2345")
             .pageNumber(0)
             .pageSize(10)
@@ -476,7 +476,7 @@ public class DeveloperSearchServiceTest {
         allDevelopers.get(1).setDecertificationDate(LocalDate.parse("2020-07-01"));
 
         Mockito.when(developerManager.getDeveloperSearchResultsV2()).thenReturn(allDevelopers);
-        SearchRequest searchRequest = SearchRequest.builder()
+        DeveloperSearchRequestV2 searchRequest = DeveloperSearchRequestV2.builder()
             .decertificationDateStart("2020-07-01")
             .decertificationDateEnd("2020-06-01")
             .pageNumber(0)
@@ -496,7 +496,7 @@ public class DeveloperSearchServiceTest {
         allDevelopers.get(1).setDecertificationDate(LocalDate.parse("2020-06-01"));
 
         Mockito.when(developerManager.getDeveloperSearchResultsV2()).thenReturn(allDevelopers);
-        SearchRequest searchRequest = SearchRequest.builder()
+        DeveloperSearchRequestV2 searchRequest = DeveloperSearchRequestV2.builder()
             .decertificationDateStart("2020-06-25")
             .pageNumber(0)
             .pageSize(10)
@@ -515,7 +515,7 @@ public class DeveloperSearchServiceTest {
         allDevelopers.get(1).setDecertificationDate(LocalDate.parse("2020-06-01"));
 
         Mockito.when(developerManager.getDeveloperSearchResultsV2()).thenReturn(allDevelopers);
-        SearchRequest searchRequest = SearchRequest.builder()
+        DeveloperSearchRequestV2 searchRequest = DeveloperSearchRequestV2.builder()
             .decertificationDateStart("2020-06-24")
             .pageNumber(0)
             .pageSize(10)
@@ -534,7 +534,7 @@ public class DeveloperSearchServiceTest {
         allDevelopers.get(1).setDecertificationDate(LocalDate.parse("2020-06-27"));
 
         Mockito.when(developerManager.getDeveloperSearchResultsV2()).thenReturn(allDevelopers);
-        SearchRequest searchRequest = SearchRequest.builder()
+        DeveloperSearchRequestV2 searchRequest = DeveloperSearchRequestV2.builder()
             .decertificationDateEnd("2020-06-25")
             .pageNumber(0)
             .pageSize(10)
@@ -553,7 +553,7 @@ public class DeveloperSearchServiceTest {
         allDevelopers.get(1).setDecertificationDate(LocalDate.parse("2020-06-27"));
 
         Mockito.when(developerManager.getDeveloperSearchResultsV2()).thenReturn(allDevelopers);
-        SearchRequest searchRequest = SearchRequest.builder()
+        DeveloperSearchRequestV2 searchRequest = DeveloperSearchRequestV2.builder()
             .decertificationDateEnd("2020-06-26")
             .pageNumber(0)
             .pageSize(10)
@@ -572,7 +572,7 @@ public class DeveloperSearchServiceTest {
         allDevelopers.get(1).setDecertificationDate(LocalDate.parse("2020-06-27"));
 
         Mockito.when(developerManager.getDeveloperSearchResultsV2()).thenReturn(allDevelopers);
-        SearchRequest searchRequest = SearchRequest.builder()
+        DeveloperSearchRequestV2 searchRequest = DeveloperSearchRequestV2.builder()
             .decertificationDateStart("2020-06-24")
             .decertificationDateEnd("2020-06-26")
             .pageNumber(0)
@@ -592,7 +592,7 @@ public class DeveloperSearchServiceTest {
         allDevelopers.get(1).setDecertificationDate(LocalDate.parse("2020-06-27"));
 
         Mockito.when(developerManager.getDeveloperSearchResultsV2()).thenReturn(allDevelopers);
-        SearchRequest searchRequest = SearchRequest.builder()
+        DeveloperSearchRequestV2 searchRequest = DeveloperSearchRequestV2.builder()
             .decertificationDateStart("2020-06-25")
             .decertificationDateEnd("2020-06-26")
             .pageNumber(0)
@@ -612,7 +612,7 @@ public class DeveloperSearchServiceTest {
         allDevelopers.get(1).setDecertificationDate(LocalDate.parse("2020-06-27"));
 
         Mockito.when(developerManager.getDeveloperSearchResultsV2()).thenReturn(allDevelopers);
-        SearchRequest searchRequest = SearchRequest.builder()
+        DeveloperSearchRequestV2 searchRequest = DeveloperSearchRequestV2.builder()
             .decertificationDateStart("2020-06-24")
             .decertificationDateEnd("2020-06-25")
             .pageNumber(0)
@@ -632,7 +632,7 @@ public class DeveloperSearchServiceTest {
         allDevelopers.get(1).setDecertificationDate(LocalDate.parse("2020-06-27"));
 
         Mockito.when(developerManager.getDeveloperSearchResultsV2()).thenReturn(allDevelopers);
-        SearchRequest searchRequest = SearchRequest.builder()
+        DeveloperSearchRequestV2 searchRequest = DeveloperSearchRequestV2.builder()
             .decertificationDateStart("2020-06-25")
             .decertificationDateEnd("2020-06-25")
             .pageNumber(0)
