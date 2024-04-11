@@ -29,7 +29,6 @@ import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
-import gov.healthit.chpl.web.controller.annotation.DeprecatedApiResponseFields;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -62,7 +61,6 @@ public class SurveillanceController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
-    @DeprecatedApiResponseFields(responseClass = Surveillance.class, httpMethod = "POST", friendlyUrl = "/surveillance")
     @RequestMapping(value = "", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     public ResponseEntity<Surveillance> createSurveillance(@RequestBody(required = true) Surveillance survToInsert)
             throws EntityRetrievalException, UserPermissionRetrievalException, ActivityException, ValidationException {
@@ -90,7 +88,6 @@ public class SurveillanceController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
-    @DeprecatedApiResponseFields(responseClass = Surveillance.class, httpMethod = "PUT", friendlyUrl = "/surveillance/{surveillanceId}")
     @RequestMapping(value = "/{surveillanceId}", method = RequestMethod.PUT,
             produces = "application/json; charset=utf-8")
     public ResponseEntity<Surveillance> updateSurveillance(@RequestBody(required = true) Surveillance survToUpdate)

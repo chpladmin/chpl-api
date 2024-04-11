@@ -25,7 +25,6 @@ import gov.healthit.chpl.svap.manager.SvapManager;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.FileUtils;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
-import gov.healthit.chpl.web.controller.annotation.DeprecatedApi;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -130,80 +129,6 @@ public class DownloadableResourceController {
             toDownload = fileUtils.getDownloadFile(env.getProperty("schemaCsvListingName"));
         }
         return toDownload;
-    }
-
-    @Deprecated
-    @DeprecatedApi(friendlyUrl = "/download", removalDate = "2024-01-01",
-        message = "The endpoint is deprecated and will be removed. Please GET from /download/{listingType}.")
-    @Operation(summary = "Download the entire CHPL in the specified format.",
-            description = "Once per day, the entire certified product listing is "
-                    + "written out to JSON and CSV files on the CHPL servers. There are files for the retired "
-                    + "2011 and 2014 certification editions, as well as a file with Inactive listings and "
-                    + "a file with Active listings. This method allows any user to download "
-                    + "one of those files. The CSV file is formatted in such a way that users may import "
-                    + "it into Microsoft Excel. The JSON file may be imported into any JSON tool of their choosing."
-                    + "To download any one of the files, append ‘&edition=year’ to the end of the query string "
-                    + "(e.g., &edition=2014). A separate query is required to download each file.",
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
-    @RequestMapping(value = "/download", method = RequestMethod.GET, produces = "application/xml")
-    public void downloadListingDetails(@RequestParam(value = "edition", required = false) String editionInput,
-            @RequestParam(value = "format", defaultValue = "csv", required = false) String formatInput,
-            @RequestParam(value = "definition", defaultValue = "false", required = false) Boolean isDefinition,
-            HttpServletRequest request, HttpServletResponse response) throws IOException {
-        // parse inputs
-        String edition = editionInput;
-        String format = formatInput;
-        String responseType = "text/csv";
-
-        if (!StringUtils.isEmpty(edition)) {
-            // make sure it's a 4 character year
-            edition = edition.trim();
-            if (!edition.startsWith("20")) {
-                edition = "20" + edition;
-            }
-            if (edition.equals("2015")) {
-                edition = "active";
-            }
-        } else {
-            edition = "active";
-        }
-
-        if (!StringUtils.isEmpty(format) && format.equalsIgnoreCase("csv")) {
-            format = "csv";
-        } else if (!StringUtils.isEmpty(format) && format.equalsIgnoreCase("json")) {
-            format = "json";
-            responseType = "application/json";
-        }
-
-        File toDownload = null;
-        // if the user wants a definition file, find it
-        if (isDefinition != null && isDefinition.booleanValue()) {
-            if (edition.equals("2014")) {
-                toDownload = fileUtils.getDownloadFile(env.getProperty("schemaCsv2014Name"));
-            } else if (edition.equals("2015") || edition.equals("active")) {
-                toDownload = fileUtils.getDownloadFile(env.getProperty("schemaCsvListingName"));
-            }
-
-            if (!toDownload.exists()) {
-                response.getWriter()
-                        .write(msgUtil.getMessage("resources.schemaFileNotFound", toDownload.getAbsolutePath()));
-                return;
-            }
-        } else {
-            File newestFileWithFormat = fileUtils.getNewestFileMatchingName("^chpl-" + edition + "-.+\\." + format + "$");
-            if (newestFileWithFormat != null) {
-                toDownload = newestFileWithFormat;
-            } else {
-                response.getWriter()
-                        .write(msgUtil.getMessage("resources.fileWithEditionAndFormatNotFound", edition, format));
-                return;
-            }
-        }
-
-        LOGGER.info("Downloading " + toDownload.getName());
-        fileUtils.streamFileAsResponse(toDownload, responseType, response);
     }
 
     @Operation(summary = "Download a summary of SVAP activity as a CSV.",

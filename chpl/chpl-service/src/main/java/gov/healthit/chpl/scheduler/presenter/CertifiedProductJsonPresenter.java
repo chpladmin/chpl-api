@@ -32,7 +32,7 @@ public class CertifiedProductJsonPresenter extends CertifiedProductPresenter imp
     @Override
     public synchronized void add(CertifiedProductSearchDetails cp) throws IOException {
         getLogger().info("Adding CP to JSON file: " + cp.getId());
-        jGenerator.writeObject(massageData(cp));
+        jGenerator.writeObject(cp);
     }
 
     @Override
@@ -51,17 +51,6 @@ public class CertifiedProductJsonPresenter extends CertifiedProductPresenter imp
             logger = LogManager.getLogger(CertifiedProductJsonPresenter.class);
         }
         return logger;
-    }
-
-    private CertifiedProductSearchDetails massageData(CertifiedProductSearchDetails listing) {
-        listing.getCertificationResults().stream()
-                .forEach(cr -> {
-                    cr.setAllowedConformanceMethods(null);
-                    cr.setAllowedOptionalStandards(null);
-                    cr.setAllowedSvaps(null);
-                    cr.setAllowedTestTools(null);
-                });
-        return listing;
     }
 
 }

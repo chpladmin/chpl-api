@@ -74,6 +74,10 @@ public class CertifiedProductDAO extends BaseDAOImpl {
             entity.setIcs(listing.getIcs() == null || listing.getIcs().getInherits() == null ? Boolean.FALSE : listing.getIcs().getInherits());
             entity.setAccessibilityCertified(listing.getAccessibilityCertified());
             entity.setSvapNoticeUrl(listing.getSvapNoticeUrl());
+            entity.setRwtPlansUrl(listing.getRwtPlansUrl());
+            entity.setRwtPlansCheckDate(listing.getRwtPlansCheckDate());
+            entity.setRwtResultsUrl(listing.getRwtResultsUrl());
+            entity.setRwtResultsCheckDate(listing.getRwtResultsCheckDate());
             entity.setChplProductNumber(null);
 
             //these fields are null for ALL current listings
@@ -129,8 +133,7 @@ public class CertifiedProductDAO extends BaseDAOImpl {
 
     @Transactional(readOnly = false)
     @SuppressWarnings({"checkstyle:todocomment"})
-    public void delete(final Long productId) {
-        // TODO: How to delete this without leaving orphans
+    public void delete(Long productId) {
         Query query = entityManager.createQuery(
                 "UPDATE CertifiedProductEntity SET deleted = true WHERE certified_product_id = :productid");
         query.setParameter("productid", productId);

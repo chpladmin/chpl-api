@@ -26,7 +26,6 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
-import gov.healthit.chpl.web.controller.annotation.DeprecatedApiResponseFields;
 import gov.healthit.chpl.web.controller.results.ChangeRequestResults;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -53,7 +52,6 @@ public class ChangeRequestController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
     @RequestMapping(value = "/{changeRequestId:^-?\\d+$}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    @DeprecatedApiResponseFields(responseClass = ChangeRequest.class, friendlyUrl = "/change-requests/{changeRequestId}")
     public @ResponseBody ChangeRequest getChangeRequest(@PathVariable final Long changeRequestId) throws EntityRetrievalException {
         return changeRequestManager.getChangeRequest(changeRequestId);
     }
@@ -80,7 +78,6 @@ public class ChangeRequestController {
             })
     @RequestMapping(value = "", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
-    @DeprecatedApiResponseFields(responseClass = ChangeRequestResults.class, httpMethod = "POST", friendlyUrl = "/change-requests")
     public ChangeRequestResults createChangeRequest(@RequestBody final ChangeRequest cr)
             throws InvalidArgumentsException, EntityRetrievalException, ValidationException, ActivityException {
 
@@ -100,7 +97,6 @@ public class ChangeRequestController {
             })
     @RequestMapping(value = "", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
-    @DeprecatedApiResponseFields(responseClass = ChangeRequest.class, httpMethod = "PUT", friendlyUrl = "/change-requests")
     public ChangeRequest updateChangeRequest(@RequestBody final ChangeRequestUpdateRequest updateRequest)
             throws EntityRetrievalException, ValidationException, EntityCreationException,
             JsonProcessingException, InvalidArgumentsException, EmailNotSentException {

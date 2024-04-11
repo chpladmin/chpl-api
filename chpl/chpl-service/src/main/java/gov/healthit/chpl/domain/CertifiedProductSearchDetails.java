@@ -24,7 +24,6 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import gov.healthit.chpl.activity.ActivityExclude;
-import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseField;
 import gov.healthit.chpl.domain.comparator.CertificationStatusEventComparator;
 import gov.healthit.chpl.domain.compliance.DirectReview;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
@@ -101,10 +100,14 @@ public class CertifiedProductSearchDetails implements Serializable {
     @Schema(description = "The version of the product being uploaded.")
     private ProductVersion version;
 
+    /**
+     * This property exists solely to be able to deserialize listing activity events from very old data.
+     * Since we care about listing editions when returning activity metadata we need to be able to read
+     * this value in old listing activity event data. Not all old listing properties need to be present
+     * for this reason. This property should not be visible in any response from an API call.
+     */
     @Deprecated
-    @DeprecatedResponseField(message = "Please use the 'edition' field.", removalDate = "2024-01-01")
-    @Builder.Default
-    @Schema(description = "The certification edition. It takes a value of 2011, 2014, 2015, or null.")
+    @JsonProperty(access = Access.WRITE_ONLY)
     private Map<String, Object> certificationEdition = new HashMap<String, Object>();
 
     @Schema(description = "The certification edition. It takes a value of 2011, 2014, 2015, or null.")
@@ -124,11 +127,6 @@ public class CertifiedProductSearchDetails implements Serializable {
 
     @JsonIgnore
     private String certificationDateStr;
-
-    @Deprecated
-    @DeprecatedResponseField(message = "Please use the 'decertificationDay' field.", removalDate = "2024-01-01")
-    @Schema(description = "Decertification date represented in milliseconds since epoch")
-    private Long decertificationDate;
 
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
@@ -250,6 +248,9 @@ public class CertifiedProductSearchDetails implements Serializable {
     @JsonSerialize(using = LocalDateSerializer.class)
     private LocalDate rwtPlansCheckDate;
 
+    @JsonIgnore
+    private String userEnteredRwtPlansCheckDate;
+
     @Schema(description = "URL where the listings Real World Testing Results is located")
     private String rwtResultsUrl;
 
@@ -257,6 +258,9 @@ public class CertifiedProductSearchDetails implements Serializable {
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
     private LocalDate rwtResultsCheckDate;
+
+    @JsonIgnore
+    private String userEnteredRwtResultsCheckDate;
 
     @Schema(description = "URL where the Listings SVAP Notice URL is located")
     private String svapNoticeUrl;

@@ -35,6 +35,7 @@ import gov.healthit.chpl.validation.listing.reviewer.CertificationDateReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.DuplicateDataReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.FieldLengthReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.InheritanceReviewer;
+import gov.healthit.chpl.validation.listing.reviewer.RealWorldTestingReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.UnsupportedCharacterReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.UrlReviewer;
 
@@ -55,6 +56,7 @@ public class ListingUploadValidator {
     private EditionReviewer editionReviewer;
     private TestingLabReviewer atlReviewer;
     private CertificationBodyReviewer acbReviewer;
+    private RealWorldTestingReviewer rwtReviewer;
     private DeveloperReviewer devReviewer;
     private ProductReviewer productReviewer;
     private VersionReviewer versionReviewer;
@@ -86,6 +88,7 @@ public class ListingUploadValidator {
             EditionReviewer editionReviewer,
             @Qualifier("testingLabReviewer") TestingLabReviewer atlReviewer,
             CertificationBodyReviewer acbReviewer,
+            RealWorldTestingReviewer rwtReviewer,
             DeveloperReviewer devReviewer,
             ProductReviewer productReviewer,
             VersionReviewer versionReviewer,
@@ -118,6 +121,7 @@ public class ListingUploadValidator {
         this.editionReviewer = editionReviewer;
         this.atlReviewer = atlReviewer;
         this.acbReviewer = acbReviewer;
+        this.rwtReviewer = rwtReviewer;
         this.devReviewer = devReviewer;
         this.productReviewer = productReviewer;
         this.versionReviewer = versionReviewer;
@@ -163,6 +167,7 @@ public class ListingUploadValidator {
         certifiedDateCodeReviewer.review(listing);
         certDateReviewer.review(listing);
         certificationIdReviewer.review(listing);
+        rwtReviewer.review(listing);
         qmsReviewer.review(listing);
         accStdReviewer.review(listing);
         measureReviewer.review(listing);

@@ -4,7 +4,6 @@ import java.io.Serializable;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseField;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,22 +22,6 @@ public class CertifiedProductTestingLab implements Serializable {
 
     @Schema(description = "Testing Lab")
     private TestingLab testingLab;
-
-
-    @Deprecated
-    @DeprecatedResponseField(removalDate = "2024-04-01", message = "Replaced by testingLab.id")
-    @Schema(description = "Testing Lab internal ID")
-    private Long testingLabId;
-
-    @Deprecated
-    @DeprecatedResponseField(removalDate = "2024-04-01", message = "Replaced by testingLab.name")
-    @Schema(description = "The Testing Lab's public name")
-    private String testingLabName;
-
-    @Deprecated
-    @DeprecatedResponseField(removalDate = "2024-04-01", message = "Replaced by testingLab.atlCode")
-    @Schema(description = "The Testing Lab's Code")
-    private String testingLabCode;
 
     public CertifiedProductTestingLab() {
         super();
