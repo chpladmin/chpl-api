@@ -197,15 +197,18 @@ public class DeveloperSearchService {
     private boolean matchesActiveListingsFilter(DeveloperSearchResult developer, DeveloperSearchRequest searchRequest) {
         Boolean matchesHasActiveListingsFilter = null;
         if (searchRequest.getActiveListingsOptions().contains(ActiveListingSearchOptions.HAS_ANY_ACTIVE)) {
-            matchesHasActiveListingsFilter = developer.getCurrentActiveListingCount() > 0;
+            matchesHasActiveListingsFilter = developer.getCurrentActiveListingCount() != null
+                    && developer.getCurrentActiveListingCount() > 0;
         }
         Boolean matchesHadActiveListingsDuringPastPeriodFilter = null;
         if (searchRequest.getActiveListingsOptions().contains(ActiveListingSearchOptions.HAD_ANY_ACTIVE_DURING_MOST_RECENT_PAST_ATTESTATION_PERIOD)) {
-            matchesHadActiveListingsDuringPastPeriodFilter = developer.getMostRecentPastAttestationPeriodActiveListingCount() > 0;
+            matchesHadActiveListingsDuringPastPeriodFilter = developer.getMostRecentPastAttestationPeriodActiveListingCount() != null
+                    && developer.getMostRecentPastAttestationPeriodActiveListingCount() > 0;
         }
         Boolean matchesNoActiveListingsFilter = null;
         if (searchRequest.getActiveListingsOptions().contains(ActiveListingSearchOptions.HAS_NO_ACTIVE)) {
-            matchesNoActiveListingsFilter = developer.getCurrentActiveListingCount() == 0;
+            matchesNoActiveListingsFilter = developer.getCurrentActiveListingCount() == null
+                    || developer.getCurrentActiveListingCount() == 0;
         }
 
         if (ObjectUtils.anyNotNull(matchesHasActiveListingsFilter, matchesHadActiveListingsDuringPastPeriodFilter, matchesNoActiveListingsFilter)) {

@@ -51,6 +51,9 @@ public class DeveloperSearchResult implements Serializable {
     private Date creationDate;
 
     public DeveloperSearchResult() {
+        currentActiveListingCount = 0;
+        mostRecentPastAttestationPeriodActiveListingCount = 0;
+        submittedAttestationsForMostRecentPastPeriod = false;
         acbsForAllListings = new HashSet<IdNamePair>();
         acbsForActiveListings = new HashSet<IdNamePair>();
     }
