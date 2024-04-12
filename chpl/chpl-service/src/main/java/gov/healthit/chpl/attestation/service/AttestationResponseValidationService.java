@@ -2,7 +2,6 @@ package gov.healthit.chpl.attestation.service;
 
 import java.util.List;
 
-import org.ff4j.FF4j;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.form.Form;
@@ -23,7 +22,7 @@ public class AttestationResponseValidationService {
 
     public AttestationResponseValidationService(ListingApplicabilityService listingApplicabilityService,
             ListingSearchService listingSearchService, ErrorMessageUtil msgUtil,
-            ResourcePermissionsFactory resourcePermissionsFactory, FF4j ff4j) {
+            ResourcePermissionsFactory resourcePermissionsFactory) {
         this.listingApplicabilityService = listingApplicabilityService;
         this.msgUtil = msgUtil;
         this.resourcePermissionsFactory = resourcePermissionsFactory;
