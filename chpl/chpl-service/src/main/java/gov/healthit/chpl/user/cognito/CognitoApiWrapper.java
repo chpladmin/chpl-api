@@ -180,6 +180,18 @@ public class CognitoApiWrapper {
         }
     }
 
+    public List<User> getAllUsers() {
+        ListUsersRequest request = ListUsersRequest.builder()
+                .limit(5)
+                .userPoolId(userPoolId)
+                .build();
+
+
+        return cognitoClient.listUsers(request).users().stream()
+                .map(userType -> createUserFromUserType(userType))
+                .toList();
+    }
+
     private CognitoIdentityProviderClient createCognitoClient(String accessKey, String secretKey, String region) {
         AwsCredentials awsCredentials = AwsBasicCredentials.create(accessKey, secretKey);
 
@@ -193,7 +205,7 @@ public class CognitoApiWrapper {
         return attributes.stream()
             .filter(att -> att.name().equals(name))
             .findAny()
-            .orElse(null);
+            .orElse(AttributeType.builder().value("").build());
 
     }
 
