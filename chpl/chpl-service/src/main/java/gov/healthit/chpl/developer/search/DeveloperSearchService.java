@@ -14,6 +14,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
@@ -72,6 +73,26 @@ public class DeveloperSearchService {
             = getPage(matchedDevelopers, getBeginIndex(searchRequest), getEndIndex(searchRequest));
         response.setResults(pageOfDevelopers);
         return response;
+    }
+
+    public List<DeveloperSearchResult> getAllPagesOfSearchResults(DeveloperSearchRequest searchRequest, Logger logger) {
+        List<DeveloperSearchResult> searchResults = new ArrayList<DeveloperSearchResult>();
+        try {
+            logger.debug(searchRequest.toString());
+            DeveloperSearchResponse searchResponse = findDevelopers(searchRequest);
+            searchResults.addAll(searchResponse.getResults());
+            while (searchResponse.getRecordCount() > searchResults.size()) {
+                searchRequest.setPageSize(searchResponse.getPageSize());
+                searchRequest.setPageNumber(searchResponse.getPageNumber() + 1);
+                logger.debug(searchRequest.toString());
+                searchResponse = findDevelopers(searchRequest);
+                searchResults.addAll(searchResponse.getResults());
+            }
+            logger.debug("Found {} total developers for search request {}.", searchResults.size(), searchRequest);
+        } catch (ValidationException ex) {
+            logger.error("Could not retrieve developers from search request.", ex);
+        }
+        return searchResults;
     }
 
     private boolean matchesSearchTerm(DeveloperSearchResult developer, String searchTerm) {

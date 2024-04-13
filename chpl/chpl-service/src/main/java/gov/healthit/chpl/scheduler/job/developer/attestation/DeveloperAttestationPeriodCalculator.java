@@ -16,7 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.attestation.domain.AttestationPeriod;
-import gov.healthit.chpl.attestation.manager.AttestationPeriodService;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.domain.CertificationStatus;
 import gov.healthit.chpl.domain.CertificationStatusEvent;
@@ -32,27 +31,14 @@ public class DeveloperAttestationPeriodCalculator {
     private static final Integer MAX_PAGE_SIZE = 100;
 
     private DeveloperDAO developerDao;
-    private AttestationPeriodService attestationPeriodService;
     private ListingSearchService listingSearchService;
     private List<String> activeStatuses = CertificationStatusUtil.getActiveStatusNames();
 
     @Autowired
     public DeveloperAttestationPeriodCalculator(DeveloperDAO developerDao,
-            AttestationPeriodService attestationPeriodService,
             ListingSearchService listingSearchService) {
         this.developerDao = developerDao;
-        this.attestationPeriodService = attestationPeriodService;
         this.listingSearchService = listingSearchService;
-    }
-
-    public List<Developer> getDevelopersWithActiveListingsDuringMostRecentPastAttestationPeriod(Logger logger) {
-        AttestationPeriod mostRecentPastPeriod = attestationPeriodService.getMostRecentPastAttestationPeriod();
-        logger.info("Most recent past attestation period: {} - {} ", mostRecentPastPeriod.getPeriodStart().toString(), mostRecentPastPeriod.getPeriodEnd().toString());
-
-        List<Developer> devsWithActiveListings = getDevelopersWithActiveListingsDuringAttestationPeriod(mostRecentPastPeriod, logger);
-        logger.info("Found {} developers with active listings during the last attestation period ", devsWithActiveListings.size() + "");
-        return devsWithActiveListings;
-
     }
 
     public List<Developer> getDevelopersWithActiveListingsDuringAttestationPeriod(AttestationPeriod period, Logger logger) {
