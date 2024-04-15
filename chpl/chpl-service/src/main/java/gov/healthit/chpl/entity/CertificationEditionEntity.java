@@ -54,10 +54,8 @@ public class CertificationEditionEntity extends EntityAudit {
 
     public CertificationEdition toDomain() {
         return CertificationEdition.builder()
-                .certificationEditionId(getId())
                 .id(getId())
                 .retired(getRetired())
-                .year(getYear())
                 .name(getYear())
                 .build();
     }

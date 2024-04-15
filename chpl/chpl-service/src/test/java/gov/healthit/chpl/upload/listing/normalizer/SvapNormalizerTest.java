@@ -145,37 +145,7 @@ public class SvapNormalizerTest {
         assertEquals("CITATION1", listing.getCertificationResults().get(0).getSvaps().get(0).getRegulatoryTextCitation());
     }
 
-    @Test
-    public void normalize_criterionHasAllowedSvaps_addsAllowedSvapsToCertificationResult() {
-        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .certificationResult(CertificationResult.builder()
-                        .criterion(CertificationCriterion.builder()
-                                    .id(1L)
-                                    .number("170.315 (a)(1)")
-                                    .build())
-                        .svaps(new ArrayList<CertificationResultSvap>())
-                        .build())
-                .build();
-        normalizer.normalize(listing);
-        assertEquals(2, listing.getCertificationResults().get(0).getAllowedSvaps().size());
-    }
-
-    @Test
-    public void normalize_criterionHasNoAllowedSvaps_noAllowedSvapsAdded() {
-        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .certificationResult(CertificationResult.builder()
-                        .criterion(CertificationCriterion.builder()
-                                    .id(2L)
-                                    .number("170.315 (a)(2)")
-                                    .build())
-                        .svaps(new ArrayList<CertificationResultSvap>())
-                        .build())
-                .build();
-        normalizer.normalize(listing);
-        assertEquals(0, listing.getCertificationResults().get(0).getAllowedSvaps().size());
-    }
-
-    private CertificationEdition create2015Edition() {
+        private CertificationEdition create2015Edition() {
         return CertificationEdition.builder()
                 .id(3L)
                 .name("2015")

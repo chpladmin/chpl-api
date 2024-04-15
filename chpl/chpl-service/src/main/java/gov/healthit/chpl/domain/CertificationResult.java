@@ -12,13 +12,11 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
-import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseField;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.codeset.CertificationResultCodeSet;
 import gov.healthit.chpl.codeset.CertificationResultCodeSetComparator;
 import gov.healthit.chpl.conformanceMethod.CertificationResultConformanceMethodComparator;
 import gov.healthit.chpl.conformanceMethod.domain.CertificationResultConformanceMethod;
-import gov.healthit.chpl.conformanceMethod.domain.ConformanceMethod;
 import gov.healthit.chpl.domain.comparator.CertificationResultAdditionalSoftwareComparator;
 import gov.healthit.chpl.domain.comparator.CertificationResultTestDataComparator;
 import gov.healthit.chpl.domain.comparator.CertificationResultTestProcedureComparator;
@@ -28,15 +26,12 @@ import gov.healthit.chpl.functionalitytested.CertificationResultFunctionalityTes
 import gov.healthit.chpl.functionalitytested.CertificationResultFunctionalityTestedComparator;
 import gov.healthit.chpl.optionalStandard.CertificationResultOptionalStandardComparator;
 import gov.healthit.chpl.optionalStandard.domain.CertificationResultOptionalStandard;
-import gov.healthit.chpl.optionalStandard.domain.OptionalStandard;
 import gov.healthit.chpl.standard.CertificationResultStandard;
 import gov.healthit.chpl.standard.CertificationResultStandardComparator;
 import gov.healthit.chpl.svap.domain.CertificationResultSvap;
 import gov.healthit.chpl.svap.domain.CertificationResultSvapComparator;
-import gov.healthit.chpl.svap.domain.Svap;
 import gov.healthit.chpl.testtool.CertificationResultTestTool;
 import gov.healthit.chpl.testtool.CertificationResultTestToolComparator;
-import gov.healthit.chpl.testtool.TestTool;
 import gov.healthit.chpl.util.CertificationResultRules;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -122,26 +117,6 @@ public class CertificationResult implements Serializable {
     @Schema(description = "This variable explains the way in which each privacy and security criterion was addressed for "
             + "the purposes of certification. It takes either of Approach 1 and Approach 2.")
     private String privacySecurityFramework;
-
-    @Deprecated
-    @DeprecatedResponseField(message = "This field is deprecated and will be removed. This data can be found via a GET request to the endpoint /conformance-methods.",
-        removalDate = "2024-01-01")
-    private List<ConformanceMethod> allowedConformanceMethods;
-
-    @Deprecated
-    @DeprecatedResponseField(message = "This field is deprecated and will be removed. This data can be found via a GET request to the endpoint /svaps.",
-        removalDate = "2024-01-01")
-    private List<Svap> allowedSvaps;
-
-    @Deprecated
-    @DeprecatedResponseField(message = "This field is deprecated and will be removed. This data can be found via a GET request to the endpoint /optional-standards.",
-        removalDate = "2024-01-01")
-    private List<OptionalStandard> allowedOptionalStandards;
-
-    @Deprecated
-    @DeprecatedResponseField(message = "This field is deprecated and will be removed. This data can be found via a GET request to the endpoint /test-tools.",
-        removalDate = "2024-01-01")
-    private List<TestTool> allowedTestTools;
 
     @Schema(description = "Any optional, alternative, ambulatory (2015 only), or inpatient (2015 only) capabilities within a certification "
             + "criterion to which the Health IT module was tested and certified. For example, within the 2015 certification "
