@@ -11,6 +11,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import gov.healthit.chpl.certificationCriteria.CertificationCriterionComparator;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterionEntity;
 import gov.healthit.chpl.entity.EntityAudit;
 import lombok.AllArgsConstructor;
@@ -53,11 +54,11 @@ public class FunctionalityTestedCriteriaMapEntity extends EntityAudit {
     @JoinColumn(name = "functionality_tested_id", insertable = false, updatable = false)
     private FunctionalityTestedEntity functionalityTested;
 
-    public FunctionalityTestedCriteriaMap toDomain() {
+    public FunctionalityTestedCriteriaMap toDomain(CertificationCriterionComparator criterionComparator) {
         return FunctionalityTestedCriteriaMap.builder()
                 .id(id)
                 .criterion(criterion.toDomain())
-                .functionalityTested(functionalityTested.toDomainWithCriteria())
+                .functionalityTested(functionalityTested.toDomainWithCriteria(criterionComparator))
                 .build();
     }
 }
