@@ -168,6 +168,16 @@ const searchControllerTests = {
   },
 };
 
+const searchDevelopersControllerTests = {
+  ...commonOptions,
+  collection: collection_path + '/search-developers.postman_collection.json',
+  reporter: {
+    junit: {
+      export: reports_path + '/search-developers-controller-tests.xml',
+    },
+  },
+};
+
 const promotinginteroperabilityControllerTests = {
   ...commonOptions,
   collection: collection_path + '/promoting-interoperability-controller.postman_collection.json',
@@ -318,6 +328,7 @@ const jobs = [
   cb => newman.run(surveillanceReportControllerTests,cb),
   cb => newman.run(surveillanceControllerTests,cb),
   cb => newman.run(searchControllerTests,cb),
+  cb => newman.run(searchDevelopersControllerTests,cb),
   cb => newman.run(certificationidControllerTests,cb),
   cb => newman.run(activityControllerTests,cb),
   cb => newman.run(changerequestsControllerTests,cb),
