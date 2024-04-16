@@ -12,8 +12,11 @@ import org.springframework.transaction.annotation.Transactional;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterionComparator;
 import gov.healthit.chpl.dao.CertificationCriterionAttributeDAO;
+import gov.healthit.chpl.domain.activity.ActivityConcept;
+import gov.healthit.chpl.exception.ActivityException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
+import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.scheduler.job.downloadfile.GenerateListingDownloadFile;
 import gov.healthit.chpl.scheduler.job.downloadfile.ListingSet;
 import gov.healthit.chpl.sharedstore.listing.ListingStoreRemove;
@@ -28,19 +31,24 @@ public class StandardManager {
     private StandardService standardService;
     private StandardDAO standardDAO;
     private CertificationCriterionAttributeDAO certificationCriterionAttributeDAO;
+    private ActivityManager activityManager;
     private ErrorMessageUtil errorMessageUtil;
     private CertificationCriterionComparator criteriaComparator;
     private StandardComparator standardComparator;
 
     @Autowired
-    public StandardManager(StandardDAO standardDAO, StandardValidator standardValidator,
-            StandardService standardService, CertificationCriterionAttributeDAO certificationCriterionAttributeDAO,
+    public StandardManager(StandardDAO standardDAO,
+            StandardValidator standardValidator,
+            StandardService standardService,
+            CertificationCriterionAttributeDAO certificationCriterionAttributeDAO,
+            ActivityManager activityManager,
             ErrorMessageUtil errorMessageUtil, CertificationCriterionComparator criteriaComparator) {
 
         this.standardDAO = standardDAO;
         this.standardValidator = standardValidator;
         this.standardService = standardService;
         this.certificationCriterionAttributeDAO = certificationCriterionAttributeDAO;
+        this.activityManager = activityManager;
         this.errorMessageUtil = errorMessageUtil;
         this.criteriaComparator = criteriaComparator;
         this.standardComparator = new StandardComparator();
@@ -63,9 +71,20 @@ public class StandardManager {
     @ListingStoreRemove(removeBy = RemoveBy.ALL)
     @GenerateListingDownloadFile(listingSet = {ListingSet.EDITION_2011, ListingSet.EDITION_2014})
     public Standard update(Standard standard) throws EntityRetrievalException, ValidationException {
+        Standard origStandard = standardDAO.getById(standard.getId());
         standardValidator.validateForEdit(standard);
         standardService.update(standard);
-        return standardDAO.getById(standard.getId());
+        Standard updatedStandard = standardDAO.getById(standard.getId());
+
+        try {
+            activityManager.addActivity(ActivityConcept.STANDARD, origStandard.getId(),
+                    origStandard.getRegulatoryTextCitation() + " was updated.",
+                    origStandard, updatedStandard);
+        } catch (ActivityException ex) {
+            LOGGER.error("Error adding activity about updating Standard " + origStandard.getRegulatoryTextCitation(), ex);
+        }
+
+        return updatedStandard;
     }
 
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).STANDARD, "
@@ -73,7 +92,17 @@ public class StandardManager {
     @Transactional
     public Standard create(Standard standard) throws EntityRetrievalException, ValidationException {
         standardValidator.validateForAdd(standard);
-        return standardService.add(standard);
+        Standard createdStandard = standardService.add(standard);
+
+        try {
+            activityManager.addActivity(ActivityConcept.STANDARD, createdStandard.getId(),
+                    createdStandard.getRegulatoryTextCitation() + " was created.",
+                    null, createdStandard);
+        } catch (ActivityException ex) {
+            LOGGER.error("Error adding activity about creating Standard " + createdStandard.getRegulatoryTextCitation(), ex);
+        }
+
+        return createdStandard;
     }
 
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).STANDARD, "
@@ -88,6 +117,14 @@ public class StandardManager {
 
         standardValidator.validateForDelete(standard);
         standardService.delete(standard);
+
+        try {
+            activityManager.addActivity(ActivityConcept.STANDARD, standard.getId(),
+                    standard.getRegulatoryTextCitation() + " was deleted.",
+                    standard, null);
+        } catch (ActivityException ex) {
+            LOGGER.error("Error adding activity about deleting standard with ID " + standardId, ex);
+        }
     }
 
     public List<Standard> getStandardsByCriteria(Long criteriaId) {

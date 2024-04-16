@@ -71,5 +71,6 @@ public class TestingLabActivityMetadataBuilder extends ActivityMetadataBuilder {
             TestingLabActivityMetadata atlMetadata, TestingLab atl) {
         atlMetadata.setAtlId(atl.getId());
         atlMetadata.setAtlName(atl.getName());
+        atlMetadata.getObject().setName(atl.getName());
     }
 }

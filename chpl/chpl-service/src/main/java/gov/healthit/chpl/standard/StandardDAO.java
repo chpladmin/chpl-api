@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import javax.persistence.Query;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -16,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
+import gov.healthit.chpl.certificationCriteria.CertificationCriterionComparator;
 import gov.healthit.chpl.criteriaattribute.rule.RuleDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
@@ -29,18 +31,21 @@ import lombok.extern.log4j.Log4j2;
 public class StandardDAO extends BaseDAOImpl {
     private RuleDAO ruleDAO;
     private CertifiedProductDAO certifiedProductDAO;
+    private CertificationCriterionComparator criterionComparator;
 
     @Autowired
-    public StandardDAO(RuleDAO ruleDAO, CertifiedProductDAO certifiedProductDAO) {
+    public StandardDAO(RuleDAO ruleDAO, CertifiedProductDAO certifiedProductDAO,
+            CertificationCriterionComparator criterionComparator) {
         this.ruleDAO = ruleDAO;
         this.certifiedProductDAO = certifiedProductDAO;
+        this.criterionComparator = criterionComparator;
     }
 
     public Standard getById(Long id) {
         try {
             StandardEntity entity = getEntityById(id);
             if (entity != null) {
-                return entity.toDomainWithCriteria();
+                return entity.toDomainWithCriteria(criterionComparator);
             } else {
                 return null;
             }
@@ -92,8 +97,8 @@ public class StandardDAO extends BaseDAOImpl {
             entity.setRule(null);
         }
 
-        entity.setAdditionalInformation(standard.getAdditionalInformation());
-        entity.setGroupName(standard.getGroupName());
+        entity.setAdditionalInformation(StringUtils.isEmpty(standard.getAdditionalInformation()) ? null : standard.getAdditionalInformation());
+        entity.setGroupName(StringUtils.isEmpty(standard.getGroupName()) ? null : standard.getGroupName());
         update(entity);
     }
 
@@ -134,7 +139,7 @@ public class StandardDAO extends BaseDAOImpl {
     public List<Standard> findAll() {
         List<StandardEntity> entities = getAllEntities();
         return entities.stream()
-                .map(entity -> entity.toDomainWithCriteria())
+                .map(entity -> entity.toDomainWithCriteria(criterionComparator))
                 .collect(Collectors.toList());
     }
 
@@ -150,7 +155,7 @@ public class StandardDAO extends BaseDAOImpl {
     @Transactional
     public List<StandardCriteriaMap> getAllStandardCriteriaMap() throws EntityRetrievalException {
         return getAllStandardCriteriaMapEntities().stream()
-                .map(e -> e.toDomain())
+                .map(e -> e.toDomain(criterionComparator))
                 .collect(Collectors.toList());
     }
 

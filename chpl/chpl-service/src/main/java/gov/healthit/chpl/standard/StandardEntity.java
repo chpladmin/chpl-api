@@ -2,6 +2,7 @@ package gov.healthit.chpl.standard;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -20,6 +21,7 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.Where;
 
+import gov.healthit.chpl.certificationCriteria.CertificationCriterionComparator;
 import gov.healthit.chpl.criteriaattribute.rule.RuleEntity;
 import gov.healthit.chpl.entity.EntityAudit;
 import lombok.AllArgsConstructor;
@@ -94,7 +96,7 @@ public class StandardEntity extends EntityAudit implements Serializable {
                 .build();
     }
 
-    public Standard toDomainWithCriteria() {
+    public Standard toDomainWithCriteria(CertificationCriterionComparator criterionComparator) {
         return Standard.builder()
                 .id(this.getId())
                 .value(this.getValue())
@@ -107,7 +109,8 @@ public class StandardEntity extends EntityAudit implements Serializable {
                 .rule(this.rule != null ? this.rule.toDomain() : null)
                 .criteria(this.getMappedCriteria() != null ? this.getMappedCriteria().stream()
                         .map(mappedCriterion -> mappedCriterion.getCriterion().toDomain())
-                        .collect(Collectors.toList()) : null)
+                        .sorted(criterionComparator)
+                        .collect(Collectors.toCollection(ArrayList::new)) : null)
                 .build();
     }
 

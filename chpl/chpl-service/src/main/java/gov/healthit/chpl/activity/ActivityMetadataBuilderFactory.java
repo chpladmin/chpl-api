@@ -6,14 +6,12 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.dto.ActivityDTO;
 
-/**
- * Creates an appropriate metadata buidler object for the type of activity.
- *
- * @author kekey
- *
- */
 @Component
 public class ActivityMetadataBuilderFactory {
+    private ActivityMetadataBuilder defaultBuilder;
+    private FunctionalityTestedActivityMetadataBuilder funcTestedBuilder;
+    private StandardActivityMetadataBuilder standardBuilder;
+    private SvapActivityMetadataBuilder svapBuilder;
     private ListingActivityMetadataBuilder listingBuilder;
     private DeveloperActivityMetadataBuilder developerBuilder;
     private ProductActivityMetadataBuilder productBuilder;
@@ -21,32 +19,34 @@ public class ActivityMetadataBuilderFactory {
     private CertificationBodyActivityMetadataBuilder acbBuilder;
     private TestingLabActivityMetadataBuilder atlBuilder;
     private UserMaintenanceActivityMetadataBuilder userMaintenanceActivityMetadataBuilder;
-    private AnnouncementActivityMetadataBuilder announcementActivityMetadataBuilder;
-    private CorrectActionPlanActivityMetadataBuilder correctActionPlanActivityMetadataBuilder;
-    private PendingSurveillanceActivityMetadataBuilder pendingSurveillanceActivityMetadataBuilder;
     private ComplaintActivityMetadataBuilder complaintActivityMetadataBuilder;
     private QuarterlyReportActivityMetadataBuilder quarterlyReportActivityMetadataBuilder;
     private AnnualReportActivityMetadataBuilder annualReportActivityMetadataBuilder;
     private ChangeRequestActivityMetadataBuilder changeRequestActivityMetadataBuilder;
-    private ApiKeyManagementReportActivityMetadataBuilder apiKeyManagementReportActivityMetadataBuilder;
+    private ApiKeyActivityMetadataBuilder apiKeyBuilder;
 
     @Autowired
-    public ActivityMetadataBuilderFactory(
-            @Qualifier("listingActivityMetadataBuilder") final ListingActivityMetadataBuilder listingBuilder,
-            @Qualifier("developerActivityMetadataBuilder") final DeveloperActivityMetadataBuilder developerBuilder,
-            @Qualifier("productActivityMetadataBuilder") final ProductActivityMetadataBuilder productBuilder,
-            @Qualifier("versionActivityMetadataBuilder") final VersionActivityMetadataBuilder versionBuilder,
-            @Qualifier("acbActivityMetadataBuilder") final CertificationBodyActivityMetadataBuilder acbBuilder,
-            @Qualifier("atlActivityMetadataBuilder") final TestingLabActivityMetadataBuilder atlBuilder,
-            @Qualifier("userMaintenanceActivityMetadataBuilder") final UserMaintenanceActivityMetadataBuilder userMaintenanceActivityMetadataBuilder,
-            @Qualifier("announcementActivityMetadataBuilder") final AnnouncementActivityMetadataBuilder announcementActivityMetadataBuilder,
-            @Qualifier("correctActionPlanActivityMetadataBuilder") final CorrectActionPlanActivityMetadataBuilder correctActionPlanActivityMetadataBuilder,
-            @Qualifier("pendingSurveillanceActivityMetadataBuilder") final PendingSurveillanceActivityMetadataBuilder pendingSurveillanceActivityMetadataBuilder,
-            @Qualifier("complaintActivityMetadataBuilder") final ComplaintActivityMetadataBuilder complaintActivityMetadataBuilder,
-            @Qualifier("quarterlyReportActivityMetadataBuilder") final QuarterlyReportActivityMetadataBuilder quarterlyReportActivityMetadataBuilder,
-            @Qualifier("annualReportActivityMetadataBuilder") final AnnualReportActivityMetadataBuilder annualReportActivityMetadataBuilder,
-            @Qualifier("changeRequestActivityMetadataBuilder") final ChangeRequestActivityMetadataBuilder changeRequestActivityMetadataBuilder,
-            @Qualifier("apiKeyManagementReportActivityMetadataBuilder") final ApiKeyManagementReportActivityMetadataBuilder apiKeyManagementReportActivityMetadataBuilder) {
+    public ActivityMetadataBuilderFactory (
+            @Qualifier("activityMetadataBuilder") ActivityMetadataBuilder defaultBuilder,
+            @Qualifier("functionalityTestedActivityMetadataBuilder") FunctionalityTestedActivityMetadataBuilder funcTestedBuilder,
+            @Qualifier("standardActivityMetadataBuilder") StandardActivityMetadataBuilder standardBuilder,
+            @Qualifier("svapActivityMetadataBuilder") SvapActivityMetadataBuilder svapBuilder,
+            @Qualifier("listingActivityMetadataBuilder") ListingActivityMetadataBuilder listingBuilder,
+            @Qualifier("developerActivityMetadataBuilder") DeveloperActivityMetadataBuilder developerBuilder,
+            @Qualifier("productActivityMetadataBuilder") ProductActivityMetadataBuilder productBuilder,
+            @Qualifier("versionActivityMetadataBuilder") VersionActivityMetadataBuilder versionBuilder,
+            @Qualifier("acbActivityMetadataBuilder") CertificationBodyActivityMetadataBuilder acbBuilder,
+            @Qualifier("atlActivityMetadataBuilder") TestingLabActivityMetadataBuilder atlBuilder,
+            @Qualifier("userMaintenanceActivityMetadataBuilder") UserMaintenanceActivityMetadataBuilder userMaintenanceActivityMetadataBuilder,
+            @Qualifier("complaintActivityMetadataBuilder") ComplaintActivityMetadataBuilder complaintActivityMetadataBuilder,
+            @Qualifier("quarterlyReportActivityMetadataBuilder") QuarterlyReportActivityMetadataBuilder quarterlyReportActivityMetadataBuilder,
+            @Qualifier("annualReportActivityMetadataBuilder") AnnualReportActivityMetadataBuilder annualReportActivityMetadataBuilder,
+            @Qualifier("changeRequestActivityMetadataBuilder") ChangeRequestActivityMetadataBuilder changeRequestActivityMetadataBuilder,
+            @Qualifier("apiKeyActivityMetadataBuilder") ApiKeyActivityMetadataBuilder apiKeyBuilder) {
+        this.defaultBuilder = defaultBuilder;
+        this.funcTestedBuilder = funcTestedBuilder;
+        this.standardBuilder = standardBuilder;
+        this.svapBuilder = svapBuilder;
         this.listingBuilder = listingBuilder;
         this.developerBuilder = developerBuilder;
         this.productBuilder = productBuilder;
@@ -54,25 +54,14 @@ public class ActivityMetadataBuilderFactory {
         this.acbBuilder = acbBuilder;
         this.atlBuilder = atlBuilder;
         this.userMaintenanceActivityMetadataBuilder = userMaintenanceActivityMetadataBuilder;
-        this.announcementActivityMetadataBuilder = announcementActivityMetadataBuilder;
-        this.correctActionPlanActivityMetadataBuilder = correctActionPlanActivityMetadataBuilder;
-        this.pendingSurveillanceActivityMetadataBuilder = pendingSurveillanceActivityMetadataBuilder;
         this.complaintActivityMetadataBuilder = complaintActivityMetadataBuilder;
         this.quarterlyReportActivityMetadataBuilder = quarterlyReportActivityMetadataBuilder;
         this.annualReportActivityMetadataBuilder = annualReportActivityMetadataBuilder;
         this.changeRequestActivityMetadataBuilder = changeRequestActivityMetadataBuilder;
-        this.apiKeyManagementReportActivityMetadataBuilder = apiKeyManagementReportActivityMetadataBuilder;
+        this.apiKeyBuilder = apiKeyBuilder;
     }
 
-    /**
-     * Factory method to get a metadata builder of the appropriate class based
-     * on what type of activity object is passed in.
-     *
-     * @param dto
-     *            the activity object
-     * @return the appropriate builder
-     */
-    public ActivityMetadataBuilder getBuilder(final ActivityDTO dto) {
+    public ActivityMetadataBuilder getBuilder(ActivityDTO dto) {
         ActivityMetadataBuilder builder = null;
         switch (dto.getConcept()) {
         case CERTIFIED_PRODUCT:
@@ -96,15 +85,6 @@ public class ActivityMetadataBuilderFactory {
         case USER:
             builder = userMaintenanceActivityMetadataBuilder;
             break;
-        case ANNOUNCEMENT:
-            builder = announcementActivityMetadataBuilder;
-            break;
-        case CORRECTIVE_ACTION_PLAN:
-            builder = correctActionPlanActivityMetadataBuilder;
-            break;
-        case PENDING_SURVEILLANCE:
-            builder = pendingSurveillanceActivityMetadataBuilder;
-            break;
         case COMPLAINT:
             builder = complaintActivityMetadataBuilder;
             break;
@@ -118,8 +98,22 @@ public class ActivityMetadataBuilderFactory {
         case CHANGE_REQUEST:
             builder = changeRequestActivityMetadataBuilder;
             break;
+        case FUNCTIONALITY_TESTED:
+            builder = funcTestedBuilder;
+            break;
+        case STANDARD:
+            builder = standardBuilder;
+            break;
+        case SVAP:
+            builder = svapBuilder;
+            break;
         case API_KEY:
-            builder = apiKeyManagementReportActivityMetadataBuilder;
+            builder = apiKeyBuilder;
+            break;
+        case ANNOUNCEMENT:
+        case CORRECTIVE_ACTION_PLAN:
+        case PENDING_SURVEILLANCE:
+            builder = defaultBuilder;
             break;
         default:
             break;
