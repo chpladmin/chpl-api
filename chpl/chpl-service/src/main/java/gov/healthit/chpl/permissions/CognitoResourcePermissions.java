@@ -54,9 +54,14 @@ public class CognitoResourcePermissions implements ResourcePermissions {
     }
 
     @Override
-    public List<UserDTO> getAllUsersOnDeveloper(Developer dev) {
-        LOGGER.error("Not implemented: getAllUsersOnDeveloper");
-        throw new NotImplementedException("Not implemented: getAllUsersOnDeveloper");
+    public List<User> getAllUsersOnDeveloper(Developer dev) {
+        return cognitoApiWrapper.getAllUsers().stream()
+                .filter(user -> user.getRole().equals(CognitoGroups.CHPL_DEVELOPER)
+                        && user.getOrganizations().stream()
+                                .filter(org -> org.getId().equals(dev.getId()))
+                                .findAny()
+                                .isPresent())
+                .toList();
     }
 
     @Override

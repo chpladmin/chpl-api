@@ -15,7 +15,7 @@ public interface ResourcePermissions {
 
     List<UserDTO> getAllUsersOnAcb(CertificationBody acb);
 
-    List<UserDTO> getAllUsersOnDeveloper(Developer dev);
+    List<User> getAllUsersOnDeveloper(Developer dev);
 
     List<CertificationBody> getAllAcbsForCurrentUser();
 

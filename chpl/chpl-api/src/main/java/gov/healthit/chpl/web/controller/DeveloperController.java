@@ -296,6 +296,29 @@ public class DeveloperController {
         return results;
     }
 
+    @Operation(summary = "List Cognito users with permissions on a specified developer.",
+            description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_ACB, or have administrative "
+                    + "authority on the specified developer.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
+    @RequestMapping(value = "/{developerId}/cognito-users", method = RequestMethod.GET,
+            produces = "application/json; charset=utf-8")
+    public @ResponseBody UsersResponse getCognitoUsers(@PathVariable("developerId") Long developerId)
+            throws InvalidArgumentsException, EntityRetrievalException {
+        List<UserDTO> users = developerManager.getAllUsersOnDeveloper(developerId);
+        List<User> domainUsers = new ArrayList<User>(users.size());
+        for (UserDTO userDto : users) {
+            User domainUser = userDto.toDomain();
+            domainUsers.add(domainUser);
+        }
+
+        UsersResponse results = new UsersResponse();
+        results.setUsers(domainUsers);
+        return results;
+    }
+
     @Operation(summary = "List attestations for a developer.",
             description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_ACB, or have administrative "
                     + "authority on the specified developer.",

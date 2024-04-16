@@ -83,15 +83,12 @@ public class ChplResourcePermissions implements ResourcePermissions {
 
     @Override
     @Transactional(readOnly = true)
-    public List<UserDTO> getAllUsersOnDeveloper(Developer dev) {
-        List<UserDTO> userDtos = new ArrayList<UserDTO>();
+    public List<User> getAllUsersOnDeveloper(Developer dev) {
         List<UserDeveloperMapDTO> dtos = userDeveloperMapDAO.getByDeveloperId(dev.getId());
 
-        for (UserDeveloperMapDTO dto : dtos) {
-            userDtos.add(dto.getUser());
-        }
-
-        return userDtos;
+        return dtos.stream()
+                .map(udm -> udm.getUser().toDomain())
+                .toList();
     }
 
     @Override
