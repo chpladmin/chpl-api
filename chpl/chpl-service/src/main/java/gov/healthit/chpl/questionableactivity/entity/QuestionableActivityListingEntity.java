@@ -15,6 +15,7 @@ import javax.persistence.Table;
 import org.hibernate.annotations.Where;
 
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
+import gov.healthit.chpl.entity.ActivityEntity;
 import gov.healthit.chpl.entity.EntityAudit;
 import gov.healthit.chpl.entity.auth.UserEntity;
 import gov.healthit.chpl.entity.listing.CertifiedProductDetailsEntity;
@@ -47,8 +48,9 @@ public class QuestionableActivityListingEntity extends EntityAudit implements Qu
     @Column(name = "questionable_activity_trigger_id")
     private Long triggerId;
 
-    @Column(name = "activity_id")
-    private Long activityId;
+    @OneToOne(optional = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "activity_id", insertable = true, updatable = false)
+    private ActivityEntity activity;
 
     @OneToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "questionable_activity_trigger_id", insertable = false, updatable = false)
@@ -86,14 +88,13 @@ public class QuestionableActivityListingEntity extends EntityAudit implements Qu
     public QuestionableActivityListing toDomain() {
         return QuestionableActivityListing.builder()
                 .id(this.getId())
-                .activityId(this.getActivityId())
+                .activity(this.getActivity().toDomain())
                 .trigger(this.getTrigger() == null
                     ? QuestionableActivityTrigger.builder().id(this.getTriggerId()).build()
                         : this.getTrigger().toDomain())
                 .before(this.getBefore())
                 .after(this.getAfter())
                 .activityDate(this.getActivityDate())
-                .userId(this.getUserId())
                 .listingId(this.getListingId())
                 .listing(this.getListing() == null
                     ? CertifiedProductDetailsDTO.builder().id(this.getListingId()).build()

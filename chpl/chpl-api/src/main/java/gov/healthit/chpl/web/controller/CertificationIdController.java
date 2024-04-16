@@ -19,8 +19,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.certificationId.Validator;
 import gov.healthit.chpl.certificationId.ValidatorFactory;
@@ -29,6 +27,7 @@ import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
 import gov.healthit.chpl.dto.CQMMetDTO;
 import gov.healthit.chpl.dto.CertificationIdDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
+import gov.healthit.chpl.exception.ActivityException;
 import gov.healthit.chpl.exception.CertificationIdException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -320,12 +319,8 @@ public class CertificationIdController {
                         results.setEhrCertificationId(idDto.getCertificationId());
                     }
                 }
-            } catch (final EntityRetrievalException ex) {
+            } catch (EntityRetrievalException | EntityCreationException | ActivityException ex) {
                 throw new CertificationIdException("Unable to retrieve a Certification ID.");
-            } catch (final EntityCreationException ex) {
-                throw new CertificationIdException("Unable to create a new Certification ID.");
-            } catch (final JsonProcessingException ex) {
-                throw new CertificationIdException("Unable to create a new Certification ID.");
             }
         }
         return results;

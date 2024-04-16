@@ -16,13 +16,9 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
-
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.ActivityDTO;
-import gov.healthit.chpl.entity.auth.UserEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -47,10 +43,6 @@ import lombok.experimental.SuperBuilder;
                     + "JOIN " + BaseDAOImpl.SCHEMA_NAME + ".activity_concept ac "
                         + " ON a.activity_object_concept_id = ac.activity_concept_id "
                         + "AND ac.concept = :conceptName "
-                    + "LEFT OUTER JOIN " + BaseDAOImpl.SCHEMA_NAME + ".user u "
-                        + "ON a.last_modified_user = u.user_id "
-                    + "JOIN " + BaseDAOImpl.SCHEMA_NAME + ".user_permission up "
-                        + "ON u.user_permission_id = up.user_permission_id "
                     + "WHERE a.deleted = false "
                     + "AND (a.activity_date >= :startDate) "
                     + "AND (a.activity_date <= :endDate) "
@@ -67,10 +59,6 @@ import lombok.experimental.SuperBuilder;
                     + "JOIN " + BaseDAOImpl.SCHEMA_NAME + ".activity_concept ac "
                         + " ON a.activity_object_concept_id = ac.activity_concept_id "
                         + "AND ac.concept = :conceptName "
-                    + "LEFT OUTER JOIN " + BaseDAOImpl.SCHEMA_NAME + ".user u "
-                        + "ON a.last_modified_user = u.user_id "
-                    + "JOIN " + BaseDAOImpl.SCHEMA_NAME + ".user_permission up "
-                        + "ON u.user_permission_id = up.user_permission_id "
                     + "WHERE a.deleted = false "
                     + "AND (a.activity_date >= :startDate) "
                     + "AND (a.activity_date <= :endDate) "
@@ -115,11 +103,6 @@ public class ActivityEntity extends EntityAudit {
     @Column(name = "reason")
     private String reason;
 
-    @OneToOne(optional = true, fetch = FetchType.LAZY)
-    @Fetch(FetchMode.JOIN)
-    @JoinColumn(name = "last_modified_user", unique = true, nullable = true, insertable = false, updatable = false)
-    private UserEntity user;
-
     public ActivityDTO toDomain() {
         return ActivityDTO.builder()
                 .id(this.getId())
@@ -133,6 +116,7 @@ public class ActivityEntity extends EntityAudit {
                 .creationDate(this.getCreationDate())
                 .lastModifiedDate(this.getLastModifiedDate())
                 .lastModifiedUser(this.getLastModifiedUser())
+                .lastModifiedSsoUser(this.getLastModifiedSsoUser())
                 .deleted(this.getDeleted())
                 .build();
     }

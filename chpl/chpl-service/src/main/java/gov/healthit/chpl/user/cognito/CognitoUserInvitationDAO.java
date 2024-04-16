@@ -18,6 +18,8 @@ public class CognitoUserInvitationDAO extends BaseDAOImpl {
         CognitoUserInvitationEntity entity = CognitoUserInvitationEntity.builder()
                 .email(userInvitation.getEmail())
                 .token(userInvitation.getInvitationToken())
+                .groupName(userInvitation.getGroupName())
+                .organizationId(userInvitation.getOrganizationId() != null ? userInvitation.getOrganizationId() : null)
                 .build();
 
         create(entity);

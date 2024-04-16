@@ -41,6 +41,7 @@ import gov.healthit.chpl.domain.CertifiedProductUcdProcess;
 import gov.healthit.chpl.domain.TestTask;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.entity.CertificationStatusType;
+import gov.healthit.chpl.exception.ActivityException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
@@ -125,7 +126,8 @@ public class ListingConfirmationManager {
     }, allEntries = true)
     @ListingSearchCacheRefresh
     public CertifiedProductSearchDetails create(CertifiedProductSearchDetails listing)
-        throws EntityCreationException, EntityRetrievalException, JsonProcessingException, ValidationException {
+            throws ValidationException, EntityCreationException, EntityRetrievalException, ActivityException, JsonProcessingException {
+
         if (listing.getDeveloper().getId() == null) {
             //create developer, set developer ID in listing
             Long developerId = developerManager.create(listing.getDeveloper());
@@ -363,7 +365,7 @@ public class ListingConfirmationManager {
         statusEventDao.create(listing.getId(), certEvent);
     }
 
-    private void logCertifiedProductCreateActivity(CertifiedProductSearchDetails listing) throws JsonProcessingException, EntityCreationException, EntityRetrievalException {
+    private void logCertifiedProductCreateActivity(CertifiedProductSearchDetails listing) throws ActivityException  {
         activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, listing.getId(),
             "Created a certified product", null, listing);
     }

@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.stream.Collectors;
 
-import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 
 import org.apache.commons.csv.CSVFormat;
@@ -24,7 +23,6 @@ import org.quartz.JobDataMap;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
@@ -44,6 +42,7 @@ import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.domain.schedule.ChplJob;
 import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
 import gov.healthit.chpl.dto.auth.UserDTO;
+import gov.healthit.chpl.exception.ActivityException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
@@ -138,8 +137,7 @@ public class ListingUploadManager {
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).LISTING_UPLOAD, "
             + "T(gov.healthit.chpl.permissions.domains.ListingUploadDomainPerissions).CREATE, #uploadMetadata)")
-    public ListingUpload createOrReplaceListingUpload(ListingUpload uploadMetadata) throws ValidationException,
-            JsonProcessingException, EntityRetrievalException, EntityCreationException {
+    public ListingUpload createOrReplaceListingUpload(ListingUpload uploadMetadata) throws ValidationException, ActivityException {
         if (StringUtils.isEmpty(uploadMetadata.getChplProductNumber())) {
             throw new ValidationException(msgUtil.getMessage("listing.upload.missingChplProductNumber"));
         } else if (uploadMetadata.getAcb() == null || uploadMetadata.getAcb().getId() == null) {
@@ -281,7 +279,7 @@ public class ListingUploadManager {
             + "T(gov.healthit.chpl.permissions.domains.ListingUploadDomainPerissions).CONFIRM, #id)")
     public CertifiedProductSearchDetails confirm(Long id, ConfirmListingRequest confirmListingRequest)
             throws InvalidArgumentsException, JsonProcessingException, EntityRetrievalException, EntityCreationException,
-            ValidationException {
+            ValidationException, ActivityException {
         // Is listing already processing?
         if (!listingUploadDao.isAvailableForProcessing(id)) {
             throw new InvalidArgumentsException(msgUtil.getMessage("pendingListing.alreadyProcessing"));
@@ -295,6 +293,10 @@ public class ListingUploadManager {
             } catch (ValidationException ex) {
                 listingUploadDao.updateStatus(id, ListingUploadStatus.UPLOAD_SUCCESS);
                 LOGGER.error("Could not confirm pending listing " + id + " due to validation error.");
+                throw ex;
+            } catch (ActivityException ex) {
+                listingUploadDao.updateStatus(id, ListingUploadStatus.UPLOAD_SUCCESS);
+                LOGGER.error("Could not generate activity.");
                 throw ex;
             } catch (Exception ex) {
                 listingUploadDao.updateStatus(id, ListingUploadStatus.UPLOAD_SUCCESS);
@@ -324,9 +326,7 @@ public class ListingUploadManager {
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).LISTING_UPLOAD, "
             + "T(gov.healthit.chpl.permissions.domains.ListingUploadDomainPerissions).DELETE, #id)")
-    public void reject(Long id)
-            throws EntityRetrievalException, EntityNotFoundException, EntityCreationException, AccessDeniedException,
-            JsonProcessingException, ObjectMissingValidationException {
+    public void reject(Long id) throws ObjectMissingValidationException, EntityRetrievalException, ActivityException {
         if (isListingUploadAvailableForRejection(id)) {
             ListingUpload listingUploadBeforeDelete = listingUploadDao.getById(id);
             listingUploadDao.updateStatus(id, ListingUploadStatus.REJECTED);

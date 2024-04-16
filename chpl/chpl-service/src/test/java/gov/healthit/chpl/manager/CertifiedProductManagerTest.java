@@ -19,9 +19,6 @@ import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.springframework.core.env.Environment;
-import org.springframework.security.access.AccessDeniedException;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.accessibilityStandard.AccessibilityStandardDAO;
 import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
@@ -56,11 +53,10 @@ import gov.healthit.chpl.domain.TestingLab;
 import gov.healthit.chpl.domain.contact.PointOfContact;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
+import gov.healthit.chpl.exception.ActivityException;
 import gov.healthit.chpl.exception.CertifiedProductUpdateException;
-import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
-import gov.healthit.chpl.exception.MissingReasonException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.listing.measure.ListingMeasureDAO;
 import gov.healthit.chpl.manager.auth.UserManager;
@@ -156,8 +152,7 @@ public class CertifiedProductManagerTest {
 
     @Test(expected = ValidationException.class)
     public void update_HasValidationWarningsAndNoAck_ThrowsValidationException()
-            throws EntityRetrievalException, AccessDeniedException, JsonProcessingException, EntityCreationException,
-            InvalidArgumentsException, IOException, ValidationException, MissingReasonException, CertifiedProductUpdateException {
+            throws EntityRetrievalException, ValidationException, InvalidArgumentsException, IOException, ActivityException, CertifiedProductUpdateException {
 
         Mockito.when(certifiedProductDetailsManager.getCertifiedProductDetails(ArgumentMatchers.anyLong()))
                 .thenReturn(getCertifiedProductSearchDetails());
@@ -185,8 +180,7 @@ public class CertifiedProductManagerTest {
 
     @Test
     public void update_HasValidationWarningsAndAck_ReturnsUpdatedListing()
-            throws EntityRetrievalException, AccessDeniedException, JsonProcessingException, EntityCreationException,
-            InvalidArgumentsException, IOException, ValidationException, MissingReasonException, CertifiedProductUpdateException {
+            throws EntityRetrievalException, ValidationException, InvalidArgumentsException, IOException, ActivityException, CertifiedProductUpdateException {
 
         Mockito.when(certifiedProductDetailsManager.getCertifiedProductDetails(ArgumentMatchers.anyLong()))
                 .thenReturn(getCertifiedProductSearchDetails());

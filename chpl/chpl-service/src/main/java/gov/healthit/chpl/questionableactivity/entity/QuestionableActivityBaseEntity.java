@@ -2,7 +2,7 @@ package gov.healthit.chpl.questionableactivity.entity;
 
 import java.util.Date;
 
-import gov.healthit.chpl.entity.auth.UserEntity;
+import gov.healthit.chpl.entity.ActivityEntity;
 
 public interface QuestionableActivityBaseEntity {
 
@@ -10,8 +10,8 @@ public interface QuestionableActivityBaseEntity {
     void setId(Long id);
     Long getTriggerId();
     void setTriggerId(Long triggerId);
-    Long getActivityId();
-    void setActivityId(Long activityId);
+    ActivityEntity getActivity();
+    void setActivity(ActivityEntity activity);
     QuestionableActivityTriggerEntity getTrigger();
     void setTrigger(QuestionableActivityTriggerEntity trigger);
     String getBefore();
@@ -20,10 +20,6 @@ public interface QuestionableActivityBaseEntity {
     void setAfter(String after);
     Date getActivityDate();
     void setActivityDate(Date activityDate);
-    Long getUserId();
-    void setUserId(Long userId);
-    UserEntity getUser();
-    void setUser(UserEntity user);
     Boolean getDeleted();
     void setDeleted(Boolean deleted);
     Long getLastModifiedUser();
