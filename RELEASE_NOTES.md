@@ -1,5 +1,19 @@
 # Release Notes
 
+## Version 44.0.0
+_15 April 2024_
+
+### Breaking Change
+* Remove deprecated endpoints and fields eligible for removal Jan 1, 2024
+
+### Features
+* Get Listing's initial state if Certification Date before Real World Testing start date
+* Support more criteria headings during upload
+* Support RWT url and date fields in listing upload
+* Support uploading and confirming Code Sets on a listing
+
+---
+
 ## Version 43.7.0
 _1 April 2024_
 

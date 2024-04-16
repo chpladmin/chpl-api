@@ -1,7 +1,5 @@
 package gov.healthit.chpl.activity;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -11,14 +9,16 @@ import gov.healthit.chpl.domain.activity.ActivityMetadata;
 import gov.healthit.chpl.domain.activity.UserMaintenanceActivityMetadata;
 import gov.healthit.chpl.dto.ActivityDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
+import gov.healthit.chpl.util.ChplUserToCognitoUserUtil;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 @Component("userMaintenanceActivityMetadataBuilder")
 public class UserMaintenanceActivityMetadataBuilder extends ActivityMetadataBuilder {
-    private static final Logger LOGGER = LogManager.getLogger(UserMaintenanceActivityMetadataBuilder.class);
     private ObjectMapper jsonMapper;
 
-    public UserMaintenanceActivityMetadataBuilder() {
-        super();
+    public UserMaintenanceActivityMetadataBuilder(ChplUserToCognitoUserUtil chplUserToCognitoUserUtil) {
+        super(chplUserToCognitoUserUtil);
         jsonMapper = new ObjectMapper();
     }
 

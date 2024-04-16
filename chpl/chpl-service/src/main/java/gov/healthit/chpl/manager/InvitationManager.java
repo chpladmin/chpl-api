@@ -12,8 +12,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-
 import gov.healthit.chpl.dao.auth.InvitationDAO;
 import gov.healthit.chpl.dao.auth.UserDAO;
 import gov.healthit.chpl.dao.auth.UserPermissionDAO;
@@ -27,7 +25,7 @@ import gov.healthit.chpl.domain.auth.UserInvitation;
 import gov.healthit.chpl.domain.auth.UserPermission;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.dto.auth.UserInvitationDTO;
-import gov.healthit.chpl.exception.EntityCreationException;
+import gov.healthit.chpl.exception.ActivityException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.MultipleUserAccountsException;
@@ -159,9 +157,7 @@ public class InvitationManager extends SecuredManager {
 
     @Transactional
     public User createUserFromInvitation(UserInvitation invitation, CreateUserRequest user)
-            throws EntityRetrievalException, InvalidArgumentsException, UserRetrievalException,
-            UserCreationException, MultipleUserAccountsException, EntityCreationException, EntityRetrievalException,
-            JsonProcessingException {
+            throws InvalidArgumentsException, UserCreationException, ActivityException, EntityRetrievalException, UserRetrievalException {
         Authentication authenticator = AuthUtil.getInvitedUserAuthenticator(invitation.getLastModifiedUserId());
         SecurityContextHolder.getContext().setAuthentication(authenticator);
 
@@ -222,8 +218,8 @@ public class InvitationManager extends SecuredManager {
             String activityDescription = "User " + user.getEmail() + " was confirmed.";
             try {
                 activityManager.addActivity(ActivityConcept.USER, user.getId(), activityDescription, origUser, user,
-                        user.getId());
-            } catch (JsonProcessingException | EntityCreationException | EntityRetrievalException e) {
+                        user.toDomain());
+            } catch (ActivityException e) {
                 LOGGER.error("Error creating user confirmation activity.  UserId: " + user.getId(), e);
             }
 

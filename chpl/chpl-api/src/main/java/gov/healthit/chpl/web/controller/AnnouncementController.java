@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -14,15 +15,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-
 import gov.healthit.chpl.domain.Announcement;
+import gov.healthit.chpl.exception.ActivityException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
-import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.manager.AnnouncementManager;
-import gov.healthit.chpl.manager.impl.UpdateCertifiedBodyException;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import gov.healthit.chpl.web.controller.annotation.CacheControl;
 import gov.healthit.chpl.web.controller.annotation.CacheMaxAge;
@@ -73,8 +71,7 @@ public class AnnouncementController {
             })
     @RequestMapping(value = "", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
-    public Announcement create(@RequestBody Announcement announcement) throws InvalidArgumentsException,
-            UserRetrievalException, EntityRetrievalException, EntityCreationException, JsonProcessingException {
+    public Announcement create(@RequestBody Announcement announcement) throws InvalidArgumentsException, ActivityException, EntityRetrievalException, EntityCreationException {
 
         if (!StringUtils.hasText(announcement.getTitle())) {
             throw new InvalidArgumentsException("A title is required for a new announcement");
@@ -106,8 +103,7 @@ public class AnnouncementController {
     @RequestMapping(value = "/{announcementId}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
     public Announcement updateAnnouncement(@PathVariable("announcementId") Long announcementId, @RequestBody Announcement announcement)
-            throws InvalidArgumentsException, EntityRetrievalException, JsonProcessingException,
-            EntityCreationException, UpdateCertifiedBodyException {
+            throws InvalidArgumentsException, ActivityException, EntityRetrievalException {
 
         if (!StringUtils.hasText(announcement.getTitle())) {
             throw new InvalidArgumentsException("A title is required when editing an announcement");
@@ -139,7 +135,7 @@ public class AnnouncementController {
     @RequestMapping(value = "/{announcementId}", method = RequestMethod.DELETE,
             produces = "application/json; charset=utf-8")
     public String deleteAnnouncement(@PathVariable("announcementId") Long announcementId)
-            throws JsonProcessingException, EntityCreationException, EntityRetrievalException, UserRetrievalException {
+            throws AccessDeniedException, EntityRetrievalException, ActivityException {
 
         Announcement toDelete = announcementManager.getById(announcementId, false);
         announcementManager.delete(toDelete);
