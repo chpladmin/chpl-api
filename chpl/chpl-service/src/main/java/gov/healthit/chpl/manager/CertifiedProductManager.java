@@ -76,11 +76,11 @@ import gov.healthit.chpl.dto.ListingToListingMapDTO;
 import gov.healthit.chpl.dto.TargetedUserDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
+import gov.healthit.chpl.exception.ActivityException;
 import gov.healthit.chpl.exception.CertifiedProductUpdateException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
-import gov.healthit.chpl.exception.MissingReasonException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.listing.measure.ListingMeasureDAO;
@@ -281,8 +281,7 @@ public class CertifiedProductManager extends SecuredManager {
     @ListingSearchCacheRefresh
     @ListingStoreRemove(removeBy = RemoveBy.LISTING_ID, id = "#updateRequest.listing.id")
     public CertifiedProductDTO update(ListingUpdateRequest updateRequest)
-            throws AccessDeniedException, JsonProcessingException, InvalidArgumentsException, IOException,
-            ValidationException, MissingReasonException, CertifiedProductUpdateException {
+            throws ValidationException, InvalidArgumentsException, IOException, ActivityException, CertifiedProductUpdateException {
 
         CertifiedProductSearchDetails existingListing = null;
         try {
@@ -337,9 +336,8 @@ public class CertifiedProductManager extends SecuredManager {
                 && request.isAcknowledgeBusinessErrors();
     }
 
-    private Long logCertifiedProductUpdateActivity(CertifiedProductSearchDetails existingListing,
-            CertifiedProductSearchDetails updatedListing,
-            String reason) throws JsonProcessingException, EntityCreationException, EntityRetrievalException {
+    private Long logCertifiedProductUpdateActivity(CertifiedProductSearchDetails existingListing, CertifiedProductSearchDetails updatedListing,
+            String reason) throws ActivityException {
         Long activityId = activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, existingListing.getId(),
                 "Updated certified product " + updatedListing.getChplProductNumber() + ".", existingListing,
                 updatedListing, reason);

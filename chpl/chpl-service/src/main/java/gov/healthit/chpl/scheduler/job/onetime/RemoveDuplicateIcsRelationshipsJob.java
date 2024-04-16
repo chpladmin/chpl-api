@@ -18,7 +18,7 @@ import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
-import gov.healthit.chpl.exception.EntityCreationException;
+import gov.healthit.chpl.exception.ActivityException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.scheduler.job.QuartzJob;
@@ -101,8 +101,7 @@ public class RemoveDuplicateIcsRelationshipsJob extends QuartzJob {
         LOGGER.info("********* Completed the Remove Duplicate ICS Relationships job. *********");
     }
 
-    private void logCertifiedProductUpdateActivity(CertifiedProductSearchDetails existingListing,
-            String reason) throws JsonProcessingException, EntityCreationException, EntityRetrievalException {
+    private void logCertifiedProductUpdateActivity(CertifiedProductSearchDetails existingListing, String reason) throws EntityRetrievalException, ActivityException {
 
         CertifiedProductSearchDetails updatedListing = cpdManager.getCertifiedProductDetailsNoCache(existingListing.getId());
 

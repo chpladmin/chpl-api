@@ -9,13 +9,11 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterionComparator;
 import gov.healthit.chpl.dao.CertificationCriterionAttributeDAO;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
-import gov.healthit.chpl.exception.EntityCreationException;
+import gov.healthit.chpl.exception.ActivityException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ActivityManager;
@@ -82,7 +80,7 @@ public class StandardManager {
             activityManager.addActivity(ActivityConcept.STANDARD, origStandard.getId(),
                     origStandard.getRegulatoryTextCitation() + " was updated.",
                     origStandard, updatedStandard);
-        } catch (JsonProcessingException | EntityCreationException ex) {
+        } catch (ActivityException ex) {
             LOGGER.error("Error adding activity about updating Standard " + origStandard.getRegulatoryTextCitation(), ex);
         }
 
@@ -100,7 +98,7 @@ public class StandardManager {
             activityManager.addActivity(ActivityConcept.STANDARD, createdStandard.getId(),
                     createdStandard.getRegulatoryTextCitation() + " was created.",
                     null, createdStandard);
-        } catch (JsonProcessingException | EntityCreationException ex) {
+        } catch (ActivityException ex) {
             LOGGER.error("Error adding activity about creating Standard " + createdStandard.getRegulatoryTextCitation(), ex);
         }
 
@@ -124,7 +122,7 @@ public class StandardManager {
             activityManager.addActivity(ActivityConcept.STANDARD, standard.getId(),
                     standard.getRegulatoryTextCitation() + " was deleted.",
                     standard, null);
-        } catch (JsonProcessingException | EntityCreationException ex) {
+        } catch (ActivityException ex) {
             LOGGER.error("Error adding activity about deleting standard with ID " + standardId, ex);
         }
     }

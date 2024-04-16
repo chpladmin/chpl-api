@@ -17,13 +17,11 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.dao.CertificationCriterionAttributeDAO;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
-import gov.healthit.chpl.exception.EntityCreationException;
+import gov.healthit.chpl.exception.ActivityException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ActivityManager;
@@ -102,7 +100,7 @@ public class SvapManager {
                 activityManager.addActivity(ActivityConcept.SVAP, updatedSvap.getSvapId(),
                         originalSvap.getRegulatoryTextCitation() + " was updated.",
                     originalSvap, updatedSvap);
-            } catch (JsonProcessingException | EntityCreationException ex) {
+            } catch (ActivityException ex) {
                 LOGGER.error("Error adding activity about updating SVAP " + originalSvap.getRegulatoryTextCitation(), ex);
             }
         }
@@ -123,7 +121,7 @@ public class SvapManager {
                         createdSvap.getSvapId(),
                         createdSvap.getRegulatoryTextCitation() + " was created.",
                         null, createdSvap);
-            } catch (JsonProcessingException | EntityCreationException ex) {
+            } catch (ActivityException ex) {
                 LOGGER.error("Error adding activity about creating an SVAP " + createdSvap.getRegulatoryTextCitation(), ex);
             }
         }
@@ -143,7 +141,7 @@ public class SvapManager {
             activityManager.addActivity(ActivityConcept.SVAP, originalSvap.getSvapId(),
                     originalSvap.getRegulatoryTextCitation() + " was deleted.",
                     originalSvap, null);
-        } catch (JsonProcessingException | EntityCreationException ex) {
+        } catch (ActivityException ex) {
             LOGGER.error("Error adding activity about deleting SVAP with ID " + svapId, ex);
         }
     }

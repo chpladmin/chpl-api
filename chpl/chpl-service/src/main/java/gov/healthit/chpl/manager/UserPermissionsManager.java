@@ -20,6 +20,7 @@ import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.UserCertificationBodyMapDTO;
 import gov.healthit.chpl.dto.UserDeveloperMapDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
+import gov.healthit.chpl.exception.ActivityException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.UserRetrievalException;
@@ -68,7 +69,8 @@ public class UserPermissionsManager extends SecuredManager {
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).USER_PERMISSIONS, "
             + "T(gov.healthit.chpl.permissions.domains.UserPermissionsDomainPermissions).DELETE_ACB, #acb)")
     public void deleteAcbPermission(CertificationBody acb, Long userId)
-            throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
+            throws EntityRetrievalException, JsonProcessingException, EntityCreationException, ActivityException {
+
         // Get the UserCertBodyMapDTO
         List<UserCertificationBodyMapDTO> userPermissions = userCertificationBodyMapDAO.getByUserId(userId);
         UserDTO originalUser = getUser(userId);
@@ -128,7 +130,8 @@ public class UserPermissionsManager extends SecuredManager {
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).USER_PERMISSIONS, "
             + "T(gov.healthit.chpl.permissions.domains.UserPermissionsDomainPermissions).DELETE_DEVELOPER, #developerId)")
     public void deleteDeveloperPermission(Long developerId, Long userId)
-            throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
+            throws EntityRetrievalException, JsonProcessingException, EntityCreationException, ActivityException  {
+
         List<UserDeveloperMapDTO> userPermissions = userDeveloperMapDAO.getByUserId(userId);
         UserDTO originalUser = getUser(userId);
 
@@ -203,8 +206,7 @@ public class UserPermissionsManager extends SecuredManager {
         return dtos.size() > 0;
     }
 
-    private void removeUser(final UserDTO user) throws JsonProcessingException,
-        EntityCreationException, EntityRetrievalException {
+    private void removeUser(final UserDTO user) throws ActivityException {
         try {
             // We can't call the user manager delete method here because
             // that only lets role onc and role admin remove the user.

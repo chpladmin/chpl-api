@@ -25,6 +25,7 @@ import gov.healthit.chpl.domain.activity.ActivityMetadata;
 import gov.healthit.chpl.domain.activity.ActivityMetadataPage;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.ActivityMetadataManager;
@@ -96,7 +97,7 @@ public class ActivityController {
             })
     @RequestMapping(value = "/{id:^-?\\d+$}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public ActivityDetails activityById(@PathVariable("id") final Long id)
-            throws EntityRetrievalException, JsonParseException, IOException, ValidationException {
+            throws EntityRetrievalException, JsonParseException, IOException, ValidationException, UserRetrievalException {
         ActivityDetails details = activityManager.getActivityById(id);
         return details;
     }

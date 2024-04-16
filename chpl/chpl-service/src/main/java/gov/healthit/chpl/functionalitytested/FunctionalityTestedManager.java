@@ -9,13 +9,11 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterionComparator;
 import gov.healthit.chpl.dao.CertificationCriterionAttributeDAO;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
-import gov.healthit.chpl.exception.EntityCreationException;
+import gov.healthit.chpl.exception.ActivityException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ActivityManager;
@@ -84,7 +82,7 @@ public class FunctionalityTestedManager {
                     origFuncTested.getId(),
                     origFuncTested.getRegulatoryTextCitation() + " was updated.",
                     origFuncTested, updatedFuncTested);
-        } catch (JsonProcessingException | EntityCreationException ex) {
+        } catch (ActivityException ex) {
             LOGGER.error("Error adding activity about updating functionality tested " + origFuncTested.getRegulatoryTextCitation(), ex);
         }
 
@@ -103,7 +101,7 @@ public class FunctionalityTestedManager {
                     createdFuncTested.getId(),
                     createdFuncTested.getRegulatoryTextCitation() + " was created.",
                     null, createdFuncTested);
-        } catch (JsonProcessingException | EntityCreationException ex) {
+        } catch (ActivityException ex) {
             LOGGER.error("Error adding activity about creating functionality tested " + createdFuncTested.getRegulatoryTextCitation(), ex);
         }
 
@@ -128,7 +126,7 @@ public class FunctionalityTestedManager {
                     functionalityTested.getId(),
                     functionalityTested.getRegulatoryTextCitation() + " was deleted.",
                     functionalityTested, null);
-        } catch (JsonProcessingException | EntityCreationException ex) {
+        } catch (ActivityException ex) {
             LOGGER.error("Error adding activity about deleting functionality tested with ID " + functionalityTestedId, ex);
         }
     }

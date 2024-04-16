@@ -20,6 +20,8 @@ public class CognitoUserInvitation {
     private Long id;
     private String email;
     private UUID invitationToken;
+    private String groupName;
+    private Long organizationId;
 
     @JsonIgnore
     private Date creationDate;

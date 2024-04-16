@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.ObjectUtils;
 import org.ff4j.FF4j;
 import org.quartz.JobDataMap;
@@ -45,6 +44,7 @@ import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.domain.schedule.ChplJob;
 import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
 import gov.healthit.chpl.dto.auth.UserDTO;
+import gov.healthit.chpl.exception.ActivityException;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -179,7 +179,8 @@ public class ChangeRequestManager {
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CHANGE_REQUEST, "
             + "T(gov.healthit.chpl.permissions.domains.ChangeRequestDomainPermissions).CREATE, #changeRequest)")
     public ChangeRequest createChangeRequest(ChangeRequest changeRequest)
-            throws EntityRetrievalException, ValidationException, JsonProcessingException, EntityCreationException, InvalidArgumentsException, NotImplementedException {
+            throws InvalidArgumentsException, EntityRetrievalException, ValidationException, ActivityException {
+
         changeRequest.setDeveloper(getDeveloperFromDb(changeRequest));
         changeRequest.setChangeRequestType(getChangeRequestType(changeRequest));
         changeRequest = updateChangeRequestWithCastedDetails(changeRequest);
@@ -292,8 +293,7 @@ public class ChangeRequestManager {
         return crMap.containsKey("form");
     }
 
-    private ChangeRequest saveChangeRequest(ChangeRequest cr)
-            throws EntityRetrievalException, ValidationException, JsonProcessingException, EntityCreationException {
+    private ChangeRequest saveChangeRequest(ChangeRequest cr) throws ValidationException, EntityRetrievalException, ActivityException {
 
         ChangeRequestValidationContext crValidationContext = getNewValidationContext(cr, null);
         ValidationException validationException = new ValidationException(crValidationService.getErrorMessages(crValidationContext));

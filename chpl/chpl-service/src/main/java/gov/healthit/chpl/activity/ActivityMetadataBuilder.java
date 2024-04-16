@@ -18,11 +18,18 @@ import gov.healthit.chpl.domain.activity.TestingLabActivityMetadata;
 import gov.healthit.chpl.domain.activity.UserMaintenanceActivityMetadata;
 import gov.healthit.chpl.domain.activity.VersionActivityMetadata;
 import gov.healthit.chpl.dto.ActivityDTO;
+import gov.healthit.chpl.util.ChplUserToCognitoUserUtil;
 
 @Component("activityMetadataBuilder")
 public class ActivityMetadataBuilder {
 
-    public ActivityMetadata build(ActivityDTO dto) {
+    private ChplUserToCognitoUserUtil chplUserToCognitoUserUtil;
+
+    public ActivityMetadataBuilder(ChplUserToCognitoUserUtil chplUserToCognitoUserUtil) {
+        this.chplUserToCognitoUserUtil = chplUserToCognitoUserUtil;
+    }
+
+   public ActivityMetadata build(ActivityDTO dto) {
         ActivityMetadata metadata = createMetadataObject(dto);
         if (metadata != null) {
             addGenericMetadata(dto, metadata);
@@ -43,7 +50,7 @@ public class ActivityMetadataBuilder {
                 .id(dto.getActivityObjectId())
                 .build());
         metadata.setConcept(dto.getConcept());
-        metadata.setResponsibleUser(dto.getUser() == null ? null : dto.getUser().toDomain());
+        metadata.setResponsibleUser(chplUserToCognitoUserUtil.getUser(dto.getLastModifiedUser(), dto.getLastModifiedSsoUser()));
         metadata.setDescription(dto.getDescription());
         metadata.getCategories().add(getCrudCategory(dto));
     }

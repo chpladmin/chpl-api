@@ -2,8 +2,7 @@ package gov.healthit.chpl.activity;
 
 import java.util.List;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -13,17 +12,21 @@ import gov.healthit.chpl.domain.activity.ActivityCategory;
 import gov.healthit.chpl.domain.activity.ActivityMetadata;
 import gov.healthit.chpl.domain.activity.DeveloperActivityMetadata;
 import gov.healthit.chpl.dto.ActivityDTO;
+import gov.healthit.chpl.util.ChplUserToCognitoUserUtil;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 @Component("developerActivityMetadataBuilder")
 public class DeveloperActivityMetadataBuilder extends ActivityMetadataBuilder {
-    private static final Logger LOGGER = LogManager.getLogger(DeveloperActivityMetadataBuilder.class);
     private ObjectMapper jsonMapper;
 
-    public DeveloperActivityMetadataBuilder() {
-        super();
+    @Autowired
+    public DeveloperActivityMetadataBuilder(ChplUserToCognitoUserUtil chplUserToCognitoUserUtil) {
+        super(chplUserToCognitoUserUtil);
         jsonMapper = new ObjectMapper();
     }
 
+    @Override
     protected void addConceptSpecificMetadata(final ActivityDTO activity, final ActivityMetadata metadata) {
         if (!(metadata instanceof DeveloperActivityMetadata)) {
             return;

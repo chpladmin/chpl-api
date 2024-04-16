@@ -16,6 +16,7 @@ import gov.healthit.chpl.domain.activity.ActivityMetadata;
 import gov.healthit.chpl.domain.activity.ListingActivityMetadata;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.dto.ActivityDTO;
+import gov.healthit.chpl.util.ChplUserToCognitoUserUtil;
 
 @Component("listingActivityMetadataBuilder")
 public class ListingActivityMetadataBuilder extends ActivityMetadataBuilder {
@@ -25,8 +26,8 @@ public class ListingActivityMetadataBuilder extends ActivityMetadataBuilder {
     private ObjectMapper jsonMapper;
 
     @Autowired
-    public ListingActivityMetadataBuilder(CertificationStatusEventsService cseService) {
-        super();
+    public ListingActivityMetadataBuilder(CertificationStatusEventsService cseService, ChplUserToCognitoUserUtil chplUserToCognitoUserUtil) {
+        super(chplUserToCognitoUserUtil);
         this.cseService = cseService;
         jsonMapper = new ObjectMapper();
     }
