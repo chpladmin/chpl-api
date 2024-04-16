@@ -36,4 +36,5 @@ public final class CacheNames {
     public static final String CONFORMANCE_METHODS = "conformanceMethods";
     public static final String OPTIONAL_STANDARDS = "optionalStandards";
     public static final String CODE_SET = "codeSets";
+    public static final String CHPL_USERS = "chplUsers";
 }

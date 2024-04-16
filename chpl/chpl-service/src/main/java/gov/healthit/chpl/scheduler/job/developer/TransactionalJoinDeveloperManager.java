@@ -26,6 +26,7 @@ import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.ProductOwner;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
+import gov.healthit.chpl.exception.ActivityException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
@@ -131,7 +132,7 @@ public class TransactionalJoinDeveloperManager {
                             "Updated certified product " + postJoinListing.getChplProductNumber() + ".", preJoinListing,
                             postJoinListing);
                     }
-                } catch (JsonProcessingException | EntityRetrievalException | EntityCreationException ex) {
+                } catch (ActivityException ex) {
                     LOGGER.warn("Unable to log listing activity for listing " + postJoinListingId + " during developer join.", ex);
                 }  catch (Exception ex) {
                     LOGGER.warn("Unexpected error logging listing activity for listing " + postJoinListingId + " during developer join.", ex);
@@ -147,7 +148,7 @@ public class TransactionalJoinDeveloperManager {
                     activityManager.addActivity(ActivityConcept.DEVELOPER, developerJoined.getId(),
                         "Developer " + developerJoined.getName() + " joined " + developerToJoin.getName(),
                         developerJoined, developerToJoin);
-                } catch (JsonProcessingException | EntityRetrievalException | EntityCreationException ex) {
+                } catch (ActivityException ex) {
                     LOGGER.warn("Unable to log developer join activity.", ex);
                 }  catch (Exception ex) {
                     LOGGER.warn("Unexpected error logging developer join activity.", ex);

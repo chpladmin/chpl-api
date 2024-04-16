@@ -6,9 +6,12 @@ import java.util.List;
 import javax.persistence.Query;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.entity.auth.UserContactEntity;
@@ -76,6 +79,7 @@ public class UserDAO extends BaseDAOImpl {
     }
 
     @Transactional
+    @CacheEvict(value = CacheNames.CHPL_USERS, key = "#user.id")
     public UserDTO update(UserDTO user) throws UserRetrievalException, MultipleUserAccountsException {
         UserEntity userEntity = getEntityById(user.getId());
         userEntity.setFailedLoginCount(user.getFailedLoginCount());
@@ -96,6 +100,7 @@ public class UserDAO extends BaseDAOImpl {
     }
 
     @Transactional
+    @CacheEvict(value = CacheNames.CHPL_USERS, key = "#userId")
     public void delete(Long userId) throws UserRetrievalException {
         UserEntity toDelete = getEntityById(userId);
         if (toDelete == null) {
@@ -149,11 +154,15 @@ public class UserDAO extends BaseDAOImpl {
     }
 
     private UserEntity getEntityById(Long userId) throws UserRetrievalException {
+        return getEntityById(userId, false);
+    }
+
+    private UserEntity getEntityById(Long userId, boolean includeDeleted) throws UserRetrievalException {
         Query query = entityManager.createQuery("from UserEntity u "
                 + "JOIN FETCH u.contact "
                 + "JOIN FETCH u.permission "
-                + "WHERE (NOT u.deleted = true) "
-                + "AND (u.id = :userid) ",
+                + "WHERE (u.id = :userid)  "
+                + (includeDeleted ? "" : "AND (u.deleted = false) "),
                 UserEntity.class);
         query.setParameter("userid", userId);
         List<UserEntity> result = query.getResultList();
@@ -193,7 +202,12 @@ public class UserDAO extends BaseDAOImpl {
     }
 
     public UserDTO getById(Long userId) throws UserRetrievalException {
-        UserEntity userEntity = this.getEntityById(userId);
+        return getById(userId, false);
+    }
+
+    @Cacheable(value = CacheNames.CHPL_USERS, key = "#userId")
+    public UserDTO getById(Long userId, boolean includeDelete) throws UserRetrievalException {
+        UserEntity userEntity = this.getEntityById(userId, includeDelete);
         if (userEntity == null) {
             return null;
         }

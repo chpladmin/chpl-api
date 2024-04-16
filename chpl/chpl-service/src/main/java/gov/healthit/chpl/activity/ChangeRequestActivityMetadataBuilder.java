@@ -1,8 +1,7 @@
 package gov.healthit.chpl.activity;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -11,10 +10,17 @@ import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.domain.activity.ActivityMetadata;
 import gov.healthit.chpl.domain.activity.ChangeRequestActivityMetadata;
 import gov.healthit.chpl.dto.ActivityDTO;
+import gov.healthit.chpl.util.ChplUserToCognitoUserUtil;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 @Component("changeRequestActivityMetadataBuilder")
 public class ChangeRequestActivityMetadataBuilder extends ActivityMetadataBuilder {
-    private static final Logger LOGGER = LogManager.getLogger(ChangeRequestActivityMetadataBuilder.class);
+
+    @Autowired
+    public ChangeRequestActivityMetadataBuilder(ChplUserToCognitoUserUtil chplUserToCognitoUserUtil) {
+        super(chplUserToCognitoUserUtil);
+    }
 
     @Override
     protected void addConceptSpecificMetadata(ActivityDTO dto, ActivityMetadata metadata) {

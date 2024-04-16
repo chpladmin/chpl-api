@@ -10,8 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-
 import gov.healthit.chpl.changerequest.dao.ChangeRequestDAO;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestDeveloperDemographicsDAO;
 import gov.healthit.chpl.changerequest.dao.DeveloperCertificationBodyMapDAO;
@@ -26,6 +24,7 @@ import gov.healthit.chpl.domain.contact.PointOfContact;
 import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
 import gov.healthit.chpl.email.footer.PublicFooter;
+import gov.healthit.chpl.exception.ActivityException;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -165,7 +164,7 @@ public class ChangeRequestDeveloperDemographicsService extends ChangeRequestDeta
             Developer updatedDeveloper = developerManager.update(developer, false);
             cr.setDeveloper(updatedDeveloper);
             return cr;
-        } catch (JsonProcessingException | ValidationException e) {
+        } catch (ValidationException | ActivityException e) {
             throw new RuntimeException(e);
         }
     }

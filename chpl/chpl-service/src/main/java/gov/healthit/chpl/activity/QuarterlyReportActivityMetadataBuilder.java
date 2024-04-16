@@ -1,7 +1,6 @@
 package gov.healthit.chpl.activity;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -12,10 +11,17 @@ import gov.healthit.chpl.domain.activity.QuarterlyReportActivityMetadata;
 import gov.healthit.chpl.dto.ActivityDTO;
 import gov.healthit.chpl.surveillance.report.domain.QuarterlyReport;
 import gov.healthit.chpl.surveillance.report.domain.RelevantListing;
+import gov.healthit.chpl.util.ChplUserToCognitoUserUtil;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 @Component("quarterlyReportActivityMetadataBuilder")
 public class QuarterlyReportActivityMetadataBuilder extends ActivityMetadataBuilder {
-    private static final Logger LOGGER = LogManager.getLogger(QuarterlyReportActivityMetadataBuilder.class);
+
+    @Autowired
+    public QuarterlyReportActivityMetadataBuilder(ChplUserToCognitoUserUtil chplUserToCognitoUserUtil) {
+        super(chplUserToCognitoUserUtil);
+    }
 
     @Override
     protected void addConceptSpecificMetadata(ActivityDTO activity, ActivityMetadata metadata) {

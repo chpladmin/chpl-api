@@ -8,14 +8,12 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-
 import gov.healthit.chpl.dao.TestingLabDAO;
 import gov.healthit.chpl.domain.TestingLab;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
+import gov.healthit.chpl.exception.ActivityException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.manager.impl.SecuredManager;
 import gov.healthit.chpl.manager.impl.UpdateTestingLabException;
 import lombok.extern.log4j.Log4j2;
@@ -32,8 +30,7 @@ public class TestingLabManager extends SecuredManager {
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).TESTING_LAB, "
             + "T(gov.healthit.chpl.permissions.domains.TestingLabDomainPermissions).CREATE)")
-    public TestingLab create(TestingLab atl)
-            throws UserRetrievalException, EntityCreationException, EntityRetrievalException, JsonProcessingException {
+    public TestingLab create(TestingLab atl) throws EntityCreationException, EntityRetrievalException, ActivityException {
         String maxCode = testingLabDAO.getMaxCode();
         int maxCodeValue = Integer.parseInt(maxCode);
         int nextCodeValue = maxCodeValue + 1;
@@ -63,8 +60,7 @@ public class TestingLabManager extends SecuredManager {
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).TESTING_LAB, "
             + "T(gov.healthit.chpl.permissions.domains.TestingLabDomainPermissions).UPDATE, #atl)")
-    public TestingLab update(TestingLab atl) throws EntityRetrievalException, JsonProcessingException,
-            EntityCreationException, UpdateTestingLabException {
+    public TestingLab update(TestingLab atl) throws EntityRetrievalException, ActivityException {
 
         TestingLab beforeAtl = testingLabDAO.getById(atl.getId());
         TestingLab result = testingLabDAO.update(atl);
@@ -78,8 +74,7 @@ public class TestingLabManager extends SecuredManager {
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).TESTING_LAB, "
             + "T(gov.healthit.chpl.permissions.domains.TestingLabDomainPermissions).RETIRE)")
-    public TestingLab retire(TestingLab atl) throws EntityRetrievalException, JsonProcessingException,
-            EntityCreationException, UpdateTestingLabException {
+    public TestingLab retire(TestingLab atl) throws UpdateTestingLabException, EntityRetrievalException, ActivityException {
 
         if (atl.getRetirementDay() == null || LocalDate.now().isBefore(atl.getRetirementDay())) {
             throw new UpdateTestingLabException("Retirement date is required and must be before \"now\".");
@@ -96,8 +91,7 @@ public class TestingLabManager extends SecuredManager {
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).TESTING_LAB, "
             + "T(gov.healthit.chpl.permissions.domains.TestingLabDomainPermissions).UNRETIRE)")
-    public TestingLab unretire(Long atlId) throws EntityRetrievalException, JsonProcessingException,
-            EntityCreationException, UpdateTestingLabException {
+    public TestingLab unretire(Long atlId) throws EntityRetrievalException, ActivityException {
         TestingLab beforeAtl = testingLabDAO.getById(atlId);
         TestingLab toUnretire = testingLabDAO.getById(atlId);
         toUnretire.setRetired(false);

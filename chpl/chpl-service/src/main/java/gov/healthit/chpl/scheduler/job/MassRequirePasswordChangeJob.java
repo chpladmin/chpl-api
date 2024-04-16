@@ -10,18 +10,14 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-
 import gov.healthit.chpl.auth.ChplAccountEmailNotConfirmedException;
 import gov.healthit.chpl.auth.authentication.JWTUserConverterFacade;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.domain.auth.LoginCredentials;
 import gov.healthit.chpl.dto.auth.UserDTO;
-import gov.healthit.chpl.exception.EntityCreationException;
-import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.exception.ActivityException;
 import gov.healthit.chpl.exception.JWTCreationException;
 import gov.healthit.chpl.exception.MultipleUserAccountsException;
-import gov.healthit.chpl.exception.UserAccountExistsException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.auth.AuthenticationManager;
@@ -71,8 +67,7 @@ public class MassRequirePasswordChangeJob extends QuartzJob {
                     try {
                         LOGGER.info("Marking user {} as requiring password change on next login", user.getUsername());
                         userManager.update(user);
-                    } catch (UserRetrievalException | JsonProcessingException | EntityCreationException
-                            | EntityRetrievalException | ValidationException e) {
+                    } catch (UserRetrievalException | ValidationException | ActivityException e) {
                         LOGGER.debug("Unable to update user with username {} and message {}",
                                 user.getUsername(), e.getMessage());
                     }
@@ -84,8 +79,7 @@ public class MassRequirePasswordChangeJob extends QuartzJob {
             }
             SecurityContextHolder.getContext().setAuthentication(null);
         } catch (BadCredentialsException | AccountStatusException | UserRetrievalException
-                | MultipleUserAccountsException | UserAccountExistsException
-                | JWTCreationException | ChplAccountEmailNotConfirmedException e) {
+                | MultipleUserAccountsException | JWTCreationException | ChplAccountEmailNotConfirmedException e) {
             LOGGER.debug("Unable to update users {}", e.getLocalizedMessage());
         }
     }
