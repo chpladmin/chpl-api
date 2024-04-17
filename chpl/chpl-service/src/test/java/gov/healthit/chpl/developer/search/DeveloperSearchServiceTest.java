@@ -857,31 +857,13 @@ public class DeveloperSearchServiceTest {
     }
 
     @Test
-    public void search_searchDevelopersThatHaveSubmittedAttestationsFalse_doesNotAffectMatches() throws ValidationException {
-        List<DeveloperSearchResult> allDevelopers = createDeveloperSearchResultCollection(50);
-        allDevelopers.get(0).setSubmittedAttestationsForMostRecentPastPeriod(true);
-
-        Mockito.when(developerManager.getDeveloperSearchResults()).thenReturn(allDevelopers);
-        DeveloperSearchRequest searchRequest = DeveloperSearchRequest.builder()
-            .hasSubmittedAttestationsForMostRecentPastPeriod(false)
-            .pageNumber(0)
-            .pageSize(10)
-        .build();
-        DeveloperSearchResponse searchResponse = developerSearchService.findDevelopers(searchRequest);
-
-        assertNotNull(searchResponse);
-        assertEquals(50, searchResponse.getRecordCount());
-        assertEquals(10, searchResponse.getResults().size());
-    }
-
-    @Test
     public void search_searchDevelopersThatHaveNotSubmittedAttestations_findsMatches() throws ValidationException {
         List<DeveloperSearchResult> allDevelopers = createDeveloperSearchResultCollection(50);
         allDevelopers.get(0).setSubmittedAttestationsForMostRecentPastPeriod(true);
 
         Mockito.when(developerManager.getDeveloperSearchResults()).thenReturn(allDevelopers);
         DeveloperSearchRequest searchRequest = DeveloperSearchRequest.builder()
-            .hasNotSubmittedAttestationsForMostRecentPastPeriod(true)
+            .hasSubmittedAttestationsForMostRecentPastPeriod(false)
             .pageNumber(0)
             .pageSize(10)
         .build();

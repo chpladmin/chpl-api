@@ -186,12 +186,9 @@ public class SearchDevelopersController {
                 + "(ex: \"Under certification ban by ONC\" finds developers in either the Under certification ban by ONC status).",
                 allowEmptyValue = true, in = ParameterIn.QUERY, name = "statuses")
             @RequestParam(value = "statuses", required = false, defaultValue = "") String statusesDelimited,
-        @Parameter(description = "Whether the developer has submitted attestations for the most recent attestation period",
+        @Parameter(description = "Whether the developer has or has not submitted attestations for the most recent attestation period",
                 allowEmptyValue = true, in = ParameterIn.QUERY, name = "hasSubmittedAttestationsForMostRecentPastPeriod")
             @RequestParam(value = "hasSubmittedAttestationsForMostRecentPastPeriod", required = false, defaultValue = "") Boolean hasSubmittedAttestationsForMostRecentPastPeriod,
-        @Parameter(description = "Whether the developer has not submitted attestations for the most recent attestation period",
-                allowEmptyValue = true, in = ParameterIn.QUERY, name = "hasNotSubmittedAttestationsForMostRecentPastPeriod")
-            @RequestParam(value = "hasNotSubmittedAttestationsForMostRecentPastPeriod", required = false, defaultValue = "") Boolean hasNotSubmittedAttestationsForMostRecentPastPeriod,
         @Parameter(description = "To return only developers decertified on or after this date. Required format is " + DeveloperSearchRequestV2.DATE_SEARCH_FORMAT,
                 allowEmptyValue = true, in = ParameterIn.QUERY, name = "decertificationDateStart")
             @RequestParam(value = "decertificationDateStart", required = false, defaultValue = "") String decertificationDateStart,
@@ -228,7 +225,6 @@ public class SearchDevelopersController {
                 .statuses(convertToSetWithDelimeter(statusesDelimited, ","))
                 .acbsForActiveListings(convertToSetWithDelimeter(acbsForActiveLisitngsDelimited, ","))
                 .acbsForAllListings(convertToSetWithDelimeter(acbsForAllLisitngsDelimited, ","))
-                .hasNotSubmittedAttestationsForMostRecentPastPeriod(hasNotSubmittedAttestationsForMostRecentPastPeriod)
                 .hasSubmittedAttestationsForMostRecentPastPeriod(hasSubmittedAttestationsForMostRecentPastPeriod)
                 .decertificationDateStart(decertificationDateStart)
                 .decertificationDateEnd(decertificationDateEnd)

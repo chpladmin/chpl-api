@@ -58,7 +58,7 @@ public class MissingAttestationChangeRequestEmailJob extends SecurityContextCapa
                                 ActiveListingSearchOptions.HAD_ANY_ACTIVE_DURING_MOST_RECENT_PAST_ATTESTATION_PERIOD)
                                 .collect(Collectors.toSet()))
                         .activeListingsOptionsOperator(SearchSetOperator.AND)
-                        .hasNotSubmittedAttestationsForMostRecentPastPeriod(true)
+                        .hasSubmittedAttestationsForMostRecentPastPeriod(false)
                         .build(),
                         LOGGER);
 

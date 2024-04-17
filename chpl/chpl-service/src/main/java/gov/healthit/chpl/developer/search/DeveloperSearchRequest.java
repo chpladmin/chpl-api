@@ -46,7 +46,6 @@ public class DeveloperSearchRequest implements Serializable {
     private String activeListingsOptionsOperatorString;
     private SearchSetOperator activeListingsOptionsOperator;
 
-    private Boolean hasNotSubmittedAttestationsForMostRecentPastPeriod;
     private Boolean hasSubmittedAttestationsForMostRecentPastPeriod;
 
     @JsonIgnore

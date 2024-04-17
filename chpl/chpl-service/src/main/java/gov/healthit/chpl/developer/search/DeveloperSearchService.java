@@ -58,7 +58,6 @@ public class DeveloperSearchService {
             .filter(dev -> matchesStatuses(dev, searchRequest.getStatuses()))
             .filter(dev -> matchesDecertificationDateRange(dev, searchRequest.getDecertificationDateStart(), searchRequest.getDecertificationDateEnd()))
             .filter(dev -> matchesHasSubmittedAttestations(dev, searchRequest.getHasSubmittedAttestationsForMostRecentPastPeriod()))
-            .filter(dev -> matchesHasNotSubmittedAttestations(dev, searchRequest.getHasNotSubmittedAttestationsForMostRecentPastPeriod()))
             .filter(dev -> matchesActiveListingsFilter(dev, searchRequest))
             .collect(Collectors.toList());
         LOGGER.debug("Total matched developers: " + matchedDevelopers.size());
@@ -196,23 +195,12 @@ public class DeveloperSearchService {
     }
 
     private boolean matchesHasSubmittedAttestations(DeveloperSearchResult developer, Boolean hasSubmittedAttestations) {
-        if (hasSubmittedAttestations == null || BooleanUtils.isFalse(hasSubmittedAttestations)) {
-            //null and false are treated the same here
-            return true;
+        if (hasSubmittedAttestations != null && BooleanUtils.isTrue(hasSubmittedAttestations)) {
+            return BooleanUtils.isTrue(developer.getSubmittedAttestationsForMostRecentPastPeriod());
+        } else if (hasSubmittedAttestations != null && BooleanUtils.isFalse(hasSubmittedAttestations)) {
+            return BooleanUtils.isFalse(developer.getSubmittedAttestationsForMostRecentPastPeriod());
         }
-
-        return BooleanUtils.isTrue(hasSubmittedAttestations)
-                && BooleanUtils.isTrue(developer.getSubmittedAttestationsForMostRecentPastPeriod());
-    }
-
-    private boolean matchesHasNotSubmittedAttestations(DeveloperSearchResult developer, Boolean hasNotSubmittedAttestations) {
-        if (hasNotSubmittedAttestations == null || BooleanUtils.isFalse(hasNotSubmittedAttestations)) {
-            //null and false are treated the same here
-            return true;
-        }
-
-        return BooleanUtils.isTrue(hasNotSubmittedAttestations)
-                && BooleanUtils.isFalse(developer.getSubmittedAttestationsForMostRecentPastPeriod());
+        return true;
     }
 
     private boolean matchesActiveListingsFilter(DeveloperSearchResult developer, DeveloperSearchRequest searchRequest) {
