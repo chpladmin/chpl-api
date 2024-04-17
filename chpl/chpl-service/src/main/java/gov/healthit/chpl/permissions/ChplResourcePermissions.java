@@ -70,15 +70,12 @@ public class ChplResourcePermissions implements ResourcePermissions {
 
     @Override
     @Transactional(readOnly = true)
-    public List<UserDTO> getAllUsersOnAcb(CertificationBody acb) {
-        List<UserDTO> userDtos = new ArrayList<UserDTO>();
+    public List<User> getAllUsersOnAcb(CertificationBody acb) {
         List<UserCertificationBodyMapDTO> dtos = userCertificationBodyMapDAO.getByAcbId(acb.getId());
 
-        for (UserCertificationBodyMapDTO dto : dtos) {
-            userDtos.add(dto.getUser());
-        }
-
-        return userDtos;
+        return dtos.stream()
+                .map(dto -> dto.getUser().toDomain())
+                .toList();
     }
 
     @Override

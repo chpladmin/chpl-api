@@ -41,7 +41,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 @Tag(name = "acbs", description = "Allows CRUD operations on certification bodies (ONC-ACBs).")
 @RestController
 @RequestMapping("/acbs")
@@ -270,7 +272,10 @@ public class CertificationBodyController {
             throw new InvalidArgumentsException("Could not find the ACB specified.");
         }
 
-        List<UserDTO> users = resourcePermissionsFactory.get().getAllUsersOnAcb(acb);
+        List<UserDTO> users = resourcePermissionsFactory.get().getAllUsersOnAcb(acb).stream()
+                .map(user -> getUser(acbId))
+                .toList();
+
         List<User> acbUsers = new ArrayList<User>(users.size());
         for (UserDTO userDto : users) {
             User acbUser = userDto.toDomain();
@@ -281,4 +286,58 @@ public class CertificationBodyController {
         results.setUsers(acbUsers);
         return results;
     }
+
+    @Operation(summary = "List users with permissions on a specified ONC-ACB.",
+            description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or have administrative "
+                    + "or read authority on the specified ONC-ACB",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "The request was successful.",
+                    content = {
+                            @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = UsersResponse.class))
+                    }),
+            @ApiResponse(responseCode = "401", description = "The authenticated user does not have permissions to get the user list.",
+                    content = @Content),
+            @ApiResponse(responseCode = "404", description = "The ONC-ACB ID specified in the URL does not exist in the CHPL database.",
+                    content = @Content),
+            @ApiResponse(responseCode = "500", description = "There was an unexpected error getting the user list.",
+                    content = @Content)
+    })
+    @RequestMapping(value = "/{acbId}/cognito-users", method = RequestMethod.GET,
+            produces = "application/json; charset=utf-8")
+    public @ResponseBody UsersResponse getCognitoUsers(@PathVariable("acbId") final Long acbId)
+            throws InvalidArgumentsException, EntityRetrievalException {
+        CertificationBody acb = resourcePermissionsFactory.get().getAcbIfPermissionById(acbId);
+//        if (acb == null) {
+//            throw new InvalidArgumentsException("Could not find the ACB specified.");
+//        }
+//
+//        List<User> users = resourcePermissionsFactory.get().getAllUsersOnAcb(acb);
+//        List<User> acbUsers = new ArrayList<User>(users.size());
+//        for (UserDTO userDto : users) {
+//            User acbUser = userDto.toDomain();
+//            acbUsers.add(acbUser);
+//        }
+
+        UsersResponse results = new UsersResponse();
+//        results.setUsers(acbUsers);
+        return results;
+    }
+
+
+    private UserDTO getUser(Long userId) {
+        try {
+            return userManager.getById(userId);
+        } catch (UserRetrievalException e) {
+            LOGGER.error("Could not retrieve user with id: {}", userId, e);
+            return null;
+        }
+
+    }
+
+
 }

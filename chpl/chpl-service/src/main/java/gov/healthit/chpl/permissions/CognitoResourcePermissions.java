@@ -48,9 +48,14 @@ public class CognitoResourcePermissions implements ResourcePermissions {
     }
 
     @Override
-    public List<UserDTO> getAllUsersOnAcb(CertificationBody acb) {
-        LOGGER.error("Not implemented: getAllUsersOnAcb");
-        throw new NotImplementedException("Not implemented: getAllUsersOnAcb");
+    public List<User> getAllUsersOnAcb(CertificationBody acb) {
+        return cognitoApiWrapper.getAllUsers().stream()
+                .filter(user -> user.getRole().equals(CognitoGroups.CHPL_ACB)
+                        && user.getOrganizations().stream()
+                                .filter(org -> org.getId().equals(acb.getId()))
+                                .findAny()
+                                .isPresent())
+                .toList();
     }
 
     @Override
@@ -108,7 +113,6 @@ public class CognitoResourcePermissions implements ResourcePermissions {
         return user.getOrganizations().stream()
                 .map(org -> getDeveloper(org.getId()))
                 .toList();
-
     }
 
     @Override

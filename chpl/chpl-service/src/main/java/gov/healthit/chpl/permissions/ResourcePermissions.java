@@ -13,7 +13,7 @@ public interface ResourcePermissions {
 
     boolean isDeveloperActive(Long developerId);
 
-    List<UserDTO> getAllUsersOnAcb(CertificationBody acb);
+    List<User> getAllUsersOnAcb(CertificationBody acb);
 
     List<User> getAllUsersOnDeveloper(Developer dev);
 
