@@ -307,15 +307,10 @@ public class DeveloperController {
             produces = "application/json; charset=utf-8")
     public @ResponseBody UsersResponse getCognitoUsers(@PathVariable("developerId") Long developerId)
             throws InvalidArgumentsException, EntityRetrievalException {
-        List<UserDTO> users = developerManager.getAllUsersOnDeveloper(developerId);
-        List<User> domainUsers = new ArrayList<User>(users.size());
-        for (UserDTO userDto : users) {
-            User domainUser = userDto.toDomain();
-            domainUsers.add(domainUser);
-        }
+        List<User> users = developerManager.getAllCognitoUsersOnDeveloper(developerId);
 
         UsersResponse results = new UsersResponse();
-        results.setUsers(domainUsers);
+        results.setUsers(users);
         return results;
     }
 
@@ -346,4 +341,5 @@ public class DeveloperController {
             throws EntityRetrievalException, ValidationException {
         return attestationManager.createAttestationPeriodDeveloperException(developerId, attestationPeriodId);
     }
+
 }

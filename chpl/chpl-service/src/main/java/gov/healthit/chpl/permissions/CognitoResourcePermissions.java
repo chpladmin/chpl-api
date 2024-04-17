@@ -14,7 +14,6 @@ import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.auth.CognitoGroups;
 import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.domain.auth.UserPermission;
-import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.entity.developer.DeveloperStatusType;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.UserRetrievalException;
@@ -61,7 +60,8 @@ public class CognitoResourcePermissions implements ResourcePermissions {
     @Override
     public List<User> getAllUsersOnDeveloper(Developer dev) {
         return cognitoApiWrapper.getAllUsers().stream()
-                .filter(user -> user.getRole().equals(CognitoGroups.CHPL_DEVELOPER)
+                .filter(user -> user.getRole() != null
+                        && user.getRole().equals(CognitoGroups.CHPL_DEVELOPER)
                         && user.getOrganizations().stream()
                                 .filter(org -> org.getId().equals(dev.getId()))
                                 .findAny()
@@ -76,7 +76,7 @@ public class CognitoResourcePermissions implements ResourcePermissions {
             if (user != null) {
                 if (isUserRoleAdmin() || isUserRoleOnc()) {
                     return certificationBodyDAO.findAll();
-                } else if (isUserRoleAcbAdmin()){
+                } else if (isUserRoleAcbAdmin()) {
                     return getAllAcbsForUser(user);
                 } else {
                     return null;
@@ -116,7 +116,7 @@ public class CognitoResourcePermissions implements ResourcePermissions {
     }
 
     @Override
-    public List<UserDTO> getAllUsersForCurrentUser() {
+    public List<User> getAllUsersForCurrentUser() {
         LOGGER.error("Not implemented: getAllUsersForCurrentUser");
         throw new NotImplementedException("Not implemented: getAllUsersForCurrentUser");
     }

@@ -25,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import gov.healthit.chpl.auth.user.AuthenticationSystem;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.caching.ListingSearchCacheRefresh;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
@@ -234,7 +235,7 @@ public class DeveloperManager extends SecuredManager {
             + "T(gov.healthit.chpl.permissions.domains.DeveloperDomainPermissions).GET_ALL_USERS, #devId)")
     public List<UserDTO> getAllUsersOnDeveloper(Long devId) throws EntityRetrievalException {
         Developer dev = getById(devId);
-        List<User> users = resourcePermissionsFactory.get().getAllUsersOnDeveloper(dev);
+        List<User> users = resourcePermissionsFactory.get(AuthenticationSystem.CHPL).getAllUsersOnDeveloper(dev);
 
         return users.stream()
                 .map(user -> getUser(user.getUserId()))
@@ -246,7 +247,7 @@ public class DeveloperManager extends SecuredManager {
             + "T(gov.healthit.chpl.permissions.domains.DeveloperDomainPermissions).GET_ALL_USERS, #devId)")
     public List<User> getAllCognitoUsersOnDeveloper(Long devId) throws EntityRetrievalException {
         Developer dev = getById(devId);
-        return resourcePermissionsFactory.get().getAllUsersOnDeveloper(dev);
+        return resourcePermissionsFactory.get(AuthenticationSystem.COGNTIO).getAllUsersOnDeveloper(dev);
 
     }
 

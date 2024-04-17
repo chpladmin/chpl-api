@@ -150,13 +150,15 @@ public class ChplResourcePermissions implements ResourcePermissions {
 
     @Override
     @Transactional(readOnly = true)
-    public List<UserDTO> getAllUsersForCurrentUser() {
+    public List<User> getAllUsersForCurrentUser() {
         JWTAuthenticatedUser user = AuthUtil.getCurrentUser();
-        List<UserDTO> users = new ArrayList<UserDTO>();
+        List<User> users = new ArrayList<User>();
 
         if (user != null) {
             if (isUserRoleAdmin() || isUserRoleOnc()) {
-                users = userDAO.findAll();
+                users = userDAO.findAll().stream()
+                        .map(dto -> dto.toDomain())
+                        .toList();
             } else if (isUserRoleAcbAdmin()) {
                 List<CertificationBody> acbs = getAllAcbsForCurrentUser();
                 for (CertificationBody acb : acbs) {
@@ -172,7 +174,7 @@ public class ChplResourcePermissions implements ResourcePermissions {
                 UserDTO thisUser = null;
                 try {
                     thisUser = userDAO.getById(user.getId());
-                    users.add(thisUser);
+                    users.add(thisUser.toDomain());
                 } catch (UserRetrievalException ex) { }
             }
         }

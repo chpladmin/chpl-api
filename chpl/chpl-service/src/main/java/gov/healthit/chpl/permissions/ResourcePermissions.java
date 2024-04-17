@@ -6,7 +6,6 @@ import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.domain.auth.UserPermission;
-import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 
 public interface ResourcePermissions {
@@ -25,7 +24,7 @@ public interface ResourcePermissions {
 
     List<Developer> getAllDevelopersForUser(User user);
 
-    List<UserDTO> getAllUsersForCurrentUser();
+    List<User> getAllUsersForCurrentUser();
 
     CertificationBody getAcbIfPermissionById(Long certificationBodyId) throws EntityRetrievalException;
 

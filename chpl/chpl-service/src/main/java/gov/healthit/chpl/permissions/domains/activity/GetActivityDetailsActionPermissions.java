@@ -17,6 +17,7 @@ import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.activity.ActivityDetails;
 import gov.healthit.chpl.domain.auth.Authority;
 import gov.healthit.chpl.dto.auth.UserDTO;
+import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.permissions.domains.ActionPermissions;
 import gov.healthit.chpl.surveillance.report.AnnualReportDAO;
 import gov.healthit.chpl.surveillance.report.QuarterlyReportDAO;
@@ -300,7 +301,9 @@ public class GetActivityDetailsActionPermissions extends ActionPermissions {
                     // and see if the user in the activity is in that list
                     List<CertificationBody> accessibleAcbs = getResourcePermissions().getAllAcbsForCurrentUser();
                     for (CertificationBody acb : accessibleAcbs) {
-                        accessibleUsers.addAll(getResourcePermissions().getAllUsersOnAcb(acb));
+                        accessibleUsers.addAll(getResourcePermissions().getAllUsersOnAcb(acb).stream()
+                                .map(u -> getUserDto(u.getUserId()))
+                                .toList());
                     }
                 } else if (getResourcePermissions().isUserRoleCmsStaff()) {
                     List<UserDTO> cmsUsers = userDao.getUsersWithPermission(Authority.ROLE_CMS_STAFF);
@@ -340,5 +343,14 @@ public class GetActivityDetailsActionPermissions extends ActionPermissions {
             return false;
         }
 
+    }
+
+    private UserDTO getUserDto(Long userId) {
+        try {
+            return userDao.getById(userId);
+        } catch (UserRetrievalException e) {
+            LOGGER.error("Could not retrieve user with id: {}", userId, e);
+            return null;
+        }
     }
 }
