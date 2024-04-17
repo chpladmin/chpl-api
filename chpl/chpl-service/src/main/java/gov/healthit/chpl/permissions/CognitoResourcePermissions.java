@@ -49,8 +49,10 @@ public class CognitoResourcePermissions implements ResourcePermissions {
     @Override
     public List<User> getAllUsersOnAcb(CertificationBody acb) {
         return cognitoApiWrapper.getAllUsers().stream()
-                .filter(user -> user.getRole().equals(CognitoGroups.CHPL_ACB)
+                .filter(user -> user.getRole() != null
+                        && user.getRole().equals(CognitoGroups.CHPL_ACB)
                         && user.getOrganizations().stream()
+
                                 .filter(org -> org.getId().equals(acb.getId()))
                                 .findAny()
                                 .isPresent())

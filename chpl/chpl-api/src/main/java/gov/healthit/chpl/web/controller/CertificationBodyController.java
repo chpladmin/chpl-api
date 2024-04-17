@@ -1,6 +1,5 @@
 package gov.healthit.chpl.web.controller;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.ObjectUtils;
@@ -18,8 +17,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import gov.healthit.chpl.auth.user.AuthenticationSystem;
 import gov.healthit.chpl.domain.CertificationBody;
-import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.domain.auth.UsersResponse;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
@@ -272,18 +271,8 @@ public class CertificationBodyController {
             throw new InvalidArgumentsException("Could not find the ACB specified.");
         }
 
-        List<UserDTO> users = resourcePermissionsFactory.get().getAllUsersOnAcb(acb).stream()
-                .map(user -> getUser(acbId))
-                .toList();
-
-        List<User> acbUsers = new ArrayList<User>(users.size());
-        for (UserDTO userDto : users) {
-            User acbUser = userDto.toDomain();
-            acbUsers.add(acbUser);
-        }
-
         UsersResponse results = new UsersResponse();
-        results.setUsers(acbUsers);
+        results.setUsers(resourcePermissionsFactory.get(AuthenticationSystem.CHPL).getAllUsersOnAcb(acb));
         return results;
     }
 
@@ -312,19 +301,9 @@ public class CertificationBodyController {
     public @ResponseBody UsersResponse getCognitoUsers(@PathVariable("acbId") final Long acbId)
             throws InvalidArgumentsException, EntityRetrievalException {
         CertificationBody acb = resourcePermissionsFactory.get().getAcbIfPermissionById(acbId);
-//        if (acb == null) {
-//            throw new InvalidArgumentsException("Could not find the ACB specified.");
-//        }
-//
-//        List<User> users = resourcePermissionsFactory.get().getAllUsersOnAcb(acb);
-//        List<User> acbUsers = new ArrayList<User>(users.size());
-//        for (UserDTO userDto : users) {
-//            User acbUser = userDto.toDomain();
-//            acbUsers.add(acbUser);
-//        }
 
         UsersResponse results = new UsersResponse();
-//        results.setUsers(acbUsers);
+        results.setUsers(resourcePermissionsFactory.get(AuthenticationSystem.COGNTIO).getAllUsersOnAcb(acb));
         return results;
     }
 
