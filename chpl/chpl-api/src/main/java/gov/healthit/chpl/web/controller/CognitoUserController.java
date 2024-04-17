@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import gov.healthit.chpl.domain.CreateUserFromInvitationRequest;
+import gov.healthit.chpl.domain.auth.CognitoGroups;
 import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.domain.auth.UsersResponse;
 import gov.healthit.chpl.exception.EmailNotSentException;
@@ -70,10 +71,27 @@ public class CognitoUserController {
             })
     @RequestMapping(value = "/invite", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
-    public CognitoUserInvitation inviteUser(@RequestBody CognitoUserInvitation invitation) throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException {
+    public CognitoUserInvitation inviteUser(@RequestBody CognitoUserInvitation invitation)
+            throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException, ValidationException {
 
-        CognitoUserInvitation createdInvitiation = cognitoUserManager.inviteAdmin(invitation.getEmail());
-
+        CognitoUserInvitation createdInvitiation = null;
+        switch (invitation.getGroupName()) {
+            case CognitoGroups.CHPL_ADMIN:
+                createdInvitiation = cognitoUserManager.inviteAdminUser(invitation);
+                break;
+            case CognitoGroups.CHPL_ONC:
+                createdInvitiation = cognitoUserManager.inviteOncUser(invitation);
+                break;
+            case CognitoGroups.CHPL_ACB:
+                createdInvitiation = cognitoUserManager.inviteOncAcbUser(invitation);
+                break;
+            case CognitoGroups.CHPL_DEVELOPER:
+                createdInvitiation = cognitoUserManager.inviteOncUser(invitation);
+                break;
+            case CognitoGroups.CHPL_CMS_STAFF:
+                createdInvitiation = cognitoUserManager.inviteCmsUser(invitation);
+                break;
+        }
         return createdInvitiation;
     }
 

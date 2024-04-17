@@ -23,18 +23,18 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 public class SvapDAO extends BaseDAOImpl {
     private CertifiedProductDAO certifiedProductDao;
-    private CertificationCriterionComparator criteriaComparator;
+    private CertificationCriterionComparator criterionComparator;
 
     @Autowired
-    public SvapDAO(CertifiedProductDAO certifiedProductDao, CertificationCriterionComparator criteriaComparator) {
+    public SvapDAO(CertifiedProductDAO certifiedProductDao, CertificationCriterionComparator criterionComparator) {
         this.certifiedProductDao = certifiedProductDao;
-        this.criteriaComparator = criteriaComparator;
+        this.criterionComparator = criterionComparator;
     }
 
     public Svap getById(Long id) throws EntityRetrievalException {
         SvapEntity entity = getSvapEntityById(id);
         if (entity != null) {
-            return entity.toDomainWithCriteria();
+            return entity.toDomainWithCriteria(criterionComparator);
         }
         return null;
     }
@@ -48,13 +48,13 @@ public class SvapDAO extends BaseDAOImpl {
         svapCriteriaMaps.stream()
             .map(mapping -> mapping.getSvap())
             .forEach(svap -> svap.setCriteria(
-                    svap.getCriteria().stream().sorted(criteriaComparator).collect(Collectors.toList())));
+                    svap.getCriteria().stream().sorted(criterionComparator).collect(Collectors.toList())));
         return svapCriteriaMaps;
     }
 
     public List<Svap> getAll() {
         return getAllEntities().stream()
-                .map(entity -> entity.toDomainWithCriteria())
+                .map(entity -> entity.toDomainWithCriteria(criterionComparator))
                 .collect(Collectors.toList());
     }
 

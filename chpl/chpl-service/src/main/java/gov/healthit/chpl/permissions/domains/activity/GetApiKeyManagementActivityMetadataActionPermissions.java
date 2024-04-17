@@ -1,8 +1,8 @@
 package gov.healthit.chpl.permissions.domains.activity;
 
-import gov.healthit.chpl.domain.activity.ApiKeyManagementActivityMetadata;
-import gov.healthit.chpl.permissions.domains.ActionPermissions;
 import org.springframework.stereotype.Component;
+
+import gov.healthit.chpl.permissions.domains.ActionPermissions;
 
 @Component("activityGetApiKeyManagementActivityMetadataActionPermissions")
 public class GetApiKeyManagementActivityMetadataActionPermissions extends ActionPermissions {
@@ -12,13 +12,7 @@ public class GetApiKeyManagementActivityMetadataActionPermissions extends Action
   }
 
   @Override
-  public boolean hasAccess(final Object obj) {
-    if (!(obj instanceof ApiKeyManagementActivityMetadata)) {
-      return false;
-    } else if (getResourcePermissions().isUserRoleAdmin() || getResourcePermissions().isUserRoleOnc()) {
-      return true;
-    } else {
-      return false;
-    }
+  public boolean hasAccess(Object obj) {
+    return getResourcePermissions().isUserRoleAdmin() || getResourcePermissions().isUserRoleOnc();
   }
 }

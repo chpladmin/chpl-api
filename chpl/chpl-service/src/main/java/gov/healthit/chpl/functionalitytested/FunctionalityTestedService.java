@@ -40,7 +40,7 @@ public class FunctionalityTestedService {
                     .forEach(crit -> functionalityTestedDAO.addFunctionalityTestedCriteriaMap(newfunctionalityTested, crit));
         }
 
-        return functionalityTestedDAO.getById(functionalityTested.getId());
+        return functionalityTestedDAO.getById(newfunctionalityTested.getId());
     }
 
     public void delete(FunctionalityTested functionalityTested) throws EntityRetrievalException, ValidationException {

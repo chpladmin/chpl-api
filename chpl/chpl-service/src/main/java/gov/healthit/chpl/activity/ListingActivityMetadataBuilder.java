@@ -16,6 +16,7 @@ import gov.healthit.chpl.domain.activity.ActivityMetadata;
 import gov.healthit.chpl.domain.activity.ListingActivityMetadata;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.dto.ActivityDTO;
+import gov.healthit.chpl.util.ChplUserToCognitoUserUtil;
 
 @Component("listingActivityMetadataBuilder")
 public class ListingActivityMetadataBuilder extends ActivityMetadataBuilder {
@@ -25,8 +26,8 @@ public class ListingActivityMetadataBuilder extends ActivityMetadataBuilder {
     private ObjectMapper jsonMapper;
 
     @Autowired
-    public ListingActivityMetadataBuilder(CertificationStatusEventsService cseService) {
-        super();
+    public ListingActivityMetadataBuilder(CertificationStatusEventsService cseService, ChplUserToCognitoUserUtil chplUserToCognitoUserUtil) {
+        super(chplUserToCognitoUserUtil);
         this.cseService = cseService;
         jsonMapper = new ObjectMapper();
     }
@@ -75,6 +76,7 @@ public class ListingActivityMetadataBuilder extends ActivityMetadataBuilder {
     private void parseListingMetadata(
             final ListingActivityMetadata listingMetadata, final CertifiedProductSearchDetails listing) {
         listingMetadata.setChplProductNumber(listing.getChplProductNumber());
+        listingMetadata.getObject().setName(listing.getChplProductNumber());
         if (listing.getCertifyingBody() != null
                 && listing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_NAME_KEY) != null
                 && listing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_ID_KEY) != null) {

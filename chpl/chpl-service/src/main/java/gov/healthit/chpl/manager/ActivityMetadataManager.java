@@ -46,7 +46,7 @@ public class ActivityMetadataManager extends SecuredManager {
     }
 
     @Transactional
-    public List<ActivityMetadata> getActivityMetadataByObject(final Long objectId, final ActivityConcept concept,
+    public List<ActivityMetadata> getActivityMetadataByObject(Long objectId, ActivityConcept concept,
             final Date startDate, final Date endDate) throws JsonParseException, IOException {
 
         return getActivityMetadataByObjectWithoutSecurity(objectId, concept, startDate, endDate);
@@ -55,7 +55,7 @@ public class ActivityMetadataManager extends SecuredManager {
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ACTIVITY, "
             + "T(gov.healthit.chpl.permissions.domains.ActivityDomainPermissions).GET_METADATA_BY_ACB, #acbId)")
     @Transactional
-    public List<ActivityMetadata> getCertificationBodyActivityMetadata(final Long acbId, final Date startDate,
+    public List<ActivityMetadata> getCertificationBodyActivityMetadata(Long acbId, Date startDate,
             final Date endDate) throws EntityRetrievalException, JsonParseException, IOException {
         acbDao.getById(acbId); // throws not found exception for invalid id
         return getActivityMetadataByObjectWithoutSecurity(acbId, ActivityConcept.CERTIFICATION_BODY, startDate,
@@ -65,7 +65,7 @@ public class ActivityMetadataManager extends SecuredManager {
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ACTIVITY, "
             + "T(gov.healthit.chpl.permissions.domains.ActivityDomainPermissions).GET_METADATA_BY_ATL, #atlId)")
     @Transactional
-    public List<ActivityMetadata> getTestingLabActivityMetadata(final Long atlId, final Date startDate,
+    public List<ActivityMetadata> getTestingLabActivityMetadata(Long atlId, Date startDate,
             final Date endDate) throws EntityRetrievalException, JsonParseException, IOException {
         atlDao.getById(atlId); // throws not found exception for invalid id
         return getActivityMetadataByObjectWithoutSecurity(atlId, ActivityConcept.TESTING_LAB, startDate, endDate);
@@ -76,7 +76,7 @@ public class ActivityMetadataManager extends SecuredManager {
     @PostFilter("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ACTIVITY, "
             + "T(gov.healthit.chpl.permissions.domains.ActivityDomainPermissions).GET_COMPLAINT_METADATA, filterObject)")
     @Transactional
-    public List<ActivityMetadata> getComplaintActivityMetadata(final Date startDate, final Date endDate)
+    public List<ActivityMetadata> getComplaintActivityMetadata(Date startDate, Date endDate)
             throws IOException {
         return getActivityMetadataByConceptWithoutSecurity(ActivityConcept.COMPLAINT, startDate, endDate);
     }
@@ -86,7 +86,7 @@ public class ActivityMetadataManager extends SecuredManager {
     @PostFilter("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ACTIVITY, "
             + "T(gov.healthit.chpl.permissions.domains.ActivityDomainPermissions).GET_QUARTERLY_REPORT_METADATA, filterObject)")
     @Transactional
-    public List<ActivityMetadata> getQuarterlyReportActivityMetadata(final Date startDate, final Date endDate)
+    public List<ActivityMetadata> getQuarterlyReportActivityMetadata(Date startDate, Date endDate)
             throws IOException {
         return getActivityMetadataByConceptWithoutSecurity(ActivityConcept.QUARTERLY_REPORT, startDate, endDate);
     }
@@ -96,7 +96,7 @@ public class ActivityMetadataManager extends SecuredManager {
     @PostFilter("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ACTIVITY, "
             + "T(gov.healthit.chpl.permissions.domains.ActivityDomainPermissions).GET_QUARTERLY_REPORT_METADATA, filterObject)")
     @Transactional
-    public List<ActivityMetadata> getQuarterlyReportListingActivityMetadata(final Date startDate, final Date endDate)
+    public List<ActivityMetadata> getQuarterlyReportListingActivityMetadata(Date startDate, Date endDate)
             throws IOException {
         return getActivityMetadataByConceptWithoutSecurity(ActivityConcept.QUARTERLY_REPORT_LISTING, startDate,
                 endDate);
@@ -107,7 +107,7 @@ public class ActivityMetadataManager extends SecuredManager {
     @PostFilter("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ACTIVITY, "
             + "T(gov.healthit.chpl.permissions.domains.ActivityDomainPermissions).GET_ANNUAL_REPORT_METADATA, filterObject)")
     @Transactional
-    public List<ActivityMetadata> getAnnualReportActivityMetadata(final Date startDate, final Date endDate)
+    public List<ActivityMetadata> getAnnualReportActivityMetadata(Date startDate, Date endDate)
             throws IOException {
         return getActivityMetadataByConceptWithoutSecurity(ActivityConcept.ANNUAL_REPORT, startDate, endDate);
     }
@@ -117,13 +117,13 @@ public class ActivityMetadataManager extends SecuredManager {
     @PostFilter("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ACTIVITY, "
             + "T(gov.healthit.chpl.permissions.domains.ActivityDomainPermissions).GET_CHANGE_REQUEST_METADATA, filterObject)")
     @Transactional
-    public List<ActivityMetadata> getChangeRequestActivityMetadata(final Date startDate, final Date endDate)
+    public List<ActivityMetadata> getChangeRequestActivityMetadata(Date startDate, Date endDate)
             throws IOException {
         return getActivityMetadataByConceptWithoutSecurity(ActivityConcept.CHANGE_REQUEST, startDate, endDate);
     }
 
-    private List<ActivityMetadata> getActivityMetadataByConceptWithoutSecurity(final ActivityConcept concept,
-            final Date startDate, final Date endDate) throws JsonParseException, IOException {
+    private List<ActivityMetadata> getActivityMetadataByConceptWithoutSecurity(ActivityConcept concept,
+            Date startDate, Date endDate) throws JsonParseException, IOException {
         LOGGER.info("Getting " + concept.name() + " activity from " + startDate + " through " + endDate);
         // get the activity
         List<ActivityDTO> activityDtos = activityDAO.findByConcept(concept, startDate, endDate);
@@ -145,8 +145,8 @@ public class ActivityMetadataManager extends SecuredManager {
         return activityMetas;
     }
 
-    private List<ActivityMetadata> getActivityMetadataByObjectWithoutSecurity(final Long objectId,
-            final ActivityConcept concept, final Date startDate, final Date endDate)
+    private List<ActivityMetadata> getActivityMetadataByObjectWithoutSecurity(Long objectId,
+            ActivityConcept concept, Date startDate, Date endDate)
             throws JsonParseException, IOException {
 
         LOGGER.info("Getting " + concept.name() + " activity for id " + objectId + " from " + startDate + " through "
