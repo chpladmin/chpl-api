@@ -299,7 +299,7 @@ public class DeveloperSearchService {
                 return 0;
             }
             int sortFactor = descending ? -1 : 1;
-            return (dev1.getName().compareTo(dev2.getName())) * sortFactor;
+            return (dev1.getName().toUpperCase().compareTo(dev2.getName().toUpperCase())) * sortFactor;
         }
     }
 
