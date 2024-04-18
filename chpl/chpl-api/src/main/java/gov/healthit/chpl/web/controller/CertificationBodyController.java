@@ -30,7 +30,6 @@ import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.UserPermissionsManager;
 import gov.healthit.chpl.manager.auth.UserManager;
 import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
-import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import gov.healthit.chpl.web.controller.results.CertificationBodyResults;
 import io.swagger.v3.oas.annotations.Operation;
@@ -272,7 +271,7 @@ public class CertificationBodyController {
         }
 
         UsersResponse results = new UsersResponse();
-        results.setUsers(resourcePermissionsFactory.get(AuthUtil.getCurrentUser().getAuthenticationSystem()).getAllUsersOnAcb(acb));
+        results.setUsers(resourcePermissionsFactory.get().getAllUsersOnAcb(acb));
         return results;
     }
 }

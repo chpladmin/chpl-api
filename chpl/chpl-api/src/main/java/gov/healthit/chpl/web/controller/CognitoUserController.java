@@ -120,19 +120,4 @@ public class CognitoUserController {
         }
     }
 
-    /*
-    @Operation(summary = "View users of the system.",
-            description = "Security Restrictions: ROLE_ADMIN and ROLE_ONC can see all users.  ROLE_ACB "
-                    + "and ROLE_CMS_STAFF can see themselves.",
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
-            })
-    @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public @ResponseBody UsersResponse getUsers() {
-        UsersResponse response = new UsersResponse();
-        response.getUsers().addAll(cognitoUserManager.getAll());
-        return response;
-    }
-    */
 }
