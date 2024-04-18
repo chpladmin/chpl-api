@@ -22,6 +22,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.attestation.domain.AttestationPeriodDeveloperException;
 import gov.healthit.chpl.attestation.manager.AttestationManager;
+import gov.healthit.chpl.auth.user.AuthenticationSystem;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.compliance.directreview.DirectReviewCachingService;
 import gov.healthit.chpl.developer.join.JoinDevelopersRequest;
@@ -46,6 +47,7 @@ import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.UserPermissionsManager;
 import gov.healthit.chpl.realworldtesting.domain.RealWorldTestingUrlByDeveloper;
 import gov.healthit.chpl.realworldtesting.manager.RealWorldTestingManager;
+import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import gov.healthit.chpl.web.controller.results.DeveloperAttestationSubmissionResults;
@@ -283,33 +285,19 @@ public class DeveloperController {
             produces = "application/json; charset=utf-8")
     public @ResponseBody UsersResponse getUsers(@PathVariable("developerId") Long developerId)
             throws InvalidArgumentsException, EntityRetrievalException {
-        List<UserDTO> users = developerManager.getAllUsersOnDeveloper(developerId);
-        List<User> domainUsers = new ArrayList<User>(users.size());
-        for (UserDTO userDto : users) {
-            User domainUser = userDto.toDomain();
-            domainUsers.add(domainUser);
+
+        List<User> domainUsers = null;
+        if (AuthUtil.getCurrentUser().getAuthenticationSystem().equals(AuthenticationSystem.COGNTIO)) {
+            domainUsers = developerManager.getAllCognitoUsersOnDeveloper(developerId);
+        } else if (AuthUtil.getCurrentUser().getAuthenticationSystem().equals(AuthenticationSystem.CHPL)) {
+            List<UserDTO> users = developerManager.getAllUsersOnDeveloper(developerId);
+            domainUsers = users.stream()
+                    .map(user -> user.toDomain())
+                    .toList();
         }
 
         UsersResponse results = new UsersResponse();
         results.setUsers(domainUsers);
-        return results;
-    }
-
-    @Operation(summary = "List Cognito users with permissions on a specified developer.",
-            description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_ACB, or have administrative "
-                    + "authority on the specified developer.",
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
-            })
-    @RequestMapping(value = "/{developerId}/cognito-users", method = RequestMethod.GET,
-            produces = "application/json; charset=utf-8")
-    public @ResponseBody UsersResponse getCognitoUsers(@PathVariable("developerId") Long developerId)
-            throws InvalidArgumentsException, EntityRetrievalException {
-        List<User> users = developerManager.getAllCognitoUsersOnDeveloper(developerId);
-
-        UsersResponse results = new UsersResponse();
-        results.setUsers(users);
         return results;
     }
 

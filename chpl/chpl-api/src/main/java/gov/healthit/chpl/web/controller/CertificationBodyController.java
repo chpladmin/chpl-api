@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import gov.healthit.chpl.auth.user.AuthenticationSystem;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.auth.UsersResponse;
 import gov.healthit.chpl.dto.auth.UserDTO;
@@ -31,6 +30,7 @@ import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.UserPermissionsManager;
 import gov.healthit.chpl.manager.auth.UserManager;
 import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
+import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import gov.healthit.chpl.web.controller.results.CertificationBodyResults;
 import io.swagger.v3.oas.annotations.Operation;
@@ -272,51 +272,7 @@ public class CertificationBodyController {
         }
 
         UsersResponse results = new UsersResponse();
-        results.setUsers(resourcePermissionsFactory.get(AuthenticationSystem.CHPL).getAllUsersOnAcb(acb));
+        results.setUsers(resourcePermissionsFactory.get(AuthUtil.getCurrentUser().getAuthenticationSystem()).getAllUsersOnAcb(acb));
         return results;
     }
-
-    @Operation(summary = "List users with permissions on a specified ONC-ACB.",
-            description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or have administrative "
-                    + "or read authority on the specified ONC-ACB",
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
-            })
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "The request was successful.",
-                    content = {
-                            @Content(mediaType = "application/json",
-                                    schema = @Schema(implementation = UsersResponse.class))
-                    }),
-            @ApiResponse(responseCode = "401", description = "The authenticated user does not have permissions to get the user list.",
-                    content = @Content),
-            @ApiResponse(responseCode = "404", description = "The ONC-ACB ID specified in the URL does not exist in the CHPL database.",
-                    content = @Content),
-            @ApiResponse(responseCode = "500", description = "There was an unexpected error getting the user list.",
-                    content = @Content)
-    })
-    @RequestMapping(value = "/{acbId}/cognito-users", method = RequestMethod.GET,
-            produces = "application/json; charset=utf-8")
-    public @ResponseBody UsersResponse getCognitoUsers(@PathVariable("acbId") final Long acbId)
-            throws InvalidArgumentsException, EntityRetrievalException {
-        CertificationBody acb = resourcePermissionsFactory.get().getAcbIfPermissionById(acbId);
-
-        UsersResponse results = new UsersResponse();
-        results.setUsers(resourcePermissionsFactory.get(AuthenticationSystem.COGNTIO).getAllUsersOnAcb(acb));
-        return results;
-    }
-
-
-    private UserDTO getUser(Long userId) {
-        try {
-            return userManager.getById(userId);
-        } catch (UserRetrievalException e) {
-            LOGGER.error("Could not retrieve user with id: {}", userId, e);
-            return null;
-        }
-
-    }
-
-
 }

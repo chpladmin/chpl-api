@@ -28,7 +28,7 @@ public class ResourcePermissionsFactory {
             CertificationBodyDAO acbDAO, ErrorMessageUtil errorMessageUtil, UserDAO userDAO) {
 
         this.chplResourcePermissions = new ChplResourcePermissions(userCertificationBodyMapDAO, userDeveloperMapDAO, acbDAO, errorMessageUtil, userDAO, developerDAO);
-        this.cognitoResourcePermissions = new CognitoResourcePermissions(certificationBodyDAO, developerDAO, cognitoApiWrapper);
+        this.cognitoResourcePermissions = new CognitoResourcePermissions(certificationBodyDAO, developerDAO, cognitoApiWrapper, errorMessageUtil);
     }
 
     public ResourcePermissions get() {
