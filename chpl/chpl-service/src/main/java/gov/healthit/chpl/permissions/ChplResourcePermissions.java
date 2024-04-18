@@ -232,6 +232,7 @@ public class ChplResourcePermissions implements ResourcePermissions {
             UserDTO userDto = userDAO.getById(user.getUserId());
             return userDto.getPermission();
         } catch (UserRetrievalException ex) {
+            LOGGER.error("Could not retrieve userDto with id: {}", user, ex);
         }
         return null;
     }
