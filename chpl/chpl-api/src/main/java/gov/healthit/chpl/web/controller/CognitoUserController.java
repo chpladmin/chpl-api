@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 import gov.healthit.chpl.domain.CreateUserFromInvitationRequest;
 import gov.healthit.chpl.domain.auth.CognitoGroups;
 import gov.healthit.chpl.domain.auth.User;
-import gov.healthit.chpl.domain.auth.UsersResponse;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.UserCreationException;
 import gov.healthit.chpl.exception.UserPermissionRetrievalException;
@@ -121,6 +120,7 @@ public class CognitoUserController {
         }
     }
 
+    /*
     @Operation(summary = "View users of the system.",
             description = "Security Restrictions: ROLE_ADMIN and ROLE_ONC can see all users.  ROLE_ACB "
                     + "and ROLE_CMS_STAFF can see themselves.",
@@ -134,5 +134,5 @@ public class CognitoUserController {
         response.getUsers().addAll(cognitoUserManager.getAll());
         return response;
     }
-
+    */
 }

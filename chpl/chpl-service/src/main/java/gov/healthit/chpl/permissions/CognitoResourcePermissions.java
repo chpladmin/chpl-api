@@ -237,7 +237,9 @@ public class CognitoResourcePermissions implements ResourcePermissions {
 
     @Override
     public boolean hasPermissionOnUser(User user) {
-        if (user.getRole().equalsIgnoreCase(CognitoGroups.CHPL_STARTUP)) {
+        if (user.getRole() == null) {
+            return false;
+        }else if (user.getRole().equalsIgnoreCase(CognitoGroups.CHPL_STARTUP)) {
             return false;
         } else if (isUserRoleAdmin() || (AuthUtil.getCurrentUser().getCognitoId()).equals(user.getCognitoId())) {
             return true;
