@@ -17,6 +17,7 @@ import gov.healthit.chpl.domain.activity.ActivityMetadata;
 import gov.healthit.chpl.domain.activity.VersionActivityMetadata;
 import gov.healthit.chpl.dto.ActivityDTO;
 import gov.healthit.chpl.dto.ProductVersionDTO;
+import gov.healthit.chpl.util.ChplUserToCognitoUserUtil;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -27,13 +28,14 @@ public class VersionActivityMetadataBuilder extends ActivityMetadataBuilder {
     private ProductDAO productDao;
 
     @Autowired
-    public VersionActivityMetadataBuilder(DeveloperDAO developerDao, ProductDAO productDao) {
-        super();
+    public VersionActivityMetadataBuilder(DeveloperDAO developerDao, ProductDAO productDao, ChplUserToCognitoUserUtil chplUserToCognitoUserUtil) {
+        super(chplUserToCognitoUserUtil);
         jsonMapper = new ObjectMapper();
         this.developerDao = developerDao;
         this.productDao = productDao;
     }
 
+    @Override
     protected void addConceptSpecificMetadata(ActivityDTO activity, ActivityMetadata metadata) {
         if (!(metadata instanceof VersionActivityMetadata)) {
             return;
@@ -144,6 +146,7 @@ public class VersionActivityMetadataBuilder extends ActivityMetadataBuilder {
             }
         }
         versionMetadata.setVersion(version.getVersion());
+        versionMetadata.getObject().setName(version.getVersion());
     }
 
     private void parseVersionMetadata(

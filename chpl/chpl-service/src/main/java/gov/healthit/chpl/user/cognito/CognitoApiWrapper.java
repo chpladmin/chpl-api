@@ -1,6 +1,7 @@
 package gov.healthit.chpl.user.cognito;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -60,6 +61,8 @@ public class CognitoApiWrapper {
     private CertificationBodyDAO certificationBodyDAO;
     private DeveloperDAO developerDAO;
 
+    private Map<UUID, User> userMap = new HashMap<UUID, User>();
+
     @Autowired
     public CognitoApiWrapper(@Value("${cognito.accessKey}") String accessKey, @Value("${cognito.secretKey}") String secretKey,
             @Value("${cognito.region}") String region, @Value("${cognito.clientId}") String clientId, @Value("${cognito.userPoolId}") String userPoolId,
@@ -101,6 +104,14 @@ public class CognitoApiWrapper {
     }
 
     public User getUserInfo(UUID cognitoId) throws UserRetrievalException {
+        if (!userMap.containsKey(cognitoId)) {
+            User user = getUserInfoFromCognito(cognitoId);
+            userMap.put(cognitoId, user);
+        }
+        return userMap.get(cognitoId);
+    }
+
+    private User getUserInfoFromCognito(UUID cognitoId) throws UserRetrievalException {
         ListUsersResponse response = cognitoClient.listUsers(ListUsersRequest.builder()
                 .userPoolId(userPoolId)
                 .filter("sub = \"" + cognitoId.toString() + "\"")
@@ -140,7 +151,9 @@ public class CognitoApiWrapper {
                             AttributeType.builder().name("email").value(userRequest.getEmail()).build(),
                             AttributeType.builder().name("phone_number").value("+1" + userRequest.getPhoneNumber().replaceAll("[^0-9.]", "")).build(),
                             AttributeType.builder().name("nickname").value(userRequest.getFriendlyName()).build(),
-                            AttributeType.builder().name("custom:title").value(userRequest.getTitle()).build())
+                            AttributeType.builder().name("custom:title").value(userRequest.getTitle()).build(),
+                            AttributeType.builder().name("custom:organizations").value(
+                                    userRequest.getOrganizationId() != null ? userRequest.getOrganizationId().toString() : "").build())
                     .temporaryPassword(tempPassword)
                     .messageAction(MessageActionType.SUPPRESS)
                     .build();
@@ -153,14 +166,14 @@ public class CognitoApiWrapper {
                     .password(tempPassword)
                     .build();
         } catch (Exception e) {
-            throw new UserCreationException(String.format("Error creating user with email %s in store.", userRequest.getEmail()));
+            throw new UserCreationException(String.format("Error creating user with email %s in store.", userRequest.getEmail()), e);
         }
     }
 
-    public AdminAddUserToGroupResponse addUserToAdminGroup(String email) {
+    public AdminAddUserToGroupResponse addUserToGroup(String email, String groupName) {
         AdminAddUserToGroupRequest request = AdminAddUserToGroupRequest.builder()
                 .userPoolId(userPoolId)
-                .groupName(CognitoGroups.CHPL_ADMIN.toString())
+                .groupName(groupName)
                 .username(email)
                 .build();
 

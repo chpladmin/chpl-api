@@ -101,7 +101,7 @@ public class RealWorldTestingEligiblityService {
         LocalDate currentRwtEligStartDate = rwtProgramStartDate;
         Integer currentRwtEligYear = rwtProgramFirstEligibilityYear;
         while (currentRwtEligStartDate.isBefore(LocalDate.now())) {
-            Optional<CertifiedProductSearchDetails> listing = getListingAsOfDate(listingId, currentRwtEligStartDate);
+            Optional<CertifiedProductSearchDetails> listing = getListingAsOfDateOrOriginalState(listingId, currentRwtEligStartDate);
             if (listing.isPresent() && isListingRwtEligible(listing.get(), currentRwtEligStartDate)) {
                 RealWorldTestingEligibility eligibility = new RealWorldTestingEligibility(RealWorldTestingEligiblityReason.SELF, currentRwtEligYear);
                 addCalculatedResultsToMemo(listingId, eligibility);
@@ -112,6 +112,14 @@ public class RealWorldTestingEligiblityService {
             currentRwtEligYear++;
         }
         return Optional.empty();
+    }
+
+    private Optional<CertifiedProductSearchDetails> getListingAsOfDateOrOriginalState(Long listingId, LocalDate asOfDate) {
+        Optional<CertifiedProductSearchDetails> listing = getListingAsOfDate(listingId, asOfDate);
+        if (listing.isEmpty()) {
+            listing = getListingInOriginalState(listingId);
+        }
+        return listing;
     }
 
     private Integer getRwtEligibilityYearBasedOnIcs(Long listingId, Logger logger) {
@@ -133,13 +141,11 @@ public class RealWorldTestingEligiblityService {
                         if (Integer.valueOf(cpParentDto.getIcsCode()) >= Integer.valueOf(cpChild.getIcsCode())) {
                             continue;
                         }
-                        if (listingIsWithdrawn(cpParentDto, logger)) {
-                            //If parent is withdrawn continue with calculating its eligibility year.... Uh-oh - possible recursion...
-                            RealWorldTestingEligibility parentEligibility = getRwtEligibilityYearForListing(cpParent.getId(), logger);
-                            if (parentEligibility.getEligibilityYear() != null
-                                    && doesListingAttestToEligibleCriteria(listing.get(), parentEligibility.getEligibilityYear())) {
-                                parentEligibilityYears.add(parentEligibility.getEligibilityYear());
-                            }
+                        //Uh-oh - possible recursion...
+                        RealWorldTestingEligibility parentEligibility = getRwtEligibilityYearForListing(cpParent.getId(), logger);
+                        if (parentEligibility.getEligibilityYear() != null
+                                && doesListingAttestToEligibleCriteria(listing.get(), parentEligibility.getEligibilityYear())) {
+                            parentEligibilityYears.add(parentEligibility.getEligibilityYear());
                         }
                     }
                     if (parentEligibilityYears.size() > 0) {
@@ -153,22 +159,6 @@ public class RealWorldTestingEligiblityService {
         } catch (EntityRetrievalException e) {
             return null;
         }
-    }
-
-    private boolean listingIsWithdrawn(CertifiedProductDTO listing, Logger logger) {
-        boolean result = false;
-        try {
-            CertificationStatusEvent currentStatusEvent = certStatusService.getCurrentCertificationStatusEvent(listing.getId());
-            logger.debug("Listing " + listing.getId() + " has current certification status of " + currentStatusEvent.getStatus().getName());
-            result = currentStatusEvent != null && withdrawnStatuses.stream()
-                    .map(status -> status.getName())
-                    .filter(statusName -> currentStatusEvent.getStatus().getName().equals(statusName))
-                    .findAny().isPresent();
-        } catch (EntityRetrievalException ex) {
-            logger.error("Unable to get current certification status event for listing  " + listing.getId(), ex);
-            return result;
-        }
-        return result;
     }
 
     private Optional<CertifiedProductSearchDetails> getListingAsOfDate(Long listingId, LocalDate asOfDate) {

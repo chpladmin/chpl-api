@@ -1,6 +1,7 @@
 package gov.healthit.chpl.functionalitytested;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -19,6 +20,7 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.Where;
 
+import gov.healthit.chpl.certificationCriteria.CertificationCriterionComparator;
 import gov.healthit.chpl.criteriaattribute.rule.RuleEntity;
 import gov.healthit.chpl.entity.EntityAudit;
 import gov.healthit.chpl.entity.PracticeTypeEntity;
@@ -105,7 +107,7 @@ public class FunctionalityTestedEntity extends EntityAudit {
                 .build();
     }
 
-    public FunctionalityTested toDomainWithCriteria() {
+    public FunctionalityTested toDomainWithCriteria(CertificationCriterionComparator criterionComparator) {
         return FunctionalityTested.builder()
                 .id(this.getId())
                 .value(this.getValue())
@@ -118,7 +120,8 @@ public class FunctionalityTestedEntity extends EntityAudit {
                 .practiceType(this.getPracticeType() != null ? this.getPracticeType().toDomain() : null)
                 .criteria(this.getMappedCriteria() != null ? this.getMappedCriteria().stream()
                         .map(mappedCriterion -> mappedCriterion.getCriterion().toDomain())
-                        .collect(Collectors.toList()) : null)
+                        .sorted(criterionComparator)
+                        .collect(Collectors.toCollection(ArrayList::new)) : null)
                 .build();
     }
 }

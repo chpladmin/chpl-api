@@ -40,7 +40,7 @@ public class StandardService {
                     .forEach(crit -> standardDAO.addStandardCriteriaMap(newStandard, crit));
         }
 
-        return standardDAO.getById(standard.getId());
+        return standardDAO.getById(newStandard.getId());
     }
 
     public void delete(Standard standard) throws EntityRetrievalException, ValidationException {

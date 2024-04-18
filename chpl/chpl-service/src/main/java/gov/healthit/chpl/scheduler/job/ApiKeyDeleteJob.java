@@ -7,7 +7,6 @@ import java.util.Locale;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,19 +18,18 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-
 import gov.healthit.chpl.api.dao.ApiKeyDAO;
 import gov.healthit.chpl.api.domain.ApiKey;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
+import gov.healthit.chpl.domain.auth.Authority;
 import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.email.EmailBuilder;
+import gov.healthit.chpl.exception.ActivityException;
 import gov.healthit.chpl.exception.EmailNotSentException;
-import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.ActivityManager;
 
-public class ApiKeyDeleteJob implements Job {
+public class ApiKeyDeleteJob extends QuartzJob {
     private static final Logger LOGGER = LogManager.getLogger("apiKeyDeleteJobLogger");
 
     @Autowired
@@ -53,6 +51,7 @@ public class ApiKeyDeleteJob implements Job {
     public void execute(final JobExecutionContext jobContext) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
         LOGGER.info("********* Starting the API Key Deletion job. *********");
+        setSecurityContext(Authority.ROLE_ADMIN);
         LOGGER.info("Looking for API keys where the warning email was sent " + getNumberOfDaysUntilDelete() + " days ago.");
 
         List<ApiKey> apiKeys = apiKeyDAO.findAllToBeRevoked(getNumberOfDaysUntilDelete());
@@ -74,7 +73,7 @@ public class ApiKeyDeleteJob implements Job {
                         try {
                             delete(apiKey);
                             sendEmail(apiKey);
-                        } catch (EntityRetrievalException | EntityCreationException | JsonProcessingException e) {
+                        } catch (EntityRetrievalException | ActivityException e) {
                             LOGGER.error("Error updating api_key.deleted for id: " + apiKey.getId(), e);
                         } catch (EmailNotSentException e) {
                             LOGGER.error("Error sending email to: " + apiKey.getEmail(), e);
@@ -88,11 +87,11 @@ public class ApiKeyDeleteJob implements Job {
         LOGGER.info("********* Completed the API Key Deletion job. *********");
     }
 
-    private void delete(ApiKey apiKey) throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
+    private void delete(ApiKey apiKey) throws EntityRetrievalException, ActivityException {
         deleteKey(apiKey.getId());
     }
 
-    private void deleteKey(Long keyId) throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
+    private void deleteKey(Long keyId) throws EntityRetrievalException, ActivityException {
         ApiKey toDelete = apiKeyDAO.getById(keyId);
         String activityMsg = "API Key " + toDelete.getKey() + " was revoked.";
         apiKeyDAO.delete(keyId);

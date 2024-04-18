@@ -1,7 +1,6 @@
 package gov.healthit.chpl.activity;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -11,17 +10,21 @@ import gov.healthit.chpl.domain.activity.ActivityCategory;
 import gov.healthit.chpl.domain.activity.ActivityMetadata;
 import gov.healthit.chpl.domain.activity.CertificationBodyActivityMetadata;
 import gov.healthit.chpl.dto.ActivityDTO;
+import gov.healthit.chpl.util.ChplUserToCognitoUserUtil;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 @Component("acbActivityMetadataBuilder")
 public class CertificationBodyActivityMetadataBuilder extends ActivityMetadataBuilder {
-    private static final Logger LOGGER = LogManager.getLogger(CertificationBodyActivityMetadataBuilder.class);
     private ObjectMapper jsonMapper;
 
-    public CertificationBodyActivityMetadataBuilder() {
-        super();
+    @Autowired
+    public CertificationBodyActivityMetadataBuilder(ChplUserToCognitoUserUtil chplUserToCognitoUserUtil) {
+        super(chplUserToCognitoUserUtil);
         jsonMapper = new ObjectMapper();
     }
 
+    @Override
     protected void addConceptSpecificMetadata(final ActivityDTO dto, final ActivityMetadata metadata) {
         if (!(metadata instanceof CertificationBodyActivityMetadata)) {
             return;
@@ -67,5 +70,6 @@ public class CertificationBodyActivityMetadataBuilder extends ActivityMetadataBu
     private void parseAcbMetadata(final CertificationBodyActivityMetadata acbMetadata, final CertificationBody acb) {
         acbMetadata.setAcbId(acb.getId());
         acbMetadata.setAcbName(acb.getName());
+        acbMetadata.getObject().setName(acb.getName());
     }
 }

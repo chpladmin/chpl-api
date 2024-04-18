@@ -35,6 +35,7 @@ import gov.healthit.chpl.domain.contact.PointOfContact;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.ProductVersionDTO;
+import gov.healthit.chpl.exception.ActivityException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
@@ -130,8 +131,8 @@ public class ProductManager extends SecuredManager {
             CacheNames.QUESTIONABLE_ACTIVITIES
     }, allEntries = true)
     @ListingSearchCacheRefresh
-    public Long create(Long developerId, Product product)
-            throws EntityRetrievalException, EntityCreationException, JsonProcessingException {
+    public Long create(Long developerId, Product product) throws EntityCreationException, ActivityException {
+
         product.setOwner(Developer.builder().id(developerId).build());
         Product createdProduct = null;
         try {
@@ -154,7 +155,8 @@ public class ProductManager extends SecuredManager {
     @ListingSearchCacheRefresh
     @ListingStoreRemove(removeBy = RemoveBy.PRODUCT_ID, id = "#product.id")
     public Product updateProductOwnership(Product product)
-            throws EntityRetrievalException, EntityCreationException, ValidationException, JsonProcessingException {
+            throws EntityRetrievalException, JsonProcessingException, EntityCreationException, ValidationException, ActivityException {
+
         Map<Long, CertifiedProductSearchDetails> preUpdateListingDetails = new HashMap<Long, CertifiedProductSearchDetails>();
         Map<Long, CertifiedProductSearchDetails> postUpdateListingDetails = new HashMap<Long, CertifiedProductSearchDetails>();
 
@@ -200,8 +202,7 @@ public class ProductManager extends SecuredManager {
     }, allEntries = true)
     @ListingSearchCacheRefresh
     @ListingStoreRemove(removeBy = RemoveBy.PRODUCT_ID, id = "#product.id")
-    public Product update(Product product)
-            throws EntityRetrievalException, EntityCreationException, ValidationException, JsonProcessingException {
+    public Product update(Product product) throws EntityRetrievalException, ValidationException, EntityCreationException, ActivityException  {
         return updateProduct(product, false);
     }
 
@@ -214,8 +215,7 @@ public class ProductManager extends SecuredManager {
     }, allEntries = true)
     @ListingSearchCacheRefresh
     @ListingStoreRemove(removeBy = RemoveBy.PRODUCT_ID, id = "#product.id")
-    public Product updateProductForOwnerJoin(Product product)
-            throws EntityRetrievalException, EntityCreationException, ValidationException, JsonProcessingException {
+    public Product updateProductForOwnerJoin(Product product) throws EntityRetrievalException, ValidationException, EntityCreationException, ActivityException {
         return updateProduct(product, true);
     }
 
@@ -229,7 +229,7 @@ public class ProductManager extends SecuredManager {
     @ListingSearchCacheRefresh
     @ListingStoreRemove(removeBy = RemoveBy.PRODUCT_ID, id = "#toCreate.id")
     public Product merge(List<Long> productIdsToMerge, Product toCreate)
-            throws EntityRetrievalException, ValidationException, EntityCreationException, JsonProcessingException {
+            throws EntityRetrievalException, JsonProcessingException, ValidationException, EntityCreationException, ActivityException {
 
         List<Product> beforeProducts = new ArrayList<Product>();
         for (Long productId : productIdsToMerge) {
@@ -273,9 +273,9 @@ public class ProductManager extends SecuredManager {
     }, allEntries = true)
     @ListingSearchCacheRefresh
     @ListingStoreRemove(removeBy = RemoveBy.PRODUCT_ID, id = "#productToCreate.id")
-    public Product split(Product oldProduct, Product productToCreate, String newProductCode,
-            List<ProductVersionDTO> newProductVersions)
-            throws AccessDeniedException, ValidationException, EntityRetrievalException, EntityCreationException, JsonProcessingException {
+    public Product split(Product oldProduct, Product productToCreate, String newProductCode, List<ProductVersionDTO> newProductVersions)
+            throws JsonProcessingException, ValidationException, EntityRetrievalException, EntityCreationException, ActivityException {
+
         Product createdProduct = createProduct(productToCreate);
         //must set the ID otherwise the "productToCreate.id" passed into the shared store is null
         productToCreate.setId(createdProduct.getId());
@@ -351,7 +351,8 @@ public class ProductManager extends SecuredManager {
     }
 
     private Product updateProduct(Product product, boolean isOwnerJoiningAnotherDeveloper)
-            throws EntityRetrievalException, EntityCreationException, ValidationException, JsonProcessingException {
+            throws EntityRetrievalException, ValidationException, EntityCreationException, ActivityException {
+
         normalizeProduct(product);
 
         Product existingProduct = productDao.getById(product.getId());
@@ -370,8 +371,7 @@ public class ProductManager extends SecuredManager {
         return productAfter;
     }
 
-    private Product createProduct(Product product)
-            throws ValidationException, EntityRetrievalException, EntityCreationException, JsonProcessingException {
+    private Product createProduct(Product product) throws ValidationException, EntityCreationException, EntityRetrievalException, ActivityException {
         normalizeProduct(product);
         runNewProductValidations(product, false);
         Long productId = productDao.create(product.getOwner().getId(), product);

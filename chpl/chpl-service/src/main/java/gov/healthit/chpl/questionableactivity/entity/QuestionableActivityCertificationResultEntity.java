@@ -14,6 +14,7 @@ import javax.persistence.Table;
 
 import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
+import gov.healthit.chpl.entity.ActivityEntity;
 import gov.healthit.chpl.entity.EntityAudit;
 import gov.healthit.chpl.entity.auth.UserEntity;
 import gov.healthit.chpl.entity.listing.CertificationResultDetailsEntity;
@@ -45,8 +46,9 @@ public class QuestionableActivityCertificationResultEntity extends EntityAudit i
     @Column(name = "questionable_activity_trigger_id")
     private Long triggerId;
 
-    @Column(name = "activity_id")
-    private Long activityId;
+    @OneToOne(optional = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "activity_id", insertable = true, updatable = false)
+    private ActivityEntity activity;
 
     @OneToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "questionable_activity_trigger_id", insertable = false, updatable = false)
@@ -81,14 +83,13 @@ public class QuestionableActivityCertificationResultEntity extends EntityAudit i
     public QuestionableActivityCertificationResult toDomain() {
         return QuestionableActivityCertificationResult.builder()
                 .id(this.getId())
-                .activityId(this.getActivityId())
+                .activity(this.getActivity().toDomain())
                 .trigger(this.getTrigger() == null
                     ? QuestionableActivityTrigger.builder().id(this.getTriggerId()).build()
                             : this.getTrigger().toDomain())
                 .before(this.getBefore())
                 .after(this.getAfter())
                 .activityDate(this.getActivityDate())
-                .userId(this.getUserId())
                 .listing(this.getCertResult() == null ? null
                     : new CertifiedProductDetailsDTO(this.getCertResult().getListing()))
                 .certResultId(this.getCertResultId())

@@ -1,42 +1,35 @@
 package gov.healthit.chpl.activity;
 
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Component;
+
+import gov.healthit.chpl.domain.activity.ActivityCategory;
 import gov.healthit.chpl.domain.activity.ActivityMetadata;
-import gov.healthit.chpl.domain.activity.AnnouncementActivityMetadata;
+import gov.healthit.chpl.domain.activity.ActivityMetadata.ActivityObject;
 import gov.healthit.chpl.domain.activity.AnnualReportActivityMetadata;
-import gov.healthit.chpl.domain.activity.ApiKeyManagementActivityMetadata;
 import gov.healthit.chpl.domain.activity.CertificationBodyActivityMetadata;
 import gov.healthit.chpl.domain.activity.ChangeRequestActivityMetadata;
 import gov.healthit.chpl.domain.activity.ComplaintActivityMetadata;
-import gov.healthit.chpl.domain.activity.CorrectiveActionPlanActivityMetadata;
 import gov.healthit.chpl.domain.activity.DeveloperActivityMetadata;
 import gov.healthit.chpl.domain.activity.ListingActivityMetadata;
-import gov.healthit.chpl.domain.activity.PendingSurveillanceActivityMetadata;
 import gov.healthit.chpl.domain.activity.ProductActivityMetadata;
 import gov.healthit.chpl.domain.activity.QuarterlyReportActivityMetadata;
 import gov.healthit.chpl.domain.activity.TestingLabActivityMetadata;
 import gov.healthit.chpl.domain.activity.UserMaintenanceActivityMetadata;
 import gov.healthit.chpl.domain.activity.VersionActivityMetadata;
 import gov.healthit.chpl.dto.ActivityDTO;
+import gov.healthit.chpl.util.ChplUserToCognitoUserUtil;
 
-/**
- * Builds an appropriate metadata object for the type of activity that is
- * provided.
- *
- * @author kekey
- *
- */
-public abstract class ActivityMetadataBuilder {
+@Component("activityMetadataBuilder")
+public class ActivityMetadataBuilder {
 
-    /**
-     * Create an activity metadata object from activity DTO. Fill in the basic
-     * fields that all metadata will have (date, id, etc) and then add fields
-     * specific to the type of activity. Finally, categorize the activity based
-     * on what actually happened.
-     *
-     * @param dto
-     * @return parsed metadata object
-     */
-    public ActivityMetadata build(final ActivityDTO dto) {
+    private ChplUserToCognitoUserUtil chplUserToCognitoUserUtil;
+
+    public ActivityMetadataBuilder(ChplUserToCognitoUserUtil chplUserToCognitoUserUtil) {
+        this.chplUserToCognitoUserUtil = chplUserToCognitoUserUtil;
+    }
+
+   public ActivityMetadata build(ActivityDTO dto) {
         ActivityMetadata metadata = createMetadataObject(dto);
         if (metadata != null) {
             addGenericMetadata(dto, metadata);
@@ -45,18 +38,33 @@ public abstract class ActivityMetadataBuilder {
         return metadata;
     }
 
-    protected abstract void addConceptSpecificMetadata(ActivityDTO dto, ActivityMetadata metadata);
+    protected void addConceptSpecificMetadata(ActivityDTO dto, ActivityMetadata metadata) {
+        //can be implemented by subclasses to add other info to the metadata
+    }
 
-    protected void addGenericMetadata(final ActivityDTO dto, final ActivityMetadata metadata) {
+    protected void addGenericMetadata(ActivityDTO dto, ActivityMetadata metadata) {
         metadata.setId(dto.getId());
         metadata.setDate(dto.getActivityDate());
         metadata.setObjectId(dto.getActivityObjectId());
+        metadata.setObject(ActivityObject.builder()
+                .id(dto.getActivityObjectId())
+                .build());
         metadata.setConcept(dto.getConcept());
-        metadata.setResponsibleUser(dto.getUser() == null ? null : dto.getUser().toDomain());
+        metadata.setResponsibleUser(chplUserToCognitoUserUtil.getUser(dto.getLastModifiedUser(), dto.getLastModifiedSsoUser()));
         metadata.setDescription(dto.getDescription());
+        metadata.getCategories().add(getCrudCategory(dto));
     }
 
-    private ActivityMetadata createMetadataObject(final ActivityDTO dto) {
+    private ActivityCategory getCrudCategory(ActivityDTO dto) {
+        if (StringUtils.isEmpty(dto.getOriginalData())) {
+            return ActivityCategory.CREATE;
+        } else if (StringUtils.isEmpty(dto.getNewData())) {
+            return ActivityCategory.DELETE;
+        }
+        return ActivityCategory.UPDATE;
+    }
+
+    private ActivityMetadata createMetadataObject(ActivityDTO dto) {
         ActivityMetadata metadata = null;
         switch (dto.getConcept()) {
         case CERTIFIED_PRODUCT:
@@ -80,15 +88,6 @@ public abstract class ActivityMetadataBuilder {
         case USER:
             metadata = new UserMaintenanceActivityMetadata();
             break;
-        case ANNOUNCEMENT:
-            metadata = new AnnouncementActivityMetadata();
-            break;
-        case CORRECTIVE_ACTION_PLAN:
-            metadata = new CorrectiveActionPlanActivityMetadata();
-            break;
-        case PENDING_SURVEILLANCE:
-            metadata = new PendingSurveillanceActivityMetadata();
-            break;
         case COMPLAINT:
             metadata = new ComplaintActivityMetadata();
             break;
@@ -102,8 +101,14 @@ public abstract class ActivityMetadataBuilder {
         case CHANGE_REQUEST:
             metadata = new ChangeRequestActivityMetadata();
             break;
+        case ANNOUNCEMENT:
+        case CORRECTIVE_ACTION_PLAN:
+        case PENDING_SURVEILLANCE:
         case API_KEY:
-            metadata = new ApiKeyManagementActivityMetadata();
+        case FUNCTIONALITY_TESTED:
+        case STANDARD:
+        case SVAP:
+            metadata = new ActivityMetadata();
             break;
         default:
             break;
