@@ -4,11 +4,9 @@ import java.util.List;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.dao.TestDataDAO;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultTestData;
@@ -28,18 +26,15 @@ public class RequiredData2015Reviewer extends PermissionBasedReviewer {
 
     private CertificationResultRules certRules;
     private TestDataDAO testDataDao;
-    private FF4j ff4j;
 
     @Autowired
     @SuppressWarnings("checkstyle:parameternumber")
     public RequiredData2015Reviewer(CertificationResultRules certRules, ErrorMessageUtil msgUtil,
             TestDataDAO testDataDao,
-            ResourcePermissionsFactory resourcePermissionsFactory,
-            FF4j ff4j) {
+            ResourcePermissionsFactory resourcePermissionsFactory) {
         super(msgUtil, resourcePermissionsFactory);
         this.certRules = certRules;
         this.testDataDao = testDataDao;
-        this.ff4j = ff4j;
     }
 
     @Override
@@ -177,13 +172,6 @@ public class RequiredData2015Reviewer extends PermissionBasedReviewer {
     }
 
     private void reviewRequiredFieldsCommonToAllListings(CertifiedProductSearchDetails listing) {
-        if (!ff4j.check(FeatureList.EDITIONLESS)) {
-            if (listing.getEdition() == null
-                    || listing.getEdition().getId() == null) {
-                listing.addBusinessErrorMessage("Certification edition is required but was not found.");
-            }
-        }
-
         if (StringUtils.isEmpty(listing.getAcbCertificationId())) {
             listing.addWarningMessage("CHPL certification ID was not found.");
         }

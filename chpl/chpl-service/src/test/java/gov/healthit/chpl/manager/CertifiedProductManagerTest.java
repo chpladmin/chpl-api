@@ -20,7 +20,6 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.springframework.core.env.Environment;
 
-import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.accessibilityStandard.AccessibilityStandardDAO;
 import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
 import gov.healthit.chpl.certifiedproduct.service.CertificationResultSynchronizationService;
@@ -34,7 +33,6 @@ import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.CertifiedProductQmsStandardDAO;
 import gov.healthit.chpl.dao.CertifiedProductTargetedUserDAO;
 import gov.healthit.chpl.dao.CertifiedProductTestingLabDAO;
-import gov.healthit.chpl.dao.CuresUpdateEventDAO;
 import gov.healthit.chpl.dao.ListingGraphDAO;
 import gov.healthit.chpl.dao.PromotingInteroperabilityUserDAO;
 import gov.healthit.chpl.dao.TargetedUserDAO;
@@ -66,7 +64,6 @@ import gov.healthit.chpl.notifier.ChplTeamNotifier;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.qmsStandard.QmsStandardDAO;
-import gov.healthit.chpl.service.CuresUpdateService;
 import gov.healthit.chpl.sharedstore.listing.ListingIcsSharedStoreHandler;
 import gov.healthit.chpl.upload.listing.normalizer.ListingDetailsNormalizer;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -93,7 +90,6 @@ public class CertifiedProductManagerTest {
     private ProductManager productManager;
     private ProductVersionManager versionManager;
     private CertificationStatusEventDAO statusEventDao;
-    private CuresUpdateEventDAO curesUpdateDao;
     private PromotingInteroperabilityUserDAO piuDao;
     private CertificationStatusDAO certStatusDao;
     private ListingGraphDAO listingGraphDao;
@@ -102,7 +98,6 @@ public class CertifiedProductManagerTest {
     private CertifiedProductDetailsManager certifiedProductDetailsManager;
     private ActivityManager activityManager;
     private ListingValidatorFactory validatorFactory;
-    private CuresUpdateService curesUpdateService;
     private FF4j ff4j;
 
     private CertifiedProductManager certifiedProductManager;
@@ -124,7 +119,6 @@ public class CertifiedProductManagerTest {
         productManager = Mockito.mock(ProductManager.class);
         versionManager = Mockito.mock(ProductVersionManager.class);
         statusEventDao = Mockito.mock(CertificationStatusEventDAO.class);
-        curesUpdateDao = Mockito.mock(CuresUpdateEventDAO.class);
         piuDao = Mockito.mock(PromotingInteroperabilityUserDAO.class);
         certStatusDao = Mockito.mock(CertificationStatusDAO.class);
         listingGraphDao = Mockito.mock(ListingGraphDAO.class);
@@ -132,16 +126,13 @@ public class CertifiedProductManagerTest {
         certifiedProductDetailsManager = Mockito.mock(CertifiedProductDetailsManager.class);
         activityManager = Mockito.mock(ActivityManager.class);
         validatorFactory = Mockito.mock(ListingValidatorFactory.class);
-        curesUpdateService = Mockito.mock(CuresUpdateService.class);
-        ff4j = Mockito.mock(FF4j.class);
 
-        Mockito.when(ff4j.check(FeatureList.EDITIONLESS)).thenReturn(false);
         Mockito.when(resourcePermissionsFactory.get()).thenReturn(resourcePermissions);
 
         certifiedProductManager = new CertifiedProductManager(msgUtil, cpDao,
                  qmsDao,  targetedUserDao, asDao,  cpQmsDao, cpMeasureDao, cpTestingLabDao,
                 cpTargetedUserDao, cpAccStdDao, productManager, versionManager,
-                statusEventDao, curesUpdateDao, piuDao, certResultService, cqmResultService,
+                statusEventDao, piuDao, certResultService, cqmResultService,
                 Mockito.mock(SedSynchronizationService.class),
                 certStatusDao,
                 listingGraphDao, resourcePermissionsFactory,
@@ -151,12 +142,12 @@ public class CertifiedProductManagerTest {
                 Mockito.mock(UserManager.class),
                 Mockito.mock(ListingDetailsNormalizer.class),
                 Mockito.mock(BaselineStandardAsOfTodayNormalizer.class),
-                validatorFactory, curesUpdateService,
+                validatorFactory,
                 Mockito.mock(ListingIcsSharedStoreHandler.class),
                 Mockito.mock(CertificationStatusEventsService.class),
                 Mockito.mock(ChplTeamNotifier.class),
                 Mockito.mock(Environment.class),
-                Mockito.mock(ChplHtmlEmailBuilder.class), ff4j);
+                Mockito.mock(ChplHtmlEmailBuilder.class));
     }
 
     @Test(expected = ValidationException.class)

@@ -4,16 +4,13 @@ import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 
 @Component
 public class ListingDetailsNormalizer {
-    private CertificationEditionNormalizer editionNormalizer;
     private CertificationBodyNormalizer acbNormalizer;
     private TestingLabNormalizer atlNormalizer;
     private RwtNormalizer rwtNormalizer;
@@ -27,12 +24,10 @@ public class ListingDetailsNormalizer {
     private CqmNormalizer cqmNormalizer;
     private MeasureNormalizer measureNormalizer;
     private SedNormalizer sedNormalizer;
-    private FF4j ff4j;
 
     @SuppressWarnings("checkstyle:parameternumber")
     @Autowired
-    public ListingDetailsNormalizer(CertificationEditionNormalizer editionNormalizer,
-            CertificationBodyNormalizer acbNormalizer,
+    public ListingDetailsNormalizer(CertificationBodyNormalizer acbNormalizer,
             TestingLabNormalizer atlNormalizer,
             DeveloperNormalizer developerNormalizer,
             ProductAndVersionNormalizer productVersionNormalizer,
@@ -43,9 +38,7 @@ public class ListingDetailsNormalizer {
             CertificationResultNormalizer certResultNormalizer,
             CqmNormalizer cqmNormalizer,
             MeasureNormalizer measureNormalizer,
-            SedNormalizer sedNormalizer,
-            FF4j ff4j) {
-        this.editionNormalizer = editionNormalizer;
+            SedNormalizer sedNormalizer) {
         this.acbNormalizer = acbNormalizer;
         this.atlNormalizer = atlNormalizer;
         this.rwtNormalizer = new RwtNormalizer();
@@ -59,7 +52,6 @@ public class ListingDetailsNormalizer {
         this.cqmNormalizer = cqmNormalizer;
         this.measureNormalizer = measureNormalizer;
         this.sedNormalizer = sedNormalizer;
-        this.ff4j = ff4j;
     }
 
     public void normalize(CertifiedProductSearchDetails listing, List<CertificationResultLevelNormalizer> additionalNormalizers) {
@@ -71,9 +63,6 @@ public class ListingDetailsNormalizer {
         }
 
         setEmptyStringFieldsToNull(listing);
-        if (!ff4j.check(FeatureList.EDITIONLESS)) {
-            this.editionNormalizer.normalize(listing);
-        }
         this.acbNormalizer.normalize(listing);
         this.atlNormalizer.normalize(listing);
         this.rwtNormalizer.normalize(listing);

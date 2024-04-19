@@ -1,11 +1,9 @@
 package gov.healthit.chpl.upload.listing.validation;
 
-import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.ListingUpload;
 import gov.healthit.chpl.upload.listing.validation.reviewer.AccessibilityStandardReviewer;
@@ -22,7 +20,6 @@ import gov.healthit.chpl.upload.listing.validation.reviewer.CqmResultReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.DeveloperCodeReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.DeveloperReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.EditionCodeReviewer;
-import gov.healthit.chpl.upload.listing.validation.reviewer.EditionReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.IcsCodeReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.MeasureReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.ProductReviewer;
@@ -53,7 +50,6 @@ public class ListingUploadValidator {
     private CertificationIdReviewer certificationIdReviewer;
 
     private ChplNumberUniqueReviewer chplNumberUniqueReviewer;
-    private EditionReviewer editionReviewer;
     private TestingLabReviewer atlReviewer;
     private CertificationBodyReviewer acbReviewer;
     private RealWorldTestingReviewer rwtReviewer;
@@ -73,8 +69,6 @@ public class ListingUploadValidator {
     private CqmResultReviewer cqmResultReviewer;
     private SedReviewer sedReviewer;
 
-    private FF4j ff4j;
-
     @Autowired
     @SuppressWarnings("checkstyle:parameternumber")
     public ListingUploadValidator(CSVHeaderReviewer csvHeaderReviewer,
@@ -85,7 +79,6 @@ public class ListingUploadValidator {
             DeveloperCodeReviewer developerCodeReviewer,
             IcsCodeReviewer icsCodeReviewer,
             AdditionalSoftwareCodeReviewer additionalSoftwareCodeReviewer,
-            EditionReviewer editionReviewer,
             @Qualifier("testingLabReviewer") TestingLabReviewer atlReviewer,
             CertificationBodyReviewer acbReviewer,
             RealWorldTestingReviewer rwtReviewer,
@@ -106,8 +99,7 @@ public class ListingUploadValidator {
             CertificationResultReviewer certResultReviewer,
             CqmResultReviewer cqmResultReviewer,
             SedReviewer sedReviewer,
-            DuplicateDataReviewer duplicateDataReviewer,
-            FF4j ff4j) {
+            DuplicateDataReviewer duplicateDataReviewer) {
         this.csvHeaderReviewer = csvHeaderReviewer;
         this.chplNumberFormatReviewer = chplNumberFormatReviewer;
         this.editionCodeReviewer = editionCodeReviewer;
@@ -118,7 +110,6 @@ public class ListingUploadValidator {
         this.additionalSoftwareCodeReviewer = additionalSoftwareCodeReviewer;
         this.certifiedDateCodeReviewer = certifiedDateCodeReviewer;
         this.certificationIdReviewer = certificationIdReviewer;
-        this.editionReviewer = editionReviewer;
         this.atlReviewer = atlReviewer;
         this.acbReviewer = acbReviewer;
         this.rwtReviewer = rwtReviewer;
@@ -138,7 +129,6 @@ public class ListingUploadValidator {
         this.cqmResultReviewer = cqmResultReviewer;
         this.sedReviewer = sedReviewer;
         this.duplicateDataReviewer = duplicateDataReviewer;
-        this.ff4j = ff4j;
     }
 
     public void review(ListingUpload uploadedMetadata, CertifiedProductSearchDetails listing) {
@@ -150,9 +140,6 @@ public class ListingUploadValidator {
         chplNumberFormatReviewer.review(listing);
         chplNumberUniqueReviewer.review(listing);
         editionCodeReviewer.review(listing);
-        if (!ff4j.check(FeatureList.EDITIONLESS)) {
-            editionReviewer.review(listing);
-        }
         atlCodeReviewer.review(listing);
         atlReviewer.review(listing);
         acbCodeReviewer.review(listing);

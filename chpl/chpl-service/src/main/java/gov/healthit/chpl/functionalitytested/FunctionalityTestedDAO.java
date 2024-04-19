@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import javax.persistence.Query;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -16,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
+import gov.healthit.chpl.certificationCriteria.CertificationCriterionComparator;
 import gov.healthit.chpl.criteriaattribute.rule.RuleDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.PracticeTypeDAO;
@@ -33,19 +35,23 @@ public class FunctionalityTestedDAO extends BaseDAOImpl {
     private RuleDAO ruleDAO;
     private CertifiedProductDAO certifiedProductDAO;
     private PracticeTypeDAO practiceTypeDAO;
+    private CertificationCriterionComparator criterionComparator;
 
     @Autowired
-    public FunctionalityTestedDAO(RuleDAO ruleDAO, CertifiedProductDAO certifiedProductDAO, PracticeTypeDAO practiceTypeDAO) {
+    public FunctionalityTestedDAO(RuleDAO ruleDAO, CertifiedProductDAO certifiedProductDAO,
+            PracticeTypeDAO practiceTypeDAO,
+            CertificationCriterionComparator criterionComparator) {
         this.ruleDAO = ruleDAO;
         this.certifiedProductDAO = certifiedProductDAO;
         this.practiceTypeDAO = practiceTypeDAO;
+        this.criterionComparator = criterionComparator;
     }
 
     public FunctionalityTested getById(Long id) {
         try {
             FunctionalityTestedEntity entity = getEntityById(id);
             if (entity != null) {
-                return entity.toDomainWithCriteria();
+                return entity.toDomainWithCriteria(criterionComparator);
             } else {
                 return null;
             }
@@ -105,7 +111,7 @@ public class FunctionalityTestedDAO extends BaseDAOImpl {
         } else {
             entity.setPracticeType(null);
         }
-        entity.setAdditionalInformation(functionalityTested.getAdditionalInformation());
+        entity.setAdditionalInformation(StringUtils.isEmpty(functionalityTested.getAdditionalInformation()) ? null : functionalityTested.getAdditionalInformation());
 
         update(entity);
     }
@@ -148,7 +154,7 @@ public class FunctionalityTestedDAO extends BaseDAOImpl {
     public List<FunctionalityTested> findAll() {
         List<FunctionalityTestedEntity> entities = getAllEntities();
         return entities.stream()
-                .map(entity -> entity.toDomainWithCriteria())
+                .map(entity -> entity.toDomainWithCriteria(criterionComparator))
                 .collect(Collectors.toList());
     }
 
@@ -164,7 +170,7 @@ public class FunctionalityTestedDAO extends BaseDAOImpl {
     @Transactional
     public List<FunctionalityTestedCriteriaMap> getAllFunctionalityTestedCriteriaMap() throws EntityRetrievalException {
         return getAllFunctionalityTestedCriteriaMapEntities().stream()
-                .map(e -> e.toDomain())
+                .map(e -> e.toDomain(criterionComparator))
                 .collect(Collectors.toList());
     }
 

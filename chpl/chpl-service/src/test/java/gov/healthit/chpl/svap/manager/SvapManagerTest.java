@@ -16,6 +16,7 @@ import gov.healthit.chpl.dao.CertificationCriterionAttributeDAO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
+import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.svap.dao.SvapDAO;
 import gov.healthit.chpl.svap.domain.Svap;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -29,12 +30,14 @@ public class SvapManagerTest {
 
     @Before
     public void before() {
+        ActivityManager activityManager = Mockito.mock(ActivityManager.class);
         svapDao = Mockito.mock(SvapDAO.class);
         certificationCriterionAttributeDAO = Mockito.mock(CertificationCriterionAttributeDAO.class);
         errorMessageUtil = Mockito.mock(ErrorMessageUtil.class);
         FileUtils fileUtils = new FileUtils(Mockito.mock(Environment.class), errorMessageUtil);
         svapManager = new SvapManager(svapDao, fileUtils,
-                errorMessageUtil, certificationCriterionAttributeDAO, "report", "reportSchema");
+                errorMessageUtil, certificationCriterionAttributeDAO, activityManager,
+                "report", "reportSchema");
     }
 
     @Test

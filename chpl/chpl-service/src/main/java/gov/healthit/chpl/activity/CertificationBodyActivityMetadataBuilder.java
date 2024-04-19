@@ -70,5 +70,6 @@ public class CertificationBodyActivityMetadataBuilder extends ActivityMetadataBu
     private void parseAcbMetadata(final CertificationBodyActivityMetadata acbMetadata, final CertificationBody acb) {
         acbMetadata.setAcbId(acb.getId());
         acbMetadata.setAcbName(acb.getName());
+        acbMetadata.getObject().setName(acb.getName());
     }
 }
