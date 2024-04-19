@@ -27,8 +27,8 @@ import gov.healthit.chpl.search.domain.OrderByOption;
 import gov.healthit.chpl.search.domain.RwtSearchOptions;
 import gov.healthit.chpl.search.domain.SearchRequest;
 import gov.healthit.chpl.search.domain.SearchSetOperator;
+import gov.healthit.chpl.svap.dao.SvapDAO;
 import gov.healthit.chpl.svap.domain.Svap;
-import gov.healthit.chpl.svap.manager.SvapManager;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 public class SearchRequestValidatorTest {
@@ -58,7 +58,7 @@ public class SearchRequestValidatorTest {
 
     private DimensionalDataManager dimensionalDataManager;
     private CertificationCriteriaManager certificationCriteriaManager;
-    private SvapManager svapManager;
+    private SvapDAO svapDao;
     private DirectReviewSearchService drService;
     private ErrorMessageUtil msgUtil;
     private SearchRequestValidator validator;
@@ -67,7 +67,7 @@ public class SearchRequestValidatorTest {
     public void setup() {
         dimensionalDataManager = Mockito.mock(DimensionalDataManager.class);
         certificationCriteriaManager = Mockito.mock(CertificationCriteriaManager.class);
-        svapManager = Mockito.mock(SvapManager.class);
+        svapDao = Mockito.mock(SvapDAO.class);
         drService = Mockito.mock(DirectReviewSearchService.class);
         Mockito.when(drService.doesCacheHaveAnyOkData()).thenReturn(true);
 
@@ -119,7 +119,7 @@ public class SearchRequestValidatorTest {
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("search.orderBy.invalid"), ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(INVALID_ORDER_BY, i.getArgument(1), i.getArgument(2)));
 
-        validator = new SearchRequestValidator(dimensionalDataManager, certificationCriteriaManager, svapManager, msgUtil);
+        validator = new SearchRequestValidator(dimensionalDataManager, certificationCriteriaManager, svapDao, msgUtil);
     }
 
     @Test
@@ -1163,7 +1163,7 @@ public class SearchRequestValidatorTest {
         SearchRequest request = SearchRequest.builder()
             .svapIds(Stream.of(1L).collect(Collectors.toSet()))
             .build();
-        Mockito.when(svapManager.getAll())
+        Mockito.when(svapDao.getAll())
             .thenReturn(null);
 
         try {
@@ -1181,7 +1181,7 @@ public class SearchRequestValidatorTest {
         SearchRequest request = SearchRequest.builder()
             .svapIds(Stream.of(3L).collect(Collectors.toSet()))
             .build();
-        Mockito.when(svapManager.getAll())
+        Mockito.when(svapDao.getAll())
             .thenReturn(Stream.of(Svap.builder().svapId(1L).build(),
                     Svap.builder().svapId(2L).build())
                     .collect(Collectors.toList()));
@@ -1201,7 +1201,7 @@ public class SearchRequestValidatorTest {
         SearchRequest request = SearchRequest.builder()
             .svapIds(Stream.of(1L).collect(Collectors.toSet()))
             .build();
-        Mockito.when(svapManager.getAll())
+        Mockito.when(svapDao.getAll())
             .thenReturn(Stream.of(Svap.builder().svapId(1L).build(),
                 Svap.builder().svapId(2L).build())
                 .collect(Collectors.toList()));
@@ -1279,7 +1279,7 @@ public class SearchRequestValidatorTest {
         SearchRequest request = SearchRequest.builder()
             .svapIds(Stream.of(1L, 2L).collect(Collectors.toSet()))
             .build();
-        Mockito.when(svapManager.getAll())
+        Mockito.when(svapDao.getAll())
             .thenReturn(Stream.of(
                     Svap.builder().svapId(1L).build(),
                     Svap.builder().svapId(2L).build())

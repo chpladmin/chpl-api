@@ -12,33 +12,44 @@ import org.springframework.transaction.annotation.Transactional;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterionComparator;
 import gov.healthit.chpl.dao.CertificationCriterionAttributeDAO;
+import gov.healthit.chpl.domain.activity.ActivityConcept;
+import gov.healthit.chpl.exception.ActivityException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
+import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.scheduler.job.downloadfile.GenerateListingDownloadFile;
 import gov.healthit.chpl.scheduler.job.downloadfile.ListingSet;
 import gov.healthit.chpl.sharedstore.listing.ListingStoreRemove;
 import gov.healthit.chpl.sharedstore.listing.RemoveBy;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 @Component
 public class FunctionalityTestedManager {
     private FunctionalityTestedValidator functionalityTestedValidator;
     private FunctionalityTestedService functionalityTestedService;
     private FunctionalityTestedDAO functionalityTestedDAO;
     private CertificationCriterionAttributeDAO certificationCriterionAttributeDAO;
+    private ActivityManager activityManager;
     private ErrorMessageUtil errorMessageUtil;
     private CertificationCriterionComparator criteriaComparator;
     private FunctionalityTestedComparator funcTestedComparator;
 
     @Autowired
-    public FunctionalityTestedManager(FunctionalityTestedDAO functionalityTestedDAO, FunctionalityTestedValidator functionalityTestedValidator,
-            FunctionalityTestedService functionalityTestedService, CertificationCriterionAttributeDAO certificationCriterionAttributeDAO,
-            ErrorMessageUtil errorMessageUtil, CertificationCriterionComparator criteriaComparator) {
+    public FunctionalityTestedManager(FunctionalityTestedDAO functionalityTestedDAO,
+            FunctionalityTestedValidator functionalityTestedValidator,
+            FunctionalityTestedService functionalityTestedService,
+            CertificationCriterionAttributeDAO certificationCriterionAttributeDAO,
+            ActivityManager activityManager,
+            ErrorMessageUtil errorMessageUtil,
+            CertificationCriterionComparator criteriaComparator) {
 
         this.functionalityTestedDAO = functionalityTestedDAO;
         this.functionalityTestedValidator = functionalityTestedValidator;
         this.functionalityTestedService = functionalityTestedService;
         this.certificationCriterionAttributeDAO = certificationCriterionAttributeDAO;
+        this.activityManager = activityManager;
         this.errorMessageUtil = errorMessageUtil;
         this.criteriaComparator = criteriaComparator;
         this.funcTestedComparator = new FunctionalityTestedComparator();
@@ -61,9 +72,21 @@ public class FunctionalityTestedManager {
     @ListingStoreRemove(removeBy = RemoveBy.ALL)
     @GenerateListingDownloadFile(listingSet = {ListingSet.EDITION_2011, ListingSet.EDITION_2014, ListingSet.INACTIVE})
     public FunctionalityTested update(FunctionalityTested functionalityTested) throws EntityRetrievalException, ValidationException {
+        FunctionalityTested origFuncTested = functionalityTestedDAO.getById(functionalityTested.getId());
         functionalityTestedValidator.validateForEdit(functionalityTested);
         functionalityTestedService.update(functionalityTested);
-        return functionalityTestedDAO.getById(functionalityTested.getId());
+        FunctionalityTested updatedFuncTested = functionalityTestedDAO.getById(functionalityTested.getId());
+
+        try {
+            activityManager.addActivity(ActivityConcept.FUNCTIONALITY_TESTED,
+                    origFuncTested.getId(),
+                    origFuncTested.getRegulatoryTextCitation() + " was updated.",
+                    origFuncTested, updatedFuncTested);
+        } catch (ActivityException ex) {
+            LOGGER.error("Error adding activity about updating functionality tested " + origFuncTested.getRegulatoryTextCitation(), ex);
+        }
+
+        return updatedFuncTested;
     }
 
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).FUNCTIONALITY_TESTED, "
@@ -71,7 +94,18 @@ public class FunctionalityTestedManager {
     @Transactional
     public FunctionalityTested create(FunctionalityTested functionalityTested) throws EntityRetrievalException, ValidationException {
         functionalityTestedValidator.validateForAdd(functionalityTested);
-        return functionalityTestedService.add(functionalityTested);
+        FunctionalityTested createdFuncTested = functionalityTestedService.add(functionalityTested);
+
+        try {
+            activityManager.addActivity(ActivityConcept.FUNCTIONALITY_TESTED,
+                    createdFuncTested.getId(),
+                    createdFuncTested.getRegulatoryTextCitation() + " was created.",
+                    null, createdFuncTested);
+        } catch (ActivityException ex) {
+            LOGGER.error("Error adding activity about creating functionality tested " + createdFuncTested.getRegulatoryTextCitation(), ex);
+        }
+
+        return createdFuncTested;
     }
 
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).FUNCTIONALITY_TESTED, "
@@ -86,6 +120,15 @@ public class FunctionalityTestedManager {
 
         functionalityTestedValidator.validateForDelete(functionalityTested);
         functionalityTestedService.delete(functionalityTested);
+
+        try {
+            activityManager.addActivity(ActivityConcept.FUNCTIONALITY_TESTED,
+                    functionalityTested.getId(),
+                    functionalityTested.getRegulatoryTextCitation() + " was deleted.",
+                    functionalityTested, null);
+        } catch (ActivityException ex) {
+            LOGGER.error("Error adding activity about deleting functionality tested with ID " + functionalityTestedId, ex);
+        }
     }
 
     public List<FunctionalityTested> getFunctionalitiesTested(Long criteriaId, Long practiceTypeId) {

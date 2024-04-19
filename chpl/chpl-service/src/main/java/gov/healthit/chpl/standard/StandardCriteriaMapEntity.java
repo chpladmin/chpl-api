@@ -13,6 +13,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import gov.healthit.chpl.certificationCriteria.CertificationCriterionComparator;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterionEntity;
 import gov.healthit.chpl.entity.EntityAudit;
 import lombok.AllArgsConstructor;
@@ -55,11 +56,11 @@ public class StandardCriteriaMapEntity extends EntityAudit implements Serializab
     @JoinColumn(name = "standard_id", insertable = false, updatable = false)
     private StandardEntity standard;
 
-    public StandardCriteriaMap toDomain() {
+    public StandardCriteriaMap toDomain(CertificationCriterionComparator criterionComparator) {
         return StandardCriteriaMap.builder()
                 .id(id)
                 .criterion(criterion.toDomain())
-                .standard(standard.toDomainWithCriteria())
+                .standard(standard.toDomainWithCriteria(criterionComparator))
                 .build();
     }
 

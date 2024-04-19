@@ -23,6 +23,7 @@ public class ActivityDTO implements Serializable {
     private String newData;
     private Date activityDate;
     private Long activityObjectId;
+    private String activityObjectName;
     private String reason;
     private ActivityConcept concept;
     private Date creationDate;

@@ -146,6 +146,7 @@ public class VersionActivityMetadataBuilder extends ActivityMetadataBuilder {
             }
         }
         versionMetadata.setVersion(version.getVersion());
+        versionMetadata.getObject().setName(version.getVersion());
     }
 
     private void parseVersionMetadata(

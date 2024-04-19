@@ -1,5 +1,6 @@
 package gov.healthit.chpl.svap.entity;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -17,6 +18,7 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.WhereJoinTable;
 
+import gov.healthit.chpl.certificationCriteria.CertificationCriterionComparator;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterionEntity;
 import gov.healthit.chpl.entity.EntityAudit;
 import gov.healthit.chpl.svap.domain.Svap;
@@ -69,7 +71,7 @@ public class SvapEntity extends EntityAudit {
                 .build();
     }
 
-    public Svap toDomainWithCriteria() {
+    public Svap toDomainWithCriteria(CertificationCriterionComparator criterionComparator) {
         return Svap.builder()
                 .svapId(this.getSvapId())
                 .approvedStandardVersion(this.getApprovedStandardVersion())
@@ -77,7 +79,8 @@ public class SvapEntity extends EntityAudit {
                 .replaced(this.getReplaced())
                 .criteria(this.getCriteria().stream()
                         .map(crit -> crit.toDomain())
-                        .collect(Collectors.toList()))
+                        .sorted(criterionComparator)
+                        .collect(Collectors.toCollection(ArrayList::new)))
                 .build();
     }
 
