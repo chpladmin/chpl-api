@@ -13,7 +13,6 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.lang3.StringUtils;
-import org.ff4j.FF4j;
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
@@ -53,9 +52,6 @@ public class PromotingInteroperabilityUploadJob extends SecurityContextCapableJo
 
     @Autowired
     private CertifiedProductManager cpManager;
-
-    @Autowired
-    private FF4j ff4j;
 
     @Autowired
     private ChplEmailFactory chplEmailFactory;
