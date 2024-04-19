@@ -27,6 +27,7 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.caching.ListingSearchCacheRefresh;
 import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
@@ -37,7 +38,6 @@ import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.ProductOwner;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
-import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
 import gov.healthit.chpl.email.footer.AdminFooter;
@@ -105,7 +105,7 @@ public class SplitDeveloperJob extends QuartzJob {
         LOGGER.info("********* Starting the Split Developer job. *********");
 
         JobDataMap jobDataMap = jobContext.getMergedJobDataMap();
-        UserDTO user = (UserDTO) jobDataMap.get(USER_KEY);
+        JWTAuthenticatedUser user = (JWTAuthenticatedUser) jobDataMap.get(USER_KEY);
         if (user == null) {
             LOGGER.fatal("No user could be found in the job data.");
         } else {
