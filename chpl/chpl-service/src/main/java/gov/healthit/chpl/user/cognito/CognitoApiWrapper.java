@@ -291,14 +291,12 @@ public class CognitoApiWrapper {
         user.setFullName(getUserAttribute(userType.attributes(), "name").value());
         user.setEmail(getUserAttribute(userType.attributes(), "email").value());
         user.setTitle(getUserAttribute(userType.attributes(), "custom:title").value());
+        user.setPhoneNumber(getUserAttribute(userType.attributes(), "phone_number").value());
         user.setAccountLocked(!userType.enabled());
         user.setAccountEnabled(userType.enabled());
-        //user.setCredentialsExpired(userType.userStatus() == UserStatusType.);
         user.setStatus(userType.userStatusAsString());
-
-
         user.setPasswordResetRequired(userType.userStatus().equals(UserStatusType.RESET_REQUIRED));
-        //user.setLastLoggedInDate(new Date());
+
         AdminListGroupsForUserRequest groupsRequest = AdminListGroupsForUserRequest.builder()
                 .userPoolId(userPoolId)
                 .username(user.getEmail())
