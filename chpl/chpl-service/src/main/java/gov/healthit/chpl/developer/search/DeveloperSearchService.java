@@ -276,8 +276,12 @@ public class DeveloperSearchService {
             case DECERTIFICATION_DATE:
                 developers.sort(new DecertificationDateComparator(descending));
                 break;
+            case DEVELOPER_CODE:
+                developers.sort(new DeveloperCodeComparator(descending));
+                break;
+            case DEVELOPER_NAME:
             case DEVELOPER:
-                developers.sort(new DeveloperComparator(descending));
+                developers.sort(new DeveloperNameComparator(descending));
                 break;
             default:
                 LOGGER.error("Unrecognized value for Order By: " + orderBy.name());
@@ -285,10 +289,10 @@ public class DeveloperSearchService {
         }
     }
 
-    private class DeveloperComparator implements Comparator<DeveloperSearchResult> {
+    private class DeveloperNameComparator implements Comparator<DeveloperSearchResult> {
         private boolean descending = false;
 
-        DeveloperComparator(boolean descending) {
+        DeveloperNameComparator(boolean descending) {
             this.descending = descending;
         }
 
@@ -300,6 +304,24 @@ public class DeveloperSearchService {
             }
             int sortFactor = descending ? -1 : 1;
             return (dev1.getName().toUpperCase().compareTo(dev2.getName().toUpperCase())) * sortFactor;
+        }
+    }
+
+    private class DeveloperCodeComparator implements Comparator<DeveloperSearchResult> {
+        private boolean descending = false;
+
+        DeveloperCodeComparator(boolean descending) {
+            this.descending = descending;
+        }
+
+        @Override
+        public int compare(DeveloperSearchResult dev1, DeveloperSearchResult dev2) {
+            if (ObjectUtils.anyNull(dev1, dev2)
+                    || StringUtils.isAnyEmpty(dev1.getCode(), dev2.getCode())) {
+                return 0;
+            }
+            int sortFactor = descending ? -1 : 1;
+            return (dev1.getCode().toUpperCase().compareTo(dev2.getCode().toUpperCase())) * sortFactor;
         }
     }
 

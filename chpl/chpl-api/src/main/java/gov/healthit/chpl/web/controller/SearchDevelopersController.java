@@ -211,10 +211,10 @@ public class SearchDevelopersController {
                 + "Defaults to 20. Maximum allowed page size is 100.",
                 allowEmptyValue = true, in = ParameterIn.QUERY, name = "pageSize")
             @RequestParam(value = "pageSize", required = false, defaultValue = "20") Integer pageSize,
-        @Parameter(description = "What to order by. Options are one of the following: DEVELOPER, "
-                + "DECERTIFICATION_DATE, or STATUS. Defaults to DEVELOPER.",
+        @Parameter(description = "What to order by. Options are one of the following: DEVELOPER_NAME, DEVELOPER_CODE, "
+                + "DECERTIFICATION_DATE, or STATUS. Defaults to DEVELOPER_NAME.",
                 allowEmptyValue = true, in = ParameterIn.QUERY, name = "orderBy")
-            @RequestParam(value = "orderBy", required = false, defaultValue = "developer") String orderBy,
+            @RequestParam(value = "orderBy", required = false, defaultValue = "developer_name") String orderBy,
         @Parameter(description = "Use to specify the direction of the sort. Defaults to false (ascending sort).",
                 allowEmptyValue = true, in = ParameterIn.QUERY, name = "sortDescending")
             @RequestParam(value = "sortDescending", required = false, defaultValue = "false") Boolean sortDescending)

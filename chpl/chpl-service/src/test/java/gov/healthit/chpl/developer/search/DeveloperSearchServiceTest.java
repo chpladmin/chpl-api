@@ -66,7 +66,7 @@ public class DeveloperSearchServiceTest {
     }
 
     @Test
-    public void search_sortByDeveloperAscending_ordersResults() throws ValidationException {
+    public void search_sortByDeveloperNameAscending_ordersResults() throws ValidationException {
         List<DeveloperSearchResult> allDevelopers = createDeveloperSearchResultCollection(5);
         allDevelopers.get(0).setName("z");
         allDevelopers.get(1).setName("b");
@@ -76,7 +76,7 @@ public class DeveloperSearchServiceTest {
         Mockito.when(developerManager.getDeveloperSearchResults()).thenReturn(allDevelopers);
         DeveloperSearchRequest searchRequest = DeveloperSearchRequest.builder()
             .sortDescending(false)
-            .orderBy(OrderByOption.DEVELOPER)
+            .orderBy(OrderByOption.DEVELOPER_NAME)
             .pageNumber(0)
             .pageSize(10)
         .build();
@@ -93,7 +93,7 @@ public class DeveloperSearchServiceTest {
     }
 
     @Test
-    public void search_sortByDeveloperDescending_ordersResults() throws ValidationException {
+    public void search_sortByDeveloperNameDescending_ordersResults() throws ValidationException {
         List<DeveloperSearchResult> allDevelopers = createDeveloperSearchResultCollection(5);
         allDevelopers.get(0).setName("z");
         allDevelopers.get(1).setName("b");
@@ -103,7 +103,7 @@ public class DeveloperSearchServiceTest {
         Mockito.when(developerManager.getDeveloperSearchResults()).thenReturn(allDevelopers);
         DeveloperSearchRequest searchRequest = DeveloperSearchRequest.builder()
             .sortDescending(true)
-            .orderBy(OrderByOption.DEVELOPER)
+            .orderBy(OrderByOption.DEVELOPER_NAME)
             .pageNumber(0)
             .pageSize(10)
         .build();
@@ -117,6 +117,60 @@ public class DeveloperSearchServiceTest {
         assertEquals("f", searchResponse.getResults().get(2).getName());
         assertEquals("d", searchResponse.getResults().get(3).getName());
         assertEquals("b", searchResponse.getResults().get(4).getName());
+    }
+
+    @Test
+    public void search_sortByDeveloperCodeAscending_ordersResults() throws ValidationException {
+        List<DeveloperSearchResult> allDevelopers = createDeveloperSearchResultCollection(5);
+        allDevelopers.get(0).setCode("z");
+        allDevelopers.get(1).setCode("b");
+        allDevelopers.get(2).setCode("d");
+        allDevelopers.get(3).setCode("f");
+        allDevelopers.get(4).setCode("y");
+        Mockito.when(developerManager.getDeveloperSearchResults()).thenReturn(allDevelopers);
+        DeveloperSearchRequest searchRequest = DeveloperSearchRequest.builder()
+            .sortDescending(false)
+            .orderBy(OrderByOption.DEVELOPER_CODE)
+            .pageNumber(0)
+            .pageSize(10)
+        .build();
+        DeveloperSearchResponse searchResponse = developerSearchService.findDevelopers(searchRequest);
+
+        assertNotNull(searchResponse);
+        assertEquals(5, searchResponse.getRecordCount());
+        assertEquals(5, searchResponse.getResults().size());
+        assertEquals("b", searchResponse.getResults().get(0).getCode());
+        assertEquals("d", searchResponse.getResults().get(1).getCode());
+        assertEquals("f", searchResponse.getResults().get(2).getCode());
+        assertEquals("y", searchResponse.getResults().get(3).getCode());
+        assertEquals("z", searchResponse.getResults().get(4).getCode());
+    }
+
+    @Test
+    public void search_sortByDeveloperCodeDescending_ordersResults() throws ValidationException {
+        List<DeveloperSearchResult> allDevelopers = createDeveloperSearchResultCollection(5);
+        allDevelopers.get(0).setCode("z");
+        allDevelopers.get(1).setCode("b");
+        allDevelopers.get(2).setCode("d");
+        allDevelopers.get(3).setCode("f");
+        allDevelopers.get(4).setCode("y");
+        Mockito.when(developerManager.getDeveloperSearchResults()).thenReturn(allDevelopers);
+        DeveloperSearchRequest searchRequest = DeveloperSearchRequest.builder()
+            .sortDescending(true)
+            .orderBy(OrderByOption.DEVELOPER_CODE)
+            .pageNumber(0)
+            .pageSize(10)
+        .build();
+        DeveloperSearchResponse searchResponse = developerSearchService.findDevelopers(searchRequest);
+
+        assertNotNull(searchResponse);
+        assertEquals(5, searchResponse.getRecordCount());
+        assertEquals(5, searchResponse.getResults().size());
+        assertEquals("z", searchResponse.getResults().get(0).getCode());
+        assertEquals("y", searchResponse.getResults().get(1).getCode());
+        assertEquals("f", searchResponse.getResults().get(2).getCode());
+        assertEquals("d", searchResponse.getResults().get(3).getCode());
+        assertEquals("b", searchResponse.getResults().get(4).getCode());
     }
 
     @Test
