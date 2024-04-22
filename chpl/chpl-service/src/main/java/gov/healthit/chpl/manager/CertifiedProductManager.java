@@ -74,14 +74,12 @@ import gov.healthit.chpl.dto.CertifiedProductTargetedUserDTO;
 import gov.healthit.chpl.dto.CuresUpdateEventDTO;
 import gov.healthit.chpl.dto.ListingToListingMapDTO;
 import gov.healthit.chpl.dto.TargetedUserDTO;
-import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
 import gov.healthit.chpl.exception.ActivityException;
 import gov.healthit.chpl.exception.CertifiedProductUpdateException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
-import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.listing.measure.ListingMeasureDAO;
 import gov.healthit.chpl.manager.auth.UserManager;
@@ -1167,12 +1165,6 @@ public class CertifiedProductManager extends SecuredManager {
 
     private void createTriggerToUpdateCurrentCertificationStatusJob(CertifiedProductSearchDetails updatedListing, Long activityId,
             LocalDate currentStatusUpdateDay, String reason) {
-        UserDTO jobUser = null;
-        try {
-            jobUser = userManager.getById(AuthUtil.getCurrentUser().getId());
-        } catch (UserRetrievalException ex) {
-            LOGGER.error("Could not find user to execute job.");
-        }
 
         ChplOneTimeTrigger updateStatusTrigger = new ChplOneTimeTrigger();
         ChplJob updateStatusJob = new ChplJob();
@@ -1180,7 +1172,7 @@ public class CertifiedProductManager extends SecuredManager {
         updateStatusJob.setGroup(SchedulerManager.CHPL_BACKGROUND_JOBS_KEY);
         JobDataMap jobDataMap = new JobDataMap();
         jobDataMap.put(UpdateCurrentCertificationStatusJob.LISTING_ID, updatedListing.getId());
-        jobDataMap.put(UpdateCurrentCertificationStatusJob.USER, jobUser);
+        jobDataMap.put(UpdateCurrentCertificationStatusJob.USER, AuthUtil.getCurrentUser());
         jobDataMap.put(UpdateCurrentCertificationStatusJob.CERTIFICATION_STATUS_EVENT_DAY, currentStatusUpdateDay);
         jobDataMap.put(UpdateCurrentCertificationStatusJob.ACTIVITY_ID, activityId);
         jobDataMap.put(UpdateCurrentCertificationStatusJob.USER_PROVIDED_REASON, reason);
