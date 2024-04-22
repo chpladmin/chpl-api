@@ -13,7 +13,6 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.lang3.StringUtils;
-import org.ff4j.FF4j;
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
@@ -23,11 +22,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
+import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.ListingUpdateRequest;
 import gov.healthit.chpl.domain.PromotingInteroperabilityUser;
-import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -55,9 +54,6 @@ public class PromotingInteroperabilityUploadJob extends SecurityContextCapableJo
     private CertifiedProductManager cpManager;
 
     @Autowired
-    private FF4j ff4j;
-
-    @Autowired
     private ChplEmailFactory chplEmailFactory;
 
     @Override
@@ -67,7 +63,7 @@ public class PromotingInteroperabilityUploadJob extends SecurityContextCapableJo
         LOGGER.info("********* Starting the Promoting Interoperability Upload job. *********");
 
         JobDataMap jobDataMap = jobContext.getMergedJobDataMap();
-        UserDTO user = (UserDTO) jobDataMap.get(USER_KEY);
+        JWTAuthenticatedUser user = (JWTAuthenticatedUser) jobDataMap.get(USER_KEY);
         if (user == null) {
             LOGGER.fatal("No user could be found in the job data.");
         } else {
@@ -217,7 +213,7 @@ public class PromotingInteroperabilityUploadJob extends SecurityContextCapableJo
         return "Line " + piu.getCsvLineNumber() + ": Field \"user_count\" is missing.";
     }
 
-    private void emailResultsToUser(Set<PromotingInteroperabilityUserRecord> piuRecords, UserDTO user) {
+    private void emailResultsToUser(Set<PromotingInteroperabilityUserRecord> piuRecords, JWTAuthenticatedUser user) {
         if (piuRecords == null || piuRecords.size() == 0
                 || countPiuRecordsWithoutError(piuRecords) == 0) {
             String errorSubject = env.getProperty("piu.email.subject.failure");
