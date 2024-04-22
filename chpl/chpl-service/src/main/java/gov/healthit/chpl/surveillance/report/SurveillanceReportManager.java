@@ -177,12 +177,6 @@ public class SurveillanceReportManager extends SecuredManager {
             + "#annualReportId)")
     public ChplOneTimeTrigger exportAnnualReportAsBackgroundJob(Long annualReportId)
             throws ValidationException, SchedulerException, UserRetrievalException {
-        UserDTO jobUser = null;
-        try {
-            jobUser = userManager.getById(AuthUtil.getCurrentUser().getId());
-        } catch (UserRetrievalException ex) {
-            LOGGER.error("Could not find user to execute job.");
-        }
 
         ChplOneTimeTrigger exportAnnualReportTrigger = new ChplOneTimeTrigger();
         ChplJob expoertAnnualReportJob = new ChplJob();
@@ -190,7 +184,7 @@ public class SurveillanceReportManager extends SecuredManager {
         expoertAnnualReportJob.setGroup(SchedulerManager.CHPL_BACKGROUND_JOBS_KEY);
         JobDataMap jobDataMap = new JobDataMap();
         jobDataMap.put(AnnualReportGenerationJob.ANNUAL_REPORT_ID_KEY, annualReportId);
-        jobDataMap.put(AnnualReportGenerationJob.USER_KEY, jobUser);
+        jobDataMap.put(AnnualReportGenerationJob.USER_KEY, AuthUtil.getCurrentUser());
         expoertAnnualReportJob.setJobDataMap(jobDataMap);
         exportAnnualReportTrigger.setJob(expoertAnnualReportJob);
         exportAnnualReportTrigger.setRunDateMillis(System.currentTimeMillis() + SchedulerManager.FIVE_SECONDS_IN_MILLIS);

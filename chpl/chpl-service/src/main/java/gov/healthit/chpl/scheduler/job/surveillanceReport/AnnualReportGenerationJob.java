@@ -22,15 +22,14 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
+import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
-import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
 import gov.healthit.chpl.email.EmailBuilder;
 import gov.healthit.chpl.email.footer.AdminFooter;
 import gov.healthit.chpl.exception.ActivityException;
 import gov.healthit.chpl.exception.EmailNotSentException;
-import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.scheduler.SecurityContextCapableJob;
 import gov.healthit.chpl.surveillance.report.SurveillanceReportManager;
@@ -87,7 +86,7 @@ public class AnnualReportGenerationJob extends SecurityContextCapableJob impleme
         JobDataMap jobDataMap = jobContext.getMergedJobDataMap();
         boolean isJobDataValid = isJobDataValid(jobDataMap);
         if (isJobDataValid) {
-            UserDTO user = (UserDTO) jobDataMap.get(USER_KEY);
+            JWTAuthenticatedUser user = (JWTAuthenticatedUser) jobDataMap.get(USER_KEY);
             setSecurityContext(user);
             Long annualReportId = (Long) jobDataMap.get(ANNUAL_REPORT_ID_KEY);
 
@@ -137,7 +136,7 @@ public class AnnualReportGenerationJob extends SecurityContextCapableJob impleme
                 }
             });
         } else {
-            UserDTO user = (UserDTO) jobDataMap.get(USER_KEY);
+            JWTAuthenticatedUser user = (JWTAuthenticatedUser) jobDataMap.get(USER_KEY);
             if (user != null && user.getEmail() != null) {
                 sendEmail(user.getEmail(), env.getProperty("surveillance.annualReport.failure.subject"),
                         env.getProperty("surveillance.annualReport.badJobData.htmlBody"), null);
@@ -148,7 +147,7 @@ public class AnnualReportGenerationJob extends SecurityContextCapableJob impleme
 
     private boolean isJobDataValid(JobDataMap jobDataMap) {
         boolean isValid = true;
-        UserDTO user = (UserDTO) jobDataMap.get(USER_KEY);
+        JWTAuthenticatedUser user = (JWTAuthenticatedUser) jobDataMap.get(USER_KEY);
         if (user == null) {
             isValid = false;
             LOGGER.fatal("No user could be found in the job data.");
