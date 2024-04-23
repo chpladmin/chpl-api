@@ -31,12 +31,6 @@ public abstract class ChangeRequestDetailsService<T> {
     @Value("${changerequest.status.cancelledbyrequester}")
     private Long cancelledByRequesterStatus;
 
-    //@Value("${user.permission.onc}")
-    //private Long oncPermission;
-
-    //@Value("${user.permission.admin}")
-    //private Long adminPermission;
-
     private UserDeveloperMapDAO userDeveloperMapDAO;
 
     @Autowired

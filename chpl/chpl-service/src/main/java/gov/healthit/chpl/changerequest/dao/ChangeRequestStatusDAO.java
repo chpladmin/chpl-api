@@ -26,7 +26,6 @@ public class ChangeRequestStatusDAO extends BaseDAOImpl {
 
     private ChangeRequestStatusEntity getEntityById(Long id) throws EntityRetrievalException {
         String hql = "FROM ChangeRequestStatusEntity crStatus "
-                //+ "JOIN FETCH crStatus.userPermission "
                 + "LEFT JOIN FETCH crStatus.certificationBody "
                 + "WHERE crStatus.deleted = false "
                 + "AND crStatus.id = :changeRequestStatusId";
@@ -55,7 +54,6 @@ public class ChangeRequestStatusDAO extends BaseDAOImpl {
             entity.setCertificationBody(
                     getSession().load(CertificationBodyEntity.class, crStatus.getCertificationBody().getId()));
         }
-        //entity.setUserPermission(getSession().load(UserPermissionEntity.class, crStatus.getUserPermission().getId()));
         entity.setUserGroupName(crStatus.getUserGroupName());
         entity.setComment(crStatus.getComment());
         entity.setStatusChangeDate(DateUtil.toDate(crStatus.getStatusChangeDateTime()));

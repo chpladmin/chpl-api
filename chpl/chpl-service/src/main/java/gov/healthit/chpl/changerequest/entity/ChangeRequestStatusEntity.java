@@ -55,11 +55,6 @@ public class ChangeRequestStatusEntity extends EntityAudit {
             updatable = false)
     private CertificationBodyEntity certificationBody;
 
-    //@Basic(optional = false)
-    //@OneToOne(optional = false, fetch = FetchType.LAZY)
-    //@JoinColumn(name = "user_permission_id", nullable = false, insertable = true, updatable = false)
-    //private UserPermissionEntity userPermission;
-
     @Basic(optional = false)
     @Column(name = "user_group_name", nullable = false)
     private String userGroupName;

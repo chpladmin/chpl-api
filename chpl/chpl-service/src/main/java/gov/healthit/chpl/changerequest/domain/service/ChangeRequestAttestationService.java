@@ -96,7 +96,6 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
     public ChangeRequest create(ChangeRequest cr) {
         try {
             ChangeRequestAttestationSubmission attestation = (ChangeRequestAttestationSubmission) cr.getDetails();
-            //attestation.setSignatureEmail(getUserById(AuthUtil.getCurrentUser().getId()).getEmail());
             attestation.setSignatureEmail(AuthUtil.getCurrentUser().getEmail());
             attestation.setAttestationPeriod(getAttestationPeriod(cr));
             ChangeRequestAttestationSubmission createdAttestation = crAttestationDAO.create(cr, attestation);

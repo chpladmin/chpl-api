@@ -152,7 +152,6 @@ public class ChangeRequestStatusService {
         crStatus.setChangeRequestStatusType(crStatusType);
         crStatus.setComment(comment);
         crStatus.setStatusChangeDateTime(LocalDateTime.now());
-        //crStatus.setUserPermission(resourcePermissionsFactory.get().getRoleByUser(getUserById(AuthUtil.getCurrentUser().getId())));
         crStatus.setUserGroupName(AuthUtil.getCurrentUser().getAuthorities().stream()
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException("Could not determine the current user's authority name."))

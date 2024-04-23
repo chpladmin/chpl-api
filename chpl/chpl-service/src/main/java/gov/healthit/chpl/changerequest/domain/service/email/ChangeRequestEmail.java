@@ -27,13 +27,6 @@ import lombok.extern.log4j.Log4j2;
 public abstract class ChangeRequestEmail {
     private UserDeveloperMapDAO userDeveloperMapDAO;
 
-    //@Value("${user.permission.onc}")
-    //private Long oncPermission;
-
-    //@Value("${user.permission.admin}")
-    //private Long adminPermission;
-
-
     @Autowired
     public ChangeRequestEmail(UserDeveloperMapDAO userDeveloperMapDAO) {
         this.userDeveloperMapDAO = userDeveloperMapDAO;
