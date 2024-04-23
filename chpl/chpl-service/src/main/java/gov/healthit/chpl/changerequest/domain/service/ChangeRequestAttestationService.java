@@ -96,7 +96,8 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
     public ChangeRequest create(ChangeRequest cr) {
         try {
             ChangeRequestAttestationSubmission attestation = (ChangeRequestAttestationSubmission) cr.getDetails();
-            attestation.setSignatureEmail(getUserById(AuthUtil.getCurrentUser().getId()).getEmail());
+            //attestation.setSignatureEmail(getUserById(AuthUtil.getCurrentUser().getId()).getEmail());
+            attestation.setSignatureEmail(AuthUtil.getCurrentUser().getEmail());
             attestation.setAttestationPeriod(getAttestationPeriod(cr));
             ChangeRequestAttestationSubmission createdAttestation = crAttestationDAO.create(cr, attestation);
 
@@ -113,7 +114,7 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
             }
 
             return newCr;
-        } catch (EntityRetrievalException | UserRetrievalException e) {
+        } catch (EntityRetrievalException e) {
             throw new RuntimeException(e);
         }
     }

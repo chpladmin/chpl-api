@@ -7,7 +7,6 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import gov.healthit.chpl.domain.CertificationBody;
-import gov.healthit.chpl.domain.auth.UserPermission;
 import gov.healthit.chpl.util.EasternToSystemLocalDateTimeDeserializer;
 import gov.healthit.chpl.util.SystemToEasternLocalDateTimeSerializer;
 import lombok.AllArgsConstructor;
@@ -30,6 +29,6 @@ public class ChangeRequestStatus implements Serializable {
 
     private String comment;
     private CertificationBody certificationBody;
-    private UserPermission userPermission;
-
+    //private UserPermission userPermission;
+    private String userGroupName;
 }

@@ -67,7 +67,10 @@ public class ChangeRequestStatusService {
         ChangeRequestStatus crStatus = new ChangeRequestStatus();
         crStatus.setStatusChangeDateTime(LocalDateTime.now());
         crStatus.setChangeRequestStatusType(crStatusType);
-        crStatus.setUserPermission(resourcePermissionsFactory.get().getRoleByUser(getUserById(AuthUtil.getCurrentUser().getId())));
+        crStatus.setUserGroupName(AuthUtil.getCurrentUser().getAuthorities().stream()
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("Could not determine the current user's authority name."))
+                .toString());
 
         return crStatusDAO.create(cr, crStatus);
     }
@@ -149,7 +152,12 @@ public class ChangeRequestStatusService {
         crStatus.setChangeRequestStatusType(crStatusType);
         crStatus.setComment(comment);
         crStatus.setStatusChangeDateTime(LocalDateTime.now());
-        crStatus.setUserPermission(resourcePermissionsFactory.get().getRoleByUser(getUserById(AuthUtil.getCurrentUser().getId())));
+        //crStatus.setUserPermission(resourcePermissionsFactory.get().getRoleByUser(getUserById(AuthUtil.getCurrentUser().getId())));
+        crStatus.setUserGroupName(AuthUtil.getCurrentUser().getAuthorities().stream()
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("Could not determine the current user's authority name."))
+                .toString());
+
         if (resourcePermissionsFactory.get().isUserRoleAcbAdmin()) {
             crStatus.setCertificationBody(getCertificationBodyForCurrentUser());
         }

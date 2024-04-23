@@ -128,7 +128,7 @@ public class ChangeRequestDAO extends BaseDAOImpl {
                 + "LEFT JOIN FETCH crStatus.changeRequestStatusType "
                 + "LEFT JOIN FETCH crStatus.certificationBody acb "
                 + "LEFT JOIN FETCH acb.address "
-                + "LEFT JOIN FETCH crStatus.userPermission "
+                //+ "LEFT JOIN FETCH crStatus.userPermission "
                 + "WHERE cr.deleted = false "
                 + "AND cr.id = :changeRequestId";
 
@@ -164,7 +164,7 @@ public class ChangeRequestDAO extends BaseDAOImpl {
                 + "JOIN FETCH crStatus.changeRequestStatusType "
                 + "LEFT JOIN FETCH crStatus.certificationBody acb "
                 + "LEFT JOIN FETCH acb.address "
-                + "JOIN FETCH crStatus.userPermission "
+                //+ "JOIN FETCH crStatus.userPermission "
                 + "WHERE cr.deleted = false "
                 + "AND cr.developer.id IN (:developerIds)";
 
@@ -186,7 +186,7 @@ public class ChangeRequestDAO extends BaseDAOImpl {
                 + "JOIN FETCH cr.statuses crStatus "
                 + "JOIN FETCH crStatus.changeRequestStatusType "
                 + "LEFT JOIN FETCH crStatus.certificationBody crStatusAcbs "
-                + "JOIN FETCH crStatus.userPermission "
+                //+ "JOIN FETCH crStatus.userPermission "
                 + "LEFT JOIN FETCH cras.attestationPeriod per "
                 + "WHERE crType.id = :crTypeId "
                 + "AND per.id = :periodId "
@@ -211,7 +211,7 @@ public class ChangeRequestDAO extends BaseDAOImpl {
                 + "JOIN FETCH cr.statuses crStatus "
                 + "JOIN FETCH crStatus.changeRequestStatusType "
                 + "LEFT JOIN FETCH crStatus.certificationBody acb "
-                + "JOIN FETCH crStatus.userPermission "
+                //+ "JOIN FETCH crStatus.userPermission "
                 + "WHERE cr.deleted = false ";
 
         List<ChangeRequestEntity> results = entityManager
@@ -231,7 +231,7 @@ public class ChangeRequestDAO extends BaseDAOImpl {
                 + "JOIN FETCH cr.statuses crStatus "
                 + "JOIN FETCH crStatus.changeRequestStatusType "
                 + "LEFT JOIN FETCH crStatus.certificationBody acb "
-                + "JOIN FETCH crStatus.userPermission "
+                //+ "JOIN FETCH crStatus.userPermission "
                 + "INNER JOIN DeveloperCertificationBodyMapEntity devAcbMap ON devAcbMap.developer.id = dev.id "
                 + "WHERE devAcbMap.certificationBody.id IN (:acbIds) "
                 + "AND cr.deleted = false ";
@@ -253,7 +253,7 @@ public class ChangeRequestDAO extends BaseDAOImpl {
                 + "JOIN FETCH cr.statuses crStatus "
                 + "JOIN FETCH crStatus.changeRequestStatusType "
                 + "LEFT JOIN FETCH crStatus.certificationBody acb "
-                + "JOIN FETCH crStatus.userPermission "
+                //+ "JOIN FETCH crStatus.userPermission "
                 + "WHERE cr.deleted = false "
                 + "AND cr.developer.id IN (:developerIds)";
 

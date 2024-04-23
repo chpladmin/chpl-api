@@ -9,11 +9,12 @@ import org.commonmark.node.Node;
 import org.commonmark.parser.Parser;
 import org.commonmark.renderer.html.HtmlRenderer;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestAttestationSubmission;
 import gov.healthit.chpl.dao.UserDeveloperMapDAO;
+import gov.healthit.chpl.domain.auth.Authority;
+import gov.healthit.chpl.domain.auth.CognitoGroups;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
 import gov.healthit.chpl.exception.EmailNotSentException;
@@ -26,11 +27,11 @@ import lombok.extern.log4j.Log4j2;
 public abstract class ChangeRequestEmail {
     private UserDeveloperMapDAO userDeveloperMapDAO;
 
-    @Value("${user.permission.onc}")
-    private Long oncPermission;
+    //@Value("${user.permission.onc}")
+    //private Long oncPermission;
 
-    @Value("${user.permission.admin}")
-    private Long adminPermission;
+    //@Value("${user.permission.admin}")
+    //private Long adminPermission;
 
 
     @Autowired
@@ -49,8 +50,7 @@ public abstract class ChangeRequestEmail {
     public String getApprovalBody(ChangeRequest cr) {
         if (cr.getCurrentStatus().getCertificationBody() != null) {
             return cr.getCurrentStatus().getCertificationBody().getName();
-        } else if (cr.getCurrentStatus().getUserPermission().getId().equals(oncPermission)
-                || cr.getCurrentStatus().getUserPermission().getId().equals(adminPermission)) {
+        } else if (isUserGroupAdminOrOnc(cr.getCurrentStatus().getUserGroupName())) {
             return "ONC";
         } else {
             LOGGER.warn("Unexpected change request ACB or User Permission. Change Requst ID: " + cr.getId());
@@ -94,4 +94,20 @@ public abstract class ChangeRequestEmail {
         String converted = renderer.render(document);
         return converted;
     }
+
+    private Boolean isUserGroupAdminOrOnc(String userGroupName) {
+        return isUserGroupAdmin(userGroupName)
+                || isUserGroupOnc(userGroupName);
+    }
+
+    private Boolean isUserGroupAdmin(String userGroupName) {
+        return userGroupName.equals(Authority.ROLE_ADMIN)
+                || userGroupName.equals(CognitoGroups.CHPL_ADMIN);
+    }
+
+    private Boolean isUserGroupOnc(String userGroupName) {
+        return userGroupName.equals(Authority.ROLE_ONC)
+                || userGroupName.equals(CognitoGroups.CHPL_ONC);
+    }
+
 }
