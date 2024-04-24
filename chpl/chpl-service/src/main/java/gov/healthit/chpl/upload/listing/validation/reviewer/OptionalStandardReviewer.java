@@ -5,9 +5,9 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
@@ -84,24 +84,29 @@ public class OptionalStandardReviewer implements Reviewer {
     private void reviewOptionalStandardFields(CertifiedProductSearchDetails listing,
             CertificationResult certResult, CertificationResultOptionalStandard optionalStandard) {
         reviewIdRequired(listing, certResult, optionalStandard);
-        reviewCitationRequired(listing, certResult, optionalStandard);
+        reviewValueRequired(listing, certResult, optionalStandard);
         reviewOptionalStandardIsValidForCriterion(listing, certResult, optionalStandard);
     }
 
     private void reviewIdRequired(CertifiedProductSearchDetails listing,
             CertificationResult certResult, CertificationResultOptionalStandard optionalStandard) {
-        if (optionalStandard.getOptionalStandardId() == null
-                && !StringUtils.isEmpty(optionalStandard.getCitation())) {
+        if ((optionalStandard.getOptionalStandard() == null
+                || optionalStandard.getOptionalStandard().getId() == null)
+                && !StringUtils.isEmpty(optionalStandard.getUserEnteredValue())) {
+            String optStdDisplay = (optionalStandard.getOptionalStandard() != null
+                    && optionalStandard.getOptionalStandard().getDisplayValue() != null) ? optionalStandard.getOptionalStandard().getDisplayValue()
+                            : optionalStandard.getUserEnteredValue();
             listing.addDataErrorMessage(
                     msgUtil.getMessage("listing.criteria.optionalStandardNotFound",
                             Util.formatCriteriaNumber(certResult.getCriterion()),
-                            optionalStandard.getCitation()));
+                            optStdDisplay));
         }
     }
 
-    private void reviewCitationRequired(CertifiedProductSearchDetails listing,
+    private void reviewValueRequired(CertifiedProductSearchDetails listing,
             CertificationResult certResult, CertificationResultOptionalStandard optionalStandard) {
-        if (StringUtils.isEmpty(optionalStandard.getCitation())) {
+        if (StringUtils.isEmpty(optionalStandard.getUserEnteredValue())
+                && StringUtils.isEmpty(optionalStandard.getOptionalStandard().getDisplayValue())) {
             listing.addDataErrorMessage(
                     msgUtil.getMessage("listing.criteria.missingOptionalStandardName",
                             Util.formatCriteriaNumber(certResult.getCriterion())));
@@ -110,11 +115,13 @@ public class OptionalStandardReviewer implements Reviewer {
 
     private void reviewOptionalStandardIsValidForCriterion(CertifiedProductSearchDetails listing,
             CertificationResult certResult, CertificationResultOptionalStandard optionalStandard) {
-        if (optionalStandard.getOptionalStandardId() != null
-                && !isOptionalStandardValidForCriteria(optionalStandard.getOptionalStandardId(),
+        if (optionalStandard.getOptionalStandard() != null
+                && optionalStandard.getOptionalStandard().getId() != null
+                && !isOptionalStandardValidForCriteria(optionalStandard.getOptionalStandard().getId(),
                         certResult.getCriterion().getId())) {
             listing.addDataErrorMessage(msgUtil.getMessage("listing.criteria.optionalStandard.invalidCriteria",
-                    optionalStandard.getCitation(), Util.formatCriteriaNumber(certResult.getCriterion())));
+                    optionalStandard.getOptionalStandard().getDisplayValue(),
+                    Util.formatCriteriaNumber(certResult.getCriterion())));
         }
     }
 

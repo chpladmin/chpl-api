@@ -56,6 +56,15 @@ public class OptionalStandardDAO extends BaseDAOImpl {
         return obj;
     }
 
+    public OptionalStandard getByDisplayValue(String displayValue) {
+        List<OptionalStandardEntity> entities = getEntitiesByDisplayValue(displayValue);
+        OptionalStandard obj = null;
+        if (entities != null && entities.size() > 0) {
+            obj = entities.get(0).toDomain();
+        }
+        return obj;
+    }
+
     private List<OptionalStandardEntity> getEntitiesByCitation(String citation) {
         String osQuery = "SELECT DISTINCT os "
                 + "FROM OptionalStandardEntity os "
@@ -74,6 +83,17 @@ public class OptionalStandardDAO extends BaseDAOImpl {
             matches = query.getResultList();
         }
         return matches;
+    }
+
+    private List<OptionalStandardEntity> getEntitiesByDisplayValue(String displayValue) {
+        String osQuery = "SELECT DISTINCT os "
+                + "FROM OptionalStandardEntity os "
+                + "WHERE os.deleted <> true "
+                + "AND UPPER(os.displayValue) = :displayValue ";
+        Query query = entityManager.createQuery(osQuery, OptionalStandardEntity.class);
+        query.setParameter("displayValue", displayValue.toUpperCase());
+
+        return query.getResultList();
     }
 
     private List<OptionalStandardCriteriaMapEntity> getAllOptionalStandardCriteriaMapEntities() throws EntityRetrievalException {

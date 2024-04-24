@@ -2,6 +2,7 @@ package gov.healthit.chpl.optionalStandard.domain;
 
 import java.io.Serializable;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import gov.healthit.chpl.entity.listing.CertificationResultOptionalStandardEntity;
@@ -24,26 +25,42 @@ public class CertificationResultOptionalStandard implements Serializable {
     @Schema(description = "Optional standard to certification result mapping internal ID.")
     private Long id;
 
-    @Schema(description = "The Optional Standard internal identifier.")
-    private Long optionalStandardId;
+    @Schema(description = "The Optional Standard associated with this certification result.")
+    private OptionalStandard optionalStandard;
 
-    @Schema(description = "The citation for the Optional Standard used to test the associated criteria.")
-    private String citation;
+    @JsonIgnore
+    private String userEnteredValue;
 
-    @Schema(description = "The description of the Optional Standard used to test the associated criteria.")
-    private String description;
+//    @Deprecated
+//    @DeprecatedResponseField(message = "This field is deprecated and will be removed. Please use optionalStandard.id",
+//        removalDate = "2024-10-31")
+//    @Schema(description = "The Optional Standard internal identifier.")
+//    private Long optionalStandardId;
+//
+//    @Deprecated
+//    @DeprecatedResponseField(message = "This field is deprecated and will be removed. Please use optionalStandard.citation",
+//        removalDate = "2024-10-31")
+//    @Schema(description = "The citation for the Optional Standard used to test the associated criteria.")
+//    private String citation;
+//
+//    @Deprecated
+//    @DeprecatedResponseField(message = "This field is deprecated and will be removed. Please use optionalStandard.description",
+//        removalDate = "2024-10-31")
+//    @Schema(description = "The description of the Optional Standard used to test the associated criteria.")
+//    private String description;
 
     public CertificationResultOptionalStandard(CertificationResultOptionalStandardEntity entity) {
         this.id = entity.getId();
         if (entity.getOptionalStandard() != null) {
-            this.optionalStandardId = entity.getOptionalStandard().getId();
-            this.citation = entity.getOptionalStandard().getCitation();
-            this.description = entity.getOptionalStandard().getDescription();
+            this.optionalStandard = entity.getOptionalStandard().toDomain();
+//            this.optionalStandardId = entity.getOptionalStandard().getId();
+//            this.citation = entity.getOptionalStandard().getCitation();
+//            this.description = entity.getOptionalStandard().getDescription();
         }
     }
 
     public boolean matches(CertificationResultOptionalStandard existingItem) {
-        return this.optionalStandardId.longValue() == existingItem.getOptionalStandardId().longValue()
-                || this.citation.equalsIgnoreCase(existingItem.getCitation());
+        return this.optionalStandard.getId().longValue() == existingItem.getOptionalStandard().getId().longValue()
+                || this.optionalStandard.getCitation().equalsIgnoreCase(existingItem.getOptionalStandard().getCitation());
     }
 }

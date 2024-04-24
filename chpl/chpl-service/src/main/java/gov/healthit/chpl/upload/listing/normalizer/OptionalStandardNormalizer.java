@@ -57,11 +57,14 @@ public class OptionalStandardNormalizer {
     }
 
     private void populateOptionalStandardFields(CertificationResultOptionalStandard cros) {
-        if (!StringUtils.isEmpty(cros.getCitation())) {
-            OptionalStandard optionalStandard = optionalStandardDao.getByCitation(cros.getCitation());
+        if (!StringUtils.isEmpty(cros.getUserEnteredValue())) {
+            OptionalStandard optionalStandard = optionalStandardDao.getByDisplayValue(cros.getUserEnteredValue());
+            if (optionalStandard == null || optionalStandard.getId() == null) {
+                optionalStandard = optionalStandardDao.getByCitation(cros.getUserEnteredValue());
+            }
+
             if (optionalStandard != null) {
-                cros.setOptionalStandardId(optionalStandard.getId());
-                cros.setDescription(optionalStandard.getDescription());
+                cros.setOptionalStandard(optionalStandard);
             }
         }
     }
