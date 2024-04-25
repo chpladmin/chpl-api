@@ -15,6 +15,7 @@ import gov.healthit.chpl.optionalStandard.domain.OptionalStandard;
 import gov.healthit.chpl.optionalStandard.domain.OptionalStandardCriteriaMap;
 import gov.healthit.chpl.optionalStandard.entity.OptionalStandardCriteriaMapEntity;
 import gov.healthit.chpl.optionalStandard.entity.OptionalStandardEntity;
+import gov.healthit.chpl.util.Util;
 
 @Repository("optionalStandardDAO")
 public class OptionalStandardDAO extends BaseDAOImpl {
@@ -93,7 +94,15 @@ public class OptionalStandardDAO extends BaseDAOImpl {
         Query query = entityManager.createQuery(osQuery, OptionalStandardEntity.class);
         query.setParameter("displayValue", displayValue.toUpperCase());
 
-        return query.getResultList();
+        List<OptionalStandardEntity> matches = query.getResultList();
+        if (matches == null || matches.size() == 0) {
+            // if this didn't find anything try again with special trademark characters removed
+            query = entityManager.createQuery(osQuery, OptionalStandardEntity.class);
+            String displayValueWithoutTrademarkSymbols = Util.removeAllTrademarkCharacters(displayValue);
+            query.setParameter("displayValue", displayValueWithoutTrademarkSymbols.toUpperCase());
+            matches = query.getResultList();
+        }
+        return matches;
     }
 
     private List<OptionalStandardCriteriaMapEntity> getAllOptionalStandardCriteriaMapEntities() throws EntityRetrievalException {

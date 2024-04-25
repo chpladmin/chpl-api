@@ -89,6 +89,17 @@ public final class Util {
         return EmailValidator.getInstance().isValid(email);
     }
 
+    public static String removeAllTrademarkCharacters(String value) {
+        //R inside of circle
+        value = value.replaceAll("\u00AE", "");
+        //TM symbol
+        value = value.replaceAll("\u2122", "");
+        //SM symbol
+        value = value.replaceAll("\u2120", "");
+        //Copyright symbol
+        value = value.replaceAll("\u00A9", "");
+        return value;
+    }
     public static String joinListGrammatically(List<String> list) {
         if (list == null || list.size() == 0) {
             return "";
