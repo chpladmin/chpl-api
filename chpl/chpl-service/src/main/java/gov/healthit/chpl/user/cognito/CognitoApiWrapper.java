@@ -44,6 +44,7 @@ import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminListGr
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AttributeType;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AuthFlowType;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AuthenticationResultType;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.GroupType;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.ListUsersRequest;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.ListUsersResponse;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.MessageActionType;
@@ -269,7 +270,7 @@ public class CognitoApiWrapper {
                 .username(user.getEmail())
                 .build();
         AdminListGroupsForUserResponse groupsResponse = cognitoClient.adminListGroupsForUser(groupsRequest);
-        user.setRole(groupsResponse.groups().get(0).groupName());
+        user.setRole(getRoleBasedOnFilteredGroups(groupsResponse.groups()));
 
         AttributeType orgIdsAttribute = getUserAttribute(userType.attributes(), "custom:organizations");
         if (orgIdsAttribute != null && StringUtils.isNotEmpty(orgIdsAttribute.value())) {
@@ -280,4 +281,11 @@ public class CognitoApiWrapper {
         return user;
     }
 
+    private String getRoleBasedOnFilteredGroups(List<GroupType> groups) {
+        return groups.stream()
+                .map(groupType -> groupType.groupName())
+                .filter(group -> !group.endsWith("-env"))
+                .findAny()
+                .orElseThrow(() -> new RuntimeException("Could not determine user's role"));
+    }
 }
