@@ -228,6 +228,7 @@ public class OptionalStandardReviewerTest {
                         .citation("optional std")
                         .displayValue("optional std")
                         .build())
+                .userEnteredValue("optional std")
                 .build());
         optionalStandards.add(CertificationResultOptionalStandard.builder()
                     .optionalStandard(null)
@@ -305,6 +306,7 @@ public class OptionalStandardReviewerTest {
                         .citation("optional std")
                         .displayValue("optional std")
                         .build())
+                .userEnteredValue("optional std")
                 .build());
 
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
@@ -374,6 +376,7 @@ public class OptionalStandardReviewerTest {
                         .citation("optional std")
                         .displayValue("optional std")
                         .build())
+                .userEnteredValue("optional std")
                 .build());
         optionalStandards.add(CertificationResultOptionalStandard.builder()
                 .optionalStandard(OptionalStandard.builder().id(null).citation("").build())

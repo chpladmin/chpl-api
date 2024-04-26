@@ -14,6 +14,7 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.optionalStandard.OptionalStandardDAO;
 import gov.healthit.chpl.optionalStandard.domain.CertificationResultOptionalStandard;
+import gov.healthit.chpl.optionalStandard.domain.OptionalStandard;
 import gov.healthit.chpl.optionalStandard.domain.OptionalStandardCriteriaMap;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -85,6 +86,7 @@ public class OptionalStandardReviewer implements Reviewer {
             CertificationResult certResult, CertificationResultOptionalStandard optionalStandard) {
         reviewIdRequired(listing, certResult, optionalStandard);
         reviewValueRequired(listing, certResult, optionalStandard);
+        reviewFuzzyMatchHappened(listing, certResult, optionalStandard);
         reviewOptionalStandardIsValidForCriterion(listing, certResult, optionalStandard);
     }
 
@@ -111,6 +113,35 @@ public class OptionalStandardReviewer implements Reviewer {
                     msgUtil.getMessage("listing.criteria.missingOptionalStandardName",
                             Util.formatCriteriaNumber(certResult.getCriterion())));
         }
+    }
+
+    private void reviewFuzzyMatchHappened(CertifiedProductSearchDetails listing,
+            CertificationResult certResult, CertificationResultOptionalStandard optionalStandard) {
+        if (optionalStandard.getOptionalStandard() != null
+                && optionalStandard.getOptionalStandard().getId() != null
+                && !StringUtils.isEmpty(optionalStandard.getUserEnteredValue())
+                && !userEnteredValueMatchesDisplayValue(optionalStandard.getUserEnteredValue(), optionalStandard.getOptionalStandard())
+                && !userEnteredValueMatchesCitation(optionalStandard.getUserEnteredValue(), optionalStandard.getOptionalStandard())) {
+            listing.addWarningMessage(
+                    msgUtil.getMessage("listing.criteria.optionalStandardFuzzyMatch",
+                            optionalStandard.getUserEnteredValue(),
+                            optionalStandard.getOptionalStandard().getDisplayValue(),
+                            Util.formatCriteriaNumber(certResult.getCriterion())));
+        }
+    }
+
+    private boolean userEnteredValueMatchesDisplayValue(String userEnteredValue, OptionalStandard optionalStandard) {
+        return !StringUtils.isEmpty(userEnteredValue)
+                && optionalStandard != null
+                && !StringUtils.isEmpty(optionalStandard.getDisplayValue())
+                && StringUtils.equals(userEnteredValue, optionalStandard.getDisplayValue());
+    }
+
+    private boolean userEnteredValueMatchesCitation(String userEnteredValue, OptionalStandard optionalStandard) {
+        return !StringUtils.isEmpty(userEnteredValue)
+                && optionalStandard != null
+                && !StringUtils.isEmpty(optionalStandard.getCitation())
+                && StringUtils.equals(userEnteredValue, optionalStandard.getCitation());
     }
 
     private void reviewOptionalStandardIsValidForCriterion(CertifiedProductSearchDetails listing,
