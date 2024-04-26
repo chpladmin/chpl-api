@@ -62,6 +62,6 @@ public class CertificationResultOptionalStandard implements Serializable {
 
     public boolean matches(CertificationResultOptionalStandard existingItem) {
         return this.optionalStandard.getId().longValue() == existingItem.getOptionalStandard().getId().longValue()
-                || this.optionalStandard.getCitation().equalsIgnoreCase(existingItem.getOptionalStandard().getCitation());
+                || this.optionalStandard.getDisplayValue().equalsIgnoreCase(existingItem.getOptionalStandard().getDisplayValue());
     }
 }
