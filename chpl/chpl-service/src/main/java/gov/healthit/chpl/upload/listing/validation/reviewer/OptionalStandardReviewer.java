@@ -1,5 +1,6 @@
 package gov.healthit.chpl.upload.listing.validation.reviewer;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -56,6 +57,8 @@ public class OptionalStandardReviewer implements Reviewer {
                 .forEach(certResult -> reviewCertificationResult(listing, certResult));
         listing.getCertificationResults().stream()
                 .forEach(certResult -> removeOptionalStandardsIfNotApplicable(certResult));
+        listing.getCertificationResults().stream()
+            .forEach(certResult -> removeNotFoundOptionalStandards(certResult));
     }
 
     private void reviewCertificationResult(CertifiedProductSearchDetails listing, CertificationResult certResult) {
@@ -82,6 +85,24 @@ public class OptionalStandardReviewer implements Reviewer {
         }
     }
 
+    private void removeNotFoundOptionalStandards(CertificationResult certResult) {
+        if (CollectionUtils.isEmpty(certResult.getOptionalStandards())) {
+            return;
+        }
+
+        Iterator<CertificationResultOptionalStandard> optStdsIter = certResult.getOptionalStandards().iterator();
+        while (optStdsIter.hasNext()) {
+            CertificationResultOptionalStandard optStd = optStdsIter.next();
+            if (optStd.getOptionalStandard() == null
+                    || optStd.getOptionalStandard().getId() == null) {
+                optStdsIter.remove();
+            } else if (optStd.getOptionalStandard() != null && optStd.getOptionalStandard().getId() != null
+                    && !isOptionalStandardValidForCriteria(optStd.getOptionalStandard().getId(), certResult.getCriterion().getId())) {
+                optStdsIter.remove();
+            }
+        }
+    }
+
     private void reviewOptionalStandardFields(CertifiedProductSearchDetails listing,
             CertificationResult certResult, CertificationResultOptionalStandard optionalStandard) {
         reviewIdRequired(listing, certResult, optionalStandard);
@@ -98,8 +119,8 @@ public class OptionalStandardReviewer implements Reviewer {
             String optStdDisplay = (optionalStandard.getOptionalStandard() != null
                     && optionalStandard.getOptionalStandard().getDisplayValue() != null) ? optionalStandard.getOptionalStandard().getDisplayValue()
                             : optionalStandard.getUserEnteredValue();
-            listing.addDataErrorMessage(
-                    msgUtil.getMessage("listing.criteria.optionalStandardNotFound",
+            listing.addWarningMessage(
+                    msgUtil.getMessage("listing.criteria.optionalStandardNotFoundAndRemoved",
                             Util.formatCriteriaNumber(certResult.getCriterion()),
                             optStdDisplay));
         }
@@ -150,7 +171,7 @@ public class OptionalStandardReviewer implements Reviewer {
                 && optionalStandard.getOptionalStandard().getId() != null
                 && !isOptionalStandardValidForCriteria(optionalStandard.getOptionalStandard().getId(),
                         certResult.getCriterion().getId())) {
-            listing.addDataErrorMessage(msgUtil.getMessage("listing.criteria.optionalStandard.invalidCriteria",
+            listing.addWarningMessage(msgUtil.getMessage("listing.criteria.optionalStandard.invalidCriteria",
                     optionalStandard.getOptionalStandard().getDisplayValue(),
                     Util.formatCriteriaNumber(certResult.getCriterion())));
         }

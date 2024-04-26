@@ -31,6 +31,7 @@ public class CertificationResultOptionalStandard implements Serializable {
     @JsonIgnore
     private String userEnteredValue;
 
+    //TODO: PUT THESE BACK
 //    @Deprecated
 //    @DeprecatedResponseField(message = "This field is deprecated and will be removed. Please use optionalStandard.id",
 //        removalDate = "2024-10-31")
