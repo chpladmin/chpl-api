@@ -25,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import gov.healthit.chpl.auth.user.AuthenticationSystem;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.caching.ListingSearchCacheRefresh;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
@@ -38,6 +39,7 @@ import gov.healthit.chpl.domain.DeveloperStatusEvent;
 import gov.healthit.chpl.domain.IdNamePair;
 import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
+import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.domain.contact.PointOfContact;
 import gov.healthit.chpl.domain.developer.hierarchy.DeveloperTree;
 import gov.healthit.chpl.domain.developer.hierarchy.ProductTree;
@@ -244,7 +246,20 @@ public class DeveloperManager extends SecuredManager {
             + "T(gov.healthit.chpl.permissions.domains.DeveloperDomainPermissions).GET_ALL_USERS, #devId)")
     public List<UserDTO> getAllUsersOnDeveloper(Long devId) throws EntityRetrievalException {
         Developer dev = getById(devId);
-        return resourcePermissionsFactory.get().getAllUsersOnDeveloper(dev);
+        List<User> users = resourcePermissionsFactory.get(AuthenticationSystem.CHPL).getAllUsersOnDeveloper(dev);
+
+        return users.stream()
+                .map(user -> getUser(user.getUserId()))
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).DEVELOPER, "
+            + "T(gov.healthit.chpl.permissions.domains.DeveloperDomainPermissions).GET_ALL_USERS, #devId)")
+    public List<User> getAllCognitoUsersOnDeveloper(Long devId) throws EntityRetrievalException {
+        Developer dev = getById(devId);
+        return resourcePermissionsFactory.get(AuthenticationSystem.COGNTIO).getAllUsersOnDeveloper(dev);
+
     }
 
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).DEVELOPER, "
@@ -590,5 +605,15 @@ public class DeveloperManager extends SecuredManager {
             return msgUtil.getMessage("developer.merge.dupChplProdNbrs.duplicate", origChplProductNumberA,
                     origChplProductNumberB);
         }
+    }
+
+    private UserDTO getUser(Long userId) {
+        try {
+            return userManager.getById(userId);
+        } catch (UserRetrievalException e) {
+            LOGGER.error("Could not retrieve user with id: {}", userId, e);
+            return null;
+        }
+
     }
 }

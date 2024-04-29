@@ -32,5 +32,6 @@ public class User extends Person implements Serializable {
     private Date lastLoggedInDate;
     private List<Organization> organizations = new ArrayList<Organization>();
     private String hash;
+    private String status;
 
 }

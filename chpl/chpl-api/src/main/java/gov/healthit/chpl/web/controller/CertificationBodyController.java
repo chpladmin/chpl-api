@@ -1,6 +1,5 @@
 package gov.healthit.chpl.web.controller;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.ObjectUtils;
@@ -19,7 +18,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.domain.CertificationBody;
-import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.domain.auth.UsersResponse;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.exception.ActivityException;
@@ -41,7 +39,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 @Tag(name = "acbs", description = "Allows CRUD operations on certification bodies (ONC-ACBs).")
 @RestController
 @RequestMapping("/acbs")
@@ -270,15 +270,8 @@ public class CertificationBodyController {
             throw new InvalidArgumentsException("Could not find the ACB specified.");
         }
 
-        List<UserDTO> users = resourcePermissionsFactory.get().getAllUsersOnAcb(acb);
-        List<User> acbUsers = new ArrayList<User>(users.size());
-        for (UserDTO userDto : users) {
-            User acbUser = userDto.toDomain();
-            acbUsers.add(acbUser);
-        }
-
         UsersResponse results = new UsersResponse();
-        results.setUsers(acbUsers);
+        results.setUsers(resourcePermissionsFactory.get().getAllUsersOnAcb(acb));
         return results;
     }
 }
