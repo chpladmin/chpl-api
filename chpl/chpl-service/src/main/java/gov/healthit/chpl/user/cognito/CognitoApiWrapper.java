@@ -1,5 +1,6 @@
 package gov.healthit.chpl.user.cognito;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -8,6 +9,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Stream;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -193,6 +195,36 @@ public class CognitoApiWrapper {
         }
     }
 
+    public List<User> getAllUsers() {
+        ListUsersRequest request = ListUsersRequest.builder()
+                .userPoolId(userPoolId)
+                .build();
+
+        List<User> users = new ArrayList<User>();
+
+        ListUsersResponse response = cognitoClient.listUsers(request);
+        users.addAll(response.users().stream()
+                .map(userType -> createUserFromUserType(userType))
+                .toList());
+
+        while (response.paginationToken() != null) {
+            LOGGER.info(response.paginationToken());
+            request = ListUsersRequest.builder()
+                .userPoolId(userPoolId)
+                .paginationToken(response.paginationToken())
+                .build();
+
+            response = cognitoClient.listUsers(request);
+
+            users.addAll(response.users().stream()
+                .peek(userType -> LOGGER.info(getUserAttribute(userType.attributes(), "email").value()))
+                    .map(userType -> createUserFromUserType(userType))
+                    .toList());
+
+        }
+        return users;
+    }
+
     private CognitoIdentityProviderClient createCognitoClient(String accessKey, String secretKey, String region) {
         AwsCredentials awsCredentials = AwsBasicCredentials.create(accessKey, secretKey);
 
@@ -259,17 +291,20 @@ public class CognitoApiWrapper {
         user.setFullName(getUserAttribute(userType.attributes(), "name").value());
         user.setEmail(getUserAttribute(userType.attributes(), "email").value());
         user.setTitle(getUserAttribute(userType.attributes(), "custom:title").value());
+        user.setPhoneNumber(getUserAttribute(userType.attributes(), "phone_number").value());
         user.setAccountLocked(!userType.enabled());
         user.setAccountEnabled(userType.enabled());
-        user.setCredentialsExpired(false);
+        user.setStatus(userType.userStatusAsString());
         user.setPasswordResetRequired(userType.userStatus().equals(UserStatusType.RESET_REQUIRED));
-        user.setLastLoggedInDate(new Date());
+
         AdminListGroupsForUserRequest groupsRequest = AdminListGroupsForUserRequest.builder()
                 .userPoolId(userPoolId)
                 .username(user.getEmail())
                 .build();
         AdminListGroupsForUserResponse groupsResponse = cognitoClient.adminListGroupsForUser(groupsRequest);
-        user.setRole(groupsResponse.groups().get(0).groupName());
+        if (CollectionUtils.isNotEmpty(groupsResponse.groups())) {
+            user.setRole(groupsResponse.groups().get(0).groupName());
+        }
 
         AttributeType orgIdsAttribute = getUserAttribute(userType.attributes(), "custom:organizations");
         if (orgIdsAttribute != null && StringUtils.isNotEmpty(orgIdsAttribute.value())) {
