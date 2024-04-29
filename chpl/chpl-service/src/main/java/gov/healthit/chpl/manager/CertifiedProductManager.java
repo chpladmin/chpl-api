@@ -12,7 +12,6 @@ import java.util.Optional;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.ff4j.FF4j;
 import org.quartz.JobDataMap;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +25,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.accessibilityStandard.AccessibilityStandard;
 import gov.healthit.chpl.accessibilityStandard.AccessibilityStandardDAO;
 import gov.healthit.chpl.caching.CacheNames;
@@ -43,7 +41,6 @@ import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.CertifiedProductQmsStandardDAO;
 import gov.healthit.chpl.dao.CertifiedProductTargetedUserDAO;
 import gov.healthit.chpl.dao.CertifiedProductTestingLabDAO;
-import gov.healthit.chpl.dao.CuresUpdateEventDAO;
 import gov.healthit.chpl.dao.ListingGraphDAO;
 import gov.healthit.chpl.dao.PromotingInteroperabilityUserDAO;
 import gov.healthit.chpl.dao.TargetedUserDAO;
@@ -71,16 +68,15 @@ import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.CertifiedProductQmsStandardDTO;
 import gov.healthit.chpl.dto.CertifiedProductTargetedUserDTO;
-import gov.healthit.chpl.dto.CuresUpdateEventDTO;
 import gov.healthit.chpl.dto.ListingToListingMapDTO;
 import gov.healthit.chpl.dto.TargetedUserDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
+import gov.healthit.chpl.exception.ActivityException;
 import gov.healthit.chpl.exception.CertifiedProductUpdateException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
-import gov.healthit.chpl.exception.MissingReasonException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.listing.measure.ListingMeasureDAO;
@@ -93,13 +89,11 @@ import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.qmsStandard.QmsStandard;
 import gov.healthit.chpl.qmsStandard.QmsStandardDAO;
 import gov.healthit.chpl.scheduler.job.certificationStatus.UpdateCurrentCertificationStatusJob;
-import gov.healthit.chpl.service.CuresUpdateService;
 import gov.healthit.chpl.sharedstore.listing.ListingIcsSharedStoreHandler;
 import gov.healthit.chpl.sharedstore.listing.ListingStoreRemove;
 import gov.healthit.chpl.sharedstore.listing.RemoveBy;
 import gov.healthit.chpl.upload.listing.normalizer.ListingDetailsNormalizer;
 import gov.healthit.chpl.util.AuthUtil;
-import gov.healthit.chpl.util.CertificationStatusUtil;
 import gov.healthit.chpl.util.DateUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.validation.listing.ListingValidatorFactory;
@@ -125,7 +119,6 @@ public class CertifiedProductManager extends SecuredManager {
     private ProductManager productManager;
     private ProductVersionManager versionManager;
     private CertificationStatusEventDAO statusEventDao;
-    private CuresUpdateEventDAO curesUpdateDao;
     private PromotingInteroperabilityUserDAO piuDao;
     private CertificationResultSynchronizationService certResultService;
     private CqmResultSynchronizationService cqmResultService;
@@ -140,13 +133,11 @@ public class CertifiedProductManager extends SecuredManager {
     private ListingDetailsNormalizer listingNormalizer;
     private BaselineStandardAsOfTodayNormalizer baselineStandardNormalizer;
     private ListingValidatorFactory validatorFactory;
-    private CuresUpdateService curesUpdateService;
     private ListingIcsSharedStoreHandler icsSharedStoreHandler;
     private CertificationStatusEventsService certStatusEventsService;
     private ChplTeamNotifier chplTeamNotifier;
     private Environment env;
     private ChplHtmlEmailBuilder chplHtmlEmailBuilder;
-    private FF4j ff4j;
 
     public CertifiedProductManager() {
     }
@@ -161,7 +152,7 @@ public class CertifiedProductManager extends SecuredManager {
             CertifiedProductTargetedUserDAO cpTargetedUserDao,
             CertifiedProductAccessibilityStandardDAO cpAccStdDao,
             ProductManager productManager, ProductVersionManager versionManager, CertificationStatusEventDAO statusEventDao,
-            CuresUpdateEventDAO curesUpdateDao, PromotingInteroperabilityUserDAO piuDao,
+            PromotingInteroperabilityUserDAO piuDao,
             CertificationResultSynchronizationService certResultService, CqmResultSynchronizationService cqmResultService,
             SedSynchronizationService sedService,
             CertificationStatusDAO certStatusDao, ListingGraphDAO listingGraphDao,
@@ -170,10 +161,10 @@ public class CertifiedProductManager extends SecuredManager {
             SchedulerManager schedulerManager, ActivityManager activityManager, UserManager userManager,
             ListingDetailsNormalizer listingNormalizer,
             BaselineStandardAsOfTodayNormalizer baselineStandardNormalizer,
-            ListingValidatorFactory validatorFactory, CuresUpdateService curesUpdateService,
+            ListingValidatorFactory validatorFactory,
             @Lazy ListingIcsSharedStoreHandler icsSharedStoreHandler,
             CertificationStatusEventsService certStatusEventsService, ChplTeamNotifier chplteamNotifier,
-            Environment env, ChplHtmlEmailBuilder chplHtmlEmailBuilder, FF4j ff4j) {
+            Environment env, ChplHtmlEmailBuilder chplHtmlEmailBuilder) {
 
         this.msgUtil = msgUtil;
         this.cpDao = cpDao;
@@ -188,7 +179,6 @@ public class CertifiedProductManager extends SecuredManager {
         this.productManager = productManager;
         this.versionManager = versionManager;
         this.statusEventDao = statusEventDao;
-        this.curesUpdateDao = curesUpdateDao;
         this.piuDao = piuDao;
         this.certResultService = certResultService;
         this.cqmResultService = cqmResultService;
@@ -203,13 +193,11 @@ public class CertifiedProductManager extends SecuredManager {
         this.listingNormalizer = listingNormalizer;
         this.baselineStandardNormalizer = baselineStandardNormalizer;
         this.validatorFactory = validatorFactory;
-        this.curesUpdateService = curesUpdateService;
         this.icsSharedStoreHandler = icsSharedStoreHandler;
         this.certStatusEventsService = certStatusEventsService;
         this.chplTeamNotifier = chplteamNotifier;
         this.env = env;
         this.chplHtmlEmailBuilder = chplHtmlEmailBuilder;
-        this.ff4j = ff4j;
     }
 
     @Transactional(readOnly = true)
@@ -281,8 +269,7 @@ public class CertifiedProductManager extends SecuredManager {
     @ListingSearchCacheRefresh
     @ListingStoreRemove(removeBy = RemoveBy.LISTING_ID, id = "#updateRequest.listing.id")
     public CertifiedProductDTO update(ListingUpdateRequest updateRequest)
-            throws AccessDeniedException, JsonProcessingException, InvalidArgumentsException, IOException,
-            ValidationException, MissingReasonException, CertifiedProductUpdateException {
+            throws ValidationException, InvalidArgumentsException, IOException, ActivityException, CertifiedProductUpdateException {
 
         CertifiedProductSearchDetails existingListing = null;
         try {
@@ -337,9 +324,8 @@ public class CertifiedProductManager extends SecuredManager {
                 && request.isAcknowledgeBusinessErrors();
     }
 
-    private Long logCertifiedProductUpdateActivity(CertifiedProductSearchDetails existingListing,
-            CertifiedProductSearchDetails updatedListing,
-            String reason) throws JsonProcessingException, EntityCreationException, EntityRetrievalException {
+    private Long logCertifiedProductUpdateActivity(CertifiedProductSearchDetails existingListing, CertifiedProductSearchDetails updatedListing,
+            String reason) throws ActivityException {
         Long activityId = activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, existingListing.getId(),
                 "Updated certified product " + updatedListing.getChplProductNumber() + ".", existingListing,
                 updatedListing, reason);
@@ -361,10 +347,6 @@ public class CertifiedProductManager extends SecuredManager {
         updateCertificationDate(updatedListing.getId(), new Date(existingListing.getCertificationDate()),
                 new Date(updatedListing.getCertificationDate()));
         updateCertificationStatusEvents(existingListing, updatedListing);
-
-        if (!ff4j.check(FeatureList.EDITIONLESS)) {
-            updateCuresUpdateEvents(updatedListing.getId(), existingListing.getCuresUpdate(), updatedListing);
-        }
 
         updatePromotingInteroperabilityUserHistory(updatedListing.getId(),
                 existingListing.getPromotingInteroperabilityUserHistory(),
@@ -982,26 +964,6 @@ public class CertifiedProductManager extends SecuredManager {
 
         for (Long idToRemove : idsToRemove) {
             statusEventDao.delete(idToRemove);
-        }
-        return numChanges;
-    }
-
-    private int updateCuresUpdateEvents(Long listingId, Boolean existingCuresUpdate,
-            CertifiedProductSearchDetails updatedListing) throws EntityCreationException, EntityRetrievalException {
-        int numChanges = 0;
-        String currentStatusName = updatedListing.getCurrentStatus().getStatus().getName();
-        if (CertificationStatusUtil.getActiveStatusNames().contains(currentStatusName)) {
-            Boolean isCuresUpdate = curesUpdateService.isCuresUpdate(updatedListing);
-            if (existingCuresUpdate != isCuresUpdate) {
-                CuresUpdateEventDTO curesEvent = new CuresUpdateEventDTO();
-                curesEvent.setCreationDate(new Date());
-                curesEvent.setDeleted(false);
-                curesEvent.setEventDate(new Date());
-                curesEvent.setCuresUpdate(isCuresUpdate);
-                curesEvent.setCertifiedProductId(listingId);
-                curesUpdateDao.create(curesEvent);
-                numChanges += 1;
-            }
         }
         return numChanges;
     }

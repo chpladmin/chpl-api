@@ -21,7 +21,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.nulabinc.zxcvbn.Strength;
 import com.nulabinc.zxcvbn.Zxcvbn;
 
@@ -33,14 +32,10 @@ import gov.healthit.chpl.domain.auth.UpdatePasswordResponse;
 import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.dto.auth.UserResetTokenDTO;
+import gov.healthit.chpl.exception.ActivityException;
 import gov.healthit.chpl.exception.EmailNotSentException;
-import gov.healthit.chpl.exception.EntityCreationException;
-import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.MultipleUserAccountsException;
-import gov.healthit.chpl.exception.UserAccountExistsException;
 import gov.healthit.chpl.exception.UserCreationException;
-import gov.healthit.chpl.exception.UserManagementException;
-import gov.healthit.chpl.exception.UserPermissionRetrievalException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ActivityManager;
@@ -83,8 +78,7 @@ public class UserManager extends SecuredManager {
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SECURED_USER, "
             + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).CREATE)")
-    public UserDTO create(UserDTO userDto, String password)
-            throws UserCreationException, JsonProcessingException, EntityRetrievalException, EntityCreationException {
+    public UserDTO create(UserDTO userDto, String password) throws UserCreationException, ActivityException  {
 
         Strength strength = getPasswordStrength(userDto, password);
         if (strength.getScore() < UserManager.MIN_PASSWORD_STRENGTH) {
@@ -97,7 +91,7 @@ public class UserManager extends SecuredManager {
 
         String activityDescription = "User " + createdUser.getEmail() + " was created.";
         activityManager.addActivity(ActivityConcept.USER, createdUser.getId(), activityDescription,
-                null, createdUser, createdUser.getId());
+                null, createdUser, createdUser.toDomain());
 
         return createdUser;
     }
@@ -105,9 +99,7 @@ public class UserManager extends SecuredManager {
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SECURED_USER, "
             + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).UPDATE, #user)")
-    public UserDTO update(User user)
-            throws UserRetrievalException, JsonProcessingException, EntityCreationException, EntityRetrievalException,
-            ValidationException, UserAccountExistsException, MultipleUserAccountsException {
+    public UserDTO update(User user) throws UserRetrievalException, ValidationException, MultipleUserAccountsException, ActivityException {
         UserDTO before = getById(user.getUserId());
         UserDTO toUpdate = UserDTO.builder()
                 .id(before.getId())
@@ -136,9 +128,7 @@ public class UserManager extends SecuredManager {
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SECURED_USER, "
             + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).UPDATE, #user)")
-    public UserDTO update(UserDTO user)
-            throws UserRetrievalException, JsonProcessingException, EntityCreationException, EntityRetrievalException,
-            ValidationException, UserAccountExistsException, MultipleUserAccountsException {
+    public UserDTO update(UserDTO user) throws ValidationException, UserRetrievalException, MultipleUserAccountsException, ActivityException {
         Optional<ValidationException> validationException = validateUser(user);
         if (validationException.isPresent()) {
             throw validationException.get();
@@ -160,9 +150,7 @@ public class UserManager extends SecuredManager {
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SECURED_USER, "
             + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).DELETE)")
-    public void delete(UserDTO user)
-            throws UserRetrievalException, UserPermissionRetrievalException, UserManagementException,
-            JsonProcessingException, EntityCreationException, EntityRetrievalException {
+    public void delete(UserDTO user) throws UserRetrievalException, ActivityException {
         userDAO.delete(user.getId());
 
         //db soft delete trigger takes care of deleting things associated with this user.

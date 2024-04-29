@@ -11,7 +11,6 @@ import javax.transaction.Transactional;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
-import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -19,7 +18,6 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.caching.ListingSearchCacheRefresh;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
@@ -34,7 +32,6 @@ import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.CertifiedProductQmsStandardDAO;
 import gov.healthit.chpl.dao.CertifiedProductTargetedUserDAO;
 import gov.healthit.chpl.dao.CertifiedProductTestingLabDAO;
-import gov.healthit.chpl.dao.CuresUpdateEventDAO;
 import gov.healthit.chpl.dao.ListingGraphDAO;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationStatus;
@@ -43,8 +40,8 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductUcdProcess;
 import gov.healthit.chpl.domain.TestTask;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
-import gov.healthit.chpl.dto.CuresUpdateEventDTO;
 import gov.healthit.chpl.entity.CertificationStatusType;
+import gov.healthit.chpl.exception.ActivityException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
@@ -54,7 +51,6 @@ import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.ProductManager;
 import gov.healthit.chpl.manager.ProductVersionManager;
-import gov.healthit.chpl.service.CuresUpdateService;
 import gov.healthit.chpl.standard.CertificationResultStandardDAO;
 import lombok.extern.log4j.Log4j2;
 
@@ -77,11 +73,8 @@ public class ListingConfirmationManager {
     private CertificationResultCodeSetDAO certResultCodeSetDao;
     private CQMResultDAO cqmResultDao;
     private CertificationStatusEventDAO statusEventDao;
-    private CuresUpdateEventDAO curesUpdateDao;
-    private CuresUpdateService curesUpdateService;
     private ActivityManager activityManager;
     private CertifiedProductDetailsManager cpDetailsManager;
-    private FF4j ff4j;
 
     private CertificationStatus activeStatus;
 
@@ -97,11 +90,9 @@ public class ListingConfirmationManager {
             CertificationResultDAO certResultDao, CertificationResultFunctionalityTestedDAO certResultFuncTestedDao,
             CQMResultDAO cqmResultDao,
             CertificationStatusDAO certStatusDao,  CertificationStatusEventDAO statusEventDao,
-            CuresUpdateEventDAO curesUpdateDao,
-            CertifiedProductDetailsManager cpDetailsManager, CuresUpdateService curesUpdateService,
+            CertifiedProductDetailsManager cpDetailsManager,
             ActivityManager activityManager, CertificationResultStandardDAO certResultStandardDao,
-            CertificationResultCodeSetDAO certResultCodeSetDao,
-            FF4j ff4j) {
+            CertificationResultCodeSetDAO certResultCodeSetDao) {
         this.developerManager = developerManager;
         this.productManager = productManager;
         this.versionManager = versionManager;
@@ -116,13 +107,10 @@ public class ListingConfirmationManager {
         this.certResultFuncTestedDao = certResultFuncTestedDao;
         this.cqmResultDao = cqmResultDao;
         this.statusEventDao = statusEventDao;
-        this.curesUpdateDao = curesUpdateDao;
         this.cpDetailsManager = cpDetailsManager;
-        this.curesUpdateService = curesUpdateService;
         this.activityManager = activityManager;
         this.certResultStandardDao = certResultStandardDao;
         this.certResultCodeSetDao = certResultCodeSetDao;
-        this.ff4j = ff4j;
 
         activeStatus = certStatusDao.getByStatusName(CertificationStatusType.Active.toString());
     }
@@ -138,7 +126,8 @@ public class ListingConfirmationManager {
     }, allEntries = true)
     @ListingSearchCacheRefresh
     public CertifiedProductSearchDetails create(CertifiedProductSearchDetails listing)
-        throws EntityCreationException, EntityRetrievalException, JsonProcessingException, ValidationException {
+            throws ValidationException, EntityCreationException, EntityRetrievalException, ActivityException, JsonProcessingException {
+
         if (listing.getDeveloper().getId() == null) {
             //create developer, set developer ID in listing
             Long developerId = developerManager.create(listing.getDeveloper());
@@ -167,9 +156,6 @@ public class ListingConfirmationManager {
         saveSed(listing);
         saveCqms(listing);
         saveInitialCertificationEvent(listing);
-        if (!ff4j.check(FeatureList.EDITIONLESS)) {
-            saveInitialCuresUpdateEvent(listing);
-        }
         CertifiedProductSearchDetails confirmedListing = cpDetailsManager.getCertifiedProductDetails(listing.getId());
         try {
             logCertifiedProductCreateActivity(confirmedListing);
@@ -379,16 +365,7 @@ public class ListingConfirmationManager {
         statusEventDao.create(listing.getId(), certEvent);
     }
 
-    private void saveInitialCuresUpdateEvent(CertifiedProductSearchDetails listing) throws EntityCreationException {
-        CuresUpdateEventDTO curesEvent = CuresUpdateEventDTO.builder()
-                .eventDate(new Date(listing.getCertificationDate()))
-                .curesUpdate(curesUpdateService.isCuresUpdate(listing))
-                .certifiedProductId(listing.getId())
-                .build();
-        curesUpdateDao.create(curesEvent);
-    }
-
-    private void logCertifiedProductCreateActivity(CertifiedProductSearchDetails listing) throws JsonProcessingException, EntityCreationException, EntityRetrievalException {
+    private void logCertifiedProductCreateActivity(CertifiedProductSearchDetails listing) throws ActivityException  {
         activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, listing.getId(),
             "Created a certified product", null, listing);
     }

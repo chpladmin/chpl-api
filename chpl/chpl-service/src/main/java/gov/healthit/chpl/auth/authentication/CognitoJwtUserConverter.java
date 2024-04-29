@@ -66,7 +66,7 @@ public class CognitoJwtUserConverter implements JWTUserConverter {
         RSAKeyProvider keyProvider = new CognitoRsaKeyProvider(region, userPoolId, tokenizeRsaKeyUrl);
         Algorithm algorithm = Algorithm.RSA256(keyProvider);
         JWTVerifier jwtVerifier = JWT.require(algorithm)
-            .withAudience(clientId)
+            //.withAudience(clientId)
             .build();
 
         DecodedJWT decodedJwt = jwtVerifier.verify(jwt);

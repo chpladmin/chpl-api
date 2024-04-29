@@ -2,31 +2,28 @@ package gov.healthit.chpl.domain.activity;
 
 import java.io.Serializable;
 
-/**
- * Different types of activity the system will log.
- *
- * @author kekey
- *
- */
 public enum ActivityConcept implements Serializable {
-    CERTIFIED_PRODUCT,
-    PRODUCT,
-    DEVELOPER,
-    CERTIFICATION,
-    CQM,
-    CERTIFICATION_BODY,
-    VERSION,
-    USER,
-    TESTING_LAB,
-    LISTING_UPLOAD,
-    API_KEY,
     ANNOUNCEMENT,
+    ANNUAL_REPORT,
+    API_KEY,
+    CERTIFICATION,
+    CERTIFICATION_BODY,
     CERTIFICATION_ID,
-    PENDING_SURVEILLANCE,
-    CORRECTIVE_ACTION_PLAN,
+    CERTIFIED_PRODUCT,
+    CHANGE_REQUEST,
     COMPLAINT,
+    CORRECTIVE_ACTION_PLAN,
+    CQM,
+    DEVELOPER,
+    FUNCTIONALITY_TESTED,
+    LISTING_UPLOAD,
+    PENDING_SURVEILLANCE,
+    PRODUCT,
     QUARTERLY_REPORT,
     QUARTERLY_REPORT_LISTING,
-    ANNUAL_REPORT,
-    CHANGE_REQUEST;
+    SVAP,
+    STANDARD,
+    TESTING_LAB,
+    USER,
+    VERSION;
 }

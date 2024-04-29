@@ -7,7 +7,6 @@ import java.util.Objects;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
-import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
@@ -25,6 +24,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.auth.ChplAccountEmailNotConfirmedException;
 import gov.healthit.chpl.auth.ChplAccountStatusException;
+import gov.healthit.chpl.auth.user.AuthenticationSystem;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.domain.CreateUserFromInvitationRequest;
 import gov.healthit.chpl.domain.auth.Authority;
@@ -34,22 +34,21 @@ import gov.healthit.chpl.domain.auth.UserInvitation;
 import gov.healthit.chpl.domain.auth.UsersResponse;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.dto.auth.UserInvitationDTO;
+import gov.healthit.chpl.exception.ActivityException;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.JWTCreationException;
 import gov.healthit.chpl.exception.MultipleUserAccountsException;
-import gov.healthit.chpl.exception.UserAccountExistsException;
 import gov.healthit.chpl.exception.UserCreationException;
-import gov.healthit.chpl.exception.UserManagementException;
 import gov.healthit.chpl.exception.UserPermissionRetrievalException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.InvitationManager;
 import gov.healthit.chpl.manager.auth.AuthenticationManager;
-import gov.healthit.chpl.manager.auth.CognitoAuthenticationManager;
 import gov.healthit.chpl.manager.auth.UserManager;
+import gov.healthit.chpl.user.cognito.CognitoUserManager;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
@@ -66,8 +65,7 @@ public class UserManagementController {
     private InvitationManager invitationManager;
     private AuthenticationManager authenticationManager;
     private ErrorMessageUtil msgUtil;
-    private CognitoAuthenticationManager cognitoAuthenticationManager;
-    private FF4j ff4j;
+    private CognitoUserManager cognitoUserManager;
 
     private long invitationLengthInDays;
     private long confirmationLengthInDays;
@@ -80,19 +78,16 @@ public class UserManagementController {
             @Value("${invitationLengthInDays}") Long invitationLengthDays,
             @Value("${confirmationLengthInDays}") Long confirmationLengthDays,
             @Value("${authorizationLengthInDays}") Long authorizationLengthInDays,
-            CognitoAuthenticationManager cognitoAuthenticationManager,
-            FF4j ff4j) {
+            CognitoUserManager cognitoUserManager) {
         this.userManager = userManager;
         this.invitationManager = invitationManager;
         this.authenticationManager = authenticationManager;
         this.msgUtil = errorMessageUtil;
-        this.cognitoAuthenticationManager = cognitoAuthenticationManager;
+        this.cognitoUserManager = cognitoUserManager;
 
         this.invitationLengthInDays = invitationLengthDays;
         this.confirmationLengthInDays = confirmationLengthDays;
         this.authorizationLengthInDays = authorizationLengthInDays;
-
-        this.ff4j = ff4j;
     }
 
     @Operation(summary = "Create a new user account from an invitation.",
@@ -107,9 +102,8 @@ public class UserManagementController {
     @RequestMapping(value = "/create", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
     public @ResponseBody User createUser(@RequestBody CreateUserFromInvitationRequest userInfo)
-            throws ValidationException, EntityRetrievalException, InvalidArgumentsException,
-            UserRetrievalException, MultipleUserAccountsException, UserCreationException,
-            EmailNotSentException, JsonProcessingException, EntityCreationException {
+            throws ValidationException, InvalidArgumentsException, UserCreationException, ActivityException,
+            EntityRetrievalException, UserRetrievalException {
 
         if (userInfo.getUser() == null || userInfo.getUser().getEmail() == null) {
             throw new ValidationException(msgUtil.getMessage("user.email.required"));
@@ -205,7 +199,7 @@ public class UserManagementController {
             throw new InvalidArgumentsException("User key is required.");
         }
 
-        JWTAuthenticatedUser loggedInUser = (JWTAuthenticatedUser) AuthUtil.getCurrentUser();
+        JWTAuthenticatedUser loggedInUser = AuthUtil.getCurrentUser();
         if (loggedInUser == null
                 && (StringUtils.isEmpty(credentials.getUserName()) || StringUtils.isEmpty(credentials.getPassword()))) {
             throw new InvalidArgumentsException(
@@ -227,7 +221,7 @@ public class UserManagementController {
             }
             Authentication invitedUserAuthenticator = AuthUtil.getInvitedUserAuthenticator(user.getId());
             SecurityContextHolder.getContext().setAuthentication(invitedUserAuthenticator);
-            loggedInUser = (JWTAuthenticatedUser) AuthUtil.getCurrentUser();
+            loggedInUser = AuthUtil.getCurrentUser();
         }
 
         UserDTO userToUpdate = userManager.getById(loggedInUser.getId());
@@ -284,9 +278,7 @@ public class UserManagementController {
     @RequestMapping(value = "/{userId}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
     public User updateUserDetails(@RequestBody User userInfo)
-            throws UserRetrievalException, UserPermissionRetrievalException, JsonProcessingException,
-            EntityCreationException, EntityRetrievalException, ValidationException, UserAccountExistsException,
-            MultipleUserAccountsException {
+            throws UserRetrievalException, ValidationException, MultipleUserAccountsException, ActivityException {
 
         if (userInfo.getUserId() <= 0) {
             throw new UserRetrievalException("Cannot update user with ID less than 0");
@@ -305,9 +297,7 @@ public class UserManagementController {
             })
     @RequestMapping(value = "/{userId}", method = RequestMethod.DELETE,
     produces = "application/json; charset=utf-8")
-    public DeletedUser deleteUser(@PathVariable("userId") Long userId)
-            throws UserRetrievalException, UserManagementException, UserPermissionRetrievalException,
-            JsonProcessingException, EntityCreationException, EntityRetrievalException {
+    public DeletedUser deleteUser(@PathVariable("userId") Long userId) throws UserRetrievalException, ActivityException {
 
         if (userId <= 0) {
             throw new UserRetrievalException("Cannot delete user with ID less than 0");
@@ -331,12 +321,11 @@ public class UserManagementController {
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     @PreAuthorize("isAuthenticated()")
     public @ResponseBody UsersResponse getUsers() {
-        List<UserDTO> userList = userManager.getAll();
-        List<User> users = new ArrayList<User>(userList.size());
-
-        for (UserDTO userDto : userList) {
-            User user = userDto.toDomain();
-            users.add(user);
+        List<User> users = null;
+        if (AuthUtil.getCurrentUser().getAuthenticationSystem().equals(AuthenticationSystem.COGNTIO)) {
+            users = getAllCognitoUsers();
+        } else if (AuthUtil.getCurrentUser().getAuthenticationSystem().equals(AuthenticationSystem.CHPL)) {
+            users = getAllChplUsers();
         }
 
         UsersResponse response = new UsersResponse();
@@ -357,6 +346,22 @@ public class UserManagementController {
             throws UserRetrievalException {
 
         return userManager.getUserInfo(id);
+    }
+
+
+    private List<User> getAllChplUsers() {
+        List<UserDTO> userList = userManager.getAll();
+        List<User> users = new ArrayList<User>(userList.size());
+
+        for (UserDTO userDto : userList) {
+            User user = userDto.toDomain();
+            users.add(user);
+        }
+        return users;
+    }
+
+    private List<User> getAllCognitoUsers() {
+        return cognitoUserManager.getAll();
     }
 
     private class DeletedUser {

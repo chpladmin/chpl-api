@@ -31,15 +31,15 @@ import gov.healthit.chpl.search.domain.OrderByOption;
 import gov.healthit.chpl.search.domain.RwtSearchOptions;
 import gov.healthit.chpl.search.domain.SearchRequest;
 import gov.healthit.chpl.search.domain.SearchSetOperator;
+import gov.healthit.chpl.svap.dao.SvapDAO;
 import gov.healthit.chpl.svap.domain.Svap;
-import gov.healthit.chpl.svap.manager.SvapManager;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Component
 public class SearchRequestValidator {
     private DimensionalDataManager dimensionalDataManager;
     private CertificationCriteriaManager certificationCriteriaManager;
-    private SvapManager svapManager;
+    private SvapDAO svapDao;
     private ErrorMessageUtil msgUtil;
     private DateTimeFormatter dateFormatter;
     private Set<String> allowedDerivedCertificationEditions;
@@ -47,10 +47,10 @@ public class SearchRequestValidator {
     @Autowired
     public SearchRequestValidator(DimensionalDataManager dimensionalDataManager,
             CertificationCriteriaManager certificationCriteriaManager,
-            SvapManager svapManager, ErrorMessageUtil msgUtil) {
+            SvapDAO svapDao, ErrorMessageUtil msgUtil) {
         this.dimensionalDataManager = dimensionalDataManager;
         this.certificationCriteriaManager = certificationCriteriaManager;
-        this.svapManager = svapManager;
+        this.svapDao = svapDao;
         this.msgUtil = msgUtil;
         dateFormatter = DateTimeFormatter.ofPattern(SearchRequest.CERTIFICATION_DATE_SEARCH_FORMAT);
         allowedDerivedCertificationEditions = Stream.of(CertificationEditionConcept.CERTIFICATION_EDITION_2011.getYear(),
@@ -428,7 +428,7 @@ public class SearchRequestValidator {
             return Collections.emptySet();
         }
 
-        List<Svap> allSvaps = svapManager.getAll();
+        List<Svap> allSvaps = svapDao.getAll();
         Set<Long> allSvapIds = allSvaps != null
                 ? allSvaps.stream().map(svap -> svap.getSvapId()).collect(Collectors.toSet())
                 : new HashSet<Long>();

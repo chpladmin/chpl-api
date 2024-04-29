@@ -2,9 +2,10 @@ package gov.healthit.chpl.dto;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.UUID;
 
 import gov.healthit.chpl.domain.activity.ActivityConcept;
-import gov.healthit.chpl.dto.auth.UserDTO;
+import gov.healthit.chpl.domain.auth.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -22,11 +23,13 @@ public class ActivityDTO implements Serializable {
     private String newData;
     private Date activityDate;
     private Long activityObjectId;
+    private String activityObjectName;
     private String reason;
     private ActivityConcept concept;
     private Date creationDate;
     private Date lastModifiedDate;
     private Long lastModifiedUser;
+    private UUID lastModifiedSsoUser;
     private Boolean deleted;
-    private UserDTO user;
+    private User user;
 }

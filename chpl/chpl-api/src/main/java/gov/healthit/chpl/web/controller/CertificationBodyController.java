@@ -1,6 +1,5 @@
 package gov.healthit.chpl.web.controller;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.ObjectUtils;
@@ -19,9 +18,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.domain.CertificationBody;
-import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.domain.auth.UsersResponse;
 import gov.healthit.chpl.dto.auth.UserDTO;
+import gov.healthit.chpl.exception.ActivityException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
@@ -30,7 +29,6 @@ import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.UserPermissionsManager;
 import gov.healthit.chpl.manager.auth.UserManager;
-import gov.healthit.chpl.manager.impl.UpdateCertifiedBodyException;
 import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import gov.healthit.chpl.web.controller.results.CertificationBodyResults;
@@ -41,7 +39,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 @Tag(name = "acbs", description = "Allows CRUD operations on certification bodies (ONC-ACBs).")
 @RestController
 @RequestMapping("/acbs")
@@ -133,8 +133,8 @@ public class CertificationBodyController {
     @RequestMapping(value = "", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
     public CertificationBody createAcb(@RequestBody final CertificationBody acbInfo)
-            throws InvalidArgumentsException, UserRetrievalException, EntityRetrievalException, EntityCreationException,
-            JsonProcessingException {
+            throws InvalidArgumentsException, EntityCreationException, EntityRetrievalException, ActivityException {
+
         CertificationBody toCreate = new CertificationBody();
         toCreate.setAcbCode(acbInfo.getAcbCode());
         toCreate.setName(acbInfo.getName());
@@ -171,9 +171,8 @@ public class CertificationBodyController {
     })
     @RequestMapping(value = "/{acbId}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
-    public CertificationBody updateAcb(@RequestBody final CertificationBody acbToUpdate) throws InvalidArgumentsException,
-            EntityRetrievalException, JsonProcessingException, EntityCreationException, UpdateCertifiedBodyException,
-            SchedulerException, ValidationException {
+    public CertificationBody updateAcb(@RequestBody final CertificationBody acbToUpdate)
+            throws EntityRetrievalException, SchedulerException, ValidationException, ActivityException, InvalidArgumentsException {
 
         // Get the ACB as it is currently in the database to find out if
         // the retired flag was changed.
@@ -227,7 +226,8 @@ public class CertificationBodyController {
     @RequestMapping(value = "{acbId}/users/{userId}", method = RequestMethod.DELETE,
             produces = "application/json; charset=utf-8")
     public String deleteUserFromAcb(@PathVariable final Long acbId, @PathVariable final Long userId)
-            throws UserRetrievalException, EntityRetrievalException, InvalidArgumentsException, JsonProcessingException, EntityCreationException {
+            throws UserRetrievalException, EntityRetrievalException, InvalidArgumentsException, JsonProcessingException, EntityCreationException, ActivityException {
+
         UserDTO user = userManager.getById(userId);
         CertificationBody acb = resourcePermissionsFactory.get().getAcbIfPermissionById(acbId);
 
@@ -270,15 +270,8 @@ public class CertificationBodyController {
             throw new InvalidArgumentsException("Could not find the ACB specified.");
         }
 
-        List<UserDTO> users = resourcePermissionsFactory.get().getAllUsersOnAcb(acb);
-        List<User> acbUsers = new ArrayList<User>(users.size());
-        for (UserDTO userDto : users) {
-            User acbUser = userDto.toDomain();
-            acbUsers.add(acbUser);
-        }
-
         UsersResponse results = new UsersResponse();
-        results.setUsers(acbUsers);
+        results.setUsers(resourcePermissionsFactory.get().getAllUsersOnAcb(acb));
         return results;
     }
 }

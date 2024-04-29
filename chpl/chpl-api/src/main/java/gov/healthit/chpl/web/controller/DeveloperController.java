@@ -22,6 +22,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.attestation.domain.AttestationPeriodDeveloperException;
 import gov.healthit.chpl.attestation.manager.AttestationManager;
+import gov.healthit.chpl.auth.user.AuthenticationSystem;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.compliance.directreview.DirectReviewCachingService;
 import gov.healthit.chpl.developer.join.JoinDevelopersRequest;
@@ -35,17 +36,18 @@ import gov.healthit.chpl.domain.compliance.DirectReview;
 import gov.healthit.chpl.domain.developer.hierarchy.DeveloperTree;
 import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
 import gov.healthit.chpl.dto.auth.UserDTO;
+import gov.healthit.chpl.exception.ActivityException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.JiraRequestFailedException;
-import gov.healthit.chpl.exception.MissingReasonException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.UserPermissionsManager;
 import gov.healthit.chpl.realworldtesting.domain.RealWorldTestingUrlByDeveloper;
 import gov.healthit.chpl.realworldtesting.manager.RealWorldTestingManager;
+import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import gov.healthit.chpl.web.controller.results.DeveloperAttestationSubmissionResults;
@@ -166,10 +168,9 @@ public class DeveloperController {
             })
     @RequestMapping(value = "/{developerId}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
-    public ResponseEntity<Developer> update(@PathVariable("developerId") Long developerId,
-            @RequestBody(required = true) Developer developerToUpdate)
-            throws InvalidArgumentsException, EntityCreationException, EntityRetrievalException,
-            JsonProcessingException, ValidationException, MissingReasonException {
+    public ResponseEntity<Developer> update(@PathVariable("developerId") Long developerId, @RequestBody(required = true) Developer developerToUpdate)
+            throws EntityRetrievalException, ValidationException, EntityCreationException, ActivityException {
+
         developerToUpdate.setId(developerId);
 
         Developer result = developerManager.update(developerToUpdate, true);
@@ -263,9 +264,9 @@ public class DeveloperController {
             })
     @RequestMapping(value = "{developerId}/users/{userId}", method = RequestMethod.DELETE,
             produces = "application/json; charset=utf-8")
-    public PermissionDeletedResponse deleteUserFromDeveloper(
-            @PathVariable Long developerId, @PathVariable Long userId)
-            throws EntityRetrievalException, JsonProcessingException, EntityCreationException {
+    public PermissionDeletedResponse deleteUserFromDeveloper(@PathVariable Long developerId, @PathVariable Long userId)
+            throws JsonProcessingException, EntityRetrievalException, EntityCreationException, ActivityException {
+
         // delete all permissions on that developer
         userPermissionsManager.deleteDeveloperPermission(developerId, userId);
         PermissionDeletedResponse response = new PermissionDeletedResponse();
@@ -284,11 +285,15 @@ public class DeveloperController {
             produces = "application/json; charset=utf-8")
     public @ResponseBody UsersResponse getUsers(@PathVariable("developerId") Long developerId)
             throws InvalidArgumentsException, EntityRetrievalException {
-        List<UserDTO> users = developerManager.getAllUsersOnDeveloper(developerId);
-        List<User> domainUsers = new ArrayList<User>(users.size());
-        for (UserDTO userDto : users) {
-            User domainUser = userDto.toDomain();
-            domainUsers.add(domainUser);
+
+        List<User> domainUsers = null;
+        if (AuthUtil.getCurrentUser().getAuthenticationSystem().equals(AuthenticationSystem.COGNTIO)) {
+            domainUsers = developerManager.getAllCognitoUsersOnDeveloper(developerId);
+        } else if (AuthUtil.getCurrentUser().getAuthenticationSystem().equals(AuthenticationSystem.CHPL)) {
+            List<UserDTO> users = developerManager.getAllUsersOnDeveloper(developerId);
+            domainUsers = users.stream()
+                    .map(user -> user.toDomain())
+                    .toList();
         }
 
         UsersResponse results = new UsersResponse();
@@ -323,4 +328,5 @@ public class DeveloperController {
             throws EntityRetrievalException, ValidationException {
         return attestationManager.createAttestationPeriodDeveloperException(developerId, attestationPeriodId);
     }
+
 }

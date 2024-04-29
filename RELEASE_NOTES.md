@@ -1,5 +1,17 @@
 # Release Notes
 
+## Version 44.1.0
+_29 April 2024_
+
+### Features
+* View Cognito user information
+* Create/invite new Cognito users (onc, cms, acb, dev)
+* Update Activity and Questionable Activity to incorporate Cognito users
+* Create endpoints to get SVAP, Standard, and Functionality Tested activity pages
+* Save activity for CRUD ops of Functionality Tested, Standards, and SVAPS
+
+---
+
 ## Version 44.0.0
 _15 April 2024_
 

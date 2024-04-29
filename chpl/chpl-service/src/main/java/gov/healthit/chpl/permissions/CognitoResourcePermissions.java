@@ -2,8 +2,10 @@ package gov.healthit.chpl.permissions;
 
 import java.util.List;
 
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.Predicate;
 import org.apache.commons.lang3.NotImplementedException;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
@@ -14,12 +16,12 @@ import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.auth.CognitoGroups;
 import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.domain.auth.UserPermission;
-import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.entity.developer.DeveloperStatusType;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.user.cognito.CognitoApiWrapper;
 import gov.healthit.chpl.util.AuthUtil;
+import gov.healthit.chpl.util.ErrorMessageUtil;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -27,12 +29,16 @@ public class CognitoResourcePermissions implements ResourcePermissions {
     private CertificationBodyDAO certificationBodyDAO;
     private DeveloperDAO developerDAO;
     private CognitoApiWrapper cognitoApiWrapper;
+    private ErrorMessageUtil errorMessageUtil;
 
-    @Autowired
-    public CognitoResourcePermissions(CertificationBodyDAO certificationBodyDAO, DeveloperDAO developerDAO, CognitoApiWrapper cognitoApiWrapper) {
+
+    public CognitoResourcePermissions(CertificationBodyDAO certificationBodyDAO, DeveloperDAO developerDAO, CognitoApiWrapper cognitoApiWrapper,
+            ErrorMessageUtil errorMessageUtil) {
+
         this.certificationBodyDAO = certificationBodyDAO;
         this.developerDAO = developerDAO;
         this.cognitoApiWrapper = cognitoApiWrapper;
+        this.errorMessageUtil = errorMessageUtil;
     }
 
     @Override
@@ -48,15 +54,27 @@ public class CognitoResourcePermissions implements ResourcePermissions {
     }
 
     @Override
-    public List<UserDTO> getAllUsersOnAcb(CertificationBody acb) {
-        LOGGER.error("Not implemented: getAllUsersOnAcb");
-        throw new NotImplementedException("Not implemented: getAllUsersOnAcb");
+    public List<User> getAllUsersOnAcb(CertificationBody acb) {
+        return cognitoApiWrapper.getAllUsers().stream()
+                .filter(user -> user.getRole() != null
+                        && user.getRole().equals(CognitoGroups.CHPL_ACB)
+                        && user.getOrganizations().stream()
+                                .filter(org -> org.getId().equals(acb.getId()))
+                                .findAny()
+                                .isPresent())
+                .toList();
     }
 
     @Override
-    public List<UserDTO> getAllUsersOnDeveloper(Developer dev) {
-        LOGGER.error("Not implemented: getAllUsersOnDeveloper");
-        throw new NotImplementedException("Not implemented: getAllUsersOnDeveloper");
+    public List<User> getAllUsersOnDeveloper(Developer dev) {
+        return cognitoApiWrapper.getAllUsers().stream()
+                .filter(user -> user.getRole() != null
+                        && user.getRole().equals(CognitoGroups.CHPL_DEVELOPER)
+                        && user.getOrganizations().stream()
+                                .filter(org -> org.getId().equals(dev.getId()))
+                                .findAny()
+                                .isPresent())
+                .toList();
     }
 
     @Override
@@ -66,7 +84,7 @@ public class CognitoResourcePermissions implements ResourcePermissions {
             if (user != null) {
                 if (isUserRoleAdmin() || isUserRoleOnc()) {
                     return certificationBodyDAO.findAll();
-                } else if (isUserRoleAcbAdmin()){
+                } else if (isUserRoleAcbAdmin()) {
                     return getAllAcbsForUser(user);
                 } else {
                     return null;
@@ -103,19 +121,35 @@ public class CognitoResourcePermissions implements ResourcePermissions {
         return user.getOrganizations().stream()
                 .map(org -> getDeveloper(org.getId()))
                 .toList();
-
     }
 
     @Override
-    public List<UserDTO> getAllUsersForCurrentUser() {
+    public List<User> getAllUsersForCurrentUser() {
         LOGGER.error("Not implemented: getAllUsersForCurrentUser");
         throw new NotImplementedException("Not implemented: getAllUsersForCurrentUser");
     }
 
     @Override
     public CertificationBody getAcbIfPermissionById(Long certificationBodyId) throws EntityRetrievalException {
-        LOGGER.error("Not implemented: getAcbIfPermissionById");
-        throw new NotImplementedException("Not implemented: getAcbIfPermissionById");
+        try {
+            certificationBodyDAO.getById(certificationBodyId);
+        } catch (final EntityRetrievalException ex) {
+            throw new EntityRetrievalException(errorMessageUtil.getMessage("acb.notFound"));
+        }
+
+        List<CertificationBody> acbs = getAllAcbsForCurrentUser();
+        CollectionUtils.filter(acbs, new Predicate<CertificationBody>() {
+            @Override
+            public boolean evaluate(final CertificationBody object) {
+                return object.getId().equals(certificationBodyId);
+            }
+
+        });
+
+        if (acbs.size() == 0) {
+            throw new AccessDeniedException(errorMessageUtil.getMessage("access.denied"));
+        }
+        return acbs.get(0);
     }
 
     @Override
@@ -226,7 +260,9 @@ public class CognitoResourcePermissions implements ResourcePermissions {
 
     @Override
     public boolean hasPermissionOnUser(User user) {
-        if (user.getRole().equalsIgnoreCase(CognitoGroups.CHPL_STARTUP)) {
+        if (user.getRole() == null) {
+            return false;
+        } else if (user.getRole().equalsIgnoreCase(CognitoGroups.CHPL_STARTUP)) {
             return false;
         } else if (isUserRoleAdmin() || (AuthUtil.getCurrentUser().getCognitoId()).equals(user.getCognitoId())) {
             return true;

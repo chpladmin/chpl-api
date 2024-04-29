@@ -25,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import gov.healthit.chpl.auth.user.AuthenticationSystem;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.caching.ListingSearchCacheRefresh;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
@@ -37,6 +38,7 @@ import gov.healthit.chpl.domain.DeveloperStatusEvent;
 import gov.healthit.chpl.domain.IdNamePair;
 import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
+import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.domain.contact.PointOfContact;
 import gov.healthit.chpl.domain.developer.hierarchy.DeveloperTree;
 import gov.healthit.chpl.domain.developer.hierarchy.ProductTree;
@@ -49,6 +51,7 @@ import gov.healthit.chpl.dto.DeveloperStatusEventPair;
 import gov.healthit.chpl.dto.ProductVersionDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.entity.developer.DeveloperStatusType;
+import gov.healthit.chpl.exception.ActivityException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.UserRetrievalException;
@@ -233,7 +236,20 @@ public class DeveloperManager extends SecuredManager {
             + "T(gov.healthit.chpl.permissions.domains.DeveloperDomainPermissions).GET_ALL_USERS, #devId)")
     public List<UserDTO> getAllUsersOnDeveloper(Long devId) throws EntityRetrievalException {
         Developer dev = getById(devId);
-        return resourcePermissionsFactory.get().getAllUsersOnDeveloper(dev);
+        List<User> users = resourcePermissionsFactory.get(AuthenticationSystem.CHPL).getAllUsersOnDeveloper(dev);
+
+        return users.stream()
+                .map(user -> getUser(user.getUserId()))
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).DEVELOPER, "
+            + "T(gov.healthit.chpl.permissions.domains.DeveloperDomainPermissions).GET_ALL_USERS, #devId)")
+    public List<User> getAllCognitoUsersOnDeveloper(Long devId) throws EntityRetrievalException {
+        Developer dev = getById(devId);
+        return resourcePermissionsFactory.get(AuthenticationSystem.COGNTIO).getAllUsersOnDeveloper(dev);
+
     }
 
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).DEVELOPER, "
@@ -250,7 +266,8 @@ public class DeveloperManager extends SecuredManager {
     @ListingStoreRemove(removeBy = RemoveBy.DEVELOPER_ID, id = "#updatedDev.id")
     @ListingSearchCacheRefresh
     public Developer update(Developer updatedDev, boolean doUpdateValidations)
-            throws EntityRetrievalException, JsonProcessingException, EntityCreationException, ValidationException {
+            throws EntityRetrievalException, ValidationException, EntityCreationException, ActivityException {
+
         Developer beforeDev = getById(updatedDev.getId());
         normalizeSpaces(updatedDev);
 
@@ -334,8 +351,7 @@ public class DeveloperManager extends SecuredManager {
             CacheNames.ALL_DEVELOPERS, CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED,
             CacheNames.COLLECTIONS_DEVELOPERS
     }, allEntries = true)
-    public Long create(Developer developer)
-            throws EntityCreationException, EntityRetrievalException, JsonProcessingException, ValidationException {
+    public Long create(Developer developer) throws ValidationException, EntityCreationException, EntityRetrievalException, ActivityException {
         normalizeSpaces(developer);
         Set<String> errors = runCreateValidations(developer, null);
         if (!CollectionUtils.isEmpty(errors)) {
@@ -579,5 +595,15 @@ public class DeveloperManager extends SecuredManager {
             return msgUtil.getMessage("developer.merge.dupChplProdNbrs.duplicate", origChplProductNumberA,
                     origChplProductNumberB);
         }
+    }
+
+    private UserDTO getUser(Long userId) {
+        try {
+            return userManager.getById(userId);
+        } catch (UserRetrievalException e) {
+            LOGGER.error("Could not retrieve user with id: {}", userId, e);
+            return null;
+        }
+
     }
 }
