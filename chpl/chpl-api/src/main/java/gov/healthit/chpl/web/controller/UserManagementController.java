@@ -7,7 +7,6 @@ import java.util.Objects;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
-import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
@@ -25,6 +24,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.auth.ChplAccountEmailNotConfirmedException;
 import gov.healthit.chpl.auth.ChplAccountStatusException;
+import gov.healthit.chpl.auth.user.AuthenticationSystem;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.domain.CreateUserFromInvitationRequest;
 import gov.healthit.chpl.domain.auth.Authority;
@@ -47,8 +47,8 @@ import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.InvitationManager;
 import gov.healthit.chpl.manager.auth.AuthenticationManager;
-import gov.healthit.chpl.manager.auth.CognitoAuthenticationManager;
 import gov.healthit.chpl.manager.auth.UserManager;
+import gov.healthit.chpl.user.cognito.CognitoUserManager;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
@@ -65,8 +65,7 @@ public class UserManagementController {
     private InvitationManager invitationManager;
     private AuthenticationManager authenticationManager;
     private ErrorMessageUtil msgUtil;
-    private CognitoAuthenticationManager cognitoAuthenticationManager;
-    private FF4j ff4j;
+    private CognitoUserManager cognitoUserManager;
 
     private long invitationLengthInDays;
     private long confirmationLengthInDays;
@@ -79,19 +78,16 @@ public class UserManagementController {
             @Value("${invitationLengthInDays}") Long invitationLengthDays,
             @Value("${confirmationLengthInDays}") Long confirmationLengthDays,
             @Value("${authorizationLengthInDays}") Long authorizationLengthInDays,
-            CognitoAuthenticationManager cognitoAuthenticationManager,
-            FF4j ff4j) {
+            CognitoUserManager cognitoUserManager) {
         this.userManager = userManager;
         this.invitationManager = invitationManager;
         this.authenticationManager = authenticationManager;
         this.msgUtil = errorMessageUtil;
-        this.cognitoAuthenticationManager = cognitoAuthenticationManager;
+        this.cognitoUserManager = cognitoUserManager;
 
         this.invitationLengthInDays = invitationLengthDays;
         this.confirmationLengthInDays = confirmationLengthDays;
         this.authorizationLengthInDays = authorizationLengthInDays;
-
-        this.ff4j = ff4j;
     }
 
     @Operation(summary = "Create a new user account from an invitation.",
@@ -325,12 +321,11 @@ public class UserManagementController {
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     @PreAuthorize("isAuthenticated()")
     public @ResponseBody UsersResponse getUsers() {
-        List<UserDTO> userList = userManager.getAll();
-        List<User> users = new ArrayList<User>(userList.size());
-
-        for (UserDTO userDto : userList) {
-            User user = userDto.toDomain();
-            users.add(user);
+        List<User> users = null;
+        if (AuthUtil.getCurrentUser().getAuthenticationSystem().equals(AuthenticationSystem.COGNTIO)) {
+            users = getAllCognitoUsers();
+        } else if (AuthUtil.getCurrentUser().getAuthenticationSystem().equals(AuthenticationSystem.CHPL)) {
+            users = getAllChplUsers();
         }
 
         UsersResponse response = new UsersResponse();
@@ -351,6 +346,22 @@ public class UserManagementController {
             throws UserRetrievalException {
 
         return userManager.getUserInfo(id);
+    }
+
+
+    private List<User> getAllChplUsers() {
+        List<UserDTO> userList = userManager.getAll();
+        List<User> users = new ArrayList<User>(userList.size());
+
+        for (UserDTO userDto : userList) {
+            User user = userDto.toDomain();
+            users.add(user);
+        }
+        return users;
+    }
+
+    private List<User> getAllCognitoUsers() {
+        return cognitoUserManager.getAll();
     }
 
     private class DeletedUser {
