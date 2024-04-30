@@ -189,6 +189,9 @@ public class SearchDevelopersController {
         @Parameter(description = "Whether the developer has or has not submitted attestations for the most recent attestation period",
                 allowEmptyValue = true, in = ParameterIn.QUERY, name = "hasSubmittedAttestationsForMostRecentPastPeriod")
             @RequestParam(value = "hasSubmittedAttestationsForMostRecentPastPeriod", required = false, defaultValue = "") Boolean hasSubmittedAttestationsForMostRecentPastPeriod,
+        @Parameter(description = "Whether the developer has or has not published (submitted and been approved) attestations for the most recent attestation period",
+            allowEmptyValue = true, in = ParameterIn.QUERY, name = "hasPublishedAttestationsForMostRecentPastPeriod")
+        @RequestParam(value = "hasPublishedAttestationsForMostRecentPastPeriod", required = false, defaultValue = "") Boolean hasPublishedAttestationsForMostRecentPastPeriod,
         @Parameter(description = "To return only developers decertified on or after this date. Required format is " + DeveloperSearchRequestV2.DATE_SEARCH_FORMAT,
                 allowEmptyValue = true, in = ParameterIn.QUERY, name = "decertificationDateStart")
             @RequestParam(value = "decertificationDateStart", required = false, defaultValue = "") String decertificationDateStart,
@@ -226,6 +229,7 @@ public class SearchDevelopersController {
                 .acbsForActiveListings(convertToSetWithDelimeter(acbsForActiveLisitngsDelimited, ","))
                 .acbsForAllListings(convertToSetWithDelimeter(acbsForAllLisitngsDelimited, ","))
                 .hasSubmittedAttestationsForMostRecentPastPeriod(hasSubmittedAttestationsForMostRecentPastPeriod)
+                .hasPublishedAttestationsForMostRecentPastPeriod(hasPublishedAttestationsForMostRecentPastPeriod)
                 .decertificationDateStart(decertificationDateStart)
                 .decertificationDateEnd(decertificationDateEnd)
                 .activeListingsOptionsStrings(convertToSetWithDelimeter(activeListingsOptionsDelimited, ","))

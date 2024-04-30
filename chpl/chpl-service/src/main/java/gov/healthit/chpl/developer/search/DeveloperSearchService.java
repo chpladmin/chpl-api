@@ -58,6 +58,7 @@ public class DeveloperSearchService {
             .filter(dev -> matchesStatuses(dev, searchRequest.getStatuses()))
             .filter(dev -> matchesDecertificationDateRange(dev, searchRequest.getDecertificationDateStart(), searchRequest.getDecertificationDateEnd()))
             .filter(dev -> matchesHasSubmittedAttestations(dev, searchRequest.getHasSubmittedAttestationsForMostRecentPastPeriod()))
+            .filter(dev -> matchesHasPublishedAttestations(dev, searchRequest.getHasPublishedAttestationsForMostRecentPastPeriod()))
             .filter(dev -> matchesActiveListingsFilter(dev, searchRequest))
             .collect(Collectors.toList());
         LOGGER.debug("Total matched developers: " + matchedDevelopers.size());
@@ -199,6 +200,15 @@ public class DeveloperSearchService {
             return BooleanUtils.isTrue(developer.getSubmittedAttestationsForMostRecentPastPeriod());
         } else if (hasSubmittedAttestations != null && BooleanUtils.isFalse(hasSubmittedAttestations)) {
             return BooleanUtils.isFalse(developer.getSubmittedAttestationsForMostRecentPastPeriod());
+        }
+        return true;
+    }
+
+    private boolean matchesHasPublishedAttestations(DeveloperSearchResult developer, Boolean hasPublishedAttestations) {
+        if (hasPublishedAttestations != null && BooleanUtils.isTrue(hasPublishedAttestations)) {
+            return BooleanUtils.isTrue(developer.getPublishedAttestationsForMostRecentPastPeriod());
+        } else if (hasPublishedAttestations != null && BooleanUtils.isFalse(hasPublishedAttestations)) {
+            return BooleanUtils.isFalse(developer.getPublishedAttestationsForMostRecentPastPeriod());
         }
         return true;
     }

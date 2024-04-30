@@ -45,6 +45,7 @@ public class DeveloperSearchResult implements Serializable {
     private Integer currentActiveListingCount;
     private Integer mostRecentPastAttestationPeriodActiveListingCount;
     private Boolean submittedAttestationsForMostRecentPastPeriod;
+    private Boolean publishedAttestationsForMostRecentPastPeriod;
 
     private Set<IdNamePair> acbsForAllListings;
     private Set<IdNamePair> acbsForActiveListings;

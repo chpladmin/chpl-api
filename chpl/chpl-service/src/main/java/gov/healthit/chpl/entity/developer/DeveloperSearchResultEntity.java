@@ -103,8 +103,11 @@ public class DeveloperSearchResultEntity implements Serializable {
     @Column(name = "most_recent_past_attestation_period_active_listing_count")
     private Integer mostRecentPastAttestationPeriodActiveListingCount;
 
-    @Column(name = "submission_id_for_most_recent_past_attestation_period")
-    private Long mostRecentPastAttestationPeriodSubmissionId;
+    @Column(name = "published_attestation_submission_id")
+    private Long mostRecentPastAttestationPeriodPublishedSubmissionId;
+
+    @Column(name = "attestation_submission_change_request_id")
+    private Long mostRecentPastAttestationPeriodChangeRequestSubmissionId;
 
     @Column(name = "acbs_for_developer_active_listings")
     private String acbsForDeveloperActiveListings;
@@ -147,7 +150,8 @@ public class DeveloperSearchResultEntity implements Serializable {
                 .decertificationDate(calculateDecertificationDate(this.getCurrentStatusName(), this.getLastStatusChangeDate()))
                 .currentActiveListingCount(this.getCurrentActiveListingCount())
                 .mostRecentPastAttestationPeriodActiveListingCount(this.getMostRecentPastAttestationPeriodActiveListingCount())
-                .submittedAttestationsForMostRecentPastPeriod(this.getMostRecentPastAttestationPeriodSubmissionId() != null)
+                .submittedAttestationsForMostRecentPastPeriod(this.getMostRecentPastAttestationPeriodChangeRequestSubmissionId() != null)
+                .publishedAttestationsForMostRecentPastPeriod(this.getMostRecentPastAttestationPeriodPublishedSubmissionId() != null)
                 .acbsForAllListings(buildSetOfIdNamePairs(this.getAcbsForDeveloperAllListings()))
                 .acbsForActiveListings(buildSetOfIdNamePairs(this.getAcbsForDeveloperActiveListings()))
                 .creationDate(this.getCreationDate())
