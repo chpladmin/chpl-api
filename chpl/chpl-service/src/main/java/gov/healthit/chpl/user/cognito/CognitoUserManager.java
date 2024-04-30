@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
@@ -31,12 +32,14 @@ public class CognitoUserManager {
     private CognitoConfirmEmailEmailer cognitoConfirmEmailEmailer;
     private CognitoApiWrapper cognitoApiWrapper;
     private CognitoInvitationValidator cognitoInvitationValidator;
+    private String groupNameForEnvironment;
+
 
 
     @Autowired
     public CognitoUserManager(CognitoUserInvitationDAO userInvitationDAO, CognitoUserCreationValidator userCreationValidator,
             InvitationEmailer invitationEmailer, CognitoConfirmEmailEmailer cognitoConfirmEmailEmailer, CognitoApiWrapper cognitoApiWrapper,
-            CognitoInvitationValidator cognitoInvitationValidator) {
+            CognitoInvitationValidator cognitoInvitationValidator, @Value("${cognito.environment.groupName}") String groupNameForEnvironment) {
 
         this.userInvitationDAO = userInvitationDAO;
         this.userCreationValidator = userCreationValidator;
@@ -44,6 +47,7 @@ public class CognitoUserManager {
         this.cognitoConfirmEmailEmailer = cognitoConfirmEmailEmailer;
         this.cognitoApiWrapper = cognitoApiWrapper;
         this.cognitoInvitationValidator = cognitoInvitationValidator;
+        this.groupNameForEnvironment = groupNameForEnvironment;
     }
 
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SECURED_USER, "
@@ -151,6 +155,7 @@ public class CognitoUserManager {
             }
             credentials = cognitoApiWrapper.createUser(userInfo.getUser());
             cognitoApiWrapper.addUserToGroup(userInfo.getUser().getEmail(), invitation.getGroupName());
+            cognitoApiWrapper.addUserToGroup(userInfo.getUser().getEmail(), groupNameForEnvironment);
             userInvitationDAO.deleteByToken(UUID.fromString(userInfo.getHash()));
             cognitoConfirmEmailEmailer.sendConfirmationEmail(credentials);
         } catch (EmailNotSentException e) {
