@@ -21,6 +21,7 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
+import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.email.ChplEmailFactory;
@@ -28,7 +29,6 @@ import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
 import gov.healthit.chpl.email.footer.AdminFooter;
 import gov.healthit.chpl.exception.ActivityException;
 import gov.healthit.chpl.exception.EmailNotSentException;
-import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.scheduler.job.QuartzJob;
 import gov.healthit.chpl.surveillance.report.SurveillanceReportManager;
@@ -91,8 +91,7 @@ public class QuarterlyReportGenerationJob extends QuartzJob {
         JobDataMap jobDataMap = jobContext.getMergedJobDataMap();
         boolean isJobDataValid = isJobDataValid(jobDataMap);
         if (isJobDataValid) {
-            UserDTO user = (UserDTO) jobDataMap.get(USER_KEY);
-            setSecurityContext(user);
+            JWTAuthenticatedUser user = (JWTAuthenticatedUser) jobDataMap.get(USER_KEY);
             Long quarterlyReportId = (Long) jobDataMap.get(QUARTERLY_REPORT_ID_KEY);
 
             TransactionTemplate txTemplate = new TransactionTemplate(txManager);
