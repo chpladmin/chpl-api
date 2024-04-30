@@ -2,6 +2,8 @@ package gov.healthit.chpl.web.controller;
 
 import java.util.UUID;
 
+import org.apache.commons.lang3.NotImplementedException;
+import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
@@ -13,17 +15,23 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import gov.healthit.chpl.FeatureList;
+import gov.healthit.chpl.auth.ChplAccountStatusException;
 import gov.healthit.chpl.domain.CreateUserFromInvitationRequest;
+import gov.healthit.chpl.domain.auth.AuthenticationResponse;
 import gov.healthit.chpl.domain.auth.CognitoGroups;
+import gov.healthit.chpl.domain.auth.LoginCredentials;
 import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.UserCreationException;
 import gov.healthit.chpl.exception.UserPermissionRetrievalException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
+import gov.healthit.chpl.manager.auth.CognitoAuthenticationManager;
 import gov.healthit.chpl.user.cognito.CognitoUserInvitation;
 import gov.healthit.chpl.user.cognito.CognitoUserManager;
 import gov.healthit.chpl.util.AuthUtil;
+import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -35,12 +43,44 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 public class CognitoUserController {
 
     private CognitoUserManager cognitoUserManager;
-
+    private CognitoAuthenticationManager cognitoAuthenticationManager;
+    private ErrorMessageUtil errorMessageUtil;
+    private FF4j ff4j;
 
     @Autowired
-    public CognitoUserController(CognitoUserManager cognitoUserManager) {
+    public CognitoUserController(CognitoUserManager cognitoUserManager, CognitoAuthenticationManager cognitoAuthenticationManager,
+            ErrorMessageUtil errorMessageUtil, FF4j ff4j) {
         this.cognitoUserManager = cognitoUserManager;
+        this.cognitoAuthenticationManager = cognitoAuthenticationManager;
+        this.errorMessageUtil = errorMessageUtil;
+        this.ff4j = ff4j;
     }
+
+    @Operation(summary = "Log in.",
+            description = "Call this method to authenticate a user. The value returned is that user's "
+                    + "token which must be passed on all subsequent requests in the Authorization header. "
+                    + "Specifically, the Authorization header must have a value of 'Bearer token-that-gets-returned'.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            }
+        )
+    @RequestMapping(value = "/authenticate", method = RequestMethod.POST,
+            consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
+    public AuthenticationResponse authenticateJSON(@RequestBody LoginCredentials credentials) {
+
+        if (!ff4j.check(FeatureList.SSO)) {
+            throw new NotImplementedException("This method has not been implemnted");
+        }
+
+        String jwt = cognitoAuthenticationManager.authenticate(credentials);
+        if (jwt == null) {
+            throw new ChplAccountStatusException(errorMessageUtil.getMessage("auth.loginNotAllowed"));
+        }
+        return AuthenticationResponse.builder()
+                .token(jwt)
+                .build();
+    }
+
 
     @Operation(summary = "View a specific user's details.",
             description = "The logged in user must either be the user in the parameters, have ROLE_ADMIN, or "
