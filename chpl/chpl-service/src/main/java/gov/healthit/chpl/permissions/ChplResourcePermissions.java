@@ -6,7 +6,6 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.Predicate;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -44,7 +43,6 @@ public class ChplResourcePermissions implements ResourcePermissions {
     private DeveloperDAO developerDAO;
 
     @SuppressWarnings({"checkstyle:parameternumber"})
-    @Autowired
     public ChplResourcePermissions(UserCertificationBodyMapDAO userCertificationBodyMapDAO, UserDeveloperMapDAO userDeveloperMapDAO,
             CertificationBodyDAO acbDAO, ErrorMessageUtil errorMessageUtil, UserDAO userDAO, DeveloperDAO developerDAO) {
 
@@ -70,28 +68,22 @@ public class ChplResourcePermissions implements ResourcePermissions {
 
     @Override
     @Transactional(readOnly = true)
-    public List<UserDTO> getAllUsersOnAcb(CertificationBody acb) {
-        List<UserDTO> userDtos = new ArrayList<UserDTO>();
+    public List<User> getAllUsersOnAcb(CertificationBody acb) {
         List<UserCertificationBodyMapDTO> dtos = userCertificationBodyMapDAO.getByAcbId(acb.getId());
 
-        for (UserCertificationBodyMapDTO dto : dtos) {
-            userDtos.add(dto.getUser());
-        }
-
-        return userDtos;
+        return dtos.stream()
+                .map(dto -> dto.getUser().toDomain())
+                .toList();
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<UserDTO> getAllUsersOnDeveloper(Developer dev) {
-        List<UserDTO> userDtos = new ArrayList<UserDTO>();
+    public List<User> getAllUsersOnDeveloper(Developer dev) {
         List<UserDeveloperMapDTO> dtos = userDeveloperMapDAO.getByDeveloperId(dev.getId());
 
-        for (UserDeveloperMapDTO dto : dtos) {
-            userDtos.add(dto.getUser());
-        }
-
-        return userDtos;
+        return dtos.stream()
+                .map(udm -> udm.getUser().toDomain())
+                .toList();
     }
 
     @Override
@@ -156,13 +148,15 @@ public class ChplResourcePermissions implements ResourcePermissions {
 
     @Override
     @Transactional(readOnly = true)
-    public List<UserDTO> getAllUsersForCurrentUser() {
+    public List<User> getAllUsersForCurrentUser() {
         JWTAuthenticatedUser user = AuthUtil.getCurrentUser();
-        List<UserDTO> users = new ArrayList<UserDTO>();
+        List<User> users = new ArrayList<User>();
 
         if (user != null) {
             if (isUserRoleAdmin() || isUserRoleOnc()) {
-                users = userDAO.findAll();
+                users = userDAO.findAll().stream()
+                        .map(dto -> dto.toDomain())
+                        .toList();
             } else if (isUserRoleAcbAdmin()) {
                 List<CertificationBody> acbs = getAllAcbsForCurrentUser();
                 for (CertificationBody acb : acbs) {
@@ -178,7 +172,7 @@ public class ChplResourcePermissions implements ResourcePermissions {
                 UserDTO thisUser = null;
                 try {
                     thisUser = userDAO.getById(user.getId());
-                    users.add(thisUser);
+                    users.add(thisUser.toDomain());
                 } catch (UserRetrievalException ex) { }
             }
         }
@@ -236,6 +230,7 @@ public class ChplResourcePermissions implements ResourcePermissions {
             UserDTO userDto = userDAO.getById(user.getUserId());
             return userDto.getPermission();
         } catch (UserRetrievalException ex) {
+            LOGGER.error("Could not retrieve userDto with id: {}", user, ex);
         }
         return null;
     }
