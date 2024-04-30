@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.attestation.domain.AttestationPeriodDeveloperException;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.Developer;
-import gov.healthit.chpl.dto.auth.UserDTO;
+import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
 import gov.healthit.chpl.email.footer.PublicFooter;
@@ -44,7 +44,7 @@ public class AttestationExceptionEmail {
         }
 
         public void send(AttestationPeriodDeveloperException attestationException) throws EmailNotSentException {
-            List<UserDTO> recipients = resourcePermissionsFactory.get().getAllUsersOnDeveloper(
+            List<User> recipients = resourcePermissionsFactory.get().getAllUsersOnDeveloper(
                     Developer.builder().id(attestationException.getDeveloper().getId()).build());
 
             chplEmailFactory.emailBuilder()

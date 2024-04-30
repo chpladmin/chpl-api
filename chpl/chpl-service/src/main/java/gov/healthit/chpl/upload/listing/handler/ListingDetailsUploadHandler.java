@@ -10,11 +10,9 @@ import java.util.Map;
 import javax.validation.ValidationException;
 
 import org.apache.commons.csv.CSVRecord;
-import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductTestingLab;
@@ -28,7 +26,6 @@ import gov.healthit.chpl.upload.listing.ListingUploadHandlerUtil;
 public class ListingDetailsUploadHandler {
     private static final int SECONDS_TO_MILLISECONDS = 1000;
 
-    private CertificationEditionHandler editionHandler;
     private CertificationDateHandler certDateHandler;
     private DeveloperDetailsUploadHandler devDetailsUploadHandler;
     private TargetedUsersUploadHandler targetedUserUploadHandler;
@@ -40,21 +37,17 @@ public class ListingDetailsUploadHandler {
     private SedUploadHandler sedUploadHandler;
     private CertificationResultUploadHandler certResultHandler;
     private ListingUploadHandlerUtil uploadUtil;
-    private FF4j ff4j;
 
     @Autowired
     @SuppressWarnings("checkstyle:parameternumber")
-    public ListingDetailsUploadHandler(CertificationEditionHandler editionHandler,
-            CertificationDateHandler certDateHandler,
+    public ListingDetailsUploadHandler(CertificationDateHandler certDateHandler,
             DeveloperDetailsUploadHandler devDetailsUploadHandler,
             TargetedUsersUploadHandler targetedUserUploadHandler,
             AccessibilityStandardsUploadHandler accessibilityStandardsHandler,
             QmsUploadHandler qmsHandler, IcsUploadHandler icsHandler,
             CqmUploadHandler cqmHandler, MeasuresUploadHandler measuresUploadHandler,
             SedUploadHandler sedUploadHandler, CertificationResultUploadHandler certResultHandler,
-            ListingUploadHandlerUtil uploadUtil,
-            FF4j ff4j) {
-        this.editionHandler = editionHandler;
+            ListingUploadHandlerUtil uploadUtil) {
         this.certDateHandler = certDateHandler;
         this.devDetailsUploadHandler = devDetailsUploadHandler;
         this.targetedUserUploadHandler = targetedUserUploadHandler;
@@ -66,7 +59,6 @@ public class ListingDetailsUploadHandler {
         this.sedUploadHandler = sedUploadHandler;
         this.certResultHandler = certResultHandler;
         this.uploadUtil = uploadUtil;
-        this.ff4j = ff4j;
     }
 
     public CertifiedProductSearchDetails parseAsListing(CSVRecord headingRecord, List<CSVRecord> listingRecords)
@@ -102,10 +94,6 @@ public class ListingDetailsUploadHandler {
                 .sedTestingEndDay(parseSedTestingDay(headingRecord, listingRecords))
                 .sedTestingEndDateStr(parseSedTestingDayStr(headingRecord, listingRecords))
             .build();
-
-        if (!ff4j.check(FeatureList.EDITIONLESS)) {
-            listing.setEdition(editionHandler.handle(headingRecord, listingRecords));
-        }
 
         listing.setSed(sedUploadHandler.parseAsSed(headingRecord, listingRecords, listing));
 
