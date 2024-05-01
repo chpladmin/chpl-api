@@ -93,6 +93,7 @@ public class QuarterlyReportGenerationJob extends QuartzJob {
         if (isJobDataValid) {
             JWTAuthenticatedUser user = (JWTAuthenticatedUser) jobDataMap.get(USER_KEY);
             Long quarterlyReportId = (Long) jobDataMap.get(QUARTERLY_REPORT_ID_KEY);
+            setSecurityContext(user);
 
             TransactionTemplate txTemplate = new TransactionTemplate(txManager);
             txTemplate.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
@@ -152,7 +153,7 @@ public class QuarterlyReportGenerationJob extends QuartzJob {
 
     private boolean isJobDataValid(JobDataMap jobDataMap) {
         boolean isValid = true;
-        UserDTO user = (UserDTO) jobDataMap.get(USER_KEY);
+        JWTAuthenticatedUser user = (JWTAuthenticatedUser) jobDataMap.get(USER_KEY);
         if (user == null) {
             isValid = false;
             LOGGER.fatal("No user could be found in the job data.");
