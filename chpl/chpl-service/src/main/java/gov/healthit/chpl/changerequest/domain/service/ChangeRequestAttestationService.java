@@ -134,7 +134,7 @@ public class ChangeRequestAttestationService extends ChangeRequestDetailsService
                     ((ChangeRequestAttestationSubmission) crFromDb.getDetails()).getAttestationPeriod());
 
             //Get email that based on current user
-            ((ChangeRequestAttestationSubmission) cr.getDetails()).setSignatureEmail(getUserById(AuthUtil.getCurrentUser().getId()).getEmail());
+            ((ChangeRequestAttestationSubmission) cr.getDetails()).setSignatureEmail(AuthUtil.getCurrentUser().getEmail());
 
             if (haveDetailsBeenUpdated(cr, crFromDb)) {
                 crAttestationDAO.update(cr, (ChangeRequestAttestationSubmission) cr.getDetails());
