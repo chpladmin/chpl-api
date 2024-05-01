@@ -39,6 +39,7 @@ import gov.healthit.chpl.service.UserAccountUpdateEmailer;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
+import gov.healthit.chpl.web.controller.annotation.DeprecatedApi;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -71,6 +72,10 @@ public class AuthenticationController {
         this.msgUtil = msgUtil;
     }
 
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/auth/athenticate",
+            removalDate = "2024-11-01",
+            message = "This endpoint is deprecated and will be removed in a future release. No replacement is currently available.")
     @Operation(summary = "Log in.",
             description = "Call this method to authenticate a user. The value returned is that user's "
                     + "token which must be passed on all subsequent requests in the Authorization header. "

@@ -63,6 +63,7 @@ public class AuthenticationManager {
         this.confirmationWindowInDays = confirmationWindowInDays;
     }
 
+    @Deprecated
     @Transactional
     public String authenticate(LoginCredentials credentials)
             throws JWTCreationException, UserRetrievalException, MultipleUserAccountsException, ChplAccountEmailNotConfirmedException {
