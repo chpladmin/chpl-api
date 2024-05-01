@@ -61,17 +61,15 @@ Each of the above files has "default" values for each key, though a few keys wit
 
 ## Tomcat server
 
-Modifiy `server.xml` to add a Resource to the GlobalNamingResources
+* Modify `server.xml`: 
 
-`<Resource auth="Container" driverClassName="org.postgresql.Driver" maxActive="100" maxIdle="30" maxWait="10000" name="YOUR NAME HERE" password="PASSWORD HERE" type="javax.sql.DataSource" url="jdbc:postgresql://WHEREVER YOUR DATABASE IS" username="DATABASE PASSWORD"/>`
+  * Add a Resource to the GlobalNamingResources `<Resource auth="Container" driverClassName="org.postgresql.Driver" maxActive="100" maxIdle="30" maxWait="10000" name="YOUR NAME HERE" password="PASSWORD HERE" type="javax.sql.DataSource" url="jdbc:postgresql://WHEREVER YOUR DATABASE IS" username="DATABASE PASSWORD"/>`
+  * Change the port number from 8080 to 8181 in the Connector
+  * Add the following line at the end of the `<Host>` section near the bottom of the file `<Context docBase="chpl-api" path="/chpl-service" reloadable="true" source="org.eclipse.jst.jee.server:chpl-api"/>`
 
-And add a ResourceLink to the Context in `context.xml`:
+* Add a ResourceLink to the Context in `context.xml` like `<ResourceLink global="jdbc/DATABASE NAME" name="jdbc/DATABASE NAME" type="javax.sql.DataSource"/>`
 
-`<ResourceLink global="jdbc/DATABASE NAME" name="jdbc/DATABASE NAME" type="javax.sql.DataSource"/>`
-
-Change the port number from 8080 to 8181 in the Connector of the server.xml file.
-
-Copy the postgres-9.2 jar under Ai_PUBLIC\CHPL_Public\DB_Dump into the tomcat install /lib directory
+* Set the `shared.loader` property in `catalina.properties` like `shared.loader="${catalina.base}/conf","${catalina.home}/conf"`. This allows Tomcat to find the *-override.properties files on the classpath that were created in the Eclipse Tomcat environment.
 
 ## Package everything
 
