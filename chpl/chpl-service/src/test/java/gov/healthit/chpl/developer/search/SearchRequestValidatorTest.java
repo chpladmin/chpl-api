@@ -25,8 +25,10 @@ public class SearchRequestValidatorTest {
     private static final String INVALID_DECERTIFICATION_DATE = "Could not parse '%s' as date in the format %s.";
     private static final String INVALID_ORDER_BY = "Order by parameter '%s' is invalid. Value must be one of %s.";
     private static final String INVALID_OPERATOR = "Invalid search operator value '%s'. Value must be one of %s.";
-    private static final String MISSING_OPERATOR = "Multiple active listing filters were found without a search operator (AND/OR). A search operator is required.";
+    private static final String MISSING_ACTIVE_LISTINGS_OPERATOR = "Multiple active listing filters were found without a search operator (AND/OR). A search operator is required.";
     private static final String INVALID_ACTIVE_LISTINGS_OPTIONS = "No active listings search option matches '%s'. Values must be one of %s.";
+    private static final String MISSING_ATTESTATIONS_OPERATOR = "Multiple attestations filters were found without a search operator (AND/OR). A search operator is required.";
+    private static final String INVALID_ATTESTATIONS_OPTIONS = "No attestations search option matches '%s'. Values must be one of %s.";
 
     private DimensionalDataManager dimensionalDataManager;
     private ErrorMessageUtil msgUtil;
@@ -50,9 +52,13 @@ public class SearchRequestValidatorTest {
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("search.searchOperator.invalid"), ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(INVALID_OPERATOR, i.getArgument(1), i.getArgument(2)));
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("search.developer.missingActiveListingsOperator")))
-            .thenReturn(MISSING_OPERATOR);
+            .thenReturn(MISSING_ACTIVE_LISTINGS_OPERATOR);
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("search.developer.activeListingsSearchOption.invalid"), ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(INVALID_ACTIVE_LISTINGS_OPTIONS, i.getArgument(1), i.getArgument(2)));
+        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("search.developer.missingAttestationsOperator")))
+            .thenReturn(MISSING_ATTESTATIONS_OPERATOR);
+        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("search.developer.attestationsSearchOption.invalid"), ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
+            .thenAnswer(i -> String.format(INVALID_ATTESTATIONS_OPTIONS, i.getArgument(1), i.getArgument(2)));
 
         validator = new SearchRequestValidator(dimensionalDataManager, msgUtil);
     }
@@ -366,7 +372,7 @@ public class SearchRequestValidatorTest {
             validator.validate(request);
         } catch (ValidationException ex) {
             assertEquals(1, ex.getErrorMessages().size());
-            assertTrue(ex.getErrorMessages().contains(MISSING_OPERATOR));
+            assertTrue(ex.getErrorMessages().contains(MISSING_ACTIVE_LISTINGS_OPERATOR));
             return;
         }
         fail("Should not execute.");
@@ -422,6 +428,98 @@ public class SearchRequestValidatorTest {
         }
         fail("Should not execute.");
     }
+
+    @Test
+    public void validate_invalidAttestationsSearchOperator_addsError() {
+        DeveloperSearchRequest request = DeveloperSearchRequest.builder()
+            .attestationsOptions(Stream.of(
+                    AttestationsSearchOptions.HAS_NOT_PUBLISHED,
+                    AttestationsSearchOptions.HAS_PUBLISHED).collect(Collectors.toSet()))
+            .attestationsOptionsOperatorString("XOR")
+            .attestationsOptionsOperator(null)
+            .build();
+
+        try {
+            validator.validate(request);
+        } catch (ValidationException ex) {
+            assertEquals(1, ex.getErrorMessages().size());
+            assertTrue(ex.getErrorMessages().contains(String.format(INVALID_OPERATOR, "XOR", "AND,OR")));
+            return;
+        }
+        fail("Should not execute.");
+    }
+
+    @Test
+    public void validate_missingAttestationsSearchOperator_addsError() {
+        DeveloperSearchRequest request = DeveloperSearchRequest.builder()
+            .attestationsOptions(Stream.of(
+                    AttestationsSearchOptions.HAS_NOT_PUBLISHED,
+                    AttestationsSearchOptions.HAS_PUBLISHED).collect(Collectors.toSet()))
+            .activeListingsOptionsOperator(null)
+            .build();
+
+        try {
+            validator.validate(request);
+        } catch (ValidationException ex) {
+            assertEquals(1, ex.getErrorMessages().size());
+            assertTrue(ex.getErrorMessages().contains(MISSING_ATTESTATIONS_OPERATOR));
+            return;
+        }
+        fail("Should not execute.");
+    }
+
+    @Test
+    public void validate_singleAttestationsOptionAndNoAttestationsSearchOperator_noError() {
+        DeveloperSearchRequest request = DeveloperSearchRequest.builder()
+            .attestationsOptions(Stream.of(
+                    AttestationsSearchOptions.HAS_SUBMITTED).collect(Collectors.toSet()))
+            .attestationsOptionsOperator(null)
+            .build();
+
+        try {
+            validator.validate(request);
+        } catch (ValidationException ex) {
+            fail(ex.getMessage());
+        }
+    }
+
+    @Test
+    public void validate_validAttestationsSearchOperator_noError() {
+        DeveloperSearchRequest request = DeveloperSearchRequest.builder()
+            .attestationsOptions(Stream.of(
+                    AttestationsSearchOptions.HAS_SUBMITTED,
+                    AttestationsSearchOptions.HAS_PUBLISHED).collect(Collectors.toSet()))
+            .attestationsOptionsOperator(SearchSetOperator.AND)
+            .build();
+
+        try {
+            validator.validate(request);
+        } catch (ValidationException ex) {
+            fail(ex.getMessage());
+        }
+    }
+
+    @Test
+    public void validate_invalidAttestationsSearchOption_addsError() {
+        DeveloperSearchRequest request = DeveloperSearchRequest.builder()
+            .attestationsOptions(Stream.of(AttestationsSearchOptions.HAS_SUBMITTED).collect(Collectors.toSet()))
+            .attestationsOptionsStrings(Stream.of(AttestationsSearchOptions.HAS_SUBMITTED.name(), "NONE_SUBMITTED").collect(Collectors.toSet()))
+            .attestationsOptionsOperator(null)
+            .build();
+
+        try {
+            validator.validate(request);
+        } catch (ValidationException ex) {
+            assertEquals(1, ex.getErrorMessages().size());
+            assertTrue(ex.getErrorMessages().contains(String.format(INVALID_ATTESTATIONS_OPTIONS, "NONE_SUBMITTED",
+                    Stream.of(AttestationsSearchOptions.values())
+                    .map(value -> value.name())
+                    .collect(Collectors.joining(",")))));
+            return;
+        }
+        fail("Should not execute.");
+    }
+
 
     @Test
     public void validate_invalidOrderBy_addsError() {
