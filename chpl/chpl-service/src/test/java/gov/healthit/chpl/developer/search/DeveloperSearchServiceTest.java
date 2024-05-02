@@ -796,7 +796,7 @@ public class DeveloperSearchServiceTest {
     }
 
     @Test
-    public void search_searchDevelopersWithActiveListings_findsMatches() throws ValidationException {
+    public void search_developersWithActiveListings_findsMatches() throws ValidationException {
         List<DeveloperSearchResult> allDevelopers = createDeveloperSearchResultCollection(50);
         allDevelopers.get(0).setCurrentActiveListingCount(1);
         allDevelopers.get(1).setCurrentActiveListingCount(2);
@@ -815,7 +815,7 @@ public class DeveloperSearchServiceTest {
     }
 
     @Test
-    public void search_searchDevelopersWithActiveOrInactive_findsAllMatches() throws ValidationException {
+    public void search_developersWithActiveOrInactive_findsAllMatches() throws ValidationException {
         List<DeveloperSearchResult> allDevelopers = createDeveloperSearchResultCollection(50);
         allDevelopers.get(0).setCurrentActiveListingCount(1);
         allDevelopers.get(1).setCurrentActiveListingCount(2);
@@ -836,7 +836,7 @@ public class DeveloperSearchServiceTest {
     }
 
     @Test
-    public void search_searchDevelopersWithActiveAndInactive_findsNoMatches() throws ValidationException {
+    public void search_developersWithActiveAndInactive_findsNoMatches() throws ValidationException {
         List<DeveloperSearchResult> allDevelopers = createDeveloperSearchResultCollection(50);
         allDevelopers.get(0).setCurrentActiveListingCount(1);
         allDevelopers.get(1).setCurrentActiveListingCount(2);
@@ -857,7 +857,7 @@ public class DeveloperSearchServiceTest {
     }
 
     @Test
-    public void search_searchDevelopersWithActiveDuringPastPeriod_findsMatches() throws ValidationException {
+    public void search_developersWithActiveDuringPastPeriod_findsMatches() throws ValidationException {
         List<DeveloperSearchResult> allDevelopers = createDeveloperSearchResultCollection(50);
         allDevelopers.get(0).setMostRecentPastAttestationPeriodActiveListingCount(1);
         allDevelopers.get(1).setCurrentActiveListingCount(2);
@@ -876,7 +876,7 @@ public class DeveloperSearchServiceTest {
     }
 
     @Test
-    public void search_searchDevelopersWithActiveListings_findsNoMatches() throws ValidationException {
+    public void search_developersWithActiveListings_findsNoMatches() throws ValidationException {
         List<DeveloperSearchResult> allDevelopers = createDeveloperSearchResultCollection(50);
 
         Mockito.when(developerManager.getDeveloperSearchResults()).thenReturn(allDevelopers);
@@ -893,45 +893,193 @@ public class DeveloperSearchServiceTest {
     }
 
     @Test
-    public void search_searchDevelopersThatHaveSubmittedAttestations_findsMatches() throws ValidationException {
+    public void search_developersWithAttestationsSubmitted_findsMatches() throws ValidationException {
         List<DeveloperSearchResult> allDevelopers = createDeveloperSearchResultCollection(50);
         allDevelopers.get(0).setSubmittedAttestationsForMostRecentPastPeriod(true);
+        allDevelopers.get(1).setSubmittedAttestationsForMostRecentPastPeriod(true);
 
         Mockito.when(developerManager.getDeveloperSearchResults()).thenReturn(allDevelopers);
         DeveloperSearchRequest searchRequest = DeveloperSearchRequest.builder()
-            .hasSubmittedAttestationsForMostRecentPastPeriod(true)
+            .attestationsOptions(Stream.of(AttestationsSearchOptions.HAS_SUBMITTED).collect(Collectors.toSet()))
             .pageNumber(0)
             .pageSize(10)
         .build();
         DeveloperSearchResponse searchResponse = developerSearchService.findDevelopers(searchRequest);
 
         assertNotNull(searchResponse);
-        assertEquals(1, searchResponse.getRecordCount());
-        assertEquals(1, searchResponse.getResults().size());
+        assertEquals(2, searchResponse.getRecordCount());
+        assertEquals(2, searchResponse.getResults().size());
     }
 
     @Test
-    public void search_searchDevelopersThatHaveNotSubmittedAttestations_findsMatches() throws ValidationException {
+    public void search_developersWithAttestationsNotSubmitted_findsMatches() throws ValidationException {
         List<DeveloperSearchResult> allDevelopers = createDeveloperSearchResultCollection(50);
-        allDevelopers.get(0).setSubmittedAttestationsForMostRecentPastPeriod(true);
+        allDevelopers.get(0).setSubmittedAttestationsForMostRecentPastPeriod(false);
+        allDevelopers.get(1).setSubmittedAttestationsForMostRecentPastPeriod(false);
 
         Mockito.when(developerManager.getDeveloperSearchResults()).thenReturn(allDevelopers);
         DeveloperSearchRequest searchRequest = DeveloperSearchRequest.builder()
-            .hasSubmittedAttestationsForMostRecentPastPeriod(false)
+            .attestationsOptions(Stream.of(AttestationsSearchOptions.HAS_NOT_SUBMITTED).collect(Collectors.toSet()))
             .pageNumber(0)
             .pageSize(10)
         .build();
         DeveloperSearchResponse searchResponse = developerSearchService.findDevelopers(searchRequest);
 
         assertNotNull(searchResponse);
-        assertEquals(49, searchResponse.getRecordCount());
-        assertEquals(10, searchResponse.getResults().size());
+        assertEquals(2, searchResponse.getRecordCount());
+        assertEquals(2, searchResponse.getResults().size());
+    }
+
+    @Test
+    public void search_developersWithAttestationsSubmittedOrNotSubmitted_findsMatches() throws ValidationException {
+        List<DeveloperSearchResult> allDevelopers = createDeveloperSearchResultCollection(50);
+        allDevelopers.get(0).setSubmittedAttestationsForMostRecentPastPeriod(false);
+        allDevelopers.get(1).setSubmittedAttestationsForMostRecentPastPeriod(true);
+
+        Mockito.when(developerManager.getDeveloperSearchResults()).thenReturn(allDevelopers);
+        DeveloperSearchRequest searchRequest = DeveloperSearchRequest.builder()
+            .attestationsOptions(Stream.of(AttestationsSearchOptions.HAS_NOT_SUBMITTED,
+                    AttestationsSearchOptions.HAS_SUBMITTED).collect(Collectors.toSet()))
+            .attestationsOptionsOperator(SearchSetOperator.OR)
+            .pageNumber(0)
+            .pageSize(10)
+        .build();
+        DeveloperSearchResponse searchResponse = developerSearchService.findDevelopers(searchRequest);
+
+        assertNotNull(searchResponse);
+        assertEquals(2, searchResponse.getRecordCount());
+        assertEquals(2, searchResponse.getResults().size());
+    }
+
+    @Test
+    public void search_developersWithAttestationsSubmittedAndNotSubmitted_findsNoMatches() throws ValidationException {
+        List<DeveloperSearchResult> allDevelopers = createDeveloperSearchResultCollection(50);
+        allDevelopers.get(0).setSubmittedAttestationsForMostRecentPastPeriod(false);
+        allDevelopers.get(1).setSubmittedAttestationsForMostRecentPastPeriod(true);
+
+        Mockito.when(developerManager.getDeveloperSearchResults()).thenReturn(allDevelopers);
+        DeveloperSearchRequest searchRequest = DeveloperSearchRequest.builder()
+            .attestationsOptions(Stream.of(AttestationsSearchOptions.HAS_NOT_SUBMITTED,
+                    AttestationsSearchOptions.HAS_SUBMITTED).collect(Collectors.toSet()))
+            .attestationsOptionsOperator(SearchSetOperator.AND)
+            .pageNumber(0)
+            .pageSize(10)
+        .build();
+        DeveloperSearchResponse searchResponse = developerSearchService.findDevelopers(searchRequest);
+
+        assertNotNull(searchResponse);
+        assertEquals(0, searchResponse.getRecordCount());
+        assertEquals(0, searchResponse.getResults().size());
+    }
+
+    @Test
+    public void search_developersWithAttestationsPublished_findsMatches() throws ValidationException {
+        List<DeveloperSearchResult> allDevelopers = createDeveloperSearchResultCollection(50);
+        allDevelopers.get(0).setPublishedAttestationsForMostRecentPastPeriod(true);
+        allDevelopers.get(1).setPublishedAttestationsForMostRecentPastPeriod(true);
+
+        Mockito.when(developerManager.getDeveloperSearchResults()).thenReturn(allDevelopers);
+        DeveloperSearchRequest searchRequest = DeveloperSearchRequest.builder()
+            .attestationsOptions(Stream.of(AttestationsSearchOptions.HAS_PUBLISHED).collect(Collectors.toSet()))
+            .pageNumber(0)
+            .pageSize(10)
+        .build();
+        DeveloperSearchResponse searchResponse = developerSearchService.findDevelopers(searchRequest);
+
+        assertNotNull(searchResponse);
+        assertEquals(2, searchResponse.getRecordCount());
+        assertEquals(2, searchResponse.getResults().size());
+    }
+
+    @Test
+    public void search_developersWithAttestationsNotPublished_findsMatches() throws ValidationException {
+        List<DeveloperSearchResult> allDevelopers = createDeveloperSearchResultCollection(50);
+        allDevelopers.get(0).setPublishedAttestationsForMostRecentPastPeriod(false);
+        allDevelopers.get(1).setPublishedAttestationsForMostRecentPastPeriod(false);
+
+        Mockito.when(developerManager.getDeveloperSearchResults()).thenReturn(allDevelopers);
+        DeveloperSearchRequest searchRequest = DeveloperSearchRequest.builder()
+            .attestationsOptions(Stream.of(AttestationsSearchOptions.HAS_NOT_PUBLISHED).collect(Collectors.toSet()))
+            .pageNumber(0)
+            .pageSize(10)
+        .build();
+        DeveloperSearchResponse searchResponse = developerSearchService.findDevelopers(searchRequest);
+
+        assertNotNull(searchResponse);
+        assertEquals(2, searchResponse.getRecordCount());
+        assertEquals(2, searchResponse.getResults().size());
+    }
+
+    @Test
+    public void search_developersWithAttestationsPublishedOrNotPublished_findsMatches() throws ValidationException {
+        List<DeveloperSearchResult> allDevelopers = createDeveloperSearchResultCollection(50);
+        allDevelopers.get(0).setPublishedAttestationsForMostRecentPastPeriod(true);
+        allDevelopers.get(1).setPublishedAttestationsForMostRecentPastPeriod(false);
+
+        Mockito.when(developerManager.getDeveloperSearchResults()).thenReturn(allDevelopers);
+        DeveloperSearchRequest searchRequest = DeveloperSearchRequest.builder()
+            .attestationsOptions(Stream.of(AttestationsSearchOptions.HAS_PUBLISHED,
+                    AttestationsSearchOptions.HAS_NOT_PUBLISHED).collect(Collectors.toSet()))
+            .attestationsOptionsOperator(SearchSetOperator.OR)
+            .pageNumber(0)
+            .pageSize(10)
+        .build();
+        DeveloperSearchResponse searchResponse = developerSearchService.findDevelopers(searchRequest);
+
+        assertNotNull(searchResponse);
+        assertEquals(2, searchResponse.getRecordCount());
+        assertEquals(2, searchResponse.getResults().size());
+    }
+
+    @Test
+    public void search_developersWithAttestationsPublishedAndNotPublished_findsNoMatches() throws ValidationException {
+        List<DeveloperSearchResult> allDevelopers = createDeveloperSearchResultCollection(50);
+        allDevelopers.get(0).setPublishedAttestationsForMostRecentPastPeriod(true);
+        allDevelopers.get(1).setPublishedAttestationsForMostRecentPastPeriod(false);
+
+        Mockito.when(developerManager.getDeveloperSearchResults()).thenReturn(allDevelopers);
+        DeveloperSearchRequest searchRequest = DeveloperSearchRequest.builder()
+            .attestationsOptions(Stream.of(AttestationsSearchOptions.HAS_PUBLISHED,
+                    AttestationsSearchOptions.HAS_NOT_PUBLISHED).collect(Collectors.toSet()))
+            .attestationsOptionsOperator(SearchSetOperator.AND)
+            .pageNumber(0)
+            .pageSize(10)
+        .build();
+        DeveloperSearchResponse searchResponse = developerSearchService.findDevelopers(searchRequest);
+
+        assertNotNull(searchResponse);
+        assertEquals(0, searchResponse.getRecordCount());
+        assertEquals(0, searchResponse.getResults().size());
+    }
+
+    @Test
+    public void search_developersWithAttestationsNotSubmittedOrNotPublished_findsMatches() throws ValidationException {
+        List<DeveloperSearchResult> allDevelopers = createDeveloperSearchResultCollection(50);
+        allDevelopers.get(0).setSubmittedAttestationsForMostRecentPastPeriod(false);
+        allDevelopers.get(1).setPublishedAttestationsForMostRecentPastPeriod(false);
+
+        Mockito.when(developerManager.getDeveloperSearchResults()).thenReturn(allDevelopers);
+        DeveloperSearchRequest searchRequest = DeveloperSearchRequest.builder()
+            .attestationsOptions(Stream.of(AttestationsSearchOptions.HAS_NOT_SUBMITTED,
+                    AttestationsSearchOptions.HAS_NOT_PUBLISHED).collect(Collectors.toSet()))
+            .attestationsOptionsOperator(SearchSetOperator.OR)
+            .pageNumber(0)
+            .pageSize(10)
+        .build();
+        DeveloperSearchResponse searchResponse = developerSearchService.findDevelopers(searchRequest);
+
+        assertNotNull(searchResponse);
+        assertEquals(2, searchResponse.getRecordCount());
+        assertEquals(2, searchResponse.getResults().size());
     }
 
     private List<DeveloperSearchResult> createDeveloperSearchResultCollection(int collectionSize) {
         List<DeveloperSearchResult> developers = new ArrayList<DeveloperSearchResult>();
         for (int i = 0; i < collectionSize; i++) {
-            developers.add(new DeveloperSearchResult());
+            developers.add(DeveloperSearchResult.builder()
+                    .submittedAttestationsForMostRecentPastPeriod(null)
+                    .publishedAttestationsForMostRecentPastPeriod(null)
+                    .build());
         }
         return developers;
     }

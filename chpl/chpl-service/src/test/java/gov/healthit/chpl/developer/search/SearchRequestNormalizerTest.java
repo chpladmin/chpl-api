@@ -129,6 +129,51 @@ public class SearchRequestNormalizerTest {
     }
 
     @Test
+    public void normalize_attestationsStringsFilter_setsAttestationsOptionsCorrectly() {
+        DeveloperSearchRequest searchRequest = DeveloperSearchRequest.builder()
+                .attestationsOptionsStrings(Stream.of("HAS_SUBMITTED ", " HAS_NOT_PUBLISHED ", "", " ",
+                        null, "HAS_NOT_SUBMITTED", "  HAS_PUBLISHED   ").collect(Collectors.toSet()))
+                .build();
+        normalizer.normalize(searchRequest);
+
+        assertEquals(4, searchRequest.getAttestationsOptions().size());
+        assertTrue(searchRequest.getAttestationsOptions().contains(AttestationsSearchOptions.HAS_SUBMITTED));
+        assertTrue(searchRequest.getAttestationsOptions().contains(AttestationsSearchOptions.HAS_NOT_PUBLISHED));
+        assertTrue(searchRequest.getAttestationsOptions().contains(AttestationsSearchOptions.HAS_NOT_SUBMITTED));
+        assertTrue(searchRequest.getAttestationsOptions().contains(AttestationsSearchOptions.HAS_PUBLISHED));
+    }
+
+    @Test
+    public void normalize_attestationsOperatorStringAnd_setsAttestationsOperatorCorrectly() {
+        DeveloperSearchRequest searchRequest = DeveloperSearchRequest.builder()
+                .attestationsOptionsOperatorString("AND")
+                .build();
+        normalizer.normalize(searchRequest);
+
+        assertEquals(SearchSetOperator.AND, searchRequest.getAttestationsOptionsOperator());
+    }
+
+    @Test
+    public void normalize_attestationsOperatorStringOr_setsAttestationsOperatorCorrectly() {
+        DeveloperSearchRequest searchRequest = DeveloperSearchRequest.builder()
+                .attestationsOptionsOperatorString("OR")
+                .build();
+        normalizer.normalize(searchRequest);
+
+        assertEquals(SearchSetOperator.OR, searchRequest.getAttestationsOptionsOperator());
+    }
+
+    @Test
+    public void normalize_attestationsOperatorStringXor_setsAttestationsOperatorNull() {
+        DeveloperSearchRequest searchRequest = DeveloperSearchRequest.builder()
+                .attestationsOptionsOperatorString("XOR")
+                .build();
+        normalizer.normalize(searchRequest);
+
+        assertNull(searchRequest.getAttestationsOptionsOperator());
+    }
+
+    @Test
     public void normalize_statuses_trimsCorrectly() {
         DeveloperSearchRequest searchRequest = DeveloperSearchRequest.builder()
                 .statuses(Stream.of("Active ", " Under certification ban ", "", " ", null, "Suspended").collect(Collectors.toSet()))

@@ -12,6 +12,7 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.dao.auth.UserDAO;
 import gov.healthit.chpl.developer.search.ActiveListingSearchOptions;
+import gov.healthit.chpl.developer.search.AttestationsSearchOptions;
 import gov.healthit.chpl.developer.search.DeveloperSearchRequest;
 import gov.healthit.chpl.developer.search.DeveloperSearchResult;
 import gov.healthit.chpl.developer.search.DeveloperSearchService;
@@ -58,7 +59,7 @@ public class MissingAttestationChangeRequestEmailJob extends SecurityContextCapa
                                 ActiveListingSearchOptions.HAD_ANY_ACTIVE_DURING_MOST_RECENT_PAST_ATTESTATION_PERIOD)
                                 .collect(Collectors.toSet()))
                         .activeListingsOptionsOperator(SearchSetOperator.AND)
-                        .hasSubmittedAttestationsForMostRecentPastPeriod(false)
+                        .attestationsOptions(Stream.of(AttestationsSearchOptions.HAS_NOT_SUBMITTED).collect(Collectors.toSet()))
                         .build(),
                         LOGGER);
 

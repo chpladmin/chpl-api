@@ -17,6 +17,7 @@ public class SearchRequestNormalizer {
         normalizeAcbsForAllListings(request);
         normalizeDecertificationDates(request);
         normalizeActiveListingsFilter(request);
+        normalizeAttestationsFilter(request);
         normalizeOrderBy(request);
     }
 
@@ -113,6 +114,50 @@ public class SearchRequestNormalizer {
             try {
                 request.setActiveListingsOptionsOperator(
                         SearchSetOperator.valueOf(request.getActiveListingsOptionsOperatorString().toUpperCase().trim()));
+            } catch (Exception ignore) {
+            }
+        }
+    }
+
+    private void normalizeAttestationsFilter(DeveloperSearchRequest request) {
+        normalizeAttestationsOptions(request);
+        normalizeAttestationsOptionsOperator(request);
+    }
+
+    private void normalizeAttestationsOptions(DeveloperSearchRequest request) {
+        if (request.getAttestationsOptionsStrings() != null
+                && request.getAttestationsOptionsStrings().size() > 0
+                && (request.getAttestationsOptions() == null || request.getAttestationsOptions().size() == 0)) {
+            try {
+                request.setAttestationsOptions(
+                        request.getAttestationsOptionsStrings().stream()
+                            .filter(option -> !StringUtils.isBlank(option))
+                            .map(option -> convertToAttestationsSearchOption(option))
+                            .filter(option -> option != null)
+                            .collect(Collectors.toSet()));
+            } catch (Exception ignore) {
+            }
+        }
+    }
+
+    private AttestationsSearchOptions convertToAttestationsSearchOption(String option) {
+        if (StringUtils.isBlank(option)) {
+            return null;
+        }
+        AttestationsSearchOptions convertedOption = null;
+        try {
+            convertedOption = AttestationsSearchOptions.valueOf(option.toUpperCase().trim());
+        } catch (Exception ex) {
+        }
+        return convertedOption;
+    }
+
+    private void normalizeAttestationsOptionsOperator(DeveloperSearchRequest request) {
+        if (!StringUtils.isBlank(request.getAttestationsOptionsOperatorString())
+                && request.getAttestationsOptionsOperator() == null) {
+            try {
+                request.setAttestationsOptionsOperator(
+                        SearchSetOperator.valueOf(request.getAttestationsOptionsOperatorString().toUpperCase().trim()));
             } catch (Exception ignore) {
             }
         }

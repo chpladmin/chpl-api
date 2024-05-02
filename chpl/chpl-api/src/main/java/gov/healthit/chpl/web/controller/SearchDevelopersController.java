@@ -186,12 +186,15 @@ public class SearchDevelopersController {
                 + "(ex: \"Under certification ban by ONC\" finds developers in either the Under certification ban by ONC status).",
                 allowEmptyValue = true, in = ParameterIn.QUERY, name = "statuses")
             @RequestParam(value = "statuses", required = false, defaultValue = "") String statusesDelimited,
-        @Parameter(description = "Whether the developer has or has not submitted attestations for the most recent attestation period",
-                allowEmptyValue = true, in = ParameterIn.QUERY, name = "hasSubmittedAttestationsForMostRecentPastPeriod")
-            @RequestParam(value = "hasSubmittedAttestationsForMostRecentPastPeriod", required = false, defaultValue = "") Boolean hasSubmittedAttestationsForMostRecentPastPeriod,
-        @Parameter(description = "Whether the developer has or has not published (submitted and been approved) attestations for the most recent attestation period",
-            allowEmptyValue = true, in = ParameterIn.QUERY, name = "hasPublishedAttestationsForMostRecentPastPeriod")
-        @RequestParam(value = "hasPublishedAttestationsForMostRecentPastPeriod", required = false, defaultValue = "") Boolean hasPublishedAttestationsForMostRecentPastPeriod,
+        @Parameter(description = "A comma-separated list of filters indicating the status of attestations for the developer over the most recent past period. "
+                    + "Valid options are HAS_SUBMITTED, HAS_NOT_SUBMITTED, HAS_PUBLISHED, and HAS_NOT_PUBLISHED.",
+                    allowEmptyValue = true, in = ParameterIn.QUERY, name = "attestationsOptions")
+            @RequestParam(value = "attestationsOptions", required = false, defaultValue = "") String attestationsOptionsDelimited,
+        @Parameter(description = "Either AND or OR. Defaults to OR."
+                    + "Indicates whether a developer must have met all attestationsOptions "
+                    + "specified or may have met any one or more of the attestationsOptions",
+                    allowEmptyValue = true, in = ParameterIn.QUERY, name = "attestationsOptionsOperator")
+            @RequestParam(value = "attestationsOptionsOperator", required = false, defaultValue = "OR") String attestationsOptionsOperator,
         @Parameter(description = "To return only developers decertified on or after this date. Required format is " + DeveloperSearchRequestV2.DATE_SEARCH_FORMAT,
                 allowEmptyValue = true, in = ParameterIn.QUERY, name = "decertificationDateStart")
             @RequestParam(value = "decertificationDateStart", required = false, defaultValue = "") String decertificationDateStart,
@@ -228,8 +231,8 @@ public class SearchDevelopersController {
                 .statuses(convertToSetWithDelimeter(statusesDelimited, ","))
                 .acbsForActiveListings(convertToSetWithDelimeter(acbsForActiveLisitngsDelimited, ","))
                 .acbsForAllListings(convertToSetWithDelimeter(acbsForAllLisitngsDelimited, ","))
-                .hasSubmittedAttestationsForMostRecentPastPeriod(hasSubmittedAttestationsForMostRecentPastPeriod)
-                .hasPublishedAttestationsForMostRecentPastPeriod(hasPublishedAttestationsForMostRecentPastPeriod)
+                .attestationsOptionsStrings(convertToSetWithDelimeter(attestationsOptionsDelimited, ","))
+                .attestationsOptionsOperatorString(attestationsOptionsOperator)
                 .decertificationDateStart(decertificationDateStart)
                 .decertificationDateEnd(decertificationDateEnd)
                 .activeListingsOptionsStrings(convertToSetWithDelimeter(activeListingsOptionsDelimited, ","))

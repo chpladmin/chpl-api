@@ -46,8 +46,14 @@ public class DeveloperSearchRequest implements Serializable {
     private String activeListingsOptionsOperatorString;
     private SearchSetOperator activeListingsOptionsOperator;
 
-    private Boolean hasSubmittedAttestationsForMostRecentPastPeriod;
-    private Boolean hasPublishedAttestationsForMostRecentPastPeriod;
+    @JsonIgnore
+    @Builder.Default
+    private Set<String> attestationsOptionsStrings = new HashSet<String>();
+    @Builder.Default
+    private Set<AttestationsSearchOptions> attestationsOptions = new HashSet<AttestationsSearchOptions>();
+    @JsonIgnore
+    private String attestationsOptionsOperatorString;
+    private SearchSetOperator attestationsOptionsOperator;
 
     @JsonIgnore
     private String orderByString;

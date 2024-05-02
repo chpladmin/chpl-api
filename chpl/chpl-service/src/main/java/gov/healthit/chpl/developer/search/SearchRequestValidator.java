@@ -42,6 +42,7 @@ public class SearchRequestValidator {
         errors.addAll(getAcbErrors(request.getAcbsForAllListings()));
         errors.addAll(getDecertificationDateErrors(request.getDecertificationDateStart(), request.getDecertificationDateEnd()));
         errors.addAll(getActiveListingsFilterErrors(request));
+        errors.addAll(getAttestationsFilterErrors(request));
         errors.addAll(getPageSizeErrors(request.getPageSize()));
         errors.addAll(getOrderByErrors(request));
         if (errors != null && errors.size() > 0) {
@@ -122,18 +123,18 @@ public class SearchRequestValidator {
                         .map(value -> value.name())
                         .collect(Collectors.joining(","))))
                     .collect(Collectors.toSet());
-        } else if (isMissingOptionsOperator(searchRequest)
-                && hasMultipleOptions(searchRequest)) {
+        } else if (isMissingActiveListingsOptionsOperator(searchRequest)
+                && hasMultipleActiveListingsOptions(searchRequest)) {
             return Stream.of(msgUtil.getMessage("search.developer.missingActiveListingsOperator")).collect(Collectors.toSet());
         }
         return Collections.emptySet();
     }
 
-    private boolean isMissingOptionsOperator(DeveloperSearchRequest searchRequest) {
+    private boolean isMissingActiveListingsOptionsOperator(DeveloperSearchRequest searchRequest) {
         return searchRequest.getActiveListingsOptionsOperator() == null;
     }
 
-    private boolean hasMultipleOptions(DeveloperSearchRequest searchRequest) {
+    private boolean hasMultipleActiveListingsOptions(DeveloperSearchRequest searchRequest) {
         return searchRequest.getActiveListingsOptions() != null && searchRequest.getActiveListingsOptions().size() > 1;
     }
 
@@ -156,6 +157,62 @@ public class SearchRequestValidator {
         boolean result = true;
         try {
             ActiveListingSearchOptions.valueOf(option.toUpperCase().trim());
+        } catch (Exception ex) {
+            result = false;
+        }
+        return result;
+    }
+
+    private Set<String> getAttestationsFilterErrors(DeveloperSearchRequest searchRequest) {
+        Set<String> errors = new LinkedHashSet<String>();
+        errors.addAll(getAttestationsOptionsOperatorErrors(searchRequest));
+        errors.addAll(getAttestationsOptionsErrors(searchRequest));
+        return errors;
+    }
+
+    private Set<String> getAttestationsOptionsOperatorErrors(DeveloperSearchRequest searchRequest) {
+        if (searchRequest.getAttestationsOptionsOperator() == null
+                && !StringUtils.isBlank(searchRequest.getAttestationsOptionsOperatorString())) {
+            return Stream.of(msgUtil.getMessage("search.searchOperator.invalid",
+                    searchRequest.getAttestationsOptionsOperatorString(),
+                    Stream.of(SearchSetOperator.values())
+                        .map(value -> value.name())
+                        .collect(Collectors.joining(","))))
+                    .collect(Collectors.toSet());
+        } else if (isMissingAttestationsOptionsOperator(searchRequest)
+                && hasMultipleAttestationsOptions(searchRequest)) {
+            return Stream.of(msgUtil.getMessage("search.developer.missingAttestationsOperator")).collect(Collectors.toSet());
+        }
+        return Collections.emptySet();
+    }
+
+    private boolean isMissingAttestationsOptionsOperator(DeveloperSearchRequest searchRequest) {
+        return searchRequest.getAttestationsOptionsOperator() == null;
+    }
+
+    private boolean hasMultipleAttestationsOptions(DeveloperSearchRequest searchRequest) {
+        return searchRequest.getAttestationsOptions() != null && searchRequest.getAttestationsOptions().size() > 1;
+    }
+
+    private Set<String> getAttestationsOptionsErrors(DeveloperSearchRequest searchRequest) {
+        if (searchRequest.getAttestationsOptionsStrings() != null && searchRequest.getAttestationsOptionsStrings().size() > 0) {
+            return searchRequest.getAttestationsOptionsStrings().stream()
+                .filter(option -> !StringUtils.isBlank(option))
+                .filter(option -> !isAttestationsSearchOption(option))
+                .map(option -> msgUtil.getMessage("search.developer.attestationsSearchOption.invalid",
+                        option,
+                        Stream.of(AttestationsSearchOptions.values())
+                        .map(value -> value.name())
+                        .collect(Collectors.joining(","))))
+                .collect(Collectors.toSet());
+        }
+        return Collections.emptySet();
+    }
+
+    private boolean isAttestationsSearchOption(String option) {
+        boolean result = true;
+        try {
+            AttestationsSearchOptions.valueOf(option.toUpperCase().trim());
         } catch (Exception ex) {
             result = false;
         }

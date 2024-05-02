@@ -57,8 +57,7 @@ public class DeveloperSearchService {
             .filter(dev -> matchesAnyListingAcbNames(dev, searchRequest.getAcbsForAllListings()))
             .filter(dev -> matchesStatuses(dev, searchRequest.getStatuses()))
             .filter(dev -> matchesDecertificationDateRange(dev, searchRequest.getDecertificationDateStart(), searchRequest.getDecertificationDateEnd()))
-            .filter(dev -> matchesHasSubmittedAttestations(dev, searchRequest.getHasSubmittedAttestationsForMostRecentPastPeriod()))
-            .filter(dev -> matchesHasPublishedAttestations(dev, searchRequest.getHasPublishedAttestationsForMostRecentPastPeriod()))
+            .filter(dev -> matchesAttestationsFilter(dev, searchRequest))
             .filter(dev -> matchesActiveListingsFilter(dev, searchRequest))
             .collect(Collectors.toList());
         LOGGER.debug("Total matched developers: " + matchedDevelopers.size());
@@ -195,24 +194,6 @@ public class DeveloperSearchService {
         return date;
     }
 
-    private boolean matchesHasSubmittedAttestations(DeveloperSearchResult developer, Boolean hasSubmittedAttestations) {
-        if (hasSubmittedAttestations != null && BooleanUtils.isTrue(hasSubmittedAttestations)) {
-            return BooleanUtils.isTrue(developer.getSubmittedAttestationsForMostRecentPastPeriod());
-        } else if (hasSubmittedAttestations != null && BooleanUtils.isFalse(hasSubmittedAttestations)) {
-            return BooleanUtils.isFalse(developer.getSubmittedAttestationsForMostRecentPastPeriod());
-        }
-        return true;
-    }
-
-    private boolean matchesHasPublishedAttestations(DeveloperSearchResult developer, Boolean hasPublishedAttestations) {
-        if (hasPublishedAttestations != null && BooleanUtils.isTrue(hasPublishedAttestations)) {
-            return BooleanUtils.isTrue(developer.getPublishedAttestationsForMostRecentPastPeriod());
-        } else if (hasPublishedAttestations != null && BooleanUtils.isFalse(hasPublishedAttestations)) {
-            return BooleanUtils.isFalse(developer.getPublishedAttestationsForMostRecentPastPeriod());
-        }
-        return true;
-    }
-
     private boolean matchesActiveListingsFilter(DeveloperSearchResult developer, DeveloperSearchRequest searchRequest) {
         Boolean matchesHasActiveListingsFilter = null;
         if (searchRequest.getActiveListingsOptions().contains(ActiveListingSearchOptions.HAS_ANY_ACTIVE)) {
@@ -233,6 +214,37 @@ public class DeveloperSearchService {
         if (ObjectUtils.anyNotNull(matchesHasActiveListingsFilter, matchesHadActiveListingsDuringPastPeriodFilter, matchesNoActiveListingsFilter)) {
             return applyOperation(searchRequest.getActiveListingsOptionsOperator(),
                     matchesHasActiveListingsFilter, matchesHadActiveListingsDuringPastPeriodFilter, matchesNoActiveListingsFilter);
+        }
+        return true;
+    }
+
+    private boolean matchesAttestationsFilter(DeveloperSearchResult developer, DeveloperSearchRequest searchRequest) {
+        Boolean matchesHasSubmittedAttestationsFilter = null;
+        if (searchRequest.getAttestationsOptions().contains(AttestationsSearchOptions.HAS_SUBMITTED)) {
+            matchesHasSubmittedAttestationsFilter = BooleanUtils.isTrue(developer.getSubmittedAttestationsForMostRecentPastPeriod());
+        }
+        Boolean matchesHasNotSubmittedAttestationsFilter = null;
+        if (searchRequest.getAttestationsOptions().contains(AttestationsSearchOptions.HAS_NOT_SUBMITTED)) {
+            matchesHasNotSubmittedAttestationsFilter = BooleanUtils.isFalse(developer.getSubmittedAttestationsForMostRecentPastPeriod());
+        }
+        Boolean matchesHasPublishedAttestationsFilter = null;
+        if (searchRequest.getAttestationsOptions().contains(AttestationsSearchOptions.HAS_PUBLISHED)) {
+            matchesHasPublishedAttestationsFilter = BooleanUtils.isTrue(developer.getPublishedAttestationsForMostRecentPastPeriod());
+        }
+        Boolean matchesHasNotPublishedAttestationsFilter = null;
+        if (searchRequest.getAttestationsOptions().contains(AttestationsSearchOptions.HAS_NOT_PUBLISHED)) {
+            matchesHasNotPublishedAttestationsFilter = BooleanUtils.isFalse(developer.getPublishedAttestationsForMostRecentPastPeriod());
+        }
+
+        if (ObjectUtils.anyNotNull(matchesHasSubmittedAttestationsFilter,
+                matchesHasNotSubmittedAttestationsFilter,
+                matchesHasPublishedAttestationsFilter,
+                matchesHasNotPublishedAttestationsFilter)) {
+            return applyOperation(searchRequest.getAttestationsOptionsOperator(),
+                    matchesHasSubmittedAttestationsFilter,
+                    matchesHasNotSubmittedAttestationsFilter,
+                    matchesHasPublishedAttestationsFilter,
+                    matchesHasNotPublishedAttestationsFilter);
         }
         return true;
     }
