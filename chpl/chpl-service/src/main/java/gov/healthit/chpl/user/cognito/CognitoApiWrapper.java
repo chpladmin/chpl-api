@@ -46,6 +46,8 @@ import software.amazon.awssdk.services.cognitoidentityprovider.model.AttributeTy
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AuthFlowType;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AuthenticationResultType;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.GroupType;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.ListUsersInGroupRequest;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.ListUsersInGroupResponse;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.ListUsersRequest;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.ListUsersResponse;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.MessageActionType;
@@ -59,6 +61,7 @@ public class CognitoApiWrapper {
     private String clientId;
     private String userPoolId;
     private String userPoolClientSecret;
+    private String environmentGroupName;
     private CognitoIdentityProviderClient cognitoClient;
     private CertificationBodyDAO certificationBodyDAO;
     private DeveloperDAO developerDAO;
@@ -68,11 +71,13 @@ public class CognitoApiWrapper {
     @Autowired
     public CognitoApiWrapper(@Value("${cognito.accessKey}") String accessKey, @Value("${cognito.secretKey}") String secretKey,
             @Value("${cognito.region}") String region, @Value("${cognito.clientId}") String clientId, @Value("${cognito.userPoolId}") String userPoolId,
-            @Value("${cognito.userPoolClientSecret}") String userPoolClientSecret, CertificationBodyDAO certificationBodyDAO, DeveloperDAO developerDAO) {
+            @Value("${cognito.userPoolClientSecret}") String userPoolClientSecret, @Value("${cognito.environment.groupName}") String environmentGroupName,
+            CertificationBodyDAO certificationBodyDAO, DeveloperDAO developerDAO) {
 
         cognitoClient = createCognitoClient(accessKey, secretKey, region);
         this.clientId = clientId;
         this.userPoolId = userPoolId;
+        this.environmentGroupName = environmentGroupName;
         this.userPoolClientSecret = userPoolClientSecret;
         this.certificationBodyDAO = certificationBodyDAO;
         this.developerDAO = developerDAO;
@@ -121,10 +126,13 @@ public class CognitoApiWrapper {
                 .build());
 
         if (response.users().size() > 0) {
-            return createUserFromUserType(response.users().get(0));
-        } else {
-            return null;
+            String email = getUserAttribute(response.users().get(0).attributes(), "email").value();
+            List<GroupType> userGroups = getGroupsForUser(email);
+            if (doesGroupMatchCurrentEnvironment(userGroups)) {
+                return createUserFromUserType(response.users().get(0));
+            }
         }
+        return null;
     }
 
     public User getUserInfo(String email) throws UserRetrievalException {
@@ -135,10 +143,12 @@ public class CognitoApiWrapper {
                 .build());
 
         if (response.users().size() > 0) {
-            return createUserFromUserType(response.users().get(0));
-        } else {
-            return null;
+            List<GroupType> userGroups = getGroupsForUser(email);
+            if (doesGroupMatchCurrentEnvironment(userGroups)) {
+                return createUserFromUserType(response.users().get(0));
+            }
         }
+        return null;
     }
 
     public CognitoCredentials createUser(CreateUserRequest userRequest) throws UserCreationException {
@@ -196,28 +206,28 @@ public class CognitoApiWrapper {
     }
 
     public List<User> getAllUsers() {
-        ListUsersRequest request = ListUsersRequest.builder()
+        ListUsersInGroupRequest request = ListUsersInGroupRequest.builder()
                 .userPoolId(userPoolId)
+                .groupName(environmentGroupName)
                 .build();
 
         List<User> users = new ArrayList<User>();
 
-        ListUsersResponse response = cognitoClient.listUsers(request);
+        ListUsersInGroupResponse response = cognitoClient.listUsersInGroup(request);
         users.addAll(response.users().stream()
                 .map(userType -> createUserFromUserType(userType))
                 .toList());
 
-        while (response.paginationToken() != null) {
-            LOGGER.info(response.paginationToken());
-            request = ListUsersRequest.builder()
+        while (response.nextToken() != null) {
+            request = ListUsersInGroupRequest.builder()
                 .userPoolId(userPoolId)
-                .paginationToken(response.paginationToken())
+                .groupName(environmentGroupName)
+                .nextToken(response.nextToken())
                 .build();
 
-            response = cognitoClient.listUsers(request);
+            response = cognitoClient.listUsersInGroup(request);
 
             users.addAll(response.users().stream()
-                .peek(userType -> LOGGER.info(getUserAttribute(userType.attributes(), "email").value()))
                     .map(userType -> createUserFromUserType(userType))
                     .toList());
 
@@ -296,13 +306,7 @@ public class CognitoApiWrapper {
         user.setAccountEnabled(userType.enabled());
         user.setStatus(userType.userStatusAsString());
         user.setPasswordResetRequired(userType.userStatus().equals(UserStatusType.RESET_REQUIRED));
-
-        AdminListGroupsForUserRequest groupsRequest = AdminListGroupsForUserRequest.builder()
-                .userPoolId(userPoolId)
-                .username(user.getEmail())
-                .build();
-        AdminListGroupsForUserResponse groupsResponse = cognitoClient.adminListGroupsForUser(groupsRequest);
-        user.setRole(getRoleBasedOnFilteredGroups(groupsResponse.groups()));
+        user.setRole(getRoleBasedOnFilteredGroups(getGroupsForUser(user.getEmail())));
 
         AttributeType orgIdsAttribute = getUserAttribute(userType.attributes(), "custom:organizations");
         if (orgIdsAttribute != null && StringUtils.isNotEmpty(orgIdsAttribute.value())) {
@@ -319,5 +323,21 @@ public class CognitoApiWrapper {
                 .filter(group -> !group.endsWith("-env"))
                 .findAny()
                 .orElseThrow(() -> new RuntimeException("Could not determine user's role"));
+    }
+
+    private List<GroupType> getGroupsForUser(String email) {
+        AdminListGroupsForUserRequest groupsRequest = AdminListGroupsForUserRequest.builder()
+                .userPoolId(userPoolId)
+                .username(email)
+                .build();
+        AdminListGroupsForUserResponse groupsResponse = cognitoClient.adminListGroupsForUser(groupsRequest);
+        return groupsResponse.groups();
+    }
+
+    private boolean doesGroupMatchCurrentEnvironment(List<GroupType> groups) {
+        return groups.stream()
+                .filter(grp -> grp.groupName().equals(environmentGroupName))
+                .findAny()
+                .isPresent();
     }
 }
