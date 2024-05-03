@@ -71,6 +71,7 @@ public class InvitationManager extends SecuredManager {
         this.userPermissions = userPermissionDao.findAll();
     }
 
+    @Deprecated
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).INVITATION, "
             + "T(gov.healthit.chpl.permissions.domains.InvitationDomainPermissions).INVITE_ADMIN)")
@@ -79,6 +80,7 @@ public class InvitationManager extends SecuredManager {
         return inviteToAccount(Authority.ROLE_ADMIN, null, emailAddress);
     }
 
+    @Deprecated
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).INVITATION, "
             + "T(gov.healthit.chpl.permissions.domains.InvitationDomainPermissions).INVITE_ONC)")
@@ -87,6 +89,7 @@ public class InvitationManager extends SecuredManager {
         return inviteToAccount(Authority.ROLE_ONC, null, emailAddress);
     }
 
+    @Deprecated
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).INVITATION, "
             + "T(gov.healthit.chpl.permissions.domains.InvitationDomainPermissions).INVITE_CMS)")
@@ -96,6 +99,7 @@ public class InvitationManager extends SecuredManager {
 
     }
 
+    @Deprecated
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).INVITATION, "
             + "T(gov.healthit.chpl.permissions.domains.InvitationDomainPermissions).INVITE_ACB, #acbId)")
@@ -104,6 +108,7 @@ public class InvitationManager extends SecuredManager {
         return inviteToAccount(Authority.ROLE_ACB, acbId, emailAddress);
     }
 
+    @Deprecated
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).INVITATION, "
             + "T(gov.healthit.chpl.permissions.domains.InvitationDomainPermissions).INVITE_DEVELOPER, #developerId)")
@@ -135,11 +140,13 @@ public class InvitationManager extends SecuredManager {
         return createdInvitation;
     }
 
+    @Deprecated
     @Transactional
     public UserInvitation getByInvitationHash(String hash) {
         return invitationDao.getByInvitationToken(hash);
     }
 
+    @Deprecated
     @Transactional
     public UserInvitation getByConfirmationHash(String hash) {
         return invitationDao.getByConfirmationToken(hash);
@@ -155,6 +162,7 @@ public class InvitationManager extends SecuredManager {
         return invitationDao.getByCreatedUserId(createdUserId);
     }
 
+    @Deprecated
     @Transactional
     public User createUserFromInvitation(UserInvitation invitation, CreateUserRequest user)
             throws InvalidArgumentsException, UserCreationException, ActivityException, EntityRetrievalException, UserRetrievalException {
@@ -196,6 +204,7 @@ public class InvitationManager extends SecuredManager {
 
     }
 
+    @Deprecated
     @Transactional
     public UserDTO confirmAccountEmail(UserInvitation invitation) throws UserRetrievalException, MultipleUserAccountsException {
         Authentication authenticator = AuthUtil.getInvitedUserAuthenticator(invitation.getLastModifiedUserId());
@@ -229,6 +238,7 @@ public class InvitationManager extends SecuredManager {
         }
     }
 
+    @Deprecated
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).INVITATION, "
             + "T(gov.healthit.chpl.permissions.domains.InvitationDomainPermissions).UPDATE_FROM_INVITATION, #userInvitation)")

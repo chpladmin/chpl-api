@@ -117,6 +117,10 @@ public class AuthenticationController {
                 .build();
     }
 
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/auth/change-password",
+            removalDate = "2024-11-01",
+            message = "This endpoint is deprecated and will be removed in a future release. No replacement is currently available.")
     @Operation(summary = "Change password.",
             description = "Change the logged in user's password as long as the old password "
                     + "passed in matches what is stored in the database.",
@@ -163,6 +167,10 @@ public class AuthenticationController {
         return response;
     }
 
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/auth/reset-password-request",
+            removalDate = "2024-11-01",
+            message = "This endpoint is deprecated and will be removed in a future release. No replacement is currently available.")
     @Operation(summary = "Reset password.", description = "Reset the user's password.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
@@ -174,6 +182,10 @@ public class AuthenticationController {
         return userManager.authorizePasswordReset(request);
     }
 
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/auth/email-reset-password",
+            removalDate = "2024-11-01",
+            message = "This endpoint is deprecated and will be removed in a future release. No replacement is currently available.")
     @Operation(summary = "Emails the user a token and link that can be used to reset their password..",
             description = "",
             security = {
@@ -188,6 +200,10 @@ public class AuthenticationController {
         userAccountUpdateEmailer.sendPasswordResetEmail(userResetTokenDTO.getUserResetToken(), request.getEmail());
     }
 
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/auth/impersonate",
+            removalDate = "2024-11-01",
+            message = "This endpoint is deprecated and will be removed in a future release. No replacement is currently available.")
     @Operation(summary = "Impersonate another user.", description = "",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
@@ -205,6 +221,10 @@ public class AuthenticationController {
                 .build();
     }
 
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/auth/unimpersonate",
+            removalDate = "2024-11-01",
+            message = "This endpoint is deprecated and will be removed in a future release. No replacement is currently available.")
     @Operation(summary = "Stop impersonating another user.", description = "",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),

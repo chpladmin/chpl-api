@@ -99,6 +99,7 @@ public class AuthenticationManager {
         }
     }
 
+    @Deprecated
     public UserDTO getUser(LoginCredentials credentials)
             throws AccountStatusException, UserRetrievalException,
             MultipleUserAccountsException, ChplAccountEmailNotConfirmedException {
@@ -223,6 +224,7 @@ public class AuthenticationManager {
         }
     }
 
+    @Deprecated
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).USER_PERMISSIONS, "
             + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).IMPERSONATE_USER, #id)")
     public String impersonateUser(Long id)
@@ -238,6 +240,7 @@ public class AuthenticationManager {
         return getJWT(impersonatedUser);
     }
 
+    @Deprecated
     public String unimpersonateUser(JWTAuthenticatedUser user) throws JWTCreationException, UserRetrievalException, MultipleUserAccountsException {
         return getJWT(getUserByNameOrEmail(user.getSubjectName()));
     }

@@ -96,6 +96,7 @@ public class UserManager extends SecuredManager {
         return createdUser;
     }
 
+    @Deprecated
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SECURED_USER, "
             + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).UPDATE, #user)")
@@ -147,6 +148,7 @@ public class UserManager extends SecuredManager {
         return updated;
     }
 
+    @Deprecated
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SECURED_USER, "
             + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).DELETE)")
@@ -172,6 +174,7 @@ public class UserManager extends SecuredManager {
         return userDAO.getUsersWithPermission(permissionName);
     }
 
+    @Deprecated
     @PostAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SECURED_USER, "
             + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).GET_BY_ID, returnObject)")
     public UserDTO getById(Long id) throws UserRetrievalException {
@@ -197,6 +200,7 @@ public class UserManager extends SecuredManager {
         }
     }
 
+    @Deprecated
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SECURED_USER, "
             + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).UPDATE_PASSWORD, #user)")
@@ -210,6 +214,7 @@ public class UserManager extends SecuredManager {
 
     // no auth needed. create a random string and create a new reset token row
     // for the user
+    @Deprecated
     @Transactional
     public UserResetTokenDTO createResetUserPasswordToken(String email)
             throws UserRetrievalException {
@@ -229,6 +234,7 @@ public class UserManager extends SecuredManager {
         return userResetToken;
     }
 
+    @Deprecated
     @Transactional
     public UpdatePasswordResponse authorizePasswordReset(ResetPasswordRequest resetRequest) throws UserRetrievalException,
         MultipleUserAccountsException {
@@ -279,6 +285,7 @@ public class UserManager extends SecuredManager {
         return userDAO.getByNameOrEmail(username);
     }
 
+    @Deprecated
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SECURED_USER, "
             + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).GET_BY_USER_NAME)")
@@ -289,6 +296,7 @@ public class UserManager extends SecuredManager {
         return user.toDomain();
     }
 
+    @Deprecated
     public Strength getPasswordStrength(UserDTO user, final String password) {
         ArrayList<String> badWords = new ArrayList<String>();
         badWords.add("chpl");

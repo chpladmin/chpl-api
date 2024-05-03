@@ -52,6 +52,7 @@ import gov.healthit.chpl.user.cognito.CognitoUserManager;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
+import gov.healthit.chpl.web.controller.annotation.DeprecatedApi;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -90,6 +91,10 @@ public class UserManagementController {
         this.authorizationLengthInDays = authorizationLengthInDays;
     }
 
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/users/create",
+            removalDate = "2024-11-01",
+            message = "This endpoint is deprecated and will be removed in a future release. No replacement is currently available.")
     @Operation(summary = "Create a new user account from an invitation.",
             description = "An individual who has been invited to the CHPL has a special user key in their invitation email. "
                     + "That user key along with all the information needed to create a new user's account "
@@ -153,6 +158,10 @@ public class UserManagementController {
         return validationErrors;
     }
 
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/users/confirm",
+            removalDate = "2024-11-01",
+            message = "This endpoint is deprecated and will be removed in a future release. No replacement is currently available.")
     @Operation(summary = "Confirm that a user's email address is valid.",
             description = "When a new user accepts their invitation to the CHPL they have to provide "
                     + "an email address. They then receive an email prompting them to confirm "
@@ -179,6 +188,10 @@ public class UserManagementController {
         return createdUser.toDomain();
     }
 
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/users/{userId}/authorize",
+            removalDate = "2024-11-01",
+            message = "This endpoint is deprecated and will be removed in a future release. No replacement is currently available.")
     @Operation(summary = "Update an existing user account with new permissions.",
             description = "Gives the user permission on the object in the invitation (usually an additional ACB or Developer)."
                     + "The correct order to call invitation requests is "
@@ -233,6 +246,10 @@ public class UserManagementController {
         return "{\"token\": \"" + authenticationManager.getJWT(updatedUser) + "\"}";
     }
 
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/users/invite",
+            removalDate = "2024-11-01",
+            message = "This endpoint is deprecated and will be removed in a future release. No replacement is currently available.")
     @Operation(summary = "Invite a user to the CHPL.",
             description = "This request creates an invitation that is sent to the email address provided. "
                     + "The recipient of this invitation can then choose to create a new account "
@@ -270,6 +287,10 @@ public class UserManagementController {
         return createdInvitiation;
     }
 
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/users/{userId}",
+            removalDate = "2024-11-01",
+            message = "This endpoint is deprecated and will be removed in a future release. No replacement is currently available.")
     @Operation(summary = "Modify user information.", description = "",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
@@ -288,6 +309,10 @@ public class UserManagementController {
         return updated.toDomain();
     }
 
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/users/{userId}",
+            removalDate = "2024-11-01",
+            message = "This endpoint is deprecated and will be removed in a future release. No replacement is currently available.")
     @Operation(summary = "Delete a user.",
             description = "Deletes a user account and all associated authorities on organizations. "
                     + "Security Restrictions: ROLE_ADMIN or ROLE_ONC",
@@ -311,6 +336,10 @@ public class UserManagementController {
         return new DeletedUser(true);
     }
 
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/users",
+            removalDate = "2024-11-01",
+            message = "This endpoint is deprecated and will be removed in a future release. No replacement is currently available.")
     @Operation(summary = "View users of the system.",
             description = "Security Restrictions: ROLE_ADMIN and ROLE_ONC can see all users.  ROLE_ACB "
                     + "and ROLE_CMS_STAFF can see themselves.",
@@ -333,6 +362,10 @@ public class UserManagementController {
         return response;
     }
 
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/users/beta/{id}/details",
+            removalDate = "2024-11-01",
+            message = "This endpoint is deprecated and will be removed in a future release. No replacement is currently available.")
     @Operation(summary = "View a specific user's details.",
             description = "The logged in user must either be the user in the parameters, have ROLE_ADMIN, or "
                     + "have ROLE_ACB.",
