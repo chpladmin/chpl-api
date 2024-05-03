@@ -16,6 +16,9 @@ import gov.healthit.chpl.subscription.service.SubscriptionLookupUtil;
 import gov.healthit.chpl.subscription.subject.processor.CertificationCriteriaAddedActivityProcessor;
 import gov.healthit.chpl.subscription.subject.processor.CertificationCriteriaRemovedActivityProcessor;
 import gov.healthit.chpl.subscription.subject.processor.CertificationStatusChangedActivityProcessor;
+import gov.healthit.chpl.subscription.subject.processor.RwtPlansUrlChangedActivityProcessor;
+import gov.healthit.chpl.subscription.subject.processor.RwtResultsUrlChangedActivityProcessor;
+import gov.healthit.chpl.subscription.subject.processor.ServiceBaseUrlListChangedActivityProcessor;
 import gov.healthit.chpl.subscription.subject.processor.SubscriptionSubjectProcessor;
 import lombok.extern.log4j.Log4j2;
 
@@ -70,5 +73,8 @@ public class SubscriptionObserver {
         this.processors.add(new CertificationStatusChangedActivityProcessor(getSubject(lookupUtil.getCertificationStatusChangedSubjectId())));
         this.processors.add(new CertificationCriteriaAddedActivityProcessor(getSubject(lookupUtil.getCertificationCriteriaAddedSubjectId())));
         this.processors.add(new CertificationCriteriaRemovedActivityProcessor(getSubject(lookupUtil.getCertificationCriteriaRemovedSubjectId())));
+        this.processors.add(new RwtPlansUrlChangedActivityProcessor(getSubject(lookupUtil.getRwtPlansUrlChangedSubjectId())));
+        this.processors.add(new RwtResultsUrlChangedActivityProcessor(getSubject(lookupUtil.getRwtResultsUrlChangedSubjectId())));
+        this.processors.add(new ServiceBaseUrlListChangedActivityProcessor(getSubject(lookupUtil.getServiceBaseUrlListChangedSubjectId())));
     }
 }

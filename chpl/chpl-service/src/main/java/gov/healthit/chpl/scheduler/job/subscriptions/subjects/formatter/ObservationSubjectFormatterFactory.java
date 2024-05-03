@@ -14,16 +14,25 @@ public class ObservationSubjectFormatterFactory {
     private CertificationStatusChangedFormatter certStatusChangedFormatter;
     private CertificationCriteriaAddedFormatter criteriaAddedFormatter;
     private CertificationCriteriaRemovedFormatter criteriaRemovedFormatter;
+    private RwtPlansUrlChangedFormatter rwtPlansChangedFormatter;
+    private RwtResultsUrlChangedFormatter rwtResultsChangedFormatter;
+    private ServiceBaseUrlListChangedFormatter serviceBaseUrlListChangedFormatter;
     private SubscriptionLookupUtil lookupUtil;
 
     @Autowired
     public ObservationSubjectFormatterFactory(CertificationStatusChangedFormatter certStatusChangedFormatter,
             CertificationCriteriaAddedFormatter criteriaAddedFormatter,
             CertificationCriteriaRemovedFormatter criteriaRemovedFormatter,
+            RwtPlansUrlChangedFormatter rwtPlansChangedFormatter,
+            RwtResultsUrlChangedFormatter rwtResultsChangedFormatter,
+            ServiceBaseUrlListChangedFormatter serviceBaseUrlListChangedFormatter,
             SubscriptionLookupUtil lookupUtil) {
         this.certStatusChangedFormatter = certStatusChangedFormatter;
         this.criteriaAddedFormatter = criteriaAddedFormatter;
         this.criteriaRemovedFormatter = criteriaRemovedFormatter;
+        this.rwtPlansChangedFormatter = rwtPlansChangedFormatter;
+        this.rwtResultsChangedFormatter = rwtResultsChangedFormatter;
+        this.serviceBaseUrlListChangedFormatter = serviceBaseUrlListChangedFormatter;
         this.lookupUtil = lookupUtil;
     }
 
@@ -35,6 +44,12 @@ public class ObservationSubjectFormatterFactory {
             return criteriaAddedFormatter;
         } else if (lookupUtil.getCertificationCriteriaRemovedSubjectId().equals(observationSubjectId)) {
             return criteriaRemovedFormatter;
+        } else if (lookupUtil.getRwtPlansUrlChangedSubjectId().equals(observationSubjectId)) {
+            return rwtPlansChangedFormatter;
+        }  else if (lookupUtil.getRwtResultsUrlChangedSubjectId().equals(observationSubjectId)) {
+            return rwtResultsChangedFormatter;
+        }  else if (lookupUtil.getServiceBaseUrlListChangedSubjectId().equals(observationSubjectId)) {
+            return serviceBaseUrlListChangedFormatter;
         } else {
             LOGGER.error("No subject formatter found for subject with ID " + observationSubjectId);
         }
