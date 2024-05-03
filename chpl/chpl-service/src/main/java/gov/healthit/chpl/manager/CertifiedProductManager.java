@@ -608,11 +608,13 @@ public class CertifiedProductManager extends SecuredManager {
                 for (CertifiedProductQmsStandard updatedItem : updatedQmsStandards) {
                     boolean inExistingListing = false;
                     for (CertifiedProductQmsStandard existingItem : existingQmsStandards) {
-                        if (updatedItem.matches(existingItem)
-                                && haveQmsDetailsChanged(existingItem, updatedItem)) {
+                        if (updatedItem.matches(existingItem)) {
                             inExistingListing = true;
-                            qmsToAdd.add(updatedItem);
-                            idsToRemove.add(existingItem.getId());
+                            if (haveQmsDetailsChanged(existingItem, updatedItem)) {
+                                inExistingListing = true;
+                                qmsToAdd.add(updatedItem);
+                                idsToRemove.add(existingItem.getId());
+                            }
                         }
                     }
 
