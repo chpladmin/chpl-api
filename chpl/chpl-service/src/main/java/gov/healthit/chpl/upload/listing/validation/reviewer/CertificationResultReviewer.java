@@ -277,11 +277,7 @@ public class CertificationResultReviewer {
     }
 
     private void reviewRiskManagementSummaryInformation(CertifiedProductSearchDetails listing, CertificationResult certResult) {
-        if (certResultRules.hasCertOption(certResult.getCriterion().getId(), CertificationResultRules.RISK_MANAGEMENT_SUMMARY_INFORMATION)
-                && ObjectUtils.isEmpty(certResult.getRiskManagementSummaryInformation())) {
-            listing.addDataErrorMessage(msgUtil.getMessage("listing.criteria.missingRiskManagementSummaryInformation",
-                    Util.formatCriteriaNumber(certResult.getCriterion())));
-        } else if (!certResultRules.hasCertOption(certResult.getCriterion().getId(), CertificationResultRules.RISK_MANAGEMENT_SUMMARY_INFORMATION)) {
+        if (!certResultRules.hasCertOption(certResult.getCriterion().getId(), CertificationResultRules.RISK_MANAGEMENT_SUMMARY_INFORMATION)) {
             if (!ObjectUtils.isEmpty(certResult.getRiskManagementSummaryInformation())) {
                 listing.addWarningMessage(
                         msgUtil.getMessage("listing.criteria.riskManagementSummaryInformationNotApplicable", Util.formatCriteriaNumber(certResult.getCriterion())));
