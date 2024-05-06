@@ -593,7 +593,6 @@ public class CertifiedProductManager extends SecuredManager {
 
         int numChanges = 0;
         List<CertifiedProductQmsStandard> qmsToAdd = new ArrayList<CertifiedProductQmsStandard>();
-        List<QmsStandardPair> qmsToUpdate = new ArrayList<QmsStandardPair>();
         List<Long> idsToRemove = new ArrayList<Long>();
 
         // figure out which QMS to add
@@ -611,7 +610,11 @@ public class CertifiedProductManager extends SecuredManager {
                     for (CertifiedProductQmsStandard existingItem : existingQmsStandards) {
                         if (updatedItem.matches(existingItem)) {
                             inExistingListing = true;
-                            qmsToUpdate.add(new QmsStandardPair(existingItem, updatedItem));
+                            if (haveQmsDetailsChanged(existingItem, updatedItem)) {
+                                inExistingListing = true;
+                                qmsToAdd.add(updatedItem);
+                                idsToRemove.add(existingItem.getId());
+                            }
                         }
                     }
 
@@ -655,34 +658,15 @@ public class CertifiedProductManager extends SecuredManager {
             cpQmsDao.createCertifiedProductQms(qmsDto);
         }
 
-        for (QmsStandardPair toUpdate : qmsToUpdate) {
-            boolean hasChanged = false;
-            if (!Objects.equals(toUpdate.getOrig().getApplicableCriteria(),
-                    toUpdate.getUpdated().getApplicableCriteria())
-                    || !Objects.equals(toUpdate.getOrig().getQmsModification(),
-                            toUpdate.getUpdated().getQmsModification())) {
-                hasChanged = true;
-            }
-
-            if (hasChanged) {
-                CertifiedProductQmsStandard stdToUpdate = toUpdate.getUpdated();
-                QmsStandard qmsItem = qmsDao.getById(stdToUpdate.getQmsStandardId());
-                CertifiedProductQmsStandardDTO qmsDto = new CertifiedProductQmsStandardDTO();
-                qmsDto.setId(stdToUpdate.getId());
-                qmsDto.setApplicableCriteria(stdToUpdate.getApplicableCriteria());
-                qmsDto.setCertifiedProductId(listingId);
-                qmsDto.setQmsModification(stdToUpdate.getQmsModification());
-                qmsDto.setQmsStandardId(qmsItem.getId());
-                qmsDto.setQmsStandardName(qmsItem.getName());
-                cpQmsDao.updateCertifiedProductQms(qmsDto);
-                numChanges++;
-            }
-        }
-
         for (Long idToRemove : idsToRemove) {
             cpQmsDao.deleteCertifiedProductQms(idToRemove);
         }
         return numChanges;
+    }
+
+    private boolean haveQmsDetailsChanged(CertifiedProductQmsStandard orig, CertifiedProductQmsStandard updated) {
+        return !StringUtils.equals(orig.getApplicableCriteria(), updated.getApplicableCriteria())
+                || !StringUtils.equals(orig.getQmsModification(), updated.getQmsModification());
     }
 
     private int updateMeasures(Long listingId, List<ListingMeasure> existingMeasures,
