@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
+import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.ListingUpdateRequest;
@@ -61,7 +62,7 @@ public class RealWorldTestingUploadJob extends QuartzJob {
         LOGGER.info("********* Starting the Real World Testing Upload job. *********");
 
         try {
-            UserDTO user = (UserDTO) context.getMergedJobDataMap().get(USER_KEY);
+            JWTAuthenticatedUser user = (JWTAuthenticatedUser) context.getMergedJobDataMap().get(USER_KEY);
             setSecurityContext(user);
 
             List<RealWorldTestingUpload> rwts = (List<RealWorldTestingUpload>) context.getMergedJobDataMap().get(RWT_UPLOAD_ITEMS);

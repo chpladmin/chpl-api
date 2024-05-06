@@ -24,11 +24,9 @@ import gov.healthit.chpl.dto.CQMMetDTO;
 import gov.healthit.chpl.dto.CertificationIdAndCertifiedProductDTO;
 import gov.healthit.chpl.dto.CertificationIdDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
-import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.exception.ActivityException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.auth.UserManager;
 import gov.healthit.chpl.scheduler.job.certificationId.CertificationIdEmailJob;
@@ -139,19 +137,12 @@ public class CertificationIdManager {
             + "T(gov.healthit.chpl.permissions.domains.CertificationIdDomainPermissions).GET_ALL)")
     @Transactional
     public ChplOneTimeTrigger triggerCmsIdReport() throws SchedulerException, ValidationException {
-        UserDTO jobUser = null;
-        try {
-            jobUser = userManager.getById(AuthUtil.getCurrentUser().getId());
-        } catch (UserRetrievalException ex) {
-            LOGGER.error("Could not find user to execute job.");
-        }
-
         ChplOneTimeTrigger complaintsReportTrigger = new ChplOneTimeTrigger();
         ChplJob complaintsReportJob = new ChplJob();
         complaintsReportJob.setName(CertificationIdEmailJob.JOB_NAME);
         complaintsReportJob.setGroup(SchedulerManager.CHPL_BACKGROUND_JOBS_KEY);
         JobDataMap jobDataMap = new JobDataMap();
-        jobDataMap.put(CertificationIdEmailJob.USER_KEY, jobUser);
+        jobDataMap.put(CertificationIdEmailJob.USER_KEY, AuthUtil.getCurrentUser());
         complaintsReportJob.setJobDataMap(jobDataMap);
         complaintsReportTrigger.setJob(complaintsReportJob);
         complaintsReportTrigger.setRunDateMillis(System.currentTimeMillis() + SchedulerManager.FIVE_SECONDS_IN_MILLIS);

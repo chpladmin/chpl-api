@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
+import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.quartz.SchedulerException;
 import org.springframework.http.MediaType;
@@ -15,13 +16,12 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.domain.auth.Authority;
 import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
-import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.SchedulerManager;
-import gov.healthit.chpl.manager.auth.UserManager;
 import gov.healthit.chpl.realworldtesting.dao.RealWorldTestingByDeveloperDao;
 import gov.healthit.chpl.realworldtesting.domain.RealWorldTestingUploadResponse;
+import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 public class RealWorldTestingManagerTest {
@@ -29,7 +29,6 @@ public class RealWorldTestingManagerTest {
 
     private RealWorldTestingManager realWorldTestingManager;
     private SchedulerManager schedulerManager;
-    private UserManager userManager;
     private ErrorMessageUtil errorMessageUtil;
 
     @Before
@@ -40,16 +39,12 @@ public class RealWorldTestingManagerTest {
         Mockito.when(schedulerManager.createBackgroundJobTrigger(ArgumentMatchers.any(ChplOneTimeTrigger.class)))
                 .thenReturn(new ChplOneTimeTrigger());
 
-        userManager = Mockito.mock(UserManager.class);
-        Mockito.when(userManager.getById(ArgumentMatchers.anyLong()))
-                .thenReturn(getUser());
-
         errorMessageUtil = Mockito.mock(ErrorMessageUtil.class);
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.anyString(), ArgumentMatchers.any()))
                 .thenReturn("This is an error message.");
 
         realWorldTestingManager = new RealWorldTestingManager(Mockito.mock(RealWorldTestingByDeveloperDao.class),
-                schedulerManager, userManager, errorMessageUtil);
+                schedulerManager, null, errorMessageUtil);
     }
 
     @Test(expected = ValidationException.class)
@@ -104,12 +99,16 @@ public class RealWorldTestingManagerTest {
                 "text/csv",
                 fileContents.getBytes());
 
-        RealWorldTestingUploadResponse response = realWorldTestingManager.uploadRealWorldTestingCsv(file);
+        try (MockedStatic<AuthUtil> mockedAuthUtil = Mockito.mockStatic(AuthUtil.class)) {
+            mockedAuthUtil.when(AuthUtil::getCurrentUser).thenReturn(getUser());
 
-        assertEquals("user@abc.com", response.getEmail());
-        assertEquals("rwt.csv", response.getFileName());
-        assertEquals(2,  response.getRecordsToBeProcessed());
+            RealWorldTestingUploadResponse response = realWorldTestingManager.uploadRealWorldTestingCsv(file);
+            assertEquals("user@abc.com", response.getEmail());
+            assertEquals("rwt.csv", response.getFileName());
+            assertEquals(2,  response.getRecordsToBeProcessed());
+        }
     }
+
 
     @Test
     public void uploadRealWorldTestingCsv_FileWithoutHeaderAndDataRows_Success()
@@ -123,11 +122,14 @@ public class RealWorldTestingManagerTest {
                 "text/csv",
                 fileContents.getBytes());
 
-        RealWorldTestingUploadResponse response = realWorldTestingManager.uploadRealWorldTestingCsv(file);
+        try (MockedStatic<AuthUtil> mockedAuthUtil = Mockito.mockStatic(AuthUtil.class)) {
+            mockedAuthUtil.when(AuthUtil::getCurrentUser).thenReturn(getUser());
+            RealWorldTestingUploadResponse response = realWorldTestingManager.uploadRealWorldTestingCsv(file);
 
-        assertEquals("user@abc.com", response.getEmail());
-        assertEquals("rwt.csv", response.getFileName());
-        assertEquals(2,  response.getRecordsToBeProcessed());
+            assertEquals("user@abc.com", response.getEmail());
+            assertEquals("rwt.csv", response.getFileName());
+            assertEquals(2,  response.getRecordsToBeProcessed());
+        }
     }
 
     @Test
@@ -140,18 +142,20 @@ public class RealWorldTestingManagerTest {
                 "rwt.csv",
                 "text/csv",
                 fileContents.getBytes());
+        try (MockedStatic<AuthUtil> mockedAuthUtil = Mockito.mockStatic(AuthUtil.class)) {
+            mockedAuthUtil.when(AuthUtil::getCurrentUser).thenReturn(getUser());
 
-        RealWorldTestingUploadResponse response = realWorldTestingManager.uploadRealWorldTestingCsv(file);
-
-        assertEquals("user@abc.com", response.getEmail());
-        assertEquals("rwt.csv", response.getFileName());
-        assertEquals(1,  response.getRecordsToBeProcessed());
+            RealWorldTestingUploadResponse response = realWorldTestingManager.uploadRealWorldTestingCsv(file);
+            assertEquals("user@abc.com", response.getEmail());
+            assertEquals("rwt.csv", response.getFileName());
+            assertEquals(1,  response.getRecordsToBeProcessed());
+        }
     }
 
-    private UserDTO getUser() {
-        UserDTO user = new UserDTO();
-        user.setEmail("user@abc.com");
-        return user;
+    private JWTAuthenticatedUser getUser() {
+        return JWTAuthenticatedUser.builder()
+                .email("user@abc.com")
+                .build();
     }
 
     private void setSecurityContext() {

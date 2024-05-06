@@ -22,9 +22,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.domain.schedule.ChplJob;
 import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
-import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.SchedulerManager;
@@ -80,7 +80,7 @@ public class RealWorldTestingManager {
         List<RealWorldTestingUpload> rwts = parseCsvFile(file);
         startRwtUploadJob(rwts);
 
-        UserDTO currentUser = userManager.getById(AuthUtil.getCurrentUser().getId());
+        JWTAuthenticatedUser currentUser = AuthUtil.getCurrentUser();
         RealWorldTestingUploadResponse response = new RealWorldTestingUploadResponse();
         response.setEmail(currentUser.getEmail());
         response.setFileName(file.getName());
@@ -97,7 +97,7 @@ public class RealWorldTestingManager {
         rwtUploadJob.setGroup(SchedulerManager.CHPL_BACKGROUND_JOBS_KEY);
         JobDataMap jobDataMap = new JobDataMap();
         jobDataMap.put(RealWorldTestingUploadJob.RWT_UPLOAD_ITEMS, rwts);
-        jobDataMap.put(RealWorldTestingUploadJob.USER_KEY, userManager.getById(AuthUtil.getCurrentUser().getId()));
+        jobDataMap.put(RealWorldTestingUploadJob.USER_KEY, AuthUtil.getCurrentUser());
         rwtUploadJob.setJobDataMap(jobDataMap);
         rwtUploadTrigger.setJob(rwtUploadJob);
         rwtUploadTrigger.setRunDateMillis(System.currentTimeMillis() + DELAY_BEFORE_JOB_START);
