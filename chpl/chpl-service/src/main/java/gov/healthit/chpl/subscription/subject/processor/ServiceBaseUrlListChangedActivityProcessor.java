@@ -29,8 +29,10 @@ public class ServiceBaseUrlListChangedActivityProcessor extends SubscriptionSubj
             CertifiedProductSearchDetails newListing) {
         CertificationResult originalG10CertResult = getG10CertResult(originalListing);
         CertificationResult newG10CertResult = getG10CertResult(newListing);
-        return originalG10CertResult != null && newG10CertResult != null
-                && !StringUtils.equals(originalG10CertResult.getServiceBaseUrlList(), newG10CertResult.getServiceBaseUrlList());
+        return (originalG10CertResult == null && newG10CertResult != null)
+                || (originalG10CertResult != null && newG10CertResult == null)
+                || (originalG10CertResult != null && newG10CertResult != null
+                    && !StringUtils.equals(originalG10CertResult.getServiceBaseUrlList(), newG10CertResult.getServiceBaseUrlList()));
 
     }
 
