@@ -20,7 +20,7 @@ import lombok.extern.log4j.Log4j2;
 @Component
 @Log4j2(topic = "subscriptionObservationsNotificationJobLogger")
 public class RwtResultsUrlChangedFormatter extends ObservationSubjectFormatter {
-    private static final String DESCRIPTION_REMOVED = "RWT Results URL was removed.";
+    private static final String DESCRIPTION_REMOVED = "RWT Results URL %s was removed.";
     private static final String DESCRIPTION_ADDED_UNFORMATTED = "RWT Results URL %s was added.";
     private static final String DESCRIPTION_UPDATED_UNFORMATTED = "RWT Results URL was changed from %s to %s";
 
@@ -44,7 +44,7 @@ public class RwtResultsUrlChangedFormatter extends ObservationSubjectFormatter {
 
         String formattedObservation = null;
         if (!StringUtils.isEmpty(before.getRwtResultsUrl()) && StringUtils.isEmpty(after.getRwtResultsUrl())) {
-            formattedObservation = DESCRIPTION_REMOVED;
+            formattedObservation = String.format(DESCRIPTION_REMOVED, before.getRwtResultsUrl());
         } else if (StringUtils.isEmpty(before.getRwtResultsUrl()) && !StringUtils.isEmpty(after.getRwtResultsUrl())) {
             formattedObservation = String.format(DESCRIPTION_ADDED_UNFORMATTED, after.getRwtResultsUrl());
         } else {
