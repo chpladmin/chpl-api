@@ -77,6 +77,7 @@ import gov.healthit.chpl.exception.CertifiedProductUpdateException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
+import gov.healthit.chpl.exception.MissingReasonException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.listing.measure.ListingMeasureDAO;
@@ -269,7 +270,7 @@ public class CertifiedProductManager extends SecuredManager {
     @ListingSearchCacheRefresh
     @ListingStoreRemove(removeBy = RemoveBy.LISTING_ID, id = "#updateRequest.listing.id")
     public CertifiedProductDTO update(ListingUpdateRequest updateRequest)
-            throws ValidationException, InvalidArgumentsException, IOException, ActivityException, CertifiedProductUpdateException {
+            throws MissingReasonException, ValidationException, InvalidArgumentsException, IOException, ActivityException, CertifiedProductUpdateException {
 
         CertifiedProductSearchDetails existingListing = null;
         try {
