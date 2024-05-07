@@ -24,6 +24,11 @@ public class SecurityContextCapableJob {
         SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);
     }
 
+    public void setSecurityContext(JWTAuthenticatedUser user) {
+        SecurityContextHolder.getContext().setAuthentication(user);
+        SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);
+    }
+
     public void setSecurityContext(String authority) {
         SecurityContextHolder.getContext().setAuthentication(JWTAuthenticatedUser.builder()
                 .authenticated(true)

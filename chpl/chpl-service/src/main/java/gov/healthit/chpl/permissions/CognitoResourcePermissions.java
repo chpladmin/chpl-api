@@ -211,8 +211,10 @@ public class CognitoResourcePermissions implements ResourcePermissions {
 
     @Override
     public boolean doesUserHaveRole(List<String> authorities) {
-        LOGGER.error("Not implemented: doesUserHaveRole");
-        throw new NotImplementedException("Not implemented: doesUserHaveRole");
+        return authorities.stream()
+                .filter(auth -> doesUserHaveRole(auth))
+                .findAny()
+                .isPresent();
     }
 
     @Override

@@ -393,13 +393,6 @@ public class DeveloperManager extends SecuredManager {
             throw new ValidationException(getDuplicateChplProductNumberErrorMessages(duplicateChplProdNumbers), null);
         }
 
-        UserDTO jobUser = null;
-        try {
-            jobUser = userManager.getById(AuthUtil.getCurrentUser().getId());
-        } catch (UserRetrievalException ex) {
-            LOGGER.error("Could not find user to execute job.");
-        }
-
         ChplOneTimeTrigger joinDevelopersTrigger = new ChplOneTimeTrigger();
         ChplJob joinDevelopersJob = new ChplJob();
         joinDevelopersJob.setName(JoinDeveloperJob.JOB_NAME);
@@ -407,7 +400,7 @@ public class DeveloperManager extends SecuredManager {
         JobDataMap jobDataMap = new JobDataMap();
         jobDataMap.put(JoinDeveloperJob.JOINING_DEVELOPERS, beforeDevelopers);
         jobDataMap.put(JoinDeveloperJob.DEVELOPER_TO_JOIN, owningDeveloper);
-        jobDataMap.put(JoinDeveloperJob.USER_KEY, jobUser);
+        jobDataMap.put(JoinDeveloperJob.USER_KEY, AuthUtil.getCurrentUser());
         joinDevelopersJob.setJobDataMap(jobDataMap);
         joinDevelopersTrigger.setJob(joinDevelopersJob);
         joinDevelopersTrigger.setRunDateMillis(System.currentTimeMillis() + SchedulerManager.FIVE_SECONDS_IN_MILLIS);
@@ -432,13 +425,6 @@ public class DeveloperManager extends SecuredManager {
             throw new ValidationException(devErrors);
         }
 
-        UserDTO jobUser = null;
-        try {
-            jobUser = userManager.getById(AuthUtil.getCurrentUser().getId());
-        } catch (UserRetrievalException ex) {
-            LOGGER.error("Could not find user to execute job.");
-        }
-
         ChplOneTimeTrigger splitDeveloperTrigger = new ChplOneTimeTrigger();
         ChplJob splitDeveloperJob = new ChplJob();
         splitDeveloperJob.setName(SplitDeveloperJob.JOB_NAME);
@@ -447,7 +433,7 @@ public class DeveloperManager extends SecuredManager {
         jobDataMap.put(SplitDeveloperJob.OLD_DEVELOPER_KEY, oldDeveloper);
         jobDataMap.put(SplitDeveloperJob.NEW_DEVELOPER_KEY, developerToCreate);
         jobDataMap.put(SplitDeveloperJob.PRODUCT_IDS_TO_MOVE_KEY, productIdsToMove);
-        jobDataMap.put(SplitDeveloperJob.USER_KEY, jobUser);
+        jobDataMap.put(SplitDeveloperJob.USER_KEY, AuthUtil.getCurrentUser());
         splitDeveloperJob.setJobDataMap(jobDataMap);
         splitDeveloperTrigger.setJob(splitDeveloperJob);
         splitDeveloperTrigger.setRunDateMillis(System.currentTimeMillis() + SchedulerManager.FIVE_SECONDS_IN_MILLIS);

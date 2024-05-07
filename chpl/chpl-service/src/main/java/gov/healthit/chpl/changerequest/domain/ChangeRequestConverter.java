@@ -118,16 +118,14 @@ public final class ChangeRequestConverter {
     }
 
     public static ChangeRequestStatus convert(ChangeRequestStatusEntity entity) {
-        ChangeRequestStatus status = new ChangeRequestStatus();
-        status.setId(entity.getId());
-        status.setChangeRequestStatusType(convert(entity.getChangeRequestStatusType()));
-        status.setComment(entity.getComment());
-        status.setStatusChangeDateTime(DateUtil.toLocalDateTime(entity.getStatusChangeDate().getTime()));
-        if (entity.getCertificationBody() != null) {
-            status.setCertificationBody(entity.getCertificationBody().toDomain());
-        }
-        status.setUserPermission(entity.getUserPermission().toDomain());
-        return status;
+        return ChangeRequestStatus.builder()
+                .id(entity.getId())
+                .changeRequestStatusType(convert(entity.getChangeRequestStatusType()))
+                .comment(entity.getComment())
+                .statusChangeDateTime(DateUtil.toLocalDateTime(entity.getStatusChangeDate().getTime()))
+                .certificationBody(entity.getCertificationBody() != null ? entity.getCertificationBody().toDomain() : null)
+                .userGroupName(entity.getUserGroupName())
+                .build();
     }
 
     public static ChangeRequestDeveloperDemographics convert(ChangeRequestDeveloperDemographicsEntity entity) {

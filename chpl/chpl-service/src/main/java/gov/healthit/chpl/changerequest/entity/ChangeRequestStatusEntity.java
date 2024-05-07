@@ -15,7 +15,6 @@ import javax.persistence.Table;
 
 import gov.healthit.chpl.entity.CertificationBodyEntity;
 import gov.healthit.chpl.entity.EntityAudit;
-import gov.healthit.chpl.entity.auth.UserPermissionEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -57,9 +56,8 @@ public class ChangeRequestStatusEntity extends EntityAudit {
     private CertificationBodyEntity certificationBody;
 
     @Basic(optional = false)
-    @OneToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_permission_id", nullable = false, insertable = true, updatable = false)
-    private UserPermissionEntity userPermission;
+    @Column(name = "user_group_name", nullable = false)
+    private String userGroupName;
 
     @Basic(optional = false)
     @Column(name = "status_change_date", nullable = false)
