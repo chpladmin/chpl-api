@@ -16,6 +16,7 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.ActivityDTO;
 import gov.healthit.chpl.subscription.domain.SubscriptionObservation;
 import gov.healthit.chpl.subscription.subject.processor.ServiceBaseUrlListChangedActivityProcessor;
+import gov.healthit.chpl.util.DateUtil;
 import gov.healthit.chpl.util.Util;
 import lombok.extern.log4j.Log4j2;
 
@@ -47,22 +48,26 @@ public class ServiceBaseUrlListChangedFormatter extends ObservationSubjectFormat
         CertificationResult originalG10CertResult = getG10CertResult(before);
         CertificationResult newG10CertResult = getG10CertResult(after);
 
-        List<List<String>> formattedObservations = new ArrayList<List<String>>();
+        String formattedObservation = null;
         if (!StringUtils.isEmpty(originalG10CertResult.getServiceBaseUrlList()) && StringUtils.isEmpty(newG10CertResult.getServiceBaseUrlList())) {
-            formattedObservations.add(Stream.of(
-                    String.format(DESCRIPTION_REMOVED_UNFORMATTED, Util.formatCriteriaNumber(newG10CertResult.getCriterion())))
-                    .toList());
+            formattedObservation = String.format(DESCRIPTION_REMOVED_UNFORMATTED,
+                    Util.formatCriteriaNumber(newG10CertResult.getCriterion()));
         } else if (StringUtils.isEmpty(originalG10CertResult.getServiceBaseUrlList()) && !StringUtils.isEmpty(newG10CertResult.getServiceBaseUrlList())) {
-            formattedObservations.add(Stream.of(
-                    String.format(DESCRIPTION_ADDED_UNFORMATTED, newG10CertResult.getServiceBaseUrlList(), Util.formatCriteriaNumber(newG10CertResult.getCriterion())))
-                    .toList());
+            formattedObservation = String.format(DESCRIPTION_ADDED_UNFORMATTED,
+                    newG10CertResult.getServiceBaseUrlList(),
+                    Util.formatCriteriaNumber(newG10CertResult.getCriterion()));
         } else {
-            String updatedObservation = String.format(DESCRIPTION_UPDATED_UNFORMATTED,
+            formattedObservation = String.format(DESCRIPTION_UPDATED_UNFORMATTED,
                     originalG10CertResult.getServiceBaseUrlList(),
                     newG10CertResult.getServiceBaseUrlList(),
                     Util.formatCriteriaNumber(newG10CertResult.getCriterion()));
-            formattedObservations.add(Stream.of(updatedObservation).toList());
         }
+
+        List<List<String>> formattedObservations = new ArrayList<List<String>>();
+        formattedObservations.add(Stream.of(observation.getSubscription().getSubject().getSubject(),
+                formattedObservation,
+                DateUtil.formatInEasternTime(activity.getActivityDate()))
+                .toList());
         return formattedObservations;
     }
 

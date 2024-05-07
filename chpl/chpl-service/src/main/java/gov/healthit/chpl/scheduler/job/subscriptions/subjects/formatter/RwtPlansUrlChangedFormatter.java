@@ -14,6 +14,7 @@ import gov.healthit.chpl.dao.ActivityDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.ActivityDTO;
 import gov.healthit.chpl.subscription.domain.SubscriptionObservation;
+import gov.healthit.chpl.util.DateUtil;
 import lombok.extern.log4j.Log4j2;
 
 @Component
@@ -41,18 +42,19 @@ public class RwtPlansUrlChangedFormatter extends ObservationSubjectFormatter {
             return null;
         }
 
-        List<List<String>> formattedObservations = new ArrayList<List<String>>();
+        String formattedObservation = null;
         if (!StringUtils.isEmpty(before.getRwtPlansUrl()) && StringUtils.isEmpty(after.getRwtPlansUrl())) {
-            formattedObservations.add(Stream.of(DESCRIPTION_REMOVED).toList());
+            formattedObservation = DESCRIPTION_REMOVED;
         } else if (StringUtils.isEmpty(before.getRwtPlansUrl()) && !StringUtils.isEmpty(after.getRwtPlansUrl())) {
-            formattedObservations.add(Stream.of(
-                    String.format(DESCRIPTION_ADDED_UNFORMATTED, after.getRwtPlansUrl()))
-                    .toList());
+            formattedObservation = String.format(DESCRIPTION_ADDED_UNFORMATTED, after.getRwtPlansUrl());
         } else {
-            String updatedObservation = String.format(DESCRIPTION_UPDATED_UNFORMATTED, before.getRwtPlansUrl(), after.getRwtPlansUrl());
-            formattedObservations.add(Stream.of(updatedObservation).toList());
+            formattedObservation = String.format(DESCRIPTION_UPDATED_UNFORMATTED, before.getRwtPlansUrl(), after.getRwtPlansUrl());
         }
 
+        List<List<String>> formattedObservations = new ArrayList<List<String>>();
+        formattedObservations.add(Stream.of(observation.getSubscription().getSubject().getSubject(),
+                formattedObservation,
+                DateUtil.formatInEasternTime(activity.getActivityDate())).toList());
         return formattedObservations;
     }
 }
