@@ -23,8 +23,8 @@ import lombok.extern.log4j.Log4j2;
 @Component
 @Log4j2(topic = "subscriptionObservationsNotificationJobLogger")
 public class ServiceBaseUrlListChangedFormatter extends ObservationSubjectFormatter {
-    private static final String DESCRIPTION_REMOVED_UNFORMATTED = "Service Base URL List %s was removed from %s.";
-    private static final String DESCRIPTION_ADDED_UNFORMATTED = "Service Base URL List %s was added to %s.";
+    private static final String DESCRIPTION_REMOVED_UNFORMATTED = "Service Base URL List %s was removed from %s";
+    private static final String DESCRIPTION_ADDED_UNFORMATTED = "Service Base URL List %s was added to %s";
     private static final String DESCRIPTION_UPDATED_UNFORMATTED = "Service Base URL List was changed from %s to %s on %s";
 
     @Autowired

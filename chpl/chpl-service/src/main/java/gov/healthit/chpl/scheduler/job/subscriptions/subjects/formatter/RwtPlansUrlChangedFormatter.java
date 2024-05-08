@@ -20,8 +20,8 @@ import lombok.extern.log4j.Log4j2;
 @Component
 @Log4j2(topic = "subscriptionObservationsNotificationJobLogger")
 public class RwtPlansUrlChangedFormatter extends ObservationSubjectFormatter {
-    private static final String DESCRIPTION_REMOVED = "RWT Plans URL %s was removed.";
-    private static final String DESCRIPTION_ADDED_UNFORMATTED = "RWT Plans URL %s was added.";
+    private static final String DESCRIPTION_REMOVED = "RWT Plans URL %s was removed";
+    private static final String DESCRIPTION_ADDED_UNFORMATTED = "RWT Plans URL %s was added";
     private static final String DESCRIPTION_UPDATED_UNFORMATTED = "RWT Plans URL was changed from %s to %s";
 
     @Autowired
