@@ -40,19 +40,23 @@ public class ObservationSubjectFormatterFactory {
         Long observationSubjectId = observation.getSubscription().getSubject().getId();
         if (lookupUtil.getCertificationStatusChangedSubjectId().equals(observationSubjectId)) {
             return certStatusChangedFormatter;
-        } else if (lookupUtil.getCertificationCriteriaAddedSubjectId().equals(observationSubjectId)) {
-            return criteriaAddedFormatter;
-        } else if (lookupUtil.getCertificationCriteriaRemovedSubjectId().equals(observationSubjectId)) {
-            return criteriaRemovedFormatter;
-        } else if (lookupUtil.getRwtPlansUrlChangedSubjectId().equals(observationSubjectId)) {
-            return rwtPlansChangedFormatter;
-        }  else if (lookupUtil.getRwtResultsUrlChangedSubjectId().equals(observationSubjectId)) {
-            return rwtResultsChangedFormatter;
-        }  else if (lookupUtil.getServiceBaseUrlListChangedSubjectId().equals(observationSubjectId)) {
-            return serviceBaseUrlListChangedFormatter;
-        } else {
-            LOGGER.error("No subject formatter found for subject with ID " + observationSubjectId);
         }
+        if (lookupUtil.getCertificationCriteriaAddedSubjectId().equals(observationSubjectId)) {
+            return criteriaAddedFormatter;
+        }
+        if (lookupUtil.getCertificationCriteriaRemovedSubjectId().equals(observationSubjectId)) {
+            return criteriaRemovedFormatter;
+        }
+        if (lookupUtil.getRwtPlansUrlChangedSubjectId().equals(observationSubjectId)) {
+            return rwtPlansChangedFormatter;
+        }
+        if (lookupUtil.getRwtResultsUrlChangedSubjectId().equals(observationSubjectId)) {
+            return rwtResultsChangedFormatter;
+        }
+        if (lookupUtil.getServiceBaseUrlListChangedSubjectId().equals(observationSubjectId)) {
+            return serviceBaseUrlListChangedFormatter;
+        }
+        LOGGER.error("No subject formatter found for subject with ID " + observationSubjectId);
         return null;
     }
 }
