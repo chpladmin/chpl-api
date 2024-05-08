@@ -1,8 +1,10 @@
 package gov.healthit.chpl.scheduler.job.developer.attestation.email.missingchangerequest;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.math.NumberUtils;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -10,12 +12,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.dao.auth.UserDAO;
-import gov.healthit.chpl.dto.auth.UserDTO;
+import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.scheduler.job.QuartzJob;
 import gov.healthit.chpl.scheduler.job.developer.attestation.email.DeveloperEmail;
 import gov.healthit.chpl.scheduler.job.developer.attestation.email.StatusReportEmail;
+import gov.healthit.chpl.user.cognito.CognitoApiWrapper;
+import gov.healthit.chpl.util.Util;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2(topic = "missingAttestationChangeRequestEmailJobLogger")
@@ -36,16 +40,19 @@ public class MissingAttestationChangeRequestEmailJob implements Job  {
     @Autowired
     private UserDAO userDAO;
 
+    @Autowired
+    private CognitoApiWrapper cognitoApiWrapper;
+
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
 
         LOGGER.info("********* Starting Developer Missing Attestatation Change Request Email job. *********");
         try {
-            UserDTO submittedByUser = getUserFromJobData(context);
+            User submittedByUser = getUserFromJobData(context);
 
             List<DeveloperEmail> developerEmails = missingAttestationChangeRequestDeveloperCollector.getDevelopers().stream()
-                    .map(developer -> emailGenerator.getDeveloperEmail(developer))
+                    .map(developer -> emailGenerator.getDeveloperEmail(developer, submittedByUser))
                     .toList();
 
             sendEmails(developerEmails);
@@ -73,7 +80,7 @@ public class MissingAttestationChangeRequestEmailJob implements Job  {
         });
     }
 
-    private void sendStatusReportEmail(List<DeveloperEmail> developerEmails, UserDTO submittedUser) {
+    private void sendStatusReportEmail(List<DeveloperEmail> developerEmails, User submittedUser) {
         StatusReportEmail statusReportEmail = emailStatusReportGenerator.getStatusReportEmail(developerEmails, submittedUser);
 
         try {
@@ -88,7 +95,15 @@ public class MissingAttestationChangeRequestEmailJob implements Job  {
         }
     }
 
-    private UserDTO getUserFromJobData(JobExecutionContext context) throws UserRetrievalException {
-        return userDAO.getById(context.getMergedJobDataMap().getLong(QuartzJob.JOB_DATA_KEY_SUBMITTED_BY_USER_ID));
+    private User getUserFromJobData(JobExecutionContext context) throws UserRetrievalException {
+        String id = context.getMergedJobDataMap().get(QuartzJob.JOB_DATA_KEY_SUBMITTED_BY_USER_ID).toString();
+
+        if (NumberUtils.isParsable(id)) {
+            return userDAO.getById(Long.valueOf(id)).toDomain();
+        } else if (Util.isUUID(id)) {
+            return cognitoApiWrapper.getUserInfo(UUID.fromString(id));
+        } else {
+            return null;
+        }
     }
 }

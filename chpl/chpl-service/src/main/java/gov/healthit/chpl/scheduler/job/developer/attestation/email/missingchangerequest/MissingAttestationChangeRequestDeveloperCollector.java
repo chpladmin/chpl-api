@@ -83,7 +83,6 @@ public class MissingAttestationChangeRequestDeveloperCollector extends SecurityC
                     .map(result -> getAttestationSubmission(getChangeRequest(result.getId())))
                     .toList();
 
-            LOGGER.debug("Found {} Attestation Change Requests for {}", changeRequestAttestationSubmissions.size(), developer.getName());
             return changeRequestAttestationSubmissions;
         } catch (ValidationException e) {
             LOGGER.error("Error getting change requests for developer: {} {}", developer.getId(), developer.getName());

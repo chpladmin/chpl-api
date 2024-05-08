@@ -7,6 +7,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -110,6 +111,15 @@ public final class Util {
                         .concat(String.format("%s " + finalJoinStr + " ", list.size() > 2 ? "," : ""))
                         .concat(list.get(list.size() - 1))
                     : list.get(0);
+        }
+    }
+
+    public static boolean isUUID(String string) {
+        try {
+            UUID.fromString(string);
+            return true;
+        } catch (Exception ex) {
+            return false;
         }
     }
 }

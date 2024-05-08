@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.dto.auth.UserDTO;
+import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
 import gov.healthit.chpl.email.footer.PublicFooter;
 import gov.healthit.chpl.scheduler.job.developer.attestation.email.DeveloperEmail;
@@ -35,7 +35,7 @@ public class MissingAttestationChangeRequestDeveloperStatusReportEmailGenerator 
         this.emailParagraph = emailParagraph;
     }
 
-    public StatusReportEmail getStatusReportEmail(List<DeveloperEmail> developerEmails, UserDTO submittedUser) {
+    public StatusReportEmail getStatusReportEmail(List<DeveloperEmail> developerEmails, User submittedUser) {
         return StatusReportEmail.builder()
                 .subject(emailSubject)
                 .message(getMessage(developerEmails, submittedUser))
@@ -43,7 +43,7 @@ public class MissingAttestationChangeRequestDeveloperStatusReportEmailGenerator 
                 .build();
     }
 
-    private String getMessage(List<DeveloperEmail> developerEmails, UserDTO submittedUser) {
+    private String getMessage(List<DeveloperEmail> developerEmails, User submittedUser) {
         return htmlEmailBuilder.initialize()
                 .heading(emailSubject)
                 .paragraph("", String.format(emailSalutation, submittedUser.getFullName()))

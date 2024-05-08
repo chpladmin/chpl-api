@@ -1,16 +1,18 @@
 package gov.healthit.chpl.scheduler.job.developer.attestation.email.missingchangerequest;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.auth.user.AuthenticationSystem;
 import gov.healthit.chpl.domain.Developer;
-import gov.healthit.chpl.dto.auth.UserDTO;
+import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
 import gov.healthit.chpl.email.footer.PublicFooter;
-import gov.healthit.chpl.manager.DeveloperManager;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.scheduler.job.developer.attestation.email.DeveloperEmail;
 import gov.healthit.chpl.scheduler.job.developer.attestation.email.DeveloperEmailGenerator;
 import gov.healthit.chpl.util.Util;
@@ -19,7 +21,8 @@ import lombok.extern.log4j.Log4j2;
 @Component
 @Log4j2(topic = "missingAttestationChangeRequestEmailJobLogger")
 public class MissingAttestationChangeRequestDeveloperEmailGenerator implements DeveloperEmailGenerator {
-    private DeveloperManager developerManager;
+
+    private ResourcePermissionsFactory resourcePermissionsFactory;
     private ChplHtmlEmailBuilder htmlEmailBuilder;
     private String emailSubject;
     private String emailSalutation;
@@ -29,14 +32,14 @@ public class MissingAttestationChangeRequestDeveloperEmailGenerator implements D
     private String emailClosing;
 
     @Autowired
-    public MissingAttestationChangeRequestDeveloperEmailGenerator(DeveloperManager developerManager, ChplHtmlEmailBuilder htmlEmailBuilder,
+    public MissingAttestationChangeRequestDeveloperEmailGenerator(ResourcePermissionsFactory resourcePermissionsFactory, ChplHtmlEmailBuilder htmlEmailBuilder,
             @Value("${developer.missingAttestationChangeRequest.subject}") String emailSubject,
             @Value("${developer.missingAttestationChangeRequest.salutation}") String emailSalutation,
             @Value("${developer.missingAttestationChangeRequest.paragraph1}") String emailParagraph1,
             @Value("${developer.missingAttestationChangeRequest.paragraph2}") String emailParagraph2,
             @Value("${developer.missingAttestationChangeRequest.paragraph3}") String emailParagraph3,
             @Value("${developer.missingAttestationChangeRequest.closing}") String emailClosing) {
-        this.developerManager = developerManager;
+        this.resourcePermissionsFactory = resourcePermissionsFactory;
         this.htmlEmailBuilder = htmlEmailBuilder;
         this.emailSubject = emailSubject;
         this.emailSalutation = emailSalutation;
@@ -46,11 +49,17 @@ public class MissingAttestationChangeRequestDeveloperEmailGenerator implements D
         this.emailClosing = emailClosing;
     }
 
-
     @Override
-    public DeveloperEmail getDeveloperEmail(Developer developer) {
+    public DeveloperEmail getDeveloperEmail(Developer developer, User submittedUser) {
         try {
-            List<UserDTO> developerUsers = developerManager.getAllUsersOnDeveloper(developer.getId());
+
+            List<User> developerUsers = new ArrayList<User>();
+            if (submittedUser.getCognitoId() != null) {
+                developerUsers = getCognitoUsersForDeveloper(developer);
+            } else if (submittedUser.getUserId() != null) {
+                developerUsers = getChplUsersForDeveloper(developer);
+            }
+
             return DeveloperEmail.builder()
                     .developer(developer)
                     .recipients(getRecipients(developerUsers))
@@ -64,13 +73,21 @@ public class MissingAttestationChangeRequestDeveloperEmailGenerator implements D
         }
     }
 
-    private List<String> getRecipients(List<UserDTO> developerUsers) {
+    private List<User> getCognitoUsersForDeveloper(Developer developer) {
+        return resourcePermissionsFactory.get(AuthenticationSystem.COGNTIO).getAllUsersOnDeveloper(developer);
+    }
+
+    private List<User> getChplUsersForDeveloper(Developer developer) {
+        return resourcePermissionsFactory.get(AuthenticationSystem.CHPL).getAllUsersOnDeveloper(developer);
+    }
+
+    private List<String> getRecipients(List<User> developerUsers) {
         return developerUsers.stream()
                     .map(user -> user.getEmail())
                     .toList();
     }
 
-    private String getMessage(Developer developer, List<UserDTO> developerUsers) {
+    private String getMessage(Developer developer, List<User> developerUsers) {
         return htmlEmailBuilder.initialize()
                 .heading(emailSubject)
                 .paragraph("", emailSalutation)
@@ -82,7 +99,7 @@ public class MissingAttestationChangeRequestDeveloperEmailGenerator implements D
                 .build();
     }
 
-    private String getUsersAsString(List<UserDTO> developerUsers) {
+    private String getUsersAsString(List<User> developerUsers) {
         List<String> users = developerUsers.stream()
                 .map(user -> user.getFullName() + " &lt;" + user.getEmail() + "&gt;")
                 .toList();
