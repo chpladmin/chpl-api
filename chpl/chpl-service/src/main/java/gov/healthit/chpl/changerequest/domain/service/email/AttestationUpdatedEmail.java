@@ -3,6 +3,7 @@ package gov.healthit.chpl.changerequest.domain.service.email;
 import java.time.format.DateTimeFormatter;
 import java.util.stream.Collectors;
 
+import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -14,6 +15,7 @@ import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
 import gov.healthit.chpl.email.footer.PublicFooter;
 import gov.healthit.chpl.exception.EmailNotSentException;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 
 @Component
 public class AttestationUpdatedEmail extends ChangeRequestEmail {
@@ -25,10 +27,11 @@ public class AttestationUpdatedEmail extends ChangeRequestEmail {
 
     @Autowired
     public AttestationUpdatedEmail(ChplEmailFactory chplEmailFactory, ChplHtmlEmailBuilder chplHtmlEmailBuilder, UserDeveloperMapDAO userDeveloperMapDAO,
+            ResourcePermissionsFactory resourcePermissionsFactory, FF4j ff4j,
             @Value("${changeRequest.attestation.updated.subject}") String emailSubject,
             @Value("${changeRequest.attestation.updated.body}") String emailBody) {
 
-        super(userDeveloperMapDAO);
+        super(userDeveloperMapDAO, resourcePermissionsFactory, ff4j);
         this.chplEmailFactory = chplEmailFactory;
         this.chplHtmlEmailBuilder = chplHtmlEmailBuilder;
         this.emailSubject = emailSubject;

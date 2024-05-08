@@ -31,10 +31,8 @@ import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.domain.schedule.ChplJob;
 import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
-import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.exception.ActivityException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.SchedulerManager;
@@ -181,19 +179,12 @@ public class ComplaintManager extends SecuredManager {
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).COMPLAINT, "
             + "T(gov.healthit.chpl.permissions.domains.ComplaintDomainPermissions).DOWNLOAD_ALL)")
     public ChplOneTimeTrigger triggerComplaintsReport() throws SchedulerException, ValidationException {
-        UserDTO jobUser = null;
-        try {
-            jobUser = userManager.getById(AuthUtil.getCurrentUser().getId());
-        } catch (UserRetrievalException ex) {
-            LOGGER.error("Could not find user to execute job.");
-        }
-
         ChplOneTimeTrigger complaintsReportTrigger = new ChplOneTimeTrigger();
         ChplJob complaintsReportJob = new ChplJob();
         complaintsReportJob.setName(ComplaintsReportJob.JOB_NAME);
         complaintsReportJob.setGroup(SchedulerManager.CHPL_JOBS_KEY);
         JobDataMap jobDataMap = new JobDataMap();
-        jobDataMap.put(ComplaintsReportJob.EMAIL_KEY, jobUser.getEmail());
+        jobDataMap.put(ComplaintsReportJob.EMAIL_KEY, AuthUtil.getCurrentUser().getEmail());
         complaintsReportJob.setJobDataMap(jobDataMap);
         complaintsReportTrigger.setJob(complaintsReportJob);
         complaintsReportTrigger.setRunDateMillis(System.currentTimeMillis() + SchedulerManager.FIVE_SECONDS_IN_MILLIS);

@@ -24,6 +24,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.FeatureList;
+import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestDAO;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestStatusTypeDAO;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestStatusType;
@@ -34,7 +35,6 @@ import gov.healthit.chpl.changerequest.search.ChangeRequestSearchResult;
 import gov.healthit.chpl.changerequest.search.ChangeRequestSearchService;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.domain.Developer;
-import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
 import gov.healthit.chpl.email.footer.PublicFooter;
@@ -107,7 +107,7 @@ public class ChangeRequestReportEmailJob extends QuartzJob {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
         LOGGER.info("********* Starting the Change Request Report Email job *********");
         JobDataMap jobDataMap = context.getMergedJobDataMap();
-        UserDTO user = (UserDTO) jobDataMap.get(USER_KEY);
+        JWTAuthenticatedUser user = (JWTAuthenticatedUser) jobDataMap.get(USER_KEY);
         ChangeRequestSearchRequest searchRequest = (ChangeRequestSearchRequest) jobDataMap.get(SEARCH_REQUEST);
         dateTimeFormatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
         List<ChangeRequestSearchResult> searchResults = null;
@@ -190,7 +190,7 @@ public class ChangeRequestReportEmailJob extends QuartzJob {
     }
 
     private void sendEmail(JobExecutionContext context, ChangeRequestSearchRequest searchRequest) throws EmailNotSentException, IOException {
-        UserDTO user = (UserDTO) context.getMergedJobDataMap().get(USER_KEY);
+        JWTAuthenticatedUser user = (JWTAuthenticatedUser) context.getMergedJobDataMap().get(USER_KEY);
         String email = user.getEmail();
 
         LOGGER.info("Sending email to: " + email);

@@ -70,14 +70,12 @@ import gov.healthit.chpl.dto.CertifiedProductQmsStandardDTO;
 import gov.healthit.chpl.dto.CertifiedProductTargetedUserDTO;
 import gov.healthit.chpl.dto.ListingToListingMapDTO;
 import gov.healthit.chpl.dto.TargetedUserDTO;
-import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
 import gov.healthit.chpl.exception.ActivityException;
 import gov.healthit.chpl.exception.CertifiedProductUpdateException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
-import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.listing.measure.ListingMeasureDAO;
 import gov.healthit.chpl.manager.auth.UserManager;
@@ -593,7 +591,6 @@ public class CertifiedProductManager extends SecuredManager {
 
         int numChanges = 0;
         List<CertifiedProductQmsStandard> qmsToAdd = new ArrayList<CertifiedProductQmsStandard>();
-        List<QmsStandardPair> qmsToUpdate = new ArrayList<QmsStandardPair>();
         List<Long> idsToRemove = new ArrayList<Long>();
 
         // figure out which QMS to add
@@ -611,7 +608,11 @@ public class CertifiedProductManager extends SecuredManager {
                     for (CertifiedProductQmsStandard existingItem : existingQmsStandards) {
                         if (updatedItem.matches(existingItem)) {
                             inExistingListing = true;
-                            qmsToUpdate.add(new QmsStandardPair(existingItem, updatedItem));
+                            if (haveQmsDetailsChanged(existingItem, updatedItem)) {
+                                inExistingListing = true;
+                                qmsToAdd.add(updatedItem);
+                                idsToRemove.add(existingItem.getId());
+                            }
                         }
                     }
 
@@ -655,34 +656,15 @@ public class CertifiedProductManager extends SecuredManager {
             cpQmsDao.createCertifiedProductQms(qmsDto);
         }
 
-        for (QmsStandardPair toUpdate : qmsToUpdate) {
-            boolean hasChanged = false;
-            if (!Objects.equals(toUpdate.getOrig().getApplicableCriteria(),
-                    toUpdate.getUpdated().getApplicableCriteria())
-                    || !Objects.equals(toUpdate.getOrig().getQmsModification(),
-                            toUpdate.getUpdated().getQmsModification())) {
-                hasChanged = true;
-            }
-
-            if (hasChanged) {
-                CertifiedProductQmsStandard stdToUpdate = toUpdate.getUpdated();
-                QmsStandard qmsItem = qmsDao.getById(stdToUpdate.getQmsStandardId());
-                CertifiedProductQmsStandardDTO qmsDto = new CertifiedProductQmsStandardDTO();
-                qmsDto.setId(stdToUpdate.getId());
-                qmsDto.setApplicableCriteria(stdToUpdate.getApplicableCriteria());
-                qmsDto.setCertifiedProductId(listingId);
-                qmsDto.setQmsModification(stdToUpdate.getQmsModification());
-                qmsDto.setQmsStandardId(qmsItem.getId());
-                qmsDto.setQmsStandardName(qmsItem.getName());
-                cpQmsDao.updateCertifiedProductQms(qmsDto);
-                numChanges++;
-            }
-        }
-
         for (Long idToRemove : idsToRemove) {
             cpQmsDao.deleteCertifiedProductQms(idToRemove);
         }
         return numChanges;
+    }
+
+    private boolean haveQmsDetailsChanged(CertifiedProductQmsStandard orig, CertifiedProductQmsStandard updated) {
+        return !StringUtils.equals(orig.getApplicableCriteria(), updated.getApplicableCriteria())
+                || !StringUtils.equals(orig.getQmsModification(), updated.getQmsModification());
     }
 
     private int updateMeasures(Long listingId, List<ListingMeasure> existingMeasures,
@@ -1131,12 +1113,6 @@ public class CertifiedProductManager extends SecuredManager {
 
     private void createTriggerToUpdateCurrentCertificationStatusJob(CertifiedProductSearchDetails updatedListing, Long activityId,
             LocalDate currentStatusUpdateDay, String reason) {
-        UserDTO jobUser = null;
-        try {
-            jobUser = userManager.getById(AuthUtil.getCurrentUser().getId());
-        } catch (UserRetrievalException ex) {
-            LOGGER.error("Could not find user to execute job.");
-        }
 
         ChplOneTimeTrigger updateStatusTrigger = new ChplOneTimeTrigger();
         ChplJob updateStatusJob = new ChplJob();
@@ -1144,7 +1120,7 @@ public class CertifiedProductManager extends SecuredManager {
         updateStatusJob.setGroup(SchedulerManager.CHPL_BACKGROUND_JOBS_KEY);
         JobDataMap jobDataMap = new JobDataMap();
         jobDataMap.put(UpdateCurrentCertificationStatusJob.LISTING_ID, updatedListing.getId());
-        jobDataMap.put(UpdateCurrentCertificationStatusJob.USER, jobUser);
+        jobDataMap.put(UpdateCurrentCertificationStatusJob.USER, AuthUtil.getCurrentUser());
         jobDataMap.put(UpdateCurrentCertificationStatusJob.CERTIFICATION_STATUS_EVENT_DAY, currentStatusUpdateDay);
         jobDataMap.put(UpdateCurrentCertificationStatusJob.ACTIVITY_ID, activityId);
         jobDataMap.put(UpdateCurrentCertificationStatusJob.USER_PROVIDED_REASON, reason);
