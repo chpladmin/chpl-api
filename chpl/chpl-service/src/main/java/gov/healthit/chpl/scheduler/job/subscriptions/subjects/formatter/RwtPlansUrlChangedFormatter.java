@@ -21,8 +21,8 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2(topic = "subscriptionObservationsNotificationJobLogger")
 public class RwtPlansUrlChangedFormatter extends ObservationSubjectFormatter {
     private static final String DESCRIPTION_REMOVED = "RWT Plans URL %s was removed";
-    private static final String DESCRIPTION_ADDED_UNFORMATTED = "RWT Plans URL %s was added";
-    private static final String DESCRIPTION_UPDATED_UNFORMATTED = "RWT Plans URL was changed from %s to %s";
+    private static final String DESCRIPTION_ADDED = "RWT Plans URL %s was added";
+    private static final String DESCRIPTION_UPDATED = "RWT Plans URL was changed from %s to %s";
 
     @Autowired
     public RwtPlansUrlChangedFormatter(@Qualifier("activityDAO") ActivityDAO activityDao,
@@ -46,9 +46,9 @@ public class RwtPlansUrlChangedFormatter extends ObservationSubjectFormatter {
         if (!StringUtils.isEmpty(before.getRwtPlansUrl()) && StringUtils.isEmpty(after.getRwtPlansUrl())) {
             formattedObservation = String.format(DESCRIPTION_REMOVED, before.getRwtPlansUrl());
         } else if (StringUtils.isEmpty(before.getRwtPlansUrl()) && !StringUtils.isEmpty(after.getRwtPlansUrl())) {
-            formattedObservation = String.format(DESCRIPTION_ADDED_UNFORMATTED, after.getRwtPlansUrl());
+            formattedObservation = String.format(DESCRIPTION_ADDED, after.getRwtPlansUrl());
         } else {
-            formattedObservation = String.format(DESCRIPTION_UPDATED_UNFORMATTED, before.getRwtPlansUrl(), after.getRwtPlansUrl());
+            formattedObservation = String.format(DESCRIPTION_UPDATED, before.getRwtPlansUrl(), after.getRwtPlansUrl());
         }
 
         List<List<String>> formattedObservations = new ArrayList<List<String>>();

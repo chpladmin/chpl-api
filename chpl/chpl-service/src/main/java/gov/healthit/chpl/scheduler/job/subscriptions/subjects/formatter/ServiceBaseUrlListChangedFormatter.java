@@ -23,9 +23,9 @@ import lombok.extern.log4j.Log4j2;
 @Component
 @Log4j2(topic = "subscriptionObservationsNotificationJobLogger")
 public class ServiceBaseUrlListChangedFormatter extends ObservationSubjectFormatter {
-    private static final String DESCRIPTION_REMOVED_UNFORMATTED = "Service Base URL List %s was removed from %s";
-    private static final String DESCRIPTION_ADDED_UNFORMATTED = "Service Base URL List %s was added to %s";
-    private static final String DESCRIPTION_UPDATED_UNFORMATTED = "Service Base URL List was changed from %s to %s on %s";
+    private static final String DESCRIPTION_REMOVED = "Service Base URL List %s was removed from %s";
+    private static final String DESCRIPTION_ADDED = "Service Base URL List %s was added to %s";
+    private static final String DESCRIPTION_UPDATED = "Service Base URL List was changed from %s to %s on %s";
 
     @Autowired
     public ServiceBaseUrlListChangedFormatter(@Qualifier("activityDAO") ActivityDAO activityDao,
@@ -50,16 +50,16 @@ public class ServiceBaseUrlListChangedFormatter extends ObservationSubjectFormat
 
         String formattedObservation = null;
         if (originalG10CertResult != null && newG10CertResult == null) {
-            formattedObservation = String.format(DESCRIPTION_REMOVED_UNFORMATTED,
+            formattedObservation = String.format(DESCRIPTION_REMOVED,
                     originalG10CertResult.getServiceBaseUrlList(),
                     Util.formatCriteriaNumber(originalG10CertResult.getCriterion()));
         } else if (originalG10CertResult == null && newG10CertResult != null)  {
-            formattedObservation = String.format(DESCRIPTION_ADDED_UNFORMATTED,
+            formattedObservation = String.format(DESCRIPTION_ADDED,
                     newG10CertResult.getServiceBaseUrlList(),
                     Util.formatCriteriaNumber(newG10CertResult.getCriterion()));
         } else if (originalG10CertResult != null && newG10CertResult != null
                 && !StringUtils.equals(originalG10CertResult.getServiceBaseUrlList(), newG10CertResult.getServiceBaseUrlList())) {
-            formattedObservation = String.format(DESCRIPTION_UPDATED_UNFORMATTED,
+            formattedObservation = String.format(DESCRIPTION_UPDATED,
                     originalG10CertResult.getServiceBaseUrlList(),
                     newG10CertResult.getServiceBaseUrlList(),
                     Util.formatCriteriaNumber(newG10CertResult.getCriterion()));
