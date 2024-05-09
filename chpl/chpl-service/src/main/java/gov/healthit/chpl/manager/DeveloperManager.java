@@ -25,7 +25,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import gov.healthit.chpl.auth.user.AuthenticationSystem;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.caching.ListingSearchCacheRefresh;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
@@ -66,6 +65,7 @@ import gov.healthit.chpl.manager.rules.developer.DeveloperValidationFactory;
 import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.scheduler.job.SplitDeveloperJob;
 import gov.healthit.chpl.scheduler.job.developer.JoinDeveloperJob;
+import gov.healthit.chpl.scheduler.job.developer.messaging.MessageDevelopersJob;
 import gov.healthit.chpl.sharedstore.listing.ListingStoreRemove;
 import gov.healthit.chpl.sharedstore.listing.RemoveBy;
 import gov.healthit.chpl.util.AuthUtil;
@@ -244,22 +244,10 @@ public class DeveloperManager extends SecuredManager {
     @Transactional(readOnly = true)
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).DEVELOPER, "
             + "T(gov.healthit.chpl.permissions.domains.DeveloperDomainPermissions).GET_ALL_USERS, #devId)")
-    public List<UserDTO> getAllUsersOnDeveloper(Long devId) throws EntityRetrievalException {
+    public List<User> getAllUsersOnDeveloper(Long devId) throws EntityRetrievalException {
         Developer dev = getById(devId);
-        List<User> users = resourcePermissionsFactory.get(AuthenticationSystem.CHPL).getAllUsersOnDeveloper(dev);
-
-        return users.stream()
-                .map(user -> getUser(user.getUserId()))
-                .toList();
-    }
-
-    @Transactional(readOnly = true)
-    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).DEVELOPER, "
-            + "T(gov.healthit.chpl.permissions.domains.DeveloperDomainPermissions).GET_ALL_USERS, #devId)")
-    public List<User> getAllCognitoUsersOnDeveloper(Long devId) throws EntityRetrievalException {
-        Developer dev = getById(devId);
-        return resourcePermissionsFactory.get(AuthenticationSystem.COGNTIO).getAllUsersOnDeveloper(dev);
-
+        List<User> users = resourcePermissionsFactory.get().getAllUsersOnDeveloper(dev);
+        return users;
     }
 
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).DEVELOPER, "
@@ -449,6 +437,20 @@ public class DeveloperManager extends SecuredManager {
         splitDeveloperTrigger.setRunDateMillis(System.currentTimeMillis() + SchedulerManager.FIVE_SECONDS_IN_MILLIS);
         splitDeveloperTrigger = schedulerManager.createBackgroundJobTrigger(splitDeveloperTrigger);
         return splitDeveloperTrigger;
+    }
+
+    //TODO: Only allow ADMIN/ONC for now
+    public ChplOneTimeTrigger triggerMessageDevelopers() throws ValidationException, SchedulerException {
+        ChplOneTimeTrigger messageDevelopersTrigger = new ChplOneTimeTrigger();
+        ChplJob messageDevelopersJob = new ChplJob();
+        messageDevelopersJob.setName(MessageDevelopersJob.JOB_NAME);
+        messageDevelopersJob.setGroup(SchedulerManager.CHPL_BACKGROUND_JOBS_KEY);
+        JobDataMap jobDataMap = new JobDataMap();
+        messageDevelopersJob.setJobDataMap(jobDataMap);
+        messageDevelopersTrigger.setJob(messageDevelopersJob);
+        messageDevelopersTrigger.setRunDateMillis(System.currentTimeMillis() + SchedulerManager.FIVE_SECONDS_IN_MILLIS);
+        messageDevelopersTrigger = schedulerManager.createBackgroundJobTrigger(messageDevelopersTrigger);
+        return messageDevelopersTrigger;
     }
 
     private Set<String> getDuplicateChplProductNumberErrorMessages(List<DuplicateChplProdNumber> duplicateChplProdNumbers) {

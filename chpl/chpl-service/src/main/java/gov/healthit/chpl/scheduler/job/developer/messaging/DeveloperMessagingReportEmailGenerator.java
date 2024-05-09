@@ -1,4 +1,4 @@
-package gov.healthit.chpl.scheduler.job.developer.attestation.email.missingchangerequest;
+package gov.healthit.chpl.scheduler.job.developer.messaging;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -10,13 +10,11 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
 import gov.healthit.chpl.email.footer.PublicFooter;
-import gov.healthit.chpl.scheduler.job.developer.messaging.DeveloperEmail;
-import gov.healthit.chpl.scheduler.job.developer.messaging.MessagingReportEmail;
 import lombok.extern.log4j.Log4j2;
 
 @Component
-@Log4j2(topic = "missingAttestationChangeRequestEmailJobLogger")
-public class MissingAttestationChangeRequestDeveloperStatusReportEmailGenerator {
+@Log4j2(topic = "messageDevelopersJobLogger")
+public class DeveloperMessagingReportEmailGenerator {
     private ChplHtmlEmailBuilder htmlEmailBuilder;
     private String emailSubject;
     private String emailSalutation;
@@ -25,7 +23,7 @@ public class MissingAttestationChangeRequestDeveloperStatusReportEmailGenerator 
     private List<String> tableHeaders = List.of("Developer", "Users");
 
     @Autowired
-    public MissingAttestationChangeRequestDeveloperStatusReportEmailGenerator(ChplHtmlEmailBuilder htmlEmailBuilder,
+    public DeveloperMessagingReportEmailGenerator(ChplHtmlEmailBuilder htmlEmailBuilder,
             @Value("${developer.missingAttestationChangeRequest.report.subject}") String emailSubject,
             @Value("${developer.missingAttestationChangeRequest.report.salutation}") String emailSalutation,
             @Value("${developer.missingAttestationChangeRequest.report.paragraph}") String emailParagraph) {

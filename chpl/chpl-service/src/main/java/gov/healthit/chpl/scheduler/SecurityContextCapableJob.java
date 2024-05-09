@@ -56,5 +56,4 @@ public class SecurityContextCapableJob {
                 .build());
         SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);
     }
-
 }

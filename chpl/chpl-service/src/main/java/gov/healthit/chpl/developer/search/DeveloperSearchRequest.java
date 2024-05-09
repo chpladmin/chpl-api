@@ -5,8 +5,10 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 import gov.healthit.chpl.search.domain.SearchSetOperator;
+import gov.healthit.chpl.util.CommaDelimitedStringToSetOfStrings;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -26,17 +28,21 @@ public class DeveloperSearchRequest implements Serializable {
     private String developerName;
     private String developerCode;
 
+    @JsonDeserialize(using = CommaDelimitedStringToSetOfStrings.class)
     @Builder.Default
     private Set<String> statuses = new HashSet<String>();
 
+    @JsonDeserialize(using = CommaDelimitedStringToSetOfStrings.class)
     @Builder.Default
     private Set<String> acbsForActiveListings = new HashSet<String>();
+    @JsonDeserialize(using = CommaDelimitedStringToSetOfStrings.class)
     @Builder.Default
     private Set<String> acbsForAllListings = new HashSet<String>();
 
     private String decertificationDateStart;
     private String decertificationDateEnd;
 
+    @JsonDeserialize(using = CommaDelimitedStringToSetOfStrings.class)
     @JsonIgnore
     @Builder.Default
     private Set<String> activeListingsOptionsStrings = new HashSet<String>();
@@ -46,6 +52,7 @@ public class DeveloperSearchRequest implements Serializable {
     private String activeListingsOptionsOperatorString;
     private SearchSetOperator activeListingsOptionsOperator;
 
+    @JsonDeserialize(using = CommaDelimitedStringToSetOfStrings.class)
     @JsonIgnore
     @Builder.Default
     private Set<String> attestationsOptionsStrings = new HashSet<String>();

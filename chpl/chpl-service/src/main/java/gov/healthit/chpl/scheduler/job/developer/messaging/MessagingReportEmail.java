@@ -1,4 +1,4 @@
-package gov.healthit.chpl.scheduler.job.developer.attestation.email;
+package gov.healthit.chpl.scheduler.job.developer.messaging;
 
 import java.util.List;
 
@@ -11,8 +11,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-
-public class StatusReportEmail {
+public class MessagingReportEmail {
     private List<String> recipients;
     private String subject;
     private String message;

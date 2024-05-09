@@ -1,4 +1,4 @@
-package gov.healthit.chpl.scheduler.job.developer.attestation.email.missingchangerequest;
+package gov.healthit.chpl.scheduler.job.developer.messaging;
 
 import java.util.List;
 import java.util.UUID;
@@ -23,39 +23,38 @@ import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.scheduler.SecurityContextCapableJob;
 import gov.healthit.chpl.scheduler.job.QuartzJob;
-import gov.healthit.chpl.scheduler.job.developer.messaging.DeveloperEmail;
-import gov.healthit.chpl.scheduler.job.developer.messaging.MessagingReportEmail;
 import gov.healthit.chpl.search.domain.SearchSetOperator;
 import gov.healthit.chpl.user.cognito.CognitoApiWrapper;
 import gov.healthit.chpl.util.Util;
 import lombok.extern.log4j.Log4j2;
 
-@Log4j2(topic = "missingAttestationChangeRequestEmailJobLogger")
-public class MissingAttestationChangeRequestEmailJob extends SecurityContextCapableJob implements Job {
+@Log4j2(topic = "messageDevelopersJobLogger")
+public class MessageDevelopersJob extends SecurityContextCapableJob implements Job {
+    public static final String JOB_NAME = "messageDevelopersJob";
 
     @Autowired
     private DeveloperSearchService developerSearchService;
 
     @Autowired
-    private MissingAttestationChangeRequestDeveloperEmailGenerator emailGenerator;
+    private DeveloperMessageEmailGenerator messageGenerator;
 
     @Autowired
-    private MissingAttestationChangeRequestDeveloperStatusReportEmailGenerator emailStatusReportGenerator;
+    private DeveloperMessagingReportEmailGenerator messagingReportGenerator;
 
     @Autowired
     private ChplEmailFactory emailFactory;
 
     @Autowired
-    private UserDAO userDAO;
+    private CognitoApiWrapper cognitoApiWrapper;
 
     @Autowired
-    private CognitoApiWrapper cognitoApiWrapper;
+    private UserDAO userDAO;
 
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
 
-        LOGGER.info("********* Starting Developer Missing Attestatation Change Request Email job. *********");
+        LOGGER.info("********* Starting Message Developers job. *********");
         try {
             User submittedByUser = getUserFromJobData(context);
             setSecurityContext(submittedByUser);
@@ -71,7 +70,7 @@ public class MissingAttestationChangeRequestEmailJob extends SecurityContextCapa
                         LOGGER);
 
             List<DeveloperEmail> developerEmails = developersMissingAttestations.stream()
-                    .map(developer -> emailGenerator.getDeveloperEmail(developer, submittedByUser))
+                    .map(developer -> messageGenerator.getDeveloperEmail(developer))
                     .toList();
 
             sendEmails(developerEmails);
@@ -79,7 +78,7 @@ public class MissingAttestationChangeRequestEmailJob extends SecurityContextCapa
         } catch (Exception e) {
             LOGGER.error(e);
         } finally {
-            LOGGER.info("********* Completed Developer Missing Attestatation Change Request Email job. *********");
+            LOGGER.info("********* Completed Message Developers job. *********");
         }
     }
 
@@ -100,7 +99,8 @@ public class MissingAttestationChangeRequestEmailJob extends SecurityContextCapa
     }
 
     private void sendStatusReportEmail(List<DeveloperEmail> developerEmails, User submittedUser) {
-        MessagingReportEmail statusReportEmail = emailStatusReportGenerator.getStatusReportEmail(developerEmails, submittedUser);
+        MessagingReportEmail statusReportEmail = messagingReportGenerator.getStatusReportEmail(developerEmails, submittedUser);
+
         try {
             emailFactory.emailBuilder()
                 .recipients(statusReportEmail.getRecipients())
