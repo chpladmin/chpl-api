@@ -2,7 +2,6 @@ package gov.healthit.chpl.developer.search;
 
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -26,37 +25,26 @@ import lombok.Setter;
 @Setter
 @Builder
 @AllArgsConstructor
-public class DeveloperSearchResult implements Serializable {
+@Deprecated
+public class DeveloperSearchResultV2 implements Serializable {
 
-    private static final long serialVersionUID = -2547390625364841038L;
+    private static final long serialVersionUID = -2541790625364841038L;
 
     private Long id;
     private String code;
     private String name;
-    private String website;
-    private Boolean selfDeveloper;
     private Address address;
     private PointOfContact contact;
     private IdNamePair status;
-    private Date mostRecentStatusEvent;
+
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
     private LocalDate decertificationDate;
-    private Integer currentActiveListingCount;
-    private Integer mostRecentPastAttestationPeriodActiveListingCount;
-    private Boolean submittedAttestationsForMostRecentPastPeriod;
-    private Boolean publishedAttestationsForMostRecentPastPeriod;
 
-    private Set<IdNamePair> acbsForAllListings;
-    private Set<IdNamePair> acbsForActiveListings;
-    private Date creationDate;
+    private Set<IdNamePair> associatedAcbs;
 
-    public DeveloperSearchResult() {
-        currentActiveListingCount = 0;
-        mostRecentPastAttestationPeriodActiveListingCount = 0;
-        submittedAttestationsForMostRecentPastPeriod = false;
-        acbsForAllListings = new HashSet<IdNamePair>();
-        acbsForActiveListings = new HashSet<IdNamePair>();
+    public DeveloperSearchResultV2() {
+        associatedAcbs = new HashSet<IdNamePair>();
     }
 
     @Override

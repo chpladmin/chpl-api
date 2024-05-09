@@ -8,21 +8,23 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.auth.user.AuthenticationSystem;
+import gov.healthit.chpl.dao.DeveloperDAO;
+import gov.healthit.chpl.developer.search.DeveloperSearchResult;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
 import gov.healthit.chpl.email.footer.PublicFooter;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.scheduler.job.developer.attestation.email.DeveloperEmail;
-import gov.healthit.chpl.scheduler.job.developer.attestation.email.DeveloperEmailGenerator;
 import gov.healthit.chpl.util.Util;
 import lombok.extern.log4j.Log4j2;
 
 @Component
 @Log4j2(topic = "missingAttestationChangeRequestEmailJobLogger")
-public class MissingAttestationChangeRequestDeveloperEmailGenerator implements DeveloperEmailGenerator {
-
+public class MissingAttestationChangeRequestDeveloperEmailGenerator {
     private ResourcePermissionsFactory resourcePermissionsFactory;
+    private DeveloperDAO developerDAO;
     private ChplHtmlEmailBuilder htmlEmailBuilder;
     private String emailSubject;
     private String emailSalutation;
@@ -32,7 +34,8 @@ public class MissingAttestationChangeRequestDeveloperEmailGenerator implements D
     private String emailClosing;
 
     @Autowired
-    public MissingAttestationChangeRequestDeveloperEmailGenerator(ResourcePermissionsFactory resourcePermissionsFactory, ChplHtmlEmailBuilder htmlEmailBuilder,
+    public MissingAttestationChangeRequestDeveloperEmailGenerator(ResourcePermissionsFactory resourcePermissionsFactory, DeveloperDAO developerDAO,
+            ChplHtmlEmailBuilder htmlEmailBuilder,
             @Value("${developer.missingAttestationChangeRequest.subject}") String emailSubject,
             @Value("${developer.missingAttestationChangeRequest.salutation}") String emailSalutation,
             @Value("${developer.missingAttestationChangeRequest.paragraph1}") String emailParagraph1,
@@ -40,6 +43,7 @@ public class MissingAttestationChangeRequestDeveloperEmailGenerator implements D
             @Value("${developer.missingAttestationChangeRequest.paragraph3}") String emailParagraph3,
             @Value("${developer.missingAttestationChangeRequest.closing}") String emailClosing) {
         this.resourcePermissionsFactory = resourcePermissionsFactory;
+        this.developerDAO = developerDAO;
         this.htmlEmailBuilder = htmlEmailBuilder;
         this.emailSubject = emailSubject;
         this.emailSalutation = emailSalutation;
@@ -49,15 +53,14 @@ public class MissingAttestationChangeRequestDeveloperEmailGenerator implements D
         this.emailClosing = emailClosing;
     }
 
-    @Override
-    public DeveloperEmail getDeveloperEmail(Developer developer, User submittedUser) {
+    public DeveloperEmail getDeveloperEmail(DeveloperSearchResult developer, User submittedUser) {
         try {
 
             List<User> developerUsers = new ArrayList<User>();
             if (submittedUser.getCognitoId() != null) {
-                developerUsers = getCognitoUsersForDeveloper(developer);
+                developerUsers = getCognitoUsersForDeveloper(getDeveloper(developer.getId()));
             } else if (submittedUser.getUserId() != null) {
-                developerUsers = getChplUsersForDeveloper(developer);
+                developerUsers = getChplUsersForDeveloper(getDeveloper(developer.getId()));
             }
 
             return DeveloperEmail.builder()
@@ -87,7 +90,7 @@ public class MissingAttestationChangeRequestDeveloperEmailGenerator implements D
                     .toList();
     }
 
-    private String getMessage(Developer developer, List<User> developerUsers) {
+    private String getMessage(DeveloperSearchResult developer, List<User> developerUsers) {
         return htmlEmailBuilder.initialize()
                 .heading(emailSubject)
                 .paragraph("", emailSalutation)
@@ -104,5 +107,14 @@ public class MissingAttestationChangeRequestDeveloperEmailGenerator implements D
                 .map(user -> user.getFullName() + " &lt;" + user.getEmail() + "&gt;")
                 .toList();
         return Util.joinListGrammatically(users);
+    }
+
+    private Developer getDeveloper(Long developerId) {
+        try {
+            return developerDAO.findById(developerId);
+        } catch (EntityRetrievalException e) {
+            LOGGER.info("Could not find developer: {}", developerId, e);
+            return null;
+        }
     }
 }
