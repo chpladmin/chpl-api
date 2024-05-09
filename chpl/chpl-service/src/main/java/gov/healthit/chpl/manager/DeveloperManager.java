@@ -439,7 +439,8 @@ public class DeveloperManager extends SecuredManager {
         return splitDeveloperTrigger;
     }
 
-    //TODO: Only allow ADMIN/ONC for now
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).DEVELOPER, "
+            + "T(gov.healthit.chpl.permissions.domains.DeveloperDomainPermissions).MESSAGE)")
     public ChplOneTimeTrigger triggerMessageDevelopers() throws ValidationException, SchedulerException {
         ChplOneTimeTrigger messageDevelopersTrigger = new ChplOneTimeTrigger();
         ChplJob messageDevelopersJob = new ChplJob();
