@@ -172,6 +172,9 @@
     <Logger name="missingAttestationChangeRequestEmailJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="missingAttestationChangeRequestEmailJob" />
     </Logger>
+    <Logger name="messageDevelopersJobLogger" level="INFO" additivity="false">
+        <AppenderRef ref="messageDevelopersJob" />
+    </Logger>
     <Logger name="fixupQuestionableActivityJobLogger" level="DEBUG" additivity="false">
         <AppenderRef ref="fixupQuestionableActivityJob" />
     </Logger>
