@@ -16,7 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.attestation.domain.AttestationPeriod;
-import gov.healthit.chpl.attestation.manager.AttestationPeriodService;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.domain.CertificationStatus;
 import gov.healthit.chpl.domain.CertificationStatusEvent;
@@ -32,24 +31,14 @@ public class DeveloperAttestationPeriodCalculator {
     private static final Integer MAX_PAGE_SIZE = 100;
 
     private DeveloperDAO developerDao;
-    private AttestationPeriodService attestationPeriodService;
     private ListingSearchService listingSearchService;
     private List<String> activeStatuses = CertificationStatusUtil.getActiveStatusNames();
 
     @Autowired
     public DeveloperAttestationPeriodCalculator(DeveloperDAO developerDao,
-            AttestationPeriodService attestationPeriodService,
             ListingSearchService listingSearchService) {
         this.developerDao = developerDao;
-        this.attestationPeriodService = attestationPeriodService;
         this.listingSearchService = listingSearchService;
-    }
-
-    public List<Developer> getDevelopersWithActiveListingsDuringMostRecentPastAttestationPeriod(Logger logger) {
-        AttestationPeriod mostRecentPastPeriod = attestationPeriodService.getMostRecentPastAttestationPeriod();
-        logger.info("Most recent past attestation period: {} - {} ", mostRecentPastPeriod.getPeriodStart().toString(), mostRecentPastPeriod.getPeriodEnd().toString());
-
-        return getDevelopersWithActiveListingsDuringAttestationPeriod(mostRecentPastPeriod, logger);
     }
 
     public List<Developer> getDevelopersWithActiveListingsDuringAttestationPeriod(AttestationPeriod period, Logger logger) {
@@ -128,6 +117,7 @@ public class DeveloperAttestationPeriodCalculator {
     }
 
     private List<ListingSearchResult> getListingDataForDeveloper(Developer developer, Map<Long, List<ListingSearchResult>> listingsByDeveloper, Logger logger) {
+        logger.info("Getting listing data for developer " + developer.getId());
         if (listingsByDeveloper.containsKey(developer.getId())) {
             return listingsByDeveloper.get(developer.getId());
         } else {
@@ -147,6 +137,8 @@ public class DeveloperAttestationPeriodCalculator {
                 .pageSize(MAX_PAGE_SIZE)
                 .pageNumber(0)
                 .build();
-        return listingSearchService.getAllPagesOfSearchResults(searchRequest, logger);
+        List<ListingSearchResult> activeListings = listingSearchService.getAllPagesOfSearchResults(searchRequest, logger);
+        logger.info("Found " + activeListings.size() + " active listings");
+        return activeListings;
     }
 }

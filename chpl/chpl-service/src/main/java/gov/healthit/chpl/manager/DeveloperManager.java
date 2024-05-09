@@ -31,6 +31,7 @@ import gov.healthit.chpl.caching.ListingSearchCacheRefresh;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.developer.search.DeveloperSearchResult;
+import gov.healthit.chpl.developer.search.DeveloperSearchResultV2;
 import gov.healthit.chpl.domain.Address;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.Developer;
@@ -131,14 +132,23 @@ public class DeveloperManager extends SecuredManager {
     @Transactional(readOnly = true)
     @Cacheable(CacheNames.COLLECTIONS_DEVELOPERS)
     public List<DeveloperSearchResult> getDeveloperSearchResults() {
+        List<DeveloperSearchResult> allDevelopers = developerDao.getAllSearchResults();
+        LOGGER.info("Converted all developers to domain result objects");
+        return allDevelopers;
+    }
+
+    @Transactional(readOnly = true)
+    @Deprecated
+    public List<DeveloperSearchResultV2> getDeveloperSearchResultsV2() {
         Map<Developer, Set<CertificationBody>> allDevelopersWithAcbs = developerDao.findAllDevelopersWithAcbs();
         return allDevelopersWithAcbs.keySet().stream()
-                .map(developer -> convertToSearchResult(developer, allDevelopersWithAcbs.get(developer)))
+                .map(developer -> convertToSearchResultV2(developer, allDevelopersWithAcbs.get(developer)))
                 .collect(Collectors.toList());
     }
 
-    private DeveloperSearchResult convertToSearchResult(Developer developer, Set<CertificationBody> acbs) {
-        return DeveloperSearchResult.builder()
+    @Deprecated
+    private DeveloperSearchResultV2 convertToSearchResultV2(Developer developer, Set<CertificationBody> acbs) {
+        return DeveloperSearchResultV2.builder()
                 .id(developer.getId())
                 .name(developer.getName())
                 .code(developer.getDeveloperCode())
@@ -393,13 +403,6 @@ public class DeveloperManager extends SecuredManager {
             throw new ValidationException(getDuplicateChplProductNumberErrorMessages(duplicateChplProdNumbers), null);
         }
 
-        UserDTO jobUser = null;
-        try {
-            jobUser = userManager.getById(AuthUtil.getCurrentUser().getId());
-        } catch (UserRetrievalException ex) {
-            LOGGER.error("Could not find user to execute job.");
-        }
-
         ChplOneTimeTrigger joinDevelopersTrigger = new ChplOneTimeTrigger();
         ChplJob joinDevelopersJob = new ChplJob();
         joinDevelopersJob.setName(JoinDeveloperJob.JOB_NAME);
@@ -407,7 +410,7 @@ public class DeveloperManager extends SecuredManager {
         JobDataMap jobDataMap = new JobDataMap();
         jobDataMap.put(JoinDeveloperJob.JOINING_DEVELOPERS, beforeDevelopers);
         jobDataMap.put(JoinDeveloperJob.DEVELOPER_TO_JOIN, owningDeveloper);
-        jobDataMap.put(JoinDeveloperJob.USER_KEY, jobUser);
+        jobDataMap.put(JoinDeveloperJob.USER_KEY, AuthUtil.getCurrentUser());
         joinDevelopersJob.setJobDataMap(jobDataMap);
         joinDevelopersTrigger.setJob(joinDevelopersJob);
         joinDevelopersTrigger.setRunDateMillis(System.currentTimeMillis() + SchedulerManager.FIVE_SECONDS_IN_MILLIS);
@@ -432,13 +435,6 @@ public class DeveloperManager extends SecuredManager {
             throw new ValidationException(devErrors);
         }
 
-        UserDTO jobUser = null;
-        try {
-            jobUser = userManager.getById(AuthUtil.getCurrentUser().getId());
-        } catch (UserRetrievalException ex) {
-            LOGGER.error("Could not find user to execute job.");
-        }
-
         ChplOneTimeTrigger splitDeveloperTrigger = new ChplOneTimeTrigger();
         ChplJob splitDeveloperJob = new ChplJob();
         splitDeveloperJob.setName(SplitDeveloperJob.JOB_NAME);
@@ -447,7 +443,7 @@ public class DeveloperManager extends SecuredManager {
         jobDataMap.put(SplitDeveloperJob.OLD_DEVELOPER_KEY, oldDeveloper);
         jobDataMap.put(SplitDeveloperJob.NEW_DEVELOPER_KEY, developerToCreate);
         jobDataMap.put(SplitDeveloperJob.PRODUCT_IDS_TO_MOVE_KEY, productIdsToMove);
-        jobDataMap.put(SplitDeveloperJob.USER_KEY, jobUser);
+        jobDataMap.put(SplitDeveloperJob.USER_KEY, AuthUtil.getCurrentUser());
         splitDeveloperJob.setJobDataMap(jobDataMap);
         splitDeveloperTrigger.setJob(splitDeveloperJob);
         splitDeveloperTrigger.setRunDateMillis(System.currentTimeMillis() + SchedulerManager.FIVE_SECONDS_IN_MILLIS);

@@ -4,6 +4,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.stream.Collectors;
 
+import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -15,6 +16,7 @@ import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
 import gov.healthit.chpl.email.footer.PublicFooter;
 import gov.healthit.chpl.exception.EmailNotSentException;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 
 @Component
 public class AttestationPendingDeveloperActionEmail extends ChangeRequestEmail {
@@ -26,10 +28,11 @@ public class AttestationPendingDeveloperActionEmail extends ChangeRequestEmail {
 
     @Autowired
     public AttestationPendingDeveloperActionEmail(ChplEmailFactory chplEmailFactory, ChplHtmlEmailBuilder chplHtmlEmailBuilder, UserDeveloperMapDAO userDeveloperMapDAO,
+            ResourcePermissionsFactory resourcePermissionsFactory, FF4j ff4j,
             @Value("${changeRequest.attestation.pendingDeveloperAction.subject}") String emailSubject,
             @Value("${changeRequest.attestation.pendingDeveloperAction.body}") String emailBody) {
 
-        super(userDeveloperMapDAO);
+        super(userDeveloperMapDAO, resourcePermissionsFactory, ff4j);
         this.chplEmailFactory = chplEmailFactory;
         this.chplHtmlEmailBuilder = chplHtmlEmailBuilder;
         this.emailSubject = emailSubject;

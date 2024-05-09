@@ -43,13 +43,11 @@ import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.domain.schedule.ChplJob;
 import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
-import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.exception.ActivityException;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
-import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.form.validation.FormValidator;
 import gov.healthit.chpl.manager.ActivityManager;
@@ -244,19 +242,13 @@ public class ChangeRequestManager {
             + "T(gov.healthit.chpl.permissions.domains.ChangeRequestDomainPermissions).SEARCH)")
     public ChplOneTimeTrigger triggerChangeRequestsReport(ChangeRequestSearchRequest searchRequest)
             throws SchedulerException, ValidationException {
-        UserDTO jobUser = null;
-        try {
-            jobUser = userManager.getById(AuthUtil.getCurrentUser().getId());
-        } catch (UserRetrievalException ex) {
-            LOGGER.error("Could not find user to execute job.");
-        }
 
         ChplOneTimeTrigger changeRequestsReportTrigger = new ChplOneTimeTrigger();
         ChplJob changeRequestsReportJob = new ChplJob();
         changeRequestsReportJob.setName(ChangeRequestReportEmailJob.JOB_NAME);
         changeRequestsReportJob.setGroup(SchedulerManager.CHPL_BACKGROUND_JOBS_KEY);
         JobDataMap jobDataMap = new JobDataMap();
-        jobDataMap.put(ChangeRequestReportEmailJob.USER_KEY, jobUser);
+        jobDataMap.put(ChangeRequestReportEmailJob.USER_KEY, AuthUtil.getCurrentUser());
         jobDataMap.put(ChangeRequestReportEmailJob.SEARCH_REQUEST, searchRequest);
         changeRequestsReportJob.setJobDataMap(jobDataMap);
         changeRequestsReportTrigger.setJob(changeRequestsReportJob);
