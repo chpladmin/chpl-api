@@ -57,6 +57,7 @@ import gov.healthit.chpl.exception.ActivityException;
 import gov.healthit.chpl.exception.CertifiedProductUpdateException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
+import gov.healthit.chpl.exception.MissingReasonException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.listing.measure.ListingMeasureDAO;
 import gov.healthit.chpl.manager.auth.UserManager;
@@ -152,7 +153,7 @@ public class CertifiedProductManagerTest {
 
     @Test(expected = ValidationException.class)
     public void update_HasValidationWarningsAndNoAck_ThrowsValidationException()
-            throws EntityRetrievalException, ValidationException, InvalidArgumentsException, IOException, ActivityException, CertifiedProductUpdateException {
+            throws MissingReasonException, EntityRetrievalException, ValidationException, InvalidArgumentsException, IOException, ActivityException, CertifiedProductUpdateException {
 
         Mockito.when(certifiedProductDetailsManager.getCertifiedProductDetails(ArgumentMatchers.anyLong()))
                 .thenReturn(getCertifiedProductSearchDetails());
@@ -180,7 +181,7 @@ public class CertifiedProductManagerTest {
 
     @Test
     public void update_HasValidationWarningsAndAck_ReturnsUpdatedListing()
-            throws EntityRetrievalException, ValidationException, InvalidArgumentsException, IOException, ActivityException, CertifiedProductUpdateException {
+            throws MissingReasonException, EntityRetrievalException, ValidationException, InvalidArgumentsException, IOException, ActivityException, CertifiedProductUpdateException {
 
         Mockito.when(certifiedProductDetailsManager.getCertifiedProductDetails(ArgumentMatchers.anyLong()))
                 .thenReturn(getCertifiedProductSearchDetails());
