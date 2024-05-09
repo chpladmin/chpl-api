@@ -12,19 +12,6 @@ import org.hibernate.usertype.UserType;
 
 public class StringJsonUserType implements UserType {
 
-    /**
-     * Return the SQL type codes for the columns mapped by this type. The codes
-     * are defined on <tt>java.sql.Types</tt>.
-     *
-     * @return int[] the typecodes
-     * @see java.sql.Types
-     */
-    @Override
-    public int[] sqlTypes() {
-        return new int[] {
-                Types.JAVA_OBJECT
-        };
-    }
 
     /**
      * The class returned by <tt>nullSafeGet()</tt>.
@@ -143,31 +130,6 @@ public class StringJsonUserType implements UserType {
     }
 
     /**
-     * Retrieve an instance of the mapped class from a JDBC resultset.
-     * Implementors should handle possibility of null values.
-     *
-     * @param rs
-     *            a JDBC result set
-     * @param names
-     *            the column names
-     * @param session
-     * @param owner
-     *            the containing entity @return Object
-     * @throws org.hibernate.HibernateException
-     *
-     * @throws java.sql.SQLException
-     */
-    @Override
-    public Object nullSafeGet(final ResultSet rs, final String[] names, SharedSessionContractImplementor session,
-            final Object owner)
-            throws HibernateException, SQLException {
-        if (rs.getString(names[0]) == null) {
-            return null;
-        }
-        return rs.getString(names[0]);
-    }
-
-    /**
      * Write an instance of the mapped class to a prepared statement.
      * Implementors should handle possibility of null values. A multi-column
      * type should be written to parameters starting from <tt>index</tt>.
@@ -193,6 +155,19 @@ public class StringJsonUserType implements UserType {
         }
 
         st.setObject(index, value, Types.OTHER);
+    }
+
+    @Override
+    public int getSqlType() {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+
+    @Override
+    public Object nullSafeGet(ResultSet rs, int position, SharedSessionContractImplementor session, Object owner)
+            throws SQLException {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }

@@ -4,6 +4,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import org.hibernate.HibernateException;
+import org.hibernate.engine.spi.SharedSessionContractImplementor;
 
 import gov.healthit.chpl.entity.PostgresEnumType;
 
@@ -16,5 +17,18 @@ public class PostgresListingUploadStatus extends PostgresEnumType {
             return null;
         }
         return ListingUploadStatus.valueOf(name);
+    }
+
+    @Override
+    public int getSqlType() {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+
+    @Override
+    public Object nullSafeGet(ResultSet rs, int position, SharedSessionContractImplementor session, Object owner)
+            throws SQLException {
+        // TODO Auto-generated method stub
+        return null;
     }
 }

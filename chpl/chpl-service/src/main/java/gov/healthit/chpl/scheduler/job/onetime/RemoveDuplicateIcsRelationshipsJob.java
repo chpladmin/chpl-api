@@ -1,7 +1,7 @@
 package gov.healthit.chpl.scheduler.job.onetime;
 
-import javax.persistence.Query;
-import javax.transaction.Transactional;
+import jakarta.persistence.Query;
+import jakarta.transaction.Transactional;
 
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;

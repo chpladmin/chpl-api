@@ -3,7 +3,7 @@ package gov.healthit.chpl.upload.listing.handler;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.validation.ValidationException;
+import jakarta.validation.ValidationException;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.csv.CSVRecord;

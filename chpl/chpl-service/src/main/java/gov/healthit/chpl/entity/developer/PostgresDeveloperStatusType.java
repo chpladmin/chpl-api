@@ -31,4 +31,17 @@ public class PostgresDeveloperStatusType extends PostgresEnumType {
             st.setString(index, value.toString());
         }
     }
+
+    @Override
+    public int getSqlType() {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+
+    @Override
+    public Object nullSafeGet(ResultSet rs, int position, SharedSessionContractImplementor session, Object owner)
+            throws SQLException {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }

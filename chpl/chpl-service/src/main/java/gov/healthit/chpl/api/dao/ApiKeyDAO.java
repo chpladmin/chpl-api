@@ -4,7 +4,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.persistence.Query;
+import jakarta.persistence.Query;
 
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Repository;

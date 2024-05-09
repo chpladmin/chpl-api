@@ -1,6 +1,6 @@
 package gov.healthit.chpl.dao.auth;
 
-import javax.persistence.Query;
+import jakarta.persistence.Query;
 
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
