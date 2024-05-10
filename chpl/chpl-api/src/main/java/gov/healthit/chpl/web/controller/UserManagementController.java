@@ -93,6 +93,7 @@ public class UserManagementController {
 
     @Deprecated
     @DeprecatedApi(friendlyUrl = "/users/create",
+            httpMethod = "POST",
             removalDate = "2024-11-01",
             message = "This endpoint is deprecated and will be removed in a future release. No replacement is currently available.")
     @Operation(summary = "Create a new user account from an invitation.",
@@ -160,6 +161,7 @@ public class UserManagementController {
 
     @Deprecated
     @DeprecatedApi(friendlyUrl = "/users/confirm",
+            httpMethod = "POST",
             removalDate = "2024-11-01",
             message = "This endpoint is deprecated and will be removed in a future release. No replacement is currently available.")
     @Operation(summary = "Confirm that a user's email address is valid.",
@@ -190,6 +192,7 @@ public class UserManagementController {
 
     @Deprecated
     @DeprecatedApi(friendlyUrl = "/users/{userId}/authorize",
+            httpMethod = "POST",
             removalDate = "2024-11-01",
             message = "This endpoint is deprecated and will be removed in a future release. No replacement is currently available.")
     @Operation(summary = "Update an existing user account with new permissions.",
@@ -248,6 +251,7 @@ public class UserManagementController {
 
     @Deprecated
     @DeprecatedApi(friendlyUrl = "/users/invite",
+            httpMethod = "POST",
             removalDate = "2024-11-01",
             message = "This endpoint is deprecated and will be removed in a future release. No replacement is currently available.")
     @Operation(summary = "Invite a user to the CHPL.",
@@ -289,6 +293,7 @@ public class UserManagementController {
 
     @Deprecated
     @DeprecatedApi(friendlyUrl = "/users/{userId}",
+            httpMethod = "PUT",
             removalDate = "2024-11-01",
             message = "This endpoint is deprecated and will be removed in a future release. No replacement is currently available.")
     @Operation(summary = "Modify user information.", description = "",
@@ -311,6 +316,7 @@ public class UserManagementController {
 
     @Deprecated
     @DeprecatedApi(friendlyUrl = "/users/{userId}",
+            httpMethod = "DELETE",
             removalDate = "2024-11-01",
             message = "This endpoint is deprecated and will be removed in a future release. No replacement is currently available.")
     @Operation(summary = "Delete a user.",
