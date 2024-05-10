@@ -24,9 +24,9 @@ public class DeveloperMessagingReportEmailGenerator {
 
     @Autowired
     public DeveloperMessagingReportEmailGenerator(ChplHtmlEmailBuilder htmlEmailBuilder,
-            @Value("${developer.missingAttestationChangeRequest.report.subject}") String emailSubject,
-            @Value("${developer.missingAttestationChangeRequest.report.salutation}") String emailSalutation,
-            @Value("${developer.missingAttestationChangeRequest.report.paragraph}") String emailParagraph) {
+            @Value("${developer.messaging.report.subject}") String emailSubject,
+            @Value("${developer.messaging.report.salutation}") String emailSalutation,
+            @Value("${developer.messaging.report.paragraph}") String emailParagraph) {
         this.htmlEmailBuilder = htmlEmailBuilder;
         this.emailSubject = emailSubject;
         this.emailSalutation = emailSalutation;

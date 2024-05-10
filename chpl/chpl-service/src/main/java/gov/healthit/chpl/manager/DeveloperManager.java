@@ -16,6 +16,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.quartz.JobDataMap;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Lazy;
@@ -29,8 +30,11 @@ import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.caching.ListingSearchCacheRefresh;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
+import gov.healthit.chpl.developer.messaging.DeveloperMessageRequest;
 import gov.healthit.chpl.developer.search.DeveloperSearchResult;
 import gov.healthit.chpl.developer.search.DeveloperSearchResultV2;
+import gov.healthit.chpl.developer.search.SearchRequestNormalizer;
+import gov.healthit.chpl.developer.search.SearchRequestValidator;
 import gov.healthit.chpl.domain.Address;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.Developer;
@@ -91,6 +95,8 @@ public class DeveloperManager extends SecuredManager {
     private ErrorMessageUtil msgUtil;
     private ResourcePermissionsFactory resourcePermissionsFactory;
     private DeveloperValidationFactory developerValidationFactory;
+    private SearchRequestValidator developerSearchRequestValidator;
+    private SearchRequestNormalizer developerSearchRequestNormalizer;
     private SchedulerManager schedulerManager;
 
     @Autowired
@@ -100,6 +106,7 @@ public class DeveloperManager extends SecuredManager {
             CertifiedProductDAO certifiedProductDAO, ChplProductNumberUtil chplProductNumberUtil,
             ActivityManager activityManager, ErrorMessageUtil msgUtil, ResourcePermissionsFactory resourcePermissionsFactory,
             DeveloperValidationFactory developerValidationFactory,
+            @Qualifier("developerSearchRequestValidator") SearchRequestValidator developerSearchRequestValidator,
             SchedulerManager schedulerManager) {
         this.developerDao = developerDao;
         this.productManager = productManager;
@@ -112,6 +119,8 @@ public class DeveloperManager extends SecuredManager {
         this.msgUtil = msgUtil;
         this.resourcePermissionsFactory = resourcePermissionsFactory;
         this.developerValidationFactory = developerValidationFactory;
+        this.developerSearchRequestValidator = developerSearchRequestValidator;
+        this.developerSearchRequestNormalizer = new SearchRequestNormalizer();
         this.schedulerManager = schedulerManager;
     }
 
@@ -441,12 +450,18 @@ public class DeveloperManager extends SecuredManager {
 
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).DEVELOPER, "
             + "T(gov.healthit.chpl.permissions.domains.DeveloperDomainPermissions).MESSAGE)")
-    public ChplOneTimeTrigger triggerMessageDevelopers() throws ValidationException, SchedulerException {
+    public ChplOneTimeTrigger triggerMessageDevelopers(DeveloperMessageRequest developerMessageRequest)
+            throws ValidationException, SchedulerException {
+
+        developerSearchRequestNormalizer.normalize(developerMessageRequest.getQuery());
+        developerSearchRequestValidator.validate(developerMessageRequest.getQuery());
+
         ChplOneTimeTrigger messageDevelopersTrigger = new ChplOneTimeTrigger();
         ChplJob messageDevelopersJob = new ChplJob();
         messageDevelopersJob.setName(MessageDevelopersJob.JOB_NAME);
         messageDevelopersJob.setGroup(SchedulerManager.CHPL_BACKGROUND_JOBS_KEY);
         JobDataMap jobDataMap = new JobDataMap();
+        jobDataMap.put(MessageDevelopersJob.DEVELOPER_MESSAGE_REQUEST, developerMessageRequest);
         messageDevelopersJob.setJobDataMap(jobDataMap);
         messageDevelopersTrigger.setJob(messageDevelopersJob);
         messageDevelopersTrigger.setRunDateMillis(System.currentTimeMillis() + SchedulerManager.FIVE_SECONDS_IN_MILLIS);

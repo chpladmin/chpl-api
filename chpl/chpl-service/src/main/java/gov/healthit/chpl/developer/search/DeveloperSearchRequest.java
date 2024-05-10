@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 import gov.healthit.chpl.search.domain.SearchSetOperator;
 import gov.healthit.chpl.util.CommaDelimitedStringToSetOfStrings;
+import gov.healthit.chpl.util.StringToSearchSetOperator;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -46,20 +47,24 @@ public class DeveloperSearchRequest implements Serializable {
     @JsonIgnore
     @Builder.Default
     private Set<String> activeListingsOptionsStrings = new HashSet<String>();
+    @JsonDeserialize(using = CommaDelimitedStringToSetOfActiveListingSearchOptions.class)
     @Builder.Default
     private Set<ActiveListingSearchOptions> activeListingsOptions = new HashSet<ActiveListingSearchOptions>();
     @JsonIgnore
     private String activeListingsOptionsOperatorString;
+    @JsonDeserialize(using = StringToSearchSetOperator.class)
     private SearchSetOperator activeListingsOptionsOperator;
 
     @JsonDeserialize(using = CommaDelimitedStringToSetOfStrings.class)
     @JsonIgnore
     @Builder.Default
     private Set<String> attestationsOptionsStrings = new HashSet<String>();
+    @JsonDeserialize(using = CommaDelimitedStringToSetOfAttestationsSearchOptions.class)
     @Builder.Default
     private Set<AttestationsSearchOptions> attestationsOptions = new HashSet<AttestationsSearchOptions>();
     @JsonIgnore
     private String attestationsOptionsOperatorString;
+    @JsonDeserialize(using = StringToSearchSetOperator.class)
     private SearchSetOperator attestationsOptionsOperator;
 
     @JsonIgnore

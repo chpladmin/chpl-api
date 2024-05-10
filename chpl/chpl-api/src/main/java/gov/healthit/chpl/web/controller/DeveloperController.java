@@ -329,7 +329,7 @@ public class DeveloperController {
             consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
     public ChplOneTimeTrigger sendMessage(@RequestBody(required = true) DeveloperMessageRequest developerMessageRequest)
         throws ValidationException, SchedulerException {
-        return developerManager.triggerMessageDevelopers();
+        return developerManager.triggerMessageDevelopers(developerMessageRequest);
     }
 
 }
