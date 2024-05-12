@@ -173,8 +173,8 @@ public class ActivityManager extends SecuredManager {
             dto.setCreationDate(new Date());
             dto.setLastModifiedDate(new Date());
 
-            dto.setLastModifiedUser(asUser.getUserId());
-            dto.setLastModifiedSsoUser(asUser.getCognitoId());
+            dto.setLastModifiedUser(asUser != null ? asUser.getUserId() : null);
+            dto.setLastModifiedSsoUser(asUser != null ? asUser.getCognitoId() : null);
             dto.setUser(asUser);
 
             dto.setDeleted(false);
