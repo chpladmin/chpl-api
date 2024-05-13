@@ -1,17 +1,15 @@
 package gov.healthit.chpl.entity.developer;
 
+import gov.healthit.chpl.domain.DeveloperStatus;
+import gov.healthit.chpl.entity.EntityAudit;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-
-import org.hibernate.annotations.Type;
-
-import gov.healthit.chpl.domain.DeveloperStatus;
-import gov.healthit.chpl.entity.EntityAudit;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -37,10 +35,11 @@ public class DeveloperStatusEntity extends EntityAudit {
     private Long id;
 
     @Column(name = "name")
-    @Type(type = "gov.healthit.chpl.entity.developer.PostgresDeveloperStatusType", parameters = {
-            @org.hibernate.annotations.Parameter(name = "enumClassName",
-                    value = "gov.healthit.chpl.entity.developer.DeveloperStatusType")
-    })
+    //@Type(type = "gov.healthit.chpl.entity.developer.PostgresDeveloperStatusType", parameters = {
+    //        @org.hibernate.annotations.Parameter(name = "enumClassName",
+    //                value = "gov.healthit.chpl.entity.developer.DeveloperStatusType")
+    //})
+    @Convert(converter = DeveloperStatusTypeConverter.class)
     private DeveloperStatusType name;
 
     public DeveloperStatus toDomain() {

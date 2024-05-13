@@ -29,7 +29,8 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.web.multipart.commons.CommonsMultipartResolver;
+//import org.springframework.web.multipart.commons.CommonsMultipartResolver;
+import org.springframework.web.multipart.support.StandardServletMultipartResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -140,12 +141,12 @@ public class CHPLConfig implements WebMvcConfigurer, EnvironmentAware {
     }
 
     @Bean(name = "multipartResolver")
-    public CommonsMultipartResolver getResolver() throws IOException {
+    public StandardServletMultipartResolver getResolver() throws IOException {
         LOGGER.info("get CommonsMultipartResolver");
-        CommonsMultipartResolver resolver = new CommonsMultipartResolver();
+        StandardServletMultipartResolver resolver = new StandardServletMultipartResolver();
 
         // Set the maximum allowed size (in bytes) for each individual file: 5MB
-        resolver.setMaxUploadSize(MAX_UPLOAD_FILE_SIZE);
+        //resolver.setMaxUploadSize(MAX_UPLOAD_FILE_SIZE);
         return resolver;
     }
 

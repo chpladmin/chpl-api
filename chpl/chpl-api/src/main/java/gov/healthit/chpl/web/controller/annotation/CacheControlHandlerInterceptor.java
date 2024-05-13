@@ -4,14 +4,13 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
 
+import org.springframework.web.method.HandlerMethod;
+import org.springframework.web.servlet.HandlerInterceptor;
+
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-import org.springframework.web.method.HandlerMethod;
-import org.springframework.web.servlet.HandlerInterceptor;
-import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
-
-public class CacheControlHandlerInterceptor extends HandlerInterceptorAdapter implements HandlerInterceptor {
+public class CacheControlHandlerInterceptor implements HandlerInterceptor {
 
     private static final String HEADER_EXPIRES = "Expires";
     private static final String HEADER_CACHE_CONTROL = "Cache-Control";
@@ -141,13 +140,15 @@ public class CacheControlHandlerInterceptor extends HandlerInterceptorAdapter im
 
         return cacheControl;
     }
+
     @Override
     public final boolean preHandle(
             final HttpServletRequest request,
             final HttpServletResponse response,
             final Object handler) throws Exception {
         this.assignCacheControlHeader(request, response, handler);
-        return super.preHandle(request, response, handler);
+        //return super.preHandle(request, response, handler);
+        return true;
     }
 
     /**

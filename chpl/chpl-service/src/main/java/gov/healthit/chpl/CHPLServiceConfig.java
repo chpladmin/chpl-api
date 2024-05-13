@@ -9,15 +9,22 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.SSLContext;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
+import org.apache.hc.client5.http.ssl.NoopHostnameVerifier;
+import org.apache.hc.client5.http.ssl.SSLConnectionSocketFactoryBuilder;
+import org.apache.hc.client5.http.ssl.TrustAllStrategy;
+import org.apache.hc.core5.http.io.SocketConfig;
+import org.apache.hc.core5.ssl.SSLContextBuilder;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.TrustStrategy;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,11 +51,9 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -60,7 +65,6 @@ import org.springframework.web.servlet.view.JstlView;
 @Configuration
 @EnableWebMvc
 @EnableTransactionManagement(proxyTargetClass = true)
-@EnableGlobalMethodSecurity(prePostEnabled = true, proxyTargetClass = true)
 @EnableAsync
 @EnableAspectJAutoProxy
 @EnableScheduling
@@ -130,6 +134,7 @@ public class CHPLServiceConfig implements WebMvcConfigurer, EnvironmentAware {
         return new org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor();
     }
 
+    /*
     @Bean(name = "multipartResolver")
     public CommonsMultipartResolver getResolver() throws IOException {
         LOGGER.info("get CommonsMultipartResolver");
@@ -142,6 +147,7 @@ public class CHPLServiceConfig implements WebMvcConfigurer, EnvironmentAware {
 
         return resolver;
     }
+    */
 
     @Bean
     public TaskExecutor taskExecutor() {
@@ -238,21 +244,24 @@ public class CHPLServiceConfig implements WebMvcConfigurer, EnvironmentAware {
         TrustStrategy acceptingTrustStrategy = (X509Certificate[] chain, String authType) -> true;
         SSLContext sslContext = org.apache.http.ssl.SSLContexts.custom().loadTrustMaterial(null, acceptingTrustStrategy).build();
         SSLConnectionSocketFactory csf = new SSLConnectionSocketFactory(sslContext);
-        CloseableHttpClient httpClient = HttpClients.custom().setSSLSocketFactory(csf).build();
+
+        CloseableHttpClient httpClient = HttpClients.custom()
+                .setConnectionManager(PoolingHttpClientConnectionManagerBuilder.create()
+                        .setDefaultSocketConfig(SocketConfig.custom()
+                                .setSoTimeout(getRequestTimeout(), TimeUnit.MILLISECONDS)
+                                .build())
+                        .setSSLSocketFactory(SSLConnectionSocketFactoryBuilder.create()
+                                .setSslContext(SSLContextBuilder.create()
+                                        .loadTrustMaterial(TrustAllStrategy.INSTANCE)
+                                        .build())
+                                .setHostnameVerifier(NoopHostnameVerifier.INSTANCE)
+                                .build())
+                        .build())
+                .build();
+
         HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
         requestFactory.setHttpClient(httpClient);
-        int requestTimeout = DEFAULT_REQUEST_TIMEOUT;
-        String requestTimeoutProperty = env.getProperty("jira.requestTimeoutMillis");
-        if (!StringUtils.isEmpty(requestTimeoutProperty)) {
-            try {
-                requestTimeout = Integer.parseInt(requestTimeoutProperty);
-            } catch (NumberFormatException ex) {
-                LOGGER.warn("Cannot parse " + requestTimeoutProperty + " as an integer. "
-                        + "Using the default value " + DEFAULT_REQUEST_TIMEOUT);
-            }
-        }
-        requestFactory.setConnectTimeout(requestTimeout);
-        requestFactory.setReadTimeout(requestTimeout);
+        requestFactory.setConnectTimeout(getRequestTimeout());
 
         RestTemplate restTemplate = new RestTemplate(requestFactory);
         restTemplate.getInterceptors().add(
@@ -271,5 +280,19 @@ public class CHPLServiceConfig implements WebMvcConfigurer, EnvironmentAware {
                     }
                 });
         return restTemplate;
+    }
+
+    private int getRequestTimeout() {
+        int requestTimeout = DEFAULT_REQUEST_TIMEOUT;
+        String requestTimeoutProperty = env.getProperty("jira.requestTimeoutMillis");
+        if (!StringUtils.isEmpty(requestTimeoutProperty)) {
+            try {
+                requestTimeout = Integer.parseInt(requestTimeoutProperty);
+            } catch (NumberFormatException ex) {
+                LOGGER.warn("Cannot parse " + requestTimeoutProperty + " as an integer. "
+                        + "Using the default value " + DEFAULT_REQUEST_TIMEOUT);
+            }
+        }
+        return requestTimeout;
     }
 }
