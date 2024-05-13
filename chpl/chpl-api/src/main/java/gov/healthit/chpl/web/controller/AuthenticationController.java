@@ -74,6 +74,7 @@ public class AuthenticationController {
 
     @Deprecated
     @DeprecatedApi(friendlyUrl = "/auth/athenticate",
+            httpMethod = "POST",
             removalDate = "2024-11-01",
             message = "This endpoint is deprecated and will be removed in a future release. No replacement is currently available.")
     @Operation(summary = "Log in.",
@@ -119,6 +120,7 @@ public class AuthenticationController {
 
     @Deprecated
     @DeprecatedApi(friendlyUrl = "/auth/change-password",
+            httpMethod = "POST",
             removalDate = "2024-11-01",
             message = "This endpoint is deprecated and will be removed in a future release. No replacement is currently available.")
     @Operation(summary = "Change password.",
@@ -169,6 +171,7 @@ public class AuthenticationController {
 
     @Deprecated
     @DeprecatedApi(friendlyUrl = "/auth/reset-password-request",
+            httpMethod = "POST",
             removalDate = "2024-11-01",
             message = "This endpoint is deprecated and will be removed in a future release. No replacement is currently available.")
     @Operation(summary = "Reset password.", description = "Reset the user's password.",
@@ -184,6 +187,7 @@ public class AuthenticationController {
 
     @Deprecated
     @DeprecatedApi(friendlyUrl = "/auth/email-reset-password",
+            httpMethod = "POST",
             removalDate = "2024-11-01",
             message = "This endpoint is deprecated and will be removed in a future release. No replacement is currently available.")
     @Operation(summary = "Emails the user a token and link that can be used to reset their password..",
