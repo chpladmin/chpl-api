@@ -4,8 +4,6 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import jakarta.persistence.Query;
-
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Repository;
 
@@ -15,6 +13,7 @@ import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import jakarta.persistence.Query;
 
 @Repository("apiKeyDAO")
 public class ApiKeyDAO extends BaseDAOImpl {
@@ -164,7 +163,7 @@ public class ApiKeyDAO extends BaseDAOImpl {
         ApiKeyEntity entity = null;
         Query query = entityManager.createQuery(
                 "from ApiKeyEntity "
-                        + "where (api_key_id = :entityid) "
+                        + "where (id = :entityid) "
                         + "and deleted <> true",
                 ApiKeyEntity.class);
         query.setParameter("entityid", entityId);
@@ -183,7 +182,7 @@ public class ApiKeyDAO extends BaseDAOImpl {
 
     private ApiKeyEntity getEntityByKey(String key) throws EntityRetrievalException {
         ApiKeyEntity entity = null;
-        Query query = entityManager.createQuery("from ApiKeyEntity where (NOT deleted = true) AND (api_key = :apikey) ",
+        Query query = entityManager.createQuery("from ApiKeyEntity where (NOT deleted = true) AND (apiKey = :apikey) ",
                 ApiKeyEntity.class);
         query.setParameter("apikey", key);
         List<ApiKeyEntity> result = query.getResultList();

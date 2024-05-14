@@ -47,6 +47,7 @@ import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.orm.jpa.LocalEntityManagerFactoryBean;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
@@ -112,10 +113,9 @@ public class CHPLServiceConfig implements WebMvcConfigurer, EnvironmentAware {
     }
 
     @Bean
-    public org.springframework.orm.jpa.LocalEntityManagerFactoryBean entityManagerFactory() {
+    public LocalEntityManagerFactoryBean entityManagerFactory() {
         LOGGER.info("get LocalEntityManagerFactoryBean");
-        org.springframework.orm.jpa.LocalEntityManagerFactoryBean bean
-            = new org.springframework.orm.jpa.LocalEntityManagerFactoryBean();
+        LocalEntityManagerFactoryBean bean = new LocalEntityManagerFactoryBean();
         bean.setPersistenceUnitName(env.getRequiredProperty("persistenceUnitName"));
         return bean;
     }
