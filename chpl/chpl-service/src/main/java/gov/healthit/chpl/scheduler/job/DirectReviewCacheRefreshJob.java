@@ -10,6 +10,7 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.caching.ListingSearchCacheRefresh;
 import gov.healthit.chpl.compliance.directreview.DirectReviewCachingService;
+import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.search.CertifiedProductSearchManager;
 import lombok.extern.log4j.Log4j2;
 
@@ -24,6 +25,9 @@ public class DirectReviewCacheRefreshJob extends QuartzJob {
 
     @Autowired
     private CertifiedProductSearchManager certifiedProductSearchManager;
+
+    @Autowired
+    private DeveloperManager developerManager;
 
     @Autowired
     private CacheManager cacheManager;
@@ -41,6 +45,7 @@ public class DirectReviewCacheRefreshJob extends QuartzJob {
 
         LOGGER.info("Refreshing searchable listing collection (deprecated)");
         cacheManager.getCache(CacheNames.COLLECTIONS_LISTINGS).invalidate();
+        developerManager.getDeveloperSearchResults();
         certifiedProductSearchManager.getFlatListingCollection();
         LOGGER.info("Completed refreshing searchable listing collection (deprecated)");
 
