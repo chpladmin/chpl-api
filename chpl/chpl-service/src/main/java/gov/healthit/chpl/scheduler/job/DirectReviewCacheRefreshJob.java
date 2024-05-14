@@ -45,6 +45,7 @@ public class DirectReviewCacheRefreshJob extends QuartzJob {
 
         LOGGER.info("Refreshing searchable listing collection (deprecated)");
         cacheManager.getCache(CacheNames.COLLECTIONS_LISTINGS).invalidate();
+        cacheManager.getCache(CacheNames.COLLECTIONS_DEVELOPERS).invalidate();
         developerManager.getDeveloperSearchResults();
         certifiedProductSearchManager.getFlatListingCollection();
         LOGGER.info("Completed refreshing searchable listing collection (deprecated)");
