@@ -20,7 +20,7 @@
         <checkstyle.version>9.2.1</checkstyle.version>
         <commons.csv.version>1.10.0</commons.csv.version>
         <commons.fileupload.version>1.5</commons.fileupload.version>
-        <ff4j.version>1.8</ff4j.version>
+        <ff4j.version>2.0.0</ff4j.version>
         <java.version>17</java.version>
         <junit.version>5.9.3</junit.version>
         <log4j2.version>2.20.0</log4j2.version>
