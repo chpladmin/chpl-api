@@ -6,11 +6,9 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
 import gov.healthit.chpl.entity.EntityAudit;
-import gov.healthit.chpl.entity.datatypes.StringJsonUserType;
 import gov.healthit.chpl.entity.lastmodifieduserstrategy.LastModifiedUserStrategy;
 import gov.healthit.chpl.entity.lastmodifieduserstrategy.SystemUserStrategy;
 import jakarta.persistence.Column;
-import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -31,7 +29,7 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @Entity
 @Table(name = "summary_statistics")
-@Convert(attributeName = "summaryStatistics", converter = StringJsonUserType.class)
+//@Convert(attributeName = "summaryStatistics", converter = StringJsonUserType.class)
 public class SummaryStatisticsEntity extends EntityAudit {
     private static final long serialVersionUID = 4752929481454934958L;
 
