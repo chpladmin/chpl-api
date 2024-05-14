@@ -126,9 +126,11 @@ public class ActivityManager extends SecuredManager {
 
     private User getCurrentUser() throws UserRetrievalException {
         User currentUser = null;
-        if (AuthUtil.getCurrentUser().getAuthenticationSystem().equals(AuthenticationSystem.CHPL)) {
+        if (AuthUtil.getCurrentUser() != null
+                && AuthUtil.getCurrentUser().getAuthenticationSystem().equals(AuthenticationSystem.CHPL)) {
             currentUser = userDAO.getById(AuthUtil.getAuditId()).toDomain();
-        } else if (AuthUtil.getCurrentUser().getAuthenticationSystem().equals(AuthenticationSystem.COGNTIO)) {
+        } else if (AuthUtil.getCurrentUser() != null
+                && AuthUtil.getCurrentUser().getAuthenticationSystem().equals(AuthenticationSystem.COGNTIO)) {
             currentUser = cognitoApiWrapper.getUserInfo(AuthUtil.getCurrentUser().getCognitoId());
         }
         return currentUser;
@@ -171,8 +173,8 @@ public class ActivityManager extends SecuredManager {
             dto.setCreationDate(new Date());
             dto.setLastModifiedDate(new Date());
 
-            dto.setLastModifiedUser(asUser.getUserId());
-            dto.setLastModifiedSsoUser(asUser.getCognitoId());
+            dto.setLastModifiedUser(asUser != null ? asUser.getUserId() : null);
+            dto.setLastModifiedSsoUser(asUser != null ? asUser.getCognitoId() : null);
             dto.setUser(asUser);
 
             dto.setDeleted(false);
