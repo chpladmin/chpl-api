@@ -11,7 +11,7 @@
     <name>CHPL api</name>
 
     <properties>
-      <org.springdoc.version>1.8.0</org.springdoc.version>
+      <org.springdoc.version>2.5.0</org.springdoc.version>
     </properties>
 
     <dependencies>
@@ -67,7 +67,7 @@
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-api</artifactId>
-            <version>2.5.0</version>
+            <version>${org.springdoc.version}</version>
         </dependency>
         
         <dependency>

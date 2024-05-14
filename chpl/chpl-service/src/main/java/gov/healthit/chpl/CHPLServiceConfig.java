@@ -129,7 +129,7 @@ public class CHPLServiceConfig implements WebMvcConfigurer, EnvironmentAware {
     }
 
     @Bean
-    public org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor persistenceAnnotationBeanPostProcessor() {
+    public static org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor persistenceAnnotationBeanPostProcessor() {
         LOGGER.info("get PersistenceAnnotationBeanPostProcessor");
         return new org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor();
     }

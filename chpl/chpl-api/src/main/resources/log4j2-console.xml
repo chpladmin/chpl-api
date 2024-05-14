@@ -23,7 +23,7 @@
             <AppenderRef ref="STDOUT" />
             <AppenderRef ref="chplServiceJsonLog" />
         </Logger>
-        <Logger name="org.springframework" level="WARN"
+        <Logger name="org.springframework" level="TRACE"
             additivity="false">
             <AppenderRef ref="STDOUT" />
         </Logger>

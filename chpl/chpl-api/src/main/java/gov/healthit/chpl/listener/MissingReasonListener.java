@@ -1,6 +1,5 @@
 package gov.healthit.chpl.listener;
 
-import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -17,7 +16,7 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
  *
  */
 @Component
-@Aspect
+//@Aspect
 public class MissingReasonListener {
     private ErrorMessageUtil errorMessageUtil;
 
