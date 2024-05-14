@@ -141,8 +141,6 @@ public class ProductManager extends SecuredManager {
             LOGGER.error("Could not create product.", ex);
             throw new EntityCreationException(ex);
         }
-        String activityMsg = "Product " + product.getName() + " was created.";
-        activityManager.addActivity(ActivityConcept.PRODUCT, createdProduct.getId(), activityMsg, null, createdProduct);
         return createdProduct.getId();
     }
 

@@ -22,7 +22,6 @@ import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.domain.schedule.ChplJob;
 import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
-import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.exception.ActivityException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -177,12 +176,6 @@ public class SurveillanceReportManager extends SecuredManager {
             + "#annualReportId)")
     public ChplOneTimeTrigger exportAnnualReportAsBackgroundJob(Long annualReportId)
             throws ValidationException, SchedulerException, UserRetrievalException {
-        UserDTO jobUser = null;
-        try {
-            jobUser = userManager.getById(AuthUtil.getCurrentUser().getId());
-        } catch (UserRetrievalException ex) {
-            LOGGER.error("Could not find user to execute job.");
-        }
 
         ChplOneTimeTrigger exportAnnualReportTrigger = new ChplOneTimeTrigger();
         ChplJob expoertAnnualReportJob = new ChplJob();
@@ -190,7 +183,7 @@ public class SurveillanceReportManager extends SecuredManager {
         expoertAnnualReportJob.setGroup(SchedulerManager.CHPL_BACKGROUND_JOBS_KEY);
         JobDataMap jobDataMap = new JobDataMap();
         jobDataMap.put(AnnualReportGenerationJob.ANNUAL_REPORT_ID_KEY, annualReportId);
-        jobDataMap.put(AnnualReportGenerationJob.USER_KEY, jobUser);
+        jobDataMap.put(AnnualReportGenerationJob.USER_KEY, AuthUtil.getCurrentUser());
         expoertAnnualReportJob.setJobDataMap(jobDataMap);
         exportAnnualReportTrigger.setJob(expoertAnnualReportJob);
         exportAnnualReportTrigger.setRunDateMillis(System.currentTimeMillis() + SchedulerManager.FIVE_SECONDS_IN_MILLIS);
@@ -387,12 +380,6 @@ public class SurveillanceReportManager extends SecuredManager {
             + "#quarterlyReportId)")
     public ChplOneTimeTrigger exportQuarterlyReportAsBackgroundJob(Long quarterlyReportId)
             throws ValidationException, SchedulerException, UserRetrievalException {
-        UserDTO jobUser = null;
-        try {
-            jobUser = userManager.getById(AuthUtil.getCurrentUser().getId());
-        } catch (UserRetrievalException ex) {
-            LOGGER.error("Could not find user to execute job.");
-        }
 
         ChplOneTimeTrigger exportQuarterlyReportTrigger = new ChplOneTimeTrigger();
         ChplJob expoertQuarterlyReportJob = new ChplJob();
@@ -400,7 +387,7 @@ public class SurveillanceReportManager extends SecuredManager {
         expoertQuarterlyReportJob.setGroup(SchedulerManager.CHPL_BACKGROUND_JOBS_KEY);
         JobDataMap jobDataMap = new JobDataMap();
         jobDataMap.put(QuarterlyReportGenerationJob.QUARTERLY_REPORT_ID_KEY, quarterlyReportId);
-        jobDataMap.put(QuarterlyReportGenerationJob.USER_KEY, jobUser);
+        jobDataMap.put(QuarterlyReportGenerationJob.USER_KEY, AuthUtil.getCurrentUser());
         expoertQuarterlyReportJob.setJobDataMap(jobDataMap);
         exportQuarterlyReportTrigger.setJob(expoertQuarterlyReportJob);
         exportQuarterlyReportTrigger.setRunDateMillis(System.currentTimeMillis() + SchedulerManager.FIVE_SECONDS_IN_MILLIS);

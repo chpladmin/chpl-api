@@ -16,11 +16,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.CacheManager;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
+import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.caching.ListingSearchCacheRefresh;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.domain.Developer;
-import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
 import gov.healthit.chpl.email.footer.AdminFooter;
@@ -75,7 +75,7 @@ public class JoinDeveloperJob extends QuartzJob {
         LOGGER.info("********* Starting the Join Developer job. *********");
 
         JobDataMap jobDataMap = jobContext.getMergedJobDataMap();
-        UserDTO user = (UserDTO) jobDataMap.get(USER_KEY);
+        JWTAuthenticatedUser user = (JWTAuthenticatedUser) jobDataMap.get(USER_KEY);
         if (user == null) {
             LOGGER.fatal("No user could be found in the job data.");
         } else {
@@ -109,7 +109,7 @@ public class JoinDeveloperJob extends QuartzJob {
                     LOGGER.error(e);
                 }
             } else {
-                LOGGER.warn("The user " + user.getUsername()
+                LOGGER.warn("The user " + user.getSubjectName()
                     + " does not have a configured email address so no email will be sent.");
             }
         }

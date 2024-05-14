@@ -54,6 +54,7 @@ public class CognitoJwtUserConverter implements JWTUserConverter {
                                             .toList()
                                     : null)
                     .authorities(decodeJwt.getClaim("cognito:groups").asList(String.class).stream()
+                            .filter(group -> !group.endsWith("-env")) //Remove environment related groups
                             .map(group -> new SimpleGrantedAuthority(group))
                             .collect(Collectors.toSet()))
                     .build();

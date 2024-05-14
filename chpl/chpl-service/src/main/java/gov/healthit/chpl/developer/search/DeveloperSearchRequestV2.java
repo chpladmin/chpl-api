@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class SearchRequest implements Serializable {
+public class DeveloperSearchRequestV2 implements Serializable {
     private static final long serialVersionUID = 11792092166701580L;
     public static final String DATE_SEARCH_FORMAT = "yyyy-MM-dd";
     public static final int DEFAULT_PAGE_SIZE = 20;

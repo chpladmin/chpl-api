@@ -35,6 +35,7 @@ import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.exception.ActivityException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
+import gov.healthit.chpl.exception.MissingReasonException;
 import gov.healthit.chpl.exception.UserPermissionRetrievalException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
@@ -201,7 +202,7 @@ public class SurveillanceManager extends SecuredManager {
     @ListingSearchCacheRefresh
     @ListingStoreRemove(removeBy = RemoveBy.LISTING_ID, id = "#survToDelete.certifiedProduct.id")
     public void deleteSurveillance(Surveillance survToDelete, String reason)
-            throws InvalidArgumentsException, EntityRetrievalException, ActivityException {
+            throws MissingReasonException, InvalidArgumentsException, EntityRetrievalException, ActivityException {
 
         if (survToDelete == null) {
             throw new InvalidArgumentsException("Cannot find surveillance with id " + survToDelete.getId() + " to delete.");
