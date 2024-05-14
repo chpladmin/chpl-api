@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springdoc.core.customizers.OpenApiCustomiser;
+import org.springdoc.core.customizers.OpenApiCustomizer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.MessageSource;
@@ -225,7 +225,7 @@ public class CHPLConfig implements WebMvcConfigurer, EnvironmentAware {
     }
 
     @Bean
-    public OpenApiCustomiser sortTagsAlphabetically() {
+    public OpenApiCustomizer sortTagsAlphabetically() {
         return openApi -> openApi.setTags(openApi.getTags()
                 .stream()
                 .sorted(Comparator.comparing(tag -> StringUtils.stripAccents(tag.getName())))
@@ -233,7 +233,7 @@ public class CHPLConfig implements WebMvcConfigurer, EnvironmentAware {
     }
 
     @Bean
-    public OpenApiCustomiser sortSchemasAlphabetically() {
+    public OpenApiCustomizer sortSchemasAlphabetically() {
         return openApi -> {
             Map<String, Schema> schemas = openApi.getComponents().getSchemas();
             openApi.getComponents().setSchemas(new TreeMap<>(schemas));
