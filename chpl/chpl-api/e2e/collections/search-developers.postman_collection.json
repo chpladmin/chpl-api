@@ -1,0 +1,66 @@
+{
+	"info": {
+		"name": "search-developers",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "GET /developers/search/v3 - returns 200 status and response body should not be empty",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"/developers/search/v3 end point return 200 status and response body should not be empty\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.response).not.eq(null);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "API-Key",
+						"value": "{{apiKey}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/rest/developers/search/v3",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"rest",
+						"developers",
+						"search",
+						"v3"
+					]
+				},
+				"description": "/developers/search/v3 end point returns 200 status and response body should not be empty"
+			},
+			"response": []
+		}
+	]
+}

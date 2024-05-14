@@ -6,19 +6,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.domain.Developer;
+import gov.healthit.chpl.developer.search.DeveloperSearchResult;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
 import gov.healthit.chpl.email.footer.PublicFooter;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.scheduler.job.developer.attestation.email.DeveloperEmail;
-import gov.healthit.chpl.scheduler.job.developer.attestation.email.DeveloperEmailGenerator;
 import gov.healthit.chpl.util.Util;
 import lombok.extern.log4j.Log4j2;
 
 @Component
 @Log4j2(topic = "missingAttestationChangeRequestEmailJobLogger")
-public class MissingAttestationChangeRequestDeveloperEmailGenerator implements DeveloperEmailGenerator {
+public class MissingAttestationChangeRequestDeveloperEmailGenerator {
     private DeveloperManager developerManager;
     private ChplHtmlEmailBuilder htmlEmailBuilder;
     private String emailSubject;
@@ -46,9 +45,7 @@ public class MissingAttestationChangeRequestDeveloperEmailGenerator implements D
         this.emailClosing = emailClosing;
     }
 
-
-    @Override
-    public DeveloperEmail getDeveloperEmail(Developer developer) {
+    public DeveloperEmail getDeveloperEmail(DeveloperSearchResult developer) {
         try {
             List<UserDTO> developerUsers = developerManager.getAllUsersOnDeveloper(developer.getId());
             return DeveloperEmail.builder()
@@ -70,7 +67,7 @@ public class MissingAttestationChangeRequestDeveloperEmailGenerator implements D
                     .toList();
     }
 
-    private String getMessage(Developer developer, List<UserDTO> developerUsers) {
+    private String getMessage(DeveloperSearchResult developer, List<UserDTO> developerUsers) {
         return htmlEmailBuilder.initialize()
                 .heading(emailSubject)
                 .paragraph("", emailSalutation)

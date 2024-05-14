@@ -31,6 +31,7 @@ import gov.healthit.chpl.caching.ListingSearchCacheRefresh;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.developer.search.DeveloperSearchResult;
+import gov.healthit.chpl.developer.search.DeveloperSearchResultV2;
 import gov.healthit.chpl.domain.Address;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.Developer;
@@ -131,14 +132,23 @@ public class DeveloperManager extends SecuredManager {
     @Transactional(readOnly = true)
     @Cacheable(CacheNames.COLLECTIONS_DEVELOPERS)
     public List<DeveloperSearchResult> getDeveloperSearchResults() {
+        List<DeveloperSearchResult> allDevelopers = developerDao.getAllSearchResults();
+        LOGGER.info("Converted all developers to domain result objects");
+        return allDevelopers;
+    }
+
+    @Transactional(readOnly = true)
+    @Deprecated
+    public List<DeveloperSearchResultV2> getDeveloperSearchResultsV2() {
         Map<Developer, Set<CertificationBody>> allDevelopersWithAcbs = developerDao.findAllDevelopersWithAcbs();
         return allDevelopersWithAcbs.keySet().stream()
-                .map(developer -> convertToSearchResult(developer, allDevelopersWithAcbs.get(developer)))
+                .map(developer -> convertToSearchResultV2(developer, allDevelopersWithAcbs.get(developer)))
                 .collect(Collectors.toList());
     }
 
-    private DeveloperSearchResult convertToSearchResult(Developer developer, Set<CertificationBody> acbs) {
-        return DeveloperSearchResult.builder()
+    @Deprecated
+    private DeveloperSearchResultV2 convertToSearchResultV2(Developer developer, Set<CertificationBody> acbs) {
+        return DeveloperSearchResultV2.builder()
                 .id(developer.getId())
                 .name(developer.getName())
                 .code(developer.getDeveloperCode())
