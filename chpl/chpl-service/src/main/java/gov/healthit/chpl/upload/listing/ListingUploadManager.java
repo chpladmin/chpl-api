@@ -254,12 +254,6 @@ public class ListingUploadManager {
             + "T(gov.healthit.chpl.permissions.domains.ListingUploadDomainPerissions).VALIDATE_BY_IDS)")
     public void calculateErrorAndWarningCounts(List<Long> listingUploadIds)
             throws ValidationException, SchedulerException {
-        UserDTO jobUser = null;
-        try {
-            jobUser = userDao.getById(AuthUtil.getCurrentUser().getId());
-        } catch (UserRetrievalException ex) {
-            LOGGER.error("Could not find user to execute job.");
-        }
 
         ChplOneTimeTrigger validateListingUploadTrigger = new ChplOneTimeTrigger();
         ChplJob validateListingUploadJob = new ChplJob();
@@ -267,7 +261,7 @@ public class ListingUploadManager {
         validateListingUploadJob.setGroup(SchedulerManager.CHPL_BACKGROUND_JOBS_KEY);
         JobDataMap jobDataMap = new JobDataMap();
         jobDataMap.put(ListingUploadValidationJob.LISTING_UPLOAD_IDS, listingUploadIds);
-        jobDataMap.put(ListingUploadValidationJob.USER_KEY, jobUser);
+        jobDataMap.put(ListingUploadValidationJob.USER_KEY, AuthUtil.getCurrentUser());
         validateListingUploadJob.setJobDataMap(jobDataMap);
         validateListingUploadTrigger.setJob(validateListingUploadJob);
         validateListingUploadTrigger.setRunDateMillis(System.currentTimeMillis() + SchedulerManager.FIVE_SECONDS_IN_MILLIS);

@@ -52,18 +52,6 @@ public class CertifiedProductQmsStandardDAO extends BaseDAOImpl {
         return new CertifiedProductQmsStandardDTO(toCreateEntity);
     }
 
-    public CertifiedProductQmsStandardDTO updateCertifiedProductQms(CertifiedProductQmsStandardDTO toUpdate)
-            throws EntityRetrievalException {
-        CertifiedProductQmsStandardEntity curr = getEntityById(toUpdate.getId());
-        if (curr == null) {
-            throw new EntityRetrievalException("Could not find mapping with id " + toUpdate.getId());
-        }
-        curr.setApplicableCriteria(toUpdate.getApplicableCriteria());
-        curr.setModification(toUpdate.getQmsModification());
-        update(curr);
-        return new CertifiedProductQmsStandardDTO(curr);
-    }
-
     public CertifiedProductQmsStandardDTO deleteCertifiedProductQms(Long id) throws EntityRetrievalException {
         CertifiedProductQmsStandardEntity curr = getEntityById(id);
         if (curr == null) {

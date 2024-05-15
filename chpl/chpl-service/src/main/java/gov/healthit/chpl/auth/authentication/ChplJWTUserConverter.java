@@ -53,6 +53,7 @@ public class ChplJWTUserConverter implements JWTUserConverter {
         } else {
             String subject = (String) validatedClaims.remove("sub");
             user.setSubjectName(subject);
+            user.setEmail(subject);
 
             String role = (String) validatedClaims.get("Authority");
             user.getAuthorities().add(new SimpleGrantedAuthority(role));

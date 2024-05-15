@@ -125,7 +125,7 @@ public class CognitoUserController {
                 createdInvitiation = cognitoUserManager.inviteOncAcbUser(invitation);
                 break;
             case CognitoGroups.CHPL_DEVELOPER:
-                createdInvitiation = cognitoUserManager.inviteOncUser(invitation);
+                createdInvitiation = cognitoUserManager.inviteDeveloperUser(invitation);
                 break;
             case CognitoGroups.CHPL_CMS_STAFF:
                 createdInvitiation = cognitoUserManager.inviteCmsUser(invitation);

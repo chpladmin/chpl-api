@@ -17,7 +17,6 @@ import gov.healthit.chpl.caching.ListingSearchCacheRefresh;
 import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
 import gov.healthit.chpl.domain.CertificationStatus;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.scheduler.job.QuartzJob;
 import gov.healthit.chpl.search.CertifiedProductSearchManager;
 import gov.healthit.chpl.util.DateUtil;
@@ -49,7 +48,7 @@ public class UpdateCurrentCertificationStatusJob extends QuartzJob {
     private CertifiedProductSearchManager certifiedProductSearchManager;
 
     private CertifiedProductSearchDetails currentListing;
-    private UserDTO user;
+    private JWTAuthenticatedUser user;
     private Long activityId;
     private LocalDate certificationStatusEventDay;
     private String reason;
@@ -107,7 +106,7 @@ public class UpdateCurrentCertificationStatusJob extends QuartzJob {
 
     private void parseJobInput(JobExecutionContext jobContext) {
         JobDataMap jobDataMap = jobContext.getMergedJobDataMap();
-        user = (UserDTO) jobDataMap.get(USER);
+        user = (JWTAuthenticatedUser) jobDataMap.get(USER);
         Long listingId = jobDataMap.getLong(LISTING_ID);
         if (listingId != null) {
             try {

@@ -27,9 +27,9 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
+import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.ListingUpload;
-import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -71,7 +71,7 @@ public class ListingUploadValidationJob extends QuartzJob {
         LOGGER.info("********* Starting the Listing Upload Validation job. *********");
 
         JobDataMap jobDataMap = jobContext.getMergedJobDataMap();
-        UserDTO user = (UserDTO) jobDataMap.get(USER_KEY);
+        JWTAuthenticatedUser user = (JWTAuthenticatedUser) jobDataMap.get(USER_KEY);
         if (user == null) {
             LOGGER.fatal("No user could be found in the job data.");
         } else {

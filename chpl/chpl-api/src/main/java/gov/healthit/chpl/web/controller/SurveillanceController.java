@@ -24,6 +24,7 @@ import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.exception.ActivityException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
+import gov.healthit.chpl.exception.MissingReasonException;
 import gov.healthit.chpl.exception.UserPermissionRetrievalException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
@@ -119,7 +120,7 @@ public class SurveillanceController {
             produces = "application/json; charset=utf-8")
     public @ResponseBody ResponseEntity<String> deleteSurveillance(@PathVariable(value = "surveillanceId") Long surveillanceId,
             @RequestBody(required = false) SimpleExplainableAction requestBody)
-                    throws InvalidArgumentsException, EntityRetrievalException, ActivityException {
+                    throws MissingReasonException, InvalidArgumentsException, EntityRetrievalException, ActivityException {
 
         Surveillance survToDelete = null;
         try {

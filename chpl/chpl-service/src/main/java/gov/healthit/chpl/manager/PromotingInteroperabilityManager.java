@@ -18,10 +18,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import gov.healthit.chpl.domain.schedule.ChplJob;
 import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
-import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.auth.UserManager;
 import gov.healthit.chpl.scheduler.job.promotingInteroperability.PromotingInteroperabilityUploadJob;
@@ -62,13 +60,6 @@ public class PromotingInteroperabilityManager {
         String data = fileUtils.readFileAsString(file);
         checkFileCanBeReadAndMultipleRowsExist(data);
 
-        UserDTO jobUser = null;
-        try {
-            jobUser = userManager.getById(AuthUtil.getCurrentUser().getId());
-        } catch (UserRetrievalException ex) {
-            LOGGER.error("Could not find user to execute job.");
-        }
-
         ChplOneTimeTrigger uploadPiuTrigger = new ChplOneTimeTrigger();
         ChplJob uploadPiuJob = new ChplJob();
         uploadPiuJob.setName(PromotingInteroperabilityUploadJob.JOB_NAME);
@@ -76,7 +67,7 @@ public class PromotingInteroperabilityManager {
         JobDataMap jobDataMap = new JobDataMap();
         jobDataMap.put(PromotingInteroperabilityUploadJob.FILE_CONTENTS_KEY, data);
         jobDataMap.put(PromotingInteroperabilityUploadJob.ACCURATE_AS_OF_DATE_KEY, accurateAsOfDate);
-        jobDataMap.put(PromotingInteroperabilityUploadJob.USER_KEY, jobUser);
+        jobDataMap.put(PromotingInteroperabilityUploadJob.USER_KEY, AuthUtil.getCurrentUser());
         uploadPiuJob.setJobDataMap(jobDataMap);
         uploadPiuTrigger.setJob(uploadPiuJob);
         uploadPiuTrigger.setRunDateMillis(System.currentTimeMillis() + SchedulerManager.FIVE_SECONDS_IN_MILLIS);
