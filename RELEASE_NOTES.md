@@ -1,5 +1,24 @@
 # Release Notes
 
+## Version 44.2.0
+_14 May 2024_
+
+### Features
+* Congito users need to be associated with a CHPL env (DEV, QA,etc)
+* Update Jobs to incorporate Cognito users
+* Update Change Requests to incorporate Cognito users
+* Make Risk Mgmt Summary Information url optional
+* Create "v3" endpoint of developer search
+* Deprecate /developers/search/v2 endpoint
+
+### Bug Fixes
+* Save activity when user is anonymous
+* Declare unchecked exception about missing reason on listing update
+* Remove 'update' feature of QMS Standards, only add and remove
+* Stop recording duplicate product creation activity
+
+---
+
 ## Version 44.1.0
 _29 April 2024_
 
