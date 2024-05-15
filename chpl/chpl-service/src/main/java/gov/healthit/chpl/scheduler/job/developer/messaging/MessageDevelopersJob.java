@@ -74,7 +74,7 @@ public class MessageDevelopersJob extends SecurityContextCapableJob implements J
                     .toList();
 
             sendEmails(developerEmails);
-            sendStatusReportEmail(developerEmails, submittedByUser);
+            sendStatusReportEmail(developerEmails, developerMessageRequest.getSubject(), submittedByUser);
         } catch (Exception e) {
             LOGGER.error(e);
         } finally {
@@ -98,8 +98,8 @@ public class MessageDevelopersJob extends SecurityContextCapableJob implements J
         });
     }
 
-    private void sendStatusReportEmail(List<DeveloperEmail> developerEmails, User submittedUser) {
-        MessagingReportEmail statusReportEmail = messagingReportGenerator.getStatusReportEmail(developerEmails, submittedUser);
+    private void sendStatusReportEmail(List<DeveloperEmail> developerEmails, String developerMessageSubject, User submittedUser) {
+        MessagingReportEmail statusReportEmail = messagingReportGenerator.getStatusReportEmail(developerEmails, developerMessageSubject, submittedUser);
 
         try {
             emailFactory.emailBuilder()
