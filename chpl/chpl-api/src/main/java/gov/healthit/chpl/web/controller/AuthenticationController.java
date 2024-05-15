@@ -1,7 +1,5 @@
 package gov.healthit.chpl.web.controller;
 
-import org.apache.commons.lang3.StringUtils;
-import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
@@ -16,7 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.nulabinc.zxcvbn.Strength;
 
-import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.auth.ChplAccountEmailNotConfirmedException;
 import gov.healthit.chpl.auth.ChplAccountStatusException;
 import gov.healthit.chpl.auth.authentication.JWTUserConverterFacade;
@@ -37,12 +34,12 @@ import gov.healthit.chpl.exception.MultipleUserAccountsException;
 import gov.healthit.chpl.exception.UserManagementException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.manager.auth.AuthenticationManager;
-import gov.healthit.chpl.manager.auth.CognitoAuthenticationManager;
 import gov.healthit.chpl.manager.auth.UserManager;
 import gov.healthit.chpl.service.UserAccountUpdateEmailer;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
+import gov.healthit.chpl.web.controller.annotation.DeprecatedApi;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -61,25 +58,25 @@ public class AuthenticationController {
     private UserManager userManager;
     private JWTUserConverterFacade userConverterFacade;
     private ErrorMessageUtil msgUtil;
-    private CognitoAuthenticationManager cognitoAuthenticationManager;
-    private FF4j ff4j;
 
     @Autowired
     public AuthenticationController(AuthenticationManager authenticationManager,
             UserAccountUpdateEmailer userAccountUpdateEmailer,
             BCryptPasswordEncoder bCryptPasswordEncoder,
-            UserManager userManager, JWTUserConverterFacade userConverterFacade, ErrorMessageUtil msgUtil,
-            FF4j ff4j, CognitoAuthenticationManager cognitoAuthenticationManager) {
+            UserManager userManager, JWTUserConverterFacade userConverterFacade, ErrorMessageUtil msgUtil) {
         this.authenticationManager = authenticationManager;
         this.userAccountUpdateEmailer = userAccountUpdateEmailer;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.userManager = userManager;
         this.userConverterFacade = userConverterFacade;
         this.msgUtil = msgUtil;
-        this.ff4j = ff4j;
-        this.cognitoAuthenticationManager = cognitoAuthenticationManager;
     }
 
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/auth/athenticate",
+            httpMethod = "POST",
+            removalDate = "2024-11-01",
+            message = "This endpoint is deprecated and will be removed in a future release. No replacement is currently available.")
     @Operation(summary = "Log in.",
             description = "Call this method to authenticate a user. The value returned is that user's "
                     + "token which must be passed on all subsequent requests in the Authorization header. "
@@ -94,18 +91,7 @@ public class AuthenticationController {
     public AuthenticationResponse authenticateJSON(@RequestBody LoginCredentials credentials)
             throws JWTCreationException, UserRetrievalException, MultipleUserAccountsException, ChplAccountEmailNotConfirmedException {
 
-        String jwt = null;
-
-        //If SSO is turned on try to auth using cognito
-        if (ff4j.check(FeatureList.SSO)) {
-            jwt = cognitoAuthenticationManager.authenticate(credentials);
-        }
-
-        //If SSO is turned off or Cognito auth fails, use the CHPL auth
-        if (StringUtils.isEmpty(jwt)) {
-            jwt = authenticationManager.authenticate(credentials);
-        }
-
+        String jwt = authenticationManager.authenticate(credentials);
         if (jwt == null) {
             throw new ChplAccountStatusException(msgUtil.getMessage("auth.loginNotAllowed"));
         }
@@ -132,6 +118,11 @@ public class AuthenticationController {
                 .build();
     }
 
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/auth/change-password",
+            httpMethod = "POST",
+            removalDate = "2024-11-01",
+            message = "This endpoint is deprecated and will be removed in a future release. No replacement is currently available.")
     @Operation(summary = "Change password.",
             description = "Change the logged in user's password as long as the old password "
                     + "passed in matches what is stored in the database.",
@@ -178,6 +169,11 @@ public class AuthenticationController {
         return response;
     }
 
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/auth/reset-password-request",
+            httpMethod = "POST",
+            removalDate = "2024-11-01",
+            message = "This endpoint is deprecated and will be removed in a future release. No replacement is currently available.")
     @Operation(summary = "Reset password.", description = "Reset the user's password.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
@@ -189,6 +185,11 @@ public class AuthenticationController {
         return userManager.authorizePasswordReset(request);
     }
 
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/auth/email-reset-password",
+            httpMethod = "POST",
+            removalDate = "2024-11-01",
+            message = "This endpoint is deprecated and will be removed in a future release. No replacement is currently available.")
     @Operation(summary = "Emails the user a token and link that can be used to reset their password..",
             description = "",
             security = {
@@ -203,6 +204,10 @@ public class AuthenticationController {
         userAccountUpdateEmailer.sendPasswordResetEmail(userResetTokenDTO.getUserResetToken(), request.getEmail());
     }
 
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/auth/impersonate",
+            removalDate = "2024-11-01",
+            message = "This endpoint is deprecated and will be removed in a future release. No replacement is currently available.")
     @Operation(summary = "Impersonate another user.", description = "",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
@@ -220,6 +225,10 @@ public class AuthenticationController {
                 .build();
     }
 
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/auth/unimpersonate",
+            removalDate = "2024-11-01",
+            message = "This endpoint is deprecated and will be removed in a future release. No replacement is currently available.")
     @Operation(summary = "Stop impersonating another user.", description = "",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
