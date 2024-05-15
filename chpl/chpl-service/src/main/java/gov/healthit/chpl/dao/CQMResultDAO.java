@@ -264,7 +264,7 @@ public class CQMResultDAO extends BaseDAOImpl {
 
     private List<CQMResultCriteriaEntity> getCertCriteriaForCqmResult(Long cqmResultId) {
         Query query = entityManager.createQuery(
-                "from CQMResultCriteriaEntity " + "where (NOT deleted = true) AND (cqm_result_id = :cqmResultId) ",
+                "from CQMResultCriteriaEntity " + "where (NOT deleted = true) AND (cqmResultId = :cqmResultId) ",
                 CQMResultCriteriaEntity.class);
         query.setParameter("cqmResultId", cqmResultId);
 

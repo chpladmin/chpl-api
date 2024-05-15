@@ -25,7 +25,8 @@ import gov.healthit.chpl.scheduler.job.summarystatistics.data.StatisticsSnapshot
 import gov.healthit.chpl.scheduler.job.summarystatistics.data.StatisticsSnapshotCalculator;
 import lombok.extern.log4j.Log4j2;
 
-@Log4j2(topic = "summaryStatisticsCreatorJobLogger")
+//@Log4j2(topic = "summaryStatisticsCreatorJobLogger")
+@Log4j2
 @DisallowConcurrentExecution
 public class SummaryStatisticsCreatorJob extends QuartzJob {
 
@@ -75,6 +76,7 @@ public class SummaryStatisticsCreatorJob extends QuartzJob {
                     entity.setSummaryStatistics(getJson(statisticsSnapshot));
                     summaryStatisticsDAO.create(entity);
                 } catch (Exception e) {
+                    LOGGER.error("Could not save Summary Statistic entity", e);
                     status.setRollbackOnly();
                 }
             }

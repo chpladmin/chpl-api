@@ -3,8 +3,6 @@ package gov.healthit.chpl.scheduler.job.chartdata;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -18,17 +16,11 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.scheduler.job.QuartzJob;
 import gov.healthit.chpl.search.ListingSearchManager;
 import gov.healthit.chpl.search.domain.ListingSearchResult;
+import lombok.extern.log4j.Log4j2;
 
-/**
- * This is the starting point for populating statistics tables that will be used for the charts. As new tables need to
- * be populated, they will be added here.
- *
- * @author TYoung
- *
- */
+@Log4j2(topic = "chartDataCreatorJobLogger")
 @DisallowConcurrentExecution
 public final class ChartDataCreatorJob extends QuartzJob {
-    private static final Logger LOGGER = LogManager.getLogger("chartDataCreatorJobLogger");
 
     @Autowired
     private ListingSearchManager listingSearchManager;

@@ -2,8 +2,7 @@ package gov.healthit.chpl.entity.statistics;
 
 import java.util.Date;
 
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
+import org.hibernate.annotations.ColumnTransformer;
 
 import gov.healthit.chpl.entity.EntityAudit;
 import gov.healthit.chpl.entity.lastmodifieduserstrategy.LastModifiedUserStrategy;
@@ -29,7 +28,6 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @Entity
 @Table(name = "summary_statistics")
-//@Convert(attributeName = "summaryStatistics", converter = StringJsonUserType.class)
 public class SummaryStatisticsEntity extends EntityAudit {
     private static final long serialVersionUID = 4752929481454934958L;
 
@@ -47,7 +45,7 @@ public class SummaryStatisticsEntity extends EntityAudit {
     private Date endDate;
 
     @Column(name = "summary_statistics")
-    @JdbcTypeCode(SqlTypes.JSON)
+    @ColumnTransformer(write = "?::jsonb")
     private String summaryStatistics;
 
 }
