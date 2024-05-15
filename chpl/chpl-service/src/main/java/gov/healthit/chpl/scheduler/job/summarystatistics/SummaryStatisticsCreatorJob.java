@@ -25,8 +25,7 @@ import gov.healthit.chpl.scheduler.job.summarystatistics.data.StatisticsSnapshot
 import gov.healthit.chpl.scheduler.job.summarystatistics.data.StatisticsSnapshotCalculator;
 import lombok.extern.log4j.Log4j2;
 
-//@Log4j2(topic = "summaryStatisticsCreatorJobLogger")
-@Log4j2
+@Log4j2(topic = "summaryStatisticsCreatorJobLogger")
 @DisallowConcurrentExecution
 public class SummaryStatisticsCreatorJob extends QuartzJob {
 

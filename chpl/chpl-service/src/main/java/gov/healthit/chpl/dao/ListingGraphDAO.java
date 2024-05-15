@@ -4,8 +4,6 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-import jakarta.persistence.Query;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -16,6 +14,7 @@ import gov.healthit.chpl.entity.listing.CertifiedProductEntity;
 import gov.healthit.chpl.entity.listing.ListingToListingMapEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import jakarta.persistence.Query;
 import lombok.extern.log4j.Log4j2;
 
 @Repository(value = "listingGraphDao")
@@ -82,7 +81,7 @@ public class ListingGraphDAO extends BaseDAOImpl {
                                 + "AND listing.deleted <> true",
                         BigDecimal.class);
         query.setParameter("listingIds", listingIds);
-        BigDecimal result = (BigDecimal) query.getSingleResult();
+        Double result = (Double) query.getSingleResult();
         if (result == null) {
             return null;
         }
