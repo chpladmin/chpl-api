@@ -3,8 +3,6 @@ package gov.healthit.chpl.dao;
 import java.util.ArrayList;
 import java.util.List;
 
-import jakarta.persistence.Query;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -15,6 +13,7 @@ import gov.healthit.chpl.entity.listing.CertifiedProductQmsStandardEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.qmsStandard.QmsStandardDAO;
+import jakarta.persistence.Query;
 
 @Repository(value = "certifiedProductQmsStandardDao")
 public class CertifiedProductQmsStandardDAO extends BaseDAOImpl {
@@ -107,7 +106,7 @@ public class CertifiedProductQmsStandardDAO extends BaseDAOImpl {
                 "SELECT qms from CertifiedProductQmsStandardEntity qms "
                         + "LEFT OUTER JOIN FETCH qms.qmsStandard "
                         + "where (NOT qms.deleted = true) "
-                        + "AND (certified_product_id = :entityid) ",
+                        + "AND (certifiedProductId = :entityid) ",
                 CertifiedProductQmsStandardEntity.class);
 
         query.setParameter("entityid", productId);
@@ -123,7 +122,7 @@ public class CertifiedProductQmsStandardDAO extends BaseDAOImpl {
                         "SELECT qms from CertifiedProductQmsStandardEntity qms "
                                 + "LEFT OUTER JOIN FETCH qms.qmsStandard "
                                 + "where (NOT qms.deleted = true) "
-                                + "AND (certified_product_id = :productId) "
+                                + "AND (certifiedProductId = :productId) "
                                 + "AND (qms.qmsStandardId = :qmsId)",
                         CertifiedProductQmsStandardEntity.class);
 

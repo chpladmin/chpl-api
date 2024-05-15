@@ -3,8 +3,6 @@ package gov.healthit.chpl.dao;
 import java.util.ArrayList;
 import java.util.List;
 
-import jakarta.persistence.Query;
-
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
@@ -13,6 +11,7 @@ import gov.healthit.chpl.dto.CertifiedProductAccessibilityStandardDTO;
 import gov.healthit.chpl.entity.listing.CertifiedProductAccessibilityStandardEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import jakarta.persistence.Query;
 
 @Repository(value = "certifiedProductAccessibilityStandardDao")
 public class CertifiedProductAccessibilityStandardDAO extends BaseDAOImpl {
@@ -100,7 +99,7 @@ public class CertifiedProductAccessibilityStandardDAO extends BaseDAOImpl {
                         + "CertifiedProductAccessibilityStandardEntity accStd "
                         + "LEFT OUTER JOIN FETCH accStd.accessibilityStandard "
                         + "WHERE (NOT accStd.deleted = true) "
-                        + "AND (certified_product_id = :entityid) ",
+                        + "AND (certifiedProductId = :entityid) ",
                 CertifiedProductAccessibilityStandardEntity.class);
 
         query.setParameter("entityid", productId);
@@ -116,7 +115,7 @@ public class CertifiedProductAccessibilityStandardDAO extends BaseDAOImpl {
                         + "CertifiedProductAccessibilityStandardEntity accStd "
                         + "LEFT OUTER JOIN FETCH accStd.accessibilityStandard "
                         + "WHERE (NOT accStd.deleted = true) "
-                        + "AND (certified_product_id = :productId) "
+                        + "AND (certifiedProductId = :productId) "
                         + "AND (accStd.accessibilityStandardId = :accStdId)",
                 CertifiedProductAccessibilityStandardEntity.class);
 

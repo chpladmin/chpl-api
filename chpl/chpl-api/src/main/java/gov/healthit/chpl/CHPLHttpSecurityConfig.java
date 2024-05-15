@@ -51,13 +51,16 @@ public class CHPLHttpSecurityConfig {
     public SecurityFilterChain configure(HttpSecurity http) throws Exception {
         LOGGER.info("Configure CHPL Security");
         return http.csrf(csrf -> csrf.disable())
+                .cors(cors -> cors.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(request -> request
-                        .requestMatchers("/favicon.ico").permitAll()
-                        .requestMatchers("/resources/**").permitAll()
-                        .requestMatchers("/").permitAll())
+                .authorizeHttpRequests(auth -> auth.anyRequest().permitAll())
+                //.authorizeHttpRequests(request -> request
+                //        .requestMatchers("/favicon.ico").permitAll()
+                //        .requestMatchers("/resources/**").permitAll()
+                //        .requestMatchers("/").permitAll())
                 .addFilterBefore(apiKeyAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new JWTAuthenticationFilter(userConverterFacade), UsernamePasswordAuthenticationFilter.class)
+                .headers(header -> header.cacheControl(ctrl -> ctrl.disable()))
                 .build();
     }
 
@@ -67,6 +70,7 @@ public class CHPLHttpSecurityConfig {
         return new APIKeyAuthenticationFilter(apiKeyManager);
     }
 }
+
     /*
     @Override
     protected void configure(HttpSecurity http) throws Exception {

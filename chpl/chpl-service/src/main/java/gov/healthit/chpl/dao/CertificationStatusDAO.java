@@ -53,7 +53,7 @@ public class CertificationStatusDAO extends BaseDAOImpl {
         CertificationStatusEntity entity = null;
 
         Query query = entityManager.createQuery(
-                "from CertificationStatusEntity where (NOT deleted = true) AND (certification_status_id = :entityid) ",
+                "from CertificationStatusEntity where (NOT deleted = true) AND (id = :entityid) ",
                 CertificationStatusEntity.class);
         query.setParameter("entityid", id);
         List<CertificationStatusEntity> result = query.getResultList();

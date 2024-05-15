@@ -2,8 +2,6 @@ package gov.healthit.chpl.dao;
 
 import java.util.List;
 
-import jakarta.persistence.Query;
-
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
@@ -12,6 +10,7 @@ import gov.healthit.chpl.entity.listing.CertifiedProductTargetedUserEntity;
 import gov.healthit.chpl.entity.listing.CertifiedProductTestingLabMapEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import jakarta.persistence.Query;
 
 @Repository(value = "certifiedProductTestingLabDao")
 public class CertifiedProductTestingLabDAO extends BaseDAOImpl {
@@ -87,7 +86,7 @@ public class CertifiedProductTestingLabDAO extends BaseDAOImpl {
                 "SELECT tl from CertifiedProductTestingLabMapEntity tl "
                         + "LEFT OUTER JOIN FETCH tl.testingLab "
                         + "WHERE (NOT tl.deleted = true) "
-                        + "AND (certified_product_id = :entityid) ",
+                        + "AND (certifiedProductId = :entityid) ",
                         CertifiedProductTestingLabMapEntity.class);
 
         query.setParameter("entityid", productId);
@@ -103,7 +102,7 @@ public class CertifiedProductTestingLabDAO extends BaseDAOImpl {
                         "SELECT tu from CertifiedProductTestingLabEntity tu "
                                 + "LEFT OUTER JOIN FETCH tl.testingLab "
                                 + "WHERE (NOT tl.deleted = true) "
-                                + "AND (certified_product_id = :productId) "
+                                + "AND (certifiedProductId = :productId) "
                                 + "AND (tl.testingLabId = :tlId)",
                         CertifiedProductTargetedUserEntity.class);
 

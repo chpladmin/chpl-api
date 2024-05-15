@@ -3,8 +3,6 @@ package gov.healthit.chpl.dao;
 import java.util.ArrayList;
 import java.util.List;
 
-import jakarta.persistence.Query;
-
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
@@ -13,6 +11,7 @@ import gov.healthit.chpl.dto.ProductVersionDTO;
 import gov.healthit.chpl.entity.ProductVersionEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import jakarta.persistence.Query;
 
 @Repository("productVersionDAO")
 public class ProductVersionDAO extends BaseDAOImpl {
@@ -227,7 +226,7 @@ public class ProductVersionDAO extends BaseDAOImpl {
                 + " FROM ProductVersionEntity pve "
                 + " LEFT OUTER JOIN FETCH pve.product product "
                 + "LEFT OUTER JOIN FETCH product.developer "
-                + "WHERE (product_version_id = :entityid)";
+                + "WHERE (pve.id = :entityid)";
         if (!includeDeleted) {
             queryStr += " AND pve.deleted = false";
         }

@@ -7,8 +7,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import jakarta.persistence.Query;
-
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +31,7 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.scheduler.job.urlStatus.data.UrlType;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import jakarta.persistence.Query;
 import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
@@ -135,7 +134,7 @@ public class CertifiedProductDAO extends BaseDAOImpl {
     @SuppressWarnings({"checkstyle:todocomment"})
     public void delete(Long productId) {
         Query query = entityManager.createQuery(
-                "UPDATE CertifiedProductEntity SET deleted = true WHERE certified_product_id = :productid");
+                "UPDATE CertifiedProductEntity SET deleted = true WHERE certifiedProductId = :productid");
         query.setParameter("productid", productId);
         query.executeUpdate();
     }
@@ -676,7 +675,7 @@ public class CertifiedProductDAO extends BaseDAOImpl {
 
         CertifiedProductEntity entity = null;
 
-        Query query = entityManager.createQuery("from CertifiedProductEntity where (certified_product_id = :entityid) ",
+        Query query = entityManager.createQuery("from CertifiedProductEntity where (id = :entityid) ",
                 CertifiedProductEntity.class);
         query.setParameter("entityid", entityId);
         List<CertifiedProductEntity> result = query.getResultList();
