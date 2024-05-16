@@ -15,7 +15,6 @@
         <url-pattern>/*</url-pattern>
     </filter-mapping>
 
-<!-- 
     <filter>
         <filter-name>deprecatedEndpointUsageFilter</filter-name>
         <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
@@ -24,7 +23,7 @@
         <filter-name>deprecatedEndpointUsageFilter</filter-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping>
--->
+
     <!-- FF4J config  -->
     <servlet>
         <servlet-name>ff4j-console</servlet-name>

@@ -1,6 +1,5 @@
 package gov.healthit.chpl.dao;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -79,7 +78,7 @@ public class ListingGraphDAO extends BaseDAOImpl {
                                 + "FROM CertifiedProductEntity listing "
                                 + "WHERE listing.id IN (:listingIds) "
                                 + "AND listing.deleted <> true",
-                        BigDecimal.class);
+                        Double.class);
         query.setParameter("listingIds", listingIds);
         Double result = (Double) query.getSingleResult();
         if (result == null) {
