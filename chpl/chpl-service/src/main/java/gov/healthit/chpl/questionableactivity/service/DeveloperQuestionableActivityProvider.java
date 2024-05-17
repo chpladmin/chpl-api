@@ -6,7 +6,7 @@ import java.util.List;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.Developer;
-import gov.healthit.chpl.domain.DeveloperStatusEvent;
+import gov.healthit.chpl.domain.DeveloperStatusEventDeprecated;
 import gov.healthit.chpl.dto.DeveloperStatusEventPair;
 import gov.healthit.chpl.manager.impl.DeveloperStatusEventsHelper;
 import gov.healthit.chpl.questionableactivity.domain.QuestionableActivityDeveloper;
@@ -69,14 +69,14 @@ public class DeveloperQuestionableActivityProvider {
      * @return list of added statuses
      */
      public List<QuestionableActivityDeveloper> checkStatusHistoryAdded(
-            List<DeveloperStatusEvent> origStatuses, List<DeveloperStatusEvent> newStatuses) {
+            List<DeveloperStatusEventDeprecated> origStatuses, List<DeveloperStatusEventDeprecated> newStatuses) {
 
          List<QuestionableActivityDeveloper> statusAddedActivities
              = new ArrayList<QuestionableActivityDeveloper>();
 
-         List<DeveloperStatusEvent> addedStatuses =
+         List<DeveloperStatusEventDeprecated> addedStatuses =
                  DeveloperStatusEventsHelper.getAddedEvents(origStatuses, newStatuses);
-         for (DeveloperStatusEvent newStatusEvent : addedStatuses) {
+         for (DeveloperStatusEventDeprecated newStatusEvent : addedStatuses) {
              QuestionableActivityDeveloper activity =
                      getQuestionableActivityDeveloper(null, getFormattedStatus(newStatusEvent));
              activity.setReason(newStatusEvent.getReason());
@@ -92,14 +92,14 @@ public class DeveloperQuestionableActivityProvider {
      * @return list of added statuses
      */
      public List<QuestionableActivityDeveloper> checkStatusHistoryRemoved(
-            List<DeveloperStatusEvent> origStatuses, List<DeveloperStatusEvent> newStatuses) {
+            List<DeveloperStatusEventDeprecated> origStatuses, List<DeveloperStatusEventDeprecated> newStatuses) {
 
         List<QuestionableActivityDeveloper> statusRemovedActivities
             = new ArrayList<QuestionableActivityDeveloper>();
 
-        List<DeveloperStatusEvent> removedStatuses =
+        List<DeveloperStatusEventDeprecated> removedStatuses =
                 DeveloperStatusEventsHelper.getRemovedEvents(origStatuses, newStatuses);
-        for (DeveloperStatusEvent newStatusEvent : removedStatuses) {
+        for (DeveloperStatusEventDeprecated newStatusEvent : removedStatuses) {
             QuestionableActivityDeveloper activity =
                     getQuestionableActivityDeveloper(getFormattedStatus(newStatusEvent), null);
             statusRemovedActivities.add(activity);
@@ -114,7 +114,7 @@ public class DeveloperQuestionableActivityProvider {
      * @return list of edited statuses
      */
     public List<QuestionableActivityDeveloper> checkStatusHistoryItemEdited(
-            List<DeveloperStatusEvent> origStatuses, List<DeveloperStatusEvent> newStatuses) {
+            List<DeveloperStatusEventDeprecated> origStatuses, List<DeveloperStatusEventDeprecated> newStatuses) {
 
         List<QuestionableActivityDeveloper> statusEditedActivities
             = new ArrayList<QuestionableActivityDeveloper>();
@@ -138,7 +138,7 @@ public class DeveloperQuestionableActivityProvider {
         return activity;
     }
 
-    private String getFormattedStatus(DeveloperStatusEvent statusEvent) {
+    private String getFormattedStatus(DeveloperStatusEventDeprecated statusEvent) {
         return statusEvent.getStatus().getStatus() + " ("
                 + Util.getDateFormatter().format(statusEvent.getStatusDate()) + ")";
     }

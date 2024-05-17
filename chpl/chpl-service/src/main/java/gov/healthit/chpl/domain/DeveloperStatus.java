@@ -22,12 +22,12 @@ public class DeveloperStatus implements Serializable {
     private Long id;
 
     @Schema(description = "Developer status name")
-    private String status;
+    private String name;
 
     public DeveloperStatus(DeveloperStatus other) {
         this();
         this.setId(other.getId());
-        this.setStatus(other.getStatus());
+        this.setName(other.getName());
     }
 
     @Override
@@ -49,11 +49,11 @@ public class DeveloperStatus implements Serializable {
         } else if (!id.equals(other.id)) {
             return false;
         }
-        if (status == null) {
-            if (other.status != null) {
+        if (name == null) {
+            if (other.name != null) {
                 return false;
             }
-        } else if (!status.equals(other.status)) {
+        } else if (!name.equals(other.name)) {
             return false;
         }
         return true;
@@ -64,7 +64,7 @@ public class DeveloperStatus implements Serializable {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((id == null) ? 0 : id.hashCode());
-        result = prime * result + ((status == null) ? 0 : status.hashCode());
+        result = prime * result + ((name == null) ? 0 : name.hashCode());
         return result;
     }
 }

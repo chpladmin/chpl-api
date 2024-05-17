@@ -22,7 +22,6 @@ import gov.healthit.chpl.dao.ProductDAO;
 import gov.healthit.chpl.dao.ProductVersionDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.Developer;
-import gov.healthit.chpl.domain.DeveloperStatus;
 import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.ProductVersion;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
@@ -124,10 +123,8 @@ public class ProductVersionManager extends SecuredManager {
         if (dev == null) {
             throw new EntityRetrievalException("Cannot find developer with id " + prod.getOwner().getId());
         }
-        DeveloperStatus currDevStatus = dev.getStatus();
-        if (currDevStatus == null || currDevStatus.getStatus() == null) {
-            String msg = "The version " + version.getVersion() + " cannot be created since the status of developer "
-                    + dev.getName() + " cannot be determined.";
+        if (!dev.isNotBannedOrSuspended()) {
+            String msg = "The version " + version.getVersion() + " cannot be created due to the current status of the developer";
             LOGGER.error(msg);
             throw new EntityCreationException(msg);
         }
@@ -160,10 +157,8 @@ public class ProductVersionManager extends SecuredManager {
         if (dev == null) {
             throw new EntityRetrievalException("Cannot find developer with id " + prod.getOwner().getId());
         }
-        DeveloperStatus currDevStatus = dev.getStatus();
-        if (currDevStatus == null || currDevStatus.getStatus() == null) {
-            String msg = "The version " + dto.getVersion() + " cannot be created since the status of developer "
-                    + dev.getName() + " cannot be determined.";
+        if (!dev.isNotBannedOrSuspended()) {
+            String msg = "The version " + dto.getVersion() + " cannot be created due to the current status of the developer";
             LOGGER.error(msg);
             throw new EntityCreationException(msg);
         }
@@ -200,10 +195,8 @@ public class ProductVersionManager extends SecuredManager {
         if (dev == null) {
             throw new EntityRetrievalException("Cannot find developer of version id " + beforeVersion.getId());
         }
-        DeveloperStatus currDevStatus = dev.getStatus();
-        if (currDevStatus == null || currDevStatus.getStatus() == null) {
-            String msg = "The version " + beforeVersion.getVersion() + " cannot be updated since the status of developer "
-                    + dev.getName() + " cannot be determined.";
+        if (!dev.isNotBannedOrSuspended()) {
+            String msg = "The version " + beforeVersion.getVersion() + " cannot be created due to the current status of the developer";
             LOGGER.error(msg);
             throw new EntityCreationException(msg);
         }

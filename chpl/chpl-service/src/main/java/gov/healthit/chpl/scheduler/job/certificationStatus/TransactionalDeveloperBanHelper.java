@@ -15,7 +15,7 @@ import gov.healthit.chpl.domain.CertificationStatus;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.DeveloperStatus;
-import gov.healthit.chpl.domain.DeveloperStatusEvent;
+import gov.healthit.chpl.domain.DeveloperStatusEventDeprecated;
 import gov.healthit.chpl.domain.schedule.ChplJob;
 import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
 import gov.healthit.chpl.entity.CertificationStatusType;
@@ -97,12 +97,12 @@ public class TransactionalDeveloperBanHelper {
             newDeveloperStatus = devStatusDao.getByName(DeveloperStatusType.UnderCertificationBanByOnc.toString());
         }
 
-        DeveloperStatusEvent mostRecentDeveloperStatus = developer.getMostRecentStatusEvent();
+        DeveloperStatusEventDeprecated mostRecentDeveloperStatus = developer.getMostRecentStatusEvent();
         if (newDeveloperStatus != null
                 && !mostRecentDeveloperStatus.getStatus().getStatus().equals(newDeveloperStatus.getStatus())) {
             LOGGER.info("Developer currently has the status " + mostRecentDeveloperStatus.getStatus().getStatus()
                     + ". Setting the developer to " + newDeveloperStatus.getStatus());
-            DeveloperStatusEvent statusHistoryToAdd = new DeveloperStatusEvent();
+            DeveloperStatusEventDeprecated statusHistoryToAdd = new DeveloperStatusEventDeprecated();
             statusHistoryToAdd.setDeveloperId(developer.getId());
             statusHistoryToAdd.setStatus(newDeveloperStatus);
             statusHistoryToAdd.setStatusDate(new Date());

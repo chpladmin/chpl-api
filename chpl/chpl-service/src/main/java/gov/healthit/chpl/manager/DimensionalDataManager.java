@@ -52,7 +52,6 @@ import gov.healthit.chpl.dto.TestProcedureCriteriaMapDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.listing.measure.ListingMeasureDAO;
 import gov.healthit.chpl.listing.measure.MeasureDAO;
-import gov.healthit.chpl.optionalStandard.OptionalStandardDAO;
 import gov.healthit.chpl.surveillance.report.QuarterDAO;
 import gov.healthit.chpl.surveillance.report.domain.Quarter;
 import lombok.extern.log4j.Log4j2;
@@ -65,7 +64,6 @@ public class DimensionalDataManager {
     private CertificationCriterionDAO certificationCriterionDao;
     private EducationTypeDAO educationTypeDao;
     private AgeRangeDAO ageRangeDao;
-    private OptionalStandardDAO optionalStandardDao;
     private TestStandardDAO testStandardDao;
     private TestProcedureDAO testProcedureDao;
     private TestDataDAO testDataDao;
@@ -91,13 +89,12 @@ public class DimensionalDataManager {
                                   SurveillanceDAO survDao, QuarterDAO quarterDao,
                                   ProductDAO productDao, DeveloperDAO devDao, MeasureDAO measureDao,
                                   ListingMeasureDAO listingMeasureDao, CQMCriterionDAO cqmCriterionDao,
-                                  CertificationEditionDAO certEditionDao, OptionalStandardDAO optionalStandardDao) {
+                                  CertificationEditionDAO certEditionDao) {
         this.cacheableDimensionalDataManager = cacheableDimensionalDataManager;
         this.certificationBodyDao = certificationBodyDao;
         this.certificationCriterionDao = certificationCriterionDao;
         this.educationTypeDao = educationTypeDao;
         this.ageRangeDao = ageRangeDao;
-        this.optionalStandardDao = optionalStandardDao;
         this.testStandardDao = testStandardDao;
         this.testProcedureDao = testProcedureDao;
         this.testDataDao = testDataDao;
@@ -159,7 +156,7 @@ public class DimensionalDataManager {
         Set<KeyValueModel> statuses = new HashSet<KeyValueModel>();
 
         for (DeveloperStatus devStatus : devStatuses) {
-            statuses.add(new KeyValueModel(devStatus.getId(), devStatus.getStatus()));
+            statuses.add(new KeyValueModel(devStatus.getId(), devStatus.getName()));
         }
 
         return statuses;

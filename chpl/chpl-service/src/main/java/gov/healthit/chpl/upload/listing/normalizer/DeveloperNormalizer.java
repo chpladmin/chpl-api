@@ -11,7 +11,7 @@ import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.DeveloperStatus;
-import gov.healthit.chpl.domain.DeveloperStatusEvent;
+import gov.healthit.chpl.domain.DeveloperStatusEventDeprecated;
 import gov.healthit.chpl.entity.developer.DeveloperStatusType;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.upload.listing.ListingUploadHandlerUtil;
@@ -62,7 +62,7 @@ public class DeveloperNormalizer {
                     && !StringUtils.isEmpty(devCode) && devCode.equals(DeveloperManager.NEW_DEVELOPER_CODE)) {
                 copyUserEnteredDeveloperValues(listing.getDeveloper());
                 listing.getDeveloper().setStatusEvents(
-                        Stream.of(DeveloperStatusEvent.builder()
+                        Stream.of(DeveloperStatusEventDeprecated.builder()
                                 .status(DeveloperStatus.builder()
                                         .status(DeveloperStatusType.Active.getName())
                                         .build())

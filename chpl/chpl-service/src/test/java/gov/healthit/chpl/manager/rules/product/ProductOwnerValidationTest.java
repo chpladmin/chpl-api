@@ -17,7 +17,7 @@ import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.ProductDAO;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.DeveloperStatus;
-import gov.healthit.chpl.domain.DeveloperStatusEvent;
+import gov.healthit.chpl.domain.DeveloperStatusEventDeprecated;
 import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.permissions.ResourcePermissions;
@@ -163,7 +163,7 @@ public class ProductOwnerValidationTest {
         Mockito.when(devDao.getById(ArgumentMatchers.eq(1L))).thenReturn(Developer.builder()
                 .id(1L)
                 .name("developer 1")
-                .statusEvents(new ArrayList<DeveloperStatusEvent>())
+                .statusEvents(new ArrayList<DeveloperStatusEventDeprecated>())
                 .build());
 
         ProductValidationContext context = ProductValidationContext.builder()
@@ -528,8 +528,8 @@ public class ProductOwnerValidationTest {
         assertTrue(CollectionUtils.isEmpty(validation.getMessages()));
     }
 
-    private DeveloperStatusEvent getDeveloperStatusEvent(Long statusEventId, String statusName, LocalDate statusDate) {
-        return DeveloperStatusEvent.builder()
+    private DeveloperStatusEventDeprecated getDeveloperStatusEvent(Long statusEventId, String statusName, LocalDate statusDate) {
+        return DeveloperStatusEventDeprecated.builder()
                 .id(statusEventId)
                 .status(DeveloperStatus.builder()
                         .status(statusName)

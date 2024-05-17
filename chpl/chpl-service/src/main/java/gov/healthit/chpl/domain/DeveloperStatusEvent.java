@@ -1,10 +1,14 @@
 package gov.healthit.chpl.domain;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDate;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
+import gov.healthit.chpl.util.LocalDateDeserializer;
+import gov.healthit.chpl.util.LocalDateSerializer;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,35 +21,32 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class DeveloperStatusEvent implements Serializable {
-    private static final long serialVersionUID = -7303257499336378800L;
+    private static final long serialVersionUID = 464621477897152179L;
 
-    @Schema(description = "Developer status event internal ID")
+    @Schema(description = "Developer status internal id.")
     private Long id;
 
-    @Schema(description = "Developer internal ID")
-    private Long developerId;
-
-    @Schema(description = "The status the developer changed TO with this status event.")
+    @Schema(description = "Developer status name. Indicates a developer ban or suspension.")
     private DeveloperStatus status;
-
-    @Schema(description = "Date this status event occurred.")
-    private Date statusDate;
 
     @Schema(description = "The reason for this status change. "
             + "It is required of the status changed to 'Under Certification Ban by ONC'")
     private String reason;
 
-    public boolean matches(DeveloperStatusEvent anotherStatusEvent) {
-        boolean result = false;
-        if (this.getId() != null && anotherStatusEvent.getId() != null
-                && this.getId().longValue() == anotherStatusEvent.getId().longValue()) {
-            return true;
-        }
-        return result;
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonSerialize(using = LocalDateSerializer.class)
+    @Schema(description = "Day the banned or suspended status became effective.")
+    private LocalDate startDay;
+
+    @Schema(description = "Day the ban or suspension ended.")
+    private LocalDate endDay;
+
+    public DeveloperStatusEvent(DeveloperStatusEvent other) {
+        this();
+        this.setId(other.getId());
+        this.setStatus(other.getStatus());
     }
 
-    // Not all attributes have been included. The attributes being used were selected so the DeveloperManager could
-    // determine equality when updating a Developer
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
@@ -58,25 +59,11 @@ public class DeveloperStatusEvent implements Serializable {
             return false;
         }
         DeveloperStatusEvent other = (DeveloperStatusEvent) obj;
-        if (developerId == null) {
-            if (other.developerId != null) {
-                return false;
-            }
-        } else if (!developerId.equals(other.developerId)) {
-            return false;
-        }
         if (id == null) {
             if (other.id != null) {
                 return false;
             }
         } else if (!id.equals(other.id)) {
-            return false;
-        }
-        if (reason == null) {
-            if (other.reason != null) {
-                return false;
-            }
-        } else if (!reason.equals(other.reason)) {
             return false;
         }
         if (status == null) {
@@ -86,27 +73,39 @@ public class DeveloperStatusEvent implements Serializable {
         } else if (!status.equals(other.status)) {
             return false;
         }
-        if (statusDate == null) {
-            if (other.statusDate != null) {
+        if (reason == null) {
+            if (other.reason != null) {
                 return false;
             }
-        } else if (!statusDate.equals(other.statusDate)) {
+        } else if (!reason.equals(other.reason)) {
+            return false;
+        }
+        if (startDay == null) {
+            if (other.startDay != null) {
+                return false;
+            }
+        } else if (!startDay.equals(other.startDay)) {
+            return false;
+        }
+        if (endDay == null) {
+            if (other.endDay != null) {
+                return false;
+            }
+        } else if (!endDay.equals(other.endDay)) {
             return false;
         }
         return true;
     }
 
-    // Not all attributes have been included. The attributes being used were selected so the DeveloperManager could
-    // determine equality when updating a Developer
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((developerId == null) ? 0 : developerId.hashCode());
         result = prime * result + ((id == null) ? 0 : id.hashCode());
-        result = prime * result + ((reason == null) ? 0 : reason.hashCode());
         result = prime * result + ((status == null) ? 0 : status.hashCode());
-        result = prime * result + ((statusDate == null) ? 0 : statusDate.hashCode());
+        result = prime * result + ((reason == null) ? 0 : reason.hashCode());
+        result = prime * result + ((startDay == null) ? 0 : startDay.hashCode());
+        result = prime * result + ((endDay == null) ? 0 : endDay.hashCode());
         return result;
     }
 }

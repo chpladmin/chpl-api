@@ -94,8 +94,11 @@ public class DeveloperSearchResultEntity implements Serializable {
     @Column(name = "current_status_name")
     private String currentStatusName;
 
-    @Column(name = "last_developer_status_change")
-    private Date lastStatusChangeDate;
+    @Column(name = "vendor_status_start_date")
+    private LocalDate developerStatusStartDate;
+
+    @Column(name = "vendor_status_end_date")
+    private LocalDate developerStatusEndDate;
 
     @Column(name = "current_active_listing_count")
     private Integer currentActiveListingCount;
@@ -142,12 +145,16 @@ public class DeveloperSearchResultEntity implements Serializable {
                         .email(this.getContactEmail())
                         .phoneNumber(this.getContactPhoneNumber())
                         .build())
-                .status(IdNamePair.builder()
+                .status(this.getCurrentStatusId() == null ? null :
+                    IdNamePair.builder()
                         .id(this.getCurrentStatusId())
                         .name(this.getCurrentStatusName())
                         .build())
-                .mostRecentStatusEvent(this.getLastStatusChangeDate())
-                .decertificationDate(calculateDecertificationDate(this.getCurrentStatusName(), this.getLastStatusChangeDate()))
+                .mostRecentStatusEvent(this.getDeveloperStatusStartDate() != null
+                    ? DateUtil.toDate(this.getDeveloperStatusStartDate()) : null)
+                .currentStatusStartDate(this.getDeveloperStatusStartDate())
+                .currentStatusEndDate(this.getDeveloperStatusEndDate())
+                .decertificationDate(calculateDecertificationDate(this.getCurrentStatusName(), this.getDeveloperStatusStartDate()))
                 .currentActiveListingCount(this.getCurrentActiveListingCount())
                 .mostRecentPastAttestationPeriodActiveListingCount(this.getMostRecentPastAttestationPeriodActiveListingCount())
                 .submittedAttestationsForMostRecentPastPeriod(this.getMostRecentPastAttestationPeriodChangeRequestSubmissionId() != null)
@@ -158,9 +165,9 @@ public class DeveloperSearchResultEntity implements Serializable {
                 .build();
     }
 
-    private LocalDate calculateDecertificationDate(String statusName, Date statusChangeDate) {
+    private LocalDate calculateDecertificationDate(String statusName, LocalDate statusChangeDate) {
         if (statusName.equals(DeveloperStatusType.UnderCertificationBanByOnc.getName())) {
-            return DateUtil.toLocalDate(statusChangeDate.getTime());
+            return statusChangeDate;
         }
         return null;
     }

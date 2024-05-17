@@ -9,7 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 import gov.healthit.chpl.domain.Address;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.DeveloperStatus;
-import gov.healthit.chpl.domain.DeveloperStatusEvent;
+import gov.healthit.chpl.domain.DeveloperStatusEventDeprecated;
 import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.contact.PointOfContact;
 import gov.healthit.chpl.entity.listing.CertifiedProductDetailsEntity;
@@ -55,7 +55,7 @@ public class CertifiedProductDetailsDTO implements Serializable {
     private String certificationBodyCode;
     private String productClassificationName;
     private Developer developer;
-    private DeveloperStatusEvent developerCurrentStatus;
+    private DeveloperStatusEventDeprecated developerCurrentStatus;
     private Product product;
     private ProductVersionDTO version;
     private Date creationDate;
@@ -123,7 +123,7 @@ public class CertifiedProductDetailsDTO implements Serializable {
         this.developer.setSelfDeveloper(entity.getSelfDeveloper());
 
         if (entity.getDeveloperStatusId() != null) {
-            developerCurrentStatus = new DeveloperStatusEvent();
+            developerCurrentStatus = new DeveloperStatusEventDeprecated();
             developerCurrentStatus.setDeveloperId(entity.getDeveloperId());
             DeveloperStatus statusObj = new DeveloperStatus();
             statusObj.setId(entity.getDeveloperStatusId());
@@ -224,7 +224,7 @@ public class CertifiedProductDetailsDTO implements Serializable {
         this.developer.setSelfDeveloper(entity.getSelfDeveloper());
 
         if (entity.getDeveloperStatusId() != null) {
-            developerCurrentStatus = new DeveloperStatusEvent();
+            developerCurrentStatus = new DeveloperStatusEventDeprecated();
             developerCurrentStatus.setDeveloperId(entity.getDeveloperId());
             DeveloperStatus statusObj = new DeveloperStatus();
             statusObj.setId(entity.getDeveloperStatusId());

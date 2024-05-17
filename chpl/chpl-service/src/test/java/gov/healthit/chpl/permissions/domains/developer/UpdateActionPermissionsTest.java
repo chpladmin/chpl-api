@@ -16,7 +16,7 @@ import org.mockito.MockitoAnnotations;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.DeveloperStatus;
-import gov.healthit.chpl.domain.DeveloperStatusEvent;
+import gov.healthit.chpl.domain.DeveloperStatusEventDeprecated;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.permissions.domain.ActionPermissionsBaseTest;
@@ -69,7 +69,7 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
 
         Developer dev = new Developer();
         dev.setId(1L);
-        DeveloperStatusEvent statusEvent = new DeveloperStatusEvent();
+        DeveloperStatusEventDeprecated statusEvent = new DeveloperStatusEventDeprecated();
         statusEvent.setDeveloperId(1L);
         statusEvent.setStatusDate(new Date());
         DeveloperStatus status = new DeveloperStatus();

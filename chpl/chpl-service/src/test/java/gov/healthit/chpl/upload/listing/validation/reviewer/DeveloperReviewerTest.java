@@ -15,7 +15,7 @@ import gov.healthit.chpl.domain.Address;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.DeveloperStatus;
-import gov.healthit.chpl.domain.DeveloperStatusEvent;
+import gov.healthit.chpl.domain.DeveloperStatusEventDeprecated;
 import gov.healthit.chpl.domain.contact.PointOfContact;
 import gov.healthit.chpl.entity.developer.DeveloperStatusType;
 import gov.healthit.chpl.upload.listing.ListingUploadHandlerUtil;
@@ -1135,7 +1135,7 @@ public class DeveloperReviewerTest {
                         .email("test@test.com")
                         .phoneNumber("123-456-7890")
                         .build())
-                .statusEvents(List.of(DeveloperStatusEvent.builder()
+                .statusEvents(List.of(DeveloperStatusEventDeprecated.builder()
                         .developerId(id)
                         .id(1L)
                         .status(DeveloperStatus.builder()

@@ -45,7 +45,7 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductTestingLab;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.DeveloperStatus;
-import gov.healthit.chpl.domain.DeveloperStatusEvent;
+import gov.healthit.chpl.domain.DeveloperStatusEventDeprecated;
 import gov.healthit.chpl.domain.ListingUpdateRequest;
 import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.ProductVersion;
@@ -260,7 +260,7 @@ public class CertifiedProductManagerTest {
                                 .build())
                         .developerCode("3046")
                         .name("Acelis Connected Health Technologies")
-                        .statusEvents(List.of(DeveloperStatusEvent.builder()
+                        .statusEvents(List.of(DeveloperStatusEventDeprecated.builder()
                                 .developerId(1L)
                                 .id(1L)
                                 .status(DeveloperStatus.builder()

@@ -1,6 +1,6 @@
 package gov.healthit.chpl.entity.developer;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -14,7 +14,9 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import gov.healthit.chpl.domain.DeveloperStatusEvent;
+import gov.healthit.chpl.domain.DeveloperStatusEventDeprecated;
 import gov.healthit.chpl.entity.EntityAudit;
+import gov.healthit.chpl.util.DateUtil;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -56,16 +58,30 @@ public class DeveloperStatusEventEntity extends EntityAudit {
     @Column(name = "reason")
     private String reason;
 
-    @Column(name = "status_date")
-    private Date statusDate;
+    @Column(name = "start_date")
+    private LocalDate startDate;
+
+    @Column(name = "end_date")
+    private LocalDate endDate;
 
     public DeveloperStatusEvent toDomain() {
         return DeveloperStatusEvent.builder()
+                .id(this.getId())
+                .reason(this.getReason())
+                .status(this.getDeveloperStatus() != null ? this.getDeveloperStatus().toDomain() : null)
+                .startDay(this.getStartDate())
+                .endDay(this.getEndDate())
+                .build();
+    }
+
+    @Deprecated
+    public DeveloperStatusEventDeprecated toStatusEventsDeprecated() {
+        return DeveloperStatusEventDeprecated.builder()
                 .developerId(this.getDeveloperId())
                 .id(this.getId())
                 .reason(this.getReason())
                 .status(this.getDeveloperStatus() != null ? this.getDeveloperStatus().toDomain() : null)
-                .statusDate(this.getStatusDate())
+                .statusDate(DateUtil.toDate(this.getStartDate()))
                 .build();
     }
 }
