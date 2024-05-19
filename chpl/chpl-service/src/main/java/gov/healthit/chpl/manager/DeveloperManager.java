@@ -157,10 +157,11 @@ public class DeveloperManager extends SecuredManager {
                                 .name(acb.getName())
                                 .build())
                         .collect(Collectors.toSet()))
-                .status(IdNamePair.builder()
-                        .id(developer.getStatus().getId())
-                        .name(developer.getStatus().getName())
-                        .build())
+                .status(developer.getCurrentStatusEvent() == null ? null
+                        : IdNamePair.builder()
+                            .id(developer.getStatus().getId())
+                            .name(developer.getStatus().getName())
+                            .build())
                 .decertificationDate(calculateDecertificationDate(developer))
                 .build();
     }

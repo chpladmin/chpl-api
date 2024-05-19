@@ -17,19 +17,17 @@ import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.ProductDAO;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.DeveloperStatus;
-import gov.healthit.chpl.domain.DeveloperStatusEventDeprecated;
+import gov.healthit.chpl.domain.DeveloperStatusEvent;
 import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
-import gov.healthit.chpl.util.DateUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 public class ProductOwnerValidationTest {
     private static final String PRODUCT_OWNER_MISSING = "A product owner is required.";
     private static final String PRODUCT_OWNER_DOES_NOT_EXIST = "An owner with ID %s was specified for the product but that developer does not exist.";
-    private static final String PRODUCT_OWNER_STATUS_DOES_NOT_EXIST = "The product '%s' cannot be created since the status of developer '%s' cannot be determined.";
-    private static final String PRODUCT_OWNER_STATUS_NOT_ACTIVE = "The product owner must be Active. Currently, the product owner has a status of '%s'.";
+    private static final String PRODUCT_OWNER_STATUS_BANNED_OR_SUSPENDED = "The product owner must not be banned or suspended. Currently, the product owner has a status of '%s'.";
     private static final String PRODUCT_OWNER_HISTORY_OWNER_NO_PRODUCTS = "%s has no other products so this product cannot be transferred. A developer may not have 0 products.";
 
     private DeveloperDAO devDao;
@@ -64,12 +62,9 @@ public class ProductOwnerValidationTest {
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("product.ownerMustExist"),
                 ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(PRODUCT_OWNER_DOES_NOT_EXIST, i.getArgument(1), ""));
-        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("product.ownerStatusMustExist"),
-                ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
-            .thenAnswer(i -> String.format(PRODUCT_OWNER_STATUS_DOES_NOT_EXIST, i.getArgument(1), i.getArgument(2)));
-        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("product.ownerMustBeActive"),
+        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("product.ownerMustNotBeBannedOrSuspended"),
                 ArgumentMatchers.anyString()))
-            .thenAnswer(i -> String.format(PRODUCT_OWNER_STATUS_NOT_ACTIVE, i.getArgument(1), ""));
+            .thenAnswer(i -> String.format(PRODUCT_OWNER_STATUS_BANNED_OR_SUSPENDED, i.getArgument(1), ""));
         Mockito.when(msgUtil.getMessage(
                 ArgumentMatchers.eq("product.ownerHistory.cannotTransferDevelopersOnlyProduct"),
                 ArgumentMatchers.anyString()))
@@ -134,11 +129,11 @@ public class ProductOwnerValidationTest {
     }
 
     @Test
-    public void review_productOwnerExistsNullStatus_hasError() throws EntityRetrievalException {
+    public void review_productOwnerExistsNullStatuses_noError() throws EntityRetrievalException {
         Mockito.when(devDao.getById(ArgumentMatchers.eq(1L))).thenReturn(Developer.builder()
                 .id(1L)
                 .name("developer 1")
-                .statusEvents(null)
+                .statuses(null)
                 .build());
 
         ProductValidationContext context = ProductValidationContext.builder()
@@ -154,16 +149,15 @@ public class ProductOwnerValidationTest {
 
         ProductOwnerValidation validation = new ProductOwnerValidation(devDao, productDao, Mockito.mock(ResourcePermissionsFactory.class));
         boolean isValid = validation.isValid(context);
-        assertFalse(isValid);
-        assertTrue(validation.getMessages().contains(String.format(PRODUCT_OWNER_STATUS_DOES_NOT_EXIST, "name", "developer 1")));
+        assertTrue(isValid);
     }
 
     @Test
-    public void review_productOwnerExistsEmptyStatus_hasError() throws EntityRetrievalException {
+    public void review_productOwnerExistsEmptyStatuses_noError() throws EntityRetrievalException {
         Mockito.when(devDao.getById(ArgumentMatchers.eq(1L))).thenReturn(Developer.builder()
                 .id(1L)
                 .name("developer 1")
-                .statusEvents(new ArrayList<DeveloperStatusEventDeprecated>())
+                .statuses(new ArrayList<DeveloperStatusEvent>())
                 .build());
 
         ProductValidationContext context = ProductValidationContext.builder()
@@ -179,8 +173,7 @@ public class ProductOwnerValidationTest {
 
         ProductOwnerValidation validation = new ProductOwnerValidation(devDao, productDao, Mockito.mock(ResourcePermissionsFactory.class));
         boolean isValid = validation.isValid(context);
-        assertFalse(isValid);
-        assertTrue(validation.getMessages().contains(String.format(PRODUCT_OWNER_STATUS_DOES_NOT_EXIST, "name", "developer 1")));
+        assertTrue(isValid);
     }
 
     @Test
@@ -188,9 +181,6 @@ public class ProductOwnerValidationTest {
         Mockito.when(devDao.getById(ArgumentMatchers.eq(1L))).thenReturn(Developer.builder()
                 .id(1L)
                 .name("developer 1")
-                .statusEvents(Stream.of(
-                        getDeveloperStatusEvent(1L, "Active", LocalDate.parse("2022-01-01")))
-                        .toList())
                 .build());
 
         Mockito.when(productDao.getById(ArgumentMatchers.eq(1L)))
@@ -240,9 +230,6 @@ public class ProductOwnerValidationTest {
         Mockito.when(devDao.getById(ArgumentMatchers.eq(1L))).thenReturn(Developer.builder()
                 .id(1L)
                 .name("developer 1")
-                .statusEvents(Stream.of(
-                        getDeveloperStatusEvent(1L, "Active", LocalDate.parse("2022-01-01")))
-                        .toList())
                 .build());
 
         Mockito.when(productDao.getById(ArgumentMatchers.eq(1L)))
@@ -297,9 +284,6 @@ public class ProductOwnerValidationTest {
                 .id(1L)
                 .name("developer 1")
                 .deleted(false)
-                .statusEvents(Stream.of(
-                        getDeveloperStatusEvent(1L, "Active", LocalDate.parse("2022-01-01")))
-                        .toList())
                 .build());
 
         Mockito.when(devDao.getById(ArgumentMatchers.eq(2L), ArgumentMatchers.anyBoolean()))
@@ -307,9 +291,6 @@ public class ProductOwnerValidationTest {
                 .id(2L)
                 .name("old dev")
                 .deleted(true)
-                .statusEvents(Stream.of(
-                        getDeveloperStatusEvent(1L, "Active", LocalDate.parse("2022-01-01")))
-                        .toList())
                 .build());
 
         Mockito.when(productDao.getById(ArgumentMatchers.eq(1L)))
@@ -358,9 +339,8 @@ public class ProductOwnerValidationTest {
         Mockito.when(devDao.getById(ArgumentMatchers.eq(1L))).thenReturn(Developer.builder()
                 .id(1L)
                 .name("developer 1")
-                .statusEvents(Stream.of(
-                        getDeveloperStatusEvent(1L, "Active", LocalDate.parse("2022-01-01")),
-                        getDeveloperStatusEvent(2L, "Suspended by ONC", LocalDate.parse("2022-10-01")))
+                .statuses(Stream.of(
+                        getDeveloperStatusEvent(2L, "Suspended by ONC", LocalDate.now()))
                         .toList())
                 .build());
 
@@ -385,7 +365,7 @@ public class ProductOwnerValidationTest {
         ProductOwnerValidation validation = new ProductOwnerValidation(devDao, productDao, resourcePermissionsFactory);
         boolean isValid = validation.isValid(context);
         assertFalse(isValid);
-        assertTrue(validation.getMessages().contains(String.format(PRODUCT_OWNER_STATUS_NOT_ACTIVE, "Suspended by ONC")));
+        assertTrue(validation.getMessages().contains(String.format(PRODUCT_OWNER_STATUS_BANNED_OR_SUSPENDED, "Suspended by ONC")));
     }
 
     @Test
@@ -393,9 +373,8 @@ public class ProductOwnerValidationTest {
         Mockito.when(devDao.getById(ArgumentMatchers.eq(1L))).thenReturn(Developer.builder()
                 .id(1L)
                 .name("developer 1")
-                .statusEvents(Stream.of(
-                        getDeveloperStatusEvent(1L, "Active", LocalDate.parse("2022-01-01")),
-                        getDeveloperStatusEvent(2L, "Suspended by ONC", LocalDate.parse("2022-10-01")))
+                .statuses(Stream.of(
+                        getDeveloperStatusEvent(2L, "Suspended by ONC", LocalDate.now()))
                         .toList())
                 .build());
 
@@ -428,9 +407,8 @@ public class ProductOwnerValidationTest {
         Mockito.when(devDao.getById(ArgumentMatchers.eq(1L))).thenReturn(Developer.builder()
                 .id(1L)
                 .name("developer 1")
-                .statusEvents(Stream.of(
-                        getDeveloperStatusEvent(1L, "Active", LocalDate.parse("2022-01-01")),
-                        getDeveloperStatusEvent(2L, "Suspended by ONC", LocalDate.parse("2022-10-01")))
+                .statuses(Stream.of(
+                        getDeveloperStatusEvent(2L, "Suspended by ONC", LocalDate.now()))
                         .toList())
                 .build());
 
@@ -459,14 +437,12 @@ public class ProductOwnerValidationTest {
     }
 
     @Test
-    public void review_productOwnerExistsActiveCurrentStatus_userIsAcb_noError() throws EntityRetrievalException {
+    public void review_productOwnerExistsPreviousBan_userIsAcb_noError() throws EntityRetrievalException {
         Mockito.when(devDao.getById(ArgumentMatchers.eq(1L))).thenReturn(Developer.builder()
                 .id(1L)
                 .name("developer 1")
-                .statusEvents(Stream.of(
-                        getDeveloperStatusEvent(1L, "Active", LocalDate.parse("2022-01-01")),
-                        getDeveloperStatusEvent(2L, "Suspended by ONC", LocalDate.parse("2022-10-01")),
-                        getDeveloperStatusEvent(1L, "Active", LocalDate.parse("2022-10-05")))
+                .statuses(Stream.of(
+                        getDeveloperStatusEvent(3L, "Under Certification Ban by ONC", LocalDate.parse("2022-10-01"), LocalDate.parse("2022-11-01")))
                         .toList())
                 .build());
 
@@ -495,12 +471,12 @@ public class ProductOwnerValidationTest {
     }
 
     @Test
-    public void review_productOwnerExistsActiveOnlyStatus_userIsAcb_noError() throws EntityRetrievalException {
+    public void review_productOwnerExistsPreviousSuspension_userIsAcb_noError() throws EntityRetrievalException {
         Mockito.when(devDao.getById(ArgumentMatchers.eq(1L))).thenReturn(Developer.builder()
                 .id(1L)
                 .name("developer 1")
-                .statusEvents(Stream.of(
-                        getDeveloperStatusEvent(1L, "Active", LocalDate.parse("2022-01-01")))
+                .statuses(Stream.of(
+                        getDeveloperStatusEvent(2L, "Suspended by ONC", LocalDate.parse("2022-10-01"), LocalDate.parse("2022-11-01")))
                         .toList())
                 .build());
 
@@ -528,13 +504,49 @@ public class ProductOwnerValidationTest {
         assertTrue(CollectionUtils.isEmpty(validation.getMessages()));
     }
 
-    private DeveloperStatusEventDeprecated getDeveloperStatusEvent(Long statusEventId, String statusName, LocalDate statusDate) {
-        return DeveloperStatusEventDeprecated.builder()
+    @Test
+    public void review_productOwnerExistsNoStatuses_userIsAcb_noError() throws EntityRetrievalException {
+        Mockito.when(devDao.getById(ArgumentMatchers.eq(1L))).thenReturn(Developer.builder()
+                .id(1L)
+                .name("developer 1")
+                .build());
+
+        ResourcePermissions resourcePermissions = Mockito.mock(ResourcePermissions.class);
+        Mockito.when(resourcePermissions.isUserRoleAcbAdmin()).thenReturn(true);
+        Mockito.when(resourcePermissions.isUserRoleAdmin()).thenReturn(false);
+        Mockito.when(resourcePermissions.isUserRoleOnc()).thenReturn(false);
+        ResourcePermissionsFactory resourcePermissionsFactory = Mockito.mock(ResourcePermissionsFactory.class);
+        Mockito.when(resourcePermissionsFactory.get()).thenReturn(resourcePermissions);
+
+        ProductValidationContext context = ProductValidationContext.builder()
+                .errorMessageUtil(msgUtil)
+                .product(Product.builder()
+                        .name("name")
+                        .owner(Developer.builder()
+                                .id(1L)
+                                .build())
+                        .build())
+
+                .build();
+
+        ProductOwnerValidation validation = new ProductOwnerValidation(devDao, productDao, resourcePermissionsFactory);
+        boolean isValid = validation.isValid(context);
+        assertTrue(isValid);
+        assertTrue(CollectionUtils.isEmpty(validation.getMessages()));
+    }
+
+    private DeveloperStatusEvent getDeveloperStatusEvent(Long statusEventId, String statusName, LocalDate startDate) {
+        return getDeveloperStatusEvent(statusEventId, statusName, startDate, null);
+    }
+
+    private DeveloperStatusEvent getDeveloperStatusEvent(Long statusEventId, String statusName, LocalDate startDate, LocalDate endDate) {
+        return DeveloperStatusEvent.builder()
                 .id(statusEventId)
                 .status(DeveloperStatus.builder()
-                        .status(statusName)
+                        .name(statusName)
                         .build())
-                .statusDate(DateUtil.toDate(statusDate))
+                .startDay(startDate)
+                .endDay(endDate)
             .build();
     }
 }

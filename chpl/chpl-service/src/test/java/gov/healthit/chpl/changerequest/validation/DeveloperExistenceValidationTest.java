@@ -2,9 +2,6 @@ package gov.healthit.chpl.changerequest.validation;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.util.Arrays;
-import java.util.Date;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
@@ -14,8 +11,6 @@ import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.changerequest.validation.ChangeRequestValidationContext.ValidationDAOs;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.domain.Developer;
-import gov.healthit.chpl.domain.DeveloperStatus;
-import gov.healthit.chpl.domain.DeveloperStatusEventDeprecated;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 
 public class DeveloperExistenceValidationTest {
@@ -31,15 +26,6 @@ public class DeveloperExistenceValidationTest {
         Mockito.when(developerDAO.getById(ArgumentMatchers.anyLong())).thenReturn(
                 Developer.builder()
                         .id(1L)
-                        .statusEvents(Arrays.asList(DeveloperStatusEventDeprecated.builder()
-                                .id(1L)
-                                .developerId(1L)
-                                .status(DeveloperStatus.builder()
-                                        .id(1L)
-                                        .status("Active")
-                                        .build())
-                                .statusDate(new Date())
-                                .build()))
                         .build());
 
         newChangeRequest = ChangeRequest.builder()

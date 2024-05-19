@@ -16,7 +16,6 @@ import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.auth.CognitoGroups;
 import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.domain.auth.UserPermission;
-import gov.healthit.chpl.entity.developer.DeveloperStatusType;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.user.cognito.CognitoApiWrapper;
@@ -43,11 +42,10 @@ public class CognitoResourcePermissions implements ResourcePermissions {
 
     @Override
     @Transactional(readOnly = true)
-    public boolean isDeveloperActive(Long developerId) {
+    public boolean isDeveloperNotBannedOrSuspended(Long developerId) {
         try {
             Developer developer = developerDAO.getById(developerId);
-            return developer != null && developer.getStatus() != null
-                    && developer.getStatus().getStatus().equals(DeveloperStatusType.Active.toString());
+            return developer != null && developer.isNotBannedOrSuspended();
         } catch (EntityRetrievalException e) {
             return false;
         }

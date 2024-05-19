@@ -2,7 +2,6 @@ package gov.healthit.chpl.changerequest.validation;
 
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.domain.Developer;
-import gov.healthit.chpl.entity.developer.DeveloperStatusType;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.rules.ValidationRule;
 
@@ -32,9 +31,9 @@ public class DeveloperActiveValidation extends ValidationRule<ChangeRequestValid
             return true;
         }
 
-        // Is the developer active?
-        if (!dev.getStatus().getStatus().equals(DeveloperStatusType.Active.toString())) {
-            getMessages().add(getErrorMessage("changeRequest.developer.notActive"));
+        // Is the developer in a banned or suspended status?
+        if (!dev.isNotBannedOrSuspended()) {
+            getMessages().add(getErrorMessage("changeRequest.developer.bannedOrSuspended"));
             return false;
         }
         return true;

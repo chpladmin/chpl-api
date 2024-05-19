@@ -3,8 +3,7 @@ package gov.healthit.chpl.upload.listing.validation.reviewer;
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.util.Date;
-import java.util.List;
+import java.time.LocalDate;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -15,7 +14,7 @@ import gov.healthit.chpl.domain.Address;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.DeveloperStatus;
-import gov.healthit.chpl.domain.DeveloperStatusEventDeprecated;
+import gov.healthit.chpl.domain.DeveloperStatusEvent;
 import gov.healthit.chpl.domain.contact.PointOfContact;
 import gov.healthit.chpl.entity.developer.DeveloperStatusType;
 import gov.healthit.chpl.upload.listing.ListingUploadHandlerUtil;
@@ -40,8 +39,7 @@ public class DeveloperReviewerTest {
     private static final String MISSING_EMAIL = "Developer contact email address is required.";
     private static final String MISSING_PHONE_NUMBER = "Developer contact phone number is required.";
     private static final String MISSING_CONTACT_NAME = "Developer contact name is required.";
-    private static final String MISSING_STATUS = "The developer must have a current status specified.";
-    private static final String INVALID_STATUS = "The developer %s has a status of %s. Certified products belonging to this developer cannot be created until its status returns to Active.";
+    private static final String INVALID_STATUS = "The developer %s has a status of %s. Certified products belonging to this developer cannot be created.";
     private static final String NOT_FOUND = "The developer %s was not found in the system.";
 
     private ErrorMessageUtil errorMessageUtil;
@@ -84,9 +82,7 @@ public class DeveloperReviewerTest {
             .thenReturn(MISSING_PHONE_NUMBER);
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("developer.contact.nameRequired")))
             .thenReturn(MISSING_CONTACT_NAME);
-        Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("developer.status.noCurrent")))
-            .thenReturn(MISSING_STATUS);
-        Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.developer.notActive.noCreate"), ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
+        Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.developer.bannedOrSuspended.noCreate"), ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(INVALID_STATUS, i.getArgument(1), i.getArgument(2)));
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.developer.notFound"), ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(NOT_FOUND, i.getArgument(1), ""));
@@ -850,9 +846,9 @@ public class DeveloperReviewerTest {
     }
 
     @Test
-    public void review_newDeveloperWithNoCurrentStatus_noError() {
+    public void review_newDeveloperWithNullStatuses_noError() {
         Developer developer = buildNewDeveloper();
-        developer.setStatusEvents(null);
+        developer.setStatuses(null);
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .chplProductNumber("15.04.04.XXXX.WEBe.06.00.1.210101")
                 .developer(developer)
@@ -863,52 +859,10 @@ public class DeveloperReviewerTest {
     }
 
     @Test
-    public void review_systemDeveloperWithNoCurrentStatus_hasError() {
+    public void review_systemDeveloperWithNoCurrentStatus_noError() {
         Developer developer = buildSystemDeveloper();
-        developer.setStatusEvents(null);
+        developer.setStatuses(null);
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .developer(developer)
-                .build();
-
-        reviewer.review(listing);
-
-        assertEquals(1, listing.getErrorMessages().size());
-        assertTrue(listing.getErrorMessages().contains(MISSING_STATUS));
-    }
-
-    @Test
-    public void review_newDeveloperWithNullStatus_noError() {
-        Developer developer = buildNewDeveloper();
-        developer.getStatus().setStatus(null);
-        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .chplProductNumber("15.04.04.XXXX.WEBe.06.00.1.210101")
-                .developer(developer)
-                .build();
-
-        reviewer.review(listing);
-        assertEquals(0, listing.getErrorMessages().size());
-    }
-
-    @Test
-    public void review_systemDeveloperWithNullStatus_hasError() {
-        Developer developer = buildSystemDeveloper();
-        developer.getStatus().setStatus(null);
-        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .developer(developer)
-                .build();
-
-        reviewer.review(listing);
-
-        assertEquals(1, listing.getErrorMessages().size());
-        assertTrue(listing.getErrorMessages().contains(MISSING_STATUS));
-    }
-
-    @Test
-    public void review_newDeveloperWithEmptyStatusName_noError() {
-        Developer developer = buildNewDeveloper();
-        developer.getStatus().setStatus("");
-        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
-                .chplProductNumber("15.04.04.XXXX.WEBe.06.00.1.210101")
                 .developer(developer)
                 .build();
 
@@ -918,23 +872,29 @@ public class DeveloperReviewerTest {
     }
 
     @Test
-    public void review_systemDeveloperWithEmptyStatusName_hasError() {
+    public void review_systemDeveloperWithNullStatuses_noError() {
         Developer developer = buildSystemDeveloper();
-        developer.getStatus().setStatus("");
+        developer.setStatuses(null);
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .developer(developer)
                 .build();
 
         reviewer.review(listing);
 
-        assertEquals(1, listing.getErrorMessages().size());
-        assertTrue(listing.getErrorMessages().contains(MISSING_STATUS));
+        assertEquals(0, listing.getErrorMessages().size());
     }
 
     @Test
     public void review_systemDeveloperWithUnderOncBanStatusName_hasError() {
         Developer developer = buildSystemDeveloper();
-        developer.getStatus().setStatus(DeveloperStatusType.UnderCertificationBanByOnc.getName());
+        developer.getStatuses().add(
+                DeveloperStatusEvent.builder()
+                    .status(DeveloperStatus.builder()
+                            .id(2L)
+                            .name(DeveloperStatusType.UnderCertificationBanByOnc.getName())
+                            .build())
+                    .startDay(LocalDate.now())
+                    .build());
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .developer(developer)
                 .build();
@@ -948,7 +908,14 @@ public class DeveloperReviewerTest {
     @Test
     public void review_systemDeveloperWithSuspendedStatusName_hasError() {
         Developer developer = buildSystemDeveloper();
-        developer.getStatus().setStatus(DeveloperStatusType.SuspendedByOnc.getName());
+        developer.getStatuses().add(
+                DeveloperStatusEvent.builder()
+                    .status(DeveloperStatus.builder()
+                            .id(3L)
+                            .name(DeveloperStatusType.SuspendedByOnc.getName())
+                            .build())
+                    .startDay(LocalDate.now())
+                    .build());
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .developer(developer)
                 .build();
@@ -1135,14 +1102,6 @@ public class DeveloperReviewerTest {
                         .email("test@test.com")
                         .phoneNumber("123-456-7890")
                         .build())
-                .statusEvents(List.of(DeveloperStatusEventDeprecated.builder()
-                        .developerId(id)
-                        .id(1L)
-                        .status(DeveloperStatus.builder()
-                            .status(DeveloperStatusType.Active.getName())
-                            .build())
-                        .statusDate(new Date())
-                        .build()))
                 .build();
     }
 }

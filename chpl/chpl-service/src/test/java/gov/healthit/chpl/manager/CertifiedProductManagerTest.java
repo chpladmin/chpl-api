@@ -6,12 +6,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.ff4j.FF4j;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
@@ -44,8 +42,6 @@ import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductTestingLab;
 import gov.healthit.chpl.domain.Developer;
-import gov.healthit.chpl.domain.DeveloperStatus;
-import gov.healthit.chpl.domain.DeveloperStatusEventDeprecated;
 import gov.healthit.chpl.domain.ListingUpdateRequest;
 import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.ProductVersion;
@@ -99,7 +95,6 @@ public class CertifiedProductManagerTest {
     private CertifiedProductDetailsManager certifiedProductDetailsManager;
     private ActivityManager activityManager;
     private ListingValidatorFactory validatorFactory;
-    private FF4j ff4j;
 
     private CertifiedProductManager certifiedProductManager;
 
@@ -260,15 +255,6 @@ public class CertifiedProductManagerTest {
                                 .build())
                         .developerCode("3046")
                         .name("Acelis Connected Health Technologies")
-                        .statusEvents(List.of(DeveloperStatusEventDeprecated.builder()
-                                .developerId(1L)
-                                .id(1L)
-                                .status(DeveloperStatus.builder()
-                                        .id(1L)
-                                        .status("Active")
-                                        .build())
-                                .statusDate(cal2.getTime())
-                                .build()))
                         .build())
                 .product(Product.builder()
                         .id(1L)

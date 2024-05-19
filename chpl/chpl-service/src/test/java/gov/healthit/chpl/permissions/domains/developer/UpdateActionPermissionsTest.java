@@ -3,8 +3,6 @@ package gov.healthit.chpl.permissions.domains.developer;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.util.Date;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
@@ -15,16 +13,14 @@ import org.mockito.MockitoAnnotations;
 
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.domain.Developer;
-import gov.healthit.chpl.domain.DeveloperStatus;
-import gov.healthit.chpl.domain.DeveloperStatusEventDeprecated;
-import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.permissions.ChplResourcePermissions;
 import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.permissions.domain.ActionPermissionsBaseTest;
 
 public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
 
     @Mock
-    private ResourcePermissions resourcePermissions;
+    private ChplResourcePermissions resourcePermissions;
 
     @Mock
     private DeveloperDAO developerDAO;
@@ -40,6 +36,7 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
         MockitoAnnotations.initMocks(this);
         Mockito.when(resourcePermissionsFacotry.get()).thenReturn(resourcePermissions);
         Mockito.when(resourcePermissions.getAllAcbsForCurrentUser()).thenReturn(getAllAcbForUser(2L, 4L));
+        Mockito.when(permissions.getResourcePermissions()).thenReturn(resourcePermissions);
     }
 
     @Override
@@ -69,23 +66,12 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
 
         Developer dev = new Developer();
         dev.setId(1L);
-        DeveloperStatusEventDeprecated statusEvent = new DeveloperStatusEventDeprecated();
-        statusEvent.setDeveloperId(1L);
-        statusEvent.setStatusDate(new Date());
-        DeveloperStatus status = new DeveloperStatus();
-        status.setStatus("Active");
-        statusEvent.setStatus(status);
-        dev.getStatusEvents().add(statusEvent);
-
-        Mockito.when(developerDAO.getById(ArgumentMatchers.anyLong())).thenReturn(dev);
-        // If the current status is Active
+        //no status changes means developer is "normal" and should be able to be edited
+        Mockito.when(resourcePermissions.isDeveloperNotBannedOrSuspended(ArgumentMatchers.eq(1L))).thenReturn(true);
         assertTrue(permissions.hasAccess(dev));
 
-        // If the current status is Non-Active
-        status.setStatus("Suspended by ONC");
-        dev.getStatusEvents().clear();
-        statusEvent.setStatus(status);
-        dev.getStatusEvents().add(statusEvent);
+        // If the current status is a banned/suspended value dev should not be able to be edited
+        Mockito.when(resourcePermissions.isDeveloperNotBannedOrSuspended(ArgumentMatchers.eq(1L))).thenReturn(false);
         assertFalse(permissions.hasAccess(dev));
     }
 

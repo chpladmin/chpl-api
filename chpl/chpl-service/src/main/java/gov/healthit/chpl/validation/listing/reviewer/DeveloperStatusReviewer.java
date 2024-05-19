@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.Developer;
-import gov.healthit.chpl.domain.DeveloperStatus;
+import gov.healthit.chpl.domain.DeveloperStatusEvent;
 import gov.healthit.chpl.entity.developer.DeveloperStatusType;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
@@ -37,24 +37,18 @@ public class DeveloperStatusReviewer implements Reviewer {
             if (listing.getDeveloper() != null && listing.getDeveloper().getId() != null) {
                 Developer developer = developerDao.getById(listing.getDeveloper().getId());
                 if (developer != null) {
-                    DeveloperStatus mostRecentStatus = developer.getStatus();
-                    if (mostRecentStatus == null || mostRecentStatus.getStatus() == null) {
+                    DeveloperStatusEvent currentStatusEvent = developer.getCurrentStatusEvent();
+                    if (!checkAdminOrOncAllowedToEdit(developer)
+                            && (resourcePermissionsFactory.get().isUserRoleAdmin() || resourcePermissionsFactory.get().isUserRoleOnc())) {
                         listing.addBusinessErrorMessage(msgUtil.getMessage(
-                                "listing.developer.noStatusFound.noUpdate", developer.getName()));
-                    } else {
-                        if (resourcePermissionsFactory.get().isUserRoleAdmin() || resourcePermissionsFactory.get().isUserRoleOnc()) {
-                            if (!checkAdminOrOncAllowedToEdit(developer)) {
-                                listing.addBusinessErrorMessage(msgUtil.getMessage(
-                                        "listing.developer.notActiveOrBanned.noUpdate",
-                                        developer.getName(), mostRecentStatus.getStatus(),
-                                        DeveloperStatusType.Active.getName(),
-                                        DeveloperStatusType.UnderCertificationBanByOnc.getName()));
-                            }
-                        } else if (!checkAcbAllowedToEdit(developer)) {
-                            listing.addBusinessErrorMessage(msgUtil.getMessage(
-                                    "listing.developer.notActive.noUpdate",
-                                    developer.getName(), mostRecentStatus.getStatus()));
-                        }
+                                "listing.developer.suspended.noUpdate",
+                                developer.getName(),
+                                currentStatusEvent.getStatus().getName()));
+                    } else if (!checkAcbAllowedToEdit(developer)) {
+                        listing.addBusinessErrorMessage(msgUtil.getMessage(
+                                "listing.developer.bannedOrSuspended.noUpdate",
+                                developer.getName(),
+                                currentStatusEvent.getStatus().getName()));
                     }
                 } else {
                     listing.addBusinessErrorMessage(msgUtil.getMessage("developer.notFound"));
@@ -67,13 +61,12 @@ public class DeveloperStatusReviewer implements Reviewer {
     }
 
     private boolean checkAcbAllowedToEdit(Developer developer) {
-        DeveloperStatus mostRecentStatus = developer.getStatus();
-        return mostRecentStatus.getStatus().equals(DeveloperStatusType.Active.getName());
+        return developer.isNotBannedOrSuspended();
     }
 
     private boolean checkAdminOrOncAllowedToEdit(Developer developer) {
-        DeveloperStatus mostRecentStatus = developer.getStatus();
-        return mostRecentStatus.getStatus().equals(DeveloperStatusType.Active.getName())
-                || mostRecentStatus.getStatus().equals(DeveloperStatusType.UnderCertificationBanByOnc.getName());
+        DeveloperStatusEvent currentStatusEvent = developer.getCurrentStatusEvent();
+        return currentStatusEvent == null
+                || currentStatusEvent.getStatus().getName().equals(DeveloperStatusType.UnderCertificationBanByOnc.getName());
     }
 }
