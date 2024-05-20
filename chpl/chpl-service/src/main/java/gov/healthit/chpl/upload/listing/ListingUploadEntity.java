@@ -9,15 +9,18 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.annotations.JdbcType;
 import org.hibernate.annotations.SelectBeforeUpdate;
+import org.hibernate.dialect.PostgreSQLEnumJdbcType;
 
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.ListingUpload;
 import gov.healthit.chpl.entity.CertificationBodyEntity;
 import gov.healthit.chpl.entity.EntityAudit;
 import jakarta.persistence.Column;
-import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -80,12 +83,9 @@ public class ListingUploadEntity extends EntityAudit {
     @Column(name = "warning_count")
     private Integer warningCount;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "status")
-    //@Type(type = "gov.healthit.chpl.upload.listing.PostgresListingUploadStatus",
-    //    parameters = {@org.hibernate.annotations.Parameter(name = "enumClassName",
-    //        value = "gov.healthit.chpl.upload.listing.ListingUploadStatus")
-    //})
-    @Convert(converter = ListingUploadStatusConverter.class)
+    @JdbcType(PostgreSQLEnumJdbcType.class)
     private ListingUploadStatus status;
 
     @Column(name = "certified_product_id")
