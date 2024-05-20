@@ -109,6 +109,7 @@ public class DeveloperController {
         return results;
     }
 
+    @DeprecatedApiResponseFields(friendlyUrl = "/developers/{developerId}", httpMethod = "GET", responseClass = Developer.class)
     @Operation(summary = "Get information about a specific developer.", description = "",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
@@ -120,6 +121,7 @@ public class DeveloperController {
         return developerManager.getById(developerId);
     }
 
+    @DeprecatedApiResponseFields(friendlyUrl = "/developers/{developerId}/hierarchy", httpMethod = "GET", responseClass = DeveloperTree.class)
     @Operation(summary = "Get all hierarchical information about a specific developer. "
             + "Includes associated products, versions, and basic listing data.", description = "",
             security = {
@@ -162,6 +164,7 @@ public class DeveloperController {
         return rwtManager.getResultsUrls(developerId);
     }
 
+    @DeprecatedApiResponseFields(friendlyUrl = "/developers/{developerId}", httpMethod = "PUT", responseClass = Developer.class)
     @Operation(summary = "Update a developer.",
             description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB",
             security = {
@@ -319,6 +322,8 @@ public class DeveloperController {
                 .build();
     }
 
+    @DeprecatedApiResponseFields(friendlyUrl = "/developers/{developerId}/attestations/attestationPeriodId/exception",
+            httpMethod = "POST", responseClass = AttestationPeriodDeveloperException.class)
     @Operation(summary = "Create a new attestation submission end date exception for a developer.",
             description = "Security Restrictions: ROLE_ADMIN, ROLE+_ONC, or ROLE_ONC_ACB",
             security = {
