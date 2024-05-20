@@ -15,6 +15,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -91,10 +92,15 @@ public class CHPLHttpSecurityConfig {
     public UserDetailsService userDetailsService() {
         UserDetails user = User.builder()
                 .username(ff4jUsername)
-                .password("{noop}" + ff4jPassword)
+                .password("{bcrypt}" + passwordEncoder().encode(ff4jPassword))
                 .roles(FF4J_ROLE)
                 .build();
         return new InMemoryUserDetailsManager(user);
+    }
+
+    @Bean
+    public BCryptPasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 
     private APIKeyAuthenticationFilter apiKeyAuthenticationFilter() {
