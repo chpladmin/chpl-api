@@ -50,6 +50,7 @@ import gov.healthit.chpl.realworldtesting.manager.RealWorldTestingManager;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
+import gov.healthit.chpl.web.controller.annotation.DeprecatedApiResponseFields;
 import gov.healthit.chpl.web.controller.results.DeveloperAttestationSubmissionResults;
 import gov.healthit.chpl.web.controller.results.DeveloperResults;
 import io.swagger.v3.oas.annotations.Operation;
@@ -86,6 +87,7 @@ public class DeveloperController {
         this.rwtManager = rwtManager;
     }
 
+    @DeprecatedApiResponseFields(friendlyUrl = "/developers", httpMethod = "GET", responseClass = DeveloperResults.class)
     @Operation(summary = "List all developers in the system.",
             description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, and ROLE_ACB can see deleted "
                     + "developers.  Everyone else can only see active developers.",
