@@ -38,6 +38,8 @@ public class DeveloperStatusEvent implements Serializable {
     @Schema(description = "Day the banned or suspended status became effective.")
     private LocalDate startDay;
 
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonSerialize(using = LocalDateSerializer.class)
     @Schema(description = "Day the ban or suspension ended.")
     private LocalDate endDay;
 

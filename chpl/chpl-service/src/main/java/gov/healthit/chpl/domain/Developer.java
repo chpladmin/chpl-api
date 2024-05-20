@@ -120,7 +120,7 @@ public class Developer implements Serializable {
     }
 
     @Deprecated
-    @DeprecatedResponseField(message = "This field is deprecated and will be removed.")
+    @DeprecatedResponseField(message = "This field is deprecated and will be removed.", removalDate = "2025-01-01")
     @Schema(description = "The status of a developer with certified Health IT. Allowable values are null, \"Suspended by ONC\", or \"Under "
             + "Certification Ban by ONC\"")
     public DeveloperStatus getStatus() {

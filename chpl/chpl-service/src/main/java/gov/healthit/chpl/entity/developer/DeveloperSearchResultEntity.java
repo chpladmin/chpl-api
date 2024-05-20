@@ -166,7 +166,8 @@ public class DeveloperSearchResultEntity implements Serializable {
     }
 
     private LocalDate calculateDecertificationDate(String statusName, LocalDate statusChangeDate) {
-        if (statusName.equals(DeveloperStatusType.UnderCertificationBanByOnc.getName())) {
+        if (!StringUtils.isEmpty(statusName)
+                && statusName.equals(DeveloperStatusType.UnderCertificationBanByOnc.getName())) {
             return statusChangeDate;
         }
         return null;
