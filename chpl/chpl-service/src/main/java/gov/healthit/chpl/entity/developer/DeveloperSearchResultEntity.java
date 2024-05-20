@@ -145,11 +145,11 @@ public class DeveloperSearchResultEntity implements Serializable {
                         .email(this.getContactEmail())
                         .phoneNumber(this.getContactPhoneNumber())
                         .build())
-                .status(this.getCurrentStatusId() == null ? null :
-                    IdNamePair.builder()
-                        .id(this.getCurrentStatusId())
-                        .name(this.getCurrentStatusName())
-                        .build())
+                .status(this.getCurrentStatusId() == null ? null
+                        : IdNamePair.builder()
+                            .id(this.getCurrentStatusId())
+                            .name(this.getCurrentStatusName())
+                            .build())
                 .mostRecentStatusEvent(this.getDeveloperStatusStartDate() != null
                     ? DateUtil.toDate(this.getDeveloperStatusStartDate()) : null)
                 .currentStatusStartDate(this.getDeveloperStatusStartDate())
