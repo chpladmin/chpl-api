@@ -17,6 +17,7 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.functionalitytested.CertificationResultFunctionalityTested;
 import gov.healthit.chpl.functionalitytested.FunctionalityTested;
 import gov.healthit.chpl.optionalStandard.domain.CertificationResultOptionalStandard;
+import gov.healthit.chpl.optionalStandard.domain.OptionalStandard;
 import gov.healthit.chpl.standard.CertificationResultStandard;
 import gov.healthit.chpl.standard.Standard;
 import gov.healthit.chpl.svap.domain.CertificationResultSvap;
@@ -188,7 +189,9 @@ public class CertificationResultUploadHandler {
             if (!CollectionUtils.isEmpty(optionalStandardNames)) {
                 optionalStandardNames.stream().forEach(optionalStandardName -> {
                     CertificationResultOptionalStandard optionalStandard = CertificationResultOptionalStandard.builder()
-                            .citation(optionalStandardName)
+                            .optionalStandard(OptionalStandard.builder()
+                                    .build())
+                            .userEnteredValue(optionalStandardName)
                             .build();
                     optionalStandards.add(optionalStandard);
                 });

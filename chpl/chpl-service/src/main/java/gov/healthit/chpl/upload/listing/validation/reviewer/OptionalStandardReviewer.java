@@ -1,19 +1,21 @@
 package gov.healthit.chpl.upload.listing.validation.reviewer;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.optionalStandard.OptionalStandardDAO;
 import gov.healthit.chpl.optionalStandard.domain.CertificationResultOptionalStandard;
+import gov.healthit.chpl.optionalStandard.domain.OptionalStandard;
 import gov.healthit.chpl.optionalStandard.domain.OptionalStandardCriteriaMap;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -55,6 +57,8 @@ public class OptionalStandardReviewer implements Reviewer {
                 .forEach(certResult -> reviewCertificationResult(listing, certResult));
         listing.getCertificationResults().stream()
                 .forEach(certResult -> removeOptionalStandardsIfNotApplicable(certResult));
+        listing.getCertificationResults().stream()
+            .forEach(certResult -> removeNotFoundOptionalStandards(certResult));
     }
 
     private void reviewCertificationResult(CertifiedProductSearchDetails listing, CertificationResult certResult) {
@@ -81,40 +85,95 @@ public class OptionalStandardReviewer implements Reviewer {
         }
     }
 
+    private void removeNotFoundOptionalStandards(CertificationResult certResult) {
+        if (CollectionUtils.isEmpty(certResult.getOptionalStandards())) {
+            return;
+        }
+
+        Iterator<CertificationResultOptionalStandard> optStdsIter = certResult.getOptionalStandards().iterator();
+        while (optStdsIter.hasNext()) {
+            CertificationResultOptionalStandard optStd = optStdsIter.next();
+            if (optStd.getOptionalStandard() == null
+                    || optStd.getOptionalStandard().getId() == null) {
+                optStdsIter.remove();
+            } else if (optStd.getOptionalStandard() != null && optStd.getOptionalStandard().getId() != null
+                    && !isOptionalStandardValidForCriteria(optStd.getOptionalStandard().getId(), certResult.getCriterion().getId())) {
+                optStdsIter.remove();
+            }
+        }
+    }
+
     private void reviewOptionalStandardFields(CertifiedProductSearchDetails listing,
             CertificationResult certResult, CertificationResultOptionalStandard optionalStandard) {
         reviewIdRequired(listing, certResult, optionalStandard);
-        reviewCitationRequired(listing, certResult, optionalStandard);
+        reviewValueRequired(listing, certResult, optionalStandard);
+        reviewFuzzyMatchHappened(listing, certResult, optionalStandard);
         reviewOptionalStandardIsValidForCriterion(listing, certResult, optionalStandard);
     }
 
     private void reviewIdRequired(CertifiedProductSearchDetails listing,
             CertificationResult certResult, CertificationResultOptionalStandard optionalStandard) {
-        if (optionalStandard.getOptionalStandardId() == null
-                && !StringUtils.isEmpty(optionalStandard.getCitation())) {
-            listing.addDataErrorMessage(
-                    msgUtil.getMessage("listing.criteria.optionalStandardNotFound",
+        if ((optionalStandard.getOptionalStandard() == null
+                || optionalStandard.getOptionalStandard().getId() == null)
+                && !StringUtils.isEmpty(optionalStandard.getUserEnteredValue())) {
+            String optStdDisplay = (optionalStandard.getOptionalStandard() != null
+                    && optionalStandard.getOptionalStandard().getDisplayValue() != null) ? optionalStandard.getOptionalStandard().getDisplayValue()
+                            : optionalStandard.getUserEnteredValue();
+            listing.addWarningMessage(
+                    msgUtil.getMessage("listing.criteria.optionalStandardNotFoundAndRemoved",
                             Util.formatCriteriaNumber(certResult.getCriterion()),
-                            optionalStandard.getCitation()));
+                            optStdDisplay));
         }
     }
 
-    private void reviewCitationRequired(CertifiedProductSearchDetails listing,
+    private void reviewValueRequired(CertifiedProductSearchDetails listing,
             CertificationResult certResult, CertificationResultOptionalStandard optionalStandard) {
-        if (StringUtils.isEmpty(optionalStandard.getCitation())) {
+        if (StringUtils.isEmpty(optionalStandard.getUserEnteredValue())
+                && StringUtils.isEmpty(optionalStandard.getOptionalStandard().getDisplayValue())) {
             listing.addDataErrorMessage(
                     msgUtil.getMessage("listing.criteria.missingOptionalStandardName",
                             Util.formatCriteriaNumber(certResult.getCriterion())));
         }
     }
 
+    private void reviewFuzzyMatchHappened(CertifiedProductSearchDetails listing,
+            CertificationResult certResult, CertificationResultOptionalStandard optionalStandard) {
+        if (optionalStandard.getOptionalStandard() != null
+                && optionalStandard.getOptionalStandard().getId() != null
+                && !StringUtils.isEmpty(optionalStandard.getUserEnteredValue())
+                && !userEnteredValueMatchesDisplayValue(optionalStandard.getUserEnteredValue(), optionalStandard.getOptionalStandard())
+                && !userEnteredValueMatchesCitation(optionalStandard.getUserEnteredValue(), optionalStandard.getOptionalStandard())) {
+            listing.addWarningMessage(
+                    msgUtil.getMessage("listing.criteria.optionalStandardFuzzyMatch",
+                            optionalStandard.getUserEnteredValue(),
+                            optionalStandard.getOptionalStandard().getDisplayValue(),
+                            Util.formatCriteriaNumber(certResult.getCriterion())));
+        }
+    }
+
+    private boolean userEnteredValueMatchesDisplayValue(String userEnteredValue, OptionalStandard optionalStandard) {
+        return !StringUtils.isEmpty(userEnteredValue)
+                && optionalStandard != null
+                && !StringUtils.isEmpty(optionalStandard.getDisplayValue())
+                && StringUtils.equals(userEnteredValue, optionalStandard.getDisplayValue());
+    }
+
+    private boolean userEnteredValueMatchesCitation(String userEnteredValue, OptionalStandard optionalStandard) {
+        return !StringUtils.isEmpty(userEnteredValue)
+                && optionalStandard != null
+                && !StringUtils.isEmpty(optionalStandard.getCitation())
+                && StringUtils.equals(userEnteredValue, optionalStandard.getCitation());
+    }
+
     private void reviewOptionalStandardIsValidForCriterion(CertifiedProductSearchDetails listing,
             CertificationResult certResult, CertificationResultOptionalStandard optionalStandard) {
-        if (optionalStandard.getOptionalStandardId() != null
-                && !isOptionalStandardValidForCriteria(optionalStandard.getOptionalStandardId(),
+        if (optionalStandard.getOptionalStandard() != null
+                && optionalStandard.getOptionalStandard().getId() != null
+                && !isOptionalStandardValidForCriteria(optionalStandard.getOptionalStandard().getId(),
                         certResult.getCriterion().getId())) {
-            listing.addDataErrorMessage(msgUtil.getMessage("listing.criteria.optionalStandard.invalidCriteria",
-                    optionalStandard.getCitation(), Util.formatCriteriaNumber(certResult.getCriterion())));
+            listing.addWarningMessage(msgUtil.getMessage("listing.criteria.optionalStandard.invalidCriteria",
+                    optionalStandard.getOptionalStandard().getDisplayValue(),
+                    Util.formatCriteriaNumber(certResult.getCriterion())));
         }
     }
 

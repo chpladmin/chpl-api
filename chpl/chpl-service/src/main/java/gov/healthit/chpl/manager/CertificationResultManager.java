@@ -480,7 +480,7 @@ public class CertificationResultManager extends SecuredManager {
         for (CertificationResultOptionalStandard toAdd : optionalStandardToAdd) {
             CertificationResultOptionalStandardEntity toAddEntity = new CertificationResultOptionalStandardEntity();
             toAddEntity.setCertificationResultId(certResult.getId());
-            toAddEntity.setOptionalStandardId(toAdd.getOptionalStandardId());
+            toAddEntity.setOptionalStandardId(toAdd.getOptionalStandard().getId());
             certResultDAO.addOptionalStandardMapping(toAddEntity);
         }
 
