@@ -15,8 +15,10 @@ public class CertificationResultOptionalStandardComparator implements Serializab
 
     @Override
     public int compare(CertificationResultOptionalStandard os1, CertificationResultOptionalStandard os2) {
-        if (!StringUtils.isEmpty(os1.getCitation()) && !StringUtils.isEmpty(os2.getCitation())) {
-            return os1.getCitation().compareTo(os2.getCitation());
+        if (os1.getOptionalStandard() != null && os2.getOptionalStandard() != null
+                && !StringUtils.isEmpty(os1.getOptionalStandard().getDisplayValue())
+                && !StringUtils.isEmpty(os2.getOptionalStandard().getDisplayValue())) {
+            return os1.getOptionalStandard().getDisplayValue().compareTo(os2.getOptionalStandard().getDisplayValue());
         } else if (os1.getId() != null && os2.getId() != null) {
             return os1.getId().compareTo(os2.getId());
         }
