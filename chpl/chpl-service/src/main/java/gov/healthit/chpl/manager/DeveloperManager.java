@@ -159,8 +159,8 @@ public class DeveloperManager extends SecuredManager {
                         .collect(Collectors.toSet()))
                 .status(developer.getCurrentStatusEvent() == null ? null
                         : IdNamePair.builder()
-                            .id(developer.getStatus().getId())
-                            .name(developer.getStatus().getName())
+                            .id(developer.getCurrentStatusEvent().getStatus().getId())
+                            .name(developer.getCurrentStatusEvent().getStatus().getName())
                             .build())
                 .decertificationDate(calculateDecertificationDate(developer))
                 .build();

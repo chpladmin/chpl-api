@@ -124,11 +124,11 @@ public class Developer implements Serializable {
     @Schema(description = "The status of a developer with certified Health IT. Allowable values are null, \"Suspended by ONC\", or \"Under "
             + "Certification Ban by ONC\"")
     public DeveloperStatus getStatus() {
-        if (CollectionUtils.isEmpty(this.getStatusEvents())) {
+        if (CollectionUtils.isEmpty(this.getStatuses())) {
             return null;
         }
 
-        return getMostRecentStatusEvent().getStatus();
+        return getCurrentStatusEvent() != null ? getCurrentStatusEvent().getStatus() : null;
     }
 
     @Deprecated
