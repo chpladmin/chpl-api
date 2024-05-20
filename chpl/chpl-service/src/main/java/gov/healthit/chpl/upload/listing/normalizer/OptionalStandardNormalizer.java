@@ -10,6 +10,8 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.fuzzyMatching.FuzzyChoicesManager;
+import gov.healthit.chpl.fuzzyMatching.FuzzyType;
 import gov.healthit.chpl.optionalStandard.OptionalStandardDAO;
 import gov.healthit.chpl.optionalStandard.domain.CertificationResultOptionalStandard;
 import gov.healthit.chpl.optionalStandard.domain.OptionalStandard;
@@ -19,10 +21,13 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 public class OptionalStandardNormalizer {
     private OptionalStandardDAO optionalStandardDao;
+    private FuzzyChoicesManager fuzzyChoicesManager;
 
     @Autowired
-    public OptionalStandardNormalizer(OptionalStandardDAO optionalStandardDao) {
+    public OptionalStandardNormalizer(OptionalStandardDAO optionalStandardDao,
+            FuzzyChoicesManager fuzzyChoicesManager) {
         this.optionalStandardDao = optionalStandardDao;
+        this.fuzzyChoicesManager= fuzzyChoicesManager;
     }
 
     public void normalize(CertifiedProductSearchDetails listing) {
@@ -46,22 +51,56 @@ public class OptionalStandardNormalizer {
     }
 
     private void fillInOptionalStandardsData(CertificationResult certResult) {
-        populateOptionalStandardsFields(certResult.getOptionalStandards());
+        populateOptionalStandardsFields(certResult, certResult.getOptionalStandards());
     }
 
-    private void populateOptionalStandardsFields(List<CertificationResultOptionalStandard> optionalStandards) {
+    private void populateOptionalStandardsFields(CertificationResult certResult, List<CertificationResultOptionalStandard> optionalStandards) {
         if (!CollectionUtils.isEmpty(optionalStandards)) {
             optionalStandards.stream()
                 .forEach(optionalStandard -> populateOptionalStandardFields(optionalStandard));
+            optionalStandards.stream()
+                .filter(optionalStandard -> optionalStandard.getOptionalStandard() == null
+                    || optionalStandard.getOptionalStandard().getId() == null)
+                .forEach(unknownOptionalStandard -> lookForFuzzyMatch(certResult, unknownOptionalStandard));
         }
     }
 
     private void populateOptionalStandardFields(CertificationResultOptionalStandard cros) {
-        if (!StringUtils.isEmpty(cros.getCitation())) {
-            OptionalStandard optionalStandard = optionalStandardDao.getByCitation(cros.getCitation());
+        String displayValueToSearch = "";
+        if (!StringUtils.isEmpty(cros.getUserEnteredValue())) {
+            displayValueToSearch = cros.getUserEnteredValue();
+        } else if (cros.getOptionalStandard() != null
+                && !StringUtils.isEmpty(cros.getOptionalStandard().getDisplayValue())) {
+            displayValueToSearch = cros.getOptionalStandard().getDisplayValue();
+        } else if (cros.getOptionalStandard() != null
+                && !StringUtils.isEmpty(cros.getOptionalStandard().getCitation())) {
+            displayValueToSearch = cros.getOptionalStandard().getCitation();
+        }
+
+        if (!StringUtils.isEmpty(displayValueToSearch)) {
+            OptionalStandard optionalStandard = optionalStandardDao.getByDisplayValue(displayValueToSearch);
+            if (optionalStandard == null || optionalStandard.getId() == null) {
+                optionalStandard = optionalStandardDao.getByCitation(displayValueToSearch);
+            }
+
             if (optionalStandard != null) {
-                cros.setOptionalStandardId(optionalStandard.getId());
-                cros.setDescription(optionalStandard.getDescription());
+                cros.setOptionalStandard(optionalStandard);
+            }
+        }
+    }
+
+    private void lookForFuzzyMatch(CertificationResult certResult, CertificationResultOptionalStandard unknownOptionalStandard) {
+        if (unknownOptionalStandard == null || StringUtils.isEmpty(unknownOptionalStandard.getUserEnteredValue())) {
+            return;
+        }
+
+        String topFuzzyChoice = fuzzyChoicesManager.getTopFuzzyChoice(unknownOptionalStandard.getUserEnteredValue(),
+                FuzzyType.OPTIONAL_STANDARD,
+                certResult.getCriterion());
+        if (!StringUtils.isEmpty(topFuzzyChoice)) {
+            OptionalStandard optionalStandard = optionalStandardDao.getByDisplayValue(topFuzzyChoice);
+            if (optionalStandard != null) {
+                unknownOptionalStandard.setOptionalStandard(optionalStandard);
             }
         }
     }

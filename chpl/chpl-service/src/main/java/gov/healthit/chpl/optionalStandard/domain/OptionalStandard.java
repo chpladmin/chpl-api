@@ -30,6 +30,9 @@ public class OptionalStandard implements Serializable {
     @Schema(description = "Optional Standard description.")
     private String description;
 
+    @Schema(description = "Optional Standard value used for display and selection.")
+    private String displayValue;
+
     // Do not include this property if the value is "empty". It will be empty when generating listing details
     // and will be non-empty (this included) when doing CRUD operations on optional standards
     @JsonInclude(value = Include.NON_EMPTY)

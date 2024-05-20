@@ -460,8 +460,8 @@ public class CertificationResultUploadHandlerTest {
         assertEquals(1, certResult.getOptionalStandards().size());
         CertificationResultOptionalStandard std = certResult.getOptionalStandards().get(0);
         assertNotNull(std);
-        assertNotNull(std.getCitation());
-        assertEquals("std", std.getCitation());
+        assertNotNull(std.getUserEnteredValue());
+        assertEquals("std", std.getUserEnteredValue());
     }
 
     @Test
@@ -479,8 +479,8 @@ public class CertificationResultUploadHandlerTest {
         assertNotNull(certResult.getOptionalStandards());
         CertificationResultOptionalStandard std = certResult.getOptionalStandards().get(0);
         assertNotNull(std);
-        assertNotNull(std.getCitation());
-        assertEquals("std", std.getCitation());
+        assertNotNull(std.getUserEnteredValue());
+        assertEquals("std", std.getUserEnteredValue());
     }
 
     @Test
@@ -499,12 +499,12 @@ public class CertificationResultUploadHandlerTest {
         assertEquals(2, certResult.getOptionalStandards().size());
         CertificationResultOptionalStandard std = certResult.getOptionalStandards().get(0);
         assertNotNull(std);
-        assertNotNull(std.getCitation());
-        assertEquals("std", std.getCitation());
+        assertNotNull(std.getUserEnteredValue());
+        assertEquals("std", std.getUserEnteredValue());
         std = certResult.getOptionalStandards().get(1);
         assertNotNull(std);
-        assertNotNull(std.getCitation());
-        assertEquals("std2", std.getCitation());
+        assertNotNull(std.getUserEnteredValue());
+        assertEquals("std2", std.getUserEnteredValue());
     }
 
     @Test
@@ -539,8 +539,8 @@ public class CertificationResultUploadHandlerTest {
         assertEquals(1, certResult.getOptionalStandards().size());
         CertificationResultOptionalStandard std = certResult.getOptionalStandards().get(0);
         assertNotNull(std);
-        assertNotNull(std.getCitation());
-        assertEquals("std", std.getCitation());
+        assertNotNull(std.getUserEnteredValue());
+        assertEquals("std", std.getUserEnteredValue());
     }
 
     @Test
@@ -558,8 +558,8 @@ public class CertificationResultUploadHandlerTest {
         assertNotNull(certResult.getOptionalStandards());
         CertificationResultOptionalStandard std = certResult.getOptionalStandards().get(0);
         assertNotNull(std);
-        assertNotNull(std.getCitation());
-        assertEquals("std", std.getCitation());
+        assertNotNull(std.getUserEnteredValue());
+        assertEquals("std", std.getUserEnteredValue());
     }
 
     @Test
@@ -578,12 +578,12 @@ public class CertificationResultUploadHandlerTest {
         assertEquals(2, certResult.getOptionalStandards().size());
         CertificationResultOptionalStandard std = certResult.getOptionalStandards().get(0);
         assertNotNull(std);
-        assertNotNull(std.getCitation());
-        assertEquals("std", std.getCitation());
+        assertNotNull(std.getUserEnteredValue());
+        assertEquals("std", std.getUserEnteredValue());
         std = certResult.getOptionalStandards().get(1);
         assertNotNull(std);
-        assertNotNull(std.getCitation());
-        assertEquals("std2", std.getCitation());
+        assertNotNull(std.getUserEnteredValue());
+        assertEquals("std2", std.getUserEnteredValue());
     }
 
     @Test
