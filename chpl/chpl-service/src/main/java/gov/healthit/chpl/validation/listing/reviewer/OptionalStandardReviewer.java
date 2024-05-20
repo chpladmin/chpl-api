@@ -51,9 +51,9 @@ public class OptionalStandardReviewer extends PermissionBasedReviewer implements
         for (CertificationResult cr : certificationResultsWithOptionalStandards) {
             for (CertificationResultOptionalStandard cros : cr.getOptionalStandards()) {
                 populateOptionalStandardFields(cros, optionalStandardCriteriaMap);
-                if (!isOptionalStandardValidForCriteria(cros.getOptionalStandardId(), cr.getCriterion().getId(), optionalStandardCriteriaMap)) {
+                if (!isOptionalStandardValidForCriteria(cros.getOptionalStandard().getId(), cr.getCriterion().getId(), optionalStandardCriteriaMap)) {
                     String error = errorMessageUtil.getMessage("listing.criteria.optionalStandard.invalidCriteria",
-                            cros.getCitation(), CertificationCriterionService.formatCriteriaNumber(cr.getCriterion()));
+                            cros.getOptionalStandard().getDisplayValue(), CertificationCriterionService.formatCriteriaNumber(cr.getCriterion()));
                     addBusinessCriterionError(listing, cr, error);
                 }
             }
@@ -61,17 +61,19 @@ public class OptionalStandardReviewer extends PermissionBasedReviewer implements
     }
 
     private void populateOptionalStandardFields(CertificationResultOptionalStandard cros, Map<Long, List<OptionalStandardCriteriaMap>> optionalStandardCriteriaMap) {
-        if (cros.getOptionalStandardId() != null) {
-            Optional<OptionalStandard> optionalStandard = getOptionalStandard(cros.getOptionalStandardId(), optionalStandardCriteriaMap);
+        if (cros.getOptionalStandard().getId() != null) {
+            Optional<OptionalStandard> optionalStandard = getOptionalStandard(cros.getOptionalStandard().getId(), optionalStandardCriteriaMap);
             if (optionalStandard.isPresent()) {
-                cros.setCitation(optionalStandard.get().getCitation());
-                cros.setDescription(optionalStandard.get().getDescription());
+                cros.getOptionalStandard().setCitation(optionalStandard.get().getCitation());
+                cros.getOptionalStandard().setDescription(optionalStandard.get().getDescription());
+                cros.getOptionalStandard().setDisplayValue(optionalStandard.get().getDisplayValue());
             }
-        } else if (!StringUtils.isEmpty(cros.getCitation())) {
-            Optional<OptionalStandard> optionalStandard = getOptionalStandard(cros.getCitation(), optionalStandardCriteriaMap);
+        } else if (!StringUtils.isEmpty(cros.getOptionalStandard().getDisplayValue())) {
+            Optional<OptionalStandard> optionalStandard = getOptionalStandard(cros.getOptionalStandard().getDisplayValue(), optionalStandardCriteriaMap);
             if (optionalStandard.isPresent()) {
-                cros.setOptionalStandardId(optionalStandard.get().getId());
-                cros.setDescription(optionalStandard.get().getDescription());
+                cros.getOptionalStandard().setId(optionalStandard.get().getId());
+                cros.getOptionalStandard().setCitation(optionalStandard.get().getCitation());
+                cros.getOptionalStandard().setDescription(optionalStandard.get().getDescription());
             }
         }
     }
@@ -95,11 +97,11 @@ public class OptionalStandardReviewer extends PermissionBasedReviewer implements
                 .findAny();
     }
 
-    private Optional<OptionalStandard> getOptionalStandard(String citation, Map<Long, List<OptionalStandardCriteriaMap>> optionalStandardCriteriaMap) {
+    private Optional<OptionalStandard> getOptionalStandard(String displayValue, Map<Long, List<OptionalStandardCriteriaMap>> optionalStandardCriteriaMap) {
         return optionalStandardCriteriaMap.values().stream()
                 .flatMap(List::stream)
                 .map(oscm -> oscm.getOptionalStandard())
-                .filter(os -> os.getCitation().equals(citation))
+                .filter(os -> os.getDisplayValue().equals(displayValue))
                 .findAny();
     }
 }
