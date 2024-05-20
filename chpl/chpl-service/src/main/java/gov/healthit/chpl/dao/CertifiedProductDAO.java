@@ -430,7 +430,7 @@ public class CertifiedProductDAO extends BaseDAOImpl {
     @Transactional(readOnly = true)
     public List<CertifiedProductDTO> getByVersionIds(final List<Long> versionIds) {
         Query query = entityManager.createQuery(
-                "from CertifiedProductEntity where (NOT deleted = true) and product_version_id IN :idList",
+                "from CertifiedProductEntity where (NOT deleted = true) and productVersionId IN :idList",
                 CertifiedProductEntity.class);
         query.setParameter("idList", versionIds);
         List<CertifiedProductEntity> results = query.getResultList();
@@ -591,7 +591,7 @@ public class CertifiedProductDAO extends BaseDAOImpl {
         Query query = entityManager.createQuery(
                 "from CertifiedProductDetailsEntity "
                         + "WHERE (NOT deleted = true) "
-                        + "AND certification_body_id IN :idList",
+                        + "AND certificationBodyId IN :idList",
                         CertifiedProductDetailsEntity.class);
         query.setParameter("idList", acbIds);
         List<CertifiedProductDetailsEntity> results = query.getResultList();

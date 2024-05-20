@@ -133,7 +133,7 @@ public class CertificationIdDAO extends BaseDAOImpl {
             throws EntityRetrievalException {
         Map<String, Boolean> results = new HashMap<String, Boolean>();
 
-        Query query = entityManager.createQuery("from CertificationIdEntity where certification_id IN :certids ",
+        Query query = entityManager.createQuery("from CertificationIdEntity where certificationId IN :certids ",
                 CertificationIdEntity.class);
         query.setParameter("certids", certificationIds);
         List<CertificationIdEntity> queryResult = query.getResultList();
@@ -278,7 +278,7 @@ public class CertificationIdDAO extends BaseDAOImpl {
                     + "HAVING COUNT(mpx.certificationIdId) = :productCount "
                 + ") "
                 + "AND year = :year "
-                + "ORDER BY creation_date DESC ",
+                + "ORDER BY creationDate DESC ",
                 CertificationIdEntity.class);
 
         query.setParameter("productIds", productIds);

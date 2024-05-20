@@ -3,8 +3,6 @@ package gov.healthit.chpl.dao.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import jakarta.persistence.Query;
-
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.dao.ProductClassificationTypeDAO;
@@ -12,6 +10,7 @@ import gov.healthit.chpl.dto.ProductClassificationTypeDTO;
 import gov.healthit.chpl.entity.ProductClassificationTypeEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import jakarta.persistence.Query;
 
 @Repository("productClassificationTypeDAO")
 public class ProductClassificationTypeDAOImpl extends BaseDAOImpl implements ProductClassificationTypeDAO {
@@ -56,7 +55,7 @@ public class ProductClassificationTypeDAOImpl extends BaseDAOImpl implements Pro
     @Override
     public void delete(Long id) {
         Query query = entityManager.createQuery(
-                "UPDATE ProductClassificationTypeEntity SET deleted = true WHERE product_classification_type_id = :entityid");
+                "UPDATE ProductClassificationTypeEntity SET deleted = true WHERE id = :entityid");
         query.setParameter("entityid", id);
         query.executeUpdate();
     }
@@ -123,7 +122,7 @@ public class ProductClassificationTypeDAOImpl extends BaseDAOImpl implements Pro
         ProductClassificationTypeEntity entity = null;
 
         Query query = entityManager.createQuery(
-                "from ProductClassificationTypeEntity where (NOT deleted = true) AND (product_classification_type_id = :entityid) ",
+                "from ProductClassificationTypeEntity where (NOT deleted = true) AND (id = :entityid) ",
                 ProductClassificationTypeEntity.class);
         query.setParameter("entityid", id);
         List<ProductClassificationTypeEntity> result = query.getResultList();

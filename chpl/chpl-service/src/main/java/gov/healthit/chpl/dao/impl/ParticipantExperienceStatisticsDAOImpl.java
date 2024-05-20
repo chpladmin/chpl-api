@@ -3,8 +3,6 @@ package gov.healthit.chpl.dao.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import jakarta.persistence.Query;
-
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,6 +11,7 @@ import gov.healthit.chpl.dto.ParticipantExperienceStatisticsDTO;
 import gov.healthit.chpl.entity.statistics.ParticipantExperienceStatisticsEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import jakarta.persistence.Query;
 
 /**
  * The implementation for ParticipantExperienceStatisticsDAO.
@@ -68,7 +67,7 @@ public class ParticipantExperienceStatisticsDAOImpl extends BaseDAOImpl implemen
     private List<ParticipantExperienceStatisticsEntity> findAllEntities(final Long experienceTypeId) {
         Query query = entityManager.createQuery(
                 "from ParticipantExperienceStatisticsEntity a where (NOT deleted = true) "
-                + "AND (experience_type_id = :experienceTypeId)");
+                + "AND (experienceTypeId = :experienceTypeId)");
         query.setParameter("experienceTypeId", experienceTypeId);
         return query.getResultList();
     }

@@ -89,7 +89,7 @@ public class CertifiedProductQmsStandardDAO extends BaseDAOImpl {
                 "SELECT qms from CertifiedProductQmsStandardEntity qms "
                         + "LEFT OUTER JOIN FETCH qms.qmsStandard "
                         + "where (NOT qms.deleted = true) "
-                        + "AND (certified_product_qms_standard_id = :entityid) ",
+                        + "AND (id = :entityid) ",
                 CertifiedProductQmsStandardEntity.class);
 
         query.setParameter("entityid", id);

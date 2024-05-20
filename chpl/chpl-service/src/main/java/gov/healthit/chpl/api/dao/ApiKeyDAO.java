@@ -205,7 +205,7 @@ public class ApiKeyDAO extends BaseDAOImpl {
     private ApiKeyEntity getRevokedEntityByKey(String key) {
         ApiKeyEntity entity = null;
 
-        Query query = entityManager.createQuery("from ApiKeyEntity where (deleted = true) AND (api_key = :apikey) ",
+        Query query = entityManager.createQuery("from ApiKeyEntity where (deleted = true) AND (apiKey = :apikey) ",
                 ApiKeyEntity.class);
         query.setParameter("apikey", key);
         List<ApiKeyEntity> result = query.getResultList();
