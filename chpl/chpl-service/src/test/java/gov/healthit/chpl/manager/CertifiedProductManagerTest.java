@@ -56,11 +56,11 @@ import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.MissingReasonException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.listing.measure.ListingMeasureDAO;
-import gov.healthit.chpl.manager.auth.UserManager;
 import gov.healthit.chpl.notifier.ChplTeamNotifier;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.qmsStandard.QmsStandardDAO;
+import gov.healthit.chpl.scheduler.job.certificationStatus.TransactionalDeveloperBanHelper;
 import gov.healthit.chpl.sharedstore.listing.ListingIcsSharedStoreHandler;
 import gov.healthit.chpl.upload.listing.normalizer.ListingDetailsNormalizer;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -135,12 +135,12 @@ public class CertifiedProductManagerTest {
                 certifiedProductDetailsManager,
                 Mockito.mock(SchedulerManager.class),
                 activityManager,
-                Mockito.mock(UserManager.class),
                 Mockito.mock(ListingDetailsNormalizer.class),
                 Mockito.mock(BaselineStandardAsOfTodayNormalizer.class),
                 validatorFactory,
                 Mockito.mock(ListingIcsSharedStoreHandler.class),
                 Mockito.mock(CertificationStatusEventsService.class),
+                Mockito.mock(TransactionalDeveloperBanHelper.class),
                 Mockito.mock(ChplTeamNotifier.class),
                 Mockito.mock(Environment.class),
                 Mockito.mock(ChplHtmlEmailBuilder.class));
