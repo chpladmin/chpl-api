@@ -22,7 +22,7 @@ import lombok.extern.log4j.Log4j2;
 @Component
 @Log4j2(topic = "subscriptionObservationsNotificationJobLogger")
 public class CertificationStatusChangedFormatter extends ObservationSubjectFormatter {
-    private static final String DESCRIPTION_UNFORMATTED = "Certification status changed from '%s' on %s "
+    private static final String STATUS_CHANGED = "Certification status changed from '%s' on %s "
             + "to '%s' on %s";
 
     private CertificationStatusEventsService certStatusEventService;
@@ -60,7 +60,7 @@ public class CertificationStatusChangedFormatter extends ObservationSubjectForma
                 if (!addedStatusEvent.getStatus().getName().equals(yesterdaysStatusEvent.getStatus().getName())) {
                     formattedObservations.add(
                         Stream.of(observation.getSubscription().getSubject().getSubject(),
-                            String.format(DESCRIPTION_UNFORMATTED, yesterdaysStatusEvent.getStatus().getName(),
+                            String.format(STATUS_CHANGED, yesterdaysStatusEvent.getStatus().getName(),
                                 yesterdaysStatusEvent.getEventDay(),
                                 addedStatusEvent.getStatus().getName(),
                                 addedStatusEvent.getEventDay()),
