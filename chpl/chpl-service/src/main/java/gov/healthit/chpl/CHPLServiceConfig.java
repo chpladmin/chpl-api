@@ -85,7 +85,6 @@ import org.springframework.web.servlet.view.JstlView;
 public class CHPLServiceConfig implements WebMvcConfigurer, EnvironmentAware {
 
     private static final Logger LOGGER = LogManager.getLogger(CHPLServiceConfig.class);
-    private static final int MAX_UPLOAD_SIZE_BYTES = 5242880; // 5MB
     private static final int MAX_COOKIE_AGE_SECONDS = 3600; // 1 hour
     private static final int CORE_POOL_SIZE = 10;
     private static final int MAX_POOL_SIZE = 100;
@@ -133,21 +132,6 @@ public class CHPLServiceConfig implements WebMvcConfigurer, EnvironmentAware {
         LOGGER.info("get PersistenceAnnotationBeanPostProcessor");
         return new org.springframework.orm.jpa.support.PersistenceAnnotationBeanPostProcessor();
     }
-
-    /*
-    @Bean(name = "multipartResolver")
-    public CommonsMultipartResolver getResolver() throws IOException {
-        LOGGER.info("get CommonsMultipartResolver");
-        CommonsMultipartResolver resolver = new CommonsMultipartResolver();
-
-        // Set the maximum allowed size (in bytes) for each individual file.
-        resolver.setMaxUploadSize(MAX_UPLOAD_SIZE_BYTES);
-
-        // You may also set other available properties.
-
-        return resolver;
-    }
-    */
 
     @Bean
     public TaskExecutor taskExecutor() {
