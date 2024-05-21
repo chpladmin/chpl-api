@@ -26,7 +26,7 @@ import lombok.extern.log4j.Log4j2;
 @Component
 @Log4j2(topic = "subscriptionObservationsNotificationJobLogger")
 public class CertificationCriteriaRemovedFormatter extends ObservationSubjectFormatter {
-    private static final String DESCRIPTION_UNFORMATTED = "Certification criterion %s was unattested";
+    private static final String CRITERION_REMOVED = "Certification criterion %s was unattested";
 
     @Autowired
     public CertificationCriteriaRemovedFormatter(@Qualifier("activityDAO") ActivityDAO activityDao,
@@ -50,7 +50,7 @@ public class CertificationCriteriaRemovedFormatter extends ObservationSubjectFor
         List<List<String>> formattedObservations = new ArrayList<List<String>>(removedCriteria.size());
         removedCriteria.stream()
             .forEach(criterion -> formattedObservations.add(Stream.of(observation.getSubscription().getSubject().getSubject(),
-                    String.format(DESCRIPTION_UNFORMATTED, Util.formatCriteriaNumber(criterion)),
+                    String.format(CRITERION_REMOVED, Util.formatCriteriaNumber(criterion)),
                     DateUtil.formatInEasternTime(activity.getActivityDate())).toList()));
         return formattedObservations;
     }
