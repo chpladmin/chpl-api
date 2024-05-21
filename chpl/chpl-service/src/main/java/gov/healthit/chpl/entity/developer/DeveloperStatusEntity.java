@@ -35,10 +35,6 @@ public class DeveloperStatusEntity extends EntityAudit {
     private Long id;
 
     @Column(name = "name")
-    //@Type(type = "gov.healthit.chpl.entity.developer.PostgresDeveloperStatusType", parameters = {
-    //        @org.hibernate.annotations.Parameter(name = "enumClassName",
-    //                value = "gov.healthit.chpl.entity.developer.DeveloperStatusType")
-    //})
     @Convert(converter = DeveloperStatusTypeConverter.class)
     private DeveloperStatusType name;
 
