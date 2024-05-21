@@ -9,7 +9,6 @@ import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.DeveloperStatusEvent;
 import gov.healthit.chpl.manager.impl.DeveloperStatusEventsHelper;
 import gov.healthit.chpl.questionableactivity.domain.QuestionableActivityDeveloper;
-import gov.healthit.chpl.util.Util;
 
 @Component
 public class DeveloperQuestionableActivityProvider {
@@ -109,8 +108,8 @@ public class DeveloperQuestionableActivityProvider {
 
     private String getFormattedStatus(DeveloperStatusEvent statusEvent) {
         return statusEvent.getStatus().getName()
-                + " (" + Util.getDateFormatter().format(statusEvent.getStartDay())
-                + (statusEvent.getEndDay() == null ? " - ? " : " - " + Util.getDateFormatter().format(statusEvent.getEndDay()))
+                + " (" + statusEvent.getStartDay()
+                + (statusEvent.getEndDay() == null ? " - ? " : " - " + statusEvent.getEndDay())
                 + ")";
     }
 }

@@ -220,11 +220,11 @@ public class Developer implements Serializable {
         } else if (!selfDeveloper.equals(other.selfDeveloper)) {
             return false;
         }
-        if (statusEvents == null) {
-            if (other.statusEvents != null) {
+        if (statuses == null) {
+            if (other.statuses != null) {
                 return false;
             }
-        } else if (!isStatusEventListEqual(other.statusEvents)) {
+        } else if (!isStatusEventListEqual(other.statuses)) {
             return false;
         }
         if (website == null) {
@@ -237,16 +237,16 @@ public class Developer implements Serializable {
         return true;
     }
 
-    private boolean isStatusEventListEqual(List<DeveloperStatusEventDeprecated> other) {
-        if (statusEvents.size() != other.size()) {
+    private boolean isStatusEventListEqual(List<DeveloperStatusEvent> other) {
+        if (statuses.size() != other.size()) {
             return false;
         } else {
             // Make copies of both lists and order them
-            List<DeveloperStatusEventDeprecated> clonedThis = statusEvents.stream()
-                    .sorted(Comparator.comparing(DeveloperStatusEventDeprecated::getStatusDate))
+            List<DeveloperStatusEvent> clonedThis = statuses.stream()
+                    .sorted(Comparator.comparing(DeveloperStatusEvent::getStartDay))
                     .toList();
-            List<DeveloperStatusEventDeprecated> clonedOther = other.stream()
-                    .sorted(Comparator.comparing(DeveloperStatusEventDeprecated::getStatusDate))
+            List<DeveloperStatusEvent> clonedOther = other.stream()
+                    .sorted(Comparator.comparing(DeveloperStatusEvent::getStartDay))
                     .toList();
             return clonedThis.equals(clonedOther);
         }
