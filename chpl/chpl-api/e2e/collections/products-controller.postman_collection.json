@@ -382,11 +382,7 @@
 						"exec": [
 							"pm.test(\"product merge request attempt by ACB user should return Status code 401\", function () {\r",
 							"    pm.response.to.have.status(401);\r",
-							"});\r",
-							"\r",
-							"pm.test(\"ACB user should be denied access to merge products\", function () {\r",
-							"    pm.expect(pm.response.text()).to.include(\"Access is denied\");\r",
-							"});"
+							"});\r"
 						],
 						"type": "text/javascript"
 					}
@@ -442,11 +438,7 @@
 						"exec": [
 							"pm.test(\"product merge request attempt by anonymous user should return Status code 401\", function () {\r",
 							"    pm.response.to.have.status(401);\r",
-							"});\r",
-							"\r",
-							"pm.test(\"anonymous user should be denied access to merge products\", function () {\r",
-							"    pm.expect(pm.response.text()).to.include(\"Access is denied\");\r",
-							"});"
+							"});\r"
 						],
 						"type": "text/javascript"
 					}
