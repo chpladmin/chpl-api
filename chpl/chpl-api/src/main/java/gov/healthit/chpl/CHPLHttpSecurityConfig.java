@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.PropertySources;
 import org.springframework.core.annotation.Order;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -29,6 +30,7 @@ import lombok.extern.log4j.Log4j2;
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 @PropertySources({
     @PropertySource("classpath:/environment.properties"),
     @PropertySource(value = "classpath:/environment-override.properties", ignoreResourceNotFound = true),
