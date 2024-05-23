@@ -27,8 +27,6 @@ public class DeveloperStatusEventsValidation extends ValidationRule<DeveloperVal
         if (!CollectionUtils.isEmpty(statusEvents)) {
             // sort the status events by date
             statusEvents.sort(new DeveloperStatusEventComparator());
-
-            errors.addAll(statusEventsHaveDuplicates(statusEvents, context));
             errors.addAll(statusEventsDatesOverlap(statusEvents, context));
         }
         return errors;
@@ -51,29 +49,6 @@ public class DeveloperStatusEventsValidation extends ValidationRule<DeveloperVal
             if (prev != null && curr != null
                     && DateUtil.datesOverlap(prev.getStartDay(), prev.getEndDay(), curr.getStartDay(), curr.getEndDay())) {
                 errors.add(context.getErrorMessageUtil().getMessage("developer.status.datesOverlap",
-                        prev.getStatus().getName()));
-            }
-        }
-        return errors;
-    }
-
-    private List<String> statusEventsHaveDuplicates(List<DeveloperStatusEvent> statusEvents, DeveloperValidationContext context) {
-        List<String> errors = new ArrayList<String>();
-        Iterator<DeveloperStatusEvent> iter = statusEvents.iterator();
-        DeveloperStatusEvent prev = null, curr = null;
-        while (iter.hasNext()) {
-            if (prev == null) {
-                prev = iter.next();
-            } else if (curr == null) {
-                curr = iter.next();
-            } else {
-                prev = curr;
-                curr = iter.next();
-            }
-
-            if (prev != null && curr != null
-                    && prev.getStatus().getName().equalsIgnoreCase(curr.getStatus().getName())) {
-                errors.add(context.getErrorMessageUtil().getMessage("developer.status.duplicateStatus",
                         prev.getStatus().getName()));
             }
         }
