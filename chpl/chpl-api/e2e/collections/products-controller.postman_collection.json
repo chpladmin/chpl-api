@@ -12,7 +12,6 @@
 					"script": {
 						"exec": [
 							"pm.test(\"Invalid api key parameter should return 401 status\", function () {\r",
-							"    console.log(pm.response.text());\r",
 							"    pm.response.to.have.status(401);\r",
 							"});"
 						],
