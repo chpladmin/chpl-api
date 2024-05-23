@@ -12,6 +12,7 @@
 					"script": {
 						"exec": [
 							"pm.test(\"Invalid api key parameter should return 401 status\", function () {\r",
+							"    console.log(pm.response.text());\r",
 							"    pm.response.to.have.status(401);\r",
 							"});"
 						],
@@ -29,13 +30,13 @@
 					}
 				],
 				"url": {
-					"raw": "{{url}}/rest/products\n?api_key=atest123cg",
+					"raw": "{{url}}/rest/products?api_key=atest123cg",
 					"host": [
 						"{{url}}"
 					],
 					"path": [
 						"rest",
-						"products\n"
+						"products"
 					],
 					"query": [
 						{
