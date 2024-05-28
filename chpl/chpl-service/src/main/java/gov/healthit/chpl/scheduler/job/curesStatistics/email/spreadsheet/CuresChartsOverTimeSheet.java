@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.domain.statistics.CuresCriterionChartStatistic;
-import gov.healthit.chpl.scheduler.job.curesStatistics.email.CuresStatisticsChartData;
+import gov.healthit.chpl.report.curesupdate.CuresStatisticsChartData;
 import lombok.extern.log4j.Log4j2;
 
 @Component
