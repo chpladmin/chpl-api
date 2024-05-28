@@ -562,7 +562,7 @@ public class CertificationResultDAO extends BaseDAOImpl {
         try {
             CertificationResultOptionalStandardEntity entity = new CertificationResultOptionalStandardEntity();
             entity.setCertificationResultId(certResultId);
-            entity.setOptionalStandardId(optionalStandard.getOptionalStandardId());
+            entity.setOptionalStandardId(optionalStandard.getOptionalStandard().getId());
             create(entity);
             return entity.getId();
         } catch (Exception ex) {

@@ -11,6 +11,7 @@ import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.optionalStandard.domain.CertificationResultOptionalStandard;
+import gov.healthit.chpl.optionalStandard.domain.OptionalStandard;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 public class OptionalStandardDuplicateReviewerTest {
@@ -37,12 +38,16 @@ public class OptionalStandardDuplicateReviewerTest {
         CertificationResult cert = getCertResult();
 
         CertificationResultOptionalStandard optionalStandard1 = new CertificationResultOptionalStandard();
-        optionalStandard1.setOptionalStandardId(1L);
-        optionalStandard1.setCitation("OptionalStandard1");
+        optionalStandard1.setOptionalStandard(OptionalStandard.builder()
+                .id(1L)
+                .displayValue("OptionalStandard1")
+                .build());
 
         CertificationResultOptionalStandard optionalStandard2 = new CertificationResultOptionalStandard();
-        optionalStandard2.setOptionalStandardId(1L);
-        optionalStandard2.setCitation("OptionalStandard1");
+        optionalStandard2.setOptionalStandard(OptionalStandard.builder()
+                .id(1L)
+                .displayValue("OptionalStandard1")
+                .build());
 
         cert.getOptionalStandards().add(optionalStandard1);
         cert.getOptionalStandards().add(optionalStandard2);
@@ -63,12 +68,16 @@ public class OptionalStandardDuplicateReviewerTest {
         CertificationResult cert = getCertResult();
 
         CertificationResultOptionalStandard optionalStandard1 = new CertificationResultOptionalStandard();
-        optionalStandard1.setOptionalStandardId(1L);
-        optionalStandard1.setCitation("OptionalStandard1");
+        optionalStandard1.setOptionalStandard(OptionalStandard.builder()
+                .id(1L)
+                .displayValue("OptionalStandard1")
+                .build());
 
         CertificationResultOptionalStandard optionalStandard2 = new CertificationResultOptionalStandard();
-        optionalStandard2.setOptionalStandardId(2L);
-        optionalStandard2.setCitation("OptionalStandard1");
+        optionalStandard2.setOptionalStandard(OptionalStandard.builder()
+                .id(2L)
+                .displayValue("OptionalStandard1")
+                .build());
 
         cert.getOptionalStandards().add(optionalStandard1);
         cert.getOptionalStandards().add(optionalStandard2);
@@ -89,12 +98,16 @@ public class OptionalStandardDuplicateReviewerTest {
         CertificationResult cert = getCertResult();
 
         CertificationResultOptionalStandard optionalStandard1 = new CertificationResultOptionalStandard();
-        optionalStandard1.setOptionalStandardId(null);
-        optionalStandard1.setCitation("OptionalStandard1");
+        optionalStandard1.setOptionalStandard(OptionalStandard.builder()
+                .id(null)
+                .displayValue("OptionalStandard1")
+                .build());
 
         CertificationResultOptionalStandard optionalStandard2 = new CertificationResultOptionalStandard();
-        optionalStandard2.setOptionalStandardId(null);
-        optionalStandard2.setCitation("OptionalStandard1");
+        optionalStandard2.setOptionalStandard(OptionalStandard.builder()
+                .id(null)
+                .displayValue("OptionalStandard1")
+                .build());
 
         cert.getOptionalStandards().add(optionalStandard1);
         cert.getOptionalStandards().add(optionalStandard2);
@@ -114,12 +127,16 @@ public class OptionalStandardDuplicateReviewerTest {
         CertificationResult cert = getCertResult();
 
         CertificationResultOptionalStandard optionalStandard1 = new CertificationResultOptionalStandard();
-        optionalStandard1.setOptionalStandardId(1L);
-        optionalStandard1.setCitation("OptionalStandard1");
+        optionalStandard1.setOptionalStandard(OptionalStandard.builder()
+                .id(1L)
+                .displayValue("OptionalStandard1")
+                .build());
 
         CertificationResultOptionalStandard optionalStandard2 = new CertificationResultOptionalStandard();
-        optionalStandard2.setOptionalStandardId(2L);
-        optionalStandard2.setCitation("OptionalStandard2");
+        optionalStandard2.setOptionalStandard(OptionalStandard.builder()
+                .id(2L)
+                .displayValue("OptionalStandard2")
+                .build());
 
         cert.getOptionalStandards().add(optionalStandard1);
         cert.getOptionalStandards().add(optionalStandard2);
@@ -148,20 +165,28 @@ public class OptionalStandardDuplicateReviewerTest {
         CertificationResult cert = getCertResult();
 
         CertificationResultOptionalStandard optionalStandard1 = new CertificationResultOptionalStandard();
-        optionalStandard1.setOptionalStandardId(1L);
-        optionalStandard1.setCitation("OptionalStandard1");
+        optionalStandard1.setOptionalStandard(OptionalStandard.builder()
+                .id(1L)
+                .displayValue("OptionalStandard1")
+                .build());
 
         CertificationResultOptionalStandard optionalStandard2 = new CertificationResultOptionalStandard();
-        optionalStandard2.setOptionalStandardId(2L);
-        optionalStandard2.setCitation("OptionalStandard2");
+        optionalStandard2.setOptionalStandard(OptionalStandard.builder()
+                .id(2L)
+                .displayValue("OptionalStandard2")
+                .build());
 
         CertificationResultOptionalStandard optionalStandard3 = new CertificationResultOptionalStandard();
-        optionalStandard3.setOptionalStandardId(1L);
-        optionalStandard3.setCitation("OptionalStandard1");
+        optionalStandard3.setOptionalStandard(OptionalStandard.builder()
+                .id(1L)
+                .displayValue("OptionalStandard1")
+                .build());
 
         CertificationResultOptionalStandard optionalStandard4 = new CertificationResultOptionalStandard();
-        optionalStandard4.setOptionalStandardId(4L);
-        optionalStandard4.setCitation("OptionalStandard4");
+        optionalStandard4.setOptionalStandard(OptionalStandard.builder()
+                .id(4L)
+                .displayValue("OptionalStandard4")
+                .build());
 
         cert.getOptionalStandards().add(optionalStandard1);
         cert.getOptionalStandards().add(optionalStandard2);

@@ -30,9 +30,9 @@ import gov.healthit.chpl.util.ValidationUtils;
 
 public class OptionalStandardReviewerTest {
     private static final String OPTIONAL_STANDARDS_NOT_APPLICABLE = "Optional Standards are not applicable for the criterion %s.";
-    private static final String OPTIONAL_STANDARD_NOT_FOUND = "Criteria %s contains an optional standard '%s' which does not exist.";
+    private static final String OPTIONAL_STANDARD_NOT_FOUND = "Criteria %s contains an optional standard '%s' which does not exist. It has been removed.";
     private static final String OPTIONAL_STANDARD_NAME_MISSING = "There was no optional standard name found for certification criteria %s.";
-    private static final String OPTIONAL_STANDARD_NOT_FOR_CRITERION = "Optional Standard %s is not valid for criteria %s.";
+    private static final String OPTIONAL_STANDARD_NOT_FOR_CRITERION = "Optional Standard %s is not valid for criteria %s. It has been removed.";
 
     private OptionalStandardDAO optionalStandardDao;
     private CertificationResultRules certResultRules;
@@ -59,7 +59,7 @@ public class OptionalStandardReviewerTest {
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.optionalStandardsNotApplicable"),
                 ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(OPTIONAL_STANDARDS_NOT_APPLICABLE, i.getArgument(1), ""));
-        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.optionalStandardNotFound"),
+        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.optionalStandardNotFoundAndRemoved"),
                 ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(OPTIONAL_STANDARD_NOT_FOUND, i.getArgument(1), i.getArgument(2)));
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.missingOptionalStandardName"),
@@ -85,6 +85,7 @@ public class OptionalStandardReviewerTest {
                 .optionalStandard(OptionalStandard.builder()
                         .id(1L)
                         .citation("optional std")
+                        .displayValue("optional std")
                         .build())
                 .build());
         maps.add(OptionalStandardCriteriaMap.builder()
@@ -97,6 +98,7 @@ public class OptionalStandardReviewerTest {
                 .optionalStandard(OptionalStandard.builder()
                         .id(2L)
                         .citation("optional std2")
+                        .displayValue("optional std2")
                         .build())
                 .build());
         return maps;
@@ -154,8 +156,11 @@ public class OptionalStandardReviewerTest {
             .thenReturn(false);
         List<CertificationResultOptionalStandard> optionalStandards = new ArrayList<CertificationResultOptionalStandard>();
         optionalStandards.add(CertificationResultOptionalStandard.builder()
-                .citation("optional std")
-                .optionalStandardId(1L)
+                .optionalStandard(OptionalStandard.builder()
+                        .citation("optional std")
+                        .displayValue("optional std")
+                        .id(1L)
+                        .build())
                 .build());
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .edition(edition2015)
@@ -185,8 +190,11 @@ public class OptionalStandardReviewerTest {
             .thenReturn(false);
         List<CertificationResultOptionalStandard> optionalStandards = new ArrayList<CertificationResultOptionalStandard>();
         optionalStandards.add(CertificationResultOptionalStandard.builder()
-                .citation("optional std")
-                .optionalStandardId(1L)
+                .optionalStandard(OptionalStandard.builder()
+                        .citation("optional std")
+                        .displayValue("optional std")
+                        .id(1L)
+                        .build())
                 .build());
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .edition(edition2015)
@@ -209,17 +217,22 @@ public class OptionalStandardReviewerTest {
     }
 
     @Test
-    public void review_optionalStandardsWithoutId_hasError() {
+    public void review_optionalStandardsWithoutId_hasWarningAndIsRemoved() {
         Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.OPTIONAL_STANDARD)))
             .thenReturn(true);
 
         List<CertificationResultOptionalStandard> optionalStandards = new ArrayList<CertificationResultOptionalStandard>();
         optionalStandards.add(CertificationResultOptionalStandard.builder()
-                .optionalStandardId(1L)
-                .citation("optional std")
+                .optionalStandard(OptionalStandard.builder()
+                        .id(1L)
+                        .citation("optional std")
+                        .displayValue("optional std")
+                        .build())
+                .userEnteredValue("optional std")
                 .build());
         optionalStandards.add(CertificationResultOptionalStandard.builder()
-                .citation("bad name")
+                    .optionalStandard(null)
+                    .userEnteredValue("bad name")
                 .build());
 
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
@@ -235,12 +248,14 @@ public class OptionalStandardReviewerTest {
                         .optionalStandards(optionalStandards)
                         .build())
                 .build();
+        assertEquals(2, listing.getCertificationResults().get(0).getOptionalStandards().size());
         reviewer.review(listing);
 
-        assertEquals(0, listing.getWarningMessages().size());
-        assertEquals(1, listing.getErrorMessages().size());
-        assertTrue(listing.getErrorMessages().contains(
+        assertEquals(1, listing.getWarningMessages().size());
+        assertEquals(0, listing.getErrorMessages().size());
+        assertTrue(listing.getWarningMessages().contains(
                 String.format(OPTIONAL_STANDARD_NOT_FOUND, "170.315 (a)(1)", "bad name")));
+        assertEquals(1, listing.getCertificationResults().get(0).getOptionalStandards().size());
     }
 
     @Test
@@ -250,11 +265,15 @@ public class OptionalStandardReviewerTest {
 
         List<CertificationResultOptionalStandard> optionalStandards = new ArrayList<CertificationResultOptionalStandard>();
         optionalStandards.add(CertificationResultOptionalStandard.builder()
-                .optionalStandardId(1L)
-                .citation("optional std")
+                .optionalStandard(OptionalStandard.builder()
+                        .id(1L)
+                        .citation("optional std")
+                        .displayValue("optional std")
+                        .build())
                 .build());
         optionalStandards.add(CertificationResultOptionalStandard.builder()
-                .citation("bad name")
+                .optionalStandard(OptionalStandard.builder().id(null).build())
+                .userEnteredValue("bad name")
                 .build());
 
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
@@ -284,8 +303,12 @@ public class OptionalStandardReviewerTest {
 
         List<CertificationResultOptionalStandard> optionalStandards = new ArrayList<CertificationResultOptionalStandard>();
         optionalStandards.add(CertificationResultOptionalStandard.builder()
-                .optionalStandardId(1L)
-                .citation("optional std")
+                .optionalStandard(OptionalStandard.builder()
+                        .id(1L)
+                        .citation("optional std")
+                        .displayValue("optional std")
+                        .build())
+                .userEnteredValue("optional std")
                 .build());
 
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
@@ -303,10 +326,11 @@ public class OptionalStandardReviewerTest {
                 .build();
         reviewer.review(listing);
 
-        assertEquals(0, listing.getWarningMessages().size());
-        assertEquals(1, listing.getErrorMessages().size());
-        assertTrue(listing.getErrorMessages().contains(
+        assertEquals(1, listing.getWarningMessages().size());
+        assertEquals(0, listing.getErrorMessages().size());
+        assertTrue(listing.getWarningMessages().contains(
                 String.format(OPTIONAL_STANDARD_NOT_FOR_CRITERION, "optional std", "170.315 (a)(2)")));
+        assertEquals(0, listing.getCertificationResults().get(0).getOptionalStandards().size());
     }
 
     @Test
@@ -316,8 +340,11 @@ public class OptionalStandardReviewerTest {
 
         List<CertificationResultOptionalStandard> optionalStandards = new ArrayList<CertificationResultOptionalStandard>();
         optionalStandards.add(CertificationResultOptionalStandard.builder()
-                .optionalStandardId(1L)
-                .citation("optional std")
+                .optionalStandard(OptionalStandard.builder()
+                        .id(1L)
+                        .citation("optional std")
+                        .displayValue("optional std")
+                        .build())
                 .build());
 
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
@@ -347,12 +374,16 @@ public class OptionalStandardReviewerTest {
 
         List<CertificationResultOptionalStandard> optionalStandards = new ArrayList<CertificationResultOptionalStandard>();
         optionalStandards.add(CertificationResultOptionalStandard.builder()
-                .optionalStandardId(1L)
-                .citation("optional std")
+                .optionalStandard(OptionalStandard.builder()
+                        .id(1L)
+                        .citation("optional std")
+                        .displayValue("optional std")
+                        .build())
+                .userEnteredValue("optional std")
                 .build());
         optionalStandards.add(CertificationResultOptionalStandard.builder()
-                .optionalStandardId(null)
-                .citation("")
+                .optionalStandard(OptionalStandard.builder().id(null).citation("").build())
+                .userEnteredValue("")
                 .build());
 
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
@@ -383,12 +414,15 @@ public class OptionalStandardReviewerTest {
 
         List<CertificationResultOptionalStandard> optionalStandards = new ArrayList<CertificationResultOptionalStandard>();
         optionalStandards.add(CertificationResultOptionalStandard.builder()
-                .optionalStandardId(1L)
-                .citation("optional std")
+                .optionalStandard(OptionalStandard.builder()
+                        .id(1L)
+                        .citation("optional std")
+                        .displayValue("optional std")
+                        .build())
                 .build());
         optionalStandards.add(CertificationResultOptionalStandard.builder()
-                .optionalStandardId(null)
-                .citation("")
+                .optionalStandard(OptionalStandard.builder().id(null).citation("").build())
+                .userEnteredValue("")
                 .build());
 
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
@@ -418,12 +452,14 @@ public class OptionalStandardReviewerTest {
 
         List<CertificationResultOptionalStandard> optionalStandards = new ArrayList<CertificationResultOptionalStandard>();
         optionalStandards.add(CertificationResultOptionalStandard.builder()
-                .optionalStandardId(1L)
-                .citation("optional std")
+                .optionalStandard(OptionalStandard.builder()
+                        .id(1L)
+                        .citation("optional std")
+                        .displayValue("optional std")
+                        .build())
                 .build());
         optionalStandards.add(CertificationResultOptionalStandard.builder()
-                .optionalStandardId(2L)
-                .citation("")
+                .optionalStandard(OptionalStandard.builder().id(2L).citation("").displayValue("").build())
                 .build());
 
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
@@ -441,12 +477,13 @@ public class OptionalStandardReviewerTest {
                 .build();
         reviewer.review(listing);
 
-        assertEquals(0, listing.getWarningMessages().size());
-        assertEquals(2, listing.getErrorMessages().size());
+        assertEquals(1, listing.getWarningMessages().size());
+        assertEquals(1, listing.getErrorMessages().size());
         assertTrue(listing.getErrorMessages().contains(
                 String.format(OPTIONAL_STANDARD_NAME_MISSING, "170.315 (a)(1)", "")));
-        assertTrue(listing.getErrorMessages().contains(
+        assertTrue(listing.getWarningMessages().contains(
                 String.format(OPTIONAL_STANDARD_NOT_FOR_CRITERION, "", "170.315 (a)(1)")));
+        assertEquals(1, listing.getCertificationResults().get(0).getOptionalStandards().size());
     }
 
     @Test
@@ -456,12 +493,15 @@ public class OptionalStandardReviewerTest {
 
         List<CertificationResultOptionalStandard> optionalStandards = new ArrayList<CertificationResultOptionalStandard>();
         optionalStandards.add(CertificationResultOptionalStandard.builder()
-                .optionalStandardId(1L)
-                .citation("optional std")
+                .optionalStandard(OptionalStandard.builder()
+                        .id(1L)
+                        .citation("optional std")
+                        .displayValue("optional std")
+                        .build())
                 .build());
         optionalStandards.add(CertificationResultOptionalStandard.builder()
-                .optionalStandardId(2L)
-                .citation("")
+                .optionalStandard(OptionalStandard.builder().id(2L).citation("").build())
+
                 .build());
 
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
@@ -491,8 +531,11 @@ public class OptionalStandardReviewerTest {
 
         List<CertificationResultOptionalStandard> optionalStandards = new ArrayList<CertificationResultOptionalStandard>();
         optionalStandards.add(CertificationResultOptionalStandard.builder()
-                .optionalStandardId(1L)
-                .citation("optional std")
+                .optionalStandard(OptionalStandard.builder()
+                        .id(1L)
+                        .citation("optional std")
+                        .displayValue("optional std")
+                        .build())
                 .build());
 
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()

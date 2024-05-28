@@ -51,7 +51,7 @@ public class OptionalStandardDuplicateReviewer {
         List<String> warnings = new ArrayList<String>();
         for (CertificationResultOptionalStandard duplicate : duplicates) {
             String warning = errorMessageUtil.getMessage("listing.criteria.duplicateOptionalStandard",
-                    criteria, duplicate.getCitation());
+                    criteria, duplicate.getOptionalStandard().getDisplayValue());
             warnings.add(warning);
         }
         return warnings;
@@ -62,9 +62,10 @@ public class OptionalStandardDuplicateReviewer {
             @Override
             public boolean test(CertificationResultOptionalStandard os1,
                     CertificationResultOptionalStandard os2) {
-                return (ObjectUtils.allNotNull(os1.getOptionalStandardId(), os2.getOptionalStandardId())
-                        && Objects.equals(os1.getOptionalStandardId(),  os2.getOptionalStandardId()))
-                    || Objects.equals(os1.getCitation(), os2.getCitation());
+                return (ObjectUtils.allNotNull(os1.getOptionalStandard(), os2.getOptionalStandard(),
+                        os1.getOptionalStandard().getId(), os2.getOptionalStandard().getId())
+                        && Objects.equals(os1.getOptionalStandard().getId(),  os2.getOptionalStandard().getId()))
+                    || Objects.equals(os1.getOptionalStandard().getDisplayValue(), os2.getOptionalStandard().getDisplayValue());
             }
         };
     }

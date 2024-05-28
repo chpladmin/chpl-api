@@ -50,6 +50,9 @@ public class OptionalStandardEntity extends EntityAudit {
     @Column(name = "description", nullable = false)
     private String description;
 
+    @Column(name = "display_value", nullable = false)
+    private String displayValue;
+
     @OneToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "optional_standard_criteria_map",
         joinColumns = {@JoinColumn(name = "optional_standard_id", referencedColumnName = "id")},
@@ -62,6 +65,7 @@ public class OptionalStandardEntity extends EntityAudit {
                 .id(this.getId())
                 .citation(this.getCitation())
                 .description(this.getDescription())
+                .displayValue(this.getDisplayValue())
                 .build();
     }
 
@@ -70,6 +74,7 @@ public class OptionalStandardEntity extends EntityAudit {
                 .id(this.getId())
                 .citation(this.getCitation())
                 .description(this.getDescription())
+                .displayValue(this.getDisplayValue())
                 .criteria(this.getCriteria().stream().map(e -> e.toDomain()).collect(Collectors.toList()))
                 .build();
     }

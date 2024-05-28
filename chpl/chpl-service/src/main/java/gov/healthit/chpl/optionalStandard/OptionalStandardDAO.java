@@ -15,6 +15,7 @@ import gov.healthit.chpl.optionalStandard.domain.OptionalStandard;
 import gov.healthit.chpl.optionalStandard.domain.OptionalStandardCriteriaMap;
 import gov.healthit.chpl.optionalStandard.entity.OptionalStandardCriteriaMapEntity;
 import gov.healthit.chpl.optionalStandard.entity.OptionalStandardEntity;
+import gov.healthit.chpl.util.Util;
 
 @Repository("optionalStandardDAO")
 public class OptionalStandardDAO extends BaseDAOImpl {
@@ -56,6 +57,15 @@ public class OptionalStandardDAO extends BaseDAOImpl {
         return obj;
     }
 
+    public OptionalStandard getByDisplayValue(String displayValue) {
+        List<OptionalStandardEntity> entities = getEntitiesByDisplayValue(displayValue);
+        OptionalStandard obj = null;
+        if (entities != null && entities.size() > 0) {
+            obj = entities.get(0).toDomain();
+        }
+        return obj;
+    }
+
     private List<OptionalStandardEntity> getEntitiesByCitation(String citation) {
         String osQuery = "SELECT DISTINCT os "
                 + "FROM OptionalStandardEntity os "
@@ -71,6 +81,25 @@ public class OptionalStandardDAO extends BaseDAOImpl {
             query = entityManager.createQuery(osQuery, OptionalStandardEntity.class);
             String citationWithoutSpaces = citation.replaceAll("\\s", "");
             query.setParameter("citation", citationWithoutSpaces.toUpperCase());
+            matches = query.getResultList();
+        }
+        return matches;
+    }
+
+    private List<OptionalStandardEntity> getEntitiesByDisplayValue(String displayValue) {
+        String osQuery = "SELECT DISTINCT os "
+                + "FROM OptionalStandardEntity os "
+                + "WHERE os.deleted <> true "
+                + "AND UPPER(os.displayValue) = :displayValue ";
+        Query query = entityManager.createQuery(osQuery, OptionalStandardEntity.class);
+        query.setParameter("displayValue", displayValue.toUpperCase());
+
+        List<OptionalStandardEntity> matches = query.getResultList();
+        if (matches == null || matches.size() == 0) {
+            // if this didn't find anything try again with special trademark characters removed
+            query = entityManager.createQuery(osQuery, OptionalStandardEntity.class);
+            String displayValueWithoutTrademarkSymbols = Util.removeAllTrademarkCharacters(displayValue);
+            query.setParameter("displayValue", displayValueWithoutTrademarkSymbols.toUpperCase());
             matches = query.getResultList();
         }
         return matches;
