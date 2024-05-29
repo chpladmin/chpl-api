@@ -214,6 +214,10 @@
         <AppenderRef ref="missingAttestationChangeRequestEmailJob" />
         <AppenderRef ref="missingAttestationChangeRequestEmailJobJson" />
     </Logger>
+    <Logger name="messageDevelopersJobLogger" level="INFO" additivity="false">
+        <AppenderRef ref="messageDevelopersJob" />
+        <AppenderRef ref="messageDevelopersJobJson" />
+    </Logger>
     <Logger name="fixupQuestionableActivityJobLogger" level="DEBUG" additivity="false">
         <AppenderRef ref="fixupQuestionableActivityJob" />
         <AppenderRef ref="fixupQuestionableActivityJobJson" />

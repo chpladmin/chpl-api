@@ -10,6 +10,7 @@ import org.quartz.JobDataMap;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
@@ -22,6 +23,7 @@ import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.attestation.manager.AttestationManager;
 import gov.healthit.chpl.attestation.manager.AttestationPeriodService;
 import gov.healthit.chpl.attestation.service.AttestationResponseValidationService;
+import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestDAO;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestStatusTypeDAO;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestTypeDAO;
@@ -176,6 +178,7 @@ public class ChangeRequestManager {
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CHANGE_REQUEST, "
             + "T(gov.healthit.chpl.permissions.domains.ChangeRequestDomainPermissions).CREATE, #changeRequest)")
+    @CacheEvict(cacheNames = CacheNames.COLLECTIONS_DEVELOPERS)
     public ChangeRequest createChangeRequest(ChangeRequest changeRequest)
             throws InvalidArgumentsException, EntityRetrievalException, ValidationException, ActivityException {
 
@@ -195,6 +198,7 @@ public class ChangeRequestManager {
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CHANGE_REQUEST, "
             + "T(gov.healthit.chpl.permissions.domains.ChangeRequestDomainPermissions).UPDATE, #crUpdateRequest)")
+    @CacheEvict(cacheNames = CacheNames.COLLECTIONS_DEVELOPERS)
     public ChangeRequest updateChangeRequest(ChangeRequestUpdateRequest crUpdateRequest)
             throws EntityRetrievalException, ValidationException, EntityCreationException,
             JsonProcessingException, InvalidArgumentsException, EmailNotSentException {
