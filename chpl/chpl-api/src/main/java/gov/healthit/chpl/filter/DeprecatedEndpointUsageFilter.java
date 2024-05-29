@@ -74,11 +74,6 @@ public class DeprecatedEndpointUsageFilter extends GenericFilterBean {
             return;
         }
 
-        //if (!ServletRequestPathUtils.hasParsedRequestPath(request)) {
-        //    ServletRequestPathUtils.parseAndCache(request);
-        //}
-
-
         urlPathHelper.resolveAndCacheLookupPath(request);
         RequestMappingInfo requestMapping = getRequestMappingForHttpServletRequest(request);
         if (requestMapping != null) {
