@@ -147,8 +147,8 @@ public class DeveloperDAO extends BaseDAOImpl {
         DeveloperStatusEntity statusEntity = getStatusByName(status.getStatus().getName());
         statusEventEntity.setDeveloperStatusId(statusEntity.getId());
         statusEventEntity.setReason(status.getReason());
-        statusEventEntity.setStartDate(status.getStartDay());
-        statusEventEntity.setEndDate(status.getEndDay());
+        statusEventEntity.setStartDate(status.getStartDate());
+        statusEventEntity.setEndDate(status.getEndDate());
         create(statusEventEntity);
     }
 

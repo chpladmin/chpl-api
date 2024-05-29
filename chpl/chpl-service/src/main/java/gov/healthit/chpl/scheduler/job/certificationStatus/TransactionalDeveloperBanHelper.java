@@ -104,7 +104,7 @@ public class TransactionalDeveloperBanHelper {
             LOGGER.info("Setting the developer to " + newDeveloperStatus.getName());
             DeveloperStatusEvent statusEventToAdd = DeveloperStatusEvent.builder()
                     .status(newDeveloperStatus)
-                    .startDay(LocalDate.now())
+                    .startDate(LocalDate.now())
                     .reason(msgUtil.getMessage("developer.statusAutomaticallyChanged"))
                     .build();
             developer.getStatuses().add(statusEventToAdd);

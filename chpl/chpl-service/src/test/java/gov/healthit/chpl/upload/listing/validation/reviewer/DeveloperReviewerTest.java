@@ -893,7 +893,7 @@ public class DeveloperReviewerTest {
                             .id(2L)
                             .name(DeveloperStatusType.UnderCertificationBanByOnc.getName())
                             .build())
-                    .startDay(LocalDate.now())
+                    .startDate(LocalDate.now())
                     .build());
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .developer(developer)
@@ -914,7 +914,7 @@ public class DeveloperReviewerTest {
                             .id(3L)
                             .name(DeveloperStatusType.SuspendedByOnc.getName())
                             .build())
-                    .startDay(LocalDate.now())
+                    .startDate(LocalDate.now())
                     .build());
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .developer(developer)

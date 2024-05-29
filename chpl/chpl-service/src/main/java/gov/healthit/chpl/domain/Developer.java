@@ -99,8 +99,8 @@ public class Developer implements Serializable {
         }
         LocalDate today = LocalDate.now();
         return statuses.stream()
-            .filter(status -> (status.getStartDay().isBefore(today) || status.getStartDay().isEqual(today))
-                    && (status.getEndDay() == null || status.getEndDay().isAfter(today) || status.getEndDay().isEqual(today)))
+            .filter(status -> (status.getStartDate().isBefore(today) || status.getStartDate().isEqual(today))
+                    && (status.getEndDate() == null || status.getEndDate().isAfter(today) || status.getEndDate().isEqual(today)))
             .findAny().isEmpty();
     }
 
@@ -113,8 +113,8 @@ public class Developer implements Serializable {
         DeveloperStatusEvent statusToday = null;
         LocalDate today = LocalDate.now();
         statusToday = statuses.stream()
-            .filter(status -> (status.getStartDay().isBefore(today) || status.getStartDay().isEqual(today))
-                    && (status.getEndDay() == null || status.getEndDay().isAfter(today) || status.getEndDay().isEqual(today)))
+            .filter(status -> (status.getStartDate().isBefore(today) || status.getStartDate().isEqual(today))
+                    && (status.getEndDate() == null || status.getEndDate().isAfter(today) || status.getEndDate().isEqual(today)))
             .findAny().orElse(null);
         return statusToday;
     }
@@ -243,10 +243,10 @@ public class Developer implements Serializable {
         } else {
             // Make copies of both lists and order them
             List<DeveloperStatusEvent> clonedThis = statuses.stream()
-                    .sorted(Comparator.comparing(DeveloperStatusEvent::getStartDay))
+                    .sorted(Comparator.comparing(DeveloperStatusEvent::getStartDate))
                     .toList();
             List<DeveloperStatusEvent> clonedOther = other.stream()
-                    .sorted(Comparator.comparing(DeveloperStatusEvent::getStartDay))
+                    .sorted(Comparator.comparing(DeveloperStatusEvent::getStartDate))
                     .toList();
             return clonedThis.equals(clonedOther);
         }

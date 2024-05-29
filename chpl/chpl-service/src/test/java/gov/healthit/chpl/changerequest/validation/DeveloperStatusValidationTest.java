@@ -97,7 +97,7 @@ public class DeveloperStatusValidationTest {
                                         .id(2L)
                                         .name("Suspended by ONC")
                                         .build())
-                                .startDay(LocalDate.now())
+                                .startDate(LocalDate.now())
                                 .build()))
                         .build());
 

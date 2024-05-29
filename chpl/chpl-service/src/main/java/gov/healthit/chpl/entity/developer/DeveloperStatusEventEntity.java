@@ -69,8 +69,8 @@ public class DeveloperStatusEventEntity extends EntityAudit {
                 .id(this.getId())
                 .reason(this.getReason())
                 .status(this.getDeveloperStatus() != null ? this.getDeveloperStatus().toDomain() : null)
-                .startDay(this.getStartDate())
-                .endDay(this.getEndDate())
+                .startDate(this.getStartDate())
+                .endDate(this.getEndDate())
                 .build();
     }
 

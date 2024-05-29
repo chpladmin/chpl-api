@@ -46,8 +46,8 @@ public final class DeveloperStatusEventsHelper {
                                 .id(original.getStatus().getId())
                                 .name(original.getStatus().getName())
                                 .build())
-                        .startDay(LocalDate.from(original.getStartDay()))
-                        .endDay(original.getEndDay() == null ? null : LocalDate.from(original.getEndDay()))
+                        .startDate(LocalDate.from(original.getStartDate()))
+                        .endDate(original.getEndDate() == null ? null : LocalDate.from(original.getEndDate()))
                         .build());
             }
             return clone;

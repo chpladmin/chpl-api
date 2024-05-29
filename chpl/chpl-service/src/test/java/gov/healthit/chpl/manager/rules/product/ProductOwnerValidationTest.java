@@ -545,8 +545,8 @@ public class ProductOwnerValidationTest {
                 .status(DeveloperStatus.builder()
                         .name(statusName)
                         .build())
-                .startDay(startDate)
-                .endDay(endDate)
+                .startDate(startDate)
+                .endDate(endDate)
             .build();
     }
 }

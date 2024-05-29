@@ -108,8 +108,8 @@ public class DeveloperQuestionableActivityProvider {
 
     private String getFormattedStatus(DeveloperStatusEvent statusEvent) {
         return statusEvent.getStatus().getName()
-                + " (" + statusEvent.getStartDay()
-                + (statusEvent.getEndDay() == null ? " - ? " : " - " + statusEvent.getEndDay())
+                + " (" + statusEvent.getStartDate()
+                + (statusEvent.getEndDate() == null ? " - ? " : " - " + statusEvent.getEndDate())
                 + ")";
     }
 }

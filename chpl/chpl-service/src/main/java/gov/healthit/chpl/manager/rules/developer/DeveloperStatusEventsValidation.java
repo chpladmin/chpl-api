@@ -47,7 +47,7 @@ public class DeveloperStatusEventsValidation extends ValidationRule<DeveloperVal
             }
 
             if (prev != null && curr != null
-                    && DateUtil.datesOverlap(prev.getStartDay(), prev.getEndDay(), curr.getStartDay(), curr.getEndDay())) {
+                    && DateUtil.datesOverlap(prev.getStartDate(), prev.getEndDate(), curr.getStartDate(), curr.getEndDate())) {
                 errors.add(context.getErrorMessageUtil().getMessage("developer.status.datesOverlap",
                         prev.getStatus().getName()));
             }

@@ -179,7 +179,7 @@ public class DeveloperManager extends SecuredManager {
         DeveloperStatusEvent developerStatusNow = developer.getCurrentStatusEvent();
         if (developerStatusNow != null
                 && developerStatusNow.getStatus().getName().equals(DeveloperStatusType.UnderCertificationBanByOnc.getName())) {
-            return developerStatusNow.getStartDay();
+            return developerStatusNow.getStartDate();
         }
         return null;
     }

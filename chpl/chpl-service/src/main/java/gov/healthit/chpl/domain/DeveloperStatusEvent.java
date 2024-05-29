@@ -35,13 +35,13 @@ public class DeveloperStatusEvent implements Serializable {
 
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
-    @Schema(description = "Day the banned or suspended status became effective.")
-    private LocalDate startDay;
+    @Schema(description = "Date the banned or suspended status became effective.")
+    private LocalDate startDate;
 
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
-    @Schema(description = "Day the ban or suspension ended.")
-    private LocalDate endDay;
+    @Schema(description = "Date the ban or suspension ended.")
+    private LocalDate endDate;
 
     public DeveloperStatusEvent(DeveloperStatusEvent other) {
         this();
@@ -82,18 +82,18 @@ public class DeveloperStatusEvent implements Serializable {
         } else if (!reason.equals(other.reason)) {
             return false;
         }
-        if (startDay == null) {
-            if (other.startDay != null) {
+        if (startDate == null) {
+            if (other.startDate != null) {
                 return false;
             }
-        } else if (!startDay.equals(other.startDay)) {
+        } else if (!startDate.equals(other.startDate)) {
             return false;
         }
-        if (endDay == null) {
-            if (other.endDay != null) {
+        if (endDate == null) {
+            if (other.endDate != null) {
                 return false;
             }
-        } else if (!endDay.equals(other.endDay)) {
+        } else if (!endDate.equals(other.endDate)) {
             return false;
         }
         return true;
@@ -106,8 +106,8 @@ public class DeveloperStatusEvent implements Serializable {
         result = prime * result + ((id == null) ? 0 : id.hashCode());
         result = prime * result + ((status == null) ? 0 : status.hashCode());
         result = prime * result + ((reason == null) ? 0 : reason.hashCode());
-        result = prime * result + ((startDay == null) ? 0 : startDay.hashCode());
-        result = prime * result + ((endDay == null) ? 0 : endDay.hashCode());
+        result = prime * result + ((startDate == null) ? 0 : startDate.hashCode());
+        result = prime * result + ((endDate == null) ? 0 : endDate.hashCode());
         return result;
     }
 }
