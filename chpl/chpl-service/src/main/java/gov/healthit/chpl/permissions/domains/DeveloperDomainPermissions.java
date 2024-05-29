@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.permissions.domains.developer.CreateActionPermissions;
 import gov.healthit.chpl.permissions.domains.developer.GetAllUsersActionPermissions;
 import gov.healthit.chpl.permissions.domains.developer.GetAllWithDeletedActionPermissions;
+import gov.healthit.chpl.permissions.domains.developer.GetCsvHeadingsActionPermissions;
 import gov.healthit.chpl.permissions.domains.developer.JoinActionPermissions;
 import gov.healthit.chpl.permissions.domains.developer.MessageActionPermissions;
 import gov.healthit.chpl.permissions.domains.developer.SplitActionPermissions;
@@ -20,6 +21,7 @@ public class DeveloperDomainPermissions extends DomainPermissions {
     public static final String JOIN = "JOIN";
     public static final String SPLIT = "SPLIT";
     public static final String GET_ALL_USERS = "GET_ALL_USERS";
+    public static final String GET_CSV_HEADINGS = "GET_CSV_HEADINGS";
     public static final String MESSAGE = "MESSAGE";
 
     @Autowired
@@ -30,6 +32,7 @@ public class DeveloperDomainPermissions extends DomainPermissions {
             @Qualifier("developerJoinActionPermissions") JoinActionPermissions joinActionPermissions,
             @Qualifier("developerSplitActionPermissions") SplitActionPermissions splitActionPermissions,
             @Qualifier("developerGetAllUsersActionPermissions") GetAllUsersActionPermissions getUsersActionPermissions,
+            @Qualifier("developerGetCsvHeadingsActionPermissions") GetCsvHeadingsActionPermissions getCsvHeadingsActionPermissions,
             @Qualifier("developerMessagingActionPermissions") MessageActionPermissions messageActionPermissions) {
 
         getActionPermissions().put(GET_ALL_WITH_DELETED, getAllWithDeletedActionPermissions);
@@ -38,6 +41,7 @@ public class DeveloperDomainPermissions extends DomainPermissions {
         getActionPermissions().put(JOIN, joinActionPermissions);
         getActionPermissions().put(SPLIT, splitActionPermissions);
         getActionPermissions().put(GET_ALL_USERS, getUsersActionPermissions);
+        getActionPermissions().put(GET_CSV_HEADINGS, getCsvHeadingsActionPermissions);
         getActionPermissions().put(MESSAGE, messageActionPermissions);
     }
 }

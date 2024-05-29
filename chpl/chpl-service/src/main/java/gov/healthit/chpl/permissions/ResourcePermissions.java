@@ -16,6 +16,8 @@ public interface ResourcePermissions {
 
     List<User> getAllUsersOnDeveloper(Developer dev);
 
+    List<User> getAllUsersOnDeveloper(Long developerId);
+
     List<CertificationBody> getAllAcbsForCurrentUser();
 
     List<CertificationBody> getAllAcbsForUser(User user);
