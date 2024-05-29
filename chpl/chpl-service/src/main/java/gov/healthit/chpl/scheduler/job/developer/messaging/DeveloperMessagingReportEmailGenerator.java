@@ -1,4 +1,4 @@
-package gov.healthit.chpl.scheduler.job.developer.attestation.email.missingchangerequest;
+package gov.healthit.chpl.scheduler.job.developer.messaging;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -10,13 +10,11 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
 import gov.healthit.chpl.email.footer.PublicFooter;
-import gov.healthit.chpl.scheduler.job.developer.messaging.DeveloperEmail;
-import gov.healthit.chpl.scheduler.job.developer.messaging.MessagingReportEmail;
 import lombok.extern.log4j.Log4j2;
 
 @Component
-@Log4j2(topic = "missingAttestationChangeRequestEmailJobLogger")
-public class MissingAttestationChangeRequestDeveloperStatusReportEmailGenerator {
+@Log4j2(topic = "messageDevelopersJobLogger")
+public class DeveloperMessagingReportEmailGenerator {
     private ChplHtmlEmailBuilder htmlEmailBuilder;
     private String emailSubject;
     private String emailSalutation;
@@ -25,27 +23,27 @@ public class MissingAttestationChangeRequestDeveloperStatusReportEmailGenerator 
     private List<String> tableHeaders = List.of("Developer", "Users");
 
     @Autowired
-    public MissingAttestationChangeRequestDeveloperStatusReportEmailGenerator(ChplHtmlEmailBuilder htmlEmailBuilder,
-            @Value("${developer.missingAttestationChangeRequest.report.subject}") String emailSubject,
-            @Value("${developer.missingAttestationChangeRequest.report.salutation}") String emailSalutation,
-            @Value("${developer.missingAttestationChangeRequest.report.paragraph}") String emailParagraph) {
+    public DeveloperMessagingReportEmailGenerator(ChplHtmlEmailBuilder htmlEmailBuilder,
+            @Value("${developer.messaging.report.subject}") String emailSubject,
+            @Value("${developer.messaging.report.salutation}") String emailSalutation,
+            @Value("${developer.messaging.report.paragraph}") String emailParagraph) {
         this.htmlEmailBuilder = htmlEmailBuilder;
         this.emailSubject = emailSubject;
         this.emailSalutation = emailSalutation;
         this.emailParagraph = emailParagraph;
     }
 
-    public MessagingReportEmail getStatusReportEmail(List<DeveloperEmail> developerEmails, User submittedUser) {
+    public MessagingReportEmail getStatusReportEmail(List<DeveloperEmail> developerEmails, String developerMessageSubject, User submittedUser) {
         return MessagingReportEmail.builder()
-                .subject(emailSubject)
-                .message(getMessage(developerEmails, submittedUser))
+                .subject(String.format(emailSubject, developerMessageSubject))
+                .message(getMessage(developerEmails, developerMessageSubject, submittedUser))
                 .recipients(List.of(submittedUser.getEmail()))
                 .build();
     }
 
-    private String getMessage(List<DeveloperEmail> developerEmails, User submittedUser) {
+    private String getMessage(List<DeveloperEmail> developerEmails, String developerMessageSubject, User submittedUser) {
         return htmlEmailBuilder.initialize()
-                .heading(emailSubject)
+                .heading(String.format(emailSubject, developerMessageSubject))
                 .paragraph("", String.format(emailSalutation, submittedUser.getFullName()))
                 .paragraph("", emailParagraph)
                 .table(tableHeaders, getTableRows(developerEmails))

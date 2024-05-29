@@ -1,6 +1,5 @@
 package gov.healthit.chpl.changerequest.domain.service.email;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
@@ -9,19 +8,17 @@ import java.util.stream.Collectors;
 import org.commonmark.node.Node;
 import org.commonmark.parser.Parser;
 import org.commonmark.renderer.html.HtmlRenderer;
-import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestAttestationSubmission;
-import gov.healthit.chpl.dao.UserDeveloperMapDAO;
-import gov.healthit.chpl.domain.Developer;
+import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.domain.auth.Authority;
 import gov.healthit.chpl.domain.auth.CognitoGroups;
 import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
 import gov.healthit.chpl.exception.EmailNotSentException;
+import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.form.FormItem;
 import gov.healthit.chpl.form.SectionHeading;
 import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
@@ -31,34 +28,23 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 public abstract class ChangeRequestEmail {
     private ResourcePermissionsFactory resourcePermissionsFactory;
-    private FF4j ff4j;
-    private UserDeveloperMapDAO userDeveloperMapDAO;
+    private DeveloperDAO developerDAO;
 
     @Autowired
-    public ChangeRequestEmail(UserDeveloperMapDAO userDeveloperMapDAO, ResourcePermissionsFactory resourcePermissionsFactory, FF4j ff4j) {
-        this.userDeveloperMapDAO = userDeveloperMapDAO;
+    public ChangeRequestEmail(ResourcePermissionsFactory resourcePermissionsFactory, DeveloperDAO developerDAO) {
         this.resourcePermissionsFactory = resourcePermissionsFactory;
-        this.ff4j = ff4j;
+        this.developerDAO = developerDAO;
     }
 
     public abstract void send(ChangeRequest cr) throws EmailNotSentException;
 
     public List<User> getUsersForDeveloper(Long developerId) {
-        List<User> users = new ArrayList<User>();
-
-        //TODO Remove this when the CHPL users are no longer being used
-        users.addAll(userDeveloperMapDAO.getByDeveloperId(developerId).stream()
-                .map(userDeveloperMap -> userDeveloperMap.getUser().toDomain())
-                .toList());
-
-        if (ff4j.check(FeatureList.SSO)) {
-            users.addAll(resourcePermissionsFactory.get().getAllUsersOnDeveloper(
-                    Developer.builder()
-                            .id(developerId)
-                            .build()));
+        try {
+            return resourcePermissionsFactory.get().getAllUsersOnDeveloper(developerDAO.getById(developerId));
+        } catch (EntityRetrievalException e) {
+            LOGGER.error("Could not retrieve developer with id: {}", developerId);
+            return null;
         }
-
-        return users;
     }
 
     public String getApprovalBody(ChangeRequest cr) {
