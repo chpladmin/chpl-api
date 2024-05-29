@@ -805,6 +805,15 @@
         </job>
 
         <job>
+            <name>messageDevelopersJob</name>
+            <group>chplBackgroundJobs</group>
+            <description>Sends a user-provided message to a selected set of Developers</description>
+            <job-class>gov.healthit.chpl.scheduler.job.developer.messaging.MessageDevelopersJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+        </job>
+
+        <job>
             <name>fixupDeveloperAttestationActivityJob</name>
             <group>systemJobs</group>
             <description>Rewrite inaccurate Developer activity due to a duplicate submission of Attestations in Period 2.</description>

@@ -1,21 +1,19 @@
-package gov.healthit.chpl.scheduler.job.developer.attestation.email.missingchangerequest;
+package gov.healthit.chpl.scheduler.job.developer.messaging;
 
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.apache.commons.lang3.math.NumberUtils;
 import org.quartz.Job;
+import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.dao.auth.UserDAO;
-import gov.healthit.chpl.developer.search.ActiveListingSearchOptions;
-import gov.healthit.chpl.developer.search.AttestationsSearchOptions;
-import gov.healthit.chpl.developer.search.DeveloperSearchRequest;
+import gov.healthit.chpl.developer.messaging.DeveloperMessageRequest;
 import gov.healthit.chpl.developer.search.DeveloperSearchResult;
 import gov.healthit.chpl.developer.search.DeveloperSearchService;
 import gov.healthit.chpl.domain.auth.User;
@@ -23,63 +21,64 @@ import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.scheduler.SecurityContextCapableJob;
 import gov.healthit.chpl.scheduler.job.QuartzJob;
-import gov.healthit.chpl.scheduler.job.developer.messaging.DeveloperEmail;
-import gov.healthit.chpl.scheduler.job.developer.messaging.MessagingReportEmail;
-import gov.healthit.chpl.search.domain.SearchSetOperator;
 import gov.healthit.chpl.user.cognito.CognitoApiWrapper;
 import gov.healthit.chpl.util.Util;
 import lombok.extern.log4j.Log4j2;
 
-@Log4j2(topic = "missingAttestationChangeRequestEmailJobLogger")
-public class MissingAttestationChangeRequestEmailJob extends SecurityContextCapableJob implements Job {
+@Log4j2(topic = "messageDevelopersJobLogger")
+public class MessageDevelopersJob extends SecurityContextCapableJob implements Job {
+    public static final String JOB_NAME = "messageDevelopersJob";
+    public static final String DEVELOPER_MESSAGE_REQUEST = "developerMessageRequest";
 
     @Autowired
     private DeveloperSearchService developerSearchService;
 
     @Autowired
-    private MissingAttestationChangeRequestDeveloperEmailGenerator emailGenerator;
+    private DeveloperMessageEmailGenerator messageGenerator;
 
     @Autowired
-    private MissingAttestationChangeRequestDeveloperStatusReportEmailGenerator emailStatusReportGenerator;
+    private DeveloperMessagingReportEmailGenerator messagingReportGenerator;
 
     @Autowired
     private ChplEmailFactory emailFactory;
 
     @Autowired
-    private UserDAO userDAO;
+    private CognitoApiWrapper cognitoApiWrapper;
 
     @Autowired
-    private CognitoApiWrapper cognitoApiWrapper;
+    private UserDAO userDAO;
 
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
 
-        LOGGER.info("********* Starting Developer Missing Attestatation Change Request Email job. *********");
+        LOGGER.info("********* Starting Message Developers job. *********");
         try {
             User submittedByUser = getUserFromJobData(context);
             setSecurityContext(submittedByUser);
+            LOGGER.info(String.format("Messaging developers on behalf of %s (%s)", submittedByUser.getFullName(), submittedByUser.getEmail()));
 
-            List<DeveloperSearchResult> developersMissingAttestations = developerSearchService.getAllPagesOfSearchResults(
-                    DeveloperSearchRequest.builder()
-                        .activeListingsOptions(Stream.of(ActiveListingSearchOptions.HAS_ANY_ACTIVE,
-                                ActiveListingSearchOptions.HAD_ANY_ACTIVE_DURING_MOST_RECENT_PAST_ATTESTATION_PERIOD)
-                                .collect(Collectors.toSet()))
-                        .activeListingsOptionsOperator(SearchSetOperator.AND)
-                        .attestationsOptions(Stream.of(AttestationsSearchOptions.HAS_NOT_SUBMITTED).collect(Collectors.toSet()))
-                        .build(),
+            JobDataMap jobDataMap = context.getMergedJobDataMap();
+            DeveloperMessageRequest developerMessageRequest = (DeveloperMessageRequest) jobDataMap.get(DEVELOPER_MESSAGE_REQUEST);
+            LOGGER.info("Developer search request: " + developerMessageRequest.getQuery());
+            LOGGER.info("Message Subject: " + developerMessageRequest.getSubject());
+            LOGGER.info("Message Body: " + developerMessageRequest.getBody());
+
+            List<DeveloperSearchResult> developersToMessage = developerSearchService.getAllPagesOfSearchResults(
+                        developerMessageRequest.getQuery(),
                         LOGGER);
+            LOGGER.info("Messaging " + developersToMessage.size() + " developers.");
 
-            List<DeveloperEmail> developerEmails = developersMissingAttestations.stream()
-                    .map(developer -> emailGenerator.getDeveloperEmail(developer, submittedByUser))
+            List<DeveloperEmail> developerEmails = developersToMessage.stream()
+                    .map(developer -> messageGenerator.getDeveloperEmail(developer, developerMessageRequest))
                     .toList();
 
             sendEmails(developerEmails);
-            sendStatusReportEmail(developerEmails, submittedByUser);
+            sendStatusReportEmail(developerEmails, developerMessageRequest.getSubject(), submittedByUser);
         } catch (Exception e) {
             LOGGER.error(e);
         } finally {
-            LOGGER.info("********* Completed Developer Missing Attestatation Change Request Email job. *********");
+            LOGGER.info("********* Completed Message Developers job. *********");
         }
     }
 
@@ -99,8 +98,9 @@ public class MissingAttestationChangeRequestEmailJob extends SecurityContextCapa
         });
     }
 
-    private void sendStatusReportEmail(List<DeveloperEmail> developerEmails, User submittedUser) {
-        MessagingReportEmail statusReportEmail = emailStatusReportGenerator.getStatusReportEmail(developerEmails, submittedUser);
+    private void sendStatusReportEmail(List<DeveloperEmail> developerEmails, String developerMessageSubject, User submittedUser) {
+        MessagingReportEmail statusReportEmail = messagingReportGenerator.getStatusReportEmail(developerEmails, developerMessageSubject, submittedUser);
+
         try {
             emailFactory.emailBuilder()
                 .recipients(statusReportEmail.getRecipients())

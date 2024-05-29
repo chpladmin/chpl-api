@@ -3,14 +3,13 @@ package gov.healthit.chpl.changerequest.domain.service.email;
 import java.time.format.DateTimeFormatter;
 import java.util.stream.Collectors;
 
-import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.changerequest.domain.ChangeRequest;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestAttestationSubmission;
-import gov.healthit.chpl.dao.UserDeveloperMapDAO;
+import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
 import gov.healthit.chpl.email.footer.PublicFooter;
@@ -26,12 +25,12 @@ public class AttestationUpdatedEmail extends ChangeRequestEmail {
 
 
     @Autowired
-    public AttestationUpdatedEmail(ChplEmailFactory chplEmailFactory, ChplHtmlEmailBuilder chplHtmlEmailBuilder, UserDeveloperMapDAO userDeveloperMapDAO,
-            ResourcePermissionsFactory resourcePermissionsFactory, FF4j ff4j,
+    public AttestationUpdatedEmail(ChplEmailFactory chplEmailFactory, ChplHtmlEmailBuilder chplHtmlEmailBuilder,
+            ResourcePermissionsFactory resourcePermissionsFactory, DeveloperDAO developerDAO,
             @Value("${changeRequest.attestation.updated.subject}") String emailSubject,
             @Value("${changeRequest.attestation.updated.body}") String emailBody) {
 
-        super(userDeveloperMapDAO, resourcePermissionsFactory, ff4j);
+        super(resourcePermissionsFactory, developerDAO);
         this.chplEmailFactory = chplEmailFactory;
         this.chplHtmlEmailBuilder = chplHtmlEmailBuilder;
         this.emailSubject = emailSubject;

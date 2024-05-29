@@ -30,6 +30,7 @@ import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
+import gov.healthit.chpl.auth.user.AuthenticationSystem;
 import gov.healthit.chpl.domain.schedule.ChplJob;
 import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
 import gov.healthit.chpl.domain.schedule.ChplRepeatableTrigger;
@@ -129,7 +130,11 @@ public class SchedulerManager extends SecuredManager {
                 .forJob(chplTrigger.getJob().getName(), chplTrigger.getJob().getGroup())
                 .usingJobData(chplTrigger.getJob().getJobDataMap()).build();
 
-        trigger.getJobDataMap().put(QuartzJob.JOB_DATA_KEY_SUBMITTED_BY_USER_ID, AuthUtil.getCurrentUser().getId());
+        if (AuthUtil.getCurrentUser().getAuthenticationSystem().equals(AuthenticationSystem.COGNTIO)) {
+            trigger.getJobDataMap().put(QuartzJob.JOB_DATA_KEY_SUBMITTED_BY_USER_ID, AuthUtil.getCurrentUser().getCognitoId());
+        } else if (AuthUtil.getCurrentUser().getAuthenticationSystem().equals(AuthenticationSystem.CHPL)) {
+            trigger.getJobDataMap().put(QuartzJob.JOB_DATA_KEY_SUBMITTED_BY_USER_ID, AuthUtil.getCurrentUser().getId());
+        }
 
         scheduler.scheduleJob(trigger);
 
