@@ -93,7 +93,7 @@ public class CertifiedProductTargetedUserDAO extends BaseDAOImpl {
                 "SELECT tu from CertifiedProductTargetedUserEntity tu "
                         + "LEFT OUTER JOIN FETCH tu.targetedUser "
                         + "where (NOT tu.deleted = true) "
-                        + "AND (id = :entityid) ",
+                        + "AND (tu.id = :entityid) ",
                 CertifiedProductTargetedUserEntity.class);
 
         query.setParameter("entityid", id);
