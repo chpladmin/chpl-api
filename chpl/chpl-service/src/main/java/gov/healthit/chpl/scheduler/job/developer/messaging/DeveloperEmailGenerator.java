@@ -1,4 +1,4 @@
-package gov.healthit.chpl.scheduler.job.developer.attestation.email;
+package gov.healthit.chpl.scheduler.job.developer.messaging;
 
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.auth.User;

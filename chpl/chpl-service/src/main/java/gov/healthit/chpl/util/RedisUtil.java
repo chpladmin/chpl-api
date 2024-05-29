@@ -25,4 +25,9 @@ public class RedisUtil {
                 .map(entry -> entry.getValue())
                 .toList();
     }
+
+    public boolean cacheHasAnyData(Cache cache) {
+        RedissonMap<String, Object> map = (RedissonMap) cache.getNativeCache();
+        return map.size() > 0;
+    }
 }

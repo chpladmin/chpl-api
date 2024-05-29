@@ -56,6 +56,18 @@ public class SubscriptionLookupUtil {
         return Long.parseLong(environment.getProperty("subscription.subject.certificationCriteriaRemoved"));
     }
 
+    public Long getRwtPlansUrlChangedSubjectId() {
+        return Long.parseLong(environment.getProperty("subscription.subject.rwtPlansUrlChanged"));
+    }
+
+    public Long getRwtResultsUrlChangedSubjectId() {
+        return Long.parseLong(environment.getProperty("subscription.subject.rwtResultsUrlChanged"));
+    }
+
+    public Long getServiceBaseUrlListChangedSubjectId() {
+        return Long.parseLong(environment.getProperty("subscription.subject.serviceBaseUrlListChanged"));
+    }
+
     public Long getDailyConsolidationMethodId() {
         return Long.parseLong(environment.getProperty("subscription.consolidationMethod.daily"));
     }
