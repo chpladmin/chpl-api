@@ -1,7 +1,6 @@
 package gov.healthit.chpl.web.controller;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -341,7 +340,7 @@ public class SearchDevelopersController {
         try {
             tempFile = developerCsvWriter.getAsCsv(searchRequest, LOGGER);
             fileUtils.streamFileAsResponse(tempFile, DOWNLOAD_FILE_FORMAT, response);
-        } catch (IOException ex) {
+        } catch (Exception ex) {
             LOGGER.error("Unable to return CSV file for developer download.", ex);
         }
     }
