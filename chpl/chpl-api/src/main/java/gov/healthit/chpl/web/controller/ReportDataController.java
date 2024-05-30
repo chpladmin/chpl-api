@@ -26,13 +26,13 @@ public class ReportDataController {
         this.reportDataManager = reportDataManager;
     }
 
-    @Operation(summary = "",
-            description = "",
+    @Operation(summary = "Retrieves the data used to generate the Cures Update Report.",
+            description = "Retrieves the data used to generate the Cures Update Report.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
     @RequestMapping(value = "/cures-update-report", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public @ResponseBody List<CuresCriterionChartStatistic> getAllRules() {
+    public @ResponseBody List<CuresCriterionChartStatistic> getCuresUpdateReportData() {
         return reportDataManager.getCuresUpdateReportData();
     }
 
