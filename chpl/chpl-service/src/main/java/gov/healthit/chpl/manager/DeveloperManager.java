@@ -128,14 +128,6 @@ public class DeveloperManager extends SecuredManager {
     }
 
     @Transactional(readOnly = true)
-    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).DEVELOPER, "
-            + "T(gov.healthit.chpl.permissions.domains.DeveloperDomainPermissions).GET_ALL_WITH_DELETED)")
-    @Cacheable(CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED)
-    public List<Developer> getAllIncludingDeleted() {
-        return developerDao.findAllIncludingDeleted();
-    }
-
-    @Transactional(readOnly = true)
     @Cacheable(CacheNames.COLLECTIONS_DEVELOPERS)
     public List<DeveloperSearchResult> getDeveloperSearchResults() {
         List<DeveloperSearchResult> allDevelopers = developerDao.getAllSearchResults();

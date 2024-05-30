@@ -233,13 +233,6 @@ public class DeveloperDAO extends BaseDAOImpl {
         return developerAcbMaps;
     }
 
-    public List<Developer> findAllIncludingDeleted() {
-        List<DeveloperEntity> entities = getAllEntitiesIncludingDeleted();
-        return entities.stream()
-                .map(entity -> entity.toDomain())
-                .toList();
-    }
-
     public Developer findById(Long id) throws EntityRetrievalException {
         DeveloperEntity entity = getEntityById(id, false);
         return entity.toDomain();
@@ -407,15 +400,6 @@ public class DeveloperDAO extends BaseDAOImpl {
                 DeveloperEntity.class).getResultList();
         List<AttestationPeriodEntity> attestationPeriodEntities = getAllAttestationPeriodEntities();
         result.forEach(e -> e.setPeriods(attestationPeriodEntities));
-        return result;
-    }
-
-    private List<DeveloperEntity> getAllEntitiesIncludingDeleted() {
-        List<DeveloperEntity> result = entityManager
-                .createQuery(DEVELOPER_HQL, DeveloperEntity.class)
-                .getResultList();
-        List<AttestationPeriodEntity> allAttestationPeriods = getAllAttestationPeriodEntities();
-        result.forEach(e -> e.setPeriods(allAttestationPeriods));
         return result;
     }
 
