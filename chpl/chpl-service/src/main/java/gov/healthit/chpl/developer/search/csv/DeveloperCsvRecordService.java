@@ -55,7 +55,6 @@ public class DeveloperCsvRecordService {
         devRecord.add(dev.getAddress() == null ? "" : dev.getAddress().getCity());
         devRecord.add(dev.getAddress() == null ? "" : dev.getAddress().getState());
         devRecord.add(dev.getAddress() == null ? "" : dev.getAddress().getZipcode());
-        devRecord.add(dev.getAddress() == null ? "" : dev.getAddress().getCountry());
         return devRecord;
     }
 

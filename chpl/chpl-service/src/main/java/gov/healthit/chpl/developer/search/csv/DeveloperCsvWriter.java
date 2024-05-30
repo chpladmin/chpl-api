@@ -50,32 +50,40 @@ public class DeveloperCsvWriter {
         File csvFile = fileUtils.createTempFile("developer-search-results", ".csv");
         openDataFile(csvFile);
         csvPrinter.printRecord(getHeadingRecord());
+        csvPrinter.flush();
         if (!CollectionUtils.isEmpty(allSearchResults)) {
             allSearchResults.stream()
                 .forEach(rethrowConsumer(searchResult -> csvPrinter.printRecord(getDeveloperRecord(searchResult))));
         }
+        csvPrinter.flush();
         close();
         return csvFile;
     }
 
     private List<String> getHeadingRecord() {
-        return csvHeadingService.getAllCsvHeadings();
+        if (isAuthorizedToSeeUserData()) {
+            return csvHeadingService.getCsvHeadingsWithUsers();
+        }
+        return csvHeadingService.getCsvHeadings();
     }
 
     private List<String> getDeveloperRecord(DeveloperSearchResult dev) {
-        if (resourcePermissionsFactory.get().isUserRoleAdmin()
-                || resourcePermissionsFactory.get().isUserRoleOnc()
-                || resourcePermissionsFactory.get().isUserRoleAcbAdmin()) {
+        if (isAuthorizedToSeeUserData()) {
             return csvRecordService.getRecordWithUsers(dev);
         }
         return csvRecordService.getRecord(dev);
+    }
+
+    private boolean isAuthorizedToSeeUserData() {
+        return resourcePermissionsFactory.get().isUserRoleAdmin()
+                || resourcePermissionsFactory.get().isUserRoleOnc()
+                || resourcePermissionsFactory.get().isUserRoleAcbAdmin();
     }
 
     private void openDataFile(File csvFile) throws IOException {
         osWriter = new OutputStreamWriter(new FileOutputStream(csvFile), StandardCharsets.UTF_8);
         osWriter.write('\ufeff');
         csvPrinter = new CSVPrinter(osWriter, CSVFormat.EXCEL);
-        csvPrinter.printRecord(csvHeadingService.getAllCsvHeadings());
         csvPrinter.flush();
     }
 
