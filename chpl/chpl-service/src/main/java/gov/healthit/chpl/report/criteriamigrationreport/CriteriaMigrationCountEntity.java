@@ -27,7 +27,7 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "criteria_migration_definition")
+@Table(name = "criteria_migration_count")
 public class CriteriaMigrationCountEntity extends EntityAudit {
     private static final long serialVersionUID = 2391445527765937573L;
 
@@ -41,6 +41,10 @@ public class CriteriaMigrationCountEntity extends EntityAudit {
     @Basic(optional = false)
     @Column(name = "id", nullable = false)
     private Long id;
+
+    @Basic(optional = false)
+    @Column(name = "criteria_migration_definition_id", nullable = false)
+    private Long criteriaMigrationDefinitionId;
 
     @Basic(optional = false)
     @Column(name = "report_date", nullable = false)

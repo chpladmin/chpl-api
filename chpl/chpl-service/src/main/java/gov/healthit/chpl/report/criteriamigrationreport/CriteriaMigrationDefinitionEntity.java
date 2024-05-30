@@ -47,9 +47,9 @@ public class CriteriaMigrationDefinitionEntity extends EntityAudit {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @OneToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "criteriaMigrationReport", insertable = false, updatable = false)
-    private CriteriaMigrationReportEntity criteriaMigrationReport;
+    @Basic(optional = false)
+    @Column(name = "criteria_migration_report_id", nullable = false)
+    private Long criteriaMigrationReportId;
 
     @OneToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "original_certification_criterion_id", insertable = false, updatable = false)
