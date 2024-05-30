@@ -17,7 +17,6 @@ import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.dao.CertificationIdDAO;
 import gov.healthit.chpl.domain.SimpleCertificationId;
 import gov.healthit.chpl.domain.SimpleCertificationIdWithProducts;
-import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.domain.schedule.ChplJob;
 import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
 import gov.healthit.chpl.dto.CQMMetDTO;
@@ -28,27 +27,19 @@ import gov.healthit.chpl.exception.ActivityException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
-import gov.healthit.chpl.manager.auth.UserManager;
 import gov.healthit.chpl.scheduler.job.certificationId.CertificationIdEmailJob;
 import gov.healthit.chpl.util.AuthUtil;
-import lombok.extern.log4j.Log4j2;
 
 @Service
-@Log4j2
 public class CertificationIdManager {
     private CertificationIdDAO certificationIdDao;
-    private ActivityManager activityManager;
     private SchedulerManager schedulerManager;
-    private UserManager userManager;
 
     @Autowired
     public CertificationIdManager(CertificationIdDAO certificationIdDao,
-            ActivityManager activityManager, SchedulerManager schedulerManager,
-            UserManager userManager) {
+             SchedulerManager schedulerManager) {
         this.certificationIdDao = certificationIdDao;
-        this.activityManager = activityManager;
         this.schedulerManager = schedulerManager;
-        this.userManager = userManager;
     }
 
     @Transactional(readOnly = true)
@@ -152,12 +143,6 @@ public class CertificationIdManager {
 
     @Transactional(readOnly = false)
     public CertificationIdDTO create(List<CertifiedProductDetailsDTO> listings, String year) throws EntityCreationException, ActivityException {
-
-        CertificationIdDTO result = certificationIdDao.create(listings, year);
-
-        String activityMsg = "CertificationId " + result.getCertificationId() + " was created.";
-        activityManager.addActivity(ActivityConcept.CERTIFICATION_ID, result.getId(), activityMsg, null,
-                result);
-        return result;
+        return certificationIdDao.create(listings, year);
     }
 }
