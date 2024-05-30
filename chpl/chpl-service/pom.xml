@@ -403,13 +403,6 @@
             <artifactId>spring-boot</artifactId>
             <version>${org.springboot.version}</version>
         </dependency>
-        <!--
-        <dependency>
-            <groupId>org.springdoc</groupId>
-            <artifactId>springdoc-openapi-webmvc-core</artifactId>
-            <version>${org.springdoc.version}</version>
-        </dependency>
-        -->
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-api</artifactId>

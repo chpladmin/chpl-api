@@ -4,11 +4,11 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
-
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 
 public class CacheControlHandlerInterceptor implements HandlerInterceptor {
 
@@ -147,7 +147,6 @@ public class CacheControlHandlerInterceptor implements HandlerInterceptor {
             final HttpServletResponse response,
             final Object handler) throws Exception {
         this.assignCacheControlHeader(request, response, handler);
-        //return super.preHandle(request, response, handler);
         return true;
     }
 
