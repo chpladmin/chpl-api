@@ -47,7 +47,7 @@ public class DeveloperCsvWriter {
 
     public File getAsCsv(DeveloperSearchRequest searchRequest, Logger logger) throws IOException {
         List<DeveloperSearchResult> allSearchResults = devSearchService.getAllPagesOfSearchResults(searchRequest, logger);
-        File csvFile = fileUtils.createTempFile("developer-search-results", "csv");
+        File csvFile = fileUtils.createTempFile("developer-search-results", ".csv");
         openDataFile(csvFile);
         csvPrinter.printRecord(getHeadingRecord());
         if (!CollectionUtils.isEmpty(allSearchResults)) {
