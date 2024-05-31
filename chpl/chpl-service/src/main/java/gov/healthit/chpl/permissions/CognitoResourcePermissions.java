@@ -67,18 +67,21 @@ public class CognitoResourcePermissions implements ResourcePermissions {
 
     @Override
     public List<User> getAllUsersOnDeveloper(Developer dev) {
-        return getAllUsersOnDeveloper(dev.getId());
-    }
-
-    @Override
-    public List<User> getAllUsersOnDeveloper(Long developerId) {
         return cognitoApiWrapper.getAllUsers().stream()
                 .filter(user -> user.getRole() != null
                         && user.getRole().equals(CognitoGroups.CHPL_DEVELOPER)
                         && user.getOrganizations().stream()
-                                .filter(org -> org.getId().equals(developerId))
+                                .filter(org -> org.getId().equals(dev.getId()))
                                 .findAny()
                                 .isPresent())
+                .toList();
+    }
+
+    @Override
+    public List<User> getAllDeveloperUsers() {
+        return cognitoApiWrapper.getAllUsers().stream()
+                .filter(user -> user.getRole() != null
+                        && user.getRole().equals(CognitoGroups.CHPL_DEVELOPER))
                 .toList();
     }
 

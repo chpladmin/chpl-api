@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.Predicate;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.transaction.annotation.Transactional;
@@ -79,14 +80,19 @@ public class ChplResourcePermissions implements ResourcePermissions {
     @Override
     @Transactional(readOnly = true)
     public List<User> getAllUsersOnDeveloper(Developer dev) {
-        return getAllUsersOnDeveloper(dev.getId());
+        List<UserDeveloperMapDTO> dtos = userDeveloperMapDAO.getByDeveloperId(dev.getId());
+
+        return dtos.stream()
+                .map(udm -> udm.getUser().toDomain())
+                .toList();
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<User> getAllUsersOnDeveloper(Long developerId) {
-        List<UserDeveloperMapDTO> dtos = userDeveloperMapDAO.getByDeveloperId(developerId);
-
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).DEVELOPER, "
+            + "T(gov.healthit.chpl.permissions.domains.DeveloperDomainPermissions).GET_ALL_USERS)")
+    public List<User> getAllDeveloperUsers() {
+        List<UserDeveloperMapDTO> dtos = userDeveloperMapDAO.getAllDeveloperUsers();
         return dtos.stream()
                 .map(udm -> udm.getUser().toDomain())
                 .toList();
@@ -114,7 +120,6 @@ public class ChplResourcePermissions implements ResourcePermissions {
     @Override
     @Transactional(readOnly = true)
     public List<CertificationBody> getAllAcbsForUser(User user) {
-        List<CertificationBody> acbs = new ArrayList<CertificationBody>();
         List<UserCertificationBodyMapDTO> userAcbMaps = userCertificationBodyMapDAO.getByUserId(user.getUserId());
         return userAcbMaps.stream()
             .map(userAcbMap -> userAcbMap.getCertificationBody())

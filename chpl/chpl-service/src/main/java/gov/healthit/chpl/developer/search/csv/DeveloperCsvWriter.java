@@ -7,6 +7,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.developer.search.DeveloperSearchRequest;
 import gov.healthit.chpl.developer.search.DeveloperSearchResult;
 import gov.healthit.chpl.developer.search.DeveloperSearchService;
+import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.util.FileUtils;
 
@@ -52,8 +54,12 @@ public class DeveloperCsvWriter {
         csvPrinter.printRecord(getHeadingRecord());
         csvPrinter.flush();
         if (!CollectionUtils.isEmpty(allSearchResults)) {
+            final List<User> allDeveloperUsers = new ArrayList<User>();
+            if (isAuthorizedToSeeUserData()) {
+                allDeveloperUsers.addAll(resourcePermissionsFactory.get().getAllDeveloperUsers());
+            }
             allSearchResults.stream()
-                .forEach(rethrowConsumer(searchResult -> csvPrinter.printRecord(getDeveloperRecord(searchResult))));
+                .forEach(rethrowConsumer(searchResult -> csvPrinter.printRecord(getDeveloperRecord(searchResult, allDeveloperUsers))));
         }
         csvPrinter.flush();
         close();
@@ -67,9 +73,9 @@ public class DeveloperCsvWriter {
         return csvHeadingService.getCsvHeadings();
     }
 
-    private List<String> getDeveloperRecord(DeveloperSearchResult dev) {
+    private List<String> getDeveloperRecord(DeveloperSearchResult dev, List<User> allDeveloperUsers) {
         if (isAuthorizedToSeeUserData()) {
-            return csvRecordService.getRecordWithUsers(dev);
+            return csvRecordService.getRecordWithUsers(dev, allDeveloperUsers);
         }
         return csvRecordService.getRecord(dev);
     }

@@ -10,26 +10,21 @@ import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.developer.search.DeveloperSearchResult;
 import gov.healthit.chpl.domain.Address;
 import gov.healthit.chpl.domain.IdNamePair;
 import gov.healthit.chpl.domain.auth.User;
-import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.util.DateUtil;
 
 @Component
 public class DeveloperCsvRecordService {
-    private ResourcePermissionsFactory resourcePermissionFactory;
     private String developerUrlUnformatted;
 
     @Autowired
-    public DeveloperCsvRecordService(ResourcePermissionsFactory resourcePermissionFactory,
-            @Value("${chplUrlBegin}") String chplUrlBegin,
+    public DeveloperCsvRecordService(@Value("${chplUrlBegin}") String chplUrlBegin,
             @Value("${developerUrlPart}") String developerUrlPart) {
-        this.resourcePermissionFactory = resourcePermissionFactory;
         this.developerUrlUnformatted = chplUrlBegin + developerUrlPart;
     }
 
@@ -58,11 +53,14 @@ public class DeveloperCsvRecordService {
         return devRecord;
     }
 
-    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).DEVELOPER, "
-            + "T(gov.healthit.chpl.permissions.domains.DeveloperDomainPermissions).GET_CSV_HEADINGS)")
-    public List<String> getRecordWithUsers(DeveloperSearchResult dev) {
+    public List<String> getRecordWithUsers(DeveloperSearchResult dev, List<User> allDeveloperUsers) {
         List<String> devRecord = getRecord(dev);
-        List<User> developerUsers = resourcePermissionFactory.get().getAllUsersOnDeveloper(dev.getId());
+        List<User> developerUsers = allDeveloperUsers.stream()
+                .filter(devUser -> devUser.getOrganizations().stream()
+                                .filter(org -> org.getId().equals(dev.getId()))
+                                .findAny()
+                                .isPresent())
+                .collect(Collectors.toList());
         if (CollectionUtils.isEmpty(developerUsers)) {
             devRecord.add("");
         } else {
