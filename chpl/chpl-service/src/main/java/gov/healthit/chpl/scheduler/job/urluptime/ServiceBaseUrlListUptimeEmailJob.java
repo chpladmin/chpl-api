@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,7 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.domain.CertificationBody;
+import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
 import gov.healthit.chpl.email.footer.AdminFooter;
@@ -81,8 +83,14 @@ public class ServiceBaseUrlListUptimeEmailJob extends QuartzJob {
     }
 
     private Map<Long, Set<CertificationBody>> getDeveloperIdAndCertificationBodyMap() {
-        return developerDAO.findAllDevelopersWithAcbs().entrySet().stream()
-                .collect(Collectors.toMap(entry -> entry.getKey().getId(), entry -> entry.getValue()));
+        Map<Developer, Set<CertificationBody>> developerAcbMaps = developerDAO.findAllDevelopersWithAcbs();
+        developerAcbMaps.entrySet().stream()
+            .filter(entry -> CollectionUtils.isEmpty(entry.getValue()))
+            .forEach(devWithoutAcb -> LOGGER.warn("The developer " + devWithoutAcb.getKey().getName() + " has no associated ACBs and will not be included in the report."));
+
+        return developerAcbMaps.entrySet().stream()
+            .filter(entry -> !CollectionUtils.isEmpty(entry.getValue()))
+            .collect(Collectors.toMap(entry -> entry.getKey().getId(), entry -> entry.getValue()));
     }
 
     private List<ServiceBaseUrlListUptimeReport> getReportRows() {
