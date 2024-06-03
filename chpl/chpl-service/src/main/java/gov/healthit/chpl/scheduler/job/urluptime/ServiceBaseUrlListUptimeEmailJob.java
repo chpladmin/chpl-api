@@ -2,6 +2,7 @@ package gov.healthit.chpl.scheduler.job.urluptime;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -84,10 +85,6 @@ public class ServiceBaseUrlListUptimeEmailJob extends QuartzJob {
 
     private Map<Long, Set<CertificationBody>> getDeveloperIdAndCertificationBodyMap() {
         Map<Developer, Set<CertificationBody>> developerAcbMaps = developerDAO.findAllDevelopersWithAcbs();
-        developerAcbMaps.entrySet().stream()
-            .filter(entry -> CollectionUtils.isEmpty(entry.getValue()))
-            .forEach(devWithoutAcb -> LOGGER.warn("The developer " + devWithoutAcb.getKey().getName() + " has no associated ACBs and will not be included in the report."));
-
         return developerAcbMaps.entrySet().stream()
             .filter(entry -> !CollectionUtils.isEmpty(entry.getValue()))
             .collect(Collectors.toMap(entry -> entry.getKey().getId(), entry -> entry.getValue()));
@@ -105,6 +102,10 @@ public class ServiceBaseUrlListUptimeEmailJob extends QuartzJob {
 
     private Map<Long, Boolean> getApplicableAcbsForDeveloper(Long developerId) {
         Set<CertificationBody> acbsForDeveloper = developerIdAndCertificationBodyMap.get(developerId);
+        if (CollectionUtils.isEmpty(acbsForDeveloper)) {
+            LOGGER.warn("The developer " + developerId + " has no associated ACBs and will not be included in the report.");
+            return new HashMap<Long, Boolean>();
+        }
 
         return activeAcbs.stream()
                 .collect(Collectors.toMap(
@@ -120,13 +121,13 @@ public class ServiceBaseUrlListUptimeEmailJob extends QuartzJob {
         chplEmailFactory.emailBuilder()
                 .recipient(context.getMergedJobDataMap().getString("email"))
                 .subject(env.getProperty("serviceBaseUrlListUptime.report.subject"))
-                .htmlMessage(createHtmlMessage(context, rows.size()))
+                .htmlMessage(createHtmlMessage())
                 .fileAttachments(Arrays.asList(serviceBaseUrlListUptimeCsvWriter.generateFile(rows)))
                 .sendEmail();
         LOGGER.info("Completed Sending email to: " + context.getMergedJobDataMap().getString("email"));
     }
 
-    private String createHtmlMessage(JobExecutionContext context, int errorCount) {
+    private String createHtmlMessage() {
         return chplHtmlEmailBuilder.initialize()
                 .heading(env.getProperty("serviceBaseUrlListUptime.report.subject"))
                 .paragraph("", env.getProperty("serviceBaseUrlListUptime.report.paragraph1.body"))

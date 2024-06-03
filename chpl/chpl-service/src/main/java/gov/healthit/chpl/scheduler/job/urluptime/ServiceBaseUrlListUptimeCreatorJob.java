@@ -23,7 +23,6 @@ public class ServiceBaseUrlListUptimeCreatorJob extends QuartzJob {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
         LOGGER.info("********* Starting the Service Base Url List Uptime Creator job *********");
         if (!datadogReadOnly) {
-
             try {
                 datadogChplSynchonizer.synchronize();
             } catch (Exception e) {
