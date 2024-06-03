@@ -1,6 +1,8 @@
 package gov.healthit.chpl.report.criteriamigrationreport;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import javax.persistence.Query;
 
@@ -13,8 +15,24 @@ import lombok.extern.log4j.Log4j2;
 @Component
 public class CriteriaMigrationReportDAO extends BaseDAOImpl {
 
+    public void create(CriteriaMigrationCount criteriaMigrationCount) {
+        Optional<CriteriaMigrationCountEntity> entity = getCriteriaMigrationCountEntityByDefinitionAndReportDate(
+                criteriaMigrationCount.getCriteriaMigrationDefinition().getId(), criteriaMigrationCount.getReportDate());
+
+        if (entity.isPresent()) {
+            softDeleteCriteriaMigrationCountEntity(entity.get());
+        }
+
+        create(CriteriaMigrationCountEntity.builder()
+                .criteriaMigrationDefinitionId(criteriaMigrationCount.getCriteriaMigrationDefinition().getId())
+                .reportDate(criteriaMigrationCount.getReportDate())
+                .originalCriterionCount(criteriaMigrationCount.getOriginalCriterionCount())
+                .updatedCriterionCount(criteriaMigrationCount.getUpdatedCriterionCount())
+                .originalToUpdatedCriterionCount(criteriaMigrationCount.getOriginalToUpdatedCriterionCount())
+                .build());
+    }
+
     public CriteriaMigrationReport getCriteriaMigrationReport(Long criteriaMigrationReportId) {
-        //return getCriteriaMigrationReportEntity(criteriaMigrationReportId).toDomain();
         CriteriaMigrationReportEntity report = getCriteriaMigrationReportEntity(criteriaMigrationReportId);
 
         report.setCriteriaMigrationDefinitions(getCriteriaMigrationDefinitionEntities(criteriaMigrationReportId));
@@ -23,7 +41,26 @@ public class CriteriaMigrationReportDAO extends BaseDAOImpl {
                 .forEach(def -> def.setCriteriaMigrationCounts(getCriteriaMigrationCountEntity(def.getId())));
 
         return report.toDomain();
+    }
 
+    public CriteriaMigrationReport getCriteriaMigrationReportWithoutCounts(Long criteriaMigrationReportId) {
+        CriteriaMigrationReportEntity report = getCriteriaMigrationReportEntity(criteriaMigrationReportId);
+
+        report.setCriteriaMigrationDefinitions(getCriteriaMigrationDefinitionEntities(criteriaMigrationReportId));
+
+        return report.toDomain();
+    }
+
+    public List<CriteriaMigrationReport> getAllCriteriaMigrationReportsWithoutCounts() {
+        List<CriteriaMigrationReportEntity> reports = getAllCriteriaMigrationReportEntities();
+
+        reports.forEach(report -> {
+            report.setCriteriaMigrationDefinitions(getCriteriaMigrationDefinitionEntities(report.getId()));
+        });
+
+        return reports.stream()
+                .map(rpt -> rpt.toDomain())
+                .toList();
     }
 
     private CriteriaMigrationReportEntity getCriteriaMigrationReportEntity(Long criteriaMigrationReportId) {
@@ -43,6 +80,15 @@ public class CriteriaMigrationReportDAO extends BaseDAOImpl {
         } else {
             return result.get(0);
         }
+    }
+
+    private List<CriteriaMigrationReportEntity> getAllCriteriaMigrationReportEntities() {
+        Query query = entityManager.createQuery(
+                "select distinct cmr "
+                + "from CriteriaMigrationReportEntity cmr "
+                + "where cmr.deleted = false ", CriteriaMigrationReportEntity.class);
+
+        return query.getResultList();
     }
 
     private List<CriteriaMigrationDefinitionEntity> getCriteriaMigrationDefinitionEntities(Long criteriaMigrationReportId) {
@@ -89,4 +135,28 @@ public class CriteriaMigrationReportDAO extends BaseDAOImpl {
         }
     }
 
+    private Optional<CriteriaMigrationCountEntity> getCriteriaMigrationCountEntityByDefinitionAndReportDate(Long criteriaMigrationDefinitionId, LocalDate reportDate) {
+        Query query = entityManager.createQuery(
+                "select distinct cmc "
+                + "from CriteriaMigrationCountEntity cmc "
+                + "where cmc.deleted = false "
+                + "and cmc.criteriaMigrationDefinitionId = :criteriaMigrationDefinitionId "
+                + "and cmc.reportDate = :reportDate ", CriteriaMigrationCountEntity.class);
+        query.setParameter("criteriaMigrationDefinitionId", criteriaMigrationDefinitionId);
+        query.setParameter("reportDate", reportDate);
+
+        @SuppressWarnings("unchecked")
+        List<CriteriaMigrationCountEntity> result = query.getResultList();
+
+        if (result == null || result.size() == 0) {
+            return Optional.empty();
+        } else {
+            return Optional.of(result.get(0));
+        }
+    }
+
+    private void softDeleteCriteriaMigrationCountEntity(CriteriaMigrationCountEntity entity) {
+        entity.setDeleted(true);
+        update(entity);
+    }
 }

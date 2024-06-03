@@ -14,6 +14,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import org.hibernate.Hibernate;
+
 import gov.healthit.chpl.certificationCriteria.CertificationCriterionEntity;
 import gov.healthit.chpl.entity.EntityAudit;
 import gov.healthit.chpl.entity.lastmodifieduserstrategy.LastModifiedUserStrategy;
@@ -68,7 +70,7 @@ public class CriteriaMigrationDefinitionEntity extends EntityAudit {
                 .id(this.id)
                 .originalCriterion(this.originalCriterion.toDomain())
                 .updatedCriterion(this.updatedCriterion.toDomain())
-                .criteriaMigrationCounts(this.criteriaMigrationCounts.stream()
+                .criteriaMigrationCounts(!Hibernate.isInitialized(this.criteriaMigrationCounts) ? null : this.criteriaMigrationCounts.stream()
                         .map(e -> e.toDomain())
                         .toList())
                 .build();

@@ -1,5 +1,6 @@
 package gov.healthit.chpl.report.criteriamigrationreport;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import javax.persistence.Basic;
@@ -48,6 +49,10 @@ public class CriteriaMigrationReportEntity extends EntityAudit {
     @Column(name = "report_name", nullable = false)
     private String reportName;
 
+    @Basic(optional = false)
+    @Column(name = "start_date", nullable = false)
+    private LocalDate startDate;;
+
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "id")
     @Column(name = "criteria_migration_report_id", nullable = false)
     private List<CriteriaMigrationDefinitionEntity> criteriaMigrationDefinitions;
@@ -56,6 +61,7 @@ public class CriteriaMigrationReportEntity extends EntityAudit {
         return CriteriaMigrationReport.builder()
                 .id(this.id)
                 .reportName(this.reportName)
+                .startDate(this.startDate)
                 .criteriaMigrationDefinitions(this.criteriaMigrationDefinitions.stream()
                         .map(e -> e.toDomain())
                         .toList())
