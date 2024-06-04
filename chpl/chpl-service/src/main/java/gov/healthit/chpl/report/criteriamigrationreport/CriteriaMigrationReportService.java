@@ -5,12 +5,10 @@ import java.util.List;
 
 import javax.transaction.Transactional;
 
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import lombok.extern.log4j.Log4j2;
-
-@Log4j2
 @Component
 public class CriteriaMigrationReportService {
 
@@ -33,16 +31,17 @@ public class CriteriaMigrationReportService {
 
 
     @Transactional
-    public void gatherDataForReport() {
+    public void gatherDataForReport(Logger logger) {
         List<CriteriaMigrationReport> reports = criteriaMigrationReportDAO.getAllCriteriaMigrationReportsWithoutCounts();
 
         reports.forEach(report -> {
             report.getCriteriaMigrationDefinitions().forEach(cmd -> {
-                Integer originalToUpdatedCount = originalToUpdatedCriterionCountService.generateCountForDate(cmd, LocalDate.now(), report.getStartDate());
-                Integer originalCount = originalCriterionCountService.generateCountForDate(cmd, LocalDate.now(), report.getStartDate());
-                Integer updatedCount = updatedCriterionCountService.generateCountForDate(cmd, LocalDate.now(), report.getStartDate());
+                Integer originalToUpdatedCount = originalToUpdatedCriterionCountService.generateCountForDate(cmd, LocalDate.now(), report.getStartDate(), logger);
+                Integer originalCount = originalCriterionCountService.generateCountForDate(cmd, LocalDate.now(), report.getStartDate(), logger);
+                Integer updatedCount = updatedCriterionCountService.generateCountForDate(cmd, LocalDate.now(), report.getStartDate(), logger);
 
-                LOGGER.info("Count of {} for {} to {} is {}, {}, {}",
+                logger.info("Count of {} / {} for {} to {} is {}, {}, {}",
+                        cmd.getOriginalCriterion().getNumber(),
                         cmd.getUpdatedCriterion().getNumber(),
                         report.getStartDate(),
                         LocalDate.now(),

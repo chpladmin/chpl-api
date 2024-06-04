@@ -921,5 +921,13 @@
             </job-data-map>
         </job>
         
+        <job>
+            <name>criteriaMigrationReportCreatorJob</name>
+            <group>systemJobs</group>
+            <description>Criteria Migration Report Creator Job</description>
+            <job-class>gov.healthit.chpl.scheduler.job.criteriamigrationreport.CriteriaMigrationReportCreatorJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+        </job>
     </schedule>
 </job-scheduling-data>
