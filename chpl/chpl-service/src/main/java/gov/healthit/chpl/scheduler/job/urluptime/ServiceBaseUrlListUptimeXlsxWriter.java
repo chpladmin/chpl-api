@@ -1,6 +1,5 @@
 package gov.healthit.chpl.scheduler.job.urluptime;
 
-import java.awt.Color;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -12,18 +11,17 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.poi.common.usermodel.HyperlinkType;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.DefaultIndexedColorMap;
-import org.apache.poi.xssf.usermodel.XSSFColor;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFHyperlink;
 import org.apache.poi.xssf.usermodel.XSSFWorkbookFactory;
-import org.openxmlformats.schemas.spreadsheetml.x2006.main.CTCol;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -36,22 +34,27 @@ import lombok.extern.log4j.Log4j2;
 public class ServiceBaseUrlListUptimeXlsxWriter {
     private static final int WORKSHEET_FONT_POINTS  = 10;
     private static final int WORKSHEET_LARGE_FONT_POINTS = 12;
+    private static final float PERCENTAGE_MULTIPLIER = 100.0F;
 
     private FileUtils fileUtils;
     private String serviceBaseUrlListReportName;
-    private CellStyle boldStyle;
+    private CellStyle boldStyle, linkStyle;
     private DateTimeFormatter filepartFormatter;
     private DateTimeFormatter monthHeadingFormatter;
     private DateTimeFormatter lastWeekHeadingFormatter;
+    private String unformtatedDeveloperUrl;
 
     @Autowired
     public ServiceBaseUrlListUptimeXlsxWriter(FileUtils fileUtils,
-            @Value("${serviceBaseUrlListReportName}") String serviceBaseUrlListReportName) {
+            @Value("${serviceBaseUrlListReportName}") String serviceBaseUrlListReportName,
+            @Value("${chplUrlBegin}") String chplUrlBegin,
+            @Value("${developerUrlPart}") String developerUrlPart) {
         this.fileUtils = fileUtils;
         this.serviceBaseUrlListReportName = serviceBaseUrlListReportName;
         this.filepartFormatter = DateTimeFormatter.ofPattern("yyyyMMddhhmmss");
         this.monthHeadingFormatter = DateTimeFormatter.ofPattern("MMMM yyyy");
         this.lastWeekHeadingFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        this.unformtatedDeveloperUrl = chplUrlBegin + developerUrlPart;
     }
 
     public void writeWorkbookAsFile(List<ServiceBaseUrlListUptimeReport> reportRows) {
@@ -92,7 +95,7 @@ public class ServiceBaseUrlListUptimeXlsxWriter {
     private Workbook createWorkbook(List<ServiceBaseUrlListUptimeReport> reportRows) {
         XSSFWorkbookFactory workbookFactory = new XSSFWorkbookFactory();
         Workbook workbook = workbookFactory.create();
-        Sheet sheet = getSheet(workbook, "Service Base URL List Report", null, 0);
+        Sheet sheet = getSheet(workbook, "Service Base URL List Report");
         AtomicInteger currRow = new AtomicInteger(0);
         createHeader(workbook, sheet, currRow.getAndIncrement());
         reportRows.stream()
@@ -129,30 +132,51 @@ public class ServiceBaseUrlListUptimeXlsxWriter {
                 String.format("%s - %s Successful Tests Percentage", lastWeekHeadingFormatter.format(aWeekAgoBegin), lastWeekHeadingFormatter.format(yesterday)));
     }
 
-    private void createDataRow(Workbook workbook, Sheet sheet, int beginRow, ServiceBaseUrlListUptimeReport data) {
+    private void createDataRow(Workbook workbook, Sheet sheet, int rowNum, ServiceBaseUrlListUptimeReport data) {
+        Row row = getRow(sheet, rowNum);
+        AtomicInteger currCol = new AtomicInteger(0);
 
+        Cell cell = createCell(row, currCol.getAndIncrement(), null);
+        cell.setCellValue(data.getDeveloperName());
+        CreationHelper createHelper = workbook.getCreationHelper();
+        XSSFHyperlink link = (XSSFHyperlink) createHelper.createHyperlink(HyperlinkType.URL);
+        link.setAddress(String.format(unformtatedDeveloperUrl, data.getDeveloperId().toString()));
+        cell.setHyperlink((XSSFHyperlink) link);
+        cell.setCellStyle(getLinkStyle(workbook));
+
+        cell = createCell(row, currCol.getAndIncrement(), null);
+        cell.setCellValue(data.getUrl());
+        cell = createCell(row, currCol.getAndIncrement(), null);
+        cell.setCellValue(data.getTotalTestCount());
+        cell = createCell(row, currCol.getAndIncrement(), null);
+        cell.setCellValue(data.getTotalSuccessfulTestCount());
+        cell = createCell(row, currCol.getAndIncrement(), null);
+        cell.setCellValue(calculatePercentage(data.getTotalSuccessfulTestCount(), data.getTotalTestCount()));
+        cell = createCell(row, currCol.getAndIncrement(), null);
+        cell.setCellValue(data.getCurrentMonthTestCount());
+        cell = createCell(row, currCol.getAndIncrement(), null);
+        cell.setCellValue(data.getCurrentMonthSuccessfulTestCount());
+        cell = createCell(row, currCol.getAndIncrement(), null);
+        cell.setCellValue(calculatePercentage(data.getCurrentMonthSuccessfulTestCount(), data.getCurrentMonthTestCount()));
+        cell = createCell(row, currCol.getAndIncrement(), null);
+        cell.setCellValue(data.getPastWeekTestCount());
+        cell = createCell(row, currCol.getAndIncrement(), null);
+        cell.setCellValue(data.getPastWeekSuccessfulTestCount());
+        cell = createCell(row, currCol.getAndIncrement(), null);
+        cell.setCellValue(calculatePercentage(data.getPastWeekSuccessfulTestCount(), data.getPastWeekTestCount()));
     }
 
-    private Sheet getSheet(Workbook workbook, String sheetName, Color tabColor, int lastDataColumn) {
+    private Float calculatePercentage(Long numerator, Long denominator) {
+        if (denominator == null || denominator.equals(0)) {
+            return 0.0F;
+        }
+        return (numerator / denominator) * PERCENTAGE_MULTIPLIER;
+    }
+
+    private Sheet getSheet(Workbook workbook, String sheetName) {
         Sheet sheet = workbook.getSheet(sheetName);
         if (sheet == null) {
             sheet = workbook.createSheet(sheetName);
-            if (sheet instanceof XSSFSheet) {
-                XSSFSheet xssfSheet = (XSSFSheet) sheet;
-                if (tabColor != null) {
-                    DefaultIndexedColorMap colorMap = new DefaultIndexedColorMap();
-                    XSSFColor xssfTabColor = new XSSFColor(tabColor, colorMap);
-                    xssfSheet.setTabColor(xssfTabColor);
-                }
-
-                //hide all the columns after the data
-                if (lastDataColumn > 0) {
-                    CTCol col = xssfSheet.getCTWorksheet().getColsArray(0).addNewCol();
-                    col.setMin(lastDataColumn);
-                    col.setMax(100); // the last column (1-indexed)
-                    col.setHidden(true);
-                }
-            }
         }
         return sheet;
     }
@@ -169,7 +193,9 @@ public class ServiceBaseUrlListUptimeXlsxWriter {
         Cell cell = null;
         try {
             cell = row.createCell(cellIndex);
-            cell.setCellStyle(style);
+            if (style != null) {
+                cell.setCellStyle(style);
+            }
         } catch (Exception ex) {
             LOGGER.error("Error creating cell in row " + row.getRowNum() + " at column " + cellIndex, ex);
         }
@@ -189,5 +215,20 @@ public class ServiceBaseUrlListUptimeXlsxWriter {
         this.boldStyle.setFillForegroundColor(IndexedColors.WHITE.index);
         this.boldStyle.setFillBackgroundColor(IndexedColors.WHITE.index);
         return this.boldStyle;
+    }
+
+    public CellStyle getLinkStyle(Workbook workbook) {
+        if (this.linkStyle != null) {
+            return this.linkStyle;
+        }
+        Font linkFont = workbook.createFont();
+        linkFont.setUnderline(Font.U_SINGLE);
+        linkFont.setColor(IndexedColors.BLUE.index);
+
+        this.linkStyle = workbook.createCellStyle();
+        this.linkStyle.setFillForegroundColor(IndexedColors.WHITE.index);
+        this.linkStyle.setFillBackgroundColor(IndexedColors.WHITE.index);
+        this.linkStyle.setFont(linkFont);
+        return this.linkStyle;
     }
 }

@@ -74,7 +74,7 @@ public class DownloadableResourceController {
             })
     @Deprecated
     @DeprecatedApi(friendlyUrl = "/download/{listingType}", httpMethod = "GET",
-        message = "This endpoing is deprecated and will be removed. Please use '{listingType}/download'.",
+        message = "This endpoing is deprecated and will be removed. Please use '/listings/download'.",
         removalDate = "2024-12-31")
     @RequestMapping(value = "/download/{listingType:2011|2014|active|inactive}", method = RequestMethod.GET, produces = "text/csv")
     public void downloadListingsDeprecated(@PathVariable(value = "listingType", required = true) String listingType,
@@ -90,8 +90,8 @@ public class DownloadableResourceController {
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
-    @RequestMapping(value = "/{listingType:2011|2014|active|inactive}/download", method = RequestMethod.GET, produces = "text/csv")
-    public void downloadListings(@PathVariable(value = "listingType", required = true) String listingType,
+    @RequestMapping(value = "/listings/download", method = RequestMethod.GET, produces = "text/csv")
+    public void downloadListings(@RequestParam(value = "listingType", defaultValue = "active", required = true) String listingType,
             @RequestParam(value = "format", defaultValue = "csv", required = false) String formatInput,
             @RequestParam(value = "definition", defaultValue = "false", required = false) Boolean isDefinition,
             HttpServletRequest request, HttpServletResponse response) throws IOException, InvalidArgumentsException {
