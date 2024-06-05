@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import gov.healthit.chpl.domain.statistics.CuresCriterionChartStatistic;
 import gov.healthit.chpl.report.ReportDataManager;
+import gov.healthit.chpl.report.criteriamigrationreport.CriteriaMigrationReport;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -34,6 +35,17 @@ public class ReportDataController {
     @RequestMapping(value = "/cures-update-report", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<CuresCriterionChartStatistic> getCuresUpdateReportData() {
         return reportDataManager.getCuresUpdateReportData();
+    }
+
+
+    @Operation(summary = "Retrieves the data used to generate the HTI-1 Criteria Migration Report.",
+            description = "Retrieves the data used to generate the HTI-1 Criteria Migration Report.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
+    @RequestMapping(value = "/hti-1-criteria-migration-report", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public @ResponseBody CriteriaMigrationReport getHti1CriteriaMigrationReport() {
+        return reportDataManager.getHti1CriteriaMigrationReport();
     }
 
 }

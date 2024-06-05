@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class CriteriaMigrationReportService {
+    public static final Long HTI1_REPORT_ID = 2L;
 
     private CriteriaMigrationReportDAO criteriaMigrationReportDAO;
     private OriginalToUpdatedCriterionCountService originalToUpdatedCriterionCountService;
@@ -29,6 +30,9 @@ public class CriteriaMigrationReportService {
         this.updatedCriterionCountService = updatedCriterionCountService;
     }
 
+    public CriteriaMigrationReport getReport(Long criteriaMigrationReportId) {
+        return criteriaMigrationReportDAO.getCriteriaMigrationReport(criteriaMigrationReportId);
+    }
 
     @Transactional
     public void gatherDataForReport(Logger logger) {
