@@ -46,6 +46,12 @@ public class DownloadableResourceController {
     @Value("${schemaDirectReviewsName}")
     private String directReviewsSchemaName;
 
+    @Value("${serviceBaseUrlListReportName}")
+    private String serviceBaseUrlListReportName;
+
+    @Value("${serviceBaseUrlListSchemaName}")
+    private String serviceBaseUrlListSchemaName;
+
     @Autowired
     public DownloadableResourceController(Environment env,
             ErrorMessageUtil msgUtil,
@@ -271,6 +277,46 @@ public class DownloadableResourceController {
         }
 
         LOGGER.info("Downloading " + downloadFile.getName());
+        fileUtils.streamFileAsResponse(downloadFile, "text/csv", response);
+    }
+
+    @Operation(summary = "Download the Service Base Url List report as a CSV.",
+            description = "At least once per day, a report of Service Base Url List data is written to a CSV "
+                    + "file on the CHPL servers. This endpoint allows any user to download that file.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
+    @RequestMapping(value = "/service-base-url-list/download", method = RequestMethod.GET, produces = "text/csv")
+    public void downloadServiceBaseUrlListReport(
+            @RequestParam(value = "definition", defaultValue = "false", required = false) Boolean isDefinition,
+            HttpServletRequest request, HttpServletResponse response) throws IOException {
+        File downloadFile = null;
+        if (isDefinition != null && isDefinition.booleanValue()) {
+            try {
+                downloadFile = fileUtils.getDownloadFile(serviceBaseUrlListSchemaName);
+            } catch (IOException ex) {
+                response.getWriter().append(ex.getMessage());
+                return;
+            }
+        } else {
+            try {
+                downloadFile = fileUtils.getNewestFileMatchingName("^" + serviceBaseUrlListReportName + "-.+\\.xlsx$");
+            } catch (IOException ex) {
+                response.getWriter().append(ex.getMessage());
+                return;
+            }
+        }
+
+        if (downloadFile == null) {
+            response.getWriter().append(msgUtil.getMessage("resources.schemaFileGeneralError"));
+            return;
+        }
+        if (!downloadFile.exists()) {
+            response.getWriter().append(msgUtil.getMessage("resources.schemaFileNotFound", downloadFile.getAbsolutePath()));
+            return;
+        }
+
+        LOGGER.info("Streaming " + downloadFile.getName());
         fileUtils.streamFileAsResponse(downloadFile, "text/csv", response);
     }
 }
