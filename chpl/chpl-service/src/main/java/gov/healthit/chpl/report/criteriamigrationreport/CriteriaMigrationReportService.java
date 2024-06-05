@@ -40,7 +40,7 @@ public class CriteriaMigrationReportService {
                 Integer originalCount = originalCriterionCountService.generateCountForDate(cmd, LocalDate.now(), report.getStartDate(), logger);
                 Integer updatedCount = updatedCriterionCountService.generateCountForDate(cmd, LocalDate.now(), report.getStartDate(), logger);
 
-                logger.info("Count of {} / {} for {} to {} is {}, {}, {}",
+                logger.debug("Count of {} / {} for {} to {} is {}, {}, {}",
                         cmd.getOriginalCriterion().getNumber(),
                         cmd.getUpdatedCriterion().getNumber(),
                         report.getStartDate(),
