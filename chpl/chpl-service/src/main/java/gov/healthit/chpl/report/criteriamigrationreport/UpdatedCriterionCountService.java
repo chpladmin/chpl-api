@@ -23,10 +23,11 @@ public class UpdatedCriterionCountService {
     }
 
     private Integer calculateCurrentStatistics(CriteriaMigrationDefinition cmd, LocalDate reportDate, LocalDate startDate, Logger logger) {
-        logger.info("Calculating original criteria upgraded to cures statistics for " + reportDate);
-        return certifiedProductDAO.getListingIdsAttestingToCriterion(
+        Integer listingCount = certifiedProductDAO.getListingIdsAttestingToCriterion(
                 cmd.getUpdatedCriterion().getId(),
                 CertificationStatusUtil.getActiveStatuses()).size();
+        logger.info("Count of listings attesting to {} : {}", cmd.getUpdatedCriterion().getNumber(), listingCount);
+        return listingCount;
     }
 
 }

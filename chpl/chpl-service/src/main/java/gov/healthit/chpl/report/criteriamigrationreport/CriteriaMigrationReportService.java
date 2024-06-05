@@ -40,11 +40,11 @@ public class CriteriaMigrationReportService {
 
         reports.forEach(report -> {
             report.getCriteriaMigrationDefinitions().forEach(cmd -> {
-                Integer originalToUpdatedCount = originalToUpdatedCriterionCountService.generateCountForDate(cmd, LocalDate.now(), report.getStartDate(), logger);
+                Integer originalToUpdatedCount = originalToUpdatedCriterionCountService.generateCountForDate(cmd, report.getStartDate(), logger);
                 Integer originalCount = originalCriterionCountService.generateCountForDate(cmd, LocalDate.now(), report.getStartDate(), logger);
                 Integer updatedCount = updatedCriterionCountService.generateCountForDate(cmd, LocalDate.now(), report.getStartDate(), logger);
 
-                logger.debug("Count of {} / {} for {} to {} is {}, {}, {}",
+                logger.info("Count of {} / {} for {} to {} is {}, {}, {}",
                         cmd.getOriginalCriterion().getNumber(),
                         cmd.getUpdatedCriterion().getNumber(),
                         report.getStartDate(),

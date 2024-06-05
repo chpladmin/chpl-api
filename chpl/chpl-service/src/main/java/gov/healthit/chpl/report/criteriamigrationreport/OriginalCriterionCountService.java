@@ -19,14 +19,15 @@ public class OriginalCriterionCountService {
     }
 
     public Integer generateCountForDate(CriteriaMigrationDefinition cmd, LocalDate reportDate, LocalDate startDate, Logger logger) {
-        return calculateCurrentStatistics(cmd, reportDate, startDate, logger);
+        return calculateCurrentStatistics(cmd, startDate, logger);
     }
 
-    private Integer calculateCurrentStatistics(CriteriaMigrationDefinition cmd, LocalDate reportDate, LocalDate startDate, Logger logger) {
-        logger.info("Calculating original criteria upgraded to cures statistics for " + reportDate);
-        return certifiedProductDAO.getListingIdsAttestingToCriterion(
+    private Integer calculateCurrentStatistics(CriteriaMigrationDefinition cmd, LocalDate startDate, Logger logger) {
+        Integer listingCount = certifiedProductDAO.getListingIdsAttestingToCriterion(
                 cmd.getOriginalCriterion().getId(),
                 CertificationStatusUtil.getActiveStatuses()).size();
+        logger.info("Count of listings attesting to {} : {}", cmd.getOriginalCriterion().getNumber(), listingCount);
+        return listingCount;
     }
 
 }

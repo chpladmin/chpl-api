@@ -3,9 +3,7 @@ package gov.healthit.chpl.report.criteriamigrationreport;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -27,12 +25,11 @@ public class OriginalToUpdatedCriterionCountService {
         this.activityStatisticsHelper = activityStatisticsHelper;
     }
 
-    public Integer generateCountForDate(CriteriaMigrationDefinition cmd, LocalDate reportDate, LocalDate startDate, Logger logger) {
-        return calculateCurrentStatistics(cmd, reportDate, startDate, logger);
+    public Integer generateCountForDate(CriteriaMigrationDefinition cmd, LocalDate startDate, Logger logger) {
+        return calculateCurrentStatistics(cmd, startDate, logger);
     }
 
-    private Integer calculateCurrentStatistics(CriteriaMigrationDefinition cmd, LocalDate reportDate, LocalDate startDate, Logger logger) {
-        logger.info("Calculating original criteria upgraded to cures statistics for " + reportDate);
+    private Integer calculateCurrentStatistics(CriteriaMigrationDefinition cmd, LocalDate startDate, Logger logger) {
         Date currentDate = new Date();
 
         Integer listingCount = 0;
@@ -41,19 +38,8 @@ public class OriginalToUpdatedCriterionCountService {
                 cmd.getUpdatedCriterion().getId(),
                 CertificationStatusUtil.getActiveStatuses());
 
-        if (!CollectionUtils.isEmpty(listingIdsAttestingToCriterion)) {
-            logger.info("Listing IDs attesting to criterion ID " + cmd.getUpdatedCriterion().getId() + ": "
-                    + listingIdsAttestingToCriterion.stream()
-                        .map(listingId -> listingId.toString())
-                        .collect(Collectors.joining(",")));
-        } else {
-            logger.info("No listings attest to criterion ID " + cmd.getUpdatedCriterion().getId());
-        }
-
+        logger.info("Checking for listing that had {} at one time and now have {}.", cmd.getOriginalCriterion().getNumber(), cmd.getUpdatedCriterion().getNumber());
         for (Long listingId : listingIdsAttestingToCriterion) {
-            logger.info("Checking if listing ID " + listingId
-                    + " removed attestation of original criterion ID " + cmd.getOriginalCriterion().getId()
-                    + " between " + startDate + " and " + currentDate);
             if (activityStatisticsHelper.didListingRemoveAttestationToCriterionDuringTimeInterval(listingId,
                     cmd.getOriginalCriterion(),
                     DateUtil.toDate(startDate),
@@ -61,7 +47,7 @@ public class OriginalToUpdatedCriterionCountService {
                 listingCount++;
             }
         }
-
+        logger.info("Found {} listings meeting above criteria.", listingCount);
         return listingCount;
     }
 
