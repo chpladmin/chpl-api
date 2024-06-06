@@ -145,6 +145,7 @@ public class ServiceBaseUrlListUptimeXlsxWriter {
         cell.setCellStyle(getLinkStyle(workbook));
 
         cell = createCell(row, currCol.getAndIncrement(), null);
+        cell.setCellValue(data.getUrl());
         XSSFHyperlink serviceBaseUrlListLink = (XSSFHyperlink) creationHelper.createHyperlink(HyperlinkType.URL);
         serviceBaseUrlListLink.setAddress(data.getUrl());
         cell.setHyperlink((XSSFHyperlink) serviceBaseUrlListLink);
