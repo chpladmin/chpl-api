@@ -155,6 +155,7 @@ public class CognitoUserManager {
                 userInfo.getUser().setOrganizationId(invitation.getOrganizationId());
             }
             credentials = cognitoApiWrapper.createUser(userInfo.getUser());
+            cognitoApiWrapper.setUserPassword(userInfo.getUser().getEmail(), "ThisNeedsToBeChanged");
             cognitoApiWrapper.addUserToGroup(userInfo.getUser().getEmail(), invitation.getGroupName());
             cognitoApiWrapper.addUserToGroup(userInfo.getUser().getEmail(), groupNameForEnvironment);
             userInvitationDAO.deleteByToken(UUID.fromString(userInfo.getHash()));
@@ -170,8 +171,8 @@ public class CognitoUserManager {
     }
 
     @Transactional
-    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).INVITATION, "
-            + "T(gov.healthit.chpl.permissions.domains.InvitationDomainPermissions).GET)")
+    //@PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).INVITATION, "
+    //        + "T(gov.healthit.chpl.permissions.domains.InvitationDomainPermissions).GET)")
     public CognitoUserInvitation getInvitation(UUID token) {
         return userInvitationDAO.getByToken(token);
     }
