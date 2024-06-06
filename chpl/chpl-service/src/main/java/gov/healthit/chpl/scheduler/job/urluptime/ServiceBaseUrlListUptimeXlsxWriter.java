@@ -16,6 +16,7 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.FormulaEvaluator;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -32,13 +33,11 @@ import lombok.extern.log4j.Log4j2;
 @Component
 @Log4j2(topic =  "serviceBaseUrlListUptimeCreatorJobLogger")
 public class ServiceBaseUrlListUptimeXlsxWriter {
-    private static final int WORKSHEET_FONT_POINTS  = 10;
     private static final int WORKSHEET_LARGE_FONT_POINTS = 12;
-    private static final float PERCENTAGE_MULTIPLIER = 100.0F;
 
     private FileUtils fileUtils;
     private String serviceBaseUrlListReportName;
-    private CellStyle boldStyle, linkStyle;
+    private CellStyle boldStyle, linkStyle, percentageStyle;
     private DateTimeFormatter filepartFormatter;
     private DateTimeFormatter monthHeadingFormatter;
     private DateTimeFormatter lastWeekHeadingFormatter;
@@ -138,8 +137,8 @@ public class ServiceBaseUrlListUptimeXlsxWriter {
 
         Cell cell = createCell(row, currCol.getAndIncrement(), null);
         cell.setCellValue(data.getDeveloperName());
-        CreationHelper createHelper = workbook.getCreationHelper();
-        XSSFHyperlink link = (XSSFHyperlink) createHelper.createHyperlink(HyperlinkType.URL);
+        CreationHelper creationHelper = workbook.getCreationHelper();
+        XSSFHyperlink link = (XSSFHyperlink) creationHelper.createHyperlink(HyperlinkType.URL);
         link.setAddress(String.format(unformtatedDeveloperUrl, data.getDeveloperId().toString()));
         cell.setHyperlink((XSSFHyperlink) link);
         cell.setCellStyle(getLinkStyle(workbook));
@@ -150,27 +149,32 @@ public class ServiceBaseUrlListUptimeXlsxWriter {
         cell.setCellValue(data.getTotalTestCount());
         cell = createCell(row, currCol.getAndIncrement(), null);
         cell.setCellValue(data.getTotalSuccessfulTestCount());
-        cell = createCell(row, currCol.getAndIncrement(), null);
-        cell.setCellValue(calculatePercentage(data.getTotalSuccessfulTestCount(), data.getTotalTestCount()));
+
+        Cell totalSuccessfulPercentageCell = createCell(row, currCol.getAndIncrement(), null);
+        totalSuccessfulPercentageCell.setCellFormula("D" + (rowNum + 1) + "/C" + (rowNum + 1));
+        FormulaEvaluator formulaEvaluator = creationHelper.createFormulaEvaluator();
+        formulaEvaluator.evaluateFormulaCell(totalSuccessfulPercentageCell);
+        totalSuccessfulPercentageCell.setCellStyle(getPercentageStyle(workbook));
+
         cell = createCell(row, currCol.getAndIncrement(), null);
         cell.setCellValue(data.getCurrentMonthTestCount());
         cell = createCell(row, currCol.getAndIncrement(), null);
         cell.setCellValue(data.getCurrentMonthSuccessfulTestCount());
-        cell = createCell(row, currCol.getAndIncrement(), null);
-        cell.setCellValue(calculatePercentage(data.getCurrentMonthSuccessfulTestCount(), data.getCurrentMonthTestCount()));
+
+        Cell monthSuccessfulPercentageCell = createCell(row, currCol.getAndIncrement(), null);
+        monthSuccessfulPercentageCell.setCellFormula("G" + (rowNum + 1) + "/F" + (rowNum + 1));
+        formulaEvaluator.evaluateFormulaCell(monthSuccessfulPercentageCell);
+        monthSuccessfulPercentageCell.setCellStyle(getPercentageStyle(workbook));
+
         cell = createCell(row, currCol.getAndIncrement(), null);
         cell.setCellValue(data.getPastWeekTestCount());
         cell = createCell(row, currCol.getAndIncrement(), null);
         cell.setCellValue(data.getPastWeekSuccessfulTestCount());
-        cell = createCell(row, currCol.getAndIncrement(), null);
-        cell.setCellValue(calculatePercentage(data.getPastWeekSuccessfulTestCount(), data.getPastWeekTestCount()));
-    }
 
-    private Float calculatePercentage(Long numerator, Long denominator) {
-        if (denominator == null || denominator.equals(0)) {
-            return 0.0F;
-        }
-        return (numerator / denominator) * PERCENTAGE_MULTIPLIER;
+        Cell weekSuccessfulPercentageCell = createCell(row, currCol.getAndIncrement(), null);
+        weekSuccessfulPercentageCell.setCellFormula("J" + (rowNum + 1) + "/I" + (rowNum + 1));
+        formulaEvaluator.evaluateFormulaCell(weekSuccessfulPercentageCell);
+        weekSuccessfulPercentageCell.setCellStyle(getPercentageStyle(workbook));
     }
 
     private Sheet getSheet(Workbook workbook, String sheetName) {
@@ -230,5 +234,14 @@ public class ServiceBaseUrlListUptimeXlsxWriter {
         this.linkStyle.setFillBackgroundColor(IndexedColors.WHITE.index);
         this.linkStyle.setFont(linkFont);
         return this.linkStyle;
+    }
+
+    public CellStyle getPercentageStyle(Workbook workbook) {
+        if (this.percentageStyle != null) {
+            return this.percentageStyle;
+        }
+        this.percentageStyle = workbook.createCellStyle();
+        this.percentageStyle.setDataFormat(workbook.createDataFormat().getFormat("0.00%"));
+        return this.percentageStyle;
     }
 }
