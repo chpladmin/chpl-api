@@ -1,6 +1,6 @@
 Column Name,Allowed Formats or Values,Description
 Developer,,
-URL,,
+Service Base URL List,,
 All Time Total Tests,,
 All Time Successful Tests,,
 All Time Successful Tests Percentage,,
