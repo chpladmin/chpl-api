@@ -33,6 +33,7 @@ import lombok.extern.log4j.Log4j2;
 @Component
 @Log4j2(topic =  "serviceBaseUrlListUptimeCreatorJobLogger")
 public class ServiceBaseUrlListUptimeXlsxWriter {
+    private static final int DAYS_IN_WEEK = 7;
     private static final int WORKSHEET_LARGE_FONT_POINTS = 12;
 
     private FileUtils fileUtils;
@@ -115,11 +116,11 @@ public class ServiceBaseUrlListUptimeXlsxWriter {
 
     private List<String> getHeaders() {
         LocalDate yesterday = LocalDate.now().minusDays(1);
-        LocalDate aWeekAgoBegin = LocalDate.now().minusDays(8);
+        LocalDate aWeekAgoBegin = LocalDate.now().minusDays(DAYS_IN_WEEK);
 
         return Arrays.asList(
                 "Developer",
-                "URL",
+                "Service Base URL List",
                 "All Time Total Tests",
                 "All Time Successful Tests",
                 "All Time Successful Tests Percentage",
@@ -138,13 +139,17 @@ public class ServiceBaseUrlListUptimeXlsxWriter {
         Cell cell = createCell(row, currCol.getAndIncrement(), null);
         cell.setCellValue(data.getDeveloperName());
         CreationHelper creationHelper = workbook.getCreationHelper();
-        XSSFHyperlink link = (XSSFHyperlink) creationHelper.createHyperlink(HyperlinkType.URL);
-        link.setAddress(String.format(unformtatedDeveloperUrl, data.getDeveloperId().toString()));
-        cell.setHyperlink((XSSFHyperlink) link);
+        XSSFHyperlink developerLink = (XSSFHyperlink) creationHelper.createHyperlink(HyperlinkType.URL);
+        developerLink.setAddress(String.format(unformtatedDeveloperUrl, data.getDeveloperId().toString()));
+        cell.setHyperlink((XSSFHyperlink) developerLink);
         cell.setCellStyle(getLinkStyle(workbook));
 
         cell = createCell(row, currCol.getAndIncrement(), null);
-        cell.setCellValue(data.getUrl());
+        XSSFHyperlink serviceBaseUrlListLink = (XSSFHyperlink) creationHelper.createHyperlink(HyperlinkType.URL);
+        serviceBaseUrlListLink.setAddress(data.getUrl());
+        cell.setHyperlink((XSSFHyperlink) serviceBaseUrlListLink);
+        cell.setCellStyle(getLinkStyle(workbook));
+
         cell = createCell(row, currCol.getAndIncrement(), null);
         cell.setCellValue(data.getTotalTestCount());
         cell = createCell(row, currCol.getAndIncrement(), null);
