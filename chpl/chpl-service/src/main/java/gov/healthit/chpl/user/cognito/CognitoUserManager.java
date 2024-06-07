@@ -155,7 +155,7 @@ public class CognitoUserManager {
                 userInfo.getUser().setOrganizationId(invitation.getOrganizationId());
             }
             credentials = cognitoApiWrapper.createUser(userInfo.getUser());
-            cognitoApiWrapper.setUserPassword(userInfo.getUser().getEmail(), "ThisNeedsToBeChanged");
+            //cognitoApiWrapper.setUserPassword(userInfo.getUser().getEmail(), "ThisNeedsToBeChanged");
             cognitoApiWrapper.addUserToGroup(userInfo.getUser().getEmail(), invitation.getGroupName());
             cognitoApiWrapper.addUserToGroup(userInfo.getUser().getEmail(), groupNameForEnvironment);
             userInvitationDAO.deleteByToken(UUID.fromString(userInfo.getHash()));

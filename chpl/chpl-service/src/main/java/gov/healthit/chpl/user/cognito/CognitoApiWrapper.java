@@ -1,7 +1,6 @@
 package gov.healthit.chpl.user.cognito;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -15,6 +14,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.CognitoSecretHash;
+import gov.healthit.chpl.PasswordGenerator;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.domain.CertificationBody;
@@ -43,10 +43,13 @@ import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminInitia
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminInitiateAuthResponse;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminListGroupsForUserRequest;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminListGroupsForUserResponse;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminRespondToAuthChallengeRequest;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminRespondToAuthChallengeResponse;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminSetUserPasswordRequest;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AttributeType;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AuthFlowType;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AuthenticationResultType;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.ChallengeNameType;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.GroupType;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.ListUsersInGroupRequest;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.ListUsersInGroupResponse;
@@ -89,7 +92,7 @@ public class CognitoApiWrapper {
 
     }
 
-    public String authenticate(LoginCredentials credentials) throws PasswordResetRequiredException {
+    public AuthenticationResultType authenticate(LoginCredentials credentials) throws PasswordResetRequiredException {
         String secretHash = CognitoSecretHash.calculateSecretHash(clientId, userPoolClientSecret, credentials.getUserName());
 
         Map<String, String> authParams = new LinkedHashMap<String, String>();
@@ -106,19 +109,41 @@ public class CognitoApiWrapper {
 
         try {
             AdminInitiateAuthResponse authResult = cognitoClient.adminInitiateAuth(authRequest);
-            //if (authResult.challengeName().equals(ChallengeNameType.NEW_PASSWORD_REQUIRED)) {
-            //    throw PasswordResetRequiredException.builder()
-            //            .message(errorMessageUtil.getMessage("auth.changePasswordRequired"))
-            //            .build();
-            //}
-            AuthenticationResultType resultType = authResult.authenticationResult();
-            return resultType.idToken();
-        //} catch (PasswordResetRequiredException e) {
-        //    throw e;
+            if (authResult.challengeName() != null
+                    && authResult.challengeName().equals(ChallengeNameType.NEW_PASSWORD_REQUIRED)) {
+                throw PasswordResetRequiredException.builder()
+                        .message(errorMessageUtil.getMessage("auth.changePasswordRequired"))
+                        .build();
+            }
+            return  authResult.authenticationResult();
+        } catch (PasswordResetRequiredException e) {
+            throw e;
         } catch (Exception e) {
             //This is cluttering the logs when the SSO flag is on, and the user logs in using CHPL creds
             //We might want to uncomment it when we move to only using Cognito creds
             //LOGGER.error("Authentication error: {}", e.getMessage(), e);
+            return null;
+        }
+    }
+
+
+    public String respondToNewPasswordRequiredChallenge(String username, String newPassword) {
+        AdminRespondToAuthChallengeRequest request = AdminRespondToAuthChallengeRequest.builder()
+                .clientId(clientId)
+                .challengeName(ChallengeNameType.NEW_PASSWORD_REQUIRED)
+                .challengeResponses(Map.of("NEW_PASSWORD", newPassword, "USERNAME", username))
+                .build();
+
+        try {
+            AdminRespondToAuthChallengeResponse response = cognitoClient.adminRespondToAuthChallenge(request);
+
+            if (response.challengeName() != null) {
+                LOGGER.error("Received Challenge {} when responding to NEW_PASSWORD_REQUIRED");
+                return null;
+            }
+            return response.authenticationResult().idToken();
+        } catch (Exception e) {
+            LOGGER.error("Error responding to NEW_PASSWORD_REQUIRED challenge: {}", e.getMessage(), e);
             return null;
         }
     }
@@ -166,7 +191,7 @@ public class CognitoApiWrapper {
 
     public CognitoCredentials createUser(CreateUserRequest userRequest) throws UserCreationException {
         try {
-            String tempPassword = "Password1!-" + (new Date()).getTime();
+            String tempPassword = PasswordGenerator.generate();
 
             AdminCreateUserRequest request = AdminCreateUserRequest.builder()
                     .userPoolId(userPoolId)

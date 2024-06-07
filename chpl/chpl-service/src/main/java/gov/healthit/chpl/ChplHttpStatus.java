@@ -3,7 +3,9 @@ package gov.healthit.chpl;
 import org.springframework.lang.Nullable;
 
 public enum ChplHttpStatus {
-    RESENT_USER_CONFIRMATION_EMAIL(461, "Account's Email Not Confirmed");
+    RESENT_USER_CONFIRMATION_EMAIL(461, "Account's Email Not Confirmed"),
+    NEW_PASSWORD_REQUIRED(470, "The user is required to change their password on next login.");
+
 
     private int value;
 

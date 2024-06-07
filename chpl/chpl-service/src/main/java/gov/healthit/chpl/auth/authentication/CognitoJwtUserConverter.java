@@ -41,7 +41,7 @@ public class CognitoJwtUserConverter implements JWTUserConverter {
         try {
             DecodedJWT decodeJwt = decodeJwt(jwt);
             return JWTAuthenticatedUser.builder()
-                    .authenticationSystem(AuthenticationSystem.COGNTIO)
+                    .authenticationSystem(AuthenticationSystem.COGNITO)
                     .authenticated(true)
                     .cognitoId(UUID.fromString(decodeJwt.getSubject()))
                     .subjectName(decodeJwt.getClaim("email").asString())

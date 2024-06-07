@@ -359,7 +359,7 @@ public class UserManagementController {
     @PreAuthorize("isAuthenticated()")
     public @ResponseBody UsersResponse getUsers() {
         List<User> users = null;
-        if (AuthUtil.getCurrentUser().getAuthenticationSystem().equals(AuthenticationSystem.COGNTIO)) {
+        if (AuthUtil.getCurrentUser().getAuthenticationSystem().equals(AuthenticationSystem.COGNITO)) {
             users = getAllCognitoUsers();
         } else if (AuthUtil.getCurrentUser().getAuthenticationSystem().equals(AuthenticationSystem.CHPL)) {
             users = getAllChplUsers();
@@ -389,9 +389,13 @@ public class UserManagementController {
         return userManager.getUserInfo(id);
     }
 
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/users/invitation/{token}",
+            removalDate = "2024-11-01",
+            message = "This endpoint is deprecated and will be removed in a future release. No replacement is currently available.")
     @Operation(summary = "Get the authentication system for an invitation token.",
             description = "Get the authentication system for an invitation token.  Valid values are "
-                    + "'CHPL', 'COGNITO', and ''. Empty string indicates the inviatation does not exist "
+                    + "'CHPL', 'COGNITO', and ''. Empty string indicates the invitation does not exist "
                     + "or has been deleted.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
@@ -408,7 +412,7 @@ public class UserManagementController {
             try {
                 CognitoUserInvitation cognitoInvite = cognitoUserManager.getInvitation(UUID.fromString(token));
                 if (cognitoInvite != null) {
-                    return AuthenticationSystem.COGNTIO.toString();
+                    return AuthenticationSystem.COGNITO.toString();
                 }
             } catch (Exception e) {
                 return "";

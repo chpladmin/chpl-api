@@ -41,6 +41,7 @@ import gov.healthit.chpl.manager.impl.UpdateCertifiedBodyException;
 import gov.healthit.chpl.manager.impl.UpdateTestingLabException;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import lombok.extern.log4j.Log4j2;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.PasswordResetRequiredException;
 
 @RestControllerAdvice
 @Log4j2
@@ -250,4 +251,12 @@ public class ApiExceptionControllerAdvice {
                 .businessErrorMessages(SortedSets.immutable.of(errorMessageUtil.getMessage("redis.connection.timeout")))
                 .build(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
+    @ExceptionHandler(PasswordResetRequiredException.class)
+    public ResponseEntity<ErrorResponse> exception(PasswordResetRequiredException e) {
+        return ResponseEntity
+                .status(ChplHttpStatus.NEW_PASSWORD_REQUIRED.value())
+                .body(new ErrorResponse(ChplHttpStatus.NEW_PASSWORD_REQUIRED.getReasonPhrase()));
+    }
+
 }
