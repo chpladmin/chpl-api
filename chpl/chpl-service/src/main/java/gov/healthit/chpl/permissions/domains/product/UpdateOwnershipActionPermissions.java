@@ -30,11 +30,7 @@ public class UpdateOwnershipActionPermissions extends ActionPermissions {
                 Product product = (Product) obj;
                 // Get the original Product, since the one passed in has the "new" developer id
                 Product originalProduct = getProduct(product.getId());
-                if (getResourcePermissions().isDeveloperNotBannedOrSuspended(originalProduct.getOwner().getId())) {
-                    return doesCurrentUserHaveAccessToAllOfProductListings(originalProduct.getId());
-                } else {
-                    return false;
-                }
+                return doesCurrentUserHaveAccessToAllOfProductListings(originalProduct.getId());
             } catch (Exception e) {
                 return false;
             }
