@@ -1,0 +1,65 @@
+{
+	"info": {
+		"name": "report-data",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "GET /rest/report-data/hti-1-criteria-migration-report - gives status 200 and valid response",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = pm.response.json();\r",
+							"\r",
+							"pm.test(\"/report-data/hti-1-criteria-migration-report end point returns 200 status and response body should not be empty\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"    //var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.response).not.eq(null);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"/report-data/hti-1-criteria-migration-report end point response should have correct fields in response\", function () {\r",
+							"    pm.expect(jsonData).to.have.property('criteriaMigrationDefinitions');\r",
+							"    pm.expect(jsonData.criteriaMigrationDefinitions[0]).to.have.property('originalCriterion');\r",
+							"    pm.expect(jsonData.criteriaMigrationDefinitions[0]).to.have.property('updatedCriterion');\r",
+							"    pm.expect(jsonData.criteriaMigrationDefinitions[0]).to.have.property('criteriaMigrationCounts');\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "API-Key",
+						"value": "{{apiKey}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/rest/report-data/hti-1-criteria-migration-report",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"rest",
+						"report-data",
+						"hti-1-criteria-migration-report"
+					]
+				},
+				"description": "GET /rest/report-data/hti-1-criteria-migration-report - gives status 200 and valid response for anonymous users"
+			},
+			"response": []
+		}
+	]
+}
