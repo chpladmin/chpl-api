@@ -3,11 +3,13 @@ package gov.healthit.chpl.manager.auth;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.auth.authentication.JWTUserConverterFacade;
+import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.domain.auth.LoginCredentials;
 import gov.healthit.chpl.domain.auth.User;
+import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.user.cognito.CognitoApiWrapper;
 import gov.healthit.chpl.user.cognito.CognitoAuthenticationResponse;
-import gov.healthit.chpl.user.cognito.CognitoUserManager;
 import lombok.extern.log4j.Log4j2;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AuthenticationResultType;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.PasswordResetRequiredException;
@@ -17,12 +19,12 @@ import software.amazon.awssdk.services.cognitoidentityprovider.model.PasswordRes
 public class CognitoAuthenticationManager {
 
     private CognitoApiWrapper cognitoApiWrapper;
-    private CognitoUserManager cognitoUserManager;
+    private JWTUserConverterFacade jwtUserConverterFacade;
 
     @Autowired
-    public CognitoAuthenticationManager(CognitoApiWrapper cognitoApiWrapper, CognitoUserManager cognitoUserManager) {
+    public CognitoAuthenticationManager(CognitoApiWrapper cognitoApiWrapper, JWTUserConverterFacade jwtUserConverterFacade) {
         this.cognitoApiWrapper = cognitoApiWrapper;
-        this.cognitoUserManager = cognitoUserManager;
+        this.jwtUserConverterFacade = jwtUserConverterFacade;
     }
 
     public CognitoAuthenticationResponse authenticate(LoginCredentials credentials) throws PasswordResetRequiredException {
@@ -31,7 +33,14 @@ public class CognitoAuthenticationManager {
             return null;
         }
 
-        User user = null; //cognitoUserManager.getUserInfo(null)
+        JWTAuthenticatedUser jwtUser = jwtUserConverterFacade.getAuthenticatedUser(authResult.idToken());
+        User user;
+        try {
+            user = cognitoApiWrapper.getUserInfo(jwtUser.getCognitoId());
+        } catch (UserRetrievalException e) {
+            LOGGER.error("Could not decode JWT Token");
+            return null;
+        }
 
         return CognitoAuthenticationResponse.builder()
                 .accessToken(authResult.accessToken())
