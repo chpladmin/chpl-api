@@ -19,6 +19,7 @@ import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.auth.ChplAccountStatusException;
 import gov.healthit.chpl.domain.CreateUserFromInvitationRequest;
 import gov.healthit.chpl.domain.auth.CognitoGroups;
+import gov.healthit.chpl.domain.auth.CognitoNewPasswordRequiredRequest;
 import gov.healthit.chpl.domain.auth.LoginCredentials;
 import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.exception.EmailNotSentException;
@@ -81,6 +82,26 @@ public class CognitoUserController {
         return response;
     }
 
+    @Operation(summary = "Set user's password in response to NEW_PASSWORD_REQUIRED challenge.",
+            description = "Set user's password in response to NEW_PASSWORD_REQUIRED challenge.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            }
+        )
+    @RequestMapping(value = "/authenticate/challenge/new-password-required", method = RequestMethod.POST,
+            consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
+    public CognitoAuthenticationResponse newPasswordRequiredChallenge(@RequestBody CognitoNewPasswordRequiredRequest request) {
+
+        if (!ff4j.check(FeatureList.SSO)) {
+            throw new NotImplementedException("This method has not been implemnted");
+        }
+
+        CognitoAuthenticationResponse response = cognitoAuthenticationManager.newPassworRequiredChallenge(request);
+        if (response == null) {
+            throw new ChplAccountStatusException(errorMessageUtil.getMessage("auth.loginNotAllowed"));
+        }
+        return response;
+    }
 
     @Operation(summary = "View a specific user's details.",
             description = "The logged in user must either be the user in the parameters, have ROLE_ADMIN, or "

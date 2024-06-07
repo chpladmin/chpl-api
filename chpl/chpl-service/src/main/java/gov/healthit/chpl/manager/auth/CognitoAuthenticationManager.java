@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.auth.authentication.JWTUserConverterFacade;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
+import gov.healthit.chpl.domain.auth.CognitoNewPasswordRequiredRequest;
 import gov.healthit.chpl.domain.auth.LoginCredentials;
 import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.exception.UserRetrievalException;
@@ -49,4 +50,28 @@ public class CognitoAuthenticationManager {
                 .user(user)
                 .build();
     }
+
+    public CognitoAuthenticationResponse newPassworRequiredChallenge(CognitoNewPasswordRequiredRequest request) throws PasswordResetRequiredException {
+        AuthenticationResultType authResult = cognitoApiWrapper.respondToNewPasswordRequiredChallenge(request);
+        if (authResult == null) {
+            return null;
+        }
+
+        JWTAuthenticatedUser jwtUser = jwtUserConverterFacade.getAuthenticatedUser(authResult.idToken());
+        User user;
+        try {
+            user = cognitoApiWrapper.getUserInfo(jwtUser.getCognitoId());
+        } catch (UserRetrievalException e) {
+            LOGGER.error("Could not decode JWT Token");
+            return null;
+        }
+
+        return CognitoAuthenticationResponse.builder()
+                .accessToken(authResult.accessToken())
+                .idToken(authResult.idToken())
+                .refreshToken(authResult.refreshToken())
+                .user(user)
+                .build();
+    }
+
 }

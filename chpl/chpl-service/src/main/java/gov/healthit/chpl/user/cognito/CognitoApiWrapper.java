@@ -1,12 +1,17 @@
 package gov.healthit.chpl.user.cognito;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Stream;
+
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +26,7 @@ import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.Organization;
 import gov.healthit.chpl.domain.auth.CognitoGroups;
+import gov.healthit.chpl.domain.auth.CognitoNewPasswordRequiredRequest;
 import gov.healthit.chpl.domain.auth.CreateUserRequest;
 import gov.healthit.chpl.domain.auth.LoginCredentials;
 import gov.healthit.chpl.domain.auth.User;
@@ -126,12 +132,15 @@ public class CognitoApiWrapper {
         }
     }
 
-
-    public String respondToNewPasswordRequiredChallenge(String username, String newPassword) {
+    public AuthenticationResultType respondToNewPasswordRequiredChallenge(CognitoNewPasswordRequiredRequest newPassworRequiredRequest) {
         AdminRespondToAuthChallengeRequest request = AdminRespondToAuthChallengeRequest.builder()
+                .userPoolId(userPoolId)
                 .clientId(clientId)
                 .challengeName(ChallengeNameType.NEW_PASSWORD_REQUIRED)
-                .challengeResponses(Map.of("NEW_PASSWORD", newPassword, "USERNAME", username))
+                .challengeResponses(Map.of("NEW_PASSWORD", newPassworRequiredRequest.getPassword(),
+                        "USERNAME", newPassworRequiredRequest.getUserName(),
+                        "SECRET_HASH", calculateSecretHash(clientId, userPoolClientSecret, newPassworRequiredRequest.getUserName())))
+                .session(newPassworRequiredRequest.getSessionId())
                 .build();
 
         try {
@@ -141,7 +150,7 @@ public class CognitoApiWrapper {
                 LOGGER.error("Received Challenge {} when responding to NEW_PASSWORD_REQUIRED");
                 return null;
             }
-            return response.authenticationResult().idToken();
+            return response.authenticationResult();
         } catch (Exception e) {
             LOGGER.error("Error responding to NEW_PASSWORD_REQUIRED challenge: {}", e.getMessage(), e);
             return null;
@@ -388,5 +397,22 @@ public class CognitoApiWrapper {
                 .filter(grp -> grp.groupName().equals(environmentGroupName))
                 .findAny()
                 .isPresent();
+    }
+
+    private String calculateSecretHash(String userPoolClientId, String userPoolClientSecret, String userName) {
+        final String HMAC_SHA256_ALGORITHM = "HmacSHA256";
+
+        SecretKeySpec signingKey = new SecretKeySpec(
+                userPoolClientSecret.getBytes(StandardCharsets.UTF_8),
+                HMAC_SHA256_ALGORITHM);
+        try {
+            Mac mac = Mac.getInstance(HMAC_SHA256_ALGORITHM);
+            mac.init(signingKey);
+            mac.update(userName.getBytes(StandardCharsets.UTF_8));
+            byte[] rawHmac = mac.doFinal(userPoolClientId.getBytes(StandardCharsets.UTF_8));
+            return Base64.getEncoder().encodeToString(rawHmac);
+        } catch (Exception e) {
+            throw new RuntimeException("Error while calculating ");
+        }
     }
 }
