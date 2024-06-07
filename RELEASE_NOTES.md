@@ -1,5 +1,19 @@
 # Release Notes
 
+## Version 44.3.0
+_28 May 2024_
+
+### Features
+* Add specific Cognito login endpoint
+* Notify subscribers about more listing updates
+* Incorporate fuzzy matching to optional standard upload
+* Add 'displayValue' as Optional Standard field
+
+### Bug Fixes
+* Correctly handle editing of listing with duplicate QMS Standards
+
+---
+
 ## Version 44.2.0
 _14 May 2024_
 

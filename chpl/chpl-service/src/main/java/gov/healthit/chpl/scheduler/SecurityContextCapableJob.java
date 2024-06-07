@@ -8,6 +8,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import gov.healthit.chpl.auth.user.AuthenticationSystem;
 import gov.healthit.chpl.auth.user.ChplSystemUsers;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
+import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.dto.auth.UserDTO;
 
 public class SecurityContextCapableJob {
@@ -42,4 +43,17 @@ public class SecurityContextCapableJob {
         SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);
     }
 
+    public void setSecurityContext(User user) {
+        SecurityContextHolder.getContext().setAuthentication(JWTAuthenticatedUser.builder()
+                .authenticated(true)
+                .authenticationSystem(user.getCognitoId() != null ? AuthenticationSystem.COGNTIO : AuthenticationSystem.CHPL)
+                .fullName(user.getFullName())
+                .id(user.getUserId())
+                .cognitoId(user.getCognitoId())
+                .friendlyName(user.getFriendlyName())
+                .subjectName(user.getEmail())
+                .authorities(List.of(new SimpleGrantedAuthority(user.getRole())))
+                .build());
+        SecurityContextHolder.setStrategyName(SecurityContextHolder.MODE_INHERITABLETHREADLOCAL);
+    }
 }
