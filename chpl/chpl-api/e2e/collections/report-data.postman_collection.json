@@ -1,7 +1,9 @@
 {
 	"info": {
+		"_postman_id": "5d429e50-c36b-4c5e-b147-7f880d8ab929",
 		"name": "report-data",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "8125082"
 	},
 	"item": [
 		{
