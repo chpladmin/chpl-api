@@ -1,4 +1,4 @@
-package gov.healthit.chpl.scheduler.job.developer.attestation.email;
+package gov.healthit.chpl.scheduler.job.developer.messaging;
 
 import java.io.File;
 import java.util.List;
