@@ -306,24 +306,14 @@ public class DownloadableResourceController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
     @RequestMapping(value = "/service-base-url-list/download", method = RequestMethod.GET, produces = "text/csv")
-    public void downloadServiceBaseUrlListReport(
-            @RequestParam(value = "definition", defaultValue = "false", required = false) Boolean isDefinition,
-            HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public void downloadServiceBaseUrlListReport(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
         File downloadFile = null;
-        if (isDefinition != null && isDefinition.booleanValue()) {
-            try {
-                downloadFile = fileUtils.getDownloadFile(serviceBaseUrlListSchemaName);
-            } catch (IOException ex) {
-                response.getWriter().append(ex.getMessage());
-                return;
-            }
-        } else {
-            try {
-                downloadFile = fileUtils.getNewestFileMatchingName("^" + serviceBaseUrlListReportName + "-.+\\.xlsx$");
-            } catch (IOException ex) {
-                response.getWriter().append(ex.getMessage());
-                return;
-            }
+        try {
+            downloadFile = fileUtils.getNewestFileMatchingName("^" + serviceBaseUrlListReportName + "-.+\\.xlsx$");
+        } catch (IOException ex) {
+            response.getWriter().append(ex.getMessage());
+            return;
         }
 
         if (downloadFile == null) {
