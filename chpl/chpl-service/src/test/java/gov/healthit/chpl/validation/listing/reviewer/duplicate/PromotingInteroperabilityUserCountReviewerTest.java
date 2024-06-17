@@ -18,7 +18,7 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 
 public class PromotingInteroperabilityUserCountReviewerTest {
     private static final String ERR_MSG = "Listing contains duplicate Promoting Interoperability entries for %s. Please remove the duplicates.";
-    private static final String WARN_MSG = "Listing contains duplicate Promoting Interoperability entires for user count %s and date %s. The duplicates have been removed.";
+    private static final String WARN_MSG = "Listing contains duplicate Promoting Interoperability entries for user count %s and date %s. The duplicates have been removed.";
 
     private ErrorMessageUtil msgUtil;
     private PromotingInteroperabilityUserCountReviewer reviewer;
