@@ -11,7 +11,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.poi.common.usermodel.HyperlinkType;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.CreationHelper;
@@ -21,7 +20,6 @@ import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFHyperlink;
 import org.apache.poi.xssf.usermodel.XSSFWorkbookFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -38,7 +36,7 @@ public class ServiceBaseUrlListUptimeXlsxWriter {
 
     private FileUtils fileUtils;
     private String serviceBaseUrlListReportName;
-    private CellStyle boldStyle, linkStyle, percentageStyle;
+    private CellStyle boldStyle, percentageStyle;
     private DateTimeFormatter filepartFormatter;
     private DateTimeFormatter monthHeadingFormatter;
     private DateTimeFormatter lastWeekHeadingFormatter;
@@ -95,11 +93,11 @@ public class ServiceBaseUrlListUptimeXlsxWriter {
     private Workbook createWorkbook(List<ServiceBaseUrlListUptimeReport> reportRows) {
         XSSFWorkbookFactory workbookFactory = new XSSFWorkbookFactory();
         Workbook workbook = workbookFactory.create();
-        Sheet sheet = getSheet(workbook, "Service Base URL List Report");
+        Sheet dataSheet = getSheet(workbook, "Service Base URL List Report");
         AtomicInteger currRow = new AtomicInteger(0);
-        createHeader(workbook, sheet, currRow.getAndIncrement());
+        createHeader(workbook, dataSheet, currRow.getAndIncrement());
         reportRows.stream()
-            .forEach(row -> createDataRow(workbook, sheet, currRow.getAndIncrement(), row));
+            .forEach(row -> createDataRow(workbook, dataSheet, currRow.getAndIncrement(), row));
         return workbook;
     }
 
@@ -120,6 +118,7 @@ public class ServiceBaseUrlListUptimeXlsxWriter {
 
         return Arrays.asList(
                 "Developer",
+                "Developer URL",
                 "Service Base URL List",
                 "All Time Total Tests",
                 "All Time Successful Tests",
@@ -138,18 +137,12 @@ public class ServiceBaseUrlListUptimeXlsxWriter {
 
         Cell cell = createCell(row, currCol.getAndIncrement(), null);
         cell.setCellValue(data.getDeveloperName());
-        CreationHelper creationHelper = workbook.getCreationHelper();
-        XSSFHyperlink developerLink = (XSSFHyperlink) creationHelper.createHyperlink(HyperlinkType.URL);
-        developerLink.setAddress(String.format(unformtatedDeveloperUrl, data.getDeveloperId().toString()));
-        cell.setHyperlink((XSSFHyperlink) developerLink);
-        cell.setCellStyle(getLinkStyle(workbook));
+
+        cell = createCell(row, currCol.getAndIncrement(), null);
+        cell.setCellValue(String.format(unformtatedDeveloperUrl, data.getDeveloperId().toString()));
 
         cell = createCell(row, currCol.getAndIncrement(), null);
         cell.setCellValue(data.getUrl());
-        XSSFHyperlink serviceBaseUrlListLink = (XSSFHyperlink) creationHelper.createHyperlink(HyperlinkType.URL);
-        serviceBaseUrlListLink.setAddress(data.getUrl());
-        cell.setHyperlink((XSSFHyperlink) serviceBaseUrlListLink);
-        cell.setCellStyle(getLinkStyle(workbook));
 
         cell = createCell(row, currCol.getAndIncrement(), null);
         cell.setCellValue(data.getTotalTestCount());
@@ -158,6 +151,7 @@ public class ServiceBaseUrlListUptimeXlsxWriter {
 
         Cell totalSuccessfulPercentageCell = createCell(row, currCol.getAndIncrement(), null);
         totalSuccessfulPercentageCell.setCellFormula("D" + (rowNum + 1) + "/C" + (rowNum + 1));
+        CreationHelper creationHelper = workbook.getCreationHelper();
         FormulaEvaluator formulaEvaluator = creationHelper.createFormulaEvaluator();
         formulaEvaluator.evaluateFormulaCell(totalSuccessfulPercentageCell);
         totalSuccessfulPercentageCell.setCellStyle(getPercentageStyle(workbook));
@@ -225,21 +219,6 @@ public class ServiceBaseUrlListUptimeXlsxWriter {
         this.boldStyle.setFillForegroundColor(IndexedColors.WHITE.index);
         this.boldStyle.setFillBackgroundColor(IndexedColors.WHITE.index);
         return this.boldStyle;
-    }
-
-    public CellStyle getLinkStyle(Workbook workbook) {
-        if (this.linkStyle != null) {
-            return this.linkStyle;
-        }
-        Font linkFont = workbook.createFont();
-        linkFont.setUnderline(Font.U_SINGLE);
-        linkFont.setColor(IndexedColors.BLUE.index);
-
-        this.linkStyle = workbook.createCellStyle();
-        this.linkStyle.setFillForegroundColor(IndexedColors.WHITE.index);
-        this.linkStyle.setFillBackgroundColor(IndexedColors.WHITE.index);
-        this.linkStyle.setFont(linkFont);
-        return this.linkStyle;
     }
 
     public CellStyle getPercentageStyle(Workbook workbook) {
