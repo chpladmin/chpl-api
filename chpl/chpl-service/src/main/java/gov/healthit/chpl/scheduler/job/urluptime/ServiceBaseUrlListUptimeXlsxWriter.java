@@ -49,7 +49,7 @@ public class ServiceBaseUrlListUptimeXlsxWriter {
             @Value("${developerUrlPart}") String developerUrlPart) {
         this.fileUtils = fileUtils;
         this.serviceBaseUrlListReportName = serviceBaseUrlListReportName;
-        this.filepartFormatter = DateTimeFormatter.ofPattern("yyyyMMddhhmmss");
+        this.filepartFormatter = DateTimeFormatter.ofPattern("yyyyMMdd_hhmmss");
         this.monthHeadingFormatter = DateTimeFormatter.ofPattern("MMMM yyyy");
         this.lastWeekHeadingFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         this.unformattedDeveloperUrl = chplUrlBegin + developerUrlPart;
