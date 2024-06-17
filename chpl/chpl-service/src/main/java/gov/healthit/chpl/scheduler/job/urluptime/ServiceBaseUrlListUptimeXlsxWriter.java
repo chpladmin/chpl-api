@@ -40,7 +40,7 @@ public class ServiceBaseUrlListUptimeXlsxWriter {
     private DateTimeFormatter filepartFormatter;
     private DateTimeFormatter monthHeadingFormatter;
     private DateTimeFormatter lastWeekHeadingFormatter;
-    private String unformtatedDeveloperUrl;
+    private String unformattedDeveloperUrl;
 
     @Autowired
     public ServiceBaseUrlListUptimeXlsxWriter(FileUtils fileUtils,
@@ -52,7 +52,7 @@ public class ServiceBaseUrlListUptimeXlsxWriter {
         this.filepartFormatter = DateTimeFormatter.ofPattern("yyyyMMddhhmmss");
         this.monthHeadingFormatter = DateTimeFormatter.ofPattern("MMMM yyyy");
         this.lastWeekHeadingFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        this.unformtatedDeveloperUrl = chplUrlBegin + developerUrlPart;
+        this.unformattedDeveloperUrl = chplUrlBegin + developerUrlPart;
     }
 
     public void writeWorkbookAsFile(List<ServiceBaseUrlListUptimeReport> reportRows) {
@@ -94,10 +94,12 @@ public class ServiceBaseUrlListUptimeXlsxWriter {
         XSSFWorkbookFactory workbookFactory = new XSSFWorkbookFactory();
         Workbook workbook = workbookFactory.create();
         Sheet dataSheet = getSheet(workbook, "Service Base URL List Report");
-        AtomicInteger currRow = new AtomicInteger(0);
-        createHeader(workbook, dataSheet, currRow.getAndIncrement());
+        AtomicInteger currDataRow = new AtomicInteger(0);
+        createHeader(workbook, dataSheet, currDataRow.getAndIncrement());
         reportRows.stream()
-            .forEach(row -> createDataRow(workbook, dataSheet, currRow.getAndIncrement(), row));
+            .forEach(row -> createDataRow(workbook, dataSheet, currDataRow.getAndIncrement(), row));
+
+        buildDefinitionSheet(workbook);
         return workbook;
     }
 
@@ -139,7 +141,7 @@ public class ServiceBaseUrlListUptimeXlsxWriter {
         cell.setCellValue(data.getDeveloperName());
 
         cell = createCell(row, currCol.getAndIncrement(), null);
-        cell.setCellValue(String.format(unformtatedDeveloperUrl, data.getDeveloperId().toString()));
+        cell.setCellValue(String.format(unformattedDeveloperUrl, data.getDeveloperId().toString()));
 
         cell = createCell(row, currCol.getAndIncrement(), null);
         cell.setCellValue(data.getUrl());
@@ -150,7 +152,7 @@ public class ServiceBaseUrlListUptimeXlsxWriter {
         cell.setCellValue(data.getTotalSuccessfulTestCount());
 
         Cell totalSuccessfulPercentageCell = createCell(row, currCol.getAndIncrement(), null);
-        totalSuccessfulPercentageCell.setCellFormula("D" + (rowNum + 1) + "/C" + (rowNum + 1));
+        totalSuccessfulPercentageCell.setCellFormula("E" + (rowNum + 1) + "/D" + (rowNum + 1));
         CreationHelper creationHelper = workbook.getCreationHelper();
         FormulaEvaluator formulaEvaluator = creationHelper.createFormulaEvaluator();
         formulaEvaluator.evaluateFormulaCell(totalSuccessfulPercentageCell);
@@ -162,7 +164,7 @@ public class ServiceBaseUrlListUptimeXlsxWriter {
         cell.setCellValue(data.getCurrentMonthSuccessfulTestCount());
 
         Cell monthSuccessfulPercentageCell = createCell(row, currCol.getAndIncrement(), null);
-        monthSuccessfulPercentageCell.setCellFormula("G" + (rowNum + 1) + "/F" + (rowNum + 1));
+        monthSuccessfulPercentageCell.setCellFormula("H" + (rowNum + 1) + "/G" + (rowNum + 1));
         formulaEvaluator.evaluateFormulaCell(monthSuccessfulPercentageCell);
         monthSuccessfulPercentageCell.setCellStyle(getPercentageStyle(workbook));
 
@@ -172,9 +174,107 @@ public class ServiceBaseUrlListUptimeXlsxWriter {
         cell.setCellValue(data.getPastWeekSuccessfulTestCount());
 
         Cell weekSuccessfulPercentageCell = createCell(row, currCol.getAndIncrement(), null);
-        weekSuccessfulPercentageCell.setCellFormula("J" + (rowNum + 1) + "/I" + (rowNum + 1));
+        weekSuccessfulPercentageCell.setCellFormula("K" + (rowNum + 1) + "/J" + (rowNum + 1));
         formulaEvaluator.evaluateFormulaCell(weekSuccessfulPercentageCell);
         weekSuccessfulPercentageCell.setCellStyle(getPercentageStyle(workbook));
+    }
+
+    private void buildDefinitionSheet(Workbook workbook) {
+        Sheet definitionSheet = getSheet(workbook, "Definitions");
+        AtomicInteger currRow = new AtomicInteger(0);
+        Row row = getRow(definitionSheet, currRow.getAndIncrement());
+        AtomicInteger currCol = new AtomicInteger(0);
+
+        //heading
+        Cell cell = createCell(row, currCol.getAndIncrement(), getBoldStyle(workbook));
+        cell.setCellValue("Column Name");
+        cell = createCell(row, currCol.getAndIncrement(), getBoldStyle(workbook));
+        cell.setCellValue("Description");
+
+        //content
+        row = getRow(definitionSheet, currRow.getAndIncrement());
+        currCol.set(0);
+        cell = createCell(row, currCol.getAndIncrement(), null);
+        cell.setCellValue("Developer");
+        cell = createCell(row, currCol.getAndIncrement(), null);
+        cell.setCellValue("The name of the developer or vendor of the certified health IT product");
+
+        row = getRow(definitionSheet, currRow.getAndIncrement());
+        currCol.set(0);
+        cell = createCell(row, currCol.getAndIncrement(), null);
+        cell.setCellValue("Developer URL");
+        cell = createCell(row, currCol.getAndIncrement(), null);
+        cell.setCellValue("Link to the developer’s page in CHPL");
+
+        row = getRow(definitionSheet, currRow.getAndIncrement());
+        currCol.set(0);
+        cell = createCell(row, currCol.getAndIncrement(), null);
+        cell.setCellValue("Service Base URL List");
+        cell = createCell(row, currCol.getAndIncrement(), null);
+        cell.setCellValue("The URL of the Service Base URL List");
+
+        row = getRow(definitionSheet, currRow.getAndIncrement());
+        currCol.set(0);
+        cell = createCell(row, currCol.getAndIncrement(), null);
+        cell.setCellValue("All Time Total Tests");
+        cell = createCell(row, currCol.getAndIncrement(), null);
+        cell.setCellValue("The total number of tests conducted since monitoring began");
+
+        row = getRow(definitionSheet, currRow.getAndIncrement());
+        currCol.set(0);
+        cell = createCell(row, currCol.getAndIncrement(), null);
+        cell.setCellValue("All Time Successful Tests");
+        cell = createCell(row, currCol.getAndIncrement(), null);
+        cell.setCellValue("The total number of successful tests since monitoring began");
+
+        row = getRow(definitionSheet, currRow.getAndIncrement());
+        currCol.set(0);
+        cell = createCell(row, currCol.getAndIncrement(), null);
+        cell.setCellValue("All Time Successful Tests, Percentage");
+        cell = createCell(row, currCol.getAndIncrement(), null);
+        cell.setCellValue("The percentage of successful tests since monitoring began");
+
+        row = getRow(definitionSheet, currRow.getAndIncrement());
+        currCol.set(0);
+        cell = createCell(row, currCol.getAndIncrement(), null);
+        cell.setCellValue("[Previous Month] Total Tests");
+        cell = createCell(row, currCol.getAndIncrement(), null);
+        cell.setCellValue("The total number of tests conducted in the previous month");
+
+        row = getRow(definitionSheet, currRow.getAndIncrement());
+        currCol.set(0);
+        cell = createCell(row, currCol.getAndIncrement(), null);
+        cell.setCellValue("[Previous Month] Successful Tests");
+        cell = createCell(row, currCol.getAndIncrement(), null);
+        cell.setCellValue("The total number of successful tests in the previous month");
+
+        row = getRow(definitionSheet, currRow.getAndIncrement());
+        currCol.set(0);
+        cell = createCell(row, currCol.getAndIncrement(), null);
+        cell.setCellValue("[Previous Month] Successful Tests, Percentage");
+        cell = createCell(row, currCol.getAndIncrement(), null);
+        cell.setCellValue("The percentage of successful tests in the previous month");
+
+        row = getRow(definitionSheet, currRow.getAndIncrement());
+        currCol.set(0);
+        cell = createCell(row, currCol.getAndIncrement(), null);
+        cell.setCellValue("[Last 7-Days] Total Tests");
+        cell = createCell(row, currCol.getAndIncrement(), null);
+        cell.setCellValue("The total number of tests conducted in the last 7 days");
+
+        row = getRow(definitionSheet, currRow.getAndIncrement());
+        currCol.set(0);
+        cell = createCell(row, currCol.getAndIncrement(), null);
+        cell.setCellValue("[Last 7-Days] Successful Tests");
+        cell = createCell(row, currCol.getAndIncrement(), null);
+        cell.setCellValue("The total number of successful tests in the last 7 days");
+
+        row = getRow(definitionSheet, currRow.getAndIncrement());
+        currCol.set(0);
+        cell = createCell(row, currCol.getAndIncrement(), null);
+        cell.setCellValue("[Last 7-Days] Successful Tests, Percentage");
+        cell = createCell(row, currCol.getAndIncrement(), null);
+        cell.setCellValue("The percentage of successful tests in the last 7 days");
     }
 
     private Sheet getSheet(Workbook workbook, String sheetName) {
