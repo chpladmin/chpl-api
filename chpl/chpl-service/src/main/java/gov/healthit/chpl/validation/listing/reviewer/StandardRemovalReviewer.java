@@ -31,8 +31,9 @@ public class StandardRemovalReviewer implements ComparisonReviewer {
             Optional<CertificationResult> updatedCertResults = findCertificationResult(updatedListing, existingCertResult.getId());
 
             if (updatedCertResults.isPresent()) {
-                List<Standard> removedStandards = getRemovedStandards(existingCertResult.getStandards().stream().map(crs -> crs.getStandard()).toList(),
-                        CollectionUtils.isEmpty(updatedCertResults.get().getStandards())  ? null : updatedCertResults.get().getStandards().stream().map(crs -> crs.getStandard()).toList());
+                List<Standard> removedStandards = getRemovedStandards(
+                        CollectionUtils.isEmpty(existingCertResult.getStandards()) ? null : existingCertResult.getStandards().stream().map(crs -> crs.getStandard()).toList(),
+                        CollectionUtils.isEmpty(updatedCertResults.get().getStandards()) ? null : updatedCertResults.get().getStandards().stream().map(crs -> crs.getStandard()).toList());
 
                 removedStandards.stream()
                         .filter(std -> !isStandardInteresting(std))
@@ -43,6 +44,10 @@ public class StandardRemovalReviewer implements ComparisonReviewer {
     }
 
     private List<Standard> getRemovedStandards(List<Standard> originalStandards, List<Standard> updatedStandards) {
+        if (CollectionUtils.isEmpty(originalStandards)) {
+            return new ArrayList<Standard>();
+        }
+
         List<Standard> origStandardsMutable = new ArrayList<Standard>(originalStandards);
         if (!CollectionUtils.isEmpty(updatedStandards)) {
             //need a mutable version of the list
