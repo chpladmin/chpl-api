@@ -62,7 +62,6 @@ import software.amazon.awssdk.services.cognitoidentityprovider.model.ListUsersIn
 import software.amazon.awssdk.services.cognitoidentityprovider.model.ListUsersRequest;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.ListUsersResponse;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.MessageActionType;
-import software.amazon.awssdk.services.cognitoidentityprovider.model.PasswordResetRequiredException;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.UserStatusType;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.UserType;
 
@@ -98,7 +97,7 @@ public class CognitoApiWrapper {
 
     }
 
-    public AuthenticationResultType authenticate(LoginCredentials credentials) throws PasswordResetRequiredException {
+    public AuthenticationResultType authenticate(LoginCredentials credentials) throws CognitoAuthenticationChallengeException {
         String secretHash = CognitoSecretHash.calculateSecretHash(clientId, userPoolClientSecret, credentials.getUserName());
 
         Map<String, String> authParams = new LinkedHashMap<String, String>();
@@ -117,12 +116,15 @@ public class CognitoApiWrapper {
             AdminInitiateAuthResponse authResult = cognitoClient.adminInitiateAuth(authRequest);
             if (authResult.challengeName() != null
                     && authResult.challengeName().equals(ChallengeNameType.NEW_PASSWORD_REQUIRED)) {
-                throw PasswordResetRequiredException.builder()
-                        .message(errorMessageUtil.getMessage("auth.changePasswordRequired"))
+                throw CognitoAuthenticationChallengeException.builder()
+                        .challenge(CognitoAuthenticationChallenge.builder()
+                                .sessionId(authResult.session())
+                                .challenge(authResult.challengeName())
+                                .build())
                         .build();
             }
             return  authResult.authenticationResult();
-        } catch (PasswordResetRequiredException e) {
+        } catch (CognitoAuthenticationChallengeException e) {
             throw e;
         } catch (Exception e) {
             //This is cluttering the logs when the SSO flag is on, and the user logs in using CHPL creds
@@ -209,8 +211,8 @@ public class CognitoApiWrapper {
                             AttributeType.builder().name("name").value(userRequest.getFullName()).build(),
                             AttributeType.builder().name("email").value(userRequest.getEmail()).build(),
                             AttributeType.builder().name("phone_number").value("+1" + userRequest.getPhoneNumber().replaceAll("[^0-9.]", "")).build(),
-                            AttributeType.builder().name("nickname").value(userRequest.getFriendlyName()).build(),
-                            AttributeType.builder().name("custom:title").value(userRequest.getTitle()).build(),
+                            AttributeType.builder().name("nickname").value("THIS ATTRIBUTE NEEDS TO BE MADE NOT REQUIRED").build(),
+                            AttributeType.builder().name("custom:title").value("THIS ATTRIBUTE NEEDS TO BE REMOVED").build(),
                             AttributeType.builder().name("custom:organizations").value(
                                     userRequest.getOrganizationId() != null ? userRequest.getOrganizationId().toString() : "").build())
                     .temporaryPassword(tempPassword)

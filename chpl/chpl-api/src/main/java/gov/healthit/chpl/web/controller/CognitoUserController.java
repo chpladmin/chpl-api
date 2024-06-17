@@ -28,6 +28,7 @@ import gov.healthit.chpl.exception.UserPermissionRetrievalException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.auth.CognitoAuthenticationManager;
+import gov.healthit.chpl.user.cognito.CognitoAuthenticationChallengeException;
 import gov.healthit.chpl.user.cognito.CognitoAuthenticationResponse;
 import gov.healthit.chpl.user.cognito.CognitoUserInvitation;
 import gov.healthit.chpl.user.cognito.CognitoUserManager;
@@ -66,10 +67,10 @@ public class CognitoUserController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             }
         )
-    @ApiResponse(responseCode = "470", description = "The user is required to change their password on next login.")
+    @ApiResponse(responseCode = "470", description = "The user is required to respond to the described challenge.")
     @RequestMapping(value = "/authenticate", method = RequestMethod.POST,
             consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
-    public CognitoAuthenticationResponse authenticateJSON(@RequestBody LoginCredentials credentials) {
+    public CognitoAuthenticationResponse authenticateJSON(@RequestBody LoginCredentials credentials) throws CognitoAuthenticationChallengeException {
 
         if (!ff4j.check(FeatureList.SSO)) {
             throw new NotImplementedException("This method has not been implemnted");

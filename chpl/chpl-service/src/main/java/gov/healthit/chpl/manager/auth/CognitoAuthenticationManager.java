@@ -10,6 +10,7 @@ import gov.healthit.chpl.domain.auth.LoginCredentials;
 import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.user.cognito.CognitoApiWrapper;
+import gov.healthit.chpl.user.cognito.CognitoAuthenticationChallengeException;
 import gov.healthit.chpl.user.cognito.CognitoAuthenticationResponse;
 import lombok.extern.log4j.Log4j2;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AuthenticationResultType;
@@ -28,7 +29,7 @@ public class CognitoAuthenticationManager {
         this.jwtUserConverterFacade = jwtUserConverterFacade;
     }
 
-    public CognitoAuthenticationResponse authenticate(LoginCredentials credentials) throws PasswordResetRequiredException {
+    public CognitoAuthenticationResponse authenticate(LoginCredentials credentials) throws CognitoAuthenticationChallengeException {
         AuthenticationResultType authResult = cognitoApiWrapper.authenticate(credentials);
         if (authResult == null) {
             return null;

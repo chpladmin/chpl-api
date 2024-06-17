@@ -39,9 +39,10 @@ import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.impl.UpdateCertifiedBodyException;
 import gov.healthit.chpl.manager.impl.UpdateTestingLabException;
+import gov.healthit.chpl.user.cognito.CognitoAuthenticationChallenge;
+import gov.healthit.chpl.user.cognito.CognitoAuthenticationChallengeException;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import lombok.extern.log4j.Log4j2;
-import software.amazon.awssdk.services.cognitoidentityprovider.model.PasswordResetRequiredException;
 
 @RestControllerAdvice
 @Log4j2
@@ -252,11 +253,11 @@ public class ApiExceptionControllerAdvice {
                 .build(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    @ExceptionHandler(PasswordResetRequiredException.class)
-    public ResponseEntity<ErrorResponse> exception(PasswordResetRequiredException e) {
+    @ExceptionHandler(CognitoAuthenticationChallengeException.class)
+    public ResponseEntity<CognitoAuthenticationChallenge> exception(CognitoAuthenticationChallengeException e) {
         return ResponseEntity
-                .status(ChplHttpStatus.NEW_PASSWORD_REQUIRED.value())
-                .body(new ErrorResponse(ChplHttpStatus.NEW_PASSWORD_REQUIRED.getReasonPhrase()));
+                .status(ChplHttpStatus.COGNITO_AUTHENTICATION_CHALLENGE.value())
+                .body(e.getChallenge());
     }
 
 }
