@@ -1,6 +1,7 @@
 package gov.healthit.chpl.web.controller;
 
 import java.io.File;
+import java.time.LocalDateTime;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -27,6 +28,7 @@ import gov.healthit.chpl.developer.search.DeveloperSearchServiceV2;
 import gov.healthit.chpl.developer.search.csv.DeveloperCsvWriter;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.ValidationException;
+import gov.healthit.chpl.util.DateUtil;
 import gov.healthit.chpl.util.FileUtils;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import gov.healthit.chpl.web.controller.annotation.DeprecatedApi;
@@ -339,7 +341,10 @@ public class SearchDevelopersController {
         File tempFile = null;
         try {
             tempFile = developerCsvWriter.getAsCsv(searchRequest, LOGGER);
-            fileUtils.streamFileAsResponse(tempFile, DOWNLOAD_FILE_FORMAT, response);
+
+            String filenameInResponse = String.format("developer-search-results-%s.csv",
+                    DateUtil.formatDownloadFileSuffixInEasternTime(LocalDateTime.now()));
+            fileUtils.streamFileAsResponse(tempFile, DOWNLOAD_FILE_FORMAT, response, filenameInResponse);
         } catch (Exception ex) {
             LOGGER.error("Unable to return CSV file for developer download.", ex);
         }
