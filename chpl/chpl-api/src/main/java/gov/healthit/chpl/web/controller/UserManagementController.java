@@ -5,7 +5,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
-import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,7 +48,6 @@ import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.InvitationManager;
 import gov.healthit.chpl.manager.auth.AuthenticationManager;
 import gov.healthit.chpl.manager.auth.UserManager;
-import gov.healthit.chpl.user.cognito.CognitoUserInvitation;
 import gov.healthit.chpl.user.cognito.CognitoUserManager;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -393,38 +391,6 @@ public class UserManagementController {
             throws UserRetrievalException {
 
         return userManager.getUserInfo(id);
-    }
-
-    @Deprecated
-    @DeprecatedApi(friendlyUrl = "/users/invitation/{token}",
-            removalDate = "2024-11-01",
-            message = "This endpoint is deprecated and will be removed in a future release. No replacement is currently available.")
-    @Operation(summary = "Get the authentication system for an invitation token.",
-            description = "Get the authentication system for an invitation token.  Valid values are "
-                    + "'CHPL', 'COGNITO', and ''. Empty string indicates the invitation does not exist "
-                    + "or has been deleted.",
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
-            })
-    @RequestMapping(value = "/invitation/{token}", method = RequestMethod.GET,
-            produces = "application/json; charset=utf-8")
-    public @ResponseBody String getUserInvitation(@PathVariable("token") String token) throws UserRetrievalException {
-        UserInvitation invite = invitationManager.getByInvitationHash(token);
-
-        if (invite != null) {
-            return AuthenticationSystem.CHPL.toString();
-        } else {
-            try {
-                CognitoUserInvitation cognitoInvite = cognitoUserManager.getInvitation(UUID.fromString(token));
-                if (cognitoInvite != null) {
-                    return AuthenticationSystem.COGNITO.toString();
-                }
-            } catch (Exception e) {
-                return "";
-            }
-        }
-        return "";
     }
 
     private List<User> getAllChplUsers() {
