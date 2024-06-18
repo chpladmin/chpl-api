@@ -91,7 +91,7 @@ public class CognitoUserController {
         )
     @RequestMapping(value = "/authenticate/challenge/new-password-required", method = RequestMethod.POST,
             consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
-    public CognitoAuthenticationResponse newPasswordRequiredChallenge(@RequestBody CognitoNewPasswordRequiredRequest request) {
+    public CognitoAuthenticationResponse newPasswordRequiredChallenge(@RequestBody CognitoNewPasswordRequiredRequest request) throws ValidationException {
 
         if (!ff4j.check(FeatureList.SSO)) {
             throw new NotImplementedException("This method has not been implemnted");

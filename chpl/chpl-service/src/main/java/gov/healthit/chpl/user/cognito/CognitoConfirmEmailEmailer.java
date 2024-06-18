@@ -28,7 +28,7 @@ public class CognitoConfirmEmailEmailer {
         String htmlMessage = htmlEmailBuilder.initialize()
                 .heading("Confirm CHPL Account")
                 .paragraph("Please go to the CHPL and login with this one-time password.",
-                        String.format("Email: %s<br />Confirmation Code: %s", credentials.getUserName(), credentials.getPassword()))
+                        String.format("Email: %s<br />Temporary Password: %s", credentials.getUserName(), credentials.getPassword()))
                 .footer(PublicFooter.class)
                 .build();
         LOGGER.info("Created HTML Message for " + credentials.getUserName());
