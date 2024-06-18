@@ -82,6 +82,11 @@ public final class DateUtil {
         return DateTimeFormatter.ofPattern("MMM d, yyyy, h:mm:ss a").format(dateWithCorrectZone) + ET_SUFFIX;
     }
 
+    public static String formatDownloadFileSuffixInEasternTime(LocalDateTime date) {
+        ZonedDateTime dateWithCorrectZone = date.atZone(ZoneId.of(ET_ZONE_ID));
+        return DateTimeFormatter.ofPattern("yyyyMMdd_hhmmss").format(dateWithCorrectZone);
+    }
+
     public static String formatInEasternTime(Date date) {
         ZonedDateTime zdt = ZonedDateTime.ofInstant(date.toInstant(), ZoneId.of(UTC_ZONE_ID));
         return formatInEasternTime(zdt);

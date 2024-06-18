@@ -329,5 +329,4 @@ public class DeveloperController {
         throws ValidationException, SchedulerException {
         return developerManager.triggerMessageDevelopers(developerMessageRequest);
     }
-
 }
