@@ -24,6 +24,11 @@ public class ReportDataManager {
         this.criteriaMigrationReportService = criteriaMigrationReportService;
     }
 
+    @Autowired
+    public ReportDataManager(CuresUpdateReportService curesUpdateReportService) {
+        this.curesUpdateReportService = curesUpdateReportService;
+    }
+
     public List<CuresCriterionChartStatistic> getCuresUpdateReportData() {
         return curesUpdateReportService.getReportData();
     }

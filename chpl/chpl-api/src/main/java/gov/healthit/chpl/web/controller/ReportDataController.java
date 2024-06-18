@@ -37,7 +37,6 @@ public class ReportDataController {
         return reportDataManager.getCuresUpdateReportData();
     }
 
-
     @Operation(summary = "Retrieves the data used to generate the HTI-1 Criteria Migration Report.",
             description = "Retrieves the data used to generate the HTI-1 Criteria Migration Report.",
             security = {
@@ -47,5 +46,4 @@ public class ReportDataController {
     public @ResponseBody CriteriaMigrationReport getHti1CriteriaMigrationReport() {
         return reportDataManager.getHti1CriteriaMigrationReport();
     }
-
 }

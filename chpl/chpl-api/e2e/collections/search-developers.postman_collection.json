@@ -61,6 +61,54 @@
 				"description": "/developers/search/v3 end point returns 200 status and response body should not be empty"
 			},
 			"response": []
+		},
+		{
+			"name": "GET /developers/search/download - should return 200 status for anonymous users",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"For anonymous users /developers/search/download end point return 200 status and response body should not be empty\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"    var responseData = pm.response.text();\r",
+							"    pm.expect(responseData.response).not.eq(null);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "API-Key",
+						"value": "{{apiKey}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/rest/developers/search/download",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"rest",
+						"developers",
+						"search",
+						"download"
+					]
+				},
+				"description": "GET /developers/search/download - should return 200 status for anonymous users"
+			},
+			"response": []
 		}
 	]
 }
