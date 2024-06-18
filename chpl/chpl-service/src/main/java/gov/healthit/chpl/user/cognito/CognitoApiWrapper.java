@@ -33,7 +33,6 @@ import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.UserCreationException;
 import gov.healthit.chpl.exception.UserRetrievalException;
-import gov.healthit.chpl.util.ErrorMessageUtil;
 import lombok.extern.log4j.Log4j2;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.AwsCredentials;
@@ -68,6 +67,7 @@ import software.amazon.awssdk.services.cognitoidentityprovider.model.UserType;
 @Log4j2
 @Component
 public class CognitoApiWrapper {
+    private static final String HMAC_SHA256_ALGORITHM = "HmacSHA256";
 
     private String clientId;
     private String userPoolId;
@@ -76,7 +76,6 @@ public class CognitoApiWrapper {
     private CognitoIdentityProviderClient cognitoClient;
     private CertificationBodyDAO certificationBodyDAO;
     private DeveloperDAO developerDAO;
-    private ErrorMessageUtil errorMessageUtil;
 
     private Map<UUID, User> userMap = new HashMap<UUID, User>();
 
@@ -84,7 +83,7 @@ public class CognitoApiWrapper {
     public CognitoApiWrapper(@Value("${cognito.accessKey}") String accessKey, @Value("${cognito.secretKey}") String secretKey,
             @Value("${cognito.region}") String region, @Value("${cognito.clientId}") String clientId, @Value("${cognito.userPoolId}") String userPoolId,
             @Value("${cognito.userPoolClientSecret}") String userPoolClientSecret, @Value("${cognito.environment.groupName}") String environmentGroupName,
-            CertificationBodyDAO certificationBodyDAO, DeveloperDAO developerDAO, ErrorMessageUtil errorMessageUtil) {
+            CertificationBodyDAO certificationBodyDAO, DeveloperDAO developerDAO) {
 
         cognitoClient = createCognitoClient(accessKey, secretKey, region);
         this.clientId = clientId;
@@ -93,7 +92,6 @@ public class CognitoApiWrapper {
         this.userPoolClientSecret = userPoolClientSecret;
         this.certificationBodyDAO = certificationBodyDAO;
         this.developerDAO = developerDAO;
-        this.errorMessageUtil = errorMessageUtil;
 
     }
 
@@ -141,7 +139,7 @@ public class CognitoApiWrapper {
                 .challengeName(ChallengeNameType.NEW_PASSWORD_REQUIRED)
                 .challengeResponses(Map.of("NEW_PASSWORD", newPassworRequiredRequest.getPassword(),
                         "USERNAME", newPassworRequiredRequest.getUserName(),
-                        "SECRET_HASH", calculateSecretHash(clientId, userPoolClientSecret, newPassworRequiredRequest.getUserName())))
+                        "SECRET_HASH", calculateSecretHash(newPassworRequiredRequest.getUserName())))
                 .session(newPassworRequiredRequest.getSessionId())
                 .build();
 
@@ -357,10 +355,8 @@ public class CognitoApiWrapper {
         User user = new User();
         user.setCognitoId(UUID.fromString(userType.username()));
         user.setSubjectName(getUserAttribute(userType.attributes(), "email").value());
-        //user.setFriendlyName(getUserAttribute(userType.attributes(), "nickname").value());
         user.setFullName(getUserAttribute(userType.attributes(), "name").value());
         user.setEmail(getUserAttribute(userType.attributes(), "email").value());
-        //user.setTitle(getUserAttribute(userType.attributes(), "custom:title").value());
         user.setPhoneNumber(getUserAttribute(userType.attributes(), "phone_number").value());
         user.setAccountLocked(!userType.enabled());
         user.setAccountEnabled(userType.enabled());
@@ -401,9 +397,7 @@ public class CognitoApiWrapper {
                 .isPresent();
     }
 
-    private String calculateSecretHash(String userPoolClientId, String userPoolClientSecret, String userName) {
-        final String HMAC_SHA256_ALGORITHM = "HmacSHA256";
-
+    private String calculateSecretHash(String userName) {
         SecretKeySpec signingKey = new SecretKeySpec(
                 userPoolClientSecret.getBytes(StandardCharsets.UTF_8),
                 HMAC_SHA256_ALGORITHM);
@@ -411,7 +405,7 @@ public class CognitoApiWrapper {
             Mac mac = Mac.getInstance(HMAC_SHA256_ALGORITHM);
             mac.init(signingKey);
             mac.update(userName.getBytes(StandardCharsets.UTF_8));
-            byte[] rawHmac = mac.doFinal(userPoolClientId.getBytes(StandardCharsets.UTF_8));
+            byte[] rawHmac = mac.doFinal(clientId.getBytes(StandardCharsets.UTF_8));
             return Base64.getEncoder().encodeToString(rawHmac);
         } catch (Exception e) {
             throw new RuntimeException("Error while calculating ");
