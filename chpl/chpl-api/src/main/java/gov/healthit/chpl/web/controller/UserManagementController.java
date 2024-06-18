@@ -55,6 +55,7 @@ import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import gov.healthit.chpl.web.controller.annotation.DeprecatedApi;
+import gov.healthit.chpl.web.controller.annotation.DeprecatedApiResponseFields;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -98,6 +99,7 @@ public class UserManagementController {
             httpMethod = "POST",
             removalDate = "2024-11-01",
             message = "This endpoint is deprecated and will be removed in a future release. No replacement is currently available.")
+    @DeprecatedApiResponseFields(friendlyUrl = "/users/create", responseClass = User.class)
     @Operation(summary = "Create a new user account from an invitation.",
             description = "An individual who has been invited to the CHPL has a special user key in their invitation email. "
                     + "That user key along with all the information needed to create a new user's account "
@@ -166,6 +168,7 @@ public class UserManagementController {
             httpMethod = "POST",
             removalDate = "2024-11-01",
             message = "This endpoint is deprecated and will be removed in a future release. No replacement is currently available.")
+    @DeprecatedApiResponseFields(friendlyUrl = "/confirm", responseClass = User.class)
     @Operation(summary = "Confirm that a user's email address is valid.",
             description = "When a new user accepts their invitation to the CHPL they have to provide "
                     + "an email address. They then receive an email prompting them to confirm "
@@ -298,6 +301,7 @@ public class UserManagementController {
             httpMethod = "PUT",
             removalDate = "2024-11-01",
             message = "This endpoint is deprecated and will be removed in a future release. No replacement is currently available.")
+    @DeprecatedApiResponseFields(friendlyUrl = "/{userId}", responseClass = User.class)
     @Operation(summary = "Modify user information.", description = "",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
@@ -348,6 +352,7 @@ public class UserManagementController {
     @DeprecatedApi(friendlyUrl = "/users",
             removalDate = "2024-11-01",
             message = "This endpoint is deprecated and will be removed in a future release. No replacement is currently available.")
+    @DeprecatedApiResponseFields(friendlyUrl = "/users", responseClass = User.class)
     @Operation(summary = "View users of the system.",
             description = "Security Restrictions: ROLE_ADMIN and ROLE_ONC can see all users.  ROLE_ACB "
                     + "and ROLE_CMS_STAFF can see themselves.",
@@ -374,6 +379,7 @@ public class UserManagementController {
     @DeprecatedApi(friendlyUrl = "/users/beta/{id}/details",
             removalDate = "2024-11-01",
             message = "This endpoint is deprecated and will be removed in a future release. No replacement is currently available.")
+    @DeprecatedApiResponseFields(friendlyUrl = "/users/beta/{id}/details", responseClass = User.class)
     @Operation(summary = "View a specific user's details.",
             description = "The logged in user must either be the user in the parameters, have ROLE_ADMIN, or "
                     + "have ROLE_ACB.",
