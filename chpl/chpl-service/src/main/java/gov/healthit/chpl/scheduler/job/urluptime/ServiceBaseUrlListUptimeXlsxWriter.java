@@ -237,23 +237,23 @@ public class ServiceBaseUrlListUptimeXlsxWriter {
         row = getRow(definitionSheet, currRow.getAndIncrement());
         currCol.set(0);
         cell = createCell(row, currCol.getAndIncrement(), null);
-        cell.setCellValue("[Previous Month] Total Tests");
+        cell.setCellValue("[Current Month] Total Tests");
         cell = createCell(row, currCol.getAndIncrement(), null);
-        cell.setCellValue("The total number of tests conducted in the previous month");
+        cell.setCellValue("The total number of tests conducted in the current month");
 
         row = getRow(definitionSheet, currRow.getAndIncrement());
         currCol.set(0);
         cell = createCell(row, currCol.getAndIncrement(), null);
-        cell.setCellValue("[Previous Month] Successful Tests");
+        cell.setCellValue("[Current Month] Successful Tests");
         cell = createCell(row, currCol.getAndIncrement(), null);
-        cell.setCellValue("The total number of successful tests in the previous month");
+        cell.setCellValue("The total number of successful tests in the current month");
 
         row = getRow(definitionSheet, currRow.getAndIncrement());
         currCol.set(0);
         cell = createCell(row, currCol.getAndIncrement(), null);
-        cell.setCellValue("[Previous Month] Successful Tests, Percentage");
+        cell.setCellValue("[Current Month] Successful Tests, Percentage");
         cell = createCell(row, currCol.getAndIncrement(), null);
-        cell.setCellValue("The percentage of successful tests in the previous month");
+        cell.setCellValue("The percentage of successful tests in the current month");
 
         row = getRow(definitionSheet, currRow.getAndIncrement());
         currCol.set(0);
