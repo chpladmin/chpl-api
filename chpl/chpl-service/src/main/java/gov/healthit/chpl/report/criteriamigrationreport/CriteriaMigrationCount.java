@@ -34,6 +34,6 @@ public class CriteriaMigrationCount {
     @Schema(description = "Number of listings attesting the original criteria as of the reportDate")
     private Integer updatedCriterionCount;
 
-    @Schema(description = "Number of listings where the original criteria was attested to, then unattested to, and trhe updated criteria has been attested to")
+    @Schema(description = "Number of listings where the original criteria was attested to, then unattested to, and the updated criteria has been attested to")
     private Integer originalToUpdatedCriterionCount;
 }
