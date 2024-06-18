@@ -28,6 +28,7 @@ public final class DateUtil {
     public static boolean datesOverlap(LocalDate startDate1, LocalDate endDate1, LocalDate startDate2, LocalDate endDate2) {
         Pair<LocalDate, LocalDate> dateRange1 = Pair.of(startDate1, endDate1);
         Pair<LocalDate, LocalDate> dateRange2 = Pair.of(startDate2, endDate2);
+        LOGGER.info("Checking to see if the following dates overlap: " + dateRange1.toString() + " and " + dateRange2.toString());
         return datesOverlap(dateRange1, dateRange2);
     }
 
