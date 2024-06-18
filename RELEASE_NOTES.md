@@ -1,5 +1,15 @@
 # Release Notes
 
+## Version 44.4.0
+_10 June 2024_
+
+### Features
+* Update Attestation Report to work with Cognito users
+* Stop recording certification id created activity
+* Create job for ADMIN/ONC to Message Developers
+
+---
+
 ## Version 44.3.0
 _28 May 2024_
 
