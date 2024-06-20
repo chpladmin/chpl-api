@@ -12,7 +12,6 @@ import gov.healthit.chpl.exception.JWTCreationException;
 import gov.healthit.chpl.exception.UserCreationException;
 import gov.healthit.chpl.exception.UserManagementException;
 import gov.healthit.chpl.exception.UserPermissionRetrievalException;
-import software.amazon.awssdk.services.cognitoidentityprovider.model.PasswordResetRequiredException;
 
 @ControllerAdvice
 public class AuthExceptionControllerAdvice {
@@ -45,11 +44,6 @@ public class AuthExceptionControllerAdvice {
 
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<ErrorResponse> exception(final BadCredentialsException e) {
-        return new ResponseEntity<ErrorResponse>(new ErrorResponse(e.getMessage()), HttpStatus.UNAUTHORIZED);
-    }
-
-    @ExceptionHandler(PasswordResetRequiredException.class)
-    public ResponseEntity<ErrorResponse> exception(final PasswordResetRequiredException e) {
         return new ResponseEntity<ErrorResponse>(new ErrorResponse(e.getMessage()), HttpStatus.UNAUTHORIZED);
     }
 
