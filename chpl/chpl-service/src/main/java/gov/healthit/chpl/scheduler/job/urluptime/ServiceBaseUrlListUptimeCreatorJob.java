@@ -38,7 +38,7 @@ public class ServiceBaseUrlListUptimeCreatorJob extends QuartzJob {
                 LOGGER.error(e);
             }
         } else {
-            LOGGER.info("Not synchonizing or gathering Service Base URL List data based on configuration");
+            LOGGER.info("Not synchronizing or gathering Service Base URL List data based on configuration");
         }
 
         LOGGER.info("Calculating data for downloadable Service Base URL List Uptime Report file");
