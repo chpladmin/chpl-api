@@ -3,7 +3,11 @@ package gov.healthit.chpl.scheduler.job.developer.messaging;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
@@ -29,6 +33,7 @@ import lombok.extern.log4j.Log4j2;
 public class MessageDevelopersJob extends SecurityContextCapableJob implements Job {
     public static final String JOB_NAME = "messageDevelopersJob";
     public static final String DEVELOPER_MESSAGE_REQUEST = "developerMessageRequest";
+    public static final String PREVIEW = "preview";
 
     @Autowired
     private DeveloperSearchService developerSearchService;
@@ -55,6 +60,7 @@ public class MessageDevelopersJob extends SecurityContextCapableJob implements J
         LOGGER.info("********* Starting Message Developers job. *********");
         try {
             User submittedByUser = getUserFromJobData(context);
+            Boolean isPreview = getPreviewFromJobData(context);
             setSecurityContext(submittedByUser);
             LOGGER.info(String.format("Messaging developers on behalf of %s (%s)", submittedByUser.getFullName(), submittedByUser.getEmail()));
 
@@ -73,8 +79,16 @@ public class MessageDevelopersJob extends SecurityContextCapableJob implements J
                     .map(developer -> messageGenerator.getDeveloperEmail(developer, developerMessageRequest))
                     .toList();
 
+            if (isPreview && !CollectionUtils.isEmpty(developerEmails)) {
+                developerEmails = developerEmails.subList(0, 1);
+                developerEmails.get(0).setRecipients(Stream.of(submittedByUser.getEmail()).collect(Collectors.toList()));
+            }
+
             sendEmails(developerEmails);
-            sendStatusReportEmail(developerEmails, developerMessageRequest.getSubject(), submittedByUser);
+
+            if (!isPreview) {
+                sendStatusReportEmail(developerEmails, developerMessageRequest.getSubject(), submittedByUser);
+            }
         } catch (Exception e) {
             LOGGER.error(e);
         } finally {
@@ -123,5 +137,13 @@ public class MessageDevelopersJob extends SecurityContextCapableJob implements J
         } else {
             return null;
         }
+    }
+
+    private Boolean getPreviewFromJobData(JobExecutionContext context) throws UserRetrievalException {
+        String previewFromContext = context.getMergedJobDataMap().get(PREVIEW).toString();
+        if (!StringUtils.isEmpty(previewFromContext)) {
+            return BooleanUtils.toBooleanObject(previewFromContext);
+        }
+        return false;
     }
 }
