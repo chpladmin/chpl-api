@@ -24,6 +24,7 @@ import jakarta.servlet.http.HttpServletResponse;
 public final class FileUtils {
     public static final int BUFFER_SIZE = 1024;
 
+    private static final String TEMP_DIRECTORY_NAME = "temp";
     private static final String DOWNLOAD_FOLDER_PROPERTY_NAME = "downloadFolderPath";
     private static final Logger LOGGER = LogManager.getLogger(FileUtils.class);
 
@@ -62,6 +63,13 @@ public final class FileUtils {
             throw new IOException(msgUtil.getMessage("resources.noReadPermission", downloadFolderPath));
         }
         return downloadFolder;
+    }
+
+    public File createTempFile(String fileName, String fileExtension) throws IOException {
+        Path tempDirBasePath = Paths.get(getDownloadFolder().getAbsolutePath());
+        Path tempDir = Files.createTempDirectory(tempDirBasePath, TEMP_DIRECTORY_NAME);
+        Path tempFilePath = Files.createTempFile(tempDir, fileName, fileExtension);
+        return tempFilePath.toFile();
     }
 
     public File createDownloadFile(String filename) throws IOException {

@@ -22,10 +22,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.attestation.domain.AttestationPeriodDeveloperException;
 import gov.healthit.chpl.attestation.manager.AttestationManager;
-import gov.healthit.chpl.auth.user.AuthenticationSystem;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.compliance.directreview.DirectReviewCachingService;
 import gov.healthit.chpl.developer.join.JoinDevelopersRequest;
+import gov.healthit.chpl.developer.messaging.DeveloperMessageRequest;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.PermissionDeletedResponse;
 import gov.healthit.chpl.domain.Product;
@@ -35,7 +35,6 @@ import gov.healthit.chpl.domain.auth.UsersResponse;
 import gov.healthit.chpl.domain.compliance.DirectReview;
 import gov.healthit.chpl.domain.developer.hierarchy.DeveloperTree;
 import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
-import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.exception.ActivityException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -47,7 +46,6 @@ import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.UserPermissionsManager;
 import gov.healthit.chpl.realworldtesting.domain.RealWorldTestingUrlByDeveloper;
 import gov.healthit.chpl.realworldtesting.manager.RealWorldTestingManager;
-import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import gov.healthit.chpl.web.controller.results.DeveloperAttestationSubmissionResults;
@@ -286,16 +284,7 @@ public class DeveloperController {
     public @ResponseBody UsersResponse getUsers(@PathVariable("developerId") Long developerId)
             throws InvalidArgumentsException, EntityRetrievalException {
 
-        List<User> domainUsers = null;
-        if (AuthUtil.getCurrentUser().getAuthenticationSystem().equals(AuthenticationSystem.COGNTIO)) {
-            domainUsers = developerManager.getAllCognitoUsersOnDeveloper(developerId);
-        } else if (AuthUtil.getCurrentUser().getAuthenticationSystem().equals(AuthenticationSystem.CHPL)) {
-            List<UserDTO> users = developerManager.getAllUsersOnDeveloper(developerId);
-            domainUsers = users.stream()
-                    .map(user -> user.toDomain())
-                    .toList();
-        }
-
+        List<User> domainUsers = developerManager.getAllUsersOnDeveloper(developerId);
         UsersResponse results = new UsersResponse();
         results.setUsers(domainUsers);
         return results;
@@ -329,4 +318,17 @@ public class DeveloperController {
         return attestationManager.createAttestationPeriodDeveloperException(developerId, attestationPeriodId);
     }
 
+    @Operation(summary = "Sends a message to all developers matching the provided search parameters. "
+            + "A report of the message sent and recipients will be sent to the requestor after completion.",
+            description = "Security Restrictions: ADMIN or ONC users.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
+    @RequestMapping(value = "/messages", method = RequestMethod.POST,
+            consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
+    public ChplOneTimeTrigger sendMessage(@RequestBody(required = true) DeveloperMessageRequest developerMessageRequest)
+        throws ValidationException, SchedulerException {
+        return developerManager.triggerMessageDevelopers(developerMessageRequest);
+    }
 }

@@ -78,6 +78,14 @@ public class CognitoResourcePermissions implements ResourcePermissions {
     }
 
     @Override
+    public List<User> getAllDeveloperUsers() {
+        return cognitoApiWrapper.getAllUsers().stream()
+                .filter(user -> user.getRole() != null
+                        && user.getRole().equals(CognitoGroups.CHPL_DEVELOPER))
+                .toList();
+    }
+
+    @Override
     public List<CertificationBody> getAllAcbsForCurrentUser() {
         try {
             User user = cognitoApiWrapper.getUserInfo(AuthUtil.getCurrentUser().getCognitoId());

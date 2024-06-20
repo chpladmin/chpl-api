@@ -655,6 +655,19 @@
         </Policies>
     </RollingFile>
 
+    <RollingFile name="messageDevelopersJob"
+        fileName="${logDir}/scheduler/messageDevelopersJob.log"
+        filePattern="${logDir}/scheduler/history/messageDevelopersJob-%d{yyyy-MM-dd}.log"
+        filePermissions="rw-rw-r--">
+        <PatternLayout>
+            <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
+        </PatternLayout>
+        <Policies>
+            <TimeBasedTriggeringPolicy
+                interval="1" modulate="true" />
+        </Policies>
+    </RollingFile>
+
     <RollingFile name="fixupQuestionableActivityJob"
         fileName="${logDir}/scheduler/fixupQuestionableActivityJob.log"
         filePattern="${logDir}/scheduler/history/fixupQuestionableActivityJob-%d{yyyy-MM-dd}.log"
