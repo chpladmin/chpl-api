@@ -93,6 +93,7 @@ public class ServiceBaseUrlListUptimeXlsxWriter {
     private Workbook createWorkbook(List<ServiceBaseUrlListUptimeReport> reportRows) {
         XSSFWorkbookFactory workbookFactory = new XSSFWorkbookFactory();
         Workbook workbook = workbookFactory.create();
+        initializeStyles(workbook);
         Sheet dataSheet = getSheet(workbook, "Service Base URL List Report");
         AtomicInteger currDataRow = new AtomicInteger(0);
         createHeader(workbook, dataSheet, currDataRow.getAndIncrement());
@@ -103,13 +104,27 @@ public class ServiceBaseUrlListUptimeXlsxWriter {
         return workbook;
     }
 
+    private void initializeStyles(Workbook workbook) {
+        Font boldFont = workbook.createFont();
+        boldFont.setBold(true);
+        boldFont.setFontHeightInPoints((short) WORKSHEET_LARGE_FONT_POINTS);
+
+        this.boldStyle = workbook.createCellStyle();
+        this.boldStyle.setFont(boldFont);
+        this.boldStyle.setFillForegroundColor(IndexedColors.WHITE.index);
+        this.boldStyle.setFillBackgroundColor(IndexedColors.WHITE.index);
+
+        this.percentageStyle = workbook.createCellStyle();
+        this.percentageStyle.setDataFormat(workbook.createDataFormat().getFormat("0.00%"));
+    }
+
     private void createHeader(Workbook workbook, Sheet sheet, int rowNum) {
         Row row = getRow(sheet, rowNum);
         AtomicInteger currCol = new AtomicInteger(0);
         List<String> headers = getHeaders();
         headers.stream()
             .forEach(header -> {
-                Cell cell = createCell(row, currCol.getAndIncrement(), getBoldStyle(workbook));
+                Cell cell = createCell(row, currCol.getAndIncrement(), this.boldStyle);
                 cell.setCellValue(header);
             });
     }
@@ -156,7 +171,7 @@ public class ServiceBaseUrlListUptimeXlsxWriter {
         CreationHelper creationHelper = workbook.getCreationHelper();
         FormulaEvaluator formulaEvaluator = creationHelper.createFormulaEvaluator();
         formulaEvaluator.evaluateFormulaCell(totalSuccessfulPercentageCell);
-        totalSuccessfulPercentageCell.setCellStyle(getPercentageStyle(workbook));
+        totalSuccessfulPercentageCell.setCellStyle(this.percentageStyle);
 
         cell = createCell(row, currCol.getAndIncrement(), null);
         cell.setCellValue(data.getCurrentMonthTestCount());
@@ -166,7 +181,7 @@ public class ServiceBaseUrlListUptimeXlsxWriter {
         Cell monthSuccessfulPercentageCell = createCell(row, currCol.getAndIncrement(), null);
         monthSuccessfulPercentageCell.setCellFormula("H" + (rowNum + 1) + "/G" + (rowNum + 1));
         formulaEvaluator.evaluateFormulaCell(monthSuccessfulPercentageCell);
-        monthSuccessfulPercentageCell.setCellStyle(getPercentageStyle(workbook));
+        monthSuccessfulPercentageCell.setCellStyle(this.percentageStyle);
 
         cell = createCell(row, currCol.getAndIncrement(), null);
         cell.setCellValue(data.getPastWeekTestCount());
@@ -176,7 +191,7 @@ public class ServiceBaseUrlListUptimeXlsxWriter {
         Cell weekSuccessfulPercentageCell = createCell(row, currCol.getAndIncrement(), null);
         weekSuccessfulPercentageCell.setCellFormula("K" + (rowNum + 1) + "/J" + (rowNum + 1));
         formulaEvaluator.evaluateFormulaCell(weekSuccessfulPercentageCell);
-        weekSuccessfulPercentageCell.setCellStyle(getPercentageStyle(workbook));
+        weekSuccessfulPercentageCell.setCellStyle(this.percentageStyle);
     }
 
     private void buildDefinitionSheet(Workbook workbook) {
@@ -186,9 +201,9 @@ public class ServiceBaseUrlListUptimeXlsxWriter {
         AtomicInteger currCol = new AtomicInteger(0);
 
         //heading
-        Cell cell = createCell(row, currCol.getAndIncrement(), getBoldStyle(workbook));
+        Cell cell = createCell(row, currCol.getAndIncrement(), this.boldStyle);
         cell.setCellValue("Column Name");
-        cell = createCell(row, currCol.getAndIncrement(), getBoldStyle(workbook));
+        cell = createCell(row, currCol.getAndIncrement(), this.boldStyle);
         cell.setCellValue("Description");
 
         //content
@@ -304,29 +319,5 @@ public class ServiceBaseUrlListUptimeXlsxWriter {
             LOGGER.error("Error creating cell in row " + row.getRowNum() + " at column " + cellIndex, ex);
         }
         return cell;
-    }
-
-    public CellStyle getBoldStyle(Workbook workbook) {
-        if (this.boldStyle != null) {
-            return this.boldStyle;
-        }
-        Font boldFont = workbook.createFont();
-        boldFont.setBold(true);
-        boldFont.setFontHeightInPoints((short) WORKSHEET_LARGE_FONT_POINTS);
-
-        this.boldStyle = workbook.createCellStyle();
-        this.boldStyle.setFont(boldFont);
-        this.boldStyle.setFillForegroundColor(IndexedColors.WHITE.index);
-        this.boldStyle.setFillBackgroundColor(IndexedColors.WHITE.index);
-        return this.boldStyle;
-    }
-
-    public CellStyle getPercentageStyle(Workbook workbook) {
-        if (this.percentageStyle != null) {
-            return this.percentageStyle;
-        }
-        this.percentageStyle = workbook.createCellStyle();
-        this.percentageStyle.setDataFormat(workbook.createDataFormat().getFormat("0.00%"));
-        return this.percentageStyle;
     }
 }
