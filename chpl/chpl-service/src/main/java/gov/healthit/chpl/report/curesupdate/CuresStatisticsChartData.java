@@ -1,4 +1,4 @@
-package gov.healthit.chpl.scheduler.job.curesStatistics.email;
+package gov.healthit.chpl.report.curesupdate;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -74,7 +74,8 @@ public class CuresStatisticsChartData {
                         criterion,
                         existingCertificationCounts,
                         newCertificationCounts,
-                        listingCounts))
+                        listingCounts,
+                        reportDate))
                 .collect(Collectors.toMap(CuresCriterionChartStatistic::getCriterion, item -> item));
 
         return curesCriterionChartStatistics;
@@ -83,7 +84,8 @@ public class CuresStatisticsChartData {
     private CuresCriterionChartStatistic getCuresCriterionChartStatisticForCriteria(CertificationCriterion criterion,
             Map<CertificationCriterion, Long> existingCertificationCounts,
             Map<CertificationCriterion, Long> newCertificationCounts,
-            Map<CertificationCriterion, Long> listingCounts) {
+            Map<CertificationCriterion, Long> listingCounts,
+            LocalDate reportDate) {
 
         CuresCriterionChartStatistic cccs = CuresCriterionChartStatistic.builder()
                 .criterion(criterion)
@@ -91,6 +93,7 @@ public class CuresStatisticsChartData {
                 .newCertificationCount(getNewCertificationCountByCriteria(newCertificationCounts, criterion))
                 .requiresUpdateCount(getListingCountByCriteria(listingCounts, getOrignalCriterionBasedOnCuresUpdateCriterion(criterion)))
                 .listingCount(getListingCountByCriteria(listingCounts, criterion))
+                .reportDate(reportDate)
                 .build();
 
         return cccs;
