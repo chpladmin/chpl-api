@@ -1,0 +1,56 @@
+{
+	"info": {
+		"name": "report-data",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "GET /report-data/cures-update-report - 200 status and response body",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"/report-data/cures-update-report end point returns 200 status and response body should not be empty\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.response).not.eq(null);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "API-Key",
+						"value": "{{apiKey}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/rest/report-data/cures-update-report",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"rest",
+						"report-data",
+						"cures-update-report"
+					]
+				},
+				"description": "GET /report-data/cures-update-report - 200 status and response body for anonymous users"
+			},
+			"response": []
+		}
+	]
+}

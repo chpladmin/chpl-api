@@ -2,8 +2,7 @@ package gov.healthit.chpl.dao;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.persistence.Query;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -15,6 +14,7 @@ import gov.healthit.chpl.entity.auth.UserEntity;
 import gov.healthit.chpl.entity.developer.DeveloperEntitySimple;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.util.UserMapper;
+import jakarta.persistence.Query;
 
 @Repository(value = "userDeveloperMapDAO")
 public class UserDeveloperMapDAO extends BaseDAOImpl {
@@ -27,7 +27,7 @@ public class UserDeveloperMapDAO extends BaseDAOImpl {
     }
 
 
-    public UserDeveloperMapDTO create(final UserDeveloperMapDTO dto) throws EntityRetrievalException {
+    public UserDeveloperMapDTO create(UserDeveloperMapDTO dto) throws EntityRetrievalException {
         UserDeveloperMapEntity entity = new UserDeveloperMapEntity();
         entity = create(getUserDeveloperMapEntity(dto));
         return mapEntityToDto(entity);
@@ -41,7 +41,7 @@ public class UserDeveloperMapDAO extends BaseDAOImpl {
     }
 
 
-    public List<UserDeveloperMapDTO> getByUserId(final Long userId) {
+    public List<UserDeveloperMapDTO> getByUserId(Long userId) {
         Query query = entityManager.createQuery(
                 "from UserDeveloperMapEntity udm "
                         + "join fetch udm.developer developer "
@@ -62,7 +62,7 @@ public class UserDeveloperMapDAO extends BaseDAOImpl {
         return dtos;
     }
 
-    public List<UserDeveloperMapDTO> getByDeveloperId(final Long developerId) {
+    public List<UserDeveloperMapDTO> getByDeveloperId(Long developerId) {
         Query query = entityManager.createQuery(
                 "from UserDeveloperMapEntity udm "
                         + "join fetch udm.developer developer "
@@ -82,7 +82,7 @@ public class UserDeveloperMapDAO extends BaseDAOImpl {
         return dtos;
     }
 
-    public UserDeveloperMapDTO getById(final Long id) {
+    public UserDeveloperMapDTO getById(Long id) {
         Query query = entityManager.createQuery(
                 "from UserDeveloperMapEntity udm "
                         + "join fetch udm.developer developer "
@@ -98,6 +98,22 @@ public class UserDeveloperMapDAO extends BaseDAOImpl {
             return null;
         }
         return mapEntityToDto(result.get(0));
+    }
+
+    public List<UserDeveloperMapDTO> getAllDeveloperUsers() {
+        Query query = entityManager.createQuery(
+                "SELECT udm "
+                        + "FROM UserDeveloperMapEntity udm "
+                        + "JOIN FETCH udm.developer developer "
+                        + "JOIN FETCH udm.user u "
+                        + "JOIN FETCH u.permission perm "
+                        + "JOIN FETCH u.contact contact "
+                        + "WHERE (udm.deleted != true) ",
+                UserDeveloperMapEntity.class);
+        List<UserDeveloperMapEntity> entities = query.getResultList();
+        return entities.stream()
+                .map(entity -> mapEntityToDto(entity))
+                .collect(Collectors.toList());
     }
 
     private UserDeveloperMapEntity getEntityById(final Long id) {
@@ -157,7 +173,7 @@ public class UserDeveloperMapDAO extends BaseDAOImpl {
         UserEntity user = null;
 
         Query query = entityManager.createQuery(
-                "from UserEntity where (NOT deleted = true) " + "AND (user_id = :userid) ", UserEntity.class);
+                "from UserEntity where (NOT deleted = true) " + "AND (id = :userid) ", UserEntity.class);
         query.setParameter("userid", userId);
         List<UserEntity> result = query.getResultList();
 

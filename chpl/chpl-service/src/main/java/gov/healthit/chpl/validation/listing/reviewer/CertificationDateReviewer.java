@@ -2,7 +2,7 @@ package gov.healthit.chpl.validation.listing.reviewer;
 
 import java.util.Date;
 
-import javax.validation.ValidationException;
+import jakarta.validation.ValidationException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;

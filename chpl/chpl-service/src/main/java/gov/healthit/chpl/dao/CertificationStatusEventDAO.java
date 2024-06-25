@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import javax.persistence.Query;
+import jakarta.persistence.Query;
 
 import org.springframework.stereotype.Repository;
 

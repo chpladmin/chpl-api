@@ -23,12 +23,6 @@ public abstract class PostgresEnumType implements UserType, ParameterizedType {
             throws HibernateException, SQLException;
 
     @Override
-    public Object nullSafeGet(ResultSet rs, String[] names, SharedSessionContractImplementor session, Object owner)
-            throws HibernateException, SQLException {
-        return nullSafeGet(rs, names, owner);
-    }
-
-    @Override
     public void nullSafeSet(PreparedStatement st, Object value, int index, SharedSessionContractImplementor session)
             throws HibernateException, SQLException {
         if (value == null) {
@@ -39,10 +33,11 @@ public abstract class PostgresEnumType implements UserType, ParameterizedType {
             // now using setObject passing in the java type for the postgres
             // enum object
             // st.setString(index,((Enum) value).name());
-            st.setObject(index, ((Enum) value), Types.OTHER);
+            st.setObject(index, (value), Types.OTHER);
         }
     }
 
+    @Override
     public void setParameterValues(final Properties parameters) {
         String enumClassName = parameters.getProperty("enumClassName");
         try {
@@ -59,35 +54,43 @@ public abstract class PostgresEnumType implements UserType, ParameterizedType {
         };
     }
 
+    @Override
     public Class returnedClass() {
         return enumClass;
     }
 
+    @Override
     public boolean equals(Object x, Object y) throws HibernateException {
         return x == y;
     }
 
+    @Override
     public int hashCode(Object x) throws HibernateException {
         return x.hashCode();
     }
 
+    @Override
     public Object deepCopy(Object value) throws HibernateException {
         return value;
     }
 
+    @Override
     public boolean isMutable() {
         return false; // To change body of implemented methods use File |
                       // Settings | File Templates.
     }
 
+    @Override
     public Serializable disassemble(Object value) throws HibernateException {
         return (Enum) value;
     }
 
+    @Override
     public Object assemble(Serializable cached, Object owner) throws HibernateException {
         return cached;
     }
 
+    @Override
     public Object replace(Object original, Object target, Object owner) throws HibernateException {
         return original;
     }

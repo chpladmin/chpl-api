@@ -1,6 +1,7 @@
 package gov.healthit.chpl;
 
-import org.springframework.beans.factory.ObjectFactory;
+import static org.springframework.security.config.Customizer.withDefaults;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -8,15 +9,18 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.PropertySources;
 import org.springframework.core.annotation.Order;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import gov.healthit.chpl.api.ApiKeyManager;
 import gov.healthit.chpl.auth.authentication.JWTUserConverterFacade;
@@ -26,7 +30,7 @@ import lombok.extern.log4j.Log4j2;
 
 @Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(prePostEnabled = true)
+@EnableMethodSecurity
 @PropertySources({
     @PropertySource("classpath:/environment.properties"),
     @PropertySource(value = "classpath:/environment-override.properties", ignoreResourceNotFound = true),
@@ -36,102 +40,78 @@ import lombok.extern.log4j.Log4j2;
     @PropertySource(value = "classpath:/email-override.properties", ignoreResourceNotFound = true),
 })
 @Log4j2
-public class CHPLHttpSecurityConfig extends WebSecurityConfigurerAdapter {
+public class CHPLHttpSecurityConfig {
     private static final String FF4J_ROLE = "ff4jUser";
 
-    @Configuration
+    @Value("${ff4j.webconsole.username}")
+    private String ff4jUsername;
+
+    @Value("${ff4j.webconsole.password}")
+    private String ff4jPassword;
+
+    @Value("${ff4j.webconsole.url}")
+    private String ff4jWebConsoleUrl;
+
+    @Autowired
+    private ApiKeyManager apiKeyManager;
+
+    @Autowired
+    private JWTUserConverterFacade userConverterFacade;
+
+    @Bean
     @Order(1)
-    public static class FF4JSecurityConfig extends WebSecurityConfigurerAdapter {
-        @Value("${ff4j.webconsole.username}")
-        private String ff4jUsername;
-
-        @Value("${ff4j.webconsole.password}")
-        private String ff4jPassword;
-
-        @Value("${ff4j.webconsole.url}")
-        private String ff4jWebConsoleUrl;
-
-        @Autowired
-        public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-            auth.inMemoryAuthentication()
-            .withUser(ff4jUsername).password("{bcrypt}" + passwordEncoder().encode(ff4jPassword)).roles(FF4J_ROLE);
-        }
-
-        @Override
-        protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-            LOGGER.info("configure AuthenticationManagerBuilder");
-            auth.inMemoryAuthentication()
-                .withUser(ff4jUsername).password("{bcrypt}" + passwordEncoder().encode(ff4jPassword)).roles(FF4J_ROLE);
-        }
-
-        @Override
-        protected void configure(HttpSecurity http) throws Exception {
-            LOGGER.info("configure FF4J Security for urls like " + ff4jWebConsoleUrl);
-            http
-                .csrf().disable()
-                .antMatcher(ff4jWebConsoleUrl + "/**")
-                .authorizeRequests().anyRequest().hasRole(FF4J_ROLE)
-                .and().httpBasic()
-                .and().sessionManagement()
-                    .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-        }
-
-        @Bean
-        public BCryptPasswordEncoder passwordEncoder() {
-            return new BCryptPasswordEncoder();
-        }
+    public SecurityFilterChain configureFf4j(HttpSecurity http) throws Exception {
+        LOGGER.info("Configure CHPL Security");
+        return http.securityMatcher(new AntPathRequestMatcher(ff4jWebConsoleUrl + "/**"))
+                .csrf(csrf -> csrf.disable())
+                .cors(cors -> cors.disable())
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(authz -> authz
+                        .anyRequest()
+                        .hasAnyRole(FF4J_ROLE))
+                .httpBasic(withDefaults())
+                .build();
     }
 
-    @Configuration
+    @Bean
     @Order(2)
-    public static class JwtSecurityConfig extends WebSecurityConfigurerAdapter {
+    public SecurityFilterChain configureApi(HttpSecurity http) throws Exception {
+        LOGGER.info("Configure CHPL Security");
+        return http.securityMatcher(new AntPathRequestMatcher("/**"))
+                .csrf(csrf -> csrf.disable())
+                .cors(cors -> cors.disable())
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(authz -> authz
+                       .requestMatchers(new AntPathRequestMatcher("/**"))
+                       .permitAll())
+                .addFilterBefore(apiKeyAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
+                .headers(header -> header.cacheControl(ctrl -> ctrl.disable()))
+                .build();
+    }
 
-        public JwtSecurityConfig() {
-            super(true);
-        }
+    @Bean
+    public UserDetailsService userDetailsService() {
+        UserDetails user = User.builder()
+                .username(ff4jUsername)
+                .password("{bcrypt}" + passwordEncoder().encode(ff4jPassword))
+                .roles(FF4J_ROLE)
+                .build();
+        return new InMemoryUserDetailsManager(user);
+    }
 
-        @Autowired
-        private JWTUserConverterFacade userConverterFacade;
+    @Bean
+    public BCryptPasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 
-        @Autowired
-        private ObjectFactory<ApiKeyManager> apiKeyManagerObjectFactory;
+    private APIKeyAuthenticationFilter apiKeyAuthenticationFilter() {
+        LOGGER.info("get APIKeyAuthenticationFilter");
+        return new APIKeyAuthenticationFilter(apiKeyManager);
+    }
 
-        @Bean
-        public APIKeyAuthenticationFilter apiKeyAuthenticationFilter() {
-            LOGGER.info("get APIKeyAuthenticationFilter");
-            ApiKeyManager apiKeyManager = this.apiKeyManagerObjectFactory.getObject();
-            return new APIKeyAuthenticationFilter(apiKeyManager);
-        }
-
-        @Bean
-        @Override
-        public AuthenticationManager authenticationManagerBean() throws Exception {
-            LOGGER.info("Get AuthenticationManager");
-            return super.authenticationManagerBean();
-        }
-
-        @Override
-        protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-            LOGGER.info("Configure AuthenticationManagerBuilder");
-            auth.inMemoryAuthentication().withUser("user").password("password").roles("USER").and().withUser("admin")
-            .password("password").roles("USER", "ADMIN");
-        }
-
-        @Override
-        protected void configure(HttpSecurity http) throws Exception {
-            LOGGER.info("Configure CHPL Security");
-            http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
-
-            .exceptionHandling().and().anonymous().and().servletApi().and()
-            // .headers().cacheControl().and()
-            .authorizeRequests().antMatchers("/favicon.ico").permitAll().antMatchers("/resources/**").permitAll()
-
-            // allow anonymous resource requests
-            .antMatchers("/").permitAll().and()
-            .addFilterBefore(apiKeyAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
-            // custom Token based authentication based on the header previously given to the client
-            .addFilterBefore(new JWTAuthenticationFilter(userConverterFacade), UsernamePasswordAuthenticationFilter.class)
-            .headers().cacheControl();
-        }
+    private JWTAuthenticationFilter jwtAuthenticationFilter() {
+        LOGGER.info("get JWTAuthenticationFilter");
+        return new JWTAuthenticationFilter(userConverterFacade);
     }
 }

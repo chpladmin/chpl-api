@@ -3,7 +3,7 @@ package gov.healthit.chpl.dao.statistics;
 import java.time.LocalDate;
 import java.util.List;
 
-import javax.persistence.Query;
+import jakarta.persistence.Query;
 
 import org.springframework.stereotype.Repository;
 

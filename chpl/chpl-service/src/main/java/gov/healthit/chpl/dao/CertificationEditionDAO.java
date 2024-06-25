@@ -3,14 +3,13 @@ package gov.healthit.chpl.dao;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.persistence.Query;
-
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.CertificationEdition;
 import gov.healthit.chpl.entity.CertificationEditionEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import jakarta.persistence.Query;
 
 @Repository("certificationEditionDAO")
 public class CertificationEditionDAO extends BaseDAOImpl {
@@ -63,7 +62,7 @@ public class CertificationEditionDAO extends BaseDAOImpl {
 
         CertificationEditionEntity entity = null;
         Query query = entityManager.createQuery(
-                "from CertificationEditionEntity where (NOT deleted = true) AND (certification_edition_id = :entityid) ",
+                "from CertificationEditionEntity where (NOT deleted = true) AND (id = :entityid) ",
                 CertificationEditionEntity.class);
         query.setParameter("entityid", id);
         List<CertificationEditionEntity> result = query.getResultList();
