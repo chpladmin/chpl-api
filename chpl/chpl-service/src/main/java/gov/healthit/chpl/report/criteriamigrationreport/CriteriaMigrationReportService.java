@@ -3,11 +3,11 @@ package gov.healthit.chpl.report.criteriamigrationreport;
 import java.time.LocalDate;
 import java.util.List;
 
-import javax.transaction.Transactional;
-
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import jakarta.transaction.Transactional;
 
 @Component
 public class CriteriaMigrationReportService {
