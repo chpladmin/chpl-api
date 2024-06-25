@@ -3,8 +3,6 @@ package gov.healthit.chpl.dao;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.Query;
-
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,6 +10,7 @@ import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.dto.CQMResultDetailsDTO;
 import gov.healthit.chpl.entity.listing.CQMResultDetailsEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import jakarta.persistence.Query;
 
 @Repository(value = "cqmResultDetailsDAO")
 public class CQMResultDetailsDAO extends BaseDAOImpl {
@@ -32,7 +31,7 @@ public class CQMResultDetailsDAO extends BaseDAOImpl {
         Query query = entityManager.createQuery(
                 "FROM CQMResultDetailsEntity "
                 + "WHERE (NOT deleted = true) "
-                + "AND (certified_product_id = :entityid) ",
+                + "AND (certifiedProductId = :entityid) ",
                 CQMResultDetailsEntity.class);
         query.setParameter("entityid", productId);
         List<CQMResultDetailsEntity> result = query.getResultList();

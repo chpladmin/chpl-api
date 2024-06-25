@@ -2,7 +2,7 @@ package gov.healthit.chpl.scheduler.job.certificationStatus;
 
 import java.util.Date;
 
-import javax.transaction.Transactional;
+import jakarta.transaction.Transactional;
 
 import org.quartz.JobDataMap;
 import org.springframework.beans.factory.annotation.Autowired;

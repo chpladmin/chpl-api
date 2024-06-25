@@ -1,7 +1,5 @@
 package gov.healthit.chpl;
 
-
-
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 

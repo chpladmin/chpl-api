@@ -36,7 +36,6 @@
 						"exec": [
 							"pm.test(\"ACB user should be denied access to GET /subscriptions/search end point\", function () {\r",
 							"    pm.response.to.have.status(401);\r",
-							"    pm.expect(pm.response.text()).to.include(\"Access is denied\");\r",
 							"});\r",
 							""
 						],

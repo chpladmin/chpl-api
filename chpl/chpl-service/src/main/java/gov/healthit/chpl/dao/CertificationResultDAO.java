@@ -2,12 +2,9 @@ package gov.healthit.chpl.dao;
 
 import static gov.healthit.chpl.util.LambdaExceptionUtil.rethrowConsumer;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import javax.persistence.Query;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
@@ -54,6 +51,7 @@ import gov.healthit.chpl.testtool.CertificationResultTestTool;
 import gov.healthit.chpl.testtool.CertificationResultTestToolEntity;
 import gov.healthit.chpl.testtool.TestToolDAO;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import jakarta.persistence.Query;
 
 @Repository(value = "certificationResultDAO")
 public class CertificationResultDAO extends BaseDAOImpl {
@@ -132,7 +130,7 @@ public class CertificationResultDAO extends BaseDAOImpl {
 
     public void delete(Long resultId) {
         Query query = entityManager.createQuery(
-                "UPDATE CertificationResultEntity SET deleted = true WHERE certification_result_id = :resultid");
+                "UPDATE CertificationResultEntity SET deleted = true WHERE id = :resultid");
         query.setParameter("resultid", resultId);
         query.executeUpdate();
 
@@ -140,7 +138,7 @@ public class CertificationResultDAO extends BaseDAOImpl {
 
     public void deleteByCertifiedProductId(Long certifiedProductId) {
         Query query = entityManager.createQuery(
-                "UPDATE CertificationResultEntity SET deleted = true WHERE certified_product_id = :certifiedProductId");
+                "UPDATE CertificationResultEntity SET deleted = true WHERE certifiedProductId = :certifiedProductId");
         query.setParameter("certifiedProductId", certifiedProductId);
         query.executeUpdate();
 
@@ -162,7 +160,7 @@ public class CertificationResultDAO extends BaseDAOImpl {
         CertificationResultEntity entity = null;
 
         Query query = entityManager.createQuery(
-                "from CertificationResultEntity where (NOT deleted = true) AND (certification_result_id = :entityid) ",
+                "from CertificationResultEntity where (NOT deleted = true) AND (id = :entityid) ",
                 CertificationResultEntity.class);
         query.setParameter("entityid", id);
         List<CertificationResultEntity> result = query.getResultList();
@@ -192,7 +190,7 @@ public class CertificationResultDAO extends BaseDAOImpl {
     private List<CertificationResultEntity> getEntitiesByCertifiedProductId(Long certifiedProductId) {
 
         Query query = entityManager.createQuery(
-                "from CertificationResultEntity where (NOT deleted = true) AND (certified_product_id = :entityid) ",
+                "from CertificationResultEntity where (NOT deleted = true) AND (certifiedProductId = :entityid) ",
                 CertificationResultEntity.class);
         query.setParameter("entityid", certifiedProductId);
         List<CertificationResultEntity> result = query.getResultList();
@@ -219,7 +217,7 @@ public class CertificationResultDAO extends BaseDAOImpl {
                 + "FROM CertificationResultUcdProcessEntity up "
                 + "LEFT OUTER JOIN FETCH up.ucdProcess "
                 + "WHERE (NOT up.deleted = true) "
-                + "AND (certification_result_id = :certificationResultId) "
+                + "AND (certificationResultId = :certificationResultId) "
                 + "AND up.ucdProcessId = :ucdProcessId",
                 CertificationResultUcdProcessEntity.class);
         query.setParameter("certificationResultId", certificationResultId);
@@ -440,7 +438,7 @@ public class CertificationResultDAO extends BaseDAOImpl {
             Long certificationResultId) {
         Query query = entityManager.createQuery(
                 "from CertificationResultAdditionalSoftwareEntity "
-                        + "where (NOT deleted = true) AND (certification_result_id = :certificationResultId) ",
+                        + "where (NOT deleted = true) AND (certificationResultId = :certificationResultId) ",
                 CertificationResultAdditionalSoftwareEntity.class);
         query.setParameter("certificationResultId", certificationResultId);
 
@@ -464,7 +462,7 @@ public class CertificationResultDAO extends BaseDAOImpl {
                         + "and NOT cras.deleted");
 
         query.setParameter("certifiedProductId", certifiedProductId);
-        BigInteger count = (BigInteger) query.getSingleResult();
+        Long count = (Long) query.getSingleResult();
         return count.intValue() > 0;
     }
 
@@ -634,7 +632,7 @@ public class CertificationResultDAO extends BaseDAOImpl {
         Query query = entityManager.createQuery(
                 "SELECT os " + "FROM CertificationResultOptionalStandardEntity os "
                         + "LEFT OUTER JOIN FETCH os.optionalStandard "
-                        + "where (NOT os.deleted = true) AND (certification_result_id = :certificationResultId) ",
+                        + "where (NOT os.deleted = true) AND (certificationResultId = :certificationResultId) ",
                 CertificationResultOptionalStandardEntity.class);
         query.setParameter("certificationResultId", certificationResultId);
 
@@ -720,7 +718,7 @@ public class CertificationResultDAO extends BaseDAOImpl {
         Query query = entityManager.createQuery(
                 "SELECT ts " + "FROM CertificationResultTestStandardEntity ts "
                         + "LEFT OUTER JOIN FETCH ts.testStandard "
-                        + "where (NOT ts.deleted = true) AND (certification_result_id = :certificationResultId) ",
+                        + "where (NOT ts.deleted = true) AND (certificationResultId = :certificationResultId) ",
                 CertificationResultTestStandardEntity.class);
         query.setParameter("certificationResultId", certificationResultId);
 
@@ -994,7 +992,7 @@ public class CertificationResultDAO extends BaseDAOImpl {
         Query query = entityManager.createQuery(
                 "SELECT tp " + "FROM CertificationResultTestProcedureEntity tp "
                         + "LEFT OUTER JOIN FETCH tp.testProcedure " + "WHERE (NOT tp.deleted = true) "
-                        + "AND (certification_result_id = :certificationResultId) ",
+                        + "AND (certificationResultId = :certificationResultId) ",
                 CertificationResultTestProcedureEntity.class);
         query.setParameter("certificationResultId", certificationResultId);
 
@@ -1130,7 +1128,7 @@ public class CertificationResultDAO extends BaseDAOImpl {
                         + "LEFT OUTER JOIN FETCH participant.education education "
                         + "LEFT OUTER JOIN FETCH participant.ageRange ageRange "
                         + "WHERE (NOT tp.deleted = true) "
-                        + "AND (certification_result_id = :certificationResultId) ",
+                        + "AND (certificationResultId = :certificationResultId) ",
                 CertificationResultTestTaskEntity.class);
         query.setParameter("certificationResultId", certificationResultId);
 

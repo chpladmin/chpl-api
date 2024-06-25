@@ -3,8 +3,6 @@ package gov.healthit.chpl.dao;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.persistence.Query;
-
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
@@ -12,6 +10,7 @@ import gov.healthit.chpl.domain.CQMCriterion;
 import gov.healthit.chpl.entity.CQMCriterionEntity;
 import gov.healthit.chpl.entity.CQMVersionEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import jakarta.persistence.Query;
 
 @Repository(value = "cqmCriterionDAO")
 public class CQMCriterionDAO extends BaseDAOImpl {
@@ -67,7 +66,7 @@ public class CQMCriterionDAO extends BaseDAOImpl {
         CQMCriterionEntity entity = null;
 
         Query query = entityManager.createQuery(
-                "from CQMCriterionEntity where (NOT deleted = true) AND (cqm_criterion_id = :entityid) ",
+                "from CQMCriterionEntity where (NOT deleted = true) AND (id = :entityid) ",
                 CQMCriterionEntity.class);
         query.setParameter("entityid", id);
         List<CQMCriterionEntity> result = query.getResultList();
@@ -132,7 +131,7 @@ public class CQMCriterionDAO extends BaseDAOImpl {
         if (versionEntity != null && versionEntity.getId() != null) {
 
             Query query = entityManager.createQuery(
-                    "from CQMCriterionEntity where (NOT deleted = true) AND (cms_id = :number) AND (cqm_version_id = :versionId) ",
+                    "from CQMCriterionEntity where (NOT deleted = true) AND (cmsId = :number) AND (cqmVersionId = :versionId) ",
                     CQMCriterionEntity.class);
             query.setParameter("number", number);
             query.setParameter("versionId", versionEntity.getId());

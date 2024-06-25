@@ -75,6 +75,7 @@ public class SummaryStatisticsCreatorJob extends QuartzJob {
                     entity.setSummaryStatistics(getJson(statisticsSnapshot));
                     summaryStatisticsDAO.create(entity);
                 } catch (Exception e) {
+                    LOGGER.error("Could not save Summary Statistic entity", e);
                     status.setRollbackOnly();
                 }
             }
