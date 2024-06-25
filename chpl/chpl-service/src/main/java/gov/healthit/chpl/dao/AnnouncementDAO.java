@@ -3,8 +3,6 @@ package gov.healthit.chpl.dao;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.persistence.Query;
-
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
@@ -12,6 +10,7 @@ import gov.healthit.chpl.domain.Announcement;
 import gov.healthit.chpl.entity.AnnouncementEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import jakarta.persistence.Query;
 import lombok.extern.log4j.Log4j2;
 
 @Repository(value = "announcementDAO")
@@ -115,8 +114,8 @@ public class AnnouncementDAO extends BaseDAOImpl {
         Query query = entityManager.createQuery(
                 "FROM AnnouncementEntity "
                         + "WHERE deleted = false "
-                        + "AND startDate <= NOW() "
-                        + "AND endDate > NOW() ",
+                        + "AND startDate <= CURRENT_DATE() "
+                        + "AND endDate > CURRENT_DATE() ",
                 AnnouncementEntity.class);
         return query.getResultList();
     }
@@ -124,14 +123,14 @@ public class AnnouncementDAO extends BaseDAOImpl {
     private List<AnnouncementEntity> getAllEntitiesFuture() {
         Query query = entityManager.createQuery("FROM AnnouncementEntity "
                         + "WHERE deleted = false "
-                        + "AND startDate > NOW()");
+                        + "AND startDate > CURRENT_DATE()");
         return query.getResultList();
     }
 
     private List<AnnouncementEntity> getAllEntitiesCurrentAndFuture() {
         Query query = entityManager.createQuery("FROM AnnouncementEntity "
                         + "WHERE deleted = false "
-                        + "AND endDate > NOW()");
+                        + "AND endDate > CURRENT_DATE()");
         return query.getResultList();
     }
 

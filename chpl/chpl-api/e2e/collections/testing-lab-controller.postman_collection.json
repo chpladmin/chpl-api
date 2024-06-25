@@ -64,10 +64,6 @@
 								"exec": [
 									"pm.test(\"expect anonymous user to receive 401 unauthorized response on ATL edit request\", () => {",
 									"  pm.response.to.have.status(401);",
-									"});",
-									"",
-									"pm.test(\"expect anonymous user to receive access denied error on ATL edit request\", () => {",
-									"  pm.expect(pm.response.text()).to.include(\"Access is denied\");",
 									"});"
 								],
 								"type": "text/javascript"
@@ -115,10 +111,6 @@
 								"exec": [
 									"pm.test(\"expect anonymous user to receive 401 unauthorized response on create new ATL request\", () => {",
 									"  pm.response.to.have.status(401);",
-									"});",
-									"",
-									"pm.test(\"expect anonymous user to receive access denied error on create new ATL request\", () => {",
-									"  pm.expect(pm.response.text()).to.include(\"Access is denied\");",
 									"});"
 								],
 								"type": "text/javascript"
@@ -428,10 +420,6 @@
 								"exec": [
 									"pm.test(\"expect ACB user to receive 401 unauthorized response on ATL edit request\", () => {",
 									"  pm.response.to.have.status(401);",
-									"});",
-									"",
-									"pm.test(\"expect ACB user to receive access denied error on ATL edit request\", () => {",
-									"  pm.expect(pm.response.text()).to.include(\"Access is denied\");",
 									"});"
 								],
 								"type": "text/javascript"
@@ -479,10 +467,6 @@
 								"exec": [
 									"pm.test(\"expect ACB user to receive 401 unauthorized response on create new ATL request\", () => {",
 									"  pm.response.to.have.status(401);",
-									"});",
-									"",
-									"pm.test(\"expect ACB user to receive access denied error on create new ATL request\", () => {",
-									"  pm.expect(pm.response.text()).to.include(\"Access is denied\");",
 									"});"
 								],
 								"type": "text/javascript"

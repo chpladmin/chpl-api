@@ -4,11 +4,11 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.UUID;
 
-import javax.persistence.Basic;
-import javax.persistence.Column;
-import javax.persistence.MappedSuperclass;
-import javax.persistence.PrePersist;
-import javax.persistence.PreUpdate;
+import jakarta.persistence.Basic;
+import jakarta.persistence.Column;
+import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 
 import gov.healthit.chpl.entity.lastmodifieduserstrategy.CurrentUserStrategy;
 import gov.healthit.chpl.entity.lastmodifieduserstrategy.LastModifiedUserStrategy;

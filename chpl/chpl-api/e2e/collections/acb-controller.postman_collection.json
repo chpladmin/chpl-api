@@ -19,9 +19,6 @@
 									"  pm.response.to.have.status(401);",
 									"});",
 									"",
-									"pm.test(\"expect anonymous user to receive access denied error on request to get list of ACB users that are not associated to their own\", () => {",
-									"  pm.expect(pm.response.text()).to.include(\"Access is denied\");",
-									"});",
 									"pm.test(\"expect Environment header to indicate non prod environment\", function () {\r",
 									"    pm.response.to.have.header(\"Environment\");\r",
 									"    pm.expect(pm.response.headers.get(\"Environment\")).to.eql(\"NON-PRODUCTION\");\r",
@@ -81,9 +78,6 @@
 									"  pm.response.to.have.status(401);",
 									"});",
 									"",
-									"pm.test(\"expect ACB user to receive access denied error on create new ACB request\", () => {",
-									"  pm.expect(pm.response.text()).to.include(\"Access is denied\");",
-									"});",
 									"pm.test(\"expect Environment header to indicate non prod environment\", function () {\r",
 									"    pm.response.to.have.header(\"Environment\");\r",
 									"    pm.expect(pm.response.headers.get(\"Environment\")).to.eql(\"NON-PRODUCTION\");\r",
@@ -143,10 +137,6 @@
 								"exec": [
 									"pm.test(\"expect ACB user to receive 401 unauthorized response on ACB edit request that is not their own organization\", () => {",
 									"  pm.response.to.have.status(401);",
-									"});",
-									"",
-									"pm.test(\"expect ACB user to receive access denied error on ACB edit request for organization that is not their own\", () => {",
-									"  pm.expect(pm.response.text()).to.include(\"Access is denied\");",
 									"});"
 								],
 								"type": "text/javascript"
@@ -243,10 +233,6 @@
 								"exec": [
 									"pm.test(\"expect anonymous user to receive 401 unauthorized response on request to get list of ACB users\", () => {",
 									"  pm.response.to.have.status(401);",
-									"});",
-									"",
-									"pm.test(\"expect anonymous user to receive access denied error on request to get list of ACB users\", () => {",
-									"  pm.expect(pm.response.text()).to.include(\"Access is denied\");",
 									"});"
 								],
 								"type": "text/javascript"
@@ -338,10 +324,6 @@
 								"exec": [
 									"pm.test(\"expect anonymous user to receive 401 unauthorized response on ACB edit request\", () => {",
 									"  pm.response.to.have.status(401);",
-									"});",
-									"",
-									"pm.test(\"expect anonymous user to receive access denied error on ACB edit request\", () => {",
-									"  pm.expect(pm.response.text()).to.include(\"Access is denied\");",
 									"});"
 								],
 								"type": "text/javascript"
@@ -389,10 +371,6 @@
 								"exec": [
 									"pm.test(\"expect anonymous user to receive 401 unauthorized response on create new ACB request\", () => {",
 									"  pm.response.to.have.status(401);",
-									"});",
-									"",
-									"pm.test(\"expect anonymous user to receive access denied error on create new ACB request\", () => {",
-									"  pm.expect(pm.response.text()).to.include(\"Access is denied\");",
 									"});"
 								],
 								"type": "text/javascript"

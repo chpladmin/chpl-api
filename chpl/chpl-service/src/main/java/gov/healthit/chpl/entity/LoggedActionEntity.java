@@ -3,15 +3,14 @@ package gov.healthit.chpl.entity;
 import java.io.Serializable;
 import java.util.Date;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
-
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.Data;
 
 @Entity
-@Table(name = "audit.logged_actions")
+@Table(name = "logged_actions", schema = "audit")
 @Data
 public class LoggedActionEntity implements Serializable {
     private static final long serialVersionUID = -7980143499756233253L;

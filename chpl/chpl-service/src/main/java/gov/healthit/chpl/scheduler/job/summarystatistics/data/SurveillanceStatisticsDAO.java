@@ -5,8 +5,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Stream;
 
-import javax.persistence.Query;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -14,6 +12,7 @@ import gov.healthit.chpl.compliance.surveillance.entity.SurveillanceEntity;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.util.DateUtil;
+import jakarta.persistence.Query;
 
 @Repository("surveillanceStatisticsDAO")
 public class SurveillanceStatisticsDAO extends BaseDAOImpl {
@@ -52,8 +51,8 @@ public class SurveillanceStatisticsDAO extends BaseDAOImpl {
                 + "FROM SurveillanceEntity surv "
                 + "JOIN surv.certifiedProduct cp "
                 + "WHERE cp.certificationEditionId NOT IN (:retiredEditions) "
-                + "AND surv.startDate <= now() "
-                + "AND (surv.endDate IS NULL OR surv.endDate >= now()) ";
+                + "AND surv.startDate <= CURRENT_DATE() "
+                + "AND (surv.endDate IS NULL OR surv.endDate >= CURRENT_DATE()) ";
         if (endDate == null) {
             hql += " AND surv.deleted = false";
         } else {
@@ -74,8 +73,8 @@ public class SurveillanceStatisticsDAO extends BaseDAOImpl {
                 + "FROM SurveillanceEntity surv "
                 + "JOIN surv.certifiedProduct cp "
                 + "WHERE cp.certificationEditionId NOT IN (:retiredEditions) "
-                + "AND surv.startDate <= now() "
-                + "AND (surv.endDate IS NOT NULL AND surv.endDate <= now()) ";
+                + "AND surv.startDate <= CURRENT_DATE() "
+                + "AND (surv.endDate IS NOT NULL AND surv.endDate <= CURRENT_DATE()) ";
         if (endDate == null) {
             hql += " AND surv.deleted = false";
         } else {
@@ -204,8 +203,8 @@ public class SurveillanceStatisticsDAO extends BaseDAOImpl {
                 + "FROM CertifiedProductEntity cp, "
                 + "CertificationBodyEntity cb, "
                 + "SurveillanceEntity s "
-                + "WHERE s.startDate <= now() "
-                + "AND (s.endDate IS NULL OR s.endDate >= now()) "
+                + "WHERE s.startDate <= CURRENT_DATE() "
+                + "AND (s.endDate IS NULL OR s.endDate >= CURRENT_DATE()) "
                 + "AND cp.certificationBodyId = cb.id "
                 + "AND cp.certificationEditionId NOT IN (:retiredEditions) "
                 + "AND cp.id = s.certifiedProductId ";
