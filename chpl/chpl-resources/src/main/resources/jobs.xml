@@ -19,6 +19,10 @@
             <name>backfillMissingCuresStatisticsDataJob</name>
             <group>systemJobs</group>
         </delete-job>
+        <delete-job>
+            <name>telligenJob</name>
+            <group>systemJobs</group>
+        </delete-job>
         <!-- END remove after PROD push -->
     </pre-processing-commands>
     <processing-directives>
@@ -847,15 +851,6 @@
                     <value>ROLE_ADMIN;ROLE_ONC;ROLE_ACB;chpl-admin;chpl-onc;chpl-onc-acb</value>
                 </entry>
             </job-data-map>
-        </job>
-
-        <job>
-            <name>telligenJob</name>
-            <group>systemJobs</group>
-            <description>Simulate Telligen calls</description>
-            <job-class>gov.healthit.chpl.scheduler.job.telligen.TelligenJob</job-class>
-            <durability>true</durability>
-            <recover>false</recover>
         </job>
 
         <job>
