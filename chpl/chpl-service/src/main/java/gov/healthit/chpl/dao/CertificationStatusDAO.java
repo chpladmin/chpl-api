@@ -3,14 +3,13 @@ package gov.healthit.chpl.dao;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.Query;
-
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.CertificationStatus;
 import gov.healthit.chpl.entity.CertificationStatusEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import jakarta.persistence.Query;
 
 @Repository("certificationStatusDAO")
 public class CertificationStatusDAO extends BaseDAOImpl {
@@ -54,7 +53,7 @@ public class CertificationStatusDAO extends BaseDAOImpl {
         CertificationStatusEntity entity = null;
 
         Query query = entityManager.createQuery(
-                "from CertificationStatusEntity where (NOT deleted = true) AND (certification_status_id = :entityid) ",
+                "from CertificationStatusEntity where (NOT deleted = true) AND (id = :entityid) ",
                 CertificationStatusEntity.class);
         query.setParameter("entityid", id);
         List<CertificationStatusEntity> result = query.getResultList();
@@ -74,7 +73,7 @@ public class CertificationStatusDAO extends BaseDAOImpl {
         CertificationStatusEntity entity = null;
 
         Query query = entityManager.createQuery(
-                "from CertificationStatusEntity where (NOT deleted = true) AND (certification_status = :name) ",
+                "from CertificationStatusEntity where (NOT deleted = true) AND (status = :name) ",
                 CertificationStatusEntity.class);
         query.setParameter("name", name);
         List<CertificationStatusEntity> result = query.getResultList();

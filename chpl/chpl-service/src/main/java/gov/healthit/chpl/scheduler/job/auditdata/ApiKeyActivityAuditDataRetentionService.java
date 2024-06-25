@@ -4,8 +4,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.sql.SQLException;
 
-import javax.persistence.Query;
-import javax.transaction.Transactional;
+import jakarta.persistence.Query;
+import jakarta.transaction.Transactional;
 
 import org.postgresql.copy.CopyManager;
 import org.springframework.beans.factory.annotation.Autowired;

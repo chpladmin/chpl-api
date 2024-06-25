@@ -3,7 +3,7 @@ package gov.healthit.chpl.permissions.domains.scheduler;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 
 import org.springframework.stereotype.Component;
 

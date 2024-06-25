@@ -2,21 +2,17 @@ package gov.healthit.chpl.entity.statistics;
 
 import java.util.Date;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
-
-import org.hibernate.annotations.Type;
-import org.hibernate.annotations.TypeDef;
-import org.hibernate.annotations.TypeDefs;
+import org.hibernate.annotations.ColumnTransformer;
 
 import gov.healthit.chpl.entity.EntityAudit;
-import gov.healthit.chpl.entity.datatypes.StringJsonUserType;
 import gov.healthit.chpl.entity.lastmodifieduserstrategy.LastModifiedUserStrategy;
 import gov.healthit.chpl.entity.lastmodifieduserstrategy.SystemUserStrategy;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -32,7 +28,6 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @Entity
 @Table(name = "summary_statistics")
-@TypeDefs({@TypeDef(name = "StringJsonObject", typeClass = StringJsonUserType.class)})
 public class SummaryStatisticsEntity extends EntityAudit {
     private static final long serialVersionUID = 4752929481454934958L;
 
@@ -50,7 +45,7 @@ public class SummaryStatisticsEntity extends EntityAudit {
     private Date endDate;
 
     @Column(name = "summary_statistics")
-    @Type(type = "StringJsonObject")
+    @ColumnTransformer(write = "?::jsonb")
     private String summaryStatistics;
 
 }

@@ -57,6 +57,7 @@ public class UrlCallerTest {
     }
 
     private class CustomRedirectStrategy extends DefaultRedirectStrategy {
+        @Override
         protected URI createLocationURI(final String location) throws ProtocolException {
             try {
                 System.out.println("Redirecting to " + location);

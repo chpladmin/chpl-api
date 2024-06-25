@@ -2,7 +2,7 @@ package gov.healthit.chpl.criteriaattribute.rule;
 
 import java.util.List;
 
-import javax.persistence.Query;
+import jakarta.persistence.Query;
 
 import org.springframework.stereotype.Component;
 

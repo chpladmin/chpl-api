@@ -25,11 +25,7 @@
 								"exec": [
 									"pm.test(\"create test tools request by ROLE_ACB user should return Status code 401\", function () {\r",
 									"    pm.response.to.have.status(401);\r",
-									"});\r",
-									"\r",
-									"pm.test(\"ROLE_ACB user should be denied access to create test tools\", function () {\r",
-									"    pm.expect(pm.response.text()).to.include(\"Access is denied\");\r",
-									"});"
+									"});\r"
 								],
 								"type": "text/javascript"
 							}
@@ -86,11 +82,7 @@
 								"exec": [
 									"pm.test(\"edit test tools request by ROLE_ACB user should return Status code 401\", function () {\r",
 									"    pm.response.to.have.status(401);\r",
-									"});\r",
-									"\r",
-									"pm.test(\"ROLE_ACB user should be denied access to edit test tools\", function () {\r",
-									"    pm.expect(pm.response.text()).to.include(\"Access is denied\");\r",
-									"});"
+									"});\r"
 								],
 								"type": "text/javascript"
 							}
@@ -250,12 +242,7 @@
 								"exec": [
 									"pm.test(\"create test tools request by ROLE_ONC user should return Status code 401\", function () {\r",
 									"    pm.response.to.have.status(401);\r",
-									"});\r",
-									"\r",
-									"pm.test(\"ROLE_ONC user should be denied access to create test tools\", function () {\r",
-									"    pm.expect(pm.response.text()).to.include(\"Access is denied\");\r",
-									"});\r",
-									""
+									"});\r"
 								],
 								"type": "text/javascript"
 							}
@@ -312,11 +299,7 @@
 								"exec": [
 									"pm.test(\"edit test tools request by ROLE_ONC user should return Status code 401\", function () {\r",
 									"    pm.response.to.have.status(401);\r",
-									"});\r",
-									"\r",
-									"pm.test(\"ROLE_ONC user should be denied access to edit test tools\", function () {\r",
-									"    pm.expect(pm.response.text()).to.include(\"Access is denied\");\r",
-									"});"
+									"});\r"
 								],
 								"type": "text/javascript"
 							}

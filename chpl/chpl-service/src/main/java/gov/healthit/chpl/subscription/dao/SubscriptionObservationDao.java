@@ -3,7 +3,7 @@ package gov.healthit.chpl.subscription.dao;
 import java.util.List;
 import java.util.UUID;
 
-import javax.persistence.Query;
+import jakarta.persistence.Query;
 
 import org.springframework.stereotype.Repository;
 

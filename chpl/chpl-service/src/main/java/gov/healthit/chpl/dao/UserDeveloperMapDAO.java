@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.persistence.Query;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -16,6 +14,7 @@ import gov.healthit.chpl.entity.auth.UserEntity;
 import gov.healthit.chpl.entity.developer.DeveloperEntitySimple;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.util.UserMapper;
+import jakarta.persistence.Query;
 
 @Repository(value = "userDeveloperMapDAO")
 public class UserDeveloperMapDAO extends BaseDAOImpl {
@@ -174,7 +173,7 @@ public class UserDeveloperMapDAO extends BaseDAOImpl {
         UserEntity user = null;
 
         Query query = entityManager.createQuery(
-                "from UserEntity where (NOT deleted = true) " + "AND (user_id = :userid) ", UserEntity.class);
+                "from UserEntity where (NOT deleted = true) " + "AND (id = :userid) ", UserEntity.class);
         query.setParameter("userid", userId);
         List<UserEntity> result = query.getResultList();
 

@@ -2,13 +2,6 @@ package gov.healthit.chpl.filter;
 
 import java.io.IOException;
 
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.filter.GenericFilterBean;
 
@@ -22,6 +15,12 @@ import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.util.ApiKeyUtil;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -42,7 +41,7 @@ public class APIKeyAuthenticationFilter extends GenericFilterBean {
         HttpServletRequest request = null;
         HttpServletResponse response = (HttpServletResponse) res;
 
-        if (req instanceof javax.servlet.http.HttpServletRequest) {
+        if (req instanceof jakarta.servlet.http.HttpServletRequest) {
             request = (HttpServletRequest) req;
         } else {
             throw new ServletException("Request was not correct type");
