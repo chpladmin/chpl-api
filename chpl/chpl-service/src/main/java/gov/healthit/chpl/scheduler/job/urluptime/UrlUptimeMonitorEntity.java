@@ -47,7 +47,7 @@ public class UrlUptimeMonitorEntity extends EntityAudit {
     @Basic(optional = false)
     @OneToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "developer_id")
-    private DeveloperEntitySimple developer;;
+    private DeveloperEntitySimple developer;
 
     @Basic(optional = false)
     @Column(name = "url", nullable = false)
