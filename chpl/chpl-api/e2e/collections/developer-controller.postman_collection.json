@@ -849,64 +849,242 @@
 						"description": "ONC user should get status code 200 and response when accessing /developers/{developerId}/join end point"
 					},
 					"response": []
-				}
-			]
-		},
-		{
-			"name": "GET /developers/search - 200 status and no results for invalid date parameters",
-			"event": [
+				},
 				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"var jsonData = pm.response.json();\r",
-							"pm.test(\"/developers/search end point should give 200 status and no results for invalid date parameters in request\", function () {\r",
-							"    pm.response.to.have.status(200);\r",
-							"    pm.expect(jsonData.results.length).to.eql(0)\r",
-							" });"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "GET",
-				"header": [
-					{
-						"key": "API-Key",
-						"value": "{{apiKey}}",
-						"type": "text"
-					},
-					{
-						"key": "Content-Type",
-						"value": "application/json",
-						"type": "text"
-					}
-				],
-				"url": {
-					"raw": "{{url}}/rest/developers/search?decertificationDateStart=2022-10-12&decertificationDateEnd=2022-10-11",
-					"host": [
-						"{{url}}"
-					],
-					"path": [
-						"rest",
-						"developers",
-						"search"
-					],
-					"query": [
+					"name": "GET /developers/search - 200 status and no results for invalid date parameters",
+					"event": [
 						{
-							"key": "decertificationDateStart",
-							"value": "2022-10-12"
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();\r",
+									"pm.test(\"/developers/search end point should give 200 status and no results for invalid date parameters in request\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    pm.expect(jsonData.results.length).to.eql(0)\r",
+									" });"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "API-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/rest/developers/search?decertificationDateStart=2022-10-12&decertificationDateEnd=2022-10-11",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"developers",
+								"search"
+							],
+							"query": [
+								{
+									"key": "decertificationDateStart",
+									"value": "2022-10-12"
+								},
+								{
+									"key": "decertificationDateEnd",
+									"value": "2022-10-11"
+								}
+							]
+						},
+						"description": "GET /developers/search end point should give 200 status and no results for invalid date parameters in request"
+					},
+					"response": []
+				},
+				{
+					"name": "POST /developers/message-preview - 200 status and valid response for ONC users",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var ReqBody= {\r",
+									"        userName:pm.environment.get(\"emailONC\"),password:pm.environment.get(\"passwordONC\")\r",
+									"    };\r",
+									"pm.sendRequest({\r",
+									"    url: pm.environment.get(\"authurl\"),\r",
+									"    method: \"POST\",\r",
+									"    header: {\r",
+									"        \"Content-Type\": \"application/json\",\r",
+									"        \"API-KEY\": pm.environment.get(\"apiKey\")\r",
+									"    },\r",
+									"    body: JSON.stringify(ReqBody)\r",
+									"}, function (err, response) {\r",
+									"   var jsonData = response.json();\r",
+									"   pm.environment.set(\"token\",jsonData[\"token\"])\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
 						},
 						{
-							"key": "decertificationDateEnd",
-							"value": "2022-10-11"
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"ONC users get 200 status and valid response for POST /developers/message-preview end point\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.response).not.eq(null);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
 						}
-					]
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "API-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"subject\":\"TestSubject\",\"body\":\"TestBody\",\"query\":{\"activeListingsOptions\":\"has_any_active\",\"activeListingsOptionsOperator\":\"or\",\"searchTerm\":\"Accelerated Care Plus\"}}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/rest/developers/message-preview",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"developers",
+								"message-preview"
+							]
+						},
+						"description": "POST /developers/message-preview - 200 status and valid response for ONC users"
+					},
+					"response": []
 				},
-				"description": "GET /developers/search end point should give 200 status and no results for invalid date parameters in request"
-			},
-			"response": []
+				{
+					"name": "POST /developers/message-preview - 401 status and error for ACB users",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var ReqBody= {\r",
+									"        userName:pm.environment.get(\"emailACB\"),password:pm.environment.get(\"passwordACB\")\r",
+									"    };\r",
+									"pm.sendRequest({\r",
+									"    url: pm.environment.get(\"authurl\"),\r",
+									"    method: \"POST\",\r",
+									"    header: {\r",
+									"        \"Content-Type\": \"application/json\",\r",
+									"        \"API-KEY\": pm.environment.get(\"apiKey\")\r",
+									"    },\r",
+									"    body: JSON.stringify(ReqBody)\r",
+									"}, function (err, response) {\r",
+									"   var jsonData = response.json();\r",
+									"   pm.environment.set(\"token\",jsonData[\"token\"])\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"ACB users get 401 status and error for POST /developers/message-preview end point\", function () {\r",
+									"    pm.response.to.have.status(401);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "API-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"subject\":\"TestSubject\",\"body\":\"TestBody\",\"query\":{\"activeListingsOptions\":\"has_any_active\",\"activeListingsOptionsOperator\":\"or\",\"searchTerm\":\"Accelerated Care Plus\"}}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/rest/developers/message-preview",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"developers",
+								"message-preview"
+							]
+						},
+						"description": "ACB users get 401 status and error for POST /developers/message-preview end point"
+					},
+					"response": []
+				}
+			]
 		}
 	]
 }
