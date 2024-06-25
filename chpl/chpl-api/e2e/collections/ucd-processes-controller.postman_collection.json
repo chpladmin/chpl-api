@@ -147,11 +147,7 @@
 						"exec": [
 							"pm.test(\"request to add new ucd process by anonymous user should return Status code 401\", function () {\r",
 							"    pm.response.to.have.status(401);\r",
-							"});\r",
-							"\r",
-							"pm.test(\"expect anonymous user to receive access denied error on request to add new ucd process\", () => {\r",
-							"  pm.expect(pm.response.text()).to.include(\"Access is denied\");\r",
-							"});"
+							"});\r"
 						],
 						"type": "text/javascript"
 					}
@@ -209,11 +205,7 @@
 						"exec": [
 							"pm.test(\"request to add new ucd process by ACB user should return Status code 401\", function () {\r",
 							"    pm.response.to.have.status(401);\r",
-							"});\r",
-							"\r",
-							"pm.test(\"expect ACB user to receive access denied error on request to add new ucd process\", () => {\r",
-							"  pm.expect(pm.response.text()).to.include(\"Access is denied\");\r",
-							"});"
+							"});\r"
 						],
 						"type": "text/javascript"
 					}

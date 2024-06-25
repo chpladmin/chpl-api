@@ -11,12 +11,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -24,6 +18,7 @@ import org.springframework.web.filter.GenericFilterBean;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
+import org.springframework.web.util.ServletRequestPathUtils;
 import org.springframework.web.util.UrlPathHelper;
 
 import gov.healthit.chpl.api.ApiKeyManager;
@@ -37,6 +32,11 @@ import gov.healthit.chpl.util.ApiKeyUtil;
 import gov.healthit.chpl.util.DeprecatedResponseFieldExplorer;
 import gov.healthit.chpl.web.controller.annotation.DeprecatedApi;
 import gov.healthit.chpl.web.controller.annotation.DeprecatedApiResponseFields;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -91,7 +91,10 @@ public class DeprecatedEndpointUsageFilter extends GenericFilterBean {
     }
 
     private void logDeprecatedApiUsage(RequestMappingInfo requestMapping, HandlerMethod handlerMethod, HttpServletRequest request) {
-        Set<String> matchingUrlPatterns = requestMapping.getPatternsCondition().getPatterns();
+        Set<String> matchingUrlPatterns = requestMapping.getPathPatternsCondition().getPatterns().stream()
+                .map(pattern -> pattern.getPatternString())
+                .collect(Collectors.toSet());
+
         if (matchingUrlPatterns != null && matchingUrlPatterns.size() > 0) {
             String matchingUrlPattern = matchingUrlPatterns.iterator().next();
             LOGGER.warn(request.getRequestURI() + " maps to deprecated endpoint " + matchingUrlPattern + ", handler: " + handlerMethod);
@@ -115,7 +118,10 @@ public class DeprecatedEndpointUsageFilter extends GenericFilterBean {
     }
 
     private void logDeprecatedResponseFieldsApiUsage(RequestMappingInfo requestMapping, HandlerMethod handlerMethod, HttpServletRequest request) {
-        Set<String> matchingUrlPatterns = requestMapping.getPatternsCondition().getPatterns();
+        Set<String> matchingUrlPatterns = requestMapping.getPathPatternsCondition().getPatterns().stream()
+                .map(pattern -> pattern.getPatternString())
+                .collect(Collectors.toSet());
+
         if (matchingUrlPatterns != null && matchingUrlPatterns.size() > 0) {
             String matchingUrlPattern = matchingUrlPatterns.iterator().next();
             LOGGER.debug(request.getRequestURI() + " maps to endpoint with deprecated response fields " + matchingUrlPattern + ", handler: " + handlerMethod);
@@ -164,6 +170,8 @@ public class DeprecatedEndpointUsageFilter extends GenericFilterBean {
     }
 
     private RequestMappingInfo getRequestMappingForHttpServletRequest(HttpServletRequest request) {
+        ServletRequestPathUtils.parseAndCache(request);
+
         Map<RequestMappingInfo, HandlerMethod> handlerMethods = requestMappingHandlerMapping.getHandlerMethods();
         List<RequestMappingInfo> matchingHandlers = handlerMethods.keySet().stream()
             .filter(key -> key.getMatchingCondition(request) != null)

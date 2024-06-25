@@ -1,6 +1,6 @@
 package gov.healthit.chpl.scheduler;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;

@@ -1,12 +1,11 @@
 package gov.healthit.chpl.dao.impl;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-
 import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 
 public class BaseDAOImpl {
     public static final String SCHEMA_NAME = "openchpl";

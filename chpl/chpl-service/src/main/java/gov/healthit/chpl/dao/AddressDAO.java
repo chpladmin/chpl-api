@@ -2,8 +2,6 @@ package gov.healthit.chpl.dao;
 
 import java.util.List;
 
-import javax.persistence.Query;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Repository;
 
@@ -12,6 +10,7 @@ import gov.healthit.chpl.domain.Address;
 import gov.healthit.chpl.entity.AddressEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import jakarta.persistence.Query;
 
 @Repository("addressDao")
 public class AddressDAO extends BaseDAOImpl {
@@ -82,7 +81,7 @@ public class AddressDAO extends BaseDAOImpl {
     public AddressEntity getEntityById(Long id) throws EntityRetrievalException {
         AddressEntity entity = null;
         Query query = entityManager.createQuery(
-                "from AddressEntity a where (NOT deleted = true) AND (address_id = :entityid) ", AddressEntity.class);
+                "from AddressEntity a where (NOT deleted = true) AND (id = :entityid) ", AddressEntity.class);
         query.setParameter("entityid", id);
         List<AddressEntity> result = query.getResultList();
 

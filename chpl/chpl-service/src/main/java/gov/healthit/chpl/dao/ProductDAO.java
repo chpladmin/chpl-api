@@ -3,7 +3,7 @@ package gov.healthit.chpl.dao;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.persistence.Query;
+import jakarta.persistence.Query;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;

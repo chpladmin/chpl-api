@@ -3,7 +3,7 @@ package gov.healthit.chpl.validation.listing.reviewer.edition2015;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;

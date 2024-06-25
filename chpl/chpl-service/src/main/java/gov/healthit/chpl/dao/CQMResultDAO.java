@@ -6,8 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.persistence.Query;
-
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -21,6 +19,7 @@ import gov.healthit.chpl.entity.listing.CQMResultCriteriaEntity;
 import gov.healthit.chpl.entity.listing.CQMResultEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import jakarta.persistence.Query;
 
 @Repository(value = "cqmResultDAO")
 public class CQMResultDAO extends BaseDAOImpl {
@@ -123,7 +122,7 @@ public class CQMResultDAO extends BaseDAOImpl {
         Query query = entityManager
                 .createQuery("UPDATE CQMResultEntity "
                         + "SET success = :success "
-                        + "WHERE cqm_result_id = :resultId");
+                        + "WHERE id = :resultId");
         query.setParameter("success", success);
         query.setParameter("resultId", cqmResultId);
         query.executeUpdate();
@@ -132,7 +131,7 @@ public class CQMResultDAO extends BaseDAOImpl {
     public void delete(Long cqmResultId) {
         deleteMappingsForCqmResult(cqmResultId);
         Query query = entityManager
-                .createQuery("UPDATE CQMResultEntity SET deleted = true WHERE cqm_result_id = :resultid");
+                .createQuery("UPDATE CQMResultEntity SET deleted = true WHERE id = :resultid");
         query.setParameter("resultid", cqmResultId);
         query.executeUpdate();
     }
@@ -142,8 +141,8 @@ public class CQMResultDAO extends BaseDAOImpl {
         Query query = entityManager.createQuery(
                 "UPDATE CQMResultEntity "
                 + "SET deleted = true "
-                + "WHERE cqm_criterion_id = :cqmCriterionId "
-                + "AND certified_product_id = :listingId");
+                + "WHERE cqmCriterionId = :cqmCriterionId "
+                + "AND certifiedProductId = :listingId");
         query.setParameter("cqmCriterionId", cqm.getCriterionId());
         query.setParameter("listingId", listingId);
         query.executeUpdate();
@@ -155,7 +154,7 @@ public class CQMResultDAO extends BaseDAOImpl {
             deleteMappingsForCqmResult(cqmResult.getId());
         }
         Query query = entityManager
-                .createQuery("UPDATE CQMResultEntity SET deleted = true WHERE certified_product_id = :productId");
+                .createQuery("UPDATE CQMResultEntity SET deleted = true WHERE certifiedProductId = :productId");
         query.setParameter("productId", productId);
         query.executeUpdate();
     }
@@ -171,7 +170,7 @@ public class CQMResultDAO extends BaseDAOImpl {
 
     public void deleteMappingsForCqmResult(Long cqmResultId) {
         Query query = entityManager
-                .createQuery("UPDATE CQMResultCriteriaEntity SET deleted = true WHERE cqm_result_id = :resultid");
+                .createQuery("UPDATE CQMResultCriteriaEntity SET deleted = true WHERE cqmResultId = :resultid");
         query.setParameter("resultid", cqmResultId);
         query.executeUpdate();
     }
@@ -218,7 +217,7 @@ public class CQMResultDAO extends BaseDAOImpl {
     private CQMResultEntity getEntityById(Long id) throws EntityRetrievalException {
         CQMResultEntity entity = null;
         Query query = entityManager.createQuery(
-                "from CQMResultEntity where (NOT deleted = true) AND (cqm_result_id = :entityid) ",
+                "from CQMResultEntity where (NOT deleted = true) AND (id = :entityid) ",
                 CQMResultEntity.class);
         query.setParameter("entityid", id);
         List<CQMResultEntity> result = query.getResultList();
@@ -242,7 +241,7 @@ public class CQMResultDAO extends BaseDAOImpl {
 
     private List<CQMResultEntity> getEntitiesByCertifiedProductId(Long certifiedProductId) {
         Query query = entityManager.createQuery(
-                "from CQMResultEntity where (NOT deleted = true) AND (certified_product_id = :entityid) ",
+                "from CQMResultEntity where (NOT deleted = true) AND (certifiedProductId = :entityid) ",
                 CQMResultEntity.class);
         query.setParameter("entityid", certifiedProductId);
         List<CQMResultEntity> result = query.getResultList();
@@ -265,7 +264,7 @@ public class CQMResultDAO extends BaseDAOImpl {
 
     private List<CQMResultCriteriaEntity> getCertCriteriaForCqmResult(Long cqmResultId) {
         Query query = entityManager.createQuery(
-                "from CQMResultCriteriaEntity " + "where (NOT deleted = true) AND (cqm_result_id = :cqmResultId) ",
+                "from CQMResultCriteriaEntity " + "where (NOT deleted = true) AND (cqmResultId = :cqmResultId) ",
                 CQMResultCriteriaEntity.class);
         query.setParameter("cqmResultId", cqmResultId);
 
