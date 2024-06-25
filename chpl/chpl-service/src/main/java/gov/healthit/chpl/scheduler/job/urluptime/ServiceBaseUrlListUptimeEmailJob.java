@@ -2,11 +2,13 @@ package gov.healthit.chpl.scheduler.job.urluptime;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +23,7 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.domain.CertificationBody;
+import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
 import gov.healthit.chpl.email.footer.AdminFooter;
@@ -81,8 +84,10 @@ public class ServiceBaseUrlListUptimeEmailJob extends QuartzJob {
     }
 
     private Map<Long, Set<CertificationBody>> getDeveloperIdAndCertificationBodyMap() {
-        return developerDAO.findAllDevelopersWithAcbs().entrySet().stream()
-                .collect(Collectors.toMap(entry -> entry.getKey().getId(), entry -> entry.getValue()));
+        Map<Developer, Set<CertificationBody>> developerAcbMaps = developerDAO.findAllDevelopersWithAcbs();
+        return developerAcbMaps.entrySet().stream()
+            .filter(entry -> !CollectionUtils.isEmpty(entry.getValue()))
+            .collect(Collectors.toMap(entry -> entry.getKey().getId(), entry -> entry.getValue()));
     }
 
     private List<ServiceBaseUrlListUptimeReport> getReportRows() {
@@ -97,6 +102,10 @@ public class ServiceBaseUrlListUptimeEmailJob extends QuartzJob {
 
     private Map<Long, Boolean> getApplicableAcbsForDeveloper(Long developerId) {
         Set<CertificationBody> acbsForDeveloper = developerIdAndCertificationBodyMap.get(developerId);
+        if (CollectionUtils.isEmpty(acbsForDeveloper)) {
+            LOGGER.warn("The developer " + developerId + " has no associated ACBs and will not be included in the report.");
+            return new HashMap<Long, Boolean>();
+        }
 
         return activeAcbs.stream()
                 .collect(Collectors.toMap(
@@ -112,13 +121,13 @@ public class ServiceBaseUrlListUptimeEmailJob extends QuartzJob {
         chplEmailFactory.emailBuilder()
                 .recipient(context.getMergedJobDataMap().getString("email"))
                 .subject(env.getProperty("serviceBaseUrlListUptime.report.subject"))
-                .htmlMessage(createHtmlMessage(context, rows.size()))
+                .htmlMessage(createHtmlMessage())
                 .fileAttachments(Arrays.asList(serviceBaseUrlListUptimeCsvWriter.generateFile(rows)))
                 .sendEmail();
         LOGGER.info("Completed Sending email to: " + context.getMergedJobDataMap().getString("email"));
     }
 
-    private String createHtmlMessage(JobExecutionContext context, int errorCount) {
+    private String createHtmlMessage() {
         return chplHtmlEmailBuilder.initialize()
                 .heading(env.getProperty("serviceBaseUrlListUptime.report.subject"))
                 .paragraph("", env.getProperty("serviceBaseUrlListUptime.report.paragraph1.body"))
