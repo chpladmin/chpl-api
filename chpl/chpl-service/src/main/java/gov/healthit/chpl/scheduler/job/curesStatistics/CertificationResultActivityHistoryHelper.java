@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -31,6 +32,10 @@ public class CertificationResultActivityHistoryHelper {
     }
 
     public boolean didListingRemoveAttestationToCriterionDuringTimeInterval(Long listingId, CertificationCriterion criterion, Date startDate, Date endDate) {
+        return didListingRemoveAttestationToCriterionDuringTimeInterval(listingId, criterion, startDate, endDate, LOGGER);
+    }
+
+    public boolean didListingRemoveAttestationToCriterionDuringTimeInterval(Long listingId, CertificationCriterion criterion, Date startDate, Date endDate, Logger logger) {
         List<ActivityDTO> listingActivities = activityDao.findByObjectId(listingId, ActivityConcept.CERTIFIED_PRODUCT, startDate, endDate);
         for (ActivityDTO listingActivity : listingActivities) {
             CertifiedProductSearchDetails originalListingInActivity = activityUtil.getListing(listingActivity.getOriginalData());
