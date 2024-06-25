@@ -1,5 +1,14 @@
 # Release Notes
 
+## Version 44.5.0
+_24 June 2024_
+
+### Features
+* Add endpoint to retrieve (b)(6) to (b)(10) over time report
+* Create ability to download developer search results as CSV
+
+---
+
 ## Version 44.4.0
 _10 June 2024_
 
