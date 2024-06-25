@@ -4,11 +4,10 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-import javax.persistence.Query;
-
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
+import jakarta.persistence.Query;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
