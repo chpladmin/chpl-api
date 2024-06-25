@@ -26,12 +26,12 @@
       <org.apache.httpcomponents.version>4.5.14</org.apache.httpcomponents.version>
       <poi.version>5.2.3</poi.version>
       <postgresql.version>42.7.2</postgresql.version>
-      <quartz.version>2.4.0-rc2</quartz.version>
+      <quartz.version>2.5.0-rc1</quartz.version>
       <zxcvbn.version>1.7.0</zxcvbn.version>
-      <spring.data.redis.version>3.1.0</spring.data.redis.version>
+      <spring.data.redis.version>3.2.5</spring.data.redis.version>
       <redisson.version>3.21.3</redisson.version>
       <ff4j.store.redis.version>2.0.0</ff4j.store.redis.version>
-      <org.springdoc.version>1.7.0</org.springdoc.version>
+      <org.springdoc.version>2.5.0</org.springdoc.version>
     </properties>
 
     <dependencies>
@@ -86,27 +86,29 @@
             <artifactId>postgresql</artifactId>
             <version>${postgresql.version}</version>
         </dependency>
+        
         <dependency>
-            <groupId>org.hibernate</groupId>
+            <groupId>org.hibernate.orm</groupId>
             <artifactId>hibernate-core</artifactId>
-            <version>5.6.3.Final</version>
+            <version>6.5.0.Final</version>
         </dependency>
+
         <dependency>
-            <groupId>org.hibernate.javax.persistence</groupId>
-            <artifactId>hibernate-jpa-2.1-api</artifactId>
-            <version>1.0.2.Final</version>
+            <groupId>jakarta.persistence</groupId>
+            <artifactId>jakarta.persistence-api</artifactId>
+            <version>3.1.0</version>
         </dependency>
-        <!-- would like to update hibernate-validator to the latest (7.0.1.Final) but we have lots
-             of validation exceptions that occur at query-time with the new library -->
+
         <dependency>
-            <groupId>org.hibernate</groupId>
+            <groupId>org.hibernate.validator</groupId>
             <artifactId>hibernate-validator</artifactId>
-            <version>5.3.6.Final</version>
+            <version>8.0.1.Final</version>
         </dependency>
+        
         <dependency>
-          <groupId>javax.validation</groupId>
-          <artifactId>validation-api</artifactId>
-          <version>2.0.1.Final</version>
+            <groupId>jakarta.validation</groupId>
+            <artifactId>jakarta.validation-api</artifactId>
+            <version>3.1.0-M2</version>
         </dependency>
 
         <!-- Microsoft Graph API librariess -->
@@ -220,14 +222,36 @@
             <artifactId>log4j-slf4j-impl</artifactId>
             <version>${log4j2.version}</version>
         </dependency>
+        
+        <!--
         <dependency>
             <groupId>javax.el</groupId>
             <artifactId>javax.el-api</artifactId>
             <version>3.0.1-b06</version>
         </dependency>
+        --> 
+        <dependency>
+            <groupId>jakarta.el</groupId>
+            <artifactId>jakarta.el-api</artifactId>
+            <version>6.0.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>jakarta.servlet</groupId>
+            <artifactId>jakarta.servlet-api</artifactId>
+            <version>6.1.0-M2</version>
+            <scope>provided</scope>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.apache.httpcomponents.client5</groupId>
+            <artifactId>httpclient5</artifactId>
+            <version>5.3.1</version>
+        </dependency>
+        
         <dependency>
             <groupId>org.apache.tomcat</groupId>
-            <version>9.0.88</version>
+            <version>10.1.23</version>
             <artifactId>tomcat-jasper-el</artifactId>
         </dependency>
         <dependency>
@@ -293,7 +317,7 @@
         <dependency>
             <groupId>org.apache.tomcat</groupId>
             <artifactId>tomcat-dbcp</artifactId>
-            <version>9.0.88</version>
+            <version>10.1.23</version>
         </dependency>
 
         <!-- Enhanced stream functions -->
@@ -363,11 +387,12 @@
         <dependency>
             <groupId>org.apache.tomcat</groupId>
             <artifactId>tomcat-catalina</artifactId>
-            <version>9.0.88</version>
+            <version>10.1.23</version>
             <scope>provided</scope>
         </dependency>
 
         <!-- Sprng Doc (Swagger) -->
+        
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-autoconfigure</artifactId>
@@ -380,7 +405,7 @@
         </dependency>
         <dependency>
             <groupId>org.springdoc</groupId>
-            <artifactId>springdoc-openapi-webmvc-core</artifactId>
+            <artifactId>springdoc-openapi-starter-webmvc-api</artifactId>
             <version>${org.springdoc.version}</version>
         </dependency>
 
@@ -459,6 +484,9 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
                     <release>${java.version}</release>
+                    <compilerArgs>
+                        <arg>-parameters</arg>
+                    </compilerArgs>
                 </configuration>
             </plugin>
             <plugin>

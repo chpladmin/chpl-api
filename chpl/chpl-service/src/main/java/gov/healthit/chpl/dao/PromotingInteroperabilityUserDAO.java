@@ -3,8 +3,8 @@ package gov.healthit.chpl.dao;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.persistence.Query;
-import javax.transaction.Transactional;
+import jakarta.persistence.Query;
+import jakarta.transaction.Transactional;
 
 import org.springframework.stereotype.Repository;
 

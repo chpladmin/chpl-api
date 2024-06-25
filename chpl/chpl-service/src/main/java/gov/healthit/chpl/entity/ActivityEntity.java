@@ -2,23 +2,22 @@ package gov.healthit.chpl.entity;
 
 import java.util.Date;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.NamedNativeQueries;
-import javax.persistence.NamedNativeQuery;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.ActivityDTO;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.NamedNativeQueries;
+import jakarta.persistence.NamedNativeQuery;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -38,7 +37,7 @@ import lombok.experimental.SuperBuilder;
     @NamedNativeQuery(
             name = "getPageOfActivity",
             query = "SELECT * FROM ( "
-                    + "SELECT row_number() OVER(ORDER BY a.activity_date DESC) as \"record_num\", * "
+                    + "SELECT row_number() OVER(ORDER BY a.activity_date DESC) as \"record_num\", a.* "
                     + "FROM " + BaseDAOImpl.SCHEMA_NAME + ".activity a "
                     + "JOIN " + BaseDAOImpl.SCHEMA_NAME + ".activity_concept ac "
                         + " ON a.activity_object_concept_id = ac.activity_concept_id "
@@ -54,7 +53,7 @@ import lombok.experimental.SuperBuilder;
     @NamedNativeQuery(
             name = "getPageOfActivityByObjectIds",
             query = "SELECT * FROM ( "
-                    + "SELECT row_number() OVER(ORDER BY a.activity_date DESC) as \"record_num\", * "
+                    + "SELECT row_number() OVER(ORDER BY a.activity_date DESC) as \"record_num\", a.* "
                     + "FROM " + BaseDAOImpl.SCHEMA_NAME + ".activity a "
                     + "JOIN " + BaseDAOImpl.SCHEMA_NAME + ".activity_concept ac "
                         + " ON a.activity_object_concept_id = ac.activity_concept_id "

@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -33,5 +33,5 @@ public class DirectReviewContainer implements Serializable {
     private LocalDateTime fetched;
 
     @JsonIgnore
-    private HttpStatus httpStatus;
+    private HttpStatusCode httpStatus;
 }

@@ -9,8 +9,6 @@ import java.util.Random;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import javax.persistence.Query;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -29,6 +27,7 @@ import gov.healthit.chpl.entity.CertificationIdEntity;
 import gov.healthit.chpl.entity.CertificationIdProductMapEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import jakarta.persistence.Query;
 
 @Repository("certificationIdDAO")
 public class CertificationIdDAO extends BaseDAOImpl {
@@ -134,7 +133,7 @@ public class CertificationIdDAO extends BaseDAOImpl {
             throws EntityRetrievalException {
         Map<String, Boolean> results = new HashMap<String, Boolean>();
 
-        Query query = entityManager.createQuery("from CertificationIdEntity where certification_id IN :certids ",
+        Query query = entityManager.createQuery("from CertificationIdEntity where certificationId IN :certids ",
                 CertificationIdEntity.class);
         query.setParameter("certids", certificationIds);
         List<CertificationIdEntity> queryResult = query.getResultList();
@@ -206,7 +205,7 @@ public class CertificationIdDAO extends BaseDAOImpl {
         CertificationIdEntity entity = null;
 
         Query query = entityManager.createQuery(
-                "from CertificationIdEntity where (ehr_certification_id_id = :entityid) ", CertificationIdEntity.class);
+                "from CertificationIdEntity where (id = :entityid) ", CertificationIdEntity.class);
         query.setParameter("entityid", id);
         List<CertificationIdEntity> result = query.getResultList();
 
@@ -226,7 +225,7 @@ public class CertificationIdDAO extends BaseDAOImpl {
             throws EntityRetrievalException {
         CertificationIdEntity entity = null;
 
-        Query query = entityManager.createQuery("from CertificationIdEntity where (certification_id = :certid) ",
+        Query query = entityManager.createQuery("from CertificationIdEntity where (certificationId = :certid) ",
                 CertificationIdEntity.class);
         query.setParameter("certid", certificationId);
         List<CertificationIdEntity> result = query.getResultList();
@@ -261,7 +260,7 @@ public class CertificationIdDAO extends BaseDAOImpl {
         // specified.
         Query query = entityManager.createQuery(
                 "FROM CertificationIdEntity "
-                + "WHERE ehr_certification_id_id in ("
+                + "WHERE id in ("
                     + "SELECT mpx.certificationIdId "
                     + "FROM CertificationIdProductMapEntity as mpx "
                     + "WHERE mpx.certifiedProductId IN :productIds "
@@ -279,7 +278,7 @@ public class CertificationIdDAO extends BaseDAOImpl {
                     + "HAVING COUNT(mpx.certificationIdId) = :productCount "
                 + ") "
                 + "AND year = :year "
-                + "ORDER BY creation_date DESC ",
+                + "ORDER BY creationDate DESC ",
                 CertificationIdEntity.class);
 
         query.setParameter("productIds", productIds);

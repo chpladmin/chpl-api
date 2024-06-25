@@ -17,6 +17,7 @@ import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -93,7 +94,7 @@ public class DirectReviewCachingService {
     @Transactional
     public void populateDirectReviewsCache(Logger logger) {
         logger.info("Fetching all direct review data.");
-        HttpStatus calculatedHttpStatus = null;
+        HttpStatusCode calculatedHttpStatus = null;
         List<DirectReview> allDirectReviews = new ArrayList<DirectReview>();
         try {
             int nextPageStart = 0;
@@ -146,7 +147,7 @@ public class DirectReviewCachingService {
         return drContainers;
     }
 
-    private void replaceAllDataInDirectReviewCache(List<DirectReview> allDirectReviews, HttpStatus httpStatus, Logger logger) {
+    private void replaceAllDataInDirectReviewCache(List<DirectReview> allDirectReviews, HttpStatusCode httpStatus, Logger logger) {
         final LocalDateTime drFetchTime = LocalDateTime.now();
         Cache drCache = getDirectReviewsCache();
         logger.info("Clearing the Direct Review cache.");
@@ -179,7 +180,7 @@ public class DirectReviewCachingService {
         }
     }
 
-    public void addDirectReviewToCache(Cache drCache, DirectReview dr, HttpStatus httpStatus, LocalDateTime drFetchTime) {
+    public void addDirectReviewToCache(Cache drCache, DirectReview dr, HttpStatusCode httpStatus, LocalDateTime drFetchTime) {
         if (drCache.get(dr.getDeveloperId()) != null) {
             ValueWrapper devDirectReviewElement = drCache.get(dr.getDeveloperId());
             Object devDirectReviewsContainerObj = devDirectReviewElement.get();
@@ -295,8 +296,8 @@ public class DirectReviewCachingService {
             logger.error("Unable to connect to Jira with the URL " + url + ". Message: " + httpEx.getMessage() + "; response status code " + httpEx.getStatusCode());
             throw new JiraRequestFailedException(httpEx.getMessage(), httpEx, httpEx.getStatusCode());
         } catch (Exception ex) {
-            HttpStatus statusCode =  (response != null && response.getStatusCode() != null
-                    ? response.getStatusCode() : HttpStatus.INTERNAL_SERVER_ERROR);
+            HttpStatusCode statusCode =  (response != null && response.getStatusCode() != null
+                    ? response.getStatusCode() : HttpStatusCode.valueOf(HttpStatus.INTERNAL_SERVER_ERROR.value()));
             logger.error("Unable to connect to Jira with the URL " + url + ". Message: " + ex.getMessage() + "; response status code " + statusCode);
             throw new JiraRequestFailedException(ex.getMessage(), ex, statusCode);
         }
@@ -318,7 +319,7 @@ public class DirectReviewCachingService {
             response = jiraAuthenticatedRestTemplate.getForEntity(url, String.class);
             logger.debug("Response: " + response.getBody());
         } catch (Exception ex) {
-            HttpStatus statusCode =  (response != null ? response.getStatusCode() : null);
+            HttpStatusCode statusCode =  (response != null ? response.getStatusCode() : null);
             logger.error("Unable to connect to Jira with the URL " + url + ". Got response status code " + statusCode);
             throw new JiraRequestFailedException(ex.getMessage(), ex, statusCode);
         }
@@ -340,7 +341,7 @@ public class DirectReviewCachingService {
             response = jiraAuthenticatedRestTemplate.getForEntity(url, String.class);
             logger.debug("Response: " + response.getBody());
         } catch (Exception ex) {
-            HttpStatus statusCode =  (response != null ? response.getStatusCode() : null);
+            HttpStatusCode statusCode =  (response != null ? response.getStatusCode() : null);
             logger.error("Unable to connect to Jira with the URL " + url + ". Got response status code " + statusCode);
             throw new JiraRequestFailedException(ex.getMessage(), ex, statusCode);
         }

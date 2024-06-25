@@ -2,8 +2,6 @@ package gov.healthit.chpl.dao;
 
 import java.util.List;
 
-import javax.persistence.Query;
-
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
@@ -11,6 +9,7 @@ import gov.healthit.chpl.domain.PracticeType;
 import gov.healthit.chpl.entity.PracticeTypeEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import jakarta.persistence.Query;
 
 @Repository("practiceTypeDAO")
 public class PracticeTypeDAO extends BaseDAOImpl {
@@ -51,7 +50,7 @@ public class PracticeTypeDAO extends BaseDAOImpl {
 
     public void delete(Long id) {
         Query query = entityManager
-                .createQuery("UPDATE PracticeTypeEntity SET deleted = true WHERE practice_type_id = :entityid");
+                .createQuery("UPDATE PracticeTypeEntity SET deleted = true WHERE id = :entityid");
         query.setParameter("entityid", id);
         query.executeUpdate();
     }

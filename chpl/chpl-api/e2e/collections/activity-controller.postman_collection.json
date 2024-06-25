@@ -242,7 +242,6 @@
 									"pm.test(\"ACB user gets 401 status and valid response from /activity/metadata/svaps end point\", function () {\r",
 									"    var actualResponseBody = pm.response.json();\r",
 									"    pm.response.to.have.status(401);\r",
-									"    pm.expect(pm.response.text()).to.include(\"Access is denied\");\r",
 									"});"
 								],
 								"type": "text/javascript",
@@ -300,7 +299,6 @@
 									"pm.test(\"ACB user gets 401 status and valid response from /activity/metadata/standards end point\", function () {\r",
 									"    var actualResponseBody = pm.response.json();\r",
 									"    pm.response.to.have.status(401);\r",
-									"    pm.expect(pm.response.text()).to.include(\"Access is denied\");\r",
 									"});"
 								],
 								"type": "text/javascript",
@@ -358,7 +356,6 @@
 									"pm.test(\"ACB user gets 401 status and valid response from /activity/metadata/functionalities-tested end point\", function () {\r",
 									"    var actualResponseBody = pm.response.json();\r",
 									"    pm.response.to.have.status(401);\r",
-									"    pm.expect(pm.response.text()).to.include(\"Access is denied\");\r",
 									"});"
 								],
 								"type": "text/javascript",

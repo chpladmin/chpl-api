@@ -3,11 +3,6 @@ package gov.healthit.chpl.scheduler.job.updatedcriteriastatusreport;
 import java.time.LocalDate;
 import java.util.List;
 
-import org.apache.commons.collections4.CollectionUtils;
-import org.hibernate.Criteria;
-import org.hibernate.Session;
-import org.hibernate.criterion.ProjectionList;
-import org.hibernate.criterion.Projections;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
@@ -45,17 +40,11 @@ public class UpdatedCriteriaStatusReportDAO extends BaseDAOImpl {
     }
 
     public LocalDate getMaxReportDate() {
-        Session session = getSession();
-        Criteria criteria = session.createCriteria(UpdatedCriteriaStatusReportEntity.class);
-        ProjectionList projectionList = Projections.projectionList();
-        projectionList.add(Projections.max("reportDay"));
-        criteria.setProjection(projectionList);
-        List<LocalDate> list = criteria.list();
-        if (CollectionUtils.isNotEmpty(list)) {
-            return list.get(0);
-        } else {
-            return null;
-        }
+        return entityManager
+                .createQuery("SELECT MAX(reportDay) "
+                            + "FROM UpdatedCriteriaStatusReportEntity ucsr "
+                            + "WHERE (NOT ucsr.deleted = true) ", LocalDate.class)
+                .getSingleResult();
     }
 
 
