@@ -25,6 +25,7 @@ import gov.healthit.chpl.svap.manager.SvapManager;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.FileUtils;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
+import gov.healthit.chpl.web.controller.annotation.DeprecatedApi;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -46,6 +47,12 @@ public class DownloadableResourceController {
     @Value("${schemaDirectReviewsName}")
     private String directReviewsSchemaName;
 
+    @Value("${serviceBaseUrlListReportName}")
+    private String serviceBaseUrlListReportName;
+
+    @Value("${serviceBaseUrlListSchemaName}")
+    private String serviceBaseUrlListSchemaName;
+
     @Autowired
     public DownloadableResourceController(Environment env,
             ErrorMessageUtil msgUtil,
@@ -65,8 +72,26 @@ public class DownloadableResourceController {
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/download/{listingType}", httpMethod = "GET",
+        message = "This endpoing is deprecated and will be removed. Please use '/listings/download'.",
+        removalDate = "2024-12-31")
     @RequestMapping(value = "/download/{listingType:2011|2014|active|inactive}", method = RequestMethod.GET, produces = "text/csv")
-    public void downloadListings(@PathVariable(value = "listingType", required = true) String listingType,
+    public void downloadListingsDeprecated(@PathVariable(value = "listingType", required = true) String listingType,
+            @RequestParam(value = "format", defaultValue = "csv", required = false) String formatInput,
+            @RequestParam(value = "definition", defaultValue = "false", required = false) Boolean isDefinition,
+            HttpServletRequest request, HttpServletResponse response) throws IOException, InvalidArgumentsException {
+        downloadListings(listingType, formatInput, isDefinition, request, response);
+    }
+
+    @Operation(summary = "Download all listings of a given type in the specified format.",
+            description = "Valid values for 'listingType' are active, inactive, 2011 and 2014."
+                    + "Valid values for 'format' are csv and json.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
+    @RequestMapping(value = "/listings/download", method = RequestMethod.GET, produces = "text/csv")
+    public void downloadListings(@RequestParam(value = "listingType", defaultValue = "active", required = true) String listingType,
             @RequestParam(value = "format", defaultValue = "csv", required = false) String formatInput,
             @RequestParam(value = "definition", defaultValue = "false", required = false) Boolean isDefinition,
             HttpServletRequest request, HttpServletResponse response) throws IOException, InvalidArgumentsException {
@@ -271,6 +296,36 @@ public class DownloadableResourceController {
         }
 
         LOGGER.info("Downloading " + downloadFile.getName());
+        fileUtils.streamFileAsResponse(downloadFile, "text/csv", response);
+    }
+
+    @Operation(summary = "Download the Service Base Url List report as a CSV.",
+            description = "At least once per day, a report of Service Base Url List data is written to a CSV "
+                    + "file on the CHPL servers. This endpoint allows any user to download that file.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
+    @RequestMapping(value = "/service-base-url-list/download", method = RequestMethod.GET, produces = "text/csv")
+    public void downloadServiceBaseUrlListReport(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
+        File downloadFile = null;
+        try {
+            downloadFile = fileUtils.getNewestFileMatchingName("^" + serviceBaseUrlListReportName + "-.+\\.xlsx$");
+        } catch (IOException ex) {
+            response.getWriter().append(ex.getMessage());
+            return;
+        }
+
+        if (downloadFile == null) {
+            response.getWriter().append(msgUtil.getMessage("resources.schemaFileGeneralError"));
+            return;
+        }
+        if (!downloadFile.exists()) {
+            response.getWriter().append(msgUtil.getMessage("resources.schemaFileNotFound", downloadFile.getAbsolutePath()));
+            return;
+        }
+
+        LOGGER.info("Streaming " + downloadFile.getName());
         fileUtils.streamFileAsResponse(downloadFile, "text/csv", response);
     }
 }

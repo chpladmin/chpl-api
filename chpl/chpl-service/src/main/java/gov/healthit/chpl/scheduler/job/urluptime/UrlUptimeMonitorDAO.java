@@ -7,7 +7,6 @@ import javax.persistence.Query;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
-import gov.healthit.chpl.entity.developer.DeveloperEntity;
 import gov.healthit.chpl.entity.developer.DeveloperEntitySimple;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import lombok.extern.log4j.Log4j2;
@@ -62,29 +61,9 @@ public class UrlUptimeMonitorDAO extends BaseDAOImpl {
     private List<UrlUptimeMonitorEntity> getEntitiesAll() {
         return entityManager.createQuery(
                 "FROM UrlUptimeMonitorEntity uume "
+                + "JOIN FETCH uume.developer dev "
                 + "WHERE (uume.deleted = false)", UrlUptimeMonitorEntity.class)
                 .getResultList();
-    }
-
-    private DeveloperEntity getDeveloperEntityById(Long id) throws EntityRetrievalException {
-        String queryStr = "SELECT v "
-                + "FROM DeveloperEntity v "
-                + "WHERE v.id = :entityid "
-                + "AND v.deleted = false";
-        Query query = entityManager.createQuery(queryStr, DeveloperEntity.class);
-        query.setParameter("entityid", id);
-
-        LOGGER.info("id = {}", id);
-        LOGGER.info(getEntityManager().createQuery(queryStr).unwrap(org.hibernate.query.Query.class).getQueryString());
-
-        @SuppressWarnings("unchecked")
-        List<DeveloperEntity> result = query.getResultList();
-
-        if (result == null || result.size() == 0) {
-            String msg = msgUtil.getMessage("developer.notFound");
-            throw new EntityRetrievalException(msg);
-        }
-        return result.get(0);
     }
 
     private DeveloperEntitySimple getSimpleDeveloperById(Long id, boolean includeDeleted) throws EntityRetrievalException {
