@@ -6,8 +6,6 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-import javax.persistence.Transient;
-
 import org.apache.commons.collections4.CollectionUtils;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
@@ -17,6 +15,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseField;
 import gov.healthit.chpl.domain.contact.PointOfContact;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.persistence.Transient;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
