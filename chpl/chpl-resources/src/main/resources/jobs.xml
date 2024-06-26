@@ -7,6 +7,22 @@
         <delete-triggers-in-group>triggerJob</delete-triggers-in-group>
         <delete-triggers-in-group>interruptJob</delete-triggers-in-group>
         <!-- BEGIN REMOVE after PROD push -->
+        <delete-job>
+            <name>fixupDeveloperAttestationActivityJob</name>
+            <group>systemJobs</group>
+        </delete-job>
+        <delete-job>
+            <name>removeDuplicateIcsRelationshipsJob</name>
+            <group>systemJobs</group>
+        </delete-job>
+        <delete-job>
+            <name>backfillMissingCuresStatisticsDataJob</name>
+            <group>systemJobs</group>
+        </delete-job>
+        <delete-job>
+            <name>telligenJob</name>
+            <group>systemJobs</group>
+        </delete-job>
         <!-- END remove after PROD push -->
     </pre-processing-commands>
     <processing-directives>
@@ -814,24 +830,6 @@
         </job>
 
         <job>
-            <name>fixupDeveloperAttestationActivityJob</name>
-            <group>systemJobs</group>
-            <description>Rewrite inaccurate Developer activity due to a duplicate submission of Attestations in Period 2.</description>
-            <job-class>gov.healthit.chpl.scheduler.job.onetime.FixupDeveloperAttestationActivityJob</job-class>
-            <durability>true</durability>
-            <recover>false</recover>
-        </job>
-
-        <job>
-            <name>removeDuplicateIcsRelationshipsJob</name>
-            <group>systemJobs</group>
-            <description>Remove Duplicate ICS Relationships</description>
-            <job-class>gov.healthit.chpl.scheduler.job.onetime.RemoveDuplicateIcsRelationshipsJob</job-class>
-            <durability>true</durability>
-            <recover>false</recover>
-        </job>
-
-        <job>
             <name>serviceBaseUrlListUptimeCreatorJob</name>
             <group>systemJobs</group>
             <description>Retrieve uptime information from Datadog for (g)(10) Service Base URL Lists.</description>
@@ -856,24 +854,6 @@
         </job>
 
         <job>
-            <name>backfillMissingCuresStatisticsDataJob</name>
-            <group>systemJobs</group>
-            <description>Backfill Cures Statistics Data (one-time)</description>
-            <job-class>gov.healthit.chpl.scheduler.job.onetime.BackfillMissingCuresStatisticsDataJob</job-class>
-            <durability>true</durability>
-            <recover>false</recover>
-        </job>
-
-        <job>
-            <name>telligenJob</name>
-            <group>systemJobs</group>
-            <description>Simulate Telligen calls</description>
-            <job-class>gov.healthit.chpl.scheduler.job.telligen.TelligenJob</job-class>
-            <durability>true</durability>
-            <recover>false</recover>
-        </job>
-
-        <job>
             <name>updatedListingStatusReportCreatorJob</name>
             <group>systemJobs</group>
             <description>Updated Listing Status Report Creator Job</description>
@@ -881,7 +861,7 @@
             <durability>true</durability>
             <recover>false</recover>
         </job>
-        
+
         <job>
             <name>Updated Listing Status Report</name>
             <group>chplJobs</group>
