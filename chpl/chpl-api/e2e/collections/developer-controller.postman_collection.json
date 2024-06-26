@@ -1083,6 +1083,148 @@
 						"description": "ACB users get 401 status and error for POST /developers/message-preview end point"
 					},
 					"response": []
+				},
+				{
+					"name": "POST /developers/message-preview - 401 status and error for anonymous users",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Anonymous users get 401 status and error for POST /developers/message-preview end point\", function () {\r",
+									"    pm.response.to.have.status(401);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "API-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"subject\":\"TestSubject\",\"body\":\"TestBody\",\"query\":{\"activeListingsOptions\":\"has_any_active\",\"activeListingsOptionsOperator\":\"or\",\"searchTerm\":\"Accelerated Care Plus\"}}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/rest/developers/message-preview",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"developers",
+								"message-preview"
+							]
+						},
+						"description": "Anonymous users should get 401 status and error for POST /developers/message-preview end point"
+					},
+					"response": []
+				},
+				{
+					"name": "POST /developers/message-preview - 401 status and error for Developer users",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var ReqBody= {\r",
+									"        userName:pm.environment.get(\"emailDeveloper\"),password:pm.environment.get(\"passwordDeveloper\")\r",
+									"    };\r",
+									"pm.sendRequest({\r",
+									"    url: pm.environment.get(\"authurl\"),\r",
+									"    method: \"POST\",\r",
+									"    header: {\r",
+									"        \"Content-Type\": \"application/json\",\r",
+									"        \"API-KEY\": pm.environment.get(\"apiKey\")\r",
+									"    },\r",
+									"    body: JSON.stringify(ReqBody)\r",
+									"}, function (err, response) {\r",
+									"   var jsonData = response.json();\r",
+									"   pm.environment.set(\"token\",jsonData[\"token\"])\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Developer users should get 401 status and error for POST /developers/message-preview end point\", function () {\r",
+									"    pm.response.to.have.status(401);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "API-Key",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"subject\":\"TestSubject\",\"body\":\"TestBody\",\"query\":{\"activeListingsOptions\":\"has_any_active\",\"activeListingsOptionsOperator\":\"or\",\"searchTerm\":\"Accelerated Care Plus\"}}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/rest/developers/message-preview",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"developers",
+								"message-preview"
+							]
+						},
+						"description": "Developer users should get 401 status and error for POST /developers/message-preview end point"
+					},
+					"response": []
 				}
 			]
 		}
