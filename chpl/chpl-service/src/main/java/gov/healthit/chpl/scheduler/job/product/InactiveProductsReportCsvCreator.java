@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -47,7 +48,7 @@ public class InactiveProductsReportCsvCreator {
             csvFilePrinter.printRecord(getHeaderRow());
 
             inactiveProducts.stream()
-                .sorted(Comparator.comparing(InactiveProduct::getDeveloperName))
+                .sorted(new InactiveProductComparator())
                 .forEach(inactiveProduct -> printRow(csvFilePrinter, inactiveProduct));
         }
         return csvFile;
@@ -94,10 +95,24 @@ public class InactiveProductsReportCsvCreator {
     }
 
     private String getFilename() {
-        return reportFilename + LocalDate.now().toString();
+        return reportFilename + "-" + LocalDate.now().toString();
     }
 
     private String buildDeveloperPageChplUrl(Long developerId) {
         return String.format(unformattedChplDeveloperUrl, developerId.toString());
+    }
+
+    private static final class InactiveProductComparator implements Comparator<InactiveProduct> {
+
+        @Override
+        public int compare(InactiveProduct o1, InactiveProduct o2) {
+            int devNameComparison = StringUtils.compare(o1.getDeveloperName().toUpperCase(), o2.getDeveloperName().toUpperCase());
+            if (devNameComparison != 0) {
+                return devNameComparison;
+            } else {
+                return StringUtils.compare(o1.getProductName().toUpperCase(), o2.getProductName().toUpperCase());
+            }
+        }
+
     }
 }
