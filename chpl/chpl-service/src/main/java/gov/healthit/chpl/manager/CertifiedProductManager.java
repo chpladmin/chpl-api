@@ -79,7 +79,6 @@ import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.MissingReasonException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.listing.measure.ListingMeasureDAO;
-import gov.healthit.chpl.manager.auth.UserManager;
 import gov.healthit.chpl.manager.impl.SecuredManager;
 import gov.healthit.chpl.notifier.BusinessRulesOverrideNotifierMessage;
 import gov.healthit.chpl.notifier.ChplTeamNotifier;
@@ -87,6 +86,7 @@ import gov.healthit.chpl.notifier.FutureCertificationStatusNotifierMessage;
 import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.qmsStandard.QmsStandard;
 import gov.healthit.chpl.qmsStandard.QmsStandardDAO;
+import gov.healthit.chpl.scheduler.job.certificationStatus.TransactionalDeveloperBanHelper;
 import gov.healthit.chpl.scheduler.job.certificationStatus.UpdateCurrentCertificationStatusJob;
 import gov.healthit.chpl.sharedstore.listing.ListingIcsSharedStoreHandler;
 import gov.healthit.chpl.sharedstore.listing.ListingStoreRemove;
@@ -127,13 +127,13 @@ public class CertifiedProductManager extends SecuredManager {
     private ResourcePermissionsFactory resourcePermissionsFactory;
     private CertifiedProductDetailsManager certifiedProductDetailsManager;
     private SchedulerManager schedulerManager;
-    private UserManager userManager;
     private ActivityManager activityManager;
     private ListingDetailsNormalizer listingNormalizer;
     private BaselineStandardAsOfTodayNormalizer baselineStandardNormalizer;
     private ListingValidatorFactory validatorFactory;
     private ListingIcsSharedStoreHandler icsSharedStoreHandler;
     private CertificationStatusEventsService certStatusEventsService;
+    private TransactionalDeveloperBanHelper txDeveloperBanHelper;
     private ChplTeamNotifier chplTeamNotifier;
     private Environment env;
     private ChplHtmlEmailBuilder chplHtmlEmailBuilder;
@@ -157,12 +157,14 @@ public class CertifiedProductManager extends SecuredManager {
             CertificationStatusDAO certStatusDao, ListingGraphDAO listingGraphDao,
             ResourcePermissionsFactory resourcePermissionsFactory,
             CertifiedProductDetailsManager certifiedProductDetailsManager,
-            SchedulerManager schedulerManager, ActivityManager activityManager, UserManager userManager,
+            SchedulerManager schedulerManager, ActivityManager activityManager,
             ListingDetailsNormalizer listingNormalizer,
             BaselineStandardAsOfTodayNormalizer baselineStandardNormalizer,
             ListingValidatorFactory validatorFactory,
             @Lazy ListingIcsSharedStoreHandler icsSharedStoreHandler,
-            CertificationStatusEventsService certStatusEventsService, ChplTeamNotifier chplteamNotifier,
+            CertificationStatusEventsService certStatusEventsService,
+            TransactionalDeveloperBanHelper txDeveloperBanHelper,
+            ChplTeamNotifier chplteamNotifier,
             Environment env, ChplHtmlEmailBuilder chplHtmlEmailBuilder) {
 
         this.msgUtil = msgUtil;
@@ -188,12 +190,12 @@ public class CertifiedProductManager extends SecuredManager {
         this.certifiedProductDetailsManager = certifiedProductDetailsManager;
         this.schedulerManager = schedulerManager;
         this.activityManager = activityManager;
-        this.userManager = userManager;
         this.listingNormalizer = listingNormalizer;
         this.baselineStandardNormalizer = baselineStandardNormalizer;
         this.validatorFactory = validatorFactory;
         this.icsSharedStoreHandler = icsSharedStoreHandler;
         this.certStatusEventsService = certStatusEventsService;
+        this.txDeveloperBanHelper = txDeveloperBanHelper;
         this.chplTeamNotifier = chplteamNotifier;
         this.env = env;
         this.chplHtmlEmailBuilder = chplHtmlEmailBuilder;
@@ -296,7 +298,7 @@ public class CertifiedProductManager extends SecuredManager {
             Long activityId = logCertifiedProductUpdateActivity(existingListing, updatedListingNoCache, updateRequest.getReason());
 
             deleteTriggersForRemovedFutureListingStatusChanges(existingListing, updatedListingNoCache);
-            createTriggersForAddedFutureListingStatusChanges(existingListing, updatedListingNoCache, activityId, updateRequest.getReason());
+            createTriggersForAddedListingStatusChanges(existingListing, updatedListingNoCache, activityId, updateRequest.getReason());
 
             //Send notification to Team
             if (wereBusinessRulesOverriddenDuringUpdate(updateRequest)) {
@@ -1099,10 +1101,28 @@ public class CertifiedProductManager extends SecuredManager {
         }
     }
 
-    private void createTriggersForAddedFutureListingStatusChanges(CertifiedProductSearchDetails existingListing,
+    private void createTriggersForAddedListingStatusChanges(CertifiedProductSearchDetails existingListing,
             CertifiedProductSearchDetails updatedListing, Long activityId, String reason) {
         List<CertificationStatusEvent> addedCertStatusEvents
             = certStatusEventsService.getAddedCertificationStatusEvents(existingListing, updatedListing);
+
+        //today or earlier cert status change
+        addedCertStatusEvents.stream()
+            .filter(addedCertStatusEvent -> addedCertStatusEvent.getEventDay().isEqual(LocalDate.now())
+                    || addedCertStatusEvent.getEventDay().isBefore(LocalDate.now()))
+            .forEach(addedCertStatusEvent -> {
+                try {
+                    LOGGER.info("Handling any necessary developer bans related to certification status change...");
+                    txDeveloperBanHelper.handleCertificationStatusChange(updatedListing,
+                            AuthUtil.getCurrentUser(),
+                            reason);
+                } catch (Exception ex) {
+                    LOGGER.error("There was a failure handling the certification status change of listing " + updatedListing.getId()
+                            + ". Check the status of the developer because it may need to be under certification ban.", ex);
+                }
+            });
+
+        //future cert status change
         addedCertStatusEvents.stream()
             .filter(addedCertStatusEvent -> !addedCertStatusEvent.getEventDay().isBefore(LocalDate.now()))
             .forEach(addedCertStatusEvent -> createTriggerToUpdateCurrentCertificationStatusJob(
@@ -1133,7 +1153,7 @@ public class CertifiedProductManager extends SecuredManager {
             LocalDateTime fiveAfterMidnightEastern = LocalDateTime.of(currentStatusUpdateDay, LocalTime.of(0, 5));
             updateStatusTrigger.setRunDateMillis(DateUtil.toEpochMillis(DateUtil.fromEasternToSystem(fiveAfterMidnightEastern)));
         } else {
-            LOGGER.info("Activity " + activityId + " added a certification status to listing " + updatedListing.getId() + " that was in the past. No job will be scheduled.");
+            LOGGER.info("Activity " + activityId + " added a certification status to listing " + updatedListing.getId() + " that was not in the future. No job will be scheduled.");
             return;
         }
 

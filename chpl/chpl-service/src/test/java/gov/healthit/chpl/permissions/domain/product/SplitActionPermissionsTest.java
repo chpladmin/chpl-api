@@ -74,18 +74,18 @@ public class SplitActionPermissionsTest extends ActionPermissionsBaseTest {
                 .build());
 
         // Non Active Developer
-        Mockito.when(resourcePermissions.isDeveloperActive(ArgumentMatchers.anyLong())).thenReturn(false);
+        Mockito.when(resourcePermissions.isDeveloperNotBannedOrSuspended(ArgumentMatchers.anyLong())).thenReturn(false);
         assertFalse(permissions.hasAccess(product));
 
         // User has access to associated certified products
-        Mockito.when(resourcePermissions.isDeveloperActive(ArgumentMatchers.anyLong())).thenReturn(true);
+        Mockito.when(resourcePermissions.isDeveloperNotBannedOrSuspended(ArgumentMatchers.anyLong())).thenReturn(true);
         Mockito.doReturn(true).when(spyPermissions)
                 .doesCurrentUserHaveAccessToAllOfDevelopersListings(ArgumentMatchers.anyLong(),
                         ArgumentMatchers.any());
         assertTrue(spyPermissions.hasAccess(product));
 
         // User does not have access to associated certified products
-        Mockito.when(resourcePermissions.isDeveloperActive(ArgumentMatchers.anyLong())).thenReturn(true);
+        Mockito.when(resourcePermissions.isDeveloperNotBannedOrSuspended(ArgumentMatchers.anyLong())).thenReturn(true);
         Mockito.doReturn(false).when(spyPermissions)
                 .doesCurrentUserHaveAccessToAllOfDevelopersListings(ArgumentMatchers.anyLong(), ArgumentMatchers.any());
         spyPermissions.hasAccess(product);

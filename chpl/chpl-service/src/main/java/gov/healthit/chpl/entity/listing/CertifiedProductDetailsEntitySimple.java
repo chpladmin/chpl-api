@@ -136,8 +136,11 @@ public class CertifiedProductDetailsEntitySimple {
     @Column(name = "vendor_status_name")
     private String developerStatusName;
 
-    @Column(name = "last_vendor_status_change")
-    private Date developerStatusDate;
+    @Column(name = "vendor_status_start_date")
+    private LocalDate developerStatusStartDate;
+
+    @Column(name = "vendor_status_end_date")
+    private LocalDate developerStatusEndDate;
 
     @Column(name = "self_developer")
     private Boolean selfDeveloper;

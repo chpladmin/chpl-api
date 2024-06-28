@@ -44,7 +44,7 @@ public class SplitActionPermissions extends ActionPermissions {
             return true;
         } else if (getResourcePermissions().isUserRoleAcbAdmin()) {
             ProductVersionDTO version = (ProductVersionDTO) obj;
-            if (!getResourcePermissions().isDeveloperActive(version.getDeveloperId())) {
+            if (!getResourcePermissions().isDeveloperNotBannedOrSuspended(version.getDeveloperId())) {
                 //ACB can never split version if developer is not active
                 return false;
             } else if (!doesCurrentUserHaveAccessToAllOfDevelopersListings(version.getDeveloperId(), allowedCertStatuses)) {

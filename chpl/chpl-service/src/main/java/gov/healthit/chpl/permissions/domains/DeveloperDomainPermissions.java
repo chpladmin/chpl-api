@@ -6,7 +6,6 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.permissions.domains.developer.CreateActionPermissions;
 import gov.healthit.chpl.permissions.domains.developer.GetAllUsersActionPermissions;
-import gov.healthit.chpl.permissions.domains.developer.GetAllWithDeletedActionPermissions;
 import gov.healthit.chpl.permissions.domains.developer.JoinActionPermissions;
 import gov.healthit.chpl.permissions.domains.developer.MessageActionPermissions;
 import gov.healthit.chpl.permissions.domains.developer.SplitActionPermissions;
@@ -14,7 +13,6 @@ import gov.healthit.chpl.permissions.domains.developer.UpdateActionPermissions;
 
 @Component
 public class DeveloperDomainPermissions extends DomainPermissions {
-    public static final String GET_ALL_WITH_DELETED = "GET_ALL_WITH_DELETED";
     public static final String UPDATE = "UPDATE";
     public static final String CREATE = "CREATE";
     public static final String JOIN = "JOIN";
@@ -24,7 +22,6 @@ public class DeveloperDomainPermissions extends DomainPermissions {
 
     @Autowired
     public DeveloperDomainPermissions(
-            @Qualifier("developerGetAllWithDeletedActionPermissions") GetAllWithDeletedActionPermissions getAllWithDeletedActionPermissions,
             @Qualifier("developerUpdateActionPermissions") UpdateActionPermissions updateActionPermissions,
             @Qualifier("developerCreateActionPermissions") CreateActionPermissions createActionPermissions,
             @Qualifier("developerJoinActionPermissions") JoinActionPermissions joinActionPermissions,
@@ -32,7 +29,6 @@ public class DeveloperDomainPermissions extends DomainPermissions {
             @Qualifier("developerGetAllUsersActionPermissions") GetAllUsersActionPermissions getUsersActionPermissions,
             @Qualifier("developerMessagingActionPermissions") MessageActionPermissions messageActionPermissions) {
 
-        getActionPermissions().put(GET_ALL_WITH_DELETED, getAllWithDeletedActionPermissions);
         getActionPermissions().put(UPDATE, updateActionPermissions);
         getActionPermissions().put(CREATE, createActionPermissions);
         getActionPermissions().put(JOIN, joinActionPermissions);

@@ -8,14 +8,14 @@ public class DeveloperStatusEventComparator implements Comparator<DeveloperStatu
 
     @Override
     public int compare(DeveloperStatusEvent o1, DeveloperStatusEvent o2) {
-        if (o1.getStatusDate() == null || o2.getStatusDate() == null
-                || o1.getStatusDate().equals(o2.getStatusDate())) {
+        if (o1.getStartDate() == null || o2.getStartDate() == null
+                || o1.getStartDate().equals(o2.getStartDate())) {
             return 0;
         }
-        if (o1.getStatusDate().getTime() < o2.getStatusDate().getTime()) {
+        if (o1.getStartDate().isBefore(o2.getStartDate())) {
             return -1;
         }
-        if (o1.getStatusDate().getTime() > o2.getStatusDate().getTime()) {
+        if (o1.getStartDate().isAfter(o2.getStartDate())) {
             return 1;
         }
         return 0;
