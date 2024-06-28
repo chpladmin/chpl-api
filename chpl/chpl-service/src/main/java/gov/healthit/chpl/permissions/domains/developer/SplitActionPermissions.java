@@ -44,7 +44,7 @@ public class SplitActionPermissions extends ActionPermissions {
             return true;
         } else if (getResourcePermissions().isUserRoleAcbAdmin()) {
             Developer developer = (Developer) obj;
-            if (!getResourcePermissions().isDeveloperActive(developer.getId())) {
+            if (!getResourcePermissions().isDeveloperNotBannedOrSuspended(developer.getId())) {
                 //ACB can never split developer if original developer is not active
                 return false;
             } else if (!doesCurrentUserHaveAccessToAllOfDevelopersListings(developer.getId(), allowedCertStatuses)) {

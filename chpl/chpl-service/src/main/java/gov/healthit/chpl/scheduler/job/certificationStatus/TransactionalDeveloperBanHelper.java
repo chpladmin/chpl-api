@@ -1,6 +1,6 @@
 package gov.healthit.chpl.scheduler.job.certificationStatus;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 import jakarta.transaction.Transactional;
 
@@ -97,21 +97,21 @@ public class TransactionalDeveloperBanHelper {
             newDeveloperStatus = devStatusDao.getByName(DeveloperStatusType.UnderCertificationBanByOnc.toString());
         }
 
-        DeveloperStatusEvent mostRecentDeveloperStatus = developer.getMostRecentStatusEvent();
+        DeveloperStatusEvent currentDeveloperStatusEvent = developer.getCurrentStatusEvent();
         if (newDeveloperStatus != null
-                && !mostRecentDeveloperStatus.getStatus().getStatus().equals(newDeveloperStatus.getStatus())) {
-            LOGGER.info("Developer currently has the status " + mostRecentDeveloperStatus.getStatus().getStatus()
-                    + ". Setting the developer to " + newDeveloperStatus.getStatus());
-            DeveloperStatusEvent statusHistoryToAdd = new DeveloperStatusEvent();
-            statusHistoryToAdd.setDeveloperId(developer.getId());
-            statusHistoryToAdd.setStatus(newDeveloperStatus);
-            statusHistoryToAdd.setStatusDate(new Date());
-            statusHistoryToAdd.setReason(msgUtil.getMessage("developer.statusAutomaticallyChanged"));
-            developer.getStatusEvents().add(statusHistoryToAdd);
+                && (currentDeveloperStatusEvent == null
+                    || !currentDeveloperStatusEvent.getStatus().getName().equals(newDeveloperStatus.getName()))) {
+            LOGGER.info("Setting the developer to " + newDeveloperStatus.getName());
+            DeveloperStatusEvent statusEventToAdd = DeveloperStatusEvent.builder()
+                    .status(newDeveloperStatus)
+                    .startDate(LocalDate.now())
+                    .reason(msgUtil.getMessage("developer.statusAutomaticallyChanged"))
+                    .build();
+            developer.getStatuses().add(statusEventToAdd);
             developerManager.update(developer, false);
         } else {
-            LOGGER.info("Not changing the developer's status to " + newDeveloperStatus.getStatus()
-                + ". Developer's current status is " + mostRecentDeveloperStatus.getStatus().getStatus());
+            LOGGER.info("Not changing the developer's status to " + newDeveloperStatus.getName()
+                + ". Developer's current status is " + currentDeveloperStatusEvent.getStatus().getName());
         }
     }
 

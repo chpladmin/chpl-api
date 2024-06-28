@@ -29,7 +29,7 @@ public class UpdateActionPermissions extends ActionPermissions {
                 // This object is not completely populated, so we get a new one from the DB
                 ProductVersionDTO dto = (ProductVersionDTO) obj;
                 ProductVersionDTO versionDTO = productVersionDAO.getById(dto.getId());
-                return getResourcePermissions().isDeveloperActive(versionDTO.getDeveloperId());
+                return getResourcePermissions().isDeveloperNotBannedOrSuspended(versionDTO.getDeveloperId());
             } catch (Exception e) {
                 return false;
             }

@@ -10,7 +10,6 @@ import gov.healthit.chpl.dao.ProductDAO;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.DeveloperStatus;
 import gov.healthit.chpl.domain.Product;
-import gov.healthit.chpl.entity.developer.DeveloperStatusType;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.rules.ValidationRule;
 import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
@@ -48,16 +47,12 @@ public class ProductOwnerValidation extends ValidationRule<ProductValidationCont
             getMessages().add(context.getErrorMessageUtil().getMessage("product.ownerMustExist", developerId.toString()));
             return false;
         }
-        DeveloperStatus currDevStatus = productOwner.getStatus();
-        if (currDevStatus == null || currDevStatus.getStatus() == null) {
-            getMessages().add(context.getErrorMessageUtil().getMessage("product.ownerStatusMustExist",
-                    context.getProduct().getName(),
-                    productOwner.getName()));
-            return false;
-        } else if (!currDevStatus.getStatus().equals(DeveloperStatusType.Active.toString())
-                && !isUserAllowedToActOnInactiveDeveloper()) {
-            getMessages().add(context.getErrorMessageUtil().getMessage("product.ownerMustBeActive",
-                    currDevStatus.getStatus()));
+        DeveloperStatus currDevStatus = productOwner.getCurrentStatusEvent() != null ? productOwner.getCurrentStatusEvent().getStatus() : null;
+        if (currDevStatus != null
+                && !productOwner.isNotBannedOrSuspended()
+                && !isUserAllowedToActOnBannedOrSuspendedDeveloper()) {
+            getMessages().add(
+                    context.getErrorMessageUtil().getMessage("product.ownerMustNotBeBannedOrSuspended", currDevStatus.getName()));
             return false;
         }
 
@@ -78,7 +73,7 @@ public class ProductOwnerValidation extends ValidationRule<ProductValidationCont
         return true;
     }
 
-    private boolean isUserAllowedToActOnInactiveDeveloper() {
+    private boolean isUserAllowedToActOnBannedOrSuspendedDeveloper() {
         return resourcePermissionsFactory.get().isUserRoleAdmin() || resourcePermissionsFactory.get().isUserRoleOnc();
     }
 

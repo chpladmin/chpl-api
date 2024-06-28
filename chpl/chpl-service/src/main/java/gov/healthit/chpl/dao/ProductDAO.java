@@ -207,6 +207,7 @@ public class ProductDAO extends BaseDAOImpl {
                 .toList();
     }
 
+    @Transactional
     public Product getById(Long id) throws EntityRetrievalException {
         return getById(id, false);
     }
