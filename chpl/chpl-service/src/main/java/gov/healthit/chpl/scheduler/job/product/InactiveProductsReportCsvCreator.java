@@ -3,36 +3,39 @@ package gov.healthit.chpl.scheduler.job.product;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.scheduler.job.listingvalidation.ListingValidationReport;
+import gov.healthit.chpl.util.DateUtil;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2(topic = "inactiveProductsReportJobLogger")
 @Component
 public class InactiveProductsReportCsvCreator {
 
-    private Environment env;
+    private String unformattedChplDeveloperUrl;
+    private String reportFilename;
 
     @Autowired
-    public InactiveProductsReportCsvCreator(Environment env) {
-        this.env = env;
+    public InactiveProductsReportCsvCreator(@Value("${inactiveProductsReport.fileName}") String reportFilename,
+            @Value("${chplUrlBegin}") String chplUrlBegin,
+            @Value("${developerUrlPart}") String developerUrlPart) {
+        this.unformattedChplDeveloperUrl = chplUrlBegin + developerUrlPart;
+        this.reportFilename = reportFilename;
     }
 
     private static final String NEW_LINE_SEPARATOR = "\n";
 
-    public File createCsvFile(List<ListingValidationReport> reports) throws IOException {
+    public File createCsvFile(List<InactiveProduct> inactiveProducts) throws IOException {
         CSVFormat csvFileFormat = CSVFormat.DEFAULT.builder()
                 .setRecordSeparator(NEW_LINE_SEPARATOR)
                 .build();
@@ -43,9 +46,9 @@ public class InactiveProductsReportCsvCreator {
 
             csvFilePrinter.printRecord(getHeaderRow());
 
-            reports.stream()
-                .sorted(Comparator.comparing(ListingValidationReport::getChplProductNumber))
-                .forEach(report -> printRow(csvFilePrinter, report));
+            inactiveProducts.stream()
+                .sorted(Comparator.comparing(InactiveProduct::getDeveloperName))
+                .forEach(inactiveProduct -> printRow(csvFilePrinter, inactiveProduct));
         }
         return csvFile;
     }
@@ -64,42 +67,37 @@ public class InactiveProductsReportCsvCreator {
 
     private List<String> getHeaderRow() {
         return Arrays.asList(
-                "CHPL Database Id",
-                "CHPL Product Number",
-                "Product",
-                "Version",
                 "Developer",
-                "ONC-ACB",
-                "Certification Status",
-                "Error Message");
+                "Product",
+                "ONC-ACB(s)",
+                "Inactive Date",
+                "Developer Website",
+                "Developer Link in CHPL");
     }
 
-    private List<String> getRow(ListingValidationReport report) {
+    private List<String> getRow(InactiveProduct inactiveProduct) {
         return Arrays.asList(
-                report.getCertifiedProductId().toString(),
-                report.getChplProductNumber(),
-                report.getProduct(),
-                report.getVersion(),
-                report.getDeveloper(),
-                report.getCertificationBody(),
-                report.getCertificationStatusName(),
-                report.getErrorMessage());
+                inactiveProduct.getDeveloperName(),
+                inactiveProduct.getProductName(),
+                inactiveProduct.getProductAcbs().stream().collect(Collectors.joining("; ")),
+                DateUtil.format(inactiveProduct.getInactiveDate()),
+                inactiveProduct.getDeveloperWebsite(),
+                buildDeveloperPageChplUrl(inactiveProduct.getDeveloperId()));
     }
 
-    private void printRow(CSVPrinter csvFilePrinter, ListingValidationReport report) {
+    private void printRow(CSVPrinter csvFilePrinter, InactiveProduct inactiveProduct) {
         try {
-            csvFilePrinter.printRecord(getRow(report));
+            csvFilePrinter.printRecord(getRow(inactiveProduct));
         } catch (IOException e) {
             LOGGER.catching(e);
         }
     }
 
     private String getFilename() {
-        return env.getProperty("listingValidationReport.fileName") + LocalDate.now().toString();
+        return reportFilename + LocalDate.now().toString();
     }
 
-    private String formatDate(Date date) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ssZ");
-        return sdf.format(date);
+    private String buildDeveloperPageChplUrl(Long developerId) {
+        return String.format(unformattedChplDeveloperUrl, developerId.toString());
     }
 }

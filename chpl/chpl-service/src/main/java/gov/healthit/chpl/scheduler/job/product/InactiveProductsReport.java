@@ -18,10 +18,13 @@ import gov.healthit.chpl.exception.EmailNotSentException;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2(topic = "inactiveProductsReportJobLogger")
-public class InactiveProductsReport  implements Job {
+public class InactiveProductsReport implements Job {
 
     @Autowired
     private InactiveProductDAO inactiveProductDao;
+
+    @Autowired
+    private InactiveProductsReportCsvCreator inactiveProductsReportCsvCreator;
 
     @Autowired
     private ChplHtmlEmailBuilder chplHtmlEmailBuilder;
@@ -49,21 +52,21 @@ public class InactiveProductsReport  implements Job {
         return inactiveProductDao.getAll();
     }
 
-    private void sendEmail(JobExecutionContext context, List<InactiveProduct> rows) throws EmailNotSentException, IOException {
+    private void sendEmail(JobExecutionContext context, List<InactiveProduct> inactiveProducts) throws EmailNotSentException, IOException {
         LOGGER.info("Sending email to: " + context.getMergedJobDataMap().getString("email"));
         chplEmailFactory.emailBuilder()
                 .recipient(context.getMergedJobDataMap().getString("email"))
                 .subject(env.getProperty("inactiveProductsReport.subject"))
-                .htmlMessage(createHtmlMessage(context, rows.size()))
-                .fileAttachments(Arrays.asList(listingValidationReportCsvCreator.createCsvFile(rows)))
+                .htmlMessage(createHtmlMessage(context, inactiveProducts.size()))
+                .fileAttachments(Arrays.asList(inactiveProductsReportCsvCreator.createCsvFile(inactiveProducts)))
                 .sendEmail();
         LOGGER.info("Completed Sending email to: " + context.getMergedJobDataMap().getString("email"));
     }
 
-    private String createHtmlMessage(JobExecutionContext context, int errorCount) {
+    private String createHtmlMessage(JobExecutionContext context, int inactiveProductCount) {
         return chplHtmlEmailBuilder.initialize()
                 .heading(env.getProperty("inactiveProductsReport.subject"))
-                .paragraph("", String.format(env.getProperty("inactiveProductsReport.body"), errorCount))
+                .paragraph("", String.format(env.getProperty("inactiveProductsReport.body"), inactiveProductCount))
                 .footer(AdminFooter.class)
                 .build();
     }

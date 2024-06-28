@@ -2,7 +2,12 @@ package gov.healthit.chpl.scheduler.job.product;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.Immutable;
 
 import jakarta.persistence.Basic;
@@ -28,6 +33,7 @@ import lombok.ToString;
 @Table(name = "inactive_products")
 public class InactiveProductEntity implements Serializable {
     private static final long serialVersionUID = -470107210862713204L;
+    private static final String ACB_NAME_DELIMITER = ";";
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -52,6 +58,10 @@ public class InactiveProductEntity implements Serializable {
     private String developerWebsite;
 
     @Basic(optional = false)
+    @Column(name = "certification_bodies", nullable = false)
+    private String delimitedSetOfAcbsForProduct;
+
+    @Basic(optional = false)
     @Column(name = "inactive_date", nullable = false)
     private LocalDate inactiveDate;
 
@@ -61,7 +71,19 @@ public class InactiveProductEntity implements Serializable {
                 .developerName(this.getDeveloperName())
                 .productId(this.getProductId())
                 .productName(this.getProductName())
+                .productAcbs(getAcbNamesAsList())
                 .inactiveDate(this.getInactiveDate())
                 .build();
+    }
+
+    private List<String> getAcbNamesAsList() {
+        if (StringUtils.isEmpty(this.getDelimitedSetOfAcbsForProduct())) {
+            return new ArrayList<String>();
+        }
+        String[] splitAcbsForProduct = this.getDelimitedSetOfAcbsForProduct().split(ACB_NAME_DELIMITER);
+        if (splitAcbsForProduct == null || splitAcbsForProduct.length == 0) {
+            return new ArrayList<String>();
+        }
+        return Stream.of(splitAcbsForProduct).collect(Collectors.toList());
     }
 }
