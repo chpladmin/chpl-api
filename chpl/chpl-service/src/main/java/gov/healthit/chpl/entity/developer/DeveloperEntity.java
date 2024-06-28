@@ -29,9 +29,11 @@ import gov.healthit.chpl.attestation.entity.AttestationPeriodEntity;
 import gov.healthit.chpl.attestation.entity.AttestationSubmissionEntity;
 import gov.healthit.chpl.changerequest.entity.DeveloperCertificationBodyMapEntity;
 import gov.healthit.chpl.developer.DeveloperStatusEventComparator;
+import gov.healthit.chpl.developer.DeveloperStatusEventComparatorDeprecated;
 import gov.healthit.chpl.developer.PublicAttestationComparator;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.DeveloperStatusEvent;
+import gov.healthit.chpl.domain.DeveloperStatusEventDeprecated;
 import gov.healthit.chpl.domain.PublicAttestation;
 import gov.healthit.chpl.domain.concept.PublicAttestationStatus;
 import gov.healthit.chpl.entity.AddressEntity;
@@ -60,6 +62,9 @@ public class DeveloperEntity extends EntityAudit {
 
     @Transient
     private final DeveloperStatusEventComparator developerStatusEventComparator = new DeveloperStatusEventComparator();
+    @Deprecated
+    @Transient
+    private final DeveloperStatusEventComparatorDeprecated developerStatusEventComparatorDeprecated = new DeveloperStatusEventComparatorDeprecated();
     @Transient
     private final PublicAttestationComparator publicAttestationComparator = new PublicAttestationComparator();
 
@@ -131,20 +136,32 @@ public class DeveloperEntity extends EntityAudit {
                 .developerCode(this.getDeveloperCode())
                 .name(this.getName())
                 .selfDeveloper(this.getSelfDeveloper())
-                .statusEvents(toStatusEventDomains())
+                .statusEvents(toStatusEventsDeprecated())
+                .statuses(toStatusEvents())
                 .lastModifiedDate(this.getLastModifiedDate().getTime() + "")
                 .website(this.getWebsite())
                 .attestations(toPublicAttestationDomains())
                 .build();
     }
 
-    private List<DeveloperStatusEvent> toStatusEventDomains() {
+    private List<DeveloperStatusEvent> toStatusEvents() {
         if (CollectionUtils.isEmpty(this.getStatusEvents())) {
             return new ArrayList<DeveloperStatusEvent>();
         }
         return this.statusEvents.stream()
                 .map(statusEvent -> statusEvent.toDomain())
                 .sorted(developerStatusEventComparator)
+                .collect(Collectors.toList());
+    }
+
+    @Deprecated
+    private List<DeveloperStatusEventDeprecated> toStatusEventsDeprecated() {
+        if (CollectionUtils.isEmpty(this.getStatusEvents())) {
+            return new ArrayList<DeveloperStatusEventDeprecated>();
+        }
+        return this.statusEvents.stream()
+                .map(statusEvent -> statusEvent.toStatusEventsDeprecated())
+                .sorted(developerStatusEventComparatorDeprecated)
                 .collect(Collectors.toList());
     }
 

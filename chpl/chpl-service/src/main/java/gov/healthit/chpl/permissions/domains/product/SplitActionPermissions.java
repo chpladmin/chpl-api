@@ -44,7 +44,7 @@ public class SplitActionPermissions extends ActionPermissions {
             return true;
         } else if (getResourcePermissions().isUserRoleAcbAdmin()) {
             Product product = (Product) obj;
-            if (!getResourcePermissions().isDeveloperActive(product.getOwner().getId())) {
+            if (!getResourcePermissions().isDeveloperNotBannedOrSuspended(product.getOwner().getId())) {
                 //ACB can never split product if developer is not active
                 return false;
             } else if (!doesCurrentUserHaveAccessToAllOfDevelopersListings(product.getOwner().getId(), allowedCertStatuses)) {

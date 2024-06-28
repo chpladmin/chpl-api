@@ -230,10 +230,7 @@ public class DeveloperSearchServiceTest {
     @Test
     public void search_sortByStatusAscending_ordersResults() throws ValidationException {
         List<DeveloperSearchResult> allDevelopers = createDeveloperSearchResultCollection(5);
-        allDevelopers.get(0).setStatus(status(DeveloperStatusType.Active.getName()));
         allDevelopers.get(1).setStatus(status(DeveloperStatusType.SuspendedByOnc.getName()));
-        allDevelopers.get(2).setStatus(status(DeveloperStatusType.Active.getName()));
-        allDevelopers.get(3).setStatus(status(DeveloperStatusType.Active.getName()));
         allDevelopers.get(4).setStatus(status(DeveloperStatusType.UnderCertificationBanByOnc.getName()));
         Mockito.when(developerManager.getDeveloperSearchResults()).thenReturn(allDevelopers);
         DeveloperSearchRequest searchRequest = DeveloperSearchRequest.builder()
@@ -247,9 +244,9 @@ public class DeveloperSearchServiceTest {
         assertNotNull(searchResponse);
         assertEquals(5, searchResponse.getRecordCount());
         assertEquals(5, searchResponse.getResults().size());
-        assertEquals(DeveloperStatusType.Active.getName(), searchResponse.getResults().get(0).getStatus().getName());
-        assertEquals(DeveloperStatusType.Active.getName(), searchResponse.getResults().get(1).getStatus().getName());
-        assertEquals(DeveloperStatusType.Active.getName(), searchResponse.getResults().get(2).getStatus().getName());
+        assertEquals(null, searchResponse.getResults().get(0).getStatus());
+        assertEquals(null, searchResponse.getResults().get(1).getStatus());
+        assertEquals(null, searchResponse.getResults().get(2).getStatus());
         assertEquals(DeveloperStatusType.SuspendedByOnc.getName(), searchResponse.getResults().get(3).getStatus().getName());
         assertEquals(DeveloperStatusType.UnderCertificationBanByOnc.getName(), searchResponse.getResults().get(4).getStatus().getName());
     }
@@ -257,10 +254,7 @@ public class DeveloperSearchServiceTest {
     @Test
     public void search_sortByCertificationStatusDescending_ordersResults() throws ValidationException {
         List<DeveloperSearchResult> allDevelopers = createDeveloperSearchResultCollection(5);
-        allDevelopers.get(0).setStatus(status(DeveloperStatusType.Active.getName()));
         allDevelopers.get(1).setStatus(status(DeveloperStatusType.SuspendedByOnc.getName()));
-        allDevelopers.get(2).setStatus(status(DeveloperStatusType.Active.getName()));
-        allDevelopers.get(3).setStatus(status(DeveloperStatusType.Active.getName()));
         allDevelopers.get(4).setStatus(status(DeveloperStatusType.UnderCertificationBanByOnc.getName()));
         Mockito.when(developerManager.getDeveloperSearchResults()).thenReturn(allDevelopers);
         DeveloperSearchRequest searchRequest = DeveloperSearchRequest.builder()
@@ -276,9 +270,9 @@ public class DeveloperSearchServiceTest {
         assertEquals(5, searchResponse.getResults().size());
         assertEquals(DeveloperStatusType.UnderCertificationBanByOnc.getName(), searchResponse.getResults().get(0).getStatus().getName());
         assertEquals(DeveloperStatusType.SuspendedByOnc.getName(), searchResponse.getResults().get(1).getStatus().getName());
-        assertEquals(DeveloperStatusType.Active.getName(), searchResponse.getResults().get(2).getStatus().getName());
-        assertEquals(DeveloperStatusType.Active.getName(), searchResponse.getResults().get(3).getStatus().getName());
-        assertEquals(DeveloperStatusType.Active.getName(), searchResponse.getResults().get(4).getStatus().getName());
+        assertEquals(null, searchResponse.getResults().get(2).getStatus());
+        assertEquals(null, searchResponse.getResults().get(3).getStatus());
+        assertEquals(null, searchResponse.getResults().get(4).getStatus());
     }
 
     @Test
@@ -474,7 +468,6 @@ public class DeveloperSearchServiceTest {
     @Test
     public void search_singleStatusProvided_findsMatches() throws ValidationException {
         List<DeveloperSearchResult> allDevelopers = createDeveloperSearchResultCollection(50);
-        allDevelopers.get(0).setStatus(status(DeveloperStatusType.Active.getName()));
         allDevelopers.get(1).setStatus(status(DeveloperStatusType.SuspendedByOnc.getName()));
 
         Mockito.when(developerManager.getDeveloperSearchResults()).thenReturn(allDevelopers);
@@ -495,15 +488,13 @@ public class DeveloperSearchServiceTest {
     @Test
     public void search_multipleStatusesProvided_findsMatches() throws ValidationException {
         List<DeveloperSearchResult> allDevelopers = createDeveloperSearchResultCollection(50);
-        allDevelopers.get(0).setStatus(status(DeveloperStatusType.Active.getName()));
         allDevelopers.get(1).setStatus(status(DeveloperStatusType.SuspendedByOnc.getName()));
-        allDevelopers.get(2).setStatus(status(DeveloperStatusType.Active.getName()));
         allDevelopers.get(3).setStatus(status(DeveloperStatusType.UnderCertificationBanByOnc.getName()));
 
         Mockito.when(developerManager.getDeveloperSearchResults()).thenReturn(allDevelopers);
         Set<String> statusNames = new LinkedHashSet<String>();
         statusNames.add(DeveloperStatusType.SuspendedByOnc.getName());
-        statusNames.add(DeveloperStatusType.Active.getName());
+        statusNames.add(DeveloperStatusType.UnderCertificationBanByOnc.getName());
 
         DeveloperSearchRequest searchRequest = DeveloperSearchRequest.builder()
             .statuses(statusNames)
@@ -513,8 +504,8 @@ public class DeveloperSearchServiceTest {
         DeveloperSearchResponse searchResponse = developerSearchService.findDevelopers(searchRequest);
 
         assertNotNull(searchResponse);
-        assertEquals(3, searchResponse.getRecordCount());
-        assertEquals(3, searchResponse.getResults().size());
+        assertEquals(2, searchResponse.getRecordCount());
+        assertEquals(2, searchResponse.getResults().size());
     }
 
     @Test
@@ -1079,6 +1070,7 @@ public class DeveloperSearchServiceTest {
             developers.add(DeveloperSearchResult.builder()
                     .submittedAttestationsForMostRecentPastPeriod(null)
                     .publishedAttestationsForMostRecentPastPeriod(null)
+                    .status(null)
                     .build());
         }
         return developers;
