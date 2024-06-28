@@ -1,9 +1,9 @@
 package gov.healthit.chpl.entity.developer;
 
-import org.springframework.util.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 public enum DeveloperStatusType {
-    Active("Active"), SuspendedByOnc("Suspended by ONC"), UnderCertificationBanByOnc("Under certification ban by ONC");
+    SuspendedByOnc("Suspended by ONC"), UnderCertificationBanByOnc("Under certification ban by ONC");
 
     private String name;
 

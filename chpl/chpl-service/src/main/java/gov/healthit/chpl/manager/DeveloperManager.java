@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -51,7 +50,6 @@ import gov.healthit.chpl.domain.developer.hierarchy.VersionTree;
 import gov.healthit.chpl.domain.schedule.ChplJob;
 import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
-import gov.healthit.chpl.dto.DeveloperStatusEventPair;
 import gov.healthit.chpl.dto.ProductVersionDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.entity.developer.DeveloperStatusType;
@@ -74,7 +72,6 @@ import gov.healthit.chpl.sharedstore.listing.ListingStoreRemove;
 import gov.healthit.chpl.sharedstore.listing.RemoveBy;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
-import gov.healthit.chpl.util.DateUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import lombok.extern.log4j.Log4j2;
 
@@ -131,14 +128,6 @@ public class DeveloperManager extends SecuredManager {
     }
 
     @Transactional(readOnly = true)
-    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).DEVELOPER, "
-            + "T(gov.healthit.chpl.permissions.domains.DeveloperDomainPermissions).GET_ALL_WITH_DELETED)")
-    @Cacheable(CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED)
-    public List<Developer> getAllIncludingDeleted() {
-        return developerDao.findAllIncludingDeleted();
-    }
-
-    @Transactional(readOnly = true)
     @Cacheable(CacheNames.COLLECTIONS_DEVELOPERS)
     public List<DeveloperSearchResult> getDeveloperSearchResults() {
         List<DeveloperSearchResult> allDevelopers = developerDao.getAllSearchResults();
@@ -169,17 +158,20 @@ public class DeveloperManager extends SecuredManager {
                                 .name(acb.getName())
                                 .build())
                         .collect(Collectors.toSet()))
-                .status(IdNamePair.builder()
-                        .id(developer.getStatus().getId())
-                        .name(developer.getStatus().getStatus())
-                        .build())
+                .status(developer.getCurrentStatusEvent() == null ? null
+                        : IdNamePair.builder()
+                            .id(developer.getCurrentStatusEvent().getStatus().getId())
+                            .name(developer.getCurrentStatusEvent().getStatus().getName())
+                            .build())
                 .decertificationDate(calculateDecertificationDate(developer))
                 .build();
     }
 
     private LocalDate calculateDecertificationDate(Developer developer) {
-        if (developer.getStatus().getStatus().equals(DeveloperStatusType.UnderCertificationBanByOnc.getName())) {
-            return DateUtil.toLocalDate(developer.getMostRecentStatusEvent().getStatusDate().getTime());
+        DeveloperStatusEvent developerStatusNow = developer.getCurrentStatusEvent();
+        if (developerStatusNow != null
+                && developerStatusNow.getStatus().getName().equals(DeveloperStatusType.UnderCertificationBanByOnc.getName())) {
+            return developerStatusNow.getStartDate();
         }
         return null;
     }
@@ -311,43 +303,18 @@ public class DeveloperManager extends SecuredManager {
 
     private void updateStatusHistory(Developer beforeDev, Developer updatedDev)
             throws EntityRetrievalException, EntityCreationException {
-        // update status history
         List<DeveloperStatusEvent> statusEventsToAdd = new ArrayList<DeveloperStatusEvent>();
-        List<DeveloperStatusEventPair> statusEventsToUpdate = new ArrayList<DeveloperStatusEventPair>();
         List<DeveloperStatusEvent> statusEventsToRemove = new ArrayList<DeveloperStatusEvent>();
 
-        statusEventsToUpdate = DeveloperStatusEventsHelper.getUpdatedEvents(beforeDev.getStatusEvents(),
-                updatedDev.getStatusEvents());
-        statusEventsToRemove = DeveloperStatusEventsHelper.getRemovedEvents(beforeDev.getStatusEvents(),
-                updatedDev.getStatusEvents());
-        statusEventsToAdd = DeveloperStatusEventsHelper.getAddedEvents(beforeDev.getStatusEvents(),
-                updatedDev.getStatusEvents());
-
-        for (DeveloperStatusEventPair toUpdate : statusEventsToUpdate) {
-            boolean hasChanged = false;
-            if (!Objects.equals(toUpdate.getOrig().getStatusDate(), toUpdate.getUpdated().getStatusDate())
-                    || !Objects.equals(toUpdate.getOrig().getStatus().getId(),
-                            toUpdate.getUpdated().getStatus().getId())
-                    || !Objects.equals(toUpdate.getOrig().getStatus().getStatus(),
-                            toUpdate.getUpdated().getStatus().getStatus())
-                    || !Objects.equals(toUpdate.getOrig().getReason(), toUpdate.getUpdated().getReason())) {
-                hasChanged = true;
-            }
-
-            if (hasChanged) {
-                DeveloperStatusEvent dseToUpdate = toUpdate.getUpdated();
-                dseToUpdate.setDeveloperId(beforeDev.getId());
-                developerDao.updateDeveloperStatusEvent(dseToUpdate);
-            }
-        }
+        statusEventsToRemove = DeveloperStatusEventsHelper.getRemovedEvents(beforeDev.getStatuses(), updatedDev.getStatuses());
+        statusEventsToAdd = DeveloperStatusEventsHelper.getAddedEvents(beforeDev.getStatuses(), updatedDev.getStatuses());
 
         for (DeveloperStatusEvent toAdd : statusEventsToAdd) {
-            toAdd.setDeveloperId(beforeDev.getId());
-            developerDao.createDeveloperStatusEvent(toAdd);
+            developerDao.createDeveloperStatusEvent(beforeDev.getId(), toAdd);
         }
 
         for (DeveloperStatusEvent toRemove : statusEventsToRemove) {
-            developerDao.deleteDeveloperStatusEvent(toRemove);
+            developerDao.removeDeveloperStatusEvent(toRemove.getId());
         }
     }
 
@@ -542,9 +509,8 @@ public class DeveloperManager extends SecuredManager {
 
     private Set<String> runChangeValidations(Developer afterDev, Developer beforeDev) {
         List<ValidationRule<DeveloperValidationContext>> rules = new ArrayList<ValidationRule<DeveloperValidationContext>>();
-        rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.HAS_STATUS));
         rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.STATUS_MISSING_BAN_REASON));
-        rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.PRIOR_STATUS_ACTIVE));
+        rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.PRIOR_STATUS_BANNED_OR_SUSPENDED));
         rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.EDIT_STATUS_HISTORY));
         rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.STATUS_CHANGED));
         return runChangeValidations(rules, afterDev, beforeDev);
@@ -556,7 +522,6 @@ public class DeveloperManager extends SecuredManager {
         rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.WEBSITE_WELL_FORMED));
         rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.CONTACT));
         rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.ADDRESS));
-        rules.add(developerValidationFactory.getRule(DeveloperValidationFactory.ACTIVE_STATUS));
         return runValidations(rules, developer, beforeDevelopers);
     }
 

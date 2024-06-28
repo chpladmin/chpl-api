@@ -41,7 +41,7 @@ public class DeveloperStatusEntity extends EntityAudit {
     public DeveloperStatus toDomain() {
         return DeveloperStatus.builder()
                 .id(this.getId())
-                .status(this.getName().getName())
+                .name(this.getName().getName())
                 .build();
     }
 }

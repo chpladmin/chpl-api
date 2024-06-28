@@ -24,18 +24,15 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.env.Environment;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
-import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
 import gov.healthit.chpl.email.footer.AdminFooter;
 import gov.healthit.chpl.entity.CertificationStatusType;
-import gov.healthit.chpl.entity.developer.DeveloperStatusType;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.SchedulerManager;
@@ -51,9 +48,6 @@ import lombok.extern.log4j.Log4j2;
 
 @Log4j2(topic = "questionableUrlReportGeneratorJobLogger")
 public class QuestionableUrlReportGenerator extends QuartzJob {
-
-    @Autowired
-    private Environment env;
 
     @Autowired
     private ChplHtmlEmailBuilder htmlEmailBuilder;
@@ -187,18 +181,12 @@ public class QuestionableUrlReportGenerator extends QuartzJob {
         if (urlResult.getListing() != null && urlResult.getListing().getAcb() != null) {
             return acbIds.contains(urlResult.getListing().getAcb().getId());
         }
-        if (urlResult.getDeveloper() != null && isActive(urlResult.getDeveloper())) {
+        if (urlResult.getDeveloper() != null && urlResult.getDeveloper().isNotBannedOrSuspended()) {
             List<CertifiedProductDetailsDTO> filteredListings
                 = cpDao.getListingsByStatusForDeveloperAndAcb(urlResult.getDeveloper().getId(), activeStatuses, acbIds);
             return filteredListings != null && filteredListings.size() > 0;
         }
         return false;
-    }
-
-    private boolean isActive(Developer developer) {
-        return developer.getStatus() != null
-                && !StringUtils.isEmpty(developer.getStatus().getStatus())
-                && developer.getStatus().getStatus().equals(DeveloperStatusType.Active.getName());
     }
 
     private boolean isNotListingUrl(FailedUrlResult urlResult) {

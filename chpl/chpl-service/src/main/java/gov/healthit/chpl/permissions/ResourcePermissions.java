@@ -10,7 +10,7 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 
 public interface ResourcePermissions {
 
-    boolean isDeveloperActive(Long developerId);
+    boolean isDeveloperNotBannedOrSuspended(Long developerId);
 
     List<User> getAllUsersOnAcb(CertificationBody acb);
 

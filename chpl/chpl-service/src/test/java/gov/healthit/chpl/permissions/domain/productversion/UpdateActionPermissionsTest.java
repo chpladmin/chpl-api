@@ -75,11 +75,11 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
         Mockito.when(productVersionDAO.getById(ArgumentMatchers.anyLong())).thenReturn(version);
 
         // If the current status is Active
-        Mockito.when(resourcePermissions.isDeveloperActive(ArgumentMatchers.anyLong())).thenReturn(true);
+        Mockito.when(resourcePermissions.isDeveloperNotBannedOrSuspended(ArgumentMatchers.anyLong())).thenReturn(true);
         assertTrue(permissions.hasAccess(version));
 
         // If the current status is Non-Active
-        Mockito.when(resourcePermissions.isDeveloperActive(ArgumentMatchers.anyLong())).thenReturn(false);
+        Mockito.when(resourcePermissions.isDeveloperNotBannedOrSuspended(ArgumentMatchers.anyLong())).thenReturn(false);
         assertFalse(permissions.hasAccess(version));
     }
 

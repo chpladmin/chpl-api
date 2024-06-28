@@ -2,8 +2,8 @@ package gov.healthit.chpl.changerequest.validation;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.time.LocalDate;
 import java.util.Arrays;
-import java.util.Date;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -19,7 +19,7 @@ import gov.healthit.chpl.domain.DeveloperStatus;
 import gov.healthit.chpl.domain.DeveloperStatusEvent;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 
-public class DeveloperActiveValidationTest {
+public class DeveloperStatusValidationTest {
 
     private ChangeRequest newChangeRequest;
     private ChangeRequest origChangeRequest;
@@ -40,15 +40,6 @@ public class DeveloperActiveValidationTest {
         Mockito.when(developerDAO.getById(ArgumentMatchers.anyLong())).thenReturn(
                 Developer.builder()
                         .id(1L)
-                        .statusEvents(Arrays.asList(DeveloperStatusEvent.builder()
-                                .id(1L)
-                                .developerId(1L)
-                                .status(DeveloperStatus.builder()
-                                        .id(1L)
-                                        .status("Active")
-                                        .build())
-                                .statusDate(new Date())
-                                .build()))
                         .build());
 
         newChangeRequest = ChangeRequest.builder()
@@ -100,14 +91,13 @@ public class DeveloperActiveValidationTest {
         Mockito.when(developerDAO.getById(ArgumentMatchers.anyLong())).thenReturn(
                 Developer.builder()
                         .id(1L)
-                        .statusEvents(Arrays.asList(DeveloperStatusEvent.builder()
+                        .statuses(Arrays.asList(DeveloperStatusEvent.builder()
                                 .id(1L)
-                                .developerId(1L)
                                 .status(DeveloperStatus.builder()
                                         .id(2L)
-                                        .status("Suspended by ONC")
+                                        .name("Suspended by ONC")
                                         .build())
-                                .statusDate(new Date())
+                                .startDate(LocalDate.now())
                                 .build()))
                         .build());
 
