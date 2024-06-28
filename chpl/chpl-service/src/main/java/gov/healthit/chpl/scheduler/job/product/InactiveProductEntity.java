@@ -69,6 +69,7 @@ public class InactiveProductEntity implements Serializable {
         return InactiveProduct.builder()
                 .developerId(this.getDeveloperId())
                 .developerName(this.getDeveloperName())
+                .developerWebsite(this.getDeveloperWebsite())
                 .productId(this.getProductId())
                 .productName(this.getProductName())
                 .productAcbs(getAcbNamesAsList())
