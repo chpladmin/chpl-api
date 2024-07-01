@@ -1,4 +1,4 @@
-package gov.healthit.chpl.scheduler.job.product;
+package gov.healthit.chpl.scheduler.job.developer.inactive;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -19,15 +19,15 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.util.DateUtil;
 import lombok.extern.log4j.Log4j2;
 
-@Log4j2(topic = "inactiveProductsReportJobLogger")
+@Log4j2(topic = "inactiveDevelopersAndProductsReportJobLogger")
 @Component
-public class InactiveProductsReportCsvCreator {
+public class InactiveDevelopersAndProductsReportCsvCreator {
 
     private String unformattedChplDeveloperUrl;
     private String reportFilename;
 
     @Autowired
-    public InactiveProductsReportCsvCreator(@Value("${inactiveProductsReport.fileName}") String reportFilename,
+    public InactiveDevelopersAndProductsReportCsvCreator(@Value("${inactiveDevelopersAndProductsReport.fileName}") String reportFilename,
             @Value("${chplUrlBegin}") String chplUrlBegin,
             @Value("${developerUrlPart}") String developerUrlPart) {
         this.unformattedChplDeveloperUrl = chplUrlBegin + developerUrlPart;

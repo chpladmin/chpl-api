@@ -1,4 +1,4 @@
-package gov.healthit.chpl.scheduler.job.product;
+package gov.healthit.chpl.scheduler.job.developer.inactive;
 
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -30,7 +30,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @Immutable
 @Entity
-@Table(name = "inactive_products")
+@Table(name = "inactive_developers_and_products")
 public class InactiveProductEntity implements Serializable {
     private static final long serialVersionUID = -470107210862713204L;
     private static final String ACB_NAME_DELIMITER = ";";

@@ -164,9 +164,9 @@
         <AppenderRef ref="userDefinedTriggersEmailJob" />
         <AppenderRef ref="userDefinedTriggersEmailJobJson" />
     </Logger>
-    <Logger name="inactiveProductsReportJobLogger" level="INFO" additivity="false">
-        <AppenderRef ref="inactiveProductsReportJob" />
-        <AppenderRef ref="inactiveProductsReportJobJson" />
+    <Logger name="inactiveDevelopersAndProductsReportJobLogger" level="INFO" additivity="false">
+        <AppenderRef ref="inactiveDevelopersAndProductsReportJob" />
+        <AppenderRef ref="inactiveDevelopersAndProductsReportJobJson" />
     </Logger>
     <Logger name="surveillanceActivityReportJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="surveillanceActivityReportJob" />

@@ -1,4 +1,4 @@
-package gov.healthit.chpl.scheduler.job.product;
+package gov.healthit.chpl.scheduler.job.developer.inactive;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -17,14 +17,14 @@ import gov.healthit.chpl.email.footer.AdminFooter;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import lombok.extern.log4j.Log4j2;
 
-@Log4j2(topic = "inactiveProductsReportJobLogger")
-public class InactiveProductsReport implements Job {
+@Log4j2(topic = "inactiveDevelopersAndProductsReportJobLogger")
+public class InactiveDevelopersAndProductsReport implements Job {
 
     @Autowired
     private InactiveProductDAO inactiveProductDao;
 
     @Autowired
-    private InactiveProductsReportCsvCreator inactiveProductsReportCsvCreator;
+    private InactiveDevelopersAndProductsReportCsvCreator inactiveProductsReportCsvCreator;
 
     @Autowired
     private ChplHtmlEmailBuilder chplHtmlEmailBuilder;
@@ -38,13 +38,13 @@ public class InactiveProductsReport implements Job {
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
-        LOGGER.info("********* Starting the Inactive Products Report job for " + context.getMergedJobDataMap().getString("email") + " *********");
+        LOGGER.info("********* Starting the Inactive Developers And Products Report job for " + context.getMergedJobDataMap().getString("email") + " *********");
         try {
             sendEmail(context, getReportData(context));
         } catch (Exception e) {
             LOGGER.catching(e);
         } finally {
-            LOGGER.info("********* Completed the Inactive Products Report job. *********");
+            LOGGER.info("********* Completed the Inactive Developers And Products Report job. *********");
         }
     }
 
@@ -56,7 +56,7 @@ public class InactiveProductsReport implements Job {
         LOGGER.info("Sending email to: " + context.getMergedJobDataMap().getString("email"));
         chplEmailFactory.emailBuilder()
                 .recipient(context.getMergedJobDataMap().getString("email"))
-                .subject(env.getProperty("inactiveProductsReport.subject"))
+                .subject(env.getProperty("inactiveDevelopersAndProductsReport.subject"))
                 .htmlMessage(createHtmlMessage(context, inactiveProducts.size()))
                 .fileAttachments(Arrays.asList(inactiveProductsReportCsvCreator.createCsvFile(inactiveProducts)))
                 .sendEmail();
@@ -65,8 +65,8 @@ public class InactiveProductsReport implements Job {
 
     private String createHtmlMessage(JobExecutionContext context, int inactiveProductCount) {
         return chplHtmlEmailBuilder.initialize()
-                .heading(env.getProperty("inactiveProductsReport.subject"))
-                .paragraph("", String.format(env.getProperty("inactiveProductsReport.body"), inactiveProductCount))
+                .heading(env.getProperty("inactiveDevelopersAndProductsReport.subject"))
+                .paragraph("", String.format(env.getProperty("inactiveDevelopersAndProductsReport.body"), inactiveProductCount))
                 .footer(AdminFooter.class)
                 .build();
     }

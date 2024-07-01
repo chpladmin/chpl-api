@@ -689,10 +689,10 @@
 
         <!-- Email Information about Inactive Developers and Products -->
         <job>
-            <name>Inactive Products Report</name>
+            <name>Inactive Developers And Products Report</name>
             <group>chplJobs</group>
-            <description>Gathers data about inactive products and sends it via email.</description>
-            <job-class>gov.healthit.chpl.scheduler.job.product.InactiveProductsReport</job-class>
+            <description>Gathers data about inactive developers and their products and sends it via email.</description>
+            <job-class>gov.healthit.chpl.scheduler.job.developer.inactive.InactiveDevelopersAndProductsReport</job-class>
             <durability>true</durability>
             <recover>false</recover>
             <job-data-map>

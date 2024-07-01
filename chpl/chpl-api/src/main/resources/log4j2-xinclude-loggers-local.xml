@@ -134,8 +134,8 @@
     <Logger name="userDefinedTriggersEmailJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="userDefinedTriggersEmailJob" />
     </Logger>
-    <Logger name="inactiveProductsReportJobLogger" level="INFO" additivity="false">
-        <AppenderRef ref="inactiveProductsReportJob" />
+    <Logger name="inactiveDevelopersAndProductsReportJobLogger" level="INFO" additivity="false">
+        <AppenderRef ref="inactiveDevelopersAndProductsReportJob" />
     </Logger>
     <Logger name="surveillanceActivityReportJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="surveillanceActivityReportJob" />

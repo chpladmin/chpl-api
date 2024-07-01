@@ -1,4 +1,4 @@
-package gov.healthit.chpl.scheduler.job.product;
+package gov.healthit.chpl.scheduler.job.developer.inactive;
 
 import java.util.List;
 import java.util.stream.Collectors;
