@@ -86,20 +86,15 @@ public class CuresUpdateReportService {
 
     private Boolean isTheDataComplete(List<CuresCriterionChartStatistic> data) {
         for (CuresCriterionChartStatistic stats : data) {
-            LOGGER.info("checking data completeness for {}", stats.getReportDate());
-            LOGGER.info("Existing Certification Count: {}", stats.getExistingCertificationCount() != null);
-            LOGGER.info("Listing Count: {}", stats.getListingCount() != null);
-            LOGGER.info("New Certification Count: {}", stats.getNewCertificationCount() != null);
-            LOGGER.info("Requires Update Count: {}", stats.getRequiresUpdateCount() != null);
-            if (!ObjectUtils.anyNull(stats.getExistingCertificationCount(),
+            if (ObjectUtils.anyNull(stats.getExistingCertificationCount(),
                 stats.getListingCount(),
                 stats.getNewCertificationCount(),
                 stats.getRequiresUpdateCount())) {
 
-                return true;
+                return false;
             }
         }
-        return false;
+        return true;
     }
 
 }

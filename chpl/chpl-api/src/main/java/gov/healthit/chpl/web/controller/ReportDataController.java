@@ -3,6 +3,8 @@ package gov.healthit.chpl.web.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -12,6 +14,7 @@ import gov.healthit.chpl.domain.statistics.CuresCriterionChartStatistic;
 import gov.healthit.chpl.report.ReportDataManager;
 import gov.healthit.chpl.report.criteriamigrationreport.CriteriaMigrationReport;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
+import gov.healthit.chpl.web.controller.results.ReportUrlResult;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -20,11 +23,13 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RestController
 @RequestMapping("/report-data")
 public class ReportDataController {
+    private Environment environment;
     private ReportDataManager reportDataManager;
 
     @Autowired
-    public ReportDataController(ReportDataManager reportDataManager) {
+    public ReportDataController(ReportDataManager reportDataManager, Environment environment) {
         this.reportDataManager = reportDataManager;
+        this.environment = environment;
     }
 
     @Operation(summary = "Retrieves the data used to generate the Cures Update Report.",
@@ -46,4 +51,17 @@ public class ReportDataController {
     public @ResponseBody CriteriaMigrationReport getHti1CriteriaMigrationReport() {
         return reportDataManager.getHti1CriteriaMigrationReport();
     }
+
+    @Operation(summary = "Retrieves the URL for a Power BI report.",
+            description = "Retrieves the URL for a Power BI report.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
+    @RequestMapping(value = "/{reportName}/url", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public @ResponseBody ReportUrlResult getReportUrl(@PathVariable("reportName") String reportName) {
+        return ReportUrlResult.builder()
+                .reportUrl(environment.getProperty("reportURL.uniqueProducts"))
+                .build();
+    }
+
 }
