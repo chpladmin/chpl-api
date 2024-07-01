@@ -2,39 +2,77 @@ package gov.healthit.chpl.dao;
 
 import java.util.List;
 
-import gov.healthit.chpl.dto.CriterionProductStatisticsDTO;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
+
+import gov.healthit.chpl.dao.impl.BaseDAOImpl;
+import gov.healthit.chpl.domain.CriterionProductStatistics;
 import gov.healthit.chpl.entity.statistics.CriterionProductStatisticsEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import jakarta.persistence.Query;
 
 
-/**
- * Data access object for the criterion_product_statistics table.
- * @author alarned
- *
- */
-public interface CriterionProductStatisticsDAO {
-    /**
-     * Retrieves all of the criterion_product_statistics records as a list ParticipantsEducationStatisticsDTO
-     * objects.
-     * @return List<CriterionProductStatisticsDTO>
-     */
-    List<CriterionProductStatisticsDTO> findAll();
+@Repository("criterionProductStatisticsDAO")
+public class CriterionProductStatisticsDAO extends BaseDAOImpl  {
+    public List<CriterionProductStatistics> findAll() {
+        return this.findAllEntities().stream()
+                .map(entity -> entity.toDomain())
+                .toList();
+    }
 
-    /**
-     * Marks the criterion_product_statistics record that is associated with the id as deleted.
-     * @param id Id of the record to be marked for deletion
-     * @throws EntityRetrievalException When the record could not be found.
-     */
-    void delete(Long id) throws EntityRetrievalException;
+    @Transactional
+    public void delete(final Long id) throws EntityRetrievalException {
+        CriterionProductStatisticsEntity toDelete = getEntityById(id);
 
-    /**
-     * Inserts the data in the CriterionProductStatisticsDTO into the criterion_product_statistics table.
-     * @param dto CriterionProductStatisticsDTO object populated with the data to be inserted.
-     * @return CriterionProductStatisticsEntity representing the data that was inserted
-     * @throws EntityCreationException when the data could not be inserted
-     * @throws EntityRetrievalException when the newly created record cannot be retrieved
-     */
-    CriterionProductStatisticsEntity create(CriterionProductStatisticsDTO dto)
-            throws EntityCreationException, EntityRetrievalException;
+        if (toDelete != null) {
+            toDelete.setDeleted(true);
+            entityManager.merge(toDelete);
+        }
+    }
+
+    @Transactional
+    public CriterionProductStatisticsEntity create(final CriterionProductStatistics criteirCriterionProductStatistics)
+            throws EntityCreationException, EntityRetrievalException {
+
+        CriterionProductStatisticsEntity entity = new CriterionProductStatisticsEntity();
+        entity.setProductCount(criteirCriterionProductStatistics.getProductCount());
+        entity.setCertificationCriterionId(criteirCriterionProductStatistics.getCertificationCriterionId());
+
+        entityManager.persist(entity);
+        entityManager.flush();
+        return entity;
+    }
+
+    private List<CriterionProductStatisticsEntity> findAllEntities() {
+        Query query = entityManager.createQuery("from CriterionProductStatisticsEntity cpse "
+                + "LEFT OUTER JOIN FETCH cpse.certificationCriterion cce "
+                + "LEFT OUTER JOIN FETCH cce.certificationEdition "
+                + "LEFT JOIN FETCH cce.rule "
+                + "WHERE (cpse.deleted = false)",
+                CriterionProductStatisticsEntity.class);
+        return query.getResultList();
+    }
+
+    private CriterionProductStatisticsEntity getEntityById(final Long id) throws EntityRetrievalException {
+        CriterionProductStatisticsEntity entity = null;
+
+        Query query = entityManager.createQuery("from CriterionProductStatisticsEntity cpse "
+                + "LEFT OUTER JOIN FETCH cpse.certificationCriterion cce "
+                + "LEFT OUTER JOIN FETCH cce.certificationEdition "
+                + "LEFT JOIN FETCH cce.rule "
+                + "WHERE (cpse.deleted = false) "
+                + "AND (cpse.id = :entityid)",
+                CriterionProductStatisticsEntity.class);
+        query.setParameter("entityid", id);
+        List<CriterionProductStatisticsEntity> result = query.getResultList();
+
+        if (result.size() == 1) {
+            entity = result.get(0);
+        } else {
+            throw new EntityRetrievalException("Data error. Did not find only one entity.");
+        }
+
+        return entity;
+    }
 }
