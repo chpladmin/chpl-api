@@ -329,4 +329,18 @@ public class DeveloperController {
         throws ValidationException, SchedulerException {
         return developerManager.triggerMessageDevelopers(developerMessageRequest);
     }
+
+    @Operation(summary = "Sends a single message to the logged-in user. "
+            + "This allows the logged-in user to preview how an email will appear to developers",
+            description = "Security Restrictions: ADMIN or ONC users.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
+    @RequestMapping(value = "/message-preview", method = RequestMethod.POST,
+            consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
+    public ChplOneTimeTrigger sendMessagePreview(@RequestBody(required = true) DeveloperMessageRequest developerMessageRequest)
+        throws ValidationException, SchedulerException {
+        return developerManager.triggerMessageDevelopersPreview(developerMessageRequest);
+    }
 }
