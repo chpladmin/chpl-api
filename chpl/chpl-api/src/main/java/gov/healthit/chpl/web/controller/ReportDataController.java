@@ -1,8 +1,10 @@
 package gov.healthit.chpl.web.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,11 +27,14 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 public class ReportDataController {
     private Environment environment;
     private ReportDataManager reportDataManager;
+    Map<String, String> reportUrlsByReportName;
 
     @Autowired
-    public ReportDataController(ReportDataManager reportDataManager, Environment environment) {
+    public ReportDataController(ReportDataManager reportDataManager, Environment environment,
+            @Value("#{${reportUrls}}") Map<String, String> reportUrlsByReportName) {
         this.reportDataManager = reportDataManager;
         this.environment = environment;
+        this.reportUrlsByReportName = reportUrlsByReportName;
     }
 
     @Operation(summary = "Retrieves the data used to generate the Cures Update Report.",
@@ -59,8 +64,13 @@ public class ReportDataController {
             })
     @RequestMapping(value = "/{reportName}/url", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody ReportUrlResult getReportUrl(@PathVariable("reportName") String reportName) {
+
+        String reportUrl = "";
+        if (reportUrlsByReportName.containsKey(reportName)) {
+            reportUrl = reportUrlsByReportName.get(reportName);
+        }
         return ReportUrlResult.builder()
-                .reportUrl(environment.getProperty("reportURL.uniqueProducts"))
+                .reportUrl(reportUrl)
                 .build();
     }
 
