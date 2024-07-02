@@ -419,7 +419,18 @@ public class DeveloperManager extends SecuredManager {
             + "T(gov.healthit.chpl.permissions.domains.DeveloperDomainPermissions).MESSAGE)")
     public ChplOneTimeTrigger triggerMessageDevelopers(DeveloperMessageRequest developerMessageRequest)
             throws ValidationException, SchedulerException {
+        return triggerMessageDevelopers(developerMessageRequest, false);
+    }
 
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).DEVELOPER, "
+            + "T(gov.healthit.chpl.permissions.domains.DeveloperDomainPermissions).MESSAGE)")
+    public ChplOneTimeTrigger triggerMessageDevelopersPreview(DeveloperMessageRequest developerMessageRequest)
+            throws ValidationException, SchedulerException {
+        return triggerMessageDevelopers(developerMessageRequest, true);
+    }
+
+    private ChplOneTimeTrigger triggerMessageDevelopers(DeveloperMessageRequest developerMessageRequest, Boolean isPreview)
+            throws ValidationException, SchedulerException {
         developerSearchRequestNormalizer.normalize(developerMessageRequest.getQuery());
         developerSearchRequestValidator.validate(developerMessageRequest.getQuery());
 
@@ -429,6 +440,7 @@ public class DeveloperManager extends SecuredManager {
         messageDevelopersJob.setGroup(SchedulerManager.CHPL_BACKGROUND_JOBS_KEY);
         JobDataMap jobDataMap = new JobDataMap();
         jobDataMap.put(MessageDevelopersJob.DEVELOPER_MESSAGE_REQUEST, developerMessageRequest);
+        jobDataMap.put(MessageDevelopersJob.PREVIEW, isPreview);
         messageDevelopersJob.setJobDataMap(jobDataMap);
         messageDevelopersTrigger.setJob(messageDevelopersJob);
         messageDevelopersTrigger.setRunDateMillis(System.currentTimeMillis() + SchedulerManager.FIVE_SECONDS_IN_MILLIS);

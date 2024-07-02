@@ -2,6 +2,9 @@ package gov.healthit.chpl.scheduler.job.developer.messaging;
 
 import java.util.List;
 
+import org.commonmark.node.Node;
+import org.commonmark.parser.Parser;
+import org.commonmark.renderer.html.HtmlRenderer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -49,10 +52,20 @@ public class DeveloperMessageEmailGenerator {
     }
 
     private String getMessage(DeveloperSearchResult developer, DeveloperMessageRequest developerMessageRequest) {
+        String userEnteredBody = developerMessageRequest.getBody();
+
         return htmlEmailBuilder.initialize()
                 .heading(developerMessageRequest.getSubject())
-                .paragraph("", developerMessageRequest.getBody())
+                .paragraph("", convertMarkdownToHtml(userEnteredBody))
                 .footer(PublicFooter.class)
                 .build();
+    }
+
+    private String convertMarkdownToHtml(String toConvert) {
+        Parser parser  = Parser.builder().build();
+        Node document = parser.parse(toConvert);
+        HtmlRenderer renderer = HtmlRenderer.builder().build();
+        String converted = renderer.render(document);
+        return converted;
     }
 }
