@@ -240,6 +240,18 @@ public class CognitoApiWrapper {
         cognitoClient.adminSetUserPassword(request);
     }
 
+    public void setTemporaryUserPassword(String userName, String password) {
+        AdminSetUserPasswordRequest request = AdminSetUserPasswordRequest.builder()
+                .username(userName)
+                .password(password)
+                .permanent(false)
+                .userPoolId(userPoolId)
+                .build();
+
+        cognitoClient.adminSetUserPassword(request);
+    }
+
+
     public AdminAddUserToGroupResponse addUserToGroup(String email, String groupName) {
         AdminAddUserToGroupRequest request = AdminAddUserToGroupRequest.builder()
                 .userPoolId(userPoolId)

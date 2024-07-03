@@ -8,16 +8,20 @@ import org.springframework.stereotype.Component;
 import com.nulabinc.zxcvbn.Strength;
 import com.nulabinc.zxcvbn.Zxcvbn;
 
+import gov.healthit.chpl.PasswordGenerator;
 import gov.healthit.chpl.auth.authentication.JWTUserConverterFacade;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
+import gov.healthit.chpl.domain.auth.CognitoForgotPasswordRequest;
 import gov.healthit.chpl.domain.auth.CognitoNewPasswordRequiredRequest;
 import gov.healthit.chpl.domain.auth.LoginCredentials;
 import gov.healthit.chpl.domain.auth.User;
+import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.user.cognito.CognitoApiWrapper;
 import gov.healthit.chpl.user.cognito.CognitoAuthenticationChallengeException;
 import gov.healthit.chpl.user.cognito.CognitoAuthenticationResponse;
+import gov.healthit.chpl.user.cognito.CognitoForgotPasswordEmailer;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import lombok.extern.log4j.Log4j2;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AuthenticationResultType;
@@ -30,12 +34,16 @@ public class CognitoAuthenticationManager {
     private CognitoApiWrapper cognitoApiWrapper;
     private JWTUserConverterFacade jwtUserConverterFacade;
     private ErrorMessageUtil errorMessageUtil;
+    private CognitoForgotPasswordEmailer cognitoForgotPasswordEmailer;
 
     @Autowired
-    public CognitoAuthenticationManager(CognitoApiWrapper cognitoApiWrapper, JWTUserConverterFacade jwtUserConverterFacade, ErrorMessageUtil errorMessageUtil) {
+    public CognitoAuthenticationManager(CognitoApiWrapper cognitoApiWrapper, JWTUserConverterFacade jwtUserConverterFacade, ErrorMessageUtil errorMessageUtil,
+            CognitoForgotPasswordEmailer cognitoForgotPasswordEmailer) {
+
         this.cognitoApiWrapper = cognitoApiWrapper;
         this.jwtUserConverterFacade = jwtUserConverterFacade;
         this.errorMessageUtil = errorMessageUtil;
+        this.cognitoForgotPasswordEmailer = cognitoForgotPasswordEmailer;
     }
 
     public CognitoAuthenticationResponse authenticate(LoginCredentials credentials) throws CognitoAuthenticationChallengeException {
@@ -86,6 +94,12 @@ public class CognitoAuthenticationManager {
                 .refreshToken(authResult.refreshToken())
                 .user(user)
                 .build();
+    }
+
+    public void forgotPassword(CognitoForgotPasswordRequest request) throws EmailNotSentException {
+        String tempPassword = PasswordGenerator.generate();
+        cognitoApiWrapper.setTemporaryUserPassword(request.getUserName(), tempPassword);
+        cognitoForgotPasswordEmailer.sendEmail(request.getUserName(), tempPassword);
     }
 
     private Boolean validatePaswordStrength(CognitoNewPasswordRequiredRequest request) {

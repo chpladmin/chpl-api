@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.auth.ChplAccountStatusException;
 import gov.healthit.chpl.domain.CreateUserFromInvitationRequest;
+import gov.healthit.chpl.domain.auth.CognitoForgotPasswordRequest;
 import gov.healthit.chpl.domain.auth.CognitoGroups;
 import gov.healthit.chpl.domain.auth.CognitoNewPasswordRequiredRequest;
 import gov.healthit.chpl.domain.auth.LoginCredentials;
@@ -102,6 +103,23 @@ public class CognitoUserController {
             throw new ChplAccountStatusException(errorMessageUtil.getMessage("auth.loginNotAllowed"));
         }
         return response;
+    }
+
+    @Operation(summary = "Send a user a one time password, forcing the user to change their password at next login.",
+            description = "Send a user a one time password, forcing the user to change their password at next login.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            }
+        )
+    @RequestMapping(value = "/authenticate/forgot-password", method = RequestMethod.POST,
+            consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
+    public void forgotPassword(@RequestBody CognitoForgotPasswordRequest request) throws EmailNotSentException {
+
+        if (!ff4j.check(FeatureList.SSO)) {
+            throw new NotImplementedException("This method has not been implemnted");
+        }
+
+        cognitoAuthenticationManager.forgotPassword(request);
     }
 
     @Operation(summary = "View a specific user's details.",
