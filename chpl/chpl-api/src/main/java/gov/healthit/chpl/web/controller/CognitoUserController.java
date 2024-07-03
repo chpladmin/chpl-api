@@ -111,7 +111,7 @@ public class CognitoUserController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             }
         )
-    @RequestMapping(value = "/authenticate/forgot-password", method = RequestMethod.POST,
+    @RequestMapping(value = "/forgot-password", method = RequestMethod.POST,
             consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
     public void forgotPassword(@RequestBody CognitoForgotPasswordRequest request) throws EmailNotSentException {
 
