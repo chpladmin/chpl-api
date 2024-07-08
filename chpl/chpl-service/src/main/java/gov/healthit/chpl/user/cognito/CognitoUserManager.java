@@ -59,6 +59,19 @@ public class CognitoUserManager {
         return cognitoApiWrapper.getUserInfo(cognitoId);
     }
 
+
+    @Transactional
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SECURED_USER, "
+            + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).UPDATE_COGNITO, #user)")
+    public User updateUser(User user) throws ValidationException, UserRetrievalException{
+        Set<String> errors = userUpdateValidator.validate(user);
+        if (errors.size() > 0) {
+            throw new ValidationException(errors, null);
+        }
+
+        return cognitoApiWrapper.updateUser(user);
+    }
+
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).INVITATION, "
             + "T(gov.healthit.chpl.permissions.domains.InvitationDomainPermissions).INVITE_ADMIN)")

@@ -24,6 +24,7 @@ public class SecuredUserDomainPermissions extends DomainPermissions {
     public static final String GET_BY_PERMISSION = "GET_BY_PERMISSION";
     public static final String GET_BY_USER_NAME = "GET_BY_USER_NAME";
     public static final String UPDATE = "UPDATE";
+    public static final String UPDATE_COGNITO = "UPDATE_COGNITO";
     public static final String UPDATE_CONTACT_INFO = "UPDATE_CONTACT_INFO";
     public static final String UPDATE_PASSWORD = "UPDATE_PASSWORD";
     public static final String IMPERSONATE_USER = "IMPERSONATE_USER";
@@ -38,6 +39,7 @@ public class SecuredUserDomainPermissions extends DomainPermissions {
             @Qualifier("securedUserGetByPermissionActionPermissions") GetByPermissionActionPermissions getByPermissionActionPermissions,
             @Qualifier("securedUserGetByUserNameActionPermisions") GetByUserNameActionPermissions getByUserNameActionPermissions,
             @Qualifier("securedUserUpdateActionPermissions") UpdateActionPermissions updateActionPermissions,
+            @Qualifier("securedCognitoUserUpdateActionPermissions") UpdateActionPermissions cognitoUpdateActionPermissions,
             @Qualifier("securedUserUpdateContactInfoActionPermissions") UpdateContactInfoActionPermissions updateContactInfoActionPermissions,
             @Qualifier("securedUserUpdatePasswordActionPermissions") UpdatePasswordActionPermissions updatePasswordActionPermissions,
             @Qualifier("userPermissionsImpersonateUserActionPermissions") ImpersonateUserActionPermissions impersonateUserActionPermissions) {
@@ -49,6 +51,7 @@ public class SecuredUserDomainPermissions extends DomainPermissions {
         getActionPermissions().put(GET_BY_PERMISSION, getByPermissionActionPermissions);
         getActionPermissions().put(GET_BY_USER_NAME, getByUserNameActionPermissions);
         getActionPermissions().put(UPDATE, updateActionPermissions);
+        getActionPermissions().put(UPDATE_COGNITO, cognitoUpdateActionPermissions);
         getActionPermissions().put(UPDATE_CONTACT_INFO, updateContactInfoActionPermissions);
         getActionPermissions().put(UPDATE_PASSWORD, updatePasswordActionPermissions);
         getActionPermissions().put(IMPERSONATE_USER, impersonateUserActionPermissions);
