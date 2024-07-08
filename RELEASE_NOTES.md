@@ -1,5 +1,26 @@
 # Release Notes
 
+## Version 45.0.0
+_8 July 2024_
+
+### Breaking Changes
+* Remove 'showDeleted' request parameter from GET /developers
+
+### Features
+* Upgrade Spring Framework
+* Create message-preview endpoint for developer messages
+* Deprecate download/{listingType} for {listingType}/download
+* Create Service Base URL List downloadable file after collecting data
+* Deprecate developer statusEvents in favor of statuses
+* Deprecate developer status history; add status start/end dates
+
+### Bug Fixes
+* Fix spelling of "entries" in messages
+* Correctly change developer status on listing termination
+* Developer ban/email occurs for past or present listing status change
+
+---
+
 ## Version 44.5.0
 _24 June 2024_
 
