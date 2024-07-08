@@ -1,7 +1,8 @@
 package gov.healthit.chpl.dao;
 
+import static gov.healthit.chpl.util.LambdaExceptionUtil.rethrowConsumer;
+
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -9,10 +10,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.persistence.Query;
+import jakarta.persistence.Query;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,7 +32,6 @@ import gov.healthit.chpl.entity.developer.DeveloperEntitySimple;
 import gov.healthit.chpl.entity.developer.DeveloperSearchResultEntity;
 import gov.healthit.chpl.entity.developer.DeveloperStatusEntity;
 import gov.healthit.chpl.entity.developer.DeveloperStatusEventEntity;
-import gov.healthit.chpl.entity.developer.DeveloperStatusType;
 import gov.healthit.chpl.entity.listing.CertifiedProductDetailsEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -62,7 +61,6 @@ public class DeveloperDAO extends BaseDAOImpl {
             + "LEFT OUTER JOIN FETCH attestations.attestationPeriod "
             + "WHERE dev.deleted <> true ";
 
-    private static final DeveloperStatusType DEFAULT_STATUS = DeveloperStatusType.Active;
     private AddressDAO addressDao;
     private ContactDAO contactDao;
     private DeveloperStatusDAO statusDao;
@@ -91,40 +89,9 @@ public class DeveloperDAO extends BaseDAOImpl {
             developerEntity.setSelfDeveloper(developer.getSelfDeveloper());
             create(developerEntity);
 
-            if (CollectionUtils.isEmpty(developer.getStatusEvents())) {
-                DeveloperStatusEventEntity initialStatusEntity = new DeveloperStatusEventEntity();
-                initialStatusEntity.setDeveloperId(developerEntity.getId());
-                DeveloperStatusEntity defaultStatus = getStatusByName(DEFAULT_STATUS.toString());
-                initialStatusEntity.setDeveloperStatusId(defaultStatus.getId());
-                initialStatusEntity.setStatusDate(new Date());
-                create(initialStatusEntity);
-            } else {
-                for (DeveloperStatusEvent providedDeveloperStatusEvent : developer.getStatusEvents()) {
-                    if (providedDeveloperStatusEvent.getStatus() != null
-                            && !ObjectUtils.isEmpty(providedDeveloperStatusEvent.getStatus().getStatus())
-                            && providedDeveloperStatusEvent.getStatusDate() != null) {
-                        DeveloperStatusEventEntity currDevStatus = new DeveloperStatusEventEntity();
-                        currDevStatus.setDeveloperId(developerEntity.getId());
-                        DeveloperStatusEntity defaultStatus = getStatusByName(
-                                providedDeveloperStatusEvent.getStatus().getStatus());
-                        if (defaultStatus != null) {
-                            currDevStatus.setDeveloperStatusId(defaultStatus.getId());
-                            currDevStatus.setStatusDate(providedDeveloperStatusEvent.getStatusDate());
-                            create(currDevStatus);
-                        } else {
-                            String msg = "Could not find status with name "
-                                    + providedDeveloperStatusEvent.getStatus().getStatus()
-                                    + "; cannot insert this status history entry for developer " + developer.getName();
-                            LOGGER.error(msg);
-                            throw new EntityCreationException(msg);
-                        }
-                    } else {
-                        String msg = "Developer Status name and date must be provided but at least one was not found;"
-                                + "cannot insert this status history for developer " + developer.getName();
-                        LOGGER.error(msg);
-                        throw new EntityCreationException(msg);
-                    }
-                }
+            if (!CollectionUtils.isEmpty(developer.getStatuses())) {
+                developer.getStatuses().stream()
+                    .forEach(rethrowConsumer(status -> createDeveloperStatusEvent(developerEntity.getId(), status)));
             }
             return developerEntity.getId();
         } catch (Exception ex) {
@@ -174,63 +141,24 @@ public class DeveloperDAO extends BaseDAOImpl {
         update(entity);
     }
 
-    public void createDeveloperStatusEvent(DeveloperStatusEvent statusEvent)
-            throws EntityCreationException {
-        if (statusEvent.getStatus() != null && !ObjectUtils.isEmpty(statusEvent.getStatus().getStatus())
-                && statusEvent.getStatusDate() != null) {
-            DeveloperStatusEventEntity statusEventEntity = new DeveloperStatusEventEntity();
-            statusEventEntity.setDeveloperId(statusEvent.getDeveloperId());
-            DeveloperStatusEntity defaultStatus = getStatusByName(statusEvent.getStatus().getStatus());
-            if (defaultStatus != null) {
-                statusEventEntity.setDeveloperStatusId(defaultStatus.getId());
-                statusEventEntity.setReason(statusEvent.getReason());
-                statusEventEntity.setStatusDate(statusEvent.getStatusDate());
-                statusEventEntity.setDeleted(Boolean.FALSE);
-                create(statusEventEntity);
-            } else {
-                String msg = msgUtil.getMessage("developer.updateStatus.statusNotFound",
-                        statusEvent.getStatus().getStatus(), statusEvent.getDeveloperId());
-                LOGGER.error(msg);
-                throw new EntityCreationException(msg);
-            }
-        } else {
-            String msg = msgUtil.getMessage("developer.updateStatus.missingData", statusEvent.getDeveloperId());
-            LOGGER.error(msg);
-            throw new EntityCreationException(msg);
-        }
+    public void createDeveloperStatusEvent(Long developerId, DeveloperStatusEvent status) throws EntityCreationException {
+        DeveloperStatusEventEntity statusEventEntity = new DeveloperStatusEventEntity();
+        statusEventEntity.setDeveloperId(developerId);
+        DeveloperStatusEntity statusEntity = getStatusByName(status.getStatus().getName());
+        statusEventEntity.setDeveloperStatusId(statusEntity.getId());
+        statusEventEntity.setReason(status.getReason());
+        statusEventEntity.setStartDate(status.getStartDate());
+        statusEventEntity.setEndDate(status.getEndDate());
+        create(statusEventEntity);
     }
 
-    public void updateDeveloperStatusEvent(DeveloperStatusEvent statusEvent) throws EntityRetrievalException {
-        DeveloperStatusEventEntity statusEventEntity = entityManager.find(DeveloperStatusEventEntity.class,
-                statusEvent.getId());
-        if (statusEventEntity == null) {
-            String msg = msgUtil.getMessage("developer.updateStatus.idNotFound", statusEvent.getId());
-            LOGGER.error(msg);
-            throw new EntityRetrievalException(msg);
-        } else {
-            if (statusEvent.getStatus() != null && statusEvent.getStatus().getStatus() != null) {
-                DeveloperStatusEntity newStatusEventEntity = getStatusByName(statusEvent.getStatus().getStatus());
-                if (newStatusEventEntity != null && newStatusEventEntity.getId() != null) {
-                    statusEventEntity.setDeveloperStatus(newStatusEventEntity);
-                    statusEventEntity.setReason(statusEvent.getReason());
-                    statusEventEntity.setDeveloperStatusId(newStatusEventEntity.getId());
-                }
-                statusEventEntity.setStatusDate(statusEvent.getStatusDate());
-            }
+    public void removeDeveloperStatusEvent(Long developerStatusId) throws EntityRetrievalException {
+        DeveloperStatusEventEntity statusEventEntity = entityManager.find(DeveloperStatusEventEntity.class, developerStatusId);
+        if (statusEventEntity != null) {
+            statusEventEntity.setDeleted(true);
             update(statusEventEntity);
-        }
-    }
-
-    public void deleteDeveloperStatusEvent(DeveloperStatusEvent statusEvent) throws EntityRetrievalException {
-        DeveloperStatusEventEntity statusEventEntity = entityManager.find(DeveloperStatusEventEntity.class,
-                statusEvent.getId());
-        if (statusEventEntity == null) {
-            String msg = msgUtil.getMessage("developer.updateStatus.idNotFound", statusEvent.getId());
-            LOGGER.error(msg);
-            throw new EntityRetrievalException(msg);
         } else {
-            statusEventEntity.setDeleted(Boolean.TRUE);
-            update(statusEventEntity);
+            throw new EntityRetrievalException();
         }
     }
 
@@ -303,13 +231,6 @@ public class DeveloperDAO extends BaseDAOImpl {
             });
 
         return developerAcbMaps;
-    }
-
-    public List<Developer> findAllIncludingDeleted() {
-        List<DeveloperEntity> entities = getAllEntitiesIncludingDeleted();
-        return entities.stream()
-                .map(entity -> entity.toDomain())
-                .toList();
     }
 
     public Developer findById(Long id) throws EntityRetrievalException {
@@ -479,15 +400,6 @@ public class DeveloperDAO extends BaseDAOImpl {
                 DeveloperEntity.class).getResultList();
         List<AttestationPeriodEntity> attestationPeriodEntities = getAllAttestationPeriodEntities();
         result.forEach(e -> e.setPeriods(attestationPeriodEntities));
-        return result;
-    }
-
-    private List<DeveloperEntity> getAllEntitiesIncludingDeleted() {
-        List<DeveloperEntity> result = entityManager
-                .createQuery(DEVELOPER_HQL, DeveloperEntity.class)
-                .getResultList();
-        List<AttestationPeriodEntity> allAttestationPeriods = getAllAttestationPeriodEntities();
-        result.forEach(e -> e.setPeriods(allAttestationPeriods));
         return result;
     }
 

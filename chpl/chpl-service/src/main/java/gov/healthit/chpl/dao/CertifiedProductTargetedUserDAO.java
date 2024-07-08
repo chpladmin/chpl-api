@@ -3,8 +3,6 @@ package gov.healthit.chpl.dao;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.Query;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -14,6 +12,7 @@ import gov.healthit.chpl.dto.CertifiedProductTargetedUserDTO;
 import gov.healthit.chpl.entity.listing.CertifiedProductTargetedUserEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import jakarta.persistence.Query;
 
 @Repository(value = "certifiedProductTargetedUserDao")
 public class CertifiedProductTargetedUserDAO extends BaseDAOImpl {
@@ -94,7 +93,7 @@ public class CertifiedProductTargetedUserDAO extends BaseDAOImpl {
                 "SELECT tu from CertifiedProductTargetedUserEntity tu "
                         + "LEFT OUTER JOIN FETCH tu.targetedUser "
                         + "where (NOT tu.deleted = true) "
-                        + "AND (certified_product_targeted_user_id = :entityid) ",
+                        + "AND (tu.id = :entityid) ",
                 CertifiedProductTargetedUserEntity.class);
 
         query.setParameter("entityid", id);
@@ -111,7 +110,7 @@ public class CertifiedProductTargetedUserDAO extends BaseDAOImpl {
                 "SELECT tu from CertifiedProductTargetedUserEntity tu "
                         + "LEFT OUTER JOIN FETCH tu.targetedUser "
                         + "where (NOT tu.deleted = true) "
-                        + "AND (certified_product_id = :entityid) ",
+                        + "AND (certifiedProductId = :entityid) ",
                 CertifiedProductTargetedUserEntity.class);
 
         query.setParameter("entityid", productId);
@@ -127,7 +126,7 @@ public class CertifiedProductTargetedUserDAO extends BaseDAOImpl {
                         "SELECT tu from CertifiedProductTargetedUserEntity tu "
                                 + "LEFT OUTER JOIN FETCH tu.targetedUser "
                                 + "where (NOT tu.deleted = true) "
-                                + "AND (certified_product_id = :productId) "
+                                + "AND (certifiedProductId = :productId) "
                                 + "AND (tu.targetedUserId = :tuId)",
                         CertifiedProductTargetedUserEntity.class);
 

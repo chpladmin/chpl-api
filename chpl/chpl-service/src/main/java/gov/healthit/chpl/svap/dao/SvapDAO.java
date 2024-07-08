@@ -154,7 +154,7 @@ public class SvapDAO extends BaseDAOImpl {
                         + "LEFT JOIN FETCH c.certificationEdition "
                         + "LEFT JOIN FETCH c.rule "
                         + "JOIN FETCH scm.svap s "
-                        + "LEFT JOIN FETCH s.criteria c "
+                        + "LEFT JOIN FETCH s.criteria svapc "
                         + "WHERE scm.deleted <> true "
                         + "AND s.deleted <> true "
                         + "AND c.deleted <> true",

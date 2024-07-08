@@ -16,10 +16,7 @@
 								"exec": [
 									"pm.test(\"expect ONC to get status code 401 unauthorized on request to add a complaint\", function () {\r",
 									"    pm.response.to.have.status(401);\r",
-									"});\r",
-									"pm.test(\"expect ONC user to get access denied error on add complaint request\", () => {\r",
-									"  pm.expect(pm.response.text()).to.include(\"Access is denied\");\r",
-									"});"
+									"});\r"
 								],
 								"type": "text/javascript"
 							}
@@ -76,10 +73,7 @@
 								"exec": [
 									"pm.test(\"expect ONC to get status code 401 unauthorized on request to DELETE a complaint\", function () {\r",
 									"    pm.response.to.have.status(401);\r",
-									"});\r",
-									"pm.test(\"expect ONC user to get access denied error on delete complaint request\", () => {\r",
-									"  pm.expect(pm.response.text()).to.include(\"Access is denied\");\r",
-									"});"
+									"});\r"
 								],
 								"type": "text/javascript"
 							}

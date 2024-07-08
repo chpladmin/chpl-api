@@ -8,10 +8,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.Immutable;
@@ -94,8 +94,11 @@ public class DeveloperSearchResultEntity implements Serializable {
     @Column(name = "current_status_name")
     private String currentStatusName;
 
-    @Column(name = "last_developer_status_change")
-    private Date lastStatusChangeDate;
+    @Column(name = "vendor_status_start_date")
+    private LocalDate developerStatusStartDate;
+
+    @Column(name = "vendor_status_end_date")
+    private LocalDate developerStatusEndDate;
 
     @Column(name = "current_active_listing_count")
     private Integer currentActiveListingCount;
@@ -142,12 +145,16 @@ public class DeveloperSearchResultEntity implements Serializable {
                         .email(this.getContactEmail())
                         .phoneNumber(this.getContactPhoneNumber())
                         .build())
-                .status(IdNamePair.builder()
-                        .id(this.getCurrentStatusId())
-                        .name(this.getCurrentStatusName())
-                        .build())
-                .mostRecentStatusEvent(this.getLastStatusChangeDate())
-                .decertificationDate(calculateDecertificationDate(this.getCurrentStatusName(), this.getLastStatusChangeDate()))
+                .status(this.getCurrentStatusId() == null ? null
+                        : IdNamePair.builder()
+                            .id(this.getCurrentStatusId())
+                            .name(this.getCurrentStatusName())
+                            .build())
+                .mostRecentStatusEvent(this.getDeveloperStatusStartDate() != null
+                    ? DateUtil.toDate(this.getDeveloperStatusStartDate()) : null)
+                .currentStatusStartDate(this.getDeveloperStatusStartDate())
+                .currentStatusEndDate(this.getDeveloperStatusEndDate())
+                .decertificationDate(calculateDecertificationDate(this.getCurrentStatusName(), this.getDeveloperStatusStartDate()))
                 .currentActiveListingCount(this.getCurrentActiveListingCount())
                 .mostRecentPastAttestationPeriodActiveListingCount(this.getMostRecentPastAttestationPeriodActiveListingCount())
                 .submittedAttestationsForMostRecentPastPeriod(this.getMostRecentPastAttestationPeriodChangeRequestSubmissionId() != null)
@@ -158,9 +165,10 @@ public class DeveloperSearchResultEntity implements Serializable {
                 .build();
     }
 
-    private LocalDate calculateDecertificationDate(String statusName, Date statusChangeDate) {
-        if (statusName.equals(DeveloperStatusType.UnderCertificationBanByOnc.getName())) {
-            return DateUtil.toLocalDate(statusChangeDate.getTime());
+    private LocalDate calculateDecertificationDate(String statusName, LocalDate statusChangeDate) {
+        if (!StringUtils.isEmpty(statusName)
+                && statusName.equals(DeveloperStatusType.UnderCertificationBanByOnc.getName())) {
+            return statusChangeDate;
         }
         return null;
     }

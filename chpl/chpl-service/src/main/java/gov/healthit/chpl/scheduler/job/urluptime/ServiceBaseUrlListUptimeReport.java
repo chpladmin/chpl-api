@@ -67,5 +67,4 @@ public class ServiceBaseUrlListUptimeReport {
             .forEach(contact -> contactStrings.add(contact.getFullName() + " <" + contact.getEmail() + ">"));
         return String.join("; ", contactStrings);
     }
-
 }

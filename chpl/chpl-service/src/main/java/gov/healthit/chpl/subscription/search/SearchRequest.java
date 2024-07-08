@@ -3,7 +3,7 @@ package gov.healthit.chpl.subscription.search;
 import java.io.Serializable;
 import java.util.Set;
 
-import javax.xml.bind.annotation.XmlTransient;
+import jakarta.xml.bind.annotation.XmlTransient;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 

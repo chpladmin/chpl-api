@@ -3,8 +3,6 @@ package gov.healthit.chpl.dao;
 import java.util.Date;
 import java.util.List;
 
-import javax.persistence.Query;
-
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
@@ -12,6 +10,7 @@ import gov.healthit.chpl.dto.ApiKeyActivityDTO;
 import gov.healthit.chpl.entity.ApiKeyActivityEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import jakarta.persistence.Query;
 
 @Repository("apiKeyActivityDAO")
 public class ApiKeyActivityDAO extends BaseDAOImpl {
@@ -65,7 +64,7 @@ public class ApiKeyActivityDAO extends BaseDAOImpl {
 
     public void delete(Long id) {
         Query query = entityManager
-                .createQuery("UPDATE ApiKeyActivityEntity SET deleted = true WHERE api_activity_id = :entityid");
+                .createQuery("UPDATE ApiKeyActivityEntity SET deleted = true WHERE id = :entityid");
         query.setParameter("entityid", id);
         query.executeUpdate();
     }

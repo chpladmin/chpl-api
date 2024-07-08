@@ -11,7 +11,7 @@
     <name>CHPL api</name>
 
     <properties>
-      <org.springdoc.version>1.7.0</org.springdoc.version>
+      <org.springdoc.version>2.5.0</org.springdoc.version>
     </properties>
 
     <dependencies>
@@ -46,6 +46,7 @@
             <artifactId>spring-security-web</artifactId>
         </dependency>
         <!-- springboot needed for springdoc (swagger) -->
+        
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-autoconfigure</artifactId>
@@ -56,12 +57,19 @@
             <artifactId>spring-boot</artifactId>
             <version>${org.springboot.version}</version>
         </dependency>
+        <!--
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-webmvc-core</artifactId>
             <version>${org.springdoc.version}</version>
         </dependency>
-
+        -->
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-api</artifactId>
+            <version>${org.springdoc.version}</version>
+        </dependency>
+        
         <dependency>
             <groupId>org.aspectj</groupId>
             <artifactId>aspectjrt</artifactId>
@@ -72,11 +80,20 @@
             <artifactId>aspectjweaver</artifactId>
             <version>${aspectj.version}</version>
         </dependency>
+        <!--
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
             <version>3.1.0</version>
         </dependency>
+        -->
+        <dependency>
+            <groupId>jakarta.servlet</groupId>
+            <artifactId>jakarta.servlet-api</artifactId>
+            <version>6.1.0-M2</version>
+        </dependency>
+
+
         <dependency>
             <groupId>commons-fileupload</groupId>
             <artifactId>commons-fileupload</artifactId>
@@ -97,7 +114,7 @@
         <dependency>
             <groupId>org.ff4j</groupId>
             <artifactId>ff4j-web</artifactId>
-            <version>${ff4j.version}</version>
+            <version>2.0.0</version>
             <exclusions>
               <exclusion>
                 <groupId>commons-io</groupId>
@@ -152,6 +169,9 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
                   <release>${java.version}</release>
+                  <compilerArgs>
+                      <arg>-parameters</arg>
+                   </compilerArgs>
                 </configuration>
             </plugin>
             <plugin>

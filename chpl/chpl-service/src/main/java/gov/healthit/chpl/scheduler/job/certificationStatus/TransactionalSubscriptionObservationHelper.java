@@ -2,7 +2,7 @@ package gov.healthit.chpl.scheduler.job.certificationStatus;
 
 import java.util.List;
 
-import javax.transaction.Transactional;
+import jakarta.transaction.Transactional;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;

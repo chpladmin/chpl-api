@@ -16,10 +16,9 @@ public class DeveloperValidationFactory {
     public static final String ADDRESS = "ADDRESS";
     public static final String STATUS_EVENTS = "STATUS_EVENTS";
 
-    public static final String HAS_STATUS = "HAS_STATUS";
-    public static final String ACTIVE_STATUS = "ACTIVE_STATUS";
+    public static final String NOT_BANNED_OR_SUSPENDED_STATUS = "NOT_BANNED_OR_SUSPENDED_STATUS";
     public static final String STATUS_MISSING_BAN_REASON = "STATUS_MISSING_BAN_REASON";
-    public static final String PRIOR_STATUS_ACTIVE = "PRIOR_STATUS_ACTIVE";
+    public static final String PRIOR_STATUS_BANNED_OR_SUSPENDED = "PRIOR_STATUS_BANNED_OR_SUSPENDED";
     public static final String EDIT_STATUS_HISTORY = "EDIT_STATUS_HISTORY";
     public static final String STATUS_CHANGED = "STATUS_CHANGED";
 
@@ -46,14 +45,12 @@ public class DeveloperValidationFactory {
             return new DeveloperAddressValidation();
         case STATUS_EVENTS:
             return new DeveloperStatusEventsValidation();
-        case HAS_STATUS:
-            return new DeveloperHasStatusValidation();
-        case ACTIVE_STATUS:
-            return new DeveloperActiveStatusValidation();
+        case NOT_BANNED_OR_SUSPENDED_STATUS:
+            return new DeveloperNotBannedOrSuspendedValidation();
         case STATUS_MISSING_BAN_REASON:
             return new DeveloperStatusMissingBanReasonValidation();
-        case PRIOR_STATUS_ACTIVE:
-            return new DeveloperPriorStatusActiveValidation(resourcePermissionsFactory);
+        case PRIOR_STATUS_BANNED_OR_SUSPENDED:
+            return new DeveloperPriorStatusBannedOrSuspendedValidation(resourcePermissionsFactory);
         case EDIT_STATUS_HISTORY:
             return new DeveloperEditStatusHistoryValidation(resourcePermissionsFactory);
         case STATUS_CHANGED:

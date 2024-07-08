@@ -3,8 +3,6 @@ package gov.healthit.chpl.dao;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.Query;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -15,6 +13,7 @@ import gov.healthit.chpl.entity.UserCertificationBodyMapEntity;
 import gov.healthit.chpl.entity.auth.UserEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.util.UserMapper;
+import jakarta.persistence.Query;
 
 @Repository(value = "userCertificationBodyMapDAO")
 public class UserCertificationBodyMapDAO extends BaseDAOImpl {
@@ -164,7 +163,7 @@ public class UserCertificationBodyMapDAO extends BaseDAOImpl {
         UserEntity user = null;
 
         Query query = entityManager.createQuery("from UserEntity where (NOT deleted = true) "
-                        + "AND (user_id = :userid) ", UserEntity.class);
+                        + "AND (id = :userid) ", UserEntity.class);
         query.setParameter("userid", userId);
         List<UserEntity> result = query.getResultList();
 

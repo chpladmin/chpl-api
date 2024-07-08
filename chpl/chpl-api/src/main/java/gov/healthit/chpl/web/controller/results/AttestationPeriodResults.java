@@ -10,7 +10,7 @@ import lombok.Data;
 @Builder
 public class AttestationPeriodResults {
     private List<AttestationPeriod> results;
-    
+
     public AttestationPeriodResults(List<AttestationPeriod> periods) {
         this.results = periods;
     }

@@ -1,6 +1,6 @@
 package gov.healthit.chpl.dto;
 
-import gov.healthit.chpl.domain.DeveloperStatusEvent;
+import gov.healthit.chpl.domain.DeveloperStatusEventDeprecated;
 
 /**
  * Maintains the original and updated DeveloperStatusEventDTO.
@@ -8,26 +8,26 @@ import gov.healthit.chpl.domain.DeveloperStatusEvent;
  *
  */
 public class DeveloperStatusEventPair {
-    private DeveloperStatusEvent orig;
-    private DeveloperStatusEvent updated;
+    private DeveloperStatusEventDeprecated orig;
+    private DeveloperStatusEventDeprecated updated;
 
     /**
      * Basic constructor that populates the object.
      * @param orig - DeveloperStatusEventDTO
      * @param updated - DeveloperStatusEventDTO
      */
-    public DeveloperStatusEventPair(DeveloperStatusEvent orig,
-            DeveloperStatusEvent updated) {
+    public DeveloperStatusEventPair(DeveloperStatusEventDeprecated orig,
+            DeveloperStatusEventDeprecated updated) {
 
         this.orig = orig;
         this.updated = updated;
     }
 
-    public DeveloperStatusEvent getOrig() {
+    public DeveloperStatusEventDeprecated getOrig() {
         return orig;
     }
 
-    public DeveloperStatusEvent getUpdated() {
+    public DeveloperStatusEventDeprecated getUpdated() {
         return updated;
     }
 }

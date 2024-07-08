@@ -3,11 +3,11 @@ package gov.healthit.chpl.entity.listing;
 import java.time.LocalDate;
 import java.util.Date;
 
-import javax.persistence.Basic;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import jakarta.persistence.Basic;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 import org.hibernate.annotations.Immutable;
 
@@ -136,8 +136,11 @@ public class CertifiedProductDetailsEntitySimple {
     @Column(name = "vendor_status_name")
     private String developerStatusName;
 
-    @Column(name = "last_vendor_status_change")
-    private Date developerStatusDate;
+    @Column(name = "vendor_status_start_date")
+    private LocalDate developerStatusStartDate;
+
+    @Column(name = "vendor_status_end_date")
+    private LocalDate developerStatusEndDate;
 
     @Column(name = "self_developer")
     private Boolean selfDeveloper;

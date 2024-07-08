@@ -1,20 +1,22 @@
 package gov.healthit.chpl.entity.developer;
 
-import java.util.Date;
+import java.time.LocalDate;
 
-import javax.persistence.Basic;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
+import jakarta.persistence.Basic;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 
 import gov.healthit.chpl.domain.DeveloperStatusEvent;
+import gov.healthit.chpl.domain.DeveloperStatusEventDeprecated;
 import gov.healthit.chpl.entity.EntityAudit;
+import gov.healthit.chpl.util.DateUtil;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -56,16 +58,30 @@ public class DeveloperStatusEventEntity extends EntityAudit {
     @Column(name = "reason")
     private String reason;
 
-    @Column(name = "status_date")
-    private Date statusDate;
+    @Column(name = "start_date")
+    private LocalDate startDate;
+
+    @Column(name = "end_date")
+    private LocalDate endDate;
 
     public DeveloperStatusEvent toDomain() {
         return DeveloperStatusEvent.builder()
+                .id(this.getId())
+                .reason(this.getReason())
+                .status(this.getDeveloperStatus() != null ? this.getDeveloperStatus().toDomain() : null)
+                .startDate(this.getStartDate())
+                .endDate(this.getEndDate())
+                .build();
+    }
+
+    @Deprecated
+    public DeveloperStatusEventDeprecated toStatusEventsDeprecated() {
+        return DeveloperStatusEventDeprecated.builder()
                 .developerId(this.getDeveloperId())
                 .id(this.getId())
                 .reason(this.getReason())
                 .status(this.getDeveloperStatus() != null ? this.getDeveloperStatus().toDomain() : null)
-                .statusDate(this.getStatusDate())
+                .statusDate(DateUtil.toDate(this.getStartDate()))
                 .build();
     }
 }
