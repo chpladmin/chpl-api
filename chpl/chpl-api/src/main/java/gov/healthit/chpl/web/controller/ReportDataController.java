@@ -5,7 +5,6 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.env.Environment;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -25,15 +24,12 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RestController
 @RequestMapping("/report-data")
 public class ReportDataController {
-    private Environment environment;
     private ReportDataManager reportDataManager;
-    Map<String, String> reportUrlsByReportName;
+    private Map<String, String> reportUrlsByReportName;
 
     @Autowired
-    public ReportDataController(ReportDataManager reportDataManager, Environment environment,
-            @Value("#{${reportUrls}}") Map<String, String> reportUrlsByReportName) {
+    public ReportDataController(ReportDataManager reportDataManager, @Value("#{${reportUrls}}") Map<String, String> reportUrlsByReportName) {
         this.reportDataManager = reportDataManager;
-        this.environment = environment;
         this.reportUrlsByReportName = reportUrlsByReportName;
     }
 
