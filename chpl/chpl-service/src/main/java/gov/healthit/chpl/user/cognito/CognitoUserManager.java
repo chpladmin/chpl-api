@@ -29,6 +29,7 @@ public class CognitoUserManager {
 
     private CognitoUserInvitationDAO userInvitationDAO;
     private CognitoUserCreationValidator userCreationValidator;
+    private CognitoUpdateUserValidator userUpdateValidator;
     private InvitationEmailer invitationEmailer;
     private CognitoConfirmEmailEmailer cognitoConfirmEmailEmailer;
     private CognitoApiWrapper cognitoApiWrapper;
@@ -38,12 +39,13 @@ public class CognitoUserManager {
 
 
     @Autowired
-    public CognitoUserManager(CognitoUserInvitationDAO userInvitationDAO, CognitoUserCreationValidator userCreationValidator,
+    public CognitoUserManager(CognitoUserInvitationDAO userInvitationDAO, CognitoUserCreationValidator userCreationValidator, CognitoUpdateUserValidator userUpdateValidator,
             InvitationEmailer invitationEmailer, CognitoConfirmEmailEmailer cognitoConfirmEmailEmailer, CognitoApiWrapper cognitoApiWrapper,
             CognitoInvitationValidator cognitoInvitationValidator, @Value("${cognito.environment.groupName}") String groupNameForEnvironment) {
 
         this.userInvitationDAO = userInvitationDAO;
         this.userCreationValidator = userCreationValidator;
+        this.userUpdateValidator = userUpdateValidator;
         this.invitationEmailer = invitationEmailer;
         this.cognitoConfirmEmailEmailer = cognitoConfirmEmailEmailer;
         this.cognitoApiWrapper = cognitoApiWrapper;

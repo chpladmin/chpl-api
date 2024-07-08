@@ -6,9 +6,8 @@ import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 
-import gov.healthit.chpl.domain.CreateUserFromInvitationRequest;
+import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
@@ -17,45 +16,20 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 public class CognitoUpdateUserValidator {
 
-    private CognitoUserInvitationDAO userInvitationDAO;
     private CognitoApiWrapper cognitoApiWrapper;
     private ErrorMessageUtil msgUtil;
-    private long invitationLengthInDays;
 
 
     @Autowired
-    public CognitoUpdateUserValidator(CognitoUserInvitationDAO userInvitationDAO, CognitoApiWrapper cognitoApiWrapper,
-            ErrorMessageUtil msgUtil, @Value("${invitationLengthInDays}") Long invitationLengthDays) {
-        this.userInvitationDAO = userInvitationDAO;
+    public CognitoUpdateUserValidator(CognitoApiWrapper cognitoApiWrapper, ErrorMessageUtil msgUtil) {
         this.cognitoApiWrapper = cognitoApiWrapper;
         this.msgUtil = msgUtil;
-        this.invitationLengthInDays = invitationLengthDays;
     }
 
-    public Set<String> validate(CreateUserFromInvitationRequest userInfo) {
+    public Set<String> validate(User user) {
         Set<String> messages = new HashSet<String>();
 
-
-        if (isInvitationExpired(UUID.fromString(userInfo.getHash()))) {
-            messages.add(msgUtil.getMessage("user.invitation.expired",
-                    invitationLengthInDays + "",
-                    invitationLengthInDays == 1 ? "" : "s"));
-        }
-
-
-        if (userInfo.getUser() == null || userInfo.getUser().getEmail() == null) {
-            messages.add(msgUtil.getMessage("user.email.required"));
-            return messages;
-        }
-
-        try {
-            if (doesUserExistInCognito(userInfo.getUser().getEmail())) {
-                messages.add(msgUtil.getMessage("user.accountAlreadyExists", userInfo.getUser().getEmail()));
-            }
-        } catch (UserRetrievalException e) {
-            LOGGER.error("Could not validate if the user exists in store.", e);
-        }
-        Set<String> errors = validateCreateUserFromInvitationRequest(userInfo);
+        Set<String> errors = validateUser(user);
         if (errors.size() > 0) {
             messages.addAll(errors);
         }
@@ -63,35 +37,38 @@ public class CognitoUpdateUserValidator {
         return messages;
     }
 
-    private Boolean isInvitationExpired(UUID token) {
-        CognitoUserInvitation invitation = userInvitationDAO.getByToken(token);
-        return invitation == null || invitation.isOlderThan(invitationLengthInDays);
-    }
-
-    private Set<String> validateCreateUserFromInvitationRequest(CreateUserFromInvitationRequest request) {
+    private Set<String> validateUser(User user) {
         Set<String> validationErrors = new HashSet<String>();
 
-        if (StringUtils.isEmpty(request.getUser().getFullName())) {
+        if (!doesUserExistInCognito(user.getCognitoId())) {
+            validationErrors.add(msgUtil.getMessage("user.notFound"));
+        }
+
+        if (StringUtils.isEmpty(user.getFullName())) {
             validationErrors.add(msgUtil.getMessage("cognito.user.create.fullName.empty"));
         }
 
-        if (StringUtils.isEmpty(request.getUser().getPhoneNumber())) {
+        if (StringUtils.isEmpty(user.getPhoneNumber())) {
             validationErrors.add(msgUtil.getMessage("cognito.user.create.phoneNumber.empty"));
-        } else if (!isPhoneNumberValid(request.getUser().getPhoneNumber())) {
+        } else if (!isPhoneNumberValid(user.getPhoneNumber())) {
             validationErrors.add(msgUtil.getMessage("cognito.user.create.phoneNumber.invalid"));
         }
 
-        if (StringUtils.isEmpty(request.getUser().getEmail())) {
+        if (StringUtils.isEmpty(user.getEmail())) {
             validationErrors.add(msgUtil.getMessage("cognito.user.create.email.empty"));
-        } else if (!Util.isEmailAddressValidFormat(request.getUser().getEmail())) {
+        } else if (!Util.isEmailAddressValidFormat(user.getEmail())) {
             validationErrors.add(msgUtil.getMessage("cognito.user.create.email.invalid"));
         }
 
         return validationErrors;
     }
 
-    private Boolean doesUserExistInCognito(String email) throws UserRetrievalException {
-        return cognitoApiWrapper.getUserInfo(email) != null;
+    private Boolean doesUserExistInCognito(UUID cognitoId) {
+        try {
+            return cognitoApiWrapper.getUserInfo(cognitoId) != null;
+        } catch (UserRetrievalException e) {
+            return false;
+        }
     }
 
     private Boolean isPhoneNumberValid(String phoneNumber) {
