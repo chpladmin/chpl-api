@@ -42,6 +42,7 @@ import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminInitia
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminInitiateAuthResponse;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminListGroupsForUserRequest;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminListGroupsForUserResponse;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminUpdateUserAttributesRequest;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AttributeType;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AuthFlowType;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AuthenticationResultType;
@@ -233,6 +234,23 @@ public class CognitoApiWrapper {
 
         }
         return users;
+    }
+
+    public User updateUser(User user) throws UserRetrievalException {
+        AdminUpdateUserAttributesRequest request = AdminUpdateUserAttributesRequest.builder()
+                .userPoolId(userPoolId)
+                .username(user.getCognitoId().toString())
+                .userAttributes(List.of(
+                        AttributeType.builder().name("email").value(user.getEmail()).build(),
+                        AttributeType.builder().name("phone_number").value("+1" + user.getPhoneNumber().replaceAll("[^0-9.]", "")).build(),
+                        AttributeType.builder().name("name").value(user.getFullName()).build(),
+                        AttributeType.builder().name("email_verified").value("true").build(),
+                        AttributeType.builder().name("phone_number_verified").value("true").build()))
+                .build();
+
+        cognitoClient.adminUpdateUserAttributes(request);
+
+        return getUserInfoFromCognito(user.getCognitoId());
     }
 
     private CognitoIdentityProviderClient createCognitoClient(String accessKey, String secretKey, String region) {
