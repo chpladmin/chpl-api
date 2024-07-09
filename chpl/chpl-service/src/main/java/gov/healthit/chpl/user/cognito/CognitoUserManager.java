@@ -71,7 +71,16 @@ public class CognitoUserManager {
             throw new ValidationException(errors, null);
         }
 
-        return cognitoApiWrapper.updateUser(user);
+        User originalUser = cognitoApiWrapper.getUserInfo(user.getCognitoId());
+        cognitoApiWrapper.updateUser(user);
+
+        if (originalUser.getAccountEnabled() && !user.getAccountEnabled()) {
+            cognitoApiWrapper.disableUser(user);
+        } else if (!originalUser.getAccountEnabled() && user.getAccountEnabled()) {
+            cognitoApiWrapper.enableUser(user);
+        }
+
+        return cognitoApiWrapper.getUserInfo(user.getCognitoId());
     }
 
     @Transactional

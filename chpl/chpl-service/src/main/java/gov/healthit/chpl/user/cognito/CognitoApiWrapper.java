@@ -38,6 +38,7 @@ import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminAddUse
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminCreateUserRequest;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminCreateUserResponse;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminDeleteUserRequest;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminDisableUserRequest;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminEnableUserRequest;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminInitiateAuthRequest;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminInitiateAuthResponse;
@@ -258,6 +259,14 @@ public class CognitoApiWrapper {
                 .username(user.getCognitoId().toString())
                 .build();
         cognitoClient.adminEnableUser(request);
+    }
+
+    public void disableUser(User user) {
+        AdminDisableUserRequest request = AdminDisableUserRequest.builder()
+                .userPoolId(userPoolId)
+                .username(user.getCognitoId().toString())
+                .build();
+        cognitoClient.adminDisableUser(request);
     }
 
     private CognitoIdentityProviderClient createCognitoClient(String accessKey, String secretKey, String region) {
