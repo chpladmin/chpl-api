@@ -38,6 +38,7 @@ import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminAddUse
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminCreateUserRequest;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminCreateUserResponse;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminDeleteUserRequest;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminEnableUserRequest;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminInitiateAuthRequest;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminInitiateAuthResponse;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminListGroupsForUserRequest;
@@ -236,7 +237,7 @@ public class CognitoApiWrapper {
         return users;
     }
 
-    public User updateUser(User user) throws UserRetrievalException {
+    public void updateUser(User user) throws UserRetrievalException {
         AdminUpdateUserAttributesRequest request = AdminUpdateUserAttributesRequest.builder()
                 .userPoolId(userPoolId)
                 .username(user.getCognitoId().toString())
@@ -249,8 +250,14 @@ public class CognitoApiWrapper {
                 .build();
 
         cognitoClient.adminUpdateUserAttributes(request);
+    }
 
-        return getUserInfoFromCognito(user.getCognitoId());
+    public void enableUser(User user) {
+        AdminEnableUserRequest request = AdminEnableUserRequest.builder()
+                .userPoolId(userPoolId)
+                .username(user.getCognitoId().toString())
+                .build();
+        cognitoClient.adminEnableUser(request);
     }
 
     private CognitoIdentityProviderClient createCognitoClient(String accessKey, String secretKey, String region) {
