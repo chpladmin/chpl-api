@@ -37,6 +37,7 @@ import gov.healthit.chpl.manager.ProductVersionManager;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
+import gov.healthit.chpl.web.controller.annotation.DeprecatedApi;
 import gov.healthit.chpl.web.controller.annotation.DeprecatedApiResponseFields;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -111,8 +112,10 @@ public class ActivityController {
             })
     @RequestMapping(value = "/metadata/listings", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
-    @DeprecatedApiResponseFields(friendlyUrl = "/activity/metadata/listings",
-        responseClass = ActivityMetadataPage.class)
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/activity/metadata/listings", httpMethod = "GET",
+        message = "This endpoint is deprecated and will be removed. Please use /activity/metadata/listings/{listingId} to get the activity metadata for a specific listing.",
+        removalDate = "2025-01-01")
     public ActivityMetadataPage metadataForListings(@RequestParam(required = false) Long start,
             @RequestParam(required = false) Long end, @RequestParam(required = false) Integer pageNum,
             @RequestParam(required = false) Integer pageSize) throws JsonParseException, IOException, ValidationException {
