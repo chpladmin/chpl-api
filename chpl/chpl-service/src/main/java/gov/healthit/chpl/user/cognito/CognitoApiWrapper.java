@@ -334,8 +334,7 @@ public class CognitoApiWrapper {
         user.setFullName(getUserAttribute(userType.attributes(), "name").value());
         user.setEmail(getUserAttribute(userType.attributes(), "email").value());
         user.setTitle(getUserAttribute(userType.attributes(), "custom:title").value());
-        user.setPhoneNumber(getUserAttribute(userType.attributes(), "phone_number").value());
-        user.setAccountLocked(!userType.enabled());
+        user.setPhoneNumber(getPhoneNumberFromAttributes(userType.attributes()));
         user.setAccountEnabled(userType.enabled());
         user.setStatus(userType.userStatusAsString());
         user.setPasswordResetRequired(userType.userStatus().equals(UserStatusType.RESET_REQUIRED));
@@ -348,6 +347,14 @@ public class CognitoApiWrapper {
                 .toList()));
         }
         return user;
+    }
+
+    private String getPhoneNumberFromAttributes(List<AttributeType> attributes) {
+        String phoneNumber = getUserAttribute(attributes, "phone_number").value();
+        if (phoneNumber.startsWith("+1")) {
+            phoneNumber = phoneNumber.substring(2);
+        }
+        return phoneNumber;
     }
 
     private String getRoleBasedOnFilteredGroups(List<GroupType> groups) {
