@@ -86,6 +86,7 @@ public class CognitoApiWrapper {
         this.developerDAO = developerDAO;
     }
 
+
     public String authenticate(LoginCredentials credentials) {
         String secretHash = CognitoSecretHash.calculateSecretHash(clientId, userPoolClientSecret, credentials.getUserName());
 
@@ -129,6 +130,7 @@ public class CognitoApiWrapper {
             }
         }
         return null;
+
     }
 
     public User getUserInfo(String email) throws UserRetrievalException {

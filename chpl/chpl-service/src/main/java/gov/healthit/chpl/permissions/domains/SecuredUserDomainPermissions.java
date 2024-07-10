@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.permissions.domains.secureduser.CognitoUpdateActionPermissions;
 import gov.healthit.chpl.permissions.domains.secureduser.CreateActionPermissions;
 import gov.healthit.chpl.permissions.domains.secureduser.DeleteActionPermissions;
 import gov.healthit.chpl.permissions.domains.secureduser.GetAllActionPermissions;
@@ -39,7 +40,7 @@ public class SecuredUserDomainPermissions extends DomainPermissions {
             @Qualifier("securedUserGetByPermissionActionPermissions") GetByPermissionActionPermissions getByPermissionActionPermissions,
             @Qualifier("securedUserGetByUserNameActionPermisions") GetByUserNameActionPermissions getByUserNameActionPermissions,
             @Qualifier("securedUserUpdateActionPermissions") UpdateActionPermissions updateActionPermissions,
-            @Qualifier("securedCognitoUserUpdateActionPermissions") UpdateActionPermissions cognitoUpdateActionPermissions,
+            @Qualifier("securedCognitoUserUpdateActionPermissions") CognitoUpdateActionPermissions cognitoUpdateActionPermissions,
             @Qualifier("securedUserUpdateContactInfoActionPermissions") UpdateContactInfoActionPermissions updateContactInfoActionPermissions,
             @Qualifier("securedUserUpdatePasswordActionPermissions") UpdatePasswordActionPermissions updatePasswordActionPermissions,
             @Qualifier("userPermissionsImpersonateUserActionPermissions") ImpersonateUserActionPermissions impersonateUserActionPermissions) {
