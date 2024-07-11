@@ -11,8 +11,6 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.stream.Collectors;
 
-import jakarta.transaction.Transactional;
-
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
@@ -61,6 +59,7 @@ import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
+import jakarta.transaction.Transactional;
 import lombok.extern.log4j.Log4j2;
 
 @Component
@@ -195,6 +194,29 @@ public class ListingUploadManager {
         LOGGER.debug("Normalized listing upload with ID " + id);
         listingUploadValidator.review(listingUpload, listing);
         LOGGER.debug("Validated listing upload with ID " + id);
+        return listing;
+    }
+
+    @Transactional
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).LISTING_UPLOAD, "
+            + "T(gov.healthit.chpl.permissions.domains.ListingUploadDomainPerissions).GET_UPLOAD_AS_LISTING, #listingUpload)")
+    public CertifiedProductSearchDetails getListingUploadAsListing(ListingUpload listingUpload) throws ValidationException {
+        List<CSVRecord> allCsvRecords = listingUpload.getRecords();
+        if (allCsvRecords == null) {
+            LOGGER.debug("Listing upload has no CSV records associated with it.");
+            return null;
+        }
+        LOGGER.debug("Listing upload has " + allCsvRecords.size() + " CSV records associated with it.");
+        int headingRowIndex = uploadUtil.getHeadingRecordIndex(allCsvRecords);
+        CSVRecord headingRecord = uploadUtil.getHeadingRecord(allCsvRecords);
+        List<CSVRecord> allListingRecords = allCsvRecords.subList(headingRowIndex + 1, allCsvRecords.size());
+        LOGGER.debug("Converting listing upload into CertifiedProductSearchDetails object");
+        CertifiedProductSearchDetails listing = listingDetailsHandler.parseAsListing(headingRecord, allListingRecords);
+        LOGGER.debug("Converted listing upload into CertifiedProductSearchDetails object");
+        listingNormalizer.normalize(listing, List.of(baselineStandardNormalizer));
+        LOGGER.debug("Normalized listing upload");
+        listingUploadValidator.review(listingUpload, listing);
+        LOGGER.debug("Validated listing upload");
         return listing;
     }
 

@@ -16,8 +16,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import jakarta.servlet.http.HttpServletResponse;
-
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.lang3.StringUtils;
@@ -39,6 +37,9 @@ import org.springframework.web.multipart.MultipartFile;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.caching.CacheNames;
+import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
+import gov.healthit.chpl.domain.CQMResultDetails;
+import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.ConfirmListingRequest;
 import gov.healthit.chpl.domain.ListingUpload;
@@ -59,6 +60,7 @@ import gov.healthit.chpl.web.controller.results.ListingUploadResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.log4j.Log4j2;
 
 @Tag(name = "listing-upload", description = "Allows upload of listings.")
@@ -74,13 +76,16 @@ public class ListingUploadController {
     private String uploadErrorEmailSubject;
 
     private ListingUploadManager listingUploadManager;
+    private CertifiedProductDetailsManager cpdManager;
     private ChplEmailFactory chplEmailFactory;
     private FileUtils fileUtils;
 
     @Autowired
     public ListingUploadController(ListingUploadManager listingUploadManager,
+            CertifiedProductDetailsManager cpdManager,
             ChplEmailFactory chplEmailFactory, FileUtils fileUtils) {
         this.listingUploadManager = listingUploadManager;
+        this.cpdManager = cpdManager;
         this.chplEmailFactory = chplEmailFactory;
         this.fileUtils = fileUtils;
     }
@@ -198,6 +203,83 @@ public class ListingUploadController {
         ListingUploadResponse response = createResponse(successfulListingUploads, processedListingErrorMap);
         return new ResponseEntity<ListingUploadResponse>(response,
                 response.getErrorMessages().size() == 0 ? HttpStatus.OK : HttpStatus.PARTIAL_CONTENT);
+    }
+
+    @Operation(summary = "Upload a file with certified products",
+            description = "Accepts a CSV file with a valid set of fields to upload a listing. "
+                    + "Security Restrictions: ROLE_ADMIN or user uploading the file must have ROLE_ACB "
+                    + "and administrative authority on the ONC-ACB(s) specified in the file.",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
+    @RequestMapping(value = "/upload-to-update/{listingId}", method = RequestMethod.PUT, produces = "application/json; charset=utf-8")
+    public ResponseEntity<CertifiedProductSearchDetails> replace(@PathVariable("listingId") Long listingId,
+            @RequestParam("file") MultipartFile file) throws ValidationException, ActivityException {
+        List<ListingUpload> listingsToReplace = new ArrayList<ListingUpload>();
+        try {
+            listingsToReplace = listingUploadManager.parseUploadFile(file);
+        } catch (ValidationException ex) {
+            LOGGER.error("Error uploading listing(s) from file " + file.getOriginalFilename() + ". " + ex.getMessage(), ex);
+            throw ex;
+        } catch (AccessDeniedException | NullPointerException | IndexOutOfBoundsException ex) {
+            LOGGER.error("Error uploading listing(s) from file " + file.getOriginalFilename() + ". " + ex.getMessage(), ex);
+            //send an email that something weird happened
+            sendUploadError(file, ex);
+            throw new ValidationException(ex.getMessage());
+        }
+
+        if (listingsToReplace.size() > 1) {
+            LOGGER.error("File uploaded to update listing " + listingId + " had more than one listing in the file.");
+            throw new ValidationException("The file uploaded has data for more than 1 listing.");
+        }
+
+        ListingUpload listingToReplace = listingsToReplace.get(0);
+        CertifiedProductSearchDetails listing = null;
+        try {
+            listing = cpdManager.getCertifiedProductDetails(listingId);
+        } catch (Exception ex) {
+            LOGGER.error("Could not get details for " + listingId, ex);
+            throw new ValidationException("Listing was not found");
+        }
+
+        //make sure the CHPL Product Number in the file matches the one in the listing details
+        if (!listingToReplace.getChplProductNumber().equals(listing.getChplProductNumber())) {
+            throw new ValidationException("The CHPL Product Number in the uploaded file " + listingToReplace.getChplProductNumber()
+                        + " does not match the CHPL Product Number of the listing " + listing.getChplProductNumber());
+        }
+
+        CertifiedProductSearchDetails parsedListingToReplace = listingUploadManager.getListingUploadAsListing(listingToReplace);
+        mergeListingFromFileWithListingFromChpl(parsedListingToReplace, listing);
+        return new ResponseEntity<CertifiedProductSearchDetails>(parsedListingToReplace, HttpStatus.OK);
+    }
+
+    private void mergeListingFromFileWithListingFromChpl(CertifiedProductSearchDetails listingFromFile,
+            CertifiedProductSearchDetails listingInChpl) {
+        listingFromFile.setId(listingInChpl.getId());
+        listingFromFile.setCertificationEvents(listingInChpl.getCertificationEvents());
+        //add cert result ids
+        listingFromFile.getCertificationResults().stream()
+            .forEach(certResultFromFile -> setCertResultIdFromListingInChpl(certResultFromFile, listingInChpl));
+        //add cqm result ids
+        listingFromFile.getCqmResults().stream()
+            .forEach(cqmResultFromFile -> setCqmResultIdFromListingInChpl(cqmResultFromFile, listingInChpl));
+    }
+
+    private void setCertResultIdFromListingInChpl(CertificationResult certResultFromFile, CertifiedProductSearchDetails listingInChpl) {
+        CertificationResult certResultFromChpl = listingInChpl.getCertificationResults().stream()
+            .filter(certResultInChpl -> certResultInChpl.getCriterion().getId().equals(certResultFromFile.getCriterion().getId()))
+            .findAny().orElse(null);
+        if (certResultFromChpl != null) {
+            certResultFromFile.setId(certResultFromChpl.getId());
+        }
+    }
+
+    private void setCqmResultIdFromListingInChpl(CQMResultDetails cqmResultFromFile, CertifiedProductSearchDetails listingInChpl) {
+        CQMResultDetails cqmResultFromChpl = listingInChpl.getCqmResults().stream()
+            .filter(cqmResultInChpl -> cqmResultInChpl.getCmsId().equals(cqmResultFromFile.getCmsId()))
+            .findAny().orElse(null);
+        if (cqmResultFromChpl != null) {
+            cqmResultFromFile.setId(cqmResultFromChpl.getId());
+        }
     }
 
     private ListingUploadResponse createResponse(List<ListingUpload> successfulListingUploads, Map<String, String> processedListingErrorMap) throws ValidationException {
