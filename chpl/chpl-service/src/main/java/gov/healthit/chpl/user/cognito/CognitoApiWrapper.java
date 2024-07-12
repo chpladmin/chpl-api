@@ -2,12 +2,7 @@ package gov.healthit.chpl.user.cognito;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-<<<<<<< HEAD
-import java.util.Date;
-=======
 import java.util.Base64;
-import java.util.HashMap;
->>>>>>> staging
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,11 +20,8 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.CognitoSecretHash;
-<<<<<<< HEAD
-import gov.healthit.chpl.caching.CacheNames;
-=======
 import gov.healthit.chpl.PasswordGenerator;
->>>>>>> staging
+import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.domain.CertificationBody;
@@ -60,13 +52,10 @@ import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminInitia
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminInitiateAuthResponse;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminListGroupsForUserRequest;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminListGroupsForUserResponse;
-<<<<<<< HEAD
-import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminUpdateUserAttributesRequest;
-=======
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminRespondToAuthChallengeRequest;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminRespondToAuthChallengeResponse;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminSetUserPasswordRequest;
->>>>>>> staging
+import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminUpdateUserAttributesRequest;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AttributeType;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AuthFlowType;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AuthenticationResultType;
@@ -109,12 +98,8 @@ public class CognitoApiWrapper {
 
     }
 
-<<<<<<< HEAD
 
-    public String authenticate(LoginCredentials credentials) {
-=======
     public AuthenticationResultType authenticate(LoginCredentials credentials) throws CognitoAuthenticationChallengeException {
->>>>>>> staging
         String secretHash = CognitoSecretHash.calculateSecretHash(clientId, userPoolClientSecret, credentials.getUserName());
 
         Map<String, String> authParams = new LinkedHashMap<String, String>();
@@ -151,9 +136,7 @@ public class CognitoApiWrapper {
         }
     }
 
-<<<<<<< HEAD
-    @Cacheable(CacheNames.COGNITO_USERS)
-=======
+
     public AuthenticationResultType respondToNewPasswordRequiredChallenge(CognitoNewPasswordRequiredRequest newPassworRequiredRequest) {
         AdminRespondToAuthChallengeRequest request = AdminRespondToAuthChallengeRequest.builder()
                 .userPoolId(userPoolId)
@@ -179,7 +162,7 @@ public class CognitoApiWrapper {
         }
     }
 
->>>>>>> staging
+    @Cacheable(CacheNames.COGNITO_USERS)
     public User getUserInfo(UUID cognitoId) throws UserRetrievalException {
         ListUsersResponse response = cognitoClient.listUsers(ListUsersRequest.builder()
                 .userPoolId(userPoolId)
@@ -408,13 +391,7 @@ public class CognitoApiWrapper {
         user.setSubjectName(getUserAttribute(userType.attributes(), "email").value());
         user.setFullName(getUserAttribute(userType.attributes(), "name").value());
         user.setEmail(getUserAttribute(userType.attributes(), "email").value());
-<<<<<<< HEAD
-        user.setTitle(getUserAttribute(userType.attributes(), "custom:title").value());
         user.setPhoneNumber(getPhoneNumberFromAttributes(userType.attributes()));
-=======
-        user.setPhoneNumber(getUserAttribute(userType.attributes(), "phone_number").value());
-        user.setAccountLocked(!userType.enabled());
->>>>>>> staging
         user.setAccountEnabled(userType.enabled());
         user.setStatus(userType.userStatusAsString());
         user.setPasswordResetRequired(userType.userStatus().equals(UserStatusType.RESET_REQUIRED));

@@ -187,10 +187,8 @@ public class CognitoUserController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
-    @RequestMapping(value = "/{ssoUserId}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE,
-            produces = "application/json; charset=utf-8")
+    @RequestMapping(value = "/{ssoUserId}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
     public User updateUserDetails(@RequestBody User userInfo) throws ValidationException, UserRetrievalException {
-
         return cognitoUserManager.updateUser(userInfo);
     }
 }
