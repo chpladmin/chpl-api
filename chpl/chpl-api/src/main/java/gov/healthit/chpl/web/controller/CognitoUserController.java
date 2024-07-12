@@ -18,8 +18,8 @@ import org.springframework.web.bind.annotation.RestController;
 import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.auth.ChplAccountStatusException;
 import gov.healthit.chpl.domain.CreateUserFromInvitationRequest;
-import gov.healthit.chpl.domain.auth.AuthenticationResponse;
 import gov.healthit.chpl.domain.auth.CognitoGroups;
+import gov.healthit.chpl.domain.auth.CognitoNewPasswordRequiredRequest;
 import gov.healthit.chpl.domain.auth.LoginCredentials;
 import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.exception.EmailNotSentException;
@@ -28,12 +28,15 @@ import gov.healthit.chpl.exception.UserPermissionRetrievalException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.auth.CognitoAuthenticationManager;
+import gov.healthit.chpl.user.cognito.CognitoAuthenticationChallengeException;
+import gov.healthit.chpl.user.cognito.CognitoAuthenticationResponse;
 import gov.healthit.chpl.user.cognito.CognitoUserInvitation;
 import gov.healthit.chpl.user.cognito.CognitoUserManager;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
@@ -64,23 +67,42 @@ public class CognitoUserController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             }
         )
+    @ApiResponse(responseCode = "470", description = "The user is required to respond to the described challenge.")
     @RequestMapping(value = "/authenticate", method = RequestMethod.POST,
             consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
-    public AuthenticationResponse authenticateJSON(@RequestBody LoginCredentials credentials) {
+    public CognitoAuthenticationResponse authenticateJSON(@RequestBody LoginCredentials credentials) throws CognitoAuthenticationChallengeException {
 
         if (!ff4j.check(FeatureList.SSO)) {
             throw new NotImplementedException("This method has not been implemnted");
         }
 
-        String jwt = cognitoAuthenticationManager.authenticate(credentials);
-        if (jwt == null) {
+        CognitoAuthenticationResponse response = cognitoAuthenticationManager.authenticate(credentials);
+        if (response == null) {
             throw new ChplAccountStatusException(errorMessageUtil.getMessage("auth.loginNotAllowed"));
         }
-        return AuthenticationResponse.builder()
-                .token(jwt)
-                .build();
+        return response;
     }
 
+    @Operation(summary = "Set user's password in response to NEW_PASSWORD_REQUIRED challenge.",
+            description = "Set user's password in response to NEW_PASSWORD_REQUIRED challenge.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            }
+        )
+    @RequestMapping(value = "/authenticate/challenge/new-password-required", method = RequestMethod.POST,
+            consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
+    public CognitoAuthenticationResponse newPasswordRequiredChallenge(@RequestBody CognitoNewPasswordRequiredRequest request) throws ValidationException {
+
+        if (!ff4j.check(FeatureList.SSO)) {
+            throw new NotImplementedException("This method has not been implemnted");
+        }
+
+        CognitoAuthenticationResponse response = cognitoAuthenticationManager.newPassworRequiredChallenge(request);
+        if (response == null) {
+            throw new ChplAccountStatusException(errorMessageUtil.getMessage("auth.loginNotAllowed"));
+        }
+        return response;
+    }
 
     @Operation(summary = "View a specific user's details.",
             description = "The logged in user must either be the user in the parameters, have ROLE_ADMIN, or "

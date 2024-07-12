@@ -7,6 +7,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseField;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -28,6 +29,8 @@ public class Person implements Serializable {
     @Schema(description = "Phone number of the person.")
     private String phoneNumber;
 
+    @DeprecatedResponseField(message = "This field is deprecated and will be removed.", removalDate = "2024-11-01")
+    @Deprecated
     @Schema(description = "Title (Ms., Mr., Dr., etc) of the person.")
     private String title;
 

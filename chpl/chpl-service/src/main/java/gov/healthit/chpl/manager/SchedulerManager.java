@@ -130,7 +130,7 @@ public class SchedulerManager extends SecuredManager {
                 .forJob(chplTrigger.getJob().getName(), chplTrigger.getJob().getGroup())
                 .usingJobData(chplTrigger.getJob().getJobDataMap()).build();
 
-        if (AuthUtil.getCurrentUser().getAuthenticationSystem().equals(AuthenticationSystem.COGNTIO)) {
+        if (AuthUtil.getCurrentUser().getAuthenticationSystem().equals(AuthenticationSystem.COGNITO)) {
             trigger.getJobDataMap().put(QuartzJob.JOB_DATA_KEY_SUBMITTED_BY_USER_ID, AuthUtil.getCurrentUser().getCognitoId());
         } else if (AuthUtil.getCurrentUser().getAuthenticationSystem().equals(AuthenticationSystem.CHPL)) {
             trigger.getJobDataMap().put(QuartzJob.JOB_DATA_KEY_SUBMITTED_BY_USER_ID, AuthUtil.getCurrentUser().getId());
