@@ -268,6 +268,7 @@ public class DeveloperController {
         return response;
     }
 
+    @DeprecatedApiResponseFields(friendlyUrl = "/{developerId}/users", responseClass = User.class)
     @Operation(summary = "List users with permissions on a specified developer.",
             description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, ROLE_ACB, or have administrative "
                     + "authority on the specified developer.",

@@ -10,7 +10,7 @@ public class CurrentUserStrategy extends LastModifiedUserStrategy {
     @Override
     public void populateLastModifiedUser(EntityAudit entityAudit) {
         if (AuthUtil.getCurrentUser() != null) {
-            if (AuthUtil.getCurrentUser().getAuthenticationSystem().equals(AuthenticationSystem.COGNTIO)) {
+            if (AuthUtil.getCurrentUser().getAuthenticationSystem().equals(AuthenticationSystem.COGNITO)) {
                 entityAudit.setLastModifiedSsoUser(AuthUtil.getCurrentUser().getCognitoId());
                 entityAudit.setLastModifiedUser(null);
             } else {

@@ -46,7 +46,7 @@ public class SecurityContextCapableJob {
     public void setSecurityContext(User user) {
         SecurityContextHolder.getContext().setAuthentication(JWTAuthenticatedUser.builder()
                 .authenticated(true)
-                .authenticationSystem(user.getCognitoId() != null ? AuthenticationSystem.COGNTIO : AuthenticationSystem.CHPL)
+                .authenticationSystem(user.getCognitoId() != null ? AuthenticationSystem.COGNITO : AuthenticationSystem.CHPL)
                 .fullName(user.getFullName())
                 .id(user.getUserId())
                 .cognitoId(user.getCognitoId())
