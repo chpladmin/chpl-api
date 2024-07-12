@@ -39,6 +39,8 @@ import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.impl.UpdateCertifiedBodyException;
 import gov.healthit.chpl.manager.impl.UpdateTestingLabException;
+import gov.healthit.chpl.user.cognito.CognitoAuthenticationChallenge;
+import gov.healthit.chpl.user.cognito.CognitoAuthenticationChallengeException;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import lombok.extern.log4j.Log4j2;
 
@@ -250,4 +252,12 @@ public class ApiExceptionControllerAdvice {
                 .businessErrorMessages(SortedSets.immutable.of(errorMessageUtil.getMessage("redis.connection.timeout")))
                 .build(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
+    @ExceptionHandler(CognitoAuthenticationChallengeException.class)
+    public ResponseEntity<CognitoAuthenticationChallenge> exception(CognitoAuthenticationChallengeException e) {
+        return ResponseEntity
+                .status(ChplHttpStatus.COGNITO_AUTHENTICATION_CHALLENGE.value())
+                .body(e.getChallenge());
+    }
+
 }

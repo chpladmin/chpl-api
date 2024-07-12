@@ -194,8 +194,6 @@ public class CognitoUserManager {
     }
 
     @Transactional
-    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).INVITATION, "
-            + "T(gov.healthit.chpl.permissions.domains.InvitationDomainPermissions).GET)")
     public CognitoUserInvitation getInvitation(UUID token) {
         return userInvitationDAO.getByToken(token);
     }
