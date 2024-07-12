@@ -43,7 +43,7 @@ public class ResourcePermissionsFactory {
     public ResourcePermissions get(AuthenticationSystem authSystem) {
         if (authSystem.equals(AuthenticationSystem.CHPL)) {
             return chplResourcePermissions;
-        } else if (authSystem.equals(AuthenticationSystem.COGNTIO)) {
+        } else if (authSystem.equals(AuthenticationSystem.COGNITO)) {
             return cognitoResourcePermissions;
         } else {
             return null;
