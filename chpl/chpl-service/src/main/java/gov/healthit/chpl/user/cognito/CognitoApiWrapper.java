@@ -1,7 +1,8 @@
 package gov.healthit.chpl.user.cognito;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -9,18 +10,23 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Stream;
 
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.CognitoSecretHash;
+import gov.healthit.chpl.PasswordGenerator;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.Organization;
 import gov.healthit.chpl.domain.auth.CognitoGroups;
+import gov.healthit.chpl.domain.auth.CognitoNewPasswordRequiredRequest;
 import gov.healthit.chpl.domain.auth.CreateUserRequest;
 import gov.healthit.chpl.domain.auth.LoginCredentials;
 import gov.healthit.chpl.domain.auth.User;
@@ -42,9 +48,13 @@ import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminInitia
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminInitiateAuthResponse;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminListGroupsForUserRequest;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminListGroupsForUserResponse;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminRespondToAuthChallengeRequest;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminRespondToAuthChallengeResponse;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminSetUserPasswordRequest;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AttributeType;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AuthFlowType;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AuthenticationResultType;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.ChallengeNameType;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.GroupType;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.ListUsersInGroupRequest;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.ListUsersInGroupResponse;
@@ -57,6 +67,7 @@ import software.amazon.awssdk.services.cognitoidentityprovider.model.UserType;
 @Log4j2
 @Component
 public class CognitoApiWrapper {
+    private static final String HMAC_SHA256_ALGORITHM = "HmacSHA256";
 
     private String clientId;
     private String userPoolId;
@@ -81,9 +92,10 @@ public class CognitoApiWrapper {
         this.userPoolClientSecret = userPoolClientSecret;
         this.certificationBodyDAO = certificationBodyDAO;
         this.developerDAO = developerDAO;
+
     }
 
-    public String authenticate(LoginCredentials credentials) {
+    public AuthenticationResultType authenticate(LoginCredentials credentials) throws CognitoAuthenticationChallengeException {
         String secretHash = CognitoSecretHash.calculateSecretHash(clientId, userPoolClientSecret, credentials.getUserName());
 
         Map<String, String> authParams = new LinkedHashMap<String, String>();
@@ -100,12 +112,47 @@ public class CognitoApiWrapper {
 
         try {
             AdminInitiateAuthResponse authResult = cognitoClient.adminInitiateAuth(authRequest);
-            AuthenticationResultType resultType = authResult.authenticationResult();
-            return resultType.idToken();
+            if (authResult.challengeName() != null
+                    && authResult.challengeName().equals(ChallengeNameType.NEW_PASSWORD_REQUIRED)) {
+                throw CognitoAuthenticationChallengeException.builder()
+                        .challenge(CognitoAuthenticationChallenge.builder()
+                                .sessionId(authResult.session())
+                                .challenge(authResult.challengeName())
+                                .build())
+                        .build();
+            }
+            return  authResult.authenticationResult();
+        } catch (CognitoAuthenticationChallengeException e) {
+            throw e;
         } catch (Exception e) {
             //This is cluttering the logs when the SSO flag is on, and the user logs in using CHPL creds
             //We might want to uncomment it when we move to only using Cognito creds
             //LOGGER.error("Authentication error: {}", e.getMessage(), e);
+            return null;
+        }
+    }
+
+    public AuthenticationResultType respondToNewPasswordRequiredChallenge(CognitoNewPasswordRequiredRequest newPassworRequiredRequest) {
+        AdminRespondToAuthChallengeRequest request = AdminRespondToAuthChallengeRequest.builder()
+                .userPoolId(userPoolId)
+                .clientId(clientId)
+                .challengeName(ChallengeNameType.NEW_PASSWORD_REQUIRED)
+                .challengeResponses(Map.of("NEW_PASSWORD", newPassworRequiredRequest.getPassword(),
+                        "USERNAME", newPassworRequiredRequest.getUserName(),
+                        "SECRET_HASH", calculateSecretHash(newPassworRequiredRequest.getUserName())))
+                .session(newPassworRequiredRequest.getSessionId())
+                .build();
+
+        try {
+            AdminRespondToAuthChallengeResponse response = cognitoClient.adminRespondToAuthChallenge(request);
+
+            if (response.challengeName() != null) {
+                LOGGER.error("Received Challenge {} when responding to NEW_PASSWORD_REQUIRED");
+                return null;
+            }
+            return response.authenticationResult();
+        } catch (Exception e) {
+            LOGGER.error("Error responding to NEW_PASSWORD_REQUIRED challenge: {}", e.getMessage(), e);
             return null;
         }
     }
@@ -153,7 +200,7 @@ public class CognitoApiWrapper {
 
     public CognitoCredentials createUser(CreateUserRequest userRequest) throws UserCreationException {
         try {
-            String tempPassword = "Password1!-" + (new Date()).getTime();
+            String tempPassword = PasswordGenerator.generate();
 
             AdminCreateUserRequest request = AdminCreateUserRequest.builder()
                     .userPoolId(userPoolId)
@@ -162,8 +209,8 @@ public class CognitoApiWrapper {
                             AttributeType.builder().name("name").value(userRequest.getFullName()).build(),
                             AttributeType.builder().name("email").value(userRequest.getEmail()).build(),
                             AttributeType.builder().name("phone_number").value("+1" + userRequest.getPhoneNumber().replaceAll("[^0-9.]", "")).build(),
-                            AttributeType.builder().name("nickname").value(userRequest.getFriendlyName()).build(),
-                            AttributeType.builder().name("custom:title").value(userRequest.getTitle()).build(),
+                            AttributeType.builder().name("nickname").value("THIS ATTRIBUTE NEEDS TO BE MADE NOT REQUIRED").build(),
+                            AttributeType.builder().name("custom:title").value("THIS ATTRIBUTE NEEDS TO BE REMOVED").build(),
                             AttributeType.builder().name("custom:organizations").value(
                                     userRequest.getOrganizationId() != null ? userRequest.getOrganizationId().toString() : "").build())
                     .temporaryPassword(tempPassword)
@@ -180,6 +227,17 @@ public class CognitoApiWrapper {
         } catch (Exception e) {
             throw new UserCreationException(String.format("Error creating user with email %s in store.", userRequest.getEmail()), e);
         }
+    }
+
+    public void setUserPassword(String userName, String password) {
+        AdminSetUserPasswordRequest request = AdminSetUserPasswordRequest.builder()
+                .username(userName)
+                .password(password)
+                .permanent(true)
+                .userPoolId(userPoolId)
+                .build();
+
+        cognitoClient.adminSetUserPassword(request);
     }
 
     public AdminAddUserToGroupResponse addUserToGroup(String email, String groupName) {
@@ -297,10 +355,8 @@ public class CognitoApiWrapper {
         User user = new User();
         user.setCognitoId(UUID.fromString(userType.username()));
         user.setSubjectName(getUserAttribute(userType.attributes(), "email").value());
-        user.setFriendlyName(getUserAttribute(userType.attributes(), "nickname").value());
         user.setFullName(getUserAttribute(userType.attributes(), "name").value());
         user.setEmail(getUserAttribute(userType.attributes(), "email").value());
-        user.setTitle(getUserAttribute(userType.attributes(), "custom:title").value());
         user.setPhoneNumber(getUserAttribute(userType.attributes(), "phone_number").value());
         user.setAccountLocked(!userType.enabled());
         user.setAccountEnabled(userType.enabled());
@@ -339,5 +395,20 @@ public class CognitoApiWrapper {
                 .filter(grp -> grp.groupName().equals(environmentGroupName))
                 .findAny()
                 .isPresent();
+    }
+
+    private String calculateSecretHash(String userName) {
+        SecretKeySpec signingKey = new SecretKeySpec(
+                userPoolClientSecret.getBytes(StandardCharsets.UTF_8),
+                HMAC_SHA256_ALGORITHM);
+        try {
+            Mac mac = Mac.getInstance(HMAC_SHA256_ALGORITHM);
+            mac.init(signingKey);
+            mac.update(userName.getBytes(StandardCharsets.UTF_8));
+            byte[] rawHmac = mac.doFinal(clientId.getBytes(StandardCharsets.UTF_8));
+            return Base64.getEncoder().encodeToString(rawHmac);
+        } catch (Exception e) {
+            throw new RuntimeException("Error while calculating ");
+        }
     }
 }
