@@ -105,8 +105,8 @@ public class CognitoUserController {
         return response;
     }
 
-    @Operation(summary = "Send a user a one time password, forcing the user to change their password at next login.",
-            description = "Send a user a one time password, forcing the user to change their password at next login.",
+    @Operation(summary = "Start forgot password workflow",
+            description = "Send a user an email with a link to reset their password.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             }
@@ -119,7 +119,7 @@ public class CognitoUserController {
             throw new NotImplementedException("This method has not been implemnted");
         }
 
-        cognitoAuthenticationManager.forgotPassword(request);
+        cognitoUserManager.forgotPassword(request.getUserName());
     }
 
     @Operation(summary = "View a specific user's details.",

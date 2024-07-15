@@ -8,14 +8,11 @@ import org.springframework.stereotype.Component;
 import com.nulabinc.zxcvbn.Strength;
 import com.nulabinc.zxcvbn.Zxcvbn;
 
-import gov.healthit.chpl.PasswordGenerator;
 import gov.healthit.chpl.auth.authentication.JWTUserConverterFacade;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
-import gov.healthit.chpl.domain.auth.CognitoForgotPasswordRequest;
 import gov.healthit.chpl.domain.auth.CognitoNewPasswordRequiredRequest;
 import gov.healthit.chpl.domain.auth.LoginCredentials;
 import gov.healthit.chpl.domain.auth.User;
-import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.user.cognito.CognitoApiWrapper;
@@ -96,11 +93,11 @@ public class CognitoAuthenticationManager {
                 .build();
     }
 
-    public void forgotPassword(CognitoForgotPasswordRequest request) throws EmailNotSentException {
-        String tempPassword = PasswordGenerator.generate();
-        cognitoApiWrapper.setTemporaryUserPassword(request.getUserName(), tempPassword);
-        cognitoForgotPasswordEmailer.sendEmail(request.getUserName(), tempPassword);
-    }
+    //public void forgotPassword(CognitoForgotPasswordRequest request) throws EmailNotSentException {
+    //    String tempPassword = PasswordGenerator.generate();
+    //    cognitoApiWrapper.setTemporaryUserPassword(request.getUserName(), tempPassword);
+    //    cognitoForgotPasswordEmailer.sendEmail(request.getUserName(), tempPassword);
+    //}
 
     private Boolean validatePaswordStrength(CognitoNewPasswordRequiredRequest request) {
         ArrayList<String> badWords = new ArrayList<String>();

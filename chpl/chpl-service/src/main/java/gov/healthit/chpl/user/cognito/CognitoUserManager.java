@@ -33,6 +33,8 @@ public class CognitoUserManager {
     private CognitoConfirmEmailEmailer cognitoConfirmEmailEmailer;
     private CognitoApiWrapper cognitoApiWrapper;
     private CognitoInvitationValidator cognitoInvitationValidator;
+    private CognitoForgotPasswordDAO cognitoForgotPasswordDAO;
+    private CognitoForgotPasswordEmailer cognitoForgotPasswordEmailer;
     private String groupNameForEnvironment;
 
 
@@ -40,7 +42,8 @@ public class CognitoUserManager {
     @Autowired
     public CognitoUserManager(CognitoUserInvitationDAO userInvitationDAO, CognitoUserCreationValidator userCreationValidator,
             InvitationEmailer invitationEmailer, CognitoConfirmEmailEmailer cognitoConfirmEmailEmailer, CognitoApiWrapper cognitoApiWrapper,
-            CognitoInvitationValidator cognitoInvitationValidator, @Value("${cognito.environment.groupName}") String groupNameForEnvironment) {
+            CognitoForgotPasswordDAO cognitoForgotPasswordDAO, CognitoInvitationValidator cognitoInvitationValidator,
+            CognitoForgotPasswordEmailer cognitoForgotPasswordEmailer, @Value("${cognito.environment.groupName}") String groupNameForEnvironment) {
 
         this.userInvitationDAO = userInvitationDAO;
         this.userCreationValidator = userCreationValidator;
@@ -48,6 +51,8 @@ public class CognitoUserManager {
         this.cognitoConfirmEmailEmailer = cognitoConfirmEmailEmailer;
         this.cognitoApiWrapper = cognitoApiWrapper;
         this.cognitoInvitationValidator = cognitoInvitationValidator;
+        this.cognitoForgotPasswordEmailer = cognitoForgotPasswordEmailer;
+        this.cognitoForgotPasswordDAO = cognitoForgotPasswordDAO;
         this.groupNameForEnvironment = groupNameForEnvironment;
     }
 
@@ -197,5 +202,22 @@ public class CognitoUserManager {
         if (CollectionUtils.isNotEmpty(errors)) {
             throw new ValidationException(errors);
         }
+    }
+
+    @Transactional
+    public void forgotPassword(String email) {
+        CognitoForgotPassword forgotPassword = generateForgotPassword(email);
+        try {
+            cognitoForgotPasswordEmailer.sendEmail(forgotPassword);
+        } catch (EmailNotSentException e) {
+            LOGGER.error("Could not send 'forgot password' email to: {}", email);
+        }
+     }
+
+    private CognitoForgotPassword generateForgotPassword(String email) {
+        return cognitoForgotPasswordDAO.create(CognitoForgotPassword.builder()
+                .email(email)
+                .token(UUID.randomUUID())
+                .build());
     }
 }
