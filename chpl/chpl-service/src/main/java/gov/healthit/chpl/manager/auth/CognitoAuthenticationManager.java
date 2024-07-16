@@ -93,11 +93,6 @@ public class CognitoAuthenticationManager {
                 .build();
     }
 
-    //public void forgotPassword(CognitoForgotPasswordRequest request) throws EmailNotSentException {
-    //    String tempPassword = PasswordGenerator.generate();
-    //    cognitoApiWrapper.setTemporaryUserPassword(request.getUserName(), tempPassword);
-    //    cognitoForgotPasswordEmailer.sendEmail(request.getUserName(), tempPassword);
-    //}
 
     private Boolean validatePaswordStrength(CognitoNewPasswordRequiredRequest request) {
         ArrayList<String> badWords = new ArrayList<String>();

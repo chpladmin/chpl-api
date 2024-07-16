@@ -195,6 +195,37 @@ public class CognitoUserManager {
         return cognitoApiWrapper.getAllUsers();
     }
 
+    @Transactional
+    public void sendForgotPasswordEmail(String email) {
+        CognitoForgotPassword forgotPassword = generateForgotPassword(email);
+        try {
+            cognitoForgotPasswordEmailer.sendEmail(forgotPassword);
+        } catch (EmailNotSentException e) {
+            LOGGER.error("Could not send 'forgot password' email to: {}", email);
+        }
+     }
+
+    @Transactional
+    public void setForgottenPassword(UUID forgotPasswordToken, String password) throws ValidationException {
+        CognitoForgotPassword forgotPassword = cognitoForgotPasswordDAO.getByToken(forgotPasswordToken);
+        if (forgotPassword == null) {
+            throw new ValidationException("Token is not valid for forgot password.");
+        }
+
+        if (forgotPassword.isOlderThan(1L)) {
+            throw new ValidationException("Token is has expired.");
+        }
+
+        cognitoApiWrapper.setUserPassword(forgotPassword.getEmail(), password);
+    }
+
+    private CognitoForgotPassword generateForgotPassword(String email) {
+        return cognitoForgotPasswordDAO.create(CognitoForgotPassword.builder()
+                .email(email)
+                .token(UUID.randomUUID())
+                .build());
+    }
+
     private void validateUserInvitation(CognitoUserInvitation invitation, List<CognitoInvitationValidator.InvitationValidationRules> rules)
             throws ValidationException {
 
@@ -204,20 +235,4 @@ public class CognitoUserManager {
         }
     }
 
-    @Transactional
-    public void forgotPassword(String email) {
-        CognitoForgotPassword forgotPassword = generateForgotPassword(email);
-        try {
-            cognitoForgotPasswordEmailer.sendEmail(forgotPassword);
-        } catch (EmailNotSentException e) {
-            LOGGER.error("Could not send 'forgot password' email to: {}", email);
-        }
-     }
-
-    private CognitoForgotPassword generateForgotPassword(String email) {
-        return cognitoForgotPasswordDAO.create(CognitoForgotPassword.builder()
-                .email(email)
-                .token(UUID.randomUUID())
-                .build());
-    }
 }

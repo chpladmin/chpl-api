@@ -21,6 +21,7 @@ import gov.healthit.chpl.domain.CreateUserFromInvitationRequest;
 import gov.healthit.chpl.domain.auth.CognitoForgotPasswordRequest;
 import gov.healthit.chpl.domain.auth.CognitoGroups;
 import gov.healthit.chpl.domain.auth.CognitoNewPasswordRequiredRequest;
+import gov.healthit.chpl.domain.auth.CognitoSetForgottenPasswordRequest;
 import gov.healthit.chpl.domain.auth.LoginCredentials;
 import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.exception.EmailNotSentException;
@@ -74,7 +75,7 @@ public class CognitoUserController {
     public CognitoAuthenticationResponse authenticateJSON(@RequestBody LoginCredentials credentials) throws CognitoAuthenticationChallengeException {
 
         if (!ff4j.check(FeatureList.SSO)) {
-            throw new NotImplementedException("This method has not been implemnted");
+            throw new NotImplementedException("This method has not been implemented");
         }
 
         CognitoAuthenticationResponse response = cognitoAuthenticationManager.authenticate(credentials);
@@ -95,7 +96,7 @@ public class CognitoUserController {
     public CognitoAuthenticationResponse newPasswordRequiredChallenge(@RequestBody CognitoNewPasswordRequiredRequest request) throws ValidationException {
 
         if (!ff4j.check(FeatureList.SSO)) {
-            throw new NotImplementedException("This method has not been implemnted");
+            throw new NotImplementedException("This method has not been implemented");
         }
 
         CognitoAuthenticationResponse response = cognitoAuthenticationManager.newPassworRequiredChallenge(request);
@@ -111,15 +112,31 @@ public class CognitoUserController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             }
         )
-    @RequestMapping(value = "/forgot-password", method = RequestMethod.POST,
+    @RequestMapping(value = "/forgot-password/send-email", method = RequestMethod.POST,
             consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
-    public void forgotPassword(@RequestBody CognitoForgotPasswordRequest request) throws EmailNotSentException {
+    public void requestEmailForForgottenPassword(@RequestBody CognitoForgotPasswordRequest request) throws EmailNotSentException {
 
         if (!ff4j.check(FeatureList.SSO)) {
-            throw new NotImplementedException("This method has not been implemnted");
+            throw new NotImplementedException("This method has not been implemented");
         }
 
-        cognitoUserManager.forgotPassword(request.getUserName());
+        cognitoUserManager.sendForgotPasswordEmail(request.getUserName());
+    }
+
+    @Operation(summary = "Complete forgot password workflow",
+            description = "Set user's password after requesting forgot password.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            }
+        )
+    @RequestMapping(value = "/forgot-password/set-password", method = RequestMethod.POST,
+            consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
+    public void setForgottenPassword(@RequestBody CognitoSetForgottenPasswordRequest request) throws EmailNotSentException {
+        if (!ff4j.check(FeatureList.SSO)) {
+            throw new NotImplementedException("This method has not been implemented");
+        }
+
+        //cognitoUserManager.sendForgotPasswordEmail(request.getUserName());
     }
 
     @Operation(summary = "View a specific user's details.",

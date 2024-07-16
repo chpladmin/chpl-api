@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Data
 public class CognitoForgotPassword {
-    private static final Long MILLIS_IN_A_DAY = 24L * 60L * 60L * 1000L;
+    private static final Long MILLIS_IN_HOUR = 24L * 60L * 60L * 1000L;
 
     private Long id;
     private String email;
@@ -33,8 +33,8 @@ public class CognitoForgotPassword {
     @JsonIgnore
     private UUID lasModifiedSsoUser;
 
-    public boolean isOlderThan(long numDays) {
-        return isOlderThanMillis(numDays * MILLIS_IN_A_DAY);
+    public boolean isOlderThan(long hours) {
+        return isOlderThanMillis(hours * MILLIS_IN_HOUR);
     }
 
     private boolean isOlderThanMillis(long numDaysInMillis) {
