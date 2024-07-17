@@ -28,7 +28,8 @@ public class PasswordUtil {
         String upperCaseLetters = RandomStringUtils.random(2, MIN_UPPER_CASE_LETTER, MAX_UPPER_CASE_LETTER, true, true);
         String lowerCaseLetters = RandomStringUtils.random(2, MIN_LOWER_CASE_LETTER, MAX_LOWER_CASE_LETTER, true, true);
         String numbers = RandomStringUtils.randomNumeric(2);
-        String specialChar = RandomStringUtils.random(2, MIN_SPECIAL_CHAR, MAX_SPECIAL_CHAR, false, false);        String totalChars = RandomStringUtils.randomAlphanumeric(2);
+        String specialChar = RandomStringUtils.random(2, MIN_SPECIAL_CHAR, MAX_SPECIAL_CHAR, false, false);
+        String totalChars = RandomStringUtils.randomAlphanumeric(2);
         String combinedChars = upperCaseLetters.concat(lowerCaseLetters)
           .concat(numbers)
           .concat(specialChar)
