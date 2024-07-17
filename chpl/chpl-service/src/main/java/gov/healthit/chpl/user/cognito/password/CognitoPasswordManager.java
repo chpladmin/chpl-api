@@ -3,6 +3,7 @@ package gov.healthit.chpl.user.cognito.password;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,14 +19,16 @@ public class CognitoPasswordManager {
     private CognitoApiWrapper cognitoApiWrapper;
     private CognitoForgotPasswordDAO cognitoForgotPasswordDAO;
     private CognitoForgotPasswordEmailer cognitoForgotPasswordEmailer;
+    private Long forgotTokenValidInHours;
 
     @Autowired
     public CognitoPasswordManager(CognitoApiWrapper cognitoApiWrapper, CognitoForgotPasswordDAO cognitoForgotPasswordDAO,
-            CognitoForgotPasswordEmailer cognitoForgotPasswordEmailer) {
+            CognitoForgotPasswordEmailer cognitoForgotPasswordEmailer, @Value("${cognito.forgotPassword.tokenValid}") Long forgotTokenValidInHours) {
 
         this.cognitoApiWrapper = cognitoApiWrapper;
         this.cognitoForgotPasswordEmailer = cognitoForgotPasswordEmailer;
         this.cognitoForgotPasswordDAO = cognitoForgotPasswordDAO;
+        this.forgotTokenValidInHours = forgotTokenValidInHours;
     }
 
     @Transactional
@@ -42,11 +45,11 @@ public class CognitoPasswordManager {
     public void setForgottenPassword(UUID forgotPasswordToken, String password) throws ValidationException {
         CognitoForgotPassword forgotPassword = cognitoForgotPasswordDAO.getByToken(forgotPasswordToken);
         if (forgotPassword == null) {
-            throw new ValidationException("Token is not valid for forgot password.");
+            throw new ValidationException("Forgot Password Token is not valid.");
         }
 
-        if (forgotPassword.isOlderThan(1L)) {
-            throw new ValidationException("Token is has expired.");
+        if (forgotPassword.isOlderThan(forgotTokenValidInHours)) {
+            throw new ValidationException("Forgot Password Token has expired.");
         }
 
         cognitoApiWrapper.setUserPassword(forgotPassword.getEmail(), password);
