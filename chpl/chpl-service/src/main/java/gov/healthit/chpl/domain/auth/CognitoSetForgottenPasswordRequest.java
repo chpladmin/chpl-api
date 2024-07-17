@@ -13,5 +13,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class CognitoSetForgottenPasswordRequest {
     private UUID forgotPasswordToken;
-    private String newPassword;
+    private String password;
 }

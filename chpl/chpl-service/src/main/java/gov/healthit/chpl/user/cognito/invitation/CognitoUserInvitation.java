@@ -1,4 +1,4 @@
-package gov.healthit.chpl.user.cognito;
+package gov.healthit.chpl.user.cognito.invitation;
 
 import java.util.Date;
 import java.util.UUID;

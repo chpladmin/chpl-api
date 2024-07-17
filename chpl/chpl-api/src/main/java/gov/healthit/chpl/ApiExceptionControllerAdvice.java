@@ -39,8 +39,8 @@ import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.impl.UpdateCertifiedBodyException;
 import gov.healthit.chpl.manager.impl.UpdateTestingLabException;
-import gov.healthit.chpl.user.cognito.CognitoAuthenticationChallenge;
-import gov.healthit.chpl.user.cognito.CognitoAuthenticationChallengeException;
+import gov.healthit.chpl.user.cognito.authentication.CognitoAuthenticationChallenge;
+import gov.healthit.chpl.user.cognito.authentication.CognitoAuthenticationChallengeException;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import lombok.extern.log4j.Log4j2;
 
