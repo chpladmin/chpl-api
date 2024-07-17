@@ -24,7 +24,7 @@ public class PasswordUtil {
     private static final int MIN_SPECIAL_CHAR = 33;
     private static final int MAX_SPECIAL_CHAR = 47;
 
-    public final String generate() {
+    public final String generatePassword() {
         String upperCaseLetters = RandomStringUtils.random(2, MIN_UPPER_CASE_LETTER, MAX_UPPER_CASE_LETTER, true, true);
         String lowerCaseLetters = RandomStringUtils.random(2, MIN_LOWER_CASE_LETTER, MAX_LOWER_CASE_LETTER, true, true);
         String numbers = RandomStringUtils.randomNumeric(2);
