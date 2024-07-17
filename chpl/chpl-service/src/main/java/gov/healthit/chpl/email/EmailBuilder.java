@@ -10,12 +10,12 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.quartz.JobDataMap;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.SimpleTrigger;
 import org.springframework.core.env.Environment;
-import org.springframework.util.StringUtils;
 
 import gov.healthit.chpl.domain.schedule.ChplJob;
 import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
@@ -49,10 +49,13 @@ public class EmailBuilder {
 
     private Environment env = null;
     private Scheduler scheduler;
+    private boolean sendEmails;
 
     public EmailBuilder(Environment env, Scheduler scheduler) {
         this.env = env;
         this.scheduler = scheduler;
+        this.sendEmails = Boolean.parseBoolean(env.getProperty("sendEmails"));
+        LOGGER.info("System is configured to send emails: " + sendEmails);
     }
 
     public EmailBuilder recipients(List<String> addresses) {
@@ -131,14 +134,18 @@ public class EmailBuilder {
     }
 
     public void sendEmail() throws EmailNotSentException {
-       try {
-           build();
-           scheduleOneTimeTrigger(getOneTimeTrigger());
-       } catch (Exception ex) {
-           String failureMessage = "Email could not be sent to " + recipients.stream().collect(Collectors.joining(",")) + ".";
-           LOGGER.fatal(failureMessage, ex);
-           throw new EmailNotSentException(failureMessage);
-       }
+        if (!this.sendEmails) {
+            LOGGER.info("Emails are configured not to be sent. Not sending the email.");
+        } else {
+            try {
+                build();
+                scheduleOneTimeTrigger(getOneTimeTrigger());
+            } catch (Exception ex) {
+                String failureMessage = "Email could not be sent to " + recipients.stream().collect(Collectors.joining(",")) + ".";
+                LOGGER.fatal(failureMessage, ex);
+                throw new EmailNotSentException(failureMessage);
+            }
+        }
     }
 
     public ChplOneTimeTrigger getOneTimeTrigger() {
