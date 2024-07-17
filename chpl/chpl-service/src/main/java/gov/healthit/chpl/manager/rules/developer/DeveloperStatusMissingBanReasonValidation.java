@@ -17,8 +17,8 @@ public class DeveloperStatusMissingBanReasonValidation extends ValidationRule<De
     public boolean isValid(DeveloperValidationContext context) {
         ErrorMessageUtil msgUtil = context.getErrorMessageUtil();
         Developer updatedDev = context.getDeveloper();
-        for (DeveloperStatusEvent statusEvent : updatedDev.getStatusEvents()) {
-            if (statusEvent.getStatus().getStatus()
+        for (DeveloperStatusEvent statusEvent : updatedDev.getStatuses()) {
+            if (statusEvent.getStatus().getName()
                     .equals(DeveloperStatusType.UnderCertificationBanByOnc.toString())
                     && StringUtils.isEmpty(statusEvent.getReason())) {
                 getMessages().add(msgUtil.getMessage("developer.missingReasonForBan",

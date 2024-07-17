@@ -373,11 +373,15 @@ public class DeveloperSearchService {
 
         @Override
         public int compare(DeveloperSearchResult dev1, DeveloperSearchResult dev2) {
-            if (ObjectUtils.anyNull(dev1.getStatus(), dev2.getStatus())
-                    || StringUtils.isAnyEmpty(dev1.getStatus().getName(), dev2.getStatus().getName())) {
+            int sortFactor = descending ? -1 : 1;
+
+            if (dev1.getStatus() == null && dev2.getStatus() != null) {
+                return -1 * sortFactor;
+            } else if (dev1.getStatus() != null && dev2.getStatus() == null) {
+                return 1 * sortFactor;
+            } else if (dev1.getStatus() == null && dev2.getStatus() == null) {
                 return 0;
             }
-            int sortFactor = descending ? -1 : 1;
             return (dev1.getStatus().getName().compareTo(dev2.getStatus().getName())) * sortFactor;
         }
     }

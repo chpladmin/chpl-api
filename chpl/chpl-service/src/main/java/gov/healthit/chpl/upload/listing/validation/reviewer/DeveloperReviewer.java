@@ -8,9 +8,7 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.domain.Address;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.Developer;
-import gov.healthit.chpl.domain.DeveloperStatus;
 import gov.healthit.chpl.domain.contact.PointOfContact;
-import gov.healthit.chpl.entity.developer.DeveloperStatusType;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.upload.listing.ListingUploadHandlerUtil;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
@@ -50,7 +48,7 @@ public class DeveloperReviewer implements Reviewer {
             // 1) missing in the system, or 2) does not match the user-entered data
             reviewRequiredDeveloperData(listing, WARNING);
             reviewUserEnteredDataSystemDataMismatch(listing);
-            reviewDeveloperStatusIsActive(listing);
+            reviewDeveloperStatusIsNotBannedOrSuspended(listing);
         } else {
             String devCode = "";
             try {
@@ -189,17 +187,12 @@ public class DeveloperReviewer implements Reviewer {
         }
     }
 
-    private void reviewDeveloperStatusIsActive(CertifiedProductSearchDetails listing) {
+    private void reviewDeveloperStatusIsNotBannedOrSuspended(CertifiedProductSearchDetails listing) {
         Developer developer = listing.getDeveloper();
-        if (developer.getId() != null) {
-            DeveloperStatus mostRecentStatus = developer.getStatus();
-            if (mostRecentStatus == null || StringUtils.isEmpty(mostRecentStatus.getStatus())) {
-                listing.addDataErrorMessage(msgUtil.getMessage("developer.status.noCurrent"));
-            } else if (!mostRecentStatus.getStatus().equals(DeveloperStatusType.Active.getName())) {
-                listing.addDataErrorMessage(msgUtil.getMessage("listing.developer.notActive.noCreate",
-                        developer.getName() != null ? developer.getName() : "?",
-                        mostRecentStatus.getStatus()));
-            }
+        if (!developer.isNotBannedOrSuspended()) {
+            listing.addDataErrorMessage(msgUtil.getMessage("listing.developer.bannedOrSuspended.noCreate",
+                developer.getName() != null ? developer.getName() : "?",
+                developer.getCurrentStatusEvent().getStatus().getName()));
         }
     }
 

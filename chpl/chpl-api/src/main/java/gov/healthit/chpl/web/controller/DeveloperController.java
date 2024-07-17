@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -85,27 +84,21 @@ public class DeveloperController {
         this.rwtManager = rwtManager;
     }
 
+    @DeprecatedApiResponseFields(friendlyUrl = "/developers", httpMethod = "GET", responseClass = DeveloperResults.class)
     @Operation(summary = "List all developers in the system.",
-            description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, and ROLE_ACB can see deleted "
-                    + "developers.  Everyone else can only see active developers.",
+            description = "List all developers in the system.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public @ResponseBody DeveloperResults getDevelopers(
-            @RequestParam(value = "showDeleted", required = false, defaultValue = "false") boolean showDeleted) {
-        List<Developer> developerList = null;
-        if (showDeleted) {
-            developerList = developerManager.getAllIncludingDeleted();
-        } else {
-            developerList = developerManager.getAll();
-        }
-
+    public @ResponseBody DeveloperResults getDevelopers() {
+        List<Developer> developerList = developerManager.getAll();
         DeveloperResults results = new DeveloperResults();
         results.setDevelopers(developerList);
         return results;
     }
 
+    @DeprecatedApiResponseFields(friendlyUrl = "/developers/{developerId}", httpMethod = "GET", responseClass = Developer.class)
     @Operation(summary = "Get information about a specific developer.", description = "",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
@@ -117,6 +110,7 @@ public class DeveloperController {
         return developerManager.getById(developerId);
     }
 
+    @DeprecatedApiResponseFields(friendlyUrl = "/developers/{developerId}/hierarchy", httpMethod = "GET", responseClass = DeveloperTree.class)
     @Operation(summary = "Get all hierarchical information about a specific developer. "
             + "Includes associated products, versions, and basic listing data.", description = "",
             security = {
@@ -159,6 +153,7 @@ public class DeveloperController {
         return rwtManager.getResultsUrls(developerId);
     }
 
+    @DeprecatedApiResponseFields(friendlyUrl = "/developers/{developerId}", httpMethod = "PUT", responseClass = Developer.class)
     @Operation(summary = "Update a developer.",
             description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB",
             security = {
@@ -308,6 +303,8 @@ public class DeveloperController {
                 .build();
     }
 
+    @DeprecatedApiResponseFields(friendlyUrl = "/developers/{developerId}/attestations/attestationPeriodId/exception",
+            httpMethod = "POST", responseClass = AttestationPeriodDeveloperException.class)
     @Operation(summary = "Create a new attestation submission end date exception for a developer.",
             description = "Security Restrictions: ROLE_ADMIN, ROLE+_ONC, or ROLE_ONC_ACB",
             security = {
@@ -332,5 +329,19 @@ public class DeveloperController {
     public ChplOneTimeTrigger sendMessage(@RequestBody(required = true) DeveloperMessageRequest developerMessageRequest)
         throws ValidationException, SchedulerException {
         return developerManager.triggerMessageDevelopers(developerMessageRequest);
+    }
+
+    @Operation(summary = "Sends a single message to the logged-in user. "
+            + "This allows the logged-in user to preview how an email will appear to developers",
+            description = "Security Restrictions: ADMIN or ONC users.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
+    @RequestMapping(value = "/message-preview", method = RequestMethod.POST,
+            consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
+    public ChplOneTimeTrigger sendMessagePreview(@RequestBody(required = true) DeveloperMessageRequest developerMessageRequest)
+        throws ValidationException, SchedulerException {
+        return developerManager.triggerMessageDevelopersPreview(developerMessageRequest);
     }
 }

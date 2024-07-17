@@ -110,8 +110,7 @@ public class DirectReviewCsvPresenter {
         csvRow.add(developer.getId().toString());
         csvRow.add(developer.getName());
         csvRow.add(env.getProperty("chplUrlBegin") + "/#/organizations/developers/" + developer.getId());
-        csvRow.add(developer.getStatus() == null || developer.getStatus().getStatus() == null
-                ? "Unknown" : developer.getStatus().getStatus());
+        csvRow.add(developer.getCurrentStatusEvent() != null ? developer.getCurrentStatusEvent().getStatus().getName() : "");
     }
 
     private void addNonconformityDirectReviewFields(List<String> csvRow, DirectReviewNonConformity nc) {

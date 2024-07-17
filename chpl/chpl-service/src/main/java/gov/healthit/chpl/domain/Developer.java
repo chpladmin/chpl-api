@@ -1,6 +1,7 @@
 package gov.healthit.chpl.domain;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -11,8 +12,10 @@ import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseField;
 import gov.healthit.chpl.domain.contact.PointOfContact;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.persistence.Transient;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -53,9 +56,16 @@ public class Developer implements Serializable {
     private String lastModifiedDate;
     private Boolean deleted;
 
+    @DeprecatedResponseField(message = "This field is deprecated and will be removed. Please use 'statuses'.",
+            removalDate = "2025-01-01")
+    @Deprecated
     @Schema(description = "Status changes that have occurred on the developer.")
     @Builder.Default
-    private List<DeveloperStatusEvent> statusEvents = new ArrayList<DeveloperStatusEvent>();
+    private List<DeveloperStatusEventDeprecated> statusEvents = new ArrayList<DeveloperStatusEventDeprecated>();
+
+    @Schema(description = "Developer bans or suspensions that have occurred over time.")
+    @Builder.Default
+    private List<DeveloperStatusEvent> statuses = new ArrayList<DeveloperStatusEvent>();
 
     @Schema(description = "Public attestations submitted by the developer.")
     private List<PublicAttestation> attestations;
@@ -76,27 +86,59 @@ public class Developer implements Serializable {
     private PointOfContact userEnteredPointOfContact;
 
     public Developer() {
-        this.statusEvents = new ArrayList<DeveloperStatusEvent>();
+        this.statusEvents = new ArrayList<DeveloperStatusEventDeprecated>();
+        this.statuses = new ArrayList<DeveloperStatusEvent>();
     }
 
-    @Schema(description = "The status of a developer with certified Health IT. Allowable values are \"Active\", \"Suspended by ONC\", or \"Under "
-            + "Certification Ban by ONC\"")
-    public DeveloperStatus getStatus() {
-        if (CollectionUtils.isEmpty(this.getStatusEvents())) {
-            return null;
+    @Transient
+    @JsonIgnore
+    public boolean isNotBannedOrSuspended() {
+        if (CollectionUtils.isEmpty(statuses)) {
+            return true;
         }
-
-        return getMostRecentStatusEvent().getStatus();
+        LocalDate today = LocalDate.now();
+        return statuses.stream()
+            .filter(status -> (status.getStartDate().isBefore(today) || status.getStartDate().isEqual(today))
+                    && (status.getEndDate() == null || status.getEndDate().isAfter(today) || status.getEndDate().isEqual(today)))
+            .findAny().isEmpty();
     }
 
     @JsonIgnore
-    public DeveloperStatusEvent getMostRecentStatusEvent() {
+    public DeveloperStatusEvent getCurrentStatusEvent() {
+        if (CollectionUtils.isEmpty(this.statuses)) {
+            return null;
+        }
+
+        DeveloperStatusEvent statusToday = null;
+        LocalDate today = LocalDate.now();
+        statusToday = statuses.stream()
+            .filter(status -> (status.getStartDate().isBefore(today) || status.getStartDate().isEqual(today))
+                    && (status.getEndDate() == null || status.getEndDate().isAfter(today) || status.getEndDate().isEqual(today)))
+            .findAny().orElse(null);
+        return statusToday;
+    }
+
+    @Deprecated
+    @DeprecatedResponseField(message = "This field is deprecated and will be removed.", removalDate = "2025-01-01")
+    @Schema(description = "The status of a developer with certified Health IT. Allowable values are null, \"Suspended by ONC\", or \"Under "
+            + "Certification Ban by ONC\"")
+    public DeveloperStatus getStatus() {
+        if (CollectionUtils.isEmpty(this.getStatuses())) {
+            return null;
+        }
+
+        return getCurrentStatusEvent() != null ? getCurrentStatusEvent().getStatus() : null;
+    }
+
+    @Deprecated
+    @JsonIgnore
+    public DeveloperStatusEventDeprecated getMostRecentStatusEvent() {
         if (CollectionUtils.isEmpty(this.getStatusEvents())) {
             return null;
         }
 
-        DeveloperStatusEvent newest = this.getStatusEvents().get(0);
-        for (DeveloperStatusEvent event : this.getStatusEvents()) {
+        DeveloperStatusEventDeprecated newest = this.getStatusEvents().get(0);
+        for (DeveloperStatusEventDeprecated event : this.getStatusEvents()) {
             if (event.getStatusDate().after(newest.getStatusDate())) {
                 newest = event;
             }
@@ -177,11 +219,11 @@ public class Developer implements Serializable {
         } else if (!selfDeveloper.equals(other.selfDeveloper)) {
             return false;
         }
-        if (statusEvents == null) {
-            if (other.statusEvents != null) {
+        if (statuses == null) {
+            if (other.statuses != null) {
                 return false;
             }
-        } else if (!isStatusEventListEqual(other.statusEvents)) {
+        } else if (!isStatusEventListEqual(other.statuses)) {
             return false;
         }
         if (website == null) {
@@ -195,15 +237,15 @@ public class Developer implements Serializable {
     }
 
     private boolean isStatusEventListEqual(List<DeveloperStatusEvent> other) {
-        if (statusEvents.size() != other.size()) {
+        if (statuses.size() != other.size()) {
             return false;
         } else {
             // Make copies of both lists and order them
-            List<DeveloperStatusEvent> clonedThis = statusEvents.stream()
-                    .sorted(Comparator.comparing(DeveloperStatusEvent::getStatusDate))
+            List<DeveloperStatusEvent> clonedThis = statuses.stream()
+                    .sorted(Comparator.comparing(DeveloperStatusEvent::getStartDate))
                     .toList();
             List<DeveloperStatusEvent> clonedOther = other.stream()
-                    .sorted(Comparator.comparing(DeveloperStatusEvent::getStatusDate))
+                    .sorted(Comparator.comparing(DeveloperStatusEvent::getStartDate))
                     .toList();
             return clonedThis.equals(clonedOther);
         }

@@ -134,6 +134,9 @@
     <Logger name="userDefinedTriggersEmailJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="userDefinedTriggersEmailJob" />
     </Logger>
+    <Logger name="inactiveDevelopersAndProductsReportJobLogger" level="INFO" additivity="false">
+        <AppenderRef ref="inactiveDevelopersAndProductsReportJob" />
+    </Logger>
     <Logger name="surveillanceActivityReportJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="surveillanceActivityReportJob" />
     </Logger>
@@ -174,15 +177,6 @@
     </Logger>
     <Logger name="messageDevelopersJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="messageDevelopersJob" />
-    </Logger>
-    <Logger name="fixupQuestionableActivityJobLogger" level="DEBUG" additivity="false">
-        <AppenderRef ref="fixupQuestionableActivityJob" />
-    </Logger>
-    <Logger name="removeDuplicateIcsRelationshipsJobLogger" level="DEBUG" additivity="false">
-        <AppenderRef ref="removeDuplicateIcsRelationshipsJob" />
-    </Logger>
-    <Logger name="fixupDeveloperAttestationActivityJobLogger" level="DEBUG" additivity="false">
-        <AppenderRef ref="fixupDeveloperAttestationActivityJob" />
     </Logger>
     <Logger name="listingSearchCacheRefreshLogger" level="DEBUG" additivity="false">
         <AppenderRef ref="listingSearchCacheRefresh" />

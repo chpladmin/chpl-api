@@ -1,5 +1,7 @@
 package gov.healthit.chpl.manager.rules.developer;
 
+import java.util.Objects;
+
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.DeveloperStatus;
@@ -26,14 +28,15 @@ public class DeveloperStatusChangedValidation extends ValidationRule<DeveloperVa
         ErrorMessageUtil msgUtil = context.getErrorMessageUtil();
         Developer updatedDev = context.getDeveloper();
         Developer beforeDev = context.getBeforeDev();
-        DeveloperStatus newDevStatus = updatedDev.getStatus();
-        DeveloperStatus currDevStatus = beforeDev.getStatus();
+        DeveloperStatus newDevStatus = updatedDev.getCurrentStatusEvent() != null ? updatedDev.getCurrentStatusEvent().getStatus() : null;
+        DeveloperStatus currDevStatus = beforeDev.getCurrentStatusEvent() != null ? beforeDev.getCurrentStatusEvent().getStatus() : null;
 
-        boolean currentStatusChanged = !currDevStatus.getStatus().equals(newDevStatus.getStatus());
+        boolean currentStatusChanged = !Objects.equals(newDevStatus, currDevStatus);
         if (currentStatusChanged
-                && !newDevStatus.getStatus()
-                        .equals(DeveloperStatusType.UnderCertificationBanByOnc.toString())
-                && !resourcePermissionsFactory.get().isUserRoleAdmin() && !resourcePermissionsFactory.get().isUserRoleOnc()) {
+                && newDevStatus != null
+                && !newDevStatus.getName().equals(DeveloperStatusType.UnderCertificationBanByOnc.toString())
+                && !resourcePermissionsFactory.get().isUserRoleAdmin()
+                && !resourcePermissionsFactory.get().isUserRoleOnc()) {
             String msg = msgUtil.getMessage("developer.statusChangeNotAllowedWithoutAdmin");
             getMessages().add(msg);
             return false;

@@ -22,7 +22,6 @@ import gov.healthit.chpl.questionableactivity.service.DeveloperQuestionableActiv
 import gov.healthit.chpl.questionableactivity.service.ListingQuestionableActivityService;
 import gov.healthit.chpl.questionableactivity.service.ProductQuestionableActivityProvider;
 import gov.healthit.chpl.questionableactivity.service.VersionQuestionableActivityProvider;
-import gov.healthit.chpl.util.CertificationResultRules;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -34,7 +33,6 @@ public class QuestionableActivityManager {
     private VersionQuestionableActivityProvider versionQuestionableActivityProvider;
     private ListingQuestionableActivityService listingQuestionableActivityService;
     private CertificationResultQuestionableActivityService certResultQuestionableActivityService;
-    private CertificationResultRules certResultRules;
     private QuestionableActivityDAO questionableActivityDao;
 
     @Autowired
@@ -45,7 +43,6 @@ public class QuestionableActivityManager {
             VersionQuestionableActivityProvider versionQuestionableActivityProvider,
             ListingQuestionableActivityService listingQuestionableActivityService,
             CertificationResultQuestionableActivityService certResultQuestionableActivityService,
-            CertificationResultRules certResultRules,
             QuestionableActivityDAO questionableActivityDao) {
 
         this.developerQuestionableActivityProvider = developerQuestionableActivityProvider;
@@ -53,7 +50,6 @@ public class QuestionableActivityManager {
         this.versionQuestionableActivityProvider = versionQuestionableActivityProvider;
         this.listingQuestionableActivityService = listingQuestionableActivityService;
         this.certResultQuestionableActivityService = certResultQuestionableActivityService;
-        this.certResultRules = certResultRules;
         this.questionableActivityDao = questionableActivityDao;
         triggerTypes = questionableActivityDao.getAllTriggers();
     }
@@ -80,7 +76,7 @@ public class QuestionableActivityManager {
         }
 
         devActivities = developerQuestionableActivityProvider.checkStatusHistoryAdded(
-                origDeveloper.getStatusEvents(), newDeveloper.getStatusEvents());
+                origDeveloper.getStatuses(), newDeveloper.getStatuses());
         for (QuestionableActivityDeveloper currDevActivity : devActivities) {
             createDeveloperActivity(currDevActivity, newDeveloper.getId(), activity,
                     QuestionableActivityTriggerConcept.DEVELOPER_STATUS_HISTORY_ADDED,
@@ -88,18 +84,10 @@ public class QuestionableActivityManager {
         }
 
         devActivities = developerQuestionableActivityProvider.checkStatusHistoryRemoved(
-                origDeveloper.getStatusEvents(), newDeveloper.getStatusEvents());
+                origDeveloper.getStatuses(), newDeveloper.getStatuses());
         for (QuestionableActivityDeveloper currDevActivity : devActivities) {
             createDeveloperActivity(currDevActivity, newDeveloper.getId(), activity,
                     QuestionableActivityTriggerConcept.DEVELOPER_STATUS_HISTORY_REMOVED,
-                    currDevActivity.getReason());
-        }
-
-        devActivities = developerQuestionableActivityProvider.checkStatusHistoryItemEdited(
-                origDeveloper.getStatusEvents(), newDeveloper.getStatusEvents());
-        for (QuestionableActivityDeveloper currDevActivity : devActivities) {
-            createDeveloperActivity(currDevActivity, newDeveloper.getId(), activity,
-                    QuestionableActivityTriggerConcept.DEVELOPER_STATUS_HISTORY_EDITED,
                     currDevActivity.getReason());
         }
     }

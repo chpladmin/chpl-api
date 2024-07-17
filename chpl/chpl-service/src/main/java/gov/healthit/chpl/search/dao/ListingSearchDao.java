@@ -94,9 +94,10 @@ public class ListingSearchDao extends BaseDAOImpl {
                 .developer(DeveloperSearchResult.builder()
                         .id(entity.getDeveloperId())
                         .name(entity.getDeveloper())
-                        .status(IdNamePair.builder()
-                                .id(entity.getDeveloperStatusId())
-                                .name(entity.getDeveloperStatus())
+                        .status(entity.getDeveloperStatusId() == null ? null
+                                : IdNamePair.builder()
+                                    .id(entity.getDeveloperStatusId())
+                                    .name(entity.getDeveloperStatus())
                                 .build())
                         .build())
                 .product(IdNamePair.builder()

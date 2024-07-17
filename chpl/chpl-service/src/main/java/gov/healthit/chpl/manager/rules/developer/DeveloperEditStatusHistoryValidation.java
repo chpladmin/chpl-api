@@ -25,22 +25,22 @@ public class DeveloperEditStatusHistoryValidation extends ValidationRule<Develop
         ErrorMessageUtil msgUtil = context.getErrorMessageUtil();
         Developer updatedDev = context.getDeveloper();
         Developer beforeDev = context.getBeforeDev();
-        DeveloperStatus newDevStatus = updatedDev.getStatus();
+        DeveloperStatus newDevStatus = updatedDev.getCurrentStatusEvent() != null ? updatedDev.getCurrentStatusEvent().getStatus() : null;
 
         boolean devStatusHistoryUpdated = isStatusHistoryUpdated(beforeDev, updatedDev);
 
-        if (devStatusHistoryUpdated
-                && newDevStatus.getStatus()
-                        .equals(DeveloperStatusType.UnderCertificationBanByOnc.toString())
-                && !resourcePermissionsFactory.get().isUserRoleAdmin() && !resourcePermissionsFactory.get().isUserRoleOnc()) {
+        if (devStatusHistoryUpdated && newDevStatus != null
+                && newDevStatus.getName().equals(DeveloperStatusType.UnderCertificationBanByOnc.toString())
+                && !resourcePermissionsFactory.get().isUserRoleAdmin()
+                && !resourcePermissionsFactory.get().isUserRoleOnc()) {
             String msg = msgUtil.getMessage("developer.statusChangeNotAllowedWithoutAdmin",
                     DeveloperStatusType.UnderCertificationBanByOnc.toString());
             getMessages().add(msg);
             return false;
-        } else if (devStatusHistoryUpdated
-                && !newDevStatus.getStatus()
-                        .equals(DeveloperStatusType.UnderCertificationBanByOnc.toString())
-                && resourcePermissionsFactory.get().isUserRoleAdmin() && resourcePermissionsFactory.get().isUserRoleOnc()) {
+        } else if (devStatusHistoryUpdated && newDevStatus != null
+                && !newDevStatus.getName().equals(DeveloperStatusType.UnderCertificationBanByOnc.toString())
+                && !resourcePermissionsFactory.get().isUserRoleAdmin()
+                && !resourcePermissionsFactory.get().isUserRoleOnc()) {
             String msg = msgUtil.getMessage("developer.statusHistoryChangeNotAllowedWithoutAdmin");
             getMessages().add(msg);
             return false;
@@ -50,22 +50,15 @@ public class DeveloperEditStatusHistoryValidation extends ValidationRule<Develop
 
     private static boolean isStatusHistoryUpdated(Developer original, Developer changed) {
         boolean hasChanged = false;
-        if ((original.getStatusEvents() != null && changed.getStatusEvents() == null)
-                || (original.getStatusEvents() == null && changed.getStatusEvents() != null)
-                || (original.getStatusEvents().size() != changed.getStatusEvents().size())) {
+        if ((original.getStatuses() != null && changed.getStatuses() == null)
+                || (original.getStatuses() == null && changed.getStatuses() != null)
+                || (original.getStatuses().size() != changed.getStatuses().size())) {
             hasChanged = true;
         } else {
-            // neither status history is null and they have the same size
-            // history arrays so now check for any differences in the values of
-            // each
-            for (DeveloperStatusEvent origStatusHistory : original.getStatusEvents()) {
+            for (DeveloperStatusEvent origStatusEvent : original.getStatuses()) {
                 boolean foundMatchInChanged = false;
-                for (DeveloperStatusEvent changedStatusHistory : changed.getStatusEvents()) {
-                    if (origStatusHistory.getStatus().getId() != null
-                            && changedStatusHistory.getStatus().getId() != null
-                            && origStatusHistory.getStatus().getId().equals(changedStatusHistory.getStatus().getId())
-                            && origStatusHistory.getStatusDate().getTime() == changedStatusHistory.getStatusDate()
-                                    .getTime()) {
+                for (DeveloperStatusEvent changedStatusEvent : changed.getStatuses()) {
+                    if (origStatusEvent.equals(changedStatusEvent)) {
                         foundMatchInChanged = true;
                     }
                 }

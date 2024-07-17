@@ -253,7 +253,6 @@ public class CognitoApiWrapper {
         cognitoClient.adminSetUserPassword(request);
     }
 
-
     public AdminAddUserToGroupResponse addUserToGroup(String email, String groupName) {
         AdminAddUserToGroupRequest request = AdminAddUserToGroupRequest.builder()
                 .userPoolId(userPoolId)
