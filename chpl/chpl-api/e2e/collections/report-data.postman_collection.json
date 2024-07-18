@@ -5,13 +5,13 @@
 	},
 	"item": [
 		{
-			"name": "GET /report-data/cures-update-report - 200 status and response body",
+			"name": "GET /report-data/hti-1-criteria-migration-report - 200 status and response body",
 			"event": [
 				{
 					"listen": "test",
 					"script": {
 						"exec": [
-							"pm.test(\"/report-data/cures-update-report end point returns 200 status and response body should not be empty\", function () {\r",
+							"pm.test(\"/report-data/hti-1-criteria-migration-report end point returns 200 status and response body should not be empty\", function () {\r",
 							"    pm.response.to.have.status(200);\r",
 							"    var jsonData = pm.response.json();\r",
 							"    pm.expect(jsonData.response).not.eq(null);\r",
@@ -38,17 +38,17 @@
 					}
 				],
 				"url": {
-					"raw": "{{url}}/rest/report-data/cures-update-report",
+					"raw": "{{url}}/rest/report-data/hti-1-criteria-migration-report",
 					"host": [
 						"{{url}}"
 					],
 					"path": [
 						"rest",
 						"report-data",
-						"cures-update-report"
+						"hti-1-criteria-migration-report"
 					]
 				},
-				"description": "GET /report-data/cures-update-report - 200 status and response body for anonymous users"
+				"description": "GET /report-data/hti-1-criteria-migration-report - 200 status and response body for anonymous users"
 			},
 			"response": []
 		}
