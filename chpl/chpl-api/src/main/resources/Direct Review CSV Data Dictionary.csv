@@ -2,7 +2,7 @@ Column Name,Required for each Direct Review Activity?,Allowed Formats or Values,
 Developer ID,Yes,<Integer>,The unique database ID of the developer
 Developer Name,Yes,<string>,The name of the developer or vendor of the certified health IT product
 Developer Link,Yes,<URL>,Link to the CHPL developer page
-Banned or Suspended,No,<blank>; Suspended by ONC; Under certification ban by ONC,Whether the developer has a ban or suspension within the program
+Banned or Suspended,No,<blank>; Suspended by ONC; Under certification ban by ONC,Whether the developer has a ban or suspension within the Certification Program
 Non-Conformity Type,"Required if Direct Review Result = ""Non-conformity""",<string>,The type of non-conformity found during the review; contains reference to regulation and description
 Non-Conformity Status,"Required if Direct Review Result = ""Non-Conformity""",Open; Closed,Indicates whether the non-conformity is open or closed (has been resolved)
 CAP Approval Date,No,<MM/DD/YYYY> or <string>,The date ONC approved the corrective action plan proposed by the developer or status if no date is provided
