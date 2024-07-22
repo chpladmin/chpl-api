@@ -3,12 +3,13 @@ package gov.healthit.chpl;
 import org.springframework.lang.Nullable;
 
 public enum ChplHttpStatus {
-    RESENT_USER_CONFIRMATION_EMAIL(461, "Account's Email Not Confirmed");
+    RESENT_USER_CONFIRMATION_EMAIL(461, "Account's Email Not Confirmed"),
+    COGNITO_AUTHENTICATION_CHALLENGE(470, "The user is required to respond to the described challenge.");
+
 
     private int value;
 
     private String reasonPhrase;
-
 
     ChplHttpStatus(int value, String reasonPhrase) {
         this.value = value;

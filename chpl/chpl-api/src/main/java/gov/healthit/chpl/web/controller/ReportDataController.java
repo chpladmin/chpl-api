@@ -1,8 +1,11 @@
 package gov.healthit.chpl.web.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -12,6 +15,7 @@ import gov.healthit.chpl.domain.statistics.CuresCriterionChartStatistic;
 import gov.healthit.chpl.report.ReportDataManager;
 import gov.healthit.chpl.report.criteriamigrationreport.CriteriaMigrationReport;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
+import gov.healthit.chpl.web.controller.results.ReportUrlResult;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -21,10 +25,12 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RequestMapping("/report-data")
 public class ReportDataController {
     private ReportDataManager reportDataManager;
+    private Map<String, String> reportUrlsByReportName;
 
     @Autowired
-    public ReportDataController(ReportDataManager reportDataManager) {
+    public ReportDataController(ReportDataManager reportDataManager, @Value("#{${reportUrls}}") Map<String, String> reportUrlsByReportName) {
         this.reportDataManager = reportDataManager;
+        this.reportUrlsByReportName = reportUrlsByReportName;
     }
 
     @Operation(summary = "Retrieves the data used to generate the Cures Update Report.",
@@ -46,4 +52,22 @@ public class ReportDataController {
     public @ResponseBody CriteriaMigrationReport getHti1CriteriaMigrationReport() {
         return reportDataManager.getHti1CriteriaMigrationReport();
     }
+
+    @Operation(summary = "Retrieves the URL for a Power BI report.",
+            description = "Retrieves the URL for a Power BI report.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
+    @RequestMapping(value = "/{reportName}/url", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public @ResponseBody ReportUrlResult getReportUrl(@PathVariable("reportName") String reportName) {
+
+        String reportUrl = "";
+        if (reportUrlsByReportName.containsKey(reportName)) {
+            reportUrl = reportUrlsByReportName.get(reportName);
+        }
+        return ReportUrlResult.builder()
+                .reportUrl(reportUrl)
+                .build();
+    }
+
 }

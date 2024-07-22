@@ -687,6 +687,22 @@
             </job-data-map>
         </job>
 
+        <!-- Email Information about Inactive Developers and Products -->
+        <job>
+            <name>Inactive Developers And Products Report</name>
+            <group>chplJobs</group>
+            <description>Gathers data about inactive developers and their products and sends it via email.</description>
+            <job-class>gov.healthit.chpl.scheduler.job.developer.inactive.InactiveDevelopersAndProductsReport</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+            <job-data-map>
+                <entry>
+                    <key>authorities</key>
+                    <value>ROLE_ADMIN;ROLE_ONC;chpl-admin;chpl-onc</value>
+                </entry>
+            </job-data-map>
+        </job>
+
         <!-- Job fired when a new listing is uploaded -->
         <job>
             <name>listingUploadValidationJob</name>

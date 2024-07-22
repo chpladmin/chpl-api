@@ -3,6 +3,7 @@ package gov.healthit.chpl.user.cognito;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.auth.LoginCredentials;
@@ -17,18 +18,21 @@ import lombok.extern.log4j.Log4j2;
 public class CognitoConfirmEmailEmailer {
     private ChplHtmlEmailBuilder htmlEmailBuilder;
     private ChplEmailFactory chplEmailFactory;
+    private String chplUrl;
 
     @Autowired
-    public CognitoConfirmEmailEmailer(ChplHtmlEmailBuilder htmlEmailBuilder, ChplEmailFactory chplEmailFactory) {
+    public CognitoConfirmEmailEmailer(ChplHtmlEmailBuilder htmlEmailBuilder, ChplEmailFactory chplEmailFactory, @Value("${chplUrlBegin}") String chplUrl) {
         this.htmlEmailBuilder = htmlEmailBuilder;
         this.chplEmailFactory = chplEmailFactory;
+        this.chplUrl = chplUrl;
     }
 
     public void sendConfirmationEmail(LoginCredentials credentials) throws EmailNotSentException {
         String htmlMessage = htmlEmailBuilder.initialize()
                 .heading("Confirm CHPL Account")
-                .paragraph("Please go to the CHPL and login with this one-time password.",
+                .paragraph(String.format("Please go to the <a href='%s'>CHPL</a> and login with this one-time password.", chplUrl),
                         String.format("Email: %s<br />One-time Password: %s", credentials.getUserName(), credentials.getPassword()))
+                .paragraph("", "Your one-time password is valid for 7 days.")
                 .footer(PublicFooter.class)
                 .build();
         LOGGER.info("Created HTML Message for " + credentials.getUserName());
