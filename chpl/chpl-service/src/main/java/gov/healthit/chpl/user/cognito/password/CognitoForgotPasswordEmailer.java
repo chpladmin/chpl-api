@@ -47,7 +47,7 @@ public class CognitoForgotPasswordEmailer {
     }
 
     public void sendEmail(CognitoForgotPassword forgotPassword) throws EmailNotSentException {
-        String link = String.format("%s/#/forgot_password/%s", chplUrl, forgotPassword.getToken().toString());
+        String link = String.format("%s/#/forgot-password/%s", chplUrl, forgotPassword.getToken().toString());
 
         String htmlMessage = htmlEmailBuilder.initialize()
                 .heading(heading)
