@@ -1,6 +1,5 @@
 package gov.healthit.chpl.web.controller;
 
-import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import gov.healthit.chpl.domain.statistics.CuresCriterionChartStatistic;
 import gov.healthit.chpl.report.ReportDataManager;
 import gov.healthit.chpl.report.criteriamigrationreport.CriteriaMigrationReport;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
@@ -31,16 +29,6 @@ public class ReportDataController {
     public ReportDataController(ReportDataManager reportDataManager, @Value("#{${reportUrls}}") Map<String, String> reportUrlsByReportName) {
         this.reportDataManager = reportDataManager;
         this.reportUrlsByReportName = reportUrlsByReportName;
-    }
-
-    @Operation(summary = "Retrieves the data used to generate the Cures Update Report.",
-            description = "Retrieves the data used to generate the Cures Update Report.",
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
-    @RequestMapping(value = "/cures-update-report", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public @ResponseBody List<CuresCriterionChartStatistic> getCuresUpdateReportData() {
-        return reportDataManager.getCuresUpdateReportData();
     }
 
     @Operation(summary = "Retrieves the data used to generate the HTI-1 Criteria Migration Report.",
