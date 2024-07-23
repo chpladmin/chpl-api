@@ -1,5 +1,17 @@
 # Release Notes
 
+## Version 45.1.0
+_22 July 2024_
+
+### Features
+* Build "Unique products" report in PowerBI
+* Allow disabling of sending emails throughout the app
+* Allow newly created user to change their password when logging in
+* Change 'Developer Status' col heading to 'Banned or Suspended'
+* Add report for Inactive Products
+
+---
+
 ## Version 45.0.0
 _8 July 2024_
 
