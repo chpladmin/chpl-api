@@ -1,5 +1,10 @@
 package gov.healthit.chpl.entity.statistics;
 
+import gov.healthit.chpl.certificationCriteria.CertificationCriterionEntity;
+import gov.healthit.chpl.domain.CriterionProductStatistics;
+import gov.healthit.chpl.entity.EntityAudit;
+import gov.healthit.chpl.entity.lastmodifieduserstrategy.CurrentUserThenSystemUserStrategy;
+import gov.healthit.chpl.entity.lastmodifieduserstrategy.LastModifiedUserStrategy;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -11,11 +16,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
-
-import gov.healthit.chpl.certificationCriteria.CertificationCriterionEntity;
-import gov.healthit.chpl.entity.EntityAudit;
-import gov.healthit.chpl.entity.lastmodifieduserstrategy.CurrentUserThenSystemUserStrategy;
-import gov.healthit.chpl.entity.lastmodifieduserstrategy.LastModifiedUserStrategy;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -66,4 +66,16 @@ public class CriterionProductStatisticsEntity extends EntityAudit {
         return CriterionProductStatisticsEntity.class;
     }
 
+    public CriterionProductStatistics toDomain() {
+        return CriterionProductStatistics.builder()
+                .id(this.id)
+                .productCount(this.productCount)
+                .certificationCriterionId(this.certificationCriterionId)
+                .criterion(this.certificationCriterion.toDomain())
+                .creationDate(getCreationDate())
+                .lastModifiedDate(getLastModifiedDate())
+                .lastModifiedUser(getLastModifiedUser())
+                .deleted(getDeleted())
+                .build();
+    }
 }
