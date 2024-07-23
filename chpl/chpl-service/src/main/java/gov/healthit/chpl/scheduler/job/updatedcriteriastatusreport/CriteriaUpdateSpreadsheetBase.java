@@ -1,4 +1,4 @@
-package gov.healthit.chpl.scheduler.job.curesStatistics.email.spreadsheet;
+package gov.healthit.chpl.scheduler.job.updatedcriteriastatusreport;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -11,7 +11,7 @@ import java.nio.file.StandardCopyOption;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-public abstract class CuresSpreadsheet {
+public abstract class CriteriaUpdateSpreadsheetBase {
     protected File copyTemplateFileToTemporaryFile(String template, String destinationBaseFileName) throws IOException {
         try (InputStream srcInputStream = getTemplateAsStream(template)) {
             File tempFile = File.createTempFile(destinationBaseFileName + "_", ".xlsx");

@@ -9,11 +9,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterionComparator;
-import gov.healthit.chpl.scheduler.job.curesStatistics.email.spreadsheet.CuresSpreadsheet;
 import gov.healthit.chpl.service.CertificationCriterionService;
 
 @Component
-public class UpdatedCriteriaStatusReportWorkbook extends CuresSpreadsheet { //TODO - need to update the name of the class that is being extended
+public class UpdatedCriteriaStatusReportWorkbook extends CriteriaUpdateSpreadsheetBase { //TODO - need to update the name of the class that is being extended
     private UpdatedCriteriaStatusReportSheet updatedCriteriaStatusReportSheet;
     private UpdatedCriteriaStatusReportDAO updatedCriteriaStatusReportDAO;
     private String template;

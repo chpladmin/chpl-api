@@ -74,7 +74,7 @@ public class DirectReviewCsvPresenter {
         result.add("Developer ID");
         result.add("Developer Name");
         result.add("Developer Link");
-        result.add("Developer Status");
+        result.add("Banned or Suspended");
         result.add("Non-Conformity Type");
         result.add("Non-Conformity Status");
         result.add("CAP Approval Date");
