@@ -15,20 +15,12 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.dao.CriterionProductStatisticsDAO;
-import gov.healthit.chpl.dto.CriterionProductStatisticsDTO;
-import gov.healthit.chpl.entity.statistics.CriterionProductStatisticsEntity;
+import gov.healthit.chpl.domain.CriterionProductStatistics;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.search.domain.ListingSearchResult;
 import gov.healthit.chpl.search.domain.ListingSearchResult.CertificationCriterionSearchResult;
 
-/**
- * Populates the criterion_product_statistics table with summarized count
- * information.
- *
- * @author alarned
- *
- */
 public class CriterionProductStatisticsCalculator {
     private static final Logger LOGGER = LogManager.getLogger("chartDataCreatorJobLogger");
 
@@ -80,8 +72,6 @@ public class CriterionProductStatisticsCalculator {
     }
 
     public void save(Map<Long, Long> productCounts) throws NumberFormatException, EntityRetrievalException {
-        List<CriterionProductStatisticsEntity> entities =
-        convertProductCountMapToListOfCriterionProductStatistics(productCounts);
         try {
             deleteExistingCriterionProductStatistics();
         } catch (EntityRetrievalException e) {
@@ -89,40 +79,43 @@ public class CriterionProductStatisticsCalculator {
             return;
         }
 
-        for (CriterionProductStatisticsEntity entity : entities) {
-            saveCriterionProductStatistic(entity);
-        }
+        convertProductCountMapToListOfCriterionProductStatistics(productCounts).forEach(statistic -> {
+            saveCriterionProductStatistic(statistic);
+        });
     }
 
-    private List<CriterionProductStatisticsEntity> convertProductCountMapToListOfCriterionProductStatistics(
+    private List<CriterionProductStatistics> convertProductCountMapToListOfCriterionProductStatistics(
             Map<Long, Long> productCounts) throws NumberFormatException, EntityRetrievalException {
-        List<CriterionProductStatisticsEntity> entities = new ArrayList<CriterionProductStatisticsEntity>();
+
+        List<CriterionProductStatistics> stats = new ArrayList<CriterionProductStatistics>();
         for (Entry<Long, Long> entry : productCounts.entrySet()) {
             CertificationCriterion criterion = certificationCriterionDAO.getById(entry.getKey());
             if (!criterion.isRemoved()) {
-                CriterionProductStatisticsEntity entity = new CriterionProductStatisticsEntity();
-                entity.setProductCount(entry.getValue());
-                entity.setCertificationCriterionId(criterion.getId());
-                entities.add(entity);
+                CriterionProductStatistics criterionProductStatistics = new CriterionProductStatistics();
+                criterionProductStatistics.setProductCount(entry.getValue());
+                criterionProductStatistics.setCertificationCriterionId(criterion.getId());
+                stats.add(criterionProductStatistics);
             }
         }
-        return entities;
+        return stats;
     }
 
     private void deleteExistingCriterionProductStatistics() throws EntityRetrievalException {
-        List<CriterionProductStatisticsDTO> dtos = criterionProductStatisticsDAO.findAll();
-        for (CriterionProductStatisticsDTO dto : dtos) {
-            criterionProductStatisticsDAO.delete(dto.getId());
-            LOGGER.info("Deleted: " + dto.getId());
-        }
+        criterionProductStatisticsDAO.findAll().forEach(stat -> {
+            try {
+            criterionProductStatisticsDAO.delete(stat.getId());
+            } catch (EntityRetrievalException e) {
+                LOGGER.error("Could not not delete criterionProductStatistics: {}", stat.getId(), e);
+            }
+            LOGGER.info("Deleted: " + stat.getId());
+        });
     }
 
-    private void saveCriterionProductStatistic(final CriterionProductStatisticsEntity entity) {
+    private void saveCriterionProductStatistic(CriterionProductStatistics criterionProductStatistics) {
         try {
-            CriterionProductStatisticsDTO dto = new CriterionProductStatisticsDTO(entity);
-            criterionProductStatisticsDAO.create(dto);
+            criterionProductStatisticsDAO.create(criterionProductStatistics);
             LOGGER.info("Saved CriterionProductStatisticsDTO [Certification Criteria Id: "
-                    + dto.getCertificationCriterionId() + ", Count:" + dto.getProductCount() + "]");
+                    + criterionProductStatistics.getCertificationCriterionId() + ", Count:" + criterionProductStatistics.getProductCount() + "]");
         } catch (EntityCreationException | EntityRetrievalException e) {
             LOGGER.error("Error occured while inserting counts.", e);
             return;

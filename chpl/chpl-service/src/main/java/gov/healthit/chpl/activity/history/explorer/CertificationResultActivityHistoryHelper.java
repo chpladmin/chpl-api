@@ -1,4 +1,4 @@
-package gov.healthit.chpl.scheduler.job.curesStatistics;
+package gov.healthit.chpl.activity.history.explorer;
 
 import java.util.Date;
 import java.util.List;
@@ -19,14 +19,15 @@ import gov.healthit.chpl.dto.ActivityDTO;
 import lombok.extern.log4j.Log4j2;
 
 @Service
-@Log4j2(topic = "curesStatisticsCreatorJobLogger")
+@Log4j2
 public class CertificationResultActivityHistoryHelper {
 
     private ActivityDAO activityDao;
     private ListingActivityUtil activityUtil;
 
     @Autowired
-    public CertificationResultActivityHistoryHelper(@Qualifier("activityDAO") ActivityDAO activityDao, ListingActivityUtil activityUtil) {
+    public CertificationResultActivityHistoryHelper(@Qualifier("activityDAO") ActivityDAO activityDao,
+            ListingActivityUtil activityUtil) {
         this.activityDao = activityDao;
         this.activityUtil = activityUtil;
     }

@@ -8,8 +8,8 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.activity.history.explorer.CertificationResultActivityHistoryHelper;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
-import gov.healthit.chpl.scheduler.job.curesStatistics.CertificationResultActivityHistoryHelper;
 import gov.healthit.chpl.util.CertificationStatusUtil;
 import gov.healthit.chpl.util.DateUtil;
 
