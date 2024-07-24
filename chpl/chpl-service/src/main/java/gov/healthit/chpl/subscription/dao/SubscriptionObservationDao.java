@@ -29,6 +29,18 @@ public class SubscriptionObservationDao extends BaseDAOImpl {
             + "AND subscription.deleted = false "
             + "AND subscriber.deleted = false ";
 
+    private static final String NOTIFIED_OBSERVATION_HQL = "SELECT observation "
+            + "FROM SubscriptionObservationEntity observation "
+            + "JOIN FETCH observation.subscription subscription "
+            + "JOIN FETCH subscription.subscriber subscriber "
+            + "JOIN FETCH subscriber.subscriberStatus "
+            + "JOIN FETCH subscriber.subscriberRole "
+            + "JOIN FETCH subscription.subscriptionSubject subject "
+            + "JOIN FETCH subject.subscriptionObjectType "
+            + "JOIN FETCH subscription.subscriptionConsolidationMethod consolidationMethod "
+            + "WHERE notificationSentTimestamp IS NOT NULL ";
+
+
     public void createObservations(List<Long> subscriptionIds, Long activityId) {
         //TODO: figure out how to batch insert these observations
         subscriptionIds.stream()
@@ -59,8 +71,7 @@ public class SubscriptionObservationDao extends BaseDAOImpl {
     }
 
     public List<SubscriptionObservation> getObservationsNotified() {
-        Query query = entityManager.createQuery(OBSERVATION_HQL
-                + "AND notificationSentTimestamp IS NOT NULL ",
+        Query query = entityManager.createQuery(NOTIFIED_OBSERVATION_HQL,
                 SubscriptionObservationEntity.class);
 
         List<SubscriptionObservationEntity> results = query.getResultList();
