@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.activity.history.ListingActivityUtil;
-import gov.healthit.chpl.certifiedproduct.service.CertificationStatusEventsService;
 import gov.healthit.chpl.dao.ActivityDAO;
 import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
@@ -25,14 +24,10 @@ public class CertificationStatusChangedFormatter extends ObservationSubjectForma
     private static final String STATUS_CHANGED = "Certification status changed from '%s' on %s "
             + "to '%s' on %s";
 
-    private CertificationStatusEventsService certStatusEventService;
-
     @Autowired
     public CertificationStatusChangedFormatter(@Qualifier("activityDAO") ActivityDAO activityDao,
-            ListingActivityUtil listingActivityUtil,
-            CertificationStatusEventsService certStatusEventService) {
+            ListingActivityUtil listingActivityUtil) {
         super(activityDao, listingActivityUtil);
-        this.certStatusEventService = certStatusEventService;
     }
 
     @Override
@@ -49,26 +44,17 @@ public class CertificationStatusChangedFormatter extends ObservationSubjectForma
 
         LocalDate today = LocalDate.now();
         List<List<String>> formattedObservations = new ArrayList<List<String>>();
-        List<CertificationStatusEvent> addedStatusEvents
-            = certStatusEventService.getAddedCertificationStatusEventsIgnoringReasonUpdates(before, after);
-        //Include a status event added with status change of today
-        addedStatusEvents.stream()
-            .filter(addedStatusEvent -> addedStatusEvent.getEventDay().isEqual(today) || addedStatusEvent.getEventDay().isBefore(today))
-            .forEach(addedStatusEvent -> {
-                //get the status of the listing on the day prior to this status event
-                CertificationStatusEvent yesterdaysStatusEvent = after.getStatusOnDate(DateUtil.toDate(addedStatusEvent.getEventDay().minusDays(1)));
-                if (!addedStatusEvent.getStatus().getName().equals(yesterdaysStatusEvent.getStatus().getName())) {
-                    formattedObservations.add(
-                        Stream.of(observation.getSubscription().getSubject().getSubject(),
-                            String.format(STATUS_CHANGED, yesterdaysStatusEvent.getStatus().getName(),
-                                yesterdaysStatusEvent.getEventDay(),
-                                addedStatusEvent.getStatus().getName(),
-                                addedStatusEvent.getEventDay()),
-                            DateUtil.formatInEasternTime(activity.getActivityDate()))
-                        .toList());
-                }
-            });
+        CertificationStatusEvent beforeStatusEvent = before.getCurrentStatus();
+        CertificationStatusEvent afterStatusEvent = after.getCurrentStatus();
 
+        formattedObservations.add(
+            Stream.of(observation.getSubscription().getSubject().getSubject(),
+                String.format(STATUS_CHANGED, beforeStatusEvent.getStatus().getName(),
+                        beforeStatusEvent.getEventDay(),
+                        afterStatusEvent.getStatus().getName(),
+                        afterStatusEvent.getEventDay()),
+                DateUtil.formatInEasternTime(activity.getActivityDate()))
+            .toList());
         return formattedObservations;
     }
 }
