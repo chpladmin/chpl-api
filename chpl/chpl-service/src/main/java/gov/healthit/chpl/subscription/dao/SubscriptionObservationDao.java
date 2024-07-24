@@ -1,5 +1,6 @@
 package gov.healthit.chpl.subscription.dao;
 
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -57,10 +58,12 @@ public class SubscriptionObservationDao extends BaseDAOImpl {
                 .toList();
     }
 
-    public void deleteObservations(List<Long> observationIds) {
+    public void markObservationsAsNotified(List<Long> observationIds) {
         Query query = entityManager.createQuery("UPDATE SubscriptionObservationEntity observations "
-                + "SET observations.deleted = true "
+                + "SET observations.deleted = true, "
+                + "observations.notificationSentTimestamp = :now "
                 + "WHERE observations.id IN (:observationIds)");
+        query.setParameter("now", new Date());
         query.setParameter("observationIds", observationIds);
         query.executeUpdate();
     }
