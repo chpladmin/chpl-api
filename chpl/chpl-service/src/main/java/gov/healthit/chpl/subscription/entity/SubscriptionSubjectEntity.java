@@ -1,5 +1,10 @@
 package gov.healthit.chpl.subscription.entity;
 
+import org.hibernate.annotations.Immutable;
+
+import gov.healthit.chpl.entity.EntityAudit;
+import gov.healthit.chpl.subscription.domain.SubscriptionObjectType;
+import gov.healthit.chpl.subscription.domain.SubscriptionSubject;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -9,13 +14,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-
-import org.hibernate.annotations.Immutable;
-import org.hibernate.annotations.Where;
-
-import gov.healthit.chpl.entity.EntityAudit;
-import gov.healthit.chpl.subscription.domain.SubscriptionObjectType;
-import gov.healthit.chpl.subscription.domain.SubscriptionSubject;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -32,7 +30,6 @@ import lombok.experimental.SuperBuilder;
 @Entity
 @Immutable
 @Table(name = "subscription_subject")
-@Where(clause = "deleted <> 'true'")
 public class SubscriptionSubjectEntity extends EntityAudit {
     private static final long serialVersionUID = -4801635388305598783L;
 
