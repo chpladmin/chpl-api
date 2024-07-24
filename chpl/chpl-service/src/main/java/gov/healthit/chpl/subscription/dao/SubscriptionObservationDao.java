@@ -58,6 +58,17 @@ public class SubscriptionObservationDao extends BaseDAOImpl {
                 .toList();
     }
 
+    public List<SubscriptionObservation> getObservationsNotified() {
+        Query query = entityManager.createQuery(OBSERVATION_HQL
+                + "AND notificationSentTimestamp IS NOT NULL ",
+                SubscriptionObservationEntity.class);
+
+        List<SubscriptionObservationEntity> results = query.getResultList();
+        return results.stream()
+                .map(entity -> entity.toDomain())
+                .toList();
+    }
+
     public void markObservationsAsNotified(List<Long> observationIds) {
         Query query = entityManager.createQuery("UPDATE SubscriptionObservationEntity observations "
                 + "SET observations.deleted = true, "

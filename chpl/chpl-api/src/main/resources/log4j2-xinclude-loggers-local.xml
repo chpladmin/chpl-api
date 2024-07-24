@@ -160,6 +160,9 @@
     <Logger name="subscriptionObservationsNotificationJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="subscriptionObservationsNotificationJob" />
     </Logger>
+    <Logger name="subscriptionObservationNotificationsReportEmailJobLogger" level="INFO" additivity="false">
+        <AppenderRef ref="subscriptionObservationNotificationsReportEmailJob" />
+    </Logger>
     <Logger name="developerAttestationReportJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="developerAttestationReportJob" />
     </Logger>
