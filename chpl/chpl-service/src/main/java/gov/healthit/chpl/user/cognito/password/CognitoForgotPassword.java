@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Data
 public class CognitoForgotPassword {
-    private static final Long MILLIS_IN_HOUR = 24L * 60L * 60L * 1000L;
+    private static final Long MILLIS_IN_HOUR = 60L * 60L * 1000L;
 
     private Long id;
     private String email;
