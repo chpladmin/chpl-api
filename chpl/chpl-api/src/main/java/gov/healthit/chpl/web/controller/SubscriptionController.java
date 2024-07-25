@@ -134,8 +134,7 @@ public class SubscriptionController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
     @RequestMapping(value = "/subscriptions/notifications-report",
-        method = RequestMethod.POST, produces = "application/json; charset=utf-8",
-        consumes = MediaType.APPLICATION_JSON_VALUE)
+        method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     public ChplOneTimeTrigger triggerSubscriptionObservationNotificationsReport()
             throws SchedulerException, ValidationException {
         return subscriptionManager.triggerSubscriptionObservationNotificationsReport();
