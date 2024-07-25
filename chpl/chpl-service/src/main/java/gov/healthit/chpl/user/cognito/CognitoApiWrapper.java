@@ -33,6 +33,7 @@ import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.UserCreationException;
 import gov.healthit.chpl.exception.UserRetrievalException;
+import gov.healthit.chpl.util.AuthUtil;
 import lombok.extern.log4j.Log4j2;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.AwsCredentials;
@@ -229,6 +230,31 @@ public class CognitoApiWrapper {
         }
     }
 
+    public AuthenticationResultType refreshToken(String refreshToken) {
+        String secretHash = CognitoSecretHash.calculateSecretHash(clientId, userPoolClientSecret, AuthUtil.getCurrentUser().getCognitoId());
+
+        Map<String, String> authParams = new LinkedHashMap<String, String>();
+        authParams.put("REFRESH_TOKEN", refreshToken);
+        authParams.put("SECRET_HASH", secretHash);
+
+        AdminInitiateAuthRequest authRequest = AdminInitiateAuthRequest.builder()
+                .authFlow(AuthFlowType.REFRESH_TOKEN_AUTH)
+                .userPoolId(userPoolId)
+                .clientId(clientId)
+                .authParameters(authParams)
+                .build();
+
+        try {
+            AdminInitiateAuthResponse authResult = cognitoClient.adminInitiateAuth(authRequest);
+            return authResult.authenticationResult();
+        } catch (Exception e) {
+            //This is cluttering the logs when the SSO flag is on, and the user logs in using CHPL creds
+            //We might want to uncomment it when we move to only using Cognito creds
+            LOGGER.error("Error refreshing token", e);
+            return null;
+        }
+    }
+
     public void setUserPassword(String userName, String password) {
         AdminSetUserPasswordRequest request = AdminSetUserPasswordRequest.builder()
                 .username(userName)
@@ -292,6 +318,7 @@ public class CognitoApiWrapper {
         }
         return users;
     }
+
 
     private CognitoIdentityProviderClient createCognitoClient(String accessKey, String secretKey, String region) {
         AwsCredentials awsCredentials = AwsBasicCredentials.create(accessKey, secretKey);

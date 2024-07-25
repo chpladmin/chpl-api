@@ -71,20 +71,21 @@ public class CognitoAuthenticationManager {
             return null;
         }
 
-        JWTAuthenticatedUser jwtUser = jwtUserConverterFacade.getAuthenticatedUser(authResult.idToken());
-        User user;
-        try {
-            user = cognitoApiWrapper.getUserInfo(jwtUser.getCognitoId());
-        } catch (UserRetrievalException e) {
-            LOGGER.error("Could not decode JWT Token");
-            return null;
-        }
-
         return CognitoAuthenticationResponse.builder()
                 .accessToken(authResult.accessToken())
                 .idToken(authResult.idToken())
                 .refreshToken(authResult.refreshToken())
-                .user(user)
+                .user(getUserBasedOnIdToken(authResult.idToken()))
+                .build();
+    }
+
+    public CognitoAuthenticationResponse refreshAuthenticationTokens(String refreshToken) {
+        AuthenticationResultType authResult = cognitoApiWrapper.refreshToken(refreshToken);
+        return CognitoAuthenticationResponse.builder()
+                .accessToken(authResult.accessToken())
+                .idToken(authResult.idToken())
+                .refreshToken(authResult.refreshToken())
+                .user(getUserBasedOnIdToken(authResult.idToken()))
                 .build();
     }
 
@@ -103,5 +104,15 @@ public class CognitoAuthenticationManager {
             return false;
         }
         return true;
+    }
+
+    private User getUserBasedOnIdToken(String idToken) {
+        JWTAuthenticatedUser jwtUser = jwtUserConverterFacade.getAuthenticatedUser(idToken);
+        try {
+            return cognitoApiWrapper.getUserInfo(jwtUser.getCognitoId());
+        } catch (UserRetrievalException e) {
+            LOGGER.error("Could not decode JWT Token");
+            return null;
+        }
     }
 }

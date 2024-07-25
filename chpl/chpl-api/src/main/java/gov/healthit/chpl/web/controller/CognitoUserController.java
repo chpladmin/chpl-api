@@ -12,11 +12,14 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.auth.ChplAccountStatusException;
+import gov.healthit.chpl.auth.user.AuthenticationSystem;
+import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.domain.CreateUserFromInvitationRequest;
 import gov.healthit.chpl.domain.auth.CognitoGroups;
 import gov.healthit.chpl.domain.auth.CognitoNewPasswordRequiredRequest;
@@ -35,6 +38,7 @@ import gov.healthit.chpl.user.cognito.CognitoUserManager;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -180,6 +184,20 @@ public class CognitoUserController {
         } finally {
         SecurityContextHolder.getContext().setAuthentication(null);
         }
+    }
+
+    @Hidden
+    @RequestMapping(value = "/keep-alive", method = RequestMethod.GET,
+            produces = "application/json; charset=utf-8")
+    public CognitoAuthenticationResponse keepAlive(@RequestParam (name = "token") String refreshToken) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null
+                && auth instanceof JWTAuthenticatedUser
+                && ((JWTAuthenticatedUser) auth).getAuthenticationSystem().equals(AuthenticationSystem.COGNITO)) {
+
+            return cognitoAuthenticationManager.refreshAuthenticationTokens(refreshToken);
+        }
+        return null;
     }
 
 }
