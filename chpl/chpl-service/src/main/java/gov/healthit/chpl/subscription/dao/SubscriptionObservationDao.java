@@ -8,8 +8,10 @@ import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.subscription.domain.SubscriptionObservation;
+import gov.healthit.chpl.subscription.domain.SubscriptionObservationNotification;
 import gov.healthit.chpl.subscription.entity.SubscriptionEntity;
 import gov.healthit.chpl.subscription.entity.SubscriptionObservationEntity;
+import gov.healthit.chpl.subscription.entity.SubscriptionObservationNotificationEntity;
 import jakarta.persistence.Query;
 import lombok.extern.log4j.Log4j2;
 
@@ -28,18 +30,6 @@ public class SubscriptionObservationDao extends BaseDAOImpl {
             + "WHERE observation.deleted = false "
             + "AND subscription.deleted = false "
             + "AND subscriber.deleted = false ";
-
-    private static final String NOTIFIED_OBSERVATION_HQL = "SELECT observation "
-            + "FROM SubscriptionObservationEntity observation "
-            + "JOIN FETCH observation.subscription subscription "
-            + "JOIN FETCH subscription.subscriber subscriber "
-            + "JOIN FETCH subscriber.subscriberStatus "
-            + "JOIN FETCH subscriber.subscriberRole "
-            + "JOIN FETCH subscription.subscriptionSubject subject "
-            + "JOIN FETCH subject.subscriptionObjectType "
-            + "JOIN FETCH subscription.subscriptionConsolidationMethod consolidationMethod "
-            + "WHERE notificationSentTimestamp IS NOT NULL ";
-
 
     public void createObservations(List<Long> subscriptionIds, Long activityId) {
         //TODO: figure out how to batch insert these observations
@@ -70,11 +60,12 @@ public class SubscriptionObservationDao extends BaseDAOImpl {
                 .toList();
     }
 
-    public List<SubscriptionObservation> getObservationsNotified() {
-        Query query = entityManager.createQuery(NOTIFIED_OBSERVATION_HQL,
-                SubscriptionObservationEntity.class);
+    public List<SubscriptionObservationNotification> getObservationNotifications() {
+        Query query = entityManager.createQuery("SELECT notification "
+                + "FROM SubscriptionObservationNotificationEntity notification ",
+                SubscriptionObservationNotificationEntity.class);
 
-        List<SubscriptionObservationEntity> results = query.getResultList();
+        List<SubscriptionObservationNotificationEntity> results = query.getResultList();
         return results.stream()
                 .map(entity -> entity.toDomain())
                 .toList();

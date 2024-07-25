@@ -15,7 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.subscription.domain.SubscriptionObservation;
+import gov.healthit.chpl.subscription.domain.SubscriptionObservationNotification;
 import gov.healthit.chpl.util.DateUtil;
 import lombok.extern.log4j.Log4j2;
 
@@ -32,7 +32,7 @@ public class SubscriptionObservationNotificationsReportCsvCreator {
 
     private static final String NEW_LINE_SEPARATOR = "\n";
 
-    public File createCsvFile(List<SubscriptionObservation> observations) throws IOException {
+    public File createCsvFile(List<SubscriptionObservationNotification> notifications) throws IOException {
         CSVFormat csvFileFormat = CSVFormat.DEFAULT.builder()
                 .setRecordSeparator(NEW_LINE_SEPARATOR)
                 .build();
@@ -44,8 +44,8 @@ public class SubscriptionObservationNotificationsReportCsvCreator {
             fileWriter.write('\ufeff');
             csvFilePrinter.printRecord(getHeaderRow());
 
-            observations.stream()
-                .sorted((obs1, obs2) -> obs1.getNotificationSentTimestamp().compareTo(obs2.getNotificationSentTimestamp()))
+            notifications.stream()
+                .sorted((n1, n2) -> n1.getNotificationDate().compareTo(n2.getNotificationDate()))
                 .forEach(obs -> printRows(csvFilePrinter, obs));
         }
         return csvFile;
@@ -68,24 +68,30 @@ public class SubscriptionObservationNotificationsReportCsvCreator {
                 "Subscriber",
                 "Role",
                 "Subscribed Item Type",
+                "ONC-ACBs",
+                "Developer",
+                "Product",
                 "Subscribed Item Name",
                 "Subject",
                 "Notification Time");
     }
 
-    private void printRows(CSVPrinter csvFilePrinter, SubscriptionObservation observation) {
-            List<String> rowForItem = getRow(observation);
+    private void printRows(CSVPrinter csvFilePrinter, SubscriptionObservationNotification notification) {
+            List<String> rowForItem = getRow(notification);
             printRow(csvFilePrinter, rowForItem);
     }
 
-    private List<String> getRow(SubscriptionObservation observation) {
+    private List<String> getRow(SubscriptionObservationNotification notification) {
         List<String> row = new ArrayList<String>();
-        row.add(observation.getSubscriber().getEmail());
-        row.add(observation.getSubscriber().getRole().getName());
-        row.add(observation.getSubscription().getSubject().getType().getName());
-        row.add(observation.getSubscription().getSubscribedObjectId().toString());
-        row.add(observation.getSubscription().getSubject().getSubject());
-        row.add(printTimestamp(observation.getNotificationSentTimestamp()));
+        row.add(notification.getSubscriberEmail());
+        row.add(notification.getSubscriberRole());
+        row.add(notification.getSubscriptionObjectType());
+        row.add(notification.getAcbName() != null ? notification.getAcbName() : "");
+        row.add(notification.getDeveloperName() != null ? notification.getDeveloperName() : "");
+        row.add(notification.getProductName() != null ? notification.getProductName() : "");
+        row.add(notification.getSubscribedObjectName());
+        row.add(notification.getSubscriptionSubject());
+        row.add(printTimestamp(notification.getNotificationDate()));
         return row;
     }
 

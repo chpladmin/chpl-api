@@ -16,7 +16,7 @@ import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
 import gov.healthit.chpl.email.footer.PublicFooter;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.subscription.dao.SubscriptionObservationDao;
-import gov.healthit.chpl.subscription.domain.SubscriptionObservation;
+import gov.healthit.chpl.subscription.domain.SubscriptionObservationNotification;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2(topic = "subscriptionObservationNotificationsReportEmailJobLogger")
@@ -46,10 +46,8 @@ public class SubscriptionObservationNotificationsReportEmailJob  implements Job 
 
         try {
             //get all observations with a notified-at timestamp
-            List<SubscriptionObservation> observationsWithNotificationTime = getObservations();
+            List<SubscriptionObservationNotification> observationsWithNotificationTime = getNotifications();
             LOGGER.info("Found " + observationsWithNotificationTime.size() + " observation notifications.");
-
-            //TODO: Fill in subscribed object name
 
             //send email with observations written as csv attachment
             sendEmail(context, observationsWithNotificationTime);
@@ -60,11 +58,11 @@ public class SubscriptionObservationNotificationsReportEmailJob  implements Job 
         }
     }
 
-    private List<SubscriptionObservation> getObservations() {
-        return observationDao.getObservationsNotified();
+    private List<SubscriptionObservationNotification> getNotifications() {
+        return observationDao.getObservationNotifications();
     }
 
-    private void sendEmail(JobExecutionContext context, List<SubscriptionObservation> rows) throws EmailNotSentException, IOException {
+    private void sendEmail(JobExecutionContext context, List<SubscriptionObservationNotification> rows) throws EmailNotSentException, IOException {
         String email = context.getMergedJobDataMap().getString(EMAIL_KEY);
         LOGGER.info("Sending email to: " + email);
         chplEmailFactory.emailBuilder()
