@@ -3,6 +3,7 @@ package gov.healthit.chpl.web.controller;
 import java.util.List;
 import java.util.UUID;
 
+import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.subscription.SubscriptionManager;
@@ -123,6 +125,20 @@ public class SubscriptionController {
     public Subscriber subscribe(@RequestBody(required = true) SubscriptionRequest subscriptionRequest)
         throws ValidationException {
         return subscriptionManager.subscribe(subscriptionRequest);
+    }
+
+    @Operation(summary = "Request an email to be sent to the logged-in user with a report "
+            + "of all subscription notifications that have been sent.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
+    @RequestMapping(value = "/subscriptions/notifications-report",
+        method = RequestMethod.POST, produces = "application/json; charset=utf-8",
+        consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ChplOneTimeTrigger triggerSubscriptionObservationNotificationsReport()
+            throws SchedulerException, ValidationException {
+        return subscriptionManager.triggerSubscriptionObservationNotificationsReport();
     }
 
     @Operation(summary = "Confirm a subscriber's email address is valid. Once confirmed, the subscriber "

@@ -5,18 +5,23 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import jakarta.transaction.Transactional;
-
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
+import org.quartz.JobDataMap;
+import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.ProductDAO;
+import gov.healthit.chpl.domain.schedule.ChplJob;
+import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
+import gov.healthit.chpl.manager.SchedulerManager;
+import gov.healthit.chpl.scheduler.job.subscriptions.SubscriptionObservationNotificationsReportEmailJob;
 import gov.healthit.chpl.search.ListingSearchService;
 import gov.healthit.chpl.search.domain.ListingSearchResult;
 import gov.healthit.chpl.subscriber.validation.SubscriberValidationContext;
@@ -36,7 +41,9 @@ import gov.healthit.chpl.subscription.service.SubscriberMessagingService;
 import gov.healthit.chpl.subscription.service.SubscriptionLookupUtil;
 import gov.healthit.chpl.subscription.validation.SubscriptionRequestValidationContext;
 import gov.healthit.chpl.subscription.validation.SubscriptionRequestValidationService;
+import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import jakarta.transaction.Transactional;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -53,6 +60,7 @@ public class SubscriptionManager {
     private SubscriptionLookupUtil lookupUtil;
     private SubscriberValidationService subscriberValidationService;
     private SubscriptionRequestValidationService subscriptionValidationService;
+    private SchedulerManager schedulerManager;
 
     @Autowired
     public SubscriptionManager(SubscriberDao subscriberDao,
@@ -63,7 +71,8 @@ public class SubscriptionManager {
             ProductDAO productDao,
             ListingSearchService listingSearchService,
             ErrorMessageUtil errorMessageUtil,
-            SubscriptionLookupUtil lookupUtil) {
+            SubscriptionLookupUtil lookupUtil,
+            SchedulerManager schedulerManager) {
         this.subscriberDao = subscriberDao;
         this.subscriptionDao = subscriptionDao;
         this.observationDao = observationDao;
@@ -73,6 +82,7 @@ public class SubscriptionManager {
         this.listingSearchService = listingSearchService;
         this.errorMessageUtil = errorMessageUtil;
         this.lookupUtil = lookupUtil;
+        this.schedulerManager = schedulerManager;
         this.subscriptionValidationService = new SubscriptionRequestValidationService();
         this.subscriberValidationService = new SubscriberValidationService();
     }
@@ -264,5 +274,24 @@ public class SubscriptionManager {
                 roleId,
                 subscriberDao,
                 errorMessageUtil);
+    }
+
+    @Transactional
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SUBSCRIPTION, "
+            + "T(gov.healthit.chpl.permissions.domains.SubscriptionDomainPermissions).SEARCH)")
+    public ChplOneTimeTrigger triggerSubscriptionObservationNotificationsReport()
+            throws SchedulerException, ValidationException {
+
+        ChplOneTimeTrigger subscriptionObservationNotificationsReportTrigger = new ChplOneTimeTrigger();
+        ChplJob subscriptionObservationNotificationsReportJob = new ChplJob();
+        subscriptionObservationNotificationsReportJob.setName(SubscriptionObservationNotificationsReportEmailJob.JOB_NAME);
+        subscriptionObservationNotificationsReportJob.setGroup(SchedulerManager.CHPL_JOBS_KEY);
+        JobDataMap jobDataMap = new JobDataMap();
+        jobDataMap.put(SubscriptionObservationNotificationsReportEmailJob.EMAIL_KEY, AuthUtil.getCurrentUser().getEmail());
+        subscriptionObservationNotificationsReportJob.setJobDataMap(jobDataMap);
+        subscriptionObservationNotificationsReportTrigger.setJob(subscriptionObservationNotificationsReportJob);
+        subscriptionObservationNotificationsReportTrigger.setRunDateMillis(System.currentTimeMillis() + SchedulerManager.FIVE_SECONDS_IN_MILLIS);
+        subscriptionObservationNotificationsReportTrigger = schedulerManager.createBackgroundJobTrigger(subscriptionObservationNotificationsReportTrigger);
+        return subscriptionObservationNotificationsReportTrigger;
     }
 }

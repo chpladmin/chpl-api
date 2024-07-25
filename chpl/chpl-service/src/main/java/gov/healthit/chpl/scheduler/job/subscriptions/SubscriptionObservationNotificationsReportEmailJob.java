@@ -21,7 +21,7 @@ import lombok.extern.log4j.Log4j2;
 
 @Log4j2(topic = "subscriptionObservationNotificationsReportEmailJobLogger")
 public class SubscriptionObservationNotificationsReportEmailJob  implements Job {
-    public static final String JOB_NAME = "subscriptionObservationNotificationsReportEmailJob";
+    public static final String JOB_NAME = "Subscription Notifications Email Report";
     public static final String EMAIL_KEY = "email";
 
     @Autowired
