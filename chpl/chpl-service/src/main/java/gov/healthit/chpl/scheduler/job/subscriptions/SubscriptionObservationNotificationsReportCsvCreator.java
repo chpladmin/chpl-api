@@ -97,7 +97,7 @@ public class SubscriptionObservationNotificationsReportCsvCreator {
 
     private String printTimestamp(LocalDateTime value) {
         if (value != null) {
-            return DateUtil.formatInEasternTime(value);
+            return DateUtil.formatInEasternTime(DateUtil.fromSystemToEastern(value));
         }
         return "";
     }
