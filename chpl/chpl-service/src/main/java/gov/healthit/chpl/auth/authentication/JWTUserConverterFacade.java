@@ -29,8 +29,8 @@ public class JWTUserConverterFacade implements JWTUserConverter {
     }
 
     @Override
-    public JWTAuthenticatedUser getAuthenticatedUser(String jwt) {
-        try {
+    public JWTAuthenticatedUser getAuthenticatedUser(String jwt) throws JWTValidationException, MultipleUserAccountsException {
+        //try {
             JWTAuthenticatedUser user = null;
             //If SSO is on, try to validate the jwt using the Cognito converter
             if (ff4j.check(FeatureList.SSO)) {
@@ -42,10 +42,10 @@ public class JWTUserConverterFacade implements JWTUserConverter {
                 user = chplJwtUserConverter.getAuthenticatedUser(jwt);
             }
             return user;
-        } catch (JWTValidationException | MultipleUserAccountsException e) {
-            LOGGER.error("Error converting JWT -> AuthenticatedUser object", e);
-            return null;
-        }
+        //} catch (JWTValidationException | MultipleUserAccountsException e) {
+        //    LOGGER.error("Error converting JWT -> AuthenticatedUser object", e);
+        //    return null;
+        //}
     }
 
     @Override

@@ -12,20 +12,20 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.auth.ChplAccountStatusException;
-import gov.healthit.chpl.auth.user.AuthenticationSystem;
-import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
+import gov.healthit.chpl.domain.CognitoRefreshTokenRequest;
 import gov.healthit.chpl.domain.CreateUserFromInvitationRequest;
 import gov.healthit.chpl.domain.auth.CognitoGroups;
 import gov.healthit.chpl.domain.auth.CognitoNewPasswordRequiredRequest;
 import gov.healthit.chpl.domain.auth.LoginCredentials;
 import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.exception.EmailNotSentException;
+import gov.healthit.chpl.exception.JWTValidationException;
+import gov.healthit.chpl.exception.MultipleUserAccountsException;
 import gov.healthit.chpl.exception.UserCreationException;
 import gov.healthit.chpl.exception.UserPermissionRetrievalException;
 import gov.healthit.chpl.exception.UserRetrievalException;
@@ -38,12 +38,13 @@ import gov.healthit.chpl.user.cognito.CognitoUserManager;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
-import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 @Tag(name = "cognito/users", description = "Allows management of Cognito users.")
 @RestController
 @RequestMapping("/cognito/users")
@@ -74,7 +75,8 @@ public class CognitoUserController {
     @ApiResponse(responseCode = "470", description = "The user is required to respond to the described challenge.")
     @RequestMapping(value = "/authenticate", method = RequestMethod.POST,
             consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
-    public CognitoAuthenticationResponse authenticateJSON(@RequestBody LoginCredentials credentials) throws CognitoAuthenticationChallengeException {
+    public CognitoAuthenticationResponse authenticateJSON(@RequestBody LoginCredentials credentials)
+            throws CognitoAuthenticationChallengeException, JWTValidationException, MultipleUserAccountsException {
 
         if (!ff4j.check(FeatureList.SSO)) {
             throw new NotImplementedException("This method has not been implemnted");
@@ -186,18 +188,11 @@ public class CognitoUserController {
         }
     }
 
-    @Hidden
-    @RequestMapping(value = "/keep-alive", method = RequestMethod.GET,
+    @RequestMapping(value = "/refresh-token", method = RequestMethod.POST,
             produces = "application/json; charset=utf-8")
-    public CognitoAuthenticationResponse keepAlive(@RequestParam (name = "token") String refreshToken) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth != null
-                && auth instanceof JWTAuthenticatedUser
-                && ((JWTAuthenticatedUser) auth).getAuthenticationSystem().equals(AuthenticationSystem.COGNITO)) {
-
-            return cognitoAuthenticationManager.refreshAuthenticationTokens(refreshToken);
-        }
-        return null;
+    public CognitoAuthenticationResponse refreshToken(@RequestBody CognitoRefreshTokenRequest request) {
+        LOGGER.info("{} - {}", request.getCognitoId(), request.getRefreshToken().subSequence(0, 14));
+        return cognitoAuthenticationManager.refreshAuthenticationTokens(request.getRefreshToken(), UUID.fromString(request.getCognitoId()), request.getEmail());
     }
 
 }

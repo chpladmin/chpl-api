@@ -33,7 +33,6 @@ import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.UserCreationException;
 import gov.healthit.chpl.exception.UserRetrievalException;
-import gov.healthit.chpl.util.AuthUtil;
 import lombok.extern.log4j.Log4j2;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.AwsCredentials;
@@ -230,12 +229,10 @@ public class CognitoApiWrapper {
         }
     }
 
-    public AuthenticationResultType refreshToken(String refreshToken) {
-        String secretHash = CognitoSecretHash.calculateSecretHash(clientId, userPoolClientSecret, AuthUtil.getCurrentUser().getCognitoId());
-
+    public AuthenticationResultType refreshToken(String refreshToken, UUID cognitoId, String email) {
         Map<String, String> authParams = new LinkedHashMap<String, String>();
         authParams.put("REFRESH_TOKEN", refreshToken);
-        authParams.put("SECRET_HASH", secretHash);
+       authParams.put("SECRET_HASH", calculateSecretHash(cognitoId.toString()));
 
         AdminInitiateAuthRequest authRequest = AdminInitiateAuthRequest.builder()
                 .authFlow(AuthFlowType.REFRESH_TOKEN_AUTH)

@@ -1,6 +1,7 @@
 package gov.healthit.chpl.manager.auth;
 
 import java.util.ArrayList;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -13,6 +14,8 @@ import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.domain.auth.CognitoNewPasswordRequiredRequest;
 import gov.healthit.chpl.domain.auth.LoginCredentials;
 import gov.healthit.chpl.domain.auth.User;
+import gov.healthit.chpl.exception.JWTValidationException;
+import gov.healthit.chpl.exception.MultipleUserAccountsException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.user.cognito.CognitoApiWrapper;
@@ -38,13 +41,13 @@ public class CognitoAuthenticationManager {
         this.errorMessageUtil = errorMessageUtil;
     }
 
-    public CognitoAuthenticationResponse authenticate(LoginCredentials credentials) throws CognitoAuthenticationChallengeException {
+    public CognitoAuthenticationResponse authenticate(LoginCredentials credentials) throws CognitoAuthenticationChallengeException, JWTValidationException, MultipleUserAccountsException {
         AuthenticationResultType authResult = cognitoApiWrapper.authenticate(credentials);
         if (authResult == null) {
             return null;
         }
 
-        JWTAuthenticatedUser jwtUser = jwtUserConverterFacade.getAuthenticatedUser(authResult.idToken());
+        JWTAuthenticatedUser jwtUser = jwtUserConverterFacade.getAuthenticatedUser(authResult.accessToken());
         User user;
         try {
             user = cognitoApiWrapper.getUserInfo(jwtUser.getCognitoId());
@@ -79,13 +82,13 @@ public class CognitoAuthenticationManager {
                 .build();
     }
 
-    public CognitoAuthenticationResponse refreshAuthenticationTokens(String refreshToken) {
-        AuthenticationResultType authResult = cognitoApiWrapper.refreshToken(refreshToken);
+    public CognitoAuthenticationResponse refreshAuthenticationTokens(String refreshToken, UUID cognitoId, String email) {
+        AuthenticationResultType authResult = cognitoApiWrapper.refreshToken(refreshToken, cognitoId, email);
         return CognitoAuthenticationResponse.builder()
                 .accessToken(authResult.accessToken())
                 .idToken(authResult.idToken())
                 .refreshToken(authResult.refreshToken())
-                .user(getUserBasedOnIdToken(authResult.idToken()))
+                //.user(getUserBasedOnIdToken(authResult.accessToken()))
                 .build();
     }
 
@@ -106,11 +109,11 @@ public class CognitoAuthenticationManager {
         return true;
     }
 
-    private User getUserBasedOnIdToken(String idToken) {
-        JWTAuthenticatedUser jwtUser = jwtUserConverterFacade.getAuthenticatedUser(idToken);
+    private User getUserBasedOnIdToken(String accessToken) {
         try {
+            JWTAuthenticatedUser jwtUser = jwtUserConverterFacade.getAuthenticatedUser(accessToken);
             return cognitoApiWrapper.getUserInfo(jwtUser.getCognitoId());
-        } catch (UserRetrievalException e) {
+        } catch (UserRetrievalException | JWTValidationException | MultipleUserAccountsException e) {
             LOGGER.error("Could not decode JWT Token");
             return null;
         }

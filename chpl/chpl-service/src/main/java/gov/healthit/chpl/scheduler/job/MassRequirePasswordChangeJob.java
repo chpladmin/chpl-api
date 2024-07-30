@@ -17,6 +17,7 @@ import gov.healthit.chpl.domain.auth.LoginCredentials;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.exception.ActivityException;
 import gov.healthit.chpl.exception.JWTCreationException;
+import gov.healthit.chpl.exception.JWTValidationException;
 import gov.healthit.chpl.exception.MultipleUserAccountsException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
@@ -79,7 +80,7 @@ public class MassRequirePasswordChangeJob extends QuartzJob {
             }
             SecurityContextHolder.getContext().setAuthentication(null);
         } catch (BadCredentialsException | AccountStatusException | UserRetrievalException
-                | MultipleUserAccountsException | JWTCreationException | ChplAccountEmailNotConfirmedException e) {
+                | MultipleUserAccountsException | JWTCreationException | ChplAccountEmailNotConfirmedException | JWTValidationException e) {
             LOGGER.debug("Unable to update users {}", e.getLocalizedMessage());
         }
     }
