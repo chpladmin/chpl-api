@@ -41,27 +41,30 @@ public class CognitoAuthenticationManager {
         this.errorMessageUtil = errorMessageUtil;
     }
 
-    public CognitoAuthenticationResponse authenticate(LoginCredentials credentials) throws CognitoAuthenticationChallengeException, JWTValidationException, MultipleUserAccountsException {
-        AuthenticationResultType authResult = cognitoApiWrapper.authenticate(credentials);
-        if (authResult == null) {
-            return null;
-        }
+    public CognitoAuthenticationResponse authenticate(LoginCredentials credentials) {
 
-        JWTAuthenticatedUser jwtUser = jwtUserConverterFacade.getAuthenticatedUser(authResult.accessToken());
-        User user;
         try {
-            user = cognitoApiWrapper.getUserInfo(jwtUser.getCognitoId());
-        } catch (UserRetrievalException e) {
+            AuthenticationResultType authResult = cognitoApiWrapper.authenticate(credentials);
+            if (authResult == null) {
+                return null;
+            }
+
+            JWTAuthenticatedUser jwtUser = jwtUserConverterFacade.getAuthenticatedUser(authResult.accessToken());
+            User user = cognitoApiWrapper.getUserInfo(jwtUser.getCognitoId());
+            return CognitoAuthenticationResponse.builder()
+                    .accessToken(authResult.accessToken())
+                    .idToken(authResult.idToken())
+                    .refreshToken(authResult.refreshToken())
+                    .user(user)
+                    .build();
+        } catch (UserRetrievalException | CognitoAuthenticationChallengeException | JWTValidationException | MultipleUserAccountsException e) {
             LOGGER.error("Could not decode JWT Token");
             return null;
         }
+    }
 
-        return CognitoAuthenticationResponse.builder()
-                .accessToken(authResult.accessToken())
-                .idToken(authResult.idToken())
-                .refreshToken(authResult.refreshToken())
-                .user(user)
-                .build();
+    public void invalidateTokensForUser(String email) {
+        cognitoApiWrapper.invalidateTokensForUser(email);
     }
 
     public CognitoAuthenticationResponse newPassworRequiredChallenge(CognitoNewPasswordRequiredRequest request) throws ValidationException {

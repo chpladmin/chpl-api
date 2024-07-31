@@ -51,6 +51,7 @@ import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminListGr
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminRespondToAuthChallengeRequest;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminRespondToAuthChallengeResponse;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminSetUserPasswordRequest;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminUserGlobalSignOutRequest;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AttributeType;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AuthFlowType;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AuthenticationResultType;
@@ -316,6 +317,13 @@ public class CognitoApiWrapper {
         return users;
     }
 
+    public void invalidateTokensForUser(String email) {
+        AdminUserGlobalSignOutRequest request = AdminUserGlobalSignOutRequest.builder()
+                .userPoolId(userPoolId)
+                .username(email)
+                .build();
+        cognitoClient.adminUserGlobalSignOut(request);
+    }
 
     private CognitoIdentityProviderClient createCognitoClient(String accessKey, String secretKey, String region) {
         AwsCredentials awsCredentials = AwsBasicCredentials.create(accessKey, secretKey);

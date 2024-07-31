@@ -20,12 +20,11 @@ import gov.healthit.chpl.auth.ChplAccountStatusException;
 import gov.healthit.chpl.domain.CognitoRefreshTokenRequest;
 import gov.healthit.chpl.domain.CreateUserFromInvitationRequest;
 import gov.healthit.chpl.domain.auth.CognitoGroups;
+import gov.healthit.chpl.domain.auth.CognitoLogoutRequest;
 import gov.healthit.chpl.domain.auth.CognitoNewPasswordRequiredRequest;
 import gov.healthit.chpl.domain.auth.LoginCredentials;
 import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.exception.EmailNotSentException;
-import gov.healthit.chpl.exception.JWTValidationException;
-import gov.healthit.chpl.exception.MultipleUserAccountsException;
 import gov.healthit.chpl.exception.UserCreationException;
 import gov.healthit.chpl.exception.UserPermissionRetrievalException;
 import gov.healthit.chpl.exception.UserRetrievalException;
@@ -75,8 +74,7 @@ public class CognitoUserController {
     @ApiResponse(responseCode = "470", description = "The user is required to respond to the described challenge.")
     @RequestMapping(value = "/authenticate", method = RequestMethod.POST,
             consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
-    public CognitoAuthenticationResponse authenticateJSON(@RequestBody LoginCredentials credentials)
-            throws CognitoAuthenticationChallengeException, JWTValidationException, MultipleUserAccountsException {
+    public CognitoAuthenticationResponse authenticateJSON(@RequestBody LoginCredentials credentials) throws CognitoAuthenticationChallengeException {
 
         if (!ff4j.check(FeatureList.SSO)) {
             throw new NotImplementedException("This method has not been implemnted");
@@ -88,6 +86,19 @@ public class CognitoUserController {
         }
         return response;
     }
+
+    @Operation(summary = "Log user out.",
+            description = "Invalidates all of the tokens associated with the user.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            }
+        )
+    @RequestMapping(value = "/logout", method = RequestMethod.POST,
+            consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
+    public void logout(@RequestBody CognitoLogoutRequest request) {
+        cognitoAuthenticationManager.invalidateTokensForUser(request.getEmail());
+    }
+
 
     @Operation(summary = "Set user's password in response to NEW_PASSWORD_REQUIRED challenge.",
             description = "Set user's password in response to NEW_PASSWORD_REQUIRED challenge.",

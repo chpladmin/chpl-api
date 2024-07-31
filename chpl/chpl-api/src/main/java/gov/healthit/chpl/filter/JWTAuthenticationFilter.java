@@ -23,7 +23,7 @@ import lombok.extern.log4j.Log4j2;
 public class JWTAuthenticationFilter extends GenericFilterBean {
 
     private static final String[] ALLOWED_REQUEST_PATHS = {
-            "/monitoring", "/ff4j-console", "/v3/api-docs", "(.*)refresh-token(.*)"
+            "/monitoring", "/ff4j-console", "/v3/api-docs", "(.*)refresh-token(.*)", "(.*)logout(.*)"
     };
 
     private JWTUserConverterFacade userConverterFacade;
