@@ -29,6 +29,7 @@ public class CognitoUserManager {
 
     private CognitoUserInvitationDAO userInvitationDAO;
     private CognitoUserCreationValidator userCreationValidator;
+    private CognitoUpdateUserValidator userUpdateValidator;
     private InvitationEmailer invitationEmailer;
     private CognitoConfirmEmailEmailer cognitoConfirmEmailEmailer;
     private CognitoApiWrapper cognitoApiWrapper;
@@ -38,12 +39,13 @@ public class CognitoUserManager {
 
 
     @Autowired
-    public CognitoUserManager(CognitoUserInvitationDAO userInvitationDAO, CognitoUserCreationValidator userCreationValidator,
+    public CognitoUserManager(CognitoUserInvitationDAO userInvitationDAO, CognitoUserCreationValidator userCreationValidator, CognitoUpdateUserValidator userUpdateValidator,
             InvitationEmailer invitationEmailer, CognitoConfirmEmailEmailer cognitoConfirmEmailEmailer, CognitoApiWrapper cognitoApiWrapper,
             CognitoInvitationValidator cognitoInvitationValidator, @Value("${cognito.environment.groupName}") String groupNameForEnvironment) {
 
         this.userInvitationDAO = userInvitationDAO;
         this.userCreationValidator = userCreationValidator;
+        this.userUpdateValidator = userUpdateValidator;
         this.invitationEmailer = invitationEmailer;
         this.cognitoConfirmEmailEmailer = cognitoConfirmEmailEmailer;
         this.cognitoApiWrapper = cognitoApiWrapper;
@@ -57,6 +59,28 @@ public class CognitoUserManager {
             + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).GET_BY_USER_NAME, returnObject)")
     public User getUserInfo(UUID cognitoId) throws UserRetrievalException {
         return cognitoApiWrapper.getUserInfo(cognitoId);
+    }
+
+
+    @Transactional
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SECURED_USER, "
+            + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).UPDATE_COGNITO, #user)")
+    public User updateUser(User user) throws ValidationException, UserRetrievalException{
+        Set<String> errors = userUpdateValidator.validate(user);
+        if (errors.size() > 0) {
+            throw new ValidationException(errors, null);
+        }
+
+        User originalUser = cognitoApiWrapper.getUserInfo(user.getCognitoId());
+        cognitoApiWrapper.updateUser(user);
+
+        if (originalUser.getAccountEnabled() && !user.getAccountEnabled()) {
+            cognitoApiWrapper.disableUser(user);
+        } else if (!originalUser.getAccountEnabled() && user.getAccountEnabled()) {
+            cognitoApiWrapper.enableUser(user);
+        }
+
+        return cognitoApiWrapper.getUserInfo(user.getCognitoId());
     }
 
     @Transactional

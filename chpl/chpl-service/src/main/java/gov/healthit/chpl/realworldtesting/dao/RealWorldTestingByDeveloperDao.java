@@ -3,14 +3,13 @@ package gov.healthit.chpl.realworldtesting.dao;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import jakarta.persistence.Query;
-
 import org.springframework.stereotype.Service;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.realworldtesting.domain.RealWorldTestingUrlByDeveloper;
 import gov.healthit.chpl.realworldtesting.entity.RealWorldTestingPlansUrlsByDeveloperEntity;
 import gov.healthit.chpl.realworldtesting.entity.RealWorldTestingResultsUrlsByDeveloperEntity;
+import jakarta.persistence.Query;
 
 @Service("realWorldTestingByDeveloperDao")
 public class RealWorldTestingByDeveloperDao extends BaseDAOImpl {
@@ -19,7 +18,7 @@ public class RealWorldTestingByDeveloperDao extends BaseDAOImpl {
         Query query = entityManager.createQuery("SELECT urls "
                 + "FROM RealWorldTestingPlansUrlsByDeveloperEntity urls "
                 + "WHERE urls.developerId = :developerId "
-                + "AND urls.rwtPlansUrl != NULL ",
+                + "AND urls.rwtPlansUrl IS NOT NULL ",
                 RealWorldTestingPlansUrlsByDeveloperEntity.class);
         query.setParameter("developerId", developerId);
 
@@ -33,7 +32,7 @@ public class RealWorldTestingByDeveloperDao extends BaseDAOImpl {
         Query query = entityManager.createQuery("SELECT urls "
                 + "FROM RealWorldTestingResultsUrlsByDeveloperEntity urls "
                 + "WHERE urls.developerId = :developerId "
-                + "AND urls.rwtResultsUrl != NULL ",
+                + "AND urls.rwtResultsUrl IS NOT NULL ",
                 RealWorldTestingResultsUrlsByDeveloperEntity.class);
         query.setParameter("developerId", developerId);
 

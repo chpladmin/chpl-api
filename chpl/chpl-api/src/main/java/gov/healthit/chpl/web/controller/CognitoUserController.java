@@ -111,10 +111,10 @@ public class CognitoUserController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
-    @RequestMapping(value = "/{ssoUserId}", method = RequestMethod.GET,
+    @RequestMapping(value = "/{cognitoUserId}", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
-    public @ResponseBody User getUser(@PathVariable("ssoUserId") UUID ssoUserId) throws UserRetrievalException {
-        return cognitoUserManager.getUserInfo(ssoUserId);
+    public @ResponseBody User getUser(@PathVariable("cognitoUserId") UUID cognitoUserId) throws UserRetrievalException {
+        return cognitoUserManager.getUserInfo(cognitoUserId);
     }
 
     @Operation(summary = "Invite a user to the CHPL.",
@@ -182,4 +182,16 @@ public class CognitoUserController {
         }
     }
 
+    @Operation(summary = "Modify user information.", description = "",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
+    @RequestMapping(value = "/{cognitoUserId}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
+    public User updateUserDetails(@RequestBody User userInfo, @PathVariable("cognitoUserId") UUID cognitoUserId) throws ValidationException, UserRetrievalException {
+        if (!cognitoUserId.equals(userInfo.getCognitoId())) {
+            throw new ValidationException(errorMessageUtil.getMessage("url.body.notMatch"));
+        }
+        return cognitoUserManager.updateUser(userInfo);
+    }
 }
