@@ -1,6 +1,5 @@
 package gov.healthit.chpl.certificationId;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -8,8 +7,10 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.ff4j.FF4j;
 import org.springframework.util.CollectionUtils;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.service.CertificationCriterionService.Criteria2015;
@@ -32,7 +33,8 @@ public class Validator2015 extends Validator {
             "170.315 (h)(2)"));
 
 
-    public Validator2015(CertificationCriterionService certificationCriterionService) {
+    public Validator2015(CertificationCriterionService certificationCriterionService,
+            FF4j ff4j) {
         requiredCriteria = Stream.of(certificationCriterionService.get(Criteria2015.A_5),
                 certificationCriterionService.get(Criteria2015.A_14),
                 certificationCriterionService.get(Criteria2015.B_1_CURES),
@@ -43,26 +45,17 @@ public class Validator2015 extends Validator {
 
         CertificationCriterion a9 = certificationCriterionService.get(Criteria2015.A_9);
         CertificationCriterion b11 = certificationCriterionService.get(Criteria2015.B_11);
-        if (isCriteriaAvailable(b11) && isCriteriaAvailable(a9)) {
-            baseRequiredCriteriaOr = new ArrayList<CertificationCriterion>();
-            baseRequiredCriteriaOr.add(a9);
-            baseRequiredCriteriaOr.add(b11);
-            this.counts.put("criteriaBaseRequired", 1);
-            this.counts.put("criteriaBaseRequiredMet", 0);
-        } else if (!isCriteriaAvailable(b11) && isCriteriaAvailable(a9)) {
-            requiredCriteria.add(a9);
-            baseRequiredCriteriaOr = new ArrayList<CertificationCriterion>();
-            this.counts.put("criteriaBaseRequired", 0);
-            this.counts.put("criteriaBaseRequiredMet", 0);
-        } else if (isCriteriaAvailable(b11) && !isCriteriaAvailable(a9)) {
+
+        if (ff4j.check(FeatureList.CMS_A9_GRACE_PERIOD_END)) {
             requiredCriteria.add(b11);
             baseRequiredCriteriaOr = new ArrayList<CertificationCriterion>();
             this.counts.put("criteriaBaseRequired", 0);
             this.counts.put("criteriaBaseRequiredMet", 0);
         } else {
-            //neither are available
             baseRequiredCriteriaOr = new ArrayList<CertificationCriterion>();
-            this.counts.put("criteriaBaseRequired", 0);
+            baseRequiredCriteriaOr.add(a9);
+            baseRequiredCriteriaOr.add(b11);
+            this.counts.put("criteriaBaseRequired", 1);
             this.counts.put("criteriaBaseRequiredMet", 0);
         }
 
@@ -165,12 +158,5 @@ public class Validator2015 extends Validator {
 
     protected boolean isDomainsValid() {
         return true;
-    }
-
-    private boolean isCriteriaAvailable(CertificationCriterion criterion) {
-        LocalDate today = LocalDate.now();
-        return (criterion.getStartDay() != null
-                    && (criterion.getStartDay().isEqual(today) || criterion.getStartDay().isBefore(today)))
-                && (criterion.getEndDay() == null || criterion.getEndDay().isAfter(today));
     }
 }
