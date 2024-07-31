@@ -434,6 +434,11 @@ public class DeveloperManager extends SecuredManager {
         developerSearchRequestNormalizer.normalize(developerMessageRequest.getQuery());
         developerSearchRequestValidator.validate(developerMessageRequest.getQuery());
 
+        if (StringUtils.isEmpty(developerMessageRequest.getSubject())
+                || StringUtils.isEmpty(developerMessageRequest.getBody())) {
+            throw new ValidationException(msgUtil.getMessage("developer.messaging.missingSubjectOrBody"));
+        }
+
         ChplOneTimeTrigger messageDevelopersTrigger = new ChplOneTimeTrigger();
         ChplJob messageDevelopersJob = new ChplJob();
         messageDevelopersJob.setName(MessageDevelopersJob.JOB_NAME);
