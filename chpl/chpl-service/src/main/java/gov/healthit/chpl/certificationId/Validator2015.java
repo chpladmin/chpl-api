@@ -1,7 +1,6 @@
 package gov.healthit.chpl.certificationId;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -23,14 +22,9 @@ import gov.healthit.chpl.util.Util;
 public class Validator2015 extends Validator {
 
     private List<CertificationCriterion> requiredCriteria;
+    private List<CertificationCriterion> cpoeCriteriaOr;
     private List<CertificationCriterion> decisionSupportRequiredCriteriaOr;
-
-    protected static final List<String> CPOE_CRITERIA_OR = new ArrayList<String>(Arrays.asList("170.315 (a)(1)",
-            "170.315 (a)(2)", "170.315 (a)(3)"));
-
-    protected static final List<String> DP_CRITERIA_OR = new ArrayList<String>(Arrays.asList("170.315 (h)(1)",
-            "170.315 (h)(2)"));
-
+    private List<CertificationCriterion> dpCriteriaOr;
 
     public Validator2015(CertificationCriterionService certificationCriterionService,
             FF4j ff4j) {
@@ -46,12 +40,21 @@ public class Validator2015 extends Validator {
                 certificationCriterionService.get(Criteria2015.G_9_CURES),
                 certificationCriterionService.get(Criteria2015.G_10)).collect(Collectors.toCollection(ArrayList::new));
 
+        cpoeCriteriaOr = Stream.of(certificationCriterionService.get(Criteria2015.A_1),
+                certificationCriterionService.get(Criteria2015.A_2),
+                certificationCriterionService.get(Criteria2015.A_3))
+                .collect(Collectors.toList());
+
         if (ff4j.check(FeatureList.CMS_A9_GRACE_PERIOD_END)) {
             requiredCriteria.add(3, b11); //adding at index 3 so the criteria appear in order to the user
             decisionSupportRequiredCriteriaOr = new ArrayList<CertificationCriterion>();
         } else {
             decisionSupportRequiredCriteriaOr = Stream.of(a9, b11).toList();
         }
+
+        dpCriteriaOr = Stream.of(certificationCriterionService.get(Criteria2015.H_1),
+                certificationCriterionService.get(Criteria2015.H_2))
+                .collect(Collectors.toList());
 
         this.counts.put("criteriaRequired", requiredCriteria.size());
         this.counts.put("criteriaRequiredMet", 0);
@@ -110,13 +113,15 @@ public class Validator2015 extends Validator {
     }
 
     protected boolean isCPOEValid() {
-        for (String crit : CPOE_CRITERIA_OR) {
+        for (CertificationCriterion crit : cpoeCriteriaOr) {
             if (criteriaMetContainsCriterion(crit)) {
                 this.counts.put("criteriaCpoeRequiredMet", 1);
                 return true;
             }
         }
-        missingOr.add(new ArrayList<String>(CPOE_CRITERIA_OR));
+        missingOr.add(cpoeCriteriaOr.stream()
+                .map(cpoeCrit -> Util.formatCriteriaNumber(cpoeCrit))
+                .collect(Collectors.toCollection(ArrayList::new)));
         return false;
     }
 
@@ -134,13 +139,15 @@ public class Validator2015 extends Validator {
     }
 
     protected boolean isDPValid() {
-        for (String crit : DP_CRITERIA_OR) {
+        for (CertificationCriterion crit : dpCriteriaOr) {
             if (criteriaMetContainsCriterion(crit)) {
                 this.counts.put("criteriaDpRequiredMet", 1);
                 return true;
             }
         }
-        missingOr.add(new ArrayList<String>(DP_CRITERIA_OR));
+        missingOr.add(dpCriteriaOr.stream()
+                .map(dpCrit -> Util.formatCriteriaNumber(dpCrit))
+                .collect(Collectors.toCollection(ArrayList::new)));
         return false;
     }
 
