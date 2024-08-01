@@ -424,7 +424,7 @@ public class ProductManager extends SecuredManager {
             Product product, boolean isOwnerJoiningAnotherDeveloper) {
         Set<String> errorMessages = new HashSet<String>();
         ProductValidationContext context
-            = new ProductValidationContext(product, isOwnerJoiningAnotherDeveloper, msgUtil);
+            = new ProductValidationContext(productDao, product, product.getOwner().getId(), isOwnerJoiningAnotherDeveloper, msgUtil);
 
         for (ValidationRule<ProductValidationContext> rule : rules) {
             if (!rule.isValid(context)) {
