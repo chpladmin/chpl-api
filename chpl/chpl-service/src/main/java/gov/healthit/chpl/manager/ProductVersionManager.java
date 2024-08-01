@@ -1,8 +1,11 @@
 package gov.healthit.chpl.manager;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
@@ -31,7 +34,12 @@ import gov.healthit.chpl.entity.ProductVersionEntity;
 import gov.healthit.chpl.exception.ActivityException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.impl.SecuredManager;
+import gov.healthit.chpl.manager.rules.ValidationRule;
+import gov.healthit.chpl.manager.rules.product.ProductValidationFactory;
+import gov.healthit.chpl.manager.rules.version.VersionValidationContext;
+import gov.healthit.chpl.manager.rules.version.VersionValidationFactory;
 import gov.healthit.chpl.sharedstore.listing.ListingStoreRemove;
 import gov.healthit.chpl.sharedstore.listing.RemoveBy;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
@@ -52,6 +60,7 @@ public class ProductVersionManager extends SecuredManager {
     private ErrorMessageUtil msgUtil;
     private ChplProductNumberUtil chplProductNumberUtil;
     private ValidationUtils validationUtils;
+    private VersionValidationFactory versionValidationFactory;
 
     @Autowired
     @SuppressWarnings({"checkstyle:parameternumber"})
@@ -59,7 +68,8 @@ public class ProductVersionManager extends SecuredManager {
             ProductDAO prodDao, CertifiedProductDAO cpDao, ActivityManager activityManager,
             CertifiedProductDetailsManager cpdManager,
             ErrorMessageUtil msgUtil, ChplProductNumberUtil chplProductNumberUtil,
-            ValidationUtils validationUtils) {
+            ValidationUtils validationUtils,
+            VersionValidationFactory versionValidationFactory) {
         this.versionDao = versionDao;
         this.devDao = devDao;
         this.prodDao = prodDao;
@@ -69,7 +79,7 @@ public class ProductVersionManager extends SecuredManager {
         this.msgUtil = msgUtil;
         this.chplProductNumberUtil = chplProductNumberUtil;
         this.validationUtils = validationUtils;
-
+        this.versionValidationFactory = versionValidationFactory;
     }
 
     @Transactional(readOnly = true)
@@ -110,7 +120,9 @@ public class ProductVersionManager extends SecuredManager {
             CacheNames.COLLECTIONS_LISTINGS
     }, allEntries = true)
     @ListingSearchCacheRefresh
-    public Long create(Long productId, ProductVersion version) throws EntityCreationException, EntityRetrievalException, ActivityException {
+    public Long create(Long productId, ProductVersion version)
+            throws EntityCreationException, EntityRetrievalException,
+            ValidationException, ActivityException {
         // check that the developer of this version is Active
         if (productId == null) {
             throw new EntityCreationException("Cannot create a version without a product ID.");
@@ -129,6 +141,8 @@ public class ProductVersionManager extends SecuredManager {
             throw new EntityCreationException(msg);
         }
 
+        runNewVersionValidations(version, productId);
+
         Long versionId = versionDao.create(productId, version);
         version.setId(versionId);
         ProductVersionDTO createdVersionDto = versionDao.getById(versionId);
@@ -144,7 +158,8 @@ public class ProductVersionManager extends SecuredManager {
             CacheNames.COLLECTIONS_LISTINGS
     }, allEntries = true)
     @ListingSearchCacheRefresh
-    public ProductVersionDTO create(ProductVersionDTO dto) throws EntityCreationException, EntityRetrievalException, ActivityException {
+    public ProductVersionDTO create(ProductVersionDTO dto) throws EntityCreationException,
+        ValidationException, EntityRetrievalException, ActivityException {
         // check that the developer of this version is Active
         if (dto.getProductId() == null) {
             throw new EntityCreationException("Cannot create a version without a product ID.");
@@ -163,6 +178,8 @@ public class ProductVersionManager extends SecuredManager {
             throw new EntityCreationException(msg);
         }
 
+        runNewVersionValidations(new ProductVersion(dto), dto.getProductId());
+
         ProductVersionDTO created = versionDao.create(dto);
         activityManager.addActivity(ActivityConcept.VERSION, created.getId(),
                 "Product Version " + dto.getVersion() + " added for product " + dto.getProductId(), null, created);
@@ -177,7 +194,8 @@ public class ProductVersionManager extends SecuredManager {
     }, allEntries = true)
     @ListingSearchCacheRefresh
     @ListingStoreRemove(removeBy = RemoveBy.VERSION_ID, id = "#version.id")
-    public ProductVersionDTO update(ProductVersionDTO version) throws EntityRetrievalException, EntityCreationException, ActivityException {
+    public ProductVersionDTO update(ProductVersionDTO version) throws EntityRetrievalException,
+        ValidationException, EntityCreationException, ActivityException {
 
         ProductVersionDTO beforeVersion = versionDao.getById(version.getId());
 
@@ -189,6 +207,9 @@ public class ProductVersionManager extends SecuredManager {
             LOGGER.info(versionDomain.toString());
             return beforeVersion;
         }
+
+        runExistingVersionValidations(beforeVersionDomain, beforeVersion.getProductId());
+        runNewVersionValidations(versionDomain, beforeVersion.getProductId());
 
         // check that the developer of this version is Active
         Developer dev = devDao.getByVersion(beforeVersion.getId());
@@ -266,7 +287,8 @@ public class ProductVersionManager extends SecuredManager {
     @ListingSearchCacheRefresh
     @ListingStoreRemove(removeBy = RemoveBy.VERSION_ID, id = "#newVersion.id")
     public ProductVersionDTO split(ProductVersionDTO oldVersion, ProductVersionDTO newVersion, String newVersionCode, List<Long> newVersionListingIds)
-            throws EntityCreationException, EntityRetrievalException, ActivityException {
+            throws EntityCreationException, EntityRetrievalException, ValidationException,
+            ActivityException {
 
         // create the new version and log activity
         // this method checks that the related developer is Active and will
@@ -337,5 +359,39 @@ public class ProductVersionManager extends SecuredManager {
                 origVersion, splitVersions);
 
         return afterVersion;
+    }
+
+    private void runNewVersionValidations(ProductVersion version, Long productId) throws ValidationException {
+        List<ValidationRule<VersionValidationContext>> rules = new ArrayList<ValidationRule<VersionValidationContext>>();
+        rules.add(versionValidationFactory.getRule(ProductValidationFactory.NAME));
+        Set<String> validationErrors = runValidations(rules, version, productId);
+        if (!CollectionUtils.isEmpty(validationErrors)) {
+            LOGGER.error("New version validation errors: \n" + validationErrors);
+            throw new ValidationException(validationErrors);
+        }
+    }
+
+    private void runExistingVersionValidations(ProductVersion version, Long productId) throws ValidationException {
+        List<ValidationRule<VersionValidationContext>> rules = new ArrayList<ValidationRule<VersionValidationContext>>();
+        rules.add(versionValidationFactory.getRule(ProductValidationFactory.NAME));
+        Set<String> validationErrors = runValidations(rules, version, productId);
+        if (!CollectionUtils.isEmpty(validationErrors)) {
+            LOGGER.error("Existing version validation errors: \n" + validationErrors);
+            throw new ValidationException(validationErrors);
+        }
+    }
+
+    private Set<String> runValidations(List<ValidationRule<VersionValidationContext>> rules,
+            ProductVersion version, Long productId) {
+        Set<String> errorMessages = new HashSet<String>();
+        VersionValidationContext context
+            = new VersionValidationContext(versionDao, version, productId, msgUtil);
+
+        for (ValidationRule<VersionValidationContext> rule : rules) {
+            if (!rule.isValid(context)) {
+                errorMessages.addAll(rule.getMessages());
+            }
+        }
+        return errorMessages;
     }
 }

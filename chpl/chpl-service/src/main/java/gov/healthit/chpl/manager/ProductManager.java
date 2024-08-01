@@ -397,7 +397,7 @@ public class ProductManager extends SecuredManager {
         product.setReportFileLocation(StringUtils.normalizeSpace(product.getReportFileLocation()));
     }
 
-    public void runNewProductValidations(Product product, boolean isOwnerJoiningAnotherDeveloper) throws ValidationException {
+    private void runNewProductValidations(Product product, boolean isOwnerJoiningAnotherDeveloper) throws ValidationException {
         List<ValidationRule<ProductValidationContext>> rules = new ArrayList<ValidationRule<ProductValidationContext>>();
         rules.add(productValidationFactory.getRule(ProductValidationFactory.NAME));
         rules.add(productValidationFactory.getRule(ProductValidationFactory.OWNER));
@@ -409,7 +409,7 @@ public class ProductManager extends SecuredManager {
         }
     }
 
-    public void runExistingProductValidations(Product product, boolean isOwnerJoiningAnotherDeveloper) throws ValidationException {
+    private void runExistingProductValidations(Product product, boolean isOwnerJoiningAnotherDeveloper) throws ValidationException {
         List<ValidationRule<ProductValidationContext>> rules = new ArrayList<ValidationRule<ProductValidationContext>>();
         rules.add(productValidationFactory.getRule(ProductValidationFactory.NAME));
         rules.add(productValidationFactory.getRule(ProductValidationFactory.OWNER));
