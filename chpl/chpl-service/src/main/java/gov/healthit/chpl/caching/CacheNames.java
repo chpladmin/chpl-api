@@ -37,4 +37,5 @@ public final class CacheNames {
     public static final String OPTIONAL_STANDARDS = "optionalStandards";
     public static final String CODE_SET = "codeSets";
     public static final String CHPL_USERS = "chplUsers";
+    public static final String COGNITO_USERS = "cognitoUsers";
 }
