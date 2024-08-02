@@ -241,14 +241,15 @@ public class ProductVersionManager extends SecuredManager {
     }, allEntries = true)
     @ListingSearchCacheRefresh
     @ListingStoreRemove(removeBy = RemoveBy.VERSION_ID, id = "#toCreate.id")
-    public ProductVersionDTO merge(List<Long> versionIdsToMerge, ProductVersionDTO toCreate) throws EntityRetrievalException, EntityCreationException, ActivityException {
+    public ProductVersionDTO merge(List<Long> versionIdsToMerge, ProductVersionDTO toCreate)
+            throws EntityRetrievalException, EntityCreationException, ValidationException, ActivityException {
 
         List<ProductVersionDTO> beforeVersions = new ArrayList<ProductVersionDTO>();
         for (Long versionId : versionIdsToMerge) {
             beforeVersions.add(versionDao.getById(versionId));
         }
 
-        ProductVersionDTO createdVersion = versionDao.create(toCreate);
+        ProductVersionDTO createdVersion = create(toCreate);
         //must set the ID otherwise the "toCreate.id" passed into the shared store is null
         toCreate.setId(createdVersion.getId());
 
