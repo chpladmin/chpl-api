@@ -27,6 +27,7 @@ import lombok.extern.log4j.Log4j2;
 public class CognitoUserManager {
 
     private CognitoUserCreationValidator userCreationValidator;
+    private CognitoUpdateUserValidator userUpdateValidator;
     private CognitoConfirmEmailEmailer cognitoConfirmEmailEmailer;
     private CognitoApiWrapper cognitoApiWrapper;
     private CognitoInvitationManager cognitoInvitationManager;
@@ -35,10 +36,11 @@ public class CognitoUserManager {
 
     @Autowired
     public CognitoUserManager(CognitoUserCreationValidator userCreationValidator, CognitoConfirmEmailEmailer cognitoConfirmEmailEmailer,
-            CognitoApiWrapper cognitoApiWrapper, CognitoInvitationManager cognitoInvitationManager,
+            CognitoUpdateUserValidator userUpdateValidator, CognitoApiWrapper cognitoApiWrapper, CognitoInvitationManager cognitoInvitationManager,
             @Value("${cognito.environment.groupName}") String groupNameForEnvironment) {
 
         this.userCreationValidator = userCreationValidator;
+        this.userUpdateValidator = userUpdateValidator;
         this.cognitoConfirmEmailEmailer = cognitoConfirmEmailEmailer;
         this.cognitoApiWrapper = cognitoApiWrapper;
         this.cognitoInvitationManager = cognitoInvitationManager;
@@ -53,6 +55,27 @@ public class CognitoUserManager {
         return cognitoApiWrapper.getUserInfo(cognitoId);
     }
 
+
+    @Transactional
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SECURED_USER, "
+            + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).UPDATE_COGNITO, #user)")
+    public User updateUser(User user) throws ValidationException, UserRetrievalException{
+        Set<String> errors = userUpdateValidator.validate(user);
+        if (errors.size() > 0) {
+            throw new ValidationException(errors, null);
+        }
+
+        User originalUser = cognitoApiWrapper.getUserInfo(user.getCognitoId());
+        cognitoApiWrapper.updateUser(user);
+
+        if (originalUser.getAccountEnabled() && !user.getAccountEnabled()) {
+            cognitoApiWrapper.disableUser(user);
+        } else if (!originalUser.getAccountEnabled() && user.getAccountEnabled()) {
+            cognitoApiWrapper.enableUser(user);
+        }
+
+        return cognitoApiWrapper.getUserInfo(user.getCognitoId());
+    }
 
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SECURED_USER, "

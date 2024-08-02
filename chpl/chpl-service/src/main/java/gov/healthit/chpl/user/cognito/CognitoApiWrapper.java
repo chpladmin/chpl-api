@@ -3,7 +3,6 @@ package gov.healthit.chpl.user.cognito;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Base64;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,10 +15,13 @@ import javax.crypto.spec.SecretKeySpec;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.CognitoSecretHash;
 import gov.healthit.chpl.PasswordUtil;
+import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.domain.CertificationBody;
@@ -46,6 +48,8 @@ import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminAddUse
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminCreateUserRequest;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminCreateUserResponse;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminDeleteUserRequest;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminDisableUserRequest;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminEnableUserRequest;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminInitiateAuthRequest;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminInitiateAuthResponse;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminListGroupsForUserRequest;
@@ -53,6 +57,7 @@ import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminListGr
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminRespondToAuthChallengeRequest;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminRespondToAuthChallengeResponse;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminSetUserPasswordRequest;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminUpdateUserAttributesRequest;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AttributeType;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AuthFlowType;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AuthenticationResultType;
@@ -79,8 +84,6 @@ public class CognitoApiWrapper {
     private CertificationBodyDAO certificationBodyDAO;
     private DeveloperDAO developerDAO;
 
-    private Map<UUID, User> userMap = new HashMap<UUID, User>();
-
     @Autowired
     public CognitoApiWrapper(@Value("${cognito.accessKey}") String accessKey, @Value("${cognito.secretKey}") String secretKey,
             @Value("${cognito.region}") String region, @Value("${cognito.clientId}") String clientId, @Value("${cognito.userPoolId}") String userPoolId,
@@ -96,6 +99,7 @@ public class CognitoApiWrapper {
         this.developerDAO = developerDAO;
 
     }
+
 
     public AuthenticationResultType authenticate(LoginCredentials credentials) throws CognitoAuthenticationChallengeException {
         String secretHash = CognitoSecretHash.calculateSecretHash(clientId, userPoolClientSecret, credentials.getUserName());
@@ -134,6 +138,7 @@ public class CognitoApiWrapper {
         }
     }
 
+
     public AuthenticationResultType respondToNewPasswordRequiredChallenge(CognitoNewPasswordRequiredRequest newPassworRequiredRequest) {
         AdminRespondToAuthChallengeRequest request = AdminRespondToAuthChallengeRequest.builder()
                 .userPoolId(userPoolId)
@@ -159,15 +164,8 @@ public class CognitoApiWrapper {
         }
     }
 
+    @Cacheable(CacheNames.COGNITO_USERS)
     public User getUserInfo(UUID cognitoId) throws UserRetrievalException {
-        if (!userMap.containsKey(cognitoId)) {
-            User user = getUserInfoFromCognito(cognitoId);
-            userMap.put(cognitoId, user);
-        }
-        return userMap.get(cognitoId);
-    }
-
-    private User getUserInfoFromCognito(UUID cognitoId) throws UserRetrievalException {
         ListUsersResponse response = cognitoClient.listUsers(ListUsersRequest.builder()
                 .userPoolId(userPoolId)
                 .filter("sub = \"" + cognitoId.toString() + "\"")
@@ -182,6 +180,7 @@ public class CognitoApiWrapper {
             }
         }
         return null;
+
     }
 
     public User getUserInfo(String email) throws UserRetrievalException {
@@ -252,6 +251,7 @@ public class CognitoApiWrapper {
         return cognitoClient.adminAddUserToGroup(request);
     }
 
+    @CacheEvict(value = CacheNames.COGNITO_USERS, key = "#cognitoId")
     public Boolean deleteUser(UUID cognitoId) {
         try {
             AdminDeleteUserRequest request = AdminDeleteUserRequest.builder()
@@ -293,6 +293,40 @@ public class CognitoApiWrapper {
 
         }
         return users;
+    }
+
+    @CacheEvict(value = CacheNames.COGNITO_USERS, key = "#user.cognitoId")
+    public void updateUser(User user) throws UserRetrievalException {
+        AdminUpdateUserAttributesRequest request = AdminUpdateUserAttributesRequest.builder()
+                .userPoolId(userPoolId)
+                .username(user.getCognitoId().toString())
+                .userAttributes(List.of(
+                        AttributeType.builder().name("email").value(user.getEmail()).build(),
+                        AttributeType.builder().name("phone_number").value("+1" + user.getPhoneNumber().replaceAll("[^0-9.]", "")).build(),
+                        AttributeType.builder().name("name").value(user.getFullName()).build(),
+                        AttributeType.builder().name("email_verified").value("true").build(),
+                        AttributeType.builder().name("phone_number_verified").value("true").build()))
+                .build();
+
+        cognitoClient.adminUpdateUserAttributes(request);
+    }
+
+    @CacheEvict(value = CacheNames.COGNITO_USERS, key = "#user.cognitoId")
+    public void enableUser(User user) {
+        AdminEnableUserRequest request = AdminEnableUserRequest.builder()
+                .userPoolId(userPoolId)
+                .username(user.getCognitoId().toString())
+                .build();
+        cognitoClient.adminEnableUser(request);
+    }
+
+    @CacheEvict(value = CacheNames.COGNITO_USERS, key = "#user.cognitoId")
+    public void disableUser(User user) {
+        AdminDisableUserRequest request = AdminDisableUserRequest.builder()
+                .userPoolId(userPoolId)
+                .username(user.getCognitoId().toString())
+                .build();
+        cognitoClient.adminDisableUser(request);
     }
 
     private CognitoIdentityProviderClient createCognitoClient(String accessKey, String secretKey, String region) {
@@ -359,8 +393,7 @@ public class CognitoApiWrapper {
         user.setSubjectName(getUserAttribute(userType.attributes(), "email").value());
         user.setFullName(getUserAttribute(userType.attributes(), "name").value());
         user.setEmail(getUserAttribute(userType.attributes(), "email").value());
-        user.setPhoneNumber(getUserAttribute(userType.attributes(), "phone_number").value());
-        user.setAccountLocked(!userType.enabled());
+        user.setPhoneNumber(getPhoneNumberFromAttributes(userType.attributes()));
         user.setAccountEnabled(userType.enabled());
         user.setStatus(userType.userStatusAsString());
         user.setPasswordResetRequired(userType.userStatus().equals(UserStatusType.RESET_REQUIRED));
@@ -373,6 +406,14 @@ public class CognitoApiWrapper {
                 .toList()));
         }
         return user;
+    }
+
+    private String getPhoneNumberFromAttributes(List<AttributeType> attributes) {
+        String phoneNumber = getUserAttribute(attributes, "phone_number").value();
+        if (phoneNumber.startsWith("+1")) {
+            phoneNumber = phoneNumber.substring(2);
+        }
+        return phoneNumber;
     }
 
     private String getRoleBasedOnFilteredGroups(List<GroupType> groups) {
