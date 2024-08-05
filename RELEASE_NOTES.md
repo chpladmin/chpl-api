@@ -1,5 +1,21 @@
 # Release Notes
 
+## Version 46.0.0
+_5 August 2024_
+
+### Breaking Changes
+* Remove Cures Update Report and report-data/cures-update-report
+
+### Features
+* Add ability to edit Cognito user information
+* Support Developer Name and User tokens in messaging
+* Deprecate the activity/metadata/listings endpoint
+
+### Bug Fixes
+* Use correct SQL/HQL syntax for not null
+
+---
+
 ## Version 45.1.0
 _22 July 2024_
 

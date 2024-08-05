@@ -8,19 +8,11 @@
         <delete-triggers-in-group>interruptJob</delete-triggers-in-group>
         <!-- BEGIN REMOVE after PROD push -->
         <delete-job>
-            <name>fixupDeveloperAttestationActivityJob</name>
-            <group>systemJobs</group>
+            <name>Cures Statistics Email</name>
+            <group>chplJobs</group>
         </delete-job>
         <delete-job>
-            <name>removeDuplicateIcsRelationshipsJob</name>
-            <group>systemJobs</group>
-        </delete-job>
-        <delete-job>
-            <name>backfillMissingCuresStatisticsDataJob</name>
-            <group>systemJobs</group>
-        </delete-job>
-        <delete-job>
-            <name>telligenJob</name>
+            <name>curesStatisticsCreator</name>
             <group>systemJobs</group>
         </delete-job>
         <!-- END remove after PROD push -->
@@ -163,32 +155,6 @@
                     <value>ROLE_ADMIN;ROLE_ONC;chpl-admin;chpl-onc</value> <!-- Semi-colon delimited string -->
                 </entry>
             </job-data-map>
-        </job>
-
-        <!-- Cures statistics generator -->
-        <job>
-            <name>Cures Statistics Email</name>
-            <group>chplJobs</group>
-            <description>Send the Cures Update statistics Excel reports.</description>
-            <job-class>gov.healthit.chpl.scheduler.job.curesStatistics.email.CuresStatisticsEmailJob</job-class>
-            <durability>true</durability>
-            <recover>false</recover>
-            <job-data-map>
-                <entry>
-                    <key>authorities</key>
-                    <value>ROLE_ADMIN;ROLE_ONC;chpl-admin;chpl-onc</value>
-                </entry>
-            </job-data-map>
-        </job>
-
-        <!-- Cures statistics email job -->
-        <job>
-            <name>curesStatisticsCreator</name>
-            <group>systemJobs</group>
-            <description>Generates data that is used to create cures statistics report</description>
-            <job-class>gov.healthit.chpl.scheduler.job.curesStatistics.CuresStatisticsCreatorJob</job-class>
-            <durability>true</durability>
-            <recover>false</recover>
         </job>
 
         <!-- Job fired when developer ban notification needs to happen -->
