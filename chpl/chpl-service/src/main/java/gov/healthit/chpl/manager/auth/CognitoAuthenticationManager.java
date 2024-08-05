@@ -85,8 +85,8 @@ public class CognitoAuthenticationManager {
                 .build();
     }
 
-    public CognitoAuthenticationResponse refreshAuthenticationTokens(String refreshToken, UUID cognitoId, String email) {
-        AuthenticationResultType authResult = cognitoApiWrapper.refreshToken(refreshToken, cognitoId, email);
+    public CognitoAuthenticationResponse refreshAuthenticationTokens(String refreshToken, UUID cognitoId) {
+        AuthenticationResultType authResult = cognitoApiWrapper.refreshToken(refreshToken, cognitoId);
         return CognitoAuthenticationResponse.builder()
                 .accessToken(authResult.accessToken())
                 .idToken(authResult.idToken())

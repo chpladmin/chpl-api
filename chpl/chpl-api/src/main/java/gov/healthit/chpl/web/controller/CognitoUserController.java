@@ -202,8 +202,7 @@ public class CognitoUserController {
     @RequestMapping(value = "/refresh-token", method = RequestMethod.POST,
             produces = "application/json; charset=utf-8")
     public CognitoAuthenticationResponse refreshToken(@RequestBody CognitoRefreshTokenRequest request) {
-        LOGGER.info("{} - {}", request.getCognitoId(), request.getRefreshToken().subSequence(0, 14));
-        return cognitoAuthenticationManager.refreshAuthenticationTokens(request.getRefreshToken(), UUID.fromString(request.getCognitoId()), request.getEmail());
+        return cognitoAuthenticationManager.refreshAuthenticationTokens(request.getRefreshToken(), UUID.fromString(request.getCognitoId()));
     }
 
 }

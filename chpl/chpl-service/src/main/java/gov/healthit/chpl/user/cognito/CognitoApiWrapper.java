@@ -230,7 +230,7 @@ public class CognitoApiWrapper {
         }
     }
 
-    public AuthenticationResultType refreshToken(String refreshToken, UUID cognitoId, String email) {
+    public AuthenticationResultType refreshToken(String refreshToken, UUID cognitoId) {
         Map<String, String> authParams = new LinkedHashMap<String, String>();
         authParams.put("REFRESH_TOKEN", refreshToken);
        authParams.put("SECRET_HASH", calculateSecretHash(cognitoId.toString()));
