@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.exception.EmailNotSentException;
+import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.user.cognito.CognitoApiWrapper;
 import lombok.extern.log4j.Log4j2;
@@ -33,10 +34,12 @@ public class CognitoPasswordManager {
 
     @Transactional
     public void sendForgotPasswordEmail(String email) {
-        CognitoForgotPassword forgotPassword = generateForgotPassword(email);
         try {
-            cognitoForgotPasswordEmailer.sendEmail(forgotPassword);
-        } catch (EmailNotSentException e) {
+            if (cognitoApiWrapper.getUserInfo(email) != null) {
+                CognitoForgotPassword forgotPassword = generateForgotPassword(email);
+                cognitoForgotPasswordEmailer.sendEmail(forgotPassword);
+            }
+        } catch (EmailNotSentException | UserRetrievalException e) {
             LOGGER.error("Could not send 'forgot password' email to: {}", email);
         }
      }
