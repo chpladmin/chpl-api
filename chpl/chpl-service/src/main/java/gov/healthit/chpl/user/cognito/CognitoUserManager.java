@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.prepost.PostAuthorize;
@@ -17,39 +16,34 @@ import gov.healthit.chpl.domain.CreateUserFromInvitationRequest;
 import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.UserCreationException;
-import gov.healthit.chpl.exception.UserPermissionRetrievalException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
-import gov.healthit.chpl.service.InvitationEmailer;
+import gov.healthit.chpl.user.cognito.invitation.CognitoInvitationManager;
+import gov.healthit.chpl.user.cognito.invitation.CognitoUserInvitation;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 @Component
 public class CognitoUserManager {
 
-    private CognitoUserInvitationDAO userInvitationDAO;
     private CognitoUserCreationValidator userCreationValidator;
     private CognitoUpdateUserValidator userUpdateValidator;
-    private InvitationEmailer invitationEmailer;
     private CognitoConfirmEmailEmailer cognitoConfirmEmailEmailer;
     private CognitoApiWrapper cognitoApiWrapper;
-    private CognitoInvitationValidator cognitoInvitationValidator;
+    private CognitoInvitationManager cognitoInvitationManager;
     private String groupNameForEnvironment;
 
 
-
     @Autowired
-    public CognitoUserManager(CognitoUserInvitationDAO userInvitationDAO, CognitoUserCreationValidator userCreationValidator, CognitoUpdateUserValidator userUpdateValidator,
-            InvitationEmailer invitationEmailer, CognitoConfirmEmailEmailer cognitoConfirmEmailEmailer, CognitoApiWrapper cognitoApiWrapper,
-            CognitoInvitationValidator cognitoInvitationValidator, @Value("${cognito.environment.groupName}") String groupNameForEnvironment) {
+    public CognitoUserManager(CognitoUserCreationValidator userCreationValidator, CognitoConfirmEmailEmailer cognitoConfirmEmailEmailer,
+            CognitoUpdateUserValidator userUpdateValidator, CognitoApiWrapper cognitoApiWrapper, CognitoInvitationManager cognitoInvitationManager,
+            @Value("${cognito.environment.groupName}") String groupNameForEnvironment) {
 
-        this.userInvitationDAO = userInvitationDAO;
         this.userCreationValidator = userCreationValidator;
         this.userUpdateValidator = userUpdateValidator;
-        this.invitationEmailer = invitationEmailer;
         this.cognitoConfirmEmailEmailer = cognitoConfirmEmailEmailer;
         this.cognitoApiWrapper = cognitoApiWrapper;
-        this.cognitoInvitationValidator = cognitoInvitationValidator;
+        this.cognitoInvitationManager = cognitoInvitationManager;
         this.groupNameForEnvironment = groupNameForEnvironment;
     }
 
@@ -84,83 +78,6 @@ public class CognitoUserManager {
     }
 
     @Transactional
-    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).INVITATION, "
-            + "T(gov.healthit.chpl.permissions.domains.InvitationDomainPermissions).INVITE_ADMIN)")
-    public CognitoUserInvitation inviteAdminUser(CognitoUserInvitation invitation)
-            throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException, ValidationException {
-
-        validateUserInvitation(invitation, List.of(
-                CognitoInvitationValidator.InvitationValidationRules.EmailRequired,
-                CognitoInvitationValidator.InvitationValidationRules.EmailValid,
-                CognitoInvitationValidator.InvitationValidationRules.GroupNameRequired,
-                CognitoInvitationValidator.InvitationValidationRules.GroupNameValid));
-
-        return createUserInvitation(invitation);
-    }
-
-    @Transactional
-    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).INVITATION, "
-            + "T(gov.healthit.chpl.permissions.domains.InvitationDomainPermissions).INVITE_ONC)")
-    public CognitoUserInvitation inviteOncUser(CognitoUserInvitation invitation)
-            throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException, ValidationException {
-
-        validateUserInvitation(invitation, List.of(
-                CognitoInvitationValidator.InvitationValidationRules.EmailRequired,
-                CognitoInvitationValidator.InvitationValidationRules.EmailValid,
-                CognitoInvitationValidator.InvitationValidationRules.GroupNameRequired,
-                CognitoInvitationValidator.InvitationValidationRules.GroupNameValid));
-
-        return createUserInvitation(invitation);
-    }
-
-    @Transactional
-    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).INVITATION, "
-            + "T(gov.healthit.chpl.permissions.domains.InvitationDomainPermissions).INVITE_ACB, #invitation.organizationId)")
-    public CognitoUserInvitation inviteOncAcbUser(CognitoUserInvitation invitation)
-            throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException, ValidationException {
-
-        validateUserInvitation(invitation, List.of(
-                CognitoInvitationValidator.InvitationValidationRules.EmailRequired,
-                CognitoInvitationValidator.InvitationValidationRules.EmailValid,
-                CognitoInvitationValidator.InvitationValidationRules.GroupNameRequired,
-                CognitoInvitationValidator.InvitationValidationRules.GroupNameValid,
-                CognitoInvitationValidator.InvitationValidationRules.OrganizationRequired));
-
-        return createUserInvitation(invitation);
-    }
-
-    @Transactional
-    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).INVITATION, "
-            + "T(gov.healthit.chpl.permissions.domains.InvitationDomainPermissions).INVITE_DEVELOPER, #invitation.organizationId)")
-    public CognitoUserInvitation inviteDeveloperUser(CognitoUserInvitation invitation)
-            throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException, ValidationException {
-
-        validateUserInvitation(invitation, List.of(
-                CognitoInvitationValidator.InvitationValidationRules.EmailRequired,
-                CognitoInvitationValidator.InvitationValidationRules.EmailValid,
-                CognitoInvitationValidator.InvitationValidationRules.GroupNameRequired,
-                CognitoInvitationValidator.InvitationValidationRules.GroupNameValid,
-                CognitoInvitationValidator.InvitationValidationRules.OrganizationRequired));
-
-        return createUserInvitation(invitation);
-    }
-
-    @Transactional
-    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).INVITATION, "
-            + "T(gov.healthit.chpl.permissions.domains.InvitationDomainPermissions).INVITE_CMS)")
-    public CognitoUserInvitation inviteCmsUser(CognitoUserInvitation invitation)
-            throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException, ValidationException {
-
-        validateUserInvitation(invitation, List.of(
-                CognitoInvitationValidator.InvitationValidationRules.EmailRequired,
-                CognitoInvitationValidator.InvitationValidationRules.EmailValid,
-                CognitoInvitationValidator.InvitationValidationRules.GroupNameRequired,
-                CognitoInvitationValidator.InvitationValidationRules.GroupNameValid));
-
-        return createUserInvitation(invitation);
-    }
-
-    @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SECURED_USER, "
             + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).CREATE)")
     public Boolean createUser(CreateUserFromInvitationRequest userInfo)
@@ -174,14 +91,14 @@ public class CognitoUserManager {
         // Need to be able to rollback this whole thing if there is an error...
         CognitoCredentials credentials = null;
         try {
-            CognitoUserInvitation invitation = userInvitationDAO.getByToken(UUID.fromString(userInfo.getHash()));
+            CognitoUserInvitation invitation = cognitoInvitationManager.getByToken(UUID.fromString(userInfo.getHash()));
             if (invitation.getOrganizationId() != null) {
                 userInfo.getUser().setOrganizationId(invitation.getOrganizationId());
             }
             credentials = cognitoApiWrapper.createUser(userInfo.getUser());
             cognitoApiWrapper.addUserToGroup(userInfo.getUser().getEmail(), invitation.getGroupName());
             cognitoApiWrapper.addUserToGroup(userInfo.getUser().getEmail(), groupNameForEnvironment);
-            userInvitationDAO.deleteByToken(UUID.fromString(userInfo.getHash()));
+            cognitoInvitationManager.deleteToken(UUID.fromString(userInfo.getHash()));
             cognitoConfirmEmailEmailer.sendConfirmationEmail(credentials);
         } catch (EmailNotSentException e) {
             //Invitation deletion should roll back due to @Transactional
@@ -194,32 +111,9 @@ public class CognitoUserManager {
     }
 
     @Transactional
-    public CognitoUserInvitation getInvitation(UUID token) {
-        return userInvitationDAO.getByToken(token);
-    }
-
-    private CognitoUserInvitation createUserInvitation(CognitoUserInvitation origInvitation) {
-        origInvitation.setInvitationToken(UUID.randomUUID());
-
-        CognitoUserInvitation invitation = userInvitationDAO.create(origInvitation);
-
-        invitationEmailer.emailInvitedUser(invitation);
-        return invitation;
-    }
-
-    @Transactional
     @PostFilter("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SECURED_USER, "
             + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).GET_ALL, filterObject)")
     public List<User> getAll() {
         return cognitoApiWrapper.getAllUsers();
-    }
-
-    private void validateUserInvitation(CognitoUserInvitation invitation, List<CognitoInvitationValidator.InvitationValidationRules> rules)
-            throws ValidationException {
-
-        List<String> errors = cognitoInvitationValidator.validate(invitation, rules);
-        if (CollectionUtils.isNotEmpty(errors)) {
-            throw new ValidationException(errors);
-        }
     }
 }
