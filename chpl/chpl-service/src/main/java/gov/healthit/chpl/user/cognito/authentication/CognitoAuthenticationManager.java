@@ -1,4 +1,4 @@
-package gov.healthit.chpl.manager.auth;
+package gov.healthit.chpl.user.cognito.authentication;
 
 import java.util.ArrayList;
 import java.util.UUID;
@@ -19,8 +19,6 @@ import gov.healthit.chpl.exception.MultipleUserAccountsException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.user.cognito.CognitoApiWrapper;
-import gov.healthit.chpl.user.cognito.CognitoAuthenticationChallengeException;
-import gov.healthit.chpl.user.cognito.CognitoAuthenticationResponse;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import lombok.extern.log4j.Log4j2;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AuthenticationResultType;
@@ -36,6 +34,7 @@ public class CognitoAuthenticationManager {
 
     @Autowired
     public CognitoAuthenticationManager(CognitoApiWrapper cognitoApiWrapper, JWTUserConverterFacade jwtUserConverterFacade, ErrorMessageUtil errorMessageUtil) {
+
         this.cognitoApiWrapper = cognitoApiWrapper;
         this.jwtUserConverterFacade = jwtUserConverterFacade;
         this.errorMessageUtil = errorMessageUtil;
@@ -94,6 +93,7 @@ public class CognitoAuthenticationManager {
                 //.user(getUserBasedOnIdToken(authResult.accessToken()))
                 .build();
     }
+
 
     private Boolean validatePaswordStrength(CognitoNewPasswordRequiredRequest request) {
         ArrayList<String> badWords = new ArrayList<String>();
