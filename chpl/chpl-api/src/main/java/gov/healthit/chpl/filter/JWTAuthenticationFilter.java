@@ -38,8 +38,6 @@ public class JWTAuthenticationFilter extends GenericFilterBean {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
         HttpServletRequest request = (HttpServletRequest) req;
 
-        LOGGER.info("Handling: {}", request.getServletPath());
-
         for (int i = 0; i < ALLOWED_REQUEST_PATHS.length; i++) {
             if (request.getServletPath().matches(ALLOWED_REQUEST_PATHS[i])) {
                 LOGGER.info("Skipping: {}", request.getServletPath());
