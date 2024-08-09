@@ -18,8 +18,10 @@ import org.springframework.web.bind.annotation.RestController;
 import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.auth.ChplAccountStatusException;
 import gov.healthit.chpl.domain.CreateUserFromInvitationRequest;
+import gov.healthit.chpl.domain.auth.CognitoForgotPasswordRequest;
 import gov.healthit.chpl.domain.auth.CognitoGroups;
 import gov.healthit.chpl.domain.auth.CognitoNewPasswordRequiredRequest;
+import gov.healthit.chpl.domain.auth.CognitoSetForgottenPasswordRequest;
 import gov.healthit.chpl.domain.auth.LoginCredentials;
 import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.exception.EmailNotSentException;
@@ -27,11 +29,13 @@ import gov.healthit.chpl.exception.UserCreationException;
 import gov.healthit.chpl.exception.UserPermissionRetrievalException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
-import gov.healthit.chpl.manager.auth.CognitoAuthenticationManager;
-import gov.healthit.chpl.user.cognito.CognitoAuthenticationChallengeException;
-import gov.healthit.chpl.user.cognito.CognitoAuthenticationResponse;
-import gov.healthit.chpl.user.cognito.CognitoUserInvitation;
 import gov.healthit.chpl.user.cognito.CognitoUserManager;
+import gov.healthit.chpl.user.cognito.authentication.CognitoAuthenticationChallengeException;
+import gov.healthit.chpl.user.cognito.authentication.CognitoAuthenticationManager;
+import gov.healthit.chpl.user.cognito.authentication.CognitoAuthenticationResponse;
+import gov.healthit.chpl.user.cognito.invitation.CognitoInvitationManager;
+import gov.healthit.chpl.user.cognito.invitation.CognitoUserInvitation;
+import gov.healthit.chpl.user.cognito.password.CognitoPasswordManager;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
@@ -46,15 +50,21 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 public class CognitoUserController {
 
     private CognitoUserManager cognitoUserManager;
+    private CognitoPasswordManager cognitoPasswordManager;
+    private CognitoInvitationManager cognitoInvitationManager;
     private CognitoAuthenticationManager cognitoAuthenticationManager;
     private ErrorMessageUtil errorMessageUtil;
     private FF4j ff4j;
 
     @Autowired
-    public CognitoUserController(CognitoUserManager cognitoUserManager, CognitoAuthenticationManager cognitoAuthenticationManager,
+    public CognitoUserController(CognitoUserManager cognitoUserManager, CognitoPasswordManager cognitoPasswordManager,
+            CognitoAuthenticationManager cognitoAuthenticationManager, CognitoInvitationManager cognitoInvitationManager,
             ErrorMessageUtil errorMessageUtil, FF4j ff4j) {
+
         this.cognitoUserManager = cognitoUserManager;
+        this.cognitoPasswordManager = cognitoPasswordManager;
         this.cognitoAuthenticationManager = cognitoAuthenticationManager;
+        this.cognitoInvitationManager = cognitoInvitationManager;
         this.errorMessageUtil = errorMessageUtil;
         this.ff4j = ff4j;
     }
@@ -73,7 +83,7 @@ public class CognitoUserController {
     public CognitoAuthenticationResponse authenticateJSON(@RequestBody LoginCredentials credentials) throws CognitoAuthenticationChallengeException {
 
         if (!ff4j.check(FeatureList.SSO)) {
-            throw new NotImplementedException("This method has not been implemnted");
+            throw new NotImplementedException("This method has not been implemented");
         }
 
         CognitoAuthenticationResponse response = cognitoAuthenticationManager.authenticate(credentials);
@@ -94,7 +104,7 @@ public class CognitoUserController {
     public CognitoAuthenticationResponse newPasswordRequiredChallenge(@RequestBody CognitoNewPasswordRequiredRequest request) throws ValidationException {
 
         if (!ff4j.check(FeatureList.SSO)) {
-            throw new NotImplementedException("This method has not been implemnted");
+            throw new NotImplementedException("This method has not been implemented");
         }
 
         CognitoAuthenticationResponse response = cognitoAuthenticationManager.newPassworRequiredChallenge(request);
@@ -104,6 +114,39 @@ public class CognitoUserController {
         return response;
     }
 
+    @Operation(summary = "Start forgot password workflow",
+            description = "Send a user an email with a link to reset their password.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            }
+        )
+    @RequestMapping(value = "/forgot-password/send-email", method = RequestMethod.POST,
+            consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
+    public void requestEmailForForgottenPassword(@RequestBody CognitoForgotPasswordRequest request) throws EmailNotSentException {
+
+        if (!ff4j.check(FeatureList.SSO)) {
+            throw new NotImplementedException("This method has not been implemented");
+        }
+
+        cognitoPasswordManager.sendForgotPasswordEmail(request.getUserName());
+    }
+
+    @Operation(summary = "Complete forgot password workflow",
+            description = "Set user's password after requesting forgot password.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            }
+        )
+    @RequestMapping(value = "/forgot-password/set-password", method = RequestMethod.POST,
+            consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
+    public void setForgottenPassword(@RequestBody CognitoSetForgottenPasswordRequest request) throws EmailNotSentException, ValidationException {
+        if (!ff4j.check(FeatureList.SSO)) {
+            throw new NotImplementedException("This method has not been implemented");
+        }
+
+        cognitoPasswordManager.setForgottenPassword(request.getForgotPasswordToken(), request.getPassword());
+    }
+
     @Operation(summary = "View a specific user's details.",
             description = "The logged in user must either be the user in the parameters, have ROLE_ADMIN, or "
                     + "have ROLE_ACB.",
@@ -111,10 +154,10 @@ public class CognitoUserController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
-    @RequestMapping(value = "/{ssoUserId}", method = RequestMethod.GET,
+    @RequestMapping(value = "/{cognitoUserId}", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
-    public @ResponseBody User getUser(@PathVariable("ssoUserId") UUID ssoUserId) throws UserRetrievalException {
-        return cognitoUserManager.getUserInfo(ssoUserId);
+    public @ResponseBody User getUser(@PathVariable("cognitoUserId") UUID cognitoUserId) throws UserRetrievalException {
+        return cognitoUserManager.getUserInfo(cognitoUserId);
     }
 
     @Operation(summary = "Invite a user to the CHPL.",
@@ -138,19 +181,19 @@ public class CognitoUserController {
         CognitoUserInvitation createdInvitiation = null;
         switch (invitation.getGroupName()) {
             case CognitoGroups.CHPL_ADMIN:
-                createdInvitiation = cognitoUserManager.inviteAdminUser(invitation);
+                createdInvitiation = cognitoInvitationManager.inviteAdminUser(invitation);
                 break;
             case CognitoGroups.CHPL_ONC:
-                createdInvitiation = cognitoUserManager.inviteOncUser(invitation);
+                createdInvitiation = cognitoInvitationManager.inviteOncUser(invitation);
                 break;
             case CognitoGroups.CHPL_ACB:
-                createdInvitiation = cognitoUserManager.inviteOncAcbUser(invitation);
+                createdInvitiation = cognitoInvitationManager.inviteOncAcbUser(invitation);
                 break;
             case CognitoGroups.CHPL_DEVELOPER:
-                createdInvitiation = cognitoUserManager.inviteDeveloperUser(invitation);
+                createdInvitiation = cognitoInvitationManager.inviteDeveloperUser(invitation);
                 break;
             case CognitoGroups.CHPL_CMS_STAFF:
-                createdInvitiation = cognitoUserManager.inviteCmsUser(invitation);
+                createdInvitiation = cognitoInvitationManager.inviteCmsUser(invitation);
                 break;
         }
         return createdInvitiation;
@@ -173,13 +216,25 @@ public class CognitoUserController {
             //This should set the security context to user "invited user" role
             Authentication authenticator = AuthUtil.getInvitedUserAuthenticator(null);
             SecurityContextHolder.getContext().setAuthentication(authenticator);
-            CognitoUserInvitation invitation = cognitoUserManager.getInvitation(UUID.fromString(userInfo.getHash()));
+            CognitoUserInvitation invitation = cognitoInvitationManager.getByToken(UUID.fromString(userInfo.getHash()));
             if (invitation != null) {
                 cognitoUserManager.createUser(userInfo);
             }
         } finally {
-        SecurityContextHolder.getContext().setAuthentication(null);
+            SecurityContextHolder.getContext().setAuthentication(null);
         }
     }
 
+    @Operation(summary = "Modify user information.", description = "",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
+    @RequestMapping(value = "/{cognitoUserId}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
+    public User updateUserDetails(@RequestBody User userInfo, @PathVariable("cognitoUserId") UUID cognitoUserId) throws ValidationException, UserRetrievalException {
+        if (!cognitoUserId.equals(userInfo.getCognitoId())) {
+            throw new ValidationException(errorMessageUtil.getMessage("url.body.notMatch"));
+        }
+        return cognitoUserManager.updateUser(userInfo);
+    }
 }

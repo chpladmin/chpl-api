@@ -13,7 +13,7 @@ import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
 import gov.healthit.chpl.email.footer.PublicFooter;
 import gov.healthit.chpl.exception.EmailNotSentException;
-import gov.healthit.chpl.user.cognito.CognitoUserInvitation;
+import gov.healthit.chpl.user.cognito.invitation.CognitoUserInvitation;
 import lombok.extern.log4j.Log4j2;
 
 @Service

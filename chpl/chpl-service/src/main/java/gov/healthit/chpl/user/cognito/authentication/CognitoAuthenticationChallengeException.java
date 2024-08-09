@@ -1,4 +1,4 @@
-package gov.healthit.chpl.user.cognito;
+package gov.healthit.chpl.user.cognito.authentication;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
