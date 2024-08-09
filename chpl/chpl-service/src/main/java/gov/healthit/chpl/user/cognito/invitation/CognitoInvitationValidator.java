@@ -1,4 +1,4 @@
-package gov.healthit.chpl.user.cognito;
+package gov.healthit.chpl.user.cognito.invitation;
 
 import java.util.ArrayList;
 import java.util.List;
