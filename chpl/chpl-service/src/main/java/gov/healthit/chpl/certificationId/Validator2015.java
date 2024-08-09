@@ -126,6 +126,10 @@ public class Validator2015 extends Validator {
     }
 
     protected boolean isDecisionSupportValid() {
+    	if (decisionSupportRequiredCriteriaOr.isEmpty()) {
+            this.counts.put("criteriaDsRequiredMet", 1);
+            return true;
+    	}
         for (CertificationCriterion crit : decisionSupportRequiredCriteriaOr) {
             if (criteriaMetContainsCriterion(crit)) {
                 this.counts.put("criteriaDsRequiredMet", 1);
