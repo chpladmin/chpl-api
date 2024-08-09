@@ -11,6 +11,8 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.CreateUserFromInvitationRequest;
 import gov.healthit.chpl.exception.UserRetrievalException;
+import gov.healthit.chpl.user.cognito.invitation.CognitoUserInvitation;
+import gov.healthit.chpl.user.cognito.invitation.CognitoUserInvitationDAO;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
 import lombok.extern.log4j.Log4j2;
