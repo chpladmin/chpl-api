@@ -26,12 +26,6 @@
     <Logger name="summaryStatisticsCreatorJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="summaryStatisticsCreatorJob" />
     </Logger>
-    <Logger name="curesStatisticsCreatorJobLogger" level="INFO" additivity="false">
-        <AppenderRef ref="curesStatisticsCreatorJob" />
-    </Logger>
-    <Logger name="curesStatisticsEmailJobLogger" level="INFO" additivity="false">
-        <AppenderRef ref="curesStatisticsEmailJob" />
-    </Logger>
     <Logger name="certificationIdEmailJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="certificationIdEmailJob" />
     </Logger>
