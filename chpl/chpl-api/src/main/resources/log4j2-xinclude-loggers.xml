@@ -198,6 +198,10 @@
         <AppenderRef ref="subscriptionObservationsNotificationJob" />
         <AppenderRef ref="subscriptionObservationsNotificationJobJson" />
     </Logger>
+    <Logger name="subscriptionObservationNotificationsReportEmailJobLogger" level="INFO" additivity="false">
+        <AppenderRef ref="subscriptionObservationNotificationsReportEmailJob" />
+        <AppenderRef ref="subscriptionObservationNotificationsReportEmailJobJson" />
+    </Logger>
     <Logger name="developerAttestationReportJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="developerAttestationReportJob" />
         <AppenderRef ref="developerAttestationReportJobJson" />
