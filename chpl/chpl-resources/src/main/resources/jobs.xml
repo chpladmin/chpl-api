@@ -741,6 +741,22 @@
             </job-data-map>
         </job>
 
+        <!-- Generate email report about Subscription Notifications -->
+        <job>
+            <name>Subscription Notifications Email Report</name>
+            <group>chplJobs</group>
+            <description>Sends a report providing a list of subscription notifications that have been sent to users.</description>
+            <job-class>gov.healthit.chpl.scheduler.job.subscriptions.SubscriptionObservationNotificationsReportEmailJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+            <job-data-map>
+                <entry>
+                    <key>authorities</key>
+                    <value>ROLE_ADMIN;ROLE_ONC;chpl-admin;chpl-onc</value>
+                </entry>
+            </job-data-map>
+        </job>
+
         <job>
             <name>sendEmailJob</name>
             <group>chplBackgroundJobs</group>

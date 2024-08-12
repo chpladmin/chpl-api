@@ -6,8 +6,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import jakarta.transaction.Transactional;
-
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +23,7 @@ import gov.healthit.chpl.subscription.domain.Subscriber;
 import gov.healthit.chpl.subscription.domain.SubscriptionObjectType;
 import gov.healthit.chpl.subscription.domain.SubscriptionObservation;
 import gov.healthit.chpl.subscription.service.SubscriptionLookupUtil;
+import jakarta.transaction.Transactional;
 import lombok.extern.log4j.Log4j2;
 
 @Component
@@ -77,7 +76,7 @@ public class ObservationProcessor {
                     .htmlMessage(buildMessage(observations))
                     .sendEmail();
             }
-            deleteNotifiedObservations(observations);
+            markObservationsAsNotified(observations);
         } catch (EmailNotSentException msgEx) {
             LOGGER.error("Could not send email about failed listing upload: " + msgEx.getMessage(), msgEx);
         }
@@ -134,7 +133,7 @@ public class ObservationProcessor {
         return observationSubjectFormatterFactory.getSubjectFormatter(observation).toListsOfStrings(observation);
     }
 
-    private void deleteNotifiedObservations(List<SubscriptionObservation> observations) {
-        observationDao.deleteObservations(observations.stream().map(obs -> obs.getId()).toList());
+    private void markObservationsAsNotified(List<SubscriptionObservation> observations) {
+        observationDao.markObservationsAsNotified(observations.stream().map(obs -> obs.getId()).toList());
     }
 }
