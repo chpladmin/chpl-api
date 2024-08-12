@@ -90,7 +90,6 @@ public class CognitoAuthenticationManager {
                 .accessToken(authResult.accessToken())
                 .idToken(authResult.idToken())
                 .refreshToken(authResult.refreshToken())
-                //.user(getUserBasedOnIdToken(authResult.accessToken()))
                 .build();
     }
 
