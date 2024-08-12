@@ -4,14 +4,10 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import jakarta.persistence.Query;
-import jakarta.transaction.Transactional;
-
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
-import gov.healthit.chpl.search.ListingSearchService;
 import gov.healthit.chpl.subscription.domain.Subscription;
 import gov.healthit.chpl.subscription.domain.SubscriptionConsolidationMethod;
 import gov.healthit.chpl.subscription.domain.SubscriptionObjectType;
@@ -23,6 +19,8 @@ import gov.healthit.chpl.subscription.entity.SubscriptionSearchResultEntity;
 import gov.healthit.chpl.subscription.entity.SubscriptionSubjectEntity;
 import gov.healthit.chpl.subscription.search.SubscriptionSearchResult;
 import gov.healthit.chpl.subscription.service.SubscriptionLookupUtil;
+import jakarta.persistence.Query;
+import jakarta.transaction.Transactional;
 import lombok.extern.log4j.Log4j2;
 
 @Repository
@@ -34,20 +32,20 @@ public class SubscriptionDao extends BaseDAOImpl {
             + "JOIN FETCH subscriber.subscriberStatus "
             + "JOIN FETCH subscription.subscriptionSubject subject "
             + "JOIN FETCH subject.subscriptionObjectType "
-            + "JOIN FETCH subscription.subscriptionConsolidationMethod ";
+            + "JOIN FETCH subscription.subscriptionConsolidationMethod "
+            + "WHERE subscription.deleted = false "
+            + "AND subscriber.deleted = false ";
 
     private SubscriptionLookupUtil lookupUtil;
-    private ListingSearchService listingSearchService;
 
-    public SubscriptionDao(SubscriptionLookupUtil lookupUtil,
-            ListingSearchService listingSearchService) {
+    public SubscriptionDao(SubscriptionLookupUtil lookupUtil) {
         this.lookupUtil = lookupUtil;
-        this.listingSearchService = listingSearchService;
     }
 
     public List<SubscriptionObjectType> getAllSubscriptionObjectTypes() {
         Query query = entityManager.createQuery("SELECT types "
-                + "FROM SubscriptionObjectTypeEntity types ",
+                + "FROM SubscriptionObjectTypeEntity types "
+                + "WHERE types.deleted = false ",
                 SubscriptionObjectTypeEntity.class);
 
         List<SubscriptionObjectTypeEntity> results = query.getResultList();
@@ -59,7 +57,8 @@ public class SubscriptionDao extends BaseDAOImpl {
     @Transactional
     public List<SubscriptionSubject> getAllSubjects() {
         Query query = entityManager.createQuery("SELECT subjects "
-                + "FROM SubscriptionSubjectEntity subjects ",
+                + "FROM SubscriptionSubjectEntity subjects "
+                + "WHERE subjects.deleted = false ",
                 SubscriptionSubjectEntity.class);
 
         List<SubscriptionSubjectEntity> results = query.getResultList();
@@ -70,7 +69,8 @@ public class SubscriptionDao extends BaseDAOImpl {
 
     public List<SubscriptionConsolidationMethod> getAllConsolidationMethods() {
         Query query = entityManager.createQuery("SELECT methods "
-                + "FROM SubscriptionConsolidationMethodEntity methods ",
+                + "FROM SubscriptionConsolidationMethodEntity methods "
+                + "WHERE methods.deleted = false ",
                 SubscriptionConsolidationMethodEntity.class);
 
         List<SubscriptionConsolidationMethodEntity> results = query.getResultList();
@@ -83,7 +83,8 @@ public class SubscriptionDao extends BaseDAOImpl {
     public List<SubscriptionSubject> getAllSubjectsForObjectType(Long subscriptionObjectTypeId) {
         Query query = entityManager.createQuery("SELECT subjects "
                 + "FROM SubscriptionSubjectEntity subjects "
-                + "WHERE subjects.subscriptionObjectTypeId = :subscriptionObjectTypeId",
+                + "WHERE subjects.subscriptionObjectTypeId = :subscriptionObjectTypeId "
+                + "AND subjects.deleted = false",
                 SubscriptionSubjectEntity.class);
         query.setParameter("subscriptionObjectTypeId", subscriptionObjectTypeId);
 
@@ -128,7 +129,8 @@ public class SubscriptionDao extends BaseDAOImpl {
                 + "FROM SubscriptionEntity subscription "
                 + "WHERE subscription.subscriberId = :subscriberId "
                 + "AND subscription.subscribedObjectId = :subscribedObjectId "
-                + "AND subscription.subscriptionSubjectId = :subscriptionSubjectId");
+                + "AND subscription.subscriptionSubjectId = :subscriptionSubjectId "
+                + "AND subscription.deleted = false ");
         query.setParameter("subscriberId", subscriberId);
         query.setParameter("subscribedObjectId", subscribedObjectId);
         query.setParameter("subscriptionSubjectId", subjectId);
@@ -139,7 +141,7 @@ public class SubscriptionDao extends BaseDAOImpl {
 
     public Subscription getSubscriptionById(Long subscriptionId) {
         Query query = entityManager.createQuery(SUBSCRIPTION_HQL
-                + "WHERE susbscription.id = :subscriptionId",
+                + "AND susbscription.id = :subscriptionId",
                 SubscriptionEntity.class);
         query.setParameter("subscriptionId", subscriptionId);
 
@@ -152,7 +154,7 @@ public class SubscriptionDao extends BaseDAOImpl {
 
     public List<Subscription> getSubscriptionsForSubscriber(UUID subscriberId) {
         Query query = entityManager.createQuery(SUBSCRIPTION_HQL
-                + "WHERE subscriber.id = :subscriberId",
+                + "AND subscriber.id = :subscriberId",
                 SubscriptionEntity.class);
         query.setParameter("subscriberId", subscriberId);
 
@@ -187,7 +189,8 @@ public class SubscriptionDao extends BaseDAOImpl {
                 + "JOIN subject.subscriptionObjectType objType "
                 + "WHERE subscription.subscriberId = :subscriberId "
                 + "AND subscription.subscribedObjectId = :subscribedObjectId "
-                + "AND objType.id = :subscribedObjectTypeId",
+                + "AND objType.id = :subscribedObjectTypeId "
+                + "AND subscription.deleted = false ",
                 SubscriptionEntity.class);
         query.setParameter("subscriberId", subscriberId);
         query.setParameter("subscribedObjectId", subscribedObjectId);
@@ -211,7 +214,9 @@ public class SubscriptionDao extends BaseDAOImpl {
                 + "JOIN FETCH subscriber.subscriberStatus subscriberStatus "
                 + "WHERE subscription.subscribedObjectId = :subscribedObjectId "
                 + "AND subscription.subscriptionSubjectId = :subscriptionSubjectId "
-                + "AND subscriberStatus.id = :confirmedSubscriberStatusId");
+                + "AND subscriberStatus.id = :confirmedSubscriberStatusId "
+                + "AND subscription.deleted = false "
+                + "AND subscriber.deleted = false ");
         query.setParameter("confirmedSubscriberStatusId", lookupUtil.getConfirmedSubscriberStatusId());
         query.setParameter("subscribedObjectId", subscribedObjectId);
         query.setParameter("subscriptionSubjectId", subjectId);
