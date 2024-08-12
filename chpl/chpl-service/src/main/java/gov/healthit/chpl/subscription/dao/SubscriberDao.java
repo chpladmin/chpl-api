@@ -3,8 +3,6 @@ package gov.healthit.chpl.subscription.dao;
 import java.util.List;
 import java.util.UUID;
 
-import jakarta.persistence.Query;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -16,6 +14,7 @@ import gov.healthit.chpl.subscription.entity.SubscriberEntity;
 import gov.healthit.chpl.subscription.entity.SubscriberRoleEntity;
 import gov.healthit.chpl.subscription.entity.SubscriberStatusEntity;
 import gov.healthit.chpl.subscription.service.SubscriptionLookupUtil;
+import jakarta.persistence.Query;
 import lombok.extern.log4j.Log4j2;
 
 @Repository
@@ -24,7 +23,8 @@ public class SubscriberDao extends BaseDAOImpl {
     private static final String SUBSCRIBER_HQL = "SELECT subscriber "
             + "FROM SubscriberEntity subscriber "
             + "JOIN FETCH subscriber.subscriberStatus "
-            + "LEFT JOIN FETCH subscriber.subscriberRole ";
+            + "LEFT JOIN FETCH subscriber.subscriberRole "
+            + "WHERE subscriber.deleted = false ";
 
     private SubscriptionLookupUtil lookupUtil;
 
@@ -36,6 +36,7 @@ public class SubscriberDao extends BaseDAOImpl {
     public List<SubscriberRole> getAllRoles() {
         Query query = entityManager.createQuery("SELECT roles "
                 + "FROM SubscriberRoleEntity roles "
+                + "WHERE roles.deleted = false "
                 + "ORDER BY sortOrder",
                 SubscriberRoleEntity.class);
 
@@ -47,7 +48,8 @@ public class SubscriberDao extends BaseDAOImpl {
 
     public List<SubscriberStatus> getAllStatuses() {
         Query query = entityManager.createQuery("SELECT statuses "
-                + "FROM SubscriberStatusEntity statuses ",
+                + "FROM SubscriberStatusEntity statuses "
+                + "WHERE statuses.deleted = false ",
                 SubscriberStatusEntity.class);
         List<SubscriberStatusEntity> results = query.getResultList();
         return results.stream()
@@ -65,7 +67,7 @@ public class SubscriberDao extends BaseDAOImpl {
 
     public void confirmSubscriber(UUID subscriberUuid, Long roleId) {
         SubscriberEntity subscriber = entityManager.find(SubscriberEntity.class, subscriberUuid);
-        if (subscriber == null) {
+        if (subscriber == null || subscriber.getDeleted().equals(Boolean.TRUE)) {
             LOGGER.error("No subscriber was found with ID " + subscriberUuid);
             return;
         }
@@ -76,7 +78,7 @@ public class SubscriberDao extends BaseDAOImpl {
 
     public void deleteSubscriber(UUID subscriberUuid) {
         SubscriberEntity subscriber = entityManager.find(SubscriberEntity.class, subscriberUuid);
-        if (subscriber == null) {
+        if (subscriber == null || subscriber.getDeleted().equals(Boolean.TRUE)) {
             LOGGER.error("No subscriber was found with ID " + subscriberUuid);
             return;
         }
@@ -86,7 +88,7 @@ public class SubscriberDao extends BaseDAOImpl {
 
     public Subscriber getSubscriberByEmail(String email) {
         Query query = entityManager.createQuery(SUBSCRIBER_HQL
-                + "WHERE subscriber.email = :email",
+                + "AND subscriber.email = :email",
                 SubscriberEntity.class);
         query.setParameter("email", email);
         List<SubscriberEntity> results = query.getResultList();
@@ -98,7 +100,7 @@ public class SubscriberDao extends BaseDAOImpl {
 
     public Subscriber getSubscriberById(UUID id) {
         Query query = entityManager.createQuery(SUBSCRIBER_HQL
-                + "WHERE subscriber.id = :id",
+                + "AND subscriber.id = :id",
                 SubscriberEntity.class);
         query.setParameter("id", id);
         List<SubscriberEntity> results = query.getResultList();
