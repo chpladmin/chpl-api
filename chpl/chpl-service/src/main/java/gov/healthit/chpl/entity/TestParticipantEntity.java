@@ -1,5 +1,6 @@
 package gov.healthit.chpl.entity;
 
+import gov.healthit.chpl.domain.TestParticipant;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -10,8 +11,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-
-import gov.healthit.chpl.domain.TestParticipant;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -35,6 +34,9 @@ public class TestParticipantEntity extends EntityAudit {
     @Basic(optional = false)
     @Column(name = "test_participant_id", nullable = false)
     private Long id;
+
+    @Column(name = "friendly_id", nullable = true)
+    private String friendlyId;
 
     @Column(name = "gender", nullable = false)
     private String gender;
@@ -71,6 +73,8 @@ public class TestParticipantEntity extends EntityAudit {
     public TestParticipant toDomain() {
         return TestParticipant.builder()
                 .id(this.getId())
+                .uniqueId(this.getFriendlyId())
+                .friendlyId(this.getFriendlyId())
                 .gender(this.getGender())
                 .educationType(this.getEducation().toDomain())
                 .educationTypeId(this.getEducationTypeId())

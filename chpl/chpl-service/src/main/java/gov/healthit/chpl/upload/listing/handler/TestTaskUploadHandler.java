@@ -240,6 +240,7 @@ public class TestTaskUploadHandler {
 
         return TestTask.builder()
                 .uniqueId(id)
+                .friendlyId(id)
                 .description(description)
                 .taskSuccessAverage(taskSuccessAvg)
                 .taskSuccessAverageStr(taskSuccessAvgAtIndex)

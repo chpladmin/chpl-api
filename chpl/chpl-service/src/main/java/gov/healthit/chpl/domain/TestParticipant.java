@@ -26,10 +26,17 @@ public class TestParticipant implements Serializable {
     @Schema(description = "Participant internal ID")
     private Long id;
 
+    @Deprecated
+    @DeprecatedResponseField(message = "Please use 'friendlyId' instead.", removalDate = "2025-03-01")
     @Schema(description = "An ONC-ACB designated identifier for an individual SED participant. "
-            + "The value must be unique to a particular participant. "
-            + "It is for internal use within an upload file only.")
+            + "The value must be unique to this particular participant within a listing. "
+            + "This field is meaningful to administrators only.")
     private String uniqueId;
+
+    @Schema(description = "An ONC-ACB designated identifier for an individual SED participant. "
+            + "The value must be unique to this particular participant within a listing. "
+            + "This field is meaningful to administrators only.")
+    private String friendlyId;
 
     @Schema(description = "Self-reported gender of the corresponding participant.",
             allowableValues = {"Male", "Female", "Unknown"})

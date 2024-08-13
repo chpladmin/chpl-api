@@ -3,8 +3,6 @@ package gov.healthit.chpl.dao;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import jakarta.persistence.Query;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -14,6 +12,7 @@ import gov.healthit.chpl.entity.TestParticipantEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import jakarta.persistence.Query;
 import lombok.extern.log4j.Log4j2;
 
 @Repository("testParticipantDAO")
@@ -29,6 +28,7 @@ public class TestParticipantDAO extends BaseDAOImpl {
     public Long create(TestParticipant participant) throws EntityCreationException {
         TestParticipantEntity entity = new TestParticipantEntity();
         try {
+            entity.setFriendlyId(participant.getFriendlyId());
             entity.setAgeRangeId(participant.getAge() == null || participant.getAge().getId() == null ? participant.getAgeRangeId() : participant.getAge().getId());
             entity.setAssistiveTechnologyNeeds(participant.getAssistiveTechnologyNeeds());
             entity.setComputerExperienceMonths(participant.getComputerExperienceMonths());
@@ -54,6 +54,7 @@ public class TestParticipantDAO extends BaseDAOImpl {
             throw new EntityRetrievalException("Entity with id " + participant.getId() + " does not exist");
         }
 
+        entity.setFriendlyId(participant.getFriendlyId());
         entity.setAgeRangeId(participant.getAge() != null ? participant.getAge().getId() : participant.getAgeRangeId());
         entity.setAssistiveTechnologyNeeds(participant.getAssistiveTechnologyNeeds());
         entity.setComputerExperienceMonths(participant.getComputerExperienceMonths());
