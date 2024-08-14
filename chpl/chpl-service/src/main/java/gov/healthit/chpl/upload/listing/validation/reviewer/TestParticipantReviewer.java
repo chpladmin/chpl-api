@@ -55,20 +55,18 @@ public class TestParticipantReviewer {
     }
 
     private void reviewParticipantUniqueId(CertifiedProductSearchDetails listing, TestParticipant testParticipant) {
-        if (testParticipant.getId() == null && StringUtils.isEmpty(testParticipant.getUniqueId())) {
+        if (testParticipant.getId() == null && StringUtils.isEmpty(testParticipant.getFriendlyId())) {
             listing.addDataErrorMessage(msgUtil.getMessage("listing.criteria.missingTestParticipantUniqueId"));
         }
     }
 
     private void reviewParticipantAgeRange(CertifiedProductSearchDetails listing, TestParticipant testParticipant) {
-        if (!hasAgeId(testParticipant) && !hasDeprecatedAgeId(testParticipant)
-                && (hasAgeName(testParticipant) || hasDeprecatedAgeName(testParticipant))) {
-            String suppliedAgeName = hasAgeName(testParticipant) ? testParticipant.getAge().getName() : testParticipant.getAgeRange();
+        if (!hasAgeId(testParticipant) && (hasAgeName(testParticipant))) {
+            String suppliedAgeName = hasAgeName(testParticipant) ? testParticipant.getAge().getName() : "?";
             listing.addDataErrorMessage(
                     msgUtil.getMessage("listing.criteria.invalidParticipantAgeRange",
                             suppliedAgeName, formatParticipantRef(testParticipant)));
-        } else if (!hasAgeId(testParticipant) && !hasDeprecatedAgeId(testParticipant)
-                && !hasAgeName(testParticipant) && !hasDeprecatedAgeName(testParticipant)) {
+        } else if (!hasAgeId(testParticipant) && !hasAgeName(testParticipant)) {
             listing.addDataErrorMessage(
                     msgUtil.getMessage("listing.criteria.missingParticipantAgeRange", formatParticipantRef(testParticipant)));
         }
@@ -83,23 +81,13 @@ public class TestParticipantReviewer {
                 && !StringUtils.isEmpty(testParticipant.getAge().getName());
     }
 
-    private boolean hasDeprecatedAgeId(TestParticipant testParticipant) {
-        return testParticipant.getAgeRangeId() != null;
-    }
-
-    private boolean hasDeprecatedAgeName(TestParticipant testParticipant) {
-        return !StringUtils.isEmpty(testParticipant.getAgeRange());
-    }
-
     private void reviewParticipantEducationLevel(CertifiedProductSearchDetails listing, TestParticipant testParticipant) {
-        if (!hasEducationId(testParticipant) && !hasDeprecatedEducationId(testParticipant)
-                && (hasEducationName(testParticipant) || hasDeprecatedEducationName(testParticipant))) {
-            String suppliedEducationName = hasEducationName(testParticipant) ? testParticipant.getEducationType().getName() : testParticipant.getEducationTypeName();
+        if (!hasEducationId(testParticipant) && (hasEducationName(testParticipant))) {
+            String suppliedEducationName = hasEducationName(testParticipant) ? testParticipant.getEducationType().getName() : "?";
             listing.addDataErrorMessage(
                     msgUtil.getMessage("listing.criteria.invalidParticipantEducationLevel",
                             suppliedEducationName, formatParticipantRef(testParticipant)));
-        } else if (!hasEducationId(testParticipant) && !hasDeprecatedEducationId(testParticipant)
-                && !hasEducationName(testParticipant) && !hasDeprecatedEducationName(testParticipant)) {
+        } else if (!hasEducationId(testParticipant) && !hasEducationName(testParticipant)) {
             listing.addDataErrorMessage(
                     msgUtil.getMessage("listing.criteria.missingParticipantEducationLevel", formatParticipantRef(testParticipant)));
         }
@@ -112,14 +100,6 @@ public class TestParticipantReviewer {
     private boolean hasEducationName(TestParticipant testParticipant) {
         return testParticipant.getEducationType() != null
                 && !StringUtils.isEmpty(testParticipant.getEducationType().getName());
-    }
-
-    private boolean hasDeprecatedEducationId(TestParticipant testParticipant) {
-        return testParticipant.getEducationTypeId() != null;
-    }
-
-    private boolean hasDeprecatedEducationName(TestParticipant testParticipant) {
-        return !StringUtils.isEmpty(testParticipant.getEducationTypeName());
     }
 
     private void reviewParticipantGender(CertifiedProductSearchDetails listing, TestParticipant testParticipant) {
@@ -213,6 +193,7 @@ public class TestParticipantReviewer {
     }
 
     private String formatParticipantRef(TestParticipant testParticipant) {
-        return !StringUtils.isEmpty(testParticipant.getUniqueId()) ? testParticipant.getUniqueId() : DEFAULT_PARTICIPANT_DECRIPTION;
+        return !StringUtils.isEmpty(testParticipant.getFriendlyId()) ? testParticipant.getFriendlyId()
+                : (!StringUtils.isEmpty(testParticipant.getUniqueId()) ? testParticipant.getUniqueId() : DEFAULT_PARTICIPANT_DECRIPTION);
     }
 }

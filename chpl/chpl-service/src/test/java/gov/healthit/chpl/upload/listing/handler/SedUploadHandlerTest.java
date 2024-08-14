@@ -94,7 +94,7 @@ public class SedUploadHandlerTest {
     }
 
     @Test
-    public void parseTasks_CriterionTaskButNoAvailableTaskColumns_ReturnsSedWithUniqueIds() {
+    public void parseTasks_CriterionTaskButNoAvailableTaskColumns_ReturnsSedWithFriendlyIds() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(
                 "UNIQUE_CHPL_ID__C,CRITERIA_170_315_A_1__C,Task Identifier,Participant Identifier").get(0);
         assertNotNull(headingRecord);
@@ -107,17 +107,17 @@ public class SedUploadHandlerTest {
         assertNotNull(parsedSed.getTestTasks());
         assertEquals(1, parsedSed.getTestTasks().size());
         TestTask parsedTestTask = parsedSed.getTestTasks().get(0);
-        assertEquals("A1.1", parsedTestTask.getUniqueId());
+        assertEquals("A1.1", parsedTestTask.getFriendlyId());
         assertNotNull(parsedTestTask.getTestParticipants());
         assertEquals(1, parsedTestTask.getTestParticipants().size());
         TestParticipant parsedParticipant = parsedTestTask.getTestParticipants().iterator().next();
-        assertEquals("B2", parsedParticipant.getUniqueId());
+        assertEquals("B2", parsedParticipant.getFriendlyId());
         assertNotNull(parsedSed.getUcdProcesses());
         assertEquals(0, parsedSed.getUcdProcesses().size());
     }
 
     @Test
-    public void parseTasks_CriterionTaskMultipleParticipantsButNoAvailableTaskColumns_ReturnsSedWithUniqueIds() {
+    public void parseTasks_CriterionTaskMultipleParticipantsButNoAvailableTaskColumns_ReturnsSedWithFriendlyIds() {
         CSVRecord headingRecord = ListingUploadTestUtil.getRecordsFromString(
                 "UNIQUE_CHPL_ID__C,CRITERIA_170_315_A_1__C,Task Identifier,Participant Identifier").get(0);
         assertNotNull(headingRecord);
@@ -130,13 +130,13 @@ public class SedUploadHandlerTest {
         assertNotNull(parsedSed.getTestTasks());
         assertEquals(1, parsedSed.getTestTasks().size());
         TestTask parsedTestTask = parsedSed.getTestTasks().get(0);
-        assertEquals("A1.1", parsedTestTask.getUniqueId());
+        assertEquals("A1.1", parsedTestTask.getFriendlyId());
         assertNotNull(parsedTestTask.getTestParticipants());
         assertEquals(3, parsedTestTask.getTestParticipants().size());
         parsedTestTask.getTestParticipants().stream().forEach(participant -> {
-           assertNotNull(participant.getUniqueId());
-           assertTrue(participant.getUniqueId().equals("B2") || participant.getUniqueId().equals("B3")
-                   || participant.getUniqueId().equals("B4"));
+           assertNotNull(participant.getFriendlyId());
+           assertTrue(participant.getFriendlyId().equals("B2") || participant.getFriendlyId().equals("B3")
+                   || participant.getFriendlyId().equals("B4"));
         });
         assertNotNull(parsedSed.getUcdProcesses());
         assertEquals(0, parsedSed.getUcdProcesses().size());
@@ -157,7 +157,7 @@ public class SedUploadHandlerTest {
         assertNotNull(parsedSed.getTestTasks());
         assertEquals(1, parsedSed.getTestTasks().size());
         TestTask parsedTestTask = parsedSed.getTestTasks().get(0);
-        assertEquals("A1.1", parsedTestTask.getUniqueId());
+        assertEquals("A1.1", parsedTestTask.getFriendlyId());
         assertEquals("Enable a user to electronically record, change, and access the following order types "
                 + "(i) Medications; (ii)Laboratory; and (iii) Radiology/imaging.", parsedTestTask.getDescription());
         assertEquals(90.24F, parsedTestTask.getTaskSuccessAverage());
@@ -176,7 +176,7 @@ public class SedUploadHandlerTest {
         assertNotNull(parsedTestTask.getTestParticipants());
         assertEquals(1, parsedTestTask.getTestParticipants().size());
         TestParticipant parsedParticipant = parsedTestTask.getTestParticipants().iterator().next();
-        assertEquals("B2", parsedParticipant.getUniqueId());
+        assertEquals("B2", parsedParticipant.getFriendlyId());
         assertNotNull(parsedSed.getUcdProcesses());
         assertEquals(0, parsedSed.getUcdProcesses().size());
     }
@@ -195,7 +195,7 @@ public class SedUploadHandlerTest {
         assertNotNull(parsedSed);
         assertNotNull(parsedSed.getTestTasks());
         assertEquals(1, parsedSed.getTestTasks().size());
-        assertNull(parsedSed.getTestTasks().get(0).getUniqueId());
+        assertNull(parsedSed.getTestTasks().get(0).getFriendlyId());
     }
 
     @Test
@@ -213,17 +213,19 @@ public class SedUploadHandlerTest {
         assertNotNull(parsedSed.getTestTasks());
         assertEquals(1, parsedSed.getTestTasks().size());
         TestTask parsedTestTask = parsedSed.getTestTasks().get(0);
-        assertEquals("A1.1", parsedTestTask.getUniqueId());
+        assertEquals("A1.1", parsedTestTask.getFriendlyId());
         assertNotNull(parsedTestTask.getTestParticipants());
         assertEquals(1, parsedTestTask.getTestParticipants().size());
         TestParticipant parsedParticipant = parsedTestTask.getTestParticipants().iterator().next();
-        assertEquals("B2", parsedParticipant.getUniqueId());
-        assertEquals("40-49", parsedParticipant.getAgeRange());
-        assertNull(parsedParticipant.getAgeRangeId());
+        assertEquals("B2", parsedParticipant.getFriendlyId());
+        assertNotNull(parsedParticipant.getAge());
+        assertEquals("40-49", parsedParticipant.getAge().getName());
+        assertNull(parsedParticipant.getAge().getId());
         assertEquals("No", parsedParticipant.getAssistiveTechnologyNeeds());
         assertEquals(220, parsedParticipant.getComputerExperienceMonths());
-        assertNull(parsedParticipant.getEducationTypeId());
-        assertEquals("Bachelor's Degree", parsedParticipant.getEducationTypeName());
+        assertNotNull(parsedParticipant.getEducationType());
+        assertNull(parsedParticipant.getEducationType().getId());
+        assertEquals("Bachelor's Degree", parsedParticipant.getEducationType().getName());
         assertEquals("Male", parsedParticipant.getGender());
         assertEquals("Clinical Assistant", parsedParticipant.getOccupation());
         assertEquals(16, parsedParticipant.getProductExperienceMonths());

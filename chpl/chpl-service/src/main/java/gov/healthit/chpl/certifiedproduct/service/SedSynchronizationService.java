@@ -302,13 +302,11 @@ public class SedSynchronizationService {
             boolean isDifferent = false;
             TestParticipant origParticipant = getMatchingItemInList(toUpdate, origParticipants).get();
             TestParticipant updatedParticipant = toUpdate;
-            if (!StringUtils.equals(origParticipant.getAgeRange(), updatedParticipant.getAgeRange())
-                    || !StringUtils.equals(origParticipant.getAge().getName(), updatedParticipant.getAge().getName())
+            if (!StringUtils.equals(origParticipant.getAge().getName(), updatedParticipant.getAge().getName())
                     || !StringUtils.equals(origParticipant.getAssistiveTechnologyNeeds(),
                             updatedParticipant.getAssistiveTechnologyNeeds())
                     || !Objects.equals(origParticipant.getComputerExperienceMonths(),
                             updatedParticipant.getComputerExperienceMonths())
-                    || !StringUtils.equals(origParticipant.getEducationTypeName(), updatedParticipant.getEducationTypeName())
                     || !StringUtils.equals(origParticipant.getEducationType().getName(), updatedParticipant.getEducationType().getName())
                     || !StringUtils.equals(origParticipant.getGender(), updatedParticipant.getGender())
                     || !StringUtils.equals(origParticipant.getOccupation(), updatedParticipant.getOccupation())

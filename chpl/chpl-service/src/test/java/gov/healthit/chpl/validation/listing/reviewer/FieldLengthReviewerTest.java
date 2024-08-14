@@ -853,7 +853,7 @@ public class FieldLengthReviewerTest {
                 .sed(CertifiedProductSed.builder().build())
                 .build();
         listing.getSed().getTestTasks().add(TestTask.builder()
-                .uniqueId("1A")
+                .friendlyId("1A")
                 .build());
         reviewer.review(listing);
         assertEquals(0, listing.getErrorMessages().size());
@@ -865,7 +865,7 @@ public class FieldLengthReviewerTest {
                 .sed(CertifiedProductSed.builder().build())
                 .build();
         listing.getSed().getTestTasks().add(TestTask.builder()
-                .uniqueId(createStringLongerThan(20, "A"))
+                .friendlyId(createStringLongerThan(20, "A"))
                 .build());
         reviewer.review(listing);
         assertEquals(1, listing.getErrorMessages().size());
@@ -903,7 +903,7 @@ public class FieldLengthReviewerTest {
                 .sed(CertifiedProductSed.builder().build())
                 .build();
         listing.getSed().getTestTasks().add(TestTask.builder()
-                .uniqueId("1A")
+                .friendlyId("1A")
                 .build());
         listing.getSed().getTestTasks().get(0).setTestParticipants(null);
         reviewer.review(listing);
@@ -917,7 +917,7 @@ public class FieldLengthReviewerTest {
                         .build())
                 .build();
         listing.getSed().getTestTasks().add(TestTask.builder()
-                .uniqueId("1A")
+                .friendlyId("1A")
                 .build());
         reviewer.review(listing);
         assertEquals(0, listing.getErrorMessages().size());
@@ -928,9 +928,9 @@ public class FieldLengthReviewerTest {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .sed(CertifiedProductSed.builder().build())
                 .build();
-        listing.getSed().getTestTasks().add(TestTask.builder().uniqueId("1A").build());
+        listing.getSed().getTestTasks().add(TestTask.builder().friendlyId("1A").build());
         listing.getSed().getTestTasks().get(0).setTestParticipants(Stream.of(TestParticipant.builder()
-                .uniqueId("1P")
+                .friendlyId("1P")
                 .build()).collect(Collectors.toCollection(LinkedHashSet::new)));
         reviewer.review(listing);
         assertEquals(0, listing.getErrorMessages().size());
@@ -941,9 +941,9 @@ public class FieldLengthReviewerTest {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .sed(CertifiedProductSed.builder().build())
                 .build();
-        listing.getSed().getTestTasks().add(TestTask.builder().uniqueId("1A").build());
+        listing.getSed().getTestTasks().add(TestTask.builder().friendlyId("1A").build());
         listing.getSed().getTestTasks().get(0).setTestParticipants(Stream.of(TestParticipant.builder()
-                .uniqueId(createStringLongerThan(20, "A"))
+                .friendlyId(createStringLongerThan(20, "A"))
                 .build()).collect(Collectors.toCollection(LinkedHashSet::new)));
         reviewer.review(listing);
         assertEquals(1, listing.getErrorMessages().size());
@@ -955,7 +955,7 @@ public class FieldLengthReviewerTest {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .sed(CertifiedProductSed.builder().build())
                 .build();
-        listing.getSed().getTestTasks().add(TestTask.builder().uniqueId("1A").build());
+        listing.getSed().getTestTasks().add(TestTask.builder().friendlyId("1A").build());
         listing.getSed().getTestTasks().get(0).setTestParticipants(Stream.of(TestParticipant.builder()
                 .gender("F")
                 .build()).collect(Collectors.toCollection(LinkedHashSet::new)));
@@ -968,7 +968,7 @@ public class FieldLengthReviewerTest {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .sed(CertifiedProductSed.builder().build())
                 .build();
-        listing.getSed().getTestTasks().add(TestTask.builder().uniqueId("1A").build());
+        listing.getSed().getTestTasks().add(TestTask.builder().friendlyId("1A").build());
         listing.getSed().getTestTasks().get(0).setTestParticipants(Stream.of(TestParticipant.builder()
                 .gender(createStringLongerThan(20, "A"))
                 .build()).collect(Collectors.toCollection(LinkedHashSet::new)));
@@ -982,7 +982,7 @@ public class FieldLengthReviewerTest {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .sed(CertifiedProductSed.builder().build())
                 .build();
-        listing.getSed().getTestTasks().add(TestTask.builder().uniqueId("1A").build());
+        listing.getSed().getTestTasks().add(TestTask.builder().friendlyId("1A").build());
         listing.getSed().getTestTasks().get(0).setTestParticipants(Stream.of(TestParticipant.builder()
                 .occupation("Teacher")
                 .build()).collect(Collectors.toCollection(LinkedHashSet::new)));
@@ -995,7 +995,7 @@ public class FieldLengthReviewerTest {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .sed(CertifiedProductSed.builder().build())
                 .build();
-        listing.getSed().getTestTasks().add(TestTask.builder().uniqueId("1A").build());
+        listing.getSed().getTestTasks().add(TestTask.builder().friendlyId("1A").build());
         listing.getSed().getTestTasks().get(0).setTestParticipants(Stream.of(TestParticipant.builder()
                 .occupation(createStringLongerThan(20, "A"))
                 .build()).collect(Collectors.toCollection(LinkedHashSet::new)));
@@ -1009,7 +1009,7 @@ public class FieldLengthReviewerTest {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .sed(CertifiedProductSed.builder().build())
                 .build();
-        listing.getSed().getTestTasks().add(TestTask.builder().uniqueId("1A").build());
+        listing.getSed().getTestTasks().add(TestTask.builder().friendlyId("1A").build());
         listing.getSed().getTestTasks().get(0).setTestParticipants(Stream.of(TestParticipant.builder()
                 .assistiveTechnologyNeeds("screen reader")
                 .build()).collect(Collectors.toCollection(LinkedHashSet::new)));
@@ -1022,7 +1022,7 @@ public class FieldLengthReviewerTest {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .sed(CertifiedProductSed.builder().build())
                 .build();
-        listing.getSed().getTestTasks().add(TestTask.builder().uniqueId("1A").build());
+        listing.getSed().getTestTasks().add(TestTask.builder().friendlyId("1A").build());
         listing.getSed().getTestTasks().get(0).setTestParticipants(Stream.of(TestParticipant.builder()
                 .assistiveTechnologyNeeds(createStringLongerThan(20, "A"))
                 .build()).collect(Collectors.toCollection(LinkedHashSet::new)));

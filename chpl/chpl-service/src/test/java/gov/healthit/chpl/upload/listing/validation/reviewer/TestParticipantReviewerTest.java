@@ -152,9 +152,10 @@ public class TestParticipantReviewerTest {
                         .build())
                 .build();
         TestParticipant testParticipant = buildValidTestParticipant("TP1").toBuilder()
-                    .ageRange(null)
-                    .ageRangeId(null)
-                    .age(null)
+                    .age(TestParticipantAge.builder()
+                            .id(null)
+                            .name(null)
+                            .build())
                 .build();
         listing.getSed().getTestTasks().add(buildTestTask("TT1", Stream.of(a1).collect(Collectors.toList())));
         listing.getSed().getTestTasks().get(0).setTestParticipants(
@@ -177,9 +178,10 @@ public class TestParticipantReviewerTest {
                 .sed(CertifiedProductSed.builder().build())
                 .build();
         TestParticipant testParticipant = buildValidTestParticipant("TP1").toBuilder()
-                    .ageRange("")
-                    .ageRangeId(null)
-                    .age(null)
+                    .age(TestParticipantAge.builder()
+                            .id(null)
+                            .name("")
+                            .build())
                 .build();
         listing.getSed().getTestTasks().add(buildTestTask("TT1", Stream.of(a1).collect(Collectors.toList())));
         listing.getSed().getTestTasks().get(0).setTestParticipants(
@@ -202,9 +204,10 @@ public class TestParticipantReviewerTest {
                 .sed(CertifiedProductSed.builder().build())
                 .build();
         TestParticipant testParticipant = buildValidTestParticipant("TP1").toBuilder()
-                    .ageRange("notanagerange")
-                    .ageRangeId(null)
-                    .age(null)
+                    .age(TestParticipantAge.builder()
+                            .id(null)
+                            .name("notanagerange")
+                            .build())
                 .build();
         listing.getSed().getTestTasks().add(buildTestTask("TT1", Stream.of(a1).collect(Collectors.toList())));
         listing.getSed().getTestTasks().get(0).setTestParticipants(
@@ -227,9 +230,10 @@ public class TestParticipantReviewerTest {
                 .sed(CertifiedProductSed.builder().build())
                 .build();
         TestParticipant testParticipant = buildValidTestParticipant("TP1").toBuilder()
-                    .educationTypeName(null)
-                    .educationTypeId(null)
-                    .educationType(null)
+                    .educationType(TestParticipantEducation.builder()
+                            .id(null)
+                            .name(null)
+                            .build())
                 .build();
         listing.getSed().getTestTasks().add(buildTestTask("TT1", Stream.of(a1).collect(Collectors.toList())));
         listing.getSed().getTestTasks().get(0).setTestParticipants(
@@ -252,9 +256,10 @@ public class TestParticipantReviewerTest {
                 .sed(CertifiedProductSed.builder().build())
                 .build();
         TestParticipant testParticipant = buildValidTestParticipant("TP1").toBuilder()
-                    .educationTypeName("")
-                    .educationTypeId(null)
-                    .educationType(null)
+                    .educationType(TestParticipantEducation.builder()
+                            .id(null)
+                            .name("")
+                            .build())
                 .build();
         listing.getSed().getTestTasks().add(buildTestTask("TT1", Stream.of(a1).collect(Collectors.toList())));
         listing.getSed().getTestTasks().get(0).setTestParticipants(
@@ -277,9 +282,10 @@ public class TestParticipantReviewerTest {
                 .sed(CertifiedProductSed.builder().build())
                 .build();
         TestParticipant testParticipant = buildValidTestParticipant("TP1").toBuilder()
-                .educationTypeName("notaneducation")
-                .educationTypeId(null)
-                .educationType(null)
+                .educationType(TestParticipantEducation.builder()
+                        .id(null)
+                        .name("notaneducation")
+                        .build())
             .build();
         listing.getSed().getTestTasks().add(buildTestTask("TT1", Stream.of(a1).collect(Collectors.toList())));
         listing.getSed().getTestTasks().get(0).setTestParticipants(
@@ -718,9 +724,7 @@ public class TestParticipantReviewerTest {
 
     private TestParticipant buildTestParticipant(String uniqueId) {
         return TestParticipant.builder()
-                .uniqueId(uniqueId)
-                .ageRange("10-20")
-                .ageRangeId(1L)
+                .friendlyId(uniqueId)
                 .age(TestParticipantAge.builder()
                         .id(1L)
                         .name("10-20")
@@ -728,8 +732,6 @@ public class TestParticipantReviewerTest {
                 .assistiveTechnologyNeeds("some needs")
                 .computerExperienceMonths(24)
                 .computerExperienceMonthsStr("24")
-                .educationTypeId(2L)
-                .educationTypeName("Bachelor's Degree")
                 .educationType(TestParticipantEducation.builder()
                         .id(2L)
                         .name("Bachelor's Degree")
@@ -745,7 +747,7 @@ public class TestParticipantReviewerTest {
 
     private TestTask buildTestTask(String uniqueId, List<CertificationCriterion> criteria) {
         TestTask tt = TestTask.builder()
-                .uniqueId(uniqueId)
+                .friendlyId(uniqueId)
                 .criteria(criteria.stream().collect(Collectors.toCollection(LinkedHashSet::new)))
                 .description("desc")
                 .taskErrors(1.5F)

@@ -29,10 +29,10 @@ public class TestParticipantDAO extends BaseDAOImpl {
         TestParticipantEntity entity = new TestParticipantEntity();
         try {
             entity.setFriendlyId(participant.getFriendlyId());
-            entity.setAgeRangeId(participant.getAge() == null || participant.getAge().getId() == null ? participant.getAgeRangeId() : participant.getAge().getId());
+            entity.setAgeRangeId(participant.getAge().getId());
             entity.setAssistiveTechnologyNeeds(participant.getAssistiveTechnologyNeeds());
             entity.setComputerExperienceMonths(participant.getComputerExperienceMonths());
-            entity.setEducationTypeId(participant.getEducationType() == null || participant.getEducationType().getId() == null ? participant.getEducationTypeId() : participant.getEducationType().getId());
+            entity.setEducationTypeId(participant.getEducationType().getId());
             entity.setGender(participant.getGender());
             entity.setOccupation(participant.getOccupation());
             entity.setProductExperienceMonths(participant.getProductExperienceMonths());
@@ -55,10 +55,10 @@ public class TestParticipantDAO extends BaseDAOImpl {
         }
 
         entity.setFriendlyId(participant.getFriendlyId());
-        entity.setAgeRangeId(participant.getAge() != null ? participant.getAge().getId() : participant.getAgeRangeId());
+        entity.setAgeRangeId(participant.getAge().getId());
         entity.setAssistiveTechnologyNeeds(participant.getAssistiveTechnologyNeeds());
         entity.setComputerExperienceMonths(participant.getComputerExperienceMonths());
-        entity.setEducationTypeId(participant.getEducationType() != null ? participant.getEducationType().getId() : participant.getEducationTypeId());
+        entity.setEducationTypeId(participant.getEducationType().getId());
         entity.setGender(participant.getGender());
         entity.setOccupation(participant.getOccupation());
         entity.setProductExperienceMonths(participant.getProductExperienceMonths());

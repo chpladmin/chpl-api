@@ -166,7 +166,7 @@ public class TestTaskReviewer {
     }
 
     private void reviewTaskUniqueId(CertifiedProductSearchDetails listing, TestTask testTask) {
-        if (testTask.getId() == null && StringUtils.isEmpty(testTask.getUniqueId())) {
+        if (testTask.getId() == null && StringUtils.isEmpty(testTask.getFriendlyId())) {
             listing.addDataErrorMessage(msgUtil.getMessage("listing.criteria.missingTestTaskUniqueId", formatTaskCriteria(testTask)));
         }
     }
@@ -413,7 +413,8 @@ public class TestTaskReviewer {
     }
 
     private String formatTaskRef(TestTask testTask) {
-        return !StringUtils.isEmpty(testTask.getUniqueId()) ? testTask.getUniqueId() : DEFAULT_TASK_DECRIPTION;
+        return !StringUtils.isEmpty(testTask.getFriendlyId()) ? testTask.getFriendlyId() :
+            (!StringUtils.isEmpty(testTask.getUniqueId()) ? testTask.getUniqueId() : DEFAULT_TASK_DECRIPTION);
     }
 
     private String formatTaskCriteria(TestTask testTask) {

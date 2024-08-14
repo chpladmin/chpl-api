@@ -6,8 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import jakarta.transaction.Transactional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -22,6 +20,7 @@ import gov.healthit.chpl.entity.statistics.ParticipantEducationStatisticsEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.search.domain.ListingSearchResult;
+import jakarta.transaction.Transactional;
 import lombok.extern.log4j.Log4j2;
 
 @Component
@@ -57,11 +56,11 @@ public class ParticipantEducationStatisticsCalculator extends SedDataCollector {
         List<TestParticipant> uniqueParticipants = getUniqueParticipants(listingSearchResults);
         for (TestParticipant participant : uniqueParticipants) {
             Long updatedCount = 1L;
-            if (educationMap.containsKey(participant.getEducationTypeId())) {
-                updatedCount = educationMap.get(participant.getEducationTypeId());
+            if (educationMap.containsKey(participant.getEducationType().getId())) {
+                updatedCount = educationMap.get(participant.getEducationType().getId());
                 updatedCount++;
             }
-            educationMap.put(participant.getEducationTypeId(), updatedCount);
+            educationMap.put(participant.getEducationType().getId(), updatedCount);
         }
         return educationMap;
     }

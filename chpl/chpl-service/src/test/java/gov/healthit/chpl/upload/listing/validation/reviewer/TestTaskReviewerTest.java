@@ -1812,7 +1812,7 @@ public class TestTaskReviewerTest {
 
     private TestTask buildTestTask(String uniqueId, List<CertificationCriterion> criteria, int tpCount) {
         TestTask tt = TestTask.builder()
-                .uniqueId(uniqueId)
+                .friendlyId(uniqueId)
                 .criteria(criteria.stream().collect(Collectors.toCollection(LinkedHashSet::new)))
                 .description("desc")
                 .taskErrors(1.5F)
@@ -1849,7 +1849,7 @@ public class TestTaskReviewerTest {
     private List<TestParticipant> createTestParticipantCollection(int size) {
         List<TestParticipant> tps = new ArrayList<TestParticipant>();
         for (int i = 0; i < size; i++) {
-            tps.add(TestParticipant.builder().uniqueId("tp"+i).build());
+            tps.add(TestParticipant.builder().friendlyId("tp"+i).build());
         }
         return tps;
     }

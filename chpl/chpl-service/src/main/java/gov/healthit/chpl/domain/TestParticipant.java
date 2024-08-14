@@ -46,33 +46,9 @@ public class TestParticipant implements Serializable {
     @Builder.Default
     private TestParticipantEducation educationType = new TestParticipantEducation();
 
-    @Deprecated
-    @DeprecatedResponseField(message = "Please use education.id.", removalDate = "2024-09-01")
-    @Schema(description = "Education internal ID")
-    private Long educationTypeId;
-
-    @Deprecated
-    @DeprecatedResponseField(message = "Please use education.name.", removalDate = "2024-09-01")
-    @Schema(description = "Highest education level attained by corresponding participant.",
-            allowableValues = {"No high school degree", "High school graduate, diploma or the equivalent (for example: GED)",
-            "Some college credit, no degree", "Trade/technical/vocational training", "Associate degre", "Bachelor's degree",
-            "Master's degree",  "Doctorate degree (e.g., MD,DNP, DMD, PhD)"})
-    private String educationTypeName;
-
     @Schema(description = "The age range for the corresponding participant.")
     @Builder.Default
     private TestParticipantAge age = new TestParticipantAge();
-
-    @Deprecated
-    @DeprecatedResponseField(message = "Please use age.name.", removalDate = "2024-09-01")
-    @Schema(description = "Age range internal ID")
-    private Long ageRangeId;
-
-    @Deprecated
-    @DeprecatedResponseField(message = "Please use age.name.", removalDate = "2024-09-01")
-    @Schema(description = "The age range for the corresponding participant.",
-            allowableValues = {"0-9", "10-19", "20-29", "30-39", "40-49", "50-59", "60-69", "70-79", "80-89", "90-99", "100+"})
-    private String ageRange;
 
     @Schema(description = "This variable illustrates occupation or role of corresponding participant. "
             + "It is a string variable that does not take any restrictions on formatting or values.")
@@ -159,7 +135,7 @@ public class TestParticipant implements Serializable {
         if (this.getId() != null && anotherParticipant.getId() != null
                 && this.getId().longValue() == anotherParticipant.getId().longValue()) {
             result = true;
-        } else if (StringUtils.equals(this.getUniqueId(), anotherParticipant.getUniqueId())
+        } else if (StringUtils.equals(this.getFriendlyId(), anotherParticipant.getFriendlyId())
                 && Objects.equals(this.getAge().getId(), anotherParticipant.getAge().getId())
                 && StringUtils.equals(this.getAge().getName(), anotherParticipant.getAge().getName())
                 && StringUtils.equals(this.getAssistiveTechnologyNeeds(),

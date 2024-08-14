@@ -96,16 +96,10 @@ public class TestParticipantNormalizer {
     }
 
     private void populateTestParticipantAge(TestParticipant participant) {
-        if (participant != null && !StringUtils.isEmpty(participant.getAgeRange())) {
-            TestParticipantAge ageRange = ageRangeDao.getByName(participant.getAgeRange());
-            if (ageRange != null) {
-                participant.setAgeRangeId(ageRange.getId());
-                participant.getAge().setId(ageRange.getId());
-            }
-        } else if (participant != null && participant.getAge() != null && !StringUtils.isEmpty(participant.getAge().getName())) {
+        if (participant != null && participant.getAge() != null
+                && !StringUtils.isEmpty(participant.getAge().getName())) {
             TestParticipantAge ageRange = ageRangeDao.getByName(participant.getAge().getName());
             if (ageRange != null) {
-                participant.setAgeRangeId(ageRange.getId());
                 participant.getAge().setId(ageRange.getId());
             }
         }
@@ -119,17 +113,10 @@ public class TestParticipantNormalizer {
     }
 
     private void populateTestParticipantEducationType(TestParticipant participant) {
-        if (participant != null && !StringUtils.isEmpty(participant.getEducationTypeName())) {
-            TestParticipantEducation educationType = educationTypeDao.getByName(participant.getEducationTypeName());
-            if (educationType != null) {
-                participant.setEducationTypeId(educationType.getId());
-                participant.getEducationType().setId(educationType.getId());
-            }
-        } else if (participant != null && participant.getEducationType() != null
+        if (participant != null && participant.getEducationType() != null
                  && !StringUtils.isEmpty(participant.getEducationType().getName())) {
             TestParticipantEducation educationType = educationTypeDao.getByName(participant.getEducationType().getName());
             if (educationType != null) {
-                participant.setEducationTypeId(educationType.getId());
                 participant.getEducationType().setId(educationType.getId());
             }
         }
