@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.developer.search.DeveloperSearchResult;
 import gov.healthit.chpl.report.criteriamigrationreport.CriteriaMigrationReport;
 import gov.healthit.chpl.report.criteriamigrationreport.CriteriaMigrationReportService;
 import gov.healthit.chpl.report.developer.DeveloperReportsService;
@@ -39,6 +40,10 @@ public class ReportDataManager {
 
     public List<CertificationBodyStatistic> getDeveloperCountsWithWithdrawnListingsByAcb() {
         return developerReportsService.getDeveloperCountsWithWithdrawnListingsByAcb();
+    }
+
+    public List<DeveloperSearchResult> getDevelopersWithWithdrawnListingsByAcb() {
+        return developerReportsService.getDevelopersWithWithdrawnListingsByAcb();
     }
  }
 

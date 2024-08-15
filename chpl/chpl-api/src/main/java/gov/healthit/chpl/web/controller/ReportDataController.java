@@ -115,4 +115,14 @@ public class ReportDataController {
         return reportDataManager.getDeveloperCountsWithWithdrawnListingsByAcb();
     }
 
+    @Operation(summary = "Retrieves the data used to generate the Developers with Withdrawn Listings by ACB report.",
+            description = "Retrieves the data used to generate the Developers with Withdrawn Listings by ACB report.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
+    @RequestMapping(value = "/developers-with-withdrawn-listings-by-acb", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public @ResponseBody List<DeveloperSearchResult> getDevelopersWithWithdrawnListingsByAcb() {
+        return reportDataManager.getDevelopersWithWithdrawnListingsByAcb();
+    }
+
 }
