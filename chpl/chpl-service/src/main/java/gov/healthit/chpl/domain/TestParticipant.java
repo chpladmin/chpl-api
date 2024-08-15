@@ -7,6 +7,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import gov.healthit.chpl.activity.ActivityExclude;
 import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseField;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -33,6 +34,7 @@ public class TestParticipant implements Serializable {
             + "This field is meaningful to administrators only.")
     private String uniqueId;
 
+    @ActivityExclude
     @Schema(description = "An ONC-ACB designated identifier for an individual SED participant. "
             + "The value must be unique to this particular participant within a listing. "
             + "This field is meaningful to administrators only.")
