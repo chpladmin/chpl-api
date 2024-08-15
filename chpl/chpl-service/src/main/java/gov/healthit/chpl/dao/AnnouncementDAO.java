@@ -114,8 +114,8 @@ public class AnnouncementDAO extends BaseDAOImpl {
         Query query = entityManager.createQuery(
                 "FROM AnnouncementEntity "
                         + "WHERE deleted = false "
-                        + "AND startDate <= CURRENT_DATE() "
-                        + "AND endDate > CURRENT_DATE() ",
+                        + "AND startDate <= local_datetime "
+                        + "AND endDate > local_datetime ",
                 AnnouncementEntity.class);
         return query.getResultList();
     }
@@ -123,14 +123,14 @@ public class AnnouncementDAO extends BaseDAOImpl {
     private List<AnnouncementEntity> getAllEntitiesFuture() {
         Query query = entityManager.createQuery("FROM AnnouncementEntity "
                         + "WHERE deleted = false "
-                        + "AND startDate > CURRENT_DATE()");
+                        + "AND startDate > local_datetime");
         return query.getResultList();
     }
 
     private List<AnnouncementEntity> getAllEntitiesCurrentAndFuture() {
         Query query = entityManager.createQuery("FROM AnnouncementEntity "
                         + "WHERE deleted = false "
-                        + "AND endDate > CURRENT_DATE()");
+                        + "AND endDate > local_datetime");
         return query.getResultList();
     }
 
