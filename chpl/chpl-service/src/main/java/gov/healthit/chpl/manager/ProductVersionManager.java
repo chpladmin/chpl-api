@@ -37,7 +37,6 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.impl.SecuredManager;
 import gov.healthit.chpl.manager.rules.ValidationRule;
-import gov.healthit.chpl.manager.rules.product.ProductValidationFactory;
 import gov.healthit.chpl.manager.rules.version.VersionValidationContext;
 import gov.healthit.chpl.manager.rules.version.VersionValidationFactory;
 import gov.healthit.chpl.sharedstore.listing.ListingStoreRemove;
@@ -141,7 +140,7 @@ public class ProductVersionManager extends SecuredManager {
             throw new EntityCreationException(msg);
         }
 
-        runNewVersionValidations(version, productId);
+        runNewVersionValidations(version, productId, null);
 
         Long versionId = versionDao.create(productId, version);
         version.setId(versionId);
@@ -158,7 +157,7 @@ public class ProductVersionManager extends SecuredManager {
             CacheNames.COLLECTIONS_LISTINGS
     }, allEntries = true)
     @ListingSearchCacheRefresh
-    public ProductVersionDTO create(ProductVersionDTO dto) throws EntityCreationException,
+    public ProductVersionDTO create(ProductVersionDTO dto, List<Long> versionsBeingMerged) throws EntityCreationException,
         ValidationException, EntityRetrievalException, ActivityException {
         // check that the developer of this version is Active
         if (dto.getProductId() == null) {
@@ -178,7 +177,7 @@ public class ProductVersionManager extends SecuredManager {
             throw new EntityCreationException(msg);
         }
 
-        runNewVersionValidations(new ProductVersion(dto), dto.getProductId());
+        runNewVersionValidations(new ProductVersion(dto), dto.getProductId(), versionsBeingMerged);
 
         ProductVersionDTO created = versionDao.create(dto);
         activityManager.addActivity(ActivityConcept.VERSION, created.getId(),
@@ -209,7 +208,7 @@ public class ProductVersionManager extends SecuredManager {
         }
 
         runExistingVersionValidations(beforeVersionDomain, beforeVersion.getProductId());
-        runNewVersionValidations(versionDomain, beforeVersion.getProductId());
+        runNewVersionValidations(versionDomain, beforeVersion.getProductId(), null);
 
         // check that the developer of this version is Active
         Developer dev = devDao.getByVersion(beforeVersion.getId());
@@ -249,7 +248,7 @@ public class ProductVersionManager extends SecuredManager {
             beforeVersions.add(versionDao.getById(versionId));
         }
 
-        ProductVersionDTO createdVersion = create(toCreate);
+        ProductVersionDTO createdVersion = create(toCreate, versionIdsToMerge);
         //must set the ID otherwise the "toCreate.id" passed into the shared store is null
         toCreate.setId(createdVersion.getId());
 
@@ -294,7 +293,7 @@ public class ProductVersionManager extends SecuredManager {
         // create the new version and log activity
         // this method checks that the related developer is Active and will
         // throw an exception if they aren't
-        ProductVersionDTO createdVersion = create(newVersion);
+        ProductVersionDTO createdVersion = create(newVersion, null);
         //must set the ID otherwise the "newVersion.id" passed into the shared store is null
         newVersion.setId(createdVersion.getId());
 
@@ -362,10 +361,10 @@ public class ProductVersionManager extends SecuredManager {
         return afterVersion;
     }
 
-    private void runNewVersionValidations(ProductVersion version, Long productId) throws ValidationException {
+    private void runNewVersionValidations(ProductVersion version, Long productId, List<Long> versionsBeingMerged) throws ValidationException {
         List<ValidationRule<VersionValidationContext>> rules = new ArrayList<ValidationRule<VersionValidationContext>>();
-        rules.add(versionValidationFactory.getRule(ProductValidationFactory.NAME));
-        Set<String> validationErrors = runValidations(rules, version, productId);
+        rules.add(versionValidationFactory.getRule(VersionValidationFactory.NAME));
+        Set<String> validationErrors = runValidations(rules, version, productId, versionsBeingMerged);
         if (!CollectionUtils.isEmpty(validationErrors)) {
             LOGGER.error("New version validation errors: \n" + validationErrors);
             throw new ValidationException(validationErrors);
@@ -374,8 +373,8 @@ public class ProductVersionManager extends SecuredManager {
 
     private void runExistingVersionValidations(ProductVersion version, Long productId) throws ValidationException {
         List<ValidationRule<VersionValidationContext>> rules = new ArrayList<ValidationRule<VersionValidationContext>>();
-        rules.add(versionValidationFactory.getRule(ProductValidationFactory.NAME));
-        Set<String> validationErrors = runValidations(rules, version, productId);
+        rules.add(versionValidationFactory.getRule(VersionValidationFactory.NAME));
+        Set<String> validationErrors = runValidations(rules, version, productId, null);
         if (!CollectionUtils.isEmpty(validationErrors)) {
             LOGGER.error("Existing version validation errors: \n" + validationErrors);
             throw new ValidationException(validationErrors);
@@ -383,10 +382,10 @@ public class ProductVersionManager extends SecuredManager {
     }
 
     private Set<String> runValidations(List<ValidationRule<VersionValidationContext>> rules,
-            ProductVersion version, Long productId) {
+            ProductVersion version, Long productId, List<Long> versionsBeingMerged) {
         Set<String> errorMessages = new HashSet<String>();
         VersionValidationContext context
-            = new VersionValidationContext(versionDao, version, productId, msgUtil);
+            = new VersionValidationContext(versionDao, version, productId, versionsBeingMerged, msgUtil);
 
         for (ValidationRule<VersionValidationContext> rule : rules) {
             if (!rule.isValid(context)) {

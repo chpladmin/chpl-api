@@ -1,7 +1,9 @@
 package gov.healthit.chpl.manager.rules.version;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import gov.healthit.chpl.dto.ProductVersionDTO;
@@ -17,9 +19,18 @@ public class VersionNameValidation extends ValidationRule<VersionValidationConte
             return false;
         }
         List<ProductVersionDTO> currentVersionsForProudct = context.getVersionDao().getByProductId(context.getProductId());
+        currentVersionsForProudct = currentVersionsForProudct.stream()
+            .filter(currVer -> !currVer.getId().equals(context.getVersion().getId()))
+            .collect(Collectors.toList());
+
+        if (!CollectionUtils.isEmpty(context.getVersionsBeingMerged())) {
+            currentVersionsForProudct = currentVersionsForProudct.stream()
+                    .filter(currVer -> !context.getVersionsBeingMerged().contains(currVer.getId()))
+                    .collect(Collectors.toList());
+        }
+
         boolean currentVersionWithSameName = currentVersionsForProudct.stream()
-            .filter(currVer -> currVer.getVersion().equalsIgnoreCase(updatedVersionName)
-                    && !currVer.getId().equals(context.getVersion().getId()))
+            .filter(currVer -> currVer.getVersion().equalsIgnoreCase(updatedVersionName))
             .findAny().isPresent();
         if (currentVersionWithSameName) {
             getMessages().add(context.getErrorMessageUtil().getMessage("version.duplicateName", updatedVersionName));
