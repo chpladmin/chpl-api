@@ -6,6 +6,7 @@ import java.util.Objects;
 import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import gov.healthit.chpl.activity.ActivityExclude;
 import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseField;
@@ -16,6 +17,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 @Builder(toBuilder = true)
 @Data
 @Log4j2
