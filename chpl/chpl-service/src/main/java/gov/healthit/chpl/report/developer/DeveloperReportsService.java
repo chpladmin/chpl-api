@@ -63,6 +63,11 @@ public class DeveloperReportsService {
         return developerSearchService.getAllPagesOfSearchResults(request, LOGGER);
     }
 
+    public List<CertificationBodyStatistic> getDeveloperCountsWithSuspendedListingsByAcb() {
+        StatisticsSnapshot stats = getStatistics();
+        return stats.getDeveloperCountForStatusesByAcb(statusIdHelper.getSuspendedStatusIds());
+    }
+
     private StatisticsSnapshot getStatistics() {
         try {
             SummaryStatisticsEntity summaryStatistics = summaryStatisticsDAO.getCurrentSummaryStatistics();

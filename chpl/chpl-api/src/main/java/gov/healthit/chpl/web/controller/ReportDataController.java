@@ -2,7 +2,6 @@ package gov.healthit.chpl.web.controller;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import gov.healthit.chpl.developer.search.ActiveListingSearchOptions;
 import gov.healthit.chpl.developer.search.DeveloperSearchRequest;
 import gov.healthit.chpl.developer.search.DeveloperSearchResult;
 import gov.healthit.chpl.developer.search.DeveloperSearchService;
@@ -99,9 +97,7 @@ public class ReportDataController {
     @RequestMapping(value = "/developers-with-active-listings-by-acb", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<DeveloperSearchResult> getDevelopersWithActiveListingsByAcb() {
         return developerSearchService.getAllPagesOfSearchResults(
-                DeveloperSearchRequest.builder()
-                        .activeListingsOptions(Set.of(ActiveListingSearchOptions.HAS_ANY_ACTIVE))
-                        .build(),
+                DeveloperSearchRequest.builder().build(),
                 LOGGER);
     }
 
@@ -123,6 +119,16 @@ public class ReportDataController {
     @RequestMapping(value = "/developers-with-withdrawn-listings-by-acb", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<DeveloperSearchResult> getDevelopersWithWithdrawnListingsByAcb() {
         return reportDataManager.getDevelopersWithWithdrawnListingsByAcb();
+    }
+
+    @Operation(summary = "Retrieves the data used to generate the Developer Counts with Suspended Listings by ACB report.",
+            description = "Retrieves the data used to generate the Developer Counts with Suspended Listings by ACB report.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
+    @RequestMapping(value = "/developer-count-with-suspended-listings-by-acb", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public @ResponseBody List<CertificationBodyStatistic> getDeveloperCountsWithSuspendedListingsByAcb() {
+        return reportDataManager.getDeveloperCountsWithSuspendedListingsByAcb();
     }
 
 }

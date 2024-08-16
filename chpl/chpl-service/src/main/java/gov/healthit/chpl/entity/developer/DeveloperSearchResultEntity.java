@@ -117,6 +117,9 @@ public class DeveloperSearchResultEntity implements Serializable {
     @Column(name = "acbs_for_developer_withdrawn_listings")
     private String acbsForDeveloperWithdrawnListings;
 
+    @Column(name = "acbs_for_developer_suspended_listings")
+    private String acbsForDeveloperSuspendedListings;
+
     @Column(name = "acbs_for_developer_all_listings")
     private String acbsForDeveloperAllListings;
 
@@ -164,6 +167,7 @@ public class DeveloperSearchResultEntity implements Serializable {
                 .acbsForAllListings(buildSetOfIdNamePairs(this.getAcbsForDeveloperAllListings()))
                 .acbsForActiveListings(buildSetOfIdNamePairs(this.getAcbsForDeveloperActiveListings()))
                 .acbsForWithdrawnListings(buildSetOfIdNamePairs(this.getAcbsForDeveloperWithdrawnListings()))
+                .acbsForSuspendedListings(buildSetOfIdNamePairs(this.getAcbsForDeveloperSuspendedListings()))
                 .creationDate(this.getCreationDate())
                 .build();
     }

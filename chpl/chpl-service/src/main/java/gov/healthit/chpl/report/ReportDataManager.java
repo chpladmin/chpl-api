@@ -45,5 +45,8 @@ public class ReportDataManager {
     public List<DeveloperSearchResult> getDevelopersWithWithdrawnListingsByAcb() {
         return developerReportsService.getDevelopersWithWithdrawnListingsByAcb();
     }
- }
 
+    public List<CertificationBodyStatistic> getDeveloperCountsWithSuspendedListingsByAcb() {
+        return developerReportsService.getDeveloperCountsWithSuspendedListingsByAcb();
+    }
+}
