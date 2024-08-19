@@ -2,6 +2,13 @@ package gov.healthit.chpl.subscription.entity;
 
 import java.util.UUID;
 
+import gov.healthit.chpl.entity.EntityAudit;
+import gov.healthit.chpl.entity.lastmodifieduserstrategy.DefaultUserStrategy;
+import gov.healthit.chpl.entity.lastmodifieduserstrategy.LastModifiedUserStrategy;
+import gov.healthit.chpl.subscription.domain.Subscriber;
+import gov.healthit.chpl.subscription.domain.Subscription;
+import gov.healthit.chpl.subscription.domain.SubscriptionConsolidationMethod;
+import gov.healthit.chpl.subscription.domain.SubscriptionSubject;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -11,16 +18,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-
-import org.hibernate.annotations.Where;
-
-import gov.healthit.chpl.entity.EntityAudit;
-import gov.healthit.chpl.entity.lastmodifieduserstrategy.DefaultUserStrategy;
-import gov.healthit.chpl.entity.lastmodifieduserstrategy.LastModifiedUserStrategy;
-import gov.healthit.chpl.subscription.domain.Subscriber;
-import gov.healthit.chpl.subscription.domain.Subscription;
-import gov.healthit.chpl.subscription.domain.SubscriptionConsolidationMethod;
-import gov.healthit.chpl.subscription.domain.SubscriptionSubject;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -36,7 +33,6 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @Entity
 @Table(name = "subscription")
-@Where(clause = "deleted <> 'true'")
 public class SubscriptionEntity extends EntityAudit {
     private static final long serialVersionUID = -1705305416503500650L;
 

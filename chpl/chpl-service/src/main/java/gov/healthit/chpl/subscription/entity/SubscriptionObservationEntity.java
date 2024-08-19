@@ -1,5 +1,13 @@
 package gov.healthit.chpl.subscription.entity;
 
+import java.util.Date;
+
+import gov.healthit.chpl.entity.EntityAudit;
+import gov.healthit.chpl.entity.lastmodifieduserstrategy.DefaultUserStrategy;
+import gov.healthit.chpl.entity.lastmodifieduserstrategy.LastModifiedUserStrategy;
+import gov.healthit.chpl.subscription.domain.Subscription;
+import gov.healthit.chpl.subscription.domain.SubscriptionObservation;
+import gov.healthit.chpl.util.DateUtil;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -10,14 +18,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
-
-import org.hibernate.annotations.Where;
-
-import gov.healthit.chpl.entity.EntityAudit;
-import gov.healthit.chpl.entity.lastmodifieduserstrategy.DefaultUserStrategy;
-import gov.healthit.chpl.entity.lastmodifieduserstrategy.LastModifiedUserStrategy;
-import gov.healthit.chpl.subscription.domain.Subscription;
-import gov.healthit.chpl.subscription.domain.SubscriptionObservation;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -33,7 +33,6 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @Entity
 @Table(name = "subscription_observation")
-@Where(clause = "deleted <> 'true'")
 public class SubscriptionObservationEntity extends EntityAudit {
     private static final long serialVersionUID = 1444100672673955734L;
 
@@ -58,6 +57,9 @@ public class SubscriptionObservationEntity extends EntityAudit {
     @Column(name = "activity_id", nullable = false)
     private Long activityId;
 
+    @Column(name = "notified_at", nullable = true)
+    private Date notificationSentTimestamp;
+
     public SubscriptionObservation toDomain() {
         return SubscriptionObservation.builder()
                 .id(getId())
@@ -65,6 +67,7 @@ public class SubscriptionObservationEntity extends EntityAudit {
                         ? Subscription.builder().id(getSubscriptionId()).build()
                                 : getSubscription().toDomain())
                 .activityId(getActivityId())
+                .notificationSentTimestamp(notificationSentTimestamp != null ? DateUtil.toLocalDateTime(notificationSentTimestamp.getTime()) : null)
                 .build();
     }
 }

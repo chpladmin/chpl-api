@@ -41,7 +41,7 @@ public class SubscriptionSearchService {
     }
 
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SUBSCRIPTION, "
-            + "T(gov.healthit.chpl.permissions.domains.ChangeRequestDomainPermissions).SEARCH)")
+            + "T(gov.healthit.chpl.permissions.domains.SubscriptionDomainPermissions).SEARCH)")
     public SubscriptionSearchResponse findSubscriptions(SearchRequest searchRequest) throws ValidationException {
         searchRequestNormalizer.normalize(searchRequest);
         searchRequestValidator.validate(searchRequest);

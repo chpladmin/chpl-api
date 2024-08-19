@@ -1,16 +1,18 @@
 package gov.healthit.chpl.subscription.dao;
 
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
-
-import jakarta.persistence.Query;
 
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.subscription.domain.SubscriptionObservation;
+import gov.healthit.chpl.subscription.domain.SubscriptionObservationNotification;
 import gov.healthit.chpl.subscription.entity.SubscriptionEntity;
 import gov.healthit.chpl.subscription.entity.SubscriptionObservationEntity;
+import gov.healthit.chpl.subscription.entity.SubscriptionObservationNotificationEntity;
+import jakarta.persistence.Query;
 import lombok.extern.log4j.Log4j2;
 
 @Repository
@@ -24,7 +26,10 @@ public class SubscriptionObservationDao extends BaseDAOImpl {
             + "JOIN FETCH subscriber.subscriberRole "
             + "JOIN FETCH subscription.subscriptionSubject subject "
             + "JOIN FETCH subject.subscriptionObjectType "
-            + "JOIN FETCH subscription.subscriptionConsolidationMethod consolidationMethod ";
+            + "JOIN FETCH subscription.subscriptionConsolidationMethod consolidationMethod "
+            + "WHERE observation.deleted = false "
+            + "AND subscription.deleted = false "
+            + "AND subscriber.deleted = false ";
 
     public void createObservations(List<Long> subscriptionIds, Long activityId) {
         //TODO: figure out how to batch insert these observations
@@ -45,7 +50,7 @@ public class SubscriptionObservationDao extends BaseDAOImpl {
 
     public List<SubscriptionObservation> getObservations(Long consolidationMethodId) {
         Query query = entityManager.createQuery(OBSERVATION_HQL
-                + "WHERE consolidationMethod.id = :consolidationMethodId ",
+                + "AND consolidationMethod.id = :consolidationMethodId ",
                 SubscriptionObservationEntity.class);
         query.setParameter("consolidationMethodId", consolidationMethodId);
 
@@ -55,10 +60,23 @@ public class SubscriptionObservationDao extends BaseDAOImpl {
                 .toList();
     }
 
-    public void deleteObservations(List<Long> observationIds) {
+    public List<SubscriptionObservationNotification> getObservationNotifications() {
+        Query query = entityManager.createQuery("SELECT notification "
+                + "FROM SubscriptionObservationNotificationEntity notification ",
+                SubscriptionObservationNotificationEntity.class);
+
+        List<SubscriptionObservationNotificationEntity> results = query.getResultList();
+        return results.stream()
+                .map(entity -> entity.toDomain())
+                .toList();
+    }
+
+    public void markObservationsAsNotified(List<Long> observationIds) {
         Query query = entityManager.createQuery("UPDATE SubscriptionObservationEntity observations "
-                + "SET observations.deleted = true "
+                + "SET observations.deleted = true, "
+                + "observations.notificationSentTimestamp = :now "
                 + "WHERE observations.id IN (:observationIds)");
+        query.setParameter("now", new Date());
         query.setParameter("observationIds", observationIds);
         query.executeUpdate();
     }
@@ -68,7 +86,8 @@ public class SubscriptionObservationDao extends BaseDAOImpl {
         //get the subscription IDs that are being deleted
         Query subscriptionIdsQuery = entityManager.createQuery("SELECT sub "
                 + "FROM SubscriptionEntity sub "
-                + "WHERE sub.subscriberId = :subscriberId",
+                + "WHERE sub.subscriberId = :subscriberId "
+                + "AND sub.deleted = false ",
                 SubscriptionEntity.class);
         subscriptionIdsQuery.setParameter("subscriberId", subscriberId);
         List<Long> subscriptionIds = subscriptionIdsQuery.getResultList().stream()
@@ -84,7 +103,8 @@ public class SubscriptionObservationDao extends BaseDAOImpl {
                 + "FROM SubscriptionEntity sub "
                 + "WHERE sub.subscriberId = :subscriberId "
                 + "AND sub.subscriptionSubject.subscriptionObjectType.id = :subscribedObjectTypeId "
-                + "AND sub.subscribedObjectId = :subscribedObjectId",
+                + "AND sub.subscribedObjectId = :subscribedObjectId "
+                + "AND sub.deleted = false ",
                 SubscriptionEntity.class);
         subscriptionIdsQuery.setParameter("subscriberId", subscriberId);
         subscriptionIdsQuery.setParameter("subscribedObjectTypeId", subscribedObjectTypeId);
