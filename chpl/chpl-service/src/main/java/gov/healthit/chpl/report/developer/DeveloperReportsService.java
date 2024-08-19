@@ -68,6 +68,19 @@ public class DeveloperReportsService {
         return stats.getDeveloperCountForStatusesByAcb(statusIdHelper.getSuspendedStatusIds());
     }
 
+    public List<DeveloperSearchResult> getDevelopersWithSuspendedListingsByAcb() {
+        StatisticsSnapshot stats = getStatistics();
+
+        DeveloperSearchRequest request = DeveloperSearchRequest.builder()
+                .developerIds(stats.getDeveloperCountsByStatus().stream()
+                        .filter(x -> statusIdHelper.getSuspendedStatusIds().contains(x.getStatusId()))
+                        .flatMap(x -> x.getIds().stream())
+                        .collect(Collectors.toSet()))
+                .build();
+
+        return developerSearchService.getAllPagesOfSearchResults(request, LOGGER);
+    }
+
     private StatisticsSnapshot getStatistics() {
         try {
             SummaryStatisticsEntity summaryStatistics = summaryStatisticsDAO.getCurrentSummaryStatistics();

@@ -49,4 +49,9 @@ public class ReportDataManager {
     public List<CertificationBodyStatistic> getDeveloperCountsWithSuspendedListingsByAcb() {
         return developerReportsService.getDeveloperCountsWithSuspendedListingsByAcb();
     }
+
+    public List<DeveloperSearchResult> getDevelopersWithSuspendedListingsByAcb() {
+        return developerReportsService.getDevelopersWithSuspendedListingsByAcb();
+    }
+
 }

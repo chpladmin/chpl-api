@@ -131,4 +131,14 @@ public class ReportDataController {
         return reportDataManager.getDeveloperCountsWithSuspendedListingsByAcb();
     }
 
+    @Operation(summary = "Retrieves the data used to generate the Developers with Suspended Listings by ACB report.",
+            description = "Retrieves the data used to generate the Developers with Suspended Listings by ACB report.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
+    @RequestMapping(value = "/developers-with-suspended-listings-by-acb", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public @ResponseBody List<DeveloperSearchResult> getDevelopersWithSuspendedListingsByAcb() {
+        return reportDataManager.getDevelopersWithSuspendedListingsByAcb();
+    }
+
 }
