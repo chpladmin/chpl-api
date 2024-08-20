@@ -1,5 +1,19 @@
 # Release Notes
 
+## Version 46.1.0
+_19 August 2024_
+
+### Features
+* Forgot password functionality for Cognito Users
+* Create endpoint POST /subscriptions/notifications-report
+* Create job to email report of subscription notifications to admin
+* Add 2024 rwt criteria w/o b6 and 2025 rwt criteria with b11
+
+### Flagged Features
+* Require b11 when flag is on, otherwise a9 or b11 is ok
+
+---
+
 ## Version 46.0.0
 _5 August 2024_
 
