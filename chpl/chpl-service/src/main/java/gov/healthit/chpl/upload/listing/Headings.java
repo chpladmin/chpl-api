@@ -91,8 +91,8 @@ public enum Headings {
     TEST_DATA_VERSION("Test data version"),
     TEST_DATA_ALTERATION("Test data alteration"),
     TEST_DATA_ALTERATION_DESC("Test data alteration description"),
-    CONFORMANCE_METHOD("Test procedure", "Conformance Method"),
-    CONFORMANCE_METHOD_VERSION("Test procedure version", "Conformance Method Version"),
+    CONFORMANCE_METHOD("Conformance Method"),
+    CONFORMANCE_METHOD_VERSION("Conformance Method Version"),
     TEST_TOOL_NAME("Test tool name"),
     TEST_TOOL_VERSION("Test tool version"),
     EXPORT_DOCUMENTATION("Export Documentation"),
@@ -231,5 +231,9 @@ public enum Headings {
 
     public static List<Headings> getRequiredHeadings() {
         return Arrays.asList(Headings.UNIQUE_ID, Headings.DEVELOPER, Headings.PRODUCT, Headings.VERSION);
+    }
+
+    public String getHeading() {
+        return this.colNames.get(0);
     }
 }
