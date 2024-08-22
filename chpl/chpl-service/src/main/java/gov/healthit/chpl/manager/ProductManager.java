@@ -427,7 +427,7 @@ public class ProductManager extends SecuredManager {
         Set<String> errorMessages = new HashSet<String>();
         ProductValidationContext context
             = new ProductValidationContext(productDao, product, product.getOwner().getId(), isOwnerJoiningAnotherDeveloper,
-                    productsBeingMerged,msgUtil);
+                    productsBeingMerged, msgUtil);
 
         for (ValidationRule<ProductValidationContext> rule : rules) {
             if (!rule.isValid(context)) {
