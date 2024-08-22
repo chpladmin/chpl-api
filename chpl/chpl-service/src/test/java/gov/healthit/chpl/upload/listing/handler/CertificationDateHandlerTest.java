@@ -7,13 +7,16 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.List;
+import java.util.stream.Stream;
 
 import org.apache.commons.csv.CSVRecord;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.upload.listing.ListingUploadHandlerUtil;
+import gov.healthit.chpl.upload.listing.ListingUploadHeadingUtil;
 import gov.healthit.chpl.upload.listing.ListingUploadTestUtil;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -29,8 +32,13 @@ public class CertificationDateHandlerTest {
 
     @Before
     public void setup() {
+        CertificationCriterionService criteriaService = Mockito.mock(CertificationCriterionService.class);
+        Mockito.when(criteriaService.getAllowedCriterionHeadingsForNewListing())
+            .thenReturn(Stream.of("CRITERIA_170_315_A_1__C").toList());
+        ListingUploadHeadingUtil uploadHeadingUtil = new ListingUploadHeadingUtil(criteriaService);
+
         msgUtil = Mockito.mock(ErrorMessageUtil.class);
-        handlerUtil = new ListingUploadHandlerUtil(msgUtil);
+        handlerUtil = new ListingUploadHandlerUtil(uploadHeadingUtil, msgUtil);
         chplProductNumberUtil = new ChplProductNumberUtil();
         handler = new CertificationDateHandler(handlerUtil, chplProductNumberUtil);
     }

@@ -5,6 +5,8 @@ import static org.junit.Assert.assertNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.stream.Stream;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
@@ -15,7 +17,9 @@ import gov.healthit.chpl.domain.Address;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.contact.PointOfContact;
+import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.upload.listing.ListingUploadHandlerUtil;
+import gov.healthit.chpl.upload.listing.ListingUploadHeadingUtil;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
@@ -26,10 +30,15 @@ public class DeveloperNormalizerTest {
 
     @Before
     public void setup() {
+        CertificationCriterionService criteriaService = Mockito.mock(CertificationCriterionService.class);
+        Mockito.when(criteriaService.getAllowedCriterionHeadingsForNewListing())
+            .thenReturn(Stream.of("CRITERIA_170_315_A_1__C").toList());
+        ListingUploadHeadingUtil uploadHeadingUtil = new ListingUploadHeadingUtil(criteriaService);
+
         developerDao = Mockito.mock(DeveloperDAO.class);
         ErrorMessageUtil msgUtil = Mockito.mock(ErrorMessageUtil.class);
         normalizer = new DeveloperNormalizer(developerDao, new ChplProductNumberUtil(),
-                new ListingUploadHandlerUtil(msgUtil));
+                new ListingUploadHandlerUtil(uploadHeadingUtil, msgUtil));
     }
 
     @Test

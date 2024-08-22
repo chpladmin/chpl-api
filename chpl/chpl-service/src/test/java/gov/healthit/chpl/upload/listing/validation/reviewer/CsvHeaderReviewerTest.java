@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
+import java.util.stream.Stream;
 
 import org.apache.commons.csv.CSVRecord;
 import org.junit.Before;
@@ -13,7 +14,9 @@ import org.mockito.Mockito;
 
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.ListingUpload;
+import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.upload.listing.ListingUploadHandlerUtil;
+import gov.healthit.chpl.upload.listing.ListingUploadHeadingUtil;
 import gov.healthit.chpl.upload.listing.ListingUploadTestUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
@@ -22,11 +25,17 @@ public class CsvHeaderReviewerTest {
     private static final String CSV_DUPLICATE_HEADER = "The heading '%s' appears to be a duplicate in the file.";
     private static final String CSV_DUPLICATE_CRITERIA_HEADER = "The heading '%s' appears to be a duplicate for certification result %s.";
 
+    private CertificationCriterionService criteriaService;
     private ErrorMessageUtil errorMessageUtil;
     private CSVHeaderReviewer reviewer;
 
     @Before
     public void setup() {
+        criteriaService = Mockito.mock(CertificationCriterionService.class);
+        Mockito.when(criteriaService.getAllowedCriterionHeadingsForNewListing())
+            .thenReturn(Stream.of("CRITERIA_170_315_A_8__C", "CRITERIA_170_315_A_9__C", "CRITERIA_170_315_A_1__C").toList());
+        ListingUploadHeadingUtil uploadHeadingUtil = new ListingUploadHeadingUtil(criteriaService);
+
         errorMessageUtil = Mockito.mock(ErrorMessageUtil.class);
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.upload.unrecognizedHeading"), ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(CSV_INVALID_HEADER, i.getArgument(1), ""));
@@ -35,8 +44,8 @@ public class CsvHeaderReviewerTest {
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.upload.duplicateCriteriaHeading"), ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(CSV_DUPLICATE_CRITERIA_HEADER, i.getArgument(1), i.getArgument(2)));
 
-        ListingUploadHandlerUtil uploadHandlerUtil = new ListingUploadHandlerUtil(errorMessageUtil);
-        reviewer = new CSVHeaderReviewer(uploadHandlerUtil, errorMessageUtil);
+        ListingUploadHandlerUtil uploadHandlerUtil = new ListingUploadHandlerUtil(uploadHeadingUtil, errorMessageUtil);
+        reviewer = new CSVHeaderReviewer(uploadHandlerUtil, uploadHeadingUtil, errorMessageUtil);
     }
 
     @Test

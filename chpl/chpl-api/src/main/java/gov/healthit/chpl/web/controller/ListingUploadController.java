@@ -16,8 +16,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import jakarta.servlet.http.HttpServletResponse;
-
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.lang3.StringUtils;
@@ -59,6 +57,7 @@ import gov.healthit.chpl.web.controller.results.ListingUploadResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.log4j.Log4j2;
 
 @Tag(name = "listing-upload", description = "Allows upload of listings.")
@@ -128,7 +127,7 @@ public class ListingUploadController {
             HttpServletResponse response) throws EntityRetrievalException, IOException {
         List<List<String>> rows = listingUploadManager.getUploadedCsvRecords(confirmedListingId);
 
-        File file = new File("listing-" + confirmedListingId + "-upload.csv");
+        File file = new File("listing-" + confirmedListingId + "-original.csv");
         try (OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8);
                 CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.EXCEL)) {
             writer.write('\ufeff');

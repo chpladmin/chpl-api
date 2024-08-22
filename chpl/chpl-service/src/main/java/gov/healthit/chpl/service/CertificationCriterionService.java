@@ -1,5 +1,6 @@
 package gov.healthit.chpl.service;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -9,8 +10,6 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import jakarta.annotation.PostConstruct;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,17 +18,22 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
+import jakarta.annotation.PostConstruct;
 import lombok.extern.log4j.Log4j2;
 
 @Component
 @Log4j2
 public class CertificationCriterionService {
+    private static final String HEADINGS_PROPERTY_SUFFIX = ".headings";
+    private static final String HEADING_DELIMITER = ",";
+
     private CertificationCriterionDAO certificationCriterionDAO;
     private Environment environment;
 
     private Map<Long, CertificationCriterion> criteriaByIdMap = new HashMap<Long, CertificationCriterion>();
     private Map<String, List<CertificationCriterion>> criteriaByNumberMap = new HashMap<String, List<CertificationCriterion>>();
     private Map<CertificationCriterion, CertificationCriterion> originalToCuresCriteriaMap = new HashMap<CertificationCriterion, CertificationCriterion>();
+    private Map<Long, List<String>> criterionHeadingsByIdMap = new HashMap<Long, List<String>>();
     private List<Long> referenceSortingCriteriaList = new ArrayList<Long>();
 
     @Autowired
@@ -46,6 +50,7 @@ public class CertificationCriterionService {
                 .collect(Collectors.groupingBy(CertificationCriterion::getNumber));
         referenceSortingCriteriaList = getReferenceSortingCriteriaList();
         initOriginalToCuresCriteriaMap();
+        initCriterionHeadingByIdMap();
     }
 
     private void initOriginalToCuresCriteriaMap() {
@@ -67,6 +72,47 @@ public class CertificationCriterionService {
         originalToCuresCriteriaMap.put(get("criterion.170_315_g_8"), get("criterion.170_315_g_10"));
     }
 
+    private void initCriterionHeadingByIdMap() {
+        //2015 criteria
+        Field[] declaredFields2015AndBeyond = Criteria2015.class.getDeclaredFields();
+        List<Field> staticFields2015AndBeyond = new ArrayList<Field>();
+        for (Field field : declaredFields2015AndBeyond) {
+            if (java.lang.reflect.Modifier.isStatic(field.getModifiers())) {
+                staticFields2015AndBeyond.add(field);
+            }
+        }
+        staticFields2015AndBeyond.stream()
+            .map(field -> getFieldValue(field))
+            .filter(fieldValue -> !StringUtils.isBlank(fieldValue) && get(fieldValue) != null)
+            .forEach(fieldValue -> criterionHeadingsByIdMap.put(get(fieldValue).getId(), getCriterionHeadings(fieldValue)));
+
+        //2014 criteria
+        Field[] declaredFields2014 = Criteria2014.class.getDeclaredFields();
+        List<Field> staticFields2014 = new ArrayList<Field>();
+        for (Field field : declaredFields2014) {
+            if (java.lang.reflect.Modifier.isStatic(field.getModifiers())) {
+                staticFields2014.add(field);
+            }
+        }
+        staticFields2014.stream()
+            .map(field -> getFieldValue(field))
+            .filter(fieldValue -> !StringUtils.isBlank(fieldValue) && get(fieldValue) != null)
+            .forEach(fieldValue -> criterionHeadingsByIdMap.put(get(fieldValue).getId(), getCriterionHeadings(fieldValue)));
+
+      //2011 criteria
+        Field[] declaredFields2011 = Criteria2014.class.getDeclaredFields();
+        List<Field> staticFields2011 = new ArrayList<Field>();
+        for (Field field : declaredFields2011) {
+            if (java.lang.reflect.Modifier.isStatic(field.getModifiers())) {
+                staticFields2011.add(field);
+            }
+        }
+        staticFields2011.stream()
+            .map(field -> getFieldValue(field))
+            .filter(fieldValue -> !StringUtils.isBlank(fieldValue) && get(fieldValue) != null)
+            .forEach(fieldValue -> criterionHeadingsByIdMap.put(get(fieldValue).getId(), getCriterionHeadings(fieldValue)));
+    }
+
     public CertificationCriterion get(Long certificationCriterionId) {
         return criteriaByIdMap.get(certificationCriterionId);
     }
@@ -79,12 +125,57 @@ public class CertificationCriterionService {
         }
     }
 
+    public List<String> getCriterionHeadings(String certificationCriterionDescriptor) {
+        String delimitedHeadings = environment.getProperty(certificationCriterionDescriptor + HEADINGS_PROPERTY_SUFFIX);
+        if (StringUtils.isEmpty(delimitedHeadings)) {
+            return new ArrayList<String>();
+        }
+        return Stream.of(delimitedHeadings.split(HEADING_DELIMITER)).collect(Collectors.toList());
+    }
+
+    public List<String> getCriterionHeadings(Long criterionId) {
+        return criterionHeadingsByIdMap.get(criterionId);
+    }
+
+//    public List<String> getEquivalentCriterionHeadings(String criterionHeading) {
+//
+//    }
+
     public List<CertificationCriterion> getByNumber(String certificationCriterionNumber) {
         return criteriaByNumberMap.get(certificationCriterionNumber);
     }
 
     public Map<CertificationCriterion, CertificationCriterion> getOriginalToCuresCriteriaMap() {
         return originalToCuresCriteriaMap;
+    }
+
+    public List<String> getAllowedCriterionHeadingsForNewListing() {
+        Field[] declaredFields = Criteria2015.class.getDeclaredFields();
+        List<Field> staticFields = new ArrayList<Field>();
+        for (Field field : declaredFields) {
+            if (java.lang.reflect.Modifier.isStatic(field.getModifiers())) {
+                staticFields.add(field);
+            }
+        }
+        return staticFields.stream()
+            .map(field -> getFieldValue(field))
+            .filter(fieldValue -> !StringUtils.isBlank(fieldValue))
+            .flatMap(fieldValue -> getCriterionHeadings(fieldValue).stream())
+            .collect(Collectors.toList());
+    }
+
+    private String getFieldValue(Field field) {
+        Object val = null;
+        try {
+            val = field.get(null);
+        } catch (IllegalAccessException ex) {
+            LOGGER.error("Unable to get the value of the field " + field.getName());
+        }
+
+        if (val == null) {
+            return "";
+        }
+        return val.toString();
     }
 
     public int sortCriteria(CertificationCriterion c1, CertificationCriterion c2) {
@@ -261,5 +352,115 @@ public class CertificationCriterionService {
         public static final String G_10 = "criterion.170_315_g_10";
         public static final String H_1 = "criterion.170_315_h_1";
         public static final String H_2 = "criterion.170_315_h_2";
+    }
+
+    public static class Criteria2014 {
+        public static final String A_1 = "criterion.170_314_a_1";
+        public static final String A_2 = "criterion.170_314_a_2";
+        public static final String A_3 = "criterion.170_314_a_3";
+        public static final String A_4 = "criterion.170_314_a_4";
+        public static final String A_5 = "criterion.170_314_a_5";
+        public static final String A_6 = "criterion.170_314_a_6";
+        public static final String A_7 = "criterion.170_314_a_7";
+        public static final String A_8 = "criterion.170_314_a_8";
+        public static final String A_9 = "criterion.170_314_a_9";
+        public static final String A_10 = "criterion.170_314_a_10";
+        public static final String A_11 = "criterion.170_314_a_11";
+        public static final String A_12 = "criterion.170_314_a_12";
+        public static final String A_13 = "criterion.170_314_a_13";
+        public static final String A_14 = "criterion.170_314_a_14";
+        public static final String A_15 = "criterion.170_314_a_15";
+        public static final String A_16 = "criterion.170_314_a_16";
+        public static final String A_17 = "criterion.170_314_a_17";
+        public static final String A_18 = "criterion.170_314_a_18";
+        public static final String A_19 = "criterion.170_314_a_19";
+        public static final String A_20 = "criterion.170_314_a_20";
+        public static final String B_1 = "criterion.170_314_b_1";
+        public static final String B_2 = "criterion.170_314_b_2";
+        public static final String B_3 = "criterion.170_314_b_3";
+        public static final String B_4 = "criterion.170_314_b_4";
+        public static final String B_5_A = "criterion.170_314_b_5_A";
+        public static final String B_5_B = "criterion.170_314_b_5_B";
+        public static final String B_6 = "criterion.170_314_b_6";
+        public static final String B_7 = "criterion.170_314_b_7";
+        public static final String B_8 = "criterion.170_314_b_8";
+        public static final String B_9 = "criterion.170_314_b_9";
+        public static final String C_1 = "criterion.170_314_c_1";
+        public static final String C_2 = "criterion.170_314_c_2";
+        public static final String C_3 = "criterion.170_314_c_3";
+        public static final String D_1 = "criterion.170_314_d_1";
+        public static final String D_2 = "criterion.170_314_d_2";
+        public static final String D_3 = "criterion.170_314_d_3";
+        public static final String D_4 = "criterion.170_314_d_4";
+        public static final String D_5 = "criterion.170_314_d_5";
+        public static final String D_6 = "criterion.170_314_d_6";
+        public static final String D_7 = "criterion.170_314_d_7";
+        public static final String D_8 = "criterion.170_314_d_8";
+        public static final String D_9 = "criterion.170_314_d_9";
+        public static final String E_1 = "criterion.170_314_e_1";
+        public static final String E_2 = "criterion.170_314_e_2";
+        public static final String E_3 = "criterion.170_314_e_3";
+        public static final String F_1 = "criterion.170_314_f_1";
+        public static final String F_2 = "criterion.170_314_f_2";
+        public static final String F_3 = "criterion.170_314_f_3";
+        public static final String F_4 = "criterion.170_314_f_4";
+        public static final String F_5 = "criterion.170_314_f_5";
+        public static final String F_6 = "criterion.170_314_f_6";
+        public static final String F_7 = "criterion.170_314_f_7";
+        public static final String G_1 = "criterion.170_314_g_1";
+        public static final String G_2 = "criterion.170_314_g_2";
+        public static final String G_3 = "criterion.170_314_g_3";
+        public static final String G_4 = "criterion.170_314_g_4";
+        public static final String H_1 = "criterion.170_314_h_1";
+        public static final String H_2 = "criterion.170_314_h_2";
+        public static final String H_3 = "criterion.170_314_h_3";
+    }
+
+    public static class Criteria2011 {
+        public static final String A_302 = "criterion.170_302_a";
+        public static final String B_302 = "criterion.170_302_b";
+        public static final String C_302 = "criterion.170_302_c";
+        public static final String D_302 = "criterion.170_302_d";
+        public static final String E_302 = "criterion.170_302_e";
+        public static final String F_1_302 = "criterion.170_302_f_1";
+        public static final String F_2_302 = "criterion.170_302_f_2";
+        public static final String F_3_302 = "criterion.170_302_f_3";
+        public static final String G_302 = "criterion.170_302_g";
+        public static final String H_302 = "criterion.170_302_h";
+        public static final String I_302 = "criterion.170_302_i";
+        public static final String J_302 = "criterion.170_302_j";
+        public static final String K_302 = "criterion.170_302_k";
+        public static final String L_302 = "criterion.170_302_l";
+        public static final String M_302 = "criterion.170_302_m";
+        public static final String N_302 = "criterion.170_302_n";
+        public static final String O_302 = "criterion.170_302_o";
+        public static final String P_302 = "criterion.170_302_p";
+        public static final String Q_302 = "criterion.170_302_q";
+        public static final String R_302 = "criterion.170_302_r";
+        public static final String S_302 = "criterion.170_302_s";
+        public static final String T_302 = "criterion.170_302_t";
+        public static final String U_302 = "criterion.170_302_u";
+        public static final String V_302 = "criterion.170_302_v";
+        public static final String W_302 = "criterion.170_302_w";
+        public static final String A_304 = "criterion.170_304_a";
+        public static final String B_304 = "criterion.170_304_b";
+        public static final String C_304 = "criterion.170_304_c";
+        public static final String D_304 = "criterion.170_304_d";
+        public static final String E_304 = "criterion.170_304_e";
+        public static final String F_304 = "criterion.170_304_f";
+        public static final String G_304 = "criterion.170_304_g";
+        public static final String H_304 = "criterion.170_304_h";
+        public static final String I_304 = "criterion.170_304_i";
+        public static final String J_304 = "criterion.170_304_j";
+        public static final String A_306 = "criterion.170_306_a";
+        public static final String B_306 = "criterion.170_306_b";
+        public static final String C_306 = "criterion.170_306_c";
+        public static final String D_1_306 = "criterion.170_306_d_1";
+        public static final String D_2_306 = "criterion.170_306_d_2";
+        public static final String E_306 = "criterion.170_306_e";
+        public static final String F_306 = "criterion.170_306_f";
+        public static final String G_306 = "criterion.170_306_g";
+        public static final String H_306 = "criterion.170_306_h";
+        public static final String I_306 = "criterion.170_306_i";
     }
 }

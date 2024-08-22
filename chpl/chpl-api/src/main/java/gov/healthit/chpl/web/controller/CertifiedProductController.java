@@ -199,11 +199,12 @@ public class CertifiedProductController {
             tempFile = listingCsvWriter.getAsCsv(listing);
 
             String chplIdWithoutDots = listing.getChplProductNumber().replaceAll("\\.", "-");
-            String filenameInResponse = String.format(chplIdWithoutDots + "%s.csv",
+            //should filename mimic the "download original csv" filename?
+            String filenameInResponse = String.format(chplIdWithoutDots + "_%s.csv",
                     DateUtil.formatDownloadFileSuffixInEasternTime(LocalDateTime.now()));
             fileUtils.streamFileAsResponse(tempFile, DOWNLOAD_FILE_FORMAT, response, filenameInResponse);
         } catch (IOException ex) {
-            LOGGER.error("Unable to return CSV file for listing ID + " + certifiedProductId, ex);
+            LOGGER.error("Unable to create CSV file for listing ID + " + certifiedProductId, ex);
         }
     }
 
