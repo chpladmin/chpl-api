@@ -137,9 +137,15 @@ public class CertificationCriterionService {
         return criterionHeadingsByIdMap.get(criterionId);
     }
 
-//    public List<String> getEquivalentCriterionHeadings(String criterionHeading) {
-//
-//    }
+    public List<String> getEquivalentCriterionHeadings(String criterionHeading) {
+        Long keyForCriterionHeading = criterionHeadingsByIdMap.keySet().stream()
+            .filter(key -> criterionHeadingsByIdMap.get(key).contains(criterionHeading))
+            .findAny().orElse(null);
+        if (keyForCriterionHeading != null) {
+            return List.of();
+        }
+        return criterionHeadingsByIdMap.get(keyForCriterionHeading);
+    }
 
     public List<CertificationCriterion> getByNumber(String certificationCriterionNumber) {
         return criteriaByNumberMap.get(certificationCriterionNumber);

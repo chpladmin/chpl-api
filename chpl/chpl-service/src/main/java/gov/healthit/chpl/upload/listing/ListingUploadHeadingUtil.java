@@ -3,7 +3,6 @@ package gov.healthit.chpl.upload.listing;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,7 +45,7 @@ public class ListingUploadHeadingUtil {
             //but I don't have a good way of mapping from one heading to all the other headings that could be used.
             //The result is if someone used a column 170_315_A_1__C and 170_315_A_1_C (one heading has one underscore
             //and the other has two underscores) those will not be detected as duplicates at this time.
-            return Stream.of(heading).toList();
+            return criteriaService.getEquivalentCriterionHeadings(heading);
         }
         return List.of();
     }

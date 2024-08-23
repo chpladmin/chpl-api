@@ -33,7 +33,7 @@ public class CsvHeaderReviewerTest {
     public void setup() {
         criteriaService = Mockito.mock(CertificationCriterionService.class);
         Mockito.when(criteriaService.getAllowedCriterionHeadingsForNewListing())
-            .thenReturn(Stream.of("CRITERIA_170_315_A_8__C", "CRITERIA_170_315_A_9__C", "CRITERIA_170_315_A_1__C").toList());
+            .thenReturn(Stream.of("CRITERIA_170_315_A_8__C", "CRITERIA_170_315_A_8_C", "CRITERIA_170_315_A_9__C", "CRITERIA_170_315_A_1__C").toList());
         ListingUploadHeadingUtil uploadHeadingUtil = new ListingUploadHeadingUtil(criteriaService);
 
         errorMessageUtil = Mockito.mock(ErrorMessageUtil.class);
@@ -294,6 +294,9 @@ public class CsvHeaderReviewerTest {
 
     @Test
     public void review_oneDuplicateCriterion_hasErrors() {
+        Mockito.when(criteriaService.getEquivalentCriterionHeadings(ArgumentMatchers.eq("CRITERIA_170_315_A_8__C")))
+            .thenAnswer(i -> Stream.of("CRITERIA_170_315_A_8__C", "CRITERIA_170_315_A_8_C").toList());
+
         ListingUpload listingUploadMetadata = ListingUpload.builder()
                 .records(ListingUploadTestUtil.getRecordsFromString("UNIQUE_CHPL_ID__C,VENDOR__C,PRODUCT__C,CRITERIA_170_315_A_8__C,Test Data,Test Procedure,CRITERIA_170_315_A_8__C,GAP,Additional Software,Privacy and Security Framework"))
                 .build();
@@ -305,7 +308,29 @@ public class CsvHeaderReviewerTest {
     }
 
     @Test
+    public void review_oneDuplicateCriterionWithAlternateHeading_hasErrors() {
+        Mockito.when(criteriaService.getEquivalentCriterionHeadings(ArgumentMatchers.eq("CRITERIA_170_315_A_8__C")))
+            .thenAnswer(i -> Stream.of("CRITERIA_170_315_A_8__C", "CRITERIA_170_315_A_8_C").toList());
+        Mockito.when(criteriaService.getEquivalentCriterionHeadings(ArgumentMatchers.eq("CRITERIA_170_315_A_8_C")))
+            .thenAnswer(i -> Stream.of("CRITERIA_170_315_A_8__C", "CRITERIA_170_315_A_8_C").toList());
+
+        ListingUpload listingUploadMetadata = ListingUpload.builder()
+                .records(ListingUploadTestUtil.getRecordsFromString("UNIQUE_CHPL_ID__C,VENDOR__C,PRODUCT__C,CRITERIA_170_315_A_8__C,Test Data,Test Procedure,CRITERIA_170_315_A_8_C,GAP,Additional Software,Privacy and Security Framework"))
+                .build();
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder().build();
+        reviewer.review(listingUploadMetadata, listing);
+
+        assertEquals(1, listing.getErrorMessages().size());
+        assertEquals(String.format(CSV_DUPLICATE_HEADER, "CRITERIA_170_315_A_8_C"), listing.getErrorMessages().iterator().next());
+    }
+
+    @Test
     public void review_twoDuplicateCriteria_hasErrors() {
+        Mockito.when(criteriaService.getEquivalentCriterionHeadings(ArgumentMatchers.eq("CRITERIA_170_315_A_8__C")))
+            .thenAnswer(i -> Stream.of("CRITERIA_170_315_A_8__C", "CRITERIA_170_315_A_8_C").toList());
+        Mockito.when(criteriaService.getEquivalentCriterionHeadings(ArgumentMatchers.eq("CRITERIA_170_315_A_1__C")))
+            .thenAnswer(i -> Stream.of("CRITERIA_170_315_A_1__C", "CRITERIA_170_315_A_1_C").toList());
+
         ListingUpload listingUploadMetadata = ListingUpload.builder()
                 .records(ListingUploadTestUtil.getRecordsFromString("UNIQUE_CHPL_ID__C,VENDOR__C,PRODUCT__C,CRITERIA_170_315_A_8__C,Test Data,Test Procedure,CRITERIA_170_315_A_8__C,GAP,Additional Software,Privacy and Security Framework,CRITERIA_170_315_A_1__C,CRITERIA_170_315_A_1__C"))
                 .build();
