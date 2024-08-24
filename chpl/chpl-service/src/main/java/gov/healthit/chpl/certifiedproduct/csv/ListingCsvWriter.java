@@ -5,6 +5,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
@@ -22,13 +23,16 @@ import lombok.extern.log4j.Log4j2;
 public class ListingCsvWriter {
 
     private ListingCsvHeadingWriter headingWriter;
+    private ListingCsvDataWriter dataWriter;
     private OutputStreamWriter osWriter = null;
     private CSVPrinter csvPrinter = null;
     private FileUtils fileUtils;
 
     @Autowired
-    public ListingCsvWriter(ListingCsvHeadingWriter headingWriter, FileUtils fileUtils) {
+    public ListingCsvWriter(ListingCsvHeadingWriter headingWriter, ListingCsvDataWriter dataWriter,
+            FileUtils fileUtils) {
         this.headingWriter = headingWriter;
+        this.dataWriter = dataWriter;
         this.fileUtils = fileUtils;
     }
 
@@ -39,11 +43,13 @@ public class ListingCsvWriter {
         File csvFile = fileUtils.createTempFile("listing-details", ".csv");
         openDataFile(csvFile);
 
-        csvPrinter.printRecord(headingWriter.getCsvHeadings(listing));
+        List<String> headings = headingWriter.getCsvHeadings(listing);
+        csvPrinter.printRecord(headings);
         csvPrinter.flush();
 
-        //TODO add all data
-
+        List<List<String>> allData = dataWriter.getCsvData(listing, headings.size());
+        csvPrinter.printRecords(allData);
+        csvPrinter.flush();
         close();
         return csvFile;
     }

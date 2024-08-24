@@ -15,6 +15,7 @@ import gov.healthit.chpl.certificationCriteria.CertificationCriterionWithAttribu
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.service.CertificationCriterionService;
+import gov.healthit.chpl.standard.StandardManager;
 import gov.healthit.chpl.upload.listing.ListingUploadHeadingUtil.Heading;
 import gov.healthit.chpl.upload.listing.ListingUploadHeadingUtil.LegacyHeading;
 import lombok.extern.log4j.Log4j2;
@@ -25,12 +26,15 @@ public class ListingCsvHeadingWriter {
 
     private CertificationCriterionService criteriaService;
     private CertificationCriteriaManager criteriaManager;
+    private StandardManager standardManager;
 
     @Autowired
     public ListingCsvHeadingWriter(CertificationCriterionService criteriaService,
-            CertificationCriteriaManager criteriaManager) {
+            CertificationCriteriaManager criteriaManager,
+            StandardManager standardManager) {
         this.criteriaService = criteriaService;
         this.criteriaManager = criteriaManager;
+        this.standardManager = standardManager;
     }
 
     public List<String> getCsvHeadings(CertifiedProductSearchDetails listing) {
@@ -128,8 +132,9 @@ public class ListingCsvHeadingWriter {
                 criterionHeadings.add(Heading.HAS_ADDITIONAL_SOFTWARE.getHeading());
                 criterionHeadings.add(Heading.ADDITIONAL_SOFTWARE_LISTING.getHeading());
                 criterionHeadings.add(Heading.ADDITIONAL_SOFTWARE_LISTING_GROUPING.getHeading());
-                criterionHeadings.add(Heading.ADDITIONAL_SOFTWARE_NONLISTING_GROUPING.getHeading());
+                criterionHeadings.add(Heading.ADDITIONAL_SOFTWARE_NONLISTING.getHeading());
                 criterionHeadings.add(Heading.ADDITIONAL_SOFTWARE_NONLISTING_VERSION.getHeading());
+                criterionHeadings.add(Heading.ADDITIONAL_SOFTWARE_NONLISTING_GROUPING.getHeading());
             }
             if (criterionWithAttributes.getAttributes().isApiDocumentation()) {
                 criterionHeadings.add(Heading.API_DOCUMENTATION_LINK.getHeading());
@@ -174,14 +179,17 @@ public class ListingCsvHeadingWriter {
             if (criterionWithAttributes.getAttributes().isSed()) {
                 criterionHeadings.add(Heading.UCD_PROCESS.getHeading());
                 criterionHeadings.add(Heading.UCD_PROCESS_DETAILS.getHeading());
-                criterionHeadings.add(Heading.UCD_PROCESS.getHeading());
                 criterionHeadings.add(Heading.TASK_ID.getHeading());
                 criterionHeadings.add(Heading.PARTICIPANT_ID.getHeading());
             }
             if (criterionWithAttributes.getAttributes().isServiceBaseUrlList()) {
                 criterionHeadings.add(Heading.SERVICE_BASE_URL_LIST.getHeading());
             }
-            if (criterionWithAttributes.getAttributes().isStandard()) {
+            if (criterionWithAttributes.getAttributes().isStandard()
+                  //we seem to list all criteria as eligible for standards, so here
+                    //we are also limiting the column presence by checking whether the criteria
+                    //has any standards available
+                    && !CollectionUtils.isEmpty(standardManager.getStandardsByCriteria(certResult.getCriterion().getId()))) {
                 criterionHeadings.add(Heading.STANDARD.getHeading());
             }
             if (criterionWithAttributes.getAttributes().isStandardsTested()) {

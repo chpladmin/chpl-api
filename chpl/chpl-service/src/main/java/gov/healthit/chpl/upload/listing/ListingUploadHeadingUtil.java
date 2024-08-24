@@ -140,7 +140,7 @@ public class ListingUploadHeadingUtil {
         HAS_ADDITIONAL_SOFTWARE("Additional Software"),
         ADDITIONAL_SOFTWARE_LISTING("CP Source"),
         ADDITIONAL_SOFTWARE_LISTING_GROUPING("CP Source Grouping"),
-        ADDITONAL_SOFTWARE_NONLISTING("Non CP Source"),
+        ADDITIONAL_SOFTWARE_NONLISTING("Non CP Source"),
         ADDITIONAL_SOFTWARE_NONLISTING_VERSION("Non CP Source Version"),
         ADDITIONAL_SOFTWARE_NONLISTING_GROUPING("Non CP Source Grouping"),
         TEST_DATA("Test Data"),

@@ -135,7 +135,7 @@ public class AdditionalSoftwareUploadHandler {
 
     private List<String> parseNonListingSources(CSVRecord certResultHeading, List<CSVRecord> certResultRecords) {
         List<String> values = uploadUtil.parseMultiRowField(
-                Heading.ADDITONAL_SOFTWARE_NONLISTING, certResultHeading, certResultRecords);
+                Heading.ADDITIONAL_SOFTWARE_NONLISTING, certResultHeading, certResultRecords);
         return values;
     }
 

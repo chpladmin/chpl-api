@@ -40,7 +40,7 @@ import lombok.extern.log4j.Log4j2;
 public class ListingUploadHandlerUtil {
     private static final String CRITERION_COL_HEADING_REGEX = "CRITERIA_(\\d+)_(\\d+)_([A-Z])_([0-9]+)([A-Z])?(_CURES)?_+C";
     protected static final String CRITERIA_CURES_COL_HEADING = "CURES";
-    private static final String UPLOAD_DATE_FORMAT = "yyyyMMdd";
+    public static final String UPLOAD_DATE_FORMAT = "yyyyMMdd";
     private DateFormat dateFormat;
     private Pattern criterionColHeadingPattern;
     private ListingUploadHeadingUtil uploadHeadingUtil;
