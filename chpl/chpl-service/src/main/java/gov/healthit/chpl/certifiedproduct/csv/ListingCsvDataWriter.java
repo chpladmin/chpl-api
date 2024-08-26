@@ -208,11 +208,12 @@ public class ListingCsvDataWriter {
                 .mapToInt(size -> size)
                 .max().orElse(-1);
 
-        int maxUcdProcesses = 0, maxTestTasks = 0;
+        int maxUcdProcesses = 0, maxTestTasks = 0, maxTestParticipants = 0;
         CertifiedProductSed sed = listing.getSed();
         if (sed != null) {
             maxUcdProcesses = listing.getSed().getUcdProcesses() != null ? listing.getSed().getUcdProcesses().size() : 0;
             maxTestTasks = listing.getSed().getTestTasks() != null ? listing.getSed().getTestTasks().size() : 0;
+            maxTestParticipants = getAvailableUniqueTestParticipants(listing.getSed()).size();
         }
 
         return Stream.of(maxOfNonCertResultRows,
@@ -229,6 +230,7 @@ public class ListingCsvDataWriter {
                 maxTestToolsRows,
                 maxUcdProcesses,
                 maxTestTasks,
+                maxTestParticipants,
                 1)
                 .mapToInt(val -> val)
                 .max()
