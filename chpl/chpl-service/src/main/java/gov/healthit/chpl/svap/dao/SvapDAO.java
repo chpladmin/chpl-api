@@ -176,16 +176,16 @@ public class SvapDAO extends BaseDAOImpl {
     private SvapCriteriaMapEntity getSvapCriteriaMapBySvapAndCriterionEntity(Long svapId, Long certificationCriterionId) throws EntityRetrievalException {
         List<SvapCriteriaMapEntity> result = entityManager.createQuery("SELECT DISTINCT scm "
                         + "FROM SvapCriteriaMapEntity scm "
-                        + "JOIN FETCH scm.criteria c "
-                        + "LEFT JOIN FETCH c.certificationEdition "
-                        + "LEFT JOIN FETCH c.rule "
+                        + "JOIN FETCH scm.criteria c1 "
+                        + "LEFT JOIN FETCH c1.certificationEdition "
+                        + "LEFT JOIN FETCH c1.rule "
                         + "JOIN FETCH scm.svap s "
-                        + "LEFT JOIN FETCH s.criteria c "
+                        + "LEFT JOIN FETCH s.criteria c2 "
                         + "WHERE scm.svapId = :svapId "
                         + "AND scm.certificationCriterionId = :certificationCriterionId "
                         + "AND scm.deleted <> true "
                         + "AND s.deleted <> true "
-                        + "AND c.deleted <> true",
+                        + "AND c1.deleted <> true",
                         SvapCriteriaMapEntity.class)
                 .setParameter("svapId", svapId)
                 .setParameter("certificationCriterionId", certificationCriterionId)
