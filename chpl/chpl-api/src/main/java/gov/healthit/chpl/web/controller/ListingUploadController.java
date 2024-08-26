@@ -37,6 +37,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.caching.CacheNames;
+import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.ConfirmListingRequest;
 import gov.healthit.chpl.domain.ListingUpload;
@@ -73,13 +74,16 @@ public class ListingUploadController {
     private String uploadErrorEmailSubject;
 
     private ListingUploadManager listingUploadManager;
+    private CertifiedProductDetailsManager cpdManager;
     private ChplEmailFactory chplEmailFactory;
     private FileUtils fileUtils;
 
     @Autowired
     public ListingUploadController(ListingUploadManager listingUploadManager,
+            CertifiedProductDetailsManager cpdManager,
             ChplEmailFactory chplEmailFactory, FileUtils fileUtils) {
         this.listingUploadManager = listingUploadManager;
+        this.cpdManager = cpdManager;
         this.chplEmailFactory = chplEmailFactory;
         this.fileUtils = fileUtils;
     }
@@ -125,9 +129,10 @@ public class ListingUploadController {
     @RequestMapping(value = "/{id:^-?\\d+$}/uploaded-file", method = RequestMethod.GET, produces = "text/csv")
     public void streamUploadedFile(@PathVariable("id") Long confirmedListingId,
             HttpServletResponse response) throws EntityRetrievalException, IOException {
+        CertifiedProductSearchDetails listing = cpdManager.getCertifiedProductDetails(confirmedListingId);
         List<List<String>> rows = listingUploadManager.getUploadedCsvRecords(confirmedListingId);
 
-        File file = new File("listing-" + confirmedListingId + "-original.csv");
+        File file = new File(listing.getChplProductNumber().replaceAll("\\.", "-") + "-original.csv");
         try (OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8);
                 CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.EXCEL)) {
             writer.write('\ufeff');

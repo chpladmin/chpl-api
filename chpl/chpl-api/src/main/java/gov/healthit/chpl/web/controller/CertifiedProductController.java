@@ -2,7 +2,6 @@ package gov.healthit.chpl.web.controller;
 
 import java.io.File;
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.function.Function;
 
@@ -36,7 +35,6 @@ import gov.healthit.chpl.listing.ics.ListingIcsNode;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
-import gov.healthit.chpl.util.DateUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.FileUtils;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
@@ -190,18 +188,14 @@ public class CertifiedProductController {
     @RequestMapping(value = "/{certifiedProductId:^-?\\d+$}/download",
             method = RequestMethod.GET,
             produces = DOWNLOAD_FILE_FORMAT)
-    public void  getListingAsCsv(@PathVariable("certifiedProductId") Long certifiedProductId,
+    public void  downloadListingAsCsv(@PathVariable("certifiedProductId") Long certifiedProductId,
             HttpServletRequest request, HttpServletResponse response) throws EntityRetrievalException {
 
         CertifiedProductSearchDetails listing = cpdManager.getCertifiedProductDetails(certifiedProductId);
         File tempFile = null;
         try {
             tempFile = listingCsvWriter.getAsCsv(listing);
-
-            String chplIdWithoutDots = listing.getChplProductNumber().replaceAll("\\.", "-");
-            //should filename mimic the "download original csv" filename?
-            String filenameInResponse = String.format(chplIdWithoutDots + "_%s.csv",
-                    DateUtil.formatDownloadFileSuffixInEasternTime(LocalDateTime.now()));
+            String filenameInResponse = listing.getChplProductNumber().replaceAll("\\.", "-") + ".csv";
             fileUtils.streamFileAsResponse(tempFile, DOWNLOAD_FILE_FORMAT, response, filenameInResponse);
         } catch (IOException ex) {
             LOGGER.error("Unable to create CSV file for listing ID + " + certifiedProductId, ex);

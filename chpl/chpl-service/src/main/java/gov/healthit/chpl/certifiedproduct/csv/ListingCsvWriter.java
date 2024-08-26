@@ -40,7 +40,7 @@ public class ListingCsvWriter {
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CERTIFIED_PRODUCT, "
             + "T(gov.healthit.chpl.permissions.domains.CertifiedProductDomainPermissions).CONVERT_TO_CSV, #listing)")
     public File getAsCsv(CertifiedProductSearchDetails listing) throws IOException {
-        File csvFile = fileUtils.createTempFile("listing-details", ".csv");
+        File csvFile = fileUtils.createTempFile("listing-" + listing.getId() + "-details", ".csv");
         openDataFile(csvFile);
 
         List<String> headings = headingWriter.getCsvHeadings(listing);

@@ -371,8 +371,7 @@ public class ListingCsvDataWriter {
         for (int i = 0; i < testParticipants.size(); i++) {
             TestParticipant tp = testParticipants.get(i);
             int col = PARTICIPANT_START_COL;
-            //TODO: we need the friendly ID available here from the other ticket
-            //so maybe this is blocked eventually?
+            //TODO: change this to use the friendlyID when available
             if (StringUtils.isEmpty(tp.getUniqueId())) {
                 tp.setUniqueId("TP" + (i + 1));
                 //copy the unique id to all test participant objects that have this same database id
