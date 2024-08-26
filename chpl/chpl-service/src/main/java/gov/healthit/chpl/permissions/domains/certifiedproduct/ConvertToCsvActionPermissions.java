@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.permissions.domains.ActionPermissions;
+import gov.healthit.chpl.util.CertificationStatusUtil;
 
 @Component("certifiedProductConvertToCsvActionPermissions")
 public class ConvertToCsvActionPermissions extends ActionPermissions {
@@ -18,16 +19,21 @@ public class ConvertToCsvActionPermissions extends ActionPermissions {
     public boolean hasAccess(Object obj) {
         if (!(obj instanceof CertifiedProductSearchDetails)) {
             return false;
-        } else if (getResourcePermissions().isUserRoleAdmin()
+        }
+        CertifiedProductSearchDetails listing = (CertifiedProductSearchDetails) obj;
+        if (getResourcePermissions().isUserRoleAdmin()
                 || getResourcePermissions().isUserRoleOnc()) {
-            return true;
+            return isListingActive(listing);
         } else if (getResourcePermissions().isUserRoleAcbAdmin()) {
-            CertifiedProductSearchDetails listing = (CertifiedProductSearchDetails) obj;
             Long acbId = MapUtils.getLong(listing.getCertifyingBody(), CertifiedProductSearchDetails.ACB_ID_KEY);
-            return isAcbValidForCurrentUser(acbId);
+            return isAcbValidForCurrentUser(acbId) && isListingActive(listing);
         } else {
             return false;
         }
+    }
+
+    private boolean isListingActive(CertifiedProductSearchDetails listing) {
+        return CertificationStatusUtil.isActive(listing);
     }
 
 }
