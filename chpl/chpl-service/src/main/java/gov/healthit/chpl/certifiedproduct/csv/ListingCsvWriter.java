@@ -24,8 +24,6 @@ public class ListingCsvWriter {
 
     private ListingCsvHeadingWriter headingWriter;
     private ListingCsvDataWriter dataWriter;
-    private OutputStreamWriter osWriter = null;
-    private CSVPrinter csvPrinter = null;
     private FileUtils fileUtils;
 
     @Autowired
@@ -41,32 +39,24 @@ public class ListingCsvWriter {
             + "T(gov.healthit.chpl.permissions.domains.CertifiedProductDomainPermissions).CONVERT_TO_CSV, #listing)")
     public File getAsCsv(CertifiedProductSearchDetails listing) throws IOException {
         File csvFile = fileUtils.createTempFile("listing-" + listing.getId() + "-details", ".csv");
-        openDataFile(csvFile);
+        OutputStreamWriter osWriter = new OutputStreamWriter(new FileOutputStream(csvFile), StandardCharsets.UTF_8);
+        osWriter.write('\ufeff');
+        CSVPrinter csvPrinter = new CSVPrinter(osWriter, CSVFormat.EXCEL);
+        csvPrinter.flush();
 
         List<String> headings = headingWriter.getCsvHeadings(listing);
         csvPrinter.printRecord(headings);
         csvPrinter.flush();
-
         List<List<String>> allData = dataWriter.getCsvData(listing, headings.size());
         csvPrinter.printRecords(allData);
         csvPrinter.flush();
-        close();
-        return csvFile;
-    }
 
-    private void openDataFile(File csvFile) throws IOException {
-        osWriter = new OutputStreamWriter(new FileOutputStream(csvFile), StandardCharsets.UTF_8);
-        osWriter.write('\ufeff');
-        csvPrinter = new CSVPrinter(osWriter, CSVFormat.EXCEL);
-        csvPrinter.flush();
-    }
-
-    private void close() throws IOException {
         if (csvPrinter != null) {
             csvPrinter.close();
         }
         if (osWriter != null) {
             osWriter.close();
         }
+        return csvFile;
     }
 }
