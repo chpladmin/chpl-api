@@ -3,12 +3,12 @@ package gov.healthit.chpl.web.controller;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,6 +27,7 @@ import gov.healthit.chpl.exception.ActivityException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
+import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.ProductManager;
 import gov.healthit.chpl.manager.ProductVersionManager;
@@ -116,7 +117,8 @@ public class ProductVersionController {
     @RequestMapping(value = "", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
     public ResponseEntity<ProductVersion> updateVersion(@RequestBody(required = true) final UpdateVersionsRequest versionInfo)
-            throws InvalidArgumentsException, EntityRetrievalException, EntityCreationException, ActivityException {
+            throws InvalidArgumentsException, EntityRetrievalException, EntityCreationException,
+            ValidationException, ActivityException {
 
         ProductVersionDTO result = null;
         HttpHeaders responseHeaders = new HttpHeaders();
@@ -181,7 +183,8 @@ public class ProductVersionController {
             consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
     public ResponseEntity<SplitVersionResponse> splitVersion(@PathVariable("versionId") final Long versionId,
             @RequestBody(required = true) final SplitVersionsRequest splitRequest)
-                    throws InvalidArgumentsException, EntityRetrievalException, EntityCreationException, ActivityException {
+                    throws InvalidArgumentsException, EntityRetrievalException, EntityCreationException,
+                    ValidationException, ActivityException {
 
         if (splitRequest.getNewVersionCode() != null) {
             splitRequest.setNewVersionCode(splitRequest.getNewVersionCode().trim());
