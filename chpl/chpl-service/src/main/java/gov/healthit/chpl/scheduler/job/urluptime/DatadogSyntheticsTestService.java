@@ -16,6 +16,9 @@ import com.datadog.api.client.v1.model.SyntheticsAssertionOperator;
 import com.datadog.api.client.v1.model.SyntheticsAssertionTarget;
 import com.datadog.api.client.v1.model.SyntheticsAssertionType;
 import com.datadog.api.client.v1.model.SyntheticsDeleteTestsPayload;
+import com.datadog.api.client.v1.model.SyntheticsPatchTestBody;
+import com.datadog.api.client.v1.model.SyntheticsPatchTestOperation;
+import com.datadog.api.client.v1.model.SyntheticsPatchTestOperationName;
 import com.datadog.api.client.v1.model.SyntheticsTestDetails;
 import com.datadog.api.client.v1.model.SyntheticsTestOptions;
 import com.datadog.api.client.v1.model.SyntheticsTestOptionsHTTPVersion;
@@ -60,6 +63,15 @@ public class DatadogSyntheticsTestService {
     public List<SyntheticsTestDetails> getAllSyntheticsTests() {
         try {
             return apiProvider.getApiInstance().listTests().getTests();
+        } catch (ApiException e) {
+            LOGGER.error("Could not retrieve Synthetic Tests from Datadog", e);
+            return null;
+        }
+    }
+
+    public SyntheticsAPITest getSyntheticsTest(String publicId) {
+        try {
+            return apiProvider.getApiInstance().getAPITest(publicId);
         } catch (ApiException e) {
             LOGGER.error("Could not retrieve Synthetic Tests from Datadog", e);
             return null;
@@ -142,6 +154,28 @@ public class DatadogSyntheticsTestService {
         } catch (ApiException e) {
             LOGGER.error("Could not create Synthetics Test for URL: {}", url, e);
             return null;
+        }
+    }
+
+    public void addDeveloperToTest(String syntheticsApiTestPublicId, Long developerId) {
+        LOGGER.info("Adding developer {} to test {}", developerId, syntheticsApiTestPublicId);
+        SyntheticsAPITest test = getSyntheticsTest(syntheticsApiTestPublicId);
+        test.getTags().add("developer:" + developerId);
+
+        SyntheticsPatchTestBody body = new SyntheticsPatchTestBody()
+                .addDataItem(new SyntheticsPatchTestOperation()
+                        .op(SyntheticsPatchTestOperationName.ADD)
+                        .path("/tags")
+                        .value(test.getTags()));
+        try {
+            if (datadogIsReadOnly) {
+                LOGGER.info("Not adding Developer (due to environment setting) to existing Synthetics Test {}", developerId);
+                //return null;;
+            } else {
+                apiProvider.getApiInstance().patchTest(syntheticsApiTestPublicId, body);
+            }
+        } catch (ApiException e) {
+            LOGGER.error("Could not add Developer to existing Synthetics Test {}", developerId, e);
         }
     }
 

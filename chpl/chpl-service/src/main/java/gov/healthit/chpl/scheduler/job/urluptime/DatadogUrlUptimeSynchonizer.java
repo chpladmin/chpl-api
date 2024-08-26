@@ -69,11 +69,19 @@ public class DatadogUrlUptimeSynchonizer {
     }
 
     private void synchronizeDatadogSyntheticsTestsWithServiceBaseUrlLists() {
+        // Need to do some refactoring here....
         List<ServiceBaseUrlList> serviceBaseUrlLists = serviceBaseUrlListService.getAllServiceBaseUrlLists();
         List<SyntheticsTestDetails> syntheticsTestDetails = datadogSyntheticsTestService.getAllSyntheticsTests();
 
+        addDeveloperToExistingDataDogSyntheticTest(serviceBaseUrlLists, syntheticsTestDetails);
+
+
+        serviceBaseUrlLists = serviceBaseUrlListService.getAllServiceBaseUrlLists();
+        syntheticsTestDetails = datadogSyntheticsTestService.getAllSyntheticsTests();
+
         addMissingDatadogSyntheticApiTests(serviceBaseUrlLists, syntheticsTestDetails);
         removeUnusedDatadogSyntheticApiTests(serviceBaseUrlLists, syntheticsTestDetails);
+
     }
 
     private void synchronizeUrlUptimeMonitorsWithDatadogSyntheticsTests() {
@@ -84,11 +92,21 @@ public class DatadogUrlUptimeSynchonizer {
         removeUnusedUrlUptimeMonitors(syntheticsTestDetails, urlUptimeMonitors);
     }
 
+    private void addDeveloperToExistingDataDogSyntheticTest(List<ServiceBaseUrlList> serviceBaseUrlLists, List<SyntheticsTestDetails> syntheticsTestDetails) {
+        //These are URLs that exist in Datadog, but also needs to be associated to a new Developer
+        serviceBaseUrlLists.stream()
+                .forEach(sbu ->
+                    syntheticsTestDetails.stream()
+                            .filter(synthTest -> synthTest.getConfig().getRequest().getUrl().equals(sbu.getDatadogFormattedUrl()))
+                            .filter(synthTest -> !doesDeveloperTagExist(synthTest.getTags(), sbu.getDeveloperId()))
+                            .forEach(synthTest -> datadogSyntheticsTestService.addDeveloperToTest(synthTest.getPublicId(), sbu.getDeveloperId())));
+    }
+
     private void addMissingDatadogSyntheticApiTests(List<ServiceBaseUrlList> serviceBaseUrlLists, List<SyntheticsTestDetails> syntheticsTestDetails) {
         List<ServiceBaseUrlList> urlsNotInDatadog = new ArrayList<ServiceBaseUrlList>(serviceBaseUrlLists);
         urlsNotInDatadog.removeIf(sbu -> syntheticsTestDetails.stream()
                 .filter(synthTest -> synthTest.getConfig().getRequest().getUrl().equals(sbu.getDatadogFormattedUrl())
-                        && getDeveloperIdFromTags(synthTest.getTags()).equals(sbu.getDeveloperId()))
+                        && doesDeveloperTagExist(synthTest.getTags(), sbu.getDeveloperId()))
                 .findAny()
                 .isPresent());
 
@@ -183,6 +201,14 @@ public class DatadogUrlUptimeSynchonizer {
         } else {
             return Long.valueOf(developerTag.split(":")[1]);
         }
+    }
+
+    private Boolean doesDeveloperTagExist(List<String> tags, Long developerId) {
+        return tags.stream()
+                .filter(tag -> tag.startsWith("developer:")
+                        && Long.valueOf(tag.split(":")[1]).equals(developerId))
+                .findAny()
+                .isPresent();
     }
 
     private String getDatadogPublicId(List<SyntheticsTestDetails> syntheticsTestDetails, String url, Long developerId) {

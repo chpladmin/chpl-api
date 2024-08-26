@@ -9,6 +9,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -53,7 +55,7 @@ public class ServiceBaseUrlListService {
     }
 
     private List<ServiceBaseUrlList> reduceBasedOnUrl(List<ListingSearchResult> listingSearchResults) {
-        Map<String, ServiceBaseUrlList> serviceBaseUrlLists = new HashMap<String, ServiceBaseUrlList>();
+        Map<Pair<String, Long>, ServiceBaseUrlList> serviceBaseUrlLists = new HashMap<Pair<String, Long>, ServiceBaseUrlList>();
 
         listingSearchResults.forEach(result -> {
             CertifiedProductSearchDetails listing = getListing(result.getId());
@@ -65,10 +67,12 @@ public class ServiceBaseUrlListService {
                 return;
             }
 
-            if (serviceBaseUrlLists.containsKey(certificationResult.getServiceBaseUrlList())) {
-                serviceBaseUrlLists.get(certificationResult.getServiceBaseUrlList()).getChplProductNumbers().add(listing.getChplProductNumber());
+            Pair<String, Long> urlAndDeveloperIdPair = new ImmutablePair<> (certificationResult.getServiceBaseUrlList(), result.getDeveloper().getId());
+
+            if (serviceBaseUrlLists.containsKey(urlAndDeveloperIdPair)) {
+                serviceBaseUrlLists.get(urlAndDeveloperIdPair).getChplProductNumbers().add(listing.getChplProductNumber());
             } else {
-                serviceBaseUrlLists.put(certificationResult.getServiceBaseUrlList(),
+                serviceBaseUrlLists.put(urlAndDeveloperIdPair,
                         ServiceBaseUrlList.builder()
                                 .url(certificationResult.getServiceBaseUrlList())
                                 .developerId(listing.getDeveloper().getId())
@@ -109,7 +113,6 @@ public class ServiceBaseUrlListService {
     }
 
     private CertifiedProductSearchDetails getListing(Long id) {
-        LOGGER.info("Retrieving listing: {}", id);
         try {
             return certifiedProductDetailsManager.getCertifiedProductDetails(id);
         } catch (EntityRetrievalException e) {
@@ -117,4 +120,5 @@ public class ServiceBaseUrlListService {
             return null;
         }
     }
+
  }
