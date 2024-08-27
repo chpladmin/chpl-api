@@ -2,8 +2,10 @@ package gov.healthit.chpl.upload.listing.validation.reviewer;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -56,6 +58,7 @@ public class TestTaskReviewer {
         reviewAllTestTaskCriteriaAreAllowed(listing);
         reviewCertResultsHaveTestTasksIfRequired(listing);
         reviewTestTaskFields(listing);
+        reviewTestTaskDuplicateFriendlyIds(listing);
     }
 
     private void reviewAllTestTaskCriteriaAreAllowed(CertifiedProductSearchDetails listing) {
@@ -147,7 +150,7 @@ public class TestTaskReviewer {
     }
 
     private void reviewTestTaskFields(CertifiedProductSearchDetails listing, TestTask testTask) {
-        reviewTaskUniqueId(listing, testTask);
+        reviewTaskFriendlyId(listing, testTask);
         reviewTaskParticipantSize(listing, testTask);
         reviewTaskDescription(listing, testTask);
         reviewTaskSuccessAverage(listing, testTask);
@@ -165,7 +168,7 @@ public class TestTaskReviewer {
         reviewTestTaskRatingStddev(listing, testTask);
     }
 
-    private void reviewTaskUniqueId(CertifiedProductSearchDetails listing, TestTask testTask) {
+    private void reviewTaskFriendlyId(CertifiedProductSearchDetails listing, TestTask testTask) {
         if (testTask.getId() == null && StringUtils.isEmpty(testTask.getFriendlyId())) {
             listing.addDataErrorMessage(msgUtil.getMessage("listing.criteria.missingTestTaskUniqueId", formatTaskCriteria(testTask)));
         }
@@ -412,9 +415,23 @@ public class TestTaskReviewer {
         }
     }
 
+    private void reviewTestTaskDuplicateFriendlyIds(CertifiedProductSearchDetails listing) {
+        if (listing.getSed() == null || CollectionUtils.isEmpty(listing.getSed().getTestTasks())) {
+            return;
+        }
+        List<String> testTaskFriendlyIds = listing.getSed().getTestTasks().stream()
+            .map(tt -> tt.getFriendlyId())
+            .collect(Collectors.toList());
+        Set<String> uniqueTestTaskFriendlyIds = new LinkedHashSet<String>();
+        Set<String> duplicateFriendlyIds = testTaskFriendlyIds.stream()
+            .filter(id -> !uniqueTestTaskFriendlyIds.add(id))
+            .collect(Collectors.toSet());
+        duplicateFriendlyIds.stream()
+            .forEach(friendlyId -> listing.addDataErrorMessage(msgUtil.getMessage("listing.criteria.duplicateTestTaskFriendlyId", friendlyId)));
+    }
+
     private String formatTaskRef(TestTask testTask) {
-        return !StringUtils.isEmpty(testTask.getFriendlyId()) ? testTask.getFriendlyId() :
-            (!StringUtils.isEmpty(testTask.getUniqueId()) ? testTask.getUniqueId() : DEFAULT_TASK_DECRIPTION);
+        return !StringUtils.isEmpty(testTask.getFriendlyId()) ? testTask.getFriendlyId() : DEFAULT_TASK_DECRIPTION;
     }
 
     private String formatTaskCriteria(TestTask testTask) {

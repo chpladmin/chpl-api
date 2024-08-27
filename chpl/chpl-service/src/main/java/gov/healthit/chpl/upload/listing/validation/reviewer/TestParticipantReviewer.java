@@ -1,5 +1,10 @@
 package gov.healthit.chpl.upload.listing.validation.reviewer;
 
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -30,6 +35,7 @@ public class TestParticipantReviewer {
                 .filter(testTask -> doesTestTaskHaveNonRemovedCriteria(testTask) && !CollectionUtils.isEmpty(testTask.getTestParticipants()))
                 .flatMap(testTask -> testTask.getTestParticipants().stream())
                 .forEach(testParticipant -> reviewTestParticipantFields(listing, testParticipant));
+        reviewTestParticipantDuplicateFriendlyIds(listing);
     }
 
     private boolean doesTestTaskHaveNonRemovedCriteria(TestTask testTask) {
@@ -43,7 +49,7 @@ public class TestParticipantReviewer {
     }
 
     private void reviewTestParticipantFields(CertifiedProductSearchDetails listing, TestParticipant testParticipant) {
-        reviewParticipantUniqueId(listing, testParticipant);
+        reviewParticipantFriendlyId(listing, testParticipant);
         reviewParticipantAgeRange(listing, testParticipant);
         reviewParticipantEducationLevel(listing, testParticipant);
         reviewParticipantGender(listing, testParticipant);
@@ -54,7 +60,7 @@ public class TestParticipantReviewer {
         reviewParticipantComputerExperienceMonths(listing, testParticipant);
     }
 
-    private void reviewParticipantUniqueId(CertifiedProductSearchDetails listing, TestParticipant testParticipant) {
+    private void reviewParticipantFriendlyId(CertifiedProductSearchDetails listing, TestParticipant testParticipant) {
         if (testParticipant.getId() == null && StringUtils.isEmpty(testParticipant.getFriendlyId())) {
             listing.addDataErrorMessage(msgUtil.getMessage("listing.criteria.missingTestParticipantUniqueId"));
         }
@@ -192,8 +198,34 @@ public class TestParticipantReviewer {
         }
     }
 
+    private void reviewTestParticipantDuplicateFriendlyIds(CertifiedProductSearchDetails listing) {
+        if (listing.getSed() == null || CollectionUtils.isEmpty(listing.getSed().getTestTasks())) {
+            return;
+        }
+        Map<String, List<TestParticipant>> allTestParticipantsByFriendlyId = listing.getSed().getTestTasks().stream()
+                .filter(tt -> !CollectionUtils.isEmpty(tt.getTestParticipants()))
+                .flatMap(tt -> tt.getTestParticipants().stream())
+                .filter(tp -> !StringUtils.isEmpty(tp.getFriendlyId()))
+                .collect(Collectors.groupingBy(TestParticipant::getFriendlyId));
+
+        Set<String> participantsWithDuplicateFriendlyIds = allTestParticipantsByFriendlyId.keySet().stream()
+            .flatMap(key -> allTestParticipantsByFriendlyId.get(key).stream())
+            .filter(participant ->
+                !matchesAllOtherParticipants(participant, allTestParticipantsByFriendlyId.get(participant.getFriendlyId())))
+            .map(participant -> participant.getFriendlyId())
+            .collect(Collectors.toSet());
+
+        participantsWithDuplicateFriendlyIds.stream()
+            .forEach(friendlyId -> listing.addDataErrorMessage(msgUtil.getMessage("listing.criteria.duplicateTestParticipantFriendlyId", friendlyId)));
+    }
+
+    private boolean matchesAllOtherParticipants(TestParticipant participant, List<TestParticipant> participants) {
+        return participants.stream()
+                .filter(otherPart -> !otherPart.matches(participant))
+                .findAny().isEmpty();
+    }
+
     private String formatParticipantRef(TestParticipant testParticipant) {
-        return !StringUtils.isEmpty(testParticipant.getFriendlyId()) ? testParticipant.getFriendlyId()
-                : (!StringUtils.isEmpty(testParticipant.getUniqueId()) ? testParticipant.getUniqueId() : DEFAULT_PARTICIPANT_DECRIPTION);
+        return !StringUtils.isEmpty(testParticipant.getFriendlyId()) ? testParticipant.getFriendlyId() : DEFAULT_PARTICIPANT_DECRIPTION;
     }
 }

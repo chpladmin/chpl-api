@@ -36,8 +36,6 @@ public class TestParticipantNormalizer {
             clearDataForUnattestedCriteria(listing);
             listing.getSed().getTestTasks().stream()
                 .forEach(testTask -> {
-                    setTestTaskUniqueIdToIdIfNegative(testTask);
-                    setTestParticipantUniqueIdsToIdIfNegative(testTask);
                     populateTestParticipantAges(testTask);
                     populateTestParticipantEducationTypes(testTask);
                 });
@@ -62,30 +60,6 @@ public class TestParticipantNormalizer {
             .forEach(unattestedCriterion -> testTaskCriteriaToRemove.add(unattestedCriterion));
 
         testTask.getCriteria().removeAll(testTaskCriteriaToRemove);
-    }
-
-    //remove when we turn off Angular listing edit
-    @Deprecated
-    private void setTestTaskUniqueIdToIdIfNegative(TestTask testTask) {
-        if ((testTask.getId() != null && testTask.getId() < 0)
-                || StringUtils.isEmpty(testTask.getUniqueId())) {
-            testTask.setUniqueId(testTask.getId() + "");
-        }
-    }
-
-    //remove when we turn off Angular listing edit
-    @Deprecated
-    private void setTestParticipantUniqueIdsToIdIfNegative(TestTask testTask) {
-        if (testTask.getTestParticipants() != null && testTask.getTestParticipants().size() > 0) {
-            testTask.getTestParticipants().stream()
-                .forEach(participant -> setTestParticipantUniqueIdToIdIfNegative(participant));
-        }
-    }
-
-    private void setTestParticipantUniqueIdToIdIfNegative(TestParticipant testParticipant) {
-        if (testParticipant.getId() != null && testParticipant.getId() < 0) {
-            testParticipant.setUniqueId(testParticipant.getId() + "");
-        }
     }
 
     private void populateTestParticipantAges(TestTask testTask) {

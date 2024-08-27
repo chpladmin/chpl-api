@@ -101,49 +101,28 @@ public class SedSynchronizationService {
 
     private void createNewTestTaskAndParticipants(TestTask testTask, List<TestTask> allTestTasks)
         throws EntityCreationException {
-        // With Angular listing edit: Any with a negative ID are new and need to be added and the negative ID could be repeated
-        // so a task/participant with a negative id needs to be added once and then that ID needs to be replaced with
-        // the created item's ID anywhere else that it is found.
-        // With React listing edit: Any null ID is a new task/participant and we will use the passed-in uniqueId to determine
-        // if that task is re-used across criteria or that participant is re-used across tasks.
-        if (testTask.getId() != null && testTask.getId() < 0) {
-            Long prevId = testTask.getId();
+        //If the test task ID is null then it's a new test task
+        //Once we save the test task then we need to go find any other test tasks with the same friendly ID
+        //and give it the newly created database ID
+        if (testTask.getId() == null && !StringUtils.isEmpty(testTask.getFriendlyId())) {
+            String prevId = testTask.getFriendlyId();
             Long createdTaskId = testTaskDao.create(testTask);
             for (TestTask otherTask : allTestTasks) {
-                if (otherTask.getId() != null && otherTask.getId().equals(prevId)) {
-                    otherTask.setId(createdTaskId);
-                }
-            }
-        } else if (testTask.getId() == null && !StringUtils.isEmpty(testTask.getUniqueId())) {
-            String prevId = testTask.getUniqueId();
-            Long createdTaskId = testTaskDao.create(testTask);
-            for (TestTask otherTask : allTestTasks) {
-                if (otherTask.getId() == null && !StringUtils.isEmpty(otherTask.getUniqueId())
-                        && StringUtils.equals(prevId, otherTask.getUniqueId())) {
+                if (otherTask.getId() == null && !StringUtils.isEmpty(otherTask.getFriendlyId())
+                        && StringUtils.equals(prevId, otherTask.getFriendlyId())) {
                     otherTask.setId(createdTaskId);
                 }
             }
         }
 
         for (TestParticipant participant : testTask.getTestParticipants()) {
-            //get rid of this "if" when we remove Angular listing edit but leave the "else if"
-            if (participant.getId() != null && participant.getId() < 0) {
-                Long prevId = participant.getId();
+            if (participant.getId() == null && !StringUtils.isEmpty(participant.getFriendlyId())) {
+                String prevId = participant.getFriendlyId();
                 Long createdParticipantId = testParticipantDao.create(participant);
                 for (TestTask otherTask : allTestTasks) {
                     for (TestParticipant otherParticipant : otherTask.getTestParticipants()) {
-                        if (otherParticipant.getId() != null && otherParticipant.getId().equals(prevId)) {
-                            otherParticipant.setId(createdParticipantId);
-                        }
-                    }
-                }
-            } else if (participant.getId() == null && !StringUtils.isEmpty(participant.getUniqueId())) {
-                String prevId = participant.getUniqueId();
-                Long createdParticipantId = testParticipantDao.create(participant);
-                for (TestTask otherTask : allTestTasks) {
-                    for (TestParticipant otherParticipant : otherTask.getTestParticipants()) {
-                        if (otherParticipant.getId() == null && !StringUtils.isEmpty(otherParticipant.getUniqueId())
-                                && StringUtils.equals(prevId, otherParticipant.getUniqueId())) {
+                        if (otherParticipant.getId() == null && !StringUtils.isEmpty(otherParticipant.getFriendlyId())
+                                && StringUtils.equals(prevId, otherParticipant.getFriendlyId())) {
                             otherParticipant.setId(createdParticipantId);
                         }
                     }
@@ -155,7 +134,8 @@ public class SedSynchronizationService {
     private void updateTestTask(CertifiedProductSearchDetails listing, TestTask origTestTask, TestTask updatedTestTask)
             throws EntityCreationException {
         boolean isDifferent = false;
-        if (!StringUtils.equals(origTestTask.getDescription(), updatedTestTask.getDescription())
+        if (!StringUtils.equals(origTestTask.getFriendlyId(), updatedTestTask.getFriendlyId())
+                || !StringUtils.equals(origTestTask.getDescription(), updatedTestTask.getDescription())
                 || !StringUtils.equals(origTestTask.getTaskRatingScale(), updatedTestTask.getTaskRatingScale())
                 || !Objects.equals(origTestTask.getTaskErrors(), updatedTestTask.getTaskErrors())
                 || !Objects.equals(origTestTask.getTaskErrorsStddev(), updatedTestTask.getTaskErrorsStddev())
@@ -302,7 +282,8 @@ public class SedSynchronizationService {
             boolean isDifferent = false;
             TestParticipant origParticipant = getMatchingItemInList(toUpdate, origParticipants).get();
             TestParticipant updatedParticipant = toUpdate;
-            if (!StringUtils.equals(origParticipant.getAge().getName(), updatedParticipant.getAge().getName())
+            if (!StringUtils.equals(origParticipant.getFriendlyId(), updatedParticipant.getFriendlyId())
+                    || !StringUtils.equals(origParticipant.getAge().getName(), updatedParticipant.getAge().getName())
                     || !StringUtils.equals(origParticipant.getAssistiveTechnologyNeeds(),
                             updatedParticipant.getAssistiveTechnologyNeeds())
                     || !Objects.equals(origParticipant.getComputerExperienceMonths(),
