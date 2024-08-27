@@ -373,24 +373,28 @@ public class ListingUploadHandlerUtil {
             result = false;
         }
 
-        if (value.equalsIgnoreCase("t") || value.equalsIgnoreCase("true") || value.equalsIgnoreCase("yes")
-                || value.equalsIgnoreCase("y")) {
-            result = true;
-        } else if (value.equalsIgnoreCase("f") || value.equalsIgnoreCase("false") || value.equalsIgnoreCase("no")
-                || value.equalsIgnoreCase("n")) {
-            result = false;
-        }
-
-        try {
-            double numValue = Double.parseDouble(value);
-            if (numValue > 0) {
+        if (result == null) {
+            if (value.equalsIgnoreCase("t") || value.equalsIgnoreCase("true") || value.equalsIgnoreCase("yes")
+                    || value.equalsIgnoreCase("y")) {
                 result = true;
-            } else {
+            } else if (value.equalsIgnoreCase("f") || value.equalsIgnoreCase("false") || value.equalsIgnoreCase("no")
+                    || value.equalsIgnoreCase("n")) {
                 result = false;
             }
-        } catch (NumberFormatException ex) {
-            if (!StringUtils.isBlank(value)) {
-                LOGGER.error("Could not parse " + value + " as an integer. " + ex.getMessage());
+        }
+
+        if (result == null) {
+            try {
+                double numValue = Double.parseDouble(value);
+                if (numValue > 0) {
+                    result = true;
+                } else {
+                    result = false;
+                }
+            } catch (NumberFormatException ex) {
+                if (!StringUtils.isBlank(value)) {
+                    LOGGER.error("Could not parse " + value + " as an integer. " + ex.getMessage());
+                }
             }
         }
 
