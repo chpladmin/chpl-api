@@ -35,6 +35,7 @@ public class ServiceBaseUrlListUptimeCreatorJob extends QuartzJob {
             try {
                 datadogChplSynchonizer.synchronize();
             } catch (Exception e) {
+                e.printStackTrace();
                 LOGGER.error(e);
             }
         } else {

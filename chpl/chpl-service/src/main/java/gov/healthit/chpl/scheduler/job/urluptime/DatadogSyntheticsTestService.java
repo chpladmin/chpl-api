@@ -63,6 +63,7 @@ public class DatadogSyntheticsTestService {
     public List<SyntheticsTestDetails> getAllSyntheticsTests() {
         try {
             return apiProvider.getApiInstance().listTests().getTests();
+
         } catch (ApiException e) {
             LOGGER.error("Could not retrieve Synthetic Tests from Datadog", e);
             return null;
@@ -91,7 +92,7 @@ public class DatadogSyntheticsTestService {
         }
     }
 
-    public SyntheticsAPITest createSyntheticsTest(String url, Long developerId) {
+    public SyntheticsAPITest createSyntheticsTest(String url, List<Long> developerIds) {
         SyntheticsAPITest body = new SyntheticsAPITest()
                 .config(new SyntheticsAPITestConfig()
                         .assertions(Arrays.asList(
@@ -142,13 +143,14 @@ public class DatadogSyntheticsTestService {
                 .message("Failed: " + url)
                 .type(SyntheticsAPITestType.API)
                 .name(url)
-                .tags(List.of("developer:" + developerId));
+                .tags(developerIdsToTags(developerIds));
 
         try {
             if (datadogIsReadOnly) {
-                LOGGER.info("Not updating datadog (due to environment setting) with Developer: {} and URL: {}", developerId, url);
+                LOGGER.info("Not updating datadog (due to environment setting) with Developers: {} and URL: {}", developerIds, url);
                 return body;
             } else {
+                LOGGER.info("Adding Synthetics Test for URL: {}, with Developers: {}", url, developerIds);
                 return apiProvider.getApiInstance().createSyntheticsAPITest(body);
             }
         } catch (ApiException e) {
@@ -157,10 +159,10 @@ public class DatadogSyntheticsTestService {
         }
     }
 
-    public void addDeveloperToTest(String syntheticsApiTestPublicId, Long developerId) {
-        LOGGER.info("Adding developer {} to test {}", developerId, syntheticsApiTestPublicId);
+    public void setApplicableDevelopersForTest(String syntheticsApiTestPublicId, List<Long> developerIds) {
+        LOGGER.info("Adding developer(s) {} to test {}", developerIds, syntheticsApiTestPublicId);
         SyntheticsAPITest test = getSyntheticsTest(syntheticsApiTestPublicId);
-        test.getTags().add("developer:" + developerId);
+        test.setTags(developerIdsToTags(developerIds));
 
         SyntheticsPatchTestBody body = new SyntheticsPatchTestBody()
                 .addDataItem(new SyntheticsPatchTestOperation()
@@ -169,17 +171,23 @@ public class DatadogSyntheticsTestService {
                         .value(test.getTags()));
         try {
             if (datadogIsReadOnly) {
-                LOGGER.info("Not adding Developer (due to environment setting) to existing Synthetics Test {}", developerId);
+                LOGGER.info("Not adding Developer(s) (due to environment setting) to existing Synthetics Test {}", developerIds);
                 //return null;;
             } else {
                 apiProvider.getApiInstance().patchTest(syntheticsApiTestPublicId, body);
             }
         } catch (ApiException e) {
-            LOGGER.error("Could not add Developer to existing Synthetics Test {}", developerId, e);
+            LOGGER.error("Could not add Developer(s) to existing Synthetics Test {}", developerIds, e);
         }
     }
 
     private Long convertMinutesToSeconds(Long minutes) {
         return minutes * SECONDS_IN_A_MINUTE;
+    }
+
+    private List<String> developerIdsToTags(List<Long> developerIds) {
+        return developerIds.stream()
+                .map(id -> "developer:" + id)
+                .toList();
     }
 }

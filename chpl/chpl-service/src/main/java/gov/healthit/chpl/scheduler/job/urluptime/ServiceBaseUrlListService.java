@@ -9,8 +9,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -46,7 +44,7 @@ public class ServiceBaseUrlListService {
 
     public List<ServiceBaseUrlList> getAllServiceBaseUrlLists() {
         try {
-            return reduceBasedOnUrl(findAllListingsWithG10Criteria());
+            return mapToServiceBaseUrlLists(findAllListingsWithG10Criteria());
         } catch (ValidationException e) {
             LOGGER.error("Could not perform listing search for (g)(10) criteria", e);
             return null;
@@ -54,8 +52,8 @@ public class ServiceBaseUrlListService {
 
     }
 
-    private List<ServiceBaseUrlList> reduceBasedOnUrl(List<ListingSearchResult> listingSearchResults) {
-        Map<Pair<String, Long>, ServiceBaseUrlList> serviceBaseUrlLists = new HashMap<Pair<String, Long>, ServiceBaseUrlList>();
+    private List<ServiceBaseUrlList> mapToServiceBaseUrlLists(List<ListingSearchResult> listingSearchResults) {
+        Map<String, ServiceBaseUrlList> serviceBaseUrlLists = new HashMap<String, ServiceBaseUrlList>();
 
         listingSearchResults.forEach(result -> {
             CertifiedProductSearchDetails listing = getListing(result.getId());
@@ -67,15 +65,19 @@ public class ServiceBaseUrlListService {
                 return;
             }
 
-            Pair<String, Long> urlAndDeveloperIdPair = new ImmutablePair<> (certificationResult.getServiceBaseUrlList(), result.getDeveloper().getId());
-
-            if (serviceBaseUrlLists.containsKey(urlAndDeveloperIdPair)) {
-                serviceBaseUrlLists.get(urlAndDeveloperIdPair).getChplProductNumbers().add(listing.getChplProductNumber());
+            if (serviceBaseUrlLists.containsKey(certificationResult.getServiceBaseUrlList())) {
+                //Update developers or chpl prd nbrs if necessary
+                if (!serviceBaseUrlLists.get(certificationResult.getServiceBaseUrlList()).getChplProductNumbers().contains(listing.getChplProductNumber())) {
+                    serviceBaseUrlLists.get(certificationResult.getServiceBaseUrlList()).getChplProductNumbers().add(listing.getChplProductNumber());
+                }
+                if (!serviceBaseUrlLists.get(certificationResult.getServiceBaseUrlList()).getDeveloperIds().contains(listing.getDeveloper().getId())) {
+                    serviceBaseUrlLists.get(certificationResult.getServiceBaseUrlList()).getDeveloperIds().add(listing.getDeveloper().getId());
+                }
             } else {
-                serviceBaseUrlLists.put(urlAndDeveloperIdPair,
+                serviceBaseUrlLists.put(certificationResult.getServiceBaseUrlList(),
                         ServiceBaseUrlList.builder()
                                 .url(certificationResult.getServiceBaseUrlList())
-                                .developerId(listing.getDeveloper().getId())
+                                .developerIds(new ArrayList<Long>(Arrays.asList(listing.getDeveloper().getId())))
                                 .chplProductNumbers(new ArrayList<String>(Arrays.asList(listing.getChplProductNumber())))
                                 .build());
             }
@@ -120,5 +122,4 @@ public class ServiceBaseUrlListService {
             return null;
         }
     }
-
  }

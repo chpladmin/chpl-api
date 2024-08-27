@@ -6,8 +6,10 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.TimeZone;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -46,8 +48,8 @@ public class DatadogUrlUptimeSynchonizer {
     public void synchronize() {
         //These must called in the order
         synchronizeDatadogSyntheticsTestsWithServiceBaseUrlLists();
-        synchronizeUrlUptimeMonitorsWithDatadogSyntheticsTests();
-        synchronizeUrlUptimeMonitorTestsWithDatadogSyntheticsTestResults();
+        //synchronizeUrlUptimeMonitorsWithDatadogSyntheticsTests();
+        //synchronizeUrlUptimeMonitorTestsWithDatadogSyntheticsTestResults();
     }
 
     private void synchronizeUrlUptimeMonitorTestsWithDatadogSyntheticsTestResults() {
@@ -69,20 +71,58 @@ public class DatadogUrlUptimeSynchonizer {
     }
 
     private void synchronizeDatadogSyntheticsTestsWithServiceBaseUrlLists() {
-        // Need to do some refactoring here....
+        createOrUpdateSyntheticsTest();
+        removeUnusedDatadogSyntheticsTests();
+    }
+
+    private void createOrUpdateSyntheticsTest() {
         List<ServiceBaseUrlList> serviceBaseUrlLists = serviceBaseUrlListService.getAllServiceBaseUrlLists();
         List<SyntheticsTestDetails> syntheticsTestDetails = datadogSyntheticsTestService.getAllSyntheticsTests();
 
-        addDeveloperToExistingDataDogSyntheticTest(serviceBaseUrlLists, syntheticsTestDetails);
-
-
-        serviceBaseUrlLists = serviceBaseUrlListService.getAllServiceBaseUrlLists();
-        syntheticsTestDetails = datadogSyntheticsTestService.getAllSyntheticsTests();
-
-        addMissingDatadogSyntheticApiTests(serviceBaseUrlLists, syntheticsTestDetails);
-        removeUnusedDatadogSyntheticApiTests(serviceBaseUrlLists, syntheticsTestDetails);
+        for (ServiceBaseUrlList sbu : serviceBaseUrlLists) {
+            Optional<SyntheticsTestDetails> foundSyntheticsTestDetails = findSyntheticsTestDetails(syntheticsTestDetails, sbu.getUrl());
+            if (foundSyntheticsTestDetails.isEmpty()) {
+                datadogSyntheticsTestService.createSyntheticsTest(sbu.getDatadogFormattedUrl(), sbu.getDeveloperIds());
+                syntheticsTestDetails = datadogSyntheticsTestService.getAllSyntheticsTests();
+            } else {
+                //Are the developer tags up to date?
+                if (!CollectionUtils.isEqualCollection(getDeveloperIdsFromTags(foundSyntheticsTestDetails.get().getTags()), sbu.getDeveloperIds())) {
+                    datadogSyntheticsTestService.setApplicableDevelopersForTest(foundSyntheticsTestDetails.get().getPublicId(), sbu.getDeveloperIds());
+                    syntheticsTestDetails = datadogSyntheticsTestService.getAllSyntheticsTests();
+                }
+            }
+        }
 
     }
+
+    private void removeUnusedDatadogSyntheticsTests() {
+        List<ServiceBaseUrlList> serviceBaseUrlLists = serviceBaseUrlListService.getAllServiceBaseUrlLists();
+        List<SyntheticsTestDetails> syntheticsTestDetails = datadogSyntheticsTestService.getAllSyntheticsTests();
+
+        List<String> syntheticsTestPublicIdsToDelete = new ArrayList<String>();
+        for (SyntheticsTestDetails std : syntheticsTestDetails) {
+            boolean found = serviceBaseUrlLists.stream()
+                    .filter(sbu -> sbu.getUrl().equals(std.getConfig().getRequest().getUrl()))
+                    .findAny()
+                    .isPresent();
+            if (!found) {
+                syntheticsTestPublicIdsToDelete.add(std.getPublicId());
+            }
+        }
+        if (CollectionUtils.isNotEmpty(syntheticsTestPublicIdsToDelete)) {
+            LOGGER.info("Removing Synthetics Test with PublicIds: {}", syntheticsTestPublicIdsToDelete);
+            datadogSyntheticsTestService.deleteSyntheticsTests(syntheticsTestPublicIdsToDelete);
+        }
+    }
+
+    private Optional<SyntheticsTestDetails> findSyntheticsTestDetails(List<SyntheticsTestDetails> syntheticsTestDetails, String url) {
+        return syntheticsTestDetails.stream()
+                .filter(std -> std.getConfig().getRequest().getUrl().equals(url))
+                .findAny();
+    }
+
+
+
 
     private void synchronizeUrlUptimeMonitorsWithDatadogSyntheticsTests() {
         List<UrlUptimeMonitor> urlUptimeMonitors = urlUptimeMonitorDAO.getAll();
@@ -92,21 +132,12 @@ public class DatadogUrlUptimeSynchonizer {
         removeUnusedUrlUptimeMonitors(syntheticsTestDetails, urlUptimeMonitors);
     }
 
-    private void addDeveloperToExistingDataDogSyntheticTest(List<ServiceBaseUrlList> serviceBaseUrlLists, List<SyntheticsTestDetails> syntheticsTestDetails) {
-        //These are URLs that exist in Datadog, but also needs to be associated to a new Developer
-        serviceBaseUrlLists.stream()
-                .forEach(sbu ->
-                    syntheticsTestDetails.stream()
-                            .filter(synthTest -> synthTest.getConfig().getRequest().getUrl().equals(sbu.getDatadogFormattedUrl()))
-                            .filter(synthTest -> !doesDeveloperTagExist(synthTest.getTags(), sbu.getDeveloperId()))
-                            .forEach(synthTest -> datadogSyntheticsTestService.addDeveloperToTest(synthTest.getPublicId(), sbu.getDeveloperId())));
-    }
-
+    /*
     private void addMissingDatadogSyntheticApiTests(List<ServiceBaseUrlList> serviceBaseUrlLists, List<SyntheticsTestDetails> syntheticsTestDetails) {
         List<ServiceBaseUrlList> urlsNotInDatadog = new ArrayList<ServiceBaseUrlList>(serviceBaseUrlLists);
         urlsNotInDatadog.removeIf(sbu -> syntheticsTestDetails.stream()
                 .filter(synthTest -> synthTest.getConfig().getRequest().getUrl().equals(sbu.getDatadogFormattedUrl())
-                        && doesDeveloperTagExist(synthTest.getTags(), sbu.getDeveloperId()))
+                        && getDeveloperIdFromTags(synthTest.getTags()).equals(sbu.getDeveloperId()))
                 .findAny()
                 .isPresent());
 
@@ -128,6 +159,7 @@ public class DatadogUrlUptimeSynchonizer {
                 .peek(synthTestDet -> LOGGER.info("Removing the following URL from Datadog: {}", synthTestDet.getConfig().getRequest().getUrl()))
                 .forEach(synthTestDet -> datadogSyntheticsTestService.deleteSyntheticsTests(List.of(synthTestDet.getPublicId())));
     }
+    */
 
     private void addMissingUrlUptimeMonitorsToDb(List<SyntheticsTestDetails> syntheticsTestDetails, List<UrlUptimeMonitor> urlUptimeMonitors) {
         List<SyntheticsTestDetails> syntheticsTestsNotInDatdogMonitors = new ArrayList<SyntheticsTestDetails>(syntheticsTestDetails);
@@ -203,12 +235,11 @@ public class DatadogUrlUptimeSynchonizer {
         }
     }
 
-    private Boolean doesDeveloperTagExist(List<String> tags, Long developerId) {
+    private List<Long> getDeveloperIdsFromTags(List<String> tags) {
         return tags.stream()
-                .filter(tag -> tag.startsWith("developer:")
-                        && Long.valueOf(tag.split(":")[1]).equals(developerId))
-                .findAny()
-                .isPresent();
+                .filter(tag -> tag.startsWith("developer:"))
+                .map(tag -> Long.valueOf(tag.split(":")[1]))
+                .toList();
     }
 
     private String getDatadogPublicId(List<SyntheticsTestDetails> syntheticsTestDetails, String url, Long developerId) {
