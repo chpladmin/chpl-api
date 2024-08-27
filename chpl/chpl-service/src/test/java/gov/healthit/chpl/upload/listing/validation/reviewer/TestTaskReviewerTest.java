@@ -1811,6 +1811,38 @@ public class TestTaskReviewerTest {
     }
 
     @Test
+    public void review_testTaskNullFriendlyIds_noError() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .success(true)
+                        .criterion(a1)
+                        .sed(true)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .success(true)
+                        .criterion(a2)
+                        .sed(true)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .success(true)
+                        .criterion(a3)
+                        .sed(false)
+                        .build())
+                .sed(CertifiedProductSed.builder().build())
+                .build();
+        TestTask tt1 = buildValidTestTask(null, Stream.of(a1, a2).collect(Collectors.toList()));
+        tt1.setId(1L);
+        listing.getSed().getTestTasks().add(tt1);
+        TestTask tt2 = buildValidTestTask(null, Stream.of(a1, a2).collect(Collectors.toList()));
+        tt2.setId(2L);
+        listing.getSed().getTestTasks().add(tt2);
+        reviewer.review(listing);
+
+        assertEquals(0, listing.getWarningMessages().size());
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
     public void review_testTaskValid_noError() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .certificationResult(CertificationResult.builder()

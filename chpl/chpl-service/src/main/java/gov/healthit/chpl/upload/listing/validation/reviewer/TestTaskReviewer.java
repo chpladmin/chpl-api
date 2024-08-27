@@ -420,12 +420,13 @@ public class TestTaskReviewer {
             return;
         }
         List<String> testTaskFriendlyIds = listing.getSed().getTestTasks().stream()
-            .map(tt -> tt.getFriendlyId())
-            .collect(Collectors.toList());
+                .filter(tt -> !StringUtils.isEmpty(tt.getFriendlyId()))
+                .map(tt -> tt.getFriendlyId())
+                .collect(Collectors.toList());
         Set<String> uniqueTestTaskFriendlyIds = new LinkedHashSet<String>();
         Set<String> duplicateFriendlyIds = testTaskFriendlyIds.stream()
-            .filter(id -> !uniqueTestTaskFriendlyIds.add(id))
-            .collect(Collectors.toSet());
+                .filter(id -> !uniqueTestTaskFriendlyIds.add(id))
+                .collect(Collectors.toSet());
         duplicateFriendlyIds.stream()
             .forEach(friendlyId -> listing.addDataErrorMessage(msgUtil.getMessage("listing.criteria.duplicateTestTaskFriendlyId", friendlyId)));
     }
