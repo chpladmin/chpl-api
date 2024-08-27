@@ -33,7 +33,6 @@ public class ConvertToCsvActionPermissions extends ActionPermissions {
     }
 
     private boolean isListingActive(CertifiedProductSearchDetails listing) {
-        return CertificationStatusUtil.isActive(listing);
+        return CertificationStatusUtil.isNotRetired(listing);
     }
-
 }
