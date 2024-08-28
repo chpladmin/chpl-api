@@ -170,11 +170,7 @@ public class DatadogUrlUptimeSynchonizer {
     private void addUrlUptimeMonitor(UrlUptimeMonitor urlUptimeMonitor) {
         try {
             LOGGER.info("Adding the following URL to url_uptime_monitor table: {}, {}", urlUptimeMonitor.getUrl(), urlUptimeMonitor.getDeveloper().getId());
-            var x = urlUptimeMonitorDAO.create(urlUptimeMonitor);
-            var y = urlUptimeMonitorDAO.getAll().stream()
-                    .anyMatch(z -> z.getId().equals(x.getId()));
-            LOGGER.info(y);
-
+            urlUptimeMonitorDAO.create(urlUptimeMonitor);
         } catch (Exception e) {
             LOGGER.error("Could not add the following URL to url_uptime_monitor table: {}", urlUptimeMonitor.getUrl(), e);
         }
