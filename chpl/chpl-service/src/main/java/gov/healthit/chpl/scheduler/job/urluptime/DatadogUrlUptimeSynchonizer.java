@@ -32,7 +32,7 @@ public class DatadogUrlUptimeSynchonizer {
     private DatadogSyntheticsTestResultService datadogSyntheticsTestResultService;
     private ServiceBaseUrlListService serviceBaseUrlListService;
     private UrlUptimeMonitorDAO urlUptimeMonitorDAO;
-    private UrlUptimeMonitorTestDAO utlUptimeMonitorTestDAO;
+    private UrlUptimeMonitorTestDAO urlUptimeMonitorTestDAO;
 
 
     public DatadogUrlUptimeSynchonizer(DatadogSyntheticsTestService datadogSyntheticsTestService, DatadogSyntheticsTestResultService datadogSyntheticsTestResultService,
@@ -41,28 +41,28 @@ public class DatadogUrlUptimeSynchonizer {
         this.datadogSyntheticsTestResultService = datadogSyntheticsTestResultService;
         this.serviceBaseUrlListService = serviceBaseUrlListGatherer;
         this.urlUptimeMonitorDAO = urlUptimeMonitorDAO;
-        this.utlUptimeMonitorTestDAO = urlUptimeMonitorTestDAO;
+        this.urlUptimeMonitorTestDAO = urlUptimeMonitorTestDAO;
     }
 
     @Transactional
     public void synchronize() {
         //These must called in the order
         synchronizeDatadogSyntheticsTestsWithServiceBaseUrlLists();
-        //synchronizeUrlUptimeMonitorsWithDatadogSyntheticsTests();
-        //synchronizeUrlUptimeMonitorTestsWithDatadogSyntheticsTestResults();
+        synchronizeUrlUptimeMonitorsWithDatadogSyntheticsTests();
+        synchronizeUrlUptimeMonitorTestsWithDatadogSyntheticsTestResults();
     }
 
     private void synchronizeUrlUptimeMonitorTestsWithDatadogSyntheticsTestResults() {
+        LOGGER.info("**************** Getting Test Results from Datadog and saving it locally ****************");
         List<SyntheticsTestDetails> syntheticsTestDetails = datadogSyntheticsTestService.getAllSyntheticsTests();
 
         getDatesToRetrieveResultsFor().stream()
                 .peek(testDate -> LOGGER.info("**************** Retrieving test results for: {} ****************", testDate))
                 .forEach(testDate -> urlUptimeMonitorDAO.getAll()
-                        .forEach(urlUptimeMonitor ->  datadogSyntheticsTestResultService.getSyntheticsTestResults(getDatadogPublicId(
-                                    syntheticsTestDetails,
-                                    urlUptimeMonitor.getUrl(),
-                                    urlUptimeMonitor.getDeveloper().getId()), testDate)
-                                .forEach(syntheticsTestResult -> utlUptimeMonitorTestDAO.create(UrlUptimeMonitorTest.builder()
+                        .forEach(urlUptimeMonitor ->  datadogSyntheticsTestResultService.getSyntheticsTestResults(
+                                getDatadogPublicId(syntheticsTestDetails, urlUptimeMonitor.getUrl(), urlUptimeMonitor.getDeveloper().getId()),
+                                testDate)
+                                .forEach(syntheticsTestResult -> urlUptimeMonitorTestDAO.create(UrlUptimeMonitorTest.builder()
                                       .urlUptimeMonitorId(urlUptimeMonitor.getId())
                                       .datadogTestKey(syntheticsTestResult.getResultId())
                                       .checkTime(toLocalDateTime(syntheticsTestResult.getCheckTime().longValue()))
@@ -71,6 +71,7 @@ public class DatadogUrlUptimeSynchonizer {
     }
 
     private void synchronizeDatadogSyntheticsTestsWithServiceBaseUrlLists() {
+        LOGGER.info("**************** Synchronizing Datadog tests based on CHPL data ****************");
         createOrUpdateSyntheticsTest();
         removeUnusedDatadogSyntheticsTests();
     }
@@ -121,83 +122,59 @@ public class DatadogUrlUptimeSynchonizer {
                 .findAny();
     }
 
-
-
-
     private void synchronizeUrlUptimeMonitorsWithDatadogSyntheticsTests() {
+        LOGGER.info("**************** Synchronizing CHPL data based on Datadog tests ****************");
         List<UrlUptimeMonitor> urlUptimeMonitors = urlUptimeMonitorDAO.getAll();
-        List<SyntheticsTestDetails> syntheticsTestDetails = datadogSyntheticsTestService.getAllSyntheticsTests();
+        List<UrlUptimeMonitor> expectedUrlUptimeMonitors = generateExpectedUrlIUpTimeMonitors(datadogSyntheticsTestService.getAllSyntheticsTests());
 
-        addMissingUrlUptimeMonitorsToDb(syntheticsTestDetails, urlUptimeMonitors);
-        removeUnusedUrlUptimeMonitors(syntheticsTestDetails, urlUptimeMonitors);
+        addMissingUrlMonitors(urlUptimeMonitors, expectedUrlUptimeMonitors);
+        urlUptimeMonitors = urlUptimeMonitorDAO.getAll();
+        removeOutdatedUrlMonitors(urlUptimeMonitors, expectedUrlUptimeMonitors);
     }
 
-    /*
-    private void addMissingDatadogSyntheticApiTests(List<ServiceBaseUrlList> serviceBaseUrlLists, List<SyntheticsTestDetails> syntheticsTestDetails) {
-        List<ServiceBaseUrlList> urlsNotInDatadog = new ArrayList<ServiceBaseUrlList>(serviceBaseUrlLists);
-        urlsNotInDatadog.removeIf(sbu -> syntheticsTestDetails.stream()
-                .filter(synthTest -> synthTest.getConfig().getRequest().getUrl().equals(sbu.getDatadogFormattedUrl())
-                        && getDeveloperIdFromTags(synthTest.getTags()).equals(sbu.getDeveloperId()))
-                .findAny()
-                .isPresent());
-
-        urlsNotInDatadog.stream()
-                .peek(sbu -> LOGGER.info("Adding the following URL to Datadog: {}", sbu.getDatadogFormattedUrl()))
-                .forEach(sbu -> datadogSyntheticsTestService.createSyntheticsTest(sbu.getDatadogFormattedUrl(), sbu.getDeveloperId()));
+    private void addMissingUrlMonitors(List<UrlUptimeMonitor> existing, List<UrlUptimeMonitor> expected) {
+        expected.stream()
+                .filter(uum -> !contains(existing, uum))
+                .forEach(urlMonitor -> addUrlUptimeMonitor(urlMonitor));
     }
 
-    private void removeUnusedDatadogSyntheticApiTests(List<ServiceBaseUrlList> serviceBaseUrlListss, List<SyntheticsTestDetails> syntheticsTestDetails) {
-        List<SyntheticsTestDetails> syntheticsTestDetailsNotUsed = new ArrayList<SyntheticsTestDetails>(syntheticsTestDetails);
-
-        syntheticsTestDetailsNotUsed.removeIf(std -> serviceBaseUrlListss.stream()
-                .filter(serviceBaseUrlList -> serviceBaseUrlList.getDatadogFormattedUrl().equals(std.getConfig().getRequest().getUrl())
-                        && serviceBaseUrlList.getDeveloperId().equals(getDeveloperIdFromTags(std.getTags())))
-                .findAny()
-                .isPresent());
-
-        syntheticsTestDetailsNotUsed.stream()
-                .peek(synthTestDet -> LOGGER.info("Removing the following URL from Datadog: {}", synthTestDet.getConfig().getRequest().getUrl()))
-                .forEach(synthTestDet -> datadogSyntheticsTestService.deleteSyntheticsTests(List.of(synthTestDet.getPublicId())));
-    }
-    */
-
-    private void addMissingUrlUptimeMonitorsToDb(List<SyntheticsTestDetails> syntheticsTestDetails, List<UrlUptimeMonitor> urlUptimeMonitors) {
-        List<SyntheticsTestDetails> syntheticsTestsNotInDatdogMonitors = new ArrayList<SyntheticsTestDetails>(syntheticsTestDetails);
-
-        syntheticsTestsNotInDatdogMonitors.removeIf(synthTest -> urlUptimeMonitors.stream()
-                .filter(urlUptimeMonitor -> urlUptimeMonitor.getUrl().equals(synthTest.getConfig().getRequest().getUrl())
-                        && urlUptimeMonitor.getDeveloper().getId().equals(getDeveloperIdFromTags(synthTest.getTags())))
-                .findAny()
-                .isPresent());
-
-        syntheticsTestsNotInDatdogMonitors.stream()
-                .peek(synthTest -> LOGGER.info("Adding the following URL to url_uptime_monitor table: {}", synthTest.getConfig().getRequest().getUrl()))
-                .forEach(synthTest -> addUrlUptimeMonitor(UrlUptimeMonitor.builder()
-                        .datadogPublicId(synthTest.getPublicId())
-                        .url(synthTest.getConfig().getRequest().getUrl())
-                        .developer(Developer.builder()
-                                .id(getDeveloperIdFromTags(synthTest.getTags()))
-                                .build())
-                        .build()));
+    private void removeOutdatedUrlMonitors(List<UrlUptimeMonitor> existing, List<UrlUptimeMonitor> expected) {
+        existing.stream()
+                .filter(uum -> !contains(expected, uum))
+                .forEach(urlMonitor -> {
+                    LOGGER.info("Removing the following URL to url_uptime_monitor table: {}, {}", urlMonitor.getUrl(), urlMonitor.getDeveloper().getId());
+                    urlUptimeMonitorDAO.delete(urlMonitor);
+                });
     }
 
-    private void removeUnusedUrlUptimeMonitors(List<SyntheticsTestDetails> syntheticsTestDetails, List<UrlUptimeMonitor> urlUptimeMonitors) {
-        List<UrlUptimeMonitor> urlUptimeMonitorsNotInSynthTests = new ArrayList<UrlUptimeMonitor>(urlUptimeMonitors);
+    private Boolean contains(List<UrlUptimeMonitor> list, UrlUptimeMonitor value) {
+        return list.stream()
+                .anyMatch(item -> item.getDeveloper().getId().equals(value.getDeveloper().getId())
+                        && item.getUrl().equals(value.getUrl()));
+    }
 
-        urlUptimeMonitorsNotInSynthTests.removeIf(monitor -> syntheticsTestDetails.stream()
-                .filter(synthTest -> synthTest.getConfig().getRequest().getUrl().equals(monitor.getUrl())
-                        && getDeveloperIdFromTags(synthTest.getTags()).equals(monitor.getDeveloper().getId()))
-                .findAny()
-                .isPresent());
+    private List<UrlUptimeMonitor> generateExpectedUrlIUpTimeMonitors(List<SyntheticsTestDetails> syntheticsTestDetails) {
+        return syntheticsTestDetails.stream()
+                .flatMap(synthTest -> getDeveloperIdsFromTags(synthTest.getTags()).stream()
+                        .map(devId -> UrlUptimeMonitor.builder()
+                                .datadogPublicId(synthTest.getPublicId())
+                                .url(synthTest.getConfig().getRequest().getUrl())
+                                .developer(Developer.builder()
+                                        .id(devId)
+                                        .build())
+                                .build()))
+                .toList();
 
-        urlUptimeMonitorsNotInSynthTests.stream()
-                .peek(monitor -> LOGGER.info("Removing the following URL from url_uptime_monitor table: {}", monitor.getUrl()))
-                .forEach(monitor -> urlUptimeMonitorDAO.delete(monitor));
     }
 
     private void addUrlUptimeMonitor(UrlUptimeMonitor urlUptimeMonitor) {
         try {
-            urlUptimeMonitorDAO.create(urlUptimeMonitor);
+            LOGGER.info("Adding the following URL to url_uptime_monitor table: {}, {}", urlUptimeMonitor.getUrl(), urlUptimeMonitor.getDeveloper().getId());
+            var x = urlUptimeMonitorDAO.create(urlUptimeMonitor);
+            var y = urlUptimeMonitorDAO.getAll().stream()
+                    .anyMatch(z -> z.getId().equals(x.getId()));
+            LOGGER.info(y);
+
         } catch (Exception e) {
             LOGGER.error("Could not add the following URL to url_uptime_monitor table: {}", urlUptimeMonitor.getUrl(), e);
         }
@@ -219,20 +196,7 @@ public class DatadogUrlUptimeSynchonizer {
     }
 
     private Boolean doUrlUptimeMonitorTestsExistInDbForDate(LocalDate dateToCheck) {
-        return utlUptimeMonitorTestDAO.getTestCountForDate(dateToCheck) > 0;
-    }
-
-    private Long getDeveloperIdFromTags(List<String> tags) {
-        String developerTag = tags.stream()
-                .filter(tag -> tag.startsWith("developer:"))
-                .findAny()
-                .orElse(null);
-
-        if (developerTag == null) {
-            return null;
-        } else {
-            return Long.valueOf(developerTag.split(":")[1]);
-        }
+        return urlUptimeMonitorTestDAO.getTestCountForDate(dateToCheck) > 0;
     }
 
     private List<Long> getDeveloperIdsFromTags(List<String> tags) {
@@ -245,7 +209,7 @@ public class DatadogUrlUptimeSynchonizer {
     private String getDatadogPublicId(List<SyntheticsTestDetails> syntheticsTestDetails, String url, Long developerId) {
         return syntheticsTestDetails.stream()
                 .filter(dets -> dets.getConfig().getRequest().getUrl().equals(url)
-                        && getDeveloperIdFromTags(dets.getTags()).equals(developerId))
+                        && getDeveloperIdsFromTags(dets.getTags()).contains(developerId))
                 .map(dets -> dets.getPublicId())
                 .findAny()
                 .get();
