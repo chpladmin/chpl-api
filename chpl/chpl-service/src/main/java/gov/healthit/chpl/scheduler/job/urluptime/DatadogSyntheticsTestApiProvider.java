@@ -30,10 +30,8 @@ public class DatadogSyntheticsTestApiProvider {
 
         ClientConfig clientConfig = defaultClient.getClientConfig().connectorProvider(new ApacheConnectorProvider());
         defaultClient.setClientConfig(clientConfig);
-
-
-
         defaultClient.configureApiKeys(getDatadogSecrets());
+
         apiInstance = new SyntheticsApi(defaultClient);
     }
 

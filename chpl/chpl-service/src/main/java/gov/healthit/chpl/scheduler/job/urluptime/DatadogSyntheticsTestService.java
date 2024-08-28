@@ -172,7 +172,6 @@ public class DatadogSyntheticsTestService {
         try {
             if (datadogIsReadOnly) {
                 LOGGER.info("Not adding Developer(s) (due to environment setting) to existing Synthetics Test {}", developerIds);
-                //return null;;
             } else {
                 apiProvider.getApiInstance().patchTest(syntheticsApiTestPublicId, body);
             }
