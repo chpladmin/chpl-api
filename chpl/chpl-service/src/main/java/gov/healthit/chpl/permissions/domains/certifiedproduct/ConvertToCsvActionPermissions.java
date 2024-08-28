@@ -4,7 +4,6 @@ import org.apache.commons.collections4.MapUtils;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.permissions.domains.ActionPermissions;
 import gov.healthit.chpl.util.CertificationStatusUtil;
 
@@ -27,7 +26,7 @@ public class ConvertToCsvActionPermissions extends ActionPermissions {
             return isListingNotRetired(listing);
         } else if (getResourcePermissions().isUserRoleAcbAdmin()) {
             Long acbId = MapUtils.getLong(listing.getCertifyingBody(), CertifiedProductSearchDetails.ACB_ID_KEY);
-            return isAcbValidForCurrentUser(acbId) && isListingInEditableStatus(listing);
+            return isAcbValidForCurrentUser(acbId) && isListingNotRetired(listing);
         } else {
             return false;
         }
@@ -35,11 +34,5 @@ public class ConvertToCsvActionPermissions extends ActionPermissions {
 
     private boolean isListingNotRetired(CertifiedProductSearchDetails listing) {
         return CertificationStatusUtil.isNotRetired(listing);
-    }
-
-    private boolean isListingInEditableStatus(CertifiedProductSearchDetails listing) {
-        return CertificationStatusUtil.isNotRetired(listing)
-                && !listing.getCurrentStatus().getStatus().getName().equals(CertificationStatusType.SuspendedByOnc.getName())
-                && !listing.getCurrentStatus().getStatus().getName().equals(CertificationStatusType.TerminatedByOnc.getName());
     }
 }
