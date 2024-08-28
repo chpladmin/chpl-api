@@ -11,7 +11,7 @@
 					"listen": "test",
 					"script": {
 						"exec": [
-							"pm.test(\"/report-data/hti-1-criteria-migration-report end point returns 200 status and response body should not be empty\", function () {\r",
+							"pm.test(\"/report-data/hti-1-criteria-migration-report endpoint returns 200 status and response body should not be empty\", function () {\r",
 							"    pm.response.to.have.status(200);\r",
 							"    var jsonData = pm.response.json();\r",
 							"    pm.expect(jsonData.response).not.eq(null);\r",
@@ -49,6 +49,384 @@
 					]
 				},
 				"description": "GET /report-data/hti-1-criteria-migration-report - 200 status and response body for anonymous users"
+			},
+			"response": []
+		},
+		{
+			"name": "GET /report-data/unique-developer-count - 200 status and count in response",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = pm.response.json();\r",
+							"pm.test(\"/report-data/unique-developer-count endpoint should return 200 status in response\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							" });\r",
+							"\r",
+							" pm.test(\"/report-data/unique-developer-count should include count in response\", function () {\r",
+							"    pm.expect(pm.response.text()).to.include(\"count\");\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "API-Key",
+						"value": "{{apiKey}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/rest/report-data/unique-developer-count",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"rest",
+						"report-data",
+						"unique-developer-count"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET /report-data/developers-with-withdrawn-listings-by-acb - 200 status and response fields validation",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const developerSchema =\r",
+							"[\r",
+							"  {\r",
+							"    \"id\": 0,\r",
+							"    \"name\": \"string\",\r",
+							"    \"status\": {\r",
+							"      \"id\": 0,\r",
+							"      \"name\": \"string\"\r",
+							"    }\r",
+							"  }\r",
+							"]\r",
+							"var jsonResponse = pm.response.json();\r",
+							"pm.test('developer schema for /report-data/developers-with-withdrawn-listings-by-acb is valid', function() {\r",
+							"  pm.expect(tv4.validate(jsonResponse, developerSchema)).to.be.true;  \r",
+							"});\r",
+							"\r",
+							"pm.test(\"/report-data/developers-with-withdrawn-listings-by-acb should include developer name and acbsForWithdrawnListings in response and return 200 status\", function () {\r",
+							"    pm.expect(pm.response.text()).to.include(\"name\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"acbsForWithdrawnListings\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "API-Key",
+						"value": "{{apiKey}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/rest/report-data/developers-with-withdrawn-listings-by-acb",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"rest",
+						"report-data",
+						"developers-with-withdrawn-listings-by-acb"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET /report-data/developers-with-suspended-listings-by-acb - 200 status and response fields validation",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const developerSchema =\r",
+							"[\r",
+							"  {\r",
+							"    \"id\": 0,\r",
+							"    \"name\": \"string\",\r",
+							"    \"status\": {\r",
+							"      \"id\": 0,\r",
+							"      \"name\": \"string\"\r",
+							"    }\r",
+							"  }\r",
+							"]\r",
+							"var jsonResponse = pm.response.json();\r",
+							"pm.test('developer schema for /report-data/developers-with-suspended-listings-by-acb is valid', function() {\r",
+							"  pm.expect(tv4.validate(jsonResponse, developerSchema)).to.be.true;  \r",
+							"});\r",
+							"\r",
+							"pm.test(\"/report-data/developers-with-suspended-listings-by-acb should include developer name and acbsForSuspendedListings in response and return 200 status\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"    pm.expect(pm.response.text()).to.include(\"name\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"acbsForSuspendedListings\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "API-Key",
+						"value": "{{apiKey}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/rest/report-data/developers-with-suspended-listings-by-acb",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"rest",
+						"report-data",
+						"developers-with-suspended-listings-by-acb"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET /report-data/developers-with-active-listings-by-acb - 200 status and response fields validation",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const developerSchema =\r",
+							"[\r",
+							"  {\r",
+							"    \"id\": 0,\r",
+							"    \"name\": \"string\",\r",
+							"    \"status\": {\r",
+							"      \"id\": 0,\r",
+							"      \"name\": \"string\"\r",
+							"    }\r",
+							"  }\r",
+							"]\r",
+							"var jsonResponse = pm.response.json();\r",
+							"pm.test('developer schema for /report-data/developers-with-active-listings-by-acb is valid', function() {\r",
+							"  pm.expect(tv4.validate(jsonResponse, developerSchema)).to.be.true;  \r",
+							"});\r",
+							"\r",
+							"pm.test(\"/report-data/developers-with-active-listings-by-acb should include developer name and acbsForActiveListings in response and return 200 status\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"    pm.expect(pm.response.text()).to.include(\"name\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"acbsForActiveListings\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "API-Key",
+						"value": "{{apiKey}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/rest/report-data/developers-with-active-listings-by-acb",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"rest",
+						"report-data",
+						"developers-with-active-listings-by-acb"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET /report-data/developer-count-with-withdrawn-listings-by-acb - 200 status and response fields validation",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"/report-data/developer-count-with-withdrawn-listings-by-acb should include developer count by ACB Name in response and return 200 status\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"    pm.expect(pm.response.text()).to.include(\"count\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"acbName\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "API-Key",
+						"value": "{{apiKey}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/rest/report-data/developer-count-with-withdrawn-listings-by-acb",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"rest",
+						"report-data",
+						"developer-count-with-withdrawn-listings-by-acb"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET /report-data/developer-count-with-suspended-listings-by-acb - 200 status and response fields validation",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"/report-data/developer-count-with-suspended-listings-by-acb should include developer count by ACB Name in response and return 200 status\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"    pm.expect(pm.response.text()).to.include(\"count\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"acbName\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "API-Key",
+						"value": "{{apiKey}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/rest/report-data/developer-count-with-suspended-listings-by-acb",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"rest",
+						"report-data",
+						"developer-count-with-suspended-listings-by-acb"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET /report-data/developer-count-with-active-listings-by-acb - 200 status and response fields validation",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"/report-data/developer-count-with-active-listings-by-acb should include developer count by ACB Name in response and return 200 status\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"    pm.expect(pm.response.text()).to.include(\"count\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"acbName\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "API-Key",
+						"value": "{{apiKey}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/rest/report-data/developer-count-with-active-listings-by-acb",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"rest",
+						"report-data",
+						"developer-count-with-active-listings-by-acb"
+					]
+				}
 			},
 			"response": []
 		}
