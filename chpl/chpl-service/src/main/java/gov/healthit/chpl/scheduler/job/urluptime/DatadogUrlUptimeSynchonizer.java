@@ -6,8 +6,12 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.TimeZone;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Component;
@@ -135,6 +139,7 @@ public class DatadogUrlUptimeSynchonizer {
     private void addMissingUrlMonitors(List<UrlUptimeMonitor> existing, List<UrlUptimeMonitor> expected) {
         expected.stream()
                 .filter(uum -> !contains(existing, uum))
+                // Need to remove duplicates here
                 .forEach(urlMonitor -> addUrlUptimeMonitor(urlMonitor));
     }
 
@@ -163,8 +168,14 @@ public class DatadogUrlUptimeSynchonizer {
                                         .id(devId)
                                         .build())
                                 .build()))
+                .filter(distinctByKey(o -> o.getUrl() + " | " + o.getDeveloper().getId()))
                 .toList();
 
+    }
+
+    public static <T> Predicate<T> distinctByKey(Function<? super T, Object> keyExtractor) {
+        Map<Object, Boolean> seen = new ConcurrentHashMap<Object, Boolean>();
+        return t -> seen.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
     }
 
     private void addUrlUptimeMonitor(UrlUptimeMonitor urlUptimeMonitor) {
@@ -215,4 +226,6 @@ public class DatadogUrlUptimeSynchonizer {
         return LocalDateTime.ofInstant(Instant.ofEpochMilli(ts),
                 TimeZone.getDefault().toZoneId());
     }
+
+
 }
