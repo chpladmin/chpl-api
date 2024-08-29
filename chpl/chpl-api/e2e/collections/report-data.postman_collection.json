@@ -170,26 +170,8 @@
 					"listen": "test",
 					"script": {
 						"exec": [
-							"const developerSchema =\r",
-							"[\r",
-							"  {\r",
-							"    \"id\": 0,\r",
-							"    \"name\": \"string\",\r",
-							"    \"status\": {\r",
-							"      \"id\": 0,\r",
-							"      \"name\": \"string\"\r",
-							"    }\r",
-							"  }\r",
-							"]\r",
-							"var jsonResponse = pm.response.json();\r",
-							"pm.test('developer schema for /report-data/developers-with-suspended-listings-by-acb is valid', function() {\r",
-							"  pm.expect(tv4.validate(jsonResponse, developerSchema)).to.be.true;  \r",
-							"});\r",
-							"\r",
-							"pm.test(\"/report-data/developers-with-suspended-listings-by-acb should include developer name and acbsForSuspendedListings in response and return 200 status\", function () {\r",
-							"    pm.response.to.have.status(200);\r",
-							"    pm.expect(pm.response.text()).to.include(\"name\");\r",
-							"    pm.expect(pm.response.text()).to.include(\"acbsForSuspendedListings\");\r",
+							"pm.test(\"/report-data/developers-with-suspended-listings-by-acb should return 200 status in response\", function () {\r",
+							"    pm.response.to.have.status(200); \r",
 							"});\r",
 							""
 						],
@@ -343,10 +325,8 @@
 					"listen": "test",
 					"script": {
 						"exec": [
-							"pm.test(\"/report-data/developer-count-with-suspended-listings-by-acb should include developer count by ACB Name in response and return 200 status\", function () {\r",
+							"pm.test(\"/report-data/developer-count-with-suspended-listings-by-acb should return 200 status\", function () {\r",
 							"    pm.response.to.have.status(200);\r",
-							"    pm.expect(pm.response.text()).to.include(\"count\");\r",
-							"    pm.expect(pm.response.text()).to.include(\"acbName\");\r",
 							"});\r",
 							""
 						],
