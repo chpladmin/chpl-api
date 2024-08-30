@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import gov.healthit.chpl.report.ReportDataManager;
 import gov.healthit.chpl.report.criteriamigrationreport.CriteriaMigrationReport;
+import gov.healthit.chpl.report.surveillance.CapCounts;
 import gov.healthit.chpl.report.surveillance.NonconformityCounts;
 import gov.healthit.chpl.report.surveillance.SurveillanceActivityCounts;
 import gov.healthit.chpl.scheduler.job.summarystatistics.data.CertificationBodyStatistic;
@@ -121,6 +122,36 @@ public class ReportDataController {
     @RequestMapping(value = "/open-non-conformity-listings", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<ListingSearchResult> getListingsWithOpenNonconformity() {
         return reportDataManager.getListingsWithOpenNonconformity();
+    }
+
+    @Operation(summary = "Retrieves the data used to generate the CAP Counts report.",
+            description = "Retrieves the data used to generate the CAP Counts report.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
+    @RequestMapping(value = "/cap-counts", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public @ResponseBody CapCounts getCapCounts() {
+        return reportDataManager.getCapCounts();
+    }
+
+    @Operation(summary = "Retrieves the data used to generate the Open CAP Counts by ACB report.",
+            description = "Retrieves the data used to generate the Open CAP Counts by ACB report.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
+    @RequestMapping(value = "/open-cap-counts-by-acb", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public @ResponseBody List<CertificationBodyStatistic> getOpenCapCountsByAcb() {
+        return reportDataManager.getOpenCapCountsByAcb();
+    }
+
+    @Operation(summary = "Retrieves the data used to generate the Closed CAP Counts by ACB report.",
+            description = "Retrieves the data used to generate the Closed CAP Counts by ACB report.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
+    @RequestMapping(value = "/Closed-cap-counts-by-acb", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public @ResponseBody List<CertificationBodyStatistic> getClosedCapCountsByAcb() {
+        return reportDataManager.getClosedCapCountsByAcb();
     }
 
 }

@@ -100,6 +100,25 @@ public class SurveillanceReportsService {
         }
     }
 
+    public CapCounts getCapCounts() {
+        StatisticsSnapshot stats = getStatistics();
+        Long openCaps = stats.getNonConfCAPStatusOpen().stream().collect(Collectors.summingLong(s -> s.getCount()));
+        Long closedCaps = stats.getNonConfCAPStatusClosed().stream().collect(Collectors.summingLong(s -> s.getCount()));
+        return CapCounts.builder()
+                .totalCaps(openCaps + closedCaps)
+                .openCaps(openCaps)
+                .closedCaps(closedCaps)
+                .build();
+    }
+
+    public List<CertificationBodyStatistic> getOpenCapCountsByAcb() {
+        return getStatistics().getNonConfCAPStatusOpen();
+    }
+
+    public List<CertificationBodyStatistic> getClosedCapCountsByAcb() {
+        return getStatistics().getNonConfCAPStatusClosed();
+    }
+
     private StatisticsSnapshot getStatistics() {
         try {
             SummaryStatisticsEntity summaryStatistics = summaryStatisticsDAO.getCurrentSummaryStatistics();

@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.report.criteriamigrationreport.CriteriaMigrationReport;
 import gov.healthit.chpl.report.criteriamigrationreport.CriteriaMigrationReportService;
+import gov.healthit.chpl.report.surveillance.CapCounts;
 import gov.healthit.chpl.report.surveillance.NonconformityCounts;
 import gov.healthit.chpl.report.surveillance.SurveillanceActivityCounts;
 import gov.healthit.chpl.report.surveillance.SurveillanceReportsService;
@@ -53,6 +54,18 @@ public class ReportDataManager {
 
     public List<ListingSearchResult> getListingsWithOpenNonconformity() {
         return surveillanceReportsService.getListingsWithOpenNonconformity();
+    }
+
+    public List<CertificationBodyStatistic> getOpenCapCountsByAcb() {
+        return surveillanceReportsService.getOpenCapCountsByAcb();
+    }
+
+    public List<CertificationBodyStatistic> getClosedCapCountsByAcb() {
+        return surveillanceReportsService.getClosedCapCountsByAcb();
+    }
+
+    public CapCounts getCapCounts() {
+        return surveillanceReportsService.getCapCounts();
     }
 }
 
