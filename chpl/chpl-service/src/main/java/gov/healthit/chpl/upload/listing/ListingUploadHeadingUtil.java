@@ -40,7 +40,7 @@ public class ListingUploadHeadingUtil {
     public List<String> getHeadingOptions(String heading) {
         if (getHeading(heading) != null) {
             return getHeading(heading).colNames;
-        } else if (criteriaService.getAllowedCriterionHeadingsForNewListing().contains(heading)) {
+        } else if (isCriterionHeading(heading)) {
             //TODO  This really should return the list of other headings that could be used for a criterion,
             //but I don't have a good way of mapping from one heading to all the other headings that could be used.
             //The result is if someone used a column 170_315_A_1__C and 170_315_A_1_C (one heading has one underscore
@@ -51,12 +51,11 @@ public class ListingUploadHeadingUtil {
     }
 
     public boolean isValidHeading(String heading) {
-        return getHeading(heading) != null
-                || criteriaService.getAllowedCriterionHeadingsForNewListing().contains(heading);
+        return getHeading(heading) != null || isCriterionHeading(heading);
     }
 
-    public boolean isCriterionHeading(String headingVal) {
-        if (criteriaService.getAllowedCriterionHeadingsForNewListing().contains(headingVal)) {
+    public boolean isCriterionHeading(String heading) {
+        if (criteriaService.getAllowedCriterionHeadingsForNewListing().contains(heading.toUpperCase())) {
             return true;
         }
         return false;

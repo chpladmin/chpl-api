@@ -130,7 +130,9 @@ public class CertificationCriterionService {
         if (StringUtils.isEmpty(delimitedHeadings)) {
             return new ArrayList<String>();
         }
-        return Stream.of(delimitedHeadings.split(HEADING_DELIMITER)).collect(Collectors.toList());
+        return Stream.of(delimitedHeadings.split(HEADING_DELIMITER))
+                .map(heading -> heading.toUpperCase())
+                .collect(Collectors.toList());
     }
 
     public List<String> getCriterionHeadings(Long criterionId) {
@@ -139,7 +141,7 @@ public class CertificationCriterionService {
 
     public List<String> getEquivalentCriterionHeadings(String criterionHeading) {
         Long keyForCriterionHeading = criterionHeadingsByIdMap.keySet().stream()
-            .filter(key -> criterionHeadingsByIdMap.get(key).contains(criterionHeading))
+            .filter(key -> criterionHeadingsByIdMap.get(key).contains(criterionHeading.toUpperCase()))
             .findAny().orElse(null);
         if (keyForCriterionHeading != null) {
             return List.of();
