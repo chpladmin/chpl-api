@@ -136,7 +136,7 @@ public class ProductManager extends SecuredManager {
         product.setOwner(Developer.builder().id(developerId).build());
         Product createdProduct = null;
         try {
-            createdProduct = createProduct(product);
+            createdProduct = createProduct(product, null);
         } catch (Exception ex) {
             LOGGER.error("Could not create product.", ex);
             throw new EntityCreationException(ex);
@@ -234,7 +234,7 @@ public class ProductManager extends SecuredManager {
             beforeProducts.add(productDao.getById(productId));
         }
 
-        Product createdProduct = createProduct(toCreate);
+        Product createdProduct = createProduct(toCreate, productIdsToMerge);
         //must set the ID otherwise the "toCreate.id" passed into the shared store is null
         toCreate.setId(createdProduct.getId());
 
@@ -274,7 +274,7 @@ public class ProductManager extends SecuredManager {
     public Product split(Product oldProduct, Product productToCreate, String newProductCode, List<ProductVersionDTO> newProductVersions)
             throws JsonProcessingException, ValidationException, EntityRetrievalException, EntityCreationException, ActivityException {
 
-        Product createdProduct = createProduct(productToCreate);
+        Product createdProduct = createProduct(productToCreate, null);
         //must set the ID otherwise the "productToCreate.id" passed into the shared store is null
         productToCreate.setId(createdProduct.getId());
 
@@ -360,7 +360,7 @@ public class ProductManager extends SecuredManager {
             return existingProduct;
         }
         runExistingProductValidations(existingProduct, isOwnerJoiningAnotherDeveloper);
-        runNewProductValidations(product, isOwnerJoiningAnotherDeveloper);
+        runNewProductValidations(product, isOwnerJoiningAnotherDeveloper, null);
 
         productDao.update(product);
         Product productAfter = productDao.getById(product.getId());
@@ -369,9 +369,9 @@ public class ProductManager extends SecuredManager {
         return productAfter;
     }
 
-    private Product createProduct(Product product) throws ValidationException, EntityCreationException, EntityRetrievalException, ActivityException {
+    private Product createProduct(Product product, List<Long> productsBeingMerged) throws ValidationException, EntityCreationException, EntityRetrievalException, ActivityException {
         normalizeProduct(product);
-        runNewProductValidations(product, false);
+        runNewProductValidations(product, false, productsBeingMerged);
         Long productId = productDao.create(product.getOwner().getId(), product);
         Product createdProduct = productDao.getById(productId);
         String activityMsg = "Product " + product.getName() + " was created.";
@@ -397,23 +397,24 @@ public class ProductManager extends SecuredManager {
         product.setReportFileLocation(StringUtils.normalizeSpace(product.getReportFileLocation()));
     }
 
-    public void runNewProductValidations(Product product, boolean isOwnerJoiningAnotherDeveloper) throws ValidationException {
+    private void runNewProductValidations(Product product, boolean isOwnerJoiningAnotherDeveloper,
+            List<Long> productsBeingMerged) throws ValidationException {
         List<ValidationRule<ProductValidationContext>> rules = new ArrayList<ValidationRule<ProductValidationContext>>();
         rules.add(productValidationFactory.getRule(ProductValidationFactory.NAME));
         rules.add(productValidationFactory.getRule(ProductValidationFactory.OWNER));
         rules.add(productValidationFactory.getRule(ProductValidationFactory.OWNER_HISTORY));
-        Set<String> validationErrors = runValidations(rules, product, isOwnerJoiningAnotherDeveloper);
+        Set<String> validationErrors = runValidations(rules, product, isOwnerJoiningAnotherDeveloper, productsBeingMerged);
         if (!CollectionUtils.isEmpty(validationErrors)) {
             LOGGER.error("New product validation errors: \n" + validationErrors);
             throw new ValidationException(validationErrors);
         }
     }
 
-    public void runExistingProductValidations(Product product, boolean isOwnerJoiningAnotherDeveloper) throws ValidationException {
+    private void runExistingProductValidations(Product product, boolean isOwnerJoiningAnotherDeveloper) throws ValidationException {
         List<ValidationRule<ProductValidationContext>> rules = new ArrayList<ValidationRule<ProductValidationContext>>();
         rules.add(productValidationFactory.getRule(ProductValidationFactory.NAME));
         rules.add(productValidationFactory.getRule(ProductValidationFactory.OWNER));
-        Set<String> validationErrors = runValidations(rules, product, isOwnerJoiningAnotherDeveloper);
+        Set<String> validationErrors = runValidations(rules, product, isOwnerJoiningAnotherDeveloper, null);
         if (!CollectionUtils.isEmpty(validationErrors)) {
             LOGGER.error("Existing product validation errors: \n" + validationErrors);
             throw new ValidationException(validationErrors);
@@ -421,10 +422,12 @@ public class ProductManager extends SecuredManager {
     }
 
     private Set<String> runValidations(List<ValidationRule<ProductValidationContext>> rules,
-            Product product, boolean isOwnerJoiningAnotherDeveloper) {
+            Product product, boolean isOwnerJoiningAnotherDeveloper,
+            List<Long> productsBeingMerged) {
         Set<String> errorMessages = new HashSet<String>();
         ProductValidationContext context
-            = new ProductValidationContext(product, isOwnerJoiningAnotherDeveloper, msgUtil);
+            = new ProductValidationContext(productDao, product, product.getOwner().getId(), isOwnerJoiningAnotherDeveloper,
+                    productsBeingMerged, msgUtil);
 
         for (ValidationRule<ProductValidationContext> rule : rules) {
             if (!rule.isValid(context)) {

@@ -51,8 +51,8 @@ public class SurveillanceStatisticsDAO extends BaseDAOImpl {
                 + "FROM SurveillanceEntity surv "
                 + "JOIN surv.certifiedProduct cp "
                 + "WHERE cp.certificationEditionId NOT IN (:retiredEditions) "
-                + "AND surv.startDate <= CURRENT_DATE() "
-                + "AND (surv.endDate IS NULL OR surv.endDate >= CURRENT_DATE()) ";
+                + "AND surv.startDate <= local_date "
+                + "AND (surv.endDate IS NULL OR surv.endDate >= local_date) ";
         if (endDate == null) {
             hql += " AND surv.deleted = false";
         } else {
@@ -73,8 +73,8 @@ public class SurveillanceStatisticsDAO extends BaseDAOImpl {
                 + "FROM SurveillanceEntity surv "
                 + "JOIN surv.certifiedProduct cp "
                 + "WHERE cp.certificationEditionId NOT IN (:retiredEditions) "
-                + "AND surv.startDate <= CURRENT_DATE() "
-                + "AND (surv.endDate IS NOT NULL AND surv.endDate <= CURRENT_DATE()) ";
+                + "AND surv.startDate <= local_date "
+                + "AND (surv.endDate IS NOT NULL AND surv.endDate <= local_date) ";
         if (endDate == null) {
             hql += " AND surv.deleted = false";
         } else {
@@ -203,8 +203,8 @@ public class SurveillanceStatisticsDAO extends BaseDAOImpl {
                 + "FROM CertifiedProductEntity cp, "
                 + "CertificationBodyEntity cb, "
                 + "SurveillanceEntity s "
-                + "WHERE s.startDate <= CURRENT_DATE() "
-                + "AND (s.endDate IS NULL OR s.endDate >= CURRENT_DATE()) "
+                + "WHERE s.startDate <= local_date "
+                + "AND (s.endDate IS NULL OR s.endDate >= local_date) "
                 + "AND cp.certificationBodyId = cb.id "
                 + "AND cp.certificationEditionId NOT IN (:retiredEditions) "
                 + "AND cp.id = s.certifiedProductId ";
