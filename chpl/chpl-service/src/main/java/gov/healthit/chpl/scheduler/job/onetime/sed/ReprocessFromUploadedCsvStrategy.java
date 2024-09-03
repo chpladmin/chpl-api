@@ -5,7 +5,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -56,7 +55,7 @@ public class ReprocessFromUploadedCsvStrategy {
                     Optional<TestTask> uploadedTestTask = findTestTask(currentTestTask, uploadedListing.getSed().getTestTasks());
                     if (uploadedTestTask.isPresent()) {
                         //if we are still processing, then this confirmed test task and this uploaded test task have the same values
-                        //TODO: We did not check associated criteria or participants - does that matter???
+                        //and there are no other test tasks with these values
                         LOGGER.info("Setting friendly ID to " + uploadedTestTask.get().getFriendlyId() + " for test task " + currentTestTask.getId());
                         currentTestTask.setFriendlyId(uploadedTestTask.get().getFriendlyId());
                         numTasksUpdated++;
@@ -97,6 +96,8 @@ public class ReprocessFromUploadedCsvStrategy {
                 if (!hasAnyDuplicates(currentParticipant, allCurrentParticipants)) {
                     Optional<TestParticipant> uploadedTestParticipant = findTestParticipant(currentParticipant, uploadedTestParticipants);
                     if (uploadedTestParticipant.isPresent()) {
+                        //if we are still processing, then this confirmed participant and this uploaded participant have the same values
+                        //and there are no other participants with these values
                         LOGGER.info("Setting friendly ID to " + uploadedTestParticipant.get().getFriendlyId() + " for test participant " + currentParticipant.getId());
                         currentParticipant.setFriendlyId(uploadedTestParticipant.get().getFriendlyId());
                         numParticipantsUpdated++;
@@ -146,24 +147,6 @@ public class ReprocessFromUploadedCsvStrategy {
             listing.getWarningMessages().stream()
                 .forEach(msg -> LOGGER.info("\t" + msg));
         }
-    }
-
-    private List<TestTask> subtractTestTasks(Collection<TestTask> tasksFromA, Collection<TestTask> tasksFromB) {
-        Predicate<TestTask> notInListB = taskFromA -> !tasksFromB.stream()
-                .anyMatch(taskFromB -> testTaskMatches(taskFromA, taskFromB));
-
-        return tasksFromA.stream()
-                .filter(notInListB)
-                .collect(Collectors.toList());
-    }
-
-    private List<TestParticipant> subtractTestParticipants(Collection<TestParticipant> participantsFromA, Collection<TestParticipant> participantsFromB) {
-        Predicate<TestParticipant> notInListB = participantFromA -> !participantsFromB.stream()
-                .anyMatch(participantFromB -> testParticipantMatches(participantFromA, participantFromB));
-
-        return participantsFromA.stream()
-                .filter(notInListB)
-                .collect(Collectors.toList());
     }
 
     private boolean hasAnyDuplicates(TestTask task, List<TestTask> tasksToSearch) {

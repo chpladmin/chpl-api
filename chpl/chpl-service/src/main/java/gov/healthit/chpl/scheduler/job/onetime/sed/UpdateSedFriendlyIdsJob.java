@@ -33,7 +33,7 @@ import lombok.extern.log4j.Log4j2;
 @DisallowConcurrentExecution
 @Log4j2(topic = "updatedSedFriendlyIdsJobLogger")
 public class UpdateSedFriendlyIdsJob implements Job {
-    private static final String FAILURE_TO_UPDATE_MSG = "Listing %s participants could not be updated by any strategy.";
+    private static final String FAILURE_TO_UPDATE_MSG = "Listing % SED friendly IDs could not be updated.";
     private static final long FIRST_LISTING_ID_CONFIRMED_WITH_FLEXIBLE_UPLOAD = 10912;
 
     @Autowired
@@ -55,7 +55,7 @@ public class UpdateSedFriendlyIdsJob implements Job {
     private SharedListingStoreProvider sharedStoreProvider;
 
     @Autowired
-    private ParticipantFriendlyIdReplacementDao participantReplacementDao;
+    private SedFriendlyIdReplacementDao sedFriendlyIdReplacementDao;
 
     private CertificationCriterion g3 = null;
 
@@ -75,12 +75,8 @@ public class UpdateSedFriendlyIdsJob implements Job {
 
             LOGGER.info("Found " + activeListingsWithG3ConfirmedWithFlexibleUpload.size() + " listing uploads attesting to 170.315 (g)(3).");
 
-            //TODO: Create "before" CSV with listing ID, developer, product, version, acb, status, # test tasks, # test participants without friendly ID
-
             activeListingsWithG3ConfirmedWithFlexibleUpload.stream()
                 .forEach(listing -> attemptToSaveFriendlyIds(listing));
-
-            //TODO: Create "after" CSV with listing ID, developer, product, version, acb, status, # test tasks, # test participants without friendly ID
 
         } catch (Exception ex) {
             LOGGER.fatal("Unexpected exception was caught. All listings may not have been processed.", ex);
@@ -106,9 +102,10 @@ public class UpdateSedFriendlyIdsJob implements Job {
             } else {
                 //this replacement should execute as a single transaction in case any part of it fails
                 try {
-                    participantReplacementDao.replaceParticipantFriendlyIds(listingUpdateResult.getUpdatedListing());
+                    sedFriendlyIdReplacementDao.updateSedFriendlyIds(listingUpdateResult.getUpdatedListing());
+                    LOGGER.info("Completed updating SED friendly IDs for listing " + listingUpdateResult.getUpdatedListing().getId());
                 } catch (Exception ex) {
-                    LOGGER.error("Error replacing participants for listing " + listingUpdateResult.getUpdatedListing().getId(), ex);
+                    LOGGER.error("Error updating SED friendly IDs for listing " + listingUpdateResult.getUpdatedListing().getId(), ex);
                     LOGGER.error(String.format(FAILURE_TO_UPDATE_MSG, listingUpdateResult.getOriginalListing().getId()));
                 } finally {
                     sharedStoreProvider.remove(listingUpdateResult.getUpdatedListing().getId());
