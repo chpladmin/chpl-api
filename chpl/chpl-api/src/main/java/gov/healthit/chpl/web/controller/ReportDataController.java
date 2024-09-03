@@ -149,7 +149,7 @@ public class ReportDataController {
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
-    @RequestMapping(value = "/Closed-cap-counts-by-acb", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    @RequestMapping(value = "/closed-cap-counts-by-acb", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<CertificationBodyStatistic> getClosedCapCountsByAcb() {
         return reportDataManager.getClosedCapCountsByAcb();
     }
