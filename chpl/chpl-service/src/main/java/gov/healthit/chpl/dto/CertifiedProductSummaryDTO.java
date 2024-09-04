@@ -42,7 +42,6 @@ public class CertifiedProductSummaryDTO implements Serializable {
     private String mandatoryDisclosures;
     private Date creationDate;
     private Date lastModifiedDate;
-    private String lastModifiedUser;
     private String rwtPlansUrl;
     private LocalDate rwtPlansCheckDate;
     private String rwtResultsUrl;
@@ -82,7 +81,6 @@ public class CertifiedProductSummaryDTO implements Serializable {
         this.mandatoryDisclosures = entity.getMandatoryDisclosures();
         this.creationDate = entity.getCreationDate();
         this.lastModifiedDate = entity.getLastModifiedDate();
-        this.lastModifiedUser = entity.getLastModifiedUser().toString();
         this.rwtPlansUrl = entity.getRwtPlansUrl();
         this.rwtPlansCheckDate = entity.getRwtPlansCheckDate();
         this.rwtResultsUrl = entity.getRwtResultsUrl();
