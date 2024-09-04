@@ -101,7 +101,7 @@ public class UnsupportedCharacterReviewer implements Reviewer {
                     if (task != null) {
                         // not checking anything converted to a number
                         addListingWarningIfNotValid(listing, task.getFriendlyId(),
-                                "Test Task Unique ID '" + task.getFriendlyId() + "'");
+                                "Task ID '" + task.getFriendlyId() + "'");
                         addListingWarningIfNotValid(listing, task.getDescription(),
                                 "Test Task Description '" + task.getDescription() + "'");
                         addListingWarningIfNotValid(listing, task.getTaskRatingScale(),
@@ -113,7 +113,7 @@ public class UnsupportedCharacterReviewer implements Reviewer {
                                     // not checking age range or education level because they have to map
                                     // to existing values. also not checking anything converted to a number
                                     addListingWarningIfNotValid(listing, participant.getFriendlyId(),
-                                            "Participant Unique ID '" + participant.getFriendlyId() + "'");
+                                            "Participant ID '" + participant.getFriendlyId() + "'");
                                     addListingWarningIfNotValid(listing, participant.getAssistiveTechnologyNeeds(),
                                             "Participant Assistive Technology Needs '"
                                                     + participant.getAssistiveTechnologyNeeds() + "'");
