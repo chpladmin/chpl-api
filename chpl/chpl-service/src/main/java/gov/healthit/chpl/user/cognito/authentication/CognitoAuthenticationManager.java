@@ -40,7 +40,7 @@ public class CognitoAuthenticationManager {
         this.errorMessageUtil = errorMessageUtil;
     }
 
-    public CognitoAuthenticationResponse authenticate(LoginCredentials credentials) {
+    public CognitoAuthenticationResponse authenticate(LoginCredentials credentials) throws CognitoAuthenticationChallengeException{
 
         try {
             AuthenticationResultType authResult = cognitoApiWrapper.authenticate(credentials);
@@ -56,8 +56,8 @@ public class CognitoAuthenticationManager {
                     .refreshToken(authResult.refreshToken())
                     .user(user)
                     .build();
-        } catch (UserRetrievalException | CognitoAuthenticationChallengeException | JWTValidationException | MultipleUserAccountsException e) {
-            LOGGER.error("Could not decode JWT Token");
+        } catch (UserRetrievalException | JWTValidationException | MultipleUserAccountsException e) {
+            LOGGER.error(e.getMessage(), e);
             return null;
         }
     }
