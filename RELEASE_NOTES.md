@@ -1,5 +1,18 @@
 # Release Notes
 
+## Version 46.2.0
+_3 September 2024_
+
+### Features
+* Detect duplicate version names per product when editing versions
+* Add validation for duplicate product names on product edit
+
+### Bug Fixes
+* Use correct HQL when removing criteria-SVAP association
+* Use updated HQL syntax for LocalDateTime comparison for Announcements
+
+---
+
 ## Version 46.1.0
 _19 August 2024_
 
