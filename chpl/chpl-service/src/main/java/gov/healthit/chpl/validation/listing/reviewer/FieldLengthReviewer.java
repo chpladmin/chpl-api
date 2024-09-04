@@ -161,7 +161,6 @@ public class FieldLengthReviewer implements Reviewer {
         if (!CollectionUtils.isEmpty(listing.getSed().getTestTasks())) {
             listing.getSed().getTestTasks().stream()
                     .forEach(testTask -> {
-                        checkFieldLength(listing, testTask.getFriendlyId(), "taskIdentifier");
                         checkFieldLength(listing, testTask.getTaskRatingScale(), "taskRatingScale");
                     });
         }
@@ -173,7 +172,6 @@ public class FieldLengthReviewer implements Reviewer {
                     .filter(testTask -> !CollectionUtils.isEmpty(testTask.getTestParticipants()))
                     .flatMap(testTask -> testTask.getTestParticipants().stream())
                     .forEach(testParticipant -> {
-                        checkFieldLength(listing, testParticipant.getFriendlyId(), "participantIdentifier");
                         checkFieldLength(listing, testParticipant.getGender(), "participantGender");
                         checkFieldLength(listing, testParticipant.getOccupation(), "participantOccupation");
                         checkFieldLength(listing, testParticipant.getAssistiveTechnologyNeeds(), "participantAssistiveTechnology");

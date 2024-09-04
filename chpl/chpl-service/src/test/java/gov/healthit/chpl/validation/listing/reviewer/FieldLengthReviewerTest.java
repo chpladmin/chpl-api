@@ -860,7 +860,7 @@ public class FieldLengthReviewerTest {
     }
 
     @Test
-    public void review_longTestTaskUniqueId_hasError() {
+    public void review_longTestTaskFriendlyId_noError() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .sed(CertifiedProductSed.builder().build())
                 .build();
@@ -868,8 +868,7 @@ public class FieldLengthReviewerTest {
                 .friendlyId(createStringLongerThan(20, "A"))
                 .build());
         reviewer.review(listing);
-        assertEquals(1, listing.getErrorMessages().size());
-        assertTrue(listing.getErrorMessages().contains(String.format(FIELD_TOO_LONG, "20", "Task Identifier", "placeholder")));
+        assertEquals(0, listing.getErrorMessages().size());
     }
 
     @Test
@@ -937,7 +936,7 @@ public class FieldLengthReviewerTest {
     }
 
     @Test
-    public void review_longTestParticipantUniqueId_hasError() {
+    public void review_longTestParticipantFriendlyId_noError() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .sed(CertifiedProductSed.builder().build())
                 .build();
@@ -946,8 +945,7 @@ public class FieldLengthReviewerTest {
                 .friendlyId(createStringLongerThan(20, "A"))
                 .build()).collect(Collectors.toCollection(LinkedHashSet::new)));
         reviewer.review(listing);
-        assertEquals(1, listing.getErrorMessages().size());
-        assertTrue(listing.getErrorMessages().contains(String.format(FIELD_TOO_LONG, "20", "Participant Identifier", "placeholder")));
+        assertEquals(0, listing.getErrorMessages().size());
     }
 
     @Test
