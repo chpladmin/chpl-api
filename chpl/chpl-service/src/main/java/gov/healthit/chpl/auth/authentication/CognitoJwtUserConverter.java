@@ -40,24 +40,31 @@ public class CognitoJwtUserConverter implements JWTUserConverter {
     public JWTAuthenticatedUser getAuthenticatedUser(String jwt) throws JWTValidationException, MultipleUserAccountsException {
         try {
             DecodedJWT decodeJwt = decodeJwt(jwt);
-            return JWTAuthenticatedUser.builder()
-                    .authenticationSystem(AuthenticationSystem.COGNITO)
-                    .authenticated(true)
-                    .cognitoId(UUID.fromString(decodeJwt.getSubject()))
-                    .subjectName(decodeJwt.getClaim("email").asString())
-                    .fullName(decodeJwt.getClaim("name").asString())
-                    .email(decodeJwt.getClaim("email").asString())
-                    .organizationIds(
-                            decodeJwt.getClaims().containsKey("custom:organizations")
-                                    ? Stream.of(decodeJwt.getClaim("custom:organizations").asString().split(","))
-                                            .map(Long::valueOf)
-                                            .toList()
-                                    : null)
-                    .authorities(decodeJwt.getClaim("cognito:groups").asList(String.class).stream()
-                            .filter(group -> !group.endsWith("-env")) //Remove environment related groups
-                            .map(group -> new SimpleGrantedAuthority(group))
-                            .collect(Collectors.toSet()))
-                    .build();
+            if (decodeJwt.getClaims().size() != 0) {
+                return JWTAuthenticatedUser.builder()
+                        .authenticationSystem(AuthenticationSystem.COGNITO)
+                        .authenticated(true)
+                        .cognitoId(UUID.fromString(decodeJwt.getSubject()))
+                        .subjectName(decodeJwt.getClaim("email").asString())
+                        .fullName(decodeJwt.getClaim("name").asString())
+                        .email(decodeJwt.getClaim("email").asString())
+                        .organizationIds(
+                                decodeJwt.getClaims().containsKey("custom:organizations")
+                                        ? Stream.of(decodeJwt.getClaim("custom:organizations").asString().split(","))
+                                                .map(Long::valueOf)
+                                                .toList()
+                                        : null)
+                        .authorities(decodeJwt.getClaim("cognito:groups").asList(String.class).stream()
+                                .filter(group -> !group.endsWith("-env")) //Remove environment related groups
+                                .map(group -> new SimpleGrantedAuthority(group))
+                                .collect(Collectors.toSet()))
+                        .build();
+            } else {
+                throw new JWTValidationException("Invalid authentication token.");
+            }
+        } catch (JWTValidationException e) {
+            throw e;
+
         } catch (Exception e) {
             return null;
         }

@@ -43,7 +43,7 @@ public class JWTConsumer {
             JwtClaims jwtClaims = jwtConsumer.processToClaims(jwt);
             return jwtClaims.getClaimsMap();
         } catch (InvalidJwtException e) {
-            LOGGER.error("Invalid JWT - " + e.getMessage());
+            LOGGER.error("Invalid JWT");
             throw e;
         }
     }
