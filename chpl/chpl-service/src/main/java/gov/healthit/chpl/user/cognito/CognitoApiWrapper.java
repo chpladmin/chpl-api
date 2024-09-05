@@ -58,6 +58,7 @@ import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminRespon
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminRespondToAuthChallengeResponse;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminSetUserPasswordRequest;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminUpdateUserAttributesRequest;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminUserGlobalSignOutRequest;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AttributeType;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AuthFlowType;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AuthenticationResultType;
@@ -230,6 +231,29 @@ public class CognitoApiWrapper {
         }
     }
 
+    public AuthenticationResultType refreshToken(String refreshToken, UUID cognitoId) {
+        Map<String, String> authParams = new LinkedHashMap<String, String>();
+        authParams.put("REFRESH_TOKEN", refreshToken);
+       authParams.put("SECRET_HASH", calculateSecretHash(cognitoId.toString()));
+
+        AdminInitiateAuthRequest authRequest = AdminInitiateAuthRequest.builder()
+                .authFlow(AuthFlowType.REFRESH_TOKEN_AUTH)
+                .userPoolId(userPoolId)
+                .clientId(clientId)
+                .authParameters(authParams)
+                .build();
+
+        try {
+            AdminInitiateAuthResponse authResult = cognitoClient.adminInitiateAuth(authRequest);
+            return authResult.authenticationResult();
+        } catch (Exception e) {
+            //This is cluttering the logs when the SSO flag is on, and the user logs in using CHPL creds
+            //We might want to uncomment it when we move to only using Cognito creds
+            //LOGGER.error("Error refreshing token", e);
+            return null;
+        }
+    }
+
     public void setUserPassword(String userName, String password) {
         AdminSetUserPasswordRequest request = AdminSetUserPasswordRequest.builder()
                 .username(userName)
@@ -293,6 +317,14 @@ public class CognitoApiWrapper {
 
         }
         return users;
+    }
+
+    public void invalidateTokensForUser(String email) {
+        AdminUserGlobalSignOutRequest request = AdminUserGlobalSignOutRequest.builder()
+                .userPoolId(userPoolId)
+                .username(email)
+                .build();
+        cognitoClient.adminUserGlobalSignOut(request);
     }
 
     @CacheEvict(value = CacheNames.COGNITO_USERS, key = "#user.cognitoId")
