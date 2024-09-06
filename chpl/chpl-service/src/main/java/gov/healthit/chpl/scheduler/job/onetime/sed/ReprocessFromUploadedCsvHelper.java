@@ -30,11 +30,11 @@ import lombok.extern.log4j.Log4j2;
 
 @Component
 @Log4j2(topic = "updatedSedFriendlyIdsJobLogger")
-public class ReprocessFromUploadedCsvStrategy {
+public class ReprocessFromUploadedCsvHelper {
     private ProcessedListingUploadManager processedListingUploadManager;
 
     @Autowired
-    public ReprocessFromUploadedCsvStrategy(ProcessedListingUploadManager processedListingUploadManager) {
+    public ReprocessFromUploadedCsvHelper(ProcessedListingUploadManager processedListingUploadManager) {
         this.processedListingUploadManager = processedListingUploadManager;
     }
 
@@ -54,11 +54,15 @@ public class ReprocessFromUploadedCsvStrategy {
                 if (!hasAnyDuplicates(currentTestTask, currentListing.getSed().getTestTasks())) {
                     Optional<TestTask> uploadedTestTask = findTestTask(currentTestTask, uploadedListing.getSed().getTestTasks());
                     if (uploadedTestTask.isPresent()) {
-                        //if we are still processing, then this confirmed test task and this uploaded test task have the same values
-                        //and there are no other test tasks with these values
-                        LOGGER.info("Setting friendly ID to " + uploadedTestTask.get().getFriendlyId() + " for test task " + currentTestTask.getId());
-                        currentTestTask.setFriendlyId(uploadedTestTask.get().getFriendlyId());
-                        numTasksUpdated++;
+                        if (!hasAnyDuplicates(uploadedTestTask.get(), uploadedListing.getSed().getTestTasks())) {
+                            //if we are still processing, then this confirmed test task and this uploaded test task have the same values
+                            //and there are no other test tasks with these values
+                            LOGGER.info("Setting friendly ID to " + uploadedTestTask.get().getFriendlyId() + " for test task " + currentTestTask.getId());
+                            currentTestTask.setFriendlyId(uploadedTestTask.get().getFriendlyId());
+                            numTasksUpdated++;
+                        } else {
+                            LOGGER.info("Test task with ID " + uploadedTestTask.get().getFriendlyId() + " has the same data as at least one other test task in the uploaded file. Skipping.");
+                        }
                     } else {
                         LOGGER.warn("Test task with ID " + currentTestTask.getId() + " cannot be re-processed. No matching uploaded test task was found.");
                     }
