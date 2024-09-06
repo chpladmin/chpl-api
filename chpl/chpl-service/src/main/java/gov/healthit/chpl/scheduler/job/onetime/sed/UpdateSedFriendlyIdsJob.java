@@ -133,7 +133,7 @@ public class UpdateSedFriendlyIdsJob implements Job {
             if (hasSedErrors(listingUpdateResult.getUpdatedListing())) {
                 LOGGER.warn("\tThe updated listing has SED-related errors or warnings so we will not save SED changes: ");
                 printListingErrorsAndWarnings(listingUpdateResult.getUpdatedListing());
-                LOGGER.error("Listing " + listing.getId() + " friendly IDs could not be updated.");
+                LOGGER.warn("Listing " + listing.getId() + " friendly IDs could not be updated.");
             } else {
                 //this replacement should execute as a single transaction in case any part of it fails
                 try {
@@ -147,7 +147,7 @@ public class UpdateSedFriendlyIdsJob implements Job {
                 }
             }
         } else {
-            LOGGER.error("Listing " + listing.getId() + " friendly IDs could not be updated.");
+            LOGGER.warn("Listing " + listing.getId() + " friendly IDs could not be updated.");
         }
     }
 
