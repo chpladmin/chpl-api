@@ -62,7 +62,7 @@ public class UpdateSedFriendlyIdsJob implements Job {
     @Override
     public void execute(JobExecutionContext jobContext) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
-        LOGGER.info("********* Starting the Update Participants job. *********");
+        LOGGER.info("********* Starting the Update SED Friendly Ids job. *********");
         try {
             g3 = criteriaService.get(Criteria2015.G_3);
 
@@ -120,7 +120,7 @@ public class UpdateSedFriendlyIdsJob implements Job {
             LOGGER.error("Unable to create output about listings still needing update.");
         }
 
-        LOGGER.info("********* Completed the Update Participants job. *********");
+        LOGGER.info("********* Completed the Update SED Friendly IDs job. *********");
     }
 
     private void attemptToSaveFriendlyIds(ListingSearchResult listing) {
