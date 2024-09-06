@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
@@ -33,11 +34,10 @@ import lombok.extern.log4j.Log4j2;
 @DisallowConcurrentExecution
 @Log4j2(topic = "updatedSedFriendlyIdsJobLogger")
 public class UpdateSedFriendlyIdsJob implements Job {
-    private static final String FAILURE_TO_UPDATE_MSG = "Listing % SED friendly IDs could not be updated.";
     private static final long FIRST_LISTING_ID_CONFIRMED_WITH_FLEXIBLE_UPLOAD = 10912;
 
     @Autowired
-    private ReprocessFromUploadedCsvStrategy reprocessFromUploadStrategy;
+    private ReprocessFromUploadedCsvHelper reprocessFromUploadHelper;
 
     @Autowired
     private ListingSearchService listingSearchService;
@@ -66,39 +66,74 @@ public class UpdateSedFriendlyIdsJob implements Job {
         try {
             g3 = criteriaService.get(Criteria2015.G_3);
 
-            List<ListingSearchResult> activeListingsWithG3ConfirmedWithFlexibleUpload = listingSearchService.getAllPagesOfSearchResults(SearchRequest.builder()
+            List<ListingSearchResult> listingsWithG3ConfirmedWithFlexibleUpload = listingSearchService.getAllPagesOfSearchResults(SearchRequest.builder()
                     .certificationCriteriaIds(Stream.of(g3.getId()).collect(Collectors.toSet()))
                     .certificationCriteriaOperator(SearchSetOperator.AND)
                     .build()).stream()
                     .filter(listingSearchResult -> listingSearchResult.getId() >= FIRST_LISTING_ID_CONFIRMED_WITH_FLEXIBLE_UPLOAD)
                     .toList();
 
-            LOGGER.info("Found " + activeListingsWithG3ConfirmedWithFlexibleUpload.size() + " listing uploads attesting to 170.315 (g)(3).");
+            LOGGER.info("Found " + listingsWithG3ConfirmedWithFlexibleUpload.size() + " listing uploads attesting to 170.315 (g)(3).");
 
-            activeListingsWithG3ConfirmedWithFlexibleUpload.stream()
+            listingsWithG3ConfirmedWithFlexibleUpload.stream()
                 .forEach(listing -> attemptToSaveFriendlyIds(listing));
 
         } catch (Exception ex) {
             LOGGER.fatal("Unexpected exception was caught. All listings may not have been processed.", ex);
         }
+
+        LOGGER.info("*** REPORT OF LISTINGS WITH ANY MISSING FRIENDLY IDS: ***");
+        LOGGER.info("\tDatabase ID\tCHPL Product Number\tDeveloper\tACB\tStatus\tTasks Missing ID?\tParticipants Missing ID?");
+        try {
+            List<ListingSearchResult> listingsWithG3 = listingSearchService.getAllPagesOfSearchResults(SearchRequest.builder()
+                .certificationCriteriaIds(Stream.of(g3.getId()).collect(Collectors.toSet()))
+                .certificationCriteriaOperator(SearchSetOperator.AND)
+                .build()).stream()
+                .toList();
+            listingsWithG3.stream()
+                .forEach(listingSearchResult -> {
+                    try {
+                        CertifiedProductSearchDetails currListing = certifiedProductDetailsManager.getCertifiedProductDetails(listingSearchResult.getId());
+                        boolean hasTestTasksWithMissingFriendlyId = currListing.getSed().getTestTasks().stream()
+                            .filter(tt -> StringUtils.isEmpty(tt.getFriendlyId()))
+                            .findAny().isPresent();
+                        boolean hasParticipantsWithMissingFriendlyId = currListing.getSed().getTestTasks().stream()
+                                .flatMap(tt -> tt.getTestParticipants().stream())
+                                .filter(tp -> StringUtils.isEmpty(tp.getFriendlyId()))
+                                .findAny().isPresent();
+                        if (hasTestTasksWithMissingFriendlyId
+                                || hasParticipantsWithMissingFriendlyId) {
+                            LOGGER.info("\t" + currListing.getId()
+                                    + "\t" + currListing.getChplProductNumber()
+                                    + "\t" + currListing.getDeveloper().getName()
+                                    + "\t" + currListing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_NAME_KEY).toString()
+                                    + "\t" + currListing.getCurrentStatus().getStatus().getName()
+                                    + "\t" + (hasTestTasksWithMissingFriendlyId ? "Y" : "N")
+                                    + "\t" + (hasParticipantsWithMissingFriendlyId ? "Y" : "N"));
+                        }
+                    } catch (Exception ex) {
+                        LOGGER.warn("Unable to get listing details for " + listingSearchResult.getId() + ". That will not be included in the output.");
+                    }
+
+            });
+        } catch (Exception ex) {
+            LOGGER.error("Unable to create output about listings still needing update.");
+        }
+
         LOGGER.info("********* Completed the Update Participants job. *********");
     }
 
     private void attemptToSaveFriendlyIds(ListingSearchResult listing) {
         LOGGER.info("Processing listing ID " + listing.getId());
         CertifiedProductSearchDetails listingDetails = getCertifiedProductSearchDetails(listing.getId());
-        LOGGER.info("Updating test task friendly IDs for listing ID " + listing.getId());
-        ListingUpdateResult listingUpdateResult = updateTaskFriendlyIds(listingDetails);
-        listingDetails = getCertifiedProductSearchDetails(listingDetails.getId());
-        LOGGER.info("Updating test participant friendly IDs for listing ID " + listing.getId());
-        listingUpdateResult = updateParticipantFriendlyIds(listingDetails);
+        ListingUpdateResult listingUpdateResult = updateFriendlyIds(listingDetails);
 
         if (listingUpdateResult.getUpdatedListing() != null) {
             listingValidator.validate(listingUpdateResult.getOriginalListing(), listingUpdateResult.getUpdatedListing());
             if (hasSedErrors(listingUpdateResult.getUpdatedListing())) {
                 LOGGER.warn("\tThe updated listing has SED-related errors or warnings so we will not save SED changes: ");
                 printListingErrorsAndWarnings(listingUpdateResult.getUpdatedListing());
-                LOGGER.error(String.format(FAILURE_TO_UPDATE_MSG, listingUpdateResult.getOriginalListing().getId()));
+                LOGGER.error("Listing " + listing.getId() + " friendly IDs could not be updated.");
             } else {
                 //this replacement should execute as a single transaction in case any part of it fails
                 try {
@@ -106,35 +141,31 @@ public class UpdateSedFriendlyIdsJob implements Job {
                     LOGGER.info("Completed updating SED friendly IDs for listing " + listingUpdateResult.getUpdatedListing().getId());
                 } catch (Exception ex) {
                     LOGGER.error("Error updating SED friendly IDs for listing " + listingUpdateResult.getUpdatedListing().getId(), ex);
-                    LOGGER.error(String.format(FAILURE_TO_UPDATE_MSG, listingUpdateResult.getOriginalListing().getId()));
+                    LOGGER.error("Listing " + listing.getId() + " friendly IDs could not be updated.");
                 } finally {
                     sharedStoreProvider.remove(listingUpdateResult.getUpdatedListing().getId());
                 }
             }
         } else {
-            LOGGER.error(String.format(FAILURE_TO_UPDATE_MSG, listingUpdateResult.getOriginalListing().getId()));
+            LOGGER.error("Listing " + listing.getId() + " friendly IDs could not be updated.");
         }
     }
 
-    private ListingUpdateResult updateTaskFriendlyIds(CertifiedProductSearchDetails listing) {
-        ListingUpdateResult result = new ListingUpdateResult();
-        result.setOriginalListing(getCertifiedProductSearchDetails(listing.getId()));
-        if (reprocessFromUploadStrategy.updateTasks(listing)) {
-            result.setUpdatedListing(listing);
-            LOGGER.info("\tTasks for listing " + listing.getId() + " were updated.");
-        }
-        return result;
-    }
+    private ListingUpdateResult updateFriendlyIds(CertifiedProductSearchDetails listing) {
+        ListingUpdateResult listingUpdateResult = new ListingUpdateResult();
+        listingUpdateResult.setOriginalListing(listing);
 
-    private ListingUpdateResult updateParticipantFriendlyIds(CertifiedProductSearchDetails listing) {
-        ListingUpdateResult result = new ListingUpdateResult();
-        //get the details again for the "original" listing because the strategies will change the listing reference
-        result.setOriginalListing(getCertifiedProductSearchDetails(listing.getId()));
-        if (reprocessFromUploadStrategy.updateParticipants(listing)) {
-            result.setUpdatedListing(listing);
-            LOGGER.info("\tParticipants for listing " + listing.getId() + " were updated.");
+        LOGGER.info("Updating test task friendly IDs for listing ID " + listing.getId());
+        if (reprocessFromUploadHelper.updateTasks(listing)) {
+            listingUpdateResult.setUpdatedListing(listing);
+            LOGGER.info("Tasks for listing " + listing.getId() + " were updated.");
         }
-        return result;
+        LOGGER.info("Updating test participant friendly IDs for listing ID " + listing.getId());
+        if (reprocessFromUploadHelper.updateParticipants(listing)) {
+            listingUpdateResult.setUpdatedListing(listing);
+            LOGGER.info("Participants for listing " + listing.getId() + " were updated.");
+        }
+        return listingUpdateResult;
     }
 
     private boolean hasSedErrors(CertifiedProductSearchDetails listing) {
