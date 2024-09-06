@@ -17,9 +17,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.auth.ChplAccountStatusException;
+import gov.healthit.chpl.domain.CognitoRefreshTokenRequest;
 import gov.healthit.chpl.domain.CreateUserFromInvitationRequest;
 import gov.healthit.chpl.domain.auth.CognitoForgotPasswordRequest;
 import gov.healthit.chpl.domain.auth.CognitoGroups;
+import gov.healthit.chpl.domain.auth.CognitoLogoutRequest;
 import gov.healthit.chpl.domain.auth.CognitoNewPasswordRequiredRequest;
 import gov.healthit.chpl.domain.auth.CognitoSetForgottenPasswordRequest;
 import gov.healthit.chpl.domain.auth.LoginCredentials;
@@ -43,7 +45,9 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 @Tag(name = "cognito/users", description = "Allows management of Cognito users.")
 @RestController
 @RequestMapping("/cognito/users")
@@ -92,6 +96,19 @@ public class CognitoUserController {
         }
         return response;
     }
+
+    @Operation(summary = "Log user out.",
+            description = "Invalidates all of the tokens associated with the user.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            }
+        )
+    @RequestMapping(value = "/logout", method = RequestMethod.POST,
+            consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
+    public void logout(@RequestBody CognitoLogoutRequest request) {
+        cognitoAuthenticationManager.invalidateTokensForUser(request.getEmail());
+    }
+
 
     @Operation(summary = "Set user's password in response to NEW_PASSWORD_REQUIRED challenge.",
             description = "Set user's password in response to NEW_PASSWORD_REQUIRED challenge.",
@@ -223,6 +240,12 @@ public class CognitoUserController {
         } finally {
             SecurityContextHolder.getContext().setAuthentication(null);
         }
+    }
+
+    @RequestMapping(value = "/refresh-token", method = RequestMethod.POST,
+            produces = "application/json; charset=utf-8")
+    public CognitoAuthenticationResponse refreshToken(@RequestBody CognitoRefreshTokenRequest request) {
+        return cognitoAuthenticationManager.refreshAuthenticationTokens(request.getRefreshToken(), UUID.fromString(request.getCognitoId()));
     }
 
     @Operation(summary = "Modify user information.", description = "",
