@@ -2,9 +2,11 @@ package gov.healthit.chpl.entity;
 
 import java.util.Date;
 
+import gov.healthit.chpl.activity.search.ActivitySearchResult;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.ActivityDTO;
+import gov.healthit.chpl.util.DateUtil;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -117,6 +119,18 @@ public class ActivityEntity extends EntityAudit {
                 .lastModifiedUser(this.getLastModifiedUser())
                 .lastModifiedSsoUser(this.getLastModifiedSsoUser())
                 .deleted(this.getDeleted())
+                .build();
+    }
+
+    public ActivitySearchResult toSearchResult() {
+        return ActivitySearchResult.builder()
+                .id(this.getId())
+                .before(this.getOriginalData())
+                .after(this.getNewData())
+                .activityDate(DateUtil.toLocalDateTime(this.getActivityDate().getTime()))
+                .objectId(this.getActivityObjectId())
+                .reason(this.getReason())
+                .type(ActivityConcept.valueOf(this.getConcept().getConcept()).name())
                 .build();
     }
 }
