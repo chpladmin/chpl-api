@@ -9,7 +9,6 @@ import java.util.stream.Stream;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -22,7 +21,6 @@ import gov.healthit.chpl.activity.search.SearchRequest;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.ValidationException;
-import gov.healthit.chpl.util.FileUtils;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -37,36 +35,21 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 public class SearchActivityController {
     private ActivitySearchService activitySearchService;
-    private FileUtils fileUtils;
-    private String listingsReportUrlPartBegin;
 
     @Autowired
-    public SearchActivityController(ActivitySearchService activitySearchService,
-            FileUtils fileUtils,
-            @Value("${chplUrlBegin}") String chplUrlBegin,
-            @Value("${listingReportsUrlPart}") String listingsReportUrlPart) {
+    public SearchActivityController(ActivitySearchService activitySearchService) {
         this.activitySearchService = activitySearchService;
-        this.fileUtils = fileUtils;
-        this.listingsReportUrlPartBegin = chplUrlBegin + listingsReportUrlPart;
     }
 
-    @SuppressWarnings({
-        "checkstyle:methodlength", "checkstyle:parameternumber"
-    })
-    @Operation(summary = "Get the list of all types of actions that may trigger questionable activity to be recorded. "
-            + "This is only available to ROLE_ADMIN and ROLE_ONC users.",
+    @Operation(summary = "Get the list of all things that may have activity recorded about them. Use in the 'concepts' parameter of the search endpoint.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
-    @RequestMapping(value = "/types", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public List<ActivityConcept> getAllActivityTypes() {
+    @RequestMapping(value = "/concepts", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public List<ActivityConcept> getAllActivityConcepts() {
         return Stream.of(ActivityConcept.values()).toList();
     }
 
-    @SuppressWarnings({
-        "checkstyle:methodlength", "checkstyle:parameternumber"
-    })
     @Operation(summary = "Search across all recorded activity in the CHPL. This is only available to ROLE_ADMIN and ROLE_ONC users.",
             description = "If paging parameters are not specified, the first 20 records are returned by default."
                     + "All parameters are optional. "
@@ -78,9 +61,9 @@ public class SearchActivityController {
             })
     @RequestMapping(value = "/search", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody ActivitySearchResponse search(
-        @Parameter(description = "One or more of the recorded activity types",
-            allowEmptyValue = true, in = ParameterIn.QUERY, name = "types")
-            @RequestParam(value = "types", required = false, defaultValue = "") String typesDelimited,
+        @Parameter(description = "One or more of the available activity concepts separated by ','. Ex: CERTIFIED_PRODUCT,DEVELOPER",
+            allowEmptyValue = true, in = ParameterIn.QUERY, name = "concepts")
+            @RequestParam(value = "concepts", required = false, defaultValue = "") String conceptsDelimited,
         @Parameter(description = "To return only activities that occurred on or after this date. Required format is " + SearchRequest.TIMESTAMP_SEARCH_FORMAT,
                 allowEmptyValue = true, in = ParameterIn.QUERY, name = "activityDateStart")
             @RequestParam(value = "activityDateStart", required = false, defaultValue = "") String activityDateStart,
@@ -103,7 +86,7 @@ public class SearchActivityController {
         throws InvalidArgumentsException, ValidationException {
 
         SearchRequest searchRequest = SearchRequest.builder()
-                .types(convertToSetWithDelimeter(typesDelimited, ","))
+                .concepts(convertToSetWithDelimeter(conceptsDelimited, ","))
                 .activityDateStart(activityDateStart)
                 .activityDateEnd(activityDateEnd)
                 .pageSize(pageSize)

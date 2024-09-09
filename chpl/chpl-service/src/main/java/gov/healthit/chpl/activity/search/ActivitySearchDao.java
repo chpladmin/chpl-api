@@ -39,7 +39,7 @@ public class ActivitySearchDao extends BaseDAOImpl {
                 + "FROM ActivityEntity a "
                 + "JOIN FETCH a.concept c "
                 + "WHERE a.deleted = false ";
-        if (!CollectionUtils.isEmpty(searchRequest.getTypes())) {
+        if (!CollectionUtils.isEmpty(searchRequest.getConcepts())) {
             queryStr += " AND c.concept IN (:conceptNames) ";
         }
         if (searchRequest.getActivityDateStart() != null) {
@@ -66,8 +66,8 @@ public class ActivitySearchDao extends BaseDAOImpl {
         query.setFirstResult(firstRecord);
         query.setMaxResults(searchRequest.getPageSize());
 
-        if (!CollectionUtils.isEmpty(searchRequest.getTypes())) {
-            query.setParameter("conceptNames", searchRequest.getTypes());
+        if (!CollectionUtils.isEmpty(searchRequest.getConcepts())) {
+            query.setParameter("conceptNames", searchRequest.getConcepts());
         }
         if (searchRequest.getActivityDateStart() != null) {
             LocalDateTime activityDateStart = parseLocalDateTime(searchRequest.getActivityDateStart());
@@ -99,7 +99,7 @@ public class ActivitySearchDao extends BaseDAOImpl {
                 + "FROM ActivityEntity ae "
                 + "JOIN ae.concept ac "
                 + "WHERE ae.deleted = false ";
-        if (!CollectionUtils.isEmpty(searchRequest.getTypes())) {
+        if (!CollectionUtils.isEmpty(searchRequest.getConcepts())) {
             queryStr += " AND (ac.concept IN (:conceptNames))";
         }
         if (searchRequest.getActivityDateStart() != null) {
@@ -109,8 +109,8 @@ public class ActivitySearchDao extends BaseDAOImpl {
             queryStr += " AND (ae.activityDate <= :endDate) ";
         }
         Query query = entityManager.createQuery(queryStr, Long.class);
-        if (!CollectionUtils.isEmpty(searchRequest.getTypes())) {
-            query.setParameter("conceptNames", searchRequest.getTypes());
+        if (!CollectionUtils.isEmpty(searchRequest.getConcepts())) {
+            query.setParameter("conceptNames", searchRequest.getConcepts());
         }
         if (searchRequest.getActivityDateStart() != null) {
             LocalDateTime activityDateStart = parseLocalDateTime(searchRequest.getActivityDateStart());

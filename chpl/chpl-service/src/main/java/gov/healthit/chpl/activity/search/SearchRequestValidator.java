@@ -31,7 +31,7 @@ public class SearchRequestValidator {
 
     public void validate(SearchRequest request) throws ValidationException {
         Set<String> errors = new LinkedHashSet<String>();
-        errors.addAll(getTypeErrors(request));
+        errors.addAll(getConceptErrors(request));
         errors.addAll(getActivityDateErrors(request.getActivityDateStart(), request.getActivityDateEnd()));
         errors.addAll(getPageSizeErrors(request.getPageSize()));
         errors.addAll(getOrderByErrors(request));
@@ -40,24 +40,24 @@ public class SearchRequestValidator {
         }
     }
 
-    private Set<String> getTypeErrors(SearchRequest request) {
-        Set<String> typeErrors = new LinkedHashSet<String>();
-        typeErrors.addAll(getTypeExistenceErrors(request.getTypes()));
-        return typeErrors;
+    private Set<String> getConceptErrors(SearchRequest request) {
+        Set<String> conceptErrors = new LinkedHashSet<String>();
+        conceptErrors.addAll(getConceptExistenceErrors(request.getConcepts()));
+        return conceptErrors;
     }
 
-    private Set<String> getTypeExistenceErrors(Set<String> types) {
-        if (types == null || types.size() == 0) {
+    private Set<String> getConceptExistenceErrors(Set<String> concepts) {
+        if (concepts == null || concepts.size() == 0) {
             return Collections.emptySet();
         }
 
-        List<String> allowedTypes = Stream.of(ActivityConcept.values())
-                .map(typeEnum -> typeEnum.toString())
+        List<String> allowedConcepts = Stream.of(ActivityConcept.values())
+                .map(conceptEnum -> conceptEnum.toString())
                 .toList();
 
-        return types.stream()
-            .filter(type -> !allowedTypes.contains(type))
-            .map(type -> msgUtil.getMessage("search.activity.invalidType", type))
+        return concepts.stream()
+            .filter(concept -> !allowedConcepts.contains(concept))
+            .map(concept -> msgUtil.getMessage("search.activity.invalidConcept", concept))
             .collect(Collectors.toSet());
     }
 

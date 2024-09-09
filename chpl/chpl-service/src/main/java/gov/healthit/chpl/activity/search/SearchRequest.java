@@ -20,7 +20,7 @@ public class SearchRequest implements Serializable {
     public static final int MAX_PAGE_SIZE = 100;
 
     @Builder.Default
-    private Set<String> types = new HashSet<String>();
+    private Set<String> concepts = new HashSet<String>();
     private String activityDateStart;
     private String activityDateEnd;
     private String orderByString;

@@ -8,15 +8,15 @@ import org.apache.commons.lang3.StringUtils;
 public class SearchRequestNormalizer {
 
     public void normalize(SearchRequest request) {
-        normalizeTypes(request);
+        normalizeConcepts(request);
         normalizeActivityDates(request);
         normalizeOrderBy(request);
     }
 
-    private void normalizeTypes(SearchRequest request) {
-        if (!CollectionUtils.isEmpty(request.getTypes())) {
-            request.setTypes(request.getTypes().stream()
-                .map(type -> type.toUpperCase())
+    private void normalizeConcepts(SearchRequest request) {
+        if (!CollectionUtils.isEmpty(request.getConcepts())) {
+            request.setConcepts(request.getConcepts().stream()
+                .map(concept -> concept.toUpperCase())
                 .collect(Collectors.toSet()));
         }
     }
