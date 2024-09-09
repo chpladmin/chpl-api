@@ -44,7 +44,7 @@ public class ServiceBaseUrlListService {
 
     public List<ServiceBaseUrlList> getAllServiceBaseUrlLists() {
         try {
-            return reduceBasedOnUrl(findAllListingsWithG10Criteria());
+            return mapToServiceBaseUrlLists(findAllListingsWithG10Criteria());
         } catch (ValidationException e) {
             LOGGER.error("Could not perform listing search for (g)(10) criteria", e);
             return null;
@@ -52,7 +52,7 @@ public class ServiceBaseUrlListService {
 
     }
 
-    private List<ServiceBaseUrlList> reduceBasedOnUrl(List<ListingSearchResult> listingSearchResults) {
+    private List<ServiceBaseUrlList> mapToServiceBaseUrlLists(List<ListingSearchResult> listingSearchResults) {
         Map<String, ServiceBaseUrlList> serviceBaseUrlLists = new HashMap<String, ServiceBaseUrlList>();
 
         listingSearchResults.forEach(result -> {
@@ -66,12 +66,18 @@ public class ServiceBaseUrlListService {
             }
 
             if (serviceBaseUrlLists.containsKey(certificationResult.getServiceBaseUrlList())) {
-                serviceBaseUrlLists.get(certificationResult.getServiceBaseUrlList()).getChplProductNumbers().add(listing.getChplProductNumber());
+                //Update developers or chpl prd nbrs if necessary
+                if (!serviceBaseUrlLists.get(certificationResult.getServiceBaseUrlList()).getChplProductNumbers().contains(listing.getChplProductNumber())) {
+                    serviceBaseUrlLists.get(certificationResult.getServiceBaseUrlList()).getChplProductNumbers().add(listing.getChplProductNumber());
+                }
+                if (!serviceBaseUrlLists.get(certificationResult.getServiceBaseUrlList()).getDeveloperIds().contains(listing.getDeveloper().getId())) {
+                    serviceBaseUrlLists.get(certificationResult.getServiceBaseUrlList()).getDeveloperIds().add(listing.getDeveloper().getId());
+                }
             } else {
                 serviceBaseUrlLists.put(certificationResult.getServiceBaseUrlList(),
                         ServiceBaseUrlList.builder()
                                 .url(certificationResult.getServiceBaseUrlList())
-                                .developerId(listing.getDeveloper().getId())
+                                .developerIds(new ArrayList<Long>(Arrays.asList(listing.getDeveloper().getId())))
                                 .chplProductNumbers(new ArrayList<String>(Arrays.asList(listing.getChplProductNumber())))
                                 .build());
             }
@@ -109,7 +115,6 @@ public class ServiceBaseUrlListService {
     }
 
     private CertifiedProductSearchDetails getListing(Long id) {
-        LOGGER.info("Retrieving listing: {}", id);
         try {
             return certifiedProductDetailsManager.getCertifiedProductDetails(id);
         } catch (EntityRetrievalException e) {
