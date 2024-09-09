@@ -69,7 +69,6 @@ import software.amazon.awssdk.services.cognitoidentityprovider.model.ListUsersIn
 import software.amazon.awssdk.services.cognitoidentityprovider.model.ListUsersRequest;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.ListUsersResponse;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.MessageActionType;
-import software.amazon.awssdk.services.cognitoidentityprovider.model.UserStatusType;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.UserType;
 
 @Log4j2
@@ -428,7 +427,7 @@ public class CognitoApiWrapper {
         user.setPhoneNumber(getPhoneNumberFromAttributes(userType.attributes()));
         user.setAccountEnabled(userType.enabled());
         user.setStatus(userType.userStatusAsString());
-        user.setPasswordResetRequired(userType.userStatus().equals(UserStatusType.RESET_REQUIRED));
+        user.setPasswordResetRequired(Integer.valueOf(getUserAttribute(userType.attributes(), "custom:forcePasswordReset").value()).equals(1));
         user.setRole(getRoleBasedOnFilteredGroups(getGroupsForUser(user.getEmail())));
 
         AttributeType orgIdsAttribute = getUserAttribute(userType.attributes(), "custom:organizations");

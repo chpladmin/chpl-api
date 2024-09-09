@@ -9,16 +9,19 @@ import org.springframework.stereotype.Component;
 import com.nulabinc.zxcvbn.Strength;
 import com.nulabinc.zxcvbn.Zxcvbn;
 
+import gov.healthit.chpl.PasswordGenerator;
 import gov.healthit.chpl.auth.authentication.JWTUserConverterFacade;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.domain.auth.CognitoNewPasswordRequiredRequest;
 import gov.healthit.chpl.domain.auth.LoginCredentials;
 import gov.healthit.chpl.domain.auth.User;
+import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.JWTValidationException;
 import gov.healthit.chpl.exception.MultipleUserAccountsException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.user.cognito.CognitoApiWrapper;
+import gov.healthit.chpl.user.cognito.CognitoForcePasswordChangeEmailer;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import lombok.extern.log4j.Log4j2;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AuthenticationResultType;
@@ -31,16 +34,35 @@ public class CognitoAuthenticationManager {
     private CognitoApiWrapper cognitoApiWrapper;
     private JWTUserConverterFacade jwtUserConverterFacade;
     private ErrorMessageUtil errorMessageUtil;
+    private CognitoForcePasswordChangeEmailer cognitoForcePasswordChangeEmailer;
 
     @Autowired
-    public CognitoAuthenticationManager(CognitoApiWrapper cognitoApiWrapper, JWTUserConverterFacade jwtUserConverterFacade, ErrorMessageUtil errorMessageUtil) {
+    public CognitoAuthenticationManager(CognitoApiWrapper cognitoApiWrapper, JWTUserConverterFacade jwtUserConverterFacade, ErrorMessageUtil errorMessageUtil,
+            CognitoForcePasswordChangeEmailer cognitoForcePasswordChangeEmailer) {
 
         this.cognitoApiWrapper = cognitoApiWrapper;
         this.jwtUserConverterFacade = jwtUserConverterFacade;
         this.errorMessageUtil = errorMessageUtil;
+        this.cognitoForcePasswordChangeEmailer = cognitoForcePasswordChangeEmailer;
     }
 
-    public CognitoAuthenticationResponse authenticate(LoginCredentials credentials) throws CognitoAuthenticationChallengeException{
+    public CognitoAuthenticationResponse authenticate(LoginCredentials credentials) throws CognitoAuthenticationChallengeException {
+        try {
+            if (forceUserToChangePassword(credentials.getUserName())) {
+                String password = PasswordGenerator.generate();
+                cognitoApiWrapper.setUserPassword(credentials.getUserName(), password);
+                cognitoForcePasswordChangeEmailer.sendEmail(
+                        LoginCredentials.builder()
+                            .userName(credentials.getUserName())
+                            .password(password)
+                            .build());
+                // Need to figure out how to send something back to the front end for messaging
+                return null;
+            }
+        } catch (UserRetrievalException | EmailNotSentException e) {
+            LOGGER.error(e.getMessage(), e);
+            return null;
+        }
 
         try {
             AuthenticationResultType authResult = cognitoApiWrapper.authenticate(credentials);
@@ -119,5 +141,13 @@ public class CognitoAuthenticationManager {
             LOGGER.error("Could not decode JWT Token");
             return null;
         }
+    }
+
+    private Boolean forceUserToChangePassword(String email) throws UserRetrievalException {
+        User user = cognitoApiWrapper.getUserInfo(email);
+        if (user != null && user.getPasswordResetRequired() != null) {
+            return user.getPasswordResetRequired();
+        }
+        return false;
     }
 }
