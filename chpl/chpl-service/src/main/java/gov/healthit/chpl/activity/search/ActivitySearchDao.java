@@ -1,11 +1,15 @@
 package gov.healthit.chpl.activity.search;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,9 +25,11 @@ import lombok.extern.log4j.Log4j2;
 public class ActivitySearchDao extends BaseDAOImpl {
 
     private ChplUserToCognitoUserUtil chplUserToCognitoUserUtil;
+    private DateTimeFormatter dateFormatter;
 
     public ActivitySearchDao(ChplUserToCognitoUserUtil chplUserToCognitoUserUtil) {
         this.chplUserToCognitoUserUtil = chplUserToCognitoUserUtil;
+        this.dateFormatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
     }
 
     @Transactional
@@ -64,10 +70,12 @@ public class ActivitySearchDao extends BaseDAOImpl {
             query.setParameter("conceptNames", searchRequest.getTypes());
         }
         if (searchRequest.getActivityDateStart() != null) {
-            query.setParameter("startDate", searchRequest.getActivityDateStart());
+            LocalDateTime activityDateStart = parseLocalDateTime(searchRequest.getActivityDateStart());
+            query.setParameter("startDate", activityDateStart);
         }
         if (searchRequest.getActivityDateEnd() != null) {
-            query.setParameter("endDate", searchRequest.getActivityDateEnd());
+            LocalDateTime activityDateEnd = parseLocalDateTime(searchRequest.getActivityDateEnd());
+            query.setParameter("endDate", activityDateEnd);
         }
 
 
@@ -105,11 +113,27 @@ public class ActivitySearchDao extends BaseDAOImpl {
             query.setParameter("conceptNames", searchRequest.getTypes());
         }
         if (searchRequest.getActivityDateStart() != null) {
-            query.setParameter("startDate", searchRequest.getActivityDateStart());
+            LocalDateTime activityDateStart = parseLocalDateTime(searchRequest.getActivityDateStart());
+            query.setParameter("startDate", activityDateStart);
         }
         if (searchRequest.getActivityDateEnd() != null) {
-            query.setParameter("endDate", searchRequest.getActivityDateEnd());
+            LocalDateTime activityDateEnd = parseLocalDateTime(searchRequest.getActivityDateEnd());
+            query.setParameter("endDate", activityDateEnd);
         }
         return (Long) query.getSingleResult();
+    }
+
+    private LocalDateTime parseLocalDateTime(String dateTimeString) {
+        if (StringUtils.isEmpty(dateTimeString)) {
+            return null;
+        }
+
+        LocalDateTime date = null;
+        try {
+            date = LocalDateTime.parse(dateTimeString, dateFormatter);
+        } catch (DateTimeParseException ex) {
+            LOGGER.error("Cannot parse " + dateTimeString + " as LocalDateTime of the format " + SearchRequest.TIMESTAMP_SEARCH_FORMAT);
+        }
+        return date;
     }
 }

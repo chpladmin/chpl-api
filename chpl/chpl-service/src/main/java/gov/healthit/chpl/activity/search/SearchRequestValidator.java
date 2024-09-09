@@ -1,6 +1,6 @@
 package gov.healthit.chpl.activity.search;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Collections;
@@ -26,7 +26,7 @@ public class SearchRequestValidator {
     @Autowired
     public SearchRequestValidator(ErrorMessageUtil msgUtil) {
         this.msgUtil = msgUtil;
-        dateFormatter = DateTimeFormatter.ofPattern(SearchRequest.DATE_SEARCH_FORMAT);
+        dateFormatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
     }
 
     public void validate(SearchRequest request) throws ValidationException {
@@ -69,19 +69,19 @@ public class SearchRequestValidator {
         Set<String> errors = new LinkedHashSet<String>();
         if (!StringUtils.isEmpty(activityDateStart)) {
             try {
-                 LocalDate.parse(activityDateStart, dateFormatter);
+                 LocalDateTime.parse(activityDateStart, dateFormatter);
             } catch (DateTimeParseException ex) {
                 errors.add(msgUtil.getMessage("search.activity.activityDate.invalid",
-                        activityDateStart, SearchRequest.DATE_SEARCH_FORMAT));
+                        activityDateStart, SearchRequest.TIMESTAMP_SEARCH_FORMAT));
             }
         }
 
         if (!StringUtils.isEmpty(activityDateEnd)) {
             try {
-                 LocalDate.parse(activityDateEnd, dateFormatter);
+                LocalDateTime.parse(activityDateEnd, dateFormatter);
             } catch (DateTimeParseException ex) {
                 errors.add(msgUtil.getMessage("search.activity.activityDate.invalid",
-                        activityDateEnd, SearchRequest.DATE_SEARCH_FORMAT));
+                        activityDateEnd, SearchRequest.TIMESTAMP_SEARCH_FORMAT));
             }
         }
 

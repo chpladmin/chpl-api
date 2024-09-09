@@ -71,7 +71,7 @@ public class SearchActivityController {
             description = "If paging parameters are not specified, the first 20 records are returned by default."
                     + "All parameters are optional. "
                     + "Date parameters are required to be in the format "
-                    + SearchRequest.DATE_SEARCH_FORMAT + ". ",
+                    + SearchRequest.TIMESTAMP_SEARCH_FORMAT + ". ",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
@@ -81,10 +81,10 @@ public class SearchActivityController {
         @Parameter(description = "One or more of the recorded activity types",
             allowEmptyValue = true, in = ParameterIn.QUERY, name = "types")
             @RequestParam(value = "types", required = false, defaultValue = "") String typesDelimited,
-        @Parameter(description = "To return only activities that occurred on or after this date. Required format is " + SearchRequest.DATE_SEARCH_FORMAT,
+        @Parameter(description = "To return only activities that occurred on or after this date. Required format is " + SearchRequest.TIMESTAMP_SEARCH_FORMAT,
                 allowEmptyValue = true, in = ParameterIn.QUERY, name = "activityDateStart")
             @RequestParam(value = "activityDateStart", required = false, defaultValue = "") String activityDateStart,
-        @Parameter(description = "To return only activities that occurred on or before this date. Required format is " + SearchRequest.DATE_SEARCH_FORMAT,
+        @Parameter(description = "To return only activities that occurred on or before this date. Required format is " + SearchRequest.TIMESTAMP_SEARCH_FORMAT,
                 allowEmptyValue = true, in = ParameterIn.QUERY, name = "activityDateEnd")
             @RequestParam(value = "activityDateEnd", required = false, defaultValue = "") String activityDateEnd,
         @Parameter(description = "Zero-based page number used in concert with pageSize. Defaults to 0.",
