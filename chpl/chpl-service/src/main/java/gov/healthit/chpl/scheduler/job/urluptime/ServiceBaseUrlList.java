@@ -11,7 +11,7 @@ import lombok.Data;
 @Builder
 public class ServiceBaseUrlList {
     private String url;
-    private Long developerId;
+    private List<Long> developerIds;
     private List<String> chplProductNumbers;
 
     public String getDatadogFormattedUrl() {
