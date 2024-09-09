@@ -21,7 +21,7 @@ public class ActivitySearchResult implements Serializable {
     private static final long serialVersionUID = -815386136021172537L;
 
     private Long id;
-    private String type;
+    private String concept;
     private Long objectId;
     @JsonDeserialize(using = EasternToSystemLocalDateTimeDeserializer.class)
     @JsonSerialize(using = SystemToEasternLocalDateTimeSerializer.class)

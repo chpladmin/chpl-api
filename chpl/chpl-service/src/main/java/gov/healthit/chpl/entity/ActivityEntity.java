@@ -130,7 +130,7 @@ public class ActivityEntity extends EntityAudit {
                 .activityDate(DateUtil.toLocalDateTime(this.getActivityDate().getTime()))
                 .objectId(this.getActivityObjectId())
                 .reason(this.getReason())
-                .type(ActivityConcept.valueOf(this.getConcept().getConcept()).name())
+                .concept(ActivityConcept.valueOf(this.getConcept().getConcept()).name())
                 .build();
     }
 }
