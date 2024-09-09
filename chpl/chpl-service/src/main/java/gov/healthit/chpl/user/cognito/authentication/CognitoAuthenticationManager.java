@@ -46,24 +46,7 @@ public class CognitoAuthenticationManager {
         this.cognitoForcePasswordChangeEmailer = cognitoForcePasswordChangeEmailer;
     }
 
-    public CognitoAuthenticationResponse authenticate(LoginCredentials credentials) throws CognitoAuthenticationChallengeException {
-        try {
-            if (forceUserToChangePassword(credentials.getUserName())) {
-                String password = PasswordGenerator.generate();
-                cognitoApiWrapper.setUserPassword(credentials.getUserName(), password);
-                cognitoForcePasswordChangeEmailer.sendEmail(
-                        LoginCredentials.builder()
-                            .userName(credentials.getUserName())
-                            .password(password)
-                            .build());
-                // Need to figure out how to send something back to the front end for messaging
-                return null;
-            }
-        } catch (UserRetrievalException | EmailNotSentException e) {
-            LOGGER.error(e.getMessage(), e);
-            return null;
-        }
-
+    public CognitoAuthenticationResponse authenticate(LoginCredentials credentials) throws CognitoAuthenticationChallengeException, CognitoPasswordResetRequiredException {
         try {
             AuthenticationResultType authResult = cognitoApiWrapper.authenticate(credentials);
             if (authResult == null) {
@@ -72,6 +55,8 @@ public class CognitoAuthenticationManager {
 
             JWTAuthenticatedUser jwtUser = jwtUserConverterFacade.getAuthenticatedUser(authResult.accessToken());
             User user = cognitoApiWrapper.getUserInfo(jwtUser.getCognitoId());
+            forcePasswordChangeHandler(user);
+
             return CognitoAuthenticationResponse.builder()
                     .accessToken(authResult.accessToken())
                     .idToken(authResult.idToken())
@@ -143,11 +128,24 @@ public class CognitoAuthenticationManager {
         }
     }
 
-    private Boolean forceUserToChangePassword(String email) throws UserRetrievalException {
-        User user = cognitoApiWrapper.getUserInfo(email);
-        if (user != null && user.getPasswordResetRequired() != null) {
-            return user.getPasswordResetRequired();
+    private void forcePasswordChangeHandler(User user) throws CognitoPasswordResetRequiredException {
+        try {
+            if (user.getPasswordResetRequired()) {
+                String password = PasswordGenerator.generate();
+                cognitoApiWrapper.setUserPassword(user.getEmail(), password, false);
+                user.setPasswordResetRequired(false);
+                cognitoApiWrapper.updateUser(user);
+                cognitoForcePasswordChangeEmailer.sendEmail(
+                        LoginCredentials.builder()
+                            .userName(user.getEmail())
+                            .password(password)
+                            .build());
+
+                throw new CognitoPasswordResetRequiredException();
+            }
+        } catch (UserRetrievalException | EmailNotSentException e) {
+            LOGGER.error(e.getMessage(), e);
         }
-        return false;
+
     }
 }

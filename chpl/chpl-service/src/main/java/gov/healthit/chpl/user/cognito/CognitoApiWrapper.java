@@ -118,6 +118,7 @@ public class CognitoApiWrapper {
 
         try {
             AdminInitiateAuthResponse authResult = cognitoClient.adminInitiateAuth(authRequest);
+
             if (authResult.challengeName() != null
                     && authResult.challengeName().equals(ChallengeNameType.NEW_PASSWORD_REQUIRED)) {
                 throw CognitoAuthenticationChallengeException.builder()
@@ -253,11 +254,11 @@ public class CognitoApiWrapper {
         }
     }
 
-    public void setUserPassword(String userName, String password) {
+    public void setUserPassword(String userName, String password, Boolean permanent) {
         AdminSetUserPasswordRequest request = AdminSetUserPasswordRequest.builder()
                 .username(userName)
                 .password(password)
-                .permanent(true)
+                .permanent(permanent)
                 .userPoolId(userPoolId)
                 .build();
 
@@ -336,7 +337,8 @@ public class CognitoApiWrapper {
                         AttributeType.builder().name("phone_number").value("+1" + user.getPhoneNumber().replaceAll("[^0-9.]", "")).build(),
                         AttributeType.builder().name("name").value(user.getFullName()).build(),
                         AttributeType.builder().name("email_verified").value("true").build(),
-                        AttributeType.builder().name("phone_number_verified").value("true").build()))
+                        AttributeType.builder().name("phone_number_verified").value("true").build(),
+                        AttributeType.builder().name("custom:forcePasswordReset").value(user.getPasswordResetRequired() ? "1" : "0").build()))
                 .build();
 
         cognitoClient.adminUpdateUserAttributes(request);
@@ -427,7 +429,7 @@ public class CognitoApiWrapper {
         user.setPhoneNumber(getPhoneNumberFromAttributes(userType.attributes()));
         user.setAccountEnabled(userType.enabled());
         user.setStatus(userType.userStatusAsString());
-        user.setPasswordResetRequired(Integer.valueOf(getUserAttribute(userType.attributes(), "custom:forcePasswordReset").value()).equals(1));
+        user.setPasswordResetRequired(getForcePasswordReset(userType.attributes()));
         user.setRole(getRoleBasedOnFilteredGroups(getGroupsForUser(user.getEmail())));
 
         AttributeType orgIdsAttribute = getUserAttribute(userType.attributes(), "custom:organizations");
@@ -437,6 +439,14 @@ public class CognitoApiWrapper {
                 .toList()));
         }
         return user;
+    }
+
+    private Boolean getForcePasswordReset(List<AttributeType> attributes) {
+        String forcePasswordReset = getUserAttribute(attributes, "custom:forcePasswordReset").value();
+        if (!StringUtils.isEmpty(forcePasswordReset)) {
+            return forcePasswordReset.equals("1");
+        }
+        return false;
     }
 
     private String getPhoneNumberFromAttributes(List<AttributeType> attributes) {

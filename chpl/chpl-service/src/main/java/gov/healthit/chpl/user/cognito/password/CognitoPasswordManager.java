@@ -55,7 +55,7 @@ public class CognitoPasswordManager {
             throw new ValidationException("Forgot Password Token has expired.");
         }
 
-        cognitoApiWrapper.setUserPassword(forgotPassword.getEmail(), password);
+        cognitoApiWrapper.setUserPassword(forgotPassword.getEmail(), password, true);
     }
 
     private CognitoForgotPassword generateForgotPassword(String email) {
