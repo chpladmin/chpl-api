@@ -2,6 +2,8 @@ package gov.healthit.chpl.scheduler.job.urluptime;
 
 import java.util.HashMap;
 
+import org.glassfish.jersey.apache.connector.ApacheConnectorProvider;
+import org.glassfish.jersey.client.ClientConfig;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -25,7 +27,11 @@ public class DatadogSyntheticsTestApiProvider {
         this.datadogAppKey = datadogAppKey;
 
         ApiClient defaultClient = ApiClient.getDefaultApiClient();
+
+        ClientConfig clientConfig = defaultClient.getClientConfig().connectorProvider(new ApacheConnectorProvider());
+        defaultClient.setClientConfig(clientConfig);
         defaultClient.configureApiKeys(getDatadogSecrets());
+
         apiInstance = new SyntheticsApi(defaultClient);
     }
 

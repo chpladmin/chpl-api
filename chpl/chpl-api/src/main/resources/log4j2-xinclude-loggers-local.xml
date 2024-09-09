@@ -26,12 +26,6 @@
     <Logger name="summaryStatisticsCreatorJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="summaryStatisticsCreatorJob" />
     </Logger>
-    <Logger name="curesStatisticsCreatorJobLogger" level="INFO" additivity="false">
-        <AppenderRef ref="curesStatisticsCreatorJob" />
-    </Logger>
-    <Logger name="curesStatisticsEmailJobLogger" level="INFO" additivity="false">
-        <AppenderRef ref="curesStatisticsEmailJob" />
-    </Logger>
     <Logger name="certificationIdEmailJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="certificationIdEmailJob" />
     </Logger>
@@ -165,6 +159,9 @@
     </Logger>
     <Logger name="subscriptionObservationsNotificationJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="subscriptionObservationsNotificationJob" />
+    </Logger>
+    <Logger name="subscriptionObservationNotificationsReportEmailJobLogger" level="INFO" additivity="false">
+        <AppenderRef ref="subscriptionObservationNotificationsReportEmailJob" />
     </Logger>
     <Logger name="developerAttestationReportJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="developerAttestationReportJob" />

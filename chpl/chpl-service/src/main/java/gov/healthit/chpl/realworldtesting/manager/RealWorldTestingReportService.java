@@ -185,8 +185,9 @@ public class RealWorldTestingReportService {
 
     private String getResultsMessage(RealWorldTestingReport report) {
         if (isRwtResultsEmpty(report)) {
-            if (BooleanUtils.isTrue(report.getIcs())
-                    && (areResultsLateWarning(report.getRwtEligibilityYear()) || areResultsLateError(report.getRwtEligibilityYear()))) {
+            if (BooleanUtils.isTrue(report.getIcs()) && areResultsLateWarning(report.getRwtEligibilityYear())) {
+                return errorMsg.getMessage("realWorldTesting.report.eligibleByIcs.missingResultsWarning", report.getRwtEligibilityYear().toString());
+            } else if (BooleanUtils.isTrue(report.getIcs()) && areResultsLateError(report.getRwtEligibilityYear())) {
                 return errorMsg.getMessage("realWorldTesting.report.eligibleByIcs.missingResultsError", report.getRwtEligibilityYear().toString());
             } else if (areResultsLateWarning(report.getRwtEligibilityYear())) {
                 return errorMsg.getMessage("realWorldTesting.report.eligibleBySelf.missingResultsWarning",
@@ -206,8 +207,9 @@ public class RealWorldTestingReportService {
 
     private String getPlansMessage(RealWorldTestingReport report) {
         if (isRwtPlansEmpty(report)) {
-            if (BooleanUtils.isTrue(report.getIcs())
-                    && (arePlansLateWarning(report.getRwtEligibilityYear()) || arePlansLateError(report.getRwtEligibilityYear()))) {
+            if (BooleanUtils.isTrue(report.getIcs()) && arePlansLateWarning(report.getRwtEligibilityYear())) {
+                return errorMsg.getMessage("realWorldTesting.report.eligibleByIcs.missingPlansWarning", report.getRwtEligibilityYear().toString());
+            } else if (BooleanUtils.isTrue(report.getIcs()) && arePlansLateError(report.getRwtEligibilityYear())) {
                 return errorMsg.getMessage("realWorldTesting.report.eligibleByIcs.missingPlansError", report.getRwtEligibilityYear().toString());
             } else if (arePlansLateWarning(report.getRwtEligibilityYear())) {
                 return errorMsg.getMessage("realWorldTesting.report.eligibleBySelf.missingPlansWarning",

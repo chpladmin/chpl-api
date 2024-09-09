@@ -29,7 +29,7 @@
       <quartz.version>2.5.0-rc1</quartz.version>
       <zxcvbn.version>1.7.0</zxcvbn.version>
       <spring.data.redis.version>3.2.5</spring.data.redis.version>
-      <redisson.version>3.21.3</redisson.version>
+      <redisson.version>3.22.0</redisson.version>
       <ff4j.store.redis.version>2.0.0</ff4j.store.redis.version>
       <org.springdoc.version>2.5.0</org.springdoc.version>
     </properties>
@@ -380,7 +380,7 @@
         <dependency>
             <groupId>com.datadoghq</groupId>
             <artifactId>datadog-api-client</artifactId>
-            <version>2.11.0</version>
+            <version>2.27.0</version>
         </dependency>
         
         <!-- jars provided by the system and not included in the packaged jar -->

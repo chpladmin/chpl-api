@@ -2,8 +2,6 @@ package gov.healthit.chpl;
 
 import java.io.IOException;
 
-import jakarta.servlet.http.HttpServletRequest;
-
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -39,7 +37,10 @@ import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.impl.UpdateCertifiedBodyException;
 import gov.healthit.chpl.manager.impl.UpdateTestingLabException;
+import gov.healthit.chpl.user.cognito.authentication.CognitoAuthenticationChallenge;
+import gov.healthit.chpl.user.cognito.authentication.CognitoAuthenticationChallengeException;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.log4j.Log4j2;
 
 @RestControllerAdvice
@@ -250,4 +251,12 @@ public class ApiExceptionControllerAdvice {
                 .businessErrorMessages(SortedSets.immutable.of(errorMessageUtil.getMessage("redis.connection.timeout")))
                 .build(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
+    @ExceptionHandler(CognitoAuthenticationChallengeException.class)
+    public ResponseEntity<CognitoAuthenticationChallenge> exception(CognitoAuthenticationChallengeException e) {
+        return ResponseEntity
+                .status(ChplHttpStatus.COGNITO_AUTHENTICATION_CHALLENGE.value())
+                .body(e.getChallenge());
+    }
+
 }

@@ -1,5 +1,60 @@
 # Release Notes
 
+## Version 46.2.0
+_3 September 2024_
+
+### Features
+* Detect duplicate version names per product when editing versions
+* Add validation for duplicate product names on product edit
+
+### Bug Fixes
+* Use correct HQL when removing criteria-SVAP association
+* Use updated HQL syntax for LocalDateTime comparison for Announcements
+
+---
+
+## Version 46.1.0
+_19 August 2024_
+
+### Features
+* Forgot password functionality for Cognito Users
+* Create endpoint POST /subscriptions/notifications-report
+* Create job to email report of subscription notifications to admin
+* Add 2024 rwt criteria w/o b6 and 2025 rwt criteria with b11
+
+### Flagged Features
+* Require b11 when flag is on, otherwise a9 or b11 is ok
+
+---
+
+## Version 46.0.0
+_5 August 2024_
+
+### Breaking Changes
+* Remove Cures Update Report and report-data/cures-update-report
+
+### Features
+* Add ability to edit Cognito user information
+* Support Developer Name and User tokens in messaging
+* Deprecate the activity/metadata/listings endpoint
+
+### Bug Fixes
+* Use correct SQL/HQL syntax for not null
+
+---
+
+## Version 45.1.0
+_22 July 2024_
+
+### Features
+* Build "Unique products" report in PowerBI
+* Allow disabling of sending emails throughout the app
+* Allow newly created user to change their password when logging in
+* Change 'Developer Status' col heading to 'Banned or Suspended'
+* Add report for Inactive Products
+
+---
+
 ## Version 45.0.0
 _8 July 2024_
 

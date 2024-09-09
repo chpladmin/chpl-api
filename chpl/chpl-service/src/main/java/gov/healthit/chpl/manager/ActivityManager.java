@@ -130,7 +130,7 @@ public class ActivityManager extends SecuredManager {
                 && AuthUtil.getCurrentUser().getAuthenticationSystem().equals(AuthenticationSystem.CHPL)) {
             currentUser = userDAO.getById(AuthUtil.getAuditId()).toDomain();
         } else if (AuthUtil.getCurrentUser() != null
-                && AuthUtil.getCurrentUser().getAuthenticationSystem().equals(AuthenticationSystem.COGNTIO)) {
+                && AuthUtil.getCurrentUser().getAuthenticationSystem().equals(AuthenticationSystem.COGNITO)) {
             currentUser = cognitoApiWrapper.getUserInfo(AuthUtil.getCurrentUser().getCognitoId());
         }
         return currentUser;
