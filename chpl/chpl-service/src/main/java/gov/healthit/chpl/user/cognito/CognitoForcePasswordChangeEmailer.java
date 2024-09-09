@@ -19,30 +19,45 @@ public class CognitoForcePasswordChangeEmailer {
     private ChplHtmlEmailBuilder htmlEmailBuilder;
     private ChplEmailFactory chplEmailFactory;
     private String chplUrl;
+    private String subject;
+    private String heading;
+    private String paragraph1;
+    private String paragraph2;
+    private String paragraph3;
 
     @Autowired
-    public CognitoForcePasswordChangeEmailer(ChplHtmlEmailBuilder htmlEmailBuilder, ChplEmailFactory chplEmailFactory, @Value("${chplUrlBegin}") String chplUrl) {
+    public CognitoForcePasswordChangeEmailer(ChplHtmlEmailBuilder htmlEmailBuilder, ChplEmailFactory chplEmailFactory,
+            @Value("${chplUrlBegin}") String chplUrl,
+            @Value("${cognito.forcePasswordChange.subject}") String subject,
+            @Value("${cognito.forcePasswordChange.heading}") String heading,
+            @Value("${cognito.forcePasswordChange.paragraph1}") String paragraph1,
+            @Value("${cognito.forcePasswordChange.paragraph2}") String paragraph2,
+            @Value("${cognito.forcePasswordChange.paragraph3}") String paragraph3) {
+
         this.htmlEmailBuilder = htmlEmailBuilder;
         this.chplEmailFactory = chplEmailFactory;
         this.chplUrl = chplUrl;
+        this.subject = subject;
+        this.heading = heading;
+        this.paragraph1 = paragraph1;
+        this.paragraph2 = paragraph2;
+        this.paragraph3 = paragraph3;
     }
 
     public void sendEmail(LoginCredentials credentials) throws EmailNotSentException {
         String htmlMessage = htmlEmailBuilder.initialize()
-                .heading("Force Password Change")
-                .paragraph(String.format("Please go to the <a href='%s'>CHPL</a> and login with this one-time password.", chplUrl),
-                        String.format("Email: %s<br />One-time Password: %s", credentials.getUserName(), credentials.getPassword()))
-                .paragraph("", "Your one-time password is valid for 7 days.")
+                .heading(heading)
+                .paragraph("", String.format(paragraph1, chplUrl))
+                .paragraph("", String.format(paragraph2, credentials.getUserName(), credentials.getPassword()))
+                .paragraph("", paragraph3)
                 .footer(PublicFooter.class)
                 .build();
-        LOGGER.info("Created HTML Message for " + credentials.getUserName());
 
         chplEmailFactory.emailBuilder()
             .recipients(List.of(credentials.getUserName()))
-            .subject("Confirm CHPL Account")
+            .subject(subject)
             .htmlMessage(htmlMessage)
             .sendEmail();
-        LOGGER.info("Sent email to " + credentials.getUserName());
     }
 
 }
