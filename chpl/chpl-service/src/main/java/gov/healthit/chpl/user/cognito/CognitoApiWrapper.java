@@ -263,6 +263,14 @@ public class CognitoApiWrapper {
                 .build();
 
         cognitoClient.adminSetUserPassword(request);
+
+        try {
+            User user = getUserInfo(userName);
+            user.setPasswordResetRequired(false);
+            updateUser(user);
+        } catch (UserRetrievalException e) {
+            LOGGER.error("Could not retrieve user: {}", userName, e);
+        }
     }
 
     public AdminAddUserToGroupResponse addUserToGroup(String email, String groupName) {
