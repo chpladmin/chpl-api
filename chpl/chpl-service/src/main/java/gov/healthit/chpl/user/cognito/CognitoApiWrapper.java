@@ -329,16 +329,20 @@ public class CognitoApiWrapper {
 
     @CacheEvict(value = CacheNames.COGNITO_USERS, key = "#user.cognitoId")
     public void updateUser(User user) throws UserRetrievalException {
+        List<AttributeType> attributes = new ArrayList<AttributeType>();
+        attributes.add(AttributeType.builder().name("email").value(user.getEmail()).build());
+        attributes.add(AttributeType.builder().name("name").value(user.getFullName()).build());
+        attributes.add(AttributeType.builder().name("email_verified").value("true").build());
+        attributes.add(AttributeType.builder().name("custom:forcePasswordReset").value(user.getPasswordResetRequired() ? "1" : "0").build());
+        //AttributeType.builder().name("phone_number_verified").value("true").build(),
+        if (StringUtils.isNotEmpty(user.getPhoneNumber())) {
+            attributes.add(AttributeType.builder().name("phone_number").value("+1" + user.getPhoneNumber().replaceAll("[^0-9.]", "")).build());
+        }
+
         AdminUpdateUserAttributesRequest request = AdminUpdateUserAttributesRequest.builder()
                 .userPoolId(userPoolId)
                 .username(user.getCognitoId().toString())
-                .userAttributes(List.of(
-                        AttributeType.builder().name("email").value(user.getEmail()).build(),
-                        AttributeType.builder().name("phone_number").value("+1" + user.getPhoneNumber().replaceAll("[^0-9.]", "")).build(),
-                        AttributeType.builder().name("name").value(user.getFullName()).build(),
-                        AttributeType.builder().name("email_verified").value("true").build(),
-                        AttributeType.builder().name("phone_number_verified").value("true").build(),
-                        AttributeType.builder().name("custom:forcePasswordReset").value(user.getPasswordResetRequired() ? "1" : "0").build()))
+                .userAttributes(attributes)
                 .build();
 
         cognitoClient.adminUpdateUserAttributes(request);
