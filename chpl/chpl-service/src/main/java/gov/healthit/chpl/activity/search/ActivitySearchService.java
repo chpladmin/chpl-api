@@ -1,6 +1,7 @@
 package gov.healthit.chpl.activity.search;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -8,6 +9,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.exception.ValidationException;
 import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -26,6 +28,12 @@ public class ActivitySearchService {
         this.activitySearchDao = activitySearchDao;
         this.searchRequestValidator = searchRequestValidator;
         this.searchRequestNormalizer = new SearchRequestNormalizer();
+    }
+
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).ACTIVITY, "
+            + "T(gov.healthit.chpl.permissions.domains.ActivityDomainPermissions).SEARCH)")
+    public List<ActivityConcept> getAllConcepts() {
+        return Stream.of(ActivityConcept.values()).toList();
     }
 
     @Transactional(readOnly = true)

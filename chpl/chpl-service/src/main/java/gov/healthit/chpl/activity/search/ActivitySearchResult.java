@@ -27,6 +27,7 @@ public class ActivitySearchResult implements Serializable {
     @JsonSerialize(using = SystemToEasternLocalDateTimeSerializer.class)
     private LocalDateTime activityDate;
     private String reason;
+    private String description;
     private String before;
     private String after;
     private String username;

@@ -41,13 +41,15 @@ public class SearchActivityController {
         this.activitySearchService = activitySearchService;
     }
 
-    @Operation(summary = "Get the list of all things that may have activity recorded about them. Use in the 'concepts' parameter of the search endpoint.",
+    @Operation(summary = "Get the list of all things that may have activity recorded about them. Use in the 'concepts' parameter of the search endpoint. "
+            + "This is only available to ROLE_ADMIN and ROLE_ONC users.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
     @RequestMapping(value = "/concepts", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public List<ActivityConcept> getAllActivityConcepts() {
-        return Stream.of(ActivityConcept.values()).toList();
+        return activitySearchService.getAllConcepts();
     }
 
     @Operation(summary = "Search across all recorded activity in the CHPL. This is only available to ROLE_ADMIN and ROLE_ONC users.",
