@@ -3,6 +3,7 @@ package gov.healthit.chpl.certificationCriteria;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -14,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterionWithAttributes.AllowedAttributes;
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
+import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.DateUtil;
 import lombok.extern.log4j.Log4j2;
@@ -47,14 +49,44 @@ public class CertificationCriteriaManager {
 
     public List<CertificationCriterionWithAttributes> getActiveWithAttributes(String certificationEdition,
             LocalDate startDay, LocalDate endDay) {
+        return  getActive(certificationEdition, startDay, endDay).stream()
+                .map(criterion -> buildCertificationCriterionWithAttributes(criterion))
+                .sorted(criterionComparator)
+                .collect(Collectors.toList());
+    }
+
+    public List<CertificationCriterion> getActive(String certificationEdition, LocalDate startDay, LocalDate endDay) {
         List<CertificationCriterion> activeCriteria = getActiveBetween(startDay, endDay);
         return activeCriteria.stream()
                 .filter(criterion -> StringUtils.isEmpty(certificationEdition)
                         ? true
                         : criterion.getCertificationEdition() == null || criterion.getCertificationEdition().equals(certificationEdition))
-                .map(criterion -> buildCertificationCriterionWithAttributes(criterion))
                 .sorted(criterionComparator)
                 .collect(Collectors.toList());
+    }
+
+    public List<CertificationCriterion> getCriteriaAvailableToListing(CertifiedProductSearchDetails listing) {
+        List<CertificationCriterion> allCriteriaAvailableToListing = Stream.concat(
+                getAttestedCriteria(listing).stream(),
+                getActiveCriteriaBasedOnEditionAndDate(listing).stream())
+            .distinct()
+            .sorted(criterionComparator)
+            .collect(Collectors.toList());
+        return allCriteriaAvailableToListing;
+    }
+
+    private List<CertificationCriterion> getAttestedCriteria(CertifiedProductSearchDetails listing) {
+        return listing.getCertificationResults().stream()
+                .filter(certResult -> certResult.getSuccess())
+                .map(certResult -> certResult.getCriterion())
+                .collect(Collectors.toList());
+    }
+
+    private List<CertificationCriterion> getActiveCriteriaBasedOnEditionAndDate(CertifiedProductSearchDetails listing) {
+        String edition = listing.getEdition() != null && !StringUtils.isEmpty(listing.getEdition().getName())
+                        ? listing.getEdition().getName() : null;
+
+        return this.getActive(edition, listing.getCertificationDay(), LocalDate.now());
     }
 
     @Transactional
