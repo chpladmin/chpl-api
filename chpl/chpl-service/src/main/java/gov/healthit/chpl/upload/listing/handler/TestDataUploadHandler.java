@@ -14,8 +14,8 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.CertificationResultTestData;
 import gov.healthit.chpl.domain.TestData;
-import gov.healthit.chpl.upload.listing.Headings;
 import gov.healthit.chpl.upload.listing.ListingUploadHandlerUtil;
+import gov.healthit.chpl.upload.listing.ListingUploadHeadingUtil.Heading;
 
 @Component("testDataUploadHandler")
 public class TestDataUploadHandler {
@@ -75,19 +75,19 @@ public class TestDataUploadHandler {
 
     private List<String> parseTestDataNames(CSVRecord certHeadingRecord, List<CSVRecord> certResultRecords) {
         List<String> values = uploadUtil.parseMultiRowField(
-                Headings.TEST_DATA, certHeadingRecord, certResultRecords);
+                Heading.TEST_DATA, certHeadingRecord, certResultRecords);
         return values;
     }
 
     private List<String> parseTestDataVersions(CSVRecord certHeadingRecord, List<CSVRecord> certResultRecords) {
         List<String> values = uploadUtil.parseMultiRowField(
-                Headings.TEST_DATA_VERSION, certHeadingRecord, certResultRecords);
+                Heading.TEST_DATA_VERSION, certHeadingRecord, certResultRecords);
         return values;
     }
 
     private List<String> parseTestDataAlterations(CSVRecord certHeadingRecord, List<CSVRecord> certResultRecords) {
         List<String> values = uploadUtil.parseMultiRowField(
-                Headings.TEST_DATA_ALTERATION_DESC, certHeadingRecord, certResultRecords);
+                Heading.TEST_DATA_ALTERATION_DESC, certHeadingRecord, certResultRecords);
         return values;
     }
 }

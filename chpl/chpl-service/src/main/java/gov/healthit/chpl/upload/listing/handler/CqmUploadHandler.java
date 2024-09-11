@@ -16,8 +16,8 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.CQMResultCertification;
 import gov.healthit.chpl.domain.CQMResultDetails;
-import gov.healthit.chpl.upload.listing.Headings;
 import gov.healthit.chpl.upload.listing.ListingUploadHandlerUtil;
+import gov.healthit.chpl.upload.listing.ListingUploadHeadingUtil.Heading;
 
 @Component("cqmUploadHandler")
 public class CqmUploadHandler {
@@ -107,19 +107,19 @@ public class CqmUploadHandler {
 
     private List<String> parseCqmNumbers(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
         List<String> values = uploadUtil.parseMultiRowField(
-                Headings.CQM_NUMBER, headingRecord, listingRecords);
+                Heading.CQM_NUMBER, headingRecord, listingRecords);
         return values;
     }
 
     private List<String> parseCqmVersions(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
         List<String> values = uploadUtil.parseMultiRowField(
-                Headings.CQM_VERSION, headingRecord, listingRecords);
+                Heading.CQM_VERSION, headingRecord, listingRecords);
         return values;
     }
 
     private List<String> parseCqmCriteria(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
         List<String> values = uploadUtil.parseMultiRowField(
-                Headings.CQM_CRITERIA, headingRecord, listingRecords);
+                Heading.CQM_CRITERIA, headingRecord, listingRecords);
         return values;
     }
 }

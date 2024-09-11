@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.text.ParseException;
 import java.util.Calendar;
+import java.util.stream.Stream;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -12,7 +13,9 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.upload.listing.ListingUploadHandlerUtil;
+import gov.healthit.chpl.upload.listing.ListingUploadHeadingUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 public class CertificationDateReviewerTest {
@@ -26,8 +29,13 @@ public class CertificationDateReviewerTest {
 
     @Before
     public void setup() {
+        CertificationCriterionService criteriaService = Mockito.mock(CertificationCriterionService.class);
+        Mockito.when(criteriaService.getAllowedCriterionHeadingsForNewListing())
+            .thenReturn(Stream.of("CRITERIA_170_315_A_1__C").toList());
+        ListingUploadHeadingUtil uploadHeadingUtil = new ListingUploadHeadingUtil(criteriaService);
+
         errorMessageUtil = Mockito.mock(ErrorMessageUtil.class);
-        uploadUtil = new ListingUploadHandlerUtil(errorMessageUtil);
+        uploadUtil = new ListingUploadHandlerUtil(uploadHeadingUtil, errorMessageUtil);
         reviewer = new CertificationDateReviewer(uploadUtil, errorMessageUtil);
     }
 

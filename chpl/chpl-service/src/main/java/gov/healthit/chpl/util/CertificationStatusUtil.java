@@ -1,6 +1,7 @@
 package gov.healthit.chpl.util;
 
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import gov.healthit.chpl.domain.CertificationStatus;
@@ -53,5 +54,12 @@ public final class CertificationStatusUtil {
     public static boolean isActive(CertifiedProductSearchDetails listing) {
         CertificationStatus currentStatusName = NullSafeEvaluator.eval(() -> listing.getCurrentStatus().getStatus(), null);
         return currentStatusName != null && getActiveStatusNames().contains(currentStatusName.getName());
+    }
+
+    public static boolean isNotRetired(CertifiedProductSearchDetails listing) {
+        CertificationStatus currentStatusName = NullSafeEvaluator.eval(() -> listing.getCurrentStatus().getStatus(), null);
+        return currentStatusName != null
+                && getNonretiredStatuses().stream().map(stat -> stat.getName()).collect(Collectors.toList())
+                .contains(currentStatusName.getName());
     }
 }
