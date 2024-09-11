@@ -4,6 +4,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.time.LocalDate;
+import java.util.stream.Stream;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -17,7 +18,9 @@ import gov.healthit.chpl.domain.DeveloperStatus;
 import gov.healthit.chpl.domain.DeveloperStatusEvent;
 import gov.healthit.chpl.domain.contact.PointOfContact;
 import gov.healthit.chpl.entity.developer.DeveloperStatusType;
+import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.upload.listing.ListingUploadHandlerUtil;
+import gov.healthit.chpl.upload.listing.ListingUploadHeadingUtil;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
@@ -47,6 +50,11 @@ public class DeveloperReviewerTest {
 
     @Before
     public void setup() {
+        CertificationCriterionService criteriaService = Mockito.mock(CertificationCriterionService.class);
+        Mockito.when(criteriaService.getAllowedCriterionHeadingsForNewListing())
+            .thenReturn(Stream.of("CRITERIA_170_315_A_1__C").toList());
+        ListingUploadHeadingUtil uploadHeadingUtil = new ListingUploadHeadingUtil(criteriaService);
+
         errorMessageUtil = Mockito.mock(ErrorMessageUtil.class);
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.developer.userAndSystemMismatch"), ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(SYSTEM_AND_USER_DATA_MISMATCH, i.getArgument(1), i.getArgument(2), i.getArgument(3)));
@@ -88,7 +96,7 @@ public class DeveloperReviewerTest {
             .thenAnswer(i -> String.format(NOT_FOUND, i.getArgument(1), ""));
 
         reviewer = new DeveloperReviewer(errorMessageUtil,
-                new ChplProductNumberUtil(), new ListingUploadHandlerUtil(errorMessageUtil));
+                new ChplProductNumberUtil(), new ListingUploadHandlerUtil(uploadHeadingUtil, errorMessageUtil));
     }
 
     @Test

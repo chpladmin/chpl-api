@@ -60,6 +60,7 @@ public class CertificationCriteriaManager {
     @Transactional
     public List<CertificationCriterion> getAll() {
         return this.certificationCriterionDao.findAll().stream()
+                .sorted(criterionComparator)
                 .collect(Collectors.toList());
     }
 

@@ -1,5 +1,6 @@
 package gov.healthit.chpl.web.controller;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.function.Function;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
+import gov.healthit.chpl.certifiedproduct.csv.ListingCsvWriter;
 import gov.healthit.chpl.domain.CertifiedProductSearchBasicDetails;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.ListingUpdateRequest;
@@ -32,9 +34,9 @@ import gov.healthit.chpl.listing.ics.IcsManager;
 import gov.healthit.chpl.listing.ics.ListingIcsNode;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.CertifiedProductManager;
-import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.util.FileUtils;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import gov.healthit.chpl.validation.listing.ListingValidatorFactory;
 import gov.healthit.chpl.validation.listing.Validator;
@@ -52,6 +54,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.log4j.Log4j2;
 
 @Tag(name = "certified-products", description = "Management of certified products.")
@@ -59,28 +63,34 @@ import lombok.extern.log4j.Log4j2;
 @RequestMapping("/certified_products")
 @Log4j2
 public class CertifiedProductController {
+    private static final String DOWNLOAD_FILE_FORMAT = "text/csv";
 
     private CertifiedProductDetailsManager cpdManager;
     private CertifiedProductManager cpManager;
     private IcsManager icsManager;
+    private ListingCsvWriter listingCsvWriter;
     private ActivityManager activityManager;
     private ListingValidatorFactory validatorFactory;
     private ChplProductNumberUtil chplProductNumberUtil;
+    private FileUtils fileUtils;
 
     @SuppressWarnings({
             "checkstyle:parameternumber"
     })
     @Autowired
     public CertifiedProductController(CertifiedProductDetailsManager cpdManager, CertifiedProductManager cpManager,
-            IcsManager icsManager, ActivityManager activityManager, ListingValidatorFactory validatorFactory,
+            IcsManager icsManager, ListingCsvWriter listingCsvWriter,
+            ActivityManager activityManager, ListingValidatorFactory validatorFactory,
             ErrorMessageUtil msgUtil, ChplProductNumberUtil chplProductNumberUtil,
-            DeveloperManager developerManager) {
+            FileUtils fileUtils) {
         this.cpdManager = cpdManager;
         this.cpManager = cpManager;
         this.icsManager = icsManager;
+        this.listingCsvWriter = listingCsvWriter;
         this.activityManager = activityManager;
         this.validatorFactory = validatorFactory;
         this.chplProductNumberUtil = chplProductNumberUtil;
+        this.fileUtils = fileUtils;
     }
 
     @Operation(summary = "Get all details for a specified certified product.",
@@ -168,6 +178,28 @@ public class CertifiedProductController {
         }
         certifiedProduct = validateCertifiedProduct(certifiedProduct);
         return certifiedProduct;
+    }
+
+    @Operation(summary = "Get all details from a certified product in a CSV format suitable for uploading.",
+            description = "Get all details from a certified product in a CSV format suitable for uploading.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
+    @RequestMapping(value = "/{certifiedProductId:^-?\\d+$}/download",
+            method = RequestMethod.GET,
+            produces = DOWNLOAD_FILE_FORMAT)
+    public void  downloadListingAsCsv(@PathVariable("certifiedProductId") Long certifiedProductId,
+            HttpServletRequest request, HttpServletResponse response) throws EntityRetrievalException {
+
+        CertifiedProductSearchDetails listing = cpdManager.getCertifiedProductDetails(certifiedProductId);
+        File tempFile = null;
+        try {
+            tempFile = listingCsvWriter.getAsCsv(listing);
+            String filenameInResponse = listing.getChplProductNumber().replaceAll("\\.", "-") + ".csv";
+            fileUtils.streamFileAsResponse(tempFile, DOWNLOAD_FILE_FORMAT, response, filenameInResponse);
+        } catch (IOException ex) {
+            LOGGER.error("Unable to create CSV file for listing ID + " + certifiedProductId, ex);
+        }
     }
 
     @Operation(summary = "Get all basic information for a specified certified product.  Does not include "
