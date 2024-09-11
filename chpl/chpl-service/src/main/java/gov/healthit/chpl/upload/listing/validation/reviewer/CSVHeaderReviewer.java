@@ -13,18 +13,21 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.ListingUpload;
-import gov.healthit.chpl.upload.listing.Headings;
 import gov.healthit.chpl.upload.listing.ListingUploadHandlerUtil;
+import gov.healthit.chpl.upload.listing.ListingUploadHeadingUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @Component
 public class CSVHeaderReviewer {
     private ListingUploadHandlerUtil uploadUtil;
+    private ListingUploadHeadingUtil headingUtil;
     private ErrorMessageUtil msgUtil;
 
     @Autowired
-    public CSVHeaderReviewer(ListingUploadHandlerUtil uploadUtil, ErrorMessageUtil msgUtil) {
+    public CSVHeaderReviewer(ListingUploadHandlerUtil uploadUtil, ListingUploadHeadingUtil headingUtil,
+            ErrorMessageUtil msgUtil) {
         this.uploadUtil = uploadUtil;
+        this.headingUtil = headingUtil;
         this.msgUtil = msgUtil;
     }
 
@@ -39,7 +42,7 @@ public class CSVHeaderReviewer {
 
     private void reviewUnrecognizedHeadings(CertifiedProductSearchDetails listing, CSVRecord heading) {
         heading.forEach(headingVal -> {
-            if (!StringUtils.isEmpty(headingVal) && Headings.getHeading(headingVal) == null) {
+            if (!StringUtils.isEmpty(headingVal) && !headingUtil.isValidHeading(headingVal)) {
                 listing.addWarningMessage(msgUtil.getMessage("listing.upload.unrecognizedHeading", headingVal));
             }
         });
@@ -93,11 +96,13 @@ public class CSVHeaderReviewer {
 
     public Set<String> findDuplicates(List<String> originalValues) {
         Set<String> setOfDuplicates = new LinkedHashSet<String>();
-        Set<Headings> setToTest = new LinkedHashSet<Headings>();
+        Set<String> setToTest = new LinkedHashSet<String>();
         for (String value : originalValues) {
-            if (!StringUtils.isEmpty(value) && Headings.getHeading(value) != null) {
-                if (!setToTest.add(Headings.getHeading(value))) {
-                    setOfDuplicates.add(value);
+            if (!StringUtils.isEmpty(value) && headingUtil.isValidHeading(value)) {
+                for (String headingOption : headingUtil.getHeadingOptions(value)) {
+                    if (!setToTest.add(headingOption)) {
+                        setOfDuplicates.add(value);
+                    }
                 }
             }
         }

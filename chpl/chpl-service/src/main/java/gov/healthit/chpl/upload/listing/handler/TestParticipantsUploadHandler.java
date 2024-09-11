@@ -15,8 +15,8 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.domain.TestParticipant;
 import gov.healthit.chpl.domain.TestParticipant.TestParticipantAge;
 import gov.healthit.chpl.domain.TestParticipant.TestParticipantEducation;
-import gov.healthit.chpl.upload.listing.Headings;
 import gov.healthit.chpl.upload.listing.ListingUploadHandlerUtil;
+import gov.healthit.chpl.upload.listing.ListingUploadHeadingUtil.Heading;
 import lombok.extern.log4j.Log4j2;
 
 @Component("testParticipantsUploadHandler")
@@ -140,55 +140,55 @@ public class TestParticipantsUploadHandler {
 
     private List<String> parseIds(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
         List<String> values = uploadUtil.parseMultiRowField(
-                Headings.PARTICIPANT_ID, headingRecord, listingRecords);
+                Heading.PARTICIPANT_ID, headingRecord, listingRecords);
         return values;
     }
 
     private List<String> parseGenders(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
         List<String> values = uploadUtil.parseMultiRowField(
-                Headings.PARTICIPANT_GENDER, headingRecord, listingRecords);
+                Heading.PARTICIPANT_GENDER, headingRecord, listingRecords);
         return values;
     }
 
     private List<String> parseAges(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
         List<String> values = uploadUtil.parseMultiRowField(
-                Headings.PARTICIPANT_AGE, headingRecord, listingRecords);
+                Heading.PARTICIPANT_AGE, headingRecord, listingRecords);
         return values;
     }
 
     private List<String> parseEducations(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
         List<String> values = uploadUtil.parseMultiRowField(
-                Headings.PARTICIPANT_EDUCATION, headingRecord, listingRecords);
+                Heading.PARTICIPANT_EDUCATION, headingRecord, listingRecords);
         return values;
     }
 
     private List<String> parseOccupations(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
         List<String> values = uploadUtil.parseMultiRowField(
-                Headings.PARTICIPANT_OCCUPATION, headingRecord, listingRecords);
+                Heading.PARTICIPANT_OCCUPATION, headingRecord, listingRecords);
         return values;
     }
 
     private List<String> parseProfessionalExperience(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
         List<String> values = uploadUtil.parseMultiRowField(
-                Headings.PARTICIPANT_PROFESSIONAL_EXPERIENCE, headingRecord, listingRecords);
+                Heading.PARTICIPANT_PROFESSIONAL_EXPERIENCE, headingRecord, listingRecords);
         return values;
     }
 
     private List<String> parseComputerExperience(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
         List<String> values = uploadUtil.parseMultiRowField(
-                Headings.PARTICIPANT_COMPUTER_EXPERIENCE, headingRecord, listingRecords);
+                Heading.PARTICIPANT_COMPUTER_EXPERIENCE, headingRecord, listingRecords);
         return values;
     }
 
     private List<String> parseProductExperience(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
         List<String> values = uploadUtil.parseMultiRowField(
-                Headings.PARTICIPANT_PRODUCT_EXPERIENCE, headingRecord, listingRecords);
+                Heading.PARTICIPANT_PRODUCT_EXPERIENCE, headingRecord, listingRecords);
         return values;
     }
 
     private List<String> parseAssistiveTechnologyNeeds(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
         List<String> values = uploadUtil.parseMultiRowField(
-                Headings.PARTICIPANT_ASSISTIVE_TECH, headingRecord, listingRecords);
+                Heading.PARTICIPANT_ASSISTIVE_TECH, headingRecord, listingRecords);
         return values;
     }
 }

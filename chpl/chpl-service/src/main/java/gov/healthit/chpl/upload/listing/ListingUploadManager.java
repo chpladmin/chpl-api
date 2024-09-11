@@ -50,6 +50,7 @@ import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.SchedulerManager;
 import gov.healthit.chpl.scheduler.job.ListingUploadValidationJob;
+import gov.healthit.chpl.upload.listing.ListingUploadHeadingUtil.Heading;
 import gov.healthit.chpl.upload.listing.handler.CertificationDateHandler;
 import gov.healthit.chpl.upload.listing.handler.ListingDetailsUploadHandler;
 import gov.healthit.chpl.upload.listing.normalizer.BaselineStandardAsOfCertificationDayNormalizer;
@@ -394,7 +395,7 @@ public class ListingUploadManager {
     }
 
     private void checkRequiredHeadings(CSVRecord headingRecord) throws ValidationException {
-        List<String> missingRequiredHeadings = Headings.getRequiredHeadings().stream()
+        List<String> missingRequiredHeadings = ListingUploadHeadingUtil.getRequiredHeadings().stream()
                 .filter(heading -> !uploadUtil.hasHeading(heading, headingRecord))
                 .map(headingVal -> headingVal.getNamesAsString())
                 .collect(Collectors.toList());
@@ -405,7 +406,7 @@ public class ListingUploadManager {
     }
 
     private void checkRequiredFields(CSVRecord headingRecord, List<CSVRecord> listingRecords) throws ValidationException {
-        List<String> headingsWithMissingData = Headings.getRequiredHeadings().stream()
+        List<String> headingsWithMissingData = ListingUploadHeadingUtil.getRequiredHeadings().stream()
                 .filter(heading -> StringUtils.isEmpty(uploadUtil.parseSingleRowField(heading, headingRecord, listingRecords)))
                 .map(headingVal -> headingVal.getNamesAsString())
                 .collect(Collectors.toList());
@@ -415,7 +416,7 @@ public class ListingUploadManager {
         }
     }
 
-    private String parseRequiredField(Headings heading, CSVRecord headingRecord, List<CSVRecord> listingRecords) {
+    private String parseRequiredField(Heading heading, CSVRecord headingRecord, List<CSVRecord> listingRecords) {
         String value = null;
         try {
             value = uploadUtil.parseRequiredSingleRowField(
@@ -429,7 +430,7 @@ public class ListingUploadManager {
     private CertificationBody determineAcb(CSVRecord headingRecord, List<CSVRecord> listingRecords, String chplProductNumber) {
         CertificationBody acb = null;
         // first look for an ACB name in the file
-        String acbName = uploadUtil.parseSingleRowField(Headings.CERTIFICATION_BODY_NAME, headingRecord, listingRecords);
+        String acbName = uploadUtil.parseSingleRowField(Heading.CERTIFICATION_BODY_NAME, headingRecord, listingRecords);
         if (!StringUtils.isEmpty(acbName)) {
             CertificationBody acbByName = acbDao.getByName(acbName);
             if (acbByName != null) {
@@ -455,7 +456,7 @@ public class ListingUploadManager {
         while (listingCsvRecordsIter.hasNext()) {
             CSVRecord record = listingCsvRecordsIter.next();
             String recordUniqueId = uploadUtil.parseRequiredSingleRowField(
-                    Headings.UNIQUE_ID, headingRecord, record);
+                    Heading.UNIQUE_ID, headingRecord, record);
             if (chplProductNumber == null) {
                 chplProductNumber = new String(recordUniqueId);
                 listingCsvRecords.add(record);
@@ -470,10 +471,10 @@ public class ListingUploadManager {
         ListingUpload listingUploadMetadata = new ListingUpload();
         listingUploadMetadata.getRecords().add(headingRecord);
         listingUploadMetadata.getRecords().addAll(listingCsvRecords);
-        listingUploadMetadata.setChplProductNumber(parseRequiredField(Headings.UNIQUE_ID, headingRecord, listingCsvRecords));
-        listingUploadMetadata.setDeveloper(parseRequiredField(Headings.DEVELOPER, headingRecord, listingCsvRecords));
-        listingUploadMetadata.setProduct(parseRequiredField(Headings.PRODUCT, headingRecord, listingCsvRecords));
-        listingUploadMetadata.setVersion(parseRequiredField(Headings.VERSION, headingRecord, listingCsvRecords));
+        listingUploadMetadata.setChplProductNumber(parseRequiredField(Heading.UNIQUE_ID, headingRecord, listingCsvRecords));
+        listingUploadMetadata.setDeveloper(parseRequiredField(Heading.DEVELOPER, headingRecord, listingCsvRecords));
+        listingUploadMetadata.setProduct(parseRequiredField(Heading.PRODUCT, headingRecord, listingCsvRecords));
+        listingUploadMetadata.setVersion(parseRequiredField(Heading.VERSION, headingRecord, listingCsvRecords));
         CertificationBody acb = null;
         try {
             acb = determineAcb(headingRecord, listingCsvRecords, listingUploadMetadata.getChplProductNumber());

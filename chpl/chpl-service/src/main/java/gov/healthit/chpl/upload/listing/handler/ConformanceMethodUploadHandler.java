@@ -14,8 +14,8 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.conformanceMethod.domain.CertificationResultConformanceMethod;
 import gov.healthit.chpl.conformanceMethod.domain.ConformanceMethod;
-import gov.healthit.chpl.upload.listing.Headings;
 import gov.healthit.chpl.upload.listing.ListingUploadHandlerUtil;
+import gov.healthit.chpl.upload.listing.ListingUploadHeadingUtil.Heading;
 
 @Component("conformanceMethodUploadHandler")
 public class ConformanceMethodUploadHandler {
@@ -67,13 +67,13 @@ public class ConformanceMethodUploadHandler {
 
     private List<String> parseConformanceMethodNames(CSVRecord certHeadingRecord, List<CSVRecord> certResultRecords) {
         List<String> values = uploadUtil.parseMultiRowField(
-                Headings.CONFORMANCE_METHOD, certHeadingRecord, certResultRecords);
+                Heading.CONFORMANCE_METHOD, certHeadingRecord, certResultRecords);
         return values;
     }
 
     private List<String> parseConformanceMethodVersions(CSVRecord certHeadingRecord, List<CSVRecord> certResultRecords) {
         List<String> values = uploadUtil.parseMultiRowField(
-                Headings.CONFORMANCE_METHOD_VERSION, certHeadingRecord, certResultRecords);
+                Heading.CONFORMANCE_METHOD_VERSION, certHeadingRecord, certResultRecords);
         return values;
     }
 }

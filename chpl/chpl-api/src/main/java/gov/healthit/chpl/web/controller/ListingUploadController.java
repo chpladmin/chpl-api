@@ -131,9 +131,10 @@ public class ListingUploadController {
     @RequestMapping(value = "/{id:^-?\\d+$}/uploaded-file", method = RequestMethod.GET, produces = "text/csv")
     public void streamUploadedFile(@PathVariable("id") Long confirmedListingId,
             HttpServletResponse response) throws EntityRetrievalException, IOException {
+        CertifiedProductSearchDetails listing = cpdManager.getCertifiedProductDetails(confirmedListingId);
         List<List<String>> rows = listingUploadManager.getUploadedCsvRecords(confirmedListingId);
 
-        File file = new File("listing-" + confirmedListingId + "-upload.csv");
+        File file = new File(listing.getChplProductNumber().replaceAll("\\.", "-") + "-original.csv");
         try (OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8);
                 CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.EXCEL)) {
             writer.write('\ufeff');

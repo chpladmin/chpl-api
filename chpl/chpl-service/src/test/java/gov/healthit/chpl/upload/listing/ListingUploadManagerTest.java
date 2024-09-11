@@ -11,6 +11,7 @@ import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.List;
+import java.util.stream.Stream;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -38,6 +39,7 @@ import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.SchedulerManager;
+import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.upload.listing.handler.CertificationDateHandler;
 import gov.healthit.chpl.upload.listing.handler.ListingDetailsUploadHandler;
 import gov.healthit.chpl.upload.listing.normalizer.BaselineStandardAsOfCertificationDayNormalizer;
@@ -66,6 +68,14 @@ public class ListingUploadManagerTest {
     EntityRetrievalException, EntityCreationException, IOException, FileNotFoundException {
         loadFiles();
 
+        CertificationCriterionService criteriaService = Mockito.mock(CertificationCriterionService.class);
+        Mockito.when(criteriaService.getAllowedCriterionHeadingsForNewListing())
+            .thenReturn(Stream.of("CRITERIA_170_315_A_1__C", "CRITERIA_170_315_A_2__C", "CRITERIA_170_315_A_3__C",
+                    "CRITERIA_170_315_A_4__C", "CRITERIA_170_315_D_4__C", "CRITERIA_170_315_D_4_Cures__C",
+                    "CRITERIA_170_315_B_3_Cures__C", "CRITERIA_170_315_D_11__C", "CRITERIA_170_315_D_12_Cures__C",
+                    "CRITERIA_170_315_B_3__C", "CRITERIA_170_314_B_5A__C").toList());
+        ListingUploadHeadingUtil uploadHeadingUtil = new ListingUploadHeadingUtil(criteriaService);
+
         msgUtil = Mockito.mock(ErrorMessageUtil.class);
         acbDao = Mockito.mock(CertificationBodyDAO.class);
         chplProductNumberUtil = Mockito.mock(ChplProductNumberUtil.class);
@@ -86,7 +96,7 @@ public class ListingUploadManagerTest {
 
         Mockito.doNothing().when(listingNormalizer).normalize(ArgumentMatchers.any());
 
-        uploadUtil = new ListingUploadHandlerUtil(msgUtil);
+        uploadUtil = new ListingUploadHandlerUtil(uploadHeadingUtil, msgUtil);
         uploadManager = new ListingUploadManager(Mockito.mock(ListingDetailsUploadHandler.class),
                 certDateHandler,
                 listingNormalizer,

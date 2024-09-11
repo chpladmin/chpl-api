@@ -18,8 +18,6 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import jakarta.validation.ValidationException;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
@@ -31,8 +29,10 @@ import org.apache.poi.ss.util.CellRangeAddress;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.upload.listing.ListingUploadHeadingUtil.Heading;
 import gov.healthit.chpl.util.DateUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import jakarta.validation.ValidationException;
 import lombok.extern.log4j.Log4j2;
 
 @Component("listingUploadHandlerUtil")
@@ -40,13 +40,16 @@ import lombok.extern.log4j.Log4j2;
 public class ListingUploadHandlerUtil {
     private static final String CRITERION_COL_HEADING_REGEX = "CRITERIA_(\\d+)_(\\d+)_([A-Z])_([0-9]+)([A-Z])?(_CURES)?_+C";
     protected static final String CRITERIA_CURES_COL_HEADING = "CURES";
-    private static final String UPLOAD_DATE_FORMAT = "yyyyMMdd";
+    public static final String UPLOAD_DATE_FORMAT = "yyyyMMdd";
     private DateFormat dateFormat;
     private Pattern criterionColHeadingPattern;
+    private ListingUploadHeadingUtil uploadHeadingUtil;
     private ErrorMessageUtil msgUtil;
 
     @Autowired
-    public ListingUploadHandlerUtil(ErrorMessageUtil msgUtil) {
+    public ListingUploadHandlerUtil(ListingUploadHeadingUtil uploadHeadingUtil,
+            ErrorMessageUtil msgUtil) {
+        this.uploadHeadingUtil = uploadHeadingUtil;
         this.msgUtil = msgUtil;
         this.dateFormat = new SimpleDateFormat(UPLOAD_DATE_FORMAT);
         this.criterionColHeadingPattern = Pattern.compile(CRITERION_COL_HEADING_REGEX);
@@ -80,7 +83,7 @@ public class ListingUploadHandlerUtil {
         int nextCertResultStartIndex = -1;
         for (int i = startIndex; i < headingRecord.size() && nextCertResultStartIndex < 0; i++) {
             String currHeading = headingRecord.get(i);
-            if (looksLikeCriteriaStart(currHeading)) {
+            if (uploadHeadingUtil.isCriterionHeading(currHeading)) {
                 nextCertResultStartIndex = i;
             }
         }
@@ -193,13 +196,13 @@ public class ListingUploadHandlerUtil {
         return true;
     }
 
-    public String parseRequiredSingleRowField(Headings field, CSVRecord headingRecord, List<CSVRecord> listingRecords)
+    public String parseRequiredSingleRowField(Heading heading, CSVRecord headingRecord, List<CSVRecord> listingRecords)
             throws ValidationException {
         String fieldValue = null;
-        int fieldHeadingIndex = getColumnIndexOfHeading(field, headingRecord);
+        int fieldHeadingIndex = getColumnIndexOfHeading(heading, headingRecord);
         if (fieldHeadingIndex < 0) {
             throw new ValidationException(msgUtil.getMessage("listing.upload.requiredHeadingNotFound",
-                    field.getNamesAsString()));
+                    heading.getNamesAsString()));
         }
         for (CSVRecord listingRecord : listingRecords) {
             if (StringUtils.isEmpty(fieldValue) && fieldHeadingIndex < listingRecord.size()) {
@@ -212,16 +215,16 @@ public class ListingUploadHandlerUtil {
         return fieldValue;
     }
 
-    public String parseRequiredSingleRowField(Headings field, CSVRecord headingRecord, CSVRecord listingRecord)
+    public String parseRequiredSingleRowField(Heading heading, CSVRecord headingRecord, CSVRecord listingRecord)
             throws ValidationException {
         List<CSVRecord> data = new ArrayList<CSVRecord>();
         data.add(listingRecord);
-        return parseRequiredSingleRowField(field, headingRecord, data);
+        return parseRequiredSingleRowField(heading, headingRecord, data);
     }
 
-    public String parseSingleRowField(Headings field, CSVRecord headingRecord, List<CSVRecord> listingRecords) {
+    public String parseSingleRowField(Heading heading, CSVRecord headingRecord, List<CSVRecord> listingRecords) {
         String fieldValue = null;
-        int fieldHeadingIndex = getColumnIndexOfHeading(field, headingRecord);
+        int fieldHeadingIndex = getColumnIndexOfHeading(heading, headingRecord);
         if (fieldHeadingIndex < 0) {
             return null;
         }
@@ -249,34 +252,34 @@ public class ListingUploadHandlerUtil {
         return fieldValue;
     }
 
-    public String parseSingleRowField(Headings field, CSVRecord headingRecord, CSVRecord listingRecord) {
+    public String parseSingleRowField(Heading heading, CSVRecord headingRecord, CSVRecord listingRecord) {
         List<CSVRecord> data = new ArrayList<CSVRecord>();
         data.add(listingRecord);
-        return parseSingleRowField(field, headingRecord, data);
+        return parseSingleRowField(heading, headingRecord, data);
     }
 
-    public Boolean parseSingleRowFieldAsBoolean(Headings field, CSVRecord headingRecord, List<CSVRecord> listingRecords)
+    public Boolean parseSingleRowFieldAsBoolean(Heading heading, CSVRecord headingRecord, List<CSVRecord> listingRecords)
             throws ValidationException {
-        String fieldValue = parseSingleRowField(field, headingRecord, listingRecords);
+        String fieldValue = parseSingleRowField(heading, headingRecord, listingRecords);
         return parseBoolean(fieldValue);
     }
 
-    public Date parseSingleRowFieldAsDate(Headings field, CSVRecord headingRecord, List<CSVRecord> listingRecords)
+    public Date parseSingleRowFieldAsDate(Heading heading, CSVRecord headingRecord, List<CSVRecord> listingRecords)
             throws ValidationException {
-        String fieldValue = parseSingleRowField(field, headingRecord, listingRecords);
+        String fieldValue = parseSingleRowField(heading, headingRecord, listingRecords);
         return parseDate(fieldValue);
     }
 
-    public LocalDate parseSingleRowFieldAsLocalDate(Headings field, CSVRecord headingRecord, List<CSVRecord> listingRecords)
+    public LocalDate parseSingleRowFieldAsLocalDate(Heading heading, CSVRecord headingRecord, List<CSVRecord> listingRecords)
             throws ValidationException {
-        String fieldValue = parseSingleRowField(field, headingRecord, listingRecords);
+        String fieldValue = parseSingleRowField(heading, headingRecord, listingRecords);
         return parseLocalDate(fieldValue);
     }
 
-    public List<String> parseMultiRowField(Headings field, CSVRecord headingRecord, List<CSVRecord> listingRecords)
+    public List<String> parseMultiRowField(Heading heading, CSVRecord headingRecord, List<CSVRecord> listingRecords)
             throws ValidationException {
             List<String> fieldValues = new ArrayList<String>();
-            int fieldHeadingIndex = getColumnIndexOfHeading(field, headingRecord);
+            int fieldHeadingIndex = getColumnIndexOfHeading(heading, headingRecord);
             if (fieldHeadingIndex < 0) {
                 return null;
             }
@@ -294,11 +297,10 @@ public class ListingUploadHandlerUtil {
             return fieldValues;
     }
 
-    public List<String> parseMultiRowFieldWithoutEmptyValues(
-            Headings field, CSVRecord headingRecord, List<CSVRecord> listingRecords)
+    public List<String> parseMultiRowFieldWithoutEmptyValues(Heading heading, CSVRecord headingRecord, List<CSVRecord> listingRecords)
             throws ValidationException {
-            List<String> fieldValues = parseMultiRowField(field, headingRecord, listingRecords);
-            return fieldValues == null ? null : removeEmptyValues(fieldValues);
+        List<String> fieldValues = parseMultiRowField(heading, headingRecord, listingRecords);
+        return fieldValues == null ? null : removeEmptyValues(fieldValues);
     }
 
     private List<String> removeEmptyValues(List<String> origList) {
@@ -307,7 +309,7 @@ public class ListingUploadHandlerUtil {
             .collect(Collectors.toList());
     }
 
-    public boolean hasHeading(Headings heading, CSVRecord headingRecord) {
+    public boolean hasHeading(Heading heading, CSVRecord headingRecord) {
         return getColumnIndexOfHeading(heading, headingRecord) >= 0;
     }
 
@@ -316,7 +318,7 @@ public class ListingUploadHandlerUtil {
         int certResultStartIndex = -1, certResultEndIndex = -1;
         for (int i = startIndex; i < headingRecord.size() && (certResultStartIndex < 0 || certResultEndIndex < 0); i++) {
             String currHeading = headingRecord.get(i);
-            if (looksLikeCriteriaStart(currHeading)) {
+            if (uploadHeadingUtil.isCriterionHeading(currHeading)) {
                 if (certResultStartIndex < 0) {
                     certResultStartIndex = i;
                 } else if (certResultEndIndex < 0) {
@@ -335,35 +337,27 @@ public class ListingUploadHandlerUtil {
         return new CellRangeAddress(0, dataRecords.size() > 0 ? dataRecords.size() - 1 : 0, certResultStartIndex, certResultEndIndex);
     }
 
-    private boolean looksLikeCriteriaStart(String headingVal) {
-        Headings heading = Headings.getHeading(headingVal);
-        if (heading != null && heading.name().startsWith("CRITERIA")) {
-            return true;
-        }
-        return false;
-    }
-
     private boolean hasHeading(CSVRecord record) {
         Iterator<String> iter = record.iterator();
         while (iter.hasNext()) {
             String currRecordValue = StringUtils.normalizeSpace(iter.next());
             if (currRecordValue != null && !StringUtils.isEmpty(currRecordValue)
-                    && Headings.getHeading(currRecordValue) != null) {
+                    && uploadHeadingUtil.isValidHeading(currRecordValue)) {
                 return true;
             }
         }
         return false;
     }
 
-    private int getColumnIndexOfHeading(Headings heading, CSVRecord headingRecord) {
+    private int getColumnIndexOfHeading(Heading heading, CSVRecord headingRecord) {
         int index = 0;
         Iterator<String> iter = headingRecord.iterator();
         while (iter.hasNext()) {
             String currHeadingValue = iter.next();
             String normalizedCurrHeading = StringUtils.normalizeSpace(currHeadingValue);
             if (normalizedCurrHeading != null
-                    && Headings.getHeading(normalizedCurrHeading) != null
-                    && Headings.getHeading(normalizedCurrHeading).equals(heading)) {
+                    && ListingUploadHeadingUtil.getHeading(normalizedCurrHeading) != null
+                    && ListingUploadHeadingUtil.getHeading(normalizedCurrHeading).equals(heading)) {
                 return index;
             }
             index++;
@@ -379,24 +373,28 @@ public class ListingUploadHandlerUtil {
             result = false;
         }
 
-        if (value.equalsIgnoreCase("t") || value.equalsIgnoreCase("true") || value.equalsIgnoreCase("yes")
-                || value.equalsIgnoreCase("y")) {
-            result = true;
-        } else if (value.equalsIgnoreCase("f") || value.equalsIgnoreCase("false") || value.equalsIgnoreCase("no")
-                || value.equalsIgnoreCase("n")) {
-            result = false;
-        }
-
-        try {
-            double numValue = Double.parseDouble(value);
-            if (numValue > 0) {
+        if (result == null) {
+            if (value.equalsIgnoreCase("t") || value.equalsIgnoreCase("true") || value.equalsIgnoreCase("yes")
+                    || value.equalsIgnoreCase("y")) {
                 result = true;
-            } else {
+            } else if (value.equalsIgnoreCase("f") || value.equalsIgnoreCase("false") || value.equalsIgnoreCase("no")
+                    || value.equalsIgnoreCase("n")) {
                 result = false;
             }
-        } catch (NumberFormatException ex) {
-            if (!StringUtils.isBlank(value)) {
-                LOGGER.error("Could not parse " + value + " as an integer. " + ex.getMessage());
+        }
+
+        if (result == null) {
+            try {
+                double numValue = Double.parseDouble(value);
+                if (numValue > 0) {
+                    result = true;
+                } else {
+                    result = false;
+                }
+            } catch (NumberFormatException ex) {
+                if (!StringUtils.isBlank(value)) {
+                    LOGGER.error("Could not parse " + value + " as an integer. " + ex.getMessage());
+                }
             }
         }
 
