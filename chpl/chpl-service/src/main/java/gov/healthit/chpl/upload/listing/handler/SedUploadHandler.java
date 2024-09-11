@@ -23,8 +23,8 @@ import gov.healthit.chpl.domain.CertifiedProductSed;
 import gov.healthit.chpl.domain.CertifiedProductUcdProcess;
 import gov.healthit.chpl.domain.TestParticipant;
 import gov.healthit.chpl.domain.TestTask;
-import gov.healthit.chpl.upload.listing.Headings;
 import gov.healthit.chpl.upload.listing.ListingUploadHandlerUtil;
+import gov.healthit.chpl.upload.listing.ListingUploadHeadingUtil.Heading;
 import jakarta.validation.ValidationException;
 import lombok.extern.log4j.Log4j2;
 
@@ -271,10 +271,10 @@ public class SedUploadHandler {
     }
 
     private List<String> parseTaskIds(CSVRecord certHeadingRecord, List<CSVRecord> certResultRecords) {
-        return uploadUtil.parseMultiRowFieldWithoutEmptyValues(Headings.TASK_ID, certHeadingRecord, certResultRecords);
+        return uploadUtil.parseMultiRowFieldWithoutEmptyValues(Heading.TASK_ID, certHeadingRecord, certResultRecords);
     }
 
     private List<String> parseParticipantIds(CSVRecord certHeadingRecord, List<CSVRecord> certResultRecords) {
-        return uploadUtil.parseMultiRowFieldWithoutEmptyValues(Headings.PARTICIPANT_ID, certHeadingRecord, certResultRecords);
+        return uploadUtil.parseMultiRowFieldWithoutEmptyValues(Heading.PARTICIPANT_ID, certHeadingRecord, certResultRecords);
     }
 }
