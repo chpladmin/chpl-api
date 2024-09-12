@@ -254,4 +254,8 @@
         <AppenderRef ref="criteriaMigrationReportCreatorJob" />
         <AppenderRef ref="criteriaMigrationReportCreatorJobJson" />
     </Logger>
+    <Logger name="cognitoMassRequirePasswordChangeJobLogger" level="INFO" additivity="false">
+        <AppenderRef ref="cognitoMassRequirePasswordChangeJob" />
+        <AppenderRef ref="cognitoMassRequirePasswordChangeJobJson" />
+    </Logger>
 </Loggers>

@@ -199,4 +199,7 @@
     <Logger name="updateCurrentCertificationStatusJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="updateCurrentCertificationStatusJob" />
     </Logger>
+    <Logger name="cognitoMassRequirePasswordChangeJobLogger" level="INFO" additivity="false">
+        <AppenderRef ref="cognitoMassRequirePasswordChangeJob" />
+    </Logger>
 </Loggers>

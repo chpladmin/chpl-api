@@ -14,7 +14,7 @@ import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.user.cognito.CognitoApiWrapper;
 import lombok.extern.log4j.Log4j2;
 
-@Log4j2
+@Log4j2(topic = "cognitoMassRequirePasswordChangeJobLogger")
 public class CognitoMassRequirePasswordChangeJob extends QuartzJob  {
     @Autowired
     private CognitoApiWrapper cognitoApiWrapper;
