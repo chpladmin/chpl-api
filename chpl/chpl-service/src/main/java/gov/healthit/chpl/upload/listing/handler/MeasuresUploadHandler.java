@@ -8,8 +8,6 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import jakarta.validation.ValidationException;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.lang3.StringUtils;
@@ -21,8 +19,9 @@ import gov.healthit.chpl.domain.ListingMeasure;
 import gov.healthit.chpl.domain.Measure;
 import gov.healthit.chpl.domain.MeasureDomain;
 import gov.healthit.chpl.domain.MeasureType;
-import gov.healthit.chpl.upload.listing.Headings;
 import gov.healthit.chpl.upload.listing.ListingUploadHandlerUtil;
+import gov.healthit.chpl.upload.listing.ListingUploadHeadingUtil.Heading;
+import jakarta.validation.ValidationException;
 import lombok.extern.log4j.Log4j2;
 
 @Component("measuresUploadHandler")
@@ -69,25 +68,25 @@ public class MeasuresUploadHandler {
 
     private List<String> parseMeasureDomains(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
         List<String> values = uploadUtil.parseMultiRowField(
-                Headings.MEASURE_DOMAIN, headingRecord, listingRecords);
+                Heading.MEASURE_DOMAIN, headingRecord, listingRecords);
         return values;
     }
 
     private List<String> parseMeasureRequiredTests(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
         List<String> values = uploadUtil.parseMultiRowField(
-                Headings.MEASURE_REQUIRED_TEST, headingRecord, listingRecords);
+                Heading.MEASURE_REQUIRED_TEST, headingRecord, listingRecords);
         return values;
     }
 
     private List<String> parseMeasureTypeValues(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
         List<String> values = uploadUtil.parseMultiRowField(
-                Headings.MEASURE_TYPE, headingRecord, listingRecords);
+                Heading.MEASURE_TYPE, headingRecord, listingRecords);
         return values;
     }
 
     private List<String> parseMeasureAssociatedCriteria(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
         List<String> values = uploadUtil.parseMultiRowField(
-                Headings.MEASURE_ASSOCIATED_CRITERIA, headingRecord, listingRecords);
+                Heading.MEASURE_ASSOCIATED_CRITERIA, headingRecord, listingRecords);
         return values;
     }
 
