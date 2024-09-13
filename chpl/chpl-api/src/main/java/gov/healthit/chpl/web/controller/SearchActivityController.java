@@ -63,6 +63,9 @@ public class SearchActivityController {
             })
     @RequestMapping(value = "/search", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody ActivitySearchResponse search(
+        @Parameter(description = "Text from the description or reason entered with an activity",
+            allowEmptyValue = true, in = ParameterIn.QUERY, name = "searchTerm")
+            @RequestParam(value = "searchTerm", required = false, defaultValue = "") String searchTerm,
         @Parameter(description = "One or more of the available activity concepts separated by ','. Ex: CERTIFIED_PRODUCT,DEVELOPER",
             allowEmptyValue = true, in = ParameterIn.QUERY, name = "concepts")
             @RequestParam(value = "concepts", required = false, defaultValue = "") String conceptsDelimited,
@@ -88,6 +91,7 @@ public class SearchActivityController {
         throws InvalidArgumentsException, ValidationException {
 
         SearchRequest searchRequest = SearchRequest.builder()
+                .searchTerm(searchTerm)
                 .concepts(convertToSetWithDelimeter(conceptsDelimited, ","))
                 .activityDateStart(activityDateStart)
                 .activityDateEnd(activityDateEnd)

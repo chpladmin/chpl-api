@@ -39,6 +39,9 @@ public class ActivitySearchDao extends BaseDAOImpl {
                 + "FROM ActivityEntity a "
                 + "JOIN FETCH a.concept c "
                 + "WHERE a.deleted = false ";
+        if (!StringUtils.isEmpty(searchRequest.getSearchTerm())) {
+            queryStr += " AND (UPPER(a.description) LIKE :searchTerm OR UPPER(a.reason) LIKE :searchTerm) ";
+        }
         if (!CollectionUtils.isEmpty(searchRequest.getConcepts())) {
             queryStr += " AND c.concept IN (:conceptNames) ";
         }
@@ -66,6 +69,9 @@ public class ActivitySearchDao extends BaseDAOImpl {
         query.setFirstResult(firstRecord);
         query.setMaxResults(searchRequest.getPageSize());
 
+        if (!StringUtils.isEmpty(searchRequest.getSearchTerm())) {
+            query.setParameter("searchTerm", "%" + searchRequest.getSearchTerm().toUpperCase() + "%");
+        }
         if (!CollectionUtils.isEmpty(searchRequest.getConcepts())) {
             query.setParameter("conceptNames", searchRequest.getConcepts());
         }
@@ -95,20 +101,26 @@ public class ActivitySearchDao extends BaseDAOImpl {
 
     @Transactional
     public Long getTotalActivityCount(SearchRequest searchRequest) {
-        String queryStr = "SELECT COUNT(ae) "
-                + "FROM ActivityEntity ae "
-                + "JOIN ae.concept ac "
-                + "WHERE ae.deleted = false ";
+        String queryStr = "SELECT COUNT(a) "
+                + "FROM ActivityEntity a "
+                + "JOIN a.concept c "
+                + "WHERE a.deleted = false ";
+        if (!StringUtils.isEmpty(searchRequest.getSearchTerm())) {
+            queryStr += " AND (UPPER(a.description) LIKE :searchTerm OR UPPER(a.reason) LIKE :searchTerm) ";
+        }
         if (!CollectionUtils.isEmpty(searchRequest.getConcepts())) {
-            queryStr += " AND (ac.concept IN (:conceptNames))";
+            queryStr += " AND (c.concept IN (:conceptNames))";
         }
         if (searchRequest.getActivityDateStart() != null) {
-            queryStr += " AND (ae.activityDate >= :startDate) ";
+            queryStr += " AND (a.activityDate >= :startDate) ";
         }
         if (searchRequest.getActivityDateEnd() != null) {
-            queryStr += " AND (ae.activityDate <= :endDate) ";
+            queryStr += " AND (a.activityDate <= :endDate) ";
         }
         Query query = entityManager.createQuery(queryStr, Long.class);
+        if (!StringUtils.isEmpty(searchRequest.getSearchTerm())) {
+            query.setParameter("searchTerm", "%" + searchRequest.getSearchTerm().toUpperCase() + "%");
+        }
         if (!CollectionUtils.isEmpty(searchRequest.getConcepts())) {
             query.setParameter("conceptNames", searchRequest.getConcepts());
         }

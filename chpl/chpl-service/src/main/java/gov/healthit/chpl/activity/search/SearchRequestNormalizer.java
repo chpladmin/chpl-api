@@ -8,9 +8,16 @@ import org.apache.commons.lang3.StringUtils;
 public class SearchRequestNormalizer {
 
     public void normalize(SearchRequest request) {
+        normalizeSearchTerm(request);
         normalizeConcepts(request);
         normalizeActivityDates(request);
         normalizeOrderBy(request);
+    }
+
+    private void normalizeSearchTerm(SearchRequest request) {
+        if (!StringUtils.isEmpty(request.getSearchTerm())) {
+            request.setSearchTerm(StringUtils.normalizeSpace(request.getSearchTerm()));
+        }
     }
 
     private void normalizeConcepts(SearchRequest request) {
