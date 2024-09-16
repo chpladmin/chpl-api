@@ -1,6 +1,7 @@
 package gov.healthit.chpl.user.cognito.authentication;
 
 import java.util.ArrayList;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -13,6 +14,8 @@ import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.domain.auth.CognitoNewPasswordRequiredRequest;
 import gov.healthit.chpl.domain.auth.LoginCredentials;
 import gov.healthit.chpl.domain.auth.User;
+import gov.healthit.chpl.exception.JWTValidationException;
+import gov.healthit.chpl.exception.MultipleUserAccountsException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.user.cognito.CognitoApiWrapper;
@@ -37,27 +40,30 @@ public class CognitoAuthenticationManager {
         this.errorMessageUtil = errorMessageUtil;
     }
 
-    public CognitoAuthenticationResponse authenticate(LoginCredentials credentials) throws CognitoAuthenticationChallengeException {
-        AuthenticationResultType authResult = cognitoApiWrapper.authenticate(credentials);
-        if (authResult == null) {
-            return null;
-        }
+    public CognitoAuthenticationResponse authenticate(LoginCredentials credentials) throws CognitoAuthenticationChallengeException{
 
-        JWTAuthenticatedUser jwtUser = jwtUserConverterFacade.getAuthenticatedUser(authResult.idToken());
-        User user;
         try {
-            user = cognitoApiWrapper.getUserInfo(jwtUser.getCognitoId());
-        } catch (UserRetrievalException e) {
-            LOGGER.error("Could not decode JWT Token");
+            AuthenticationResultType authResult = cognitoApiWrapper.authenticate(credentials);
+            if (authResult == null) {
+                return null;
+            }
+
+            JWTAuthenticatedUser jwtUser = jwtUserConverterFacade.getAuthenticatedUser(authResult.accessToken());
+            User user = cognitoApiWrapper.getUserInfo(jwtUser.getCognitoId());
+            return CognitoAuthenticationResponse.builder()
+                    .accessToken(authResult.accessToken())
+                    .idToken(authResult.idToken())
+                    .refreshToken(authResult.refreshToken())
+                    .user(user)
+                    .build();
+        } catch (UserRetrievalException | JWTValidationException | MultipleUserAccountsException e) {
+            LOGGER.error(e.getMessage(), e);
             return null;
         }
+    }
 
-        return CognitoAuthenticationResponse.builder()
-                .accessToken(authResult.accessToken())
-                .idToken(authResult.idToken())
-                .refreshToken(authResult.refreshToken())
-                .user(user)
-                .build();
+    public void invalidateTokensForUser(String email) {
+        cognitoApiWrapper.invalidateTokensForUser(email);
     }
 
     public CognitoAuthenticationResponse newPassworRequiredChallenge(CognitoNewPasswordRequiredRequest request) throws ValidationException {
@@ -70,20 +76,20 @@ public class CognitoAuthenticationManager {
             return null;
         }
 
-        JWTAuthenticatedUser jwtUser = jwtUserConverterFacade.getAuthenticatedUser(authResult.idToken());
-        User user;
-        try {
-            user = cognitoApiWrapper.getUserInfo(jwtUser.getCognitoId());
-        } catch (UserRetrievalException e) {
-            LOGGER.error("Could not decode JWT Token");
-            return null;
-        }
-
         return CognitoAuthenticationResponse.builder()
                 .accessToken(authResult.accessToken())
                 .idToken(authResult.idToken())
                 .refreshToken(authResult.refreshToken())
-                .user(user)
+                .user(getUserBasedOnIdToken(authResult.idToken()))
+                .build();
+    }
+
+    public CognitoAuthenticationResponse refreshAuthenticationTokens(String refreshToken, UUID cognitoId) {
+        AuthenticationResultType authResult = cognitoApiWrapper.refreshToken(refreshToken, cognitoId);
+        return CognitoAuthenticationResponse.builder()
+                .accessToken(authResult.accessToken())
+                .idToken(authResult.idToken())
+                .refreshToken(authResult.refreshToken())
                 .build();
     }
 
@@ -103,5 +109,15 @@ public class CognitoAuthenticationManager {
             return false;
         }
         return true;
+    }
+
+    private User getUserBasedOnIdToken(String accessToken) {
+        try {
+            JWTAuthenticatedUser jwtUser = jwtUserConverterFacade.getAuthenticatedUser(accessToken);
+            return cognitoApiWrapper.getUserInfo(jwtUser.getCognitoId());
+        } catch (UserRetrievalException | JWTValidationException | MultipleUserAccountsException e) {
+            LOGGER.error("Could not decode JWT Token");
+            return null;
+        }
     }
 }

@@ -2,13 +2,12 @@ package gov.healthit.chpl.scheduler.job.urluptime;
 
 import java.util.List;
 
-import jakarta.persistence.Query;
-
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.entity.developer.DeveloperEntitySimple;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import jakarta.persistence.Query;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -23,14 +22,13 @@ public class UrlUptimeMonitorDAO extends BaseDAOImpl {
 
     public UrlUptimeMonitor create(UrlUptimeMonitor datadogMonitor) throws EntityRetrievalException {
         UrlUptimeMonitorEntity entity = UrlUptimeMonitorEntity.builder()
+                .url(datadogMonitor.getDatadogPublicId())
                 .developer(getSimpleDeveloperById(datadogMonitor.getDeveloper().getId(), false))
                 .url(datadogMonitor.getUrl())
-                .deleted(false)
                 .build();
 
-        entityManager.persist(entity);
-        entityManager.flush();
-        return entity.toDomain();
+        create(entity);
+        return getEntityById(entity.getId()).toDomain();
     }
 
     public void delete(UrlUptimeMonitor datadogMonitor) {

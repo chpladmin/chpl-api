@@ -8,8 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.CertifiedProductTargetedUser;
-import gov.healthit.chpl.upload.listing.Headings;
 import gov.healthit.chpl.upload.listing.ListingUploadHandlerUtil;
+import gov.healthit.chpl.upload.listing.ListingUploadHeadingUtil.Heading;
 
 @Component("targetedUsersUploadHandler")
 public class TargetedUsersUploadHandler {
@@ -35,7 +35,7 @@ public class TargetedUsersUploadHandler {
 
     private List<String> parseTargetedUserNames(CSVRecord headingRecord, List<CSVRecord> listingRecords) {
         List<String> values = uploadUtil.parseMultiRowFieldWithoutEmptyValues(
-                Headings.TARGETED_USERS, headingRecord, listingRecords);
+                Heading.TARGETED_USERS, headingRecord, listingRecords);
         return values;
     }
 }

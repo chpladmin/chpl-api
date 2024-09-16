@@ -16,6 +16,9 @@ import com.datadog.api.client.v1.model.SyntheticsAssertionOperator;
 import com.datadog.api.client.v1.model.SyntheticsAssertionTarget;
 import com.datadog.api.client.v1.model.SyntheticsAssertionType;
 import com.datadog.api.client.v1.model.SyntheticsDeleteTestsPayload;
+import com.datadog.api.client.v1.model.SyntheticsPatchTestBody;
+import com.datadog.api.client.v1.model.SyntheticsPatchTestOperation;
+import com.datadog.api.client.v1.model.SyntheticsPatchTestOperationName;
 import com.datadog.api.client.v1.model.SyntheticsTestDetails;
 import com.datadog.api.client.v1.model.SyntheticsTestOptions;
 import com.datadog.api.client.v1.model.SyntheticsTestOptionsHTTPVersion;
@@ -60,6 +63,16 @@ public class DatadogSyntheticsTestService {
     public List<SyntheticsTestDetails> getAllSyntheticsTests() {
         try {
             return apiProvider.getApiInstance().listTests().getTests();
+
+        } catch (ApiException e) {
+            LOGGER.error("Could not retrieve Synthetic Tests from Datadog", e);
+            return null;
+        }
+    }
+
+    public SyntheticsAPITest getSyntheticsTest(String publicId) {
+        try {
+            return apiProvider.getApiInstance().getAPITest(publicId);
         } catch (ApiException e) {
             LOGGER.error("Could not retrieve Synthetic Tests from Datadog", e);
             return null;
@@ -79,7 +92,7 @@ public class DatadogSyntheticsTestService {
         }
     }
 
-    public SyntheticsAPITest createSyntheticsTest(String url, Long developerId) {
+    public SyntheticsAPITest createSyntheticsTest(String url, List<Long> developerIds) {
         SyntheticsAPITest body = new SyntheticsAPITest()
                 .config(new SyntheticsAPITestConfig()
                         .assertions(Arrays.asList(
@@ -130,13 +143,14 @@ public class DatadogSyntheticsTestService {
                 .message("Failed: " + url)
                 .type(SyntheticsAPITestType.API)
                 .name(url)
-                .tags(List.of("developer:" + developerId));
+                .tags(developerIdsToTags(developerIds));
 
         try {
             if (datadogIsReadOnly) {
-                LOGGER.info("Not updating datadog (due to environment setting) with Developer: {} and URL: {}", developerId, url);
+                LOGGER.info("Not updating datadog (due to environment setting) with Developers: {} and URL: {}", developerIds, url);
                 return body;
             } else {
+                LOGGER.info("Adding Synthetics Test for URL: {}, with Developers: {}", url, developerIds);
                 return apiProvider.getApiInstance().createSyntheticsAPITest(body);
             }
         } catch (ApiException e) {
@@ -145,7 +159,34 @@ public class DatadogSyntheticsTestService {
         }
     }
 
+    public void setApplicableDevelopersForTest(String syntheticsApiTestPublicId, List<Long> developerIds) {
+        LOGGER.info("Adding developer(s) {} to test {}", developerIds, syntheticsApiTestPublicId);
+        SyntheticsAPITest test = getSyntheticsTest(syntheticsApiTestPublicId);
+        test.setTags(developerIdsToTags(developerIds));
+
+        SyntheticsPatchTestBody body = new SyntheticsPatchTestBody()
+                .addDataItem(new SyntheticsPatchTestOperation()
+                        .op(SyntheticsPatchTestOperationName.ADD)
+                        .path("/tags")
+                        .value(test.getTags()));
+        try {
+            if (datadogIsReadOnly) {
+                LOGGER.info("Not adding Developer(s) (due to environment setting) to existing Synthetics Test {}", developerIds);
+            } else {
+                apiProvider.getApiInstance().patchTest(syntheticsApiTestPublicId, body);
+            }
+        } catch (ApiException e) {
+            LOGGER.error("Could not add Developer(s) to existing Synthetics Test {}", developerIds, e);
+        }
+    }
+
     private Long convertMinutesToSeconds(Long minutes) {
         return minutes * SECONDS_IN_A_MINUTE;
+    }
+
+    private List<String> developerIdsToTags(List<Long> developerIds) {
+        return developerIds.stream()
+                .map(id -> "developer:" + id)
+                .toList();
     }
 }
