@@ -8,6 +8,7 @@ import java.time.LocalDate;
 import java.time.Month;
 import java.util.Calendar;
 import java.util.List;
+import java.util.stream.Stream;
 
 import org.apache.commons.csv.CSVRecord;
 import org.junit.Before;
@@ -17,7 +18,9 @@ import org.mockito.Mockito;
 
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductTestingLab;
+import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.upload.listing.ListingUploadHandlerUtil;
+import gov.healthit.chpl.upload.listing.ListingUploadHeadingUtil;
 import gov.healthit.chpl.upload.listing.ListingUploadTestUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
@@ -32,6 +35,12 @@ public class ListingDetailsUploadHandlerTest {
 
     @Before
     public void setup() {
+        CertificationCriterionService criteriaService = Mockito.mock(CertificationCriterionService.class);
+        Mockito.when(criteriaService.getAllowedCriterionHeadingsForNewListing())
+            .thenReturn(Stream.of("CRITERIA_170_315_A_1__C", "CRITERIA_170_315_D_4__C", "CRITERIA_170_315_D_4_Cures__C",
+                    "CRITERIA_170_315_B_3_Cures__C").toList());
+        ListingUploadHeadingUtil uploadHeadingUtil = new ListingUploadHeadingUtil(criteriaService);
+
         msgUtil = Mockito.mock(ErrorMessageUtil.class);
 
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("upload.emptyFile"))).thenReturn("Empty file message");
@@ -44,7 +53,7 @@ public class ListingDetailsUploadHandlerTest {
                 ArgumentMatchers.anyString()))
                 .thenAnswer(i -> String.format("The value %s could not be converted to a yes/no field..", i.getArgument(1), ""));
 
-        handlerUtil = new ListingUploadHandlerUtil(msgUtil);
+        handlerUtil = new ListingUploadHandlerUtil(uploadHeadingUtil, msgUtil);
         DeveloperDetailsUploadHandler devHandler = new DeveloperDetailsUploadHandler(handlerUtil);
         certDateHandler = Mockito.mock(CertificationDateHandler.class);
         handler = new ListingDetailsUploadHandler(certDateHandler,

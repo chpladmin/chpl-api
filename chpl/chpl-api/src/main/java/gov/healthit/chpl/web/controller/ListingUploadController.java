@@ -16,8 +16,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import jakarta.servlet.http.HttpServletResponse;
-
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.lang3.StringUtils;
@@ -39,6 +37,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.caching.CacheNames;
+import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.ConfirmListingRequest;
 import gov.healthit.chpl.domain.ListingUpload;
@@ -59,6 +58,7 @@ import gov.healthit.chpl.web.controller.results.ListingUploadResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.log4j.Log4j2;
 
 @Tag(name = "listing-upload", description = "Allows upload of listings.")
@@ -74,13 +74,16 @@ public class ListingUploadController {
     private String uploadErrorEmailSubject;
 
     private ListingUploadManager listingUploadManager;
+    private CertifiedProductDetailsManager cpdManager;
     private ChplEmailFactory chplEmailFactory;
     private FileUtils fileUtils;
 
     @Autowired
     public ListingUploadController(ListingUploadManager listingUploadManager,
+            CertifiedProductDetailsManager cpdManager,
             ChplEmailFactory chplEmailFactory, FileUtils fileUtils) {
         this.listingUploadManager = listingUploadManager;
+        this.cpdManager = cpdManager;
         this.chplEmailFactory = chplEmailFactory;
         this.fileUtils = fileUtils;
     }
@@ -126,9 +129,10 @@ public class ListingUploadController {
     @RequestMapping(value = "/{id:^-?\\d+$}/uploaded-file", method = RequestMethod.GET, produces = "text/csv")
     public void streamUploadedFile(@PathVariable("id") Long confirmedListingId,
             HttpServletResponse response) throws EntityRetrievalException, IOException {
+        CertifiedProductSearchDetails listing = cpdManager.getCertifiedProductDetails(confirmedListingId);
         List<List<String>> rows = listingUploadManager.getUploadedCsvRecords(confirmedListingId);
 
-        File file = new File("listing-" + confirmedListingId + "-upload.csv");
+        File file = new File(listing.getChplProductNumber().replaceAll("\\.", "-") + "-original.csv");
         try (OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8);
                 CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.EXCEL)) {
             writer.write('\ufeff');

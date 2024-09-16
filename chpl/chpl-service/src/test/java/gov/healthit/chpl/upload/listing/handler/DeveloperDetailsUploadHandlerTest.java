@@ -5,6 +5,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 import org.apache.commons.csv.CSVRecord;
 import org.junit.Before;
@@ -14,7 +15,9 @@ import org.mockito.Mockito;
 import gov.healthit.chpl.domain.Address;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.contact.PointOfContact;
+import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.upload.listing.ListingUploadHandlerUtil;
+import gov.healthit.chpl.upload.listing.ListingUploadHeadingUtil;
 import gov.healthit.chpl.upload.listing.ListingUploadTestUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
@@ -26,8 +29,14 @@ public class DeveloperDetailsUploadHandlerTest {
 
     @Before
     public void setup() {
+        CertificationCriterionService criteriaService = Mockito.mock(CertificationCriterionService.class);
+        Mockito.when(criteriaService.getAllowedCriterionHeadingsForNewListing())
+            .thenReturn(Stream.of("CRITERIA_170_315_A_1__C", "CRITERIA_170_315_D_4__C", "CRITERIA_170_315_D_4_Cures__C",
+                    "CRITERIA_170_315_B_3_Cures__C").toList());
+        ListingUploadHeadingUtil uploadHeadingUtil = new ListingUploadHeadingUtil(criteriaService);
+
         ErrorMessageUtil msgUtil = Mockito.mock(ErrorMessageUtil.class);
-        ListingUploadHandlerUtil handlerUtil = new ListingUploadHandlerUtil(msgUtil);
+        ListingUploadHandlerUtil handlerUtil = new ListingUploadHandlerUtil(uploadHeadingUtil, msgUtil);
         handler = new DeveloperDetailsUploadHandler(handlerUtil);
     }
 

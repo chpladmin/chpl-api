@@ -20,14 +20,17 @@ public class CognitoPasswordManager {
     private CognitoApiWrapper cognitoApiWrapper;
     private CognitoForgotPasswordDAO cognitoForgotPasswordDAO;
     private CognitoForgotPasswordEmailer cognitoForgotPasswordEmailer;
+    private CognitoPasswordChangedEmailer cognitoPasswordChangedEmailer;
     private Long forgotTokenValidInHours;
 
     @Autowired
     public CognitoPasswordManager(CognitoApiWrapper cognitoApiWrapper, CognitoForgotPasswordDAO cognitoForgotPasswordDAO,
-            CognitoForgotPasswordEmailer cognitoForgotPasswordEmailer, @Value("${cognito.forgotPassword.tokenValid}") Long forgotTokenValidInHours) {
+            CognitoForgotPasswordEmailer cognitoForgotPasswordEmailer, CognitoPasswordChangedEmailer cognitoPasswordChangedEmailer,
+            @Value("${cognito.forgotPassword.tokenValid}") Long forgotTokenValidInHours) {
 
         this.cognitoApiWrapper = cognitoApiWrapper;
         this.cognitoForgotPasswordEmailer = cognitoForgotPasswordEmailer;
+        this.cognitoPasswordChangedEmailer = cognitoPasswordChangedEmailer;
         this.cognitoForgotPasswordDAO = cognitoForgotPasswordDAO;
         this.forgotTokenValidInHours = forgotTokenValidInHours;
     }
@@ -45,7 +48,7 @@ public class CognitoPasswordManager {
      }
 
     @Transactional
-    public void setForgottenPassword(UUID forgotPasswordToken, String password) throws ValidationException {
+    public void setForgottenPassword(UUID forgotPasswordToken, String password) throws ValidationException, EmailNotSentException {
         CognitoForgotPassword forgotPassword = cognitoForgotPasswordDAO.getByToken(forgotPasswordToken);
         if (forgotPassword == null) {
             throw new ValidationException("Forgot Password Token is not valid.");
@@ -56,6 +59,7 @@ public class CognitoPasswordManager {
         }
 
         cognitoApiWrapper.setUserPassword(forgotPassword.getEmail(), password);
+        cognitoPasswordChangedEmailer.sendEmail(forgotPassword.getEmail());
     }
 
     private CognitoForgotPassword generateForgotPassword(String email) {
