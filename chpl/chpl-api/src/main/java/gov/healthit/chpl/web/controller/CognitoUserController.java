@@ -173,8 +173,8 @@ public class CognitoUserController {
         )
     @RequestMapping(value = "/password", method = RequestMethod.POST,
             consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
-    public void setPassword(@RequestBody CognitoUpdatePasswordRequest request) throws EmailNotSentException, ValidationException {
-        cognitoPasswordManager.setPassword(request.getEmail(), request.getPassword(), request.getConfirmPassword());
+    public void setPassword(@RequestBody CognitoUpdatePasswordRequest request) throws EmailNotSentException, ValidationException, UserRetrievalException {
+        cognitoPasswordManager.setPassword(request.getPassword(), request.getConfirmPassword());
     }
 
     @Operation(summary = "View a specific user's details.",

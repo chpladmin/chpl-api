@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.permissions.domains.secureduser.CognitoUpdateActionPermissions;
-import gov.healthit.chpl.permissions.domains.secureduser.CognitoUpdatePasswordActionPermissions;
 import gov.healthit.chpl.permissions.domains.secureduser.CreateActionPermissions;
 import gov.healthit.chpl.permissions.domains.secureduser.DeleteActionPermissions;
 import gov.healthit.chpl.permissions.domains.secureduser.GetAllActionPermissions;
@@ -30,7 +29,6 @@ public class SecuredUserDomainPermissions extends DomainPermissions {
     public static final String UPDATE_CONTACT_INFO = "UPDATE_CONTACT_INFO";
     public static final String UPDATE_PASSWORD = "UPDATE_PASSWORD";
     public static final String IMPERSONATE_USER = "IMPERSONATE_USER";
-    public static final String COGNITO_UPDATE_PASSWORD = "COGNITO_UPDATE_PASSWORD";
 
     @Autowired
     @SuppressWarnings({"checkstyle:parameternumber"})
@@ -45,8 +43,7 @@ public class SecuredUserDomainPermissions extends DomainPermissions {
             @Qualifier("securedCognitoUserUpdateActionPermissions") CognitoUpdateActionPermissions cognitoUpdateActionPermissions,
             @Qualifier("securedUserUpdateContactInfoActionPermissions") UpdateContactInfoActionPermissions updateContactInfoActionPermissions,
             @Qualifier("securedUserUpdatePasswordActionPermissions") UpdatePasswordActionPermissions updatePasswordActionPermissions,
-            @Qualifier("userPermissionsImpersonateUserActionPermissions") ImpersonateUserActionPermissions impersonateUserActionPermissions,
-            @Qualifier("cognitoUpdatePasswordActionPermissions") CognitoUpdatePasswordActionPermissions cognitoUpdatePasswordActionPermissions) {
+            @Qualifier("userPermissionsImpersonateUserActionPermissions") ImpersonateUserActionPermissions impersonateUserActionPermissions) {
 
         getActionPermissions().put(CREATE, createActionPermissions);
         getActionPermissions().put(DELETE, deleteActionPermissions);
@@ -59,6 +56,5 @@ public class SecuredUserDomainPermissions extends DomainPermissions {
         getActionPermissions().put(UPDATE_CONTACT_INFO, updateContactInfoActionPermissions);
         getActionPermissions().put(UPDATE_PASSWORD, updatePasswordActionPermissions);
         getActionPermissions().put(IMPERSONATE_USER, impersonateUserActionPermissions);
-        getActionPermissions().put(COGNITO_UPDATE_PASSWORD, cognitoUpdatePasswordActionPermissions);
     }
 }

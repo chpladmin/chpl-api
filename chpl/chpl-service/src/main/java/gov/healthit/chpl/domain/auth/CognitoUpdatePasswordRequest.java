@@ -10,7 +10,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CognitoUpdatePasswordRequest {
-    private String email;
     private String password;
     private String confirmPassword;
 }
