@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -60,6 +61,18 @@ public class CognitoPasswordManager {
 
         cognitoApiWrapper.setUserPassword(forgotPassword.getEmail(), password);
         cognitoPasswordChangedEmailer.sendEmail(forgotPassword.getEmail());
+    }
+
+
+    @Transactional
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SECURED_USER, "
+            + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).COGNITO_UPDATE_PASSWORD, #email)")
+    public void setPassword(String email, String password, String confirmPassword) throws ValidationException, EmailNotSentException {
+        if (!password.equals(confirmPassword)) {
+            throw new ValidationException("New password and password confirmation do not match");
+        }
+        cognitoApiWrapper.setUserPassword(email, password);
+        cognitoPasswordChangedEmailer.sendEmail(email);
     }
 
     private CognitoForgotPassword generateForgotPassword(String email) {

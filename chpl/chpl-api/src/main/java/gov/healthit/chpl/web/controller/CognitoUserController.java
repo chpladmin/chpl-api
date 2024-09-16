@@ -24,6 +24,7 @@ import gov.healthit.chpl.domain.auth.CognitoGroups;
 import gov.healthit.chpl.domain.auth.CognitoLogoutRequest;
 import gov.healthit.chpl.domain.auth.CognitoNewPasswordRequiredRequest;
 import gov.healthit.chpl.domain.auth.CognitoSetForgottenPasswordRequest;
+import gov.healthit.chpl.domain.auth.CognitoUpdatePasswordRequest;
 import gov.healthit.chpl.domain.auth.LoginCredentials;
 import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.exception.EmailNotSentException;
@@ -162,6 +163,18 @@ public class CognitoUserController {
         }
 
         cognitoPasswordManager.setForgottenPassword(request.getForgotPasswordToken(), request.getPassword());
+    }
+
+    @Operation(summary = "Update the password for the currently logged in user.",
+            description = "Update the password for the currently logged in user.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            }
+        )
+    @RequestMapping(value = "/password", method = RequestMethod.POST,
+            consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
+    public void setPassword(@RequestBody CognitoUpdatePasswordRequest request) throws EmailNotSentException, ValidationException {
+        cognitoPasswordManager.setPassword(request.getEmail(), request.getPassword(), request.getConfirmPassword());
     }
 
     @Operation(summary = "View a specific user's details.",
