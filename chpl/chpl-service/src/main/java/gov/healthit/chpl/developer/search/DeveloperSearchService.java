@@ -59,6 +59,7 @@ public class DeveloperSearchService {
             .filter(dev -> matchesDecertificationDateRange(dev, searchRequest.getDecertificationDateStart(), searchRequest.getDecertificationDateEnd()))
             .filter(dev -> matchesAttestationsFilter(dev, searchRequest))
             .filter(dev -> matchesActiveListingsFilter(dev, searchRequest))
+            .filter(dev -> matchesDeveloperId(dev, searchRequest.getDeveloperIds()))
             .collect(Collectors.toList());
         LOGGER.debug("Total matched developers: " + matchedDevelopers.size());
 
@@ -180,6 +181,13 @@ public class DeveloperSearchService {
         return false;
     }
 
+    private boolean matchesDeveloperId(DeveloperSearchResult developer, Set<Long> developerIds) {
+        if (CollectionUtils.isEmpty(developerIds)) {
+            return true;
+        }
+
+        return developerIds.contains(developer.getId());
+    }
     private LocalDate parseLocalDate(String dateString) {
         if (StringUtils.isEmpty(dateString)) {
             return null;
