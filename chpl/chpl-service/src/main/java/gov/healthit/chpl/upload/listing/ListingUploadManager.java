@@ -216,8 +216,6 @@ public class ListingUploadManager {
         LOGGER.debug("Converted listing upload into CertifiedProductSearchDetails object");
         listingNormalizer.normalize(listing, List.of(baselineStandardNormalizer));
         LOGGER.debug("Normalized listing upload");
-        listingUploadValidator.review(listingUpload, listing);
-        LOGGER.debug("Validated listing upload");
         return listing;
     }
 

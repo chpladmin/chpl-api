@@ -54,6 +54,8 @@ import gov.healthit.chpl.upload.listing.ListingUploadManager;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.FileUtils;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
+import gov.healthit.chpl.validation.listing.ListingValidatorFactory;
+import gov.healthit.chpl.validation.listing.Validator;
 import gov.healthit.chpl.web.controller.annotation.DeprecatedApiResponseFields;
 import gov.healthit.chpl.web.controller.results.ListingUploadResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -77,6 +79,7 @@ public class ListingUploadController {
     private ListingUploadManager listingUploadManager;
     private CertifiedProductDetailsManager cpdManager;
     private ListingMergeService listingMergeService;
+    private ListingValidatorFactory validatorFactory;
     private ChplEmailFactory chplEmailFactory;
     private FileUtils fileUtils;
 
@@ -84,10 +87,12 @@ public class ListingUploadController {
     public ListingUploadController(ListingUploadManager listingUploadManager,
             CertifiedProductDetailsManager cpdManager,
             ListingMergeService listingMergeService,
+            ListingValidatorFactory validatorFactory,
             ChplEmailFactory chplEmailFactory, FileUtils fileUtils) {
         this.listingUploadManager = listingUploadManager;
         this.cpdManager = cpdManager;
         this.listingMergeService = listingMergeService;
+        this.validatorFactory = validatorFactory;
         this.chplEmailFactory = chplEmailFactory;
         this.fileUtils = fileUtils;
     }
@@ -215,7 +220,7 @@ public class ListingUploadController {
                     + "and administrative authority on the ONC-ACB(s) specified in the file.",
             security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
-    @RequestMapping(value = "/upload/{listingId}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    @RequestMapping(value = "/upload/{listingId}", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
     public ResponseEntity<CertifiedProductSearchDetails> mergeUploadedFileWithListing(@PathVariable("listingId") Long listingId,
             @RequestParam("file") MultipartFile file) throws ValidationException, EntityRetrievalException {
         List<ListingUpload> uploadedListings = new ArrayList<ListingUpload>();
@@ -246,7 +251,11 @@ public class ListingUploadController {
         }
 
         CertifiedProductSearchDetails uploadedListingDetails = listingUploadManager.getListingUploadAsListing(uploadedListing);
-        listingMergeService.mergeWithListingFromChpl(currentListingDetails, uploadedListingDetails);
+        listingMergeService.mergeWithListingFromChpl(uploadedListingDetails, currentListingDetails);
+        Validator validator = validatorFactory.getValidator(uploadedListingDetails);
+        if (validator != null) {
+            validator.validate(currentListingDetails, uploadedListingDetails);
+        }
         return new ResponseEntity<CertifiedProductSearchDetails>(uploadedListingDetails, HttpStatus.OK);
     }
 
