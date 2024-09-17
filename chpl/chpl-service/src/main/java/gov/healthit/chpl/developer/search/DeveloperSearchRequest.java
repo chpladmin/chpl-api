@@ -8,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 import gov.healthit.chpl.search.domain.SearchSetOperator;
+import gov.healthit.chpl.util.CommaDelimitedStringToSetOfLongs;
 import gov.healthit.chpl.util.CommaDelimitedStringToSetOfStrings;
 import gov.healthit.chpl.util.StringToSearchSetOperator;
 import lombok.AllArgsConstructor;
@@ -66,6 +67,10 @@ public class DeveloperSearchRequest implements Serializable {
     private String attestationsOptionsOperatorString;
     @JsonDeserialize(using = StringToSearchSetOperator.class)
     private SearchSetOperator attestationsOptionsOperator;
+
+    @JsonDeserialize(using = CommaDelimitedStringToSetOfLongs.class)
+    @Builder.Default
+    private Set<Long> developerIds = new HashSet<Long>();
 
     @JsonIgnore
     private String orderByString;
