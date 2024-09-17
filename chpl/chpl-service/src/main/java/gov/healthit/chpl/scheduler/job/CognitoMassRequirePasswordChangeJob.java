@@ -22,10 +22,6 @@ public class CognitoMassRequirePasswordChangeJob extends QuartzJob  {
     @Value("#{'${cognitoMassRequirePasswordChangeJob.includedUsers}'.split(',')}")
     private List<String> includedUsers;
 
-    public CognitoMassRequirePasswordChangeJob() {
-        // TODO Auto-generated constructor stub
-    }
-
     @Override
     public void execute(JobExecutionContext jobContext) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
