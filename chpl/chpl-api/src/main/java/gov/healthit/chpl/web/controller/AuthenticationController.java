@@ -101,6 +101,11 @@ public class AuthenticationController {
     }
 
     @Hidden
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/auth/keep-alive",
+            httpMethod = "POST",
+            removalDate = "2024-11-01",
+            message = "This endpoint is deprecated and will be removed in a future release. No replacement is currently available.")
     @RequestMapping(value = "/keep-alive", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     public AuthenticationResponse keepAlive(@RequestHeader (name = "Authorization") String token) throws JWTCreationException, UserRetrievalException, MultipleUserAccountsException {

@@ -1,5 +1,17 @@
 # Release Notes
 
+## Version 46.3.0
+_16 September 2024_
+
+### Features
+* Send "Password Changed" email to Cognito user after successful password reset using "Forgot Password" functionality
+* All developers with a Service Base URL should show in report, regardless if URL is the same as another developer
+* Implement token refresh for Cognito users
+* Create CSV file with all listing data populated
+* Create endpoint certified_products/id/download
+
+---
+
 ## Version 46.2.0
 _3 September 2024_
 
