@@ -128,7 +128,7 @@ public class ListingCsvDataWriter {
         csvDataMatrix[0][SED_TESTING_DATE_COL] = listing.getSedTestingEndDay() != null ? dateFormat.format(DateUtil.toDate(listing.getSedTestingEndDay())) : "";
         addParticipants(csvDataMatrix, listing.getSed());
         addTasks(csvDataMatrix, listing.getSed());
-        addCertificationResults(csvDataMatrix, listing.getCertificationResults(), listing.getSed());
+        addCertificationResults(csvDataMatrix, getAllAvailableCriteriaAsCertResults(listing), listing.getSed());
 
         List<List<String>> records = new ArrayList<List<String>>();
         for (int i = 0; i < csvDataMatrix.length; i++) {
@@ -138,6 +138,36 @@ public class ListingCsvDataWriter {
             }
         }
         return records;
+    }
+
+    private List<CertificationResult> getAllAvailableCriteriaAsCertResults(CertifiedProductSearchDetails listing) {
+        List<CertificationCriterion> allCriteriaAvailableToListing = criteriaManager.getCriteriaAvailableToListing(listing);
+        List<CertificationResult> allAvailableCriteriaAsCertResults = new ArrayList<CertificationResult>();
+        allCriteriaAvailableToListing.stream()
+            .forEach(criterion -> {
+                if (isAttested(listing, criterion)) {
+                    allAvailableCriteriaAsCertResults.add(getCertResult(listing, criterion));
+                } else {
+                    allAvailableCriteriaAsCertResults.add(CertificationResult.builder()
+                            .success(false)
+                            .criterion(criterion)
+                            .build());
+                }
+            });
+        return allAvailableCriteriaAsCertResults;
+    }
+
+    private boolean isAttested(CertifiedProductSearchDetails listing, CertificationCriterion criterion) {
+        CertificationResult certResult = listing.getCertificationResults().stream()
+                .filter(cr -> cr.getCriterion().getId().equals(criterion.getId()))
+                .findAny().orElse(null);
+        return certResult != null && BooleanUtils.isTrue(certResult.getSuccess());
+    }
+
+    private CertificationResult getCertResult(CertifiedProductSearchDetails listing, CertificationCriterion criterion) {
+        return listing.getCertificationResults().stream()
+                .filter(cr -> cr.getCriterion().getId().equals(criterion.getId()))
+                .findAny().orElse(null);
     }
 
     private int getNumberOfRows(CertifiedProductSearchDetails listing) {
@@ -436,7 +466,7 @@ public class ListingCsvDataWriter {
 
     private int addCertificationResult(String[][] csvDataMatrix, CertificationResult certResult,
             CertifiedProductSed sed, int currCol) {
-        csvDataMatrix[0][currCol++] = "1";
+        csvDataMatrix[0][currCol++] = certResult.getSuccess() ? "1" : "";
 
         CertificationCriterion criterion = certResult.getCriterion();
         CertificationCriterionWithAttributes criterionWithAttributes = criteriaManager.getAllWithAttributes().stream()
@@ -486,7 +516,7 @@ public class ListingCsvDataWriter {
                     csvDataMatrix[i][additionalSoftwareCol++] = !StringUtils.isEmpty(as.getName()) ? as.getGrouping() : "";
                 }
             } else {
-                csvDataMatrix[0][currCol++] = "0";
+                csvDataMatrix[0][currCol++] = certResult.getSuccess() ? "0" : "";
             }
             currCol += ADDITIONAL_SOFTWARE_COL_COUNT;
         }
@@ -588,7 +618,8 @@ public class ListingCsvDataWriter {
     private int addGap(String[][] csvDataMatrix, CertificationResult certResult,
             CertificationCriterionWithAttributes criterionWithAttributes, int currCol) {
         if (criterionWithAttributes.getAttributes().isGap()) {
-            csvDataMatrix[0][currCol++] = BooleanUtils.isTrue(certResult.getGap()) ? "1" : "0";
+            csvDataMatrix[0][currCol++] = BooleanUtils.isTrue(certResult.getGap()) ? "1"
+                    : (certResult.getSuccess() ? "0" : "");
         }
         return currCol;
     }

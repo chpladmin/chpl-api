@@ -12,7 +12,6 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.certificationCriteria.CertificationCriteriaManager;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterionWithAttributes;
-import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.standard.StandardManager;
@@ -112,15 +111,15 @@ public class ListingCsvHeadingWriter {
 
     private List<String> getCriteriaHeadings(CertifiedProductSearchDetails listing) {
         List<String> criteriaHeadings = new ArrayList<String>();
-        listing.getCertificationResults().stream()
+        List<CertificationCriterion> allCriteriaAvailableToListing = criteriaManager.getCriteriaAvailableToListing(listing);
+        allCriteriaAvailableToListing.stream()
             .forEach(certResult -> criteriaHeadings.addAll(getCriterionHeadings(certResult)));
         return criteriaHeadings;
     }
 
-    private List<String> getCriterionHeadings(CertificationResult certResult) {
+    private List<String> getCriterionHeadings(CertificationCriterion criterion) {
         List<String> criterionHeadings = new ArrayList<String>();
 
-        CertificationCriterion criterion = certResult.getCriterion();
         criterionHeadings.add(getCriterionNumberHeading(criterion));
         CertificationCriterionWithAttributes criterionWithAttributes = criteriaManager.getAllWithAttributes().stream()
                 .filter(critWithAttr -> critWithAttr.getId().equals(criterion.getId()))
@@ -186,10 +185,10 @@ public class ListingCsvHeadingWriter {
                 criterionHeadings.add(Heading.SERVICE_BASE_URL_LIST.getHeading());
             }
             if (criterionWithAttributes.getAttributes().isStandard()
-                  //we seem to list all criteria as eligible for standards, so here
+                    //we seem to list all criteria as eligible for standards, so here
                     //we are also limiting the column presence by checking whether the criteria
                     //has any standards available
-                    && !CollectionUtils.isEmpty(standardManager.getStandardsByCriteria(certResult.getCriterion().getId()))) {
+                    && !CollectionUtils.isEmpty(standardManager.getStandardsByCriteria(criterion.getId()))) {
                 criterionHeadings.add(Heading.STANDARD.getHeading());
             }
             if (criterionWithAttributes.getAttributes().isStandardsTested()) {
