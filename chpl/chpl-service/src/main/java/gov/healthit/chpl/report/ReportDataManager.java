@@ -5,8 +5,11 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.developer.search.DeveloperSearchResult;
 import gov.healthit.chpl.report.criteriamigrationreport.CriteriaMigrationReport;
 import gov.healthit.chpl.report.criteriamigrationreport.CriteriaMigrationReportService;
+import gov.healthit.chpl.report.developer.DeveloperReportsService;
+import gov.healthit.chpl.report.developer.UniqueDeveloperCount;
 import gov.healthit.chpl.report.surveillance.CapCounts;
 import gov.healthit.chpl.report.surveillance.NonconformityCounts;
 import gov.healthit.chpl.report.surveillance.SurveillanceActivityCounts;
@@ -21,10 +24,13 @@ public class ReportDataManager {
 
     private CriteriaMigrationReportService criteriaMigrationReportService;
     private SurveillanceReportsService surveillanceReportsService;
+    private DeveloperReportsService developerReportsService;
 
     @Autowired
-    public ReportDataManager(CriteriaMigrationReportService criteriaMigrationReportService, SurveillanceReportsService surveillanceReportsService) {
+    public ReportDataManager(CriteriaMigrationReportService criteriaMigrationReportService, DeveloperReportsService developerReportsService,
+            SurveillanceReportsService surveillanceReportsService) {
         this.criteriaMigrationReportService = criteriaMigrationReportService;
+        this.developerReportsService = developerReportsService;
         this.surveillanceReportsService = surveillanceReportsService;
     }
 
@@ -67,5 +73,29 @@ public class ReportDataManager {
     public CapCounts getCapCounts() {
         return surveillanceReportsService.getCapCounts();
     }
-}
 
+    public UniqueDeveloperCount getUniqueDeveloperCount() {
+        return developerReportsService.getUniqueDeveloperCount();
+    }
+
+    public List<CertificationBodyStatistic> getDeveloperCountsWithActiveListingsByAcb() {
+        return developerReportsService.getDeveloperCountsWithActiveListingsByAcb();
+    }
+
+    public List<CertificationBodyStatistic> getDeveloperCountsWithWithdrawnListingsByAcb() {
+        return developerReportsService.getDeveloperCountsWithWithdrawnListingsByAcb();
+    }
+
+    public List<DeveloperSearchResult> getDevelopersWithWithdrawnListingsByAcb() {
+        return developerReportsService.getDevelopersWithWithdrawnListingsByAcb();
+    }
+
+    public List<CertificationBodyStatistic> getDeveloperCountsWithSuspendedListingsByAcb() {
+        return developerReportsService.getDeveloperCountsWithSuspendedListingsByAcb();
+    }
+
+    public List<DeveloperSearchResult> getDevelopersWithSuspendedListingsByAcb() {
+        return developerReportsService.getDevelopersWithSuspendedListingsByAcb();
+    }
+
+}
