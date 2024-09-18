@@ -87,6 +87,7 @@ public class CertificationResult implements Serializable {
             + "It is a binary value that takes either true or false.")
     private Boolean attestationAnswer;
 
+    @JsonIgnore
     private String attestationAnswerStr;
 
     @Schema(description = "The hyperlink to access an application programming interface (API)'s documentation and terms of use. "
@@ -182,16 +183,27 @@ public class CertificationResult implements Serializable {
     @JsonProperty(access = Access.WRITE_ONLY)
     private String number;
 
+    @JsonIgnore
     private CertificationResultStandardComparator standardComparator;
+    @JsonIgnore
     private CertificationResultSvapComparator svapComparator;
+    @JsonIgnore
     private CertificationResultOptionalStandardComparator osComparator;
+    @JsonIgnore
     private CertificationResultConformanceMethodComparator cmComparator;
+    @JsonIgnore
     private CertificationResultFunctionalityTestedComparator funcTestedComparator;
+    @JsonIgnore
     private CertificationResultTestProcedureComparator testProcComparator;
+    @JsonIgnore
     private CertificationResultTestDataComparator testDataComparator;
+    @JsonIgnore
     private CertificationResultTestToolComparator testToolComparator;
+    @JsonIgnore
     private CertificationResultTestStandardComparator testStandardComparator;
+    @JsonIgnore
     private CertificationResultAdditionalSoftwareComparator asComparator;
+    @JsonIgnore
     private CertificationResultCodeSetComparator codeSetComparator;
 
     public CertificationResult() {
