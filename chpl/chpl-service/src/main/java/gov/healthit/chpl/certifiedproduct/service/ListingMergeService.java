@@ -81,6 +81,7 @@ public class ListingMergeService {
         updatedListing.setCertifyingBody(currentListing.getCertifyingBody());
         updatedListing.setDecertificationDay(currentListing.getDecertificationDay());
         updatedListing.setDirectReviews(currentListing.getDirectReviews());
+        updatedListing.setDirectReviewsAvailable(currentListing.isDirectReviewsAvailable());
         updatedListing.setEdition(currentListing.getEdition());
         updatedListing.setSurveillance(currentListing.getSurveillance());
         updatedListing.setTestingLabs(currentListing.getTestingLabs());
@@ -227,6 +228,7 @@ public class ListingMergeService {
                 .findAny()
                 .orElse(null);
             if (matchedCurrTestTask != null) {
+                //TODO: test tasks are not matching and i think it's because of the participant uniqueID comparison
                 updatedTestTask.setId(matchedCurrTestTask.getId());
                 if (!CollectionUtils.isEmpty(updatedTestTask.getTestParticipants())) {
                     updatedTestTask.getTestParticipants().stream()
