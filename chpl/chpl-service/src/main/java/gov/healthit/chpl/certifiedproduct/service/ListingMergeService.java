@@ -3,11 +3,13 @@ package gov.healthit.chpl.certifiedproduct.service;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.codeset.CertificationResultCodeSet;
 import gov.healthit.chpl.conformanceMethod.domain.CertificationResultConformanceMethod;
 import gov.healthit.chpl.domain.CQMResultCertification;
@@ -22,6 +24,7 @@ import gov.healthit.chpl.domain.CertifiedProductQmsStandard;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductSed;
 import gov.healthit.chpl.domain.CertifiedProductTargetedUser;
+import gov.healthit.chpl.domain.InheritedCertificationStatus;
 import gov.healthit.chpl.domain.ListingMeasure;
 import gov.healthit.chpl.domain.TestParticipant;
 import gov.healthit.chpl.domain.TestTask;
@@ -83,14 +86,23 @@ public class ListingMergeService {
         updatedListing.setDirectReviews(currentListing.getDirectReviews());
         updatedListing.setDirectReviewsAvailable(currentListing.isDirectReviewsAvailable());
         updatedListing.setEdition(currentListing.getEdition());
+        updatedListing.setCuresUpdate(currentListing.getCuresUpdate());
         updatedListing.setSurveillance(currentListing.getSurveillance());
         updatedListing.setTestingLabs(currentListing.getTestingLabs());
+        updatedListing.setCountClosedNonconformities(currentListing.getCountClosedNonconformities());
+        updatedListing.setCountClosedSurveillance(currentListing.getCountClosedSurveillance());
+        updatedListing.setCountOpenNonconformities(currentListing.getCountOpenNonconformities());
+        updatedListing.setCountOpenSurveillance(currentListing.getCountOpenSurveillance());
+        updatedListing.setCountSurveillance(currentListing.getCountSurveillance());
 
+        setIcsChildren(updatedListing, currentListing.getIcs());
         setIdsForQmsStandards(updatedListing, currentListing.getQmsStandards());
         setIdsForAccessibilityStandards(updatedListing, currentListing.getAccessibilityStandards());
         setIdsForTargetedUsers(updatedListing, currentListing.getTargetedUsers());
         setIdsForMeasures(updatedListing, currentListing.getMeasures());
         setIdsForSed(updatedListing.getSed(), currentListing.getSed());
+        updatedListing.setCountCerts((int) updatedListing.getCertificationResults().stream().filter(cert -> cert.getSuccess()).count());
+        updatedListing.setCountCqms((int) updatedListing.getCqmResults().stream().filter(cqm -> cqm.getSuccess()).count());
         if (!CollectionUtils.isEmpty(updatedListing.getCertificationResults())) {
             updatedListing.getCertificationResults().stream()
                 .forEach(certResultFromFile -> setIdsForCertificationResults(certResultFromFile, currentListing));
@@ -108,6 +120,14 @@ public class ListingMergeService {
         currChplProductNumberParts.setIcsCode(chplProductNumberUtil.deriveIcsCodeFromListing(updatedListing));
         currChplProductNumberParts.setAdditionalSoftwareCode(chplProductNumberUtil.deriveAdditionalSoftwareCodeFromListing(updatedListing));
         return chplProductNumberUtil.getChplProductNumber(currChplProductNumberParts);
+    }
+
+    private void setIcsChildren(CertifiedProductSearchDetails updatedListing, InheritedCertificationStatus currIcs) {
+        //ICS parents come from the upload file
+        //ICS children do not, so we can copy those in
+        if (currIcs != null && !CollectionUtils.isEmpty(currIcs.getChildren())) {
+            updatedListing.getIcs().setChildren(currIcs.getChildren());
+        }
     }
 
     private void setIdsForQmsStandards(CertifiedProductSearchDetails updatedListing, List<CertifiedProductQmsStandard> currQmsStandards) {
@@ -204,6 +224,22 @@ public class ListingMergeService {
             .orElse(null);
         if (matchingUpdatedMeasure != null) {
             matchingUpdatedMeasure.setId(currMeasure.getId());
+            matchingUpdatedMeasure.getAssociatedCriteria().stream()
+                .forEach(crit -> setCriteriaDataInUpdatedMeasure(crit, currMeasure.getAssociatedCriteria()));
+        }
+    }
+
+    private void setCriteriaDataInUpdatedMeasure(CertificationCriterion updatedMeasureCriterion, Set<CertificationCriterion> currMeasureCriteria) {
+        CertificationCriterion matchingCurrMeasureCriterion = currMeasureCriteria.stream()
+                .filter(currMeasureCrit -> currMeasureCrit.getId().equals(updatedMeasureCriterion.getId()))
+                .findAny()
+                .orElse(null);
+        if (matchingCurrMeasureCriterion != null) {
+            try {
+                BeanUtils.copyProperties(updatedMeasureCriterion, matchingCurrMeasureCriterion);
+            } catch (Exception ex) {
+                LOGGER.error("Unable to copy properties of measure associated criterion", ex);
+            }
         }
     }
 
@@ -316,6 +352,7 @@ public class ListingMergeService {
                 .orElse(null);
             if (matchedCurrAdditionalSoftware != null) {
                 updatedCertAdditionalSoftware.setId(matchedCurrAdditionalSoftware.getId());
+                updatedCertAdditionalSoftware.setCertificationResultId(matchedCurrAdditionalSoftware.getCertificationResultId());
             }
     }
 
@@ -375,6 +412,9 @@ public class ListingMergeService {
                 .orElse(null);
             if (matchedCurrOptionalStandard != null) {
                 updatedCertOptionalStandard.setId(matchedCurrOptionalStandard.getId());
+                updatedCertOptionalStandard.setOptionalStandardId(updatedCertOptionalStandard.getOptionalStandard().getId());
+                updatedCertOptionalStandard.setCitation(updatedCertOptionalStandard.getOptionalStandard().getCitation());
+                updatedCertOptionalStandard.setDescription(updatedCertOptionalStandard.getOptionalStandard().getDescription());
             }
     }
 

@@ -64,7 +64,7 @@ public class SedUploadHandler {
             List<CSVRecord> parsedCertResultRecords = uploadUtil.getCertificationResultRecordsFromIndex(
                     nextCertResultIndex, headingRecord, listingRecords);
             CSVRecord certHeadingRecord = uploadUtil.getHeadingRecord(parsedCertResultRecords);
-            CertificationCriterion criterion = criterionHandler.handle(certHeadingRecord, listing);
+            CertificationCriterion criterion = criterionHandler.handle(certHeadingRecord);
             if (criterion != null) {
                 List<CertifiedProductUcdProcess> certResultUcdProcesses = ucdHandler.handle(certHeadingRecord,
                         parsedCertResultRecords.subList(1, parsedCertResultRecords.size()));
