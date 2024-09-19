@@ -67,7 +67,7 @@ public class SurveillanceReportsService {
     public NonconformityCounts getNonconformityCounts() {
         StatisticsSnapshot stats = getStatistics();
         return NonconformityCounts.builder()
-                .totalNonconformities(stats.getTotalNonConformities())
+                .totalNonconformities(stats.getNonConfStatusAllTotal())
                 .openNonconformities(stats.getOpenNonConformities())
                 .closedNonconformities(stats.getClosedNonConformities())
                 .avgDaysToAssessConformity(stats.getNonConfAvgTimeToAssessConformity())
