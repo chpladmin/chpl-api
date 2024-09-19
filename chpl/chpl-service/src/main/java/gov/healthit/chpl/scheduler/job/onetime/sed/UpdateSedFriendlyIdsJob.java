@@ -34,6 +34,7 @@ import lombok.extern.log4j.Log4j2;
 @DisallowConcurrentExecution
 @Log4j2(topic = "updatedSedFriendlyIdsJobLogger")
 public class UpdateSedFriendlyIdsJob implements Job {
+    private static final List<Long> LISTING_IDS_WITH_PERSON_NAMES = Stream.of(11213L, 11232L).toList();
     private static final long FIRST_LISTING_ID_CONFIRMED_WITH_FLEXIBLE_UPLOAD = 10912;
 
     @Autowired
@@ -70,10 +71,7 @@ public class UpdateSedFriendlyIdsJob implements Job {
                     .certificationCriteriaIds(Stream.of(g3.getId()).collect(Collectors.toSet()))
                     .certificationCriteriaOperator(SearchSetOperator.AND)
                     .build()).stream()
-                    //filter out listings added before we started saving the upload files
                     .filter(listingSearchResult -> listingSearchResult.getId() >= FIRST_LISTING_ID_CONFIRMED_WITH_FLEXIBLE_UPLOAD)
-                    //filter out the two listings we know have person names in data
-                    .filter(listingSearchResult -> !listingSearchResult.getId().equals(11213L) && !listingSearchResult.getId().equals(11232L))
                     .toList();
 
             LOGGER.info("Found " + listingsWithG3ConfirmedWithFlexibleUpload.size() + " listing uploads attesting to 170.315 (g)(3).");
@@ -164,9 +162,13 @@ public class UpdateSedFriendlyIdsJob implements Job {
             LOGGER.info("Tasks for listing " + listing.getId() + " were updated.");
         }
         LOGGER.info("Updating test participant friendly IDs for listing ID " + listing.getId());
-        if (reprocessFromUploadHelper.updateParticipants(listing)) {
-            listingUpdateResult.setUpdatedListing(listing);
-            LOGGER.info("Participants for listing " + listing.getId() + " were updated.");
+        if (!LISTING_IDS_WITH_PERSON_NAMES.contains(listing.getId())) {
+            if (reprocessFromUploadHelper.updateParticipants(listing)) {
+                listingUpdateResult.setUpdatedListing(listing);
+                LOGGER.info("Participants for listing " + listing.getId() + " were updated.");
+            }
+        } else {
+            LOGGER.info("Listing with ID " + listing.getId() + " is not processed for participant identifiers. They might contain names.");
         }
         return listingUpdateResult;
     }
