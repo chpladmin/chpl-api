@@ -51,9 +51,11 @@ public class TestToolReportDao extends BaseDAOImpl {
                 + "AND cr.certifiedProductId = cpd.id "
                 + "AND cr.id = crtt.certificationResultId "
                 + "AND crtt.testTool.id = tt.id "
+                + "AND cpd.certificationStatusId IN (1,6,7) "
                 + "AND cc.deleted = false "
                 + "AND cr.deleted = false "
                 + "AND crtt.deleted = false "
+                + "AND cpd.deleted = false "
                 + "GROUP BY cc.id, tt.id ";
 
         Query query = entityManager.createQuery(hql);
