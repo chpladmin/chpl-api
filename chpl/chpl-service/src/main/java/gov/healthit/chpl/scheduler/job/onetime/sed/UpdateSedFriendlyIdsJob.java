@@ -93,7 +93,7 @@ public class UpdateSedFriendlyIdsJob implements Job {
                             + "\t" + currListing.getChplProductNumber()
                             + "\t" + currListing.getDeveloper().getName()
                             + "\t" + currListing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_NAME_KEY).toString()
-                            + "\t" + currListing.getCurrentStatus().getStatus().getName();
+                            + "\t" + currListing.getCurrentStatus().getStatus().getName());
             });
         LOGGER.info("*** REPORT OF UPLOADED FILES WITH DUPLICATE FRIENDLY IDS: ***");
         LOGGER.info("*** REPORT OF LISTINGS WITH ANY MISSING FRIENDLY IDS: ***");
