@@ -419,6 +419,11 @@ public class TestTaskReviewer {
         if (listing.getSed() == null || CollectionUtils.isEmpty(listing.getSed().getTestTasks())) {
             return;
         }
+        if (!CollectionUtils.isEmpty(listing.getSed().getDuplicateTestTaskIds())) {
+            listing.getSed().getDuplicateTestTaskIds().stream()
+                .forEach(friendlyId -> listing.addDataErrorMessage(msgUtil.getMessage("listing.criteria.duplicateTestTaskFriendlyId", friendlyId)));
+        }
+
         List<String> testTaskFriendlyIds = listing.getSed().getTestTasks().stream()
                 .filter(tt -> !StringUtils.isEmpty(tt.getFriendlyId()))
                 .map(tt -> tt.getFriendlyId())

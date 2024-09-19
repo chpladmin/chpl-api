@@ -37,6 +37,14 @@ public class CertifiedProductSed implements Serializable {
     @Builder.Default
     private Set<String> unusedTestParticipantUniqueIds = new LinkedHashSet<String>();
 
+    @JsonIgnore
+    @Builder.Default
+    private List<String> duplicateTestTaskIds = new ArrayList<String>();
+
+    @JsonIgnore
+    @Builder.Default
+    private List<String> duplicateTestParticipantIds = new ArrayList<String>();
+
     public CertifiedProductSed() {
         super();
         this.ucdProcesses = new ArrayList<CertifiedProductUcdProcess>();

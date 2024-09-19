@@ -54,7 +54,13 @@ public class SedUploadHandler {
             CertifiedProductSearchDetails listing)
         throws ValidationException {
         List<TestTask> availableTestTasks = testTaskHandler.handle(headingRecord, listingRecords);
+        List<String> allTaskIds = availableTestTasks.stream()
+                .map(tt -> tt.getFriendlyId())
+                .collect(Collectors.toList());
         List<TestParticipant> availableTestParticipants = testParticipantHandler.handle(headingRecord, listingRecords);
+        List<String> allParticipantIds = availableTestParticipants.stream()
+                .map(part -> part.getFriendlyId())
+                .collect(Collectors.toList());
         List<TestTask> testTasks = new ArrayList<TestTask>();
         List<CertifiedProductUcdProcess> allUcdProcessesOnListing = new ArrayList<CertifiedProductUcdProcess>();
 
@@ -82,6 +88,12 @@ public class SedUploadHandler {
         CertifiedProductSed sed = CertifiedProductSed.builder()
                 .testTasks(testTasks)
                 .ucdProcesses(allUcdProcessesOnListing)
+                .duplicateTestTaskIds(allTaskIds.stream()
+                                .filter(tt -> Collections.frequency(allTaskIds, tt) > 1)
+                                .collect(Collectors.toList()))
+                .duplicateTestParticipantIds(allParticipantIds.stream()
+                                .filter(tp -> Collections.frequency(allParticipantIds, tp) > 1)
+                                .collect(Collectors.toList()))
             .build();
         updateUnusedTaskAndParticipantIds(sed, availableTestTasks, availableTestParticipants);
         return sed;
