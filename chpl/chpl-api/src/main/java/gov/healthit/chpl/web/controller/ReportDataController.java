@@ -15,6 +15,7 @@ import gov.healthit.chpl.developer.search.DeveloperSearchRequest;
 import gov.healthit.chpl.developer.search.DeveloperSearchResult;
 import gov.healthit.chpl.developer.search.DeveloperSearchService;
 import gov.healthit.chpl.report.ReportDataManager;
+import gov.healthit.chpl.report.criteriaattribute.TestToolReport;
 import gov.healthit.chpl.report.criteriamigrationreport.CriteriaMigrationReport;
 import gov.healthit.chpl.report.developer.UniqueDeveloperCount;
 import gov.healthit.chpl.scheduler.job.summarystatistics.data.CertificationBodyStatistic;
@@ -139,6 +140,16 @@ public class ReportDataController {
     @RequestMapping(value = "/developers-with-suspended-listings-by-acb", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<DeveloperSearchResult> getDevelopersWithSuspendedListingsByAcb() {
         return reportDataManager.getDevelopersWithSuspendedListingsByAcb();
+    }
+
+    @Operation(summary = "Retrieves the data used to generate the Test Tool Criteria Attribute report.",
+            description = "Retrieves the data used to generate the Test Tool Criteria Attribute report.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
+    @RequestMapping(value = "/test-tools", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public @ResponseBody List<TestToolReport> getTestToolReports() {
+        return reportDataManager.getTestToolReports();
     }
 
 }
