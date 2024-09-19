@@ -1,5 +1,6 @@
 package gov.healthit.chpl.scheduler.job.onetime.sed;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -59,6 +60,7 @@ public class UpdateSedFriendlyIdsJob implements Job {
     private SedFriendlyIdReplacementDao sedFriendlyIdReplacementDao;
 
     private CertificationCriterion g3 = null;
+    private List<CertifiedProductSearchDetails> listingsWithUploadFilesWithDuplicateIdErrors;
 
     @Override
     public void execute(JobExecutionContext jobContext) throws JobExecutionException {
@@ -66,6 +68,7 @@ public class UpdateSedFriendlyIdsJob implements Job {
         LOGGER.info("********* Starting the Update SED Friendly Ids job. *********");
         try {
             g3 = criteriaService.get(Criteria2015.G_3);
+            listingsWithUploadFilesWithDuplicateIdErrors = new ArrayList<CertifiedProductSearchDetails>();
 
             List<ListingSearchResult> listingsWithG3ConfirmedWithFlexibleUpload = listingSearchService.getAllPagesOfSearchResults(SearchRequest.builder()
                     .certificationCriteriaIds(Stream.of(g3.getId()).collect(Collectors.toSet()))
@@ -82,7 +85,17 @@ public class UpdateSedFriendlyIdsJob implements Job {
         } catch (Exception ex) {
             LOGGER.fatal("Unexpected exception was caught. All listings may not have been processed.", ex);
         }
-
+        LOGGER.info("*** REPORT OF UPLOADED FILES WITH DUPLICATE FRIENDLY IDS: ***");
+        LOGGER.info("\tDatabase ID\tCHPL Product Number\tDeveloper\tACB\tStatus");
+        listingsWithUploadFilesWithDuplicateIdErrors.stream()
+            .forEach(currListing -> {
+                    LOGGER.info("\t" + currListing.getId()
+                            + "\t" + currListing.getChplProductNumber()
+                            + "\t" + currListing.getDeveloper().getName()
+                            + "\t" + currListing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_NAME_KEY).toString()
+                            + "\t" + currListing.getCurrentStatus().getStatus().getName();
+            });
+        LOGGER.info("*** REPORT OF UPLOADED FILES WITH DUPLICATE FRIENDLY IDS: ***");
         LOGGER.info("*** REPORT OF LISTINGS WITH ANY MISSING FRIENDLY IDS: ***");
         LOGGER.info("\tDatabase ID\tCHPL Product Number\tDeveloper\tACB\tStatus\tTasks Missing ID?\tParticipants Missing ID?");
         try {
@@ -157,7 +170,7 @@ public class UpdateSedFriendlyIdsJob implements Job {
         listingUpdateResult.setOriginalListing(listing);
 
         LOGGER.info("Updating test task friendly IDs for listing ID " + listing.getId());
-        if (reprocessFromUploadHelper.updateTasks(listing)) {
+        if (reprocessFromUploadHelper.updateTasks(listing, listingsWithUploadFilesWithDuplicateIdErrors)) {
             listingUpdateResult.setUpdatedListing(listing);
             LOGGER.info("Tasks for listing " + listing.getId() + " were updated.");
         }
@@ -183,6 +196,11 @@ public class UpdateSedFriendlyIdsJob implements Job {
     private boolean isAnyMessageAboutSed(Collection<String> messages) {
         return messages.stream()
             .map(msg -> msg.toUpperCase())
+            //the code to update friendly ids handles duplicate identifiers in the files so we don't need to care about the
+            //"duplicate" errors
+            .filter(upperCaseMsg -> !upperCaseMsg.contains("Test Task Identifiers must be unique across all tasks.".toUpperCase()))
+            .filter(upperCaseMsg -> !upperCaseMsg.contains("Participant Identifiers must be unique across all participants.".toUpperCase()))
+            //check for any other task or participant-related error
             .filter(upperCaseMsg -> upperCaseMsg.contains("SED")
                     || upperCaseMsg.contains("TASK")
                     || upperCaseMsg.contains("PARTICIPANT"))

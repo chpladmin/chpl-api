@@ -38,12 +38,15 @@ public class ReprocessFromUploadedCsvHelper {
         this.processedListingUploadManager = processedListingUploadManager;
     }
 
-    public boolean updateTasks(CertifiedProductSearchDetails currentListing) {
+    public boolean updateTasks(CertifiedProductSearchDetails currentListing, List<CertifiedProductSearchDetails> listingsWithUploadFilesWithDuplicates) {
         CertifiedProductSearchDetails uploadedListing =
                 processedListingUploadManager.getUploadedDetailsByConfirmedCertifiedProductId(currentListing.getId());
         if (hasSedErrors(uploadedListing)) {
             printListingErrorsAndWarnings(uploadedListing);
             return false;
+        }
+        if (isAnyMessageAboutDuplicateTasksOrParticipants(uploadedListing.getErrorMessages().castToCollection())) {
+            listingsWithUploadFilesWithDuplicates.add(uploadedListing);
         }
 
         int numTasksUpdated = 0;
@@ -128,9 +131,22 @@ public class ReprocessFromUploadedCsvHelper {
     private boolean isAnyMessageAboutSed(Collection<String> messages) {
         return messages.stream()
             .map(msg -> msg.toUpperCase())
+            //the code to update friendly ids handles duplicate identifiers in the files so we don't need to care about the
+            //"duplicate" errors
+            .filter(upperCaseMsg -> !upperCaseMsg.contains("Test Task Identifiers must be unique across all tasks.".toUpperCase()))
+            .filter(upperCaseMsg -> !upperCaseMsg.contains("Participant Identifiers must be unique across all participants.".toUpperCase()))
+            //check for any other task or participant-related error
             .filter(upperCaseMsg -> upperCaseMsg.contains("SED")
                     || upperCaseMsg.contains("TASK")
                     || upperCaseMsg.contains("PARTICIPANT"))
+            .count() > 0;
+    }
+
+    private boolean isAnyMessageAboutDuplicateTasksOrParticipants(Collection<String> messages) {
+        return messages.stream()
+            .map(msg -> msg.toUpperCase())
+            .filter(upperCaseMsg -> upperCaseMsg.contains("Test Task Identifiers must be unique across all tasks.".toUpperCase())
+                    || upperCaseMsg.contains("Participant Identifiers must be unique across all participants.".toUpperCase()))
             .count() > 0;
     }
 
