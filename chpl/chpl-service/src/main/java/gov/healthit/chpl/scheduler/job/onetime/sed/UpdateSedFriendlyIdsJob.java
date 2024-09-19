@@ -70,7 +70,10 @@ public class UpdateSedFriendlyIdsJob implements Job {
                     .certificationCriteriaIds(Stream.of(g3.getId()).collect(Collectors.toSet()))
                     .certificationCriteriaOperator(SearchSetOperator.AND)
                     .build()).stream()
+                    //filter out listings added before we started saving the upload files
                     .filter(listingSearchResult -> listingSearchResult.getId() >= FIRST_LISTING_ID_CONFIRMED_WITH_FLEXIBLE_UPLOAD)
+                    //filter out the two listings we know have person names in data
+                    .filter(listingSearchResult -> !listingSearchResult.getId().equals(11213L) && !listingSearchResult.getId().equals(11232L))
                     .toList();
 
             LOGGER.info("Found " + listingsWithG3ConfirmedWithFlexibleUpload.size() + " listing uploads attesting to 170.315 (g)(3).");
