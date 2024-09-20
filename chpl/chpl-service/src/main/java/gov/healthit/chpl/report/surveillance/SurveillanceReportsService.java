@@ -59,7 +59,7 @@ public class SurveillanceReportsService {
                     .filter(result -> result.getOpenSurveillanceCount() > 0)
                     .toList();
         } catch (ValidationException e) {
-            LOGGER.error("Could not retrieve listing search for listings with oipen surveillance.", e);
+            LOGGER.error("Could not retrieve listing search for listings with open surveillance.", e);
             return List.of();
         }
     }
@@ -68,8 +68,8 @@ public class SurveillanceReportsService {
         StatisticsSnapshot stats = getStatistics();
         return NonconformityCounts.builder()
                 .totalNonconformities(stats.getNonConfStatusAllTotal())
-                .openNonconformities(stats.getOpenNonConformities())
-                .closedNonconformities(stats.getClosedNonConformities())
+                .openNonconformities(stats.getNonConfStatusOpen().getCount())
+                .closedNonconformities(stats.getNonConfStatusClosedTotal())
                 .avgDaysToAssessConformity(stats.getNonConfAvgTimeToAssessConformity())
                 .avgDaysToApproveCap(stats.getNonConfAvgTimeToApproveCAP())
                 .avgDaysOfCap(stats.getNonConfAvgDurationOfCAP())
@@ -95,7 +95,7 @@ public class SurveillanceReportsService {
                     .filter(result -> result.getOpenSurveillanceNonConformityCount() > 0)
                     .toList();
         } catch (ValidationException e) {
-            LOGGER.error("Could not retrieve listing search for listings with oipen surveillance.", e);
+            LOGGER.error("Could not retrieve listing search for listings with open surveillance.", e);
             return List.of();
         }
     }
