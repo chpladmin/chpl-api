@@ -46,7 +46,7 @@ public class ReprocessFromUploadedCsvHelper {
             return false;
         }
         if (isAnyMessageAboutDuplicateTasksOrParticipants(uploadedListing.getErrorMessages().castToCollection())) {
-            listingsWithUploadFilesWithDuplicates.add(uploadedListing);
+            listingsWithUploadFilesWithDuplicates.add(currentListing);
         }
 
         int numTasksUpdated = 0;
