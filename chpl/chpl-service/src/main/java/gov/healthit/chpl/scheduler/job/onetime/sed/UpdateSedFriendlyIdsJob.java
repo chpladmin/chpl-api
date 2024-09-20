@@ -35,6 +35,8 @@ import lombok.extern.log4j.Log4j2;
 @DisallowConcurrentExecution
 @Log4j2(topic = "updatedSedFriendlyIdsJobLogger")
 public class UpdateSedFriendlyIdsJob implements Job {
+    public static final String TEST_TASK_DUPLICATE_MSG = "Test Task IDs must be unique across all tasks";
+    public static final String TEST_PARTICIPANT_DUPLICATE_MSG = "Participant IDs must be unique across all participants";
     private static final List<Long> LISTING_IDS_WITH_PERSON_NAMES = Stream.of(11213L, 11232L).toList();
     private static final long FIRST_LISTING_ID_CONFIRMED_WITH_FLEXIBLE_UPLOAD = 10912;
 
@@ -198,8 +200,8 @@ public class UpdateSedFriendlyIdsJob implements Job {
             .map(msg -> msg.toUpperCase())
             //the code to update friendly ids handles duplicate identifiers in the files so we don't need to care about the
             //"duplicate" errors
-            .filter(upperCaseMsg -> !upperCaseMsg.contains("Test Task Identifiers must be unique across all tasks.".toUpperCase()))
-            .filter(upperCaseMsg -> !upperCaseMsg.contains("Participant Identifiers must be unique across all participants.".toUpperCase()))
+            .filter(upperCaseMsg -> !upperCaseMsg.contains(TEST_TASK_DUPLICATE_MSG.toUpperCase()))
+            .filter(upperCaseMsg -> !upperCaseMsg.contains(TEST_PARTICIPANT_DUPLICATE_MSG.toUpperCase()))
             //check for any other task or participant-related error
             .filter(upperCaseMsg -> upperCaseMsg.contains("SED")
                     || upperCaseMsg.contains("TASK")

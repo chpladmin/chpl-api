@@ -133,8 +133,8 @@ public class ReprocessFromUploadedCsvHelper {
             .map(msg -> msg.toUpperCase())
             //the code to update friendly ids handles duplicate identifiers in the files so we don't need to care about the
             //"duplicate" errors
-            .filter(upperCaseMsg -> !upperCaseMsg.contains("Test Task Identifiers must be unique across all tasks.".toUpperCase()))
-            .filter(upperCaseMsg -> !upperCaseMsg.contains("Participant Identifiers must be unique across all participants.".toUpperCase()))
+            .filter(upperCaseMsg -> !upperCaseMsg.contains(UpdateSedFriendlyIdsJob.TEST_TASK_DUPLICATE_MSG.toUpperCase()))
+            .filter(upperCaseMsg -> !upperCaseMsg.contains(UpdateSedFriendlyIdsJob.TEST_PARTICIPANT_DUPLICATE_MSG.toUpperCase()))
             //check for any other task or participant-related error
             .filter(upperCaseMsg -> upperCaseMsg.contains("SED")
                     || upperCaseMsg.contains("TASK")
@@ -145,8 +145,8 @@ public class ReprocessFromUploadedCsvHelper {
     private boolean isAnyMessageAboutDuplicateTasksOrParticipants(Collection<String> messages) {
         return messages.stream()
             .map(msg -> msg.toUpperCase())
-            .filter(upperCaseMsg -> upperCaseMsg.contains("Test Task Identifiers must be unique across all tasks.".toUpperCase())
-                    || upperCaseMsg.contains("Participant Identifiers must be unique across all participants.".toUpperCase()))
+            .filter(upperCaseMsg -> upperCaseMsg.contains(UpdateSedFriendlyIdsJob.TEST_TASK_DUPLICATE_MSG.toUpperCase())
+                    || upperCaseMsg.contains(UpdateSedFriendlyIdsJob.TEST_PARTICIPANT_DUPLICATE_MSG.toUpperCase()))
             .count() > 0;
     }
 
