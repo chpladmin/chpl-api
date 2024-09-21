@@ -21,6 +21,7 @@ import gov.healthit.chpl.domain.comparator.CQMResultComparator;
 import gov.healthit.chpl.dto.CQMResultDetailsDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.DimensionalDataManager;
+import gov.healthit.chpl.service.CqmCriterionService;
 import lombok.extern.log4j.Log4j2;
 
 @Component
@@ -44,15 +45,14 @@ public class CqmResultsService {
         this.cqmResultComparator = new CQMResultComparator();
     }
 
-    public List<CQMResultDetails> getCqmResultDetails(Long id, String year) {
-        List<CQMResultDetailsDTO> cqmResultDTOs = getCqmResultDetailsDTOs(id);
+    public List<CQMResultDetails> getCqmResultDetails(Long listingId, String year) {
+        List<CQMResultDetailsDTO> cqmResultDTOs = getCqmResultDetailsDTOs(listingId);
 
         List<CQMResultDetails> cqmResults = new ArrayList<CQMResultDetails>();
         for (CQMResultDetailsDTO cqmResultDTO : cqmResultDTOs) {
             boolean existingCms = false;
             // for a CMS, first check to see if we already have an object with
-            // the same CMS id
-            // so we can just add to it's success versions.
+            // the same CMS id so we can just add to it's success versions.
             if ((StringUtils.isEmpty(year) || !year.equals("2011"))
                     && !StringUtils.isEmpty(cqmResultDTO.getCmsId())) {
                 for (CQMResultDetails result : cqmResults) {
@@ -71,6 +71,7 @@ public class CqmResultsService {
                 result.setNumber(cqmResultDTO.getNumber());
                 result.setTitle(cqmResultDTO.getTitle());
                 result.setDescription(cqmResultDTO.getDescription());
+                result.setDomain(cqmResultDTO.getDomain());
                 result.setTypeId(cqmResultDTO.getCqmCriterionTypeId());
                 if ((StringUtils.isEmpty(year) || !year.equals("2011"))
                         && !StringUtils.isEmpty(cqmResultDTO.getCmsId())) {
@@ -138,10 +139,10 @@ public class CqmResultsService {
         cqmResult.setAllVersions(sortedAllVersions);
     }
 
-    private List<CQMResultDetailsDTO> getCqmResultDetailsDTOs(Long id) {
+    private List<CQMResultDetailsDTO> getCqmResultDetailsDTOs(Long listingId) {
         List<CQMResultDetailsDTO> cqmResultDetailsDTOs = null;
         try {
-            cqmResultDetailsDTOs = cqmResultDetailsDAO.getCQMResultDetailsByCertifiedProductId(id);
+            cqmResultDetailsDTOs = cqmResultDetailsDAO.getCQMResultDetailsByCertifiedProductId(listingId);
         } catch (EntityRetrievalException e) {
             LOGGER.error(e.getMessage(), e);
         }
@@ -158,7 +159,8 @@ public class CqmResultsService {
 
     private List<CQMCriterion> getAvailableCQMVersions() {
         return dimensionalDataManager.getCQMCriteria().stream()
-                .filter(criterion -> !StringUtils.isEmpty(criterion.getCmsId()) && criterion.getCmsId().startsWith("CMS"))
+                .filter(criterion -> !StringUtils.isEmpty(criterion.getCmsId())
+                        && criterion.getCmsId().startsWith(CqmCriterionService.CMS_ID_BEGIN))
                 .collect(Collectors.toList());
     }
 

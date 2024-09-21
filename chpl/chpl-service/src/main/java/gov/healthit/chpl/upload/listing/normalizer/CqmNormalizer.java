@@ -1,9 +1,7 @@
 package gov.healthit.chpl.upload.listing.normalizer;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -18,7 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
-import gov.healthit.chpl.dao.CQMCriterionDAO;
 import gov.healthit.chpl.domain.CQMCriterion;
 import gov.healthit.chpl.domain.CQMResultCertification;
 import gov.healthit.chpl.domain.CQMResultDetails;
@@ -26,49 +23,30 @@ import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.service.CertificationCriterionService.Criteria2015;
+import gov.healthit.chpl.service.CqmCriterionService;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.log4j.Log4j2;
 
 @Component
 @Log4j2
 public class CqmNormalizer {
-    private static final String CMS_ID_BEGIN = "CMS";
-
-    private CQMCriterionDAO cqmDao;
+    private CqmCriterionService cqmCriterionService;
     private CertificationCriterionService criterionService;
 
-    private List<CQMCriterion> allCqmsWithVersions;
+    private List<CQMCriterion> allCqms;
     private List<CQMCriterion> mostRecentCqmVersions;
 
     @Autowired
-    public CqmNormalizer(CQMCriterionDAO cqmDao, CertificationCriterionService criterionService) {
-        this.cqmDao = cqmDao;
+    public CqmNormalizer(CqmCriterionService cqmCriterionService,
+            CertificationCriterionService criterionService) {
+        this.cqmCriterionService = cqmCriterionService;
         this.criterionService = criterionService;
     }
 
     @PostConstruct
     private void initializeAllCqmsWithVersions() {
-        allCqmsWithVersions = cqmDao.findAll();
-        allCqmsWithVersions = allCqmsWithVersions.stream()
-                .filter(cqm -> !StringUtils.isEmpty(cqm.getCmsId()) && cqm.getCmsId().startsWith(CMS_ID_BEGIN))
-                .collect(Collectors.toList());
-        //group all cqms by CMS ID - some in each group may have different titles and descriptions
-        Map<String, List<CQMCriterion>> cqmsGroupedByCmsId = new HashMap<String, List<CQMCriterion>>();
-        mostRecentCqmVersions = cqmsGroupedByCmsId.keySet().stream()
-                .map(cmsId -> getCqmForMostRecentVersion(cqmsGroupedByCmsId.get(cmsId)))
-                .collect(Collectors.toList());
-    }
-
-    private CQMCriterion getCqmForMostRecentVersion(List<CQMCriterion> cqmsWithCmsId) {
-        int maxVersion = cqmsWithCmsId.stream()
-                .map(cqmCrit -> cqmCrit.getCqmVersion().substring(1))
-                .mapToInt(Integer::valueOf)
-                .max()
-                .orElse(0);
-        return cqmsWithCmsId.stream()
-                    .filter(cqmCrit -> cqmCrit.getCqmVersion().endsWith(maxVersion + ""))
-                    .findAny()
-                    .orElse(cqmsWithCmsId.get(cqmsWithCmsId.size() - 1));
+        allCqms = cqmCriterionService.getAllCmsCqms();
+        mostRecentCqmVersions = cqmCriterionService.getAllCmsCqmsMostRecentVersionOnly();
     }
 
     public void normalize(CertifiedProductSearchDetails listing) {
@@ -88,8 +66,8 @@ public class CqmNormalizer {
 
     private void normalizeCmsId(CQMResultDetails cqmResult) {
         String cmsId = cqmResult.getCmsId();
-        if (!StringUtils.isEmpty(cmsId) && !StringUtils.startsWithIgnoreCase(cmsId, CMS_ID_BEGIN)) {
-            cmsId = CMS_ID_BEGIN + cmsId;
+        if (!StringUtils.isEmpty(cmsId) && !StringUtils.startsWithIgnoreCase(cmsId, CqmCriterionService.CMS_ID_BEGIN)) {
+            cmsId = CqmCriterionService.CMS_ID_BEGIN + cmsId;
             cqmResult.setCmsId(cmsId);
         }
     }
@@ -99,38 +77,24 @@ public class CqmNormalizer {
             return;
         }
 
-        CQMCriterion cqm = null;
-        Set<CQMCriterion> allCqmsWithCmsIdAndVersion = cqmResult.getSuccessVersions().stream()
-            .map(successVer -> cqmDao.getCMSByNumberAndVersion(cqmResult.getCmsId(), successVer))
-            .collect(Collectors.toSet());
-
-        if (allCqmsWithCmsIdAndVersion.size() > 1) {
-            int maxVersion = allCqmsWithCmsIdAndVersion.stream()
-                .map(cqmCrit -> cqmCrit.getCqmVersion().substring(1))
-                .mapToInt(Integer::valueOf)
-                .max()
-                .orElse(0);
-            cqm = allCqmsWithCmsIdAndVersion.stream()
-                    .filter(cqmCrit -> cqmCrit.getCqmVersion().endsWith(maxVersion + ""))
-                    .findAny()
-                    .orElse(allCqmsWithCmsIdAndVersion.iterator().next());
-        } else if (!CollectionUtils.isEmpty(allCqmsWithCmsIdAndVersion)) {
-            cqm = allCqmsWithCmsIdAndVersion.iterator().next();
-            if (cqm != null) {
-                cqmResult.setCqmCriterionId(cqm.getCriterionId());
-                cqmResult.setDescription(cqm.getDescription());
-                cqmResult.setDomain(cqm.getCqmDomain());
-                cqmResult.setNqfNumber(cqm.getNqfNumber());
-                cqmResult.setNumber(cqm.getNumber());
-                cqmResult.setTitle(cqm.getTitle());
-                cqmResult.setTypeId(cqm.getCqmCriterionTypeId());
-            }
+        CQMCriterion cqm = mostRecentCqmVersions.stream()
+                .filter(mostRecentCqm -> mostRecentCqm.getCmsId().equals(cqmResult.getCmsId()))
+                .findAny()
+                .orElse(null);
+        if (cqm != null) {
+            cqmResult.setCqmCriterionId(cqm.getCriterionId());
+            cqmResult.setDescription(cqm.getDescription());
+            cqmResult.setDomain(cqm.getCqmDomain());
+            cqmResult.setNqfNumber(cqm.getNqfNumber());
+            cqmResult.setNumber(cqm.getNumber());
+            cqmResult.setTitle(cqm.getTitle());
+            cqmResult.setTypeId(cqm.getCqmCriterionTypeId());
         }
     }
 
     private void addAllVersions(CQMResultDetails cqmResult) {
-        if (allCqmsWithVersions != null && allCqmsWithVersions.size() > 0) {
-            allCqmsWithVersions.stream().forEach(cqm -> {
+        if (allCqms != null && allCqms.size() > 0) {
+            allCqms.stream().forEach(cqm -> {
                 if (!StringUtils.isEmpty(cqm.getCmsId())
                         && cqm.getCmsId().equalsIgnoreCase(cqmResult.getCmsId())) {
                     cqmResult.getAllVersions().add(cqm.getCqmVersion());

@@ -42,7 +42,6 @@ public class CQMResultDetailsDTO implements Serializable {
         this.domain = entity.getDomain();
         this.cqmVersionId = entity.getCqmVersionId();
         this.version = entity.getVersion();
-
     }
 
     public Long getId() {
