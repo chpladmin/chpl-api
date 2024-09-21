@@ -1,15 +1,15 @@
 package gov.healthit.chpl.upload.listing.normalizer;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-
-import jakarta.annotation.PostConstruct;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
@@ -26,6 +26,7 @@ import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.service.CertificationCriterionService.Criteria2015;
+import jakarta.annotation.PostConstruct;
 import lombok.extern.log4j.Log4j2;
 
 @Component
@@ -37,6 +38,7 @@ public class CqmNormalizer {
     private CertificationCriterionService criterionService;
 
     private List<CQMCriterion> allCqmsWithVersions;
+    private List<CQMCriterion> mostRecentCqmVersions;
 
     @Autowired
     public CqmNormalizer(CQMCriterionDAO cqmDao, CertificationCriterionService criterionService) {
@@ -50,6 +52,23 @@ public class CqmNormalizer {
         allCqmsWithVersions = allCqmsWithVersions.stream()
                 .filter(cqm -> !StringUtils.isEmpty(cqm.getCmsId()) && cqm.getCmsId().startsWith(CMS_ID_BEGIN))
                 .collect(Collectors.toList());
+        //group all cqms by CMS ID - some in each group may have different titles and descriptions
+        Map<String, List<CQMCriterion>> cqmsGroupedByCmsId = new HashMap<String, List<CQMCriterion>>();
+        mostRecentCqmVersions = cqmsGroupedByCmsId.keySet().stream()
+                .map(cmsId -> getCqmForMostRecentVersion(cqmsGroupedByCmsId.get(cmsId)))
+                .collect(Collectors.toList());
+    }
+
+    private CQMCriterion getCqmForMostRecentVersion(List<CQMCriterion> cqmsWithCmsId) {
+        int maxVersion = cqmsWithCmsId.stream()
+                .map(cqmCrit -> cqmCrit.getCqmVersion().substring(1))
+                .mapToInt(Integer::valueOf)
+                .max()
+                .orElse(0);
+        return cqmsWithCmsId.stream()
+                    .filter(cqmCrit -> cqmCrit.getCqmVersion().endsWith(maxVersion + ""))
+                    .findAny()
+                    .orElse(cqmsWithCmsId.get(cqmsWithCmsId.size() - 1));
     }
 
     public void normalize(CertifiedProductSearchDetails listing) {
@@ -57,7 +76,7 @@ public class CqmNormalizer {
             listing.getCqmResults().stream()
                 .forEach(cqmResult -> {
                     normalizeCmsId(cqmResult);
-                    populateCqmCriterionData(cqmResult);
+                    populateCqmCriterionData(listing, cqmResult);
                     populateMappedCriteriaIds(listing, cqmResult);
                 });
         }
@@ -75,19 +94,37 @@ public class CqmNormalizer {
         }
     }
 
-    private void populateCqmCriterionData(CQMResultDetails cqmResult) {
+    private void populateCqmCriterionData(CertifiedProductSearchDetails listing, CQMResultDetails cqmResult) {
         if (StringUtils.isEmpty(cqmResult.getCmsId())) {
             return;
         }
-        CQMCriterion cqm = cqmDao.getCMSByNumber(cqmResult.getCmsId());
-        if (cqm != null) {
-            cqmResult.setCqmCriterionId(cqm.getCriterionId());
-            cqmResult.setDescription(cqm.getDescription());
-            cqmResult.setDomain(cqm.getCqmDomain());
-            cqmResult.setNqfNumber(cqm.getNqfNumber());
-            cqmResult.setNumber(cqm.getNumber());
-            cqmResult.setTitle(cqm.getTitle());
-            cqmResult.setTypeId(cqm.getCqmCriterionTypeId());
+
+        CQMCriterion cqm = null;
+        Set<CQMCriterion> allCqmsWithCmsIdAndVersion = cqmResult.getSuccessVersions().stream()
+            .map(successVer -> cqmDao.getCMSByNumberAndVersion(cqmResult.getCmsId(), successVer))
+            .collect(Collectors.toSet());
+
+        if (allCqmsWithCmsIdAndVersion.size() > 1) {
+            int maxVersion = allCqmsWithCmsIdAndVersion.stream()
+                .map(cqmCrit -> cqmCrit.getCqmVersion().substring(1))
+                .mapToInt(Integer::valueOf)
+                .max()
+                .orElse(0);
+            cqm = allCqmsWithCmsIdAndVersion.stream()
+                    .filter(cqmCrit -> cqmCrit.getCqmVersion().endsWith(maxVersion + ""))
+                    .findAny()
+                    .orElse(allCqmsWithCmsIdAndVersion.iterator().next());
+        } else if (!CollectionUtils.isEmpty(allCqmsWithCmsIdAndVersion)) {
+            cqm = allCqmsWithCmsIdAndVersion.iterator().next();
+            if (cqm != null) {
+                cqmResult.setCqmCriterionId(cqm.getCriterionId());
+                cqmResult.setDescription(cqm.getDescription());
+                cqmResult.setDomain(cqm.getCqmDomain());
+                cqmResult.setNqfNumber(cqm.getNqfNumber());
+                cqmResult.setNumber(cqm.getNumber());
+                cqmResult.setTitle(cqm.getTitle());
+                cqmResult.setTypeId(cqm.getCqmCriterionTypeId());
+            }
         }
     }
 
@@ -166,17 +203,17 @@ public class CqmNormalizer {
     }
 
     private void addUnattestedCqms(CertifiedProductSearchDetails listing) {
-        List<CQMCriterion> cqmsWithDistinctCmsIds = allCqmsWithVersions.stream()
+        List<CQMCriterion> cqmsByDistinctCmsId = mostRecentCqmVersions.stream()
             .filter(distinctByKey(CQMCriterion::getCmsId))
             .collect(Collectors.toList());
 
-        if (cqmsWithDistinctCmsIds != null && cqmsWithDistinctCmsIds.size() > 0) {
-            List<CQMCriterion> cqmsToAdd = cqmsWithDistinctCmsIds.stream()
+        if (cqmsByDistinctCmsId != null && cqmsByDistinctCmsId.size() > 0) {
+            List<CQMCriterion> cqmsToAdd = cqmsByDistinctCmsId.stream()
                     .filter(cqm -> !existsInListing(listing.getCqmResults(), cqm))
                     .collect(Collectors.toList());
             cqmsToAdd.stream().forEach(cqmToAdd -> {
                     listing.getCqmResults().add(buildCqmDetails(cqmToAdd));
-                });
+            });
         }
     }
 
