@@ -250,7 +250,7 @@ public class ListingUploadController {
             throw new EntityRetrievalException("Unable to find an existing listing with ID " + listingId);
         }
 
-        CertifiedProductSearchDetails uploadedListingDetails = listingUploadManager.getListingUploadAsListing(uploadedListing);
+        CertifiedProductSearchDetails uploadedListingDetails = listingUploadManager.getListingUploadAsListingForUpdate(uploadedListing);
         listingMergeService.mergeWithListingFromChpl(uploadedListingDetails, currentListingDetails);
         Validator validator = validatorFactory.getValidator(uploadedListingDetails);
         if (validator != null) {
