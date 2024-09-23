@@ -20,6 +20,7 @@ import gov.healthit.chpl.permissions.domains.activity.GetQuarterlyReportActivity
 import gov.healthit.chpl.permissions.domains.activity.GetStandardMetadataActionPermissions;
 import gov.healthit.chpl.permissions.domains.activity.GetSvapMetadataActionPermissions;
 import gov.healthit.chpl.permissions.domains.activity.GetUserMaintenanceMetadataActionPermissions;
+import gov.healthit.chpl.permissions.domains.activity.SearchActivityActionPermissions;
 
 @Component
 public class ActivityDomainPermissions extends DomainPermissions {
@@ -40,6 +41,7 @@ public class ActivityDomainPermissions extends DomainPermissions {
     public static final String GET_FUNCTIONALITY_TESTED_METADATA = "GET_FUNCTIONALITY_TESTED_METADATA";
     public static final String GET_STANDARD_METADATA = "GET_STANDARD_METADATA";
     public static final String GET_SVAP_METADATA = "GET_SVAP_METADATA";
+    public static final String SEARCH = "SEARCH";
 
 
     @Autowired
@@ -59,7 +61,8 @@ public class ActivityDomainPermissions extends DomainPermissions {
             @Qualifier("activityGetApiKeyManagementActivityMetadataActionPermissions") GetApiKeyManagementActivityMetadataActionPermissions getApiKeyManagementMetadataActionPermissions,
             @Qualifier("getFunctionalityTestedActivityMetadataActionPermissions") GetFunctionalityTestedMetadataActionPermissions getFunctionalityTestedMetadataActionPermissions,
             @Qualifier("getStandardActivityMetadataActionPermissions") GetStandardMetadataActionPermissions getStandardMetadataActionPermissions,
-            @Qualifier("getSvapActivityMetadataActionPermissions") GetSvapMetadataActionPermissions getSvapMetadataActionPermissions){
+            @Qualifier("getSvapActivityMetadataActionPermissions") GetSvapMetadataActionPermissions getSvapMetadataActionPermissions,
+            @Qualifier("searchActivityActionPermissions") SearchActivityActionPermissions searchActivityActionPermissions){
 
         getActionPermissions().put(GET_ACB_METADATA, getAcbActivityMetadataActionPermissions);
         getActionPermissions().put(GET_METADATA_BY_ACB, getActivityMetadataByAcbActionPermissions);
@@ -77,5 +80,6 @@ public class ActivityDomainPermissions extends DomainPermissions {
         getActionPermissions().put(GET_FUNCTIONALITY_TESTED_METADATA, getFunctionalityTestedMetadataActionPermissions);
         getActionPermissions().put(GET_STANDARD_METADATA, getStandardMetadataActionPermissions);
         getActionPermissions().put(GET_SVAP_METADATA, getSvapMetadataActionPermissions);
+        getActionPermissions().put(SEARCH, searchActivityActionPermissions);
     }
 }
