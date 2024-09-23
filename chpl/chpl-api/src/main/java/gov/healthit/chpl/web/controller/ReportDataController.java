@@ -163,6 +163,26 @@ public class ReportDataController {
         return reportDataManager.getClosedCapCountsByAcb();
     }
 
+    @Operation(summary = "Retrieves the data used to generate the Listings with Open CAP report.",
+            description = "Retrieves the data used to generate the Listings with Open CAP report.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
+    @RequestMapping(value = "/open-cap-listings", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public @ResponseBody List<ListingSearchResult> getListingsWithOpenCap() {
+        return reportDataManager.getListingsWithOpenCap();
+    }
+
+    @Operation(summary = "Retrieves the data used to generate the Listings with Closed CAP report.",
+            description = "Retrieves the data used to generate the Listings with Closed CAP report.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
+    @RequestMapping(value = "/closed-cap-listings", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public @ResponseBody List<ListingSearchResult> getListingsWithClosedCap() {
+        return reportDataManager.getListingsWithClosedCap();
+    }
+
     @Operation(summary = "Retrieves the data used to generate the Unique Developer Count report.",
             description = "Retrieves the data used to generate the Unique Developer Count report.",
             security = {

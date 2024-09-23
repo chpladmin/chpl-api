@@ -70,6 +70,14 @@ public class ReportDataManager {
         return surveillanceReportsService.getClosedCapCountsByAcb();
     }
 
+    public List<ListingSearchResult> getListingsWithOpenCap() {
+        return surveillanceReportsService.getListingsWithOpenCap();
+    }
+
+    public List<ListingSearchResult> getListingsWithClosedCap() {
+        return surveillanceReportsService.getListingsWithClosedCap();
+    }
+
     public CapCounts getCapCounts() {
         return surveillanceReportsService.getCapCounts();
     }

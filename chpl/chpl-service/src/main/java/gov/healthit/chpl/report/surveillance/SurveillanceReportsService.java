@@ -1,6 +1,7 @@
 package gov.healthit.chpl.report.surveillance;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.healthit.chpl.dao.statistics.SummaryStatisticsDAO;
+import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.entity.statistics.SummaryStatisticsEntity;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.scheduler.job.summarystatistics.data.CertificationBodyStatistic;
@@ -16,6 +18,7 @@ import gov.healthit.chpl.scheduler.job.summarystatistics.data.StatisticsSnapshot
 import gov.healthit.chpl.search.ListingSearchService;
 import gov.healthit.chpl.search.domain.ComplianceSearchFilter;
 import gov.healthit.chpl.search.domain.ListingSearchResult;
+import gov.healthit.chpl.search.domain.NonConformitySearchOptions;
 import gov.healthit.chpl.search.domain.SearchRequest;
 import lombok.extern.log4j.Log4j2;
 
@@ -117,6 +120,50 @@ public class SurveillanceReportsService {
 
     public List<CertificationBodyStatistic> getClosedCapCountsByAcb() {
         return getStatistics().getNonConfCAPStatusClosed();
+    }
+
+    public List<ListingSearchResult> getListingsWithOpenCap() {
+        try {
+            return listingSearchService.getAllPagesOfSearchResults(
+                    SearchRequest.builder()
+                        .complianceActivity(ComplianceSearchFilter.builder()
+                                .hasHadComplianceActivity(true)
+                                .nonConformityOptions(Set.of(NonConformitySearchOptions.OPEN_CAP))
+                                .build())
+                        .build())
+                    .stream()
+                    .filter(result -> result.getEdition() == null
+                            || result.getEdition().getId().equals(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getId()))
+                    .toList();
+        } catch (ValidationException e) {
+            LOGGER.error("Could not retrieve listing search for listings with open CAP.", e);
+            return List.of();
+        }
+    }
+
+    public List<ListingSearchResult> getListingsWithClosedCap() {
+        try {
+            return listingSearchService.getAllPagesOfSearchResults(
+                    SearchRequest.builder()
+                        .certificationEditions(null)
+                        .certificationStatuses(Set.of(
+                                "Active",
+                                "Suspended by ONC",
+                                "Suspended by ONC-ACB",
+                                "Terminated by ONC",
+                                "Withdrawn by Developer",
+                                "Withdrawn by Developer Under Surveillance/Review",
+                                "Withdrawn by ONC-ACB"))
+                        .complianceActivity(ComplianceSearchFilter.builder()
+                                .nonConformityOptions(Set.of(NonConformitySearchOptions.CLOSED_CAP))
+                                .build())
+                        .build())
+                    .stream()
+                    .toList();
+        } catch (ValidationException e) {
+            LOGGER.error("Could not retrieve listing search for listings with closed CAP.", e);
+            return List.of();
+        }
     }
 
     private StatisticsSnapshot getStatistics() {
