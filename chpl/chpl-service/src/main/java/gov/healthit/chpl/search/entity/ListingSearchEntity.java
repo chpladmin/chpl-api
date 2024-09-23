@@ -3,13 +3,12 @@ package gov.healthit.chpl.search.entity;
 import java.time.LocalDate;
 import java.util.Date;
 
+import org.hibernate.annotations.Immutable;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-
-import org.hibernate.annotations.Immutable;
-
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -116,6 +115,12 @@ public class ListingSearchEntity {
 
     @Column(name = "closed_nonconformity_count")
     private Long closedSurveillanceNonConformityCount;
+
+    @Column(name = "open_cap_count")
+    private Long openCapCount;
+
+    @Column(name = "closed_cap_count")
+    private Long closedCapCount;
 
     @Column(name = "surv_date_ranges")
     private String surveillanceDates;
