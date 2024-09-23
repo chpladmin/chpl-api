@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.healthit.chpl.dao.statistics.SummaryStatisticsDAO;
-import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.entity.statistics.SummaryStatisticsEntity;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.scheduler.job.summarystatistics.data.CertificationBodyStatistic;
@@ -126,14 +125,20 @@ public class SurveillanceReportsService {
         try {
             return listingSearchService.getAllPagesOfSearchResults(
                     SearchRequest.builder()
+                        .certificationEditions(null)
+                        .certificationStatuses(Set.of(
+                                "Active",
+                                "Suspended by ONC",
+                                "Suspended by ONC-ACB",
+                                "Terminated by ONC",
+                                "Withdrawn by Developer",
+                                "Withdrawn by Developer Under Surveillance/Review",
+                                "Withdrawn by ONC-ACB"))
                         .complianceActivity(ComplianceSearchFilter.builder()
-                                .hasHadComplianceActivity(true)
                                 .nonConformityOptions(Set.of(NonConformitySearchOptions.OPEN_CAP))
                                 .build())
                         .build())
                     .stream()
-                    .filter(result -> result.getEdition() == null
-                            || result.getEdition().getId().equals(CertificationEditionConcept.CERTIFICATION_EDITION_2015.getId()))
                     .toList();
         } catch (ValidationException e) {
             LOGGER.error("Could not retrieve listing search for listings with open CAP.", e);
