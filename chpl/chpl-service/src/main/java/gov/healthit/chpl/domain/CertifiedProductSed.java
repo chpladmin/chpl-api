@@ -40,13 +40,13 @@ public class CertifiedProductSed implements Serializable {
 
     //I would prefer that these two "duplicate" fields were JsonIgnored, but during upload and confirmation of a listing
     //they can ONLY be filled in by parsing the file and looking for duplicate IDs.
-    //We cannot reliably determine, after the listing is build from the CSV, whether the file had duplicate IDs.
+    //We cannot reliably determine, after the listing is built from the CSV, whether the file had duplicate IDs.
     //This is because we may ignore some of the IDs if they are unused (we only give a warning about unused IDs)
-    //or if a test test/participant has all the same identical fields, we would only have one copy of it in the listing
+    //or if a test task/participant has all the same identical fields, we would only have one copy of it in the listing
     //and it would not appear to be duplicated in the listing. So we have to save the duplicates separately
-    //in order to reliably generate errors about them AND we have to make them "sticky" in the JSON so they are
-    //passed back in when clicking "Confirm", otherwise we don't have the duplicates in the JSON and allow confirmation
-    //even if the listing had these errors.
+    //in order to reliably generate errors about them if the user goes through multiple rounds of editing listing and clicking
+    //confirm - we have to make them "sticky" in the JSON so they are passed back in when clicking "Confirm",
+    //otherwise we don't have the duplicates in the JSON and allow confirmation even if the listing had these errors.
     @Builder.Default
     private List<String> duplicateTestTaskIds = new ArrayList<String>();
 
