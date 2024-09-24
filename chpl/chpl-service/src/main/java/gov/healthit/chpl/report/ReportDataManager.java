@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.developer.search.DeveloperSearchResult;
+import gov.healthit.chpl.report.criteriaattribute.TestToolListingReport;
 import gov.healthit.chpl.report.criteriaattribute.TestToolReport;
 import gov.healthit.chpl.report.criteriaattribute.TestToolReportService;
 import gov.healthit.chpl.report.criteriamigrationreport.CriteriaMigrationReport;
@@ -61,5 +62,9 @@ public class ReportDataManager {
 
     public List<TestToolReport> getTestToolReports() {
         return testToolReportService.getTestToolReports();
+    }
+
+    public List<TestToolListingReport> getTestToolListingReports() {
+        return testToolReportService.getTestToolListingReports();
     }
 }

@@ -16,4 +16,8 @@ public class TestToolReportService {
     public List<TestToolReport> getTestToolReports() {
         return testToolReportDao.getTestToolReports();
     }
+
+    public List<TestToolListingReport> getTestToolListingReports() {
+        return testToolReportDao.getTestToolListingReports();
+    }
 }

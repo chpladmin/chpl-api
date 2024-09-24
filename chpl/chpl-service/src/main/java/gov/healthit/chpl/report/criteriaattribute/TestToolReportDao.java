@@ -70,4 +70,33 @@ public class TestToolReportDao extends BaseDAOImpl {
                 .toList();
     }
 
+    public List<TestToolListingReport> getTestToolListingReports() {
+        String hql = "SELECT cc.id as certificationCriterionId, tt.id as testToolId, cpd.chplProductNumber "
+                + "FROM CertificationCriterionEntity cc, "
+                + "CertificationResultEntity cr, "
+                + "CertifiedProductDetailsEntity cpd, "
+                + "CertificationResultTestToolEntity crtt, "
+                + "TestToolEntity tt "
+                + "WHERE cc.id = cr.certificationCriterionId "
+                + "AND cr.certifiedProductId = cpd.id "
+                + "AND cr.id = crtt.certificationResultId "
+                + "AND crtt.testTool.id = tt.id "
+                + "AND cpd.certificationStatusId IN (1,6,7) "
+                + "AND cc.deleted = false "
+                + "AND cr.deleted = false "
+                + "AND crtt.deleted = false "
+                + "AND cpd.deleted = false ";
+
+        Query query = entityManager.createQuery(hql);
+        List<Object[]> results = query.getResultList();
+
+        return results.stream()
+                .map(result -> TestToolListingReport.builder()
+                        .criterion(getCertificationCriterion((Long) result[0]))
+                        .testTool(getTestTool((Long) result[1]))
+                        .chplProductNumber((String) result[2])
+                        .build())
+                .toList();
+    }
+
 }

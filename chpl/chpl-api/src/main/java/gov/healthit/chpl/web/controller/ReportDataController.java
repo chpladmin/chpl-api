@@ -15,6 +15,7 @@ import gov.healthit.chpl.developer.search.DeveloperSearchRequest;
 import gov.healthit.chpl.developer.search.DeveloperSearchResult;
 import gov.healthit.chpl.developer.search.DeveloperSearchService;
 import gov.healthit.chpl.report.ReportDataManager;
+import gov.healthit.chpl.report.criteriaattribute.TestToolListingReport;
 import gov.healthit.chpl.report.criteriaattribute.TestToolReport;
 import gov.healthit.chpl.report.criteriamigrationreport.CriteriaMigrationReport;
 import gov.healthit.chpl.report.developer.UniqueDeveloperCount;
@@ -142,14 +143,24 @@ public class ReportDataController {
         return reportDataManager.getDevelopersWithSuspendedListingsByAcb();
     }
 
-    @Operation(summary = "Retrieves the data used to generate the Test Tool Criteria Attribute report.",
-            description = "Retrieves the data used to generate the Test Tool Criteria Attribute report.",
+    @Operation(summary = "Retrieves the data used to generate the Test Tool Criteria Attribute Summary report.",
+            description = "Retrieves the data used to generate the Test Tool Criteria Attribute Summary report.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
     @RequestMapping(value = "/test-tools", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<TestToolReport> getTestToolReports() {
         return reportDataManager.getTestToolReports();
+    }
+
+    @Operation(summary = "Retrieves the data used to generate the Test Tool Criteria Attribute Listing report.",
+            description = "Retrieves the data used to generate the Test Tool Criteria Attribute Listing report.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
+    @RequestMapping(value = "/test-tools-listing", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public @ResponseBody List<TestToolListingReport> getTestToolListingReports() {
+        return reportDataManager.getTestToolListingReports();
     }
 
 }
