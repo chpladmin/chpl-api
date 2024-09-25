@@ -29,7 +29,9 @@ import gov.healthit.chpl.testtool.TestTool;
 import gov.healthit.chpl.testtool.TestToolComparator;
 import gov.healthit.chpl.testtool.TestToolDAO;
 import gov.healthit.chpl.util.CertificationResultRules;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 @Component
 public class CertificationResultService {
     private CertificationResultRules certRules;
@@ -107,12 +109,16 @@ public class CertificationResultService {
                 for (TestTask currTestTask : searchDetails.getSed().getTestTasks()) {
                     if (newTestTask.matches(currTestTask)) {
                         alreadyExists = true;
-                        currTestTask.getCriteria().add(criteria);
+                        if (!currTestTask.getCriteria().add(criteria)) {
+                            LOGGER.warn("Cannot add criteria " + criteria.getNumber() + " to test task " + currTestTask.getId() + " for listing " + searchDetails.getId() + " because it already exists.");
+                        }
                     }
                 }
                 if (!alreadyExists) {
                     newTestTask.getCriteria().add(criteria);
                     searchDetails.getSed().getTestTasks().add(newTestTask);
+                } else {
+                    LOGGER.warn("Not adding test task " + newTestTask.getId() + " to the listing " + searchDetails.getId() + " because one with the same data has already been found.");
                 }
             }
         }
