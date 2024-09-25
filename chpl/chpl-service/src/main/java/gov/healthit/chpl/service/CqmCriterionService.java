@@ -39,7 +39,7 @@ public class CqmCriterionService {
         return nqfCqms;
     }
 
-    //group all cqms by CMS ID - some in each group may have different titles and descriptions
+    //group all cqms by CMS ID - some in each group may have different titles, descriptions, or domains
     public Map<String, List<CQMCriterion>> getCqmsGroupedByCmsId() {
         Map<String, List<CQMCriterion>> cqmsGroupedByCmsId = new HashMap<String, List<CQMCriterion>>();
         Set<String> distinctCmsIds = getAllCmsCqms().stream()
