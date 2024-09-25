@@ -202,6 +202,11 @@ public class TestParticipantReviewer {
         if (listing.getSed() == null || CollectionUtils.isEmpty(listing.getSed().getTestTasks())) {
             return;
         }
+        if (!CollectionUtils.isEmpty(listing.getSed().getDuplicateTestParticipantIds())) {
+            listing.getSed().getDuplicateTestParticipantIds().stream()
+                .forEach(friendlyId -> listing.addDataErrorMessage(msgUtil.getMessage("listing.criteria.duplicateTestParticipantFriendlyId", friendlyId)));
+        }
+
         Map<String, List<TestParticipant>> allTestParticipantsByFriendlyId = listing.getSed().getTestTasks().stream()
                 .filter(tt -> !CollectionUtils.isEmpty(tt.getTestParticipants()))
                 .flatMap(tt -> tt.getTestParticipants().stream())
