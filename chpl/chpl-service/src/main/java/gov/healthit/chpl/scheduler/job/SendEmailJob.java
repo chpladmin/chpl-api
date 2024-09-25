@@ -59,13 +59,14 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2(topic = "sendEmailJobLogger")
 @DisallowConcurrentExecution
 public class SendEmailJob implements Job {
-    private static final BigInteger THREE_MB_IN_BYTES = new BigInteger("3145728");
     public static final String JOB_NAME = "sendEmailJob";
     public static final String MESSAGE_KEY = "messageKey";
     private static final Integer UNLIMITED_RETRY_ATTEMPTS = -1;
     private static final String EMAIL_FILES_DIRECTORY = "emailFiles";
     private static final String HEADER_PREFER = "Prefer";
     private static final String HEADER_IMMUTABLE_ID = "IdType=\"ImmutableId\"";
+    private static final int MAX_ATTACH_LARGE_FILE_ATTEMPTS = 5;
+    private static final BigInteger THREE_MB_IN_BYTES = new BigInteger("3145728");
 
     private String azureUser;
     private EmailOverrider overrider;
@@ -178,7 +179,7 @@ public class SendEmailJob implements Job {
         MessagesRequestBuilder messageBuilder = graphServiceClient
                 .users().byUserId(azureUser)
                 .messages();
-        Message savedDraft = messageBuilder.post(draftMessage, new ImmutableHeaderRequestConfiguration());
+        Message savedDraft = messageBuilder.post(draftMessage, new ImmutableIdHeaderRequestConfiguration());
         LOGGER.debug("Saved the draft message with ID " + savedDraft.getId());
 
         return savedDraft;
@@ -200,7 +201,7 @@ public class SendEmailJob implements Job {
         if (attachmentSize < THREE_MB_IN_BYTES.longValue()) {
             uploadSmallAttachment(message, attachment);
         } else {
-            LOGGER.info("Attached file larger than 3MB: " + attachment.getName());
+            LOGGER.info("Attaching file larger than 3MB: " + attachment.getName());
             uploadLargeAttachment(message, attachment);
         }
     }
@@ -260,9 +261,7 @@ public class SendEmailJob implements Job {
                         attachment.length(),
                         FileAttachment::createFromDiscriminatorValue);
 
-            // Do the upload
-            int maxAttempts = 5;
-            UploadResult<FileAttachment> uploadResult = uploadTask.upload(maxAttempts, callback);
+            UploadResult<FileAttachment> uploadResult = uploadTask.upload(MAX_ATTACH_LARGE_FILE_ATTEMPTS, callback);
             if (uploadResult.isUploadSuccessful()) {
                 LOGGER.debug("Upload successful");
             } else {
@@ -412,10 +411,10 @@ public class SendEmailJob implements Job {
         }
     }
 
-    private static final class ImmutableHeaderRequestConfiguration implements Consumer<MessagesRequestBuilder.PostRequestConfiguration> {
+    private static final class ImmutableIdHeaderRequestConfiguration implements Consumer<MessagesRequestBuilder.PostRequestConfiguration> {
         @Override
         public void accept(com.microsoft.graph.users.item.messages.MessagesRequestBuilder.PostRequestConfiguration t) {
-            t.headers.add(HEADER_PREFER, HEADER_IMMUTABLE_ID);;
+            t.headers.add(HEADER_PREFER, HEADER_IMMUTABLE_ID);
         }
     }
 }
