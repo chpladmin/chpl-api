@@ -1,5 +1,10 @@
 package gov.healthit.chpl.upload.listing.validation.reviewer;
 
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -30,6 +35,7 @@ public class TestParticipantReviewer {
                 .filter(testTask -> doesTestTaskHaveNonRemovedCriteria(testTask) && !CollectionUtils.isEmpty(testTask.getTestParticipants()))
                 .flatMap(testTask -> testTask.getTestParticipants().stream())
                 .forEach(testParticipant -> reviewTestParticipantFields(listing, testParticipant));
+        reviewTestParticipantDuplicateFriendlyIds(listing);
     }
 
     private boolean doesTestTaskHaveNonRemovedCriteria(TestTask testTask) {
@@ -43,7 +49,7 @@ public class TestParticipantReviewer {
     }
 
     private void reviewTestParticipantFields(CertifiedProductSearchDetails listing, TestParticipant testParticipant) {
-        reviewParticipantUniqueId(listing, testParticipant);
+        reviewParticipantFriendlyId(listing, testParticipant);
         reviewParticipantAgeRange(listing, testParticipant);
         reviewParticipantEducationLevel(listing, testParticipant);
         reviewParticipantGender(listing, testParticipant);
@@ -54,21 +60,19 @@ public class TestParticipantReviewer {
         reviewParticipantComputerExperienceMonths(listing, testParticipant);
     }
 
-    private void reviewParticipantUniqueId(CertifiedProductSearchDetails listing, TestParticipant testParticipant) {
-        if (testParticipant.getId() == null && StringUtils.isEmpty(testParticipant.getUniqueId())) {
+    private void reviewParticipantFriendlyId(CertifiedProductSearchDetails listing, TestParticipant testParticipant) {
+        if (testParticipant.getId() == null && StringUtils.isEmpty(testParticipant.getFriendlyId())) {
             listing.addDataErrorMessage(msgUtil.getMessage("listing.criteria.missingTestParticipantUniqueId"));
         }
     }
 
     private void reviewParticipantAgeRange(CertifiedProductSearchDetails listing, TestParticipant testParticipant) {
-        if (!hasAgeId(testParticipant) && !hasDeprecatedAgeId(testParticipant)
-                && (hasAgeName(testParticipant) || hasDeprecatedAgeName(testParticipant))) {
-            String suppliedAgeName = hasAgeName(testParticipant) ? testParticipant.getAge().getName() : testParticipant.getAgeRange();
+        if (!hasAgeId(testParticipant) && (hasAgeName(testParticipant))) {
+            String suppliedAgeName = hasAgeName(testParticipant) ? testParticipant.getAge().getName() : "?";
             listing.addDataErrorMessage(
                     msgUtil.getMessage("listing.criteria.invalidParticipantAgeRange",
                             suppliedAgeName, formatParticipantRef(testParticipant)));
-        } else if (!hasAgeId(testParticipant) && !hasDeprecatedAgeId(testParticipant)
-                && !hasAgeName(testParticipant) && !hasDeprecatedAgeName(testParticipant)) {
+        } else if (!hasAgeId(testParticipant) && !hasAgeName(testParticipant)) {
             listing.addDataErrorMessage(
                     msgUtil.getMessage("listing.criteria.missingParticipantAgeRange", formatParticipantRef(testParticipant)));
         }
@@ -83,23 +87,13 @@ public class TestParticipantReviewer {
                 && !StringUtils.isEmpty(testParticipant.getAge().getName());
     }
 
-    private boolean hasDeprecatedAgeId(TestParticipant testParticipant) {
-        return testParticipant.getAgeRangeId() != null;
-    }
-
-    private boolean hasDeprecatedAgeName(TestParticipant testParticipant) {
-        return !StringUtils.isEmpty(testParticipant.getAgeRange());
-    }
-
     private void reviewParticipantEducationLevel(CertifiedProductSearchDetails listing, TestParticipant testParticipant) {
-        if (!hasEducationId(testParticipant) && !hasDeprecatedEducationId(testParticipant)
-                && (hasEducationName(testParticipant) || hasDeprecatedEducationName(testParticipant))) {
-            String suppliedEducationName = hasEducationName(testParticipant) ? testParticipant.getEducationType().getName() : testParticipant.getEducationTypeName();
+        if (!hasEducationId(testParticipant) && (hasEducationName(testParticipant))) {
+            String suppliedEducationName = hasEducationName(testParticipant) ? testParticipant.getEducationType().getName() : "?";
             listing.addDataErrorMessage(
                     msgUtil.getMessage("listing.criteria.invalidParticipantEducationLevel",
                             suppliedEducationName, formatParticipantRef(testParticipant)));
-        } else if (!hasEducationId(testParticipant) && !hasDeprecatedEducationId(testParticipant)
-                && !hasEducationName(testParticipant) && !hasDeprecatedEducationName(testParticipant)) {
+        } else if (!hasEducationId(testParticipant) && !hasEducationName(testParticipant)) {
             listing.addDataErrorMessage(
                     msgUtil.getMessage("listing.criteria.missingParticipantEducationLevel", formatParticipantRef(testParticipant)));
         }
@@ -112,14 +106,6 @@ public class TestParticipantReviewer {
     private boolean hasEducationName(TestParticipant testParticipant) {
         return testParticipant.getEducationType() != null
                 && !StringUtils.isEmpty(testParticipant.getEducationType().getName());
-    }
-
-    private boolean hasDeprecatedEducationId(TestParticipant testParticipant) {
-        return testParticipant.getEducationTypeId() != null;
-    }
-
-    private boolean hasDeprecatedEducationName(TestParticipant testParticipant) {
-        return !StringUtils.isEmpty(testParticipant.getEducationTypeName());
     }
 
     private void reviewParticipantGender(CertifiedProductSearchDetails listing, TestParticipant testParticipant) {
@@ -212,7 +198,39 @@ public class TestParticipantReviewer {
         }
     }
 
+    private void reviewTestParticipantDuplicateFriendlyIds(CertifiedProductSearchDetails listing) {
+        if (listing.getSed() == null || CollectionUtils.isEmpty(listing.getSed().getTestTasks())) {
+            return;
+        }
+        if (!CollectionUtils.isEmpty(listing.getSed().getDuplicateTestParticipantIds())) {
+            listing.getSed().getDuplicateTestParticipantIds().stream()
+                .forEach(friendlyId -> listing.addDataErrorMessage(msgUtil.getMessage("listing.criteria.duplicateTestParticipantFriendlyId", friendlyId)));
+        }
+
+        Map<String, List<TestParticipant>> allTestParticipantsByFriendlyId = listing.getSed().getTestTasks().stream()
+                .filter(tt -> !CollectionUtils.isEmpty(tt.getTestParticipants()))
+                .flatMap(tt -> tt.getTestParticipants().stream())
+                .filter(tp -> !StringUtils.isEmpty(tp.getFriendlyId()))
+                .collect(Collectors.groupingBy(TestParticipant::getFriendlyId));
+
+        Set<String> participantsWithDuplicateFriendlyIds = allTestParticipantsByFriendlyId.keySet().stream()
+            .flatMap(key -> allTestParticipantsByFriendlyId.get(key).stream())
+            .filter(participant ->
+                !matchesAllOtherParticipants(participant, allTestParticipantsByFriendlyId.get(participant.getFriendlyId())))
+            .map(participant -> participant.getFriendlyId())
+            .collect(Collectors.toSet());
+
+        participantsWithDuplicateFriendlyIds.stream()
+            .forEach(friendlyId -> listing.addDataErrorMessage(msgUtil.getMessage("listing.criteria.duplicateTestParticipantFriendlyId", friendlyId)));
+    }
+
+    private boolean matchesAllOtherParticipants(TestParticipant participant, List<TestParticipant> participants) {
+        return participants.stream()
+                .filter(otherPart -> !otherPart.matches(participant))
+                .findAny().isEmpty();
+    }
+
     private String formatParticipantRef(TestParticipant testParticipant) {
-        return !StringUtils.isEmpty(testParticipant.getUniqueId()) ? testParticipant.getUniqueId() : DEFAULT_PARTICIPANT_DECRIPTION;
+        return !StringUtils.isEmpty(testParticipant.getFriendlyId()) ? testParticipant.getFriendlyId() : DEFAULT_PARTICIPANT_DECRIPTION;
     }
 }

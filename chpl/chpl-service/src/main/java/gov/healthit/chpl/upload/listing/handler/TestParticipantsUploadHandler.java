@@ -111,11 +111,10 @@ public class TestParticipantsUploadHandler {
 
         return TestParticipant.builder()
                 .uniqueId(id)
+                .friendlyId(id)
                 .gender(gender)
                 .age(TestParticipantAge.builder().name(age).build())
-                .ageRange(age)
                 .educationType(TestParticipantEducation.builder().name(education).build())
-                .educationTypeName(education)
                 .occupation(occupation)
                 .professionalExperienceMonths(professionalExperienceMonths)
                 .professionalExperienceMonthsStr(professionalExperienceAtIndex)
