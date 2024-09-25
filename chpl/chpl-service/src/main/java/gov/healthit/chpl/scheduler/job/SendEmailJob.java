@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigInteger;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -14,9 +15,11 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.io.FileUtils;
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
@@ -30,7 +33,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
-import com.microsoft.graph.models.AttachmentCreateUploadSessionParameterSet;
+import com.microsoft.graph.core.models.IProgressCallback;
+import com.microsoft.graph.core.models.UploadResult;
+import com.microsoft.graph.core.tasks.LargeFileUploadTask;
+import com.microsoft.graph.models.Attachment;
 import com.microsoft.graph.models.AttachmentItem;
 import com.microsoft.graph.models.AttachmentType;
 import com.microsoft.graph.models.BodyType;
@@ -40,21 +46,20 @@ import com.microsoft.graph.models.ItemBody;
 import com.microsoft.graph.models.Message;
 import com.microsoft.graph.models.Recipient;
 import com.microsoft.graph.models.UploadSession;
-import com.microsoft.graph.options.HeaderOption;
-import com.microsoft.graph.requests.GraphServiceClient;
-import com.microsoft.graph.tasks.IProgressCallback;
-import com.microsoft.graph.tasks.LargeFileUploadTask;
+import com.microsoft.graph.serviceclient.GraphServiceClient;
+import com.microsoft.graph.users.item.messages.MessagesRequestBuilder;
+import com.microsoft.graph.users.item.messages.item.attachments.createuploadsession.CreateUploadSessionPostRequestBody;
 
 import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.email.ChplEmailMessage;
 import gov.healthit.chpl.email.EmailOverrider;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import lombok.extern.log4j.Log4j2;
-import okhttp3.Request;
 
 @Log4j2(topic = "sendEmailJobLogger")
 @DisallowConcurrentExecution
 public class SendEmailJob implements Job {
+    private static final BigInteger THREE_MB_IN_BYTES = new BigInteger("3145728");
     public static final String JOB_NAME = "sendEmailJob";
     public static final String MESSAGE_KEY = "messageKey";
     private static final Integer UNLIMITED_RETRY_ATTEMPTS = -1;
@@ -66,7 +71,7 @@ public class SendEmailJob implements Job {
     private EmailOverrider overrider;
 
     @Autowired
-    private GraphServiceClient<Request> appClient;
+    private GraphServiceClient graphServiceClient;
 
     @Value("${internalErrorEmailRecipients}")
     private String internalErrorEmailRecipients;
@@ -152,33 +157,36 @@ public class SendEmailJob implements Job {
     private Message getDraftMessage(ChplEmailMessage message) {
         LOGGER.debug("Creating a draft message with subject '" + message.getSubject() + "'");
         final Message draftMessage = new Message();
-        draftMessage.subject = message.getSubject();
-        draftMessage.body = new ItemBody();
-        draftMessage.body.content = overrider.getBody(message.getBody(), message.getRecipients());
-        draftMessage.body.contentType = BodyType.HTML;
-        draftMessage.toRecipients = new ArrayList<Recipient>();
+        draftMessage.setSubject(message.getSubject());
+        ItemBody body = new ItemBody();
+        body.setContent(overrider.getBody(message.getBody(), message.getRecipients()));
+        body.setContentType(BodyType.Html);
+        draftMessage.setBody(body);
 
+        draftMessage.setToRecipients(new ArrayList<Recipient>());
         List<String> recipientAddresses = overrider.getRecipients(message.getRecipients());
         recipientAddresses.stream()
             .forEach(recipientAddress -> {
                 final Recipient recipient = new Recipient();
-                recipient.emailAddress = new EmailAddress();
-                recipient.emailAddress.address = recipientAddress;
-                draftMessage.toRecipients.add(recipient);
+                EmailAddress emailAddress = new EmailAddress();
+                emailAddress.setAddress(recipientAddress);
+                recipient.setEmailAddress(emailAddress);
+                draftMessage.getToRecipients().add(recipient);
             });
 
         LOGGER.debug("Saving the draft message");
-        Message savedDraft = appClient.users(azureUser).messages()
-            .buildRequest(new HeaderOption(HEADER_PREFER, HEADER_IMMUTABLE_ID))
-            .post(draftMessage);
-        LOGGER.debug("Saved the draft message with ID " + savedDraft.id);
+        MessagesRequestBuilder messageBuilder = graphServiceClient
+                .users().byUserId(azureUser)
+                .messages();
+        Message savedDraft = messageBuilder.post(draftMessage, new ImmutableHeaderRequestConfiguration());
+        LOGGER.debug("Saved the draft message with ID " + savedDraft.getId());
 
         return savedDraft;
     }
 
     private void uploadAttachments(Message message, List<File> attachments) {
         if (CollectionUtils.isEmpty(attachments)) {
-            LOGGER.debug("No attachments for message " + message.id);
+            LOGGER.debug("No attachments for message " + message.getId());
             return;
         }
         attachments.stream()
@@ -186,28 +194,59 @@ public class SendEmailJob implements Job {
     }
 
     private void uploadAttachment(Message message, File attachment) {
-        LOGGER.debug("Uploading attachment " + attachment.getName() + " for message "+ message.id);
-        AttachmentItem attachmentItem = new AttachmentItem();
-        attachmentItem.attachmentType = AttachmentType.FILE;
-        attachmentItem.name = attachment.getName();
-        attachmentItem.size = attachment.length();
+        LOGGER.info("Uploading attachment " + attachment.getName() + " for message " + message.getId());
+        long attachmentSize = FileUtils.sizeOfAsBigInteger(attachment).longValue();
+        LOGGER.info("Attachment is " + attachmentSize + " bytes");
+        if (attachmentSize < THREE_MB_IN_BYTES.longValue()) {
+            uploadSmallAttachment(message, attachment);
+        } else {
+            LOGGER.info("Attached file larger than 3MB: " + attachment.getName());
+            uploadLargeAttachment(message, attachment);
+        }
+    }
 
-        UploadSession uploadSession = appClient.users(azureUser).messages(message.id)
-            .attachments()
-                .createUploadSession(AttachmentCreateUploadSessionParameterSet.newBuilder()
-                    .withAttachmentItem(attachmentItem)
-                    .build())
-            .buildRequest()
-            .post();
+    private void uploadSmallAttachment(Message message, File attachment) {
+        try {
+            FileAttachment fileAttachment = new FileAttachment();
+            fileAttachment.setOdataType("#microsoft.graph.fileAttachment");
+            fileAttachment.setName(attachment.getName());
+            byte[] contentBytes = FileUtils.readFileToByteArray(attachment);
+            fileAttachment.setContentBytes(contentBytes);
+            Attachment attachedFile = graphServiceClient.users().byUserId(azureUser)
+                    .messages().byMessageId(message.getId())
+                    .attachments()
+                    .post(fileAttachment);
+            if (attachedFile != null) {
+                LOGGER.info("Completed uploading attachment " + attachment.getName() + " for message " + message.getId());
+            }
+        } catch (IOException ex) {
+            LOGGER.error("Exception attaching file " + attachment.getName(), ex);
+        } catch (Exception ex) {
+            LOGGER.error("Exception attaching file " + attachment.getName(), ex);
+        }
+    }
+
+    private void uploadLargeAttachment(Message message, File attachment) {
+        CreateUploadSessionPostRequestBody createUploadSessionPostRequestBody = new CreateUploadSessionPostRequestBody();
+        AttachmentItem attachmentItem = new AttachmentItem();
+        attachmentItem.setAttachmentType(AttachmentType.File);
+        attachmentItem.setName(attachment.getName());
+        attachmentItem.setSize(attachment.length());
+        createUploadSessionPostRequestBody.setAttachmentItem(attachmentItem);
+        UploadSession uploadSession = graphServiceClient
+                .users().byUserId(azureUser)
+                .messages().byMessageId(message.getId())
+                .attachments()
+                .createUploadSession()
+                .post(createUploadSessionPostRequestBody);
 
         //iteratively upload byte ranges of the file, in order
         IProgressCallback callback = new IProgressCallback() {
             @Override
-            // Called after each slice of the file is uploaded
-            public void progress(final long current, final long max) {
+            public void report(long current, long max) {
                 LOGGER.debug(
-                    String.format("Uploaded %d bytes of %d total bytes", current, max)
-                );
+                        String.format("Uploaded %d bytes of %d total bytes", current, max)
+                    );
             }
         };
 
@@ -215,32 +254,47 @@ public class SendEmailJob implements Job {
         LargeFileUploadTask<FileAttachment> uploadTask = null;
         try {
             fileStream = new FileInputStream(attachment);
-            uploadTask = new LargeFileUploadTask<FileAttachment>(uploadSession, appClient,
-                        fileStream, attachment.length(), FileAttachment.class);
+            uploadTask = new LargeFileUploadTask<FileAttachment>(graphServiceClient.getRequestAdapter(),
+                        uploadSession,
+                        fileStream,
+                        attachment.length(),
+                        FileAttachment::createFromDiscriminatorValue);
 
             // Do the upload
-            uploadTask.upload(0, null, callback);
-            LOGGER.debug("Completed uploading attachment " + attachment.getName() + " for message "+ message.id);
+            int maxAttempts = 5;
+            UploadResult<FileAttachment> uploadResult = uploadTask.upload(maxAttempts, callback);
+            if (uploadResult.isUploadSuccessful()) {
+                LOGGER.debug("Upload successful");
+            } else {
+                LOGGER.error("Upload failed");
+            }
+            LOGGER.info("Completed uploading attachment " + attachment.getName() + " for message " + message.getId());
         } catch (FileNotFoundException ex) {
             //the FileInputStream could not be created
             LOGGER.error("The file " + attachment.getAbsolutePath() + " could not be found and will not be sent as an attachment.", ex);
         } catch (IOException ex) {
             //the uploadTask.upload method had an error
-            LOGGER.error("The upload of file attachment " + attachment.getAbsoluteFile() + " to message with ID " + message.id + " failed.", ex);
+            LOGGER.error("The upload of file attachment " + attachment.getAbsoluteFile() + " to message with ID " + message.getId() + " failed.", ex);
+        } catch (NoSuchMethodException ex) {
+            LOGGER.error("The upload of file attachment " + attachment.getAbsoluteFile() + " to message with ID " + message.getId() + " failed.", ex);
+        } catch (Exception ex) {
+            LOGGER.error("The upload of file attachment " + attachment.getAbsoluteFile() + " to message with ID " + message.getId() + " failed.", ex);
         } finally {
             try {
                 fileStream.close();
             } catch (IOException io) {
-                LOGGER.warn("Could not close the filestream for the attachment: " + io.getMessage());
+                LOGGER.error("Could not close the filestream for the attachment: " + io.getMessage());
             }
         }
     }
 
     private void sendMessage(Message message) {
-        LOGGER.info("Sending message with ID " + message.id);
-        appClient.users(azureUser).messages(message.id)
-            .send()
-            .buildRequest()
+        LOGGER.info("Sending message with ID " + message.getId());
+        graphServiceClient
+        .users()
+            .byUserId(azureUser)
+                .messages().byMessageId(message.getId())
+        .send()
         .post();
     }
 
@@ -250,17 +304,19 @@ public class SendEmailJob implements Job {
         //If this turns out to be a problem, like if Sent Items fills up or something,
         //we can adjust the code here to to wait, to retry a configurable number of times, or schedule a separate job to retry.
         try {
-            LOGGER.info("Deleting message with ID " + message.id);
-            appClient.users(azureUser).messages(message.id)
-                .buildRequest()
-            .delete();
+            LOGGER.info("Deleting message with ID " + message.getId());
+            graphServiceClient
+            .users()
+                .byUserId(azureUser)
+                    .messages().byMessageId(message.getId())
+                    .delete();
         } catch (Exception ex) {
             if (message != null) {
-                LOGGER.warn("Error deleting" + (message.isDraft ? " draft " : " ")
-                    + "message with ID '" + message.id + "'. Message had subject '"
-                    + message.subject + "' and is addressed to "
-                    + message.toRecipients.stream()
-                        .map(recip -> recip.emailAddress.address)
+                LOGGER.warn("Error deleting" + (message.getIsDraft() ? " draft " : " ")
+                    + "message with ID '" + message.getId() + "'. Message had subject '"
+                    + message.getSubject() + "' and is addressed to "
+                    + message.getToRecipients().stream()
+                        .map(recip -> recip.getEmailAddress().getAddress())
                         .collect(Collectors.joining(",")));
             }
             LOGGER.catching(ex);
@@ -353,6 +409,13 @@ public class SendEmailJob implements Job {
                             LOGGER.catching(e);
                         }
                     });
+        }
+    }
+
+    private static final class ImmutableHeaderRequestConfiguration implements Consumer<MessagesRequestBuilder.PostRequestConfiguration> {
+        @Override
+        public void accept(com.microsoft.graph.users.item.messages.MessagesRequestBuilder.PostRequestConfiguration t) {
+            t.headers.add(HEADER_PREFER, HEADER_IMMUTABLE_ID);;
         }
     }
 }
