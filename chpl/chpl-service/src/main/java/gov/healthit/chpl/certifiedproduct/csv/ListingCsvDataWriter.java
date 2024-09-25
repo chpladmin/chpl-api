@@ -403,16 +403,15 @@ public class ListingCsvDataWriter {
         for (int i = 0; i < testParticipants.size(); i++) {
             TestParticipant tp = testParticipants.get(i);
             int col = PARTICIPANT_START_COL;
-            //TODO: change this to use the friendlyID when available
-            if (StringUtils.isEmpty(tp.getUniqueId())) {
-                tp.setUniqueId("TP" + (i + 1));
+            if (StringUtils.isEmpty(tp.getFriendlyId())) {
+                tp.setFriendlyId("CHPL-PARTICIPANT-" + (i + 1));
                 //copy the unique id to all test participant objects that have this same database id
                 sed.getTestTasks().stream()
                     .flatMap(tt -> tt.getTestParticipants().stream())
                     .filter(ttParticipant -> ttParticipant.getId().equals(tp.getId()))
-                    .forEach(ttParticipant -> ttParticipant.setUniqueId(tp.getUniqueId()));
+                    .forEach(ttParticipant -> ttParticipant.setFriendlyId(tp.getFriendlyId()));
             }
-            csvDataMatrix[i][col++] = tp.getUniqueId();
+            csvDataMatrix[i][col++] = tp.getFriendlyId();
             csvDataMatrix[i][col++] = tp.getGender();
             csvDataMatrix[i][col++] = tp.getAge() != null ? tp.getAge().getName() : "";
             csvDataMatrix[i][col++] = tp.getEducationType() != null ? tp.getEducationType().getName() : "";
@@ -432,12 +431,10 @@ public class ListingCsvDataWriter {
         for (int i = 0; i < testTasks.size(); i++) {
             TestTask task = testTasks.get(i);
             int col = TASK_START_COL;
-            //TODO: we need the friendly ID available here from the other ticket
-            //so maybe this is blocked eventually?
-            if (StringUtils.isEmpty(task.getUniqueId())) {
-                task.setUniqueId("TASK" + (i + 1));
+            if (StringUtils.isEmpty(task.getFriendlyId())) {
+                task.setFriendlyId("CHPL-TASK-" + (i + 1));
             }
-            csvDataMatrix[i][col++] = task.getUniqueId();
+            csvDataMatrix[i][col++] = task.getFriendlyId();
             csvDataMatrix[i][col++] = task.getDescription();
             csvDataMatrix[i][col++] = task.getTaskSuccessAverage().toString();
             csvDataMatrix[i][col++] = task.getTaskSuccessStddev().toString();
@@ -673,11 +670,9 @@ public class ListingCsvDataWriter {
                 for (int i = 0; i < testTasks.size(); i++) {
                     int sedTestingCol = currCol;
                     TestTask testTask = testTasks.get(i);
-                    //TODO: this needs converted to the friendly ID
-                    csvDataMatrix[i][sedTestingCol++] = testTask.getUniqueId();
+                    csvDataMatrix[i][sedTestingCol++] = testTask.getFriendlyId();
                     String participants = testTask.getTestParticipants().stream()
-                         //TODO: this needs converted to the friendly ID
-                        .map(participant -> participant.getUniqueId())
+                        .map(participant -> participant.getFriendlyId())
                         .collect(Collectors.joining(";"));
                     csvDataMatrix[i][sedTestingCol++] = participants;
                 }

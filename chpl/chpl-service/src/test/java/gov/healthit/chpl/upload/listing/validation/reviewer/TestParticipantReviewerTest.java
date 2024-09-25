@@ -25,6 +25,8 @@ import gov.healthit.chpl.util.ErrorMessageUtil;
 
 public class TestParticipantReviewerTest {
     private static final String TEST_PARTICIPANT_FIELD_ROUNDED = "A non-integer numeric number was found in Test Participant \"%s\" \"%s\" \"%s\". The number has been rounded to \"%s\".";
+    private static final String DUPLICATE_PARTICIPANT_FRIENDLY_IDS = "The test participant id '%s' is a duplicate.";
+
     private CertificationCriterion a1, a6;
     private ErrorMessageUtil errorMessageUtil;
     private TestParticipantReviewer reviewer;
@@ -35,7 +37,10 @@ public class TestParticipantReviewerTest {
         errorMessageUtil = Mockito.mock(ErrorMessageUtil.class);
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.criteria.roundedParticipantNumber"),  ArgumentMatchers.anyString(),
                 ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
-        .thenAnswer(i -> String.format(TEST_PARTICIPANT_FIELD_ROUNDED, i.getArgument(1), i.getArgument(2), i.getArgument(3), i.getArgument(4)));
+            .thenAnswer(i -> String.format(TEST_PARTICIPANT_FIELD_ROUNDED, i.getArgument(1), i.getArgument(2), i.getArgument(3), i.getArgument(4)));
+        Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.criteria.duplicateTestParticipantFriendlyId"),  ArgumentMatchers.anyString()))
+            .thenAnswer(i -> String.format(DUPLICATE_PARTICIPANT_FRIENDLY_IDS, i.getArgument(1), ""));
+
 
         a1 = CertificationCriterion.builder()
                 .id(1L)
@@ -104,7 +109,7 @@ public class TestParticipantReviewerTest {
     }
 
     @Test
-    public void review_NullUniqueID_hasError() {
+    public void review_NullFriendlyID_hasError() {
         String errMsg = "A test participant is missing its unique ID.";
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.criteria.missingTestParticipantUniqueId")))
             .thenReturn(errMsg);
@@ -152,9 +157,10 @@ public class TestParticipantReviewerTest {
                         .build())
                 .build();
         TestParticipant testParticipant = buildValidTestParticipant("TP1").toBuilder()
-                    .ageRange(null)
-                    .ageRangeId(null)
-                    .age(null)
+                    .age(TestParticipantAge.builder()
+                            .id(null)
+                            .name(null)
+                            .build())
                 .build();
         listing.getSed().getTestTasks().add(buildTestTask("TT1", Stream.of(a1).collect(Collectors.toList())));
         listing.getSed().getTestTasks().get(0).setTestParticipants(
@@ -177,9 +183,10 @@ public class TestParticipantReviewerTest {
                 .sed(CertifiedProductSed.builder().build())
                 .build();
         TestParticipant testParticipant = buildValidTestParticipant("TP1").toBuilder()
-                    .ageRange("")
-                    .ageRangeId(null)
-                    .age(null)
+                    .age(TestParticipantAge.builder()
+                            .id(null)
+                            .name("")
+                            .build())
                 .build();
         listing.getSed().getTestTasks().add(buildTestTask("TT1", Stream.of(a1).collect(Collectors.toList())));
         listing.getSed().getTestTasks().get(0).setTestParticipants(
@@ -202,9 +209,10 @@ public class TestParticipantReviewerTest {
                 .sed(CertifiedProductSed.builder().build())
                 .build();
         TestParticipant testParticipant = buildValidTestParticipant("TP1").toBuilder()
-                    .ageRange("notanagerange")
-                    .ageRangeId(null)
-                    .age(null)
+                    .age(TestParticipantAge.builder()
+                            .id(null)
+                            .name("notanagerange")
+                            .build())
                 .build();
         listing.getSed().getTestTasks().add(buildTestTask("TT1", Stream.of(a1).collect(Collectors.toList())));
         listing.getSed().getTestTasks().get(0).setTestParticipants(
@@ -227,9 +235,10 @@ public class TestParticipantReviewerTest {
                 .sed(CertifiedProductSed.builder().build())
                 .build();
         TestParticipant testParticipant = buildValidTestParticipant("TP1").toBuilder()
-                    .educationTypeName(null)
-                    .educationTypeId(null)
-                    .educationType(null)
+                    .educationType(TestParticipantEducation.builder()
+                            .id(null)
+                            .name(null)
+                            .build())
                 .build();
         listing.getSed().getTestTasks().add(buildTestTask("TT1", Stream.of(a1).collect(Collectors.toList())));
         listing.getSed().getTestTasks().get(0).setTestParticipants(
@@ -252,9 +261,10 @@ public class TestParticipantReviewerTest {
                 .sed(CertifiedProductSed.builder().build())
                 .build();
         TestParticipant testParticipant = buildValidTestParticipant("TP1").toBuilder()
-                    .educationTypeName("")
-                    .educationTypeId(null)
-                    .educationType(null)
+                    .educationType(TestParticipantEducation.builder()
+                            .id(null)
+                            .name("")
+                            .build())
                 .build();
         listing.getSed().getTestTasks().add(buildTestTask("TT1", Stream.of(a1).collect(Collectors.toList())));
         listing.getSed().getTestTasks().get(0).setTestParticipants(
@@ -277,9 +287,10 @@ public class TestParticipantReviewerTest {
                 .sed(CertifiedProductSed.builder().build())
                 .build();
         TestParticipant testParticipant = buildValidTestParticipant("TP1").toBuilder()
-                .educationTypeName("notaneducation")
-                .educationTypeId(null)
-                .educationType(null)
+                .educationType(TestParticipantEducation.builder()
+                        .id(null)
+                        .name("notaneducation")
+                        .build())
             .build();
         listing.getSed().getTestTasks().add(buildTestTask("TT1", Stream.of(a1).collect(Collectors.toList())));
         listing.getSed().getTestTasks().get(0).setTestParticipants(
@@ -698,13 +709,81 @@ public class TestParticipantReviewerTest {
     }
 
     @Test
+    public void review_testParticipantsDuplicateFriendlyIdDifferentDataOnSameTask_hasError() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .sed(CertifiedProductSed.builder().build())
+                .build();
+        listing.getSed().getTestTasks().add(TestTask.builder().build());
+        TestParticipant tp1 = buildValidTestParticipant("TP1");
+        TestParticipant tp2 = buildValidTestParticipant("TP1");
+        tp2.setAssistiveTechnologyNeeds("None");
+
+        listing.getSed().getTestTasks().get(0).setTestParticipants(
+                Stream.of(tp1, tp2)
+                .collect(Collectors.toCollection(LinkedHashSet::new)));
+        reviewer.review(listing);
+
+        assertEquals(0, listing.getWarningMessages().size());
+        assertEquals(1, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(String.format(DUPLICATE_PARTICIPANT_FRIENDLY_IDS, "TP1")));
+    }
+
+    @Test
+    public void review_testParticipantsDuplicateFriendlyIdDifferentDataOnDifferentTasks_hasError() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .sed(CertifiedProductSed.builder().build())
+                .build();
+        listing.getSed().getTestTasks().add(TestTask.builder().build());
+        listing.getSed().getTestTasks().add(TestTask.builder().build());
+
+        TestParticipant tp1 = buildValidTestParticipant("TP1");
+        TestParticipant tp2 = buildValidTestParticipant("TP1");
+        tp2.setAssistiveTechnologyNeeds("None");
+
+        listing.getSed().getTestTasks().get(0).setTestParticipants(
+                Stream.of(tp1)
+                .collect(Collectors.toCollection(LinkedHashSet::new)));
+        listing.getSed().getTestTasks().get(1).setTestParticipants(
+                Stream.of(tp2)
+                .collect(Collectors.toCollection(LinkedHashSet::new)));
+        reviewer.review(listing);
+
+        assertEquals(0, listing.getWarningMessages().size());
+        assertEquals(1, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(String.format(DUPLICATE_PARTICIPANT_FRIENDLY_IDS, "TP1")));
+    }
+
+    @Test
+    public void review_testParticipantsDuplicateFriendlyIdSameDataOnDifferentTasks_noError() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .sed(CertifiedProductSed.builder().build())
+                .build();
+        listing.getSed().getTestTasks().add(TestTask.builder().build());
+        listing.getSed().getTestTasks().add(TestTask.builder().build());
+
+        TestParticipant tp1 = buildValidTestParticipant("TP1");
+        TestParticipant tp2 = buildValidTestParticipant("TP1");
+
+        listing.getSed().getTestTasks().get(0).setTestParticipants(
+                Stream.of(tp1)
+                .collect(Collectors.toCollection(LinkedHashSet::new)));
+        listing.getSed().getTestTasks().get(1).setTestParticipants(
+                Stream.of(tp2)
+                .collect(Collectors.toCollection(LinkedHashSet::new)));
+        reviewer.review(listing);
+
+        assertEquals(0, listing.getWarningMessages().size());
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
     public void review_testParticipantsValid_noError() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .sed(CertifiedProductSed.builder().build())
                 .build();
         listing.getSed().getTestTasks().add(TestTask.builder().build());
         listing.getSed().getTestTasks().get(0).setTestParticipants(
-                Stream.of(buildValidTestParticipant("TP1"), buildValidTestParticipant("TP2"))
+                Stream.of(buildValidTestParticipant("TP1"), buildValidTestParticipant("TP1"))
                 .collect(Collectors.toCollection(LinkedHashSet::new)));
         reviewer.review(listing);
 
@@ -718,9 +797,7 @@ public class TestParticipantReviewerTest {
 
     private TestParticipant buildTestParticipant(String uniqueId) {
         return TestParticipant.builder()
-                .uniqueId(uniqueId)
-                .ageRange("10-20")
-                .ageRangeId(1L)
+                .friendlyId(uniqueId)
                 .age(TestParticipantAge.builder()
                         .id(1L)
                         .name("10-20")
@@ -728,8 +805,6 @@ public class TestParticipantReviewerTest {
                 .assistiveTechnologyNeeds("some needs")
                 .computerExperienceMonths(24)
                 .computerExperienceMonthsStr("24")
-                .educationTypeId(2L)
-                .educationTypeName("Bachelor's Degree")
                 .educationType(TestParticipantEducation.builder()
                         .id(2L)
                         .name("Bachelor's Degree")
@@ -745,7 +820,7 @@ public class TestParticipantReviewerTest {
 
     private TestTask buildTestTask(String uniqueId, List<CertificationCriterion> criteria) {
         TestTask tt = TestTask.builder()
-                .uniqueId(uniqueId)
+                .friendlyId(uniqueId)
                 .criteria(criteria.stream().collect(Collectors.toCollection(LinkedHashSet::new)))
                 .description("desc")
                 .taskErrors(1.5F)
