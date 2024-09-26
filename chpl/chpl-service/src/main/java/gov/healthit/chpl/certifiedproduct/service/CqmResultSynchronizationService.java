@@ -13,12 +13,9 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.dao.CQMCriterionDAO;
 import gov.healthit.chpl.dao.CQMResultDAO;
-import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.domain.CQMCriterion;
-import gov.healthit.chpl.domain.CQMResultCertification;
 import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.CQMResultDTO;
@@ -31,14 +28,12 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 @Component
 public class CqmResultSynchronizationService {
-    private CertificationCriterionDAO certCriterionDao;
     private CQMCriterionDAO cqmCriterionDao;
     private CQMResultDAO cqmResultDao;
 
     @Autowired
-    public CqmResultSynchronizationService(CertificationCriterionDAO certCriterionDao, CQMCriterionDAO cqmCriterionDao,
+    public CqmResultSynchronizationService(CQMCriterionDAO cqmCriterionDao,
             CQMResultDAO cqmResultDao) {
-        this.certCriterionDao = certCriterionDao;
         this.cqmCriterionDao = cqmCriterionDao;
         this.cqmResultDao = cqmResultDao;
     }
@@ -182,8 +177,6 @@ public class CqmResultSynchronizationService {
             .forEach(cqmPair -> {
                 //check for changes to success versions
                 updateCqmSuccessVersions(listingId, cqmPair.getOrig(), cqmPair.getUpdated());
-                //check for changes to associated c-criteria
-                updateCqmAssociatedCriteria(cqmPair.getOrig(), cqmPair.getUpdated());
             });
         return cqmPairs.size();
     }
@@ -200,47 +193,6 @@ public class CqmResultSynchronizationService {
             }
         }
         return cqmPairs;
-    }
-
-    private int updateCqmAssociatedCriteria(CQMResultDetails existingCqm, CQMResultDetails updatedCqm) {
-        List<CQMResultCertification> criteriaToAdd = new ArrayList<CQMResultCertification>();
-        List<CQMResultCertification> criteriaToRemove = new ArrayList<CQMResultCertification>();
-
-        for (CQMResultCertification existingCriterion : existingCqm.getCriteria()) {
-            boolean exists = false;
-            for (CQMResultCertification updatedCriterion : updatedCqm.getCriteria()) {
-                if (existingCriterion.getCriterion().getId().equals(updatedCriterion.getCriterion().getId())) {
-                    exists = true;
-                }
-            }
-            if (!exists) {
-                criteriaToRemove.add(existingCriterion);
-            }
-        }
-
-        for (CQMResultCertification updatedCriterion : updatedCqm.getCriteria()) {
-            boolean exists = false;
-            for (CQMResultCertification existingCriterion : existingCqm.getCriteria()) {
-                if (existingCriterion.getCriterion().getId().equals(updatedCriterion.getCriterion().getId())) {
-                    exists = true;
-                }
-            }
-            if (!exists) {
-                criteriaToAdd.add(updatedCriterion);
-            }
-        }
-
-        int numChanges = criteriaToAdd.size() + criteriaToRemove.size();
-        for (CQMResultCertification currToAdd : criteriaToAdd) {
-            Long mappedCriterionId = findCqmCriterionId(currToAdd);
-            if (mappedCriterionId != null) {
-                cqmResultDao.createCriteriaMapping(existingCqm.getId(), mappedCriterionId);
-            }
-        }
-        for (CQMResultCertification currToRemove : criteriaToRemove) {
-            cqmResultDao.deleteCriteriaMapping(currToRemove.getId());
-        }
-        return numChanges;
     }
 
     private int updateCqmSuccessVersions(Long listingId, CQMResultDetails existingCqm, CQMResultDetails updatedCqm) {
@@ -274,7 +226,7 @@ public class CqmResultSynchronizationService {
         int numChanges = versionsToAdd.size() + versionsToRemove.size();
         for (String currToAdd : versionsToAdd) {
             try {
-                cqmResultDao.create(listingId, existingCqm.getCmsId(), currToAdd, existingCqm.getCriteria());
+                cqmResultDao.create(listingId, existingCqm.getCmsId(), currToAdd, updatedCqm.getCriteria());
             } catch (Exception ex) {
                 LOGGER.error("Could not create mapping between listing " + listingId + " and CQM " + existingCqm.getCmsId() + " and version " + currToAdd);
             }
@@ -283,25 +235,6 @@ public class CqmResultSynchronizationService {
             cqmResultDao.deleteByCmsNumberAndVersion(listingId, existingCqm.getCmsId(), currToRemove);
         }
         return numChanges;
-    }
-
-    private Long findCqmCriterionId(CQMResultCertification cqm) {
-        if (cqm.getCriterion() != null && cqm.getCriterion().getId() != null) {
-            return cqm.getCriterion().getId();
-        } else if (cqm.getCriterion() != null && !StringUtils.isEmpty(cqm.getCriterion().getNumber())
-                && !StringUtils.isEmpty(cqm.getCriterion().getTitle())) {
-            CertificationCriterion cert = certCriterionDao.getByNumberAndTitle(
-                    cqm.getCriterion().getNumber(), cqm.getCriterion().getTitle());
-            if (cert != null) {
-                return cert.getId();
-            } else {
-                LOGGER.error(
-                        "Could not find certification criteria with number " + cqm.getCriterion().getNumber());
-            }
-        } else {
-            LOGGER.error("A criteria id or number must be provided.");
-        }
-        return null;
     }
 
     @NoArgsConstructor
