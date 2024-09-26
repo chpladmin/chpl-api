@@ -14,6 +14,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.domain.CQMCriterion;
 import gov.healthit.chpl.domain.CQMResultCertification;
 import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.upload.listing.ListingUploadHandlerUtil;
@@ -75,6 +76,7 @@ public class CqmUploadHandler {
             }
             List<String> splitTrimmedVersions = Arrays.stream(splitVersions)
                     .map(String::trim)
+                    .map(ver -> !ver.startsWith(CQMCriterion.VERSION_PREPEND_CHAR) ? (CQMCriterion.VERSION_PREPEND_CHAR + ver) : ver)
                     .collect(Collectors.toList());
             versions.addAll(splitTrimmedVersions);
         }

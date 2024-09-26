@@ -77,18 +77,25 @@ public class CqmNormalizer {
             return;
         }
 
-        CQMCriterion cqm = mostRecentCqmVersions.stream()
-                .filter(mostRecentCqm -> mostRecentCqm.getCmsId().equals(cqmResult.getCmsId()))
+        int maxAttestedVersion = cqmResult.getSuccessVersions().stream()
+                .map(successVer -> successVer.substring(1))
+                .mapToInt(Integer::valueOf)
+                .max()
+                .orElse(0);
+        CQMCriterion cqmCriterionForMaxAttestedVersion = allCqms.stream()
+                .filter(cqm -> cqm.getCmsId().equalsIgnoreCase(cqmResult.getCmsId())
+                        && cqm.getCqmVersion().equals(CQMCriterion.VERSION_PREPEND_CHAR + maxAttestedVersion))
                 .findAny()
                 .orElse(null);
-        if (cqm != null) {
-            cqmResult.setCqmCriterionId(cqm.getCriterionId());
-            cqmResult.setDescription(cqm.getDescription());
-            cqmResult.setDomain(cqm.getCqmDomain());
-            cqmResult.setNqfNumber(cqm.getNqfNumber());
-            cqmResult.setNumber(cqm.getNumber());
-            cqmResult.setTitle(cqm.getTitle());
-            cqmResult.setTypeId(cqm.getCqmCriterionTypeId());
+
+        if (cqmCriterionForMaxAttestedVersion != null) {
+            cqmResult.setCqmCriterionId(cqmCriterionForMaxAttestedVersion.getCriterionId());
+            cqmResult.setDescription(cqmCriterionForMaxAttestedVersion.getDescription());
+            cqmResult.setDomain(cqmCriterionForMaxAttestedVersion.getCqmDomain());
+            cqmResult.setNqfNumber(cqmCriterionForMaxAttestedVersion.getNqfNumber());
+            cqmResult.setNumber(cqmCriterionForMaxAttestedVersion.getNumber());
+            cqmResult.setTitle(cqmCriterionForMaxAttestedVersion.getTitle());
+            cqmResult.setTypeId(cqmCriterionForMaxAttestedVersion.getCqmCriterionTypeId());
         }
     }
 

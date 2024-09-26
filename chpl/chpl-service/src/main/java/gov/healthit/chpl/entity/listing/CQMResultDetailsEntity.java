@@ -4,6 +4,8 @@ import java.util.LinkedHashSet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang3.StringUtils;
+
 import gov.healthit.chpl.domain.CQMResultDetails;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
@@ -90,7 +92,9 @@ public class CQMResultDetailsEntity {
                 .title(this.getTitle())
                 .typeId(this.getCqmCriterionTypeId())
                 .success(this.getSuccess())
-                .successVersions(Stream.of(this.getVersion()).collect(Collectors.toCollection(LinkedHashSet::new)))
+                .successVersions(!StringUtils.isEmpty(this.getVersion())
+                        ? Stream.of(this.getVersion()).collect(Collectors.toCollection(LinkedHashSet::new))
+                        : new LinkedHashSet<String>())
                 .allVersions(new LinkedHashSet<String>())
                 .build();
     }

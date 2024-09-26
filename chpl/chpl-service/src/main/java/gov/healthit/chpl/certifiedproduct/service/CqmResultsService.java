@@ -50,11 +50,18 @@ public class CqmResultsService {
         //Get a flat list of all CQM results
         //If these are of CMS-type they then need to be grouped by CMS ID and have versions attached.
         //If these are of NQF-type then they do not need any further processing.
-        List<CQMResultDetails> cqmResults = cqmResultDetailsDAO.getCQMResultDetailsByCertifiedProductId(listingId);
+        final List<CQMResultDetails> cqmResults = cqmResultDetailsDAO.getCQMResultDetailsByCertifiedProductId(listingId);
 
         //NQF-type of CQMs are only associated with 2011 listings
         if (!StringUtils.isEmpty(year) && year.equals(CertificationEditionConcept.CERTIFICATION_EDITION_2011.getYear())) {
-            return cqmResults;
+            List<CQMCriterion> allNqfCqms = cqmCriterionService.getAllNqfCqms();
+            allNqfCqms.stream()
+                .filter(nqfCqm -> !isInCqmResults(nqfCqm, cqmResults))
+                .forEach(unattestedNqfCqm -> cqmResults.add(getAsCqmResultDetails(unattestedNqfCqm)));
+
+            return cqmResults.stream()
+                    .sorted(cqmResultComparator)
+                    .collect(Collectors.toList());
         }
 
         //group the CQMs so there is only 1 per CMS ID and it contains the data related to the
@@ -84,6 +91,15 @@ public class CqmResultsService {
             cqmResult.setCriteria(getCqmCriteriaMapping(cqmResult));
         }
 
+        //Add all the CQMs that are NOT attested to
+        List<CQMResultDetails> unattestedCmsCqmsMostRecentVersions = cqmCriterionService.getAllCmsCqmsMostRecentVersionOnly().stream()
+            .filter(cmsCqm -> !isInCqmResults(cmsCqm, cqmResults))
+            .map(unattestedCmsCqm -> getAsCqmResultDetails(unattestedCmsCqm))
+            .collect(Collectors.toList());
+        unattestedCmsCqmsMostRecentVersions.stream()
+            .forEach(unattestedCmsCqm -> unattestedCmsCqm.setAllVersions(getAllVersionsForCmsId(unattestedCmsCqm.getCmsId(), allCmsCqmCriteria)));
+        groupedCqmResults.addAll(unattestedCmsCqmsMostRecentVersions);
+
         //sort everything
         groupedCqmResults.stream()
             .forEach(cqmResult -> {
@@ -95,6 +111,14 @@ public class CqmResultsService {
         return groupedCqmResults.stream()
             .sorted(cqmResultComparator)
             .collect(Collectors.toList());
+    }
+
+    private boolean isInCqmResults(CQMCriterion cqmCriterion, List<CQMResultDetails> cqmResults) {
+        boolean isNqf = StringUtils.isEmpty(cqmCriterion.getCmsId()) || !cqmCriterion.getCmsId().startsWith(CqmCriterionService.CMS_ID_BEGIN);
+        return cqmResults.stream()
+                .filter(cqmResult -> (isNqf ? cqmResult.getNqfNumber().equals(cqmCriterion.getNqfNumber()) : cqmResult.getCmsId().equals(cqmCriterion.getCmsId())))
+                .findAny()
+                .isPresent();
     }
 
     private Map<String, List<CQMResultDetails>> getCqmResultsGroupedByCmsId(List<CQMResultDetails> cqmResults) {
@@ -173,7 +197,7 @@ public class CqmResultsService {
         }
     }
 
-    private CQMResultDetails getCqmResultDetails(CQMCriterion cqm) {
+    private CQMResultDetails getAsCqmResultDetails(CQMCriterion cqm) {
         return CQMResultDetails.builder()
                 .cmsId(cqm.getCmsId())
                 .nqfNumber(cqm.getNqfNumber())
@@ -181,7 +205,9 @@ public class CqmResultsService {
                 .title(cqm.getTitle())
                 .description(cqm.getDescription())
                 .success(Boolean.FALSE)
-                .allVersions(new LinkedHashSet<String>(Arrays.asList(cqm.getCqmVersion())))
+                .allVersions(!StringUtils.isEmpty(cqm.getCqmVersion())
+                        ? new LinkedHashSet<String>(Arrays.asList(cqm.getCqmVersion()))
+                                : new LinkedHashSet<String>())
                 .typeId(cqm.getCqmCriterionTypeId())
                 .build();
     }
