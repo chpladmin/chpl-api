@@ -17,24 +17,26 @@ public class AddressDAO extends BaseDAOImpl {
 
     public Long create(Address address) {
         AddressEntity toInsert = new AddressEntity();
-        toInsert.setStreetLineOne(address.getLine1());
-        toInsert.setStreetLineTwo(address.getLine2());
-        toInsert.setCity(address.getCity());
-        toInsert.setState(address.getState());
-        toInsert.setZipcode(address.getZipcode());
-        toInsert.setCountry(StringUtils.isEmpty(address.getCountry()) ? Address.DEFAULT_COUNTRY : address.getCountry());
+        toInsert.setStreetLineOne(StringUtils.normalizeSpace(address.getLine1()));
+        toInsert.setStreetLineTwo(StringUtils.normalizeSpace(address.getLine2()));
+        toInsert.setCity(StringUtils.normalizeSpace(address.getCity()));
+        toInsert.setState(StringUtils.normalizeSpace(address.getState()));
+        toInsert.setZipcode(StringUtils.normalizeSpace(address.getZipcode()));
+        toInsert.setCountry(StringUtils.isEmpty(address.getCountry())
+                ? Address.DEFAULT_COUNTRY : StringUtils.normalizeSpace(address.getCountry()));
         create(toInsert);
         return toInsert.getId();
     }
 
     public void update(Address address) throws EntityRetrievalException {
         AddressEntity addressEntity = this.getEntityById(address.getAddressId());
-        addressEntity.setStreetLineOne(address.getLine1());
-        addressEntity.setStreetLineTwo(address.getLine2());
-        addressEntity.setCity(address.getCity());
-        addressEntity.setState(address.getState());
-        addressEntity.setZipcode(address.getZipcode());
-        addressEntity.setCountry(StringUtils.isEmpty(address.getCountry()) ? Address.DEFAULT_COUNTRY : address.getCountry());
+        addressEntity.setStreetLineOne(StringUtils.normalizeSpace(address.getLine1()));
+        addressEntity.setStreetLineTwo(StringUtils.normalizeSpace(address.getLine2()));
+        addressEntity.setCity(StringUtils.normalizeSpace(address.getCity()));
+        addressEntity.setState(StringUtils.normalizeSpace(address.getState()));
+        addressEntity.setZipcode(StringUtils.normalizeSpace(address.getZipcode()));
+        addressEntity.setCountry(StringUtils.isEmpty(address.getCountry())
+                ? Address.DEFAULT_COUNTRY : StringUtils.normalizeSpace(address.getCountry()));
         update(addressEntity);
     }
 
@@ -59,12 +61,13 @@ public class AddressDAO extends BaseDAOImpl {
             // update the address
             Address toUpdate = getById(address.getAddressId());
             if (toUpdate != null) {
-                toUpdate.setLine1(address.getLine1());
-                toUpdate.setLine2(address.getLine2());
-                toUpdate.setCity(address.getCity());
-                toUpdate.setState(address.getState());
-                toUpdate.setZipcode(address.getZipcode());
-                toUpdate.setCountry(StringUtils.isEmpty(address.getCountry()) ? Address.DEFAULT_COUNTRY : address.getCountry());
+                toUpdate.setLine1(StringUtils.normalizeSpace(address.getLine1()));
+                toUpdate.setLine2(StringUtils.normalizeSpace(address.getLine2()));
+                toUpdate.setCity(StringUtils.normalizeSpace(address.getCity()));
+                toUpdate.setState(StringUtils.normalizeSpace(address.getState()));
+                toUpdate.setZipcode(StringUtils.normalizeSpace(address.getZipcode()));
+                toUpdate.setCountry(StringUtils.isEmpty(address.getCountry())
+                        ? Address.DEFAULT_COUNTRY : StringUtils.normalizeSpace(address.getCountry()));
                 update(toUpdate);
             }
         } else {
