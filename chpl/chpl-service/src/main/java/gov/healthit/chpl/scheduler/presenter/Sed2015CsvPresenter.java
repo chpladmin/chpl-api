@@ -138,11 +138,11 @@ public class Sed2015CsvPresenter extends CertifiedProductPresenter implements Au
                     row.add(String.valueOf(testTask.getTaskPathDeviationObserved()));
                     row.add(String.valueOf(testTask.getTaskPathDeviationOptimal()));
                     row.add(participant.getOccupation());
-                    row.add(participant.getEducationTypeName());
+                    row.add(participant.getEducationType().getName());
                     row.add(String.valueOf(participant.getProductExperienceMonths()));
                     row.add(String.valueOf(participant.getProfessionalExperienceMonths()));
                     row.add(String.valueOf(participant.getComputerExperienceMonths()));
-                    row.add(participant.getAgeRange());
+                    row.add(participant.getAge().getName());
                     row.add(participant.getGender());
                     row.add(participant.getAssistiveTechnologyNeeds());
                     result.add(row);

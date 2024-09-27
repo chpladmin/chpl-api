@@ -82,13 +82,15 @@ public class TestParticipantUploadHandlerTest {
         assertNotNull(parsedParticipants);
         assertEquals(1, parsedParticipants.size());
         TestParticipant participant = parsedParticipants.get(0);
-        assertNull(participant.getUniqueId());
-        assertEquals("10-19", participant.getAgeRange());
-        assertNull(participant.getAgeRangeId());
+        assertNull(participant.getFriendlyId());
+        assertNotNull(participant.getAge());
+        assertEquals("10-19", participant.getAge().getName());
+        assertNull(participant.getAge().getId());
         assertEquals("None", participant.getAssistiveTechnologyNeeds());
         assertNull(participant.getComputerExperienceMonths());
-        assertNull(participant.getEducationTypeId());
-        assertNull(participant.getEducationTypeName());
+        assertNotNull(participant.getEducationType());
+        assertNull(participant.getEducationType().getId());
+        assertNull(participant.getEducationType().getName());
         assertEquals("Male", participant.getGender());
         assertEquals("Engineer", participant.getOccupation());
         assertNull(participant.getProductExperienceMonths());
@@ -106,7 +108,7 @@ public class TestParticipantUploadHandlerTest {
         assertNotNull(parsedParticipants);
         assertEquals(1, parsedParticipants.size());
         TestParticipant participant = parsedParticipants.get(0);
-        assertEquals("A1.1", participant.getUniqueId());
+        assertEquals("A1.1", participant.getFriendlyId());
     }
 
     @Test
@@ -153,31 +155,35 @@ public class TestParticipantUploadHandlerTest {
         assertEquals(2, parsedParticipants.size());
         parsedParticipants.stream().forEach(participant -> {
             assertNull(participant.getId());
-            assertNotNull(participant.getUniqueId());
-            if (participant.getUniqueId().equals("ID01")) {
-                assertEquals("40-49", participant.getAgeRange());
-                assertNull(participant.getAgeRangeId());
+            assertNotNull(participant.getFriendlyId());
+            if (participant.getFriendlyId().equals("ID01")) {
+                assertNotNull(participant.getAge());
+                assertEquals("40-49", participant.getAge().getName());
+                assertNull(participant.getAge().getId());
                 assertEquals("No", participant.getAssistiveTechnologyNeeds());
                 assertEquals(220, participant.getComputerExperienceMonths());
-                assertNull(participant.getEducationTypeId());
-                assertEquals("Bachelor's Degree", participant.getEducationTypeName());
+                assertNotNull(participant.getEducationType());
+                assertNull(participant.getEducationType().getId());
+                assertEquals("Bachelor's Degree", participant.getEducationType().getName());
                 assertEquals("Male", participant.getGender());
                 assertEquals("Clinical Assistant", participant.getOccupation());
                 assertEquals(16, participant.getProductExperienceMonths());
                 assertEquals(60, participant.getProfessionalExperienceMonths());
-            } else if (participant.getUniqueId().equals("ID02")) {
-                assertEquals("30-39", participant.getAgeRange());
-                assertNull(participant.getAgeRangeId());
+            } else if (participant.getFriendlyId().equals("ID02")) {
+                assertNotNull(participant.getAge());
+                assertEquals("30-39", participant.getAge().getName());
+                assertNull(participant.getAge().getId());
                 assertEquals("No", participant.getAssistiveTechnologyNeeds());
                 assertEquals(220, participant.getComputerExperienceMonths());
-                assertNull(participant.getEducationTypeId());
-                assertEquals("Bachelor's Degree", participant.getEducationTypeName());
+                assertNotNull(participant.getEducationType());
+                assertNull(participant.getEducationType().getId());
+                assertEquals("Bachelor's Degree", participant.getEducationType().getName());
                 assertEquals("Female", participant.getGender());
                 assertEquals("Clinical Assistant", participant.getOccupation());
                 assertEquals(16, participant.getProductExperienceMonths());
                 assertEquals(60, participant.getProfessionalExperienceMonths());
             } else {
-                fail("No test participant with unique id '" + participant.getUniqueId() + "' should have been found.");
+                fail("No test participant with unique id '" + participant.getFriendlyId() + "' should have been found.");
             }
         });
     }

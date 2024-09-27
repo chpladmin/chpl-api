@@ -3,8 +3,6 @@ package gov.healthit.chpl.dao;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import jakarta.persistence.Query;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -14,6 +12,7 @@ import gov.healthit.chpl.entity.TestTaskEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import jakarta.persistence.Query;
 import lombok.extern.log4j.Log4j2;
 
 @Repository("testTaskDao")
@@ -29,6 +28,7 @@ public class TestTaskDAO extends BaseDAOImpl {
     public Long create(TestTask testTask) throws EntityCreationException {
         TestTaskEntity entity = new TestTaskEntity();
         try {
+            entity.setFriendlyId(testTask.getFriendlyId());
             entity.setDescription(testTask.getDescription());
             entity.setTaskErrors(testTask.getTaskErrors());
             entity.setTaskErrorsStddev(testTask.getTaskErrorsStddev());
@@ -59,6 +59,7 @@ public class TestTaskDAO extends BaseDAOImpl {
             throw new EntityRetrievalException("Entity with id " + task.getId() + " does not exist");
         }
 
+        entity.setFriendlyId(task.getFriendlyId());
         entity.setDescription(task.getDescription());
         entity.setTaskErrors(task.getTaskErrors());
         entity.setTaskErrorsStddev(task.getTaskErrorsStddev());

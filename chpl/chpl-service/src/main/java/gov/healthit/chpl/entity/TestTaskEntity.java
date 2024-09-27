@@ -5,6 +5,11 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.hibernate.annotations.Where;
+
+import gov.healthit.chpl.domain.TestParticipant;
+import gov.healthit.chpl.domain.TestTask;
+import gov.healthit.chpl.entity.listing.TestTaskParticipantMapEntity;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -14,12 +19,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-
-import org.hibernate.annotations.Where;
-
-import gov.healthit.chpl.domain.TestParticipant;
-import gov.healthit.chpl.domain.TestTask;
-import gov.healthit.chpl.entity.listing.TestTaskParticipantMapEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -43,6 +42,9 @@ public class TestTaskEntity extends EntityAudit {
     @Basic(optional = false)
     @Column(name = "test_task_id", nullable = false)
     private Long id;
+
+    @Column(name = "friendly_id", nullable = true)
+    private String friendlyId;
 
     @Column(name = "description", nullable = false)
     private String description;
@@ -96,6 +98,8 @@ public class TestTaskEntity extends EntityAudit {
         return TestTask.builder()
                 .description(this.getDescription())
                 .id(this.getId())
+                .uniqueId(this.getFriendlyId())
+                .friendlyId(this.getFriendlyId())
                 .taskErrors(this.getTaskErrors())
                 .taskErrorsStddev(this.getTaskErrorsStddev())
                 .taskPathDeviationObserved(this.getTaskPathDeviationObserved())

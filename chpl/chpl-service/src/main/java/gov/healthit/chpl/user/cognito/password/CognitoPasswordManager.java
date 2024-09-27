@@ -7,10 +7,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.user.cognito.CognitoApiWrapper;
+import gov.healthit.chpl.util.AuthUtil;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -60,6 +62,18 @@ public class CognitoPasswordManager {
 
         cognitoApiWrapper.setUserPassword(forgotPassword.getEmail(), password, true);
         cognitoPasswordChangedEmailer.sendEmail(forgotPassword.getEmail());
+    }
+
+
+    @Transactional
+    public void setPassword(String password, String confirmPassword) throws ValidationException, EmailNotSentException, UserRetrievalException {
+        if (!password.equals(confirmPassword)) {
+            throw new ValidationException("New password and password confirmation do not match");
+        }
+
+        User user = cognitoApiWrapper.getUserInfo(AuthUtil.getCurrentUser().getCognitoId());
+        cognitoApiWrapper.setUserPassword(user.getEmail(), password);
+        cognitoPasswordChangedEmailer.sendEmail(user.getEmail());
     }
 
     private CognitoForgotPassword generateForgotPassword(String email) {

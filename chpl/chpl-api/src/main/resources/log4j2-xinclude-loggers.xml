@@ -258,4 +258,8 @@
         <AppenderRef ref="cognitoMassRequirePasswordChangeJob" />
         <AppenderRef ref="cognitoMassRequirePasswordChangeJobJson" />
     </Logger>
+    <Logger name="updatedSedFriendlyIdsJobLogger" level="INFO" additivity="false">
+        <AppenderRef ref="updatedSedFriendlyIdsJob" />
+        <AppenderRef ref="updatedSedFriendlyIdsJobJson" />
+    </Logger>
 </Loggers>

@@ -6,6 +6,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
@@ -69,16 +71,28 @@ public class ConformanceMethodReviewer extends PermissionBasedReviewer {
 
     @Override
     public void review(CertifiedProductSearchDetails listing) {
+        Map<String, List<CertificationCriterion>> defaultedConformanceMethods =
+                new LinkedHashMap<String, List<CertificationCriterion>>();
+
         listing.getCertificationResults().stream()
                 .filter(certResult -> validationUtils.isEligibleForErrors(certResult))
-                .forEach(certResult -> reviewCertificationResult(listing, certResult));
+                .forEach(certResult -> reviewCertificationResult(listing, certResult, defaultedConformanceMethods));
+
+        if (!CollectionUtils.isEmpty(defaultedConformanceMethods.keySet())) {
+            defaultedConformanceMethods.keySet().stream()
+                .forEach(confMethodName -> addWarningForDefaultConformanceMethod(confMethodName,
+                        defaultedConformanceMethods.get(confMethodName),
+                        listing));
+        }
+
         listing.getCertificationResults().stream()
                 .forEach(certResult -> removeConformanceMethodsIfNotApplicable(certResult));
     }
 
-    private void reviewCertificationResult(CertifiedProductSearchDetails listing, CertificationResult certResult) {
+    private void reviewCertificationResult(CertifiedProductSearchDetails listing, CertificationResult certResult,
+            Map<String, List<CertificationCriterion>> defaultedConformanceMethods) {
         reviewCriteriaCanHaveConformanceMethods(listing, certResult);
-        fillInDefaultConformanceMethods(listing, certResult);
+        fillInDefaultConformanceMethods(listing, certResult, defaultedConformanceMethods);
         removeOrReplaceConformanceMethodsInvalidForCriterion(listing, certResult);
         reviewConformanceMethodsRequired(listing, certResult);
         if (!CollectionUtils.isEmpty(certResult.getConformanceMethods())) {
@@ -103,7 +117,8 @@ public class ConformanceMethodReviewer extends PermissionBasedReviewer {
         }
     }
 
-    private void fillInDefaultConformanceMethods(CertifiedProductSearchDetails listing, CertificationResult certResult) {
+    private void fillInDefaultConformanceMethods(CertifiedProductSearchDetails listing, CertificationResult certResult,
+            Map<String, List<CertificationCriterion>> defaultedConformanceMethods) {
         if (certResult.getConformanceMethods() == null) {
             certResult.setConformanceMethods(new ArrayList<CertificationResultConformanceMethod>());
         }
@@ -119,7 +134,7 @@ public class ConformanceMethodReviewer extends PermissionBasedReviewer {
 
         certResult.getConformanceMethods().stream()
                 .filter(conformanceMethod -> isConformanceMethodNameMissing(conformanceMethod))
-                .forEach(conformanceMethod -> fillInDefaultConformanceMethod(listing, certResult, conformanceMethod));
+                .forEach(conformanceMethod -> fillInDefaultConformanceMethod(listing, certResult, conformanceMethod, defaultedConformanceMethods));
     }
 
     private boolean isConformanceMethodNameMissing(CertificationResultConformanceMethod conformanceMethod) {
@@ -128,21 +143,37 @@ public class ConformanceMethodReviewer extends PermissionBasedReviewer {
     }
 
     private void fillInDefaultConformanceMethod(CertifiedProductSearchDetails listing, CertificationResult certResult,
-            CertificationResultConformanceMethod conformanceMethod) {
+            CertificationResultConformanceMethod conformanceMethod,
+            Map<String, List<CertificationCriterion>> defaultedConformanceMethods) {
         ConformanceMethod defaultConformanceMethod = getDefaultConformanceMethodForCriteria(certResult.getCriterion());
         if (defaultConformanceMethod != null) {
             conformanceMethod.setConformanceMethod(defaultConformanceMethod);
             // The upload file doesn't have fields for conformance methods for all the criteria that need them.
             // We will add a default CM for the cert result here if there is only one possible choice for
             // conformance method but we have to tell the user that we did it.
-            // This code can't go in the reviewer otherwise during Test Procedure -> Conformance Method conversion
-            // a default CM gets added to the listing and may make the converter think that the listing already has a CM.
             if (BooleanUtils.isFalse(certResult.getCriterion().isRemoved())) {
-                listing.addWarningMessage(msgUtil.getMessage("listing.criteria.conformanceMethod.addedDefaultForCriterion",
-                        Util.formatCriteriaNumber(certResult.getCriterion()),
-                        defaultConformanceMethod.getName()));
+                if (defaultedConformanceMethods.get(defaultConformanceMethod.getName()) != null) {
+                    defaultedConformanceMethods.get(defaultConformanceMethod.getName()).add(certResult.getCriterion());
+                } else {
+                    defaultedConformanceMethods.put(defaultConformanceMethod.getName(),
+                            Stream.of(certResult.getCriterion()).collect(Collectors.toList()));
+                }
             }
         }
+    }
+
+    private void addWarningForDefaultConformanceMethod(String conformanceMethodName, List<CertificationCriterion> criteria,
+            CertifiedProductSearchDetails listing) {
+        List<String> criteriaNumbers = criteria.stream()
+                .map(criterion -> Util.formatCriteriaNumber(criterion))
+                .collect(Collectors.toList());
+        String joinedCriteriaStr = Util.joinListGrammatically(criteriaNumbers, "and");
+
+            listing.addWarningMessage(msgUtil.getMessage("listing.criteria.conformanceMethod.addedDefaultForCriterion",
+                    criteriaNumbers.size() > 1 ? "a" : "on",
+                    joinedCriteriaStr,
+                    criteriaNumbers.size() > 1 ? "" : "s",
+                    conformanceMethodName));
     }
 
     private void removeOrReplaceConformanceMethodsInvalidForCriterion(CertifiedProductSearchDetails listing, CertificationResult certResult) {
