@@ -43,6 +43,7 @@ public class SurveillanceReportsService {
                         stats.getSurveillanceOpenStatus().getAcbStatistics().stream()
                                 .collect(Collectors.summingLong(CertificationBodyStatistic::getCount)))
                 .totalActivities(stats.getSurveillanceAllStatusTotal())
+                .averageDurationClosedSurveillance(stats.getSurveillanceAvgTimeToClose())
                 .build();
     }
 
