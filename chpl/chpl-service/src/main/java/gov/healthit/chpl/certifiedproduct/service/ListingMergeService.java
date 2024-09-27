@@ -5,6 +5,7 @@ import java.util.Set;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -260,11 +261,10 @@ public class ListingMergeService {
         }
 
         TestTask matchedCurrTestTask = currTestTasks.stream()
-                .filter(currTestTask -> currTestTask.matches(updatedTestTask))
+                .filter(currTestTask -> StringUtils.equalsIgnoreCase(currTestTask.getFriendlyId(), updatedTestTask.getFriendlyId()))
                 .findAny()
                 .orElse(null);
             if (matchedCurrTestTask != null) {
-                //TODO: test tasks are not matching and i think it's because of the participant uniqueID comparison
                 updatedTestTask.setId(matchedCurrTestTask.getId());
                 if (!CollectionUtils.isEmpty(updatedTestTask.getTestParticipants())) {
                     updatedTestTask.getTestParticipants().stream()
@@ -279,7 +279,7 @@ public class ListingMergeService {
         }
 
         TestParticipant matchedCurrTestParticipant = currTestParticipants.stream()
-                .filter(currTestParticipant -> currTestParticipant.matches(updatedTestParticipant))
+                .filter(currTestParticipant -> StringUtils.equalsIgnoreCase(currTestParticipant.getFriendlyId(), updatedTestParticipant.getFriendlyId()))
                 .findAny()
                 .orElse(null);
             if (matchedCurrTestParticipant != null) {
