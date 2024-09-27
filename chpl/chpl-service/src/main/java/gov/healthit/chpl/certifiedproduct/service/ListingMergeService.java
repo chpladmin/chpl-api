@@ -1,6 +1,7 @@
 package gov.healthit.chpl.certifiedproduct.service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import org.apache.commons.beanutils.BeanUtils;
@@ -146,9 +147,9 @@ public class ListingMergeService {
         }
 
         CertifiedProductQmsStandard updatedQmsStandard = updatedQmsStandards.stream()
-            .filter(updatedQms -> updatedQms.getQmsStandardId().equals(currQmsStandard.getQmsStandardId())
-                    && updatedQms.getQmsModification().equals(currQmsStandard.getQmsModification())
-                    && updatedQms.getApplicableCriteria().equals(currQmsStandard.getApplicableCriteria()))
+            .filter(updatedQms -> Objects.equals(updatedQms.getQmsStandardId(), currQmsStandard.getQmsStandardId())
+                    && StringUtils.equalsIgnoreCase(updatedQms.getQmsModification(), currQmsStandard.getQmsModification())
+                    && StringUtils.equalsIgnoreCase(updatedQms.getApplicableCriteria(), currQmsStandard.getApplicableCriteria()))
             .findAny()
             .orElse(null);
         if (updatedQmsStandard != null) {
@@ -172,7 +173,7 @@ public class ListingMergeService {
         }
 
         CertifiedProductAccessibilityStandard updatedAccessibilityStandard = updatedAccessibilityStandards.stream()
-            .filter(updatedAccStd -> updatedAccStd.getAccessibilityStandardId().equals(currAccessibilityStandard.getAccessibilityStandardId()))
+            .filter(updatedAccStd -> Objects.equals(updatedAccStd.getAccessibilityStandardId(), currAccessibilityStandard.getAccessibilityStandardId()))
             .findAny()
             .orElse(null);
         if (updatedAccessibilityStandard != null) {
@@ -197,7 +198,7 @@ public class ListingMergeService {
         }
 
         CertifiedProductTargetedUser updatedTargetedUser = updatedTargetedUsers.stream()
-            .filter(updatedTu -> updatedTu.getTargetedUserId().equals(currTargetedUser.getTargetedUserId()))
+            .filter(updatedTu -> Objects.equals(updatedTu.getTargetedUserId(), currTargetedUser.getTargetedUserId()))
             .findAny()
             .orElse(null);
         if (updatedTargetedUser != null) {
@@ -232,7 +233,7 @@ public class ListingMergeService {
 
     private void setCriteriaDataInUpdatedMeasure(CertificationCriterion updatedMeasureCriterion, Set<CertificationCriterion> currMeasureCriteria) {
         CertificationCriterion matchingCurrMeasureCriterion = currMeasureCriteria.stream()
-                .filter(currMeasureCrit -> currMeasureCrit.getId().equals(updatedMeasureCriterion.getId()))
+                .filter(currMeasureCrit -> Objects.equals(currMeasureCrit.getId(), updatedMeasureCriterion.getId()))
                 .findAny()
                 .orElse(null);
         if (matchingCurrMeasureCriterion != null) {
@@ -289,7 +290,7 @@ public class ListingMergeService {
 
     private void setIdsForCertificationResults(CertificationResult updatedCertResult, CertifiedProductSearchDetails currListing) {
         CertificationResult matchedCurrCertResult = currListing.getCertificationResults().stream()
-            .filter(certResult -> certResult.getCriterion().getId().equals(updatedCertResult.getCriterion().getId()))
+            .filter(certResult -> Objects.equals(certResult.getCriterion().getId(), updatedCertResult.getCriterion().getId()))
             .findAny().orElse(null);
         if (matchedCurrCertResult != null) {
             updatedCertResult.setId(matchedCurrCertResult.getId());
@@ -362,7 +363,7 @@ public class ListingMergeService {
         }
 
         CertificationResultCodeSet matchedCurrCodeSet = currCertCodeSets.stream()
-                .filter(currCertCs -> currCertCs.getCodeSet().getId().equals(updatedCertCodeSet.getCodeSet().getId()))
+                .filter(currCertCs -> Objects.equals(currCertCs.getCodeSet().getId(), updatedCertCodeSet.getCodeSet().getId()))
                 .findAny()
                 .orElse(null);
             if (matchedCurrCodeSet != null) {
@@ -512,7 +513,7 @@ public class ListingMergeService {
         }
 
         CQMResultDetails matchedCurrCqmResult = currListing.getCqmResults().stream()
-            .filter(cqmResult -> cqmResult.getCmsId().equals(updatedCqmResult.getCmsId()))
+            .filter(cqmResult -> StringUtils.equals(cqmResult.getCmsId(), updatedCqmResult.getCmsId()))
             .findAny()
             .orElse(null);
         if (matchedCurrCqmResult != null) {
@@ -530,7 +531,7 @@ public class ListingMergeService {
         }
 
         CQMResultCertification matchedCurrCqmCert = currCqmCerts.stream()
-            .filter(currCqmCert -> currCqmCert.getCriterion().getId().equals(updatedCqmCert.getCriterion().getId()))
+            .filter(currCqmCert -> Objects.equals(currCqmCert.getCriterion().getId(), updatedCqmCert.getCriterion().getId()))
             .findAny()
             .orElse(null);
         if (matchedCurrCqmCert != null) {
