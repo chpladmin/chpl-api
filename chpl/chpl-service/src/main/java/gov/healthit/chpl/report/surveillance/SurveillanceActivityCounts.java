@@ -9,4 +9,5 @@ public class SurveillanceActivityCounts {
     private Long totalActivities;
     private Long openActivities;
     private Long closedActivities;
+    private Long averageDurationClosedSurveillance;
 }
