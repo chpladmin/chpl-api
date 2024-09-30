@@ -46,6 +46,9 @@ public class Complaint implements Serializable {
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonSerialize(using = LocalDateSerializer.class)
     private LocalDate closedDate;
+    private String complaintTypeOther;
+    @Builder.Default
+    private Set<ComplaintType> complaintTypes = new HashSet<ComplaintType>();
     @Builder.Default
     private Set<ComplaintListingMap> listings = new HashSet<ComplaintListingMap>();
     @Builder.Default
