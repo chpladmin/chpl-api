@@ -8,11 +8,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.Immutable;
 
@@ -21,6 +16,10 @@ import gov.healthit.chpl.domain.Address;
 import gov.healthit.chpl.domain.IdNamePair;
 import gov.healthit.chpl.domain.contact.PointOfContact;
 import gov.healthit.chpl.util.DateUtil;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -115,6 +114,12 @@ public class DeveloperSearchResultEntity implements Serializable {
     @Column(name = "acbs_for_developer_active_listings")
     private String acbsForDeveloperActiveListings;
 
+    @Column(name = "acbs_for_developer_withdrawn_listings")
+    private String acbsForDeveloperWithdrawnListings;
+
+    @Column(name = "acbs_for_developer_suspended_listings")
+    private String acbsForDeveloperSuspendedListings;
+
     @Column(name = "acbs_for_developer_all_listings")
     private String acbsForDeveloperAllListings;
 
@@ -161,6 +166,8 @@ public class DeveloperSearchResultEntity implements Serializable {
                 .publishedAttestationsForMostRecentPastPeriod(this.getMostRecentPastAttestationPeriodPublishedSubmissionId() != null)
                 .acbsForAllListings(buildSetOfIdNamePairs(this.getAcbsForDeveloperAllListings()))
                 .acbsForActiveListings(buildSetOfIdNamePairs(this.getAcbsForDeveloperActiveListings()))
+                .acbsForWithdrawnListings(buildSetOfIdNamePairs(this.getAcbsForDeveloperWithdrawnListings()))
+                .acbsForSuspendedListings(buildSetOfIdNamePairs(this.getAcbsForDeveloperSuspendedListings()))
                 .creationDate(this.getCreationDate())
                 .build();
     }

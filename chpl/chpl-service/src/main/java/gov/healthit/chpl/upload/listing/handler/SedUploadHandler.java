@@ -54,7 +54,13 @@ public class SedUploadHandler {
             CertifiedProductSearchDetails listing)
         throws ValidationException {
         List<TestTask> availableTestTasks = testTaskHandler.handle(headingRecord, listingRecords);
+        List<String> allTaskIds = availableTestTasks.stream()
+                .map(tt -> tt.getFriendlyId())
+                .collect(Collectors.toList());
         List<TestParticipant> availableTestParticipants = testParticipantHandler.handle(headingRecord, listingRecords);
+        List<String> allParticipantIds = availableTestParticipants.stream()
+                .map(part -> part.getFriendlyId())
+                .collect(Collectors.toList());
         List<TestTask> testTasks = new ArrayList<TestTask>();
         List<CertifiedProductUcdProcess> allUcdProcessesOnListing = new ArrayList<CertifiedProductUcdProcess>();
 
@@ -82,6 +88,12 @@ public class SedUploadHandler {
         CertifiedProductSed sed = CertifiedProductSed.builder()
                 .testTasks(testTasks)
                 .ucdProcesses(allUcdProcessesOnListing)
+                .duplicateTestTaskIds(allTaskIds.stream()
+                                .filter(tt -> Collections.frequency(allTaskIds, tt) > 1)
+                                .collect(Collectors.toList()))
+                .duplicateTestParticipantIds(allParticipantIds.stream()
+                                .filter(tp -> Collections.frequency(allParticipantIds, tp) > 1)
+                                .collect(Collectors.toList()))
             .build();
         updateUnusedTaskAndParticipantIds(sed, availableTestTasks, availableTestParticipants);
         return sed;
@@ -135,7 +147,7 @@ public class SedUploadHandler {
 
     private boolean listingContainsTask(List<TestTask> listingTestTasks, TestTask certResultTask) {
         return listingTestTasks.stream()
-            .filter(listingTestTask -> Objects.equals(listingTestTask.getUniqueId(), certResultTask.getUniqueId()))
+            .filter(listingTestTask -> Objects.equals(listingTestTask.getFriendlyId(), certResultTask.getFriendlyId()))
             .filter(listingTestTask ->
                 participantsUniqueIdsMatch(listingTestTask.getTestParticipants(), certResultTask.getTestParticipants()))
             .findAny().isPresent();
@@ -144,7 +156,7 @@ public class SedUploadHandler {
     private void addCriteriaToExistingTestTask(List<TestTask> listingTestTasks, TestTask certResultTask,
             CertificationCriterion criterion) {
         listingTestTasks.stream()
-            .filter(listingTestTask -> Objects.equals(listingTestTask.getUniqueId(), certResultTask.getUniqueId()))
+            .filter(listingTestTask -> Objects.equals(listingTestTask.getFriendlyId(), certResultTask.getFriendlyId()))
             .filter(listingTestTask ->
                 participantsUniqueIdsMatch(listingTestTask.getTestParticipants(), certResultTask.getTestParticipants()))
             .forEach(listingTestTask -> {
@@ -156,13 +168,13 @@ public class SedUploadHandler {
             List<TestTask> availableTestTasks, List<TestParticipant> availableTestParticipants) {
         TestTask result = null;
         Optional<TestTask> taskFromAvailOpt = availableTestTasks.stream()
-                .filter(availTask -> Objects.equals(availTask.getUniqueId(), certResultTask.getUniqueId()))
+                .filter(availTask -> Objects.equals(availTask.getFriendlyId(), certResultTask.getFriendlyId()))
                 .findAny();
         if (taskFromAvailOpt.isPresent()) {
             TestTask taskFromAvail = taskFromAvailOpt.get();
             result = taskFromAvail.toBuilder().build();
         } else {
-            LOGGER.error("Could not find available test task with unique ID " + certResultTask.getUniqueId());
+            LOGGER.error("Could not find available test task with unique ID " + certResultTask.getFriendlyId());
             result = certResultTask.toBuilder().build();
         }
 
@@ -177,7 +189,7 @@ public class SedUploadHandler {
             List<TestParticipant> availableTestParticipants) {
         TestParticipant result = null;
         Optional<TestParticipant> participantFromAvailOpt = availableTestParticipants.stream()
-            .filter(availParticipant -> Objects.equals(availParticipant.getUniqueId(), testParticipant.getUniqueId()))
+            .filter(availParticipant -> Objects.equals(availParticipant.getFriendlyId(), testParticipant.getFriendlyId()))
             .findAny();
         if (participantFromAvailOpt.isPresent()) {
             TestParticipant participantFromAvail = participantFromAvailOpt.get();
@@ -189,9 +201,9 @@ public class SedUploadHandler {
     }
 
     private boolean participantsUniqueIdsMatch(Set<TestParticipant> participantList1, Set<TestParticipant> participantList2) {
-        List<String> participantUniqueIds1 = participantList1.stream().map(participant -> participant.getUniqueId())
+        List<String> participantUniqueIds1 = participantList1.stream().map(participant -> participant.getFriendlyId())
                 .collect(Collectors.toList());
-        List<String> participantUniqueIds2 = participantList2.stream().map(participant -> participant.getUniqueId())
+        List<String> participantUniqueIds2 = participantList2.stream().map(participant -> participant.getFriendlyId())
                 .collect(Collectors.toList());
         Collections.sort(participantUniqueIds1);
         Collections.sort(participantUniqueIds2);
@@ -239,9 +251,9 @@ public class SedUploadHandler {
         }
 
         TestTask certResultTask = TestTask.builder()
-                .uniqueId(testTaskId)
+                .friendlyId(testTaskId)
                 .testParticipants(participantIds.stream()
-                        .map(participantId -> TestParticipant.builder().uniqueId(participantId).build())
+                        .map(participantId -> TestParticipant.builder().friendlyId(participantId).build())
                         .collect(Collectors.toCollection(LinkedHashSet::new)))
                 .build();
         certResultTasks.add(certResultTask);
@@ -251,22 +263,22 @@ public class SedUploadHandler {
             List<TestTask> availableTestTasks, List<TestParticipant> availableTestParticipants) {
         availableTestTasks.stream()
             .filter(availableTestTask -> !isReferenced(sed.getTestTasks(), availableTestTask))
-            .forEach(unreferencedTestTask -> sed.getUnusedTestTaskUniqueIds().add(unreferencedTestTask.getUniqueId()));
+            .forEach(unreferencedTestTask -> sed.getUnusedTestTaskUniqueIds().add(unreferencedTestTask.getFriendlyId()));
         availableTestParticipants.stream()
             .filter(availableTestParticipant -> !isReferenced(sed.getTestTasks(), availableTestParticipant))
-            .forEach(unreferecedParticipant -> sed.getUnusedTestParticipantUniqueIds().add(unreferecedParticipant.getUniqueId()));
+            .forEach(unreferecedParticipant -> sed.getUnusedTestParticipantUniqueIds().add(unreferecedParticipant.getFriendlyId()));
     }
 
     private boolean isReferenced(List<TestTask> allTestTasks, TestTask testTaskToFind) {
         return allTestTasks.stream()
-                .filter(tt -> Objects.equals(tt.getUniqueId(), testTaskToFind.getUniqueId()))
+                .filter(tt -> Objects.equals(tt.getFriendlyId(), testTaskToFind.getFriendlyId()))
                 .findAny().isPresent();
     }
 
     private boolean isReferenced(List<TestTask> allTestTasks, TestParticipant participantToFind) {
         return allTestTasks.stream()
                 .flatMap(tt -> tt.getTestParticipants().stream())
-                .filter(tp -> Objects.equals(tp.getUniqueId(), participantToFind.getUniqueId()))
+                .filter(tp -> Objects.equals(tp.getFriendlyId(), participantToFind.getFriendlyId()))
                 .findAny().isPresent();
     }
 

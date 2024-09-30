@@ -86,7 +86,7 @@ public class TestTaskUploadHandlerTest {
         assertNotNull(parsedTasks);
         assertEquals(1, parsedTasks.size());
         TestTask task = parsedTasks.get(0);
-        assertEquals("A1.1", task.getUniqueId());
+        assertEquals("A1.1", task.getFriendlyId());
     }
 
     @Test
@@ -103,7 +103,7 @@ public class TestTaskUploadHandlerTest {
         assertNotNull(parsedTasks);
         assertEquals(1, parsedTasks.size());
         TestTask task = parsedTasks.get(0);
-        assertEquals("A1.1", task.getUniqueId());
+        assertEquals("A1.1", task.getFriendlyId());
         assertNull(task.getDescription());
         assertEquals(7, task.getTaskErrors());
         assertNull(task.getTaskErrorsStddev());
@@ -198,8 +198,8 @@ public class TestTaskUploadHandlerTest {
         assertEquals(2, parsedTasks.size());
         parsedTasks.stream().forEach(task -> {
             assertNull(task.getId());
-            assertNotNull(task.getUniqueId());
-            if (task.getUniqueId().equals("A1.1")) {
+            assertNotNull(task.getFriendlyId());
+            if (task.getFriendlyId().equals("A1.1")) {
                 assertEquals("Enable a user to electronically record, change, and access the following order types "
                         + "(i) Medications; (ii)Laboratory; and (iii) Radiology/imaging.", task.getDescription());
                 assertEquals(90.24F, task.getTaskSuccessAverage());
@@ -215,7 +215,7 @@ public class TestTaskUploadHandlerTest {
                 assertEquals("Likert", task.getTaskRatingScale());
                 assertEquals(3.2F, task.getTaskRating());
                 assertEquals(2, task.getTaskRatingStddev());
-            } else if (task.getUniqueId().equals("A2.1")) {
+            } else if (task.getFriendlyId().equals("A2.1")) {
                 assertEquals("Task for (a)(2)", task.getDescription());
                 assertEquals(44.32F, task.getTaskSuccessAverage());
                 assertEquals(6, task.getTaskSuccessStddev());
@@ -231,7 +231,7 @@ public class TestTaskUploadHandlerTest {
                 assertEquals(88F, task.getTaskRating());
                 assertEquals(1, task.getTaskRatingStddev());
             } else {
-                fail("No test task with unique id '" + task.getUniqueId() + "' should have been found.");
+                fail("No test task with unique id '" + task.getFriendlyId() + "' should have been found.");
             }
         });
     }

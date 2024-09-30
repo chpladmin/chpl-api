@@ -52,7 +52,7 @@ public class ConformanceMethodReviewerTest {
     private static final String F3_GAP_MISMATCH_MSG = "Certification %s cannot use Conformance Method \"%s\" since GAP is %s.";
     private static final String F3_TEST_TOOLS_NOT_ALLOWED_MSG = "Certification %s cannot specify test tools when using Conformance Method %s. The test tools have been removed.";
     private static final String F3_TEST_DATA_NOT_ALLOWED_MSG = "Certification %s cannot specify test data when using Conformance Method %s. The test data has been removed.";
-    private static final String DEFAULT_CM_ADDED_MSG = "Criterion %s requires a Conformance Method but none was found. \"%s\" was added.";
+    private static final String DEFAULT_CM_ADDED_MSG = "Criteri%s %s require%s a Conformance Method but none was found. \"%s\" was added.";
 
     private CertificationResultDAO certResultDao;
     private ErrorMessageUtil msgUtil;
@@ -120,6 +120,17 @@ public class ConformanceMethodReviewerTest {
                         .build(),
                     ConformanceMethodCriteriaMap.builder()
                         .criterion(CertificationCriterion.builder()
+                            .number("170.315 (a)(4)")
+                            .id(4L)
+                            .build())
+                        .conformanceMethod(ConformanceMethod.builder()
+                            .id(1L)
+                            .name("Attestation")
+                            .removalDate(null)
+                            .build())
+                        .build(),
+                    ConformanceMethodCriteriaMap.builder()
+                        .criterion(CertificationCriterion.builder()
                             .number("170.315 (a)(9)")
                             .id(100L)
                             .startDay(LocalDate.parse("2023-01-01"))
@@ -177,8 +188,8 @@ public class ConformanceMethodReviewerTest {
                 ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(F3_TEST_DATA_NOT_ALLOWED_MSG, i.getArgument(1), i.getArgument(2)));
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.conformanceMethod.addedDefaultForCriterion"),
-                ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
-            .thenAnswer(i -> String.format(DEFAULT_CM_ADDED_MSG, i.getArgument(1), i.getArgument(2)));
+                ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
+            .thenAnswer(i -> String.format(DEFAULT_CM_ADDED_MSG, i.getArgument(1), i.getArgument(2), i.getArgument(3), i.getArgument(4)));
 
         certResultRules = Mockito.mock(CertificationResultRules.class);
         Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(),
@@ -1151,7 +1162,36 @@ public class ConformanceMethodReviewerTest {
         assertNotNull(listing.getCertificationResults().get(0).getConformanceMethods());
         assertEquals(1, listing.getCertificationResults().get(0).getConformanceMethods().size());
         assertEquals(1, listing.getWarningMessages().size());
-        assertTrue(listing.getWarningMessages().contains(String.format(DEFAULT_CM_ADDED_MSG, "170.315 (a)(2)", "Attestation")));
+        assertTrue(listing.getWarningMessages().contains(String.format(DEFAULT_CM_ADDED_MSG, "on", "170.315 (a)(2)", "s", "Attestation")));
+    }
+
+    @Test
+    public void review_twoEmptyConformanceMethodsAndCriteriaHasOneAllowed_DefaultPopulatedWithWarning() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .success(true)
+                        .criterion(CertificationCriterion.builder()
+                                .id(2L)
+                                .number("170.315 (a)(2)")
+                                .startDay(LocalDate.parse("2023-01-01"))
+                                .build())
+                        .conformanceMethods(new ArrayList<CertificationResultConformanceMethod>())
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .success(true)
+                        .criterion(CertificationCriterion.builder()
+                                .id(4L)
+                                .number("170.315 (a)(4)")
+                                .startDay(LocalDate.parse("2023-01-01"))
+                                .build())
+                        .conformanceMethods(new ArrayList<CertificationResultConformanceMethod>())
+                        .build())
+                .build();
+        conformanceMethodReviewer.review(listing);
+        assertNotNull(listing.getCertificationResults().get(0).getConformanceMethods());
+        assertEquals(1, listing.getCertificationResults().get(0).getConformanceMethods().size());
+        assertEquals(1, listing.getWarningMessages().size());
+        assertTrue(listing.getWarningMessages().contains(String.format(DEFAULT_CM_ADDED_MSG, "a", "170.315 (a)(2) and 170.315 (a)(4)", "", "Attestation")));
     }
 
     @Test

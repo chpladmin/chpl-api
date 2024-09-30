@@ -6,8 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import jakarta.transaction.Transactional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -22,6 +20,7 @@ import gov.healthit.chpl.entity.statistics.ParticipantAgeStatisticsEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.search.domain.ListingSearchResult;
+import jakarta.transaction.Transactional;
 import lombok.extern.log4j.Log4j2;
 
 @Component
@@ -59,11 +58,11 @@ public class ParticipantAgeStatisticsCalculator extends SedDataCollector {
 
         for (TestParticipant participant : uniqueParticipants) {
             Long updatedCount = 1L;
-            if (ageMap.containsKey(participant.getAgeRangeId())) {
-                updatedCount = ageMap.get(participant.getAgeRangeId());
+            if (ageMap.containsKey(participant.getAge().getId())) {
+                updatedCount = ageMap.get(participant.getAge().getId());
                 updatedCount++;
             }
-            ageMap.put(participant.getAgeRangeId(), updatedCount);
+            ageMap.put(participant.getAge().getId(), updatedCount);
         }
         return ageMap;
     }
