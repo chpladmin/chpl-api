@@ -20,6 +20,7 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.complaint.ComplaintDAO;
 import gov.healthit.chpl.complaint.domain.ComplainantType;
 import gov.healthit.chpl.complaint.domain.Complaint;
+import gov.healthit.chpl.complaint.domain.ComplaintType;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
@@ -55,6 +56,7 @@ public class ComplaintSearchRequestValidator {
         errors.addAll(getDeveloperContactedErrors(request));
         errors.addAll(getAcbIdsErrors(request));
         errors.addAll(getComplainantTypeNameErrors(request));
+        errors.addAll(getComplaintTypeNameErrors(request));
         errors.addAll(getCurrentStatusErrors(request));
         errors.addAll(getListingIdFormatErrors(request.getListingIdStrings()));
         errors.addAll(getSurveillanceIdFormatErrors(request.getSurveillanceIdStrings()));
@@ -152,6 +154,24 @@ public class ComplaintSearchRequestValidator {
         return request.getComplainantTypeNames().stream()
             .filter(name -> !isInSet(name, allComplainantTypeNames))
             .map(name -> msgUtil.getMessage("search.complaint.complainantType.invalid", name))
+            .collect(Collectors.toSet());
+    }
+
+    private Set<String> getComplaintTypeNameErrors(ComplaintSearchRequest request) {
+        if (CollectionUtils.isEmpty(request.getComplaintTypeNames())) {
+            return Collections.emptySet();
+        }
+
+        List<ComplaintType> allComplaintTypes = complaintDao.getComplaintTypes();
+        Set<String> allComplaintTypeNames;
+        if (!CollectionUtils.isEmpty(allComplaintTypes)) {
+            allComplaintTypeNames = allComplaintTypes.stream().map(kvm -> kvm.getName()).collect(Collectors.toSet());
+        } else {
+            allComplaintTypeNames = Collections.emptySet();
+        }
+        return request.getComplaintTypeNames().stream()
+            .filter(name -> !isInSet(name, allComplaintTypeNames))
+            .map(name -> msgUtil.getMessage("search.complaint.complaintType.invalid", name))
             .collect(Collectors.toSet());
     }
 
