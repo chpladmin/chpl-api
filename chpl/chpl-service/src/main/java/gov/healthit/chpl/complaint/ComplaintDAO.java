@@ -97,6 +97,7 @@ public class ComplaintDAO extends BaseDAOImpl {
         entity.setCertificationBodyId(complaint.getCertificationBody().getId());
         entity.setComplainantTypeId(complaint.getComplainantType().getId());
         entity.setComplainantTypeOther(complaint.getComplainantTypeOther());
+        entity.setComplaintTypesOther(complaint.getComplaintTypesOther());
         entity.setOncComplaintId(complaint.getOncComplaintId());
         entity.setAcbComplaintId(complaint.getAcbComplaintId());
         entity.setReceivedDate(complaint.getReceivedDate());
@@ -125,7 +126,7 @@ public class ComplaintDAO extends BaseDAOImpl {
         entity.setCertificationBodyId(complaint.getCertificationBody().getId());
         entity.setComplainantTypeId(complaint.getComplainantType().getId());
         entity.setComplainantTypeOther(complaint.getComplainantTypeOther());
-        entity.setComplaintTypeOther(complaint.getComplaintTypeOther());
+        entity.setComplaintTypesOther(complaint.getComplaintTypesOther());
         entity.setOncComplaintId(complaint.getOncComplaintId());
         entity.setAcbComplaintId(complaint.getAcbComplaintId());
         entity.setReceivedDate(complaint.getReceivedDate());

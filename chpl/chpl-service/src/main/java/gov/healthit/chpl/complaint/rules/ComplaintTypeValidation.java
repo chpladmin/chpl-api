@@ -41,7 +41,7 @@ public class ComplaintTypeValidation extends ValidationRule<ComplaintValidationC
 
             // complaint type other must exist if any complaint type = other
             if (isAnyComplaintTypeSetToOther(context.getComplaint())
-                    && StringUtils.isEmpty(context.getComplaint().getComplaintTypeOther())) {
+                    && StringUtils.isEmpty(context.getComplaint().getComplaintTypesOther())) {
                 getMessages().add(getErrorMessage("complaints.complaintType.otherMissing"));
                 return false;
             }
@@ -63,11 +63,6 @@ public class ComplaintTypeValidation extends ValidationRule<ComplaintValidationC
         return false;
     }
 
-    private Boolean isAnyComplaintTypeSetToOther(Complaint complaint) {
-        ComplaintType otherComplaintType = getComplaintTypeByName(COMPLAINT_TYPE_OTHER);
-        return otherComplaintType != null;
-    }
-
     private ComplaintType getComplaintTypeById(Long id) {
         return this.complaintTypes.stream()
             .filter(ct -> ct.getId().equals(id))
@@ -77,6 +72,18 @@ public class ComplaintTypeValidation extends ValidationRule<ComplaintValidationC
 
     private ComplaintType getComplaintTypeByName(String name) {
         return this.complaintTypes.stream()
+            .filter(ct -> ct.getName().equals(name))
+            .findAny()
+            .orElse(null);
+    }
+
+    private Boolean isAnyComplaintTypeSetToOther(Complaint complaint) {
+        ComplaintType otherComplaintType = getComplaintTypeByName(complaint, COMPLAINT_TYPE_OTHER);
+        return otherComplaintType != null;
+    }
+
+    private ComplaintType getComplaintTypeByName(Complaint complaint, String name) {
+        return complaint.getComplaintTypes().stream()
             .filter(ct -> ct.getName().equals(name))
             .findAny()
             .orElse(null);

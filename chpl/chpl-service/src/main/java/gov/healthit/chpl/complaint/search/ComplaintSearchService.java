@@ -207,8 +207,8 @@ public class ComplaintSearchService {
     }
 
     private boolean matchesComplaintTypeNameOther(Complaint complaint, Set<String> complaintTypeNames) {
-        return !StringUtils.isBlank(complaint.getComplaintTypeOther())
-                    && complaintTypeNames.contains(complaint.getComplaintTypeOther().toUpperCase());
+        return !StringUtils.isBlank(complaint.getComplaintTypesOther())
+                    && complaintTypeNames.contains(complaint.getComplaintTypesOther().toUpperCase());
     }
 
     private boolean matchesStatusNames(Complaint complaint, Set<String> statusNames) {

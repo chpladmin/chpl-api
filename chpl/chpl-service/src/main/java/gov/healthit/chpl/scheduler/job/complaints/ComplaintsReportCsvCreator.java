@@ -226,7 +226,7 @@ public class ComplaintsReportCsvCreator {
                 report.getComplaint().getComplainantType() != null ? report.getComplaint().getComplainantType().getName() : "",
                 report.getComplaint().getComplainantTypeOther(),
                 printComplaintTypes(report.getComplaint()),
-                report.getComplaint().getComplaintTypeOther(),
+                report.getComplaint().getComplaintTypesOther(),
                 report.getComplaint().getOncComplaintId(),
                 report.getComplaint().getAcbComplaintId(),
                 printDate(report.getComplaint().getReceivedDate()),

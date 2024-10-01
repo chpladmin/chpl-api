@@ -97,7 +97,7 @@ public class ComplaintEntity extends EntityAudit {
     private LocalDate closedDate;
 
     @Column(name = "complaint_type_other", nullable = true)
-    private String complaintTypeOther;
+    private String complaintTypesOther;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "complaintId")
     @Basic(optional = true)
@@ -137,7 +137,7 @@ public class ComplaintEntity extends EntityAudit {
                         : this.getComplainantType().buildComplainantType())
                 .complainantTypeOther(this.getComplainantTypeOther())
                 .complaintTypes(this.createComplaintTypeCollection())
-                .complaintTypeOther(this.getComplaintTypeOther())
+                .complaintTypesOther(this.getComplaintTypesOther())
                 .criteria(createCriteriaCollection())
                 .developerContacted(this.isDeveloperContacted())
                 .flagForOncReview(this.isFlagForOncReview())
