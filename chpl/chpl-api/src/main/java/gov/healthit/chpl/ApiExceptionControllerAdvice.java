@@ -39,6 +39,7 @@ import gov.healthit.chpl.manager.impl.UpdateCertifiedBodyException;
 import gov.healthit.chpl.manager.impl.UpdateTestingLabException;
 import gov.healthit.chpl.user.cognito.authentication.CognitoAuthenticationChallenge;
 import gov.healthit.chpl.user.cognito.authentication.CognitoAuthenticationChallengeException;
+import gov.healthit.chpl.user.cognito.authentication.CognitoPasswordResetRequiredException;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.log4j.Log4j2;
@@ -259,4 +260,11 @@ public class ApiExceptionControllerAdvice {
                 .body(e.getChallenge());
     }
 
+    @ExceptionHandler(CognitoPasswordResetRequiredException.class)
+    public ResponseEntity<ErrorResponse> exception(CognitoPasswordResetRequiredException e) {
+        return ResponseEntity
+                .status(ChplHttpStatus.COGNITO_FORCE_PASSWORD_CHANGE.value())
+                .body(new ErrorResponse(ChplHttpStatus.COGNITO_FORCE_PASSWORD_CHANGE.getReasonPhrase()));
+
+    }
 }

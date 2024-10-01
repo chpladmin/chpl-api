@@ -1,5 +1,22 @@
 # Release Notes
 
+## Version 47.0.0
+_30 September 2024_
+
+### Breaking Change
+* Remove ageRangeId, educationTypeId fields from SED
+
+### Features
+* Add change password functionality for Cognito Users
+* Add endpoints for Developer Statistics report
+* Add cols for all criteria available to edit in "Current CSV" file
+* Create /activity/search endpoint
+* Create one-time job that updates SED friendly IDs
+* Combine Conformance Methods warnings into one message
+* Deprecate 'uniqueId', add 'friendlyId' to tasks and participants
+
+---
+
 ## Version 46.3.0
 _16 September 2024_
 
