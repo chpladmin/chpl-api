@@ -72,7 +72,7 @@ public class CognitoPasswordManager {
         }
 
         User user = cognitoApiWrapper.getUserInfo(AuthUtil.getCurrentUser().getCognitoId());
-        cognitoApiWrapper.setUserPassword(user.getEmail(), password);
+        cognitoApiWrapper.setUserPassword(user.getEmail(), password, true);
         cognitoPasswordChangedEmailer.sendEmail(user.getEmail());
     }
 
