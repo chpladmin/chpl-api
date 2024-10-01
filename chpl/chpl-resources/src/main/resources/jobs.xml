@@ -899,7 +899,16 @@
             <durability>true</durability>
             <recover>false</recover>
         </job>
-
+        
+        <job>
+            <name>cognitoMassRequirePasswordChangeJob</name>
+            <group>systemJobs</group>
+            <description>Require Cognito password change on next login</description>
+            <job-class>gov.healthit.chpl.scheduler.job.CognitoMassRequirePasswordChangeJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+        </job>
+            
         <job>
             <name>updateSedFriendlyIdsJob</name>
             <group>systemJobs</group>

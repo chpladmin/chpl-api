@@ -36,6 +36,7 @@ import gov.healthit.chpl.user.cognito.CognitoUserManager;
 import gov.healthit.chpl.user.cognito.authentication.CognitoAuthenticationChallengeException;
 import gov.healthit.chpl.user.cognito.authentication.CognitoAuthenticationManager;
 import gov.healthit.chpl.user.cognito.authentication.CognitoAuthenticationResponse;
+import gov.healthit.chpl.user.cognito.authentication.CognitoPasswordResetRequiredException;
 import gov.healthit.chpl.user.cognito.invitation.CognitoInvitationManager;
 import gov.healthit.chpl.user.cognito.invitation.CognitoUserInvitation;
 import gov.healthit.chpl.user.cognito.password.CognitoPasswordManager;
@@ -85,7 +86,7 @@ public class CognitoUserController {
     @ApiResponse(responseCode = "470", description = "The user is required to respond to the described challenge.")
     @RequestMapping(value = "/authenticate", method = RequestMethod.POST,
             consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
-    public CognitoAuthenticationResponse authenticateJSON(@RequestBody LoginCredentials credentials) throws CognitoAuthenticationChallengeException {
+    public CognitoAuthenticationResponse authenticateJSON(@RequestBody LoginCredentials credentials) throws CognitoAuthenticationChallengeException, CognitoPasswordResetRequiredException {
 
         if (!ff4j.check(FeatureList.SSO)) {
             throw new NotImplementedException("This method has not been implemented");
