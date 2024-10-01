@@ -31,7 +31,7 @@ public class SecuredUserDomainPermissions extends DomainPermissions {
     public static final String IMPERSONATE_USER = "IMPERSONATE_USER";
 
     @Autowired
-    @SuppressWarnings({"checkstyle:linelength", "checkstyle:parameternumber"})
+    @SuppressWarnings({"checkstyle:parameternumber"})
     public SecuredUserDomainPermissions(
             @Qualifier("securedUserCreateActionPermissions") CreateActionPermissions createActionPermissions,
             @Qualifier("securedUserDeleteActionPermissions") DeleteActionPermissions deleteActionPermissions,

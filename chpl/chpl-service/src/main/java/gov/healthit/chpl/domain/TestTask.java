@@ -14,6 +14,8 @@ import org.apache.commons.lang3.StringUtils;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import gov.healthit.chpl.activity.ActivityExclude;
+import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseField;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -32,9 +34,16 @@ public class TestTask implements Serializable {
     @Schema(description = "Test task internal ID")
     private Long id;
 
+    @Deprecated
+    @DeprecatedResponseField(message = "Please use 'friendlyId' instead.", removalDate = "2025-03-01")
     @Schema(description = "An ONC-ACB designated identifier for an individual SED task and that must "
-            + "be unique to a particular task. This is for internal use within an upload file only.")
+            + "be unique to this particular task within a listing. This field is meaningful to administrators only.")
     private String uniqueId;
+
+    @ActivityExclude
+    @Schema(description = "An ONC-ACB designated identifier for an individual SED task and that must "
+            + "be unique to this particular task within a listing. This field is meaningful to administrators only.")
+    private String friendlyId;
 
     @Schema(description = "Brief description of task performed during SED/usability testing. "
             + "This is a string variable that does not take any restrictions on formatting or values.")

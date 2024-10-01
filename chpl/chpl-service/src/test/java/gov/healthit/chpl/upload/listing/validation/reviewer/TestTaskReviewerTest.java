@@ -31,6 +31,7 @@ public class TestTaskReviewerTest {
     private static final String TEST_TASK_NOT_APPLICABLE = "Test Tasks are not applicable for the criterion %s.";
     private static final String MISSING_TEST_TASK = "Certification %s requires at least one test task.";
     private static final String TEST_TASK_FIELD_ROUNDED = "A non-integer numeric number was found in Test Task \"%s\" \"%s\" \"%s\". The number has been rounded to \"%s\".";
+    private static final String DUPLICATE_FRIENDLY_ID = "The test task unique id '%s' is a duplicate.";
 
     private CertificationResultRules certResultRules;
     private CertificationCriterionService criteriaService;
@@ -48,9 +49,11 @@ public class TestTaskReviewerTest {
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.criteria.missingTestTask"),
                 ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(MISSING_TEST_TASK, i.getArgument(1), ""));
-        Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.criteria.roundedTestTaskNumber"),  ArgumentMatchers.anyString(),
+        Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.criteria.roundedTestTaskNumber"), ArgumentMatchers.anyString(),
                 ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
         .thenAnswer(i -> String.format(TEST_TASK_FIELD_ROUNDED, i.getArgument(1), i.getArgument(2), i.getArgument(3), i.getArgument(4)));
+        Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.eq("listing.criteria.duplicateTestTaskFriendlyId"), ArgumentMatchers.anyString()))
+            .thenAnswer(i -> String.format(DUPLICATE_FRIENDLY_ID, i.getArgument(1), ""));
 
         criteriaService = Mockito.mock(CertificationCriterionService.class);
         a1 = CertificationCriterion.builder()
@@ -1777,6 +1780,69 @@ public class TestTaskReviewerTest {
     }
 
     @Test
+    public void review_testTaskDuplicateFriendlyIds_hasError() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .success(true)
+                        .criterion(a1)
+                        .sed(true)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .success(true)
+                        .criterion(a2)
+                        .sed(true)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .success(true)
+                        .criterion(a3)
+                        .sed(false)
+                        .build())
+                .sed(CertifiedProductSed.builder().build())
+                .build();
+        listing.getSed().getTestTasks().add(
+                buildValidTestTask("tt1", Stream.of(a1, a2).collect(Collectors.toList())));
+        listing.getSed().getTestTasks().add(
+                buildValidTestTask("tt1", Stream.of(a2).collect(Collectors.toList())));
+        reviewer.review(listing);
+
+        assertEquals(0, listing.getWarningMessages().size());
+        assertEquals(1, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(String.format(DUPLICATE_FRIENDLY_ID, "tt1")));
+    }
+
+    @Test
+    public void review_testTaskNullFriendlyIds_noError() {
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .success(true)
+                        .criterion(a1)
+                        .sed(true)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .success(true)
+                        .criterion(a2)
+                        .sed(true)
+                        .build())
+                .certificationResult(CertificationResult.builder()
+                        .success(true)
+                        .criterion(a3)
+                        .sed(false)
+                        .build())
+                .sed(CertifiedProductSed.builder().build())
+                .build();
+        TestTask tt1 = buildValidTestTask(null, Stream.of(a1, a2).collect(Collectors.toList()));
+        tt1.setId(1L);
+        listing.getSed().getTestTasks().add(tt1);
+        TestTask tt2 = buildValidTestTask(null, Stream.of(a1, a2).collect(Collectors.toList()));
+        tt2.setId(2L);
+        listing.getSed().getTestTasks().add(tt2);
+        reviewer.review(listing);
+
+        assertEquals(0, listing.getWarningMessages().size());
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
     public void review_testTaskValid_noError() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .certificationResult(CertificationResult.builder()
@@ -1810,9 +1876,9 @@ public class TestTaskReviewerTest {
         return buildTestTask(uniqueId, criteria, 10);
     }
 
-    private TestTask buildTestTask(String uniqueId, List<CertificationCriterion> criteria, int tpCount) {
+    private TestTask buildTestTask(String friendlyId, List<CertificationCriterion> criteria, int tpCount) {
         TestTask tt = TestTask.builder()
-                .uniqueId(uniqueId)
+                .friendlyId(friendlyId)
                 .criteria(criteria.stream().collect(Collectors.toCollection(LinkedHashSet::new)))
                 .description("desc")
                 .taskErrors(1.5F)
@@ -1849,7 +1915,7 @@ public class TestTaskReviewerTest {
     private List<TestParticipant> createTestParticipantCollection(int size) {
         List<TestParticipant> tps = new ArrayList<TestParticipant>();
         for (int i = 0; i < size; i++) {
-            tps.add(TestParticipant.builder().uniqueId("tp"+i).build());
+            tps.add(TestParticipant.builder().friendlyId("tp"+i).build());
         }
         return tps;
     }

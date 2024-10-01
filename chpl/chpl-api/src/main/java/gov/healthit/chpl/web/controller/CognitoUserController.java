@@ -24,6 +24,7 @@ import gov.healthit.chpl.domain.auth.CognitoGroups;
 import gov.healthit.chpl.domain.auth.CognitoLogoutRequest;
 import gov.healthit.chpl.domain.auth.CognitoNewPasswordRequiredRequest;
 import gov.healthit.chpl.domain.auth.CognitoSetForgottenPasswordRequest;
+import gov.healthit.chpl.domain.auth.CognitoUpdatePasswordRequest;
 import gov.healthit.chpl.domain.auth.LoginCredentials;
 import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.exception.EmailNotSentException;
@@ -35,6 +36,7 @@ import gov.healthit.chpl.user.cognito.CognitoUserManager;
 import gov.healthit.chpl.user.cognito.authentication.CognitoAuthenticationChallengeException;
 import gov.healthit.chpl.user.cognito.authentication.CognitoAuthenticationManager;
 import gov.healthit.chpl.user.cognito.authentication.CognitoAuthenticationResponse;
+import gov.healthit.chpl.user.cognito.authentication.CognitoPasswordResetRequiredException;
 import gov.healthit.chpl.user.cognito.invitation.CognitoInvitationManager;
 import gov.healthit.chpl.user.cognito.invitation.CognitoUserInvitation;
 import gov.healthit.chpl.user.cognito.password.CognitoPasswordManager;
@@ -84,7 +86,7 @@ public class CognitoUserController {
     @ApiResponse(responseCode = "470", description = "The user is required to respond to the described challenge.")
     @RequestMapping(value = "/authenticate", method = RequestMethod.POST,
             consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
-    public CognitoAuthenticationResponse authenticateJSON(@RequestBody LoginCredentials credentials) throws CognitoAuthenticationChallengeException {
+    public CognitoAuthenticationResponse authenticateJSON(@RequestBody LoginCredentials credentials) throws CognitoAuthenticationChallengeException, CognitoPasswordResetRequiredException {
 
         if (!ff4j.check(FeatureList.SSO)) {
             throw new NotImplementedException("This method has not been implemented");
@@ -162,6 +164,18 @@ public class CognitoUserController {
         }
 
         cognitoPasswordManager.setForgottenPassword(request.getForgotPasswordToken(), request.getPassword());
+    }
+
+    @Operation(summary = "Update the password for the currently logged in user.",
+            description = "Update the password for the currently logged in user.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            }
+        )
+    @RequestMapping(value = "/password", method = RequestMethod.POST,
+            consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
+    public void setPassword(@RequestBody CognitoUpdatePasswordRequest request) throws EmailNotSentException, ValidationException, UserRetrievalException {
+        cognitoPasswordManager.setPassword(request.getPassword(), request.getConfirmPassword());
     }
 
     @Operation(summary = "View a specific user's details.",

@@ -66,6 +66,8 @@ public class ListingSearchResult implements Serializable {
     private Integer closedDirectReviewNonConformityCount = 0;
     private Long openSurveillanceCount;
     private Long closedSurveillanceCount;
+    private Long openCapCount;
+    private Long closedCapCount;
     private PromotingInteroperabilitySearchResult promotingInteroperability;
     private String mandatoryDisclosures;
     private Set<IdNamePair> previousDevelopers;
@@ -89,6 +91,8 @@ public class ListingSearchResult implements Serializable {
         this.setClosedSurveillanceCount(0L);
         this.setOpenSurveillanceNonConformityCount(0L);
         this.setClosedSurveillanceNonConformityCount(0L);
+        this.setOpenCapCount(0L);
+        this.setClosedCapCount(0L);
         previousChplProductNumbers = new LinkedHashSet<String>();
         previousDevelopers = new HashSet<IdNamePair>();
         criteriaMet = new HashSet<CertificationCriterionSearchResult>();

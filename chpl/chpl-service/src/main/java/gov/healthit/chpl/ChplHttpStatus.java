@@ -4,8 +4,8 @@ import org.springframework.lang.Nullable;
 
 public enum ChplHttpStatus {
     RESENT_USER_CONFIRMATION_EMAIL(461, "Account's Email Not Confirmed"),
-    COGNITO_AUTHENTICATION_CHALLENGE(470, "The user is required to respond to the described challenge.");
-
+    COGNITO_AUTHENTICATION_CHALLENGE(470, "The user is required to respond to the described challenge."),
+    COGNITO_FORCE_PASSWORD_CHANGE(471, "The user is required to change their password.");
 
     private int value;
 

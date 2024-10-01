@@ -428,12 +428,22 @@ public class ListingSearchService {
             matchesNotClosedNonConformityFilter = listing.getClosedDirectReviewNonConformityCount() == 0
                     && listing.getClosedSurveillanceNonConformityCount() == 0;
         }
+        Boolean matchesClosedCapFilter = null;
+        if (complianceFilter.getNonConformityOptions().contains(NonConformitySearchOptions.CLOSED_CAP)) {
+            matchesClosedCapFilter = listing.getClosedCapCount() > 0;
+        }
+        Boolean matchesOpenCapFilter = null;
+        if (complianceFilter.getNonConformityOptions().contains(NonConformitySearchOptions.OPEN_CAP)) {
+            matchesOpenCapFilter = listing.getOpenCapCount() > 0;
+        }
 
         if (ObjectUtils.anyNotNull(matchesNeverNonConformityFilter, matchesOpenNonConformityFilter, matchesClosedNonConformityFilter,
-                matchesNotNeverNonConformityFilter, matchesNotOpenNonConformityFilter, matchesNotClosedNonConformityFilter)) {
+                matchesNotNeverNonConformityFilter, matchesNotOpenNonConformityFilter, matchesNotClosedNonConformityFilter,
+                matchesClosedCapFilter, matchesOpenCapFilter)) {
             boolean matchesNonConformityFilter = applyOperation(complianceFilter.getNonConformityOptionsOperator(),
                     matchesNeverNonConformityFilter, matchesOpenNonConformityFilter, matchesClosedNonConformityFilter,
-                    matchesNotNeverNonConformityFilter, matchesNotOpenNonConformityFilter, matchesNotClosedNonConformityFilter);
+                    matchesNotNeverNonConformityFilter, matchesNotOpenNonConformityFilter, matchesNotClosedNonConformityFilter,
+                    matchesClosedCapFilter, matchesOpenCapFilter);
             return matchesHasHadComplianceActivityFilter && matchesNonConformityFilter;
         }
         return matchesHasHadComplianceActivityFilter;
