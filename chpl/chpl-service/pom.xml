@@ -14,14 +14,14 @@
     <name>chpl-service library</name>
 
     <properties>
-      <azure.version>1.12.2</azure.version>
+      <azure.version>1.13.3</azure.version>
       <bitbucket.version>0.9.4</bitbucket.version>
       <commonmark.version>0.21.0</commonmark.version>
       <fuzzywuzzy.version>1.4.0</fuzzywuzzy.version>
       <itext.version>7.2.5</itext.version>
       <jackson.version>2.15.0</jackson.version>
       <jfreechart.version>1.5.4</jfreechart.version>
-      <microsoft-graph.version>5.54.0</microsoft-graph.version>
+      <microsoft-graph.version>6.16.0</microsoft-graph.version>
       <netty.version>1.1.13</netty.version>
       <org.apache.httpcomponents.version>4.5.14</org.apache.httpcomponents.version>
       <poi.version>5.2.3</poi.version>
@@ -121,13 +121,6 @@
             <groupId>com.azure</groupId>
             <artifactId>azure-identity</artifactId>
             <version>${azure.version}</version>
-        </dependency>
-        <!--I don't think this should have to be here since it is transitively included with
-            the azure library, but without it in the pom there is a NoClassDefFound error -->
-        <dependency>
-          <groupId>io.projectreactor.netty</groupId>
-          <artifactId>reactor-netty-http</artifactId>
-          <version>${netty.version}</version>
         </dependency>
         <!-- END new Graph API libs -->
         <dependency>

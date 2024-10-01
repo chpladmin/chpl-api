@@ -2,8 +2,8 @@ package gov.healthit.chpl.filter;
 
 import java.io.IOException;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.util.StringUtils;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 import org.springframework.web.filter.GenericFilterBean;
 
@@ -17,9 +17,7 @@ import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.extern.log4j.Log4j2;
 
-@Log4j2
 public class JWTAuthenticationFilter extends GenericFilterBean {
 
     private static final String[] ALLOWED_REQUEST_PATHS = {
@@ -40,7 +38,6 @@ public class JWTAuthenticationFilter extends GenericFilterBean {
 
         for (int i = 0; i < ALLOWED_REQUEST_PATHS.length; i++) {
             if (request.getServletPath().matches(ALLOWED_REQUEST_PATHS[i])) {
-                LOGGER.info("Skipping: {}", request.getServletPath());
                 chain.doFilter(req, res); // continue
                 return;
             }

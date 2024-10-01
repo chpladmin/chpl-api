@@ -409,6 +409,163 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "GET /report-data/surveillance-activity-counts - 200 status and counts in response",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = pm.response.json();\r",
+							"pm.test(\"/report-data/surveillance-activity-counts endpoint should return 200 status in response\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							" });\r",
+							"\r",
+							" pm.test(\"/report-data/surveillance-activity-counts should include surveillance activity counts in response\", function () {\r",
+							"    pm.expect(pm.response.text()).to.include(\"totalActivities\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"openActivities\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"closedActivities\");\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "API-Key",
+						"value": "{{apiKey}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/rest/report-data/surveillance-activity-counts",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"rest",
+						"report-data",
+						"surveillance-activity-counts"
+					]
+				},
+				"description": "GET /report-data/surveillance-activity-counts - 200 status and counts in response"
+			},
+			"response": []
+		},
+		{
+			"name": "GET /report-data/non-conformity-counts - 200 status and response fields validation",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"/report-data/non-conformity-counts should include open and closed non-conformity counts in response and return 200 status\", function () {\r",
+							"    pm.expect(pm.response.text()).to.include(\"totalNonconformities\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"openNonconformities\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"closedNonconformities\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"avgDaysToAssessConformity\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"avgDaysToApproveCap\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"avgDaysOfCap\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"avgDaysFromCapApprovalToSurveillanceClose\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"avgDaysFromCapCloseToSurveillanceClose\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"avgDaysToCloseNonconformity\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "API-Key",
+						"value": "{{apiKey}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/rest/report-data/non-conformity-counts",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"rest",
+						"report-data",
+						"non-conformity-counts"
+					]
+				},
+				"description": "GET /report-data/non-conformity-counts - 200 status and response fields validation"
+			},
+			"response": []
+		},
+		{
+			"name": "GET /rest/report-data/cap-counts - 200 status and cap counts in response",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = pm.response.json();\r",
+							"pm.test(\"/report-data/cap-counts endpoint should return 200 status in response\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							" });\r",
+							"\r",
+							" pm.test(\"/report-data/cap-counts should include open and closed cap counts in response\", function () {\r",
+							"    pm.expect(pm.response.text()).to.include(\"totalCaps\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"openCaps\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"closedCaps\");\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "API-Key",
+						"value": "{{apiKey}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/rest/report-data/cap-counts",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"rest",
+						"report-data",
+						"cap-counts"
+					]
+				}
+			},
+			"response": []
 		}
 	]
 }
