@@ -784,4 +784,28 @@
                 interval="1" modulate="true" />
         </Policies>
     </RollingFile>
+    <RollingFile name="cognitoMassRequirePasswordChangeJob"
+        fileName="${logDir}/scheduler/cognitoMassRequirePasswordChangeJob.log"
+        filePattern="${logDir}/scheduler/history/cognitoMassRequirePasswordChangeJob-%d{yyyy-MM-dd}.log"
+        filePermissions="rw-rw-r--">
+        <PatternLayout>
+            <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
+        </PatternLayout>
+        <Policies>
+            <TimeBasedTriggeringPolicy
+                interval="1" modulate="true" />
+        </Policies>
+    </RollingFile>
+    <RollingFile name="updatedSedFriendlyIdsJob"
+        fileName="${logDir}/scheduler/updatedSedFriendlyIdsJob.log"
+        filePattern="${logDir}/scheduler/history/updatedSedFriendlyIdsJob-%d{yyyy-MM-dd}.log"
+        filePermissions="rw-rw-r--">
+        <PatternLayout>
+            <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
+        </PatternLayout>
+        <Policies>
+            <TimeBasedTriggeringPolicy
+                interval="1" modulate="true" />
+        </Policies>
+    </RollingFile>
 </Appenders>
