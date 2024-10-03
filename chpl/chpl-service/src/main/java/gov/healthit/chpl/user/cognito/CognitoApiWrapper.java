@@ -338,7 +338,7 @@ public class CognitoApiWrapper {
     @CacheEvict(value = CacheNames.COGNITO_USERS, key = "#user.cognitoId")
     public void updateUser(User user) throws UserRetrievalException {
         List<AttributeType> attributes = new ArrayList<AttributeType>();
-        attributes.add(AttributeType.builder().name("email").value(user.getEmail()).build());
+        //attributes.add(AttributeType.builder().name("email").value(user.getEmail()).build());
         attributes.add(AttributeType.builder().name("name").value(user.getFullName()).build());
         attributes.add(AttributeType.builder().name("email_verified").value("true").build());
         attributes.add(AttributeType.builder().name("custom:forcePasswordReset").value(user.getPasswordResetRequired() ? "1" : "0").build());
@@ -463,7 +463,9 @@ public class CognitoApiWrapper {
 
     private String getPhoneNumberFromAttributes(List<AttributeType> attributes) {
         String phoneNumber = getUserAttribute(attributes, "phone_number").value();
-        if (phoneNumber.startsWith("+1")) {
+        if (StringUtils.isEmpty(phoneNumber)) {
+            return "";
+        } else if (phoneNumber.startsWith("+1")) {
             phoneNumber = phoneNumber.substring(2);
         }
         return phoneNumber;
