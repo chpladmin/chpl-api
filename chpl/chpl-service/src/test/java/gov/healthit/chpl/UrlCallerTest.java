@@ -26,6 +26,7 @@ import org.junit.Test;
 import org.springframework.http.HttpStatus;
 
 public class UrlCallerTest {
+    private static final String USER_AGENT_CHROME = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36";
 
     //I would like to leave this test here in the event we need to diagnose any issues with the Questionable URL Report.
     @Ignore
@@ -34,7 +35,7 @@ public class UrlCallerTest {
         IOException {
         System.setProperty("javax.net.debug", "all");
 
-        String url = "https://www.exansoftware.com";
+        String url = "https://www.inovalon.com/products/provider-cloud/care-management/pharmacy-surveillance/?src=vigilanz";
 
         TrustStrategy acceptingTrustStrategy = (X509Certificate[] chain, String authType) -> true;
         SSLContext sslContext = org.apache.http.ssl.SSLContexts.custom().loadTrustMaterial(null, acceptingTrustStrategy).build();
@@ -47,7 +48,9 @@ public class UrlCallerTest {
                         .setConnectTimeout(30000)
                         .setSocketTimeout(30000)
                         .build())
+                .setUserAgent(USER_AGENT_CHROME)
                 .build();
+
         CloseableHttpResponse response = httpClient.execute(new HttpGet(url));
         String responseBody = EntityUtils.toString(response.getEntity());
         System.out.println(responseBody);

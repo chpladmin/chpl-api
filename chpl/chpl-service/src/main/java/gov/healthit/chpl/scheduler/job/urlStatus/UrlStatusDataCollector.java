@@ -27,6 +27,8 @@ import org.springframework.core.env.Environment;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
+import com.datadog.api.client.ApiClient;
+
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.scheduler.job.QuartzJob;
@@ -42,6 +44,7 @@ public class UrlStatusDataCollector extends QuartzJob {
     private static final int BATCH_SIZE = 100;
     private static final int DEFAULT_INTERVAL_DAYS = 1;
     private static final int DEFAULT_TIMEOUT_SECONTS = 10;
+    private static final String HTTP_HEADER_CHROME = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36";
 
     @Autowired
     private Environment env;
@@ -71,6 +74,10 @@ public class UrlStatusDataCollector extends QuartzJob {
     public void execute(JobExecutionContext jobContext) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
         LOGGER.info("********* Starting the URL Status Data Collector job. *********");
+
+        ApiClient defaultClient = ApiClient.getDefaultApiClient();
+        String datadogDefaultClientUserAgent = defaultClient.getUserAgent();
+        LOGGER.info("User-Agent: " + datadogDefaultClientUserAgent);
 
         completeSetup();
 
@@ -301,6 +308,7 @@ public class UrlStatusDataCollector extends QuartzJob {
                         .setConnectTimeout(connectTimeoutSeconds * SECONDS_TO_MILLIS)
                         .setSocketTimeout(connectTimeoutSeconds * SECONDS_TO_MILLIS)
                         .build())
+                .setUserAgent(HTTP_HEADER_CHROME)
                 .build();
 
         initializeExecutorService();
