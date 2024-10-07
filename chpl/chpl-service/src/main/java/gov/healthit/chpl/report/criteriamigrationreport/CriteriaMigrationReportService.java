@@ -1,14 +1,20 @@
 package gov.healthit.chpl.report.criteriamigrationreport;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import jakarta.transaction.Transactional;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 @Component
 public class CriteriaMigrationReportService {
     public static final Long HTI1_REPORT_ID = 2L;
@@ -32,6 +38,66 @@ public class CriteriaMigrationReportService {
 
     public CriteriaMigrationReport getReport(Long criteriaMigrationReportId) {
         return criteriaMigrationReportDAO.getCriteriaMigrationReport(criteriaMigrationReportId);
+    }
+
+    public List<Todd> getHtiReportData(Long criteriaMigrationReportId) {
+        CriteriaMigrationReport cmr = criteriaMigrationReportDAO.getCriteriaMigrationReport(criteriaMigrationReportId);
+
+        List<Todd> real = cmr.getCriteriaMigrationDefinitions().get(0).getCriteriaMigrationCounts().stream()
+                .sorted(Comparator.comparing(CriteriaMigrationCount::getReportDate).reversed())
+                .filter(cmc -> cmc.getReportDate().getDayOfMonth() == 1)
+                .map(cmc -> Todd.builder()
+                        .originalCriterion(cmr.getCriteriaMigrationDefinitions().get(0).getOriginalCriterion())
+                        .updatedCriterion(cmr.getCriteriaMigrationDefinitions().get(0).getUpdatedCriterion())
+                        .reportDate(cmc.getReportDate())
+                        .newCertificationCount(cmc.getUpdatedCriterionCount())
+                        .upgradedCertificationCount(cmc.getOriginalToUpdatedCriterionCount())
+                        .requiresUpdateCount(cmc.getOriginalCriterionCount())
+                        .percentUpdated(getPercentUpdate(cmc))
+                        .build())
+                .collect(Collectors.toCollection(ArrayList::new));
+
+        LocalDate checkDate = real.get(0).getReportDate();
+        CertificationCriterion originalCriterion = real.get(0).getOriginalCriterion();
+        CertificationCriterion updatedCriterion = real.get(0).getUpdatedCriterion();
+        while (real.size() < 12) {
+            if (!doesReportDateExistInList(real, checkDate)) {
+                real.add(Todd.builder()
+                        .originalCriterion(originalCriterion)
+                        .updatedCriterion(updatedCriterion)
+                        .reportDate(checkDate)
+                        .newCertificationCount(0)
+                        .upgradedCertificationCount(0)
+                        .requiresUpdateCount(0)
+                        .percentUpdated(0.0)
+                        .build());
+
+            }
+            checkDate = checkDate.minusMonths(1);
+        }
+
+        return real.stream().sorted(Comparator.comparing(Todd::getReportDate)).toList();
+    }
+
+    private Boolean doesReportDateExistInList(List<Todd> list, LocalDate reportDate) {
+        return list.stream()
+                .filter(t -> t.getReportDate().equals(reportDate))
+                .findAny()
+                .isPresent();
+    }
+
+    private Double getPercentUpdate(CriteriaMigrationCount criteriaMigratrionCount) {
+        Integer updatedCount = criteriaMigratrionCount.getOriginalToUpdatedCriterionCount()
+                + criteriaMigratrionCount.getUpdatedCriterionCount();
+        Integer totalCount = criteriaMigratrionCount.getOriginalToUpdatedCriterionCount()
+                + criteriaMigratrionCount.getUpdatedCriterionCount()
+                + criteriaMigratrionCount.getOriginalCriterionCount();
+
+        if (totalCount.equals(0)) {
+            return Double.valueOf("0");
+        } else {
+            return updatedCount.doubleValue() / totalCount.doubleValue();
+        }
     }
 
     @Transactional
