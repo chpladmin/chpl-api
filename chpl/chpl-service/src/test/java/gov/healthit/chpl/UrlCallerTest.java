@@ -11,31 +11,37 @@ import org.apache.http.ProtocolException;
 import org.apache.http.impl.client.DefaultRedirectStrategy;
 import org.htmlunit.BrowserVersion;
 import org.htmlunit.FailingHttpStatusCodeException;
+import org.htmlunit.Page;
 import org.htmlunit.WebClient;
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class UrlCallerTest {
     private static final String USER_AGENT_CHROME = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36";
 
     //I would like to leave this test here in the event we need to diagnose any issues with the Questionable URL Report.
-    @Ignore
+   // @Ignore
     @Test
     public void testUrlHttpClient() throws KeyStoreException, NoSuchAlgorithmException, KeyManagementException,
         IOException {
         //System.setProperty("javax.net.debug", "all");
 
-        String url = "https://www.agastha.com/svap.html";
+        String url = "https://drummondgroup.com/wp-content/uploads/2018/08/OTEMR-2.2-Test-Lab-Test-Report_v2014.1.1_1-14March2017.pdf";
 
         try (WebClient webClient = new WebClient(BrowserVersion.CHROME, false, null, -1)) {
             webClient.getOptions().setRedirectEnabled(true);
             webClient.getOptions().setTimeout(30000); //milliseconds
-            webClient.getPage(url);
+            webClient.getOptions().setThrowExceptionOnScriptError(false);
+            webClient.getOptions().setThrowExceptionOnFailingStatusCode(false);
+            webClient.getOptions().setUseInsecureSSL(true);
+            Page page = webClient.getPage(url);
+            System.out.println(page.getWebResponse().getStatusCode());
 
 //            final WebResponse response = webClient.getWebConnection().getResponse(new WebRequest(new URL(url)));
 //            System.out.println(response.getStatusCode());
+
         } catch (FailingHttpStatusCodeException ex) {
             System.out.println("FAILED with status code " + ex.getStatusCode());
+            ex.printStackTrace();
         } catch (Exception ex) {
             System.out.println("FAILED for some other reason " + ex.getMessage());
             ex.printStackTrace();

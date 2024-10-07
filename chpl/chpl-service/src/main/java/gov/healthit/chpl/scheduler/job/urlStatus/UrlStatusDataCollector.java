@@ -289,6 +289,9 @@ public class UrlStatusDataCollector extends QuartzJob {
         webClient = new WebClient(BrowserVersion.CHROME, false, null, -1);
         webClient.getOptions().setRedirectEnabled(true);
         webClient.getOptions().setTimeout(requestTimeoutSeconds * 1000);
+        webClient.getOptions().setThrowExceptionOnScriptError(false);
+        webClient.getOptions().setThrowExceptionOnFailingStatusCode(false);
+        webClient.getOptions().setUseInsecureSSL(true);
 
 //        TrustStrategy acceptingTrustStrategy = (X509Certificate[] chain, String authType) -> true;
 //        SSLContext sslContext = null;

@@ -4,9 +4,9 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutorService;
 
-import org.apache.hc.core5.http.HttpStatus;
 import org.apache.logging.log4j.Logger;
 import org.htmlunit.FailingHttpStatusCodeException;
+import org.htmlunit.Page;
 import org.htmlunit.WebClient;
 import org.springframework.stereotype.Service;
 
@@ -22,9 +22,10 @@ public class UrlCallerAsync {
 
     private Integer getUrlResponseCode(WebClient webClient, UrlResult urlToCheck, Logger logger) throws CompletionException {
         logger.info("Checking URL " + urlToCheck.getUrl());
-        Integer statusCode = HttpStatus.SC_SUCCESS;
+        Integer statusCode = null;
         try {
-            webClient.getPage(urlToCheck.getUrl());
+            Page page = webClient.getPage(urlToCheck.getUrl());
+            statusCode = page.getWebResponse().getStatusCode();
         } catch (FailingHttpStatusCodeException ex) {
             logger.info("Request to " + urlToCheck.getUrl() + " failed with status code " + ex.getStatusCode());
             statusCode = ex.getStatusCode();
