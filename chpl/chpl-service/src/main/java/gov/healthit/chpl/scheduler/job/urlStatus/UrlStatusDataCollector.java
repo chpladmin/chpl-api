@@ -36,8 +36,7 @@ public class UrlStatusDataCollector extends QuartzJob {
     private static final long DAYS_TO_MILLIS = 24 * 60 * 60 * SECONDS_TO_MILLIS;
     private static final int BATCH_SIZE = 100;
     private static final int DEFAULT_INTERVAL_DAYS = 1;
-    private static final int DEFAULT_TIMEOUT_SECONTS = 10;
-    private static final String HTTP_HEADER_CHROME = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36";
+    private static final int DEFAULT_TIMEOUT_SECONDS = 10;
 
     @Autowired
     private Environment env;
@@ -53,9 +52,7 @@ public class UrlStatusDataCollector extends QuartzJob {
     private int successCheckIntervalDays = DEFAULT_INTERVAL_DAYS;
     private int failureCheckIntervalDays = DEFAULT_INTERVAL_DAYS;
     private int redirectCheckIntervalDays = DEFAULT_INTERVAL_DAYS;
-    private int connectTimeoutSeconds = DEFAULT_TIMEOUT_SECONTS;
-    private int requestTimeoutSeconds = DEFAULT_TIMEOUT_SECONTS;
-    //private CloseableHttpClient httpClient;
+    private int requestTimeoutSeconds = DEFAULT_TIMEOUT_SECONDS;
     private  WebClient webClient;
     private Map<UrlResult, Future<Integer>> urlResponseCodeFuturesMap;
 
@@ -258,19 +255,7 @@ public class UrlStatusDataCollector extends QuartzJob {
                         + "Using the default value of " + redirectCheckIntervalDays);
             }
 
-            String connectTimeoutSecondsStr = env.getProperty("job.urlStatusChecker.connectTimeoutSeconds");
             String requestTimeoutSecondsStr = env.getProperty("job.urlStatusChecker.requestTimeoutSeconds");
-            if (!StringUtils.isEmpty(connectTimeoutSecondsStr)) {
-                try {
-                    connectTimeoutSeconds = Integer.parseInt(connectTimeoutSecondsStr);
-                } catch (NumberFormatException ex) {
-                    LOGGER.warn("Cannot parse job.urlStatusChecker.connectTimeoutSeconds property value "
-                            + connectTimeoutSecondsStr + " as number.");
-                }
-            } else {
-                LOGGER.warn("No value found for property job.urlStatusChecker.connectTimeoutSeconds. "
-                        + "Using the default value of " + connectTimeoutSeconds);
-            }
             if (!StringUtils.isEmpty(requestTimeoutSecondsStr)) {
                 try {
                     requestTimeoutSeconds = Integer.parseInt(requestTimeoutSecondsStr);
@@ -288,30 +273,13 @@ public class UrlStatusDataCollector extends QuartzJob {
 
         webClient = new WebClient(BrowserVersion.CHROME, false, null, -1);
         webClient.getOptions().setRedirectEnabled(true);
-        webClient.getOptions().setTimeout(requestTimeoutSeconds * 1000);
+        webClient.getOptions().setTimeout(requestTimeoutSeconds * SECONDS_TO_MILLIS);
+        //if we throw exceptions on any error then many websites don't load because they have some
+        //javascript error or some link, like GTM, that doesn't work, so we have to ignore these (as the browser does)
         webClient.getOptions().setThrowExceptionOnScriptError(false);
         webClient.getOptions().setThrowExceptionOnFailingStatusCode(false);
+        //many websites also have weird issues with their certificates and browsers seem to let you view them anyway
         webClient.getOptions().setUseInsecureSSL(true);
-
-//        TrustStrategy acceptingTrustStrategy = (X509Certificate[] chain, String authType) -> true;
-//        SSLContext sslContext = null;
-//        try {
-//            sslContext = org.apache.http.ssl.SSLContexts.custom().loadTrustMaterial(null, acceptingTrustStrategy).build();
-//        } catch (Exception ex) {
-//            LOGGER.error("Could not create ssl context; https requests may fail.", ex);
-//        }
-//
-//        SSLConnectionSocketFactory csf = new SSLConnectionSocketFactory(sslContext != null ? sslContext : SSLContexts.createDefault());
-//        httpClient = HttpClients.custom()
-//                .setSSLSocketFactory(csf)
-//                .setDefaultRequestConfig(RequestConfig.custom()
-//                        .setConnectionRequestTimeout(requestTimeoutSeconds * SECONDS_TO_MILLIS)
-//                        .setConnectTimeout(connectTimeoutSeconds * SECONDS_TO_MILLIS)
-//                        .setSocketTimeout(connectTimeoutSeconds * SECONDS_TO_MILLIS)
-//                        .build())
-//                .setUserAgent(HTTP_HEADER_CHROME)
-//                .build();
-
         initializeExecutorService();
     }
 
