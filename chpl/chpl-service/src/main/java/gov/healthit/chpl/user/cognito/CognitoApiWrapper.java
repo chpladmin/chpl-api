@@ -210,9 +210,10 @@ public class CognitoApiWrapper {
                     .userAttributes(
                             AttributeType.builder().name("name").value(userRequest.getFullName()).build(),
                             AttributeType.builder().name("email").value(userRequest.getEmail()).build(),
-                            AttributeType.builder().name("phone_number").value("+1" + userRequest.getPhoneNumber().replaceAll("[^0-9.]", "")).build(),
-                            AttributeType.builder().name("nickname").value("THIS ATTRIBUTE NEEDS TO BE MADE NOT REQUIRED").build(),
-                            AttributeType.builder().name("custom:title").value("THIS ATTRIBUTE NEEDS TO BE REMOVED").build(),
+                            AttributeType.builder().name("phone_number").value(
+                                    StringUtils.isNotEmpty(userRequest.getPhoneNumber())
+                                    ? "+1" + userRequest.getPhoneNumber().replaceAll("[^0-9.]", "")
+                                    : "").build(),
                             AttributeType.builder().name("custom:organizations").value(
                                     userRequest.getOrganizationId() != null ? userRequest.getOrganizationId().toString() : "").build())
                     .temporaryPassword(tempPassword)
