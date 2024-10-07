@@ -1,6 +1,5 @@
 package gov.healthit.chpl.scheduler.job.urlStatus;
 
-import java.security.cert.X509Certificate;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -10,15 +9,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import javax.net.ssl.SSLContext;
-
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
-import org.apache.http.conn.ssl.TrustStrategy;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.ssl.SSLContexts;
+import org.htmlunit.BrowserVersion;
+import org.htmlunit.WebClient;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.BeanUtils;
@@ -62,7 +55,8 @@ public class UrlStatusDataCollector extends QuartzJob {
     private int redirectCheckIntervalDays = DEFAULT_INTERVAL_DAYS;
     private int connectTimeoutSeconds = DEFAULT_TIMEOUT_SECONTS;
     private int requestTimeoutSeconds = DEFAULT_TIMEOUT_SECONTS;
-    private CloseableHttpClient httpClient;
+    //private CloseableHttpClient httpClient;
+    private  WebClient webClient;
     private Map<UrlResult, Future<Integer>> urlResponseCodeFuturesMap;
 
     public UrlStatusDataCollector() {
@@ -103,7 +97,7 @@ public class UrlStatusDataCollector extends QuartzJob {
             LOGGER.error("Unable to complete job: " + ex.getMessage(), ex);
         } finally {
             try {
-                httpClient.close();
+                webClient.close();
             } catch (final Exception ex) {
                 LOGGER.error("Error closing the httpClient: " + ex.getMessage(), ex);
             }
@@ -185,7 +179,7 @@ public class UrlStatusDataCollector extends QuartzJob {
                     + " will be checked for validity.");
                 try {
                    CompletableFuture<Integer> responseCodeFuture =
-                           urlCallerAsync.getUrlResponseCodeFuture(systemUrl, httpClient, executorService, LOGGER);
+                           urlCallerAsync.getUrlResponseCodeFuture(systemUrl, webClient, executorService, LOGGER);
                    urlResponseCodeFuturesMap.put(systemUrl, responseCodeFuture);
                 } catch (final Exception ex) {
                     LOGGER.info("Could not check URL " + systemUrl.getUrl()
@@ -292,24 +286,28 @@ public class UrlStatusDataCollector extends QuartzJob {
             LOGGER.error("The spring environment was null.");
         }
 
-        TrustStrategy acceptingTrustStrategy = (X509Certificate[] chain, String authType) -> true;
-        SSLContext sslContext = null;
-        try {
-            sslContext = org.apache.http.ssl.SSLContexts.custom().loadTrustMaterial(null, acceptingTrustStrategy).build();
-        } catch (Exception ex) {
-            LOGGER.error("Could not create ssl context; https requests may fail.", ex);
-        }
+        webClient = new WebClient(BrowserVersion.CHROME, false, null, -1);
+        webClient.getOptions().setRedirectEnabled(true);
+        webClient.getOptions().setTimeout(requestTimeoutSeconds * 1000);
 
-        SSLConnectionSocketFactory csf = new SSLConnectionSocketFactory(sslContext != null ? sslContext : SSLContexts.createDefault());
-        httpClient = HttpClients.custom()
-                .setSSLSocketFactory(csf)
-                .setDefaultRequestConfig(RequestConfig.custom()
-                        .setConnectionRequestTimeout(requestTimeoutSeconds * SECONDS_TO_MILLIS)
-                        .setConnectTimeout(connectTimeoutSeconds * SECONDS_TO_MILLIS)
-                        .setSocketTimeout(connectTimeoutSeconds * SECONDS_TO_MILLIS)
-                        .build())
-                .setUserAgent(HTTP_HEADER_CHROME)
-                .build();
+//        TrustStrategy acceptingTrustStrategy = (X509Certificate[] chain, String authType) -> true;
+//        SSLContext sslContext = null;
+//        try {
+//            sslContext = org.apache.http.ssl.SSLContexts.custom().loadTrustMaterial(null, acceptingTrustStrategy).build();
+//        } catch (Exception ex) {
+//            LOGGER.error("Could not create ssl context; https requests may fail.", ex);
+//        }
+//
+//        SSLConnectionSocketFactory csf = new SSLConnectionSocketFactory(sslContext != null ? sslContext : SSLContexts.createDefault());
+//        httpClient = HttpClients.custom()
+//                .setSSLSocketFactory(csf)
+//                .setDefaultRequestConfig(RequestConfig.custom()
+//                        .setConnectionRequestTimeout(requestTimeoutSeconds * SECONDS_TO_MILLIS)
+//                        .setConnectTimeout(connectTimeoutSeconds * SECONDS_TO_MILLIS)
+//                        .setSocketTimeout(connectTimeoutSeconds * SECONDS_TO_MILLIS)
+//                        .build())
+//                .setUserAgent(HTTP_HEADER_CHROME)
+//                .build();
 
         initializeExecutorService();
     }
