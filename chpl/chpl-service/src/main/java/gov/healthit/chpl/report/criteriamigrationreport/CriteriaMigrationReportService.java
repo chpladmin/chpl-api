@@ -66,10 +66,10 @@ public class CriteriaMigrationReportService {
                         .originalCriterion(originalCriterion)
                         .updatedCriterion(updatedCriterion)
                         .reportDate(checkDate)
-                        .newCertificationCount(0)
-                        .upgradedCertificationCount(0)
-                        .requiresUpdateCount(0)
-                        .percentUpdated(0.0)
+                        .newCertificationCount(200)
+                        .upgradedCertificationCount(100)
+                        .requiresUpdateCount(40)
+                        .percentUpdated(Double.valueOf("42.454"))
                         .build());
 
             }
@@ -96,7 +96,7 @@ public class CriteriaMigrationReportService {
         if (totalCount.equals(0)) {
             return Double.valueOf("0");
         } else {
-            return updatedCount.doubleValue() / totalCount.doubleValue();
+            return (updatedCount.doubleValue() / totalCount.doubleValue()) * 100;
         }
     }
 
