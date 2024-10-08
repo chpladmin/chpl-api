@@ -73,10 +73,10 @@ public class CriteriaMigrationReportService {
             targetDate.plusDays(offset);
         }
         return Todd.builder()
-                .newCertificationCount(0)
-                .requiresUpdateCount(0)
-                .upgradedCertificationCount(0)
-                .percentUpdated(0.0d)
+                .newCertificationCount(120)
+                .requiresUpdateCount(120)
+                .upgradedCertificationCount(120)
+                .percentUpdated(66.6d)
                 .reportDate(originalTargetDate)
                 .build();
     }
@@ -99,19 +99,13 @@ public class CriteriaMigrationReportService {
     private List<LocalDate> getTargetDatesForPastYear() {
         List<LocalDate> targetDates = new ArrayList<LocalDate>();
         for (Integer i = 0; i < MONTHS_IN_YEAR; ++i) {
-            targetDates.add(LocalDate.now().minusMonths(i).with(TemporalAdjusters.firstDayOfMonth()));
+            //targetDates.add(LocalDate.now().minusMonths(i).with(TemporalAdjusters.firstDayOfMonth()));
+            targetDates.add(LocalDate.now().minusMonths(i).with(TemporalAdjusters.firstDayOfMonth()).plusDays(LocalDate.now().getDayOfMonth()-1));
         }
         return targetDates;
     }
 
 
-
-    private Boolean doesReportDateExistInList(List<Todd> list, LocalDate reportDate) {
-        return list.stream()
-                .filter(t -> t.getReportDate().equals(reportDate))
-                .findAny()
-                .isPresent();
-    }
 
     private Double getPercentUpdate(CriteriaMigrationCount criteriaMigratrionCount) {
         Integer updatedCount = criteriaMigratrionCount.getOriginalToUpdatedCriterionCount()
@@ -123,7 +117,7 @@ public class CriteriaMigrationReportService {
         if (totalCount.equals(0)) {
             return Double.valueOf("0");
         } else {
-            return updatedCount.doubleValue() / totalCount.doubleValue();
+            return updatedCount.doubleValue() / totalCount.doubleValue() * 100;
         }
     }
 
