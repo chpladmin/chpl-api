@@ -2,24 +2,24 @@ package gov.healthit.chpl.dao;
 
 import java.util.List;
 
-import jakarta.persistence.Query;
-
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.contact.PointOfContact;
 import gov.healthit.chpl.entity.ContactEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import jakarta.persistence.Query;
 
 @Repository("contactDao")
 public class ContactDAO extends BaseDAOImpl {
 
     public Long create(PointOfContact contact) {
         ContactEntity toInsert = new ContactEntity();
-        toInsert.setEmail(contact.getEmail());
-        toInsert.setFullName(contact.getFullName());
-        toInsert.setPhoneNumber(contact.getPhoneNumber());
-        toInsert.setTitle(contact.getTitle());
+        toInsert.setEmail(StringUtils.normalizeSpace(contact.getEmail()));
+        toInsert.setFullName(StringUtils.normalizeSpace(contact.getFullName()));
+        toInsert.setPhoneNumber(StringUtils.normalizeSpace(contact.getPhoneNumber()));
+        toInsert.setTitle(StringUtils.normalizeSpace(contact.getTitle()));
         toInsert.setSignatureDate(null);
         toInsert.setDeleted(false);
         create(toInsert);
@@ -28,10 +28,10 @@ public class ContactDAO extends BaseDAOImpl {
 
     public void update(PointOfContact contact) throws EntityRetrievalException {
         ContactEntity contactEntity = this.getEntityById(contact.getContactId());
-        contactEntity.setEmail(contact.getEmail());
-        contactEntity.setFullName(contact.getFullName());
-        contactEntity.setPhoneNumber(contact.getPhoneNumber());
-        contactEntity.setTitle(contact.getTitle());
+        contactEntity.setEmail(StringUtils.normalizeSpace(contact.getEmail()));
+        contactEntity.setFullName(StringUtils.normalizeSpace(contact.getFullName()));
+        contactEntity.setPhoneNumber(StringUtils.normalizeSpace(contact.getPhoneNumber()));
+        contactEntity.setTitle(StringUtils.normalizeSpace(contact.getTitle()));
         contactEntity.setSignatureDate(null);
         contactEntity.setDeleted(false);
         update(contactEntity);
