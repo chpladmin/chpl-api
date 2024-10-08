@@ -1,16 +1,16 @@
 package gov.healthit.chpl.report.criteriamigrationreport;
 
 import java.time.LocalDate;
+import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import jakarta.transaction.Transactional;
 import lombok.extern.log4j.Log4j2;
 
@@ -18,6 +18,8 @@ import lombok.extern.log4j.Log4j2;
 @Component
 public class CriteriaMigrationReportService {
     public static final Long HTI1_REPORT_ID = 2L;
+    private static final Integer MONTHS_IN_YEAR = 12;
+    private static final Integer MAX_DAYS_TO_CHECK_FOR_DATA = 7;
 
     private CriteriaMigrationReportDAO criteriaMigrationReportDAO;
     private OriginalToUpdatedCriterionCountService originalToUpdatedCriterionCountService;
@@ -41,42 +43,68 @@ public class CriteriaMigrationReportService {
     }
 
     public List<Todd> getHtiReportData(Long criteriaMigrationReportId) {
-        CriteriaMigrationReport cmr = criteriaMigrationReportDAO.getCriteriaMigrationReport(criteriaMigrationReportId);
+        List<Todd> todds = new ArrayList<Todd>();
+        CriteriaMigrationReport cmr = criteriaMigrationReportDAO.getCriteriaMigrationReportWithoutCounts(criteriaMigrationReportId);
 
-        List<Todd> real = cmr.getCriteriaMigrationDefinitions().get(0).getCriteriaMigrationCounts().stream()
-                .sorted(Comparator.comparing(CriteriaMigrationCount::getReportDate).reversed())
-                .filter(cmc -> cmc.getReportDate().getDayOfMonth() == 1)
-                .map(cmc -> Todd.builder()
-                        .originalCriterion(cmr.getCriteriaMigrationDefinitions().get(0).getOriginalCriterion())
-                        .updatedCriterion(cmr.getCriteriaMigrationDefinitions().get(0).getUpdatedCriterion())
-                        .reportDate(cmc.getReportDate())
-                        .newCertificationCount(cmc.getUpdatedCriterionCount())
-                        .upgradedCertificationCount(cmc.getOriginalToUpdatedCriterionCount())
-                        .requiresUpdateCount(cmc.getOriginalCriterionCount())
-                        .percentUpdated(getPercentUpdate(cmc))
-                        .build())
-                .collect(Collectors.toCollection(ArrayList::new));
-
-        LocalDate checkDate = real.get(0).getReportDate();
-        CertificationCriterion originalCriterion = real.get(0).getOriginalCriterion();
-        CertificationCriterion updatedCriterion = real.get(0).getUpdatedCriterion();
-        while (real.size() < 12) {
-            if (!doesReportDateExistInList(real, checkDate)) {
-                real.add(Todd.builder()
-                        .originalCriterion(originalCriterion)
-                        .updatedCriterion(updatedCriterion)
-                        .reportDate(checkDate)
-                        .newCertificationCount(200)
-                        .upgradedCertificationCount(100)
-                        .requiresUpdateCount(40)
-                        .percentUpdated(Double.valueOf(".42454"))
-                        .build());
-            }
-            checkDate = checkDate.minusMonths(1);
+        for (LocalDate reportDate : getTargetDatesForPastYear()) {
+            Todd todd = getToddAtOrNearReport(cmr.getId(), reportDate);
+            todd.setOriginalCriterion(cmr.getCriteriaMigrationDefinitions().get(0).getOriginalCriterion());
+            todd.setUpdatedCriterion(cmr.getCriteriaMigrationDefinitions().get(0).getUpdatedCriterion());
+            todds.add(todd);
         }
 
-        return real.stream().sorted(Comparator.comparing(Todd::getReportDate)).toList();
+        return todds.stream().sorted(Comparator.comparing(Todd::getReportDate)).toList();
     }
+
+    private Todd getToddAtOrNearReport(Long criteriaMigrationReportId, LocalDate targetDate) {
+        LocalDate originalTargetDate = targetDate;
+        for (Integer offset : getDayOffsetList()) {
+            Optional<CriteriaMigrationCount> criteriaMigrationCount =
+                    criteriaMigrationReportDAO.getCriteriaMigrationCount(criteriaMigrationReportId, targetDate);
+            if (criteriaMigrationCount.isPresent()) {
+                return Todd.builder()
+                        .newCertificationCount(criteriaMigrationCount.get().getUpdatedCriterionCount())
+                        .requiresUpdateCount(criteriaMigrationCount.get().getOriginalCriterionCount())
+                        .upgradedCertificationCount(criteriaMigrationCount.get().getOriginalToUpdatedCriterionCount())
+                        .percentUpdated(getPercentUpdate(criteriaMigrationCount.get()))
+                        .reportDate(criteriaMigrationCount.get().getReportDate())
+                        .build();
+            }
+            targetDate.plusDays(offset);
+        }
+        return Todd.builder()
+                .newCertificationCount(0)
+                .requiresUpdateCount(0)
+                .upgradedCertificationCount(0)
+                .percentUpdated(0.0d)
+                .reportDate(originalTargetDate)
+                .build();
+    }
+
+    private List<Integer> getDayOffsetList() {
+        //This generates a list in the pattern 0, -1, 1, -2, 2, -3, 3 ....
+        List<Integer> dayOffsets = new ArrayList<Integer>();
+
+        for (Integer i = 0; i < MAX_DAYS_TO_CHECK_FOR_DATA; i++) {
+            Integer offset = i / 2;
+            if (i % 2 == 1) {
+                offset = offset * -1;
+            }
+            dayOffsets.add(offset);
+        }
+        return dayOffsets;
+    }
+
+
+    private List<LocalDate> getTargetDatesForPastYear() {
+        List<LocalDate> targetDates = new ArrayList<LocalDate>();
+        for (Integer i = 0; i < MONTHS_IN_YEAR; ++i) {
+            targetDates.add(LocalDate.now().minusMonths(i).with(TemporalAdjusters.firstDayOfMonth()));
+        }
+        return targetDates;
+    }
+
+
 
     private Boolean doesReportDateExistInList(List<Todd> list, LocalDate reportDate) {
         return list.stream()
