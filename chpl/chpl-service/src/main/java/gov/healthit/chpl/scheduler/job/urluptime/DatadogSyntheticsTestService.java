@@ -105,10 +105,9 @@ public class DatadogSyntheticsTestService {
                                         .target(HTTP_STATUS_OK)
                                         .type(SyntheticsAssertionType.STATUS_CODE)),
                                 new SyntheticsAssertion(new SyntheticsAssertionTarget()
-                                        .operator(SyntheticsAssertionOperator.IS_NOT)
-                                        .target("0")
-                                        .type(SyntheticsAssertionType.HEADER)
-                                        .property("content-length"))))
+                                        .operator(SyntheticsAssertionOperator.MATCHES)
+                                        .target("/[\\S\s]+[\\S]+/")
+                                        .type(SyntheticsAssertionType.BODY))))
                         .request(new SyntheticsTestRequest()
                                     .url(url)
                                     .method(HTTP_METHOD_GET)))
