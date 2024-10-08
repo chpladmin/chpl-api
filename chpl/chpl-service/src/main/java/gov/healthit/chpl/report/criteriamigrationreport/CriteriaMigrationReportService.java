@@ -18,7 +18,7 @@ import lombok.extern.log4j.Log4j2;
 @Component
 public class CriteriaMigrationReportService {
     public static final Long HTI1_REPORT_ID = 2L;
-    private static final Integer MONTHS_IN_YEAR = 12;
+    private static final Integer MONTHS_IN_REPORT = 4;
     private static final Integer MAX_DAYS_TO_CHECK_FOR_DATA = 7;
 
     private CriteriaMigrationReportDAO criteriaMigrationReportDAO;
@@ -46,7 +46,7 @@ public class CriteriaMigrationReportService {
         List<Todd> todds = new ArrayList<Todd>();
         CriteriaMigrationReport cmr = criteriaMigrationReportDAO.getCriteriaMigrationReportWithoutCounts(criteriaMigrationReportId);
 
-        for (LocalDate reportDate : getTargetDatesForPastYear()) {
+        for (LocalDate reportDate : getTargetDatesForReport()) {
             Todd todd = getToddAtOrNearReport(cmr.getId(), reportDate);
             todd.setOriginalCriterion(cmr.getCriteriaMigrationDefinitions().get(0).getOriginalCriterion());
             todd.setUpdatedCriterion(cmr.getCriteriaMigrationDefinitions().get(0).getUpdatedCriterion());
@@ -96,9 +96,9 @@ public class CriteriaMigrationReportService {
     }
 
 
-    private List<LocalDate> getTargetDatesForPastYear() {
+    private List<LocalDate> getTargetDatesForReport() {
         List<LocalDate> targetDates = new ArrayList<LocalDate>();
-        for (Integer i = 0; i < MONTHS_IN_YEAR; ++i) {
+        for (Integer i = 0; i < MONTHS_IN_REPORT; ++i) {
             //targetDates.add(LocalDate.now().minusMonths(i).with(TemporalAdjusters.firstDayOfMonth()));
             targetDates.add(LocalDate.now().minusMonths(i).with(TemporalAdjusters.firstDayOfMonth()).plusDays(LocalDate.now().getDayOfMonth()-1));
         }
