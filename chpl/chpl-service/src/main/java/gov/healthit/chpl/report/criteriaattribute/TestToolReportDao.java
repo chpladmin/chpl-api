@@ -52,6 +52,7 @@ public class TestToolReportDao extends BaseDAOImpl {
                 + "AND cr.id = crtt.certificationResultId "
                 + "AND crtt.testTool.id = tt.id "
                 + "AND cpd.certificationStatusId IN (1,6,7) "
+                + "AND (cc.endDay is null OR cc.endDay > CURRENT_DATE()) "
                 + "AND cc.deleted = false "
                 + "AND cr.deleted = false "
                 + "AND crtt.deleted = false "
