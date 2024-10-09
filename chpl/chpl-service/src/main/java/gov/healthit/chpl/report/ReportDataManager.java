@@ -10,6 +10,9 @@ import gov.healthit.chpl.report.criteriamigrationreport.CriteriaMigrationReport;
 import gov.healthit.chpl.report.criteriamigrationreport.CriteriaMigrationReportService;
 import gov.healthit.chpl.report.developer.DeveloperReportsService;
 import gov.healthit.chpl.report.developer.UniqueDeveloperCount;
+import gov.healthit.chpl.report.product.ProductByAcb;
+import gov.healthit.chpl.report.product.ProductReportsService;
+import gov.healthit.chpl.report.product.UniqueProductCount;
 import gov.healthit.chpl.report.surveillance.CapCounts;
 import gov.healthit.chpl.report.surveillance.NonconformityCounts;
 import gov.healthit.chpl.report.surveillance.SurveillanceActivityCounts;
@@ -25,13 +28,15 @@ public class ReportDataManager {
     private CriteriaMigrationReportService criteriaMigrationReportService;
     private SurveillanceReportsService surveillanceReportsService;
     private DeveloperReportsService developerReportsService;
+    private ProductReportsService productReportsService;
 
     @Autowired
     public ReportDataManager(CriteriaMigrationReportService criteriaMigrationReportService, DeveloperReportsService developerReportsService,
-            SurveillanceReportsService surveillanceReportsService) {
+            SurveillanceReportsService surveillanceReportsService, ProductReportsService productReportsService) {
         this.criteriaMigrationReportService = criteriaMigrationReportService;
         this.developerReportsService = developerReportsService;
         this.surveillanceReportsService = surveillanceReportsService;
+        this.productReportsService = productReportsService;
     }
 
     public CriteriaMigrationReport getHti1CriteriaMigrationReport() {
@@ -106,4 +111,23 @@ public class ReportDataManager {
         return developerReportsService.getDevelopersWithSuspendedListingsByAcb();
     }
 
+    public UniqueProductCount getUniqueProductCount() {
+        return productReportsService.getUniqueProductCount();
+    }
+
+    public List<CertificationBodyStatistic> getActiveProdutCountsByAcb() {
+        return productReportsService.getActiveProdutCountsByAcb();
+    }
+
+    public List<CertificationBodyStatistic> getWithdrawnProdutCountsByAcb() {
+        return productReportsService.getWithdrawnProdutCountsByAcb();
+    }
+
+    public List<CertificationBodyStatistic> getSuspendedProdutCountsByAcb() {
+        return productReportsService.getSuspendedProdutCountsByAcb();
+    }
+
+    public List<ProductByAcb> getActiveProdutsByAcb() {
+        return productReportsService.getActiveProdutsByAcb();
+    }
 }
