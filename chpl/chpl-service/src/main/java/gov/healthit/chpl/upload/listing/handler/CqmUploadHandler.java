@@ -70,6 +70,7 @@ public class CqmUploadHandler {
 
         LinkedHashSet<String> versions = new LinkedHashSet<String>();
         if (!StringUtils.isEmpty(cqmVersionDelimited) && !"0".equals(cqmVersionDelimited)) {
+            cqmVersionDelimited = cqmVersionDelimited.toLowerCase();
             String[] splitVersions = cqmVersionDelimited.split(";");
             if (splitVersions.length == 1) {
                 splitVersions = cqmVersionDelimited.split(",");
