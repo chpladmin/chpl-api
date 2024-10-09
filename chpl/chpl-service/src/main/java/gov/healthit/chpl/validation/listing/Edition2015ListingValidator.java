@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.upload.listing.validation.reviewer.AccessibilityStandardReviewer;
+import gov.healthit.chpl.upload.listing.validation.reviewer.AdditionalSoftwareCodeReviewer;
+import gov.healthit.chpl.upload.listing.validation.reviewer.ChplNumberFormatReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.QmsStandardReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.SedReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.TestToolReviewer;
@@ -15,7 +17,6 @@ import gov.healthit.chpl.upload.listing.validation.reviewer.UcdProcessReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.CertificationDateReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.CertificationStatusReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.ChplNumberComparisonReviewer;
-import gov.healthit.chpl.validation.listing.reviewer.ChplNumberReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.ComparisonReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.ConformanceMethodReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.DeprecatedFieldReviewer;
@@ -64,8 +65,7 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 public class Edition2015ListingValidator extends Validator {
     @Autowired
-    @Qualifier("chplNumberReviewer")
-    private ChplNumberReviewer chplNumberReviewer;
+    private ChplNumberFormatReviewer chplNumberFormatReviewer;
 
     @Autowired
     @Qualifier("developerStatusReviewer")
@@ -252,12 +252,15 @@ public class Edition2015ListingValidator extends Validator {
     private StandardRemovalReviewer standardRemovalReviewer;
 
     @Autowired
+    private AdditionalSoftwareCodeReviewer additionalSoftwareCodeReviewer;
+
+    @Autowired
     private CodeSetAsOfTodayReviewer codeSetReviewer;
 
     @Override
     public synchronized List<Reviewer> getReviewers() {
         List<Reviewer> reviewers = new ArrayList<Reviewer>();
-        reviewers.add(chplNumberReviewer);
+        reviewers.add(chplNumberFormatReviewer);
         reviewers.add(devStatusReviewer);
         reviewers.add(unsupportedCharacterReviewer);
         reviewers.add(fieldLengthReviewer);
@@ -292,6 +295,7 @@ public class Edition2015ListingValidator extends Validator {
         reviewers.add(qmsStandardReviewer);
         reviewers.add(realWorldTestingReviewer);
         reviewers.add(privacyAndSecurityCriteriaReviewer);
+        reviewers.add(additionalSoftwareCodeReviewer);
         reviewers.add(codeSetReviewer);
         return reviewers;
     }
