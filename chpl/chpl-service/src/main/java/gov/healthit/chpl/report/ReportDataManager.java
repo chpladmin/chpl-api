@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.developer.search.DeveloperSearchResult;
 import gov.healthit.chpl.report.criteriamigrationreport.CriteriaMigrationReportService;
-import gov.healthit.chpl.report.criteriamigrationreport.Todd;
+import gov.healthit.chpl.report.criteriamigrationreport.CriteriaMigrationReportDenormalized;
 import gov.healthit.chpl.report.developer.DeveloperReportsService;
 import gov.healthit.chpl.report.developer.UniqueDeveloperCount;
 import gov.healthit.chpl.report.surveillance.CapCounts;
@@ -34,7 +34,7 @@ public class ReportDataManager {
         this.surveillanceReportsService = surveillanceReportsService;
     }
 
-    public List<Todd> getHti1CriteriaMigrationReport() {
+    public List<CriteriaMigrationReportDenormalized> getHti1CriteriaMigrationReport() {
         return criteriaMigrationReportService.getHtiReportData(CriteriaMigrationReportService.HTI1_REPORT_ID);
     }
 

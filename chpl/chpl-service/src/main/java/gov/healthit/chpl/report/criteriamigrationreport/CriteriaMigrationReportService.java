@@ -42,27 +42,27 @@ public class CriteriaMigrationReportService {
         return criteriaMigrationReportDAO.getCriteriaMigrationReport(criteriaMigrationReportId);
     }
 
-    public List<Todd> getHtiReportData(Long criteriaMigrationReportId) {
-        List<Todd> todds = new ArrayList<Todd>();
+    public List<CriteriaMigrationReportDenormalized> getHtiReportData(Long criteriaMigrationReportId) {
+        List<CriteriaMigrationReportDenormalized> criteriaMigrationReports = new ArrayList<CriteriaMigrationReportDenormalized>();
         CriteriaMigrationReport cmr = criteriaMigrationReportDAO.getCriteriaMigrationReportWithoutCounts(criteriaMigrationReportId);
 
         for (LocalDate reportDate : getTargetDatesForReport()) {
-            Todd todd = getToddAtOrNearReport(cmr.getId(), reportDate);
-            todd.setOriginalCriterion(cmr.getCriteriaMigrationDefinitions().get(0).getOriginalCriterion());
-            todd.setUpdatedCriterion(cmr.getCriteriaMigrationDefinitions().get(0).getUpdatedCriterion());
-            todds.add(todd);
+            CriteriaMigrationReportDenormalized criteriaMigrationReport = getToddAtOrNearReport(cmr.getId(), reportDate);
+            criteriaMigrationReport.setOriginalCriterion(cmr.getCriteriaMigrationDefinitions().get(0).getOriginalCriterion());
+            criteriaMigrationReport.setUpdatedCriterion(cmr.getCriteriaMigrationDefinitions().get(0).getUpdatedCriterion());
+            criteriaMigrationReports.add(criteriaMigrationReport);
         }
 
-        return todds.stream().sorted(Comparator.comparing(Todd::getReportDate)).toList();
+        return criteriaMigrationReports.stream().sorted(Comparator.comparing(CriteriaMigrationReportDenormalized::getReportDate)).toList();
     }
 
-    private Todd getToddAtOrNearReport(Long criteriaMigrationReportId, LocalDate targetDate) {
+    private CriteriaMigrationReportDenormalized getToddAtOrNearReport(Long criteriaMigrationReportId, LocalDate targetDate) {
         LocalDate originalTargetDate = targetDate;
         for (Integer offset : getDayOffsetList()) {
             Optional<CriteriaMigrationCount> criteriaMigrationCount =
                     criteriaMigrationReportDAO.getCriteriaMigrationCount(criteriaMigrationReportId, targetDate);
             if (criteriaMigrationCount.isPresent()) {
-                return Todd.builder()
+                return CriteriaMigrationReportDenormalized.builder()
                         .newCertificationCount(criteriaMigrationCount.get().getUpdatedCriterionCount())
                         .requiresUpdateCount(criteriaMigrationCount.get().getOriginalCriterionCount())
                         .upgradedCertificationCount(criteriaMigrationCount.get().getOriginalToUpdatedCriterionCount())
@@ -72,7 +72,7 @@ public class CriteriaMigrationReportService {
             }
             targetDate.plusDays(offset);
         }
-        return Todd.builder()
+        return CriteriaMigrationReportDenormalized.builder()
                 .newCertificationCount(120)
                 .requiresUpdateCount(120)
                 .upgradedCertificationCount(120)

@@ -13,7 +13,7 @@ import lombok.Data;
 
 @Data
 @Builder
-public class Todd {
+public class CriteriaMigrationReportDenormalized {
     private CertificationCriterion originalCriterion;
     private CertificationCriterion updatedCriterion;
 
