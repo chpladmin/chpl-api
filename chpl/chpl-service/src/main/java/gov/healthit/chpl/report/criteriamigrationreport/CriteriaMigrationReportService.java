@@ -73,10 +73,10 @@ public class CriteriaMigrationReportService {
             targetDate.plusDays(offset);
         }
         return CriteriaMigrationReportDenormalized.builder()
-                .newCertificationCount(120)
-                .requiresUpdateCount(120)
-                .upgradedCertificationCount(120)
-                .percentUpdated(66.6d)
+                .newCertificationCount(0)
+                .requiresUpdateCount(0)
+                .upgradedCertificationCount(0)
+                .percentUpdated(0.0d)
                 .reportDate(originalTargetDate)
                 .build();
     }
