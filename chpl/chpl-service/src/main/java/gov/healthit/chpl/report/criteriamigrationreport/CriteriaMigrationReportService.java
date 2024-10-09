@@ -99,8 +99,8 @@ public class CriteriaMigrationReportService {
     private List<LocalDate> getTargetDatesForReport() {
         List<LocalDate> targetDates = new ArrayList<LocalDate>();
         for (Integer i = 0; i < MONTHS_IN_REPORT; ++i) {
-            //targetDates.add(LocalDate.now().minusMonths(i).with(TemporalAdjusters.firstDayOfMonth()));
-            targetDates.add(LocalDate.now().minusMonths(i).with(TemporalAdjusters.firstDayOfMonth()).plusDays(LocalDate.now().getDayOfMonth()-1));
+            targetDates.add(LocalDate.now().minusMonths(i).with(TemporalAdjusters.firstDayOfMonth()));
+            //targetDates.add(LocalDate.now().minusMonths(i).with(TemporalAdjusters.firstDayOfMonth()).plusDays(LocalDate.now().getDayOfMonth()-1));
         }
         return targetDates;
     }
