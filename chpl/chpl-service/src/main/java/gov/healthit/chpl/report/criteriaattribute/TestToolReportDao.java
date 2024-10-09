@@ -57,6 +57,7 @@ public class TestToolReportDao extends BaseDAOImpl {
                 + "AND cr.deleted = false "
                 + "AND crtt.deleted = false "
                 + "AND cpd.deleted = false "
+                + "AND tt.deleted = false "
                 + "GROUP BY cc.id, tt.id ";
 
         Query query = entityManager.createQuery(hql);
