@@ -40,6 +40,7 @@ public class CognitoUpdateUserValidator {
     }
 
     private Set<String> validateUser(User user) {
+        normalizeSpacesInUserInfo(user);
         Set<String> validationErrors = new HashSet<String>();
 
         if (!doesUserExistInCognito(user.getCognitoId())) {
@@ -63,6 +64,14 @@ public class CognitoUpdateUserValidator {
         }
 
         return validationErrors;
+    }
+
+    private void normalizeSpacesInUserInfo(User user) {
+        user.setEmail(StringUtils.normalizeSpace(user.getEmail()));
+        user.setFriendlyName(StringUtils.normalizeSpace(user.getFriendlyName()));
+        user.setFullName(StringUtils.normalizeSpace(user.getFullName()));
+        user.setPhoneNumber(StringUtils.normalizeSpace(user.getPhoneNumber()));
+        user.setTitle(StringUtils.normalizeSpace(user.getTitle()));
     }
 
     private Boolean doesUserExistInCognito(UUID cognitoId) {

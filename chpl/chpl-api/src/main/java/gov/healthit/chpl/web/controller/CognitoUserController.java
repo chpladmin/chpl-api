@@ -3,6 +3,7 @@ package gov.healthit.chpl.web.controller;
 import java.util.UUID;
 
 import org.apache.commons.lang3.NotImplementedException;
+import org.apache.commons.lang3.StringUtils;
 import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -208,6 +209,7 @@ public class CognitoUserController {
             produces = "application/json; charset=utf-8")
     public CognitoUserInvitation inviteUser(@RequestBody CognitoUserInvitation invitation)
             throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException, ValidationException {
+        invitation.setEmail(StringUtils.normalizeSpace(invitation.getEmail()));
 
         CognitoUserInvitation createdInvitiation = null;
         switch (invitation.getGroupName()) {
