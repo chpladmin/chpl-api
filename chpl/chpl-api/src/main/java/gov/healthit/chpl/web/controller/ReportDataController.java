@@ -294,7 +294,27 @@ public class ReportDataController {
             })
     @RequestMapping(value = "/active-products", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<ProductByAcb> getActiveProducts() {
-        return reportDataManager.getActiveProdutsByAcb();
+        return reportDataManager.getActiveProductsAndAcb();
+    }
+
+    @Operation(summary = "Retrieves the data used to generate the Suspended Products by ACB report",
+            description = "Retrieves the data used to generate the Suspended Products by ACB report.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
+    @RequestMapping(value = "/suspended-products", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public @ResponseBody List<ProductByAcb> getSuspendedProducts() {
+        return reportDataManager.getSuspendedProductsAndAcb();
+    }
+
+    @Operation(summary = "Retrieves the data used to generate the Withdrawn Products by ACB report",
+            description = "Retrieves the data used to generate the Withdrawn Products by ACB report.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
+    @RequestMapping(value = "/withdrawn-products", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public @ResponseBody List<ProductByAcb> getWithdrawnProducts() {
+        return reportDataManager.getWithdrawnProductsAndAcb();
     }
 
     @Operation(summary = "Retrieves the data used to generate the Product Count report.",

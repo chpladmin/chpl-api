@@ -127,7 +127,15 @@ public class ReportDataManager {
         return productReportsService.getSuspendedProdutCountsByAcb();
     }
 
-    public List<ProductByAcb> getActiveProdutsByAcb() {
-        return productReportsService.getActiveProdutsByAcb();
+    public List<ProductByAcb> getActiveProductsAndAcb() {
+        return productReportsService.getActiveProductsAndAcb();
+    }
+
+    public List<ProductByAcb> getWithdrawnProductsAndAcb() {
+        return productReportsService.getWithdrawnProductsAndAcb();
+    }
+
+    public List<ProductByAcb> getSuspendedProductsAndAcb() {
+        return productReportsService.getSuspendedProductsAndAcb();
     }
 }

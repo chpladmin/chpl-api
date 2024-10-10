@@ -44,6 +44,7 @@ public class ProductReportsService {
         this.statusIdHelper = new CertificationStatusIdHelper(certificationStatusDao);
         this.listingSearchService = listingSearchService;
         this.productManager = productManager;
+        this.certificationBodyManager = certificationBodyManager;
     }
 
     public UniqueProductCount getUniqueProductCount() {
@@ -71,10 +72,30 @@ public class ProductReportsService {
         return stats.getProductCountForStatusesByAcb(statusIdHelper.getWithdrawnByDeveloperStatusIds());
     }
 
-    public List<ProductByAcb> getActiveProdutsByAcb() {
+    public List<ProductByAcb> getActiveProductsAndAcb() {
+        return getProdutsAndAcbByStatuses(CertificationStatusUtil.getActiveStatusNames()
+                .stream()
+                .collect(Collectors.toSet()));
+    }
+
+    public List<ProductByAcb> getSuspendedProductsAndAcb() {
+        return getProdutsAndAcbByStatuses(CertificationStatusUtil.getSuspendedStatuses()
+                .stream()
+                .map(status -> status.getName())
+                .collect(Collectors.toSet()));
+    }
+
+    public List<ProductByAcb> getWithdrawnProductsAndAcb() {
+        return getProdutsAndAcbByStatuses(CertificationStatusUtil.getWithdrawnStatuses()
+                .stream()
+                .map(status -> status.getName())
+                .collect(Collectors.toSet()));
+    }
+
+    private List<ProductByAcb> getProdutsAndAcbByStatuses(Set<String> statusNames) {
         try {
             List<ListingSearchResult> results = listingSearchService.getAllPagesOfSearchResults(SearchRequest.builder()
-                    .certificationStatuses(CertificationStatusUtil.getActiveStatusNames().stream().collect(Collectors.toSet()))
+                    .certificationStatuses(statusNames)
                     .build());
 
             Set<ProductByAcb> x =  results.stream()
