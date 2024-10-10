@@ -3,8 +3,7 @@ package gov.healthit.chpl.dao.auth;
 import java.util.ArrayList;
 import java.util.List;
 
-import jakarta.persistence.Query;
-
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -21,6 +20,7 @@ import gov.healthit.chpl.exception.MultipleUserAccountsException;
 import gov.healthit.chpl.exception.UserCreationException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.util.UserMapper;
+import jakarta.persistence.Query;
 
 @Repository(value = "userDAO")
 public class UserDAO extends BaseDAOImpl {
@@ -61,11 +61,11 @@ public class UserDAO extends BaseDAOImpl {
             userEntity.setDeleted(false);
 
             UserContactEntity contact = new UserContactEntity();
-            contact.setEmail(user.getEmail());
-            contact.setFullName(user.getFullName());
-            contact.setFriendlyName(user.getFriendlyName());
-            contact.setPhoneNumber(user.getPhoneNumber());
-            contact.setTitle(user.getTitle());
+            contact.setEmail(StringUtils.normalizeSpace(user.getEmail()));
+            contact.setFullName(StringUtils.normalizeSpace(user.getFullName()));
+            contact.setFriendlyName(StringUtils.normalizeSpace(user.getFriendlyName()));
+            contact.setPhoneNumber(StringUtils.normalizeSpace(user.getPhoneNumber()));
+            contact.setTitle(StringUtils.normalizeSpace(user.getTitle()));
             contact.setDeleted(false);
             contact.setSignatureDate(null); // null for new user, must confirm
             // email to get it filled in
@@ -83,11 +83,11 @@ public class UserDAO extends BaseDAOImpl {
     public UserDTO update(UserDTO user) throws UserRetrievalException, MultipleUserAccountsException {
         UserEntity userEntity = getEntityById(user.getId());
         userEntity.setFailedLoginCount(user.getFailedLoginCount());
-        userEntity.getContact().setPhoneNumber(user.getPhoneNumber());
+        userEntity.getContact().setPhoneNumber(StringUtils.normalizeSpace(user.getPhoneNumber()));
         userEntity.getContact().setSignatureDate(user.getSignatureDate());
-        userEntity.getContact().setTitle(user.getTitle());
-        userEntity.getContact().setFullName(user.getFullName());
-        userEntity.getContact().setFriendlyName(user.getFriendlyName());
+        userEntity.getContact().setTitle(StringUtils.normalizeSpace(user.getTitle()));
+        userEntity.getContact().setFullName(StringUtils.normalizeSpace(user.getFullName()));
+        userEntity.getContact().setFriendlyName(StringUtils.normalizeSpace(user.getFriendlyName()));
         userEntity.setAccountEnabled(user.isAccountEnabled());
         userEntity.setAccountExpired(user.isAccountExpired());
         userEntity.setAccountLocked(user.isAccountLocked());
