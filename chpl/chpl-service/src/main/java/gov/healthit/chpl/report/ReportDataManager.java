@@ -10,6 +10,8 @@ import gov.healthit.chpl.report.criteriamigrationreport.CriteriaMigrationReport;
 import gov.healthit.chpl.report.criteriamigrationreport.CriteriaMigrationReportService;
 import gov.healthit.chpl.report.developer.DeveloperReportsService;
 import gov.healthit.chpl.report.developer.UniqueDeveloperCount;
+import gov.healthit.chpl.report.listing.ListingReportsService;
+import gov.healthit.chpl.report.listing.UniqueListingCount;
 import gov.healthit.chpl.report.product.ProductByAcb;
 import gov.healthit.chpl.report.product.ProductReportsService;
 import gov.healthit.chpl.report.product.UniqueProductCount;
@@ -29,14 +31,16 @@ public class ReportDataManager {
     private SurveillanceReportsService surveillanceReportsService;
     private DeveloperReportsService developerReportsService;
     private ProductReportsService productReportsService;
+    private ListingReportsService listingReportsService;
 
     @Autowired
     public ReportDataManager(CriteriaMigrationReportService criteriaMigrationReportService, DeveloperReportsService developerReportsService,
-            SurveillanceReportsService surveillanceReportsService, ProductReportsService productReportsService) {
+            SurveillanceReportsService surveillanceReportsService, ProductReportsService productReportsService, ListingReportsService listingReportsService) {
         this.criteriaMigrationReportService = criteriaMigrationReportService;
         this.developerReportsService = developerReportsService;
         this.surveillanceReportsService = surveillanceReportsService;
         this.productReportsService = productReportsService;
+        this.listingReportsService = listingReportsService;
     }
 
     public CriteriaMigrationReport getHti1CriteriaMigrationReport() {
@@ -116,15 +120,15 @@ public class ReportDataManager {
     }
 
     public List<CertificationBodyStatistic> getActiveProdutCountsByAcb() {
-        return productReportsService.getActiveProdutCountsByAcb();
+        return productReportsService.getActiveProductCountsByAcb();
     }
 
     public List<CertificationBodyStatistic> getWithdrawnProdutCountsByAcb() {
-        return productReportsService.getWithdrawnProdutCountsByAcb();
+        return productReportsService.getWithdrawnProductCountsByAcb();
     }
 
     public List<CertificationBodyStatistic> getSuspendedProdutCountsByAcb() {
-        return productReportsService.getSuspendedProdutCountsByAcb();
+        return productReportsService.getSuspendedProductCountsByAcb();
     }
 
     public List<ProductByAcb> getActiveProductsAndAcb() {
@@ -138,4 +142,33 @@ public class ReportDataManager {
     public List<ProductByAcb> getSuspendedProductsAndAcb() {
         return productReportsService.getSuspendedProductsAndAcb();
     }
+
+    public UniqueListingCount getUniqueListingCount() {
+        return listingReportsService.getUniqueListingCount();
+    }
+
+    public List<CertificationBodyStatistic> getActiveListingCountsByAcb() {
+        return listingReportsService.getActiveListingCountsByAcb();
+    }
+
+    public List<CertificationBodyStatistic> getWithdrawnListingCountsByAcb() {
+        return listingReportsService.getWithdrawnListingCountsByAcb();
+    }
+
+    public List<CertificationBodyStatistic> getSuspendedListingCountsByAcb() {
+        return listingReportsService.getSuspendedListingCountsByAcb();
+    }
+
+    public List<ListingSearchResult> getActiveListings() {
+        return listingReportsService.getActiveListings();
+    }
+
+    public List<ListingSearchResult> getWithdrawnListings() {
+        return listingReportsService.getWithdrawnListings();
+    }
+
+    public List<ListingSearchResult> getSuspendedListings() {
+        return listingReportsService.getSuspendedListings();
+    }
+
 }

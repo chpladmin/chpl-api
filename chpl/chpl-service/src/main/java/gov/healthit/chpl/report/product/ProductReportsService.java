@@ -57,17 +57,17 @@ public class ProductReportsService {
                 .build();
     }
 
-    public List<CertificationBodyStatistic> getActiveProdutCountsByAcb() {
+    public List<CertificationBodyStatistic> getActiveProductCountsByAcb() {
         StatisticsSnapshot stats = getStatistics();
         return stats.getProductCountForStatusesByAcb(statusIdHelper.getActiveAndSuspendedStatusIds());
     }
 
-    public List<CertificationBodyStatistic> getSuspendedProdutCountsByAcb() {
+    public List<CertificationBodyStatistic> getSuspendedProductCountsByAcb() {
         StatisticsSnapshot stats = getStatistics();
         return stats.getProductCountForStatusesByAcb(statusIdHelper.getSuspendedStatusIds());
     }
 
-    public List<CertificationBodyStatistic> getWithdrawnProdutCountsByAcb() {
+    public List<CertificationBodyStatistic> getWithdrawnProductCountsByAcb() {
         StatisticsSnapshot stats = getStatistics();
         return stats.getProductCountForStatusesByAcb(statusIdHelper.getWithdrawnByDeveloperStatusIds());
     }

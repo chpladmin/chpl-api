@@ -17,6 +17,7 @@ import gov.healthit.chpl.developer.search.DeveloperSearchService;
 import gov.healthit.chpl.report.ReportDataManager;
 import gov.healthit.chpl.report.criteriamigrationreport.CriteriaMigrationReport;
 import gov.healthit.chpl.report.developer.UniqueDeveloperCount;
+import gov.healthit.chpl.report.listing.UniqueListingCount;
 import gov.healthit.chpl.report.product.ProductByAcb;
 import gov.healthit.chpl.report.product.UniqueProductCount;
 import gov.healthit.chpl.report.surveillance.CapCounts;
@@ -326,4 +327,75 @@ public class ReportDataController {
     public @ResponseBody UniqueProductCount getUniqueProductCount() {
         return reportDataManager.getUniqueProductCount();
     }
+
+    @Operation(summary = "Retrieves the data used to generate the Active Listings by ACB report.",
+            description = "Retrieves the data used to generate the Active Listings  by ACB report.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
+    @RequestMapping(value = "/active-listing-counts-by-acb", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public @ResponseBody List<CertificationBodyStatistic> getActiveListingsCountsByAcb() {
+        return reportDataManager.getActiveListingCountsByAcb();
+    }
+
+    @Operation(summary = "Retrieves the data used to generate the Withdrawn Listings by ACB report.",
+            description = "Retrieves the data used to generate the Withdrawn Listings by ACB report.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
+    @RequestMapping(value = "/withdrawn-listing-counts-by-acb", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public @ResponseBody List<CertificationBodyStatistic> getWithdrawnListingCountsByAcb() {
+        return reportDataManager.getWithdrawnListingCountsByAcb();
+    }
+
+    @Operation(summary = "Retrieves the data used to generate the Suspended Listings by ACB report.",
+            description = "Retrieves the data used to generate the Suspended Listings by ACB report.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
+    @RequestMapping(value = "/suspended-listing-counts-by-acb", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public @ResponseBody List<CertificationBodyStatistic> getSuspendedListingCountsByAcb() {
+        return reportDataManager.getSuspendedListingCountsByAcb();
+    }
+
+    @Operation(summary = "Retrieves the data used to generate the Active Listing by ACB report",
+            description = "Retrieves the data used to generate the Active Listing by ACB report.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
+    @RequestMapping(value = "/active-listings", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public @ResponseBody List<ListingSearchResult> getActiveListings() {
+        return reportDataManager.getActiveListings();
+    }
+
+    @Operation(summary = "Retrieves the data used to generate the Suspended Listings by ACB report",
+            description = "Retrieves the data used to generate the Suspended Listings by ACB report.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
+    @RequestMapping(value = "/suspended-listings", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public @ResponseBody List<ListingSearchResult> getSuspendedListings() {
+        return reportDataManager.getSuspendedListings();
+    }
+
+    @Operation(summary = "Retrieves the data used to generate the Withdrawn Listings by ACB report",
+            description = "Retrieves the data used to generate the Withdrawn Listings by ACB report.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
+    @RequestMapping(value = "/withdrawn-products", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public @ResponseBody List<ListingSearchResult> getWithdrawnListings() {
+        return reportDataManager.getWithdrawnListings();
+    }
+
+    @Operation(summary = "Retrieves the data used to generate the Listing Count report.",
+            description = "Retrieves the data used to generate the Listing Count report.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
+    @RequestMapping(value = "/listing-count", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public @ResponseBody UniqueListingCount getUniqueListingCount() {
+        return reportDataManager.getUniqueListingCount();
+    }
+
 }
