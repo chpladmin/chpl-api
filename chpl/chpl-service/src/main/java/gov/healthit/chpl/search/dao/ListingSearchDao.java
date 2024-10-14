@@ -11,8 +11,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import jakarta.persistence.Query;
-
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Repository;
@@ -32,6 +30,7 @@ import gov.healthit.chpl.search.domain.ListingSearchResult.PromotingInteroperabi
 import gov.healthit.chpl.search.domain.ListingSearchResult.StatusEventSearchResult;
 import gov.healthit.chpl.search.entity.ListingSearchEntity;
 import gov.healthit.chpl.util.DateUtil;
+import jakarta.persistence.Query;
 import lombok.extern.log4j.Log4j2;
 
 @Repository("listingSearchDAO")
@@ -123,6 +122,8 @@ public class ListingSearchDao extends BaseDAOImpl {
                 .closedSurveillanceCount(entity.getClosedSurveillanceCount())
                 .openSurveillanceNonConformityCount(entity.getOpenSurveillanceNonConformityCount())
                 .closedSurveillanceNonConformityCount(entity.getClosedSurveillanceNonConformityCount())
+                .openCapCount(entity.getOpenCapCount())
+                .closedCapCount(entity.getClosedCapCount())
                 .rwtPlansUrl(entity.getRwtPlansUrl())
                 .rwtResultsUrl(entity.getRwtResultsUrl())
                 .svapNoticeUrl(entity.getSvapNoticeUrl())

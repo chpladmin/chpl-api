@@ -33,23 +33,26 @@ public class CognitoAuthenticationManager {
     private ErrorMessageUtil errorMessageUtil;
 
     @Autowired
-    public CognitoAuthenticationManager(CognitoApiWrapper cognitoApiWrapper, JWTUserConverterFacade jwtUserConverterFacade, ErrorMessageUtil errorMessageUtil) {
+    public CognitoAuthenticationManager(CognitoApiWrapper cognitoApiWrapper, JWTUserConverterFacade jwtUserConverterFacade,
+            ErrorMessageUtil errorMessageUtil) {
 
         this.cognitoApiWrapper = cognitoApiWrapper;
         this.jwtUserConverterFacade = jwtUserConverterFacade;
         this.errorMessageUtil = errorMessageUtil;
     }
 
-    public CognitoAuthenticationResponse authenticate(LoginCredentials credentials) throws CognitoAuthenticationChallengeException{
-
+    public CognitoAuthenticationResponse authenticate(LoginCredentials credentials) throws CognitoAuthenticationChallengeException, CognitoPasswordResetRequiredException {
         try {
+            User user = cognitoApiWrapper.getUserInfo(credentials.getUserName());
+            forcePasswordChangeHandler(user);
+
             AuthenticationResultType authResult = cognitoApiWrapper.authenticate(credentials);
             if (authResult == null) {
                 return null;
             }
 
             JWTAuthenticatedUser jwtUser = jwtUserConverterFacade.getAuthenticatedUser(authResult.accessToken());
-            User user = cognitoApiWrapper.getUserInfo(jwtUser.getCognitoId());
+
             return CognitoAuthenticationResponse.builder()
                     .accessToken(authResult.accessToken())
                     .idToken(authResult.idToken())
@@ -118,6 +121,12 @@ public class CognitoAuthenticationManager {
         } catch (UserRetrievalException | JWTValidationException | MultipleUserAccountsException e) {
             LOGGER.error("Could not decode JWT Token");
             return null;
+        }
+    }
+
+    private void forcePasswordChangeHandler(User user) throws CognitoPasswordResetRequiredException {
+        if (user != null && user.getPasswordResetRequired()) {
+            throw new CognitoPasswordResetRequiredException();
         }
     }
 }
