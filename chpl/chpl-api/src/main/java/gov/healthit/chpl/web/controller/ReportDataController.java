@@ -383,7 +383,7 @@ public class ReportDataController {
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
-    @RequestMapping(value = "/withdrawn-products", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    @RequestMapping(value = "/withdrawn-listings", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<ListingSearchResult> getWithdrawnListings() {
         return reportDataManager.getWithdrawnListings();
     }
