@@ -6,8 +6,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.developer.search.DeveloperSearchResult;
-import gov.healthit.chpl.report.criteriamigrationreport.CriteriaMigrationReportService;
+import gov.healthit.chpl.report.criteriaattribute.TestToolListingReport;
+import gov.healthit.chpl.report.criteriaattribute.TestToolReport;
+import gov.healthit.chpl.report.criteriaattribute.TestToolReportService;
 import gov.healthit.chpl.report.criteriamigrationreport.CriteriaMigrationReportDenormalized;
+import gov.healthit.chpl.report.criteriamigrationreport.CriteriaMigrationReportService;
 import gov.healthit.chpl.report.developer.DeveloperReportsService;
 import gov.healthit.chpl.report.developer.UniqueDeveloperCount;
 import gov.healthit.chpl.report.surveillance.CapCounts;
@@ -25,13 +28,15 @@ public class ReportDataManager {
     private CriteriaMigrationReportService criteriaMigrationReportService;
     private SurveillanceReportsService surveillanceReportsService;
     private DeveloperReportsService developerReportsService;
+    private TestToolReportService testToolReportService;
 
     @Autowired
     public ReportDataManager(CriteriaMigrationReportService criteriaMigrationReportService, DeveloperReportsService developerReportsService,
-            SurveillanceReportsService surveillanceReportsService) {
+            SurveillanceReportsService surveillanceReportsService, TestToolReportService testToolReportService) {
         this.criteriaMigrationReportService = criteriaMigrationReportService;
         this.developerReportsService = developerReportsService;
         this.surveillanceReportsService = surveillanceReportsService;
+        this.testToolReportService = testToolReportService;
     }
 
     public List<CriteriaMigrationReportDenormalized> getHti1CriteriaMigrationReport() {
@@ -106,4 +111,11 @@ public class ReportDataManager {
         return developerReportsService.getDevelopersWithSuspendedListingsByAcb();
     }
 
+    public List<TestToolReport> getTestToolReports() {
+        return testToolReportService.getTestToolReports();
+    }
+
+    public List<TestToolListingReport> getTestToolListingReports() {
+        return testToolReportService.getTestToolListingReports();
+    }
 }
