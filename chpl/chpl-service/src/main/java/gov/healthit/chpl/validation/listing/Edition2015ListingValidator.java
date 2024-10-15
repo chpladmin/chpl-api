@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.upload.listing.validation.reviewer.AccessibilityStandardReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.AdditionalSoftwareCodeReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.ChplNumberFormatReviewer;
+import gov.healthit.chpl.upload.listing.validation.reviewer.CqmResultReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.QmsStandardReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.SedReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.TestToolReviewer;
@@ -42,9 +43,7 @@ import gov.healthit.chpl.validation.listing.reviewer.UnavailableCriteriaReviewer
 import gov.healthit.chpl.validation.listing.reviewer.UnsupportedCharacterReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.UrlReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.ValidDataReviewer;
-import gov.healthit.chpl.validation.listing.reviewer.edition2015.AttestedCriteriaCqmReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.CodeSetAsOfTodayReviewer;
-import gov.healthit.chpl.validation.listing.reviewer.edition2015.CqmAttestedCriteriaReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.FunctionalityTestedAllowedByCriteriaReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.FunctionalityTestedAllowedByRoleReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.GapAllowedReviewer;
@@ -188,12 +187,7 @@ public class Edition2015ListingValidator extends Validator {
     private InvalidCriteriaCombinationReviewer invalidCriteriaCombinationReviewer;
 
     @Autowired
-    @Qualifier("cqmAttestedCriteriaReviewer")
-    private CqmAttestedCriteriaReviewer cqmAttestedCriteriaReviewer;
-
-    @Autowired
-    @Qualifier("attestedCriteriaCqmReviewer")
-    private AttestedCriteriaCqmReviewer attestedCriteriaCqmReviewer;
+    private CqmResultReviewer cqmResultReviewer;
 
     @Autowired
     @Qualifier("functionalityTestedAllowedByRoleReviewer")
@@ -286,8 +280,7 @@ public class Edition2015ListingValidator extends Validator {
         reviewers.add(functionalityTestedReviewer);
         reviewers.add(standardReviewer);
         reviewers.add(invalidCriteriaCombinationReviewer);
-        reviewers.add(attestedCriteriaCqmReviewer);
-        reviewers.add(cqmAttestedCriteriaReviewer);
+        reviewers.add(cqmResultReviewer);
         reviewers.add(duplicateDataReviewer);
         reviewers.add(gapAllowedReviewer);
         reviewers.add(measureReviewer);
