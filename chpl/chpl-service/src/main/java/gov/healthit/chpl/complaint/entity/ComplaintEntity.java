@@ -5,6 +5,16 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.hibernate.annotations.SQLRestriction;
+
+import gov.healthit.chpl.complaint.domain.Complaint;
+import gov.healthit.chpl.complaint.domain.ComplaintCriterionMap;
+import gov.healthit.chpl.complaint.domain.ComplaintListingMap;
+import gov.healthit.chpl.complaint.domain.ComplaintType;
+import gov.healthit.chpl.domain.CertificationBody;
+import gov.healthit.chpl.domain.ComplaintSurveillanceMap;
+import gov.healthit.chpl.entity.CertificationBodyEntity;
+import gov.healthit.chpl.entity.EntityAudit;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -16,16 +26,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-
-import org.hibernate.annotations.Where;
-
-import gov.healthit.chpl.complaint.domain.Complaint;
-import gov.healthit.chpl.complaint.domain.ComplaintCriterionMap;
-import gov.healthit.chpl.complaint.domain.ComplaintListingMap;
-import gov.healthit.chpl.domain.CertificationBody;
-import gov.healthit.chpl.domain.ComplaintSurveillanceMap;
-import gov.healthit.chpl.entity.CertificationBodyEntity;
-import gov.healthit.chpl.entity.EntityAudit;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -96,22 +96,31 @@ public class ComplaintEntity extends EntityAudit {
     @Column(name = "closed_date", nullable = true)
     private LocalDate closedDate;
 
+    @Column(name = "complaint_type_other", nullable = true)
+    private String complaintTypesOther;
+
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "complaintId")
     @Basic(optional = true)
     @Column(name = "complaint_id", nullable = false)
-    @Where(clause = "deleted <> 'true'")
+    @SQLRestriction("deleted <> true")
+    private Set<ComplaintToComplaintTypeMapEntity> complaintTypes;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "complaintId")
+    @Basic(optional = true)
+    @Column(name = "complaint_id", nullable = false)
+    @SQLRestriction("deleted <> true")
     private Set<ComplaintListingMapEntity> listings;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "complaintId")
     @Basic(optional = true)
     @Column(name = "complaint_id", nullable = false)
-    @Where(clause = "deleted <> 'true'")
+    @SQLRestriction("deleted <> true")
     private Set<ComplaintCriterionMapEntity> criteria;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "complaintId")
     @Basic(optional = true)
     @Column(name = "complaint_id", nullable = false)
-    @Where(clause = "deleted <> 'true'")
+    @SQLRestriction("deleted <> true")
     private Set<ComplaintSurveillanceMapEntity> surveillances;
 
     public Complaint buildComplaint() {
@@ -127,6 +136,8 @@ public class ComplaintEntity extends EntityAudit {
                 .complainantType(this.getComplainantType() == null ? null
                         : this.getComplainantType().buildComplainantType())
                 .complainantTypeOther(this.getComplainantTypeOther())
+                .complaintTypes(this.createComplaintTypeCollection())
+                .complaintTypesOther(this.getComplaintTypesOther())
                 .criteria(createCriteriaCollection())
                 .developerContacted(this.isDeveloperContacted())
                 .flagForOncReview(this.isFlagForOncReview())
@@ -140,6 +151,14 @@ public class ComplaintEntity extends EntityAudit {
                 .build();
     }
 
+    private Set<ComplaintType> createComplaintTypeCollection() {
+        if (this.getComplaintTypes() == null || this.getComplaintTypes().size() == 0) {
+            return new LinkedHashSet<ComplaintType>();
+        }
+        return this.getComplaintTypes().stream()
+            .map(entity -> entity.buildComplaintType())
+            .collect(Collectors.toSet());
+    }
 
     private Set<ComplaintCriterionMap> createCriteriaCollection() {
         if (this.getCriteria() == null || this.getCriteria().size() == 0) {

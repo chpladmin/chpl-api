@@ -8,6 +8,8 @@ import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -33,6 +35,7 @@ import gov.healthit.chpl.complaint.ComplaintManager;
 import gov.healthit.chpl.complaint.domain.Complaint;
 import gov.healthit.chpl.complaint.domain.ComplaintCriterionMap;
 import gov.healthit.chpl.complaint.domain.ComplaintListingMap;
+import gov.healthit.chpl.complaint.domain.ComplaintType;
 import gov.healthit.chpl.compliance.surveillance.SurveillanceManager;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.ComplaintSurveillanceMap;
@@ -58,22 +61,24 @@ public class ComplaintsWorksheetBuilder {
     private static final int COL_ONC_COMPLAINT_ID = 4;
     private static final int COL_SUMMARY = 5;
     private static final int COL_ACTIONS_RESPONSE = 6;
-    private static final int COL_COMPLAINANT_TYPE = 7;
-    private static final int COL_COMPLAINANT_TYPE_OTHER = 8;
-    private static final int COL_CRITERIA_ID = 9;
-    private static final int COL_CHPL_ID = 10;
-    private static final int COL_SURV_ID = 11;
-    private static final int COL_DEVELOPER = 12;
-    private static final int COL_PRODUCT = 13;
-    private static final int COL_VERSION = 14;
-    private static final int COL_SURV_NONCONFORMITY_COUNT = 15;
-    private static final int COL_SURV_NONCONFORMITY_TYPE = 16;
-    private static final int COL_SURV_OUTCOME = 17;
-    private static final int COL_COMPLAINANT_CONTACTED = 18;
-    private static final int COL_DEVELOPER_CONTACTED = 19;
-    private static final int COL_ATL_CONTACTED = 20;
-    private static final int COL_FLAGGED_FOR_ONC = 21;
-    private static final int COL_COMPLAINT_STATUS = 22;
+    private static final int COL_COMPLAINT_TYPES = 7;
+    private static final int COL_COMPLAINT_TYPE_OTHER = 8;
+    private static final int COL_COMPLAINANT_TYPE = 9;
+    private static final int COL_COMPLAINANT_TYPE_OTHER = 10;
+    private static final int COL_CRITERIA_ID = 11;
+    private static final int COL_CHPL_ID = 12;
+    private static final int COL_SURV_ID = 13;
+    private static final int COL_DEVELOPER = 14;
+    private static final int COL_PRODUCT = 15;
+    private static final int COL_VERSION = 16;
+    private static final int COL_SURV_NONCONFORMITY_COUNT = 17;
+    private static final int COL_SURV_NONCONFORMITY_TYPE = 18;
+    private static final int COL_SURV_OUTCOME = 19;
+    private static final int COL_COMPLAINANT_CONTACTED = 20;
+    private static final int COL_DEVELOPER_CONTACTED = 21;
+    private static final int COL_ATL_CONTACTED = 22;
+    private static final int COL_FLAGGED_FOR_ONC = 23;
+    private static final int COL_COMPLAINT_STATUS = 24;
     private static final int[] HIDDEN_COLS = {
             COL_DEVELOPER, COL_PRODUCT, COL_VERSION
     };
@@ -130,6 +135,8 @@ public class ComplaintsWorksheetBuilder {
         sheet.setColumnWidth(COL_ONC_COMPLAINT_ID, sharedColWidth);
         sheet.setColumnWidth(COL_SUMMARY, workbook.getColumnWidth(36.78));
         sheet.setColumnWidth(COL_ACTIONS_RESPONSE, workbook.getColumnWidth(78));
+        sheet.setColumnWidth(COL_COMPLAINT_TYPES, workbook.getColumnWidth(22));
+        sheet.setColumnWidth(COL_COMPLAINT_TYPE_OTHER, workbook.getColumnWidth(22));
         sheet.setColumnWidth(COL_COMPLAINANT_TYPE, workbook.getColumnWidth(22));
         sheet.setColumnWidth(COL_COMPLAINANT_TYPE_OTHER, workbook.getColumnWidth(22));
         sheet.setColumnWidth(COL_CRITERIA_ID, workbook.getColumnWidth(22));
@@ -237,6 +244,8 @@ public class ComplaintsWorksheetBuilder {
         addHeadingCell(workbook, row, COL_ONC_COMPLAINT_ID, "ONC Complaint ID (if applicable)");
         addHeadingCell(workbook, row, COL_SUMMARY, "Complaint Summary");
         addHeadingCell(workbook, row, COL_ACTIONS_RESPONSE, "Actions/Response");
+        addHeadingCell(workbook, row, COL_COMPLAINT_TYPES, "Complaint Type(s)");
+        addHeadingCell(workbook, row, COL_COMPLAINT_TYPE_OTHER, "Complaint Type - Other");
         addHeadingCell(workbook, row, COL_COMPLAINANT_TYPE, "Type of Complainant");
         addHeadingCell(workbook, row, COL_COMPLAINANT_TYPE_OTHER, "Type of Complainant - Other");
         addHeadingCell(workbook, row, COL_CRITERIA_ID, "Associated Criteria");
@@ -499,6 +508,8 @@ public class ComplaintsWorksheetBuilder {
         addDataCell(workbook, row, COL_ONC_COMPLAINT_ID, complaint.getOncComplaintId());
         addDataCell(workbook, row, COL_SUMMARY, complaint.getSummary());
         addDataCell(workbook, row, COL_ACTIONS_RESPONSE, complaint.getActions());
+        addDataCell(workbook, row, COL_COMPLAINT_TYPES, formatComplaintTypes(complaint.getComplaintTypes()));
+        addDataCell(workbook, row, COL_COMPLAINT_TYPE_OTHER, complaint.getComplaintTypesOther());
         addDataCell(workbook, row, COL_COMPLAINANT_TYPE, complaint.getComplainantType() != null ? complaint.getComplainantType().getName() : "");
         addDataCell(workbook, row, COL_COMPLAINANT_TYPE_OTHER, complaint.getComplainantTypeOther());
         addDataCell(workbook, row, COL_COMPLAINANT_CONTACTED, complaint.isComplainantContacted() ? BOOLEAN_YES : BOOLEAN_NO);
@@ -506,6 +517,16 @@ public class ComplaintsWorksheetBuilder {
         addDataCell(workbook, row, COL_ATL_CONTACTED, complaint.isOncAtlContacted() ? BOOLEAN_YES : BOOLEAN_NO);
         addDataCell(workbook, row, COL_FLAGGED_FOR_ONC, complaint.isFlagForOncReview() ? BOOLEAN_YES : BOOLEAN_NO);
         addDataCell(workbook, row, COL_COMPLAINT_STATUS, complaint.getClosedDate() == null ? Complaint.COMPLAINT_OPEN : Complaint.COMPLAINT_CLOSED);
+    }
+
+    private String formatComplaintTypes(Set<ComplaintType> complaintTypes) {
+        String result = "";
+        if (!CollectionUtils.isEmpty(complaintTypes)) {
+            result = complaintTypes.stream()
+                    .map(ct -> ct.getName())
+                    .collect(Collectors.joining(", "));
+        }
+        return result;
     }
 
     private Cell addHeadingCell(SurveillanceReportWorkbookWrapper workbook, Row row, int cellNum, String cellText) {

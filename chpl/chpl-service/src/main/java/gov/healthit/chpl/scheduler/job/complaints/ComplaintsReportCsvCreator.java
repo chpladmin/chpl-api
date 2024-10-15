@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.complaint.domain.Complaint;
 import gov.healthit.chpl.complaint.domain.ComplaintListingMap;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.util.DateUtil;
@@ -77,6 +78,8 @@ public class ComplaintsReportCsvCreator {
                 "ONC-ACB",
                 "Complainant Type",
                 "Complainant Type - Other",
+                "Complaint Types",
+                "Complaint Types - Other",
                 "ONC Complaint ID",
                 "ONC-ACB Complaint ID",
                 "Received Date",
@@ -222,6 +225,8 @@ public class ComplaintsReportCsvCreator {
                 report.getComplaint().getCertificationBody().getName(),
                 report.getComplaint().getComplainantType() != null ? report.getComplaint().getComplainantType().getName() : "",
                 report.getComplaint().getComplainantTypeOther(),
+                printComplaintTypes(report.getComplaint()),
+                report.getComplaint().getComplaintTypesOther(),
                 report.getComplaint().getOncComplaintId(),
                 report.getComplaint().getAcbComplaintId(),
                 printDate(report.getComplaint().getReceivedDate()),
@@ -238,6 +243,16 @@ public class ComplaintsReportCsvCreator {
             List<List<String>> rowsForItem = getRows(reportItem);
             rowsForItem.stream()
                 .forEach(row -> printRow(csvFilePrinter, row));
+    }
+
+    private String printComplaintTypes(Complaint complaint) {
+        if (CollectionUtils.isEmpty(complaint.getComplaintTypes())) {
+            return "";
+        }
+        return complaint.getComplaintTypes().stream()
+                .map(ct -> ct.getName())
+                .sorted()
+                .collect(Collectors.joining(", "));
     }
 
     private String printDate(LocalDate value) {
