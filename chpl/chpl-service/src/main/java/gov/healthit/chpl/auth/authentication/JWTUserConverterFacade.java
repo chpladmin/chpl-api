@@ -40,13 +40,15 @@ public class JWTUserConverterFacade implements JWTUserConverter {
         //If SSO is on, try to validate the jwt using the Cognito converter
         if (ff4j.check(FeatureList.SSO)) {
             user = cognitoJwtUserConverter.getAuthenticatedUser(jwt);
-            try {
-                //Set some values not avail in the Cognito Access Token that were avail in the CHPL token
-                User cognitoUser = cognitoApiWrapper.getUserInfo(user.getCognitoId());
-                user.setEmail(cognitoUser.getEmail());
-                user.setFullName(cognitoUser.getFullName());
-            } catch (UserRetrievalException e) {
-                throw new JWTValidationException("Could not locate the Cognito user id");
+            if (user != null) {
+                try {
+                    //Set some values not avail in the Cognito Access Token that were avail in the CHPL token
+                    User cognitoUser = cognitoApiWrapper.getUserInfo(user.getCognitoId());
+                    user.setEmail(cognitoUser.getEmail());
+                    user.setFullName(cognitoUser.getFullName());
+                } catch (UserRetrievalException e) {
+                    throw new JWTValidationException("Could not locate the Cognito user id");
+                }
             }
         }
 
