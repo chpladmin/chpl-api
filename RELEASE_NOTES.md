@@ -1,5 +1,20 @@
 # Release Notes
 
+## Version 47.1.0
+_14 October 2024_
+
+### Features
+* Update Service Based URL List tests to support URLs where content-length header does not exist
+* Do not email disabled users in developer messaging
+* Add endpoints to get data for Surveillance Summary Statistics report
+* Add job to force all Cognito users to change password
+
+### Bug Fixes
+* Eliminate extra spaces in contact info during create/update
+* Normalize spaces for insert/update to address and contact
+
+---
+
 ## Version 47.0.0
 _30 September 2024_
 
