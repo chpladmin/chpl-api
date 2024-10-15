@@ -13,6 +13,11 @@ import gov.healthit.chpl.report.criteriamigrationreport.CriteriaMigrationReportD
 import gov.healthit.chpl.report.criteriamigrationreport.CriteriaMigrationReportService;
 import gov.healthit.chpl.report.developer.DeveloperReportsService;
 import gov.healthit.chpl.report.developer.UniqueDeveloperCount;
+import gov.healthit.chpl.report.listing.ListingReportsService;
+import gov.healthit.chpl.report.listing.UniqueListingCount;
+import gov.healthit.chpl.report.product.ProductByAcb;
+import gov.healthit.chpl.report.product.ProductReportsService;
+import gov.healthit.chpl.report.product.UniqueProductCount;
 import gov.healthit.chpl.report.surveillance.CapCounts;
 import gov.healthit.chpl.report.surveillance.NonconformityCounts;
 import gov.healthit.chpl.report.surveillance.SurveillanceActivityCounts;
@@ -28,14 +33,19 @@ public class ReportDataManager {
     private CriteriaMigrationReportService criteriaMigrationReportService;
     private SurveillanceReportsService surveillanceReportsService;
     private DeveloperReportsService developerReportsService;
+    private ProductReportsService productReportsService;
+    private ListingReportsService listingReportsService;
     private TestToolReportService testToolReportService;
 
     @Autowired
     public ReportDataManager(CriteriaMigrationReportService criteriaMigrationReportService, DeveloperReportsService developerReportsService,
-            SurveillanceReportsService surveillanceReportsService, TestToolReportService testToolReportService) {
+            SurveillanceReportsService surveillanceReportsService, ProductReportsService productReportsService, ListingReportsService listingReportsService,
+            TestToolReportService testToolReportService) {
         this.criteriaMigrationReportService = criteriaMigrationReportService;
         this.developerReportsService = developerReportsService;
         this.surveillanceReportsService = surveillanceReportsService;
+        this.productReportsService = productReportsService;
+        this.listingReportsService = listingReportsService;
         this.testToolReportService = testToolReportService;
     }
 
@@ -109,6 +119,62 @@ public class ReportDataManager {
 
     public List<DeveloperSearchResult> getDevelopersWithSuspendedListingsByAcb() {
         return developerReportsService.getDevelopersWithSuspendedListingsByAcb();
+    }
+
+    public UniqueProductCount getUniqueProductCount() {
+        return productReportsService.getUniqueProductCount();
+    }
+
+    public List<CertificationBodyStatistic> getActiveProdutCountsByAcb() {
+        return productReportsService.getActiveProductCountsByAcb();
+    }
+
+    public List<CertificationBodyStatistic> getWithdrawnProdutCountsByAcb() {
+        return productReportsService.getWithdrawnProductCountsByAcb();
+    }
+
+    public List<CertificationBodyStatistic> getSuspendedProdutCountsByAcb() {
+        return productReportsService.getSuspendedProductCountsByAcb();
+    }
+
+    public List<ProductByAcb> getActiveProductsAndAcb() {
+        return productReportsService.getActiveProductsAndAcb();
+    }
+
+    public List<ProductByAcb> getWithdrawnProductsAndAcb() {
+        return productReportsService.getWithdrawnProductsAndAcb();
+    }
+
+    public List<ProductByAcb> getSuspendedProductsAndAcb() {
+        return productReportsService.getSuspendedProductsAndAcb();
+    }
+
+    public UniqueListingCount getUniqueListingCount() {
+        return listingReportsService.getUniqueListingCount();
+    }
+
+    public List<CertificationBodyStatistic> getActiveListingCountsByAcb() {
+        return listingReportsService.getActiveListingCountsByAcb();
+    }
+
+    public List<CertificationBodyStatistic> getWithdrawnListingCountsByAcb() {
+        return listingReportsService.getWithdrawnListingCountsByAcb();
+    }
+
+    public List<CertificationBodyStatistic> getSuspendedListingCountsByAcb() {
+        return listingReportsService.getSuspendedListingCountsByAcb();
+    }
+
+    public List<ListingSearchResult> getActiveListings() {
+        return listingReportsService.getActiveListings();
+    }
+
+    public List<ListingSearchResult> getWithdrawnListings() {
+        return listingReportsService.getWithdrawnListings();
+    }
+
+    public List<ListingSearchResult> getSuspendedListings() {
+        return listingReportsService.getSuspendedListings();
     }
 
     public List<TestToolReport> getTestToolReports() {

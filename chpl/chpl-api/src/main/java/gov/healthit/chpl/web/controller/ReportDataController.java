@@ -19,6 +19,9 @@ import gov.healthit.chpl.report.criteriaattribute.TestToolListingReport;
 import gov.healthit.chpl.report.criteriaattribute.TestToolReport;
 import gov.healthit.chpl.report.criteriamigrationreport.CriteriaMigrationReportDenormalized;
 import gov.healthit.chpl.report.developer.UniqueDeveloperCount;
+import gov.healthit.chpl.report.listing.UniqueListingCount;
+import gov.healthit.chpl.report.product.ProductByAcb;
+import gov.healthit.chpl.report.product.UniqueProductCount;
 import gov.healthit.chpl.report.surveillance.CapCounts;
 import gov.healthit.chpl.report.surveillance.NonconformityCounts;
 import gov.healthit.chpl.report.surveillance.SurveillanceActivityCounts;
@@ -255,6 +258,146 @@ public class ReportDataController {
     @RequestMapping(value = "/developers-with-suspended-listings-by-acb", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<DeveloperSearchResult> getDevelopersWithSuspendedListingsByAcb() {
         return reportDataManager.getDevelopersWithSuspendedListingsByAcb();
+    }
+
+    @Operation(summary = "Retrieves the data used to generate the Active Products by ACB report.",
+            description = "Retrieves the data used to generate the Active Products by ACB report.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
+    @RequestMapping(value = "/active-product-counts-by-acb", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public @ResponseBody List<CertificationBodyStatistic> getActiveProdutCountsByAcb() {
+        return reportDataManager.getActiveProdutCountsByAcb();
+    }
+
+    @Operation(summary = "Retrieves the data used to generate the Withdrawn Products by ACB report.",
+            description = "Retrieves the data used to generate the Withdrawn Products by ACB report.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
+    @RequestMapping(value = "/withdrawn-product-counts-by-acb", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public @ResponseBody List<CertificationBodyStatistic> getWithdrawnProdutCountsByAcb() {
+        return reportDataManager.getWithdrawnProdutCountsByAcb();
+    }
+
+    @Operation(summary = "Retrieves the data used to generate the Suspended Products by ACB report.",
+            description = "Retrieves the data used to generate the Suspended Products by ACB report.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
+    @RequestMapping(value = "/suspended-product-counts-by-acb", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public @ResponseBody List<CertificationBodyStatistic> getSuspendedProdutCountsByAcb() {
+        return reportDataManager.getSuspendedProdutCountsByAcb();
+    }
+
+    @Operation(summary = "Retrieves the data used to generate the Active Products by ACB report",
+            description = "Retrieves the data used to generate the Active Products by ACB report.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
+    @RequestMapping(value = "/active-products", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public @ResponseBody List<ProductByAcb> getActiveProducts() {
+        return reportDataManager.getActiveProductsAndAcb();
+    }
+
+    @Operation(summary = "Retrieves the data used to generate the Suspended Products by ACB report",
+            description = "Retrieves the data used to generate the Suspended Products by ACB report.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
+    @RequestMapping(value = "/suspended-products", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public @ResponseBody List<ProductByAcb> getSuspendedProducts() {
+        return reportDataManager.getSuspendedProductsAndAcb();
+    }
+
+    @Operation(summary = "Retrieves the data used to generate the Withdrawn Products by ACB report",
+            description = "Retrieves the data used to generate the Withdrawn Products by ACB report.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
+    @RequestMapping(value = "/withdrawn-products", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public @ResponseBody List<ProductByAcb> getWithdrawnProducts() {
+        return reportDataManager.getWithdrawnProductsAndAcb();
+    }
+
+    @Operation(summary = "Retrieves the data used to generate the Product Count report.",
+            description = "Retrieves the data used to generate the Product Count report.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
+    @RequestMapping(value = "/product-count", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public @ResponseBody UniqueProductCount getUniqueProductCount() {
+        return reportDataManager.getUniqueProductCount();
+    }
+
+    @Operation(summary = "Retrieves the data used to generate the Active Listings by ACB report.",
+            description = "Retrieves the data used to generate the Active Listings  by ACB report.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
+    @RequestMapping(value = "/active-listing-counts-by-acb", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public @ResponseBody List<CertificationBodyStatistic> getActiveListingsCountsByAcb() {
+        return reportDataManager.getActiveListingCountsByAcb();
+    }
+
+    @Operation(summary = "Retrieves the data used to generate the Withdrawn Listings by ACB report.",
+            description = "Retrieves the data used to generate the Withdrawn Listings by ACB report.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
+    @RequestMapping(value = "/withdrawn-listing-counts-by-acb", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public @ResponseBody List<CertificationBodyStatistic> getWithdrawnListingCountsByAcb() {
+        return reportDataManager.getWithdrawnListingCountsByAcb();
+    }
+
+    @Operation(summary = "Retrieves the data used to generate the Suspended Listings by ACB report.",
+            description = "Retrieves the data used to generate the Suspended Listings by ACB report.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
+    @RequestMapping(value = "/suspended-listing-counts-by-acb", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public @ResponseBody List<CertificationBodyStatistic> getSuspendedListingCountsByAcb() {
+        return reportDataManager.getSuspendedListingCountsByAcb();
+    }
+
+    @Operation(summary = "Retrieves the data used to generate the Active Listing by ACB report",
+            description = "Retrieves the data used to generate the Active Listing by ACB report.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
+    @RequestMapping(value = "/active-listings", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public @ResponseBody List<ListingSearchResult> getActiveListings() {
+        return reportDataManager.getActiveListings();
+    }
+
+    @Operation(summary = "Retrieves the data used to generate the Suspended Listings by ACB report",
+            description = "Retrieves the data used to generate the Suspended Listings by ACB report.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
+    @RequestMapping(value = "/suspended-listings", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public @ResponseBody List<ListingSearchResult> getSuspendedListings() {
+        return reportDataManager.getSuspendedListings();
+    }
+
+    @Operation(summary = "Retrieves the data used to generate the Withdrawn Listings by ACB report",
+            description = "Retrieves the data used to generate the Withdrawn Listings by ACB report.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
+    @RequestMapping(value = "/withdrawn-listings", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public @ResponseBody List<ListingSearchResult> getWithdrawnListings() {
+        return reportDataManager.getWithdrawnListings();
+    }
+
+    @Operation(summary = "Retrieves the data used to generate the Listing Count report.",
+            description = "Retrieves the data used to generate the Listing Count report.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
+    @RequestMapping(value = "/listing-count", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public @ResponseBody UniqueListingCount getUniqueListingCount() {
+        return reportDataManager.getUniqueListingCount();
     }
 
     @Operation(summary = "Retrieves the data used to generate the Test Tool Criteria Attribute Summary report.",

@@ -21,6 +21,12 @@ public final class CertificationStatusUtil {
             CertificationStatusType.SuspendedByOnc)
             .toList();
 
+    private static final List<CertificationStatusType> WITHDRAWN_STATUSES = Stream.of(
+            CertificationStatusType.WithdrawnByAcb,
+            CertificationStatusType.WithdrawnByDeveloper,
+            CertificationStatusType.WithdrawnByDeveloperUnderReview)
+            .toList();
+
     private static final List<CertificationStatusType> NONRETIRED_STATUSES = Stream.of(
             CertificationStatusType.Active,
             CertificationStatusType.SuspendedByAcb,
@@ -45,6 +51,10 @@ public final class CertificationStatusUtil {
 
     public static List<CertificationStatusType> getSuspendedStatuses() {
         return SUSPENDED_STATUSES;
+    }
+
+    public static List<CertificationStatusType> getWithdrawnStatuses() {
+        return WITHDRAWN_STATUSES;
     }
 
     public static List<CertificationStatusType> getNonretiredStatuses() {
