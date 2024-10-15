@@ -40,7 +40,8 @@ public class CqmResultReviewer implements Reviewer {
                     .filter(cqmResult -> BooleanUtils.isTrue(cqmResult.getSuccess()))
                     .forEach(cqmResult -> reviewCqmResultRequiredFields(listing, cqmResult));
 
-            Predicate<CQMResultDetails> shouldRemove = cqm -> isMissingCmsIdButHasOtherData(cqm) || isMissingCqmCriterionId(cqm);
+            Predicate<CQMResultDetails> shouldRemove = cqm -> BooleanUtils.isTrue(cqm.getSuccess())
+                    && (isMissingCmsIdButHasOtherData(cqm) || isMissingCqmCriterionId(cqm));
             listing.getCqmResults().removeIf(shouldRemove);
         }
 
