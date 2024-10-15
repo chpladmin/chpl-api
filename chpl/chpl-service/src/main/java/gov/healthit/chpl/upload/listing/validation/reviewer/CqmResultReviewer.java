@@ -1,7 +1,8 @@
 package gov.healthit.chpl.upload.listing.validation.reviewer;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.function.Predicate;
+import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
@@ -35,25 +36,27 @@ public class CqmResultReviewer implements Reviewer {
 
     @Override
     public void review(CertifiedProductSearchDetails listing) {
+        List<CQMResultDetails> cqmsToRemove = new ArrayList<CQMResultDetails>();
         if (!CollectionUtils.isEmpty(listing.getCqmResults())) {
             listing.getCqmResults().stream()
                     .filter(cqmResult -> BooleanUtils.isTrue(cqmResult.getSuccess()))
-                    .forEach(cqmResult -> reviewCqmResultRequiredFields(listing, cqmResult));
-
-            Predicate<CQMResultDetails> shouldRemove = cqm -> isMissingCmsIdButHasOtherData(cqm) || isMissingCqmCriterionId(cqm);
-            listing.getCqmResults().removeIf(shouldRemove);
+                    .forEach(cqmResult -> reviewCqmResultRequiredFields(listing, cqmResult, cqmsToRemove));
+            listing.getCqmResults().removeAll(cqmsToRemove);
         }
 
         cqmAttestedCriteriaReviewer.review(listing);
         attestedCriteriaCqmReviewer.review(listing);
     }
 
-    private void reviewCqmResultRequiredFields(CertifiedProductSearchDetails listing, CQMResultDetails cqmResult) {
+    private void reviewCqmResultRequiredFields(CertifiedProductSearchDetails listing, CQMResultDetails cqmResult,
+            List<CQMResultDetails> cqmsToRemove) {
         if (isMissingCmsIdButHasOtherData(cqmResult)) {
             listing.addWarningMessage(msgUtil.getMessage("listing.cqm.missingCmsId"));
+            cqmsToRemove.add(cqmResult);
         } else if (!StringUtils.isEmpty(cqmResult.getCmsId())) {
             if (isMissingCqmCriterionId(cqmResult)) {
                 listing.addWarningMessage(msgUtil.getMessage("listing.cqm.invalidCmsId", cqmResult.getCmsId()));
+                cqmsToRemove.add(cqmResult);
             } else {
                 if (CollectionUtils.isEmpty(cqmResult.getSuccessVersions())) {
                     listing.addDataErrorMessage(msgUtil.getMessage("listing.cqm.missingVersion", cqmResult.getCmsId()));
