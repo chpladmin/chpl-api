@@ -29,7 +29,6 @@ public class RealWorldTestingReviewer implements Reviewer {
         if (isRwtPlansDataSubmitted(updatedListing)) {
             validateRwtPlansUrl(updatedListing);
             validateRwtPlansCheckDate(updatedListing);
-
         }
         if (isRwtResultsDataSubmitted(updatedListing)) {
             validateRwtResultsUrl(updatedListing);
@@ -81,11 +80,13 @@ public class RealWorldTestingReviewer implements Reviewer {
 
     private boolean isRwtPlansDataSubmitted(CertifiedProductSearchDetails updatedListing) {
         return !StringUtils.isBlank(updatedListing.getRwtPlansUrl())
-                || Objects.nonNull(updatedListing.getRwtPlansCheckDate());
+                || Objects.nonNull(updatedListing.getRwtPlansCheckDate())
+                || !StringUtils.isBlank(updatedListing.getUserEnteredRwtPlansCheckDate());
     }
 
     private boolean isRwtResultsDataSubmitted(CertifiedProductSearchDetails updatedListing) {
         return !StringUtils.isBlank(updatedListing.getRwtResultsUrl())
-                || Objects.nonNull(updatedListing.getRwtResultsCheckDate());
+                || Objects.nonNull(updatedListing.getRwtResultsCheckDate())
+                || !StringUtils.isBlank(updatedListing.getUserEnteredRwtResultsCheckDate());
     }
 }
