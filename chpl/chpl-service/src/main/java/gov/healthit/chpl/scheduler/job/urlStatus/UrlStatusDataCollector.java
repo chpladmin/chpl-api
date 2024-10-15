@@ -1,6 +1,5 @@
 package gov.healthit.chpl.scheduler.job.urlStatus;
 
-import java.security.cert.X509Certificate;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -10,15 +9,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import javax.net.ssl.SSLContext;
-
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
-import org.apache.http.conn.ssl.TrustStrategy;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.ssl.SSLContexts;
+import org.htmlunit.BrowserVersion;
+import org.htmlunit.WebClient;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.BeanUtils;
@@ -26,6 +19,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
+
+import com.datadog.api.client.ApiClient;
 
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -41,7 +36,7 @@ public class UrlStatusDataCollector extends QuartzJob {
     private static final long DAYS_TO_MILLIS = 24 * 60 * 60 * SECONDS_TO_MILLIS;
     private static final int BATCH_SIZE = 100;
     private static final int DEFAULT_INTERVAL_DAYS = 1;
-    private static final int DEFAULT_TIMEOUT_SECONTS = 10;
+    private static final int DEFAULT_TIMEOUT_SECONDS = 10;
 
     @Autowired
     private Environment env;
@@ -57,9 +52,8 @@ public class UrlStatusDataCollector extends QuartzJob {
     private int successCheckIntervalDays = DEFAULT_INTERVAL_DAYS;
     private int failureCheckIntervalDays = DEFAULT_INTERVAL_DAYS;
     private int redirectCheckIntervalDays = DEFAULT_INTERVAL_DAYS;
-    private int connectTimeoutSeconds = DEFAULT_TIMEOUT_SECONTS;
-    private int requestTimeoutSeconds = DEFAULT_TIMEOUT_SECONTS;
-    private CloseableHttpClient httpClient;
+    private int requestTimeoutSeconds = DEFAULT_TIMEOUT_SECONDS;
+    private  WebClient webClient;
     private Map<UrlResult, Future<Integer>> urlResponseCodeFuturesMap;
 
     public UrlStatusDataCollector() {
@@ -71,6 +65,10 @@ public class UrlStatusDataCollector extends QuartzJob {
     public void execute(JobExecutionContext jobContext) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
         LOGGER.info("********* Starting the URL Status Data Collector job. *********");
+
+        ApiClient defaultClient = ApiClient.getDefaultApiClient();
+        String datadogDefaultClientUserAgent = defaultClient.getUserAgent();
+        LOGGER.info("User-Agent: " + datadogDefaultClientUserAgent);
 
         completeSetup();
 
@@ -96,7 +94,7 @@ public class UrlStatusDataCollector extends QuartzJob {
             LOGGER.error("Unable to complete job: " + ex.getMessage(), ex);
         } finally {
             try {
-                httpClient.close();
+                webClient.close();
             } catch (final Exception ex) {
                 LOGGER.error("Error closing the httpClient: " + ex.getMessage(), ex);
             }
@@ -178,7 +176,7 @@ public class UrlStatusDataCollector extends QuartzJob {
                     + " will be checked for validity.");
                 try {
                    CompletableFuture<Integer> responseCodeFuture =
-                           urlCallerAsync.getUrlResponseCodeFuture(systemUrl, httpClient, executorService, LOGGER);
+                           urlCallerAsync.getUrlResponseCodeFuture(systemUrl, webClient, executorService, LOGGER);
                    urlResponseCodeFuturesMap.put(systemUrl, responseCodeFuture);
                 } catch (final Exception ex) {
                     LOGGER.info("Could not check URL " + systemUrl.getUrl()
@@ -257,19 +255,7 @@ public class UrlStatusDataCollector extends QuartzJob {
                         + "Using the default value of " + redirectCheckIntervalDays);
             }
 
-            String connectTimeoutSecondsStr = env.getProperty("job.urlStatusChecker.connectTimeoutSeconds");
             String requestTimeoutSecondsStr = env.getProperty("job.urlStatusChecker.requestTimeoutSeconds");
-            if (!StringUtils.isEmpty(connectTimeoutSecondsStr)) {
-                try {
-                    connectTimeoutSeconds = Integer.parseInt(connectTimeoutSecondsStr);
-                } catch (NumberFormatException ex) {
-                    LOGGER.warn("Cannot parse job.urlStatusChecker.connectTimeoutSeconds property value "
-                            + connectTimeoutSecondsStr + " as number.");
-                }
-            } else {
-                LOGGER.warn("No value found for property job.urlStatusChecker.connectTimeoutSeconds. "
-                        + "Using the default value of " + connectTimeoutSeconds);
-            }
             if (!StringUtils.isEmpty(requestTimeoutSecondsStr)) {
                 try {
                     requestTimeoutSeconds = Integer.parseInt(requestTimeoutSecondsStr);
@@ -285,24 +271,15 @@ public class UrlStatusDataCollector extends QuartzJob {
             LOGGER.error("The spring environment was null.");
         }
 
-        TrustStrategy acceptingTrustStrategy = (X509Certificate[] chain, String authType) -> true;
-        SSLContext sslContext = null;
-        try {
-            sslContext = org.apache.http.ssl.SSLContexts.custom().loadTrustMaterial(null, acceptingTrustStrategy).build();
-        } catch (Exception ex) {
-            LOGGER.error("Could not create ssl context; https requests may fail.", ex);
-        }
-
-        SSLConnectionSocketFactory csf = new SSLConnectionSocketFactory(sslContext != null ? sslContext : SSLContexts.createDefault());
-        httpClient = HttpClients.custom()
-                .setSSLSocketFactory(csf)
-                .setDefaultRequestConfig(RequestConfig.custom()
-                        .setConnectionRequestTimeout(requestTimeoutSeconds * SECONDS_TO_MILLIS)
-                        .setConnectTimeout(connectTimeoutSeconds * SECONDS_TO_MILLIS)
-                        .setSocketTimeout(connectTimeoutSeconds * SECONDS_TO_MILLIS)
-                        .build())
-                .build();
-
+        webClient = new WebClient(BrowserVersion.CHROME, false, null, -1);
+        webClient.getOptions().setRedirectEnabled(true);
+        webClient.getOptions().setTimeout(requestTimeoutSeconds * SECONDS_TO_MILLIS);
+        //if we throw exceptions on any error then many websites don't load because they have some
+        //javascript error or some link, like GTM, that doesn't work, so we have to ignore these (as the browser does)
+        webClient.getOptions().setThrowExceptionOnScriptError(false);
+        webClient.getOptions().setThrowExceptionOnFailingStatusCode(false);
+        //many websites also have weird issues with their certificates and browsers seem to let you view them anyway
+        webClient.getOptions().setUseInsecureSSL(true);
         initializeExecutorService();
     }
 
