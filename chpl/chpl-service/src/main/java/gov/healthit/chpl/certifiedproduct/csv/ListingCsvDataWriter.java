@@ -629,7 +629,11 @@ public class ListingCsvDataWriter {
             if (!CollectionUtils.isEmpty(certResult.getOptionalStandards())) {
                 for (int i = 0; i < certResult.getOptionalStandards().size(); i++) {
                     CertificationResultOptionalStandard optionalStandard = certResult.getOptionalStandards().get(i);
-                    csvDataMatrix[i][currCol] = optionalStandard.getOptionalStandard().getCitation();
+                    if (!StringUtils.isEmpty(optionalStandard.getOptionalStandard().getCitation())) {
+                        csvDataMatrix[i][currCol] = optionalStandard.getOptionalStandard().getCitation();
+                    } else if (!StringUtils.isEmpty(optionalStandard.getOptionalStandard().getDisplayValue())) {
+                        csvDataMatrix[i][currCol] = optionalStandard.getOptionalStandard().getDisplayValue();
+                    }
                 }
             }
             currCol++;
