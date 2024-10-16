@@ -42,6 +42,15 @@ public class CriteriaMigrationReportDAO extends BaseDAOImpl {
         return report.toDomain();
     }
 
+    public Optional<CriteriaMigrationCount> getCriteriaMigrationCount(Long criteriaMigrationDefinitionId, LocalDate reportDate) {
+        Optional<CriteriaMigrationCountEntity> cmc =  getCriteriaMigrationCountEntityByDefinitionAndReportDate(criteriaMigrationDefinitionId, reportDate);
+        if (cmc.isPresent()) {
+            return Optional.of(cmc.get().toDomain());
+        } else {
+            return Optional.empty();
+        }
+    }
+
     public CriteriaMigrationReport getCriteriaMigrationReportWithoutCounts(Long criteriaMigrationReportId) {
         CriteriaMigrationReportEntity report = getCriteriaMigrationReportEntity(criteriaMigrationReportId);
 
