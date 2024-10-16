@@ -1,7 +1,6 @@
 package gov.healthit.chpl.report.criteriamigrationreport;
 
 import java.time.LocalDate;
-import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -18,7 +17,8 @@ import lombok.extern.log4j.Log4j2;
 @Component
 public class CriteriaMigrationReportService {
     public static final Long HTI1_REPORT_ID = 2L;
-    private static final Integer MONTHS_IN_REPORT = 4;
+    private static final Integer WEEKS_IN_REPORT = 8;
+    private static final Integer DAYS_IN_A_WEEK = 7;
     private static final Integer MAX_DAYS_TO_CHECK_FOR_DATA = 7;
 
     private CriteriaMigrationReportDAO criteriaMigrationReportDAO;
@@ -98,13 +98,11 @@ public class CriteriaMigrationReportService {
 
     private List<LocalDate> getTargetDatesForReport() {
         List<LocalDate> targetDates = new ArrayList<LocalDate>();
-        for (Integer i = 0; i < MONTHS_IN_REPORT; ++i) {
-            targetDates.add(LocalDate.now().minusMonths(i).with(TemporalAdjusters.firstDayOfMonth()));
-            //targetDates.add(LocalDate.now().minusMonths(i).with(TemporalAdjusters.firstDayOfMonth()).plusDays(LocalDate.now().getDayOfMonth()-1));
+        for (Integer i = 0; i < WEEKS_IN_REPORT; ++i) {
+            targetDates.add(LocalDate.now().minusDays(1 + (DAYS_IN_A_WEEK * i)));
         }
         return targetDates;
     }
-
 
 
     private Double getPercentUpdate(CriteriaMigrationCount criteriaMigratrionCount) {
