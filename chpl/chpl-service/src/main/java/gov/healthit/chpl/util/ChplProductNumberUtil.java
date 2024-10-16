@@ -1,8 +1,10 @@
 package gov.healthit.chpl.util;
 
 import java.util.List;
+import java.util.OptionalInt;
 import java.util.stream.Stream;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -10,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.dao.CertifiedProductSearchResultDAO;
 import gov.healthit.chpl.dao.ChplProductNumberDAO;
+import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import lombok.NoArgsConstructor;
@@ -53,6 +56,7 @@ public class ChplProductNumberUtil {
     public static final int CHPL_PRODUCT_ID_PARTS = 9;
 
     private static final int LEGACY_ID_LENGTH = 10;
+    private static final int LOWEST_TWO_DIGIT_NUMBER = 10;
 
     private CertifiedProductSearchResultDAO certifiedProductSearchResultDAO;
     private ChplProductNumberDAO chplProductNumberDAO;
@@ -109,6 +113,10 @@ public class ChplProductNumberUtil {
         parts.setAdditionalSoftwareCode(addlSoftwareCode);
         parts.setCertifiedDateCode(certDateCode);
 
+        return concatParts(parts);
+    }
+
+    public String getChplProductNumber(ChplProductNumberParts parts) {
         return concatParts(parts);
     }
 
@@ -195,6 +203,32 @@ public class ChplProductNumberUtil {
             }
         }
         return hasIcsConflict;
+    }
+
+    public String deriveIcsCodeFromListing(CertifiedProductSearchDetails listing) {
+        if (listing.getIcs() == null || !listing.getIcs().getInherits()
+                || CollectionUtils.isEmpty(listing.getIcs().getParents())) {
+            return "00";
+        }
+        OptionalInt maxParentCodeOpt = listing.getIcs().getParents().stream()
+            .map(parentListing -> parentListing.getChplProductNumber())
+            .map(parentChplProductNumber -> getIcsCode(parentChplProductNumber))
+            .mapToInt(Integer::intValue)
+            .max();
+        if (maxParentCodeOpt.isEmpty()) {
+            return "00";
+        }
+
+        int maxParentCode = maxParentCodeOpt.getAsInt();
+        return ((maxParentCode + 1) < LOWEST_TWO_DIGIT_NUMBER) ? "0" + (maxParentCode + 1) : "" + (maxParentCode + 1);
+    }
+
+    public String deriveAdditionalSoftwareCodeFromListing(CertifiedProductSearchDetails listing) {
+        long certResultsWithAdditionalSoftware = listing.getCertificationResults().stream()
+            .filter(certResult -> certResult.getSuccess())
+            .filter(certResult -> !CollectionUtils.isEmpty(certResult.getAdditionalSoftware()))
+            .count();
+        return certResultsWithAdditionalSoftware > 0 ? "1" : "0";
     }
 
     public String getDeveloperCode(String chplProductNumber) {

@@ -38,6 +38,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
+import gov.healthit.chpl.certifiedproduct.service.ListingMergeService;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.ConfirmListingRequest;
 import gov.healthit.chpl.domain.ListingUpload;
@@ -53,6 +54,8 @@ import gov.healthit.chpl.upload.listing.ListingUploadManager;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.FileUtils;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
+import gov.healthit.chpl.validation.listing.ListingValidatorFactory;
+import gov.healthit.chpl.validation.listing.Validator;
 import gov.healthit.chpl.web.controller.annotation.DeprecatedApiResponseFields;
 import gov.healthit.chpl.web.controller.results.ListingUploadResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -75,15 +78,21 @@ public class ListingUploadController {
 
     private ListingUploadManager listingUploadManager;
     private CertifiedProductDetailsManager cpdManager;
+    private ListingMergeService listingMergeService;
+    private ListingValidatorFactory validatorFactory;
     private ChplEmailFactory chplEmailFactory;
     private FileUtils fileUtils;
 
     @Autowired
     public ListingUploadController(ListingUploadManager listingUploadManager,
             CertifiedProductDetailsManager cpdManager,
+            ListingMergeService listingMergeService,
+            ListingValidatorFactory validatorFactory,
             ChplEmailFactory chplEmailFactory, FileUtils fileUtils) {
         this.listingUploadManager = listingUploadManager;
         this.cpdManager = cpdManager;
+        this.listingMergeService = listingMergeService;
+        this.validatorFactory = validatorFactory;
         this.chplEmailFactory = chplEmailFactory;
         this.fileUtils = fileUtils;
     }
@@ -202,6 +211,52 @@ public class ListingUploadController {
         ListingUploadResponse response = createResponse(successfulListingUploads, processedListingErrorMap);
         return new ResponseEntity<ListingUploadResponse>(response,
                 response.getErrorMessages().size() == 0 ? HttpStatus.OK : HttpStatus.PARTIAL_CONTENT);
+    }
+
+    @Operation(summary = "Upload a file representing a certified product. "
+            + "The listing must be one that exists in the CHPL system currently and the file may contain updates to that listing.",
+            description = "Accepts a CSV file with a valid set of fields recognized as listing data. "
+                    + "Security Restrictions: ROLE_ADMIN or user uploading the file must have ROLE_ACB "
+                    + "and administrative authority on the ONC-ACB(s) specified in the file.",
+            security = { @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)})
+    @RequestMapping(value = "/upload/{listingId}", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
+    public ResponseEntity<CertifiedProductSearchDetails> mergeUploadedFileWithListing(@PathVariable("listingId") Long listingId,
+            @RequestParam("file") MultipartFile file) throws ValidationException, EntityRetrievalException {
+        List<ListingUpload> uploadedListings = new ArrayList<ListingUpload>();
+        try {
+            uploadedListings = listingUploadManager.parseUploadFile(file);
+        } catch (ValidationException ex) {
+            LOGGER.error("Error uploading listing(s) from file " + file.getOriginalFilename() + ". " + ex.getMessage(), ex);
+            throw ex;
+        } catch (AccessDeniedException | NullPointerException | IndexOutOfBoundsException ex) {
+            LOGGER.error("Error uploading listing(s) from file " + file.getOriginalFilename() + ". " + ex.getMessage(), ex);
+            //send an email that something weird happened
+            sendUploadError(file, ex);
+            throw new ValidationException(ex.getMessage());
+        }
+
+        if (uploadedListings.size() > 1) {
+            LOGGER.error("File uploaded for listing " + listingId + " had more than one unique CHPL Product Number in the file.");
+            throw new ValidationException("The file uploaded has more than one unique CHPL Product Number. The file may only contain data for a single listing.");
+        }
+
+        ListingUpload uploadedListing = uploadedListings.get(0);
+        CertifiedProductSearchDetails currentListingDetails = null;
+        try {
+            currentListingDetails = cpdManager.getCertifiedProductDetails(listingId);
+        } catch (Exception ex) {
+            LOGGER.error("Error getting the details for listing " + listingId, ex);
+            throw new EntityRetrievalException("Unable to find an existing listing with ID " + listingId);
+        }
+
+        CertifiedProductSearchDetails uploadedListingDetails = listingUploadManager.getListingUploadAsListingForUpdate(uploadedListing);
+        listingMergeService.mergeWithListingFromChpl(uploadedListingDetails, currentListingDetails);
+        Validator validator = validatorFactory.getValidator(uploadedListingDetails);
+        if (validator != null) {
+            validator.validate(currentListingDetails, uploadedListingDetails);
+        }
+        return new ResponseEntity<CertifiedProductSearchDetails>(uploadedListingDetails, HttpStatus.OK);
     }
 
     private ListingUploadResponse createResponse(List<ListingUpload> successfulListingUploads, Map<String, String> processedListingErrorMap) throws ValidationException {

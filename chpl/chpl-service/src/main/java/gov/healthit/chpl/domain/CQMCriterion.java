@@ -13,6 +13,8 @@ import lombok.NoArgsConstructor;
 @Builder
 public class CQMCriterion implements Serializable {
     private static final long serialVersionUID = -1847517952030827806L;
+    public static final String VERSION_PREPEND_CHAR = "v";
+
     private Long criterionId;
     private String cmsId;
     private Long cqmCriterionTypeId;

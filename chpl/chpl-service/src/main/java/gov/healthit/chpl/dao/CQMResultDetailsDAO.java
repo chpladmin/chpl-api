@@ -1,33 +1,28 @@
 package gov.healthit.chpl.dao;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
-import gov.healthit.chpl.dto.CQMResultDetailsDTO;
+import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.entity.listing.CQMResultDetailsEntity;
-import gov.healthit.chpl.exception.EntityRetrievalException;
 import jakarta.persistence.Query;
 
 @Repository(value = "cqmResultDetailsDAO")
 public class CQMResultDetailsDAO extends BaseDAOImpl {
 
     @Transactional
-    public List<CQMResultDetailsDTO> getCQMResultDetailsByCertifiedProductId(Long certifiedProductId)
-            throws EntityRetrievalException {
-        List<CQMResultDetailsEntity> entities = getEntitiesByCertifiedProductId(certifiedProductId);
-        List<CQMResultDetailsDTO> dtos = new ArrayList<CQMResultDetailsDTO>(entities.size());
-        for (CQMResultDetailsEntity entity : entities) {
-            dtos.add(new CQMResultDetailsDTO(entity));
-        }
-        return dtos;
+    public List<CQMResultDetails> getCQMResultDetailsByCertifiedProductId(Long certifiedProductId) {
+        List<CQMResultDetailsEntity> cqmResultEntities = getEntitiesByCertifiedProductId(certifiedProductId);
+        return cqmResultEntities.stream()
+                .map(entity -> entity.toDomain())
+                .collect(Collectors.toList());
     }
 
-    private List<CQMResultDetailsEntity> getEntitiesByCertifiedProductId(Long productId)
-            throws EntityRetrievalException {
+    private List<CQMResultDetailsEntity> getEntitiesByCertifiedProductId(Long productId) {
         Query query = entityManager.createQuery(
                 "FROM CQMResultDetailsEntity "
                 + "WHERE (NOT deleted = true) "

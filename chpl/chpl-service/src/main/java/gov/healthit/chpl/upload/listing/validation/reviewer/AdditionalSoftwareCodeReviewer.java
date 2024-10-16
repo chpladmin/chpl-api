@@ -44,12 +44,33 @@ public class AdditionalSoftwareCodeReviewer implements Reviewer {
                 .findAny().isPresent();
         if (additionalSoftwareCode != null && additionalSoftwareCode.equals("0")) {
             if (certsHaveAdditionalSoftware) {
-                listing.addDataErrorMessage(msgUtil.getMessage("listing.additionalSoftwareCode0Mismatch"));
+                listing.addWarningMessage(msgUtil.getMessage("listing.additionalSoftwareCode0Mismatch"));
+                updateChplProductNumber(listing, ChplProductNumberUtil.ADDITIONAL_SOFTWARE_CODE_INDEX, "1");
             }
         } else if (additionalSoftwareCode != null && additionalSoftwareCode.equals("1")) {
             if (!certsHaveAdditionalSoftware) {
-                listing.addDataErrorMessage(msgUtil.getMessage("listing.additionalSoftwareCode1Mismatch"));
+                listing.addWarningMessage(msgUtil.getMessage("listing.additionalSoftwareCode1Mismatch"));
+                updateChplProductNumber(listing, ChplProductNumberUtil.ADDITIONAL_SOFTWARE_CODE_INDEX, "0");
             }
+        }
+    }
+
+    private void updateChplProductNumber(CertifiedProductSearchDetails product, int productNumberIndex, String newValue) {
+        String[] uniqueIdParts = product.getChplProductNumber().split("\\.");
+        if (uniqueIdParts.length == ChplProductNumberUtil.CHPL_PRODUCT_ID_PARTS) {
+            StringBuffer newCodeBuffer = new StringBuffer();
+            for (int idx = 0; idx < uniqueIdParts.length; idx++) {
+                if (idx == productNumberIndex) {
+                    newCodeBuffer.append(newValue);
+                } else {
+                    newCodeBuffer.append(uniqueIdParts[idx]);
+                }
+
+                if (idx < uniqueIdParts.length - 1) {
+                    newCodeBuffer.append(".");
+                }
+            }
+            product.setChplProductNumber(newCodeBuffer.toString());
         }
     }
 }
