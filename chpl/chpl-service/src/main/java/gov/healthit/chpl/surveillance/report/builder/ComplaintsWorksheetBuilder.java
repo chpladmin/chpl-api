@@ -245,7 +245,7 @@ public class ComplaintsWorksheetBuilder {
         addHeadingCell(workbook, row, COL_SUMMARY, "Complaint Summary");
         addHeadingCell(workbook, row, COL_ACTIONS_RESPONSE, "Actions/Response");
         addHeadingCell(workbook, row, COL_COMPLAINT_TYPES, "Complaint Type(s)");
-        addHeadingCell(workbook, row, COL_COMPLAINT_TYPE_OTHER, "Complaint Type - Other");
+        addHeadingCell(workbook, row, COL_COMPLAINT_TYPE_OTHER, "Complaint Type(s) - Other");
         addHeadingCell(workbook, row, COL_COMPLAINANT_TYPE, "Type of Complainant");
         addHeadingCell(workbook, row, COL_COMPLAINANT_TYPE_OTHER, "Type of Complainant - Other");
         addHeadingCell(workbook, row, COL_CRITERIA_ID, "Associated Criteria");
