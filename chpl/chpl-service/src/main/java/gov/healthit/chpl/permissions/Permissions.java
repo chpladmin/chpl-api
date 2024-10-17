@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.permissions.domains.AccessibilityStandardDomainPermissions;
 import gov.healthit.chpl.permissions.domains.ActivityDomainPermissions;
 import gov.healthit.chpl.permissions.domains.AnnouncementDomainPermissions;
+import gov.healthit.chpl.permissions.domains.ApiKeyDomainPermissions;
 import gov.healthit.chpl.permissions.domains.AttestationDomainPermissions;
 import gov.healthit.chpl.permissions.domains.CertificationBodyDomainPermissions;
 import gov.healthit.chpl.permissions.domains.CertificationIdDomainPermissions;
@@ -76,6 +77,7 @@ public class Permissions {
     public static final String FUNCTIONALITY_TESTED = "FUNCTIONALITY_TESTED";
     public static final String STANDARD = "STANDARD";
     public static final String CODE_SET = "CODE_SET";
+    public static final String API_KEY = "API_KEY";
 
     private Map<String, DomainPermissions> domainPermissions = new HashMap<String, DomainPermissions>();
 
@@ -112,7 +114,8 @@ public class Permissions {
             TestToolDomainPermissions testToolDomainPermissions,
             FunctionalityTestedDomainPermissions functionalityTestedDomainPermissions,
             StandardDomainPermissions standardDomainPermissions,
-            CodeSetDomainPermissions codeSetPermissions) {
+            CodeSetDomainPermissions codeSetPermissions,
+            ApiKeyDomainPermissions apiKeyPermissions) {
 
         domainPermissions.put(ACCESSIBILITY_STANDARD, accessibilityStandardDomainPermissions);
         domainPermissions.put(ACTIVITY, activityDomainPermissions);
@@ -146,6 +149,7 @@ public class Permissions {
         domainPermissions.put(TESTING_LAB, testingLabDomainPermissions);
         domainPermissions.put(UCD_PROCESS, ucdProcessDomainPermissions);
         domainPermissions.put(USER_PERMISSIONS, userPermissionsDomainPermissions);
+        domainPermissions.put(API_KEY, apiKeyPermissions);
     }
 
     public boolean hasAccess(final String domain, final String action) {
