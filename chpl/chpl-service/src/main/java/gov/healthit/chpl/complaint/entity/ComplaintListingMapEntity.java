@@ -1,5 +1,10 @@
 package gov.healthit.chpl.complaint.entity;
 
+import org.hibernate.annotations.SQLRestriction;
+
+import gov.healthit.chpl.complaint.domain.ComplaintListingMap;
+import gov.healthit.chpl.entity.EntityAudit;
+import gov.healthit.chpl.entity.listing.CertifiedProductDetailsEntitySimple;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -9,12 +14,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-
-import org.hibernate.annotations.Where;
-
-import gov.healthit.chpl.complaint.domain.ComplaintListingMap;
-import gov.healthit.chpl.entity.EntityAudit;
-import gov.healthit.chpl.entity.listing.CertifiedProductDetailsEntitySimple;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -46,7 +45,7 @@ public class ComplaintListingMapEntity extends EntityAudit {
 
     @OneToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "listing_id", insertable = false, updatable = false)
-    @Where(clause = "deleted <> 'true'")
+    @SQLRestriction("deleted <> true")
     private CertifiedProductDetailsEntitySimple listing;
 
     public ComplaintListingMap buildComplaintListingMap() {

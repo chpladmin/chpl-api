@@ -412,6 +412,21 @@ public class DimensionalDataController {
         return dimensionalDataManager.getDimensionalData(simple);
     }
 
+    @Operation(summary = "Get all possible complaint types in the CHPL",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
+    @RequestMapping(value = "/complaint-types", method = RequestMethod.GET,
+            produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
+    public @ResponseBody SearchOption getComplaintTypes() {
+        Set<KeyValueModel> data = complaintManager.getComplaintTypes();
+        SearchOption result = new SearchOption();
+        result.setExpandable(false);
+        result.setData(data);
+        return result;
+    }
+
     @Operation(summary = "Get all possible complainant types in the CHPL",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)

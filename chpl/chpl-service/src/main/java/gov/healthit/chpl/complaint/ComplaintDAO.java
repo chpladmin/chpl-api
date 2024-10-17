@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import jakarta.persistence.Query;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections4.IterableUtils;
 import org.apache.commons.collections4.Predicate;
@@ -17,14 +15,18 @@ import gov.healthit.chpl.complaint.domain.ComplainantType;
 import gov.healthit.chpl.complaint.domain.Complaint;
 import gov.healthit.chpl.complaint.domain.ComplaintCriterionMap;
 import gov.healthit.chpl.complaint.domain.ComplaintListingMap;
+import gov.healthit.chpl.complaint.domain.ComplaintType;
 import gov.healthit.chpl.complaint.entity.ComplainantTypeEntity;
 import gov.healthit.chpl.complaint.entity.ComplaintCriterionMapEntity;
 import gov.healthit.chpl.complaint.entity.ComplaintEntity;
 import gov.healthit.chpl.complaint.entity.ComplaintListingMapEntity;
 import gov.healthit.chpl.complaint.entity.ComplaintSurveillanceMapEntity;
+import gov.healthit.chpl.complaint.entity.ComplaintToComplaintTypeMapEntity;
+import gov.healthit.chpl.complaint.entity.ComplaintTypeEntity;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.ComplaintSurveillanceMap;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import jakarta.persistence.Query;
 import lombok.extern.log4j.Log4j2;
 
 @Component
@@ -36,6 +38,8 @@ public class ComplaintDAO extends BaseDAOImpl {
             + "LEFT JOIN FETCH listings.listing "
             + "LEFT JOIN FETCH c.surveillances surveillances "
             + "LEFT JOIN FETCH surveillances.surveillance surv "
+            + "LEFT JOIN FETCH c.complaintTypes typeMap "
+            + "LEFT JOIN FETCH typeMap.complaintType "
             + "LEFT JOIN FETCH surv.surveillanceType "
             + "LEFT JOIN FETCH c.criteria criteria "
             + "LEFT JOIN FETCH criteria.certificationCriterion criterion "
@@ -45,6 +49,13 @@ public class ComplaintDAO extends BaseDAOImpl {
             + "LEFT JOIN FETCH acb.address "
             + "JOIN FETCH c.complainantType "
             + "WHERE c.deleted = false ";
+
+    public List<ComplaintType> getComplaintTypes() {
+        List<ComplaintTypeEntity> entities = getComplaintTypeEntities();
+        return entities.stream()
+                .map(entity -> entity.buildComplaintType())
+                .collect(Collectors.toList());
+    }
 
     public List<ComplainantType> getComplainantTypes() {
         List<ComplainantTypeEntity> entities = getComplainantTypeEntities();
@@ -86,6 +97,7 @@ public class ComplaintDAO extends BaseDAOImpl {
         entity.setCertificationBodyId(complaint.getCertificationBody().getId());
         entity.setComplainantTypeId(complaint.getComplainantType().getId());
         entity.setComplainantTypeOther(complaint.getComplainantTypeOther());
+        entity.setComplaintTypesOther(complaint.getComplaintTypesOther());
         entity.setOncComplaintId(complaint.getOncComplaintId());
         entity.setAcbComplaintId(complaint.getAcbComplaintId());
         entity.setReceivedDate(complaint.getReceivedDate());
@@ -101,6 +113,7 @@ public class ComplaintDAO extends BaseDAOImpl {
         create(entity);
 
         complaint.setId(entity.getId());
+        saveComplaintTypes(complaint);
         saveListings(complaint);
         saveCritiera(complaint);
         saveSurveillances(complaint);
@@ -113,6 +126,7 @@ public class ComplaintDAO extends BaseDAOImpl {
         entity.setCertificationBodyId(complaint.getCertificationBody().getId());
         entity.setComplainantTypeId(complaint.getComplainantType().getId());
         entity.setComplainantTypeOther(complaint.getComplainantTypeOther());
+        entity.setComplaintTypesOther(complaint.getComplaintTypesOther());
         entity.setOncComplaintId(complaint.getOncComplaintId());
         entity.setAcbComplaintId(complaint.getAcbComplaintId());
         entity.setReceivedDate(complaint.getReceivedDate());
@@ -127,6 +141,7 @@ public class ComplaintDAO extends BaseDAOImpl {
 
         update(entity);
 
+        saveComplaintTypes(complaint);
         saveListings(complaint);
         saveCritiera(complaint);
         saveSurveillances(complaint);
@@ -158,6 +173,13 @@ public class ComplaintDAO extends BaseDAOImpl {
             entity = result.get(0);
         }
         return entity;
+    }
+
+    private List<ComplaintTypeEntity> getComplaintTypeEntities() {
+        Query query = entityManager.createQuery("from ComplaintTypeEntity where (NOT deleted = true) ",
+                ComplaintTypeEntity.class);
+        List<ComplaintTypeEntity> result = query.getResultList();
+        return result;
     }
 
     private List<ComplainantTypeEntity> getComplainantTypeEntities() {
@@ -260,6 +282,97 @@ public class ComplaintDAO extends BaseDAOImpl {
         query.setParameter("complaintId", complaintId);
         List<ComplaintSurveillanceMapEntity> result = query.getResultList();
 
+        return result;
+    }
+
+    private void saveComplaintTypes(Complaint complaint) throws EntityRetrievalException {
+        // Get the existing complaint types for this complaint
+        List<ComplaintToComplaintTypeMapEntity> existingComplaintTypes = getComplaintTypeMapEntities(complaint.getId());
+
+        deleteMissingComplaintTypes(complaint, existingComplaintTypes);
+        addNewComplaintTypes(complaint, existingComplaintTypes);
+    }
+
+    private void addNewComplaintTypes(Complaint complaint, List<ComplaintToComplaintTypeMapEntity> existingComplaintTypes)
+            throws EntityRetrievalException {
+        // If there is a complaint type passed in and it does not exist in the DB, add it
+        for (ComplaintType passedIn : complaint.getComplaintTypes()) {
+            ComplaintToComplaintTypeMapEntity found = IterableUtils.find(existingComplaintTypes,
+                    new Predicate<ComplaintToComplaintTypeMapEntity>() {
+                        @Override
+                        public boolean evaluate(ComplaintToComplaintTypeMapEntity object) {
+                            return object.getComplaintTypeId().equals(passedIn.getId());
+                        }
+                    });
+            // Wasn't found in the list from DB, add it to the DB
+            if (found == null) {
+                addComplaintTypeToComplaint(complaint.getId(), passedIn.getId());
+            }
+        }
+    }
+
+    private void deleteMissingComplaintTypes(Complaint complaint, List<ComplaintToComplaintTypeMapEntity> existingComplaintTypes)
+            throws EntityRetrievalException {
+        // If the existing complaint type does not exist in the new list, delete it
+        for (ComplaintToComplaintTypeMapEntity existing : existingComplaintTypes) {
+            ComplaintType found = IterableUtils.find(complaint.getComplaintTypes(),
+                    new Predicate<ComplaintType>() {
+                        @Override
+                        public boolean evaluate(ComplaintType existingComplaintType) {
+                            return existingComplaintType.getId().equals(existing.getComplaintTypeId());
+                        }
+                    });
+            // Wasn't found in the list passed in, delete it from the DB
+            if (found == null) {
+                deleteComplaintTypeFromComplaint(existing.getId());
+            }
+        }
+
+    }
+
+    private void addComplaintTypeToComplaint(Long complaintId, Long complaintTypeId) {
+        ComplaintToComplaintTypeMapEntity entity = new ComplaintToComplaintTypeMapEntity();
+        entity.setComplaintId(complaintId);
+        entity.setComplaintTypeId(complaintTypeId);
+        entity.setDeleted(false);
+        create(entity);
+    }
+
+    private void deleteComplaintTypeFromComplaint(Long mappingId) throws EntityRetrievalException {
+        ComplaintToComplaintTypeMapEntity entity = getComplaintTypeToComplaintMapEntity(mappingId);
+        entity.setDeleted(true);
+        update(entity);
+    }
+
+    private ComplaintToComplaintTypeMapEntity getComplaintTypeToComplaintMapEntity(Long mappingId) throws EntityRetrievalException {
+        ComplaintToComplaintTypeMapEntity entity = null;
+
+        Query query = entityManager.createQuery("SELECT c "
+                + "FROM ComplaintToComplaintTypeMapEntity c "
+                + "LEFT JOIN FETCH c.complaintType "
+                + "WHERE c.deleted = false "
+                + "AND c.id = :mappingId",
+                ComplaintToComplaintTypeMapEntity.class);
+        query.setParameter("mappingId", mappingId);
+        List<ComplaintToComplaintTypeMapEntity> result = query.getResultList();
+
+        if (result.size() > 1) {
+            throw new EntityRetrievalException("Data error. Duplicate complaint-to-type map id in database.");
+        } else if (result.size() == 1) {
+            entity = result.get(0);
+        }
+        return entity;
+    }
+
+    private List<ComplaintToComplaintTypeMapEntity> getComplaintTypeMapEntities(Long complaintId) {
+        Query query = entityManager.createQuery("SELECT c "
+                + "FROM ComplaintToComplaintTypeMapEntity c "
+                + "LEFT JOIN FETCH c.complaintType "
+                + "WHERE c.deleted = false "
+                + "AND c.complaintId = :complaintId",
+                ComplaintToComplaintTypeMapEntity.class);
+        query.setParameter("complaintId", complaintId);
+        List<ComplaintToComplaintTypeMapEntity> result = query.getResultList();
         return result;
     }
 

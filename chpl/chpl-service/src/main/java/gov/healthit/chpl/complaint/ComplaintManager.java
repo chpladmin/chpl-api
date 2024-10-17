@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.complaint.domain.ComplainantType;
 import gov.healthit.chpl.complaint.domain.Complaint;
+import gov.healthit.chpl.complaint.domain.ComplaintType;
 import gov.healthit.chpl.complaint.rules.ComplaintValidationContext;
 import gov.healthit.chpl.complaint.rules.ComplaintValidationFactory;
 import gov.healthit.chpl.complaint.search.ComplaintSearchRequest;
@@ -36,7 +37,6 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.SchedulerManager;
-import gov.healthit.chpl.manager.auth.UserManager;
 import gov.healthit.chpl.manager.impl.SecuredManager;
 import gov.healthit.chpl.manager.rules.ValidationRule;
 import gov.healthit.chpl.scheduler.job.complaints.ComplaintsReportJob;
@@ -56,7 +56,6 @@ public class ComplaintManager extends SecuredManager {
     private ChplProductNumberUtil chplProductNumberUtil;
     private ActivityManager activityManager;
     private SchedulerManager schedulerManager;
-    private UserManager userManager;
     private ErrorMessageUtil errorMessageUtil;
 
     @Autowired
@@ -64,8 +63,7 @@ public class ComplaintManager extends SecuredManager {
             ComplaintValidationFactory complaintValidationFactory, CertifiedProductDAO certifiedProductDAO,
             ComplaintSearchService searchService,
             ChplProductNumberUtil chplProductNumberUtil, ErrorMessageUtil errorMessageUtil,
-            ActivityManager activityManager, SchedulerManager schedulerManager,
-            UserManager userManager) {
+            ActivityManager activityManager, SchedulerManager schedulerManager) {
         this.searchService = searchService;
         this.complaintDAO = complaintDAO;
         this.complaintValidationFactory = complaintValidationFactory;
@@ -74,15 +72,24 @@ public class ComplaintManager extends SecuredManager {
         this.errorMessageUtil = errorMessageUtil;
         this.activityManager = activityManager;
         this.schedulerManager = schedulerManager;
-        this.userManager = userManager;
+    }
+
+    @Transactional
+    public Set<KeyValueModel> getComplaintTypes() {
+        List<ComplaintType> complaintTypes = complaintDAO.getComplaintTypes();
+        Set<KeyValueModel> results = new HashSet<KeyValueModel>();
+        for (ComplaintType complaintType : complaintTypes) {
+            results.add(new KeyValueModel(complaintType.getId(), complaintType.getName()));
+        }
+        return results;
     }
 
     @Transactional
     public Set<KeyValueModel> getComplainantTypes() {
-        List<ComplainantType> complaintTypes = complaintDAO.getComplainantTypes();
+        List<ComplainantType> complainantTypes = complaintDAO.getComplainantTypes();
         Set<KeyValueModel> results = new HashSet<KeyValueModel>();
-        for (ComplainantType complaintType : complaintTypes) {
-            results.add(new KeyValueModel(complaintType.getId(), complaintType.getName()));
+        for (ComplainantType complainantType : complainantTypes) {
+            results.add(new KeyValueModel(complainantType.getId(), complainantType.getName()));
         }
         return results;
     }
@@ -197,6 +204,7 @@ public class ComplaintManager extends SecuredManager {
         List<ValidationRule<ComplaintValidationContext>> rules = new ArrayList<ValidationRule<ComplaintValidationContext>>();
         rules.add(complaintValidationFactory.getRule(ComplaintValidationFactory.ACB_CHANGE));
         rules.add(complaintValidationFactory.getRule(ComplaintValidationFactory.COMPLAINT_TYPE));
+        rules.add(complaintValidationFactory.getRule(ComplaintValidationFactory.COMPLAINANT_TYPE));
         rules.add(complaintValidationFactory.getRule(ComplaintValidationFactory.RECEIVED_DATE));
         rules.add(complaintValidationFactory.getRule(ComplaintValidationFactory.ACB_COMPLAINT_ID));
         rules.add(complaintValidationFactory.getRule(ComplaintValidationFactory.SUMMARY));
@@ -210,6 +218,7 @@ public class ComplaintManager extends SecuredManager {
         List<ValidationRule<ComplaintValidationContext>> rules = new ArrayList<ValidationRule<ComplaintValidationContext>>();
         rules.add(complaintValidationFactory.getRule(ComplaintValidationFactory.OPEN_STATUS));
         rules.add(complaintValidationFactory.getRule(ComplaintValidationFactory.COMPLAINT_TYPE));
+        rules.add(complaintValidationFactory.getRule(ComplaintValidationFactory.COMPLAINANT_TYPE));
         rules.add(complaintValidationFactory.getRule(ComplaintValidationFactory.RECEIVED_DATE));
         rules.add(complaintValidationFactory.getRule(ComplaintValidationFactory.ACB_COMPLAINT_ID));
         rules.add(complaintValidationFactory.getRule(ComplaintValidationFactory.SUMMARY));

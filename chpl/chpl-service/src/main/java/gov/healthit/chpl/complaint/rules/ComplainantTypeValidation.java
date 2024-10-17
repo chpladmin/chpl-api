@@ -42,6 +42,8 @@ public class ComplainantTypeValidation extends ValidationRule<ComplaintValidatio
                     && StringUtils.isEmpty(context.getComplaint().getComplainantTypeOther())) {
                 getMessages().add(getErrorMessage("complaints.complainantType.otherMissing"));
                 return false;
+            } else if (!isComplainantTypeSetToOther(context.getComplaint().getComplainantType())) {
+                context.getComplaint().setComplainantTypeOther(null);
             }
             return true;
         } catch (Exception e) {
