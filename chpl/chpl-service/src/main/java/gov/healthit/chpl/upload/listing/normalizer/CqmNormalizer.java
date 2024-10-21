@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
+import gov.healthit.chpl.certifiedproduct.service.CqmResultsService;
 import gov.healthit.chpl.domain.CQMCriterion;
 import gov.healthit.chpl.domain.CQMResultCertification;
 import gov.healthit.chpl.domain.CQMResultDetails;
@@ -52,17 +53,18 @@ public class CqmNormalizer {
     public void normalize(CertifiedProductSearchDetails listing) {
         if (listing.getCqmResults() != null && listing.getCqmResults().size() > 0) {
             listing.getCqmResults().stream()
+                .filter(cqmResult -> !CqmResultsService.isNqfType(cqmResult))
                 .forEach(cqmResult -> {
                     normalizeCmsId(cqmResult);
                     populateCqmCriterionData(listing, cqmResult);
                     populateMappedCriteriaIds(listing, cqmResult);
+                    normalizeSuccessValue(cqmResult);
                 });
         }
         addUnattestedCqms(listing);
         listing.getCqmResults().stream()
             .forEach(cqmResult -> addAllVersions(cqmResult));
     }
-
 
     private void normalizeCmsId(CQMResultDetails cqmResult) {
         String cmsId = cqmResult.getCmsId();
@@ -213,5 +215,13 @@ public class CqmNormalizer {
                 .build();
         cqmDetails.getAllVersions().add(cqmCriterion.getCqmVersion());
         return cqmDetails;
+    }
+
+    private void normalizeSuccessValue(CQMResultDetails cqmResult) {
+        if (!CollectionUtils.isEmpty(cqmResult.getSuccessVersions())) {
+            cqmResult.setSuccess(Boolean.TRUE);
+        } else if (CollectionUtils.isEmpty(cqmResult.getSuccessVersions())) {
+            cqmResult.setSuccess(Boolean.FALSE);
+        }
     }
 }
