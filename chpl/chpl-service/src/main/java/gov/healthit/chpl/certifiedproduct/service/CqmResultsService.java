@@ -46,6 +46,12 @@ public class CqmResultsService {
         this.cqmResultComparator = new CQMResultComparator();
     }
 
+    public static boolean isNqfType(CQMResultDetails cqm) {
+        return StringUtils.isEmpty(cqm.getCmsId())
+                && !StringUtils.isEmpty(cqm.getNqfNumber())
+                && !cqm.getNqfNumber().equals("N/A");
+    }
+
     public List<CQMResultDetails> getCqmResultDetails(Long listingId, String year) {
         //Get a flat list of all CQM results
         //If these are of CMS-type they then need to be grouped by CMS ID and have versions attached.

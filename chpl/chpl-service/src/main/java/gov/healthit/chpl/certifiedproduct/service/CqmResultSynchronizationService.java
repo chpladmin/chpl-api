@@ -16,6 +16,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import gov.healthit.chpl.dao.CQMCriterionDAO;
 import gov.healthit.chpl.dao.CQMResultDAO;
 import gov.healthit.chpl.domain.CQMCriterion;
+import gov.healthit.chpl.domain.CQMResultCertification;
 import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.CQMResultDTO;
@@ -52,7 +53,7 @@ public class CqmResultSynchronizationService {
     private int addCqmResults(Long listingId, List<CQMResultDetails> existingCqms, List<CQMResultDetails> updatedCqms) {
         List<CQMResultDetails> cqmsToAdd = new ArrayList<CQMResultDetails>();
         updatedCqms.stream()
-            .filter(updatedCqm -> !isNqfType(updatedCqm) && updatedCqm.getSuccess() && !isCqmAttested(updatedCqm, existingCqms))
+            .filter(updatedCqm -> !CqmResultsService.isNqfType(updatedCqm) && updatedCqm.getSuccess() && !isCqmAttested(updatedCqm, existingCqms))
             .forEach(updatedCqmToAdd -> cqmsToAdd.add(updatedCqmToAdd));
 
         cqmsToAdd.stream()
@@ -111,7 +112,7 @@ public class CqmResultSynchronizationService {
     private int removeCqmResults(Long listingId, List<CQMResultDetails> existingCqms, List<CQMResultDetails> updatedCqms) {
         List<CQMResultDetails> cqmsToRemove = new ArrayList<CQMResultDetails>();
         existingCqms.stream()
-            .filter(existingCqm -> !isNqfType(existingCqm) && existingCqm.getSuccess() && !isCqmAttested(existingCqm, updatedCqms))
+            .filter(existingCqm -> !CqmResultsService.isNqfType(existingCqm) && existingCqm.getSuccess() && !isCqmAttested(existingCqm, updatedCqms))
             .forEach(existingCqmToRemove -> cqmsToRemove.add(existingCqmToRemove));
 
         cqmsToRemove.stream()
@@ -140,16 +141,10 @@ public class CqmResultSynchronizationService {
         }
     }
 
-    private boolean isNqfType(CQMResultDetails cqm) {
-        return StringUtils.isEmpty(cqm.getCmsId())
-                && !StringUtils.isEmpty(cqm.getNqfNumber())
-                && !cqm.getNqfNumber().equals("N/A");
-    }
-
     private boolean isNqfCqmMatching(CQMResultDetails cqm1, CQMResultDetails cqm2) {
         // NQF is the same if the NQF numbers are equal
-        return isNqfType(cqm1)
-            && isNqfType(cqm2)
+        return CqmResultsService.isNqfType(cqm1)
+            && CqmResultsService.isNqfType(cqm2)
             && cqm2.getNqfNumber().equals(cqm1.getNqfNumber());
     }
 
@@ -165,7 +160,7 @@ public class CqmResultSynchronizationService {
 
         //update NQF CQMs
         cqmPairs.stream()
-            .filter(cqmPair -> isNqfType(cqmPair.getOrig()) && !cqmPair.getOrig().getSuccess().equals(cqmPair.getUpdated().getSuccess()))
+            .filter(cqmPair -> CqmResultsService.isNqfType(cqmPair.getOrig()) && !cqmPair.getOrig().getSuccess().equals(cqmPair.getUpdated().getSuccess()))
             .forEach(cqmPair -> {
                 //update success value
                 cqmResultDao.updateNqfCqm(cqmPair.getOrig().getId(), cqmPair.getUpdated().getSuccess());
@@ -173,10 +168,11 @@ public class CqmResultSynchronizationService {
 
         //update CMS CQMs
         cqmPairs.stream()
-            .filter(cqmPair -> !isNqfType(cqmPair.getOrig()) && cqmPair.getOrig().getSuccess() && cqmPair.getUpdated().getSuccess())
+            .filter(cqmPair -> !CqmResultsService.isNqfType(cqmPair.getOrig()) && cqmPair.getOrig().getSuccess() && cqmPair.getUpdated().getSuccess())
             .forEach(cqmPair -> {
                 //check for changes to success versions
                 updateCqmSuccessVersions(listingId, cqmPair.getOrig(), cqmPair.getUpdated());
+                updateCqmAssociatedCriteria(cqmPair.getOrig(), cqmPair.getUpdated());
             });
         return cqmPairs.size();
     }
@@ -233,6 +229,44 @@ public class CqmResultSynchronizationService {
         }
         for (String currToRemove : versionsToRemove) {
             cqmResultDao.deleteByCmsNumberAndVersion(listingId, existingCqm.getCmsId(), currToRemove);
+        }
+        return numChanges;
+    }
+
+    private int updateCqmAssociatedCriteria(CQMResultDetails existingCqm, CQMResultDetails updatedCqm) {
+        List<CQMResultCertification> criteriaToAdd = new ArrayList<CQMResultCertification>();
+        List<CQMResultCertification> criteriaToRemove = new ArrayList<CQMResultCertification>();
+
+        for (CQMResultCertification existingCriterion : existingCqm.getCriteria()) {
+            boolean exists = false;
+            for (CQMResultCertification updatedCriterion : updatedCqm.getCriteria()) {
+                if (existingCriterion.getCriterion().getId().equals(updatedCriterion.getCriterion().getId())) {
+                    exists = true;
+                }
+            }
+            if (!exists) {
+                criteriaToRemove.add(existingCriterion);
+            }
+        }
+
+        for (CQMResultCertification updatedCriterion : updatedCqm.getCriteria()) {
+            boolean exists = false;
+            for (CQMResultCertification existingCriterion : existingCqm.getCriteria()) {
+                if (existingCriterion.getCriterion().getId().equals(updatedCriterion.getCriterion().getId())) {
+                    exists = true;
+                }
+            }
+            if (!exists) {
+                criteriaToAdd.add(updatedCriterion);
+            }
+        }
+
+        int numChanges = criteriaToAdd.size() + criteriaToRemove.size();
+        for (CQMResultCertification currToAdd : criteriaToAdd) {
+            cqmResultDao.createCriteriaMapping(existingCqm.getId(), currToAdd.getCriterion().getId());
+        }
+        for (CQMResultCertification currToRemove : criteriaToRemove) {
+            cqmResultDao.deleteCriteriaMapping(currToRemove.getId());
         }
         return numChanges;
     }
