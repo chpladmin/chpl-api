@@ -19,6 +19,7 @@ import gov.healthit.chpl.report.criteriaattribute.TestToolListingReport;
 import gov.healthit.chpl.report.criteriaattribute.TestToolReport;
 import gov.healthit.chpl.report.criteriamigrationreport.CriteriaMigrationReportDenormalized;
 import gov.healthit.chpl.report.developer.UniqueDeveloperCount;
+import gov.healthit.chpl.report.directreview.DirectReviewCounts;
 import gov.healthit.chpl.report.listing.UniqueListingCount;
 import gov.healthit.chpl.report.product.ProductByAcb;
 import gov.healthit.chpl.report.product.UniqueProductCount;
@@ -418,6 +419,16 @@ public class ReportDataController {
     @RequestMapping(value = "/test-tools-listing", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<TestToolListingReport> getTestToolListingReports() {
         return reportDataManager.getTestToolListingReports();
+    }
+
+    @Operation(summary = "Retrieves the data used to generate the Summary Statistics - Direct Review report.",
+            description = "Retrieves the data used to generate the Summary Statistics - Direct Review report.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
+    @RequestMapping(value = "/direct-review-counts", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public @ResponseBody DirectReviewCounts getDirectReviewCounts() {
+        return reportDataManager.getDirectReviewCounts();
     }
 
 }

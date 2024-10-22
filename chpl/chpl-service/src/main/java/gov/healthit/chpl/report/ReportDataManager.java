@@ -13,6 +13,8 @@ import gov.healthit.chpl.report.criteriamigrationreport.CriteriaMigrationReportD
 import gov.healthit.chpl.report.criteriamigrationreport.CriteriaMigrationReportService;
 import gov.healthit.chpl.report.developer.DeveloperReportsService;
 import gov.healthit.chpl.report.developer.UniqueDeveloperCount;
+import gov.healthit.chpl.report.directreview.DirectReviewCounts;
+import gov.healthit.chpl.report.directreview.DirectReviewReportsService;
 import gov.healthit.chpl.report.listing.ListingReportsService;
 import gov.healthit.chpl.report.listing.UniqueListingCount;
 import gov.healthit.chpl.report.product.ProductByAcb;
@@ -36,17 +38,19 @@ public class ReportDataManager {
     private ProductReportsService productReportsService;
     private ListingReportsService listingReportsService;
     private TestToolReportService testToolReportService;
+    private DirectReviewReportsService directReviewReportsService;
 
     @Autowired
     public ReportDataManager(CriteriaMigrationReportService criteriaMigrationReportService, DeveloperReportsService developerReportsService,
             SurveillanceReportsService surveillanceReportsService, ProductReportsService productReportsService, ListingReportsService listingReportsService,
-            TestToolReportService testToolReportService) {
+            TestToolReportService testToolReportService, DirectReviewReportsService directReviewReportsService) {
         this.criteriaMigrationReportService = criteriaMigrationReportService;
         this.developerReportsService = developerReportsService;
         this.surveillanceReportsService = surveillanceReportsService;
         this.productReportsService = productReportsService;
         this.listingReportsService = listingReportsService;
         this.testToolReportService = testToolReportService;
+        this.directReviewReportsService = directReviewReportsService;
     }
 
     public List<CriteriaMigrationReportDenormalized> getHti1CriteriaMigrationReport() {
@@ -183,5 +187,9 @@ public class ReportDataManager {
 
     public List<TestToolListingReport> getTestToolListingReports() {
         return testToolReportService.getTestToolListingReports();
+    }
+
+    public DirectReviewCounts getDirectReviewCounts() {
+        return directReviewReportsService.getDirectReviewCounts();
     }
 }
