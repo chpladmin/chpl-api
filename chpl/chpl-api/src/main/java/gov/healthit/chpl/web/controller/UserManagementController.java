@@ -166,14 +166,11 @@ public class UserManagementController {
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
-    @RequestMapping(value = "/", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
+    @RequestMapping(value = "", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
     public void addUser(@RequestBody CreateUserFromInvitationRequest userInfo) throws ValidationException, EmailNotSentException, UserCreationException {
 
         try {
-            //This should set the security context to user "invited user" role
-            Authentication authenticator = AuthUtil.getInvitedUserAuthenticator(null);
-            SecurityContextHolder.getContext().setAuthentication(authenticator);
             CognitoUserInvitation invitation = cognitoInvitationManager.getByToken(UUID.fromString(userInfo.getHash()));
             if (invitation != null) {
                 cognitoUserManager.createUser(userInfo);
