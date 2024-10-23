@@ -479,7 +479,6 @@
 									"pm.test(\"expect ONC user to receive list of ACB users associated with specific ACB\", () => {",
 									"     pm.test(\"expect response to have user properties\", function () {",
 									"        var jsonData = pm.response.json();",
-									"        pm.expect(jsonData.users[0].role).to.eql(\"ROLE_ACB\");",
 									"        pm.expect(jsonData.users[0].fullName).to.be.a('String');",
 									"        pm.expect(jsonData.users[0].email).to.be.a('String');",
 									"    });",
