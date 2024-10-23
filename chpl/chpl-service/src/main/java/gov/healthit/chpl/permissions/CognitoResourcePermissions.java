@@ -86,6 +86,7 @@ public class CognitoResourcePermissions implements ResourcePermissions {
 
     @Override
     public List<CertificationBody> getAllAcbsForCurrentUser() {
+
         try {
             User user = cognitoApiWrapper.getUserInfo(AuthUtil.getCurrentUser().getCognitoId());
             if (user != null) {
