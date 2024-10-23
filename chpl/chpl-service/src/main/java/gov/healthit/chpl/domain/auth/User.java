@@ -30,7 +30,7 @@ public class User extends Person implements Serializable {
 
     @DeprecatedResponseField(message = "This field is deprecated and will be removed.", removalDate = "2024-11-01")
     @Deprecated
-        private String friendlyName;
+    private String friendlyName;
     private Boolean accountLocked;
     private Boolean accountEnabled;
     private Boolean credentialsExpired;
