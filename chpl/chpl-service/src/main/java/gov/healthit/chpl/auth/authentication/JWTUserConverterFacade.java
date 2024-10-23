@@ -10,6 +10,7 @@ import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.dao.auth.UserDAO;
 import gov.healthit.chpl.exception.JWTValidationException;
 import gov.healthit.chpl.exception.MultipleUserAccountsException;
+import gov.healthit.chpl.user.cognito.CognitoApiWrapper;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -18,14 +19,17 @@ public class JWTUserConverterFacade implements JWTUserConverter {
     private ChplJWTUserConverter chplJwtUserConverter;
     private CognitoJwtUserConverter cognitoJwtUserConverter;
 
+    private CognitoApiWrapper cognitoApiWrapper;
+
     private FF4j ff4j;
 
     public JWTUserConverterFacade(JWTConsumer jwtConsumer, UserDAO userDAO, @Value("${cognito.region}") String region,
             @Value("${cognito.userPoolId}") String userPoolId, @Value("${cognito.clientId}") String clientId,
-            @Value("${cognito.tokenizezRsaKeyUrl}") String tokenizeRsaKeyUrl, FF4j ff4j) {
+            @Value("${cognito.tokenizezRsaKeyUrl}") String tokenizeRsaKeyUrl, FF4j ff4j, CognitoApiWrapper cognitoApiWrapper) {
         chplJwtUserConverter = new ChplJWTUserConverter(jwtConsumer, userDAO);
         cognitoJwtUserConverter = new CognitoJwtUserConverter(region, userPoolId, clientId, tokenizeRsaKeyUrl);
         this.ff4j = ff4j;
+        this.cognitoApiWrapper = cognitoApiWrapper;
     }
 
     @Override

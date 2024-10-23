@@ -61,6 +61,9 @@ public class ComplaintSearchRequest implements Serializable {
     private Set<String> complainantTypeNames = new HashSet<String>();
     @JsonDeserialize(using = CommaDelimitedStringToSetOfStrings.class)
     @Builder.Default
+    private Set<String> complaintTypeNames = new HashSet<String>();
+    @JsonDeserialize(using = CommaDelimitedStringToSetOfStrings.class)
+    @Builder.Default
     private Set<String> currentStatusNames = new HashSet<String>();
     @JsonDeserialize(using = CommaDelimitedStringToSetOfStrings.class)
     @Builder.Default
