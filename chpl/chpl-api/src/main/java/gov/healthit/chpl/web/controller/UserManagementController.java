@@ -7,6 +7,7 @@ import java.util.Objects;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
+import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
@@ -22,9 +23,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.auth.ChplAccountEmailNotConfirmedException;
 import gov.healthit.chpl.auth.ChplAccountStatusException;
-import gov.healthit.chpl.auth.user.AuthenticationSystem;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.domain.CreateUserFromInvitationRequest;
 import gov.healthit.chpl.domain.auth.Authority;
@@ -68,6 +69,7 @@ public class UserManagementController {
     private AuthenticationManager authenticationManager;
     private ErrorMessageUtil msgUtil;
     private CognitoUserManager cognitoUserManager;
+    private FF4j ff4j;
 
     private long invitationLengthInDays;
     private long confirmationLengthInDays;
@@ -80,12 +82,14 @@ public class UserManagementController {
             @Value("${invitationLengthInDays}") Long invitationLengthDays,
             @Value("${confirmationLengthInDays}") Long confirmationLengthDays,
             @Value("${authorizationLengthInDays}") Long authorizationLengthInDays,
-            CognitoUserManager cognitoUserManager) {
+            CognitoUserManager cognitoUserManager,
+            FF4j ff4j) {
         this.userManager = userManager;
         this.invitationManager = invitationManager;
         this.authenticationManager = authenticationManager;
         this.msgUtil = errorMessageUtil;
         this.cognitoUserManager = cognitoUserManager;
+        this.ff4j = ff4j;
 
         this.invitationLengthInDays = invitationLengthDays;
         this.confirmationLengthInDays = confirmationLengthDays;
@@ -362,9 +366,9 @@ public class UserManagementController {
     @PreAuthorize("isAuthenticated()")
     public @ResponseBody UsersResponse getUsers() {
         List<User> users = null;
-        if (AuthUtil.getCurrentUser().getAuthenticationSystem().equals(AuthenticationSystem.COGNITO)) {
+        if (ff4j.check(FeatureList.SSO)) {
             users = getAllCognitoUsers();
-        } else if (AuthUtil.getCurrentUser().getAuthenticationSystem().equals(AuthenticationSystem.CHPL)) {
+        } else {
             users = getAllChplUsers();
         }
 

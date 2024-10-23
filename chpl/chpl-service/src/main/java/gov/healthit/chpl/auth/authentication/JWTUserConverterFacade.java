@@ -34,10 +34,7 @@ public class JWTUserConverterFacade implements JWTUserConverter {
         //If SSO is on, try to validate the jwt using the Cognito converter
         if (ff4j.check(FeatureList.SSO)) {
             user = cognitoJwtUserConverter.getAuthenticatedUser(jwt);
-        }
-
-        //If SSO is off or jwt cannot be converted using the Cognito converter, use the CHP converter
-        if (user == null) {
+        } else {
             user = chplJwtUserConverter.getAuthenticatedUser(jwt);
         }
         return user;
