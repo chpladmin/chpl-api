@@ -77,11 +77,10 @@ public class CertificationBodyController {
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody CertificationBodyResults getAcbs(
             @RequestParam(required = false, defaultValue = "false") final boolean editable) {
-        // TODO confirm a user is logged in here
         CertificationBodyResults results = new CertificationBodyResults();
         List<CertificationBody> acbs = null;
         if (editable) {
-            acbs = resourcePermissionsFactory.get().getAllAcbsForCurrentUser();
+            acbs = acbManager.getAllEditable();
         } else {
             acbs = acbManager.getAll();
         }

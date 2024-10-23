@@ -23,8 +23,10 @@ import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.impl.SecuredManager;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.sharedstore.listing.ListingStoreRemove;
 import gov.healthit.chpl.sharedstore.listing.RemoveBy;
+import gov.healthit.chpl.util.AuthUtil;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -33,13 +35,16 @@ public class CertificationBodyManager extends SecuredManager {
     private CertificationBodyDAO certificationBodyDao;
     private ActivityManager activityManager;
     private SchedulerManager schedulerManager;
+    private ResourcePermissionsFactory resourcePermissionsFactory;
 
     @Autowired
     public CertificationBodyManager(CertificationBodyDAO certificationBodyDao,
-            ActivityManager activityManager, @Lazy SchedulerManager schedulerManager) {
+            ActivityManager activityManager, @Lazy SchedulerManager schedulerManager,
+            ResourcePermissionsFactory resourcePermissionsFactory) {
         this.certificationBodyDao = certificationBodyDao;
         this.activityManager = activityManager;
         this.schedulerManager = schedulerManager;
+        this.resourcePermissionsFactory = resourcePermissionsFactory;
     }
 
     @Transactional
@@ -154,6 +159,15 @@ public class CertificationBodyManager extends SecuredManager {
     @Transactional(readOnly = true)
     public List<CertificationBody> getAll() {
         return certificationBodyDao.findAll();
+    }
+
+    @Transactional(readOnly = true)
+    public List<CertificationBody> getAllEditable() {
+        if (AuthUtil.getCurrentUser() != null) {
+            return resourcePermissionsFactory.get().getAllAcbsForCurrentUser();
+        } else {
+            return List.of();
+        }
     }
 
     @Transactional(readOnly = true)
