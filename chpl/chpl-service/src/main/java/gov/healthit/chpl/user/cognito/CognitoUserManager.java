@@ -59,7 +59,7 @@ public class CognitoUserManager {
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SECURED_USER, "
             + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).UPDATE_COGNITO, #user)")
-    public User updateUser(User user) throws ValidationException, UserRetrievalException{
+    public User updateUser(User user) throws ValidationException, UserRetrievalException {
         Set<String> errors = userUpdateValidator.validate(user);
         if (errors.size() > 0) {
             throw new ValidationException(errors, null);
@@ -77,9 +77,6 @@ public class CognitoUserManager {
         return cognitoApiWrapper.getUserInfo(user.getCognitoId());
     }
 
-    @Transactional
-    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SECURED_USER, "
-            + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).CREATE)")
     public Boolean createUser(CreateUserFromInvitationRequest userInfo)
             throws ValidationException, UserCreationException, EmailNotSentException {
 

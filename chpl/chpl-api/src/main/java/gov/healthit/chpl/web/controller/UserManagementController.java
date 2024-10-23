@@ -5,8 +5,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
+import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
@@ -22,13 +24,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.auth.ChplAccountEmailNotConfirmedException;
 import gov.healthit.chpl.auth.ChplAccountStatusException;
-import gov.healthit.chpl.auth.user.AuthenticationSystem;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.domain.CreateUserFromInvitationRequest;
 import gov.healthit.chpl.domain.auth.Authority;
 import gov.healthit.chpl.domain.auth.AuthorizeCredentials;
+import gov.healthit.chpl.domain.auth.CognitoGroups;
 import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.domain.auth.UserInvitation;
 import gov.healthit.chpl.domain.auth.UsersResponse;
@@ -49,6 +52,8 @@ import gov.healthit.chpl.manager.InvitationManager;
 import gov.healthit.chpl.manager.auth.AuthenticationManager;
 import gov.healthit.chpl.manager.auth.UserManager;
 import gov.healthit.chpl.user.cognito.CognitoUserManager;
+import gov.healthit.chpl.user.cognito.invitation.CognitoInvitationManager;
+import gov.healthit.chpl.user.cognito.invitation.CognitoUserInvitation;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
@@ -68,6 +73,8 @@ public class UserManagementController {
     private AuthenticationManager authenticationManager;
     private ErrorMessageUtil msgUtil;
     private CognitoUserManager cognitoUserManager;
+    private CognitoInvitationManager cognitoInvitationManager;
+    private FF4j ff4j;
 
     private long invitationLengthInDays;
     private long confirmationLengthInDays;
@@ -80,17 +87,117 @@ public class UserManagementController {
             @Value("${invitationLengthInDays}") Long invitationLengthDays,
             @Value("${confirmationLengthInDays}") Long confirmationLengthDays,
             @Value("${authorizationLengthInDays}") Long authorizationLengthInDays,
-            CognitoUserManager cognitoUserManager) {
+            CognitoUserManager cognitoUserManager,
+            CognitoInvitationManager cognitoInvitationManager,
+            FF4j ff4j) {
         this.userManager = userManager;
         this.invitationManager = invitationManager;
         this.authenticationManager = authenticationManager;
         this.msgUtil = errorMessageUtil;
         this.cognitoUserManager = cognitoUserManager;
+        this.cognitoInvitationManager = cognitoInvitationManager;
+        this.ff4j = ff4j;
 
         this.invitationLengthInDays = invitationLengthDays;
         this.confirmationLengthInDays = confirmationLengthDays;
         this.authorizationLengthInDays = authorizationLengthInDays;
     }
+
+    @Operation(summary = "View a specific user's details.",
+            description = "The logged in user must either be the user in the parameters, have ROLE_ADMIN, or "
+                    + "have ROLE_ACB.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
+    @RequestMapping(value = "/{cognitoUserId}", method = RequestMethod.GET,
+            produces = "application/json; charset=utf-8")
+    public @ResponseBody User getUser(@PathVariable("cognitoUserId") UUID cognitoUserId) throws UserRetrievalException {
+        return cognitoUserManager.getUserInfo(cognitoUserId);
+    }
+
+
+    @Operation(summary = "Invite a user to the CHPL.",
+            description = "This request creates an invitation that is sent to the email address provided. "
+                    + "The recipient of this invitation can then choose to create a new account "
+                    + "or add the permissions contained within the invitation to an existing account "
+                    + "if they have one. Said another way, an invitation can be used to create or "
+                    + "modify CHPL user accounts." + "The correct order to call invitation requests is "
+                    + "the following: 1) /invite 2) /create or /authorize. "
+                    + "Security Restrictions: ROLE_ADMIN and ROLE_ONC can invite users to any organization.  "
+                    + "ROLE_ACB can add users to their own organization.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
+    @RequestMapping(value = "/invitation", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = "application/json; charset=utf-8")
+    public CognitoUserInvitation inviteUser(@RequestBody CognitoUserInvitation invitation)
+            throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException, ValidationException {
+        invitation.setEmail(StringUtils.normalizeSpace(invitation.getEmail()));
+
+        CognitoUserInvitation createdInvitiation = null;
+        switch (invitation.getGroupName()) {
+            case CognitoGroups.CHPL_ADMIN:
+                createdInvitiation = cognitoInvitationManager.inviteAdminUser(invitation);
+                break;
+            case CognitoGroups.CHPL_ONC:
+                createdInvitiation = cognitoInvitationManager.inviteOncUser(invitation);
+                break;
+            case CognitoGroups.CHPL_ACB:
+                createdInvitiation = cognitoInvitationManager.inviteOncAcbUser(invitation);
+                break;
+            case CognitoGroups.CHPL_DEVELOPER:
+                createdInvitiation = cognitoInvitationManager.inviteDeveloperUser(invitation);
+                break;
+            case CognitoGroups.CHPL_CMS_STAFF:
+                createdInvitiation = cognitoInvitationManager.inviteCmsUser(invitation);
+                break;
+        }
+        return createdInvitiation;
+    }
+
+    @Operation(summary = "Create a new user account from an invitation.",
+            description = "An individual who has been invited to the CHPL has a special user key in their invitation email. "
+                    + "That user key along with all the information needed to create a new user's account "
+                    + "can be passed in here. The account is created but cannot be used until that user "
+                    + "confirms that their email address is valid. The correct order to call invitation requests is "
+                    + "the following: 1) /invite 2) /create or /authorize ",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
+    @RequestMapping(value = "", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = "application/json; charset=utf-8")
+    public void addUser(@RequestBody CreateUserFromInvitationRequest userInfo) throws ValidationException, EmailNotSentException, UserCreationException {
+
+        try {
+            CognitoUserInvitation invitation = cognitoInvitationManager.getByToken(UUID.fromString(userInfo.getHash()));
+            if (invitation != null) {
+                cognitoUserManager.createUser(userInfo);
+            }
+        } finally {
+            SecurityContextHolder.getContext().setAuthentication(null);
+        }
+    }
+
+    @Operation(summary = "Modify user information.", description = "",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
+    @RequestMapping(value = "/{cognitoUserId:^[0-9a-f]{8}\\b-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-\\b[0-9a-f]{12}$}",
+            method = RequestMethod.PUT,
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = "application/json; charset=utf-8")
+    public User updateUserDetails(@RequestBody User userInfo, @PathVariable("cognitoUserId") UUID cognitoUserId) throws ValidationException, UserRetrievalException {
+        if (!cognitoUserId.equals(userInfo.getCognitoId())) {
+            throw new ValidationException(msgUtil.getMessage("url.body.notMatch"));
+        }
+        return cognitoUserManager.updateUser(userInfo);
+    }
+
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     @Deprecated
     @DeprecatedApi(friendlyUrl = "/users/create",
@@ -305,7 +412,7 @@ public class UserManagementController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
-    @RequestMapping(value = "/{userId}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE,
+    @RequestMapping(value = "/{userId:^-?\\d+$}", method = RequestMethod.PUT, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
     public User updateUserDetails(@RequestBody User userInfo)
             throws UserRetrievalException, ValidationException, MultipleUserAccountsException, ActivityException {
@@ -362,9 +469,9 @@ public class UserManagementController {
     @PreAuthorize("isAuthenticated()")
     public @ResponseBody UsersResponse getUsers() {
         List<User> users = null;
-        if (AuthUtil.getCurrentUser().getAuthenticationSystem().equals(AuthenticationSystem.COGNITO)) {
+        if (ff4j.check(FeatureList.SSO)) {
             users = getAllCognitoUsers();
-        } else if (AuthUtil.getCurrentUser().getAuthenticationSystem().equals(AuthenticationSystem.CHPL)) {
+        } else {
             users = getAllChplUsers();
         }
 
