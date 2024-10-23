@@ -11,6 +11,7 @@ import gov.healthit.chpl.upload.listing.validation.reviewer.AccessibilityStandar
 import gov.healthit.chpl.upload.listing.validation.reviewer.AdditionalSoftwareCodeReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.ChplNumberFormatReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.CqmResultReviewer;
+import gov.healthit.chpl.upload.listing.validation.reviewer.IcsCodeReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.QmsStandardReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.SedReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.TestToolReviewer;
@@ -246,6 +247,9 @@ public class Edition2015ListingValidator extends Validator {
     private StandardRemovalReviewer standardRemovalReviewer;
 
     @Autowired
+    private IcsCodeReviewer icsCodeReviewer;
+
+    @Autowired
     private AdditionalSoftwareCodeReviewer additionalSoftwareCodeReviewer;
 
     @Autowired
@@ -288,6 +292,7 @@ public class Edition2015ListingValidator extends Validator {
         reviewers.add(qmsStandardReviewer);
         reviewers.add(realWorldTestingReviewer);
         reviewers.add(privacyAndSecurityCriteriaReviewer);
+        reviewers.add(icsCodeReviewer);
         reviewers.add(additionalSoftwareCodeReviewer);
         reviewers.add(codeSetReviewer);
         return reviewers;
