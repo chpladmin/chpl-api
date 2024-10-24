@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.prepost.PostAuthorize;
@@ -13,6 +14,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.domain.CreateUserFromInvitationRequest;
+import gov.healthit.chpl.domain.auth.CognitoEnvironments;
+import gov.healthit.chpl.domain.auth.CognitoGroups;
 import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.UserCreationException;
@@ -25,6 +28,7 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 @Component
 public class CognitoUserManager {
+    private static final String NON_PROD_ENVIRONMENT = "non-production";
 
     private CognitoUserCreationValidator userCreationValidator;
     private CognitoUpdateUserValidator userUpdateValidator;
@@ -32,12 +36,13 @@ public class CognitoUserManager {
     private CognitoApiWrapper cognitoApiWrapper;
     private CognitoInvitationManager cognitoInvitationManager;
     private String groupNameForEnvironment;
-
+    private boolean isProdEnvironment = true;
 
     @Autowired
     public CognitoUserManager(CognitoUserCreationValidator userCreationValidator, CognitoConfirmEmailEmailer cognitoConfirmEmailEmailer,
             CognitoUpdateUserValidator userUpdateValidator, CognitoApiWrapper cognitoApiWrapper, CognitoInvitationManager cognitoInvitationManager,
-            @Value("${cognito.environment.groupName}") String groupNameForEnvironment) {
+            @Value("${cognito.environment.groupName}") String groupNameForEnvironment,
+            @Value("${server.environment}") String serverEnvironment) {
 
         this.userCreationValidator = userCreationValidator;
         this.userUpdateValidator = userUpdateValidator;
@@ -45,6 +50,9 @@ public class CognitoUserManager {
         this.cognitoApiWrapper = cognitoApiWrapper;
         this.cognitoInvitationManager = cognitoInvitationManager;
         this.groupNameForEnvironment = groupNameForEnvironment;
+        if (StringUtils.equals(serverEnvironment, NON_PROD_ENVIRONMENT)) {
+            isProdEnvironment = false;
+        }
     }
 
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SECURED_USER, "
@@ -97,7 +105,11 @@ public class CognitoUserManager {
             }
             credentials = cognitoApiWrapper.createUser(userInfo.getUser());
             cognitoApiWrapper.addUserToGroup(userInfo.getUser().getEmail(), invitation.getGroupName());
-            cognitoApiWrapper.addUserToGroup(userInfo.getUser().getEmail(), groupNameForEnvironment);
+            if (isProdEnvironment) {
+                addUserToAppropriateEnvironments(userInfo.getUser().getEmail(), invitation.getGroupName());
+            } else {
+                cognitoApiWrapper.addUserToGroup(userInfo.getUser().getEmail(), groupNameForEnvironment);
+            }
             cognitoInvitationManager.deleteToken(UUID.fromString(userInfo.getHash()));
             cognitoConfirmEmailEmailer.sendConfirmationEmail(credentials);
         } catch (EmailNotSentException e) {
@@ -115,5 +127,28 @@ public class CognitoUserManager {
             + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).GET_ALL, filterObject)")
     public List<User> getAll() {
         return cognitoApiWrapper.getAllUsers();
+    }
+
+    private void addUserToAppropriateEnvironments(String userEmail, String userRole) {
+        switch (userRole) {
+            case CognitoGroups.CHPL_ADMIN:
+            case CognitoGroups.CHPL_ONC:
+                cognitoApiWrapper.addUserToGroup(userEmail, CognitoEnvironments.DEV.getName());
+                cognitoApiWrapper.addUserToGroup(userEmail, CognitoEnvironments.QA.getName());
+                cognitoApiWrapper.addUserToGroup(userEmail, CognitoEnvironments.STG.getName());
+                cognitoApiWrapper.addUserToGroup(userEmail, CognitoEnvironments.PROD.getName());
+                break;
+            case CognitoGroups.CHPL_ACB:
+                cognitoApiWrapper.addUserToGroup(userEmail, CognitoEnvironments.STG.getName());
+                cognitoApiWrapper.addUserToGroup(userEmail, CognitoEnvironments.PROD.getName());
+                break;
+            case CognitoGroups.CHPL_DEVELOPER:
+            case CognitoGroups.CHPL_CMS_STAFF:
+                cognitoApiWrapper.addUserToGroup(userEmail, CognitoEnvironments.PROD.getName());
+                break;
+            default:
+                LOGGER.error("User role '" + userRole + "' is not recognized. The user '" + userEmail + "' will not have access to any environments.");
+                break;
+        }
     }
 }
