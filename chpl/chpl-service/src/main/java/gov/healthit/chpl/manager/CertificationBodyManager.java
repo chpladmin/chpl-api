@@ -17,10 +17,12 @@ import gov.healthit.chpl.caching.ListingSearchCacheRefresh;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
+import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.exception.ActivityException;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.impl.SecuredManager;
 import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
@@ -179,6 +181,19 @@ public class CertificationBodyManager extends SecuredManager {
     public CertificationBody getById(Long id) throws EntityRetrievalException {
         return certificationBodyDao.getById(id);
     }
+
+    @Transactional(readOnly = true)
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CERTIFICATION_BODY, "
+            + "T(gov.healthit.chpl.permissions.domains.CertificationBodyDomainPermissions).GET_USERS, #acbId)")
+    public List<User> getUsers(Long acbId) throws InvalidArgumentsException, EntityRetrievalException {
+        CertificationBody acb = resourcePermissionsFactory.get().getAcbIfPermissionById(acbId);
+        if (acb == null) {
+            throw new InvalidArgumentsException("Could not find the ACB specified.");
+        }
+
+        return resourcePermissionsFactory.get().getAllUsersOnAcb(acb);
+    }
+
 
     public void setCertificationBodyDAO(final CertificationBodyDAO acbDAO) {
         this.certificationBodyDao = acbDAO;

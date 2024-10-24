@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.permissions.domains.certificationbody.CreateActionPermissions;
 import gov.healthit.chpl.permissions.domains.certificationbody.GetByIdActionPermissions;
+import gov.healthit.chpl.permissions.domains.certificationbody.GetUsersActionPermissions;
 import gov.healthit.chpl.permissions.domains.certificationbody.RetireActionPermissions;
 import gov.healthit.chpl.permissions.domains.certificationbody.UnretireActionPermissions;
 import gov.healthit.chpl.permissions.domains.certificationbody.UpdateActionPermissions;
@@ -17,6 +18,7 @@ public class CertificationBodyDomainPermissions extends DomainPermissions {
     public static final String RETIRE = "RETIRE";
     public static final String UNRETIRE = "UNRETIRE";
     public static final String GET_BY_ID = "GET_BY_ID";
+    public static final String GET_USERS = "GET_USERS";
 
     @Autowired
     public CertificationBodyDomainPermissions(
@@ -24,12 +26,14 @@ public class CertificationBodyDomainPermissions extends DomainPermissions {
             @Qualifier("certificationBodyUpdateActionPermissions") UpdateActionPermissions updateActionPermissions,
             @Qualifier("certificationBodyRetireActionPermissions") RetireActionPermissions retireActionPermissions,
             @Qualifier("certificationBodyUnretireActionPermissions") UnretireActionPermissions unretireActionPermissions,
-            @Qualifier("certificationBodyGetByIdActionPermissions") GetByIdActionPermissions getByIdActionPermissions) {
+            @Qualifier("certificationBodyGetByIdActionPermissions") GetByIdActionPermissions getByIdActionPermissions,
+            @Qualifier("certificationBodyGetUsersActionPermissions") GetUsersActionPermissions getUsersActionPermissions) {
 
         getActionPermissions().put(CREATE, createActionPermissions);
         getActionPermissions().put(UPDATE, updateActionPermissions);
         getActionPermissions().put(RETIRE, retireActionPermissions);
         getActionPermissions().put(UNRETIRE, unretireActionPermissions);
         getActionPermissions().put(GET_BY_ID, getByIdActionPermissions);
+        getActionPermissions().put(GET_USERS, getUsersActionPermissions);
     }
 }

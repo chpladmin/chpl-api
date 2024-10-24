@@ -264,13 +264,8 @@ public class CertificationBodyController {
             produces = "application/json; charset=utf-8")
     public @ResponseBody UsersResponse getUsers(@PathVariable("acbId") final Long acbId)
             throws InvalidArgumentsException, EntityRetrievalException {
-        CertificationBody acb = resourcePermissionsFactory.get().getAcbIfPermissionById(acbId);
-        if (acb == null) {
-            throw new InvalidArgumentsException("Could not find the ACB specified.");
-        }
-
         UsersResponse results = new UsersResponse();
-        results.setUsers(resourcePermissionsFactory.get().getAllUsersOnAcb(acb));
+        results.setUsers(acbManager.getUsers(acbId));
         return results;
     }
 }
