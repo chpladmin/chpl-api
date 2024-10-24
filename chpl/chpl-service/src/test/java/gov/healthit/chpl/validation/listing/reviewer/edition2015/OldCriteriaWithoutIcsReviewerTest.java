@@ -32,28 +32,45 @@ public class OldCriteriaWithoutIcsReviewerTest {
 
     private OldCriteriaWithoutIcsReviewer reviewer;
 
-    private static final long EDITION_2015_B_3 = 1L;
-    private static final long EDITION_2015_D_2 = 2L;
-    private static final long EDITION_2015_D_3 = 3L;
-    private static final long EDITION_2015_D_10 = 4L;
     private static final int BEFORE_YEAR = 2006;
     private static final int RELEVANT_YEAR = 2020;
     private static final int MIDDLE_MONTH = 3;
     private static final int AFTER_MONTH = 9;
 
+    private CertificationCriterion b3, d2, d3, d10;
     private Date beforeBoth;
     private Date betweenBoth;
     private Date afterBoth;
 
     @Before
     public void before() {
+        b3 = CertificationCriterion.builder()
+                .id(18L)
+                .number("170.315 (b)(3)")
+                .build();
+
+        d2 = CertificationCriterion.builder()
+                .id(30L)
+                .number("170.315 (d)(2)")
+                .build();
+
+        d3 = CertificationCriterion.builder()
+                .id(31L)
+                .number("170.315 (d)(3)")
+                .build();
+
+        d10 = CertificationCriterion.builder()
+                .id(38L)
+                .number("170.315 (d)(10)")
+                .build();
+
         env = Mockito.mock(Environment.class);
         Mockito.when(env.getProperty(ArgumentMatchers.eq("questionableActivity.b3ChangeDate"))).thenReturn("01/01/2020");
         Mockito.when(env.getProperty(ArgumentMatchers.eq("cures.ruleEffectiveDate"))).thenReturn("07/07/2020");
-        Mockito.when(env.getProperty(Criteria2015.B_3_OLD)).thenReturn(String.valueOf(EDITION_2015_B_3));
-        Mockito.when(env.getProperty(Criteria2015.D_2_OLD)).thenReturn(String.valueOf(EDITION_2015_D_2));
-        Mockito.when(env.getProperty(Criteria2015.D_3_OLD)).thenReturn(String.valueOf(EDITION_2015_D_3));
-        Mockito.when(env.getProperty(Criteria2015.D_10_OLD)).thenReturn(String.valueOf(EDITION_2015_D_10));
+        Mockito.when(env.getProperty(Criteria2015.B_3_OLD)).thenReturn(String.valueOf(b3.getId()));
+        Mockito.when(env.getProperty(Criteria2015.D_2_OLD)).thenReturn(String.valueOf(d2.getId()));
+        Mockito.when(env.getProperty(Criteria2015.D_3_OLD)).thenReturn(String.valueOf(d3.getId()));
+        Mockito.when(env.getProperty(Criteria2015.D_10_OLD)).thenReturn(String.valueOf(d10.getId()));
         Mockito.when(env.getProperty("criteria.sortOrder")).thenReturn(CertificationCriterionServiceTest.sortOrderFromProperty());
 
         msgUtil = Mockito.mock(ErrorMessageUtil.class);
@@ -64,8 +81,15 @@ public class OldCriteriaWithoutIcsReviewerTest {
         certificationCriterionDAO = Mockito.mock(CertificationCriterionDAO.class);
         Mockito.when(certificationCriterionDAO.findAll()).thenReturn(makeAllCriteria());
 
-        criteriaService = new CertificationCriterionService(certificationCriterionDAO, env);
-        criteriaService.postConstruct();
+        criteriaService = Mockito.mock(CertificationCriterionService.class);
+        Mockito.when(criteriaService.get(ArgumentMatchers.eq(Criteria2015.B_3_OLD)))
+            .thenReturn(b3);
+        Mockito.when(criteriaService.get(ArgumentMatchers.eq(Criteria2015.D_2_OLD)))
+            .thenReturn(d2);
+        Mockito.when(criteriaService.get(ArgumentMatchers.eq(Criteria2015.D_3_OLD)))
+            .thenReturn(d3);
+        Mockito.when(criteriaService.get(ArgumentMatchers.eq(Criteria2015.D_10_OLD)))
+            .thenReturn(d10);
 
         reviewer = new OldCriteriaWithoutIcsReviewer(env, msgUtil, criteriaService);
         reviewer.postConstruct();
@@ -81,32 +105,19 @@ public class OldCriteriaWithoutIcsReviewerTest {
                 .ics(new InheritedCertificationStatus(true))
                 .certificationDate(beforeBoth.getTime())
                 .certificationResult(CertificationResult.builder()
-                        .criterion(CertificationCriterion.builder()
-                                .id(EDITION_2015_B_3)
-                                .number("170.315 (b)(3)")
-                                .title("not cures")
-                                .build())
+                        .criterion(b3)
                         .success(true)
                         .build())
                 .certificationResult(CertificationResult.builder()
-                        .criterion(CertificationCriterion.builder()
-                                .id(EDITION_2015_D_2)
-                                .number("170.315 (d)(2)")
-                                .build())
+                        .criterion(d2)
                         .success(true)
                         .build())
                 .certificationResult(CertificationResult.builder()
-                        .criterion(CertificationCriterion.builder()
-                                .id(EDITION_2015_D_3)
-                                .number("170.315 (d)(3)")
-                                .build())
+                        .criterion(d3)
                         .success(true)
                         .build())
                 .certificationResult(CertificationResult.builder()
-                        .criterion(CertificationCriterion.builder()
-                                .id(EDITION_2015_D_10)
-                                .number("170.315 (d)(10)")
-                                .build())
+                        .criterion(d10)
                         .success(true)
                         .build())
                 .build();
@@ -122,32 +133,19 @@ public class OldCriteriaWithoutIcsReviewerTest {
                 .ics(new InheritedCertificationStatus(false))
                 .certificationDate(beforeBoth.getTime())
                 .certificationResult(CertificationResult.builder()
-                        .criterion(CertificationCriterion.builder()
-                                .id(EDITION_2015_B_3)
-                                .number("170.315 (b)(3)")
-                                .title("not cures")
-                                .build())
+                        .criterion(b3)
                         .success(false)
                         .build())
                 .certificationResult(CertificationResult.builder()
-                        .criterion(CertificationCriterion.builder()
-                                .id(EDITION_2015_D_2)
-                                .number("170.315 (d)(2)")
-                                .build())
+                        .criterion(d2)
                         .success(false)
                         .build())
                 .certificationResult(CertificationResult.builder()
-                        .criterion(CertificationCriterion.builder()
-                                .id(EDITION_2015_D_3)
-                                .number("170.315 (d)(3)")
-                                .build())
+                        .criterion(d3)
                         .success(false)
                         .build())
                 .certificationResult(CertificationResult.builder()
-                        .criterion(CertificationCriterion.builder()
-                                .id(EDITION_2015_D_10)
-                                .number("170.315 (d)(10)")
-                                .build())
+                        .criterion(d10)
                         .success(false)
                         .build())
                 .build();
@@ -163,35 +161,19 @@ public class OldCriteriaWithoutIcsReviewerTest {
                 .ics(new InheritedCertificationStatus(false))
                 .certificationDate(beforeBoth.getTime())
                 .certificationResult(CertificationResult.builder()
-                        .criterion(CertificationCriterion.builder()
-                                .id(EDITION_2015_B_3)
-                                .number("170.315 (b)(3)")
-                                .title("not cures")
-                                .build())
+                        .criterion(b3)
                         .success(true)
                         .build())
                 .certificationResult(CertificationResult.builder()
-                        .criterion(CertificationCriterion.builder()
-                                .id(EDITION_2015_D_2)
-                                .number("170.315 (d)(2)")
-                                .title("not cures")
-                                .build())
+                        .criterion(d2)
                         .success(true)
                         .build())
                 .certificationResult(CertificationResult.builder()
-                        .criterion(CertificationCriterion.builder()
-                                .id(EDITION_2015_D_3)
-                                .number("170.315 (d)(3)")
-                                .title("not cures")
-                                .build())
+                        .criterion(d3)
                         .success(true)
                         .build())
                 .certificationResult(CertificationResult.builder()
-                        .criterion(CertificationCriterion.builder()
-                                .id(EDITION_2015_D_10)
-                                .number("170.315 (d)(10)")
-                                .title("not cures")
-                                .build())
+                        .criterion(d10)
                         .success(true)
                         .build())
                 .build();
@@ -207,31 +189,19 @@ public class OldCriteriaWithoutIcsReviewerTest {
                 .ics(new InheritedCertificationStatus(false))
                 .certificationDate(betweenBoth.getTime())
                 .certificationResult(CertificationResult.builder()
-                        .criterion(CertificationCriterion.builder()
-                                .id(EDITION_2015_B_3)
-                                .number("170.315 (b)(3)")
-                                .build())
+                        .criterion(b3)
                         .success(true)
                         .build())
                 .certificationResult(CertificationResult.builder()
-                        .criterion(CertificationCriterion.builder()
-                                .id(EDITION_2015_D_2)
-                                .number("170.315 (d)(2)")
-                                .build())
+                        .criterion(d2)
                         .success(true)
                         .build())
                 .certificationResult(CertificationResult.builder()
-                        .criterion(CertificationCriterion.builder()
-                                .id(EDITION_2015_D_3)
-                                .number("170.315 (d)(3)")
-                                .build())
+                        .criterion(d3)
                         .success(true)
                         .build())
                 .certificationResult(CertificationResult.builder()
-                        .criterion(CertificationCriterion.builder()
-                                .id(EDITION_2015_D_10)
-                                .number("170.315 (d)(10)")
-                                .build())
+                        .criterion(d10)
                         .success(true)
                         .build())
                 .build();
@@ -248,31 +218,19 @@ public class OldCriteriaWithoutIcsReviewerTest {
                 .ics(new InheritedCertificationStatus(false))
                 .certificationDate(afterBoth.getTime())
                 .certificationResult(CertificationResult.builder()
-                        .criterion(CertificationCriterion.builder()
-                                .id(EDITION_2015_B_3)
-                                .number("170.315 (b)(3)")
-                                .build())
+                        .criterion(b3)
                         .success(true)
                         .build())
                 .certificationResult(CertificationResult.builder()
-                        .criterion(CertificationCriterion.builder()
-                                .id(EDITION_2015_D_2)
-                                .number("170.315 (d)(2)")
-                                .build())
+                        .criterion(d2)
                         .success(true)
                         .build())
                 .certificationResult(CertificationResult.builder()
-                        .criterion(CertificationCriterion.builder()
-                                .id(EDITION_2015_D_3)
-                                .number("170.315 (d)(3)")
-                                .build())
+                        .criterion(d3)
                         .success(true)
                         .build())
                 .certificationResult(CertificationResult.builder()
-                        .criterion(CertificationCriterion.builder()
-                                .id(EDITION_2015_D_10)
-                                .number("170.315 (d)(10)")
-                                .build())
+                        .criterion(d10)
                         .success(true)
                         .build())
                 .build();
@@ -284,22 +242,10 @@ public class OldCriteriaWithoutIcsReviewerTest {
 
     private ArrayList<CertificationCriterion> makeAllCriteria() {
         ArrayList<CertificationCriterion> criteria = new ArrayList<CertificationCriterion>();
-        criteria.add(CertificationCriterion.builder()
-                .id(EDITION_2015_B_3)
-                .number("170.315 (b)(3)")
-                .build());
-        criteria.add(CertificationCriterion.builder()
-                .id(EDITION_2015_D_2)
-                .number("170.315 (d)(2)")
-                .build());
-        criteria.add(CertificationCriterion.builder()
-                .id(EDITION_2015_D_3)
-                .number("170.315 (d)(3)")
-                .build());
-        criteria.add(CertificationCriterion.builder()
-                .id(EDITION_2015_D_10)
-                .number("170.315 (d)(10)")
-                .build());
+        criteria.add(b3);
+        criteria.add(d2);
+        criteria.add(d3);
+        criteria.add(d10);
         return criteria;
     }
 }

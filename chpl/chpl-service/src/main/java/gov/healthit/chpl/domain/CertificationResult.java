@@ -87,6 +87,7 @@ public class CertificationResult implements Serializable {
             + "It is a binary value that takes either true or false.")
     private Boolean attestationAnswer;
 
+    @JsonIgnore
     private String attestationAnswerStr;
 
     @Schema(description = "The hyperlink to access an application programming interface (API)'s documentation and terms of use. "

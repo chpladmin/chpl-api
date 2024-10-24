@@ -60,6 +60,7 @@ import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
+import gov.healthit.chpl.validation.listing.normalizer.BaselineStandardAsOfTodayNormalizer;
 import jakarta.transaction.Transactional;
 import lombok.extern.log4j.Log4j2;
 
@@ -79,7 +80,8 @@ public class ListingUploadManager {
     private SchedulerManager schedulerManager;
     private ActivityManager activityManager;
     private ErrorMessageUtil msgUtil;
-    private BaselineStandardAsOfCertificationDayNormalizer baselineStandardNormalizer;
+    private BaselineStandardAsOfCertificationDayNormalizer baselineStandardAsOfCertificationDayNormalizer;
+    private BaselineStandardAsOfTodayNormalizer baselineStandardAsOfTodayNormalizer;
 
     @Autowired
     @SuppressWarnings("checkstyle:parameternumber")
@@ -90,7 +92,8 @@ public class ListingUploadManager {
             CertificationBodyDAO acbDao, UserDAO userDao,
             ListingConfirmationManager listingConfirmationManager, SchedulerManager schedulerManager,
             ActivityManager activityManager, ErrorMessageUtil msgUtil,
-            BaselineStandardAsOfCertificationDayNormalizer baselineStandardNormalizer) {
+            BaselineStandardAsOfCertificationDayNormalizer baselineStandardAsOfCertificationDayNormalizer,
+            BaselineStandardAsOfTodayNormalizer baselineStandardAsOfTodayNormalizer) {
         this.listingDetailsHandler = listingDetailsHandler;
         this.certDateHandler = certDateHandler;
         this.listingNormalizer = listingNormalizer;
@@ -104,7 +107,8 @@ public class ListingUploadManager {
         this.schedulerManager = schedulerManager;
         this.activityManager = activityManager;
         this.msgUtil = msgUtil;
-        this.baselineStandardNormalizer = baselineStandardNormalizer;
+        this.baselineStandardAsOfCertificationDayNormalizer = baselineStandardAsOfCertificationDayNormalizer;
+        this.baselineStandardAsOfTodayNormalizer = baselineStandardAsOfTodayNormalizer;
     }
 
     @Transactional
@@ -191,10 +195,31 @@ public class ListingUploadManager {
         CertifiedProductSearchDetails listing = listingDetailsHandler.parseAsListing(headingRecord, allListingRecords);
         listing.setId(id);
         LOGGER.debug("Converted listing upload with ID " + id + " into CertifiedProductSearchDetails object");
-        listingNormalizer.normalize(listing, List.of(baselineStandardNormalizer));
+        listingNormalizer.normalize(listing, List.of(baselineStandardAsOfCertificationDayNormalizer));
         LOGGER.debug("Normalized listing upload with ID " + id);
         listingUploadValidator.review(listingUpload, listing);
         LOGGER.debug("Validated listing upload with ID " + id);
+        return listing;
+    }
+
+    @Transactional
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).LISTING_UPLOAD, "
+            + "T(gov.healthit.chpl.permissions.domains.ListingUploadDomainPerissions).GET_UPLOAD_AS_LISTING, #listingUpload)")
+    public CertifiedProductSearchDetails getListingUploadAsListingForUpdate(ListingUpload listingUpload) throws ValidationException {
+        List<CSVRecord> allCsvRecords = listingUpload.getRecords();
+        if (allCsvRecords == null) {
+            LOGGER.debug("Listing upload has no CSV records associated with it.");
+            return null;
+        }
+        LOGGER.debug("Listing upload has " + allCsvRecords.size() + " CSV records associated with it.");
+        int headingRowIndex = uploadUtil.getHeadingRecordIndex(allCsvRecords);
+        CSVRecord headingRecord = uploadUtil.getHeadingRecord(allCsvRecords);
+        List<CSVRecord> allListingRecords = allCsvRecords.subList(headingRowIndex + 1, allCsvRecords.size());
+        LOGGER.debug("Converting listing upload into CertifiedProductSearchDetails object");
+        CertifiedProductSearchDetails listing = listingDetailsHandler.parseAsListing(headingRecord, allListingRecords);
+        LOGGER.debug("Converted listing upload into CertifiedProductSearchDetails object");
+        listingNormalizer.normalize(listing, List.of(baselineStandardAsOfTodayNormalizer));
+        LOGGER.debug("Normalized listing upload");
         return listing;
     }
 
@@ -305,7 +330,7 @@ public class ListingUploadManager {
 
     private void checkForErrorsOrUnacknowledgedWarnings(CertifiedProductSearchDetails listing,
             boolean acknowledgeWarnings) throws ValidationException {
-        listingNormalizer.normalize(listing, List.of(baselineStandardNormalizer));
+        listingNormalizer.normalize(listing, List.of(baselineStandardAsOfCertificationDayNormalizer));
         LOGGER.debug("Normalized listing for confirmation: " + listing.getChplProductNumber());
         listingUploadValidator.review(listing);
         LOGGER.debug("Validated listing for confirmation: " + listing.getChplProductNumber());
