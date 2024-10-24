@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -23,7 +22,6 @@ public class CQMResultDetails implements Serializable {
     @Schema(description = "CQM internal ID")
     private Long id;
 
-    @JsonIgnore
     private Long cqmCriterionId;
 
     @Schema(description = "The CMS ID clinical quality measures to which the Health IT Module has been certified. "

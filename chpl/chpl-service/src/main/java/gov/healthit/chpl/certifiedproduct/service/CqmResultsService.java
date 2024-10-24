@@ -2,8 +2,11 @@ package gov.healthit.chpl.certifiedproduct.service;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.BooleanUtils;
@@ -18,9 +21,8 @@ import gov.healthit.chpl.domain.CQMResultCertification;
 import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.comparator.CQMCriteriaComparator;
 import gov.healthit.chpl.domain.comparator.CQMResultComparator;
-import gov.healthit.chpl.dto.CQMResultDetailsDTO;
-import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.manager.DimensionalDataManager;
+import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
+import gov.healthit.chpl.service.CqmCriterionService;
 import lombok.extern.log4j.Log4j2;
 
 @Component
@@ -28,93 +30,148 @@ import lombok.extern.log4j.Log4j2;
 public class CqmResultsService {
     private CQMResultDetailsDAO cqmResultDetailsDAO;
     private CQMResultDAO cqmResultDao;
-    private DimensionalDataManager dimensionalDataManager;
+    private CqmCriterionService cqmCriterionService;
 
     private CQMCriteriaComparator cqmCriteriaComparator;
     private CQMResultComparator cqmResultComparator;
 
     @Autowired
     public CqmResultsService(CQMResultDetailsDAO cqmResultDetailsDAO, CQMResultDAO cqmResultDao,
-            DimensionalDataManager dimensionalDataManager,
+            CqmCriterionService cqmCriterionService,
             CQMCriteriaComparator cqmCriteriaComparator) {
         this.cqmResultDetailsDAO = cqmResultDetailsDAO;
         this.cqmResultDao = cqmResultDao;
-        this.dimensionalDataManager = dimensionalDataManager;
+        this.cqmCriterionService = cqmCriterionService;
         this.cqmCriteriaComparator = cqmCriteriaComparator;
         this.cqmResultComparator = new CQMResultComparator();
     }
 
-    public List<CQMResultDetails> getCqmResultDetails(Long id, String year) {
-        List<CQMResultDetailsDTO> cqmResultDTOs = getCqmResultDetailsDTOs(id);
+    public static boolean isNqfType(CQMResultDetails cqm) {
+        return StringUtils.isEmpty(cqm.getCmsId())
+                && !StringUtils.isEmpty(cqm.getNqfNumber())
+                && !cqm.getNqfNumber().equals("N/A");
+    }
 
-        List<CQMResultDetails> cqmResults = new ArrayList<CQMResultDetails>();
-        for (CQMResultDetailsDTO cqmResultDTO : cqmResultDTOs) {
-            boolean existingCms = false;
-            // for a CMS, first check to see if we already have an object with
-            // the same CMS id
-            // so we can just add to it's success versions.
-            if ((StringUtils.isEmpty(year) || !year.equals("2011"))
-                    && !StringUtils.isEmpty(cqmResultDTO.getCmsId())) {
-                for (CQMResultDetails result : cqmResults) {
-                    if (cqmResultDTO.getCmsId().equals(result.getCmsId())) {
-                        existingCms = true;
-                        result.getSuccessVersions().add(cqmResultDTO.getVersion());
-                    }
-                }
-            }
+    public List<CQMResultDetails> getCqmResultDetails(Long listingId, String year) {
+        //Get a flat list of all CQM results
+        //If these are of CMS-type they then need to be grouped by CMS ID and have versions attached.
+        //If these are of NQF-type then they do not need any further processing.
+        final List<CQMResultDetails> cqmResults = cqmResultDetailsDAO.getCQMResultDetailsByCertifiedProductId(listingId);
 
-            if (!existingCms) {
-                CQMResultDetails result = new CQMResultDetails();
-                result.setId(cqmResultDTO.getId());
-                result.setCmsId(cqmResultDTO.getCmsId());
-                result.setNqfNumber(cqmResultDTO.getNqfNumber());
-                result.setNumber(cqmResultDTO.getNumber());
-                result.setTitle(cqmResultDTO.getTitle());
-                result.setDescription(cqmResultDTO.getDescription());
-                result.setTypeId(cqmResultDTO.getCqmCriterionTypeId());
-                if ((StringUtils.isEmpty(year) || !year.equals("2011"))
-                        && !StringUtils.isEmpty(cqmResultDTO.getCmsId())) {
-                    result.getSuccessVersions().add(cqmResultDTO.getVersion());
-                } else {
-                    result.setSuccess(cqmResultDTO.getSuccess());
-                }
-                cqmResults.add(result);
-            }
+        //NQF-type of CQMs are only associated with 2011 listings
+        if (!StringUtils.isEmpty(year) && year.equals(CertificationEditionConcept.CERTIFICATION_EDITION_2011.getYear())) {
+            List<CQMCriterion> allNqfCqms = cqmCriterionService.getAllNqfCqms();
+            allNqfCqms.stream()
+                .filter(nqfCqm -> !isInCqmResults(nqfCqm, cqmResults))
+                .forEach(unattestedNqfCqm -> cqmResults.add(getAsCqmResultDetails(unattestedNqfCqm)));
+
+            return cqmResults.stream()
+                    .sorted(cqmResultComparator)
+                    .collect(Collectors.toList());
         }
 
-        // now add allVersions for CMSs
-        if (StringUtils.isEmpty(year) || !year.startsWith("2011")) {
-            List<CQMCriterion> cqms = getAvailableCQMVersions();
-            for (CQMCriterion cqm : cqms) {
-                boolean cqmExists = false;
-                for (CQMResultDetails details : cqmResults) {
-                    if (cqm.getCmsId().equals(details.getCmsId())) {
-                        cqmExists = true;
-                        details.getAllVersions().add(cqm.getCqmVersion());
-                    }
-                }
-                if (!cqmExists) {
-                    cqmResults.add(getCqmResultDetails(cqm));
-                }
-            }
-        }
+        //group the CQMs so there is only 1 per CMS ID and it contains the data related to the
+        //most recent successVersion of that CQM
+        List<CQMResultDetails> groupedCqmResults = new ArrayList<CQMResultDetails>();
+        Map<String, List<CQMResultDetails>> cqmResultsByCmsId = getCqmResultsGroupedByCmsId(cqmResults);
+        cqmResultsByCmsId.keySet().stream()
+            .map(cmsId -> (List<CQMResultDetails>) cqmResultsByCmsId.get(cmsId))
+            .forEach(cqmResultsForCmsId -> addToGroupedCqmResults(cqmResultsForCmsId, groupedCqmResults));
 
-        // now add criteria mappings to all of our cqms
-        for (CQMResultDetails cqmResult : cqmResults) {
+        // now fill in the "allVersions" data for that CQM
+        List<CQMCriterion> allCmsCqmCriteria = cqmCriterionService.getAllCmsCqms();
+        allCmsCqmCriteria.stream()
+            .forEach(cqmCrit -> {
+                CQMResultDetails cqmResultForCmsId = groupedCqmResults.stream()
+                        .filter(cqmResult -> cqmResult.getCmsId().equals(cqmCrit.getCmsId()))
+                        .findAny()
+                        .orElse(null);
+                if (cqmResultForCmsId != null) {
+                    cqmResultForCmsId.setAllVersions(
+                            getAllVersionsForCmsId(cqmResultForCmsId.getCmsId(), allCmsCqmCriteria));
+                }
+            });
+
+        //Add c1,c2,c3,c4 criteria mappings to all CQM results
+        for (CQMResultDetails cqmResult : groupedCqmResults) {
             cqmResult.setCriteria(getCqmCriteriaMapping(cqmResult));
         }
 
+        //Add all the CQMs that are NOT attested to
+        List<CQMResultDetails> unattestedCmsCqmsMostRecentVersions = cqmCriterionService.getAllCmsCqmsMostRecentVersionOnly().stream()
+            .filter(cmsCqm -> !isInCqmResults(cmsCqm, cqmResults))
+            .map(unattestedCmsCqm -> getAsCqmResultDetails(unattestedCmsCqm))
+            .collect(Collectors.toList());
+        unattestedCmsCqmsMostRecentVersions.stream()
+            .forEach(unattestedCmsCqm -> unattestedCmsCqm.setAllVersions(getAllVersionsForCmsId(unattestedCmsCqm.getCmsId(), allCmsCqmCriteria)));
+        groupedCqmResults.addAll(unattestedCmsCqmsMostRecentVersions);
+
         //sort everything
-        cqmResults.stream()
+        groupedCqmResults.stream()
             .forEach(cqmResult -> {
                 sortCqmCriteriaMapping(cqmResult);
                 sortSuccessVersions(cqmResult);
                 sortAllVersions(cqmResult);
             });
 
-        return cqmResults.stream()
+        return groupedCqmResults.stream()
             .sorted(cqmResultComparator)
             .collect(Collectors.toList());
+    }
+
+    private boolean isInCqmResults(CQMCriterion cqmCriterion, List<CQMResultDetails> cqmResults) {
+        boolean isNqf = StringUtils.isEmpty(cqmCriterion.getCmsId()) || !cqmCriterion.getCmsId().startsWith(CqmCriterionService.CMS_ID_BEGIN);
+        return cqmResults.stream()
+                .filter(cqmResult -> (isNqf ? cqmResult.getNqfNumber().equals(cqmCriterion.getNqfNumber()) : cqmResult.getCmsId().equals(cqmCriterion.getCmsId())))
+                .findAny()
+                .isPresent();
+    }
+
+    private Map<String, List<CQMResultDetails>> getCqmResultsGroupedByCmsId(List<CQMResultDetails> cqmResults) {
+        Map<String, List<CQMResultDetails>> cqmResultsGroupedByCmsId = new HashMap<String, List<CQMResultDetails>>();
+        Set<String> distinctCmsIds = cqmResults.stream()
+            .map(cqm -> cqm.getCmsId())
+            .collect(Collectors.toSet());
+        distinctCmsIds.stream()
+            .forEach(cmsId -> cqmResultsGroupedByCmsId.put(cmsId, getAllCqmResultsByCmsId(cmsId, cqmResults)));
+        return cqmResultsGroupedByCmsId;
+    }
+
+    private List<CQMResultDetails> getAllCqmResultsByCmsId(String cmsId, List<CQMResultDetails> cqmResults) {
+        return cqmResults.stream()
+            .filter(cqm -> cqm.getCmsId().equals(cmsId))
+            .collect(Collectors.toList());
+    }
+
+    private void addToGroupedCqmResults(List<CQMResultDetails> cqmResultsForCmsId, List<CQMResultDetails> allCqmResults) {
+        LinkedHashSet<String> successVersions = cqmResultsForCmsId.stream()
+                .flatMap(cqmResult -> cqmResult.getSuccessVersions().stream())
+                .collect(Collectors.toCollection(LinkedHashSet::new));
+        //get the CQM for the max success version
+        CQMResultDetails maxVersionCqmResult = getCqmResultForMostRecentVersion(cqmResultsForCmsId);
+        maxVersionCqmResult.setSuccessVersions(successVersions);
+
+        allCqmResults.add(maxVersionCqmResult);
+    }
+
+    private CQMResultDetails getCqmResultForMostRecentVersion(List<CQMResultDetails> cqmResultsForCmsId) {
+        int maxVersion = cqmResultsForCmsId.stream()
+                .flatMap(cqmResult -> cqmResult.getSuccessVersions().stream())
+                .map(ver -> ver.substring(1))
+                .mapToInt(Integer::valueOf)
+                .max()
+                .orElse(0);
+        return cqmResultsForCmsId.stream()
+                    .filter(cqmResult -> cqmResult.getSuccessVersions().contains("v" + maxVersion))
+                    .findAny()
+                    .orElse(cqmResultsForCmsId.get(cqmResultsForCmsId.size() - 1));
+    }
+
+    private LinkedHashSet<String> getAllVersionsForCmsId(String cmsId, List<CQMCriterion> allCmsCqmCriteria) {
+        return allCmsCqmCriteria.stream()
+            .filter(cqmCrit -> cqmCrit.getCmsId().equals(cmsId))
+            .map(cqmCrit -> cqmCrit.getCqmVersion())
+            .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
     private void sortCqmCriteriaMapping(CQMResultDetails cqmResult) {
@@ -138,16 +195,6 @@ public class CqmResultsService {
         cqmResult.setAllVersions(sortedAllVersions);
     }
 
-    private List<CQMResultDetailsDTO> getCqmResultDetailsDTOs(Long id) {
-        List<CQMResultDetailsDTO> cqmResultDetailsDTOs = null;
-        try {
-            cqmResultDetailsDTOs = cqmResultDetailsDAO.getCQMResultDetailsByCertifiedProductId(id);
-        } catch (EntityRetrievalException e) {
-            LOGGER.error(e.getMessage(), e);
-        }
-        return cqmResultDetailsDTOs;
-    }
-
     private List<CQMResultCertification> getCqmCriteriaMapping(CQMResultDetails cqmResult) {
         if (BooleanUtils.isTrue(cqmResult.getSuccess()) && cqmResult.getId() != null) {
             return cqmResultDao.getCriteriaForCqmResult(cqmResult.getId());
@@ -156,13 +203,7 @@ public class CqmResultsService {
         }
     }
 
-    private List<CQMCriterion> getAvailableCQMVersions() {
-        return dimensionalDataManager.getCQMCriteria().stream()
-                .filter(criterion -> !StringUtils.isEmpty(criterion.getCmsId()) && criterion.getCmsId().startsWith("CMS"))
-                .collect(Collectors.toList());
-    }
-
-    private CQMResultDetails getCqmResultDetails(CQMCriterion cqm) {
+    private CQMResultDetails getAsCqmResultDetails(CQMCriterion cqm) {
         return CQMResultDetails.builder()
                 .cmsId(cqm.getCmsId())
                 .nqfNumber(cqm.getNqfNumber())
@@ -170,7 +211,9 @@ public class CqmResultsService {
                 .title(cqm.getTitle())
                 .description(cqm.getDescription())
                 .success(Boolean.FALSE)
-                .allVersions(new LinkedHashSet<String>(Arrays.asList(cqm.getCqmVersion())))
+                .allVersions(!StringUtils.isEmpty(cqm.getCqmVersion())
+                        ? new LinkedHashSet<String>(Arrays.asList(cqm.getCqmVersion()))
+                                : new LinkedHashSet<String>())
                 .typeId(cqm.getCqmCriterionTypeId())
                 .build();
     }

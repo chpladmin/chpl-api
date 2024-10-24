@@ -60,7 +60,7 @@ public class SedUploadHandlerTest {
         ErrorMessageUtil msgUtil = Mockito.mock(ErrorMessageUtil.class);
         ListingUploadHandlerUtil handlerUtil = new ListingUploadHandlerUtil(uploadHeadingUtil, msgUtil);
         CertificationCriterionUploadHandler criterionHandler = Mockito.mock(CertificationCriterionUploadHandler.class);
-        Mockito.when(criterionHandler.handle(ArgumentMatchers.any(), ArgumentMatchers.any()))
+        Mockito.when(criterionHandler.handle(ArgumentMatchers.any()))
             .thenReturn(buildCriterion(1L, "170.315 (a)(1)", "a title"));
         TestTaskUploadHandler testTaskHandler = new TestTaskUploadHandler(handlerUtil);
         TestParticipantsUploadHandler participantHandler = new TestParticipantsUploadHandler(handlerUtil);

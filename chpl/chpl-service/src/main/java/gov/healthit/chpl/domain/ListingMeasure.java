@@ -90,9 +90,7 @@ public class ListingMeasure implements Serializable {
     }
 
     private boolean propertiesMatch(ListingMeasure anotherMeasure) {
-        if (this.id == null && anotherMeasure.id != null || this.id != null && anotherMeasure.id == null) {
-            return false;
-        } else if (ObjectUtils.allNotNull(this.id, anotherMeasure.id)
+        if (ObjectUtils.allNotNull(this.id, anotherMeasure.id)
                 && this.id.longValue() != anotherMeasure.id.longValue()) {
             return false;
         }
