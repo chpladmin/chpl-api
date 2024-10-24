@@ -71,6 +71,9 @@ public class SearchComplaintsController {
             @Parameter(description = "A comma-separated list of complainant type names (ex: \"Developer,Patient,Provider\"). Results may match any of the provided types.",
                 allowEmptyValue = true, in = ParameterIn.QUERY, name = "complainantTypes")
             @RequestParam(value = "complainantTypes", required = false, defaultValue = "") String complainantTypeNamesDelimited,
+            @Parameter(description = "A comma-separated list of complaint type names (ex: \"Criteria,Condition\"). Results may match any of the provided types.",
+                allowEmptyValue = true, in = ParameterIn.QUERY, name = "complaintTypes")
+            @RequestParam(value = "complaintTypes", required = false, defaultValue = "") String complaintTypeNamesDelimited,
             @Parameter(description = "A comma-separated list of listing IDs 'or'ed together "
                     + "(ex: \"1,2\" finds complaints associated with either listing 1 or listing 2).",
                     allowEmptyValue = true, in = ParameterIn.QUERY, name = "listingIds")
@@ -117,8 +120,8 @@ public class SearchComplaintsController {
                     throws EntityRetrievalException, ValidationException {
         return searchV2(searchTerm, informedOncDelimited, oncAtlContactedDelimited, complainantContactedDelimited,
                 developerContactedDelimited, certificationBodiesDelimited, currentStatusNamesDelimited,
-                complainantTypeNamesDelimited, listingIdsDelimited, surveillanceIdsDelimited, criteriaIdsDelimited,
-                closedDateStart, closedDateEnd, receivedDateStart,
+                complainantTypeNamesDelimited, complaintTypeNamesDelimited, listingIdsDelimited, surveillanceIdsDelimited,
+                criteriaIdsDelimited, closedDateStart, closedDateEnd, receivedDateStart,
                 receivedDateEnd, openDuringDateRange, pageNumber, pageSize, orderBy, sortDescending);
     }
 
@@ -156,6 +159,9 @@ public class SearchComplaintsController {
             @Parameter(description = "A comma-separated list of complainant type names (ex: \"Developer,Patient,Provider\"). Results may match any of the provided types.",
                 allowEmptyValue = true, in = ParameterIn.QUERY, name = "complainantTypes")
             @RequestParam(value = "complainantTypes", required = false, defaultValue = "") String complainantTypeNamesDelimited,
+            @Parameter(description = "A comma-separated list of complaint type names (ex: \"Criteria,Condition\"). Results may match any of the provided types.",
+                allowEmptyValue = true, in = ParameterIn.QUERY, name = "complaintTypes")
+            @RequestParam(value = "complaintTypes", required = false, defaultValue = "") String complaintTypeNamesDelimited,
             @Parameter(description = "A comma-separated list of listing IDs 'or'ed together "
                     + "(ex: \"1,2\" finds complaints associated with either listing 1 or listing 2).",
                     allowEmptyValue = true, in = ParameterIn.QUERY, name = "listingIds")
@@ -213,6 +219,7 @@ public class SearchComplaintsController {
                 .certificationBodyNames(convertToSetWithDelimeter(certificationBodiesDelimited, ","))
                 .currentStatusNames(convertToSetWithDelimeter(currentStatusNamesDelimited, ","))
                 .complainantTypeNames(convertToSetWithDelimeter(complainantTypeNamesDelimited, ","))
+                .complaintTypeNames(convertToSetWithDelimeter(complaintTypeNamesDelimited, ","))
                 .listingIdStrings(convertToSetWithDelimeter(listingIdsDelimited, ","))
                 .surveillanceIdStrings(convertToSetWithDelimeter(surveillanceIdsDelimited, ","))
                 .certificationCriteriaIdStrings(convertToSetWithDelimeter(criteriaIdsDelimited, ","))

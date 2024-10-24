@@ -6,7 +6,9 @@ import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.StringUtils;
 import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,6 +30,7 @@ import gov.healthit.chpl.domain.auth.CognitoSetForgottenPasswordRequest;
 import gov.healthit.chpl.domain.auth.CognitoUpdatePasswordRequest;
 import gov.healthit.chpl.domain.auth.LoginCredentials;
 import gov.healthit.chpl.domain.auth.User;
+import gov.healthit.chpl.domain.error.ErrorResponse;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.UserCreationException;
 import gov.healthit.chpl.exception.UserPermissionRetrievalException;
@@ -159,12 +162,19 @@ public class CognitoUserController {
         )
     @RequestMapping(value = "/forgot-password/set-password", method = RequestMethod.POST,
             consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
-    public void setForgottenPassword(@RequestBody CognitoSetForgottenPasswordRequest request) throws EmailNotSentException, ValidationException {
+    public ResponseEntity setForgottenPassword(@RequestBody CognitoSetForgottenPasswordRequest request) throws EmailNotSentException {
         if (!ff4j.check(FeatureList.SSO)) {
             throw new NotImplementedException("This method has not been implemented");
         }
 
-        cognitoPasswordManager.setForgottenPassword(request.getForgotPasswordToken(), request.getPassword());
+        try {
+            cognitoPasswordManager.setForgottenPassword(request.getForgotPasswordToken(), request.getPassword());
+            return ResponseEntity.ok().build();
+        } catch (EmailNotSentException e) {
+            throw e;
+        } catch (Exception e) {
+            return new ResponseEntity<>(new ErrorResponse("Unique identifier is not valid."), HttpStatus.NOT_FOUND);
+        }
     }
 
     @Operation(summary = "Update the password for the currently logged in user.",

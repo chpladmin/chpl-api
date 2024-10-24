@@ -115,7 +115,7 @@ public class AdditionalSoftwareCodeReviewerTest {
     }
 
     @Test
-    public void review_trueAdditionalSoftwareCodeNoAdditionalSoftware_hasError() {
+    public void review_trueAdditionalSoftwareCodeNoAdditionalSoftware_hasWarningAndChplProductNumberChanged() {
         Mockito.when(errorMessageUtil.getMessage("listing.additionalSoftwareCode1Mismatch"))
             .thenReturn(CODE_1_MISMATCH);
 
@@ -127,12 +127,14 @@ public class AdditionalSoftwareCodeReviewerTest {
                 .build();
         reviewer.review(listing);
 
-        assertEquals(1, listing.getErrorMessages().size());
-        assertTrue(listing.getErrorMessages().contains(CODE_1_MISMATCH));
+        assertEquals(0, listing.getErrorMessages().size());
+        assertEquals(1, listing.getWarningMessages().size());
+        assertTrue(listing.getWarningMessages().contains(CODE_1_MISMATCH));
+        assertEquals("15.04.04.2526.WEBe.06.00.0.210102", listing.getChplProductNumber());
     }
 
     @Test
-    public void review_falseAdditionalSoftwareCodeWithAdditionalSoftware_hasError() {
+    public void review_falseAdditionalSoftwareCodeWithAdditionalSoftware_hasWaringAndChplProductNumberChanged() {
         Mockito.when(errorMessageUtil.getMessage("listing.additionalSoftwareCode0Mismatch"))
             .thenReturn(CODE_0_MISMATCH);
 
@@ -152,7 +154,9 @@ public class AdditionalSoftwareCodeReviewerTest {
                 .build();
         reviewer.review(listing);
 
-        assertEquals(1, listing.getErrorMessages().size());
-        assertTrue(listing.getErrorMessages().contains(CODE_0_MISMATCH));
+        assertEquals(0, listing.getErrorMessages().size());
+        assertEquals(1, listing.getWarningMessages().size());
+        assertTrue(listing.getWarningMessages().contains(CODE_0_MISMATCH));
+        assertEquals("15.04.04.2526.WEBe.06.00.1.210102", listing.getChplProductNumber());
     }
 }
