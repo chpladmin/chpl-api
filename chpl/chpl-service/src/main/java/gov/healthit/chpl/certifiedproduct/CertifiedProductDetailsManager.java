@@ -168,4 +168,5 @@ public class CertifiedProductDetailsManager {
         }
         return dtos.get(0);
     }
+
 }

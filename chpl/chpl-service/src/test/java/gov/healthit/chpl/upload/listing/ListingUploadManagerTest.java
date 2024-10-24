@@ -47,6 +47,7 @@ import gov.healthit.chpl.upload.listing.normalizer.ListingDetailsNormalizer;
 import gov.healthit.chpl.upload.listing.validation.ListingUploadValidator;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.validation.listing.normalizer.BaselineStandardAsOfTodayNormalizer;
 
 public class ListingUploadManagerTest {
     @SuppressWarnings("checkstyle:linelength")
@@ -106,7 +107,8 @@ public class ListingUploadManagerTest {
                 listingConfirmationManager,
                 Mockito.mock(SchedulerManager.class),
                 Mockito.mock(ActivityManager.class), msgUtil,
-                Mockito.mock(BaselineStandardAsOfCertificationDayNormalizer.class));
+                Mockito.mock(BaselineStandardAsOfCertificationDayNormalizer.class),
+                Mockito.mock(BaselineStandardAsOfTodayNormalizer.class));
     }
 
     @Test(expected = ValidationException.class)

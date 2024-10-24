@@ -10,13 +10,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.caching.CacheNames;
-import gov.healthit.chpl.dao.CQMCriterionDAO;
 import gov.healthit.chpl.dao.CertificationEditionDAO;
 import gov.healthit.chpl.dao.CertificationStatusDAO;
-import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.PracticeTypeDAO;
 import gov.healthit.chpl.dao.ProductClassificationTypeDAO;
-import gov.healthit.chpl.dao.ProductDAO;
 import gov.healthit.chpl.domain.CQMCriterion;
 import gov.healthit.chpl.domain.CertificationEdition;
 import gov.healthit.chpl.domain.CertificationStatus;
@@ -24,6 +21,7 @@ import gov.healthit.chpl.domain.DescriptiveModel;
 import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.domain.PracticeType;
 import gov.healthit.chpl.dto.ProductClassificationTypeDTO;
+import gov.healthit.chpl.service.CqmCriterionService;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -33,9 +31,7 @@ public class CacheableDimensionalDataManager {
     private CertificationEditionDAO certificationEditionDao;
     private CertificationStatusDAO certificationStatusDao;
     private PracticeTypeDAO practiceTypeDao;
-    private CQMCriterionDAO cqmCriterionDao;
-    private ProductDAO productDao;
-    private DeveloperDAO developerDao;
+    private CqmCriterionService cqmCriterionService;
 
     @Autowired
     public CacheableDimensionalDataManager(
@@ -43,16 +39,12 @@ public class CacheableDimensionalDataManager {
             CertificationEditionDAO certificationEditionDao,
             CertificationStatusDAO certificationStatusDao,
             PracticeTypeDAO practiceTypeDao,
-            CQMCriterionDAO cqmCriterionDao,
-            ProductDAO productDao,
-            DeveloperDAO developerDao) {
+            CqmCriterionService cqmCriterionService) {
         this.productClassificationTypeDao = productClassificationTypeDao;
         this.certificationEditionDao = certificationEditionDao;
         this.certificationStatusDao = certificationStatusDao;
         this.practiceTypeDao = practiceTypeDao;
-        this.cqmCriterionDao = cqmCriterionDao;
-        this.productDao = productDao;
-        this.developerDao = developerDao;
+        this.cqmCriterionService = cqmCriterionService;
     }
 
     @Transactional
@@ -122,28 +114,18 @@ public class CacheableDimensionalDataManager {
     public Set<DescriptiveModel> getCQMCriterionNumbers(final Boolean simple) {
         LOGGER.debug("Getting all CQM numbers from the database (not cached).");
 
-        List<CQMCriterion> cqms = this.cqmCriterionDao.findAll();
-        Set<DescriptiveModel> criterionNames = new HashSet<DescriptiveModel>();
+        Set<DescriptiveModel> cqms = new HashSet<DescriptiveModel>();
 
-        for (CQMCriterion cqm : cqms) {
-            String idNumber;
-
-            if (simple) {
-                if (cqm.getCmsId() != null) {
-                    idNumber = cqm.getCmsId();
-                } else {
-                    continue;
-                }
-            } else {
-                if (cqm.getCmsId() != null) {
-                    idNumber = cqm.getCmsId();
-                } else {
-                    idNumber = cqm.getNqfNumber();
-                }
-            }
-
-            criterionNames.add(new DescriptiveModel(cqm.getCriterionId(), idNumber, cqm.getTitle()));
+        List<CQMCriterion> cmsCqms = cqmCriterionService.getAllCmsCqmsMostRecentVersionOnly();
+        List<CQMCriterion> nqfCqms = cqmCriterionService.getAllNqfCqms();
+        cmsCqms.stream()
+            .forEach(cmsCqm -> cqms.add(
+                    new DescriptiveModel(cmsCqm.getCriterionId(), cmsCqm.getCmsId(), cmsCqm.getTitle())));
+        if (!simple) {
+            nqfCqms.stream()
+                .forEach(nqfCqm -> cqms.add(
+                        new DescriptiveModel(nqfCqm.getCriterionId(), nqfCqm.getNqfNumber(), nqfCqm.getTitle())));
         }
-        return criterionNames;
+        return cqms;
     }
 }
