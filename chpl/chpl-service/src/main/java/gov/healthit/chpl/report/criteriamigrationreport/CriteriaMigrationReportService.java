@@ -47,7 +47,7 @@ public class CriteriaMigrationReportService {
         CriteriaMigrationReport cmr = criteriaMigrationReportDAO.getCriteriaMigrationReportWithoutCounts(criteriaMigrationReportId);
 
         for (LocalDate reportDate : getTargetDatesForReport()) {
-            CriteriaMigrationReportDenormalized criteriaMigrationReport = getToddAtOrNearReport(cmr.getId(), reportDate);
+            CriteriaMigrationReportDenormalized criteriaMigrationReport = getCriteriaMigrationReportAtOrNearReportDate(cmr.getId(), reportDate);
             criteriaMigrationReport.setOriginalCriterion(cmr.getCriteriaMigrationDefinitions().get(0).getOriginalCriterion());
             criteriaMigrationReport.setUpdatedCriterion(cmr.getCriteriaMigrationDefinitions().get(0).getUpdatedCriterion());
             criteriaMigrationReports.add(criteriaMigrationReport);
@@ -56,7 +56,7 @@ public class CriteriaMigrationReportService {
         return criteriaMigrationReports.stream().sorted(Comparator.comparing(CriteriaMigrationReportDenormalized::getReportDate)).toList();
     }
 
-    private CriteriaMigrationReportDenormalized getToddAtOrNearReport(Long criteriaMigrationReportId, LocalDate targetDate) {
+    private CriteriaMigrationReportDenormalized getCriteriaMigrationReportAtOrNearReportDate(Long criteriaMigrationReportId, LocalDate targetDate) {
         LocalDate originalTargetDate = targetDate;
         for (Integer offset : getDayOffsetList()) {
             Optional<CriteriaMigrationCount> criteriaMigrationCount =
@@ -99,7 +99,7 @@ public class CriteriaMigrationReportService {
     private List<LocalDate> getTargetDatesForReport() {
         List<LocalDate> targetDates = new ArrayList<LocalDate>();
         for (Integer i = 0; i < WEEKS_IN_REPORT; ++i) {
-            targetDates.add(LocalDate.now().minusDays(1 + (DAYS_IN_A_WEEK * i)));
+            targetDates.add(LocalDate.now().minusDays(DAYS_IN_A_WEEK * i));
         }
         return targetDates;
     }
