@@ -17,7 +17,7 @@ import gov.healthit.chpl.developer.search.DeveloperSearchService;
 import gov.healthit.chpl.report.ReportDataManager;
 import gov.healthit.chpl.report.criteriaattribute.TestToolListingReport;
 import gov.healthit.chpl.report.criteriaattribute.TestToolReport;
-import gov.healthit.chpl.report.criteriamigrationreport.CriteriaMigrationReport;
+import gov.healthit.chpl.report.criteriamigrationreport.CriteriaMigrationReportDenormalized;
 import gov.healthit.chpl.report.developer.UniqueDeveloperCount;
 import gov.healthit.chpl.report.surveillance.CapCounts;
 import gov.healthit.chpl.report.surveillance.NonconformityCounts;
@@ -54,7 +54,7 @@ public class ReportDataController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
     @RequestMapping(value = "/hti-1-criteria-migration-report", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public @ResponseBody CriteriaMigrationReport getHti1CriteriaMigrationReport() {
+    public @ResponseBody List<CriteriaMigrationReportDenormalized> getHti1CriteriaMigrationReport() {
         return reportDataManager.getHti1CriteriaMigrationReport();
     }
 

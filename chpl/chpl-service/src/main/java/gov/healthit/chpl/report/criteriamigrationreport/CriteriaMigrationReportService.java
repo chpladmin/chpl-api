@@ -1,17 +1,25 @@
 package gov.healthit.chpl.report.criteriamigrationreport;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import jakarta.transaction.Transactional;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 @Component
 public class CriteriaMigrationReportService {
     public static final Long HTI1_REPORT_ID = 2L;
+    private static final Integer WEEKS_IN_REPORT = 8;
+    private static final Integer DAYS_IN_A_WEEK = 7;
+    private static final Integer MAX_DAYS_TO_CHECK_FOR_DATA = 7;
 
     private CriteriaMigrationReportDAO criteriaMigrationReportDAO;
     private OriginalToUpdatedCriterionCountService originalToUpdatedCriterionCountService;
@@ -32,6 +40,83 @@ public class CriteriaMigrationReportService {
 
     public CriteriaMigrationReport getReport(Long criteriaMigrationReportId) {
         return criteriaMigrationReportDAO.getCriteriaMigrationReport(criteriaMigrationReportId);
+    }
+
+    public List<CriteriaMigrationReportDenormalized> getHtiReportData(Long criteriaMigrationReportId) {
+        List<CriteriaMigrationReportDenormalized> criteriaMigrationReports = new ArrayList<CriteriaMigrationReportDenormalized>();
+        CriteriaMigrationReport cmr = criteriaMigrationReportDAO.getCriteriaMigrationReportWithoutCounts(criteriaMigrationReportId);
+
+        for (LocalDate reportDate : getTargetDatesForReport()) {
+            CriteriaMigrationReportDenormalized criteriaMigrationReport = getCriteriaMigrationReportAtOrNearReportDate(cmr.getId(), reportDate);
+            criteriaMigrationReport.setOriginalCriterion(cmr.getCriteriaMigrationDefinitions().get(0).getOriginalCriterion());
+            criteriaMigrationReport.setUpdatedCriterion(cmr.getCriteriaMigrationDefinitions().get(0).getUpdatedCriterion());
+            criteriaMigrationReports.add(criteriaMigrationReport);
+        }
+
+        return criteriaMigrationReports.stream().sorted(Comparator.comparing(CriteriaMigrationReportDenormalized::getReportDate)).toList();
+    }
+
+    private CriteriaMigrationReportDenormalized getCriteriaMigrationReportAtOrNearReportDate(Long criteriaMigrationReportId, LocalDate targetDate) {
+        LocalDate originalTargetDate = targetDate;
+        for (Integer offset : getDayOffsetList()) {
+            Optional<CriteriaMigrationCount> criteriaMigrationCount =
+                    criteriaMigrationReportDAO.getCriteriaMigrationCount(criteriaMigrationReportId, targetDate);
+            if (criteriaMigrationCount.isPresent()) {
+                return CriteriaMigrationReportDenormalized.builder()
+                        .newCertificationCount(criteriaMigrationCount.get().getUpdatedCriterionCount())
+                        .requiresUpdateCount(criteriaMigrationCount.get().getOriginalCriterionCount())
+                        .upgradedCertificationCount(criteriaMigrationCount.get().getOriginalToUpdatedCriterionCount())
+                        .percentUpdated(getPercentUpdate(criteriaMigrationCount.get()))
+                        .reportDate(criteriaMigrationCount.get().getReportDate())
+                        .build();
+            }
+            targetDate.plusDays(offset);
+        }
+        return CriteriaMigrationReportDenormalized.builder()
+                .newCertificationCount(0)
+                .requiresUpdateCount(0)
+                .upgradedCertificationCount(0)
+                .percentUpdated(0.0d)
+                .reportDate(originalTargetDate)
+                .build();
+    }
+
+    private List<Integer> getDayOffsetList() {
+        //This generates a list in the pattern 0, -1, 1, -2, 2, -3, 3 ....
+        List<Integer> dayOffsets = new ArrayList<Integer>();
+
+        for (Integer i = 0; i < MAX_DAYS_TO_CHECK_FOR_DATA; i++) {
+            Integer offset = i / 2;
+            if (i % 2 == 1) {
+                offset = offset * -1;
+            }
+            dayOffsets.add(offset);
+        }
+        return dayOffsets;
+    }
+
+
+    private List<LocalDate> getTargetDatesForReport() {
+        List<LocalDate> targetDates = new ArrayList<LocalDate>();
+        for (Integer i = 0; i < WEEKS_IN_REPORT; ++i) {
+            targetDates.add(LocalDate.now().minusDays(DAYS_IN_A_WEEK * i));
+        }
+        return targetDates;
+    }
+
+
+    private Double getPercentUpdate(CriteriaMigrationCount criteriaMigratrionCount) {
+        Integer updatedCount = criteriaMigratrionCount.getOriginalToUpdatedCriterionCount()
+                + criteriaMigratrionCount.getUpdatedCriterionCount();
+        Integer totalCount = criteriaMigratrionCount.getOriginalToUpdatedCriterionCount()
+                + criteriaMigratrionCount.getUpdatedCriterionCount()
+                + criteriaMigratrionCount.getOriginalCriterionCount();
+
+        if (totalCount.equals(0)) {
+            return Double.valueOf("0");
+        } else {
+            return updatedCount.doubleValue() / totalCount.doubleValue() * 100;
+        }
     }
 
     @Transactional
