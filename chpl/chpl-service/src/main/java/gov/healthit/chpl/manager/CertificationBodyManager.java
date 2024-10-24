@@ -96,19 +96,44 @@ public class CertificationBodyManager extends SecuredManager {
     @ListingStoreRemove(removeBy = RemoveBy.ACB_ID, id = "#acb.id")
     @ListingSearchCacheRefresh
     // no other caches have ACB data so we do not need to clear all
-    public CertificationBody update(CertificationBody acb) throws EntityRetrievalException, SchedulerException, ValidationException, ActivityException {
+    public CertificationBody update(CertificationBody acbToUpdate) throws EntityRetrievalException, SchedulerException, ValidationException, ActivityException, InvalidArgumentsException {
+        // Get the ACB as it is currently in the database to find out if
+        // the retired flag was changed.
+        // Retirement and un-retirement is done as a separate manager action
+        // because security is different from normal ACB updates - only admins are
+        // allowed whereas an ACB admin can update other info
 
-        CertificationBody result = null;
-        CertificationBody toUpdate = certificationBodyDao.getById(acb.getId());
-        result = certificationBodyDao.update(acb);
-        if (!StringUtils.equals(acb.getName(), toUpdate.getName())) {
-            schedulerManager.changeAcbName(toUpdate.getName(), acb.getName());
+        CertificationBody existingAcb = resourcePermissionsFactory.get().getAcbIfPermissionById(acbToUpdate.getId());
+        if (acbToUpdate.isRetired()) {
+            // we are retiring this ACB - no other updates can happen
+            existingAcb.setRetirementDay(acbToUpdate.getRetirementDay());
+            existingAcb.setRetired(true);
+            retire(existingAcb);
+        } else {
+            if (existingAcb.isRetired()) {
+                // unretire the ACB
+                unretire(acbToUpdate.getId());
+            }
+
+            if (StringUtils.isEmpty(acbToUpdate.getWebsite())) {
+                throw new InvalidArgumentsException("A website is required to update the certification body");
+            }
+            if (acbToUpdate.getAddress() == null) {
+                throw new InvalidArgumentsException("An address is required to update the certification body");
+            }
+            CertificationBody result = null;
+            CertificationBody toUpdate = certificationBodyDao.getById(acbToUpdate.getId());
+            result = certificationBodyDao.update(acbToUpdate);
+            if (!StringUtils.equals(acbToUpdate.getName(), toUpdate.getName())) {
+                schedulerManager.changeAcbName(toUpdate.getName(), acbToUpdate.getName());
+            }
+
+            String activityMsg = "Updated acb " + acbToUpdate.getName();
+            activityManager.addActivity(ActivityConcept.CERTIFICATION_BODY, result.getId(), activityMsg,
+                    toUpdate, result);
+
         }
-
-        String activityMsg = "Updated acb " + acb.getName();
-        activityManager.addActivity(ActivityConcept.CERTIFICATION_BODY, result.getId(), activityMsg,
-                toUpdate, result);
-        return result;
+        return getById(acbToUpdate.getId());
     }
 
     @Transactional
