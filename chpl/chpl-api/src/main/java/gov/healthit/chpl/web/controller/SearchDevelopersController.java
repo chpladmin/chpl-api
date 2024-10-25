@@ -7,6 +7,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -223,6 +224,10 @@ public class SearchDevelopersController {
                 + "specified or may have met any one or more of the activeListingsOptions",
                 allowEmptyValue = true, in = ParameterIn.QUERY, name = "activeListingsOptionsOperator")
         @RequestParam(value = "activeListingsOptionsOperator", required = false, defaultValue = "OR") String activeListingsOptionsOperator,
+        @Parameter(description = "Either true or false. Defaults to null."
+                + "Indicates whether to search for developers that do or do not have users.",
+                allowEmptyValue = true, in = ParameterIn.QUERY, name = "hasUsers")
+        @RequestParam(value = "hasUsers", required = false, defaultValue = "") String hasUsers,
         @Parameter(description = "Zero-based page number used in concert with pageSize. Defaults to 0.",
                 allowEmptyValue = true, in = ParameterIn.QUERY, name = "pageNumber")
             @RequestParam(value = "pageNumber", required = false, defaultValue = "0") Integer pageNumber,
@@ -250,6 +255,7 @@ public class SearchDevelopersController {
                 .decertificationDateEnd(decertificationDateEnd)
                 .activeListingsOptionsStrings(convertToSetWithDelimeter(activeListingsOptionsDelimited, ","))
                 .activeListingsOptionsOperatorString(activeListingsOptionsOperator)
+                .hasUsers(!StringUtils.isEmpty(hasUsers) ? BooleanUtils.toBooleanObject(hasUsers) : null)
                 .pageSize(pageSize)
                 .pageNumber(pageNumber)
                 .orderByString(orderBy)
