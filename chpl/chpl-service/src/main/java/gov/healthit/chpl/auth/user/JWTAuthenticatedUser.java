@@ -9,7 +9,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseField;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,10 +22,10 @@ import lombok.NoArgsConstructor;
 public class JWTAuthenticatedUser implements UserDetails, Authentication {
     private static final long serialVersionUID = -7558546038256722930L;
 
-    @DeprecatedResponseField(message = "This field is deprecated and will be removed.", removalDate = "2024-11-01")
     @Deprecated
     private AuthenticationSystem authenticationSystem;
     private UUID cognitoId;
+    @Deprecated
     private Long id;
     private List<Long> organizationIds;
     private String subjectName;
@@ -35,6 +34,7 @@ public class JWTAuthenticatedUser implements UserDetails, Authentication {
     private String email;
     private String passwordResetRequired;
 
+    @Deprecated
     private UserDTO impersonatingUser;
 
     // UserDetails interface
