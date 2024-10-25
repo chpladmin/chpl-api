@@ -51,7 +51,7 @@ public class CertificationResultUploadHandler {
             CertifiedProductSearchDetails listing)
         throws ValidationException {
         CertificationResult certResult = CertificationResult.builder()
-                .criterion(criterionHandler.handle(certHeadingRecord, listing))
+                .criterion(criterionHandler.handle(certHeadingRecord))
                 .successStr(parseSuccessStr(certHeadingRecord, certResultRecords))
                 .success(parseSuccess(certHeadingRecord, certResultRecords))
                 .gap(parseGap(certHeadingRecord, certResultRecords))
