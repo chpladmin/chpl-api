@@ -210,9 +210,6 @@ public class CognitoApiWrapper {
                     .userAttributes(
                             AttributeType.builder().name("name").value(userRequest.getFullName()).build(),
                             AttributeType.builder().name("email").value(userRequest.getEmail()).build(),
-                            AttributeType.builder().name("phone_number").value("+1" + userRequest.getPhoneNumber().replaceAll("[^0-9.]", "")).build(),
-                            AttributeType.builder().name("nickname").value("THIS ATTRIBUTE NEEDS TO BE MADE NOT REQUIRED").build(),
-                            AttributeType.builder().name("custom:title").value("THIS ATTRIBUTE NEEDS TO BE REMOVED").build(),
                             AttributeType.builder().name("custom:organizations").value(
                                     userRequest.getOrganizationId() != null ? userRequest.getOrganizationId().toString() : "").build())
                     .temporaryPassword(tempPassword)
@@ -338,14 +335,9 @@ public class CognitoApiWrapper {
     @CacheEvict(value = CacheNames.COGNITO_USERS, key = "#user.cognitoId")
     public void updateUser(User user) throws UserRetrievalException {
         List<AttributeType> attributes = new ArrayList<AttributeType>();
-        attributes.add(AttributeType.builder().name("email").value(user.getEmail()).build());
         attributes.add(AttributeType.builder().name("name").value(user.getFullName()).build());
         attributes.add(AttributeType.builder().name("email_verified").value("true").build());
         attributes.add(AttributeType.builder().name("custom:forcePasswordReset").value(user.getPasswordResetRequired() ? "1" : "0").build());
-        //AttributeType.builder().name("phone_number_verified").value("true").build(),
-        if (StringUtils.isNotEmpty(user.getPhoneNumber())) {
-            attributes.add(AttributeType.builder().name("phone_number").value("+1" + user.getPhoneNumber().replaceAll("[^0-9.]", "")).build());
-        }
 
         AdminUpdateUserAttributesRequest request = AdminUpdateUserAttributesRequest.builder()
                 .userPoolId(userPoolId)
@@ -438,7 +430,6 @@ public class CognitoApiWrapper {
         user.setSubjectName(getUserAttribute(userType.attributes(), "email").value());
         user.setFullName(getUserAttribute(userType.attributes(), "name").value());
         user.setEmail(getUserAttribute(userType.attributes(), "email").value());
-        user.setPhoneNumber(getPhoneNumberFromAttributes(userType.attributes()));
         user.setAccountEnabled(userType.enabled());
         user.setStatus(userType.userStatusAsString());
         user.setPasswordResetRequired(getForcePasswordReset(userType.attributes()));
@@ -459,14 +450,6 @@ public class CognitoApiWrapper {
             return forcePasswordReset.equals("1");
         }
         return false;
-    }
-
-    private String getPhoneNumberFromAttributes(List<AttributeType> attributes) {
-        String phoneNumber = getUserAttribute(attributes, "phone_number").value();
-        if (phoneNumber.startsWith("+1")) {
-            phoneNumber = phoneNumber.substring(2);
-        }
-        return phoneNumber;
     }
 
     private String getRoleBasedOnFilteredGroups(List<GroupType> groups) {

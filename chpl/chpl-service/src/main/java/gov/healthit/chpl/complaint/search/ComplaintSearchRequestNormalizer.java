@@ -29,6 +29,7 @@ public class ComplaintSearchRequestNormalizer {
         normalizeDevelopersContacted(request);
         normalizeCertificationBodyNames(request);
         normalizeComplainantTypeNames(request);
+        normalizeComplaintTypeNames(request);
         normalizeCurrentStatusNames(request);
         normalizeListingIds(request);
         normalizeSurveillanceIds(request);
@@ -135,6 +136,15 @@ public class ComplaintSearchRequestNormalizer {
     private void normalizeComplainantTypeNames(ComplaintSearchRequest request) {
         if (!CollectionUtils.isEmpty(request.getComplainantTypeNames())) {
             request.setComplainantTypeNames(request.getComplainantTypeNames().stream()
+                    .filter(ctName -> !StringUtils.isBlank(ctName))
+                    .map(ctName -> StringUtils.normalizeSpace(ctName))
+                    .collect(Collectors.toSet()));
+        }
+    }
+
+    private void normalizeComplaintTypeNames(ComplaintSearchRequest request) {
+        if (!CollectionUtils.isEmpty(request.getComplaintTypeNames())) {
+            request.setComplaintTypeNames(request.getComplaintTypeNames().stream()
                     .filter(ctName -> !StringUtils.isBlank(ctName))
                     .map(ctName -> StringUtils.normalizeSpace(ctName))
                     .collect(Collectors.toSet()));

@@ -9,6 +9,7 @@ public class ComplaintValidationFactory {
     public static final String ACB_CHANGE = "ACB_CHANGE";
     public static final String OPEN_STATUS = "OPEN_STATUS";
     public static final String COMPLAINT_TYPE = "COMPLAINT_TYPE";
+    public static final String COMPLAINANT_TYPE = "COMPLAINANT_TYPE";
     public static final String RECEIVED_DATE = "RECEIVED_DATE";
     public static final String ACB_COMPLAINT_ID = "ACB_COMPLAINT_ID";
     public static final String SUMMARY = "SUMMARY";
@@ -23,6 +24,8 @@ public class ComplaintValidationFactory {
         case OPEN_STATUS:
             return new ComplaintStatusOpen();
         case COMPLAINT_TYPE:
+            return new ComplaintTypeValidation();
+        case COMPLAINANT_TYPE:
             return new ComplainantTypeValidation();
         case RECEIVED_DATE:
             return new ReceivedDateValidation();

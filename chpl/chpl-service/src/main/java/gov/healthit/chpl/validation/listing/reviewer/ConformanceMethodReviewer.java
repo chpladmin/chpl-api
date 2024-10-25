@@ -134,7 +134,7 @@ public class ConformanceMethodReviewer extends PermissionBasedReviewer {
 
         certResult.getConformanceMethods().stream()
                 .filter(conformanceMethod -> isConformanceMethodNameMissing(conformanceMethod))
-                .forEach(conformanceMethod -> fillInDefaultConformanceMethod(listing, certResult, conformanceMethod, defaultedConformanceMethods));
+                .forEach(conformanceMethod -> fillInDefaultConformanceMethod(certResult, conformanceMethod, defaultedConformanceMethods));
     }
 
     private boolean isConformanceMethodNameMissing(CertificationResultConformanceMethod conformanceMethod) {
@@ -142,8 +142,7 @@ public class ConformanceMethodReviewer extends PermissionBasedReviewer {
                 || StringUtils.isEmpty(conformanceMethod.getConformanceMethod().getName());
     }
 
-    private void fillInDefaultConformanceMethod(CertifiedProductSearchDetails listing, CertificationResult certResult,
-            CertificationResultConformanceMethod conformanceMethod,
+    private void fillInDefaultConformanceMethod(CertificationResult certResult, CertificationResultConformanceMethod conformanceMethod,
             Map<String, List<CertificationCriterion>> defaultedConformanceMethods) {
         ConformanceMethod defaultConformanceMethod = getDefaultConformanceMethodForCriteria(certResult.getCriterion());
         if (defaultConformanceMethod != null) {
