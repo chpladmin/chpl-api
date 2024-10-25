@@ -132,6 +132,10 @@ public class AuthenticationController {
     @RequestMapping(value = "/logout", method = RequestMethod.POST,
             consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
     public void logout(@RequestBody CognitoLogoutRequest request) {
+        if (!ff4j.check(FeatureList.SSO)) {
+            throw new NotImplementedException("This method has not been implemented");
+        }
+
         cognitoAuthenticationManager.invalidateTokensForUser(request.getEmail());
     }
 
@@ -199,12 +203,20 @@ public class AuthenticationController {
     @RequestMapping(value = "/password", method = RequestMethod.POST,
             consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
     public void setPassword(@RequestBody CognitoUpdatePasswordRequest request) throws EmailNotSentException, ValidationException, UserRetrievalException {
+        if (!ff4j.check(FeatureList.SSO)) {
+            throw new NotImplementedException("This method has not been implemented");
+        }
+
         cognitoPasswordManager.setPassword(request.getPassword(), request.getConfirmPassword());
     }
 
     @RequestMapping(value = "/refresh-token", method = RequestMethod.POST,
             produces = "application/json; charset=utf-8")
     public CognitoAuthenticationResponse refreshToken(@RequestBody CognitoRefreshTokenRequest request) {
+        if (!ff4j.check(FeatureList.SSO)) {
+            throw new NotImplementedException("This method has not been implemented");
+        }
+
         return cognitoAuthenticationManager.refreshAuthenticationTokens(request.getRefreshToken(), UUID.fromString(request.getCognitoId()));
     }
 

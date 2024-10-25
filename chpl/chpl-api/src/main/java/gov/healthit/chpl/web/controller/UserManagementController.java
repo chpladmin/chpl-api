@@ -7,6 +7,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
+import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.StringUtils;
 import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -113,6 +114,10 @@ public class UserManagementController {
     @RequestMapping(value = "/{cognitoUserId}", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     public @ResponseBody User getUser(@PathVariable("cognitoUserId") UUID cognitoUserId) throws UserRetrievalException {
+        if (!ff4j.check(FeatureList.SSO)) {
+            throw new NotImplementedException("This method has not been implemented");
+        }
+
         return cognitoUserManager.getUserInfo(cognitoUserId);
     }
 
@@ -134,6 +139,10 @@ public class UserManagementController {
             produces = "application/json; charset=utf-8")
     public CognitoUserInvitation inviteUser(@RequestBody CognitoUserInvitation invitation)
             throws UserCreationException, UserRetrievalException, UserPermissionRetrievalException, ValidationException {
+        if (!ff4j.check(FeatureList.SSO)) {
+            throw new NotImplementedException("This method has not been implemented");
+        }
+
         invitation.setEmail(StringUtils.normalizeSpace(invitation.getEmail()));
 
         CognitoUserInvitation createdInvitiation = null;
@@ -169,6 +178,9 @@ public class UserManagementController {
     @RequestMapping(value = "", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
     public void addUser(@RequestBody CreateUserFromInvitationRequest userInfo) throws ValidationException, EmailNotSentException, UserCreationException {
+        if (!ff4j.check(FeatureList.SSO)) {
+            throw new NotImplementedException("This method has not been implemented");
+        }
 
         try {
             CognitoUserInvitation invitation = cognitoInvitationManager.getByToken(UUID.fromString(userInfo.getHash()));
@@ -190,6 +202,10 @@ public class UserManagementController {
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
     public User updateUserDetails(@RequestBody User userInfo, @PathVariable("cognitoUserId") UUID cognitoUserId) throws ValidationException, UserRetrievalException {
+        if (!ff4j.check(FeatureList.SSO)) {
+            throw new NotImplementedException("This method has not been implemented");
+        }
+
         if (!cognitoUserId.equals(userInfo.getCognitoId())) {
             throw new ValidationException(msgUtil.getMessage("url.body.notMatch"));
         }
