@@ -1,5 +1,6 @@
 package gov.healthit.chpl.scheduler.job.developer.messaging;
 
+import java.util.Comparator;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -39,6 +40,15 @@ public class DeveloperMessagePreviewEmailService {
         if (CollectionUtils.isEmpty(developersWithoutUsers)) {
             return htmlBody;
         }
+        developersWithoutUsers = developersWithoutUsers.stream()
+            .sorted(new Comparator<DeveloperSearchResult>() {
+
+                @Override
+                public int compare(DeveloperSearchResult o1, DeveloperSearchResult o2) {
+                    return o1.getName().compareTo(o2.getName());
+                }
+            })
+            .toList();
 
         StringBuffer devsHtml = new StringBuffer();
         devsHtml.append("<b>The following developers do not have active users and will not receive the messsage: </b>");
