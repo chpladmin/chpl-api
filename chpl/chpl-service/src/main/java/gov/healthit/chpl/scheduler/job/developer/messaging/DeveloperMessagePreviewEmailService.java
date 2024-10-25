@@ -41,18 +41,16 @@ public class DeveloperMessagePreviewEmailService {
         }
 
         StringBuffer devsHtml = new StringBuffer();
-        devsHtml.append("<div style=\"background-color:#fdfde7\">");
         devsHtml.append("<b>The following developers do not have active users and will not receive the messsage: </b>");
         devsHtml.append("<ul>");
         developersWithoutUsers.stream()
             .forEach(dev -> devsHtml.append("<li><a href=\"" + String.format(developerUrlUnformatted, dev.getId() + "") + "\">"
                     + dev.getName() + "</a></li>"));
         devsHtml.append("</ul>");
-        devsHtml.append("</div>");
 
         StringBuffer message = new StringBuffer();
         message.append(htmlBody);
-        message.append(chplHtmlEmailBuilder.getParagraphHtml(null, devsHtml.toString(), null));
+        message.append(chplHtmlEmailBuilder.getParagraphHtml(null, devsHtml.toString(), null, "#fdfde7"));
         return message.toString();
     }
 }
