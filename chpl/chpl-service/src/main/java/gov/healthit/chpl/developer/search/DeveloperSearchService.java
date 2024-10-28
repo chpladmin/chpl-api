@@ -54,10 +54,12 @@ public class DeveloperSearchService {
 
         List<DeveloperSearchResult> developers = developerManager.getDeveloperSearchResults();
         LOGGER.debug("Total developers: " + developers.size());
-        final List<User> allDeveloperUsers = new ArrayList<User>();
+        final List<User> allEnabledDeveloperUsers = new ArrayList<User>();
         if (searchRequest.getHasUsers() != null
                 && (resourcePermissionsFactory.get().isUserRoleOnc() || resourcePermissionsFactory.get().isUserRoleAdmin())) {
-            allDeveloperUsers.addAll(resourcePermissionsFactory.get().getAllDeveloperUsers());
+            allEnabledDeveloperUsers.addAll(resourcePermissionsFactory.get().getAllDeveloperUsers().stream()
+                    .filter(user -> user.getAccountEnabled())
+                    .toList());
         }
         List<DeveloperSearchResult> matchedDevelopers = developers.stream()
             .filter(dev -> matchesSearchTerm(dev, searchRequest.getSearchTerm()))
@@ -69,7 +71,7 @@ public class DeveloperSearchService {
             .filter(dev -> matchesDecertificationDateRange(dev, searchRequest.getDecertificationDateStart(), searchRequest.getDecertificationDateEnd()))
             .filter(dev -> matchesAttestationsFilter(dev, searchRequest))
             .filter(dev -> matchesActiveListingsFilter(dev, searchRequest))
-            .filter(dev -> matchesHasUsersFilter(dev, searchRequest, allDeveloperUsers))
+            .filter(dev -> matchesHasUsersFilter(dev, searchRequest, allEnabledDeveloperUsers))
             .filter(dev -> matchesDeveloperId(dev, searchRequest.getDeveloperIds()))
             .collect(Collectors.toList());
         LOGGER.debug("Total matched developers: " + matchedDevelopers.size());
@@ -238,18 +240,18 @@ public class DeveloperSearchService {
     }
 
     private boolean matchesHasUsersFilter(DeveloperSearchResult developer, DeveloperSearchRequest searchRequest,
-            List<User> allDeveloperUsers) {
-        if (CollectionUtils.isEmpty(allDeveloperUsers)) {
+            List<User> allEnabledDeveloperUsers) {
+        if (CollectionUtils.isEmpty(allEnabledDeveloperUsers)) {
             return true;
         }
 
         if (searchRequest.getHasUsers()) {
-            return allDeveloperUsers.stream()
+            return allEnabledDeveloperUsers.stream()
                     .flatMap(user -> user.getOrganizations().stream())
                     .filter(org -> org.getId().equals(developer.getId()))
                     .findAny().isPresent();
         } else {
-            return allDeveloperUsers.stream()
+            return allEnabledDeveloperUsers.stream()
                     .flatMap(user -> user.getOrganizations().stream())
                     .filter(org -> org.getId().equals(developer.getId()))
                     .findAny().isEmpty();

@@ -317,6 +317,10 @@ public class SearchDevelopersController {
                 + "specified or may have met any one or more of the activeListingsOptions",
                 allowEmptyValue = true, in = ParameterIn.QUERY, name = "activeListingsOptionsOperator")
         @RequestParam(value = "activeListingsOptionsOperator", required = false, defaultValue = "OR") String activeListingsOptionsOperator,
+        @Parameter(description = "Either true or false. Defaults to null."
+                + "Indicates whether to search for developers that do or do not have users.",
+                allowEmptyValue = true, in = ParameterIn.QUERY, name = "hasUsers")
+        @RequestParam(value = "hasUsers", required = false, defaultValue = "") String hasUsers,
         @Parameter(description = "What to order by. Options are one of the following: DEVELOPER_NAME, DEVELOPER_CODE, "
                 + "DECERTIFICATION_DATE, or STATUS. Defaults to DEVELOPER_NAME.",
                 allowEmptyValue = true, in = ParameterIn.QUERY, name = "orderBy")
@@ -338,6 +342,7 @@ public class SearchDevelopersController {
                 .decertificationDateEnd(decertificationDateEnd)
                 .activeListingsOptionsStrings(convertToSetWithDelimeter(activeListingsOptionsDelimited, ","))
                 .activeListingsOptionsOperatorString(activeListingsOptionsOperator)
+                .hasUsers(!StringUtils.isEmpty(hasUsers) ? BooleanUtils.toBooleanObject(hasUsers) : null)
                 .pageSize(DeveloperSearchRequest.MAX_PAGE_SIZE)
                 .pageNumber(0)
                 .orderByString(orderBy)
