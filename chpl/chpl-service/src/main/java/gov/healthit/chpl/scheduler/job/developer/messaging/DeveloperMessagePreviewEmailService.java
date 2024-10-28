@@ -17,13 +17,16 @@ import lombok.extern.log4j.Log4j2;
 public class DeveloperMessagePreviewEmailService {
     private ChplHtmlEmailBuilder chplHtmlEmailBuilder;
     private String developerUrlUnformatted;
+    private String missingActiveUsersMessage;
 
     @Autowired
     public DeveloperMessagePreviewEmailService(ChplHtmlEmailBuilder chplHtmlEmailBuilder,
             @Value("${chplUrlBegin}") String chplUrlBegin,
-            @Value("${developerUrlPart}") String developerUrlPart) {
+            @Value("${developerUrlPart}") String developerUrlPart,
+            @Value("${developer.messaging.missingActiveUsers}") String missingActiveUsersMessage) {
         this.chplHtmlEmailBuilder = chplHtmlEmailBuilder;
         this.developerUrlUnformatted = chplUrlBegin + developerUrlPart;
+        this.missingActiveUsersMessage = missingActiveUsersMessage;
     }
 
     public String prependPreviewNotice(String htmlBody, DeveloperEmail developer) {
@@ -51,7 +54,7 @@ public class DeveloperMessagePreviewEmailService {
             .toList();
 
         StringBuffer devsHtml = new StringBuffer();
-        devsHtml.append("<b>The following developers do not have active users and will not receive the messsage: </b>");
+        devsHtml.append("<b>" + formatMissingActiveUsersMessage(developersWithoutUsers) + "</b>");
         devsHtml.append("<ul>");
         developersWithoutUsers.stream()
             .forEach(dev -> devsHtml.append("<li><a href=\"" + String.format(developerUrlUnformatted, dev.getId() + "") + "\">"
@@ -60,7 +63,14 @@ public class DeveloperMessagePreviewEmailService {
 
         StringBuffer message = new StringBuffer();
         message.append(htmlBody);
-        message.append(chplHtmlEmailBuilder.getParagraphHtml(null, devsHtml.toString(), null, "#fdfde7"));
+        message.append(chplHtmlEmailBuilder.getParagraphHtml(null, devsHtml.toString(), null, "#f5f9fd"));
         return message.toString();
+    }
+
+    private String formatMissingActiveUsersMessage(List<DeveloperSearchResult> developersWithoutUsers) {
+        return String.format(missingActiveUsersMessage,
+                developersWithoutUsers.size() > 1 ? ("These " + developersWithoutUsers.size()) : "This",
+                developersWithoutUsers.size() > 1 ? "s" : "",
+                developersWithoutUsers.size() > 1 ? "ve" : "s");
     }
 }
