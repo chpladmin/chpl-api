@@ -230,7 +230,7 @@ public class ConformanceMethodReviewerTest {
     }
 
     @Test
-    public void review_conformanceMethodsRequiredButEmpty_hasError() {
+    public void review_conformanceMethodsRequiredButEmptyAndNoDefault_hasError() {
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .certificationResult(CertificationResult.builder()
                         .id(1L)
@@ -1163,6 +1163,7 @@ public class ConformanceMethodReviewerTest {
         assertEquals(1, listing.getCertificationResults().get(0).getConformanceMethods().size());
         assertEquals(1, listing.getWarningMessages().size());
         assertTrue(listing.getWarningMessages().contains(String.format(DEFAULT_CM_ADDED_MSG, "on", "170.315 (a)(2)", "s", "Attestation")));
+        assertEquals(0, listing.getErrorMessages().size());
     }
 
     @Test

@@ -51,7 +51,7 @@ public class ListingCsvDataWriterTest {
                         .name("Prod")
                         .build())
                 .version(ProductVersion.builder()
-                        .version("1")
+                        .version("1.0")
                         .build())
                 .certifyingBody(acb)
                 .certificationEvents(Stream.of(CertificationStatusEvent.builder()
@@ -68,7 +68,7 @@ public class ListingCsvDataWriterTest {
         assertEquals("15.05.05.3121.ONEL.01.00.1.220823", rows.get(0).get(0));
         assertEquals("Dev", rows.get(0).get(1));
         assertEquals("Prod", rows.get(0).get(2));
-        assertEquals("1", rows.get(0).get(3));
+        assertEquals("\t1.0", rows.get(0).get(3));
         assertEquals("", rows.get(0).get(4));
         assertEquals("", rows.get(0).get(5));
         assertEquals("Katy", rows.get(0).get(9));

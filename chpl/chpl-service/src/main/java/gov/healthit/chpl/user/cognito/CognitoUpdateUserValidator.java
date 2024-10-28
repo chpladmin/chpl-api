@@ -51,12 +51,6 @@ public class CognitoUpdateUserValidator {
             validationErrors.add(msgUtil.getMessage("cognito.user.create.fullName.empty"));
         }
 
-        if (StringUtils.isEmpty(user.getPhoneNumber())) {
-            validationErrors.add(msgUtil.getMessage("cognito.user.create.phoneNumber.empty"));
-        } else if (!isPhoneNumberValid(user.getPhoneNumber())) {
-            validationErrors.add(msgUtil.getMessage("cognito.user.create.phoneNumber.invalid"));
-        }
-
         if (StringUtils.isEmpty(user.getEmail())) {
             validationErrors.add(msgUtil.getMessage("cognito.user.create.email.empty"));
         } else if (!Util.isEmailAddressValidFormat(user.getEmail())) {
@@ -81,9 +75,4 @@ public class CognitoUpdateUserValidator {
             return false;
         }
     }
-
-    private Boolean isPhoneNumberValid(String phoneNumber) {
-        return phoneNumber.matches("\\(?\\d{3}\\)?-? *\\d{3}-? *-?\\d{4}");
-    }
-
 }

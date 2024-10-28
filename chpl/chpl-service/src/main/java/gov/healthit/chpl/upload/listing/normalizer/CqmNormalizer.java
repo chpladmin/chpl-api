@@ -9,8 +9,6 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import jakarta.annotation.PostConstruct;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -18,7 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
-import gov.healthit.chpl.dao.CQMCriterionDAO;
+import gov.healthit.chpl.certifiedproduct.service.CqmResultsService;
 import gov.healthit.chpl.domain.CQMCriterion;
 import gov.healthit.chpl.domain.CQMResultCertification;
 import gov.healthit.chpl.domain.CQMResultDetails;
@@ -26,39 +24,41 @@ import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.service.CertificationCriterionService.Criteria2015;
+import gov.healthit.chpl.service.CqmCriterionService;
+import jakarta.annotation.PostConstruct;
 import lombok.extern.log4j.Log4j2;
 
 @Component
 @Log4j2
 public class CqmNormalizer {
-    private static final String CMS_ID_BEGIN = "CMS";
-
-    private CQMCriterionDAO cqmDao;
+    private CqmCriterionService cqmCriterionService;
     private CertificationCriterionService criterionService;
 
-    private List<CQMCriterion> allCqmsWithVersions;
+    private List<CQMCriterion> allCqms;
+    private List<CQMCriterion> mostRecentCqmVersions;
 
     @Autowired
-    public CqmNormalizer(CQMCriterionDAO cqmDao, CertificationCriterionService criterionService) {
-        this.cqmDao = cqmDao;
+    public CqmNormalizer(CqmCriterionService cqmCriterionService,
+            CertificationCriterionService criterionService) {
+        this.cqmCriterionService = cqmCriterionService;
         this.criterionService = criterionService;
     }
 
     @PostConstruct
     private void initializeAllCqmsWithVersions() {
-        allCqmsWithVersions = cqmDao.findAll();
-        allCqmsWithVersions = allCqmsWithVersions.stream()
-                .filter(cqm -> !StringUtils.isEmpty(cqm.getCmsId()) && cqm.getCmsId().startsWith(CMS_ID_BEGIN))
-                .collect(Collectors.toList());
+        allCqms = cqmCriterionService.getAllCmsCqms();
+        mostRecentCqmVersions = cqmCriterionService.getAllCmsCqmsMostRecentVersionOnly();
     }
 
     public void normalize(CertifiedProductSearchDetails listing) {
         if (listing.getCqmResults() != null && listing.getCqmResults().size() > 0) {
             listing.getCqmResults().stream()
+                .filter(cqmResult -> !CqmResultsService.isNqfType(cqmResult))
                 .forEach(cqmResult -> {
                     normalizeCmsId(cqmResult);
-                    populateCqmCriterionData(cqmResult);
+                    populateCqmCriterionData(listing, cqmResult);
                     populateMappedCriteriaIds(listing, cqmResult);
+                    normalizeSuccessValue(cqmResult);
                 });
         }
         addUnattestedCqms(listing);
@@ -66,34 +66,44 @@ public class CqmNormalizer {
             .forEach(cqmResult -> addAllVersions(cqmResult));
     }
 
-
     private void normalizeCmsId(CQMResultDetails cqmResult) {
         String cmsId = cqmResult.getCmsId();
-        if (!StringUtils.isEmpty(cmsId) && !StringUtils.startsWithIgnoreCase(cmsId, CMS_ID_BEGIN)) {
-            cmsId = CMS_ID_BEGIN + cmsId;
+        if (!StringUtils.isEmpty(cmsId) && !StringUtils.startsWithIgnoreCase(cmsId, CqmCriterionService.CMS_ID_BEGIN)) {
+            cmsId = CqmCriterionService.CMS_ID_BEGIN + cmsId;
             cqmResult.setCmsId(cmsId);
         }
     }
 
-    private void populateCqmCriterionData(CQMResultDetails cqmResult) {
+    private void populateCqmCriterionData(CertifiedProductSearchDetails listing, CQMResultDetails cqmResult) {
         if (StringUtils.isEmpty(cqmResult.getCmsId())) {
             return;
         }
-        CQMCriterion cqm = cqmDao.getCMSByNumber(cqmResult.getCmsId());
-        if (cqm != null) {
-            cqmResult.setCqmCriterionId(cqm.getCriterionId());
-            cqmResult.setDescription(cqm.getDescription());
-            cqmResult.setDomain(cqm.getCqmDomain());
-            cqmResult.setNqfNumber(cqm.getNqfNumber());
-            cqmResult.setNumber(cqm.getNumber());
-            cqmResult.setTitle(cqm.getTitle());
-            cqmResult.setTypeId(cqm.getCqmCriterionTypeId());
+
+        int maxAttestedVersion = cqmResult.getSuccessVersions().stream()
+                .map(successVer -> successVer.substring(1))
+                .mapToInt(Integer::valueOf)
+                .max()
+                .orElse(0);
+        CQMCriterion cqmCriterionForMaxAttestedVersion = allCqms.stream()
+                .filter(cqm -> cqm.getCmsId().equalsIgnoreCase(cqmResult.getCmsId())
+                        && cqm.getCqmVersion().equals(CQMCriterion.VERSION_PREPEND_CHAR + maxAttestedVersion))
+                .findAny()
+                .orElse(null);
+
+        if (cqmCriterionForMaxAttestedVersion != null) {
+            cqmResult.setCqmCriterionId(cqmCriterionForMaxAttestedVersion.getCriterionId());
+            cqmResult.setDescription(cqmCriterionForMaxAttestedVersion.getDescription());
+            cqmResult.setDomain(cqmCriterionForMaxAttestedVersion.getCqmDomain());
+            cqmResult.setNqfNumber(cqmCriterionForMaxAttestedVersion.getNqfNumber());
+            cqmResult.setNumber(cqmCriterionForMaxAttestedVersion.getNumber());
+            cqmResult.setTitle(cqmCriterionForMaxAttestedVersion.getTitle());
+            cqmResult.setTypeId(cqmCriterionForMaxAttestedVersion.getCqmCriterionTypeId());
         }
     }
 
     private void addAllVersions(CQMResultDetails cqmResult) {
-        if (allCqmsWithVersions != null && allCqmsWithVersions.size() > 0) {
-            allCqmsWithVersions.stream().forEach(cqm -> {
+        if (allCqms != null && allCqms.size() > 0) {
+            allCqms.stream().forEach(cqm -> {
                 if (!StringUtils.isEmpty(cqm.getCmsId())
                         && cqm.getCmsId().equalsIgnoreCase(cqmResult.getCmsId())) {
                     cqmResult.getAllVersions().add(cqm.getCqmVersion());
@@ -166,17 +176,17 @@ public class CqmNormalizer {
     }
 
     private void addUnattestedCqms(CertifiedProductSearchDetails listing) {
-        List<CQMCriterion> cqmsWithDistinctCmsIds = allCqmsWithVersions.stream()
+        List<CQMCriterion> cqmsByDistinctCmsId = mostRecentCqmVersions.stream()
             .filter(distinctByKey(CQMCriterion::getCmsId))
             .collect(Collectors.toList());
 
-        if (cqmsWithDistinctCmsIds != null && cqmsWithDistinctCmsIds.size() > 0) {
-            List<CQMCriterion> cqmsToAdd = cqmsWithDistinctCmsIds.stream()
+        if (cqmsByDistinctCmsId != null && cqmsByDistinctCmsId.size() > 0) {
+            List<CQMCriterion> cqmsToAdd = cqmsByDistinctCmsId.stream()
                     .filter(cqm -> !existsInListing(listing.getCqmResults(), cqm))
                     .collect(Collectors.toList());
             cqmsToAdd.stream().forEach(cqmToAdd -> {
                     listing.getCqmResults().add(buildCqmDetails(cqmToAdd));
-                });
+            });
         }
     }
 
@@ -205,5 +215,13 @@ public class CqmNormalizer {
                 .build();
         cqmDetails.getAllVersions().add(cqmCriterion.getCqmVersion());
         return cqmDetails;
+    }
+
+    private void normalizeSuccessValue(CQMResultDetails cqmResult) {
+        if (!CollectionUtils.isEmpty(cqmResult.getSuccessVersions())) {
+            cqmResult.setSuccess(Boolean.TRUE);
+        } else if (CollectionUtils.isEmpty(cqmResult.getSuccessVersions())) {
+            cqmResult.setSuccess(Boolean.FALSE);
+        }
     }
 }

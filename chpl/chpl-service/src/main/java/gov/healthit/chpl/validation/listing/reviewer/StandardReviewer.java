@@ -28,7 +28,6 @@ public abstract class StandardReviewer extends StandardGroupReviewer {
     private ValidationUtils validationUtils;
     private StandardDAO standardDao;
     private BaselineStandardService baselineStandardService;
-    private StandardGroupService standardGroupService;
     private ErrorMessageUtil msgUtil;
 
 
@@ -39,7 +38,6 @@ public abstract class StandardReviewer extends StandardGroupReviewer {
         this.certResultRules = certResultRules;
         this.validationUtils = validationUtils;
         this.standardDao = standardDao;
-        this.standardGroupService = standardGroupService;
         this.baselineStandardService = baselineStandardService;
         this.msgUtil = msgUtil;
     }
