@@ -3,10 +3,11 @@ package gov.healthit.chpl.fuzzyMatching;
 import org.apache.commons.lang3.StringUtils;
 
 public enum FuzzyType {
-    UCD_PROCESS("UCD Process"),
-    QMS_STANDARD("QMS Standard"),
     ACCESSIBILITY_STANDARD("Accessibility Standard"),
-    OPTIONAL_STANDARD("Optional Standard");
+    OPTIONAL_STANDARD("Optional Standard"),
+    PRODUCT("Product"),
+    QMS_STANDARD("QMS Standard"),
+    UCD_PROCESS("UCD Process");
 
     private String fuzzyType;
 
