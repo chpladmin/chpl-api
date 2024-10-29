@@ -104,12 +104,6 @@ public class RequiredData2015Reviewer extends PermissionBasedReviewer {
                             Util.formatCriteriaNumber(cert.getCriterion()));
                 }
 
-                if (certRules.hasCertOption(cert.getCriterion().getId(), CertificationResultRules.CONFORMANCE_METHOD)
-                        && (cert.getConformanceMethods() == null || cert.getConformanceMethods().size() == 0)) {
-                    addBusinessCriterionError(listing, cert, "listing.criteria.conformanceMethod.missingConformanceMethod",
-                            Util.formatCriteriaNumber(cert.getCriterion()));
-                }
-
                 if (certRules.hasCertOption(cert.getCriterion().getId(), CertificationResultRules.TEST_DATA)
                         && cert.getTestDataUsed() != null && cert.getTestDataUsed().size() > 0) {
                     for (CertificationResultTestData crTestData : cert.getTestDataUsed()) {

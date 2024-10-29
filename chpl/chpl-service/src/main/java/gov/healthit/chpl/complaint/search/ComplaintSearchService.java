@@ -80,6 +80,7 @@ public class ComplaintSearchService {
             .filter(complaint -> matchesComplainantContacted(complaint, searchRequest.getComplainantContacted()))
             .filter(complaint -> matchesDeveloperContacted(complaint, searchRequest.getDeveloperContacted()))
             .filter(complaint -> matchesComplainantTypes(complaint, searchRequest.getComplainantTypeNames()))
+            .filter(complaint -> matchesComplaintTypes(complaint, searchRequest.getComplaintTypeNames()))
             .filter(complaint -> matchesStatusNames(complaint, searchRequest.getCurrentStatusNames()))
             .filter(complaint -> matchesListingIds(complaint, searchRequest.getListingIds()))
             .filter(complaint -> matchesSurveillanceIds(complaint, searchRequest.getSurveillanceIds()))
@@ -192,6 +193,22 @@ public class ComplaintSearchService {
     private boolean matchesComplainantTypeNameOther(Complaint complaint, Set<String> complainantTypeNames) {
         return !StringUtils.isBlank(complaint.getComplainantTypeOther())
                     && complainantTypeNames.contains(complaint.getComplainantTypeOther().toUpperCase());
+    }
+
+    private boolean matchesComplaintTypes(Complaint complaint, Set<String> searchedComplaintTypeNames) {
+        if (CollectionUtils.isEmpty(searchedComplaintTypeNames)) {
+            return true;
+        }
+
+        Set<String> complaintTypeNamesUpperCase = complaint.getComplaintTypes().stream().map(ct -> ct.getName().toUpperCase()).collect(Collectors.toSet());
+        Set<String> searchedComplaintTypeNamesUpperCase = searchedComplaintTypeNames.stream().map(ctn -> ctn.toUpperCase()).collect(Collectors.toSet());
+        return CollectionUtils.containsAny(complaintTypeNamesUpperCase, searchedComplaintTypeNamesUpperCase)
+                || matchesComplaintTypeNameOther(complaint, complaintTypeNamesUpperCase);
+    }
+
+    private boolean matchesComplaintTypeNameOther(Complaint complaint, Set<String> complaintTypeNames) {
+        return !StringUtils.isBlank(complaint.getComplaintTypesOther())
+                    && complaintTypeNames.contains(complaint.getComplaintTypesOther().toUpperCase());
     }
 
     private boolean matchesStatusNames(Complaint complaint, Set<String> statusNames) {

@@ -140,7 +140,8 @@ public class ApiKeyManager {
     }
 
     @Transactional
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).API_KEY, "
+            + "T(gov.healthit.chpl.permissions.domains.ApiKeyDomainPermissions).DELETE)")
     public void deleteKey(String keyString) throws EntityRetrievalException, ActivityException  {
         ApiKey toDelete = apiKeyDAO.getByKey(keyString);
         String activityMsg = "API Key " + toDelete.getKey() + " was revoked.";
@@ -176,7 +177,8 @@ public class ApiKeyManager {
         apiKeyDAO.update(apiKey);
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).API_KEY, "
+            + "T(gov.healthit.chpl.permissions.domains.ApiKeyDomainPermissions).GET_ALL)")
     public List<ApiKey> findAll(Boolean includeDeleted) {
         return apiKeyDAO.findAll(includeDeleted);
     }

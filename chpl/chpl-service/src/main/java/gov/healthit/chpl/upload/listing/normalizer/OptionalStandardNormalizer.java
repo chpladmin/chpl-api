@@ -27,7 +27,7 @@ public class OptionalStandardNormalizer {
     public OptionalStandardNormalizer(OptionalStandardDAO optionalStandardDao,
             FuzzyChoicesManager fuzzyChoicesManager) {
         this.optionalStandardDao = optionalStandardDao;
-        this.fuzzyChoicesManager= fuzzyChoicesManager;
+        this.fuzzyChoicesManager = fuzzyChoicesManager;
     }
 
     public void normalize(CertifiedProductSearchDetails listing) {
