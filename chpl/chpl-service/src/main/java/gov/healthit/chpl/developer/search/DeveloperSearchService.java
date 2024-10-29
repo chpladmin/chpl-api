@@ -54,7 +54,7 @@ public class DeveloperSearchService {
 
         List<DeveloperSearchResult> developers = developerManager.getDeveloperSearchResults();
         LOGGER.debug("Total developers: " + developers.size());
-        final List<User> allEnabledDeveloperUsers = new ArrayList<User>();
+        List<User> allEnabledDeveloperUsers = new ArrayList<User>();
         if (searchRequest.getHasUsers() != null
                 && (resourcePermissionsFactory.get().isUserRoleOnc() || resourcePermissionsFactory.get().isUserRoleAdmin())) {
             allEnabledDeveloperUsers.addAll(resourcePermissionsFactory.get().getAllDeveloperUsers().stream()
