@@ -86,6 +86,20 @@ public class FuzzyChoicesManager extends SecuredManager {
         return result;
     }
 
+    public String getTopFuzzyChoice(String query, List<String> choices) {
+        int limit = Integer.parseInt(env.getProperty("fuzzyChoiceLimit"));
+        int cutoff = Integer.parseInt(env.getProperty("fuzzyChoiceThreshold"));
+        List<ExtractedResult> results = FuzzySearch.extractTop(query, choices, limit, cutoff);
+
+        String result = null;
+        if (results != null) {
+            for (ExtractedResult er : results) {
+                result = er.getString();
+            }
+        }
+        return result;
+    }
+
     private List<String> getFuzzyChoices(FuzzyType type)
             throws JsonParseException, JsonMappingException, EntityRetrievalException, IOException {
         if (type.equals(FuzzyType.UCD_PROCESS)) {
