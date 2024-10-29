@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.prepost.PostAuthorize;
@@ -15,8 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.auth.authentication.JWTUserConverterFacade;
 import gov.healthit.chpl.domain.CreateUserFromInvitationRequest;
-import gov.healthit.chpl.domain.auth.AuthorizeCredentials;
-import gov.healthit.chpl.domain.auth.LoginCredentials;
 import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
@@ -24,9 +21,9 @@ import gov.healthit.chpl.exception.UserCreationException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.user.cognito.authentication.CognitoAuthenticationManager;
-import gov.healthit.chpl.user.cognito.authentication.CognitoAuthenticationResponse;
 import gov.healthit.chpl.user.cognito.invitation.CognitoInvitationManager;
 import gov.healthit.chpl.user.cognito.invitation.CognitoUserInvitation;
+import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import lombok.extern.log4j.Log4j2;
 
@@ -134,33 +131,11 @@ public class CognitoUserManager {
         return cognitoApiWrapper.getAllUsers();
     }
 
-    @Transactional
-    public CognitoAuthenticationResponse addOrganizationToUser(AuthorizeCredentials credentials) throws InvalidArgumentsException {
-        if (StringUtils.isEmpty(credentials.getUserName()) || StringUtils.isEmpty(credentials.getPassword())) {
-            throw new InvalidArgumentsException(
-                    "Username and Password are required since no user is currently logged in.");
-        }
-
-        CognitoAuthenticationResponse authResponse;
-        try {
-            authResponse = cognitoAuthenticationManager.authenticate(LoginCredentials.builder()
-                    .userName(credentials.getUserName())
-                    .password(credentials.getPassword())
-                    .build());
-            User updatedUser = addOrganizationToUser(authResponse.getUser(), UUID.fromString(credentials.getHash()));
-            authResponse.setUser(updatedUser);
-        } catch (Exception e) {
-            LOGGER.error(e);
-            throw new InvalidArgumentsException("Could not update user permissions.");
-        }
-
-        return authResponse;
-    }
 
     @Transactional
-    public User addOrganizationToUser(User user, UUID invtiationToken)
-            throws InvalidArgumentsException, UserRetrievalException {
+    public User addOrganizationToUser(UUID invtiationToken) throws InvalidArgumentsException, UserRetrievalException {
 
+        User user = cognitoApiWrapper.getUserInfo(AuthUtil.getCurrentUser().getCognitoId());
         CognitoUserInvitation invitation = cognitoInvitationManager.getByToken(invtiationToken);
         if (invitation == null || invitation.isOlderThan(invitationLengthDays)) {
             throw new InvalidArgumentsException(errorMessageUtil.getMessage("user.invitation.expired",
