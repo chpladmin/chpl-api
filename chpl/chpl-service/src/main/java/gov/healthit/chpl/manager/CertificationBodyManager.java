@@ -17,12 +17,14 @@ import gov.healthit.chpl.caching.ListingSearchCacheRefresh;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
+import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.exception.ActivityException;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.impl.SecuredManager;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.sharedstore.listing.ListingStoreRemove;
 import gov.healthit.chpl.sharedstore.listing.RemoveBy;
 import lombok.extern.log4j.Log4j2;
@@ -33,13 +35,16 @@ public class CertificationBodyManager extends SecuredManager {
     private CertificationBodyDAO certificationBodyDao;
     private ActivityManager activityManager;
     private SchedulerManager schedulerManager;
+    private ResourcePermissionsFactory resourcePermissionsFactory;
 
     @Autowired
     public CertificationBodyManager(CertificationBodyDAO certificationBodyDao,
-            ActivityManager activityManager, @Lazy SchedulerManager schedulerManager) {
+            ActivityManager activityManager, @Lazy SchedulerManager schedulerManager,
+            ResourcePermissionsFactory resourcePermissionsFactory) {
         this.certificationBodyDao = certificationBodyDao;
         this.activityManager = activityManager;
         this.schedulerManager = schedulerManager;
+        this.resourcePermissionsFactory = resourcePermissionsFactory;
     }
 
     @Transactional
@@ -164,6 +169,19 @@ public class CertificationBodyManager extends SecuredManager {
     @Transactional(readOnly = true)
     public CertificationBody getById(Long id) throws EntityRetrievalException {
         return certificationBodyDao.getById(id);
+    }
+
+    @Transactional(readOnly = true)
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CERTIFICATION_BODY, "
+            + "T(gov.healthit.chpl.permissions.domains.CertificationBodyDomainPermissions).GET_ALL_USERS, #acbId)")
+    public List<User> getAllUsersOnCertificationBody(Long acbId, Boolean includeDisabled) throws EntityRetrievalException {
+        CertificationBody acb = getById(acbId);
+        if (!resourcePermissionsFactory.get().isUserRoleAdmin()
+                && !resourcePermissionsFactory.get().isUserRoleOnc()) {
+            includeDisabled = false;
+        }
+        List<User> users = resourcePermissionsFactory.get().getAllUsersOnAcb(acb, includeDisabled);
+        return users;
     }
 
     public void setCertificationBodyDAO(final CertificationBodyDAO acbDAO) {

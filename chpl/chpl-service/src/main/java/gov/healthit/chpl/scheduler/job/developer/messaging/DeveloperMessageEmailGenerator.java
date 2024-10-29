@@ -33,7 +33,7 @@ public class DeveloperMessageEmailGenerator {
 
     public DeveloperEmail getDeveloperEmail(DeveloperSearchResult developer, DeveloperMessageRequest developerMessageRequest) {
         try {
-            List<User> developerUsers = developerManager.getAllUsersOnDeveloper(developer.getId());
+            List<User> developerUsers = developerManager.getAllUsersOnDeveloper(developer.getId(), false);
             return DeveloperEmail.builder()
                     .developer(developer)
                     .recipients(getRecipients(developerUsers))

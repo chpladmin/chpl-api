@@ -360,10 +360,10 @@ public class UserManagementController {
             })
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     @PreAuthorize("isAuthenticated()")
-    public @ResponseBody UsersResponse getUsers() {
+    public @ResponseBody UsersResponse getUsers(Boolean includeDisabled) {
         List<User> users = null;
         if (AuthUtil.getCurrentUser().getAuthenticationSystem().equals(AuthenticationSystem.COGNITO)) {
-            users = getAllCognitoUsers();
+            users = getAllCognitoUsers(includeDisabled);
         } else if (AuthUtil.getCurrentUser().getAuthenticationSystem().equals(AuthenticationSystem.CHPL)) {
             users = getAllChplUsers();
         }
@@ -404,8 +404,8 @@ public class UserManagementController {
         return users;
     }
 
-    private List<User> getAllCognitoUsers() {
-        return cognitoUserManager.getAll();
+    private List<User> getAllCognitoUsers(Boolean includeDisabled) {
+        return cognitoUserManager.getAll(includeDisabled);
     }
 
     private class DeletedUser {

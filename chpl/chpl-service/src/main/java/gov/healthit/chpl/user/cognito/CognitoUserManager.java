@@ -111,9 +111,11 @@ public class CognitoUserManager {
     }
 
     @Transactional
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SECURED_USER, "
+            + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).GET_ALL, #includeDisabled)")
     @PostFilter("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SECURED_USER, "
             + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).GET_ALL, filterObject)")
-    public List<User> getAll() {
-        return cognitoApiWrapper.getAllUsers();
+    public List<User> getAll(Boolean includeDisabled) {
+        return cognitoApiWrapper.getAllUsers(includeDisabled);
     }
 }

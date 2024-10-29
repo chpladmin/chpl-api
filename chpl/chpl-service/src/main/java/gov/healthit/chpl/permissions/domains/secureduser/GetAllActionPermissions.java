@@ -1,5 +1,6 @@
 package gov.healthit.chpl.permissions.domains.secureduser;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.auth.User;
@@ -22,6 +23,12 @@ public class GetAllActionPermissions extends ActionPermissions {
         } else if (obj instanceof User) {
             User user = (User) obj;
             return getResourcePermissions().hasPermissionOnUser(user);
+        } else if (obj instanceof Boolean) {
+            Boolean includeDisabledUsers = (Boolean) obj;
+            if (includeDisabledUsers == null || BooleanUtils.isFalse(includeDisabledUsers)) {
+                return !getResourcePermissions().isUserAnonymous();
+            }
+            return getResourcePermissions().isUserRoleAdmin() || getResourcePermissions().isUserRoleOnc();
         }
         return false;
     }

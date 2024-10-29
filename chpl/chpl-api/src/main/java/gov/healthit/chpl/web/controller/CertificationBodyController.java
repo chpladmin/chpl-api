@@ -2,6 +2,7 @@ package gov.healthit.chpl.web.controller;
 
 import java.util.List;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.quartz.SchedulerException;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.domain.CertificationBody;
+import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.domain.auth.UsersResponse;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.exception.ActivityException;
@@ -33,6 +35,8 @@ import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import gov.healthit.chpl.web.controller.results.CertificationBodyResults;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -263,15 +267,16 @@ public class CertificationBodyController {
     })
     @RequestMapping(value = "/{acbId}/users", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
-    public @ResponseBody UsersResponse getUsers(@PathVariable("acbId") final Long acbId)
+    public @ResponseBody UsersResponse getUsers(@PathVariable("acbId") Long acbId,
+            @Parameter(description = "Whether to include users whose accounts have been marked as disabled. The parameter only affects the response when called by an authenticated ADMIN or ONC user.",
+                allowEmptyValue = true, in = ParameterIn.QUERY, name = "includeDisabled")
+            @RequestParam(value = "includeDisabled", required = false, defaultValue = "false") String includeDisabled)
             throws InvalidArgumentsException, EntityRetrievalException {
-        CertificationBody acb = resourcePermissionsFactory.get().getAcbIfPermissionById(acbId);
-        if (acb == null) {
-            throw new InvalidArgumentsException("Could not find the ACB specified.");
-        }
+        List<User> users = acbManager.getAllUsersOnCertificationBody(acbId,
+                StringUtils.isEmpty(includeDisabled) ? false : BooleanUtils.toBooleanObject(includeDisabled));
 
         UsersResponse results = new UsersResponse();
-        results.setUsers(resourcePermissionsFactory.get().getAllUsersOnAcb(acb));
+        results.setUsers(users);
         return results;
     }
 }
