@@ -1,5 +1,24 @@
 # Release Notes
 
+## Version 47.2.0
+_28 October 2024_
+
+### Features
+* Handle Cognito user attributes based on update user pool settings
+* Create endpoints to support Test Tool charts
+* Check URLs with chrome browser user-agent
+* Add complaintTypes to Complaints
+* Add endpoint to turn a CSV file into a listing details object
+
+### Bug Fixes
+* Display warning only for conformance methods being defaulted
+* Handle some CQM display issues
+** Show correct CQM title based on attested versions
+** Show latest CQM title in search filters
+** Display most recent CQM title for uploaded listings
+
+---
+
 ## Version 47.1.0
 _14 October 2024_
 
