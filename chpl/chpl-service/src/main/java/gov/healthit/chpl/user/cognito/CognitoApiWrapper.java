@@ -7,11 +7,13 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -338,6 +340,31 @@ public class CognitoApiWrapper {
         attributes.add(AttributeType.builder().name("name").value(user.getFullName()).build());
         attributes.add(AttributeType.builder().name("email_verified").value("true").build());
         attributes.add(AttributeType.builder().name("custom:forcePasswordReset").value(user.getPasswordResetRequired() ? "1" : "0").build());
+
+        AdminUpdateUserAttributesRequest request = AdminUpdateUserAttributesRequest.builder()
+                .userPoolId(userPoolId)
+                .username(user.getCognitoId().toString())
+                .userAttributes(attributes)
+                .build();
+
+        cognitoClient.adminUpdateUserAttributes(request);
+    }
+
+    @CacheEvict(value = CacheNames.COGNITO_USERS, key = "#user.cognitoId")
+    public void addOrgToUser(User user, Long orgId) throws UserRetrievalException {
+        List<AttributeType> attributes = new ArrayList<AttributeType>();
+        List<Long> orgIds = CollectionUtils.isEmpty(user.getOrganizations())
+                ? new ArrayList<Long>()
+                : user.getOrganizations().stream()
+                        .map(org -> org.getId())
+                        .collect(Collectors.toList());
+        orgIds.add(orgId);
+
+        attributes.add(AttributeType.builder().name("custom:organizations").value(
+                orgIds.stream()
+                        .map(o -> o.toString())
+                        .collect(Collectors.joining(",")))
+                .build());
 
         AdminUpdateUserAttributesRequest request = AdminUpdateUserAttributesRequest.builder()
                 .userPoolId(userPoolId)

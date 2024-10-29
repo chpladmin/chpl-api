@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +50,7 @@ import gov.healthit.chpl.manager.InvitationManager;
 import gov.healthit.chpl.manager.auth.AuthenticationManager;
 import gov.healthit.chpl.manager.auth.UserManager;
 import gov.healthit.chpl.user.cognito.CognitoUserManager;
+import gov.healthit.chpl.user.cognito.authentication.CognitoAuthenticationResponse;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
@@ -90,6 +92,41 @@ public class UserManagementController {
         this.invitationLengthInDays = invitationLengthDays;
         this.confirmationLengthInDays = confirmationLengthDays;
         this.authorizationLengthInDays = authorizationLengthInDays;
+    }
+
+    @Operation(summary = "Update an existing user account with an additional organization.",
+            description = "Gives the user permission on the object in the invitation (usually an additional ACB or Developer)."
+                    + "The correct order to call invitation requests is "
+                    + "the following: 1) /invite 2) /create or /authorize 3) /confirm.  Security Restrictions: ROLE_ADMIN "
+                    + "or ROLE_ONC.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
+    @RequestMapping(value = "/authorize", method = RequestMethod.POST,
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = "application/json; charset=utf-8")
+    public CognitoAuthenticationResponse addOrganizationToUser(@RequestBody AuthorizeCredentials credentials) throws InvalidArgumentsException {
+        return cognitoUserManager.addOrganizationToUser(credentials);
+    }
+
+    @Operation(summary = "Update the currently logged in user with an additional organization.",
+            description = "Gives the user permission on the object in the invitation (usually an additional ACB or Developer)."
+                    + "The correct order to call invitation requests is "
+                    + "the following: 1) /invite 2) /create or /authorize 3) /confirm.  Security Restrictions: ROLE_ADMIN "
+                    + "or ROLE_ONC.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
+    @RequestMapping(value = "/authorize/{invitationToken}", method = RequestMethod.POST,
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = "application/json; charset=utf-8")
+    public User addOrganizationToUser(@PathVariable("invitationToken") UUID invitationToken)
+            throws UserRetrievalException, InvalidArgumentsException {
+
+        User user = cognitoUserManager.getUserInfo(AuthUtil.getCurrentUser().getCognitoId());
+        return cognitoUserManager.addOrganizationToUser(user, invitationToken);
     }
 
     @Deprecated
