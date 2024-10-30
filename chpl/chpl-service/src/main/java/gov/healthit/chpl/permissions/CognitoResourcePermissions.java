@@ -68,6 +68,7 @@ public class CognitoResourcePermissions implements ResourcePermissions {
                                 .findAny()
                                 .isPresent())
                 .collect(Collectors.toList());
+
         if (BooleanUtils.isFalse(includeDisabled)) {
             return allUsersOnAcb.stream()
                     .filter(user -> user.getAccountEnabled())
@@ -91,6 +92,7 @@ public class CognitoResourcePermissions implements ResourcePermissions {
                                 .findAny()
                                 .isPresent())
                 .collect(Collectors.toList());
+
         if (BooleanUtils.isFalse(includeDisabled)) {
             return allUsersOnDeveloper.stream()
                     .filter(user -> user.getAccountEnabled())
@@ -110,6 +112,7 @@ public class CognitoResourcePermissions implements ResourcePermissions {
                 .filter(user -> user.getRole() != null
                         && user.getRole().equals(CognitoGroups.CHPL_DEVELOPER))
                 .collect(Collectors.toList());
+
         if (BooleanUtils.isFalse(includeDisabled)) {
             return allDeveloperUsers.stream()
                     .filter(user -> user.getAccountEnabled())
@@ -131,6 +134,7 @@ public class CognitoResourcePermissions implements ResourcePermissions {
 
     @Override
     public List<CertificationBody> getAllAcbsForCurrentUser() {
+
         try {
             User user = cognitoApiWrapper.getUserInfo(AuthUtil.getCurrentUser().getCognitoId());
             if (user != null) {
@@ -154,7 +158,7 @@ public class CognitoResourcePermissions implements ResourcePermissions {
     public List<CertificationBody> getAllAcbsForUser(User user) {
         return user.getOrganizations().stream()
                 .map(org -> getCertifcationBody(org.getId()))
-                .toList();
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -172,7 +176,7 @@ public class CognitoResourcePermissions implements ResourcePermissions {
     public List<Developer> getAllDevelopersForUser(User user) {
         return user.getOrganizations().stream()
                 .map(org -> getDeveloper(org.getId()))
-                .toList();
+                .collect(Collectors.toList());
     }
 
     @Override

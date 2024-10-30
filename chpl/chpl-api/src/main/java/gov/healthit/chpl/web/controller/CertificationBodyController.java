@@ -81,11 +81,10 @@ public class CertificationBodyController {
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody CertificationBodyResults getAcbs(
             @RequestParam(required = false, defaultValue = "false") final boolean editable) {
-        // TODO confirm a user is logged in here
         CertificationBodyResults results = new CertificationBodyResults();
         List<CertificationBody> acbs = null;
         if (editable) {
-            acbs = resourcePermissionsFactory.get().getAllAcbsForCurrentUser();
+            acbs = acbManager.getAllEditable();
         } else {
             acbs = acbManager.getAll();
         }
@@ -178,32 +177,7 @@ public class CertificationBodyController {
     public CertificationBody updateAcb(@RequestBody final CertificationBody acbToUpdate)
             throws EntityRetrievalException, SchedulerException, ValidationException, ActivityException, InvalidArgumentsException {
 
-        // Get the ACB as it is currently in the database to find out if
-        // the retired flag was changed.
-        // Retirement and un-retirement is done as a separate manager action
-        // because security is different from normal ACB updates - only admins are
-        // allowed whereas an ACB admin can update other info
-        CertificationBody existingAcb = resourcePermissionsFactory.get().getAcbIfPermissionById(acbToUpdate.getId());
-        if (acbToUpdate.isRetired()) {
-            // we are retiring this ACB - no other updates can happen
-            existingAcb.setRetirementDay(acbToUpdate.getRetirementDay());
-            existingAcb.setRetired(true);
-            acbManager.retire(existingAcb);
-        } else {
-            if (existingAcb.isRetired()) {
-                // unretire the ACB
-                acbManager.unretire(acbToUpdate.getId());
-            }
-
-            if (StringUtils.isEmpty(acbToUpdate.getWebsite())) {
-                throw new InvalidArgumentsException("A website is required to update the certification body");
-            }
-            if (acbToUpdate.getAddress() == null) {
-                throw new InvalidArgumentsException("An address is required to update the certification body");
-            }
-            acbManager.update(acbToUpdate);
-        }
-        return acbManager.getById(acbToUpdate.getId());
+        return acbManager.update(acbToUpdate);
     }
 
     @Operation(summary = "Remove user permissions from an ONC-ACB.",
@@ -272,7 +246,7 @@ public class CertificationBodyController {
                 allowEmptyValue = true, in = ParameterIn.QUERY, name = "includeDisabled")
             @RequestParam(value = "includeDisabled", required = false, defaultValue = "false") String includeDisabled)
             throws InvalidArgumentsException, EntityRetrievalException {
-        List<User> users = acbManager.getAllUsersOnCertificationBody(acbId,
+        List<User> users = acbManager.getUsers(acbId,
                 StringUtils.isEmpty(includeDisabled) ? false : BooleanUtils.toBooleanObject(includeDisabled));
 
         UsersResponse results = new UsersResponse();
