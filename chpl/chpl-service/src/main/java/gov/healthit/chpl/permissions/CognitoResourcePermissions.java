@@ -5,7 +5,6 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.Predicate;
-import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.transaction.annotation.Transactional;
@@ -60,7 +59,7 @@ public class CognitoResourcePermissions implements ResourcePermissions {
 
     @Override
     public List<User> getAllUsersOnAcb(CertificationBody acb, Boolean includeDisabled) {
-        List<User> allUsersOnAcb = cognitoApiWrapper.getAllUsers().stream()
+        List<User> allUsersOnAcb = cognitoApiWrapper.getAllUsers(includeDisabled).stream()
                 .filter(user -> user.getRole() != null
                         && user.getRole().equals(CognitoGroups.CHPL_ACB)
                         && user.getOrganizations().stream()
@@ -69,11 +68,6 @@ public class CognitoResourcePermissions implements ResourcePermissions {
                                 .isPresent())
                 .collect(Collectors.toList());
 
-        if (BooleanUtils.isFalse(includeDisabled)) {
-            return allUsersOnAcb.stream()
-                    .filter(user -> user.getAccountEnabled())
-                    .collect(Collectors.toList());
-        }
         return allUsersOnAcb;
     }
 
@@ -84,7 +78,7 @@ public class CognitoResourcePermissions implements ResourcePermissions {
 
     @Override
     public List<User> getAllUsersOnDeveloper(Developer dev, Boolean includeDisabled) {
-        List<User> allUsersOnDeveloper = cognitoApiWrapper.getAllUsers().stream()
+        List<User> allUsersOnDeveloper = cognitoApiWrapper.getAllUsers(includeDisabled).stream()
                 .filter(user -> user.getRole() != null
                         && user.getRole().equals(CognitoGroups.CHPL_DEVELOPER)
                         && user.getOrganizations().stream()
@@ -93,11 +87,6 @@ public class CognitoResourcePermissions implements ResourcePermissions {
                                 .isPresent())
                 .collect(Collectors.toList());
 
-        if (BooleanUtils.isFalse(includeDisabled)) {
-            return allUsersOnDeveloper.stream()
-                    .filter(user -> user.getAccountEnabled())
-                    .collect(Collectors.toList());
-        }
         return allUsersOnDeveloper;
     }
 
@@ -108,16 +97,11 @@ public class CognitoResourcePermissions implements ResourcePermissions {
 
     @Override
     public List<User> getAllDeveloperUsers(Boolean includeDisabled) {
-        List<User> allDeveloperUsers = cognitoApiWrapper.getAllUsers().stream()
+        List<User> allDeveloperUsers = cognitoApiWrapper.getAllUsers(includeDisabled).stream()
                 .filter(user -> user.getRole() != null
                         && user.getRole().equals(CognitoGroups.CHPL_DEVELOPER))
                 .collect(Collectors.toList());
 
-        if (BooleanUtils.isFalse(includeDisabled)) {
-            return allDeveloperUsers.stream()
-                    .filter(user -> user.getAccountEnabled())
-                    .collect(Collectors.toList());
-        }
         return allDeveloperUsers;
     }
 
