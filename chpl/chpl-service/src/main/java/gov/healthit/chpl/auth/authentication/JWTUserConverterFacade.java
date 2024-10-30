@@ -8,10 +8,8 @@ import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.auth.jwt.JWTConsumer;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.dao.auth.UserDAO;
-import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.exception.JWTValidationException;
 import gov.healthit.chpl.exception.MultipleUserAccountsException;
-import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.user.cognito.CognitoApiWrapper;
 import lombok.extern.log4j.Log4j2;
 
@@ -40,20 +38,7 @@ public class JWTUserConverterFacade implements JWTUserConverter {
         //If SSO is on, try to validate the jwt using the Cognito converter
         if (ff4j.check(FeatureList.SSO)) {
             user = cognitoJwtUserConverter.getAuthenticatedUser(jwt);
-            if (user != null) {
-                try {
-                    //Set some values not avail in the Cognito Access Token that were avail in the CHPL token
-                    User cognitoUser = cognitoApiWrapper.getUserInfo(user.getCognitoId());
-                    user.setEmail(cognitoUser.getEmail());
-                    user.setFullName(cognitoUser.getFullName());
-                } catch (UserRetrievalException e) {
-                    throw new JWTValidationException("Could not locate the Cognito user id");
-                }
-            }
-        }
-
-        //If SSO is off or jwt cannot be converted using the Cognito converter, use the CHP converter
-        if (user == null) {
+        } else {
             user = chplJwtUserConverter.getAuthenticatedUser(jwt);
         }
         return user;

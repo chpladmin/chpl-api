@@ -22,8 +22,10 @@ import lombok.NoArgsConstructor;
 public class JWTAuthenticatedUser implements UserDetails, Authentication {
     private static final long serialVersionUID = -7558546038256722930L;
 
+    @Deprecated
     private AuthenticationSystem authenticationSystem;
     private UUID cognitoId;
+    @Deprecated
     private Long id;
     private List<Long> organizationIds;
     private String subjectName;
@@ -32,6 +34,7 @@ public class JWTAuthenticatedUser implements UserDetails, Authentication {
     private String email;
     private String passwordResetRequired;
 
+    @Deprecated
     private UserDTO impersonatingUser;
 
     // UserDetails interface

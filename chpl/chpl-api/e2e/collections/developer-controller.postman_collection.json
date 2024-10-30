@@ -646,7 +646,7 @@
 									"    body: JSON.stringify(ReqBody)\r",
 									"}, function (err, response) {\r",
 									"   var jsonData = response.json();\r",
-									"   pm.environment.set(\"token\",jsonData[\"token\"])\r",
+									"   pm.environment.set(\"token\",jsonData[pm.environment.get(\"authTokenField\")])\r",
 									"});"
 								],
 								"type": "text/javascript"
@@ -786,7 +786,7 @@
 									"    body: JSON.stringify(ReqBody)\r",
 									"}, function (err, response) {\r",
 									"   var jsonData = response.json();\r",
-									"   pm.environment.set(\"token\",jsonData[\"token\"])\r",
+									"   pm.environment.set(\"token\",jsonData[pm.environment.get(\"authTokenField\")])\r",
 									"});"
 								],
 								"type": "text/javascript"
@@ -926,7 +926,7 @@
 									"    body: JSON.stringify(ReqBody)\r",
 									"}, function (err, response) {\r",
 									"   var jsonData = response.json();\r",
-									"   pm.environment.set(\"token\",jsonData[\"token\"])\r",
+									"   pm.environment.set(\"token\",jsonData[pm.environment.get(\"authTokenField\")])\r",
 									"});"
 								],
 								"type": "text/javascript",
@@ -1016,7 +1016,7 @@
 									"    body: JSON.stringify(ReqBody)\r",
 									"}, function (err, response) {\r",
 									"   var jsonData = response.json();\r",
-									"   pm.environment.set(\"token\",jsonData[\"token\"])\r",
+									"   pm.environment.set(\"token\",jsonData[pm.environment.get(\"authTokenField\")])\r",
 									"});"
 								],
 								"type": "text/javascript",
@@ -1158,7 +1158,7 @@
 									"    body: JSON.stringify(ReqBody)\r",
 									"}, function (err, response) {\r",
 									"   var jsonData = response.json();\r",
-									"   pm.environment.set(\"token\",jsonData[\"token\"])\r",
+									"   pm.environment.set(\"token\",jsonData[pm.environment.get(\"authTokenField\")])\r",
 									"});"
 								],
 								"type": "text/javascript",
