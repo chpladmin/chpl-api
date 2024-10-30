@@ -3,6 +3,7 @@ package gov.healthit.chpl.manager;
 import java.io.IOException;
 import java.util.Date;
 
+import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.stereotype.Service;
@@ -15,7 +16,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import gov.healthit.chpl.auth.user.AuthenticationSystem;
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.dao.ActivityDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.auth.UserDAO;
@@ -50,6 +51,7 @@ public class ActivityManager extends SecuredManager {
     private SubscriptionObserver subscriptionObserver;
     private CognitoApiWrapper cognitoApiWrapper;
     private UserDAO userDAO;
+    private FF4j ff4j;
 
     @Autowired
     public ActivityManager(ActivityDAO activityDAO, DeveloperDAO devDao,
@@ -57,7 +59,8 @@ public class ActivityManager extends SecuredManager {
             ChplProductNumberChangedListener chplProductNumberChangedListener,
             SubscriptionObserver subscriptionObserver,
             CognitoApiWrapper cognitoApiWrapper,
-            UserDAO userDAO) {
+            UserDAO userDAO,
+            FF4j ff4j) {
         this.activityDAO = activityDAO;
         this.devDao = devDao;
         this.questionableActivityListener = questionableActivityListener;
@@ -65,6 +68,7 @@ public class ActivityManager extends SecuredManager {
         this.subscriptionObserver = subscriptionObserver;
         this.cognitoApiWrapper = cognitoApiWrapper;
         this.userDAO = userDAO;
+        this.ff4j = ff4j;
     }
 
     @Transactional
@@ -126,12 +130,12 @@ public class ActivityManager extends SecuredManager {
 
     private User getCurrentUser() throws UserRetrievalException {
         User currentUser = null;
-        if (AuthUtil.getCurrentUser() != null
-                && AuthUtil.getCurrentUser().getAuthenticationSystem().equals(AuthenticationSystem.CHPL)) {
-            currentUser = userDAO.getById(AuthUtil.getAuditId()).toDomain();
-        } else if (AuthUtil.getCurrentUser() != null
-                && AuthUtil.getCurrentUser().getAuthenticationSystem().equals(AuthenticationSystem.COGNITO)) {
-            currentUser = cognitoApiWrapper.getUserInfo(AuthUtil.getCurrentUser().getCognitoId());
+        if (AuthUtil.getCurrentUser() != null) {
+            if (ff4j.check(FeatureList.SSO)) {
+                currentUser = cognitoApiWrapper.getUserInfo(AuthUtil.getCurrentUser().getCognitoId());
+            } else {
+                currentUser = userDAO.getById(AuthUtil.getAuditId()).toDomain();
+            }
         }
         return currentUser;
     }
