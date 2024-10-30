@@ -469,11 +469,6 @@ public class UserManagementController {
         return new DeletedUser(true);
     }
 
-    @Deprecated
-    @DeprecatedApi(friendlyUrl = "/users",
-            removalDate = "2024-11-01",
-            message = "This endpoint is deprecated and will be removed in a future release. No replacement is currently available.")
-    @DeprecatedApiResponseFields(friendlyUrl = "/users", responseClass = User.class)
     @Operation(summary = "View users of the system.",
             description = "Security Restrictions: ROLE_ADMIN and ROLE_ONC can see all users.  ROLE_ACB "
                     + "and ROLE_CMS_STAFF can see themselves.",
