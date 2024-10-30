@@ -365,7 +365,7 @@ public class UserManagementController {
         if (AuthUtil.getCurrentUser().getAuthenticationSystem().equals(AuthenticationSystem.COGNITO)) {
             users = getAllCognitoUsers(includeDisabled);
         } else if (AuthUtil.getCurrentUser().getAuthenticationSystem().equals(AuthenticationSystem.CHPL)) {
-            users = getAllChplUsers();
+            users = getAllChplUsers(includeDisabled);
         }
 
         UsersResponse response = new UsersResponse();
@@ -393,8 +393,8 @@ public class UserManagementController {
         return userManager.getUserInfo(id);
     }
 
-    private List<User> getAllChplUsers() {
-        List<UserDTO> userList = userManager.getAll();
+    private List<User> getAllChplUsers(Boolean includeDisabled) {
+        List<UserDTO> userList = userManager.getAll(includeDisabled);
         List<User> users = new ArrayList<User>(userList.size());
 
         for (UserDTO userDto : userList) {

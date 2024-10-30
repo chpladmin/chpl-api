@@ -18,6 +18,7 @@ import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.UserCreationException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.user.cognito.invitation.CognitoInvitationManager;
 import gov.healthit.chpl.user.cognito.invitation.CognitoUserInvitation;
 import lombok.extern.log4j.Log4j2;
@@ -31,12 +32,16 @@ public class CognitoUserManager {
     private CognitoConfirmEmailEmailer cognitoConfirmEmailEmailer;
     private CognitoApiWrapper cognitoApiWrapper;
     private CognitoInvitationManager cognitoInvitationManager;
+    private ResourcePermissionsFactory resourcePermissionsFactory;
     private String groupNameForEnvironment;
 
-
     @Autowired
-    public CognitoUserManager(CognitoUserCreationValidator userCreationValidator, CognitoConfirmEmailEmailer cognitoConfirmEmailEmailer,
-            CognitoUpdateUserValidator userUpdateValidator, CognitoApiWrapper cognitoApiWrapper, CognitoInvitationManager cognitoInvitationManager,
+    public CognitoUserManager(CognitoUserCreationValidator userCreationValidator,
+            CognitoConfirmEmailEmailer cognitoConfirmEmailEmailer,
+            CognitoUpdateUserValidator userUpdateValidator,
+            CognitoApiWrapper cognitoApiWrapper,
+            CognitoInvitationManager cognitoInvitationManager,
+            ResourcePermissionsFactory resourcePermissionsFactory,
             @Value("${cognito.environment.groupName}") String groupNameForEnvironment) {
 
         this.userCreationValidator = userCreationValidator;
@@ -44,6 +49,7 @@ public class CognitoUserManager {
         this.cognitoConfirmEmailEmailer = cognitoConfirmEmailEmailer;
         this.cognitoApiWrapper = cognitoApiWrapper;
         this.cognitoInvitationManager = cognitoInvitationManager;
+        this.resourcePermissionsFactory = resourcePermissionsFactory;
         this.groupNameForEnvironment = groupNameForEnvironment;
     }
 
@@ -111,11 +117,13 @@ public class CognitoUserManager {
     }
 
     @Transactional
-    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SECURED_USER, "
-            + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).GET_ALL, #includeDisabled)")
     @PostFilter("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SECURED_USER, "
             + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).GET_ALL, filterObject)")
     public List<User> getAll(Boolean includeDisabled) {
+        if (!resourcePermissionsFactory.get().isUserRoleAdmin()
+                && !resourcePermissionsFactory.get().isUserRoleOnc()) {
+            includeDisabled = false;
+        }
         return cognitoApiWrapper.getAllUsers(includeDisabled);
     }
 }
