@@ -133,7 +133,9 @@ public class CognitoUserManager {
 
 
     @Transactional
-    public User addOrganizationToUser(UUID invtiationToken) throws InvalidArgumentsException, UserRetrievalException {
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SECURED_USER, "
+            + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).ADD_ORG_TO_USER)")
+        public User addOrganizationToUser(UUID invtiationToken) throws InvalidArgumentsException, UserRetrievalException {
 
         User user = cognitoApiWrapper.getUserInfo(AuthUtil.getCurrentUser().getCognitoId());
         CognitoUserInvitation invitation = cognitoInvitationManager.getByToken(invtiationToken);
