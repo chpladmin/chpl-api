@@ -217,7 +217,7 @@
 							"    body: JSON.stringify(ReqBody)",
 							"}, function (err, response) {",
 							"   var jsonData = response.json();",
-							"   pm.environment.set(\"token\",jsonData[\"token\"])",
+							"   pm.environment.set(\"token\",jsonData[pm.environment.get(\"authTokenField\")])",
 							"});"
 						]
 					}
@@ -433,7 +433,7 @@
 							"    body: JSON.stringify(ReqBody)",
 							"}, function (err, response) {",
 							"   var jsonData = response.json();",
-							"   pm.environment.set(\"token\",jsonData[\"token\"])",
+							"   pm.environment.set(\"token\",jsonData[pm.environment.get(\"authTokenField\")])",
 							"});"
 						]
 					}
