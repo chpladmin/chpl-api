@@ -58,7 +58,7 @@ public class CognitoResourcePermissions implements ResourcePermissions {
     }
 
     @Override
-    public List<User> getAllUsersOnAcb(CertificationBody acb, Boolean includeDisabled) {
+    public List<User> getAllUsersOnAcb(CertificationBody acb, boolean includeDisabled) {
         List<User> allUsersOnAcb = cognitoApiWrapper.getAllUsers(includeDisabled).stream()
                 .filter(user -> user.getRole() != null
                         && user.getRole().equals(CognitoGroups.CHPL_ACB)
@@ -77,7 +77,7 @@ public class CognitoResourcePermissions implements ResourcePermissions {
     }
 
     @Override
-    public List<User> getAllUsersOnDeveloper(Developer dev, Boolean includeDisabled) {
+    public List<User> getAllUsersOnDeveloper(Developer dev, boolean includeDisabled) {
         List<User> allUsersOnDeveloper = cognitoApiWrapper.getAllUsers(includeDisabled).stream()
                 .filter(user -> user.getRole() != null
                         && user.getRole().equals(CognitoGroups.CHPL_DEVELOPER)
@@ -96,7 +96,7 @@ public class CognitoResourcePermissions implements ResourcePermissions {
     }
 
     @Override
-    public List<User> getAllDeveloperUsers(Boolean includeDisabled) {
+    public List<User> getAllDeveloperUsers(boolean includeDisabled) {
         List<User> allDeveloperUsers = cognitoApiWrapper.getAllUsers(includeDisabled).stream()
                 .filter(user -> user.getRole() != null
                         && user.getRole().equals(CognitoGroups.CHPL_DEVELOPER))
@@ -111,7 +111,7 @@ public class CognitoResourcePermissions implements ResourcePermissions {
     }
 
     @Override
-    public List<User> getAllUsersForCurrentUser(Boolean includeDisabled) {
+    public List<User> getAllUsersForCurrentUser(boolean includeDisabled) {
         LOGGER.error("Not implemented: getAllUsersForCurrentUser");
         throw new NotImplementedException("Not implemented: getAllUsersForCurrentUser");
     }

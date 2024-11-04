@@ -32,7 +32,6 @@ import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.manager.UserPermissionsManager;
 import gov.healthit.chpl.manager.auth.UserManager;
 import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
-import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import gov.healthit.chpl.web.controller.results.CertificationBodyResults;
 import io.swagger.v3.oas.annotations.Operation;
@@ -56,19 +55,16 @@ public class CertificationBodyController {
     private ResourcePermissionsFactory resourcePermissionsFactory;
     private UserPermissionsManager userPermissionsManager;
     private UserManager userManager;
-    private ErrorMessageUtil msgUtil;
 
     @Autowired
     public CertificationBodyController(CertificationBodyManager acbManager,
             ResourcePermissionsFactory resourcePermissionsFactory,
             UserPermissionsManager userPermissionsManager,
-            UserManager userManager,
-            ErrorMessageUtil msgUtil) {
+            UserManager userManager) {
         this.acbManager = acbManager;
         this.resourcePermissionsFactory = resourcePermissionsFactory;
         this.userPermissionsManager = userPermissionsManager;
         this.userManager = userManager;
-        this.msgUtil = msgUtil;
     }
 
     @Operation(summary = "List all certification bodies (ONC-ACBs).",
@@ -251,17 +247,13 @@ public class CertificationBodyController {
             produces = "application/json; charset=utf-8")
     public @ResponseBody UsersResponse getUsers(@PathVariable("acbId") Long acbId,
             @Parameter(description = "Whether to include users whose accounts have been marked as disabled. "
-                    + "Any string that can be evaluated as a boolean may be passed in (ex: true, false, off, on, yes, no, 1, 0). "
+                    + "Any string that can be evaluated as a boolean may be passed in (ex: true, false, off, on, yes, no). "
                     + "The parameter only affects the response when called by an authenticated ADMIN or ONC user.",
                 allowEmptyValue = true, in = ParameterIn.QUERY, name = "includeDisabled")
             @RequestParam(value = "includeDisabled", required = false, defaultValue = "false") String includeDisabled)
             throws InvalidArgumentsException, EntityRetrievalException {
-        if (BooleanUtils.toBooleanObject(includeDisabled) == null) {
-            throw new InvalidArgumentsException(msgUtil.getMessage("request.invalidBoolean", includeDisabled));
-        }
-
         List<User> users = acbManager.getUsers(acbId,
-                StringUtils.isEmpty(includeDisabled) ? false : BooleanUtils.toBooleanObject(includeDisabled));
+                StringUtils.isEmpty(includeDisabled) ? false : BooleanUtils.toBoolean(includeDisabled));
 
         UsersResponse results = new UsersResponse();
         results.setUsers(users);

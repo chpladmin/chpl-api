@@ -484,16 +484,11 @@ public class UserManagementController {
     @PreAuthorize("isAuthenticated()")
     public @ResponseBody UsersResponse getUsers(
             @Parameter(description = "Whether to include users whose accounts have been marked as disabled. "
-                    + "Any string that can be evaluated as a boolean may be passed in (ex: true, false, off, on, yes, no, 1, 0). "
+                    + "Any string that can be evaluated as a boolean may be passed in (ex: true, false, off, on, yes, no). "
                     + "The parameter only affects the response when called by an authenticated ADMIN or ONC user.",
                 allowEmptyValue = true, in = ParameterIn.QUERY, name = "includeDisabled")
-            @RequestParam(value = "includeDisabled", required = false, defaultValue = "false") String includeDisabledStr)
-                    throws InvalidArgumentsException {
-        if (BooleanUtils.toBooleanObject(includeDisabledStr) == null) {
-            throw new InvalidArgumentsException(msgUtil.getMessage("request.invalidBoolean", includeDisabledStr));
-        }
-
-        Boolean includeDisabled = StringUtils.isEmpty(includeDisabledStr) ? false : BooleanUtils.toBooleanObject(includeDisabledStr);
+            @RequestParam(value = "includeDisabled", required = false, defaultValue = "false") String includeDisabledStr) {
+        boolean includeDisabled = StringUtils.isEmpty(includeDisabledStr) ? false : BooleanUtils.toBoolean(includeDisabledStr);
         List<User> users = null;
         if (ff4j.check(FeatureList.SSO)) {
             users = getAllCognitoUsers(includeDisabled);

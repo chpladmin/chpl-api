@@ -210,16 +210,15 @@ public class CertificationBodyManager extends SecuredManager {
     @Transactional(readOnly = true)
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CERTIFICATION_BODY, "
             + "T(gov.healthit.chpl.permissions.domains.CertificationBodyDomainPermissions).GET_USERS, #acbId)")
-    public List<User> getUsers(Long acbId, Boolean includeDisabled)
+    public List<User> getUsers(Long acbId, boolean includeDisabled)
             throws InvalidArgumentsException, EntityRetrievalException {
         CertificationBody acb = resourcePermissionsFactory.get().getAcbIfPermissionById(acbId);
         if (acb == null) {
             throw new InvalidArgumentsException("Could not find the ACB specified.");
         }
 
-        if (includeDisabled == null
-                || (!resourcePermissionsFactory.get().isUserRoleAdmin()
-                && !resourcePermissionsFactory.get().isUserRoleOnc())) {
+        if (!resourcePermissionsFactory.get().isUserRoleAdmin()
+                && !resourcePermissionsFactory.get().isUserRoleOnc()) {
             includeDisabled = false;
         }
         List<User> users = resourcePermissionsFactory.get().getAllUsersOnAcb(acb, includeDisabled);

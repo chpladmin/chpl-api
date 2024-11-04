@@ -14,19 +14,19 @@ public interface ResourcePermissions {
 
     List<User> getAllUsersOnAcb(CertificationBody acb);
 
-    List<User> getAllUsersOnAcb(CertificationBody acb, Boolean includeDisabled);
+    List<User> getAllUsersOnAcb(CertificationBody acb, boolean includeDisabled);
 
     List<User> getAllUsersOnDeveloper(Developer dev);
 
-    List<User> getAllUsersOnDeveloper(Developer dev, Boolean includeDisabled);
+    List<User> getAllUsersOnDeveloper(Developer dev, boolean includeDisabled);
 
     List<User> getAllDeveloperUsers();
 
-    List<User> getAllDeveloperUsers(Boolean includeDisabled);
+    List<User> getAllDeveloperUsers(boolean includeDisabled);
 
     List<User> getAllUsersForCurrentUser();
 
-    List<User> getAllUsersForCurrentUser(Boolean includeDisabled);
+    List<User> getAllUsersForCurrentUser(boolean includeDisabled);
 
     List<CertificationBody> getAllAcbsForCurrentUser();
 

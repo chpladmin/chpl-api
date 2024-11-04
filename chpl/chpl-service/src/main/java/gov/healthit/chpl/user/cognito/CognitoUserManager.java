@@ -116,10 +116,9 @@ public class CognitoUserManager {
     @Transactional
     @PostFilter("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SECURED_USER, "
             + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).GET_ALL, filterObject)")
-    public List<User> getAll(Boolean includeDisabled) {
-        if (includeDisabled == null
-                || (!resourcePermissionsFactory.get().isUserRoleAdmin()
-                && !resourcePermissionsFactory.get().isUserRoleOnc())) {
+    public List<User> getAll(boolean includeDisabled) {
+        if (!resourcePermissionsFactory.get().isUserRoleAdmin()
+                && !resourcePermissionsFactory.get().isUserRoleOnc()) {
             includeDisabled = false;
         }
         return cognitoApiWrapper.getAllUsers(includeDisabled);

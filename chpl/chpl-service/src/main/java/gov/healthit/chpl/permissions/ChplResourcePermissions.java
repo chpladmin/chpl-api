@@ -6,7 +6,6 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.Predicate;
-import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -74,12 +73,12 @@ public class ChplResourcePermissions implements ResourcePermissions {
 
     @Override
     @Transactional(readOnly = true)
-    public List<User> getAllUsersOnAcb(CertificationBody acb, Boolean includeDisabled) {
+    public List<User> getAllUsersOnAcb(CertificationBody acb, boolean includeDisabled) {
         List<UserCertificationBodyMapDTO> dtos = userCertificationBodyMapDAO.getByAcbId(acb.getId());
 
         return dtos.stream()
                 .map(dto -> dto.getUser().toDomain())
-                .filter(user -> BooleanUtils.isFalse(includeDisabled) ? user.getAccountEnabled() : true)
+                .filter(user -> includeDisabled ? user.getAccountEnabled() : true)
                 .toList();
     }
 
@@ -91,12 +90,12 @@ public class ChplResourcePermissions implements ResourcePermissions {
 
     @Override
     @Transactional(readOnly = true)
-    public List<User> getAllUsersOnDeveloper(Developer dev, Boolean includeDisabled) {
+    public List<User> getAllUsersOnDeveloper(Developer dev, boolean includeDisabled) {
         List<UserDeveloperMapDTO> dtos = userDeveloperMapDAO.getByDeveloperId(dev.getId());
 
         return dtos.stream()
                 .map(udm -> udm.getUser().toDomain())
-                .filter(user -> BooleanUtils.isFalse(includeDisabled) ? user.getAccountEnabled() : true)
+                .filter(user -> includeDisabled ? user.getAccountEnabled() : true)
                 .toList();
     }
 
@@ -112,11 +111,11 @@ public class ChplResourcePermissions implements ResourcePermissions {
     @Transactional(readOnly = true)
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).DEVELOPER, "
             + "T(gov.healthit.chpl.permissions.domains.DeveloperDomainPermissions).GET_ALL_USERS)")
-    public List<User> getAllDeveloperUsers(Boolean includeDisabled) {
+    public List<User> getAllDeveloperUsers(boolean includeDisabled) {
         List<UserDeveloperMapDTO> dtos = userDeveloperMapDAO.getAllDeveloperUsers();
         return dtos.stream()
                 .map(udm -> udm.getUser().toDomain())
-                .filter(user -> BooleanUtils.isFalse(includeDisabled) ? user.getAccountEnabled() : true)
+                .filter(user -> includeDisabled ? user.getAccountEnabled() : true)
                 .toList();
     }
 
@@ -128,7 +127,7 @@ public class ChplResourcePermissions implements ResourcePermissions {
 
     @Override
     @Transactional(readOnly = true)
-    public List<User> getAllUsersForCurrentUser(Boolean includeDisabled) {
+    public List<User> getAllUsersForCurrentUser(boolean includeDisabled) {
         JWTAuthenticatedUser user = AuthUtil.getCurrentUser();
         List<User> users = new ArrayList<User>();
 
@@ -157,7 +156,7 @@ public class ChplResourcePermissions implements ResourcePermissions {
             }
         }
         return users.stream()
-                .filter(currUser -> BooleanUtils.isFalse(includeDisabled) ? currUser.getAccountEnabled() : true)
+                .filter(currUser -> includeDisabled ? currUser.getAccountEnabled() : true)
                 .collect(Collectors.toList());
     }
 

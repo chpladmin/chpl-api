@@ -13,7 +13,6 @@ import java.util.stream.Stream;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
-import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -300,7 +299,7 @@ public class CognitoApiWrapper {
         return getAllUsers(false);
     }
 
-    public List<User> getAllUsers(Boolean includeDisabled) {
+    public List<User> getAllUsers(boolean includeDisabled) {
         ListUsersInGroupRequest request = ListUsersInGroupRequest.builder()
                 .userPoolId(userPoolId)
                 .groupName(environmentGroupName)
@@ -328,7 +327,7 @@ public class CognitoApiWrapper {
 
         }
         return users.stream()
-                .filter(currUser -> BooleanUtils.isFalse(includeDisabled) ? currUser.getAccountEnabled() : true)
+                .filter(currUser -> includeDisabled ? currUser.getAccountEnabled() : true)
                 .collect(Collectors.toList());
     }
 
