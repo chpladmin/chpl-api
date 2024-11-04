@@ -247,8 +247,9 @@ public class DeveloperManager extends SecuredManager {
             + "T(gov.healthit.chpl.permissions.domains.DeveloperDomainPermissions).GET_ALL_USERS, #devId)")
     public List<User> getAllUsersOnDeveloper(Long devId, Boolean includeDisabled) throws EntityRetrievalException {
         Developer dev = getById(devId);
-        if (!resourcePermissionsFactory.get().isUserRoleAdmin()
-                && !resourcePermissionsFactory.get().isUserRoleOnc()) {
+        if (includeDisabled == null
+                || (!resourcePermissionsFactory.get().isUserRoleAdmin()
+                        && !resourcePermissionsFactory.get().isUserRoleOnc())) {
             includeDisabled = false;
         }
         List<User> users = resourcePermissionsFactory.get().getAllUsersOnDeveloper(dev, includeDisabled);

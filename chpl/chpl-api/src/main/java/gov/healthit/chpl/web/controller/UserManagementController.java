@@ -483,15 +483,22 @@ public class UserManagementController {
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     @PreAuthorize("isAuthenticated()")
     public @ResponseBody UsersResponse getUsers(
-            @Parameter(description = "Whether to include users whose accounts have been marked as disabled. The parameter only affects the response when called by an authenticated ADMIN or ONC user.",
+            @Parameter(description = "Whether to include users whose accounts have been marked as disabled. "
+                    + "Any string that can be evaluated as a boolean may be passed in (ex: true, false, off, on, yes, no, 1, 0). "
+                    + "The parameter only affects the response when called by an authenticated ADMIN or ONC user.",
                 allowEmptyValue = true, in = ParameterIn.QUERY, name = "includeDisabled")
-            @RequestParam(value = "includeDisabled", required = false, defaultValue = "false") String includeDisabled) {
-        Boolean includeDisabledBool = StringUtils.isEmpty(includeDisabled) ? false : BooleanUtils.toBooleanObject(includeDisabled);
+            @RequestParam(value = "includeDisabled", required = false, defaultValue = "false") String includeDisabledStr)
+                    throws InvalidArgumentsException {
+        if (BooleanUtils.toBooleanObject(includeDisabledStr) == null) {
+            throw new InvalidArgumentsException(msgUtil.getMessage("request.invalidBoolean", includeDisabledStr));
+        }
+
+        Boolean includeDisabled = StringUtils.isEmpty(includeDisabledStr) ? false : BooleanUtils.toBooleanObject(includeDisabledStr);
         List<User> users = null;
         if (ff4j.check(FeatureList.SSO)) {
-            users = getAllCognitoUsers(includeDisabledBool);
+            users = getAllCognitoUsers(includeDisabled);
         } else {
-            users = getAllChplUsers(includeDisabledBool);
+            users = getAllChplUsers(includeDisabled);
         }
 
         UsersResponse response = new UsersResponse();

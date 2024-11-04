@@ -284,10 +284,15 @@ public class DeveloperController {
     @RequestMapping(value = "/{developerId}/users", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     public @ResponseBody UsersResponse getUsers(@PathVariable("developerId") Long developerId,
-        @Parameter(description = "Whether to include users whose accounts have been marked as disabled. The parameter only affects the response when called by an authenticated ADMIN or ONC user.",
+        @Parameter(description = "Whether to include users whose accounts have been marked as disabled. "
+                + "Any string that can be evaluated as a boolean may be passed in (ex: true, false, off, on, yes, no, 1, 0). "
+                + "The parameter only affects the response when called by an authenticated ADMIN or ONC user.",
             allowEmptyValue = true, in = ParameterIn.QUERY, name = "includeDisabled")
         @RequestParam(value = "includeDisabled", required = false, defaultValue = "false") String includeDisabled)
     throws InvalidArgumentsException, EntityRetrievalException {
+        if (BooleanUtils.toBooleanObject(includeDisabled) == null) {
+            throw new InvalidArgumentsException(msgUtil.getMessage("request.invalidBoolean", includeDisabled));
+        }
 
         List<User> domainUsers = developerManager.getAllUsersOnDeveloper(developerId,
                 StringUtils.isEmpty(includeDisabled) ? false : BooleanUtils.toBooleanObject(includeDisabled));

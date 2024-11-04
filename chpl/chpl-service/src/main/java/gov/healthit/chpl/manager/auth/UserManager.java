@@ -171,8 +171,9 @@ public class UserManager extends SecuredManager {
     @PostFilter("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SECURED_USER, "
             + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).GET_ALL, filterObject)")
     public List<UserDTO> getAll(Boolean includeDisabled) {
-        if (!resourcePermissionsFactory.get().isUserRoleAdmin()
-                && !resourcePermissionsFactory.get().isUserRoleOnc()) {
+        if (includeDisabled == null
+                ||  (!resourcePermissionsFactory.get().isUserRoleAdmin()
+                && !resourcePermissionsFactory.get().isUserRoleOnc())) {
             includeDisabled = false;
         }
         List<UserDTO> allUsers = userDAO.findAll();

@@ -217,8 +217,9 @@ public class CertificationBodyManager extends SecuredManager {
             throw new InvalidArgumentsException("Could not find the ACB specified.");
         }
 
-        if (!resourcePermissionsFactory.get().isUserRoleAdmin()
-                && !resourcePermissionsFactory.get().isUserRoleOnc()) {
+        if (includeDisabled == null
+                || (!resourcePermissionsFactory.get().isUserRoleAdmin()
+                && !resourcePermissionsFactory.get().isUserRoleOnc())) {
             includeDisabled = false;
         }
         List<User> users = resourcePermissionsFactory.get().getAllUsersOnAcb(acb, includeDisabled);
