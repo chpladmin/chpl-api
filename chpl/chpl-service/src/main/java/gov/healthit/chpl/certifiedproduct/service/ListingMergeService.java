@@ -3,6 +3,7 @@ package gov.healthit.chpl.certifiedproduct.service;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.collections.CollectionUtils;
@@ -252,8 +253,15 @@ public class ListingMergeService {
         if (!CollectionUtils.isEmpty(updatedListingSed.getTestTasks())) {
             updatedListingSed.getTestTasks().stream()
                 .forEach(updatedTestTask -> setIdForTestTask(updatedTestTask, currListingSed.getTestTasks()));
-        }
 
+            Set<TestParticipant> currentTestParticipants = currListingSed.getTestTasks().stream()
+                    .flatMap(currTestTask -> currTestTask.getTestParticipants().stream())
+                    .collect(Collectors.toSet());
+
+            updatedListingSed.getTestTasks().stream()
+                .flatMap(updatedTestTask -> updatedTestTask.getTestParticipants().stream())
+                .forEach(updatedTestParticipant -> setIdForTestParticipant(updatedTestParticipant, currentTestParticipants));
+        }
     }
 
     private void setIdForTestTask(TestTask updatedTestTask, List<TestTask> currTestTasks) {
@@ -267,10 +275,6 @@ public class ListingMergeService {
                 .orElse(null);
             if (matchedCurrTestTask != null) {
                 updatedTestTask.setId(matchedCurrTestTask.getId());
-                if (!CollectionUtils.isEmpty(updatedTestTask.getTestParticipants())) {
-                    updatedTestTask.getTestParticipants().stream()
-                        .forEach(updatedTestParticipant -> setIdForTestParticipant(updatedTestParticipant, matchedCurrTestTask.getTestParticipants()));
-                }
             }
     }
 
