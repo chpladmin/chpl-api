@@ -3,9 +3,11 @@ package gov.healthit.chpl.user.cognito;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -373,11 +375,11 @@ public class CognitoApiWrapper {
     @CacheEvict(value = CacheNames.COGNITO_USERS, key = "#user.cognitoId")
     public void addOrgToUser(User user, Long orgId) throws UserRetrievalException {
         List<AttributeType> attributes = new ArrayList<AttributeType>();
-        List<Long> orgIds = CollectionUtils.isEmpty(user.getOrganizations())
-                ? new ArrayList<Long>()
+        Set<Long> orgIds = CollectionUtils.isEmpty(user.getOrganizations())
+                ? new HashSet<Long>()
                 : user.getOrganizations().stream()
                         .map(org -> org.getId())
-                        .collect(Collectors.toList());
+                        .collect(Collectors.toSet());
         orgIds.add(orgId);
 
         attributes.add(AttributeType.builder().name("custom:organizations").value(
