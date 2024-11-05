@@ -16,6 +16,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -59,7 +60,9 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.Getter;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 @Tag(name = "users", description = "Allows management of users.")
 @RestController
 @RequestMapping("/users")
@@ -105,8 +108,10 @@ public class UserManagementController {
     @RequestMapping(value = "/authorize/{invitationToken}", method = RequestMethod.POST,
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
-    public User addOrganizationToUser(@PathVariable("invitationToken") UUID invitationToken) throws UserRetrievalException, InvalidArgumentsException {
-        return cognitoUserManager.addOrganizationToUser(invitationToken);
+    public User addOrganizationToUser(@PathVariable("invitationToken") UUID invitationToken, @RequestHeader("authorization") String jwt)
+            throws UserRetrievalException, InvalidArgumentsException {
+
+        return cognitoUserManager.addOrganizationToUser(invitationToken, jwt.split(" ")[1]);
     }
 
     @Deprecated

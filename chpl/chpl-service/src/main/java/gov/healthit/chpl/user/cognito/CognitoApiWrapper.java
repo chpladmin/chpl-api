@@ -65,6 +65,8 @@ import software.amazon.awssdk.services.cognitoidentityprovider.model.AttributeTy
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AuthFlowType;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AuthenticationResultType;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.ChallengeNameType;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.GetUserRequest;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.GetUserResponse;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.GroupType;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.ListUsersInGroupRequest;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.ListUsersInGroupResponse;
@@ -99,7 +101,6 @@ public class CognitoApiWrapper {
         this.userPoolClientSecret = userPoolClientSecret;
         this.certificationBodyDAO = certificationBodyDAO;
         this.developerDAO = developerDAO;
-
     }
 
 
@@ -183,8 +184,27 @@ public class CognitoApiWrapper {
             }
         }
         return null;
-
     }
+
+    public User getUserByPassingCognitoUserAttributeCache(String accessToken) throws UserRetrievalException {
+        GetUserResponse response = cognitoClient.getUser(GetUserRequest.builder().accessToken(accessToken).build());
+        User user = getUserInfo(UUID.fromString(response.username()));
+
+        if (response.userAttributes().size() > 0) {
+            List<GroupType> userGroups = getGroupsForUser(user.getEmail());
+            if (doesGroupMatchCurrentEnvironment(userGroups)) {
+                AttributeType orgIdsAttribute = getUserAttribute(response.userAttributes(), "custom:organizations");
+                if (orgIdsAttribute != null && StringUtils.isNotEmpty(orgIdsAttribute.value())) {
+                    user.setOrganizations(getOrganizations(user.getRole(), Stream.of(orgIdsAttribute.value().split(","))
+                            .map(id -> Long.valueOf(id))
+                            .toList()));
+                }
+                return user;
+            }
+        }
+        return null;
+    }
+
 
     public User getUserInfo(String email) throws UserRetrievalException {
         ListUsersResponse response = cognitoClient.listUsers(ListUsersRequest.builder()
