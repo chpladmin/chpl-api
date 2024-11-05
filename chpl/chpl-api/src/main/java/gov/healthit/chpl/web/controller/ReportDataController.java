@@ -1,10 +1,8 @@
 package gov.healthit.chpl.web.controller;
 
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -15,6 +13,7 @@ import gov.healthit.chpl.developer.search.DeveloperSearchRequest;
 import gov.healthit.chpl.developer.search.DeveloperSearchResult;
 import gov.healthit.chpl.developer.search.DeveloperSearchService;
 import gov.healthit.chpl.report.ReportDataManager;
+import gov.healthit.chpl.report.ReportMetadata;
 import gov.healthit.chpl.report.criteriaattribute.TestToolListingReport;
 import gov.healthit.chpl.report.criteriaattribute.TestToolReport;
 import gov.healthit.chpl.report.criteriamigrationreport.CriteriaMigrationReportDenormalized;
@@ -29,7 +28,6 @@ import gov.healthit.chpl.report.surveillance.SurveillanceActivityCounts;
 import gov.healthit.chpl.scheduler.job.summarystatistics.data.CertificationBodyStatistic;
 import gov.healthit.chpl.search.domain.ListingSearchResult;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
-import gov.healthit.chpl.web.controller.results.ReportUrlResult;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -42,14 +40,11 @@ import lombok.extern.log4j.Log4j2;
 public class ReportDataController {
     private ReportDataManager reportDataManager;
     private DeveloperSearchService developerSearchService;
-    private Map<String, String> reportUrlsByReportName;
 
     @Autowired
-    public ReportDataController(ReportDataManager reportDataManager, DeveloperSearchService developerSearchService,
-            @Value("#{${reportUrls}}") Map<String, String> reportUrlsByReportName) {
+    public ReportDataController(ReportDataManager reportDataManager, DeveloperSearchService developerSearchService) {
         this.reportDataManager = reportDataManager;
         this.developerSearchService = developerSearchService;
-        this.reportUrlsByReportName = reportUrlsByReportName;
     }
 
     @Operation(summary = "Retrieves the data used to generate the HTI-1 Criteria Migration Report.",
@@ -62,21 +57,14 @@ public class ReportDataController {
         return reportDataManager.getHti1CriteriaMigrationReport();
     }
 
-    @Operation(summary = "Retrieves the URL for a Power BI report.",
+    @Operation(summary = "Retrieves the report metadata for a group of Power BI reports.",
             description = "Retrieves the URL for a Power BI report.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
-    @RequestMapping(value = "/{reportName}/url", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public @ResponseBody ReportUrlResult getReportUrl(@PathVariable("reportName") String reportName) {
-
-        String reportUrl = "";
-        if (reportUrlsByReportName.containsKey(reportName)) {
-            reportUrl = reportUrlsByReportName.get(reportName);
-        }
-        return ReportUrlResult.builder()
-                .reportUrl(reportUrl)
-                .build();
+    @RequestMapping(value = "/{reportGroup}/metadata", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public @ResponseBody List<ReportMetadata> getReportUrl(@PathVariable("reportGroup") String reportGroup) {
+        return reportDataManager.getReportMetadataByReportGroup(reportGroup);
     }
 
     @Operation(summary = "Retrieves the data used to generate the Surveillance Activity Counts report.",

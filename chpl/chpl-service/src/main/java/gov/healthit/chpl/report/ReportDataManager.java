@@ -39,11 +39,12 @@ public class ReportDataManager {
     private ListingReportsService listingReportsService;
     private TestToolReportService testToolReportService;
     private DirectReviewReportsService directReviewReportsService;
+    private ReportMetadataDAO reportMetadataDAO;
 
     @Autowired
     public ReportDataManager(CriteriaMigrationReportService criteriaMigrationReportService, DeveloperReportsService developerReportsService,
             SurveillanceReportsService surveillanceReportsService, ProductReportsService productReportsService, ListingReportsService listingReportsService,
-            TestToolReportService testToolReportService, DirectReviewReportsService directReviewReportsService) {
+            TestToolReportService testToolReportService, DirectReviewReportsService directReviewReportsService, ReportMetadataDAO reportMetadataDAO) {
         this.criteriaMigrationReportService = criteriaMigrationReportService;
         this.developerReportsService = developerReportsService;
         this.surveillanceReportsService = surveillanceReportsService;
@@ -51,6 +52,11 @@ public class ReportDataManager {
         this.listingReportsService = listingReportsService;
         this.testToolReportService = testToolReportService;
         this.directReviewReportsService = directReviewReportsService;
+        this.reportMetadataDAO = reportMetadataDAO;
+    }
+
+    public List<ReportMetadata> getReportMetadataByReportGroup(String reportGroup) {
+        return reportMetadataDAO.getReportMetadataByReportGroup(reportGroup);
     }
 
     public List<CriteriaMigrationReportDenormalized> getHti1CriteriaMigrationReport() {
