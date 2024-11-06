@@ -13,9 +13,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import gov.healthit.chpl.activity.entity.ActivityEntity;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.auth.User;
-import gov.healthit.chpl.entity.ActivityEntity;
 import gov.healthit.chpl.util.ChplUserToCognitoUserUtil;
 import jakarta.persistence.Query;
 import lombok.extern.log4j.Log4j2;
@@ -89,7 +89,6 @@ public class ActivitySearchDao extends BaseDAOImpl {
         return queryResults.stream()
                 .map(entity -> {
                     ActivitySearchResult asr = entity.toSearchResult();
-                    //TODO consider adding users
                     User user = chplUserToCognitoUserUtil.getUser(entity.getLastModifiedUser(), entity.getLastModifiedSsoUser());
                     if (user != null) {
                         asr.setUsername(ObjectUtils.firstNonNull(user.getEmail(), user.getFullName()));

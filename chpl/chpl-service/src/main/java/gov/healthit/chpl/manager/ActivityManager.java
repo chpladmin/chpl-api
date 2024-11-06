@@ -211,6 +211,7 @@ public class ActivityManager extends SecuredManager {
         event.setDescription(dto.getDescription());
         event.setActivityDate(dto.getActivityDate());
         event.setActivityObjectId(dto.getActivityObjectId());
+        event.setActivityObjectUuid(dto.getActivityObjectUuid());
         event.setConcept(dto.getConcept());
         event.setResponsibleUser(dto.getUser());
 
