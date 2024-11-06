@@ -47,8 +47,8 @@ public class ReportMetadataEntity extends EntityAudit {
     @Column(name = "url")
     private String url;
 
-    @Column(name = "width")
-    private String width;
+    @Column(name = "height")
+    private String height;
 
     @Column(name = "display_order")
     private String displayOrder;
@@ -61,7 +61,7 @@ public class ReportMetadataEntity extends EntityAudit {
                 .reportKey(reportKey)
                 .reportGroup(reportGroup)
                 .url(url)
-                .width(width)
+                .height(height)
                 .displayOrder(displayOrder)
                 .build();
     }

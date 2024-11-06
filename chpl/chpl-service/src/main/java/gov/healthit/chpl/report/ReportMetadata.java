@@ -12,6 +12,6 @@ public class ReportMetadata {
     private String reportKey;
     private String reportGroup;
     private String url;
-    private String width;
+    private String height;
     private String displayOrder;
 }
