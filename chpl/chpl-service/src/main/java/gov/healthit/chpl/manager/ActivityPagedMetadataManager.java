@@ -111,18 +111,7 @@ public class ActivityPagedMetadataManager extends SecuredManager {
     public ActivityMetadataPage getUserMaintenanceActivityMetadata(Long startMillis, Long endMillis,
             Integer pageNum, Integer pageSize) throws ValidationException, JsonParseException, IOException {
         validateSearchParameters(startMillis, endMillis, pageNum, pageSize);
-        if (resourcePermissionsFactory.get().isUserRoleAdmin() || resourcePermissionsFactory.get().isUserRoleOnc()) {
-            return getActivityMetadataPageByConcept(ActivityConcept.USER, startMillis, endMillis, pageNum, pageSize);
-        } else {
-            List<UserDTO> allowedUsers = resourcePermissionsFactory.get().getAllUsersForCurrentUser().stream()
-                    .map(u -> getUserDto(u.getUserId()))
-                    .toList();
-            List<Long> allowedUserIds = allowedUsers.stream()
-                .map(allowedUser -> allowedUser.getId())
-                .collect(Collectors.toList());
-            return getActivityMetadataPageByConceptAndObject(
-                    ActivityConcept.USER, allowedUserIds, startMillis, endMillis, pageNum, pageSize);
-        }
+        return getActivityMetadataPageByConcept(ActivityConcept.USER, startMillis, endMillis, pageNum, pageSize);
     }
 
     @Transactional
