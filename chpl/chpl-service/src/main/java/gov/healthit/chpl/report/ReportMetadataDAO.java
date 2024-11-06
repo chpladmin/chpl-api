@@ -41,7 +41,7 @@ public class ReportMetadataDAO extends BaseDAOImpl {
         Query query = entityManager.createQuery("SELECT rm "
                 + "FROM ReportMetadataEntity rm "
                 + "WHERE rm.environment = :environment "
-                + "AND rm.reportKey = : reportKey "
+                + "AND rm.reportKey = :reportKey "
                 + "AND rm.deleted = false ",
                 ReportMetadataEntity.class);
         query.setParameter("environment", environment);
@@ -59,8 +59,7 @@ public class ReportMetadataDAO extends BaseDAOImpl {
                 + "FROM ReportMetadataEntity rm "
                 + "WHERE rm.environment = :environment "
                 + "AND rm.reportGroup = :reportGroup "
-                + "AND rm.deleted = false "
-                + "ORDER BY rm.displayOrder ",
+                + "AND rm.deleted = false ",
                 ReportMetadataEntity.class);
         query.setParameter("environment", environment);
         query.setParameter("reportGroup", reportGroup);

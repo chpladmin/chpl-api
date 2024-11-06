@@ -58,13 +58,23 @@ public class ReportDataController {
     }
 
     @Operation(summary = "Retrieves the report metadata for a group of Power BI reports.",
-            description = "Retrieves the URL for a Power BI report.",
+            description = "Retrieves the report metadata for a group of Power BI reports.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
-    @RequestMapping(value = "/{reportGroup}/metadata", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public @ResponseBody List<ReportMetadata> getReportUrl(@PathVariable("reportGroup") String reportGroup) {
+    @RequestMapping(value = "report-metadata/group/{reportGroup}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public @ResponseBody List<ReportMetadata> getReportMetadataForGroup(@PathVariable("reportGroup") String reportGroup) {
         return reportDataManager.getReportMetadataByReportGroup(reportGroup);
+    }
+
+    @Operation(summary = "Retrieves the individual report metadata for a Power BI report.",
+            description = "Retrieves the individual report metadata for a Power BI report.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
+    @RequestMapping(value = "/report-metadata/{reportKey}", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public @ResponseBody ReportMetadata getReportMetadata(@PathVariable("reportKey") String reportKey) {
+        return reportDataManager.getReportMetadata(reportKey);
     }
 
     @Operation(summary = "Retrieves the data used to generate the Surveillance Activity Counts report.",

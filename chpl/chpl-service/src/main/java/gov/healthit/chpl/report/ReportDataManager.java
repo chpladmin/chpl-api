@@ -1,5 +1,6 @@
 package gov.healthit.chpl.report;
 
+import java.util.Comparator;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,7 +57,13 @@ public class ReportDataManager {
     }
 
     public List<ReportMetadata> getReportMetadataByReportGroup(String reportGroup) {
-        return reportMetadataDAO.getReportMetadataByReportGroup(reportGroup);
+        return reportMetadataDAO.getReportMetadataByReportGroup(reportGroup).stream()
+                .sorted(Comparator.comparing(ReportMetadata::getDisplayOrder))
+                .toList();
+    }
+
+    public ReportMetadata getReportMetadata(String reportKey) {
+        return reportMetadataDAO.getReportMetadata(reportKey);
     }
 
     public List<CriteriaMigrationReportDenormalized> getHti1CriteriaMigrationReport() {
