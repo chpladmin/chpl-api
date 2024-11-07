@@ -19,8 +19,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.DeveloperManager;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.search.domain.SearchSetOperator;
 import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -33,12 +35,15 @@ public class DeveloperSearchService {
     private SearchRequestNormalizer searchRequestNormalizer;
     private DeveloperManager developerManager;
     private DateTimeFormatter dateFormatter;
+    private ResourcePermissionsFactory resourcePermissionsFactory;
 
     @Autowired
     public DeveloperSearchService(@Qualifier("developerSearchRequestValidator") SearchRequestValidator searchRequestValidator,
-            DeveloperManager developerManager) {
+            DeveloperManager developerManager,
+            ResourcePermissionsFactory resourcePermissionsFactory) {
         this.searchRequestValidator = searchRequestValidator;
         this.developerManager = developerManager;
+        this.resourcePermissionsFactory = resourcePermissionsFactory;
         this.searchRequestNormalizer = new SearchRequestNormalizer();
         dateFormatter = DateTimeFormatter.ofPattern(DeveloperSearchRequest.DATE_SEARCH_FORMAT);
     }
@@ -49,6 +54,13 @@ public class DeveloperSearchService {
 
         List<DeveloperSearchResult> developers = developerManager.getDeveloperSearchResults();
         LOGGER.debug("Total developers: " + developers.size());
+        List<User> allEnabledDeveloperUsers = new ArrayList<User>();
+        if (searchRequest.getHasUsers() != null
+                && (resourcePermissionsFactory.get().isUserRoleOnc() || resourcePermissionsFactory.get().isUserRoleAdmin())) {
+            allEnabledDeveloperUsers.addAll(resourcePermissionsFactory.get().getAllDeveloperUsers().stream()
+                    .filter(user -> user.getAccountEnabled())
+                    .toList());
+        }
         List<DeveloperSearchResult> matchedDevelopers = developers.stream()
             .filter(dev -> matchesSearchTerm(dev, searchRequest.getSearchTerm()))
             .filter(dev -> matchesDeveloperName(dev, searchRequest.getDeveloperName()))
@@ -59,6 +71,7 @@ public class DeveloperSearchService {
             .filter(dev -> matchesDecertificationDateRange(dev, searchRequest.getDecertificationDateStart(), searchRequest.getDecertificationDateEnd()))
             .filter(dev -> matchesAttestationsFilter(dev, searchRequest))
             .filter(dev -> matchesActiveListingsFilter(dev, searchRequest))
+            .filter(dev -> matchesHasUsersFilter(dev, searchRequest, allEnabledDeveloperUsers))
             .filter(dev -> matchesDeveloperId(dev, searchRequest.getDeveloperIds()))
             .collect(Collectors.toList());
         LOGGER.debug("Total matched developers: " + matchedDevelopers.size());
@@ -224,6 +237,25 @@ public class DeveloperSearchService {
                     matchesHasActiveListingsFilter, matchesHadActiveListingsDuringPastPeriodFilter, matchesNoActiveListingsFilter);
         }
         return true;
+    }
+
+    private boolean matchesHasUsersFilter(DeveloperSearchResult developer, DeveloperSearchRequest searchRequest,
+            List<User> allEnabledDeveloperUsers) {
+        if (CollectionUtils.isEmpty(allEnabledDeveloperUsers)) {
+            return true;
+        }
+
+        if (searchRequest.getHasUsers()) {
+            return allEnabledDeveloperUsers.stream()
+                    .flatMap(user -> user.getOrganizations().stream())
+                    .filter(org -> org.getId().equals(developer.getId()))
+                    .findAny().isPresent();
+        } else {
+            return allEnabledDeveloperUsers.stream()
+                    .flatMap(user -> user.getOrganizations().stream())
+                    .filter(org -> org.getId().equals(developer.getId()))
+                    .findAny().isEmpty();
+        }
     }
 
     private boolean matchesAttestationsFilter(DeveloperSearchResult developer, DeveloperSearchRequest searchRequest) {
