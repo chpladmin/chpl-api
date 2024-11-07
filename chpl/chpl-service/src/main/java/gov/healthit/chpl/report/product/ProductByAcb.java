@@ -1,13 +1,14 @@
 package gov.healthit.chpl.report.product;
 
-import gov.healthit.chpl.domain.CertificationBody;
-import gov.healthit.chpl.domain.Product;
+import gov.healthit.chpl.domain.IdNamePair;
+import gov.healthit.chpl.search.domain.ListingSearchResult.DeveloperSearchResult;
 import lombok.Builder;
 import lombok.Data;
 
 @Data
 @Builder
 public class ProductByAcb {
-    private Product product;
-    private CertificationBody acb;
+    private IdNamePair product;
+    private IdNamePair acb;
+    private DeveloperSearchResult developer;
 }

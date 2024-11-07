@@ -12,13 +12,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.healthit.chpl.dao.CertificationStatusDAO;
 import gov.healthit.chpl.dao.statistics.SummaryStatisticsDAO;
-import gov.healthit.chpl.domain.CertificationBody;
-import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.entity.statistics.SummaryStatisticsEntity;
-import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
-import gov.healthit.chpl.manager.CertificationBodyManager;
-import gov.healthit.chpl.manager.ProductManager;
 import gov.healthit.chpl.scheduler.job.summarystatistics.data.CertificationBodyStatistic;
 import gov.healthit.chpl.scheduler.job.summarystatistics.data.StatisticsSnapshot;
 import gov.healthit.chpl.scheduler.job.summarystatistics.email.CertificationStatusIdHelper;
@@ -34,17 +29,12 @@ public class ProductReportsService {
     private SummaryStatisticsDAO summaryStatisticsDAO;
     private CertificationStatusIdHelper statusIdHelper;
     private ListingSearchService listingSearchService;
-    private ProductManager productManager;
-    private CertificationBodyManager certificationBodyManager;
 
     @Autowired
-    public ProductReportsService(SummaryStatisticsDAO summaryStatisticsDAO, CertificationStatusDAO certificationStatusDao, ListingSearchService listingSearchService,
-            ProductManager productManager, CertificationBodyManager certificationBodyManager) {
+    public ProductReportsService(SummaryStatisticsDAO summaryStatisticsDAO, CertificationStatusDAO certificationStatusDao, ListingSearchService listingSearchService) {
         this.summaryStatisticsDAO = summaryStatisticsDAO;
         this.statusIdHelper = new CertificationStatusIdHelper(certificationStatusDao);
         this.listingSearchService = listingSearchService;
-        this.productManager = productManager;
-        this.certificationBodyManager = certificationBodyManager;
     }
 
     public UniqueProductCount getUniqueProductCount() {
@@ -98,23 +88,15 @@ public class ProductReportsService {
                     .certificationStatuses(statusNames)
                     .build());
 
-            Set<ProductByAcb> x =  results.stream()
-                    .map(searchResult -> {
-                        try {
-                            Product product = productManager.getById(searchResult.getProduct().getId());
-                            CertificationBody acb = certificationBodyManager.getById(searchResult.getCertificationBody().getId());
-                            return ProductByAcb.builder()
-                                    .product(product)
-                                    .acb(acb)
-                                    .build();
-                        } catch (EntityRetrievalException e) {
-                            LOGGER.error("Could not locate productId: {}", searchResult.getProduct().getId());
-                            return null;
-                        }
-                    })
+            Set<ProductByAcb> productsByAcbs =  results.stream()
+                    .map(searchResult -> ProductByAcb.builder()
+                            .product(searchResult.getProduct())
+                            .acb(searchResult.getCertificationBody())
+                            .developer(searchResult.getDeveloper())
+                            .build())
                     .collect(Collectors.toSet());
 
-            return new ArrayList<ProductByAcb>(x);
+            return new ArrayList<ProductByAcb>(productsByAcbs);
         } catch (ValidationException e) {
             LOGGER.error("Error validating SearchRequest: {}", e.getMessage(), e);
             return List.of();
