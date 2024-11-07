@@ -20,11 +20,13 @@ import gov.healthit.chpl.search.domain.ComplianceSearchFilter;
 import gov.healthit.chpl.search.domain.ListingSearchResult;
 import gov.healthit.chpl.search.domain.NonConformitySearchOptions;
 import gov.healthit.chpl.search.domain.SearchRequest;
+import lombok.Synchronized;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 @Component
 public class SurveillanceReportsService {
+    private final Object lock = new Object();
 
     private SummaryStatisticsDAO summaryStatisticsDAO;
     private ListingSearchService listingSearchService;
@@ -35,6 +37,7 @@ public class SurveillanceReportsService {
         this.listingSearchService = listingSearchService;
     }
 
+    @Synchronized("lock")
     public SurveillanceActivityCounts getSurveiilanceActivityCounts() {
         StatisticsSnapshot stats = getStatistics();
         return SurveillanceActivityCounts.builder()
@@ -47,10 +50,12 @@ public class SurveillanceReportsService {
                 .build();
     }
 
+    @Synchronized("lock")
     public List<CertificationBodyStatistic> getOpenSurveillanceActivityCountsByAcb() {
         return getStatistics().getSurveillanceOpenStatus().getAcbStatistics();
     }
 
+    @Synchronized("lock")
     public List<ListingSearchResult> getListingsWithOpenSurveillance() {
         try {
             return listingSearchService.getAllPagesOfSearchResults(
@@ -68,6 +73,7 @@ public class SurveillanceReportsService {
         }
     }
 
+    @Synchronized("lock")
     public NonconformityCounts getNonconformityCounts() {
         StatisticsSnapshot stats = getStatistics();
         return NonconformityCounts.builder()
@@ -83,10 +89,12 @@ public class SurveillanceReportsService {
                 .build();
     }
 
+    @Synchronized("lock")
     public List<CertificationBodyStatistic> getOpenNonconformityCountsByAcb() {
         return getStatistics().getNonConfStatusOpen().getAcbStatistics();
     }
 
+    @Synchronized("lock")
     public List<ListingSearchResult> getListingsWithOpenNonconformity() {
         try {
             return listingSearchService.getAllPagesOfSearchResults(
@@ -104,6 +112,7 @@ public class SurveillanceReportsService {
         }
     }
 
+    @Synchronized("lock")
     public CapCounts getCapCounts() {
         StatisticsSnapshot stats = getStatistics();
         Long openCaps = stats.getNonConfCAPStatusOpen().stream().collect(Collectors.summingLong(s -> s.getCount()));
@@ -115,14 +124,17 @@ public class SurveillanceReportsService {
                 .build();
     }
 
+    @Synchronized("lock")
     public List<CertificationBodyStatistic> getOpenCapCountsByAcb() {
         return getStatistics().getNonConfCAPStatusOpen();
     }
 
+    @Synchronized("lock")
     public List<CertificationBodyStatistic> getClosedCapCountsByAcb() {
         return getStatistics().getNonConfCAPStatusClosed();
     }
 
+    @Synchronized("lock")
     public List<ListingSearchResult> getListingsWithOpenCap() {
         try {
             return listingSearchService.getAllPagesOfSearchResults(
@@ -148,6 +160,7 @@ public class SurveillanceReportsService {
         }
     }
 
+    @Synchronized("lock")
     public List<ListingSearchResult> getListingsWithClosedCap() {
         try {
             return listingSearchService.getAllPagesOfSearchResults(
