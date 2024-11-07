@@ -6,6 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.developer.search.DeveloperSearchResult;
+import gov.healthit.chpl.report.criteriaattribute.StandardListingReport;
+import gov.healthit.chpl.report.criteriaattribute.StandardReport;
+import gov.healthit.chpl.report.criteriaattribute.StandardReportService;
 import gov.healthit.chpl.report.criteriaattribute.TestToolListingReport;
 import gov.healthit.chpl.report.criteriaattribute.TestToolReport;
 import gov.healthit.chpl.report.criteriaattribute.TestToolReportService;
@@ -29,14 +32,17 @@ public class ReportDataManager {
     private SurveillanceReportsService surveillanceReportsService;
     private DeveloperReportsService developerReportsService;
     private TestToolReportService testToolReportService;
+    private StandardReportService standardReportService;
 
     @Autowired
     public ReportDataManager(CriteriaMigrationReportService criteriaMigrationReportService, DeveloperReportsService developerReportsService,
-            SurveillanceReportsService surveillanceReportsService, TestToolReportService testToolReportService) {
+            SurveillanceReportsService surveillanceReportsService, TestToolReportService testToolReportService,
+            StandardReportService standardReportService) {
         this.criteriaMigrationReportService = criteriaMigrationReportService;
         this.developerReportsService = developerReportsService;
         this.surveillanceReportsService = surveillanceReportsService;
         this.testToolReportService = testToolReportService;
+        this.standardReportService = standardReportService;
     }
 
     public List<CriteriaMigrationReportDenormalized> getHti1CriteriaMigrationReport() {
@@ -118,4 +124,15 @@ public class ReportDataManager {
     public List<TestToolListingReport> getTestToolListingReports() {
         return testToolReportService.getTestToolListingReports();
     }
+
+    public List<StandardReport> getStandardReports() {
+        return standardReportService.getStandardReports();
+    }
+
+    public List<StandardListingReport> getStandardListingReports() {
+        var x = standardReportService.getStandardListingReports();
+        LOGGER.info(x.size());
+        return x;
+    }
+
 }

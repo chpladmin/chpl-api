@@ -1,7 +1,7 @@
 package gov.healthit.chpl.report.criteriaattribute;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
-import gov.healthit.chpl.testtool.TestTool;
+import gov.healthit.chpl.standard.Standard;
 import lombok.Builder;
 import lombok.Data;
 
@@ -10,5 +10,5 @@ import lombok.Data;
 public class StandardListingReport {
     private String chplProductNumber;
     private CertificationCriterion criterion;
-    private TestTool testTool;
+    private Standard standard;
 }
