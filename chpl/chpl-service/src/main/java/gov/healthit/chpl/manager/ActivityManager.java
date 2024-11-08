@@ -2,6 +2,7 @@ package gov.healthit.chpl.manager;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.UUID;
 
 import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,7 +78,7 @@ public class ActivityManager extends SecuredManager {
 
         try {
             Date activityDate = new Date();
-            ActivityDTO activity = addActivity(concept, objectId, activityDescription, originalData, newData, null, activityDate, getCurrentUser());
+            ActivityDTO activity = addActivity(concept, objectId, null, activityDescription, originalData, newData, null, activityDate, getCurrentUser());
             if (activity != null) {
                 questionableActivityListener.checkQuestionableActivity(activity, originalData, newData);
                 chplProductNumberChangedListener.recordChplProductNumberChanged(concept, objectId, originalData, newData, activityDate);
@@ -91,12 +92,26 @@ public class ActivityManager extends SecuredManager {
     }
 
     @Transactional
+    public Long addUserActivity(UUID objectUuid, String activityDescription, Object originalData, Object newData)
+            throws ActivityException {
+
+        try {
+            Date activityDate = new Date();
+            ActivityDTO activity = addActivity(ActivityConcept.USER, null, objectUuid, activityDescription, originalData, newData, null, activityDate, getCurrentUser());
+            return activity == null ? null : activity.getId();
+        } catch (Exception e) {
+            LOGGER.error("Error adding activity.", e);
+            throw new ActivityException(e);
+        }
+    }
+
+    @Transactional
     public Long addActivity(ActivityConcept concept, Long objectId, String activityDescription, Object originalData, Object newData, String reason)
             throws ActivityException {
 
         try {
             Date activityDate = new Date();
-            ActivityDTO activity = addActivity(concept, objectId, activityDescription, originalData, newData, reason, activityDate, getCurrentUser());
+            ActivityDTO activity = addActivity(concept, objectId, null, activityDescription, originalData, newData, reason, activityDate, getCurrentUser());
             if (activity != null) {
                 questionableActivityListener.checkQuestionableActivity(activity, originalData, newData, reason);
                 chplProductNumberChangedListener.recordChplProductNumberChanged(concept, objectId, originalData, newData, activityDate);
@@ -115,7 +130,7 @@ public class ActivityManager extends SecuredManager {
 
         try {
             Date activityDate = new Date();
-            ActivityDTO activity = addActivity(concept, objectId, activityDescription, originalData, newData, null, activityDate, asUser);
+            ActivityDTO activity = addActivity(concept, objectId, null, activityDescription, originalData, newData, null, activityDate, asUser);
             if (activity != null) {
                 questionableActivityListener.checkQuestionableActivity(activity, originalData, newData);
                 chplProductNumberChangedListener.recordChplProductNumberChanged(concept, objectId, originalData, newData, activityDate);
@@ -140,8 +155,8 @@ public class ActivityManager extends SecuredManager {
         return currentUser;
     }
 
-    private ActivityDTO addActivity(ActivityConcept concept, Long objectId, String activityDescription, Object originalData,
-            Object newData, String reason, Date timestamp, User asUser)
+    private ActivityDTO addActivity(ActivityConcept concept, Long objectId, UUID objectUuid, String activityDescription,
+            Object originalData, Object newData, String reason, Date timestamp, User asUser)
             throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
 
         String originalDataStr = null;
@@ -173,6 +188,7 @@ public class ActivityManager extends SecuredManager {
             dto.setNewData(newDataStr);
             dto.setActivityDate(timestamp);
             dto.setActivityObjectId(objectId);
+            dto.setActivityObjectUuid(objectUuid);
             dto.setReason(reason);
             dto.setCreationDate(new Date());
             dto.setLastModifiedDate(new Date());

@@ -50,6 +50,8 @@ import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminCreate
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminDeleteUserRequest;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminDisableUserRequest;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminEnableUserRequest;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminGetUserRequest;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminGetUserResponse;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminInitiateAuthRequest;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminInitiateAuthResponse;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminListGroupsForUserRequest;
@@ -181,7 +183,6 @@ public class CognitoApiWrapper {
             }
         }
         return null;
-
     }
 
     public User getUserInfo(String email) throws UserRetrievalException {
@@ -198,6 +199,19 @@ public class CognitoApiWrapper {
             }
         }
         return null;
+    }
+
+    public User getUserNoCache(UUID cognitoId) throws UserRetrievalException {
+        AdminGetUserRequest request = AdminGetUserRequest.builder()
+                .userPoolId(userPoolId)
+                .username(cognitoId.toString())
+                .build();
+
+        AdminGetUserResponse response = cognitoClient.adminGetUser(request);
+        if (response == null || response.sdkHttpResponse() == null || !response.sdkHttpResponse().isSuccessful()) {
+            return null;
+        }
+        return createUserFromGetUserResponse(response);
     }
 
     public CognitoCredentials createUser(CreateUserRequest userRequest) throws UserCreationException {
@@ -436,6 +450,25 @@ public class CognitoApiWrapper {
         user.setRole(getRoleBasedOnFilteredGroups(getGroupsForUser(user.getEmail())));
 
         AttributeType orgIdsAttribute = getUserAttribute(userType.attributes(), "custom:organizations");
+        if (orgIdsAttribute != null && StringUtils.isNotEmpty(orgIdsAttribute.value())) {
+            user.setOrganizations(getOrganizations(user.getRole(), Stream.of(orgIdsAttribute.value().split(","))
+                .map(Long::valueOf)
+                .toList()));
+        }
+        return user;
+    }
+
+    private User createUserFromGetUserResponse(AdminGetUserResponse response) {
+        User user = new User();
+        user.setCognitoId(UUID.fromString(getUserAttribute(response.userAttributes(), "sub").value()));
+        user.setSubjectName(getUserAttribute(response.userAttributes(), "email").value());
+        user.setFullName(getUserAttribute(response.userAttributes(), "name").value());
+        user.setEmail(getUserAttribute(response.userAttributes(), "email").value());
+        user.setAccountEnabled(response.enabled());
+        user.setStatus(response.userStatusAsString());
+        user.setPasswordResetRequired(getForcePasswordReset(response.userAttributes()));
+        user.setRole(getRoleBasedOnFilteredGroups(getGroupsForUser(user.getEmail())));
+        AttributeType orgIdsAttribute = getUserAttribute(response.userAttributes(), "custom:organizations");
         if (orgIdsAttribute != null && StringUtils.isNotEmpty(orgIdsAttribute.value())) {
             user.setOrganizations(getOrganizations(user.getRole(), Stream.of(orgIdsAttribute.value().split(","))
                 .map(Long::valueOf)

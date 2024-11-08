@@ -177,7 +177,8 @@ public class UserManagementController {
             })
     @RequestMapping(value = "", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
-    public void addUser(@RequestBody CreateUserFromInvitationRequest userInfo) throws ValidationException, EmailNotSentException, UserCreationException {
+    public void addUser(@RequestBody CreateUserFromInvitationRequest userInfo) throws ValidationException, EmailNotSentException,
+        UserRetrievalException, UserCreationException, ActivityException {
         if (!ff4j.check(FeatureList.SSO)) {
             throw new NotImplementedException("This method has not been implemented");
         }
@@ -187,6 +188,8 @@ public class UserManagementController {
             if (invitation != null) {
                 cognitoUserManager.createUser(userInfo);
             }
+        } catch (Exception ex) {
+            ex.printStackTrace();
         } finally {
             SecurityContextHolder.getContext().setAuthentication(null);
         }
@@ -201,7 +204,8 @@ public class UserManagementController {
             method = RequestMethod.PUT,
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
-    public User updateUserDetails(@RequestBody User userInfo, @PathVariable("cognitoUserId") UUID cognitoUserId) throws ValidationException, UserRetrievalException {
+    public User updateUserDetails(@RequestBody User userInfo, @PathVariable("cognitoUserId") UUID cognitoUserId)
+            throws ValidationException, UserRetrievalException, ActivityException {
         if (!ff4j.check(FeatureList.SSO)) {
             throw new NotImplementedException("This method has not been implemented");
         }
