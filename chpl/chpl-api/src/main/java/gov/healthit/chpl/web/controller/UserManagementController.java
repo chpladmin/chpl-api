@@ -64,10 +64,12 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.Getter;
+import lombok.extern.log4j.Log4j2;
 
 @Tag(name = "users", description = "Allows management of users.")
 @RestController
 @RequestMapping("/users")
+@Log4j2
 public class UserManagementController {
     private UserManager userManager;
     private InvitationManager invitationManager;
@@ -189,7 +191,7 @@ public class UserManagementController {
                 cognitoUserManager.createUser(userInfo);
             }
         } catch (Exception ex) {
-            ex.printStackTrace();
+            LOGGER.error("Error creating user from invitation.", ex);
         } finally {
             SecurityContextHolder.getContext().setAuthentication(null);
         }
