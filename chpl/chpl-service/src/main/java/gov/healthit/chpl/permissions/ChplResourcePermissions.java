@@ -78,7 +78,7 @@ public class ChplResourcePermissions implements ResourcePermissions {
 
         return dtos.stream()
                 .map(dto -> dto.getUser().toDomain())
-                .filter(user -> includeDisabled ? user.getAccountEnabled() : true)
+                .filter(user -> includeDisabled ? true : user.getAccountEnabled())
                 .toList();
     }
 
@@ -95,7 +95,7 @@ public class ChplResourcePermissions implements ResourcePermissions {
 
         return dtos.stream()
                 .map(udm -> udm.getUser().toDomain())
-                .filter(user -> includeDisabled ? user.getAccountEnabled() : true)
+                .filter(user -> includeDisabled ? true : user.getAccountEnabled())
                 .toList();
     }
 
@@ -115,7 +115,7 @@ public class ChplResourcePermissions implements ResourcePermissions {
         List<UserDeveloperMapDTO> dtos = userDeveloperMapDAO.getAllDeveloperUsers();
         return dtos.stream()
                 .map(udm -> udm.getUser().toDomain())
-                .filter(user -> includeDisabled ? user.getAccountEnabled() : true)
+                .filter(user -> includeDisabled ? true : user.getAccountEnabled())
                 .toList();
     }
 
@@ -156,7 +156,7 @@ public class ChplResourcePermissions implements ResourcePermissions {
             }
         }
         return users.stream()
-                .filter(currUser -> includeDisabled ? currUser.getAccountEnabled() : true)
+                .filter(currUser -> includeDisabled ? true : currUser.getAccountEnabled())
                 .collect(Collectors.toList());
     }
 

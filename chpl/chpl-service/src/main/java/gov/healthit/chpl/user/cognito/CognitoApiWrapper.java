@@ -327,7 +327,7 @@ public class CognitoApiWrapper {
 
         }
         return users.stream()
-                .filter(currUser -> includeDisabled ? currUser.getAccountEnabled() : true)
+                .filter(currUser -> includeDisabled ? true : currUser.getAccountEnabled())
                 .collect(Collectors.toList());
     }
 
