@@ -110,6 +110,7 @@ public class CognitoInvitationManager {
         return createUserInvitation(invitation);
     }
 
+    @Transactional
     public void deleteToken(UUID invitationToken) {
         userInvitationDAO.deleteByToken(invitationToken);
     }

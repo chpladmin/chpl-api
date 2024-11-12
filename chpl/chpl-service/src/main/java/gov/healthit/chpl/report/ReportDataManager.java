@@ -9,7 +9,7 @@ import gov.healthit.chpl.developer.search.DeveloperSearchResult;
 import gov.healthit.chpl.report.criteriaattribute.TestToolListingReport;
 import gov.healthit.chpl.report.criteriaattribute.TestToolReport;
 import gov.healthit.chpl.report.criteriaattribute.TestToolReportService;
-import gov.healthit.chpl.report.criteriamigrationreport.CriteriaMigrationReport;
+import gov.healthit.chpl.report.criteriamigrationreport.CriteriaMigrationReportDenormalized;
 import gov.healthit.chpl.report.criteriamigrationreport.CriteriaMigrationReportService;
 import gov.healthit.chpl.report.developer.DeveloperReportsService;
 import gov.healthit.chpl.report.developer.UniqueDeveloperCount;
@@ -39,8 +39,8 @@ public class ReportDataManager {
         this.testToolReportService = testToolReportService;
     }
 
-    public CriteriaMigrationReport getHti1CriteriaMigrationReport() {
-        return criteriaMigrationReportService.getReport(CriteriaMigrationReportService.HTI1_REPORT_ID);
+    public List<CriteriaMigrationReportDenormalized> getHti1CriteriaMigrationReport() {
+        return criteriaMigrationReportService.getHtiReportData(CriteriaMigrationReportService.HTI1_REPORT_ID);
     }
 
     public SurveillanceActivityCounts getSurveillanceActivityCounts() {
