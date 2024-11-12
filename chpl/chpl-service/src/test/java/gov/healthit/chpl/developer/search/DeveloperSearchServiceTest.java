@@ -19,20 +19,29 @@ import gov.healthit.chpl.domain.IdNamePair;
 import gov.healthit.chpl.entity.developer.DeveloperStatusType;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.DeveloperManager;
+import gov.healthit.chpl.permissions.CognitoResourcePermissions;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.search.domain.SearchSetOperator;
 
 public class DeveloperSearchServiceTest {
 
     private DeveloperManager developerManager;
     private DeveloperSearchService developerSearchService;
+    private CognitoResourcePermissions cognitoResourcePermissions;
+    private ResourcePermissionsFactory resourcePermissionFactory;
 
     @Before
     public void setup() {
         SearchRequestValidator searchRequestValidator = Mockito.mock(SearchRequestValidator.class);
         developerManager = Mockito.mock(DeveloperManager.class);
+        cognitoResourcePermissions = Mockito.mock(CognitoResourcePermissions.class);
+        Mockito.when(cognitoResourcePermissions.isUserRoleAdmin()).thenReturn(false);
+        Mockito.when(cognitoResourcePermissions.isUserRoleOnc()).thenReturn(false);
+        resourcePermissionFactory = Mockito.mock(ResourcePermissionsFactory.class);
+        Mockito.when(resourcePermissionFactory.get()).thenReturn(cognitoResourcePermissions);
 
         developerSearchService = new DeveloperSearchService(searchRequestValidator,
-                developerManager);
+                developerManager, resourcePermissionFactory);
     }
 
     @Test
