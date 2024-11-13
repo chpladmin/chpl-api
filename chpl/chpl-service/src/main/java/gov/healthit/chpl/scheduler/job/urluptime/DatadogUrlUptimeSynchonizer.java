@@ -17,6 +17,9 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.datadog.api.client.v1.model.SyntheticsAPITestResultFull;
+import com.datadog.api.client.v1.model.SyntheticsAPITestResultShort;
+import com.datadog.api.client.v1.model.SyntheticsApiTestFailureCode;
 import com.datadog.api.client.v1.model.SyntheticsTestDetails;
 
 import gov.healthit.chpl.domain.Developer;
@@ -38,6 +41,8 @@ public class DatadogUrlUptimeSynchonizer {
     private UrlUptimeMonitorDAO urlUptimeMonitorDAO;
     private UrlUptimeMonitorTestDAO urlUptimeMonitorTestDAO;
 
+    private List<String> errorsToIgnore;
+
 
     public DatadogUrlUptimeSynchonizer(DatadogSyntheticsTestService datadogSyntheticsTestService, DatadogSyntheticsTestResultService datadogSyntheticsTestResultService,
             ServiceBaseUrlListService serviceBaseUrlListGatherer, UrlUptimeMonitorDAO urlUptimeMonitorDAO, UrlUptimeMonitorTestDAO urlUptimeMonitorTestDAO) {
@@ -46,6 +51,8 @@ public class DatadogUrlUptimeSynchonizer {
         this.serviceBaseUrlListService = serviceBaseUrlListGatherer;
         this.urlUptimeMonitorDAO = urlUptimeMonitorDAO;
         this.urlUptimeMonitorTestDAO = urlUptimeMonitorTestDAO;
+
+        errorsToIgnore = List.of("BODY_TOO_LARGE_TO_PROCESS");
     }
 
     @Transactional
@@ -62,16 +69,36 @@ public class DatadogUrlUptimeSynchonizer {
 
         getDatesToRetrieveResultsFor().stream()
                 .peek(testDate -> LOGGER.info("**************** Retrieving test results for: {} ****************", testDate))
-                .forEach(testDate -> urlUptimeMonitorDAO.getAll()
-                        .forEach(urlUptimeMonitor ->  datadogSyntheticsTestResultService.getSyntheticsTestResults(
-                                getDatadogPublicId(syntheticsTestDetails, urlUptimeMonitor.getUrl(), urlUptimeMonitor.getDeveloper().getId()),
-                                testDate)
-                                .forEach(syntheticsTestResult -> urlUptimeMonitorTestDAO.create(UrlUptimeMonitorTest.builder()
-                                      .urlUptimeMonitorId(urlUptimeMonitor.getId())
-                                      .datadogTestKey(syntheticsTestResult.getResultId())
-                                      .checkTime(toLocalDateTime(syntheticsTestResult.getCheckTime().longValue()))
-                                      .passed(syntheticsTestResult.getResult().getPassed())
-                                      .build()))));
+                .forEach(testDate -> urlUptimeMonitorDAO.getAll().forEach(urlUptimeMonitor ->  {
+                        String publicId = getDatadogPublicId(syntheticsTestDetails, urlUptimeMonitor.getUrl(), urlUptimeMonitor.getDeveloper().getId());
+
+                        datadogSyntheticsTestResultService.getSyntheticsTestResults(publicId, testDate).forEach(syntheticsTestResult -> {
+                            urlUptimeMonitorTestDAO.create(UrlUptimeMonitorTest.builder()
+                                    .urlUptimeMonitorId(urlUptimeMonitor.getId())
+                                    .datadogTestKey(syntheticsTestResult.getResultId())
+                                    .checkTime(toLocalDateTime(syntheticsTestResult.getCheckTime().longValue()))
+                                    .passed(calculatePassed(syntheticsTestResult, publicId))
+                                    .build());
+                        });
+                }));
+
+    }
+
+    private boolean calculatePassed(SyntheticsAPITestResultShort result, String publicId) {
+        if (result.getResult().getPassed()) {
+            return true;
+        } else {
+            SyntheticsAPITestResultFull detailedResult = datadogSyntheticsTestResultService.getDetailedTestResult(publicId, result.getResultId());
+            return isErrorIgnorable(detailedResult.getResult().getFailure().getCode());
+        }
+
+    }
+
+    private boolean isErrorIgnorable(SyntheticsApiTestFailureCode errorCode) {
+        return errorsToIgnore.stream()
+                .filter(code -> code.equals(errorCode.getValue()))
+                .findAny()
+                .isPresent();
     }
 
     private void synchronizeDatadogSyntheticsTestsWithServiceBaseUrlLists() {
@@ -189,7 +216,8 @@ public class DatadogUrlUptimeSynchonizer {
 
     private List<LocalDate> getDatesToRetrieveResultsFor() {
         List<LocalDate> datesToRetrieveResultsFor = new ArrayList<LocalDate>();
-        for (Long i = 1L; i <= DAYS_TO_LOOK_BACK_FOR_RESULTS; ++i) {
+        //for (Long i = 1L; i <= DAYS_TO_LOOK_BACK_FOR_RESULTS; ++i) {
+        for (Long i = 0L; i <= DAYS_TO_LOOK_BACK_FOR_RESULTS; ++i) {
             if (!LocalDate.now().minusDays(i).getDayOfWeek().equals(DayOfWeek.SATURDAY)
                     && !LocalDate.now().minusDays(i).getDayOfWeek().equals(DayOfWeek.SUNDAY)
                     && !doUrlUptimeMonitorTestsExistInDbForDate(LocalDate.now().minusDays(i))) {
