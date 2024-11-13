@@ -56,7 +56,9 @@ public class DeveloperCsvWriter {
         if (!CollectionUtils.isEmpty(allSearchResults)) {
             List<User> allDeveloperUsers = new ArrayList<User>();
             if (isAuthorizedToSeeUserData()) {
-                allDeveloperUsers.addAll(resourcePermissionsFactory.get().getAllDeveloperUsers());
+                allDeveloperUsers.addAll(resourcePermissionsFactory.get().getAllDeveloperUsers().stream()
+                        .filter(user -> user.getAccountEnabled())
+                        .toList());
             }
             allSearchResults.stream()
                 .forEach(rethrowConsumer(searchResult -> csvPrinter.printRecord(getDeveloperRecord(searchResult, allDeveloperUsers))));
