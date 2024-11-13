@@ -23,6 +23,7 @@ import gov.healthit.chpl.developer.search.DeveloperSearchService;
 import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.exception.UserRetrievalException;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.scheduler.SecurityContextCapableJob;
 import gov.healthit.chpl.scheduler.job.QuartzJob;
 import gov.healthit.chpl.user.cognito.CognitoApiWrapper;
@@ -42,6 +43,9 @@ public class MessageDevelopersJob extends SecurityContextCapableJob implements J
     private DeveloperMessageEmailGenerator messageGenerator;
 
     @Autowired
+    private DeveloperMessagePreviewEmailService previewEmailService;
+
+    @Autowired
     private DeveloperMessagingReportEmailGenerator messagingReportGenerator;
 
     @Autowired
@@ -49,6 +53,9 @@ public class MessageDevelopersJob extends SecurityContextCapableJob implements J
 
     @Autowired
     private CognitoApiWrapper cognitoApiWrapper;
+
+    @Autowired
+    private ResourcePermissionsFactory resourcePermissionsFactory;
 
     @Autowired
     private UserDAO userDAO;
@@ -75,16 +82,13 @@ public class MessageDevelopersJob extends SecurityContextCapableJob implements J
                         LOGGER);
             LOGGER.info("Messaging " + developersToMessage.size() + " developers.");
 
+            List<User> allDeveloperUsers = resourcePermissionsFactory.get().getAllDeveloperUsers();
+            List<DeveloperSearchResult> developersWithoutUsers = getDevelopersWithoutUsers(developersToMessage, allDeveloperUsers);
             List<DeveloperEmail> developerEmails = developersToMessage.stream()
-                    .map(developer -> messageGenerator.getDeveloperEmail(developer, developerMessageRequest))
+                    .map(developer -> messageGenerator.getDeveloperEmail(developer, developerMessageRequest, allDeveloperUsers))
                     .toList();
 
-            if (isPreview && !CollectionUtils.isEmpty(developerEmails)) {
-                developerEmails = developerEmails.subList(0, 1);
-                developerEmails.get(0).setRecipients(Stream.of(submittedByUser.getEmail()).collect(Collectors.toList()));
-            }
-
-            sendEmails(developerEmails);
+            sendEmails(developerEmails, isPreview, developersWithoutUsers, submittedByUser);
 
             if (!isPreview) {
                 sendStatusReportEmail(developerEmails, developerMessageRequest.getSubject(), submittedByUser);
@@ -96,20 +100,51 @@ public class MessageDevelopersJob extends SecurityContextCapableJob implements J
         }
     }
 
-    private void sendEmails(List<DeveloperEmail> developerEmails) {
+    private List<DeveloperSearchResult> getDevelopersWithoutUsers(List<DeveloperSearchResult> developersToMessage,
+            List<User> allDeveloperUsers) {
+        return developersToMessage.stream()
+                .filter(dev -> CollectionUtils.isEmpty(getEnabledUsersForDeveloper(dev, allDeveloperUsers)))
+                .toList();
+    }
+
+    private List<User> getEnabledUsersForDeveloper(DeveloperSearchResult developer, List<User> allDeveloperUsers) {
+        return allDeveloperUsers.stream()
+                .filter(user -> user.getOrganizations().stream().map(org -> org.getId()).toList()
+                        .contains(developer.getId()))
+                .filter(user -> BooleanUtils.isTrue(user.getAccountEnabled()))
+                .toList();
+    }
+
+    private void sendEmails(List<DeveloperEmail> developerEmails, boolean isPreview,
+            List<DeveloperSearchResult> developersWithoutUsers, User submittedByUser) {
+        if (isPreview && !CollectionUtils.isEmpty(developerEmails)) {
+            developerEmails = developerEmails.subList(0, 1);
+            developerEmails.get(0).setRecipients(Stream.of(submittedByUser.getEmail()).collect(Collectors.toList()));
+        }
+
         developerEmails.forEach(email -> {
             try {
                 LOGGER.info("Sending email to developer : {}", email.getDeveloper().getName());
                 emailFactory.emailBuilder()
                     .recipients(email.getRecipients())
                     .subject(email.getSubject())
-                    .htmlMessage(email.getMessage())
+                    .htmlMessage(buildMessage(email, isPreview, developersWithoutUsers))
                     .sendEmail();
             } catch (Exception e) {
                 LOGGER.error("Error sending emails to developer : {}", email.toString());
                 LOGGER.error(e);
             }
         });
+    }
+
+    private String buildMessage(DeveloperEmail email, boolean isPreview, List<DeveloperSearchResult> developersWithoutUsers) {
+        if (isPreview) {
+            String finalEmailMessage = email.getMessage();
+            finalEmailMessage = previewEmailService.prependPreviewNotice(finalEmailMessage, email);
+            finalEmailMessage = previewEmailService.appendMissingUsers(finalEmailMessage, developersWithoutUsers);
+            email.setMessage(finalEmailMessage);
+        }
+        return email.getMessage();
     }
 
     private void sendStatusReportEmail(List<DeveloperEmail> developerEmails, String developerMessageSubject, User submittedUser) {

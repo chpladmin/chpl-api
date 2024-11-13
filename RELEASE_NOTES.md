@@ -1,5 +1,20 @@
 # Release Notes
 
+## Version 47.3.0
+_12 November 2024_
+
+### Features
+* Endpoint updates for HTI-1 – (a)(9) to (b)(11) report
+* Add hasUsers parameter to developer search endpoint
+* Add users without contact info to bottom of preview message
+* Give new Cognito users appropriate environment group access
+* Add warning about similarly named products on developer
+
+### Flagged Features
+* Update functionality for SSO flag
+
+---
+
 ## Version 47.2.0
 _28 October 2024_
 
