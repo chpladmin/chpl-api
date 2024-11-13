@@ -422,7 +422,7 @@ public class CertifiedProductManager extends SecuredManager {
         try {
             cpTestingLabDao.deleteCertifiedProductTestingLab(toDelete.getId());
         } catch (Exception e) {
-            LOGGER.info("Could not delete CertifiedProductTestingLab with Id: {}, {}", toDelete.getId(), e.getMessage(), e);
+            LOGGER.error("Could not delete CertifiedProductTestingLab with Id: {}, {}", toDelete.getId(), e.getMessage(), e);
         }
     }
 
@@ -430,7 +430,7 @@ public class CertifiedProductManager extends SecuredManager {
         try {
             cpTestingLabDao.createCertifiedProductTestingLab(toAdd, listingId);
         } catch (Exception e) {
-            LOGGER.info("Could not add CertifiedProductTestingLab with Id: {}, for Listing: {}, {}", toAdd.getTestingLab().getId(), listingId, e.getMessage(), e);
+            LOGGER.error("Could not add CertifiedProductTestingLab with Id: {}, for Listing: {}, {}", toAdd.getTestingLab().getId(), listingId, e.getMessage(), e);
         }
     }
 

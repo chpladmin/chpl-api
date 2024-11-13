@@ -66,10 +66,10 @@ public class CertifiedProductTestingLabDAO extends BaseDAOImpl {
     private CertifiedProductTestingLabMapEntity getEntityById(final Long id) throws EntityRetrievalException {
         CertifiedProductTestingLabMapEntity entity = null;
         Query query = entityManager.createQuery(
-                "SELECT tl from CertifiedProductTestingLabMapEntity tl "
-                        + "LEFT OUTER JOIN FETCH tl.testingLab "
-                        + "WHERE (NOT tl.deleted = true) "
-                        + "AND (id = :entityid) ",
+                "SELECT tlm from CertifiedProductTestingLabMapEntity tlm "
+                        + "LEFT OUTER JOIN FETCH tlm.testingLab "
+                        + "WHERE (NOT tlm.deleted = true) "
+                        + "AND (tlm.id = :entityid) ",
                 CertifiedProductTestingLabMapEntity.class);
 
         query.setParameter("entityid", id);
