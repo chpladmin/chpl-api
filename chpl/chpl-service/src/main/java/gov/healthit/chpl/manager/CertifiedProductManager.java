@@ -239,7 +239,8 @@ public class CertifiedProductManager extends SecuredManager {
         return cpDao.getDetailsByProductId(productId);
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CERTIFIED_PRODUCT, "
+            + "T(gov.healthit.chpl.permissions.domains.CertifiedProductDomainPermissions).CHANGE_ACB_OWNER)")
     @Transactional(readOnly = false)
     @CacheEvict(value = {
             CacheNames.GET_DECERTIFIED_DEVELOPERS, CacheNames.COLLECTIONS_DEVELOPERS
