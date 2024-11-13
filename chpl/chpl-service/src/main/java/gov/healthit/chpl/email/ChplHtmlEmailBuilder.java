@@ -27,13 +27,14 @@ public class ChplHtmlEmailBuilder {
     private static final String TITLE_TAG = "${title}";
     private static final String PARAGRAPH_HEADING_TAG = "${paragraph-heading}";
     private static final String PARAGRAPH_TEXT_TAG = "${paragraph-text}";
+    private static final String PARAGRAPH_BG_COLOR_TAG = "${paragraph-background-color}";
     private static final String TABLE_HEADER_TAG = "${table-header}";
     private static final String TABLE_DATA_TAG = "${table-data}";
     private static final String TABLE_CAPTION_TAG = "${table-caption}";
     private static final String BUTTON_BAR_TAG = "${buttons}";
-    private static final String FEEDBACK_URL_TAG = "${feedback-url}";
     private static final String EMPTY_TABLE_DEFAULT_TEXT = "No Applicable Data";
     private static final String DEFAULT_PARAGRAPH_HEADING_LEVEL = "h2";
+    private static final String DEFAULT_PARAGRAPH_BG_COLOR = "#FFFFFF";
     private static final String TABLE_CAPTION_HTML = "<caption>" + TABLE_CAPTION_TAG + "</caption>";
 
     private String htmlSkeleton;
@@ -78,7 +79,7 @@ public class ChplHtmlEmailBuilder {
     }
 
     public ChplHtmlEmailBuilder paragraph(String heading, String text) {
-        return paragraph(heading, text, "h2");
+        return paragraph(heading, text, DEFAULT_PARAGRAPH_HEADING_LEVEL);
     }
 
     public ChplHtmlEmailBuilder paragraph(String heading, String text, String headingLevel) {
@@ -86,7 +87,7 @@ public class ChplHtmlEmailBuilder {
             return this;
         }
 
-        String modifiedHtmlParagraph = getParagraphHtml(heading, text, headingLevel);
+        String modifiedHtmlParagraph = getParagraphHtml(heading, text, headingLevel, DEFAULT_PARAGRAPH_BG_COLOR);
         addItemToEmailContents(modifiedHtmlParagraph);
         return this;
     }
@@ -217,6 +218,10 @@ public class ChplHtmlEmailBuilder {
     }
 
     public String getParagraphHtml(String heading, String text, String headingLevel) {
+        return getParagraphHtml(heading, text, headingLevel, null);
+    }
+
+    public String getParagraphHtml(String heading, String text, String headingLevel, String bgColor) {
         if (StringUtils.isEmpty(headingLevel)) {
             headingLevel = DEFAULT_PARAGRAPH_HEADING_LEVEL;
         }
@@ -232,6 +237,11 @@ public class ChplHtmlEmailBuilder {
             customHtmlParagraph = customHtmlParagraph.replace(PARAGRAPH_TEXT_TAG, "<p>" + text + "</p>");
         } else {
             customHtmlParagraph = customHtmlParagraph.replace(PARAGRAPH_TEXT_TAG, "");
+        }
+        if (!StringUtils.isEmpty(bgColor)) {
+            customHtmlParagraph = customHtmlParagraph.replace(PARAGRAPH_BG_COLOR_TAG, bgColor);
+        } else {
+            customHtmlParagraph = customHtmlParagraph.replace(PARAGRAPH_BG_COLOR_TAG, DEFAULT_PARAGRAPH_BG_COLOR);
         }
         return customHtmlParagraph;
     }
