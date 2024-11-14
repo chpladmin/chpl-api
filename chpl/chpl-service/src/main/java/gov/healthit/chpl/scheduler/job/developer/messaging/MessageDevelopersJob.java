@@ -82,10 +82,10 @@ public class MessageDevelopersJob extends SecurityContextCapableJob implements J
                         LOGGER);
             LOGGER.info("Messaging " + developersToMessage.size() + " developers.");
 
-            List<User> allDeveloperUsers = resourcePermissionsFactory.get().getAllDeveloperUsers();
-            List<DeveloperSearchResult> developersWithoutUsers = getDevelopersWithoutUsers(developersToMessage, allDeveloperUsers);
+            List<User> enabledDeveloperUsers = resourcePermissionsFactory.get().getAllDeveloperUsers();
+            List<DeveloperSearchResult> developersWithoutUsers = getDevelopersWithoutUsers(developersToMessage, enabledDeveloperUsers);
             List<DeveloperEmail> developerEmails = developersToMessage.stream()
-                    .map(developer -> messageGenerator.getDeveloperEmail(developer, developerMessageRequest, allDeveloperUsers))
+                    .map(developer -> messageGenerator.getDeveloperEmail(developer, developerMessageRequest, enabledDeveloperUsers))
                     .toList();
 
             sendEmails(developerEmails, isPreview, developersWithoutUsers, submittedByUser);
@@ -101,17 +101,16 @@ public class MessageDevelopersJob extends SecurityContextCapableJob implements J
     }
 
     private List<DeveloperSearchResult> getDevelopersWithoutUsers(List<DeveloperSearchResult> developersToMessage,
-            List<User> allDeveloperUsers) {
+            List<User> enabledDeveloperUsers) {
         return developersToMessage.stream()
-                .filter(dev -> CollectionUtils.isEmpty(getEnabledUsersForDeveloper(dev, allDeveloperUsers)))
+                .filter(dev -> CollectionUtils.isEmpty(getUsersForDeveloper(dev, enabledDeveloperUsers)))
                 .toList();
     }
 
-    private List<User> getEnabledUsersForDeveloper(DeveloperSearchResult developer, List<User> allDeveloperUsers) {
-        return allDeveloperUsers.stream()
+    private List<User> getUsersForDeveloper(DeveloperSearchResult developer, List<User> enabledDeveloperUsers) {
+        return enabledDeveloperUsers.stream()
                 .filter(user -> user.getOrganizations().stream().map(org -> org.getId()).toList()
                         .contains(developer.getId()))
-                .filter(user -> BooleanUtils.isTrue(user.getAccountEnabled()))
                 .toList();
     }
 

@@ -2,7 +2,6 @@ package gov.healthit.chpl.scheduler.job.developer.messaging;
 
 import java.util.List;
 
-import org.apache.commons.lang3.BooleanUtils;
 import org.commonmark.node.Node;
 import org.commonmark.parser.Parser;
 import org.commonmark.renderer.html.HtmlRenderer;
@@ -29,11 +28,10 @@ public class DeveloperMessageEmailGenerator {
 
     public DeveloperEmail getDeveloperEmail(DeveloperSearchResult developer,
             DeveloperMessageRequest developerMessageRequest,
-            List<User> allDeveloperUsers) {
-        List<User> enabledUsersForDeveloper = allDeveloperUsers.stream()
+            List<User> enabledDeveloperUsers) {
+        List<User> enabledUsersForDeveloper = enabledDeveloperUsers.stream()
                 .filter(user -> user.getOrganizations().stream().map(org -> org.getId()).toList()
                         .contains(developer.getId()))
-                .filter(user -> BooleanUtils.isTrue(user.getAccountEnabled()))
                 .toList();
 
         try {
