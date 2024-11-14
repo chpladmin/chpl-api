@@ -7,6 +7,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.crypto.Mac;
@@ -16,6 +17,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
@@ -201,6 +203,7 @@ public class CognitoApiWrapper {
         return null;
     }
 
+    @CachePut(CacheNames.COGNITO_USERS)
     public User getUserNoCache(UUID cognitoId) throws UserRetrievalException {
         AdminGetUserRequest request = AdminGetUserRequest.builder()
                 .userPoolId(userPoolId)
@@ -309,6 +312,10 @@ public class CognitoApiWrapper {
     }
 
     public List<User> getAllUsers() {
+        return getAllUsers(false);
+    }
+
+    public List<User> getAllUsers(boolean includeDisabled) {
         ListUsersInGroupRequest request = ListUsersInGroupRequest.builder()
                 .userPoolId(userPoolId)
                 .groupName(environmentGroupName)
@@ -335,7 +342,9 @@ public class CognitoApiWrapper {
                     .toList());
 
         }
-        return users;
+        return users.stream()
+                .filter(currUser -> includeDisabled ? true : currUser.getAccountEnabled())
+                .collect(Collectors.toList());
     }
 
     public void invalidateTokensForUser(String email) {
