@@ -133,7 +133,7 @@ public class CognitoUserManager {
             activityManager.addUserActivity(createdUser.getCognitoId(),
                     String.format("User %s was created", createdUser.getEmail()),
                     null, createdUser);
-        } catch (EmailNotSentException e) {
+        } catch (Exception e) {
             //Invitation deletion should roll back due to @Transactional
             if (credentials != null) {
                 cognitoApiWrapper.deleteUser(credentials.getCognitoId());
