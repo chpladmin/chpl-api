@@ -21,6 +21,7 @@ import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.UserCreationException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.user.cognito.invitation.CognitoInvitationManager;
 import gov.healthit.chpl.user.cognito.invitation.CognitoUserInvitation;
 import lombok.extern.log4j.Log4j2;
@@ -35,20 +36,25 @@ public class CognitoUserManager {
     private CognitoConfirmEmailEmailer cognitoConfirmEmailEmailer;
     private CognitoApiWrapper cognitoApiWrapper;
     private CognitoInvitationManager cognitoInvitationManager;
+    private ResourcePermissionsFactory resourcePermissionsFactory;
     private String groupNameForEnvironment;
     private boolean isProdEnvironment = true;
 
     @Autowired
-    public CognitoUserManager(CognitoUserCreationValidator userCreationValidator, CognitoConfirmEmailEmailer cognitoConfirmEmailEmailer,
-            CognitoUpdateUserValidator userUpdateValidator, CognitoApiWrapper cognitoApiWrapper, CognitoInvitationManager cognitoInvitationManager,
+    public CognitoUserManager(CognitoUserCreationValidator userCreationValidator,
+            CognitoConfirmEmailEmailer cognitoConfirmEmailEmailer,
+            CognitoUpdateUserValidator userUpdateValidator,
+            CognitoApiWrapper cognitoApiWrapper,
+            CognitoInvitationManager cognitoInvitationManager,
+            ResourcePermissionsFactory resourcePermissionsFactory,
             @Value("${cognito.environment.groupName}") String groupNameForEnvironment,
             @Value("${server.environment}") String serverEnvironment) {
-
         this.userCreationValidator = userCreationValidator;
         this.userUpdateValidator = userUpdateValidator;
         this.cognitoConfirmEmailEmailer = cognitoConfirmEmailEmailer;
         this.cognitoApiWrapper = cognitoApiWrapper;
         this.cognitoInvitationManager = cognitoInvitationManager;
+        this.resourcePermissionsFactory = resourcePermissionsFactory;
         this.groupNameForEnvironment = groupNameForEnvironment;
         if (StringUtils.equals(serverEnvironment, NON_PROD_ENVIRONMENT)) {
             isProdEnvironment = false;
@@ -122,8 +128,12 @@ public class CognitoUserManager {
     @Transactional
     @PostFilter("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SECURED_USER, "
             + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).GET_ALL, filterObject)")
-    public List<User> getAll() {
-        return cognitoApiWrapper.getAllUsers();
+    public List<User> getAll(boolean includeDisabled) {
+        if (!resourcePermissionsFactory.get().isUserRoleAdmin()
+                && !resourcePermissionsFactory.get().isUserRoleOnc()) {
+            includeDisabled = false;
+        }
+        return cognitoApiWrapper.getAllUsers(includeDisabled);
     }
 
     private void addUserToAppropriateEnvironments(String userEmail, String userRole) {

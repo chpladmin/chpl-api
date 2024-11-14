@@ -7,6 +7,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.crypto.Mac;
@@ -295,6 +296,10 @@ public class CognitoApiWrapper {
     }
 
     public List<User> getAllUsers() {
+        return getAllUsers(false);
+    }
+
+    public List<User> getAllUsers(boolean includeDisabled) {
         ListUsersInGroupRequest request = ListUsersInGroupRequest.builder()
                 .userPoolId(userPoolId)
                 .groupName(environmentGroupName)
@@ -321,7 +326,9 @@ public class CognitoApiWrapper {
                     .toList());
 
         }
-        return users;
+        return users.stream()
+                .filter(currUser -> includeDisabled ? true : currUser.getAccountEnabled())
+                .collect(Collectors.toList());
     }
 
     public void invalidateTokensForUser(String email) {
