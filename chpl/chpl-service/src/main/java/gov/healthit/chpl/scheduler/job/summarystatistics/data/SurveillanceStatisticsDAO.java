@@ -50,7 +50,7 @@ public class SurveillanceStatisticsDAO extends BaseDAOImpl {
         String hql = "SELECT count(surv) "
                 + "FROM SurveillanceEntity surv "
                 + "JOIN surv.certifiedProduct cp "
-                + "WHERE cp.certificationEditionId NOT IN (:retiredEditions) "
+                + "WHERE (cp.certificationEditionId NOT IN (:retiredEditions) OR cp.certificationEditionId IS NULL) "
                 + "AND surv.startDate <= local_date "
                 + "AND (surv.endDate IS NULL OR surv.endDate >= local_date) ";
         if (endDate == null) {
