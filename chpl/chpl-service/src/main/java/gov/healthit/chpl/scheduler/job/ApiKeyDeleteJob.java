@@ -116,7 +116,7 @@ public class ApiKeyDeleteJob extends QuartzJob {
                 env.getProperty("job.apiKeyDeleteJob.config.message"),
                 apiKey.getName(),
                 apiKey.getKey(),
-                getDateFormatter().format(apiKey.getLastUsedDate()),
+                apiKey.getLastUsedDate() == null ? getDateFormatter().format(apiKey.getCreationDate()) : getDateFormatter().format(apiKey.getLastUsedDate()),
                 env.getProperty("chplUrlBegin"),
                 env.getProperty("chplUrlBegin"));
 
