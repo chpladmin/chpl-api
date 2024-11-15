@@ -141,7 +141,7 @@ public class ListingCsvDataWriter {
     }
 
     private List<CertificationResult> getAllAvailableCriteriaAsCertResults(CertifiedProductSearchDetails listing) {
-        List<CertificationCriterion> allCriteriaAvailableToListing = criteriaManager.getCriteriaAvailableToListing(listing);
+        List<CertificationCriterion> allCriteriaAvailableToListing = criteriaManager.getCriteriaAvailableToListingAndUser(listing);
         List<CertificationResult> allAvailableCriteriaAsCertResults = new ArrayList<CertificationResult>();
         allCriteriaAvailableToListing.stream()
             .forEach(criterion -> {
