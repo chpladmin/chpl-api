@@ -81,7 +81,6 @@ public class DatadogUrlUptimeSynchonizer {
                                     .build());
                         });
                 }));
-
     }
 
     private boolean calculatePassed(SyntheticsAPITestResultShort result, String publicId) {
@@ -91,7 +90,6 @@ public class DatadogUrlUptimeSynchonizer {
             SyntheticsAPITestResultFull detailedResult = datadogSyntheticsTestResultService.getDetailedTestResult(publicId, result.getResultId());
             return isErrorIgnorable(detailedResult.getResult().getFailure().getCode());
         }
-
     }
 
     private boolean isErrorIgnorable(SyntheticsApiTestFailureCode errorCode) {
@@ -216,8 +214,7 @@ public class DatadogUrlUptimeSynchonizer {
 
     private List<LocalDate> getDatesToRetrieveResultsFor() {
         List<LocalDate> datesToRetrieveResultsFor = new ArrayList<LocalDate>();
-        //for (Long i = 1L; i <= DAYS_TO_LOOK_BACK_FOR_RESULTS; ++i) {
-        for (Long i = 0L; i <= DAYS_TO_LOOK_BACK_FOR_RESULTS; ++i) {
+        for (Long i = 1L; i <= DAYS_TO_LOOK_BACK_FOR_RESULTS; ++i) {
             if (!LocalDate.now().minusDays(i).getDayOfWeek().equals(DayOfWeek.SATURDAY)
                     && !LocalDate.now().minusDays(i).getDayOfWeek().equals(DayOfWeek.SUNDAY)
                     && !doUrlUptimeMonitorTestsExistInDbForDate(LocalDate.now().minusDays(i))) {
