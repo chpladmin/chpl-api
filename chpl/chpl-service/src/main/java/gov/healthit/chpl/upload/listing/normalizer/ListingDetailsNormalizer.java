@@ -88,6 +88,15 @@ public class ListingDetailsNormalizer {
     }
 
     private void setEmptyStringFieldsToNull(CertifiedProductSearchDetails listing) {
+        if (!CollectionUtils.isEmpty(listing.getCertificationEvents())) {
+            listing.getCertificationEvents().stream()
+            .forEach(event -> {
+                if (StringUtils.isEmpty(event.getReason())) {
+                    event.setReason(null);
+                }
+            });
+        }
+
         if (StringUtils.isEmpty(listing.getSvapNoticeUrl())) {
             listing.setSvapNoticeUrl(null);
         }
