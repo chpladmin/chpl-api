@@ -13,6 +13,8 @@ import gov.healthit.chpl.report.criteriamigrationreport.CriteriaMigrationReportD
 import gov.healthit.chpl.report.criteriamigrationreport.CriteriaMigrationReportService;
 import gov.healthit.chpl.report.developer.DeveloperReportsService;
 import gov.healthit.chpl.report.developer.UniqueDeveloperCount;
+import gov.healthit.chpl.report.servicebaseurllistreport.ServiceBaseUrlListReportService;
+import gov.healthit.chpl.report.servicebaseurllistreport.UrlUptimeMonitorEx;
 import gov.healthit.chpl.report.surveillance.CapCounts;
 import gov.healthit.chpl.report.surveillance.NonconformityCounts;
 import gov.healthit.chpl.report.surveillance.SurveillanceActivityCounts;
@@ -29,14 +31,17 @@ public class ReportDataManager {
     private SurveillanceReportsService surveillanceReportsService;
     private DeveloperReportsService developerReportsService;
     private TestToolReportService testToolReportService;
+    private ServiceBaseUrlListReportService serviceBaseUrlListReportService;
 
     @Autowired
     public ReportDataManager(CriteriaMigrationReportService criteriaMigrationReportService, DeveloperReportsService developerReportsService,
-            SurveillanceReportsService surveillanceReportsService, TestToolReportService testToolReportService) {
+            SurveillanceReportsService surveillanceReportsService, TestToolReportService testToolReportService,
+            ServiceBaseUrlListReportService serviceBaseUrlListReportService) {
         this.criteriaMigrationReportService = criteriaMigrationReportService;
         this.developerReportsService = developerReportsService;
         this.surveillanceReportsService = surveillanceReportsService;
         this.testToolReportService = testToolReportService;
+        this.serviceBaseUrlListReportService = serviceBaseUrlListReportService;
     }
 
     public List<CriteriaMigrationReportDenormalized> getHti1CriteriaMigrationReport() {
@@ -117,5 +122,9 @@ public class ReportDataManager {
 
     public List<TestToolListingReport> getTestToolListingReports() {
         return testToolReportService.getTestToolListingReports();
+    }
+
+    public List<UrlUptimeMonitorEx> getUrlUptimeMonitors() {
+        return serviceBaseUrlListReportService.getUrlUptimeMonitors();
     }
 }

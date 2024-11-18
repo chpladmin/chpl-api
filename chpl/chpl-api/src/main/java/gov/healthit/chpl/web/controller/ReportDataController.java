@@ -19,6 +19,7 @@ import gov.healthit.chpl.report.criteriaattribute.TestToolListingReport;
 import gov.healthit.chpl.report.criteriaattribute.TestToolReport;
 import gov.healthit.chpl.report.criteriamigrationreport.CriteriaMigrationReportDenormalized;
 import gov.healthit.chpl.report.developer.UniqueDeveloperCount;
+import gov.healthit.chpl.report.servicebaseurllistreport.UrlUptimeMonitorEx;
 import gov.healthit.chpl.report.surveillance.CapCounts;
 import gov.healthit.chpl.report.surveillance.NonconformityCounts;
 import gov.healthit.chpl.report.surveillance.SurveillanceActivityCounts;
@@ -275,6 +276,16 @@ public class ReportDataController {
     @RequestMapping(value = "/test-tools-listing", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<TestToolListingReport> getTestToolListingReports() {
         return reportDataManager.getTestToolListingReports();
+    }
+
+    @Operation(summary = "Retrieves the data used to generate the Service Base Url Listing report.",
+            description = "Retrieves the data used to generate the Service Base Url Listing report.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
+    @RequestMapping(value = "/service-base-url-listing", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public @ResponseBody List<UrlUptimeMonitorEx> getUrlUptimeMonitors() {
+        return reportDataManager.getUrlUptimeMonitors();
     }
 
 }
