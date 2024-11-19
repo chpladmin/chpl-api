@@ -223,7 +223,6 @@ public class DeveloperDAO extends BaseDAOImpl {
                                 .id(listing.getCertificationBodyId())
                                 .name(listing.getCertificationBodyName())
                                 .acbCode(listing.getCertificationBodyCode())
-                                .retired(listing.getAcbIsRetired())
                                 .build());
                     }
                     developerAcbMaps.put(developer, acbMaps);
