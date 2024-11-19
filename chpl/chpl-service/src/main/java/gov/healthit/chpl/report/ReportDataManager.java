@@ -146,6 +146,7 @@ public class ReportDataManager {
         return testToolReportService.getTestToolListingReports();
     }
 
+    @Synchronized("lock")
     public List<UrlUptimeMonitorEx> getUrlUptimeMonitors() {
         return serviceBaseUrlListReportService.getUrlUptimeMonitors();
     }
