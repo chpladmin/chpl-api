@@ -15,14 +15,12 @@ import java.util.stream.Stream;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.ff4j.FF4j;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
-import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestDAO;
 import gov.healthit.chpl.changerequest.dao.ChangeRequestStatusTypeDAO;
 import gov.healthit.chpl.changerequest.domain.ChangeRequestStatusType;
@@ -34,8 +32,6 @@ import gov.healthit.chpl.changerequest.search.ChangeRequestSearchService;
 import gov.healthit.chpl.changerequest.search.OrderByOption;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.domain.CertificationBody;
-import gov.healthit.chpl.domain.auth.Authority;
-import gov.healthit.chpl.domain.auth.CognitoGroups;
 import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
 import gov.healthit.chpl.email.footer.AdminFooter;
@@ -43,6 +39,7 @@ import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.SchedulerManager;
+import gov.healthit.chpl.scheduler.SchedulerSecurityContextService;
 import gov.healthit.chpl.scheduler.job.changerequest.presenter.ChangeRequestCsvPresenter;
 import gov.healthit.chpl.scheduler.job.changerequest.presenter.ChangeRequestDetailsPresentationService;
 import gov.healthit.chpl.scheduler.job.changerequest.presenter.PendingChangeRequestPresenter;
@@ -94,7 +91,7 @@ public class PendingChangeRequestEmailJob extends QuartzJob {
     private String pendingChangeRequestNoDataEmailBody;
 
     @Autowired
-    private FF4j ff4j;
+    private SchedulerSecurityContextService securityContextService;
 
     public PendingChangeRequestEmailJob() throws Exception {
         super();
@@ -109,7 +106,7 @@ public class PendingChangeRequestEmailJob extends QuartzJob {
         List<ChangeRequestSearchResult> searchResults = null;
         List<CertificationBody> acbs = null;
         try {
-            setSecurityContext(ff4j.check(FeatureList.SSO) ? CognitoGroups.CHPL_ADMIN : Authority.ROLE_ADMIN);
+            securityContextService.setAdminSecurityContext();
             acbs = getAppropriateAcbs(jobContext);
             searchResults = getPendingChangeRequestSearchResults(getSearchRequest(acbs));
         } catch (ValidationException ex) {

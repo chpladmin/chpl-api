@@ -32,13 +32,13 @@ import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.CertifiedProductManager;
-import gov.healthit.chpl.scheduler.SecurityContextCapableJob;
+import gov.healthit.chpl.scheduler.job.QuartzJob;
 import gov.healthit.chpl.util.DateUtil;
 import lombok.extern.log4j.Log4j2;
 
 @DisallowConcurrentExecution
 @Log4j2(topic = "promotingInteroperabilityUploadJobLogger")
-public class PromotingInteroperabilityUploadJob extends SecurityContextCapableJob implements Job {
+public class PromotingInteroperabilityUploadJob extends QuartzJob implements Job {
     public static final String JOB_NAME = "promotingInteroperabilityUploadJob";
     public static final String FILE_CONTENTS_KEY = "fileContents";
     public static final String ACCURATE_AS_OF_DATE_KEY = "accurateAsOfDate";

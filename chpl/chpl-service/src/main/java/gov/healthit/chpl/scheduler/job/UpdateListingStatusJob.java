@@ -20,9 +20,9 @@ import gov.healthit.chpl.domain.CertificationStatus;
 import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.ListingUpdateRequest;
-import gov.healthit.chpl.domain.auth.Authority;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.CertifiedProductManager;
+import gov.healthit.chpl.scheduler.SchedulerSecurityContextService;
 
 public class UpdateListingStatusJob extends QuartzJob {
     private static final Logger LOGGER = LogManager.getLogger("updateListingStatusJobLogger");
@@ -33,12 +33,15 @@ public class UpdateListingStatusJob extends QuartzJob {
     @Autowired
     private CertifiedProductManager certifiedProductManager;
 
+    @Autowired
+    private SchedulerSecurityContextService securityContextService;
+
     @Override
     public void execute(JobExecutionContext jobContext) throws JobExecutionException {
         LOGGER.info("********* Starting the Update Listing Status job. *********");
 
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
-        setSecurityContext(Authority.ROLE_ADMIN);
+        securityContextService.setAdminSecurityContext();
 
         List<Long> listings = getListingIds(jobContext);
 

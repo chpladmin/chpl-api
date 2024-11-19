@@ -21,13 +21,13 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 import gov.healthit.chpl.api.dao.ApiKeyDAO;
 import gov.healthit.chpl.api.domain.ApiKey;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
-import gov.healthit.chpl.domain.auth.Authority;
 import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.email.EmailBuilder;
 import gov.healthit.chpl.exception.ActivityException;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.ActivityManager;
+import gov.healthit.chpl.scheduler.SchedulerSecurityContextService;
 
 public class ApiKeyDeleteJob extends QuartzJob {
     private static final Logger LOGGER = LogManager.getLogger("apiKeyDeleteJobLogger");
@@ -47,11 +47,14 @@ public class ApiKeyDeleteJob extends QuartzJob {
     @Autowired
     private ChplEmailFactory chplEmailFactory;
 
+    @Autowired
+    private SchedulerSecurityContextService securityContextService;
+
     @Override
     public void execute(final JobExecutionContext jobContext) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
         LOGGER.info("********* Starting the API Key Deletion job. *********");
-        setSecurityContext(Authority.ROLE_ADMIN);
+        securityContextService.setAdminSecurityContext();
         LOGGER.info("Looking for API keys where the warning email was sent " + getNumberOfDaysUntilDelete() + " days ago.");
 
         List<ApiKey> apiKeys = apiKeyDAO.findAllToBeRevoked(getNumberOfDaysUntilDelete());

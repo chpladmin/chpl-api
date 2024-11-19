@@ -31,7 +31,7 @@ import gov.healthit.chpl.email.footer.AdminFooter;
 import gov.healthit.chpl.exception.ActivityException;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.manager.ActivityManager;
-import gov.healthit.chpl.scheduler.SecurityContextCapableJob;
+import gov.healthit.chpl.scheduler.job.QuartzJob;
 import gov.healthit.chpl.surveillance.report.SurveillanceReportManager;
 import gov.healthit.chpl.surveillance.report.builder.AnnualReportBuilderXlsx;
 import gov.healthit.chpl.surveillance.report.builder.ReportBuilderFactory;
@@ -42,7 +42,7 @@ import lombok.extern.log4j.Log4j2;
 
 @DisallowConcurrentExecution
 @Log4j2(topic = "annualReportGenerationJobLogger")
-public class AnnualReportGenerationJob extends SecurityContextCapableJob implements Job {
+public class AnnualReportGenerationJob extends QuartzJob implements Job {
     public static final String JOB_NAME = "annualReportGenerationJob";
     public static final String ANNUAL_REPORT_ID_KEY = "annualReportId";
     public static final String USER_KEY = "user";

@@ -1,7 +1,6 @@
 package gov.healthit.chpl.entity.lastmodifieduserstrategy;
 
 import gov.healthit.chpl.auth.user.AuthenticationSystem;
-import gov.healthit.chpl.auth.user.CognitoSystemUsers;
 import gov.healthit.chpl.entity.EntityAudit;
 import gov.healthit.chpl.util.AuthUtil;
 
@@ -18,7 +17,7 @@ public class CurrentUserStrategy extends LastModifiedUserStrategy {
                 entityAudit.setLastModifiedSsoUser(null);
             }
         } else {
-            entityAudit.setLastModifiedSsoUser(CognitoSystemUsers.DEFAULT_USER_ID);
+            entityAudit.setLastModifiedSsoUser(getCognitoSystemUserService().getAnonymousUserUuId());
             entityAudit.setLastModifiedUser(null);
         }
     }
