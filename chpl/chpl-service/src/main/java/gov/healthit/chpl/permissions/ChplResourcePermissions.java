@@ -68,20 +68,34 @@ public class ChplResourcePermissions implements ResourcePermissions {
     @Override
     @Transactional(readOnly = true)
     public List<User> getAllUsersOnAcb(CertificationBody acb) {
+        return getAllUsersOnAcb(acb, false);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<User> getAllUsersOnAcb(CertificationBody acb, boolean includeDisabled) {
         List<UserCertificationBodyMapDTO> dtos = userCertificationBodyMapDAO.getByAcbId(acb.getId());
 
         return dtos.stream()
                 .map(dto -> dto.getUser().toDomain())
+                .filter(user -> includeDisabled ? true : user.getAccountEnabled())
                 .toList();
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<User> getAllUsersOnDeveloper(Developer dev) {
+        return getAllUsersOnDeveloper(dev, false);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<User> getAllUsersOnDeveloper(Developer dev, boolean includeDisabled) {
         List<UserDeveloperMapDTO> dtos = userDeveloperMapDAO.getByDeveloperId(dev.getId());
 
         return dtos.stream()
                 .map(udm -> udm.getUser().toDomain())
+                .filter(user -> includeDisabled ? true : user.getAccountEnabled())
                 .toList();
     }
 
@@ -90,10 +104,60 @@ public class ChplResourcePermissions implements ResourcePermissions {
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).DEVELOPER, "
             + "T(gov.healthit.chpl.permissions.domains.DeveloperDomainPermissions).GET_ALL_USERS)")
     public List<User> getAllDeveloperUsers() {
+        return getAllDeveloperUsers(false);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).DEVELOPER, "
+            + "T(gov.healthit.chpl.permissions.domains.DeveloperDomainPermissions).GET_ALL_USERS)")
+    public List<User> getAllDeveloperUsers(boolean includeDisabled) {
         List<UserDeveloperMapDTO> dtos = userDeveloperMapDAO.getAllDeveloperUsers();
         return dtos.stream()
                 .map(udm -> udm.getUser().toDomain())
+                .filter(user -> includeDisabled ? true : user.getAccountEnabled())
                 .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<User> getAllUsersForCurrentUser() {
+        return getAllUsersForCurrentUser(false);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<User> getAllUsersForCurrentUser(boolean includeDisabled) {
+        JWTAuthenticatedUser user = AuthUtil.getCurrentUser();
+        List<User> users = new ArrayList<User>();
+
+        if (user != null) {
+            if (isUserRoleAdmin() || isUserRoleOnc()) {
+                users = userDAO.findAll().stream()
+                        .map(dto -> dto.toDomain())
+                        .toList();
+            } else if (isUserRoleAcbAdmin()) {
+                List<CertificationBody> acbs = getAllAcbsForCurrentUser();
+                for (CertificationBody acb : acbs) {
+                    users.addAll(getAllUsersOnAcb(acb));
+                }
+            } else if (isUserRoleDeveloperAdmin()) {
+                List<Developer> devs = getAllDevelopersForCurrentUser();
+                for (Developer dev : devs) {
+                    users.addAll(getAllUsersOnDeveloper(dev));
+                }
+            } else {
+                //they just have permission on themselves
+                UserDTO thisUser = null;
+                try {
+                    thisUser = userDAO.getById(user.getId());
+                    users.add(thisUser.toDomain());
+                } catch (UserRetrievalException ex) { }
+            }
+        }
+        return users.stream()
+                .filter(currUser -> includeDisabled ? true : currUser.getAccountEnabled())
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -153,39 +217,6 @@ public class ChplResourcePermissions implements ResourcePermissions {
             devs.add(dto.getDeveloper());
         }
         return devs;
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<User> getAllUsersForCurrentUser() {
-        JWTAuthenticatedUser user = AuthUtil.getCurrentUser();
-        List<User> users = new ArrayList<User>();
-
-        if (user != null) {
-            if (isUserRoleAdmin() || isUserRoleOnc()) {
-                users = userDAO.findAll().stream()
-                        .map(dto -> dto.toDomain())
-                        .toList();
-            } else if (isUserRoleAcbAdmin()) {
-                List<CertificationBody> acbs = getAllAcbsForCurrentUser();
-                for (CertificationBody acb : acbs) {
-                    users.addAll(getAllUsersOnAcb(acb));
-                }
-            } else if (isUserRoleDeveloperAdmin()) {
-                List<Developer> devs = getAllDevelopersForCurrentUser();
-                for (Developer dev : devs) {
-                    users.addAll(getAllUsersOnDeveloper(dev));
-                }
-            } else {
-                //they just have permission on themselves
-                UserDTO thisUser = null;
-                try {
-                    thisUser = userDAO.getById(user.getId());
-                    users.add(thisUser.toDomain());
-                } catch (UserRetrievalException ex) { }
-            }
-        }
-        return users;
     }
 
     @Override
