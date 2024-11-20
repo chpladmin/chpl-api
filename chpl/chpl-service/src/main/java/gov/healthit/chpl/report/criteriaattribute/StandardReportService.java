@@ -13,7 +13,6 @@ public class StandardReportService {
         this.standardReportDao = standardReportDao;
     }
 
-    // Criteria, TestTool, Listing Count
     public List<StandardReport> getStandardReports() {
         return standardReportDao.getStandardReports();
     }

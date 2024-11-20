@@ -251,9 +251,7 @@ public class ReportDataManager {
 
     @Synchronized("lock")
     public List<StandardListingReport> getStandardListingReports() {
-        var x = standardReportService.getStandardListingReports();
-        LOGGER.info(x.size());
-        return x;
+        return standardReportService.getStandardListingReports();
     }
 
     @Synchronized("lock")
