@@ -9,7 +9,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +42,7 @@ import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.impl.SecuredManager;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.service.UserAccountUpdateEmailer;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.UserMapper;
@@ -58,13 +61,15 @@ public class UserManager extends SecuredManager {
     private ActivityManager activityManager;
     private UserAccountUpdateEmailer userAccountUpdateEmailer;
     private UserMapper userMapper;
+    private ResourcePermissionsFactory resourcePermissionsFactory;
 
     @Autowired
     public UserManager(Environment env, UserDAO userDAO,
             UserResetTokenDAO userResetTokenDAO, BCryptPasswordEncoder bCryptPasswordEncoder,
             ErrorMessageUtil errorMessageUtil, ActivityManager activityManager,
             UserAccountUpdateEmailer userAccountUpdateEmailer,
-            UserMapper userMapper) {
+            UserMapper userMapper,
+            ResourcePermissionsFactory resourcePermissionsFactory) {
         this.env = env;
         this.userDAO = userDAO;
         this.userResetTokenDAO = userResetTokenDAO;
@@ -73,6 +78,7 @@ public class UserManager extends SecuredManager {
         this.activityManager = activityManager;
         this.userAccountUpdateEmailer = userAccountUpdateEmailer;
         this.userMapper = userMapper;
+        this.resourcePermissionsFactory = resourcePermissionsFactory;
     }
 
     @Transactional
@@ -164,14 +170,19 @@ public class UserManager extends SecuredManager {
     @Transactional
     @PostFilter("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SECURED_USER, "
             + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).GET_ALL, filterObject)")
-    public List<UserDTO> getAll() {
-        return userDAO.findAll();
-    }
-
-    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SECURED_USER, "
-            + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).GET_BY_PERMISSION)")
-    public List<UserDTO> getUsersWithPermission(String permissionName) {
-        return userDAO.getUsersWithPermission(permissionName);
+    public List<UserDTO> getAll(Boolean includeDisabled) {
+        if (includeDisabled == null
+                ||  (!resourcePermissionsFactory.get().isUserRoleAdmin()
+                && !resourcePermissionsFactory.get().isUserRoleOnc())) {
+            includeDisabled = false;
+        }
+        List<UserDTO> allUsers = userDAO.findAll();
+        if (includeDisabled == null || BooleanUtils.isFalse(includeDisabled)) {
+            return allUsers.stream()
+                    .filter(user -> user.isAccountEnabled())
+                    .collect(Collectors.toList());
+        }
+        return allUsers;
     }
 
     @Deprecated
