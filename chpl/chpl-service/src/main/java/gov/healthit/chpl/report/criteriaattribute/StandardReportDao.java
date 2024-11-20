@@ -85,8 +85,6 @@ public class StandardReportDao extends BaseDAOImpl {
 
         return results.stream()
                 .map(result -> StandardListingReport.builder()
-                        //.criterion(getCertificationCriterion((Long) result[0]))
-                        //.standard(getStandard((Long) result[1]))
                         .criterion(((CertificationCriterionEntity) result[0]).toDomain())
                         .standard(((StandardEntity) result[1]).toDomain())
                         .chplProductNumber((String) result[2])

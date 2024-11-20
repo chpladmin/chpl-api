@@ -6,11 +6,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
+import gov.healthit.chpl.certificationCriteria.CertificationCriterionEntity;
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.testtool.TestTool;
 import gov.healthit.chpl.testtool.TestToolDAO;
+import gov.healthit.chpl.testtool.TestToolEntity;
 import jakarta.persistence.Query;
 import lombok.extern.log4j.Log4j2;
 
@@ -73,13 +75,15 @@ public class TestToolReportDao extends BaseDAOImpl {
     }
 
     public List<TestToolListingReport> getTestToolListingReports() {
-        String hql = "SELECT cc.id as certificationCriterionId, tt.id as testToolId, cpd.chplProductNumber "
+        String hql = "SELECT cc, tt, cpd.chplProductNumber "
                 + "FROM CertificationCriterionEntity cc, "
+                + "CertificationEditionEntity ce, "
                 + "CertificationResultEntity cr, "
                 + "CertifiedProductDetailsEntity cpd, "
                 + "CertificationResultTestToolEntity crtt, "
                 + "TestToolEntity tt "
                 + "WHERE cc.id = cr.certificationCriterionId "
+                + "AND cc.certificationEditionId = ce.id "
                 + "AND cr.certifiedProductId = cpd.id "
                 + "AND cr.id = crtt.certificationResultId "
                 + "AND crtt.testTool.id = tt.id "
@@ -94,8 +98,8 @@ public class TestToolReportDao extends BaseDAOImpl {
 
         return results.stream()
                 .map(result -> TestToolListingReport.builder()
-                        .criterion(getCertificationCriterion((Long) result[0]))
-                        .testTool(getTestTool((Long) result[1]))
+                        .criterion(((CertificationCriterionEntity) result[0]).toDomain())
+                        .testTool(((TestToolEntity) result[1]).toDomain())
                         .chplProductNumber((String) result[2])
                         .build())
                 .toList();
