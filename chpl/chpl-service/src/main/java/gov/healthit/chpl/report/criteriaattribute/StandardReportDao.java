@@ -6,11 +6,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
+import gov.healthit.chpl.certificationCriteria.CertificationCriterionEntity;
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.standard.Standard;
 import gov.healthit.chpl.standard.StandardDAO;
+import gov.healthit.chpl.standard.StandardEntity;
 import jakarta.persistence.Query;
 import lombok.extern.log4j.Log4j2;
 
@@ -60,13 +62,15 @@ public class StandardReportDao extends BaseDAOImpl {
     }
 
     public List<StandardListingReport> getStandardListingReports() {
-        String hql = "SELECT cc.id as certificationCriterionId, s.id as standardId, cpd.chplProductNumber "
+        String hql = "SELECT cc, s, cpd.chplProductNumber "
                 + "FROM CertificationCriterionEntity cc, "
+                + "CertificationEditionEntity ce, "
                 + "CertificationResultEntity cr, "
                 + "CertifiedProductDetailsEntity cpd, "
                 + "CertificationResultStandardEntity crs, "
                 + "StandardEntity s "
                 + "WHERE cc.id = cr.certificationCriterionId "
+                + "AND cc.certificationEditionId = ce.id "
                 + "AND cr.certifiedProductId = cpd.id "
                 + "AND cr.id = crs.certificationResultId "
                 + "AND crs.standard.id = s.id "
@@ -81,8 +85,10 @@ public class StandardReportDao extends BaseDAOImpl {
 
         return results.stream()
                 .map(result -> StandardListingReport.builder()
-                        .criterion(getCertificationCriterion((Long) result[0]))
-                        .standard(getStandard((Long) result[1]))
+                        //.criterion(getCertificationCriterion((Long) result[0]))
+                        //.standard(getStandard((Long) result[1]))
+                        .criterion(((CertificationCriterionEntity) result[0]).toDomain())
+                        .standard(((StandardEntity) result[1]).toDomain())
                         .chplProductNumber((String) result[2])
                         .build())
                 .toList();

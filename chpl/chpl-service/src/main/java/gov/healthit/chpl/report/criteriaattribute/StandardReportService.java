@@ -3,6 +3,7 @@ package gov.healthit.chpl.report.criteriaattribute;
 import java.util.List;
 
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @Component
 public class StandardReportService {
@@ -17,6 +18,7 @@ public class StandardReportService {
         return standardReportDao.getStandardReports();
     }
 
+    @Transactional
     public List<StandardListingReport> getStandardListingReports() {
         return standardReportDao.getStandardListingReports();
     }
