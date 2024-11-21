@@ -13,7 +13,7 @@ public class TestToolReportService {
         this.testToolReportDao = testToolReportDao;
     }
 
-    // Criteria, TestTool, Listing Count
+    @Transactional
     public List<TestToolReport> getTestToolReports() {
         return testToolReportDao.getTestToolReports();
     }

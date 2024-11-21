@@ -13,6 +13,7 @@ public class StandardReportService {
         this.standardReportDao = standardReportDao;
     }
 
+    @Transactional
     public List<StandardReport> getStandardReports() {
         return standardReportDao.getStandardReports();
     }

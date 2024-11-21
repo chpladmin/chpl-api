@@ -2,16 +2,10 @@ package gov.healthit.chpl.report.criteriaattribute;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterionEntity;
-import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
-import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.standard.Standard;
-import gov.healthit.chpl.standard.StandardDAO;
 import gov.healthit.chpl.standard.StandardEntity;
 import jakarta.persistence.Query;
 import lombok.extern.log4j.Log4j2;
@@ -20,17 +14,8 @@ import lombok.extern.log4j.Log4j2;
 @Repository
 public class StandardReportDao extends BaseDAOImpl {
 
-    private StandardDAO standardDao;
-    private CertificationCriterionDAO certificationCriterionDao;
-
-    @Autowired
-    public StandardReportDao(StandardDAO standardDao, CertificationCriterionDAO certificationCriterionDao) {
-        this.standardDao = standardDao;
-        this.certificationCriterionDao = certificationCriterionDao;
-    }
-
     public List<StandardReport> getStandardReports() {
-        String hql = "SELECT cc.id as certificationCriterionId, s.id as standardId, count(*) as standardCount "
+        String hql = "SELECT cc, s, count(*) as standardCount "
                 + "FROM CertificationCriterionEntity cc, "
                 + "CertificationResultEntity cr, "
                 + "CertifiedProductDetailsEntity cpd, "
@@ -54,8 +39,8 @@ public class StandardReportDao extends BaseDAOImpl {
 
         return results.stream()
                 .map(result -> StandardReport.builder()
-                        .criterion(getCertificationCriterion((Long) result[0]))
-                        .standard(getStandard((Long) result[1]))
+                        .criterion(((CertificationCriterionEntity) result[0]).toDomain())
+                        .standard(((StandardEntity) result[1]).toDomain())
                         .count((Long) result[2])
                         .build())
                 .toList();
@@ -64,13 +49,11 @@ public class StandardReportDao extends BaseDAOImpl {
     public List<StandardListingReport> getStandardListingReports() {
         String hql = "SELECT cc, s, cpd.chplProductNumber "
                 + "FROM CertificationCriterionEntity cc, "
-                + "CertificationEditionEntity ce, "
                 + "CertificationResultEntity cr, "
                 + "CertifiedProductDetailsEntity cpd, "
                 + "CertificationResultStandardEntity crs, "
                 + "StandardEntity s "
                 + "WHERE cc.id = cr.certificationCriterionId "
-                + "AND cc.certificationEditionId = ce.id "
                 + "AND cr.certifiedProductId = cpd.id "
                 + "AND cr.id = crs.certificationResultId "
                 + "AND crs.standard.id = s.id "
@@ -91,18 +74,4 @@ public class StandardReportDao extends BaseDAOImpl {
                         .build())
                 .toList();
     }
-
-    private CertificationCriterion getCertificationCriterion(Long id) {
-        try {
-            return certificationCriterionDao.getById(id);
-        } catch (EntityRetrievalException e) {
-            LOGGER.error("Could not retrieve criterion id: {}", id, e);
-            return null;
-        }
-    }
-
-    private Standard getStandard(Long id) {
-        return standardDao.getById(id);
-    }
-
 }
