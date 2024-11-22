@@ -11,7 +11,6 @@ import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -188,9 +187,10 @@ public class ChangeRequestManager {
         return saveChangeRequest(changeRequest);
     }
 
-    @Transactional(readOnly = true)
-    @PostAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CHANGE_REQUEST, "
-            + "T(gov.healthit.chpl.permissions.domains.ChangeRequestDomainPermissions).GET_BY_ID, returnObject)")
+    // THIS MUST BE PUT BACK WHEN OCD-4737 GET TO STG
+    //@Transactional(readOnly = true)
+    //@PostAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CHANGE_REQUEST, "
+    //        + "T(gov.healthit.chpl.permissions.domains.ChangeRequestDomainPermissions).GET_BY_ID, returnObject)")
     public ChangeRequest getChangeRequest(Long changeRequestId) throws EntityRetrievalException {
         return changeRequestDAO.get(changeRequestId);
     }

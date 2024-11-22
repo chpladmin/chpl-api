@@ -11,7 +11,7 @@ public class AttestationReportDAO extends BaseDAOImpl {
 
     public void insert(AttestationReport attestationReport) {
         create(AttestationReportEntity.builder()
-                .approvedCount(attestationReport.getAttestationsApprovedCount())
+                .approvedCount(attestationReport.getApprovedCount())
                 .reportDate(attestationReport.getReportDate())
                 .attestationPeriod(AttestationPeriodEntity.builder()
                         .id(attestationReport.getAttestationPeriod().getId())
@@ -25,6 +25,5 @@ public class AttestationReportDAO extends BaseDAOImpl {
                 .pendingDeveloperActionCount(attestationReport.getPendingDeveloperActionCount())
                 .build());
     }
-
 
 }

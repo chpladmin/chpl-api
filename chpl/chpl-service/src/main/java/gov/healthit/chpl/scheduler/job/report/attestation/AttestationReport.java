@@ -4,17 +4,29 @@ import java.time.LocalDate;
 
 import gov.healthit.chpl.attestation.domain.AttestationPeriod;
 import gov.healthit.chpl.domain.CertificationBody;
-import gov.healthit.chpl.scheduler.job.developer.attestation.CheckInReportSummary;
+import lombok.Builder;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.experimental.SuperBuilder;
 
 @Data
-@EqualsAndHashCode(callSuper = false)
-@SuperBuilder
-public class AttestationReport extends CheckInReportSummary {
+@Builder
+public class AttestationReport {
     private Long id;
     private LocalDate reportDate;
     private CertificationBody certificationBody;
     private AttestationPeriod attestationPeriod;
+
+    @Builder.Default
+    private Long developerCount = 0L;
+
+    @Builder.Default
+    private Long approvedCount = 0L;
+
+    @Builder.Default
+    private Long pendingAcbActionCount = 0L;
+
+    @Builder.Default
+    private Long pendingDeveloperActionCount = 0L;
+
+    @Builder.Default
+    private Long noSubmissionCount = 0L;
 }

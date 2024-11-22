@@ -60,24 +60,18 @@ public class CheckInReportDataCollector {
         this.checkInReportValidation = checkInReportValidation;
     }
 
-
-
     public List<CheckInReport> collect(List<Long> acbIds) throws EntityRetrievalException {
-        return getCheckInReports(acbIds, false);
+        return getCheckInReports(acbIds);
     }
 
-    public List<CheckInReport> collectWithoutDetails(List<Long> acbIds) throws EntityRetrievalException {
-        return getCheckInReports(acbIds, true);
-    }
-
-    private List<CheckInReport> getCheckInReports(List<Long> acbIds, Boolean summary) {
+    private List<CheckInReport> getCheckInReports(List<Long> acbIds) {
         AttestationPeriod mostRecentAttestationPeriod = attestationManager.getMostRecentPastAttestationPeriod();
         Map<Long, List<ListingSearchResult>> activeListingsByDeveloper = getMapOfActiveListingSearchResultsByDeveloper();
         LOGGER.info("Found {} developers that should have attesations for period", activeListingsByDeveloper.entrySet().size());
 
         return getDevelopersActiveListingsDuringMostRecentPastAttestationPeriod().stream()
                 .filter(developer -> isDeveloperManagedBySelectedAcbs(developer, acbIds))
-                .map(developer -> getCheckInReport(developer, getActiveListingDataForDeveloper(developer, activeListingsByDeveloper), summary))
+                .map(developer -> getCheckInReport(developer, getActiveListingDataForDeveloper(developer, activeListingsByDeveloper)))
                 .map(report -> {
                     report.setAttestationPeriod(String.format("%s - %s", mostRecentAttestationPeriod.getPeriodStart().toString(), mostRecentAttestationPeriod.getPeriodEnd().toString()));
                     return report;
@@ -85,23 +79,13 @@ public class CheckInReportDataCollector {
                 .sorted((o1, o2) -> o1.getDeveloperName().compareTo(o2.getDeveloperName())).toList();
     }
 
-    private CheckInReport getCheckInReport(Developer developer, List<ListingSearchResult> allActiveListingsForDeveloper, Boolean summary) {
-        LOGGER.info("Getting Checkin report for Developer: {} ({})", developer.getName(), developer.getId());
+    private CheckInReport getCheckInReport(Developer developer, List<ListingSearchResult> allActiveListingsForDeveloper) {
         CheckInAttestation checkInAttestation = checkInReportSourceService.getCheckinReport(developer, attestationManager.getMostRecentPastAttestationPeriod(), LOGGER);
-        LOGGER.info("Completed Checkin report for Developer: {} ({})", developer.getName(), developer.getId());
         LOGGER.info("Getting attestation data for Developer: {} ({})", developer.getName(), developer.getId());
-
-        CheckInReport x;
-        if (summary) {
-            x = convertWithOutDetails(developer, checkInAttestation, allActiveListingsForDeveloper);
-        } else {
-            x = convertWithDetails(developer, checkInAttestation, allActiveListingsForDeveloper);
-        }
-        LOGGER.info("Completed attestation data for Developer: {} ({})", developer.getName(), developer.getId());
-        return x;
+        return convert(developer, checkInAttestation, allActiveListingsForDeveloper);
     }
 
-    private CheckInReport convertWithDetails(Developer developer, CheckInAttestation checkInAttestation, List<ListingSearchResult> allActiveListingsForDeveloper) {
+    private CheckInReport convert(Developer developer, CheckInAttestation checkInAttestation, List<ListingSearchResult> allActiveListingsForDeveloper) {
         CheckInReport checkInReport = new CheckInReport();
         Form form = null;
         checkInReport = addDeveloperInformation(checkInReport, developer);
@@ -122,41 +106,15 @@ public class CheckInReportDataCollector {
         return checkInReport;
     }
 
-    private CheckInReport convertWithOutDetails(Developer developer, CheckInAttestation checkInAttestation, List<ListingSearchResult> allActiveListingsForDeveloper) {
-        CheckInReport checkInReport = new CheckInReport();
-        Form form = null;
-        LOGGER.info("Adding Developer Info: {}", developer.getName());
-        checkInReport = addDeveloperInformation(checkInReport, developer);
-        LOGGER.info("Completed Developer Info: {}", developer.getName());
-        if (checkInAttestation.getChangeRequest() != null) {
-            //form = ((ChangeRequestAttestationSubmission) checkInAttestation.getChangeRequest().getDetails()).getForm();
-            LOGGER.info("Adding CR Info: {}", developer.getName());
-            checkInReport = addChangeRequestInformation(checkInReport, checkInAttestation.getChangeRequest());
-            LOGGER.info("Completed CR Info: {}", developer.getName());
-            //checkInReport = addResponses(checkInReport, form, ((ChangeRequestAttestationSubmission) checkInAttestation.getChangeRequest().getDetails()).getAttestationPeriod().getId());
-            //checkInReport = addValidation(checkInReport, form, ((ChangeRequestAttestationSubmission) checkInAttestation.getChangeRequest().getDetails()).getAttestationPeriod(), allActiveListingsForDeveloper);
-        }
-        //if (checkInAttestation.getAttestationSubmission() != null) {
-        //    form = checkInAttestation.getAttestationSubmission().getForm();
-        //    checkInReport = addPublishedAttestationInformation(checkInReport, developer, checkInAttestation.getAttestationSubmission());
-        //    checkInReport = addResponses(checkInReport, form, checkInAttestation.getAttestationSubmission().getAttestationPeriod().getId());
-        //    checkInReport = addValidation(checkInReport, form, checkInAttestation.getAttestationSubmission().getAttestationPeriod(), allActiveListingsForDeveloper);
-        //}
-        //checkInReport = addComplianceInformation(checkInReport, developer, allActiveListingsForDeveloper);
-
-        return checkInReport;
-    }
-
-
     private CheckInReport addDeveloperInformation(CheckInReport checkInReport, Developer developer) {
-        //List<CertificationBody> acbs = developerCertificationBodyMapDAO.getCertificationBodiesForDeveloper(developer.getId());
+        List<CertificationBody> acbs = developerCertificationBodyMapDAO.getCertificationBodiesForDeveloper(developer.getId());
         checkInReport.setDeveloperName(developer.getName());
         checkInReport.setDeveloperCode(developer.getDeveloperCode());
         checkInReport.setDeveloperId(developer.getId());
         checkInReport.setPublished(false);
-        //checkInReport.setRelevantAcbs(acbs.stream()
-        //        .map(acb -> acb.getName())
-        //        .collect(Collectors.joining("; ")));
+        checkInReport.setRelevantAcbs(acbs.stream()
+                .map(acb -> acb.getName())
+                .collect(Collectors.joining("; ")));
         return checkInReport;
     }
 
@@ -273,15 +231,11 @@ public class CheckInReportDataCollector {
     }
 
     private List<ListingSearchResult> getActiveListingDataForDeveloper(Developer developer, Map<Long, List<ListingSearchResult>> listingsByDeveloper) {
-        LOGGER.info("Getting Active Listings for Developer: {} ({})", developer.getName(), developer.getId());
-        List<ListingSearchResult> x;
         if (listingsByDeveloper.containsKey(developer.getId())) {
-            x = listingsByDeveloper.get(developer.getId());
+            return listingsByDeveloper.get(developer.getId());
         } else {
-            x = null;
+            return null;
         }
-        LOGGER.info("Completed Active Listings for Developer: {} ({})", developer.getName(), developer.getId());
-        return x;
     }
 
     private Map<Long, List<ListingSearchResult>> getMapOfActiveListingSearchResultsByDeveloper() {
@@ -300,12 +254,9 @@ public class CheckInReportDataCollector {
     }
 
     private Boolean isDeveloperManagedBySelectedAcbs(Developer developer, List<Long> acbIds) {
-        LOGGER.info("Start isDeveloperManagedBySelectedAcbs : {} ({})", developer.getName(), developer.getId());
-        var x = developerCertificationBodyMapDAO.getCertificationBodiesForDeveloper(developer.getId()).stream()
+        return developerCertificationBodyMapDAO.getCertificationBodiesForDeveloper(developer.getId()).stream()
                 .filter(acb -> acbIds.contains(acb.getId()))
                 .findAny()
                 .isPresent();
-        LOGGER.info("Completed isDeveloperManagedBySelectedAcbs : {} ({})", developer.getName(), developer.getId());
-        return x;
     }
 }

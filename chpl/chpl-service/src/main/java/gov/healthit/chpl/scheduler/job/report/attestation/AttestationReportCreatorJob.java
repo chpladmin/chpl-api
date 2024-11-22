@@ -1,7 +1,9 @@
 package gov.healthit.chpl.scheduler.job.report.attestation;
 
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.quartz.JobExecutionContext;
@@ -15,14 +17,17 @@ import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.attestation.domain.AttestationPeriod;
+import gov.healthit.chpl.attestation.manager.AttestationManager;
 import gov.healthit.chpl.attestation.manager.AttestationPeriodService;
+import gov.healthit.chpl.attestation.service.AttestationCertificationBodyService;
+import gov.healthit.chpl.changerequest.dao.ChangeRequestAttestationDAO;
+import gov.healthit.chpl.changerequest.domain.ChangeRequest;
+import gov.healthit.chpl.changerequest.manager.ChangeRequestManager;
 import gov.healthit.chpl.domain.CertificationBody;
+import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.scheduler.job.QuartzJob;
-import gov.healthit.chpl.scheduler.job.developer.attestation.CheckInReport;
-import gov.healthit.chpl.scheduler.job.developer.attestation.CheckInReportDataCollector;
-import gov.healthit.chpl.scheduler.job.developer.attestation.CheckInReportSummary;
-import gov.healthit.chpl.scheduler.job.developer.attestation.CheckInReportSummaryDataCollector;
+import gov.healthit.chpl.scheduler.job.developer.attestation.DeveloperAttestationPeriodCalculator;
 import gov.healthit.chpl.util.DateUtil;
 import lombok.extern.log4j.Log4j2;
 
@@ -37,16 +42,25 @@ public class AttestationReportCreatorJob extends QuartzJob{
     private AttestationPeriodService attestationPeriodService;
 
     @Autowired
-    private CheckInReportDataCollector checkInReportDataCollector;
+    private AttestationManager attestationManager;
 
     @Autowired
-    private CheckInReportSummaryDataCollector checkInReportSummaryDataCollector;
+    private DeveloperAttestationPeriodCalculator developerAttestationPeriodCalculator;
 
     @Autowired
     private CertificationBodyManager certificationBodyManager;
 
     @Autowired
     private AttestationReportDAO attestationReportDAO;
+
+    @Autowired
+    private ChangeRequestAttestationDAO changeRequestAttestationDAO;
+
+    @Autowired
+    private ChangeRequestManager changeRequestManager;
+
+    @Autowired
+    private AttestationCertificationBodyService attestationCertificationBodyService;
 
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
@@ -68,31 +82,56 @@ public class AttestationReportCreatorJob extends QuartzJob{
 
                 try {
                     if (inSubmissionPlusApprovalPeriod()) {
-                        List<CertificationBody> acbs = certificationBodyManager.getAllActive();
+                        AttestationPeriod mostRecentPastAttestationPeriod = attestationPeriodService.getMostRecentPastAttestationPeriod();
+                        Map<Long, AttestationReport> attestationReportsByAcbId = new HashMap<Long, AttestationReport>();
+                        List<CertificationBody> activeAcbs = certificationBodyManager.getAllActive();
+                        List<Developer> applicableDevelopers = getDevelopersActiveListingsDuringMostRecentPastAttestationPeriod();
 
-                        acbs.forEach(acb -> {
+                        applicableDevelopers.forEach(developer -> {
+                            LOGGER.info("Processing Developer: {} ({})", developer.getName(), developer.getId());
                             try {
-                                List<CheckInReport> checkInReports = checkInReportDataCollector.collectWithoutDetails(List.of(acb.getId()));
-                                CheckInReportSummary checkInReportSummary = checkInReportSummaryDataCollector.collect(checkInReports);
-                                AttestationReport attestationReport = AttestationReport.builder()
-                                        .attestationsApprovedCount(checkInReportSummary.getAttestationsApprovedCount())
-                                        .developerCount(checkInReportSummary.getDeveloperCount())
-                                        .noSubmissionCount(checkInReportSummary.getNoSubmissionCount())
-                                        .pendingAcbActionCount(checkInReportSummary.getPendingAcbActionCount())
-                                        .pendingDeveloperActionCount(checkInReportSummary.getPendingDeveloperActionCount())
-                                        .build();
 
+                                ChangeRequest cr = getMostRecentChangeRequest(developer, mostRecentPastAttestationPeriod);
 
-                                attestationReport.setAttestationPeriod(attestationPeriodService.getMostRecentPastAttestationPeriod());
-                                attestationReport.setReportDate(LocalDate.now());
-                                attestationReport.setCertificationBody(acb);
+                                activeAcbs.forEach(acb -> {
+                                   if (isDeveloperManagedByAcb(developer, acb, mostRecentPastAttestationPeriod)) {
+                                       if (!attestationReportsByAcbId.containsKey(acb.getId())) {
+                                           attestationReportsByAcbId.put(acb.getId(),
+                                                   AttestationReport.builder()
+                                                           .attestationPeriod(mostRecentPastAttestationPeriod)
+                                                           .certificationBody(acb)
+                                                           .reportDate(LocalDate.now())
+                                                           .build());
+                                       }
+                                       AttestationReport report = attestationReportsByAcbId.get(acb.getId());
+                                       report.setDeveloperCount(report.getDeveloperCount() + 1);
 
-
-                                attestationReportDAO.insert(attestationReport);
+                                       if (cr == null) {
+                                           report.setNoSubmissionCount(report.getNoSubmissionCount() + 1);
+                                       } else {
+                                           switch (cr.getCurrentStatus().getChangeRequestStatusType().getName()) {
+                                           case "Accepted":
+                                               report.setApprovedCount(report.getApprovedCount() + 1);
+                                               break;
+                                           case "Pending Developer Action":
+                                               report.setPendingDeveloperActionCount(report.getPendingDeveloperActionCount() + 1);
+                                               break;
+                                           case "Pending ONC-ACB Action":
+                                               report.setPendingAcbActionCount(report.getPendingAcbActionCount() + 1);
+                                               break;
+                                           default:
+                                               break;
+                                           }
+                                       }
+                                   }
+                                });
                             } catch (Exception e) {
-                                LOGGER.error("Could not collect Developer Attestation Report data for ONC-ACB: {} ", acb.getName(), e);
+                                LOGGER.error("Could not collect Developer Attestation Report data for Developer: {} ", developer.getName(), e);
                             }
                         });
+
+                        attestationReportsByAcbId.entrySet().forEach(entry -> attestationReportDAO.insert(entry.getValue()));
+
                     } else {
                         LOGGER.info("Not within submission plus approval window");
                     }
@@ -113,6 +152,32 @@ public class AttestationReportCreatorJob extends QuartzJob{
 
     private List<CertificationBody> getActiveAcbs() {
         return certificationBodyManager.getAllActive();
+    }
 
+    private List<Developer> getDevelopersActiveListingsDuringMostRecentPastAttestationPeriod() {
+        AttestationPeriod mostRecentPastPeriod = attestationManager.getMostRecentPastAttestationPeriod();
+        return developerAttestationPeriodCalculator.getDevelopersWithActiveListingsDuringAttestationPeriod(mostRecentPastPeriod, LOGGER);
+    }
+
+    private ChangeRequest getMostRecentChangeRequest(Developer developer, AttestationPeriod period) {
+        Long crId = changeRequestAttestationDAO.getIdOfMostRecentAttestationChangeRequest(developer.getId(), period.getId());
+        if (crId == null) {
+            LOGGER.warn("No change request was found for developer " + developer.getId() + " and attestation period " + period.getId());
+            return null;
+        }
+        ChangeRequest changeRequest = null;
+        try {
+            changeRequest = changeRequestManager.getChangeRequest(crId);
+        } catch (Exception ex) {
+            LOGGER.error("Error getting change request with ID " + crId, ex);
+        }
+        return changeRequest;
+    }
+
+    private Boolean isDeveloperManagedByAcb(Developer developer, CertificationBody certificationBody, AttestationPeriod attestationPeriod) {
+        return attestationCertificationBodyService.getAssociatedCertificationBodies(developer.getId(), attestationPeriod.getId()).stream()
+                .filter(acb -> acb.getId().equals(certificationBody.getId()))
+                .findAny()
+                .isPresent();
     }
 }

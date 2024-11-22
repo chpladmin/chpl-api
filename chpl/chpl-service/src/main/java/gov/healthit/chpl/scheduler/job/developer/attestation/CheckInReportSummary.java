@@ -1,10 +1,10 @@
 package gov.healthit.chpl.scheduler.job.developer.attestation;
 
+import lombok.Builder;
 import lombok.Data;
-import lombok.experimental.SuperBuilder;
 
 @Data
-@SuperBuilder
+@Builder
 public class CheckInReportSummary {
     private Long developerCount;
     private Long attestationsApprovedCount;

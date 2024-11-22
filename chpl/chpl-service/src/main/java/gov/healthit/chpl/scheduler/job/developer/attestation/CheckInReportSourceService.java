@@ -41,7 +41,6 @@ public class CheckInReportSourceService {
     }
 
     private ChangeRequest getMostRecentChangeRequest(Developer developer, AttestationPeriod period, Logger logger) {
-        logger.info("Start getMostRecentChangeRequest");
         Long crId = crAttestationDao.getIdOfMostRecentAttestationChangeRequest(developer.getId(), period.getId());
         if (crId == null) {
             logger.warn("No change request was found for developer " + developer.getId() + " and attestation period " + period.getId());
@@ -53,7 +52,6 @@ public class CheckInReportSourceService {
         } catch (Exception ex) {
             logger.warn("Error getting change request with ID " + crId);
         }
-        logger.info("Complete getMostRecentChangeRequest");
         return changeRequest;
     }
 

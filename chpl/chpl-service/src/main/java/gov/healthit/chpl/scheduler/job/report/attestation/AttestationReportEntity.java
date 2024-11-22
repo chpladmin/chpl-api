@@ -36,18 +36,15 @@ public class AttestationReportEntity extends EntityAudit {
     @Column(name = "id")
     private Long id;
 
-    //@Column(name = "certification_body_id")
-    //private Long certificationBodyId;
-
     @Column(name = "report_date")
     private LocalDate reportDate;
 
     @OneToOne(optional = true, fetch = FetchType.LAZY)
-    @JoinColumn(name = "attestation_period_id", insertable = false, updatable = false)
+    @JoinColumn(name = "attestation_period_id")
     private AttestationPeriodEntity attestationPeriod;
 
     @OneToOne(optional = true, fetch = FetchType.LAZY)
-    @JoinColumn(name = "certification_body_id", insertable = false, updatable = false)
+    @JoinColumn(name = "certification_body_id")
     private CertificationBodyEntity certificationBody;
 
     @Column(name = "developer_count")
@@ -72,7 +69,7 @@ public class AttestationReportEntity extends EntityAudit {
                 .attestationPeriod(attestationPeriod.toDomain())
                 .certificationBody(certificationBody.toDomain())
                 .developerCount(developerCount)
-                .attestationsApprovedCount(approvedCount)
+                .approvedCount(approvedCount)
                 .pendingAcbActionCount(pendingAcbActionCount)
                 .pendingDeveloperActionCount(pendingDeveloperActionCount)
                 .noSubmissionCount(noSubmissionCount)
