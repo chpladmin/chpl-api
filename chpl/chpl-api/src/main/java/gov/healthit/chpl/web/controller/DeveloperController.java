@@ -43,6 +43,9 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.JiraRequestFailedException;
 import gov.healthit.chpl.exception.ValidationException;
+import gov.healthit.chpl.insight.InsightRequestFailedException;
+import gov.healthit.chpl.insight.InsightService;
+import gov.healthit.chpl.insight.InsightSubmission;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.UserPermissionsManager;
@@ -70,6 +73,7 @@ public class DeveloperController {
     private ErrorMessageUtil msgUtil;
     private UserPermissionsManager userPermissionsManager;
     private AttestationManager attestationManager;
+    private InsightService insightsService;
     private DirectReviewCachingService directReviewService;
     private RealWorldTestingManager rwtManager;
 
@@ -78,12 +82,14 @@ public class DeveloperController {
             CertifiedProductManager cpManager,
             UserPermissionsManager userPermissionsManager,
             AttestationManager attestationManager,
+            InsightService insightsService,
             ErrorMessageUtil msgUtil,
             DirectReviewCachingService directReviewService,
             RealWorldTestingManager rwtManager) {
         this.developerManager = developerManager;
         this.userPermissionsManager = userPermissionsManager;
         this.attestationManager = attestationManager;
+        this.insightsService = insightsService;
         this.msgUtil = msgUtil;
         this.directReviewService = directReviewService;
         this.rwtManager = rwtManager;
@@ -138,6 +144,17 @@ public class DeveloperController {
             @PathVariable("developerId") Long developerId) throws JiraRequestFailedException {
         return new ResponseEntity<List<DirectReview>>(
                 directReviewService.getDirectReviews(developerId).getDirectReviews(), HttpStatus.OK);
+    }
+
+    @Operation(summary = "List Insight sumbissions for a developer.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
+    @RequestMapping(value = "/{developerId}/insights", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public @ResponseBody ResponseEntity<List<InsightSubmission>> getInsights(@PathVariable("developerId") Long developerId)
+            throws InsightRequestFailedException, EntityRetrievalException {
+        return new ResponseEntity<List<InsightSubmission>>(insightsService.getInsightSubmissions(developerId), HttpStatus.OK);
     }
 
     @Operation(summary = "List all Real World Testing Plans URLs from active certificates for a developer.",
