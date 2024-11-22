@@ -30,7 +30,7 @@ public class SurveillanceStatisticsDAO extends BaseDAOImpl {
         String hql = "SELECT count(surv) "
                 + "FROM SurveillanceEntity surv "
                 + "JOIN surv.certifiedProduct cp "
-                + "WHERE cp.certificationEditionId NOT IN (:retiredEditions) ";
+                + "WHERE (cp.certificationEditionId NOT IN (:retiredEditions) OR cp.certificationEditionId IS NULL) ";
         if (endDate == null) {
             hql += " AND surv.deleted = false";
         } else {
@@ -50,7 +50,7 @@ public class SurveillanceStatisticsDAO extends BaseDAOImpl {
         String hql = "SELECT count(surv) "
                 + "FROM SurveillanceEntity surv "
                 + "JOIN surv.certifiedProduct cp "
-                + "WHERE cp.certificationEditionId NOT IN (:retiredEditions) "
+                + "WHERE (cp.certificationEditionId NOT IN (:retiredEditions) OR cp.certificationEditionId IS NULL) "
                 + "AND surv.startDate <= local_date "
                 + "AND (surv.endDate IS NULL OR surv.endDate >= local_date) ";
         if (endDate == null) {
@@ -72,7 +72,7 @@ public class SurveillanceStatisticsDAO extends BaseDAOImpl {
         String hql = "SELECT count(surv) "
                 + "FROM SurveillanceEntity surv "
                 + "JOIN surv.certifiedProduct cp "
-                + "WHERE cp.certificationEditionId NOT IN (:retiredEditions) "
+                + "WHERE (cp.certificationEditionId NOT IN (:retiredEditions) OR cp.certificationEditionId IS NULL) "
                 + "AND surv.startDate <= local_date "
                 + "AND (surv.endDate IS NOT NULL AND surv.endDate <= local_date) ";
         if (endDate == null) {
@@ -96,7 +96,7 @@ public class SurveillanceStatisticsDAO extends BaseDAOImpl {
                 + "JOIN surv.surveilledRequirements reqs "
                 + "JOIN reqs.nonconformities nc "
                 + "JOIN surv.certifiedProduct cp "
-                + "WHERE cp.certificationEditionId NOT IN (:retiredEditions) ";
+                + "WHERE (cp.certificationEditionId NOT IN (:retiredEditions) OR cp.certificationEditionId IS NULL) ";
         if (endDate == null) {
             hql += " AND nc.deleted = false";
         } else {
@@ -118,7 +118,7 @@ public class SurveillanceStatisticsDAO extends BaseDAOImpl {
                 + "JOIN surv.surveilledRequirements reqs "
                 + "JOIN reqs.nonconformities nc "
                 + "JOIN surv.certifiedProduct cp "
-                + "WHERE cp.certificationEditionId NOT IN (:retiredEditions) "
+                + "WHERE (cp.certificationEditionId NOT IN (:retiredEditions) OR cp.certificationEditionId IS NULL) "
                 + "AND nc.nonconformityCloseDate IS NULL ";
         if (endDate == null) {
             hql += " AND nc.deleted = false";
@@ -143,7 +143,7 @@ public class SurveillanceStatisticsDAO extends BaseDAOImpl {
                 + "SurveillanceRequirementEntity sr, "
                 + "SurveillanceNonconformityEntity sn "
                 + "WHERE sn.nonconformityCloseDate IS NULL "
-                + "AND cp.certificationEditionId NOT IN (:retiredEditions) "
+                + "AND (cp.certificationEditionId NOT IN (:retiredEditions) OR cp.certificationEditionId IS NULL) "
                 + "AND cp.certificationBodyId = cb.id "
                 + "AND cp.id = s.certifiedProductId "
                 + "AND s.id = sr.surveillanceId "
@@ -181,7 +181,7 @@ public class SurveillanceStatisticsDAO extends BaseDAOImpl {
                 + "JOIN surv.surveilledRequirements reqs "
                 + "JOIN reqs.nonconformities nc "
                 + "JOIN surv.certifiedProduct cp "
-                + "WHERE cp.certificationEditionId NOT IN (:retiredEditions) "
+                + "WHERE (cp.certificationEditionId NOT IN (:retiredEditions) OR cp.certificationEditionId IS NULL) "
                 + "AND nc.nonconformityCloseDate IS NOT NULL ";
         if (endDate == null) {
             hql += " AND nc.deleted = false";
@@ -206,7 +206,7 @@ public class SurveillanceStatisticsDAO extends BaseDAOImpl {
                 + "WHERE s.startDate <= local_date "
                 + "AND (s.endDate IS NULL OR s.endDate >= local_date) "
                 + "AND cp.certificationBodyId = cb.id "
-                + "AND cp.certificationEditionId NOT IN (:retiredEditions) "
+                + "AND (cp.certificationEditionId NOT IN (:retiredEditions) OR cp.certificationEditionId IS NULL) "
                 + "AND cp.id = s.certifiedProductId ";
 
         if (endDate == null) {
@@ -241,7 +241,7 @@ public class SurveillanceStatisticsDAO extends BaseDAOImpl {
                 + "JOIN FETCH surv.surveilledRequirements reqs "
                 + "JOIN FETCH reqs.nonconformities nc "
                 + "JOIN FETCH surv.certifiedProduct cp "
-                + "WHERE cp.certificationEditionId NOT IN (:retiredEditions) "
+                + "WHERE (cp.certificationEditionId NOT IN (:retiredEditions) OR cp.certificationEditionId IS NULL) "
                 + "AND surv.deleted = false "
                 + "AND reqs.deleted = false "
                 + "AND nc.deleted = false ";
@@ -255,7 +255,7 @@ public class SurveillanceStatisticsDAO extends BaseDAOImpl {
                 + "FROM SurveillanceEntity surv "
                 + "JOIN surv.certifiedProduct cp "
                 + "JOIN FETCH surv.surveilledRequirements req "
-                + "WHERE cp.certificationEditionId NOT IN (:retiredEditions) "
+                + "WHERE (cp.certificationEditionId NOT IN (:retiredEditions) OR cp.certificationEditionId IS NULL) "
                 + "AND surv.deleted = false ";
         Query query = entityManager.createQuery(hql);
         query.setParameter("retiredEditions", retiredEditions);
