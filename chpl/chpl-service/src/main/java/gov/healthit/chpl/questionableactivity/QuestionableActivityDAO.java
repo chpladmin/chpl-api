@@ -10,10 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import gov.healthit.chpl.activity.entity.ActivityEntity;
 import gov.healthit.chpl.dao.ActivityDAO;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.auth.User;
-import gov.healthit.chpl.entity.ActivityEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.questionableactivity.domain.QuestionableActivityBase;
 import gov.healthit.chpl.questionableactivity.domain.QuestionableActivityCertificationResult;

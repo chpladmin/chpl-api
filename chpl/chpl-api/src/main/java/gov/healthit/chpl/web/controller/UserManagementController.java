@@ -68,10 +68,12 @@ import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.Getter;
+import lombok.extern.log4j.Log4j2;
 
 @Tag(name = "users", description = "Allows management of users.")
 @RestController
 @RequestMapping("/users")
+@Log4j2
 public class UserManagementController {
     private UserManager userManager;
     private InvitationManager invitationManager;
@@ -181,7 +183,8 @@ public class UserManagementController {
             })
     @RequestMapping(value = "", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
-    public void addUser(@RequestBody CreateUserFromInvitationRequest userInfo) throws ValidationException, EmailNotSentException, UserCreationException {
+    public void addUser(@RequestBody CreateUserFromInvitationRequest userInfo) throws ValidationException, EmailNotSentException,
+        UserRetrievalException, UserCreationException, ActivityException {
         if (!ff4j.check(FeatureList.SSO)) {
             throw new NotImplementedException("This method has not been implemented");
         }
@@ -191,6 +194,8 @@ public class UserManagementController {
             if (invitation != null) {
                 cognitoUserManager.createUser(userInfo);
             }
+        } catch (Exception ex) {
+            LOGGER.error("Error creating user from invitation.", ex);
         } finally {
             SecurityContextHolder.getContext().setAuthentication(null);
         }
@@ -205,7 +210,8 @@ public class UserManagementController {
             method = RequestMethod.PUT,
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
-    public User updateUserDetails(@RequestBody User userInfo, @PathVariable("cognitoUserId") UUID cognitoUserId) throws ValidationException, UserRetrievalException {
+    public User updateUserDetails(@RequestBody User userInfo, @PathVariable("cognitoUserId") UUID cognitoUserId)
+            throws ValidationException, UserRetrievalException, ActivityException {
         if (!ff4j.check(FeatureList.SSO)) {
             throw new NotImplementedException("This method has not been implemented");
         }
