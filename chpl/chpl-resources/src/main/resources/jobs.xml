@@ -921,5 +921,14 @@
             <durability>true</durability>
             <recover>false</recover>
         </job>
+        
+        <job>
+            <name>attestationReportCreatorJob</name>
+            <group>systemJobs</group>
+            <description>Generate data for the Attestation Report (Power BI)</description>
+            <job-class>gov.healthit.chpl.scheduler.job.report.attestation.AttestationReportCreatorJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+        </job>
     </schedule>
 </job-scheduling-data>
