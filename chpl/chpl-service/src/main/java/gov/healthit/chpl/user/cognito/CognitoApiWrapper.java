@@ -75,8 +75,6 @@ import software.amazon.awssdk.services.cognitoidentityprovider.model.GetUserResp
 import software.amazon.awssdk.services.cognitoidentityprovider.model.GroupType;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.ListUsersInGroupRequest;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.ListUsersInGroupResponse;
-import software.amazon.awssdk.services.cognitoidentityprovider.model.ListUsersRequest;
-import software.amazon.awssdk.services.cognitoidentityprovider.model.ListUsersResponse;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.MessageActionType;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.UserType;
 
@@ -175,20 +173,16 @@ public class CognitoApiWrapper {
 
     @Cacheable(CacheNames.COGNITO_USERS)
     public User getUserInfo(UUID cognitoId) throws UserRetrievalException {
-        ListUsersResponse response = cognitoClient.listUsers(ListUsersRequest.builder()
+        AdminGetUserRequest request = AdminGetUserRequest.builder()
                 .userPoolId(userPoolId)
-                .filter("sub = \"" + cognitoId.toString() + "\"")
-                .limit(1)
-                .build());
+                .username(cognitoId.toString())
+                .build();
 
-        if (response.users().size() > 0) {
-            String email = getUserAttribute(response.users().get(0).attributes(), "email").value();
-            List<GroupType> userGroups = getGroupsForUser(email);
-            if (doesGroupMatchCurrentEnvironment(userGroups)) {
-                return createUserFromUserType(response.users().get(0));
-            }
+        AdminGetUserResponse response = cognitoClient.adminGetUser(request);
+        if (response == null || response.sdkHttpResponse() == null || !response.sdkHttpResponse().isSuccessful()) {
+            return null;
         }
-        return null;
+        return createUserFromGetUserResponse(response);
     }
 
     public User getUserByPassingCognitoUserAttributeCache(String accessToken) throws UserRetrievalException {
@@ -210,22 +204,19 @@ public class CognitoApiWrapper {
         return null;
     }
 
-
     public User getUserInfo(String email) throws UserRetrievalException {
-        ListUsersResponse response = cognitoClient.listUsers(ListUsersRequest.builder()
+        AdminGetUserRequest request = AdminGetUserRequest.builder()
                 .userPoolId(userPoolId)
-                .filter("email = \"" + email + "\"")
-                .limit(1)
-                .build());
+                .username(email)
+                .build();
 
-        if (response.users().size() > 0) {
-            List<GroupType> userGroups = getGroupsForUser(email);
-            if (doesGroupMatchCurrentEnvironment(userGroups)) {
-                return createUserFromUserType(response.users().get(0));
-            }
+        AdminGetUserResponse response = cognitoClient.adminGetUser(request);
+        if (response == null || response.sdkHttpResponse() == null || !response.sdkHttpResponse().isSuccessful()) {
+            return null;
         }
-        return null;
+        return createUserFromGetUserResponse(response);
     }
+
 
     @CachePut(CacheNames.COGNITO_USERS)
     public User getUserNoCache(UUID cognitoId) throws UserRetrievalException {

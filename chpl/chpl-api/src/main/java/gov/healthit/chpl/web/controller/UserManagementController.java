@@ -75,7 +75,6 @@ import lombok.extern.log4j.Log4j2;
 @Tag(name = "users", description = "Allows management of users.")
 @RestController
 @RequestMapping("/users")
-@Log4j2
 public class UserManagementController {
     private UserManager userManager;
     private InvitationManager invitationManager;
@@ -112,32 +111,31 @@ public class UserManagementController {
         this.authorizationLengthInDays = authorizationLengthInDays;
     }
 
-<<<<<<< HEAD
     @Operation(summary = "Update the currently logged in user with an additional organization.",
             description = "Gives the user permission on the object in the invitation (usually an additional ACB or Developer)."
                     + "The correct order to call invitation requests is "
                     + "the following: 1) /invite 2) /create or /authorize 3) /confirm.  Security Restrictions: ROLE_ADMIN "
                     + "or ROLE_ONC.",
-=======
-    @Operation(summary = "View a specific user's details.",
-            description = "The logged in user must either be the user in the parameters, have ROLE_ADMIN, or "
-                    + "have ROLE_ACB.",
->>>>>>> staging
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
-<<<<<<< HEAD
     @RequestMapping(value = "/authorize/{invitationToken}", method = RequestMethod.POST,
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
     public User addOrganizationToUser(@PathVariable("invitationToken") UUID invitationToken, @RequestHeader("authorization") String jwt)
-            throws UserRetrievalException, InvalidArgumentsException {
+            throws UserRetrievalException, InvalidArgumentsException, ActivityException {
 
         return cognitoUserManager.addOrganizationToUser(invitationToken, jwt.split(" ")[1]);
     }
 
-=======
+    @Operation(summary = "View a specific user's details.",
+            description = "The logged in user must either be the user in the parameters, have ROLE_ADMIN, or "
+                    + "have ROLE_ACB.",
+                    security = {
+                            @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                            @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+                    })
     @RequestMapping(value = "/{cognitoUserId}", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     public @ResponseBody User getUser(@PathVariable("cognitoUserId") UUID cognitoUserId) throws UserRetrievalException {
@@ -147,7 +145,6 @@ public class UserManagementController {
 
         return cognitoUserManager.getUserInfo(cognitoUserId);
     }
-
 
     @Operation(summary = "Invite a user to the CHPL.",
             description = "This request creates an invitation that is sent to the email address provided. "
@@ -246,7 +243,7 @@ public class UserManagementController {
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
->>>>>>> staging
+
     @Deprecated
     @DeprecatedApi(friendlyUrl = "/users/create",
             httpMethod = "POST",

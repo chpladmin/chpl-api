@@ -189,11 +189,12 @@ public class CognitoUserManager {
     }
 
 
+    @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SECURED_USER, "
             + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).ADD_ORG_TO_USER)")
-    public User addOrganizationToUser(UUID invitationToken, String accessToken) throws InvalidArgumentsException, UserRetrievalException {
+    public User addOrganizationToUser(UUID invitationToken, String accessToken) throws InvalidArgumentsException, UserRetrievalException, ActivityException {
 
-        User user = cognitoApiWrapper.getUserInfo(AuthUtil.getCurrentUser().getCognitoId());
+        User originalUser = cognitoApiWrapper.getUserInfo(AuthUtil.getCurrentUser().getCognitoId());
         CognitoUserInvitation invitation = cognitoInvitationManager.getByToken(invitationToken);
         if (invitation == null || invitation.isOlderThan(invitationLengthDays)) {
             throw new InvalidArgumentsException(errorMessageUtil.getMessage("user.invitation.expired",
@@ -201,9 +202,13 @@ public class CognitoUserManager {
                     invitationLengthDays == 1 ? "" : "s"));
         }
 
-        cognitoApiWrapper.addOrgToUser(user, invitation.getOrganizationId());
+        cognitoApiWrapper.addOrgToUser(originalUser, invitation.getOrganizationId());
         cognitoInvitationManager.deleteToken(invitationToken);
 
-        return cognitoApiWrapper.getUserByPassingCognitoUserAttributeCache(accessToken);
+        User updatedUser = cognitoApiWrapper.getUserNoCache(originalUser.getCognitoId());
+        activityManager.addUserActivity(updatedUser.getCognitoId(),
+                String.format("User %s was updated", updatedUser.getEmail()),
+                originalUser, updatedUser);
+        return updatedUser;
     }
 }
