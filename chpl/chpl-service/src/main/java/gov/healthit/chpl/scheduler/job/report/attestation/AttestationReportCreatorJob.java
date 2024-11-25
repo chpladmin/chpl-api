@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -32,7 +33,7 @@ import gov.healthit.chpl.util.DateUtil;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
-public class AttestationReportCreatorJob extends QuartzJob{
+public class AttestationReportCreatorJob extends QuartzJob {
     private static final Integer DAYS_IN_APPROVAL_PERIOD = 30;
 
     @Autowired
@@ -82,6 +83,10 @@ public class AttestationReportCreatorJob extends QuartzJob{
 
                 try {
                     if (inSubmissionPlusApprovalPeriod()) {
+                        if (CollectionUtils.isEmpty(attestationReportDAO.getAttestationReportByDate(LocalDate.now()))) {
+                            attestationReportDAO.deleteAttestationReportByDate(LocalDate.now());
+                        }
+
                         AttestationPeriod mostRecentPastAttestationPeriod = attestationPeriodService.getMostRecentPastAttestationPeriod();
                         Map<Long, AttestationReport> attestationReportsByAcbId = new HashMap<Long, AttestationReport>();
                         List<CertificationBody> activeAcbs = certificationBodyManager.getAllActive();
