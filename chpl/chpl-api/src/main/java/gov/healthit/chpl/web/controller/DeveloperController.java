@@ -5,7 +5,9 @@ import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.StringUtils;
+import org.ff4j.FF4j;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -22,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.attestation.domain.AttestationPeriodDeveloperException;
 import gov.healthit.chpl.attestation.manager.AttestationManager;
 import gov.healthit.chpl.caching.CacheNames;
@@ -76,6 +79,7 @@ public class DeveloperController {
     private InsightService insightsService;
     private DirectReviewCachingService directReviewService;
     private RealWorldTestingManager rwtManager;
+    private FF4j ff4j;
 
     @Autowired
     public DeveloperController(DeveloperManager developerManager,
@@ -85,7 +89,8 @@ public class DeveloperController {
             InsightService insightsService,
             ErrorMessageUtil msgUtil,
             DirectReviewCachingService directReviewService,
-            RealWorldTestingManager rwtManager) {
+            RealWorldTestingManager rwtManager,
+            FF4j ff4j) {
         this.developerManager = developerManager;
         this.userPermissionsManager = userPermissionsManager;
         this.attestationManager = attestationManager;
@@ -93,6 +98,7 @@ public class DeveloperController {
         this.msgUtil = msgUtil;
         this.directReviewService = directReviewService;
         this.rwtManager = rwtManager;
+        this.ff4j = ff4j;
     }
 
     @DeprecatedApiResponseFields(friendlyUrl = "/developers", httpMethod = "GET", responseClass = DeveloperResults.class)
@@ -154,6 +160,9 @@ public class DeveloperController {
     @RequestMapping(value = "/{developerId}/insights", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody ResponseEntity<List<InsightSubmission>> getInsights(@PathVariable("developerId") Long developerId)
             throws InsightRequestFailedException, EntityRetrievalException {
+        if (!ff4j.check(FeatureList.INSIGHTS)) {
+            throw new NotImplementedException("This method has not been implemented");
+        }
         return new ResponseEntity<List<InsightSubmission>>(insightsService.getInsightSubmissions(developerId), HttpStatus.OK);
     }
 

@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.BufferingClientHttpRequestFactory;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -62,6 +63,9 @@ public class InsightService {
             LOGGER.debug("Response: " + response.getBody());
         } catch (Exception ex) {
             HttpStatusCode statusCode =  (response != null ? response.getStatusCode() : null);
+            if (statusCode == null && ex instanceof RestClientResponseException) {
+                statusCode = ((RestClientResponseException) ex).getStatusCode();
+            }
             LOGGER.error("Unable to connect to the URL " + url + ". Got response status code " + statusCode);
             throw new InsightRequestFailedException(ex.getMessage(), ex, statusCode);
         }
@@ -71,6 +75,7 @@ public class InsightService {
             root = objectMapper.readTree(responseBody);
         } catch (IOException ex) {
             LOGGER.error("Could not convert " + responseBody + " to JsonNode object.", ex);
+            throw new InsightRequestFailedException("Could not convert " + responseBody + " to expected object.", ex);
         }
         return root;
     }

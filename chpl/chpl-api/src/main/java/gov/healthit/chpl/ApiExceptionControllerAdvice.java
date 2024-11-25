@@ -80,7 +80,7 @@ public class ApiExceptionControllerAdvice {
         LOGGER.error(e.getMessage());
         return new ResponseEntity<ErrorResponse>(
                 new ErrorResponse("Insights information is not currently available, please check back later."),
-                HttpStatus.NO_CONTENT);
+                e.getStatusCode() != null ? e.getStatusCode() : HttpStatus.NO_CONTENT);
     }
 
     @ExceptionHandler(EntityRetrievalException.class)
