@@ -183,6 +183,7 @@ public class CognitoApiWrapper {
         return createUserFromGetUserResponse(response);
     }
 
+    @CachePut(CacheNames.COGNITO_USERS)
     public User getUserInfo(String email) throws UserRetrievalException {
         AdminGetUserRequest request = AdminGetUserRequest.builder()
                 .userPoolId(userPoolId)
@@ -197,7 +198,10 @@ public class CognitoApiWrapper {
     }
 
 
+<<<<<<< Updated upstream
     @CachePut(CacheNames.COGNITO_USERS)
+=======
+>>>>>>> Stashed changes
     public User getUserNoCache(UUID cognitoId) throws UserRetrievalException {
         AdminGetUserRequest request = AdminGetUserRequest.builder()
                 .userPoolId(userPoolId)
@@ -280,6 +284,7 @@ public class CognitoApiWrapper {
             LOGGER.error("Could not retrieve user: {}", userName, e);
         }
     }
+
 
     public AdminAddUserToGroupResponse addUserToGroup(String email, String groupName) {
         AdminAddUserToGroupRequest request = AdminAddUserToGroupRequest.builder()
