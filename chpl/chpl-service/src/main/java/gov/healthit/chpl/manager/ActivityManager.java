@@ -2,7 +2,9 @@ package gov.healthit.chpl.manager;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.UUID;
 
+import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.stereotype.Service;
@@ -15,7 +17,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import gov.healthit.chpl.auth.user.AuthenticationSystem;
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.dao.ActivityDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.dao.auth.UserDAO;
@@ -50,6 +52,7 @@ public class ActivityManager extends SecuredManager {
     private SubscriptionObserver subscriptionObserver;
     private CognitoApiWrapper cognitoApiWrapper;
     private UserDAO userDAO;
+    private FF4j ff4j;
 
     @Autowired
     public ActivityManager(ActivityDAO activityDAO, DeveloperDAO devDao,
@@ -57,7 +60,8 @@ public class ActivityManager extends SecuredManager {
             ChplProductNumberChangedListener chplProductNumberChangedListener,
             SubscriptionObserver subscriptionObserver,
             CognitoApiWrapper cognitoApiWrapper,
-            UserDAO userDAO) {
+            UserDAO userDAO,
+            FF4j ff4j) {
         this.activityDAO = activityDAO;
         this.devDao = devDao;
         this.questionableActivityListener = questionableActivityListener;
@@ -65,6 +69,7 @@ public class ActivityManager extends SecuredManager {
         this.subscriptionObserver = subscriptionObserver;
         this.cognitoApiWrapper = cognitoApiWrapper;
         this.userDAO = userDAO;
+        this.ff4j = ff4j;
     }
 
     @Transactional
@@ -73,7 +78,7 @@ public class ActivityManager extends SecuredManager {
 
         try {
             Date activityDate = new Date();
-            ActivityDTO activity = addActivity(concept, objectId, activityDescription, originalData, newData, null, activityDate, getCurrentUser());
+            ActivityDTO activity = addActivity(concept, objectId, null, activityDescription, originalData, newData, null, activityDate, getCurrentUser());
             if (activity != null) {
                 questionableActivityListener.checkQuestionableActivity(activity, originalData, newData);
                 chplProductNumberChangedListener.recordChplProductNumberChanged(concept, objectId, originalData, newData, activityDate);
@@ -87,12 +92,26 @@ public class ActivityManager extends SecuredManager {
     }
 
     @Transactional
+    public Long addUserActivity(UUID objectUuid, String activityDescription, Object originalData, Object newData)
+            throws ActivityException {
+
+        try {
+            Date activityDate = new Date();
+            ActivityDTO activity = addActivity(ActivityConcept.USER, null, objectUuid, activityDescription, originalData, newData, null, activityDate, getCurrentUser());
+            return activity == null ? null : activity.getId();
+        } catch (Exception e) {
+            LOGGER.error("Error adding activity.", e);
+            throw new ActivityException(e);
+        }
+    }
+
+    @Transactional
     public Long addActivity(ActivityConcept concept, Long objectId, String activityDescription, Object originalData, Object newData, String reason)
             throws ActivityException {
 
         try {
             Date activityDate = new Date();
-            ActivityDTO activity = addActivity(concept, objectId, activityDescription, originalData, newData, reason, activityDate, getCurrentUser());
+            ActivityDTO activity = addActivity(concept, objectId, null, activityDescription, originalData, newData, reason, activityDate, getCurrentUser());
             if (activity != null) {
                 questionableActivityListener.checkQuestionableActivity(activity, originalData, newData, reason);
                 chplProductNumberChangedListener.recordChplProductNumberChanged(concept, objectId, originalData, newData, activityDate);
@@ -111,7 +130,7 @@ public class ActivityManager extends SecuredManager {
 
         try {
             Date activityDate = new Date();
-            ActivityDTO activity = addActivity(concept, objectId, activityDescription, originalData, newData, null, activityDate, asUser);
+            ActivityDTO activity = addActivity(concept, objectId, null, activityDescription, originalData, newData, null, activityDate, asUser);
             if (activity != null) {
                 questionableActivityListener.checkQuestionableActivity(activity, originalData, newData);
                 chplProductNumberChangedListener.recordChplProductNumberChanged(concept, objectId, originalData, newData, activityDate);
@@ -126,18 +145,18 @@ public class ActivityManager extends SecuredManager {
 
     private User getCurrentUser() throws UserRetrievalException {
         User currentUser = null;
-        if (AuthUtil.getCurrentUser() != null
-                && AuthUtil.getCurrentUser().getAuthenticationSystem().equals(AuthenticationSystem.CHPL)) {
-            currentUser = userDAO.getById(AuthUtil.getAuditId()).toDomain();
-        } else if (AuthUtil.getCurrentUser() != null
-                && AuthUtil.getCurrentUser().getAuthenticationSystem().equals(AuthenticationSystem.COGNITO)) {
-            currentUser = cognitoApiWrapper.getUserInfo(AuthUtil.getCurrentUser().getCognitoId());
+        if (AuthUtil.getCurrentUser() != null) {
+            if (ff4j.check(FeatureList.SSO)) {
+                currentUser = cognitoApiWrapper.getUserInfo(AuthUtil.getCurrentUser().getCognitoId());
+            } else {
+                currentUser = userDAO.getById(AuthUtil.getAuditId()).toDomain();
+            }
         }
         return currentUser;
     }
 
-    private ActivityDTO addActivity(ActivityConcept concept, Long objectId, String activityDescription, Object originalData,
-            Object newData, String reason, Date timestamp, User asUser)
+    private ActivityDTO addActivity(ActivityConcept concept, Long objectId, UUID objectUuid, String activityDescription,
+            Object originalData, Object newData, String reason, Date timestamp, User asUser)
             throws EntityCreationException, EntityRetrievalException, JsonProcessingException {
 
         String originalDataStr = null;
@@ -169,6 +188,7 @@ public class ActivityManager extends SecuredManager {
             dto.setNewData(newDataStr);
             dto.setActivityDate(timestamp);
             dto.setActivityObjectId(objectId);
+            dto.setActivityObjectUuid(objectUuid);
             dto.setReason(reason);
             dto.setCreationDate(new Date());
             dto.setLastModifiedDate(new Date());
@@ -207,6 +227,7 @@ public class ActivityManager extends SecuredManager {
         event.setDescription(dto.getDescription());
         event.setActivityDate(dto.getActivityDate());
         event.setActivityObjectId(dto.getActivityObjectId());
+        event.setActivityObjectUuid(dto.getActivityObjectUuid());
         event.setConcept(dto.getConcept());
         event.setResponsibleUser(dto.getUser());
 

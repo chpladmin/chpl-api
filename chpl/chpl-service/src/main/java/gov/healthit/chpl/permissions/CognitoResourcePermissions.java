@@ -1,6 +1,7 @@
 package gov.healthit.chpl.permissions;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.Predicate;
@@ -53,38 +54,71 @@ public class CognitoResourcePermissions implements ResourcePermissions {
 
     @Override
     public List<User> getAllUsersOnAcb(CertificationBody acb) {
-        return cognitoApiWrapper.getAllUsers().stream()
+        return getAllUsersOnAcb(acb, false);
+    }
+
+    @Override
+    public List<User> getAllUsersOnAcb(CertificationBody acb, boolean includeDisabled) {
+        List<User> allUsersOnAcb = cognitoApiWrapper.getAllUsers(includeDisabled).stream()
                 .filter(user -> user.getRole() != null
                         && user.getRole().equals(CognitoGroups.CHPL_ACB)
                         && user.getOrganizations().stream()
                                 .filter(org -> org.getId().equals(acb.getId()))
                                 .findAny()
                                 .isPresent())
-                .toList();
+                .collect(Collectors.toList());
+
+        return allUsersOnAcb;
     }
 
     @Override
     public List<User> getAllUsersOnDeveloper(Developer dev) {
-        return cognitoApiWrapper.getAllUsers().stream()
+        return getAllUsersOnDeveloper(dev, false);
+    }
+
+    @Override
+    public List<User> getAllUsersOnDeveloper(Developer dev, boolean includeDisabled) {
+        List<User> allUsersOnDeveloper = cognitoApiWrapper.getAllUsers(includeDisabled).stream()
                 .filter(user -> user.getRole() != null
                         && user.getRole().equals(CognitoGroups.CHPL_DEVELOPER)
                         && user.getOrganizations().stream()
                                 .filter(org -> org.getId().equals(dev.getId()))
                                 .findAny()
                                 .isPresent())
-                .toList();
+                .collect(Collectors.toList());
+
+        return allUsersOnDeveloper;
     }
 
     @Override
     public List<User> getAllDeveloperUsers() {
-        return cognitoApiWrapper.getAllUsers().stream()
+        return getAllDeveloperUsers(false);
+    }
+
+    @Override
+    public List<User> getAllDeveloperUsers(boolean includeDisabled) {
+        List<User> allDeveloperUsers = cognitoApiWrapper.getAllUsers(includeDisabled).stream()
                 .filter(user -> user.getRole() != null
                         && user.getRole().equals(CognitoGroups.CHPL_DEVELOPER))
-                .toList();
+                .collect(Collectors.toList());
+
+        return allDeveloperUsers;
+    }
+
+    @Override
+    public List<User> getAllUsersForCurrentUser() {
+        return getAllUsersForCurrentUser(false);
+    }
+
+    @Override
+    public List<User> getAllUsersForCurrentUser(boolean includeDisabled) {
+        LOGGER.error("Not implemented: getAllUsersForCurrentUser");
+        throw new NotImplementedException("Not implemented: getAllUsersForCurrentUser");
     }
 
     @Override
     public List<CertificationBody> getAllAcbsForCurrentUser() {
+
         try {
             User user = cognitoApiWrapper.getUserInfo(AuthUtil.getCurrentUser().getCognitoId());
             if (user != null) {
@@ -108,7 +142,7 @@ public class CognitoResourcePermissions implements ResourcePermissions {
     public List<CertificationBody> getAllAcbsForUser(User user) {
         return user.getOrganizations().stream()
                 .map(org -> getCertifcationBody(org.getId()))
-                .toList();
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -126,13 +160,7 @@ public class CognitoResourcePermissions implements ResourcePermissions {
     public List<Developer> getAllDevelopersForUser(User user) {
         return user.getOrganizations().stream()
                 .map(org -> getDeveloper(org.getId()))
-                .toList();
-    }
-
-    @Override
-    public List<User> getAllUsersForCurrentUser() {
-        LOGGER.error("Not implemented: getAllUsersForCurrentUser");
-        throw new NotImplementedException("Not implemented: getAllUsersForCurrentUser");
+                .collect(Collectors.toList());
     }
 
     @Override

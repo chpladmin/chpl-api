@@ -48,7 +48,7 @@ public class MissingAttestationChangeRequestDeveloperEmailGenerator {
 
     public DeveloperEmail getDeveloperEmail(DeveloperSearchResult developer, User submittedUser) {
         try {
-            List<User> developerUsers = developerManager.getAllUsersOnDeveloper(developer.getId());
+            List<User> developerUsers = developerManager.getAllUsersOnDeveloper(developer.getId(), false);
             return DeveloperEmail.builder()
                     .developer(developer)
                     .recipients(getRecipients(developerUsers))

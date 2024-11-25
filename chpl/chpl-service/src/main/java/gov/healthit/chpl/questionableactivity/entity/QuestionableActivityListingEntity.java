@@ -14,8 +14,8 @@ import jakarta.persistence.Table;
 
 import org.hibernate.annotations.Where;
 
+import gov.healthit.chpl.activity.entity.ActivityEntity;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
-import gov.healthit.chpl.entity.ActivityEntity;
 import gov.healthit.chpl.entity.EntityAudit;
 import gov.healthit.chpl.entity.auth.UserEntity;
 import gov.healthit.chpl.entity.listing.CertifiedProductDetailsEntity;

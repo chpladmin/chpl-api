@@ -2,6 +2,7 @@ package gov.healthit.chpl.web.controller;
 
 import java.util.List;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.quartz.SchedulerException;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.domain.CertificationBody;
+import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.domain.auth.UsersResponse;
 import gov.healthit.chpl.dto.auth.UserDTO;
 import gov.healthit.chpl.exception.ActivityException;
@@ -33,6 +35,8 @@ import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import gov.healthit.chpl.web.controller.results.CertificationBodyResults;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -47,17 +51,21 @@ import lombok.extern.log4j.Log4j2;
 @RequestMapping("/acbs")
 public class CertificationBodyController {
 
-    @Autowired
     private CertificationBodyManager acbManager;
-
-    @Autowired
     private ResourcePermissionsFactory resourcePermissionsFactory;
-
-    @Autowired
     private UserPermissionsManager userPermissionsManager;
+    private UserManager userManager;
 
     @Autowired
-    private UserManager userManager;
+    public CertificationBodyController(CertificationBodyManager acbManager,
+            ResourcePermissionsFactory resourcePermissionsFactory,
+            UserPermissionsManager userPermissionsManager,
+            UserManager userManager) {
+        this.acbManager = acbManager;
+        this.resourcePermissionsFactory = resourcePermissionsFactory;
+        this.userPermissionsManager = userPermissionsManager;
+        this.userManager = userManager;
+    }
 
     @Operation(summary = "List all certification bodies (ONC-ACBs).",
             description = "Setting the 'editable' parameter to true will return all ONC-ACBs that the logged in user has "
@@ -77,11 +85,10 @@ public class CertificationBodyController {
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody CertificationBodyResults getAcbs(
             @RequestParam(required = false, defaultValue = "false") final boolean editable) {
-        // TODO confirm a user is logged in here
         CertificationBodyResults results = new CertificationBodyResults();
         List<CertificationBody> acbs = null;
         if (editable) {
-            acbs = resourcePermissionsFactory.get().getAllAcbsForCurrentUser();
+            acbs = acbManager.getAllEditable();
         } else {
             acbs = acbManager.getAll();
         }
@@ -174,32 +181,7 @@ public class CertificationBodyController {
     public CertificationBody updateAcb(@RequestBody final CertificationBody acbToUpdate)
             throws EntityRetrievalException, SchedulerException, ValidationException, ActivityException, InvalidArgumentsException {
 
-        // Get the ACB as it is currently in the database to find out if
-        // the retired flag was changed.
-        // Retirement and un-retirement is done as a separate manager action
-        // because security is different from normal ACB updates - only admins are
-        // allowed whereas an ACB admin can update other info
-        CertificationBody existingAcb = resourcePermissionsFactory.get().getAcbIfPermissionById(acbToUpdate.getId());
-        if (acbToUpdate.isRetired()) {
-            // we are retiring this ACB - no other updates can happen
-            existingAcb.setRetirementDay(acbToUpdate.getRetirementDay());
-            existingAcb.setRetired(true);
-            acbManager.retire(existingAcb);
-        } else {
-            if (existingAcb.isRetired()) {
-                // unretire the ACB
-                acbManager.unretire(acbToUpdate.getId());
-            }
-
-            if (StringUtils.isEmpty(acbToUpdate.getWebsite())) {
-                throw new InvalidArgumentsException("A website is required to update the certification body");
-            }
-            if (acbToUpdate.getAddress() == null) {
-                throw new InvalidArgumentsException("An address is required to update the certification body");
-            }
-            acbManager.update(acbToUpdate);
-        }
-        return acbManager.getById(acbToUpdate.getId());
+        return acbManager.update(acbToUpdate);
     }
 
     @Operation(summary = "Remove user permissions from an ONC-ACB.",
@@ -263,15 +245,18 @@ public class CertificationBodyController {
     })
     @RequestMapping(value = "/{acbId}/users", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
-    public @ResponseBody UsersResponse getUsers(@PathVariable("acbId") final Long acbId)
+    public @ResponseBody UsersResponse getUsers(@PathVariable("acbId") Long acbId,
+            @Parameter(description = "Whether to include users whose accounts have been marked as disabled. "
+                    + "Any string that can be evaluated as a boolean may be passed in (ex: true, false, off, on, yes, no). "
+                    + "The parameter only affects the response when called by an authenticated ADMIN or ONC user.",
+                allowEmptyValue = true, in = ParameterIn.QUERY, name = "includeDisabled")
+            @RequestParam(value = "includeDisabled", required = false, defaultValue = "false") String includeDisabled)
             throws InvalidArgumentsException, EntityRetrievalException {
-        CertificationBody acb = resourcePermissionsFactory.get().getAcbIfPermissionById(acbId);
-        if (acb == null) {
-            throw new InvalidArgumentsException("Could not find the ACB specified.");
-        }
+        List<User> users = acbManager.getUsers(acbId,
+                StringUtils.isEmpty(includeDisabled) ? false : BooleanUtils.toBoolean(includeDisabled));
 
         UsersResponse results = new UsersResponse();
-        results.setUsers(resourcePermissionsFactory.get().getAllUsersOnAcb(acb));
+        results.setUsers(users);
         return results;
     }
 }

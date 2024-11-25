@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 
 import com.datadog.api.client.ApiException;
 import com.datadog.api.client.v1.api.SyntheticsApi.GetAPITestLatestResultsOptionalParameters;
+import com.datadog.api.client.v1.model.SyntheticsAPITestResultFull;
 import com.datadog.api.client.v1.model.SyntheticsAPITestResultShort;
 import com.datadog.api.client.v1.model.SyntheticsGetAPITestLatestResultsResponse;
 
@@ -22,6 +23,7 @@ import lombok.extern.log4j.Log4j2;
 public class DatadogSyntheticsTestResultService {
 
     private DatadogSyntheticsTestApiProvider apiProvider;
+
 
     @Autowired
     public DatadogSyntheticsTestResultService(DatadogSyntheticsTestApiProvider apiProvider) {
@@ -54,6 +56,15 @@ public class DatadogSyntheticsTestResultService {
         }
 
         return testResults;
+    }
+
+    public SyntheticsAPITestResultFull getDetailedTestResult(String publicTestKey, String resultId) {
+        try {
+            return apiProvider.getApiInstance().getAPITestResult(publicTestKey, resultId);
+        } catch (ApiException e) {
+            LOGGER.error("Could not retrieve test result details for: {} | {}", publicTestKey, resultId);
+            return null;
+        }
     }
 
     private Long getMostRecentTimestamp(List<SyntheticsAPITestResultShort> testResults) {

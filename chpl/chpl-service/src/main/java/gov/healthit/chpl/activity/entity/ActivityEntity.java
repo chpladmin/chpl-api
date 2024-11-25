@@ -1,12 +1,15 @@
-package gov.healthit.chpl.entity;
+package gov.healthit.chpl.activity.entity;
 
 import java.util.Date;
+import java.util.UUID;
 
 import gov.healthit.chpl.activity.search.ActivitySearchResult;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.dto.ActivityDTO;
+import gov.healthit.chpl.entity.EntityAudit;
 import gov.healthit.chpl.util.DateUtil;
+import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -94,6 +97,10 @@ public class ActivityEntity extends EntityAudit {
     @Column(name = "activity_object_id", nullable = false)
     private Long activityObjectId;
 
+    @Basic(optional = true)
+    @Column(name = "activity_object_uuid", nullable = true)
+    private UUID activityObjectUuid;
+
     @Column(name = "activity_object_concept_id", nullable = false)
     private Long activityObjectConceptId;
 
@@ -112,6 +119,7 @@ public class ActivityEntity extends EntityAudit {
                 .newData(this.getNewData())
                 .activityDate(this.getActivityDate())
                 .activityObjectId(this.getActivityObjectId())
+                .activityObjectUuid(this.getActivityObjectUuid())
                 .concept(ActivityConcept.valueOf(this.getConcept().getConcept()))
                 .reason(this.getReason())
                 .creationDate(this.getCreationDate())
@@ -129,6 +137,7 @@ public class ActivityEntity extends EntityAudit {
                 .after(this.getNewData())
                 .activityDate(DateUtil.toLocalDateTime(this.getActivityDate().getTime()))
                 .objectId(this.getActivityObjectId())
+                .objectUuid(this.getActivityObjectUuid())
                 .reason(this.getReason())
                 .description(this.getDescription())
                 .concept(ActivityConcept.valueOf(this.getConcept().getConcept()).name())
