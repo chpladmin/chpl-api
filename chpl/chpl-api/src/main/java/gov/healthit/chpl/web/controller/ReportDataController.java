@@ -278,12 +278,12 @@ public class ReportDataController {
         return reportDataManager.getTestToolListingReports();
     }
 
-    @Operation(summary = "Retrieves the data used to generate the Service Base Url Listing report.",
-            description = "Retrieves the data used to generate the Service Base Url Listing report.",
+    @Operation(summary = "Retrieves the data used to generate the Service Base Url List report.",
+            description = "Retrieves the data used to generate the Service Base Url List report.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
-    @RequestMapping(value = "/service-base-url-listing", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    @RequestMapping(value = "/service-base-url-list", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<UrlUptimeMonitorEx> getUrlUptimeMonitors() {
         return reportDataManager.getUrlUptimeMonitors();
     }
