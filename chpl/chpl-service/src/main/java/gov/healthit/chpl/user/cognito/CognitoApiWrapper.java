@@ -197,24 +197,6 @@ public class CognitoApiWrapper {
         return createUserFromGetUserResponse(response);
     }
 
-
-<<<<<<< Updated upstream
-    @CachePut(CacheNames.COGNITO_USERS)
-=======
->>>>>>> Stashed changes
-    public User getUserNoCache(UUID cognitoId) throws UserRetrievalException {
-        AdminGetUserRequest request = AdminGetUserRequest.builder()
-                .userPoolId(userPoolId)
-                .username(cognitoId.toString())
-                .build();
-
-        AdminGetUserResponse response = cognitoClient.adminGetUser(request);
-        if (response == null || response.sdkHttpResponse() == null || !response.sdkHttpResponse().isSuccessful()) {
-            return null;
-        }
-        return createUserFromGetUserResponse(response);
-    }
-
     public CognitoCredentials createUser(CreateUserRequest userRequest) throws UserCreationException {
         try {
             String tempPassword = PasswordUtil.generatePassword();
