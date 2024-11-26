@@ -1,5 +1,19 @@
 # Release Notes
 
+## Version 47.4.0
+_25 November 2024_
+
+### Features
+* Exclude 'Body too large to process' errors from Service Base URL Report
+* Add endpoints to support Summary Statistics - Product, Direct Review, Listing Reports
+* Add ability to "includeDisabled" to all calls that get users
+
+### Flagged Features
+* Save Activity when updating/creating Cognito Users
+* Update display of "disabled" Users
+
+---
+
 ## Version 47.3.0
 _12 November 2024_
 
