@@ -32,7 +32,7 @@ import gov.healthit.chpl.scheduler.job.developer.attestation.DeveloperAttestatio
 import gov.healthit.chpl.util.DateUtil;
 import lombok.extern.log4j.Log4j2;
 
-@Log4j2
+@Log4j2(topic = "attestationReportCreatorJobLogger")
 public class AttestationReportCreatorJob extends QuartzJob {
     private static final Integer DAYS_IN_APPROVAL_PERIOD = 30;
 
