@@ -3,6 +3,7 @@ package gov.healthit.chpl.report.servicebaseurllistreport;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -11,6 +12,8 @@ import gov.healthit.chpl.developer.search.DeveloperSearchRequest;
 import gov.healthit.chpl.developer.search.DeveloperSearchService;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.IdNamePair;
+import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.manager.CertificationBodyManager;
 import gov.healthit.chpl.scheduler.job.urluptime.UrlUptimeMonitorDAO;
 import gov.healthit.chpl.scheduler.job.urluptime.UrlUptimeMonitorTestDAO;
 import lombok.extern.log4j.Log4j2;
@@ -21,12 +24,15 @@ public class ServiceBaseUrlListReportService {
     private UrlUptimeMonitorDAO urlUptimeMonitorDAO;
     private UrlUptimeMonitorTestDAO urlUptimeMonitorTestDAO;
     private DeveloperSearchService developerSearchService;
+    private CertificationBodyManager certificationBodyManager;
 
     @Autowired
-    public ServiceBaseUrlListReportService(UrlUptimeMonitorDAO urlUptimeMonitorDAO, UrlUptimeMonitorTestDAO urlUptimeMonitorTestDAO, DeveloperSearchService developerSearchService) {
+    public ServiceBaseUrlListReportService(UrlUptimeMonitorDAO urlUptimeMonitorDAO, UrlUptimeMonitorTestDAO urlUptimeMonitorTestDAO, DeveloperSearchService developerSearchService,
+            CertificationBodyManager certificationBodyManager) {
         this.urlUptimeMonitorDAO = urlUptimeMonitorDAO;
         this.urlUptimeMonitorTestDAO = urlUptimeMonitorTestDAO;
         this.developerSearchService = developerSearchService;
+        this.certificationBodyManager = certificationBodyManager;
     }
 
     public List<UrlUptimeMonitorEx> getUrlUptimeMonitors() {
@@ -58,7 +64,18 @@ public class ServiceBaseUrlListReportService {
 
         return developerSearchService.getAllPagesOfSearchResults(request, LOGGER).stream()
                 .findFirst()
-                .map(res -> res.getAcbsForActiveListings())
+                .map(res -> res.getAcbsForActiveListings().stream()
+                        .filter(acb -> isAcbActive(acb.getId()))
+                        .collect(Collectors.toSet()))
                 .orElse(Set.of());
+    }
+
+    private Boolean isAcbActive(Long acbId) {
+        try {
+            return !certificationBodyManager.getById(acbId).isRetired();
+        } catch (EntityRetrievalException e) {
+            LOGGER.error("Could not determine is ACB {} is retired.", acbId);
+            return false;
+        }
     }
 }
