@@ -83,7 +83,7 @@ public class AttestationReportCreatorJob extends QuartzJob {
 
                 try {
                     if (inSubmissionPlusApprovalPeriod()) {
-                        if (CollectionUtils.isEmpty(attestationReportDAO.getAttestationReportByDate(LocalDate.now()))) {
+                        if (!CollectionUtils.isEmpty(attestationReportDAO.getAttestationReportByDate(LocalDate.now()))) {
                             attestationReportDAO.deleteAttestationReportByDate(LocalDate.now());
                         }
 

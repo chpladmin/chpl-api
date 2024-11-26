@@ -45,7 +45,7 @@ public class AttestationReportDAO extends BaseDAOImpl {
 
     private List<AttestationReportEntity> getEntitiesByDate(LocalDate date) {
         Query query = entityManager.createQuery(
-                "from AttestationReportEntity where (NOT deleted = true) and report_date = :date", AttestationReportEntity.class);
+                "from AttestationReportEntity where (NOT deleted = true) and reportDate = :date", AttestationReportEntity.class);
         query.setParameter("date", date);
         return query.getResultList();
     }
