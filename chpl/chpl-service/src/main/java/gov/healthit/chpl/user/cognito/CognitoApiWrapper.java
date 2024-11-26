@@ -198,10 +198,7 @@ public class CognitoApiWrapper {
     }
 
 
-<<<<<<< Updated upstream
     @CachePut(CacheNames.COGNITO_USERS)
-=======
->>>>>>> Stashed changes
     public User getUserNoCache(UUID cognitoId) throws UserRetrievalException {
         AdminGetUserRequest request = AdminGetUserRequest.builder()
                 .userPoolId(userPoolId)
