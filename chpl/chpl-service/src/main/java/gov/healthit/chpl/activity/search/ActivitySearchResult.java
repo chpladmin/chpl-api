@@ -2,6 +2,7 @@ package gov.healthit.chpl.activity.search;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -23,6 +24,7 @@ public class ActivitySearchResult implements Serializable {
     private Long id;
     private String concept;
     private Long objectId;
+    private UUID objectUuid;
     @JsonDeserialize(using = EasternToSystemLocalDateTimeDeserializer.class)
     @JsonSerialize(using = SystemToEasternLocalDateTimeSerializer.class)
     private LocalDateTime activityDate;

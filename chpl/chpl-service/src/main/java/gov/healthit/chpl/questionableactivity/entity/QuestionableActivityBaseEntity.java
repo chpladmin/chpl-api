@@ -2,7 +2,7 @@ package gov.healthit.chpl.questionableactivity.entity;
 
 import java.util.Date;
 
-import gov.healthit.chpl.entity.ActivityEntity;
+import gov.healthit.chpl.activity.entity.ActivityEntity;
 
 public interface QuestionableActivityBaseEntity {
 

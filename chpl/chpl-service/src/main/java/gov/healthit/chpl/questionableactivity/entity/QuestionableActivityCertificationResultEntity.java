@@ -11,10 +11,9 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-
+import gov.healthit.chpl.activity.entity.ActivityEntity;
 import gov.healthit.chpl.dto.CertificationResultDetailsDTO;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
-import gov.healthit.chpl.entity.ActivityEntity;
 import gov.healthit.chpl.entity.EntityAudit;
 import gov.healthit.chpl.entity.auth.UserEntity;
 import gov.healthit.chpl.entity.listing.CertificationResultDetailsEntity;

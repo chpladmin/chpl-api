@@ -17,10 +17,12 @@ import gov.healthit.chpl.domain.CreateUserFromInvitationRequest;
 import gov.healthit.chpl.domain.auth.CognitoEnvironments;
 import gov.healthit.chpl.domain.auth.CognitoGroups;
 import gov.healthit.chpl.domain.auth.User;
+import gov.healthit.chpl.exception.ActivityException;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.UserCreationException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
+import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.user.cognito.invitation.CognitoInvitationManager;
 import gov.healthit.chpl.user.cognito.invitation.CognitoUserInvitation;
@@ -36,6 +38,7 @@ public class CognitoUserManager {
     private CognitoConfirmEmailEmailer cognitoConfirmEmailEmailer;
     private CognitoApiWrapper cognitoApiWrapper;
     private CognitoInvitationManager cognitoInvitationManager;
+    private ActivityManager activityManager;
     private ResourcePermissionsFactory resourcePermissionsFactory;
     private String groupNameForEnvironment;
     private boolean isProdEnvironment = true;
@@ -46,6 +49,7 @@ public class CognitoUserManager {
             CognitoUpdateUserValidator userUpdateValidator,
             CognitoApiWrapper cognitoApiWrapper,
             CognitoInvitationManager cognitoInvitationManager,
+            ActivityManager activityManager,
             ResourcePermissionsFactory resourcePermissionsFactory,
             @Value("${cognito.environment.groupName}") String groupNameForEnvironment,
             @Value("${server.environment}") String serverEnvironment) {
@@ -54,6 +58,7 @@ public class CognitoUserManager {
         this.cognitoConfirmEmailEmailer = cognitoConfirmEmailEmailer;
         this.cognitoApiWrapper = cognitoApiWrapper;
         this.cognitoInvitationManager = cognitoInvitationManager;
+        this.activityManager = activityManager;
         this.resourcePermissionsFactory = resourcePermissionsFactory;
         this.groupNameForEnvironment = groupNameForEnvironment;
         if (StringUtils.equals(serverEnvironment, NON_PROD_ENVIRONMENT)) {
@@ -69,17 +74,20 @@ public class CognitoUserManager {
         return cognitoApiWrapper.getUserInfo(cognitoId);
     }
 
+    public User getUserInfo(String email) throws UserRetrievalException {
+        return cognitoApiWrapper.getUserInfo(email);
+    }
 
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SECURED_USER, "
             + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).UPDATE_COGNITO, #user)")
-    public User updateUser(User user) throws ValidationException, UserRetrievalException {
+    public User updateUser(User user) throws ValidationException, UserRetrievalException, ActivityException {
         Set<String> errors = userUpdateValidator.validate(user);
         if (errors.size() > 0) {
             throw new ValidationException(errors, null);
         }
 
-        User originalUser = cognitoApiWrapper.getUserInfo(user.getCognitoId());
+        User originalUser = cognitoApiWrapper.getUserNoCache(user.getCognitoId());
         cognitoApiWrapper.updateUser(user);
 
         if (originalUser.getAccountEnabled() && !user.getAccountEnabled()) {
@@ -88,11 +96,16 @@ public class CognitoUserManager {
             cognitoApiWrapper.enableUser(user);
         }
 
-        return cognitoApiWrapper.getUserInfo(user.getCognitoId());
+        User updatedUser = cognitoApiWrapper.getUserNoCache(user.getCognitoId());
+        activityManager.addUserActivity(updatedUser.getCognitoId(),
+                String.format("User %s was updated", updatedUser.getEmail()),
+                originalUser, updatedUser);
+        return updatedUser;
     }
 
-    public Boolean createUser(CreateUserFromInvitationRequest userInfo)
-            throws ValidationException, UserCreationException, EmailNotSentException {
+    @Transactional
+    public UUID createUser(CreateUserFromInvitationRequest userInfo)
+            throws ValidationException, UserCreationException, UserRetrievalException, ActivityException, EmailNotSentException {
 
         Set<String> errors = userCreationValidator.validate(userInfo);
         if (errors.size() > 0) {
@@ -115,14 +128,19 @@ public class CognitoUserManager {
             }
             cognitoInvitationManager.deleteToken(UUID.fromString(userInfo.getHash()));
             cognitoConfirmEmailEmailer.sendConfirmationEmail(credentials);
-        } catch (EmailNotSentException e) {
+
+            User createdUser = cognitoApiWrapper.getUserNoCache(credentials.getCognitoId());
+            activityManager.addUserActivity(createdUser.getCognitoId(),
+                    String.format("User %s was created", createdUser.getEmail()),
+                    null, createdUser);
+        } catch (Exception e) {
             //Invitation deletion should roll back due to @Transactional
             if (credentials != null) {
                 cognitoApiWrapper.deleteUser(credentials.getCognitoId());
             }
             throw e;
         }
-        return true;
+        return credentials == null ? null : credentials.getCognitoId();
     }
 
     @Transactional
