@@ -183,7 +183,6 @@ public class CognitoApiWrapper {
         return createUserFromGetUserResponse(response);
     }
 
-    @CachePut(CacheNames.COGNITO_USERS)
     public User getUserInfo(String email) throws UserRetrievalException {
         AdminGetUserRequest request = AdminGetUserRequest.builder()
                 .userPoolId(userPoolId)
