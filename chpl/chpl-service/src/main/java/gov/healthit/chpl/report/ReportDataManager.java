@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.developer.search.DeveloperSearchResult;
+import gov.healthit.chpl.report.attestation.AttestationReportService;
 import gov.healthit.chpl.report.criteriaattribute.TestToolListingReport;
 import gov.healthit.chpl.report.criteriaattribute.TestToolReport;
 import gov.healthit.chpl.report.criteriaattribute.TestToolReportService;
@@ -25,6 +26,7 @@ import gov.healthit.chpl.report.surveillance.CapCounts;
 import gov.healthit.chpl.report.surveillance.NonconformityCounts;
 import gov.healthit.chpl.report.surveillance.SurveillanceActivityCounts;
 import gov.healthit.chpl.report.surveillance.SurveillanceReportsService;
+import gov.healthit.chpl.scheduler.job.report.attestation.AttestationReport;
 import gov.healthit.chpl.scheduler.job.summarystatistics.data.CertificationBodyStatistic;
 import gov.healthit.chpl.search.domain.ListingSearchResult;
 import lombok.Synchronized;
@@ -42,12 +44,14 @@ public class ReportDataManager {
     private ListingReportsService listingReportsService;
     private TestToolReportService testToolReportService;
     private DirectReviewReportsService directReviewReportsService;
+    private AttestationReportService attestationReportService;
     private ReportMetadataDAO reportMetadataDAO;
 
     @Autowired
     public ReportDataManager(CriteriaMigrationReportService criteriaMigrationReportService, DeveloperReportsService developerReportsService,
             SurveillanceReportsService surveillanceReportsService, ProductReportsService productReportsService, ListingReportsService listingReportsService,
-            TestToolReportService testToolReportService, DirectReviewReportsService directReviewReportsService, ReportMetadataDAO reportMetadataDAO) {
+            TestToolReportService testToolReportService, DirectReviewReportsService directReviewReportsService, AttestationReportService attestationReportService,
+            ReportMetadataDAO reportMetadataDAO) {
         this.criteriaMigrationReportService = criteriaMigrationReportService;
         this.developerReportsService = developerReportsService;
         this.surveillanceReportsService = surveillanceReportsService;
@@ -55,6 +59,7 @@ public class ReportDataManager {
         this.listingReportsService = listingReportsService;
         this.testToolReportService = testToolReportService;
         this.directReviewReportsService = directReviewReportsService;
+        this.attestationReportService = attestationReportService;
         this.reportMetadataDAO = reportMetadataDAO;
     }
 
@@ -227,4 +232,10 @@ public class ReportDataManager {
     public DirectReviewCounts getDirectReviewCounts() {
         return directReviewReportsService.getDirectReviewCounts();
     }
+
+    @Synchronized("lock")
+    public List<AttestationReport> getAttestationReports() {
+        return attestationReportService.getAttestationReports();
+    }
+
 }

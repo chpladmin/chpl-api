@@ -25,6 +25,7 @@ import gov.healthit.chpl.report.product.UniqueProductCount;
 import gov.healthit.chpl.report.surveillance.CapCounts;
 import gov.healthit.chpl.report.surveillance.NonconformityCounts;
 import gov.healthit.chpl.report.surveillance.SurveillanceActivityCounts;
+import gov.healthit.chpl.scheduler.job.report.attestation.AttestationReport;
 import gov.healthit.chpl.scheduler.job.summarystatistics.data.CertificationBodyStatistic;
 import gov.healthit.chpl.search.domain.ListingSearchResult;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
@@ -427,6 +428,16 @@ public class ReportDataController {
     @RequestMapping(value = "/direct-review-counts", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody DirectReviewCounts getDirectReviewCounts() {
         return reportDataManager.getDirectReviewCounts();
+    }
+
+    @Operation(summary = "Retrieves the data used to generate the Attestations report.",
+            description = "Retrieves the data used to generate the Attestations report.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
+    @RequestMapping(value = "/attestations", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public @ResponseBody List<AttestationReport> getAttestationReports() {
+        return reportDataManager.getAttestationReports();
     }
 
 }

@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.attestation.domain.AttestationPeriod;
 import gov.healthit.chpl.attestation.entity.AttestationPeriodEntity;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.entity.CertificationBodyEntity;
@@ -36,6 +37,12 @@ public class AttestationReportDAO extends BaseDAOImpl {
                 .toList();
     }
 
+    public List<AttestationReport> getAttestationReportByAttestationPeriod(AttestationPeriod period) {
+        return getEntitiesByAttestationPeriod(period).stream()
+                .map(entity -> entity.toDomain())
+                .toList();
+    }
+
     public void deleteAttestationReportByDate(LocalDate date) {
         getEntitiesByDate(date).forEach(entity -> {
             entity.setDeleted(true);
@@ -50,5 +57,10 @@ public class AttestationReportDAO extends BaseDAOImpl {
         return query.getResultList();
     }
 
-
+    private List<AttestationReportEntity> getEntitiesByAttestationPeriod(AttestationPeriod period) {
+        Query query = entityManager.createQuery(
+                "from AttestationReportEntity where (NOT deleted = true) and attestationPeriod.id = :attestationPeriodId", AttestationReportEntity.class);
+        query.setParameter("attestationPeriodId", period.getId());
+        return query.getResultList();
+    }
 }

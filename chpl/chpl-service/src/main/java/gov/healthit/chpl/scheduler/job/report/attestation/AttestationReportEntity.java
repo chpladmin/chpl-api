@@ -30,6 +30,7 @@ import lombok.experimental.SuperBuilder;
 @Entity
 @Table(name = "attestation_report")
 public class AttestationReportEntity extends EntityAudit {
+    private static final long serialVersionUID = -3139285302653689705L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
