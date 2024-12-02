@@ -112,10 +112,9 @@ public class UserManagementController {
     }
 
     @Operation(summary = "Update the currently logged in user with an additional organization.",
-            description = "Gives the user permission on the object in the invitation (usually an additional ACB or Developer)."
-                    + "The correct order to call invitation requests is "
-                    + "the following: 1) /invite 2) /create or /authorize 3) /confirm.  Security Restrictions: ROLE_ADMIN "
-                    + "or ROLE_ONC.",
+            description = "Update the currently logged in user with an additional organization.  This"
+                    + "is typically adding another developer or ONC-ACB to an existing user's list "
+                    + "of organizations they have access to.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
@@ -152,7 +151,7 @@ public class UserManagementController {
                     + "or add the permissions contained within the invitation to an existing account "
                     + "if they have one. Said another way, an invitation can be used to create or "
                     + "modify CHPL user accounts." + "The correct order to call invitation requests is "
-                    + "the following: 1) /invite 2) /create or /authorize. "
+                    + "the following: 1) POST /users/invitation 2) POST /users or POST users/authorize/{invitationToken}. "
                     + "Security Restrictions: ROLE_ADMIN and ROLE_ONC can invite users to any organization.  "
                     + "ROLE_ACB can add users to their own organization.",
             security = {
@@ -195,7 +194,7 @@ public class UserManagementController {
                     + "That user key along with all the information needed to create a new user's account "
                     + "can be passed in here. The account is created but cannot be used until that user "
                     + "confirms that their email address is valid. The correct order to call invitation requests is "
-                    + "the following: 1) /invite 2) /create or /authorize ",
+                    + "the following: 1) POST /users/invitation 2) POST /users or POST users/authorize/{invitationToken}",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
