@@ -33,14 +33,10 @@ public class ActivityMetadata implements Serializable {
     private ActivityConcept concept;
     @Singular
     private Set<ActivityCategory> categories = new HashSet<ActivityCategory>();
+
     @Setter(AccessLevel.NONE)
     @Getter(AccessLevel.NONE)
     private Date date;
-
-    @DeprecatedResponseField(message = "This field is deprecated and will be removed. Use object.id",
-            removalDate = "2024-10-31")
-    @Deprecated
-    private Long objectId;
 
     private ActivityObject object;
     private User responsibleUser;
