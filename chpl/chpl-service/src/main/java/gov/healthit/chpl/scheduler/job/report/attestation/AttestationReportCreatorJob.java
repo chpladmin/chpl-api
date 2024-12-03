@@ -10,6 +10,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
@@ -34,10 +35,12 @@ import lombok.extern.log4j.Log4j2;
 
 @Log4j2(topic = "attestationReportCreatorJobLogger")
 public class AttestationReportCreatorJob extends QuartzJob {
-    private static final Integer DAYS_IN_APPROVAL_PERIOD = 30;
 
     @Autowired
     private JpaTransactionManager txManager;
+
+    @Autowired
+    private Environment env;
 
     @Autowired
     private AttestationPeriodService attestationPeriodService;
@@ -62,6 +65,8 @@ public class AttestationReportCreatorJob extends QuartzJob {
 
     @Autowired
     private AttestationCertificationBodyService attestationCertificationBodyService;
+
+
 
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
@@ -151,12 +156,8 @@ public class AttestationReportCreatorJob extends QuartzJob {
     private boolean inSubmissionPlusApprovalPeriod() {
         AttestationPeriod attestationPeriod = attestationPeriodService.getMostRecentPastAttestationPeriod();
         return DateUtil.isDateBetweenInclusive(
-                Pair.of(attestationPeriod.getSubmissionStart(), attestationPeriod.getSubmissionEnd().plusDays(DAYS_IN_APPROVAL_PERIOD)),
+                Pair.of(attestationPeriod.getSubmissionStart(), attestationPeriod.getSubmissionEnd().plusDays(getDaysInApprovalPeriod())),
                 LocalDate.now());
-    }
-
-    private List<CertificationBody> getActiveAcbs() {
-        return certificationBodyManager.getAllActive();
     }
 
     private List<Developer> getDevelopersActiveListingsDuringMostRecentPastAttestationPeriod() {
@@ -184,5 +185,9 @@ public class AttestationReportCreatorJob extends QuartzJob {
                 .filter(acb -> acb.getId().equals(certificationBody.getId()))
                 .findAny()
                 .isPresent();
+    }
+
+    private Integer getDaysInApprovalPeriod() {
+        return Integer.valueOf(env.getProperty("job.apiKeyDeleteJob.config.message"));
     }
 }
