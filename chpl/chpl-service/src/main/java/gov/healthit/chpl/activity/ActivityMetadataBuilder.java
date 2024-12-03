@@ -45,7 +45,6 @@ public class ActivityMetadataBuilder {
     protected void addGenericMetadata(ActivityDTO dto, ActivityMetadata metadata) {
         metadata.setId(dto.getId());
         metadata.setDate(dto.getActivityDate());
-        metadata.setObjectId(dto.getActivityObjectId());
         metadata.setObject(ActivityObject.builder()
                 .id(dto.getActivityObjectId())
                 .build());
