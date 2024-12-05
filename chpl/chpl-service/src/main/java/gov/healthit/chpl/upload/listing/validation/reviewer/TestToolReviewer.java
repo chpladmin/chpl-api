@@ -190,7 +190,7 @@ public class TestToolReviewer implements Reviewer {
     }
 
     private boolean isTestToolRetiredBeforeListingActiveDates(CertifiedProductSearchDetails listing, TestTool testTool) {
-        LocalDate listingStartDay = listing.getCertificationDay();
+        LocalDate listingStartDay = listing.getCertificationDay() == null ? LocalDate.MIN : listing.getCertificationDay();
         LocalDate testToolEndDay = testTool.getEndDay() == null ? LocalDate.MAX : testTool.getEndDay();
         return testToolEndDay.isBefore(listingStartDay);
     }

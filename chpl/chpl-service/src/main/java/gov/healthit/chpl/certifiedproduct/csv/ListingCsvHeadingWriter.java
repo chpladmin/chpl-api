@@ -111,7 +111,7 @@ public class ListingCsvHeadingWriter {
 
     private List<String> getCriteriaHeadings(CertifiedProductSearchDetails listing) {
         List<String> criteriaHeadings = new ArrayList<String>();
-        List<CertificationCriterion> allCriteriaAvailableToListing = criteriaManager.getCriteriaAvailableToListing(listing);
+        List<CertificationCriterion> allCriteriaAvailableToListing = criteriaManager.getCriteriaAvailableToListingAndUser(listing);
         allCriteriaAvailableToListing.stream()
             .forEach(certResult -> criteriaHeadings.addAll(getCriterionHeadings(certResult)));
         return criteriaHeadings;

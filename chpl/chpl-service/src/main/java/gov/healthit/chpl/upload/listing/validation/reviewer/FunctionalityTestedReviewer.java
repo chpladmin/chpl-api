@@ -158,7 +158,7 @@ public class FunctionalityTestedReviewer {
     }
 
     private boolean isFunctionalityTestedRetiredBeforeListingActiveDates(CertifiedProductSearchDetails listing, FunctionalityTested functionalityTested) {
-        LocalDate listingStartDay = listing.getCertificationDay();
+        LocalDate listingStartDay = listing.getCertificationDay() == null ? LocalDate.MIN : listing.getCertificationDay();
         LocalDate funcTestedEndDay = functionalityTested.getEndDay() == null ? LocalDate.MAX : functionalityTested.getEndDay();
         return funcTestedEndDay.isBefore(listingStartDay);
     }
