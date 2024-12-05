@@ -239,7 +239,8 @@ public class CertifiedProductManager extends SecuredManager {
         return cpDao.getDetailsByProductId(productId);
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CERTIFIED_PRODUCT, "
+            + "T(gov.healthit.chpl.permissions.domains.CertifiedProductDomainPermissions).CHANGE_ACB_OWNER)")
     @Transactional(readOnly = false)
     @CacheEvict(value = {
             CacheNames.GET_DECERTIFIED_DEVELOPERS, CacheNames.COLLECTIONS_DEVELOPERS
@@ -421,7 +422,7 @@ public class CertifiedProductManager extends SecuredManager {
         try {
             cpTestingLabDao.deleteCertifiedProductTestingLab(toDelete.getId());
         } catch (Exception e) {
-            LOGGER.info("Could not delete CertifiedProductTestingLab with Id: {}, {}", toDelete.getId(), e.getMessage(), e);
+            LOGGER.error("Could not delete CertifiedProductTestingLab with Id: {}, {}", toDelete.getId(), e.getMessage(), e);
         }
     }
 
@@ -429,7 +430,7 @@ public class CertifiedProductManager extends SecuredManager {
         try {
             cpTestingLabDao.createCertifiedProductTestingLab(toAdd, listingId);
         } catch (Exception e) {
-            LOGGER.info("Could not add CertifiedProductTestingLab with Id: {}, for Listing: {}, {}", toAdd.getTestingLab().getId(), listingId, e.getMessage(), e);
+            LOGGER.error("Could not add CertifiedProductTestingLab with Id: {}, for Listing: {}, {}", toAdd.getTestingLab().getId(), listingId, e.getMessage(), e);
         }
     }
 

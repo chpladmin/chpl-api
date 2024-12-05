@@ -3,6 +3,7 @@ package gov.healthit.chpl.certifiedproduct.service;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.collections.CollectionUtils;
@@ -38,6 +39,7 @@ import gov.healthit.chpl.svap.domain.CertificationResultSvap;
 import gov.healthit.chpl.testtool.CertificationResultTestTool;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ChplProductNumberUtil.ChplProductNumberParts;
+import gov.healthit.chpl.util.ErrorMessageUtil;
 import lombok.extern.log4j.Log4j2;
 
 @Component
@@ -45,10 +47,13 @@ import lombok.extern.log4j.Log4j2;
 public class ListingMergeService {
 
     private ChplProductNumberUtil chplProductNumberUtil;
+    private ErrorMessageUtil msgUtil;
 
     @Autowired
-    public ListingMergeService(ChplProductNumberUtil chplProductNumberUtil) {
+    public ListingMergeService(ChplProductNumberUtil chplProductNumberUtil,
+            ErrorMessageUtil msgUtil) {
         this.chplProductNumberUtil = chplProductNumberUtil;
+        this.msgUtil = msgUtil;
     }
 
     /**
@@ -67,10 +72,9 @@ public class ListingMergeService {
         //specifically applied because they are derived from listing data that is updateable via a file).
         String currentListingChplProductNumberAfterUpdates = applyUpdatesToChplProductNumber(updatedListing, currentListing);
         if (!updatedListing.getChplProductNumber().equals(currentListingChplProductNumberAfterUpdates)) {
-            throw new ValidationException("The CHPL Product Number in the uploaded file " + updatedListing.getChplProductNumber()
-                        + " does not match the expected CHPL Product Number of the listing after updates are applied: "
-                        + currentListingChplProductNumberAfterUpdates + ". "
-                        + "Product code, Version code, and Certified Date code may not be changed via upload file.");
+            throw new ValidationException(msgUtil.getMessage("listing.upload.badMerge",
+                    updatedListing.getChplProductNumber(),
+                    currentListingChplProductNumberAfterUpdates));
         }
 
         //Set all the things that cannot be changed via upload with the values
@@ -252,8 +256,15 @@ public class ListingMergeService {
         if (!CollectionUtils.isEmpty(updatedListingSed.getTestTasks())) {
             updatedListingSed.getTestTasks().stream()
                 .forEach(updatedTestTask -> setIdForTestTask(updatedTestTask, currListingSed.getTestTasks()));
-        }
 
+            Set<TestParticipant> currentTestParticipants = currListingSed.getTestTasks().stream()
+                    .flatMap(currTestTask -> currTestTask.getTestParticipants().stream())
+                    .collect(Collectors.toSet());
+
+            updatedListingSed.getTestTasks().stream()
+                .flatMap(updatedTestTask -> updatedTestTask.getTestParticipants().stream())
+                .forEach(updatedTestParticipant -> setIdForTestParticipant(updatedTestParticipant, currentTestParticipants));
+        }
     }
 
     private void setIdForTestTask(TestTask updatedTestTask, List<TestTask> currTestTasks) {
@@ -267,10 +278,6 @@ public class ListingMergeService {
                 .orElse(null);
             if (matchedCurrTestTask != null) {
                 updatedTestTask.setId(matchedCurrTestTask.getId());
-                if (!CollectionUtils.isEmpty(updatedTestTask.getTestParticipants())) {
-                    updatedTestTask.getTestParticipants().stream()
-                        .forEach(updatedTestParticipant -> setIdForTestParticipant(updatedTestParticipant, matchedCurrTestTask.getTestParticipants()));
-                }
             }
     }
 

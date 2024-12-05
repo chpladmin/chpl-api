@@ -12,6 +12,7 @@ import org.mockito.Mockito;
 
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.util.CertificationResultRules;
 
 public class CertificationCriteriaManagerTest {
@@ -54,7 +55,8 @@ public class CertificationCriteriaManagerTest {
                         .endDay(LocalDate.parse("2024-01-01"))
                         .build())
                     .toList());
-        manager = new CertificationCriteriaManager(certificationCriterionDao, rules, criterionComparator);
+        ResourcePermissionsFactory resourcePermissionsFactory = Mockito.mock(ResourcePermissionsFactory.class);
+        manager = new CertificationCriteriaManager(certificationCriterionDao, rules, criterionComparator, resourcePermissionsFactory);
     }
 
     @Test
