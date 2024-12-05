@@ -103,7 +103,7 @@ public class ChplProductNumberUtil {
             String addlSoftwareCode, String certDateCode) {
 
         ChplProductNumberParts parts = new ChplProductNumberParts();
-        parts.setEditionCode(year);
+        parts.setEditionCode(!StringUtils.isEmpty(year) ? year : EDITION_CODE_DEFAULT);
         parts.setAtlCode(testingLab);
         parts.setAcbCode(certBody);
         parts.setDeveloperCode(vendorCode);
@@ -276,7 +276,7 @@ public class ChplProductNumberUtil {
     }
 
     public List<String> getAllowedEditionCodes() {
-        return Stream.of("15").toList();
+        return Stream.of(EDITION_CODE_DEFAULT).toList();
     }
 
     private String[] splitUniqueIdParts(final String uniqueId) {
@@ -302,7 +302,9 @@ public class ChplProductNumberUtil {
     }
 
     private String formatEdition(final String year) {
-        if (year.length() == 2) {
+        if (StringUtils.isEmpty(year)) {
+            return EDITION_CODE_DEFAULT;
+        } else if (year.length() == 2) {
             return year;
         } else {
             return year.substring(2);
