@@ -8,6 +8,9 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.developer.search.DeveloperSearchResult;
 import gov.healthit.chpl.report.attestation.AttestationReportService;
+import gov.healthit.chpl.report.criteriaattribute.StandardListingReport;
+import gov.healthit.chpl.report.criteriaattribute.StandardReport;
+import gov.healthit.chpl.report.criteriaattribute.StandardReportService;
 import gov.healthit.chpl.report.criteriaattribute.TestToolListingReport;
 import gov.healthit.chpl.report.criteriaattribute.TestToolReport;
 import gov.healthit.chpl.report.criteriaattribute.TestToolReportService;
@@ -43,6 +46,7 @@ public class ReportDataManager {
     private ProductReportsService productReportsService;
     private ListingReportsService listingReportsService;
     private TestToolReportService testToolReportService;
+    private StandardReportService standardReportService;
     private DirectReviewReportsService directReviewReportsService;
     private AttestationReportService attestationReportService;
     private ReportMetadataDAO reportMetadataDAO;
@@ -51,13 +55,14 @@ public class ReportDataManager {
     public ReportDataManager(CriteriaMigrationReportService criteriaMigrationReportService, DeveloperReportsService developerReportsService,
             SurveillanceReportsService surveillanceReportsService, ProductReportsService productReportsService, ListingReportsService listingReportsService,
             TestToolReportService testToolReportService, DirectReviewReportsService directReviewReportsService, AttestationReportService attestationReportService,
-            ReportMetadataDAO reportMetadataDAO) {
+            StandardReportService standardReportService, ReportMetadataDAO reportMetadataDAO) {
         this.criteriaMigrationReportService = criteriaMigrationReportService;
         this.developerReportsService = developerReportsService;
         this.surveillanceReportsService = surveillanceReportsService;
         this.productReportsService = productReportsService;
         this.listingReportsService = listingReportsService;
         this.testToolReportService = testToolReportService;
+        this.standardReportService = standardReportService;
         this.directReviewReportsService = directReviewReportsService;
         this.attestationReportService = attestationReportService;
         this.reportMetadataDAO = reportMetadataDAO;
@@ -163,58 +168,72 @@ public class ReportDataManager {
         return developerReportsService.getDevelopersWithSuspendedListingsByAcb();
     }
 
+    @Synchronized("lock")
     public UniqueProductCount getUniqueProductCount() {
         return productReportsService.getUniqueProductCount();
     }
 
+    @Synchronized("lock")
     public List<CertificationBodyStatistic> getActiveProdutCountsByAcb() {
         return productReportsService.getActiveProductCountsByAcb();
     }
 
+    @Synchronized("lock")
     public List<CertificationBodyStatistic> getWithdrawnProdutCountsByAcb() {
         return productReportsService.getWithdrawnProductCountsByAcb();
     }
 
+    @Synchronized("lock")
     public List<CertificationBodyStatistic> getSuspendedProdutCountsByAcb() {
         return productReportsService.getSuspendedProductCountsByAcb();
     }
 
+    @Synchronized("lock")
     public List<ProductByAcb> getActiveProductsAndAcb() {
         return productReportsService.getActiveProductsAndAcb();
     }
 
+    @Synchronized("lock")
     public List<ProductByAcb> getWithdrawnProductsAndAcb() {
         return productReportsService.getWithdrawnProductsAndAcb();
     }
 
+    @Synchronized("lock")
     public List<ProductByAcb> getSuspendedProductsAndAcb() {
         return productReportsService.getSuspendedProductsAndAcb();
     }
 
+    @Synchronized("lock")
     public UniqueListingCount getUniqueListingCount() {
         return listingReportsService.getUniqueListingCount();
     }
 
+    @Synchronized("lock")
     public List<CertificationBodyStatistic> getActiveListingCountsByAcb() {
         return listingReportsService.getActiveListingCountsByAcb();
     }
 
+    @Synchronized("lock")
     public List<CertificationBodyStatistic> getWithdrawnListingCountsByAcb() {
         return listingReportsService.getWithdrawnListingCountsByAcb();
     }
 
+    @Synchronized("lock")
     public List<CertificationBodyStatistic> getSuspendedListingCountsByAcb() {
         return listingReportsService.getSuspendedListingCountsByAcb();
     }
 
+    @Synchronized("lock")
     public List<ListingSearchResult> getActiveListings() {
         return listingReportsService.getActiveListings();
     }
 
+    @Synchronized("lock")
     public List<ListingSearchResult> getWithdrawnListings() {
         return listingReportsService.getWithdrawnListings();
     }
 
+    @Synchronized("lock")
     public List<ListingSearchResult> getSuspendedListings() {
         return listingReportsService.getSuspendedListings();
     }
@@ -229,6 +248,17 @@ public class ReportDataManager {
         return testToolReportService.getTestToolListingReports();
     }
 
+    @Synchronized("lock")
+    public List<StandardReport> getStandardReports() {
+        return standardReportService.getStandardReports();
+    }
+
+    @Synchronized("lock")
+    public List<StandardListingReport> getStandardListingReports() {
+        return standardReportService.getStandardListingReports();
+    }
+
+    @Synchronized("lock")
     public DirectReviewCounts getDirectReviewCounts() {
         return directReviewReportsService.getDirectReviewCounts();
     }
