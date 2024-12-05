@@ -48,8 +48,10 @@ public class UnavailableCriteriaReviewer {
 
     private boolean doCriterionDatesOverlapCertificationDay(CertifiedProductSearchDetails listing, CertificationResult certResult) {
         LocalDate listingEndDay = listing.getDecertificationDay() != null ? listing.getDecertificationDay() : LocalDate.now();
+        LocalDate listingStartDay = listing.getCertificationDay() != null ? listing.getCertificationDay() : LocalDate.MIN;
+
         return certResult.getCriterion() != null
-                && DateUtil.datesOverlap(Pair.of(listing.getCertificationDay(), listingEndDay),
+                && DateUtil.datesOverlap(Pair.of(listingStartDay, listingEndDay),
                         Pair.of(certResult.getCriterion().getStartDay(), certResult.getCriterion().getEndDay()));
     }
 }
