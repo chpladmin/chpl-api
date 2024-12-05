@@ -116,23 +116,7 @@ public class AttestationReportCreatorJob extends QuartzJob {
                                        AttestationReport report = attestationReportsByAcbId.get(acb.getId());
                                        report.setDeveloperCount(report.getDeveloperCount() + 1);
 
-                                       if (cr == null) {
-                                           report.setNoSubmissionCount(report.getNoSubmissionCount() + 1);
-                                       } else {
-                                           switch (cr.getCurrentStatus().getChangeRequestStatusType().getName()) {
-                                           case "Accepted":
-                                               report.setApprovedCount(report.getApprovedCount() + 1);
-                                               break;
-                                           case "Pending Developer Action":
-                                               report.setPendingDeveloperActionCount(report.getPendingDeveloperActionCount() + 1);
-                                               break;
-                                           case "Pending ONC-ACB Action":
-                                               report.setPendingAcbActionCount(report.getPendingAcbActionCount() + 1);
-                                               break;
-                                           default:
-                                               break;
-                                           }
-                                       }
+                                       updateCountsBasedOnChangeRequestStatus(cr, report);
                                    }
                                 });
                             } catch (Exception e) {
@@ -148,6 +132,26 @@ public class AttestationReportCreatorJob extends QuartzJob {
                 } catch (Exception e) {
                     LOGGER.error(e);
                 }
+            }
+
+            private void updateCountsBasedOnChangeRequestStatus(ChangeRequest cr, AttestationReport report) {
+                if (cr == null) {
+                       report.setNoSubmissionCount(report.getNoSubmissionCount() + 1);
+                   } else {
+                       switch (cr.getCurrentStatus().getChangeRequestStatusType().getName()) {
+                       case "Accepted":
+                           report.setApprovedCount(report.getApprovedCount() + 1);
+                           break;
+                       case "Pending Developer Action":
+                           report.setPendingDeveloperActionCount(report.getPendingDeveloperActionCount() + 1);
+                           break;
+                       case "Pending ONC-ACB Action":
+                           report.setPendingAcbActionCount(report.getPendingAcbActionCount() + 1);
+                           break;
+                       default:
+                           break;
+                       }
+                   }
             }
         });
         LOGGER.info("********* Completed Attestation Report Creator job. *********");
