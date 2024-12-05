@@ -126,7 +126,7 @@ public class CognitoUserManager {
             } else {
                 cognitoApiWrapper.addUserToGroup(userInfo.getUser().getEmail(), groupNameForEnvironment);
             }
-            cognitoInvitationManager.deleteToken(UUID.fromString(userInfo.getHash()));
+            cognitoInvitationManager.deleteInvitation(invitation);
             cognitoConfirmEmailEmailer.sendConfirmationEmail(credentials);
 
             User createdUser = cognitoApiWrapper.getUserNoCache(credentials.getCognitoId());
