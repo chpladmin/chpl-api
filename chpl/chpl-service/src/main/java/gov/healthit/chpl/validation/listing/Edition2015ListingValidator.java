@@ -2,6 +2,8 @@ package gov.healthit.chpl.validation.listing;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -256,10 +258,14 @@ public class Edition2015ListingValidator extends Validator {
     private CodeSetAsOfTodayReviewer codeSetReviewer;
 
     @Override
+    public synchronized List<Reviewer> getReviewersToAlwaysCheck() {
+        return Stream.of(devStatusReviewer, certStatusReviewer).collect(Collectors.toList());
+    }
+
+    @Override
     public synchronized List<Reviewer> getReviewers() {
         List<Reviewer> reviewers = new ArrayList<Reviewer>();
         reviewers.add(chplNumberFormatReviewer);
-        reviewers.add(devStatusReviewer);
         reviewers.add(unsupportedCharacterReviewer);
         reviewers.add(fieldLengthReviewer);
         reviewers.add(requiredDataReviewer);
@@ -271,7 +277,6 @@ public class Edition2015ListingValidator extends Validator {
         reviewers.add(sedReviewer);
         reviewers.add(ucdProcessReviewer);
         reviewers.add(oldCriteriaWithoutIcsReviewer);
-        reviewers.add(certStatusReviewer);
         reviewers.add(certDateReviewer);
         reviewers.add(optionalStandardReviewer);
         reviewers.add(conformanceMethodReviewer);

@@ -89,9 +89,7 @@ public class UnavailableCriteriaUcdComparisonReviewer implements ComparisonRevie
         return newCriteria;
     }
 
-    private boolean isCriterionAvailable(CertifiedProductSearchDetails listing,
-            CertificationCriterion criterion) {
-
+    private boolean isCriterionAvailable(CertifiedProductSearchDetails listing, CertificationCriterion criterion) {
         return DateUtil.datesOverlap(Pair.of(listing.getCertificationDay(), listing.getDecertificationDay()),
                         Pair.of(criterion.getStartDay(), criterion.getEndDay()));
     }

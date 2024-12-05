@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -62,11 +61,6 @@ public class CertificationStatusEventsService {
         return subtractLists(updatedListing.getCertificationEvents(), existingListing.getCertificationEvents());
     }
 
-    public List<CertificationStatusEvent> getAddedCertificationStatusEventsIgnoringReasonUpdates(CertifiedProductSearchDetails existingListing,
-            CertifiedProductSearchDetails updatedListing) {
-        return subtractListsIgnoringReasonUpdates(updatedListing.getCertificationEvents(), existingListing.getCertificationEvents());
-    }
-
     public List<CertificationStatusEvent> getRemovedCertificationStatusEvents(CertifiedProductSearchDetails existingListing,
             CertifiedProductSearchDetails updatedListing) {
         return subtractLists(existingListing.getCertificationEvents(), updatedListing.getCertificationEvents());
@@ -81,32 +75,11 @@ public class CertificationStatusEventsService {
                 .collect(Collectors.toList());
     }
 
-    private List<CertificationStatusEvent> subtractListsIgnoringReasonUpdates(List<CertificationStatusEvent> listA, List<CertificationStatusEvent> listB) {
-        Predicate<CertificationStatusEvent> notInListB = eventFromA -> !listB.stream()
-                .anyMatch(event -> doValuesMatchIgnoringReason(eventFromA, event));
-
-        return listA.stream()
-                .filter(notInListB)
-                .collect(Collectors.toList());
-    }
-
     private boolean doValuesMatch(CertificationStatusEvent event1, CertificationStatusEvent event2) {
-        return ((event1.getStatus() != null && event2.getStatus() != null
+        return (event1.getStatus() != null && event2.getStatus() != null
                     && StringUtils.equals(event1.getStatus().getName(), event2.getStatus().getName()))
-                        || (ObjectUtils.allNotNull(event1.getCertificationStatusId(), event2.getCertificationStatusId())
-                            && Objects.equal(event1.getCertificationStatusId(), event2.getCertificationStatusId())))
-                && (Objects.equal(event1.getEventDay(), event2.getEventDay())
-                        || Objects.equal(event1.getEventDate(), event2.getEventDate()))
-                && StringUtils.equalsIgnoreCase(event1.getReason(), event2.getReason());
-    }
-
-    private boolean doValuesMatchIgnoringReason(CertificationStatusEvent event1, CertificationStatusEvent event2) {
-        return ((event1.getStatus() != null && event2.getStatus() != null
-                    && StringUtils.equals(event1.getStatus().getName(), event2.getStatus().getName()))
-                        || (ObjectUtils.allNotNull(event1.getCertificationStatusId(), event2.getCertificationStatusId())
-                            && Objects.equal(event1.getCertificationStatusId(), event2.getCertificationStatusId())))
-                && (Objects.equal(event1.getEventDay(), event2.getEventDay())
-                        || Objects.equal(event1.getEventDate(), event2.getEventDate()));
+                && Objects.equal(event1.getEventDay(), event2.getEventDay())
+                && StringUtils.equals(event1.getReason(), event2.getReason());
     }
 
     private CertificationStatusEvent createCertificationStatusEvent(CertificationStatusEvent certStatusEvent) {
