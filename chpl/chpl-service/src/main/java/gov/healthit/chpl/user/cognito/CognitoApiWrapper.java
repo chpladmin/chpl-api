@@ -182,18 +182,21 @@ public class CognitoApiWrapper {
         return createUserFromGetUserResponse(response);
     }
 
-    @Cacheable(CacheNames.COGNITO_USERS_BY_EMAIL)
+    @Cacheable(value = CacheNames.COGNITO_USERS_BY_EMAIL, unless = "#result == null")
     public User getUserInfo(String email) throws UserRetrievalException {
         AdminGetUserRequest request = AdminGetUserRequest.builder()
                 .userPoolId(userPoolId)
                 .username(email)
                 .build();
-
-        AdminGetUserResponse response = cognitoClient.adminGetUser(request);
-        if (response == null || response.sdkHttpResponse() == null || !response.sdkHttpResponse().isSuccessful()) {
+        try {
+            AdminGetUserResponse response = cognitoClient.adminGetUser(request);
+            if (response == null || response.sdkHttpResponse() == null || !response.sdkHttpResponse().isSuccessful()) {
+                return null;
+            }
+            return createUserFromGetUserResponse(response);
+        } catch (Exception e) {
             return null;
         }
-        return createUserFromGetUserResponse(response);
     }
 
     @CachePut(CacheNames.COGNITO_USERS_BY_UUID)
