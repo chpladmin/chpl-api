@@ -14,6 +14,7 @@ import gov.healthit.chpl.developer.search.DeveloperSearchResult;
 import gov.healthit.chpl.developer.search.DeveloperSearchService;
 import gov.healthit.chpl.report.ReportDataManager;
 import gov.healthit.chpl.report.ReportMetadata;
+import gov.healthit.chpl.report.criteriaattribute.FunctionalityTestedListingReport;
 import gov.healthit.chpl.report.criteriaattribute.FunctionalityTestedReport;
 import gov.healthit.chpl.report.criteriaattribute.StandardListingReport;
 import gov.healthit.chpl.report.criteriaattribute.StandardReport;
@@ -460,6 +461,16 @@ public class ReportDataController {
     @RequestMapping(value = "/functionalities-tested", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<FunctionalityTestedReport> getFunctionalityTestedReports() {
         return reportDataManager.getFunctionalityTestedReports();
+    }
+
+    @Operation(summary = "Retrieves the data used to generate the Functionality Tested Criteria Attribute Listing report.",
+            description = "Retrieves the data used to generate the Functionality Tested Criteria Attribute Listing report.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
+    @RequestMapping(value = "/functionalities-tested-listing", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public @ResponseBody List<FunctionalityTestedListingReport> getFunctionalityTestedListingReports() {
+        return reportDataManager.getFunctionalityTestedListingReports();
     }
 
 }

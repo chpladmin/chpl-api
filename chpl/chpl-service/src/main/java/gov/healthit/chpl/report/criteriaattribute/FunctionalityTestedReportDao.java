@@ -53,7 +53,7 @@ public class FunctionalityTestedReportDao extends BaseDAOImpl {
                 + "WHERE cc.id = cr.certificationCriterionId "
                 + "AND cr.certifiedProductId = cpd.id "
                 + "AND cr.id = crft.certificationResultId "
-                + "AND crft.functionalityTested.id = s.id "
+                + "AND crft.functionalityTested.id = ft.id "
                 + "AND cpd.certificationStatusId IN (1,6,7) "
                 + "AND cc.deleted = false "
                 + "AND cr.deleted = false "

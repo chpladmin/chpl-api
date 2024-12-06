@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.developer.search.DeveloperSearchResult;
+import gov.healthit.chpl.report.criteriaattribute.FunctionalityTestedListingReport;
 import gov.healthit.chpl.report.criteriaattribute.FunctionalityTestedReport;
 import gov.healthit.chpl.report.criteriaattribute.FunctionalityTestedReportService;
 import gov.healthit.chpl.report.criteriaattribute.StandardListingReport;
@@ -267,4 +268,10 @@ public class ReportDataManager {
     public List<FunctionalityTestedReport> getFunctionalityTestedReports() {
         return functionalityTestedReportService.getFunctionalityTestedReports();
     }
+
+    @Synchronized("lock")
+    public List<FunctionalityTestedListingReport> getFunctionalityTestedListingReports() {
+        return functionalityTestedReportService.getFunctionalityTestedListingReports();
+    }
+
 }
