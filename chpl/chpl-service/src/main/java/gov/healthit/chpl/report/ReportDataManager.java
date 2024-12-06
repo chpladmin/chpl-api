@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.developer.search.DeveloperSearchResult;
+import gov.healthit.chpl.report.criteriaattribute.FunctionalityTestedReport;
+import gov.healthit.chpl.report.criteriaattribute.FunctionalityTestedReportService;
 import gov.healthit.chpl.report.criteriaattribute.StandardListingReport;
 import gov.healthit.chpl.report.criteriaattribute.StandardReport;
 import gov.healthit.chpl.report.criteriaattribute.StandardReportService;
@@ -46,22 +48,24 @@ public class ReportDataManager {
     private TestToolReportService testToolReportService;
     private StandardReportService standardReportService;
     private DirectReviewReportsService directReviewReportsService;
+    private FunctionalityTestedReportService functionalityTestedReportService;
     private ReportMetadataDAO reportMetadataDAO;
 
     @Autowired
     public ReportDataManager(CriteriaMigrationReportService criteriaMigrationReportService, DeveloperReportsService developerReportsService,
             SurveillanceReportsService surveillanceReportsService, ProductReportsService productReportsService, ListingReportsService listingReportsService,
             TestToolReportService testToolReportService, DirectReviewReportsService directReviewReportsService, ReportMetadataDAO reportMetadataDAO,
-            StandardReportService standardReportService) {
+            StandardReportService standardReportService, FunctionalityTestedReportService functionalityTestedReportService) {
         this.criteriaMigrationReportService = criteriaMigrationReportService;
         this.developerReportsService = developerReportsService;
         this.surveillanceReportsService = surveillanceReportsService;
         this.productReportsService = productReportsService;
         this.listingReportsService = listingReportsService;
         this.testToolReportService = testToolReportService;
-        this.standardReportService = standardReportService;
         this.directReviewReportsService = directReviewReportsService;
         this.reportMetadataDAO = reportMetadataDAO;
+        this.standardReportService = standardReportService;
+        this.functionalityTestedReportService = functionalityTestedReportService;
     }
 
     public List<ReportMetadata> getReportMetadataByReportGroup(String reportGroup) {
@@ -257,5 +261,10 @@ public class ReportDataManager {
     @Synchronized("lock")
     public DirectReviewCounts getDirectReviewCounts() {
         return directReviewReportsService.getDirectReviewCounts();
+    }
+
+    @Synchronized("lock")
+    public List<FunctionalityTestedReport> getFunctionalityTestedReports() {
+        return functionalityTestedReportService.getFunctionalityTestedReports();
     }
 }
