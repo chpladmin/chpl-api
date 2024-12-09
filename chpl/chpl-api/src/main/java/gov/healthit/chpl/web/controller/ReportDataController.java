@@ -16,6 +16,8 @@ import gov.healthit.chpl.report.ReportDataManager;
 import gov.healthit.chpl.report.ReportMetadata;
 import gov.healthit.chpl.report.criteriaattribute.FunctionalityTestedListingReport;
 import gov.healthit.chpl.report.criteriaattribute.FunctionalityTestedReport;
+import gov.healthit.chpl.report.criteriaattribute.OptionalStandardListingReport;
+import gov.healthit.chpl.report.criteriaattribute.OptionalStandardReport;
 import gov.healthit.chpl.report.criteriaattribute.StandardListingReport;
 import gov.healthit.chpl.report.criteriaattribute.StandardReport;
 import gov.healthit.chpl.report.criteriaattribute.TestToolListingReport;
@@ -454,7 +456,7 @@ public class ReportDataController {
     }
 
     @Operation(summary = "Retrieves the data used to generate the Functionality Tested Criteria Attribute Summary report.",
-            description = "Retrieves the data used to generate the Functionality Tested Criteria Attribute Summary report.",
+            description = "Retrgit pushieves the data used to generate the Functionality Tested Criteria Attribute Summary report.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
@@ -471,6 +473,26 @@ public class ReportDataController {
     @RequestMapping(value = "/functionalities-tested-listing", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<FunctionalityTestedListingReport> getFunctionalityTestedListingReports() {
         return reportDataManager.getFunctionalityTestedListingReports();
+    }
+
+    @Operation(summary = "Retrieves the data used to generate the Optional Standard Criteria Attribute Summary report.",
+            description = "Retrgit pushieves the data used to generate the Optional Standard Criteria Attribute Summary report.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
+    @RequestMapping(value = "/optional-standards", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public @ResponseBody List<OptionalStandardReport> getOptionalStandardReports() {
+        return reportDataManager.getOptionalStandardReports();
+    }
+
+    @Operation(summary = "Retrieves the data used to generate the Optional Standard Criteria Attribute Listing report.",
+            description = "Retrieves the data used to generate the Optional Standard Criteria Attribute Listing report.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
+    @RequestMapping(value = "/optional-standards-listing", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public @ResponseBody List<OptionalStandardListingReport> getOptionalStandardListingReports() {
+        return reportDataManager.getOptionalStandardListingReports();
     }
 
 }
