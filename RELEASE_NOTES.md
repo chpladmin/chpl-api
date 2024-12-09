@@ -1,5 +1,16 @@
 # Release Notes
 
+## Version 47.5.0
+_9 December 2024_
+
+### Features
+* Add Standards to the Criteria Attribute Power BI report
+
+### Bug Fixes
+* Allow joining of developers with editionless listings
+
+---
+
 ## Version 47.4.0
 _25 November 2024_
 

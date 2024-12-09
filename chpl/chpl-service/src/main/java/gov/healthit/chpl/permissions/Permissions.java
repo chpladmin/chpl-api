@@ -43,6 +43,7 @@ import gov.healthit.chpl.permissions.domains.UserPermissionsDomainPermissions;
 
 @Component
 public class Permissions {
+    public static final String API_DOCUMENTATION = "API_DOCUMENTATION";
     public static final String CERTIFICATION_RESULTS = "CERTIFICATION_RESULTS";
     public static final String CERTIFIED_PRODUCT = "CERTIFIED_PRODUCT";
     public static final String CORRECTIVE_ACTION_PLAN = "CORRECTIVE_ACTION_PLAN";

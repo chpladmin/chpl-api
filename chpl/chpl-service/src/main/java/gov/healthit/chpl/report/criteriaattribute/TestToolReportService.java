@@ -3,6 +3,7 @@ package gov.healthit.chpl.report.criteriaattribute;
 import java.util.List;
 
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 @Component
 public class TestToolReportService {
@@ -12,11 +13,12 @@ public class TestToolReportService {
         this.testToolReportDao = testToolReportDao;
     }
 
-    // Criteria, TestTool, Listing Count
+    @Transactional
     public List<TestToolReport> getTestToolReports() {
         return testToolReportDao.getTestToolReports();
     }
 
+    @Transactional
     public List<TestToolListingReport> getTestToolListingReports() {
         return testToolReportDao.getTestToolListingReports();
     }

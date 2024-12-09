@@ -27,7 +27,8 @@ public class CHPLFilesManagerImpl implements CHPLFileManager {
 
     @Override
     @Transactional
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).API_DOCUMENTATION, "
+            + "T(gov.healthit.chpl.permissions.domains.ApiDocumentationDomainPermissions).CREATE)")
     public CHPLFileDTO addApiDocumentationFile(final CHPLFileDTO newFileDTO)
             throws EntityCreationException, EntityRetrievalException {
         // Need to delete the existing 'current' file
