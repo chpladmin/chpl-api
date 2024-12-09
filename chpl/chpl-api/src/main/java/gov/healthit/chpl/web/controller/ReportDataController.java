@@ -20,6 +20,8 @@ import gov.healthit.chpl.report.criteriaattribute.OptionalStandardListingReport;
 import gov.healthit.chpl.report.criteriaattribute.OptionalStandardReport;
 import gov.healthit.chpl.report.criteriaattribute.StandardListingReport;
 import gov.healthit.chpl.report.criteriaattribute.StandardReport;
+import gov.healthit.chpl.report.criteriaattribute.TestDataListingReport;
+import gov.healthit.chpl.report.criteriaattribute.TestDataReport;
 import gov.healthit.chpl.report.criteriaattribute.TestToolListingReport;
 import gov.healthit.chpl.report.criteriaattribute.TestToolReport;
 import gov.healthit.chpl.report.criteriamigrationreport.CriteriaMigrationReportDenormalized;
@@ -493,6 +495,26 @@ public class ReportDataController {
     @RequestMapping(value = "/optional-standards-listing", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<OptionalStandardListingReport> getOptionalStandardListingReports() {
         return reportDataManager.getOptionalStandardListingReports();
+    }
+
+    @Operation(summary = "Retrieves the data used to generate the Test Data Criteria Attribute Summary report.",
+            description = "Retrieves the data used to generate the Test Data Criteria Attribute Summary report.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
+    @RequestMapping(value = "/test-data", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public @ResponseBody List<TestDataReport> getTestDataReports() {
+        return reportDataManager.getTestDataReports();
+    }
+
+    @Operation(summary = "Retrieves the data used to generate the Test Data Criteria Attribute Listing report.",
+            description = "Retrieves the data used to generate the Test Data Criteria Attribute Listing report.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
+    @RequestMapping(value = "/test-data-listing", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public @ResponseBody List<TestDataListingReport> getTestDataListingReports() {
+        return reportDataManager.getTestDataListingReports();
     }
 
 }

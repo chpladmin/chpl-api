@@ -16,6 +16,9 @@ import gov.healthit.chpl.report.criteriaattribute.OptionalStandardReportService;
 import gov.healthit.chpl.report.criteriaattribute.StandardListingReport;
 import gov.healthit.chpl.report.criteriaattribute.StandardReport;
 import gov.healthit.chpl.report.criteriaattribute.StandardReportService;
+import gov.healthit.chpl.report.criteriaattribute.TestDataListingReport;
+import gov.healthit.chpl.report.criteriaattribute.TestDataReport;
+import gov.healthit.chpl.report.criteriaattribute.TestDataReportService;
 import gov.healthit.chpl.report.criteriaattribute.TestToolListingReport;
 import gov.healthit.chpl.report.criteriaattribute.TestToolReport;
 import gov.healthit.chpl.report.criteriaattribute.TestToolReportService;
@@ -54,6 +57,7 @@ public class ReportDataManager {
     private DirectReviewReportsService directReviewReportsService;
     private FunctionalityTestedReportService functionalityTestedReportService;
     private OptionalStandardReportService optionalStandardReportService;
+    private TestDataReportService testDataReportService;
     private ReportMetadataDAO reportMetadataDAO;
 
     @Autowired
@@ -61,7 +65,7 @@ public class ReportDataManager {
             SurveillanceReportsService surveillanceReportsService, ProductReportsService productReportsService, ListingReportsService listingReportsService,
             TestToolReportService testToolReportService, DirectReviewReportsService directReviewReportsService, ReportMetadataDAO reportMetadataDAO,
             StandardReportService standardReportService, FunctionalityTestedReportService functionalityTestedReportService,
-            OptionalStandardReportService optionalStandardReportService) {
+            OptionalStandardReportService optionalStandardReportService, TestDataReportService testDataReportService) {
         this.criteriaMigrationReportService = criteriaMigrationReportService;
         this.developerReportsService = developerReportsService;
         this.surveillanceReportsService = surveillanceReportsService;
@@ -73,6 +77,7 @@ public class ReportDataManager {
         this.standardReportService = standardReportService;
         this.functionalityTestedReportService = functionalityTestedReportService;
         this.optionalStandardReportService = optionalStandardReportService;
+        this.testDataReportService = testDataReportService;
     }
 
     public List<ReportMetadata> getReportMetadataByReportGroup(String reportGroup) {
@@ -288,6 +293,16 @@ public class ReportDataManager {
     @Synchronized("lock")
     public List<OptionalStandardListingReport> getOptionalStandardListingReports() {
         return optionalStandardReportService.getOptionalStandardListingReports();
+    }
+
+    @Synchronized("lock")
+    public List<TestDataReport> getTestDataReports() {
+        return testDataReportService.getTestDataReports();
+    }
+
+    @Synchronized("lock")
+    public List<TestDataListingReport> getTestDataListingReports() {
+        return testDataReportService.getTestDataListingReports();
     }
 
 }
