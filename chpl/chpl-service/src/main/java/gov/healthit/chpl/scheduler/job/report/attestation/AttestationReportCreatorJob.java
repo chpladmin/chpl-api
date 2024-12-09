@@ -192,6 +192,6 @@ public class AttestationReportCreatorJob extends QuartzJob {
     }
 
     private Integer getDaysInApprovalPeriod() {
-        return Integer.valueOf(env.getProperty("job.apiKeyDeleteJob.config.message"));
+        return Integer.valueOf(env.getProperty("attestationApprovalWindowInDays"));
     }
 }
