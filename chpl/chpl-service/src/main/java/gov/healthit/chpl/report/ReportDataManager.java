@@ -16,6 +16,9 @@ import gov.healthit.chpl.report.criteriaattribute.OptionalStandardReportService;
 import gov.healthit.chpl.report.criteriaattribute.StandardListingReport;
 import gov.healthit.chpl.report.criteriaattribute.StandardReport;
 import gov.healthit.chpl.report.criteriaattribute.StandardReportService;
+import gov.healthit.chpl.report.criteriaattribute.SvapListingReport;
+import gov.healthit.chpl.report.criteriaattribute.SvapReport;
+import gov.healthit.chpl.report.criteriaattribute.SvapReportService;
 import gov.healthit.chpl.report.criteriaattribute.TestDataListingReport;
 import gov.healthit.chpl.report.criteriaattribute.TestDataReport;
 import gov.healthit.chpl.report.criteriaattribute.TestDataReportService;
@@ -58,6 +61,7 @@ public class ReportDataManager {
     private FunctionalityTestedReportService functionalityTestedReportService;
     private OptionalStandardReportService optionalStandardReportService;
     private TestDataReportService testDataReportService;
+    private SvapReportService svapReportService;
     private ReportMetadataDAO reportMetadataDAO;
 
     @Autowired
@@ -65,7 +69,8 @@ public class ReportDataManager {
             SurveillanceReportsService surveillanceReportsService, ProductReportsService productReportsService, ListingReportsService listingReportsService,
             TestToolReportService testToolReportService, DirectReviewReportsService directReviewReportsService, ReportMetadataDAO reportMetadataDAO,
             StandardReportService standardReportService, FunctionalityTestedReportService functionalityTestedReportService,
-            OptionalStandardReportService optionalStandardReportService, TestDataReportService testDataReportService) {
+            OptionalStandardReportService optionalStandardReportService, TestDataReportService testDataReportService,
+            SvapReportService svapReportService) {
         this.criteriaMigrationReportService = criteriaMigrationReportService;
         this.developerReportsService = developerReportsService;
         this.surveillanceReportsService = surveillanceReportsService;
@@ -78,6 +83,7 @@ public class ReportDataManager {
         this.functionalityTestedReportService = functionalityTestedReportService;
         this.optionalStandardReportService = optionalStandardReportService;
         this.testDataReportService = testDataReportService;
+        this.svapReportService = svapReportService;
     }
 
     public List<ReportMetadata> getReportMetadataByReportGroup(String reportGroup) {
@@ -303,6 +309,16 @@ public class ReportDataManager {
     @Synchronized("lock")
     public List<TestDataListingReport> getTestDataListingReports() {
         return testDataReportService.getTestDataListingReports();
+    }
+
+    @Synchronized("lock")
+    public List<SvapReport> getSvapReports() {
+        return svapReportService.getSvapReports();
+    }
+
+    @Synchronized("lock")
+    public List<SvapListingReport> getSvapListingReports() {
+        return svapReportService.getSvapListingReports();
     }
 
 }

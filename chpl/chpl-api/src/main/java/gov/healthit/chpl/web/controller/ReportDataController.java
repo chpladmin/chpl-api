@@ -20,6 +20,8 @@ import gov.healthit.chpl.report.criteriaattribute.OptionalStandardListingReport;
 import gov.healthit.chpl.report.criteriaattribute.OptionalStandardReport;
 import gov.healthit.chpl.report.criteriaattribute.StandardListingReport;
 import gov.healthit.chpl.report.criteriaattribute.StandardReport;
+import gov.healthit.chpl.report.criteriaattribute.SvapListingReport;
+import gov.healthit.chpl.report.criteriaattribute.SvapReport;
 import gov.healthit.chpl.report.criteriaattribute.TestDataListingReport;
 import gov.healthit.chpl.report.criteriaattribute.TestDataReport;
 import gov.healthit.chpl.report.criteriaattribute.TestToolListingReport;
@@ -515,6 +517,26 @@ public class ReportDataController {
     @RequestMapping(value = "/test-data-listing", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<TestDataListingReport> getTestDataListingReports() {
         return reportDataManager.getTestDataListingReports();
+    }
+
+    @Operation(summary = "Retrieves the data used to generate the SVAP Criteria Attribute Summary report.",
+            description = "Retrieves the data used to generate the SVAP Criteria Attribute Summary report.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
+    @RequestMapping(value = "/svaps", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public @ResponseBody List<SvapReport> getSvapReports() {
+        return reportDataManager.getSvapReports();
+    }
+
+    @Operation(summary = "Retrieves the data used to generate the SVAP Criteria Attribute Listing report.",
+            description = "Retrieves the data used to generate the SVAP Criteria Attribute Listing report.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
+    @RequestMapping(value = "/svaps-listing", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public @ResponseBody List<SvapListingReport> getSvapListingReports() {
+        return reportDataManager.getSvapListingReports();
     }
 
 }
