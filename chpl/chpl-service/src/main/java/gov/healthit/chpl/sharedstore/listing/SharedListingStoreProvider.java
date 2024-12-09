@@ -45,6 +45,7 @@ public class SharedListingStoreProvider extends SharedStoreProvider<Long, Certif
     }
 
     private Boolean canUserViewCertificationEventReasons() {
+        System.out.println("CURRENT USER: " + AuthUtil.getCurrentUser());
         return AuthUtil.getCurrentUser() != null
                 && (resourcePermissionsFactory.get().isUserRoleAcbAdmin()
                         || resourcePermissionsFactory.get().isUserRoleOnc()
