@@ -92,7 +92,7 @@ public class CognitoAuthenticationManager {
         return CognitoAuthenticationResponse.builder()
                 .accessToken(authResult.accessToken())
                 .idToken(authResult.idToken())
-                .refreshToken(authResult.refreshToken())
+                .refreshToken(refreshToken)
                 .build();
     }
 
