@@ -24,6 +24,6 @@ public class CodeSetAsOfCertificationDayReviewer extends CodeSetReviewer {
     }
 
     public LocalDate getCodeSetCheckDate(CertifiedProductSearchDetails listing) {
-        return listing.getCertificationDay();
+        return listing.getCertificationDay() == null ? LocalDate.MIN : listing.getCertificationDay();
     }
 }

@@ -195,7 +195,7 @@ public abstract class StandardReviewer extends StandardGroupReviewer {
     }
 
     private boolean isStandardRetiredBeforeListingActiveDates(CertifiedProductSearchDetails listing, Standard standard) {
-        LocalDate listingStartDay = listing.getCertificationDay();
+        LocalDate listingStartDay = listing.getCertificationDay() == null ? LocalDate.MIN : listing.getCertificationDay();
         LocalDate standardEndDay = standard.getEndDay() == null ? LocalDate.MAX : standard.getEndDay();
         return standardEndDay.isBefore(listingStartDay);
     }
