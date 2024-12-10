@@ -183,19 +183,36 @@ public class UserManagementController {
             })
     @RequestMapping(value = "", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
-    public void addUser(@RequestBody CreateUserFromInvitationRequest userInfo) throws ValidationException, EmailNotSentException,
-        UserRetrievalException, UserCreationException, ActivityException {
+    public void addUser(@RequestBody CreateUserFromInvitationRequest userInfo) throws InvalidArgumentsException,
+        ValidationException, EmailNotSentException, UserRetrievalException, UserCreationException, ActivityException {
         if (!ff4j.check(FeatureList.SSO)) {
             throw new NotImplementedException("This method has not been implemented");
         }
+        UUID token = null;
 
         try {
-            CognitoUserInvitation invitation = cognitoInvitationManager.getByToken(UUID.fromString(userInfo.getHash()));
+            token = UUID.fromString(userInfo.getHash());
+        } catch (IllegalArgumentException ex) {
+            LOGGER.error("Attempting to create a user from a invalid invitation token: " + userInfo.getHash(), ex);
+            throw new InvalidArgumentsException(msgUtil.getMessage("user.invitation.invalid",
+                    authorizationLengthInDays + "",
+                    authorizationLengthInDays == 1 ? "" : "s"));
+        }
+
+        try {
+            CognitoUserInvitation invitation = cognitoInvitationManager.getByToken(token);
             if (invitation != null) {
                 cognitoUserManager.createUser(userInfo);
+            } else {
+                throw new InvalidArgumentsException(msgUtil.getMessage("user.invitation.invalid",
+                        authorizationLengthInDays + "",
+                        authorizationLengthInDays == 1 ? "" : "s"));
             }
         } catch (Exception ex) {
             LOGGER.error("Error creating user from invitation.", ex);
+            throw new InvalidArgumentsException(msgUtil.getMessage("user.invitation.invalid",
+                    authorizationLengthInDays + "",
+                    authorizationLengthInDays == 1 ? "" : "s"));
         } finally {
             SecurityContextHolder.getContext().setAuthentication(null);
         }
