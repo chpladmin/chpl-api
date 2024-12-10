@@ -16,12 +16,11 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
-import gov.healthit.chpl.auth.user.ChplSystemUsers;
-import gov.healthit.chpl.dao.auth.UserDAO;
 import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
 import gov.healthit.chpl.email.footer.AdminFooter;
 import gov.healthit.chpl.manager.SchedulerManager;
+import gov.healthit.chpl.scheduler.SchedulerSecurityContextService;
 import gov.healthit.chpl.scheduler.job.QuartzJob;
 import lombok.extern.log4j.Log4j2;
 
@@ -47,7 +46,7 @@ public class DeveloperAttestationCheckInReportJob extends QuartzJob {
     private ChplEmailFactory chplEmailFactory;
 
     @Autowired
-    private UserDAO userDao;
+    private SchedulerSecurityContextService securityContextService;
 
     @Value("${developer.attestation.checkin.report.subject}")
     private String emailSubject;
@@ -90,7 +89,7 @@ public class DeveloperAttestationCheckInReportJob extends QuartzJob {
             protected void doInTransactionWithoutResult(TransactionStatus status) {
                 try {
                     LOGGER.info("Starting the transaction");
-                    setSecurityContext(userDao.getById(ChplSystemUsers.ADMIN_USER_ID));
+                    securityContextService.setAdminSecurityContext();
                     LOGGER.info("Set the Security Context");
 
                     List<CheckInReport> reportRows = checkInReportDataCollection.collect(getAcbIds(context));

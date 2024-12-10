@@ -13,6 +13,7 @@ public final class CognitoGroups {
     public static final String CHPL_USER_AUTHENTICATOR = "chpl-user-authenticator";
     public static final String CHPL_INVITED_USER_CREATOR = "chpl-invited-user-creator";
     public static final String CHPL_STARTUP = "chpl-startup";
+    public static final String CHPL_SYSTEM = "chpl-system";
 
     public static List<String> getAll() {
         return List.of(
@@ -24,6 +25,7 @@ public final class CognitoGroups {
                 CHPL_DEVELOPER,
                 CHPL_USER_AUTHENTICATOR,
                 CHPL_INVITED_USER_CREATOR,
-                CHPL_STARTUP);
+                CHPL_STARTUP,
+                CHPL_SYSTEM);
     }
 }
