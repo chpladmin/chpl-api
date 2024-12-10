@@ -20,11 +20,11 @@ import gov.healthit.chpl.email.footer.PublicFooter;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.manager.CertificationIdManager;
 import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
-import gov.healthit.chpl.scheduler.SecurityContextCapableJob;
+import gov.healthit.chpl.scheduler.job.QuartzJob;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2(topic = "certificationIdEmailJobLogger")
-public class CertificationIdEmailJob extends SecurityContextCapableJob implements Job {
+public class CertificationIdEmailJob extends QuartzJob implements Job {
     public static final String JOB_NAME = "certificationIdEmailJob";
     public static final String USER_KEY = "user";
 

@@ -23,12 +23,12 @@ import org.springframework.core.env.Environment;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import gov.healthit.chpl.dao.CertificationBodyDAO;
-import gov.healthit.chpl.domain.auth.Authority;
 import gov.healthit.chpl.domain.schedule.ChplRepeatableTrigger;
 import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.SchedulerManager;
+import gov.healthit.chpl.scheduler.SchedulerSecurityContextService;
 import lombok.extern.log4j.Log4j2;
 import net.redhogs.cronparser.CronExpressionDescriptor;
 
@@ -48,6 +48,9 @@ public class UserDefinedTriggersEmailJob extends QuartzJob {
     @Autowired
     private ChplEmailFactory chplEmailFactory;
 
+    @Autowired
+    private SchedulerSecurityContextService securityContextService;
+
     public UserDefinedTriggersEmailJob() throws Exception {
         super();
     }
@@ -56,7 +59,7 @@ public class UserDefinedTriggersEmailJob extends QuartzJob {
     public void execute(JobExecutionContext jobContext) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
         LOGGER.info("********* Starting the User-Defined Triggers Email job. *********");
-        setSecurityContext(Authority.ROLE_ADMIN);
+        securityContextService.setAdminSecurityContext();
         try {
             List<ChplRepeatableTrigger> userTriggers = schedulerManager.getAllTriggersForUser();
             List<List<String>> csvRows = formatAsCsv(userTriggers);
