@@ -329,7 +329,8 @@ public class SchedulerManager extends SecuredManager {
         }
     }
 
-    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_ONC')")
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CERTIFICATION_BODY, "
+            + "T(gov.healthit.chpl.permissions.domains.CertificationBodyDomainPermissions).RETIRE)")
     public void retireAcb(String acb) throws SchedulerException, ValidationException, EmailNotSentException {
         List<ChplRepeatableTrigger> allTriggers = getAllTriggersForUser();
         for (ChplRepeatableTrigger trigger : allTriggers) {

@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -48,7 +49,7 @@ public class MeasureComparisonReviewer implements ComparisonReviewer {
 
         return listInUpdatedListing.stream()
                 .filter(notInOriginalListing)
-                .filter(mm -> mm.getMeasure().getRemoved())
+                .filter(mm -> mm.getMeasure() != null && BooleanUtils.isTrue(mm.getMeasure().getRemoved()))
                 .collect(Collectors.toList());
     }
 

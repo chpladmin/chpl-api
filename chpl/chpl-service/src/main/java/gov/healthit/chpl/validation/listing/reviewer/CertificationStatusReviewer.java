@@ -32,6 +32,8 @@ public class CertificationStatusReviewer implements Reviewer {
                         "listing.firstStatusNotActive", CertificationStatusType.Active.getName());
                 listing.addBusinessErrorMessage(msg);
             }
+        } else {
+            listing.addDataErrorMessage(msgUtil.getMessage("listing.noStatusProvided"));
         }
         doStatusesRepeat(listing);
     }
