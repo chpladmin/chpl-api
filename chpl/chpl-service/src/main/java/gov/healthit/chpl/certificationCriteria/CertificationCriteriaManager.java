@@ -16,6 +16,7 @@ import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterionWithAttributes.AllowedAttributes;
 import gov.healthit.chpl.dao.CertificationCriterionDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.DateUtil;
 import lombok.extern.log4j.Log4j2;
@@ -26,14 +27,17 @@ public class CertificationCriteriaManager {
     private CertificationCriterionDAO certificationCriterionDao;
     private CertificationResultRules rules;
     private CertificationCriterionComparator criterionComparator;
+    private ResourcePermissionsFactory resourcePermissionsFactory;
 
     @Autowired
     public CertificationCriteriaManager(CertificationCriterionDAO certificationCriterionDao,
             CertificationResultRules rules,
-            CertificationCriterionComparator criterionComparator) {
+            CertificationCriterionComparator criterionComparator,
+            ResourcePermissionsFactory resourcePermissionsFactory) {
         this.certificationCriterionDao = certificationCriterionDao;
         this.rules = rules;
         this.criterionComparator = criterionComparator;
+        this.resourcePermissionsFactory = resourcePermissionsFactory;
     }
 
     @Transactional
@@ -65,10 +69,10 @@ public class CertificationCriteriaManager {
                 .collect(Collectors.toList());
     }
 
-    public List<CertificationCriterion> getCriteriaAvailableToListing(CertifiedProductSearchDetails listing) {
+    public List<CertificationCriterion> getCriteriaAvailableToListingAndUser(CertifiedProductSearchDetails listing) {
         List<CertificationCriterion> allCriteriaAvailableToListing = Stream.concat(
                 getAttestedCriteria(listing).stream(),
-                getActiveCriteriaBasedOnEditionAndDate(listing).stream())
+                getEditableCriteria(listing).stream())
             .distinct()
             .sorted(criterionComparator)
             .collect(Collectors.toList());
@@ -82,11 +86,18 @@ public class CertificationCriteriaManager {
                 .collect(Collectors.toList());
     }
 
-    private List<CertificationCriterion> getActiveCriteriaBasedOnEditionAndDate(CertifiedProductSearchDetails listing) {
+    private List<CertificationCriterion> getEditableCriteria(CertifiedProductSearchDetails listing) {
         String edition = listing.getEdition() != null && !StringUtils.isEmpty(listing.getEdition().getName())
                         ? listing.getEdition().getName() : null;
 
-        return this.getActive(edition, listing.getCertificationDay(), LocalDate.now());
+        List<CertificationCriterion> allActiveCriteria = this.getActive(edition, listing.getCertificationDay(), LocalDate.now());
+        if (!resourcePermissionsFactory.get().isUserRoleAdmin()
+                && !resourcePermissionsFactory.get().isUserRoleOnc()) {
+            return allActiveCriteria.stream()
+                    .filter(criterion -> criterion.isEditable())
+                    .collect(Collectors.toList());
+        }
+        return allActiveCriteria;
     }
 
     @Transactional

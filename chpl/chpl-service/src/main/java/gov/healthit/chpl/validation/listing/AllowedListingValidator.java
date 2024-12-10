@@ -7,34 +7,34 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.validation.listing.reviewer.CertificationStatusReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.ComparisonReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.DeveloperStatusReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.Reviewer;
 
-/**
- * A concrete validation implementation that does not check for any listing errors.
- * @author kekey
- *
- */
 @Component
 public class AllowedListingValidator extends Validator {
-    private DeveloperStatusReviewer devStatusReviewer;
-
+    private List<Reviewer> reviewersToAlwaysCheck;
     private List<Reviewer> reviewers;
     private List<ComparisonReviewer> comparisonReviewers;
 
     @Autowired
-    public AllowedListingValidator(@Qualifier("developerStatusReviewer") DeveloperStatusReviewer devStatusReviewer) {
-        this.devStatusReviewer = devStatusReviewer;
-        comparisonReviewers = new ArrayList<ComparisonReviewer>();
+    public AllowedListingValidator(@Qualifier("developerStatusReviewer") DeveloperStatusReviewer devStatusReviewer,
+            @Qualifier("certificationStatusReviewer") CertificationStatusReviewer certStatusReviewer) {
+
+        this.reviewersToAlwaysCheck = new ArrayList<Reviewer>();
+        this.reviewersToAlwaysCheck.add(devStatusReviewer);
+        this.reviewersToAlwaysCheck.add(certStatusReviewer);
+        this.reviewers = new ArrayList<Reviewer>();
+        this.comparisonReviewers = new ArrayList<ComparisonReviewer>();
     }
 
     public List<Reviewer> getReviewers() {
-        if (reviewers == null) {
-            reviewers = new ArrayList<Reviewer>();
-            reviewers.add(devStatusReviewer);
-        }
         return reviewers;
+    }
+
+    public List<Reviewer> getReviewersToAlwaysCheck() {
+        return reviewersToAlwaysCheck;
     }
 
     public List<ComparisonReviewer> getComparisonReviewers() {

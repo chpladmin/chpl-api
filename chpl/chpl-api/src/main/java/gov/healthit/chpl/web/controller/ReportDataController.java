@@ -14,6 +14,8 @@ import gov.healthit.chpl.developer.search.DeveloperSearchResult;
 import gov.healthit.chpl.developer.search.DeveloperSearchService;
 import gov.healthit.chpl.report.ReportDataManager;
 import gov.healthit.chpl.report.ReportMetadata;
+import gov.healthit.chpl.report.criteriaattribute.StandardListingReport;
+import gov.healthit.chpl.report.criteriaattribute.StandardReport;
 import gov.healthit.chpl.report.criteriaattribute.TestToolListingReport;
 import gov.healthit.chpl.report.criteriaattribute.TestToolReport;
 import gov.healthit.chpl.report.criteriamigrationreport.CriteriaMigrationReportDenormalized;
@@ -428,6 +430,26 @@ public class ReportDataController {
     @RequestMapping(value = "/service-base-url-list", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<UrlUptimeMonitorEx> getUrlUptimeMonitors() {
         return reportDataManager.getUrlUptimeMonitors();
+    }
+
+    @Operation(summary = "Retrieves the data used to generate the Standard Criteria Attribute Summary report.",
+            description = "Retrieves the data used to generate the Standard Criteria Attribute Summary report.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
+    @RequestMapping(value = "/standards", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public @ResponseBody List<StandardReport> getStandardReports() {
+        return reportDataManager.getStandardReports();
+    }
+
+    @Operation(summary = "Retrieves the data used to generate the Standard Criteria Attribute Listing report.",
+            description = "Retrieves the data used to generate the Standard Criteria Attribute Listing report.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
+    @RequestMapping(value = "/standards-listing", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public @ResponseBody List<StandardListingReport> getStandardListingReports() {
+        return reportDataManager.getStandardListingReports();
     }
 
     @Operation(summary = "Retrieves the data used to generate the Summary Statistics - Direct Review report.",

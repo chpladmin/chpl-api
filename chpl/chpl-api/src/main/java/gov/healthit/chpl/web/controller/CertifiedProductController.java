@@ -705,8 +705,7 @@ public class CertifiedProductController {
         CertifiedProductSearchDetails existingListing = cpdManager.getCertifiedProductDetails(updatedListing.getId());
         Long acbId = Long.parseLong(existingListing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_ID_KEY).toString());
 
-        // if the ACB owner is changed this is a separate action with different
-        // security
+        // if the ACB owner is changed this is a separate action with different security
         Long newAcbId = Long
                 .valueOf(updatedListing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_ID_KEY).toString());
         if (acbId.longValue() != newAcbId.longValue()) {
