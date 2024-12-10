@@ -18,6 +18,8 @@ import gov.healthit.chpl.report.criteriaattribute.FunctionalityTestedListingRepo
 import gov.healthit.chpl.report.criteriaattribute.FunctionalityTestedReport;
 import gov.healthit.chpl.report.criteriaattribute.OptionalStandardListingReport;
 import gov.healthit.chpl.report.criteriaattribute.OptionalStandardReport;
+import gov.healthit.chpl.report.criteriaattribute.PrivacyAndSecurityFrameworkListingReport;
+import gov.healthit.chpl.report.criteriaattribute.PrivacyAndSecurityFrameworkReport;
 import gov.healthit.chpl.report.criteriaattribute.StandardListingReport;
 import gov.healthit.chpl.report.criteriaattribute.StandardReport;
 import gov.healthit.chpl.report.criteriaattribute.SvapListingReport;
@@ -460,7 +462,7 @@ public class ReportDataController {
     }
 
     @Operation(summary = "Retrieves the data used to generate the Functionality Tested Criteria Attribute Summary report.",
-            description = "Retrgit pushieves the data used to generate the Functionality Tested Criteria Attribute Summary report.",
+            description = "Retrieves the data used to generate the Functionality Tested Criteria Attribute Summary report.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
@@ -537,6 +539,26 @@ public class ReportDataController {
     @RequestMapping(value = "/svaps-listing", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<SvapListingReport> getSvapListingReports() {
         return reportDataManager.getSvapListingReports();
+    }
+
+    @Operation(summary = "Retrieves the data used to generate the Privacy & Security Framework Criteria Attribute Summary report.",
+            description = "Retrieves the data used to generate the Privacy & Security Framework Criteria Attribute Summary report.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
+    @RequestMapping(value = "/privacy-and-security-frameworks", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public @ResponseBody List<PrivacyAndSecurityFrameworkReport> getPrivacyAndSecurityFrameworkReports() {
+        return reportDataManager.getPrivacyAndSecurityFrameworkReports();
+    }
+
+    @Operation(summary = "Retrieves the data used to generate the Privacy & Security Framework Criteria Attribute Listing report.",
+            description = "Retrieves the data used to generate the Privacy & Security Framework Criteria Attribute Listing report.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
+    @RequestMapping(value = "/privacy-and-security-frameworks-listing", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public @ResponseBody List<PrivacyAndSecurityFrameworkListingReport> getPrivacyAndSecurityFrameworkListingReports() {
+        return reportDataManager.getPrivacyAndSecurityFrameworkListingReports();
     }
 
 }
