@@ -211,10 +211,10 @@ public class UserManagementController {
             if (invitation != null) {
                 cognitoUserManager.createUser(userInfo);
             }
+        } catch (ValidationException ex) {
+            throw ex;
         } catch (Exception ex) {
             LOGGER.error("Error creating user from invitation.", ex);
-        } finally {
-            SecurityContextHolder.getContext().setAuthentication(null);
         }
     }
 
