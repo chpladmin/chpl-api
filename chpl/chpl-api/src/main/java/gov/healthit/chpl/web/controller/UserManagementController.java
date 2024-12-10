@@ -257,7 +257,7 @@ public class UserManagementController {
 
         UserInvitation invitation = invitationManager.getByInvitationHash(userInfo.getHash());
         if (invitation == null || invitation.isOlderThan(invitationLengthInDays)) {
-            throw new ValidationException(msgUtil.getMessage("user.invitation.expired",
+            throw new ValidationException(msgUtil.getMessage("user.invitation.invalid",
                     invitationLengthInDays + "",
                     invitationLengthInDays == 1 ? "" : "s"));
         }
@@ -360,7 +360,7 @@ public class UserManagementController {
 
         UserInvitation invitation = invitationManager.getByInvitationHash(credentials.getHash());
         if (invitation == null || invitation.isOlderThan(authorizationLengthInDays)) {
-            throw new InvalidArgumentsException(msgUtil.getMessage("user.invitation.expired",
+            throw new InvalidArgumentsException(msgUtil.getMessage("user.invitation.invalid",
                     authorizationLengthInDays + "",
                     authorizationLengthInDays == 1 ? "" : "s"));
         }
