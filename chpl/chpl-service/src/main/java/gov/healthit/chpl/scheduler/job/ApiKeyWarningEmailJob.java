@@ -103,7 +103,7 @@ public class ApiKeyWarningEmailJob implements Job {
                 apiKey.getName(),
                 getTotalDaysUnusedBeforeDelete().toString(),
                 apiKey.getKey(),
-                getDateFormatter().format(apiKey.getLastUsedDate()),
+                apiKey.getLastUsedDate() == null ? getDateFormatter().format(apiKey.getCreationDate()) : getDateFormatter().format(apiKey.getLastUsedDate()),
                 getNumberOfDaysUntilDelete().toString());
         return message;
     }
