@@ -35,6 +35,7 @@ import gov.healthit.chpl.exception.ObjectsMissingValidationException;
 import gov.healthit.chpl.exception.UserAccountExistsException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
+import gov.healthit.chpl.insight.InsightRequestFailedException;
 import gov.healthit.chpl.manager.impl.UpdateCertifiedBodyException;
 import gov.healthit.chpl.manager.impl.UpdateTestingLabException;
 import gov.healthit.chpl.user.cognito.authentication.CognitoAuthenticationChallenge;
@@ -72,6 +73,14 @@ public class ApiExceptionControllerAdvice {
         return new ResponseEntity<ErrorResponse>(
                 new ErrorResponse("Direct Review information is not currently available, please check back later."),
                 HttpStatus.NO_CONTENT);
+    }
+
+    @ExceptionHandler(InsightRequestFailedException.class)
+    public ResponseEntity<ErrorResponse> exception(InsightRequestFailedException e) {
+        LOGGER.error(e.getMessage());
+        return new ResponseEntity<ErrorResponse>(
+                new ErrorResponse("Insights information is not currently available, please check back later."),
+                e.getStatusCode() != null ? e.getStatusCode() : HttpStatus.NO_CONTENT);
     }
 
     @ExceptionHandler(EntityRetrievalException.class)
