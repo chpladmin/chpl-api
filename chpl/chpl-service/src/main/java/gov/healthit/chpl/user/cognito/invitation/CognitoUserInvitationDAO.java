@@ -36,11 +36,12 @@ public class CognitoUserInvitationDAO extends BaseDAOImpl {
     }
 
     public CognitoUserInvitation getByToken(UUID token) {
-        CognitoUserInvitationEntity invitation = getEntityByToken(token);
-        if (invitation != null) {
-            return invitation.toDomain();
+        CognitoUserInvitationEntity entity = getEntityByToken(token);
+        if (entity != null) {
+            return entity.toDomain();
+        } else {
+            return null;
         }
-        return null;
     }
 
     public CognitoUserInvitation getById(Long id) {

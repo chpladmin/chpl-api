@@ -212,7 +212,7 @@ public class AuthenticationController {
 
     @RequestMapping(value = "/refresh-token", method = RequestMethod.POST,
             produces = "application/json; charset=utf-8")
-    public CognitoAuthenticationResponse refreshToken(@RequestBody CognitoRefreshTokenRequest request) {
+    public CognitoAuthenticationResponse refreshToken(@RequestBody CognitoRefreshTokenRequest request) throws UserRetrievalException {
         if (!ff4j.check(FeatureList.SSO)) {
             throw new NotImplementedException("This method has not been implemented");
         }

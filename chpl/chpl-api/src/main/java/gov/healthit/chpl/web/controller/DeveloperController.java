@@ -5,7 +5,9 @@ import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.StringUtils;
+import org.ff4j.FF4j;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -22,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.attestation.domain.AttestationPeriodDeveloperException;
 import gov.healthit.chpl.attestation.manager.AttestationManager;
 import gov.healthit.chpl.caching.CacheNames;
@@ -43,6 +46,9 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.JiraRequestFailedException;
 import gov.healthit.chpl.exception.ValidationException;
+import gov.healthit.chpl.insight.InsightRequestFailedException;
+import gov.healthit.chpl.insight.InsightService;
+import gov.healthit.chpl.insight.InsightSubmission;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.UserPermissionsManager;
@@ -70,23 +76,29 @@ public class DeveloperController {
     private ErrorMessageUtil msgUtil;
     private UserPermissionsManager userPermissionsManager;
     private AttestationManager attestationManager;
+    private InsightService insightsService;
     private DirectReviewCachingService directReviewService;
     private RealWorldTestingManager rwtManager;
+    private FF4j ff4j;
 
     @Autowired
     public DeveloperController(DeveloperManager developerManager,
             CertifiedProductManager cpManager,
             UserPermissionsManager userPermissionsManager,
             AttestationManager attestationManager,
+            InsightService insightsService,
             ErrorMessageUtil msgUtil,
             DirectReviewCachingService directReviewService,
-            RealWorldTestingManager rwtManager) {
+            RealWorldTestingManager rwtManager,
+            FF4j ff4j) {
         this.developerManager = developerManager;
         this.userPermissionsManager = userPermissionsManager;
         this.attestationManager = attestationManager;
+        this.insightsService = insightsService;
         this.msgUtil = msgUtil;
         this.directReviewService = directReviewService;
         this.rwtManager = rwtManager;
+        this.ff4j = ff4j;
     }
 
     @DeprecatedApiResponseFields(friendlyUrl = "/developers", httpMethod = "GET", responseClass = DeveloperResults.class)
@@ -138,6 +150,20 @@ public class DeveloperController {
             @PathVariable("developerId") Long developerId) throws JiraRequestFailedException {
         return new ResponseEntity<List<DirectReview>>(
                 directReviewService.getDirectReviews(developerId).getDirectReviews(), HttpStatus.OK);
+    }
+
+    @Operation(summary = "List Insight sumbissions for a developer.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
+    @RequestMapping(value = "/{developerId}/insights", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public @ResponseBody ResponseEntity<List<InsightSubmission>> getInsights(@PathVariable("developerId") Long developerId)
+            throws InsightRequestFailedException, EntityRetrievalException {
+        if (!ff4j.check(FeatureList.INSIGHTS)) {
+            throw new NotImplementedException("This method has not been implemented");
+        }
+        return new ResponseEntity<List<InsightSubmission>>(insightsService.getInsightSubmissions(developerId), HttpStatus.OK);
     }
 
     @Operation(summary = "List all Real World Testing Plans URLs from active certificates for a developer.",
