@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import gov.healthit.chpl.report.ReportDataManager;
+import gov.healthit.chpl.report.criteriaattribute.CodeSetListingReport;
+import gov.healthit.chpl.report.criteriaattribute.CodeSetReport;
 import gov.healthit.chpl.report.criteriaattribute.ConformanceMethodListingReport;
 import gov.healthit.chpl.report.criteriaattribute.ConformanceMethodReport;
 import gov.healthit.chpl.report.criteriaattribute.FunctionalityTestedListingReport;
@@ -202,6 +204,27 @@ public class CriteriaAttributeReportController {
     @RequestMapping(value = "/conformance-methods/listings", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<ConformanceMethodListingReport> getConformanceMethodListingReports() {
         return reportDataManager.getCriteriaAttributeAttributeService().getConformanceMethodListingReports();
+    }
+
+    @Operation(summary = "Retrieves the data used to generate the Code Set Criteria Attribute Summary report.",
+            description = "Retrieves the data used to generate the Code Set Criteria Attribute Summary report.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
+    @RequestMapping(value = "/code-sets", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public @ResponseBody List<CodeSetReport> getCodeSetReports() {
+        return reportDataManager.getCriteriaAttributeAttributeService().getCodeSetReports();
+    }
+
+
+    @Operation(summary = "Retrieves the data used to generate the Code Set Criteria Attribute Listing report.",
+            description = "Retrieves the data used to generate the Code SetCriteria Attribute Listing report.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
+    @RequestMapping(value = "/code-sets/listings", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public @ResponseBody List<CodeSetListingReport> getCodeSetListingReports() {
+        return reportDataManager.getCriteriaAttributeAttributeService().getCodeSetListingReports();
     }
 
 }

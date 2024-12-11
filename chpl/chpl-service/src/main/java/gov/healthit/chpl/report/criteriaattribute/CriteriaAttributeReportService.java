@@ -16,6 +16,7 @@ public class CriteriaAttributeReportService {
     private SvapReportDao svapReportDao;
     private PrivacyAndSecurityFrameworkReportDao privacyAndSecurityFrameworkReportDao;
     private ConformanceMethodReportDao conformanceMethodReportDao;
+    private CodeSetReportDao codeSetReportDao;
 
     @Autowired
     public CriteriaAttributeReportService(TestToolReportDao testToolReportDao,
@@ -25,7 +26,8 @@ public class CriteriaAttributeReportService {
             TestDataReportDao testDataReportDao,
             SvapReportDao svapReportDao,
             PrivacyAndSecurityFrameworkReportDao privacyAndSecurityFrameworkReportDao,
-            ConformanceMethodReportDao conformanceMethodReportDao) {
+            ConformanceMethodReportDao conformanceMethodReportDao,
+            CodeSetReportDao codeSetReportDao) {
 
         this.testToolReportDao = testToolReportDao;
         this.standardReportDao = standardReportDao;
@@ -35,7 +37,7 @@ public class CriteriaAttributeReportService {
         this.svapReportDao = svapReportDao;
         this.privacyAndSecurityFrameworkReportDao = privacyAndSecurityFrameworkReportDao;
         this.conformanceMethodReportDao = conformanceMethodReportDao;
-
+        this.codeSetReportDao = codeSetReportDao;
     }
 
     @Transactional
@@ -116,6 +118,16 @@ public class CriteriaAttributeReportService {
     @Transactional
     public List<ConformanceMethodListingReport> getConformanceMethodListingReports() {
         return conformanceMethodReportDao.getConformanceMethodListingReports();
+    }
+
+    @Transactional
+    public List<CodeSetReport> getCodeSetReports() {
+        return codeSetReportDao.getCodeSetReports();
+    }
+
+    @Transactional
+    public List<CodeSetListingReport> getCodeSetListingReports() {
+        return codeSetReportDao.getCodeSetListingReports();
     }
 
 }
