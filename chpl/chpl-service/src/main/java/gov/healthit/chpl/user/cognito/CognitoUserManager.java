@@ -199,7 +199,7 @@ public class CognitoUserManager {
         }
 
         cognitoApiWrapper.addOrgToUser(originalUser, invitation.getOrganizationId());
-        cognitoInvitationManager.deleteToken(invitationToken);
+        cognitoInvitationManager.deleteInvitation(invitation);
 
         User updatedUser = cognitoApiWrapper.getUserNoCache(originalUser.getCognitoId());
         activityManager.addUserActivity(updatedUser.getCognitoId(),
