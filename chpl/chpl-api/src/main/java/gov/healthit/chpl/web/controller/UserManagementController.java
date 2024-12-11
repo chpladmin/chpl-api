@@ -19,6 +19,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -70,10 +71,10 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 @Tag(name = "users", description = "Allows management of users.")
 @RestController
 @RequestMapping("/users")
-@Log4j2
 public class UserManagementController {
     private UserManager userManager;
     private InvitationManager invitationManager;
@@ -110,13 +111,30 @@ public class UserManagementController {
         this.authorizationLengthInDays = authorizationLengthInDays;
     }
 
-    @Operation(summary = "View a specific user's details.",
-            description = "The logged in user must either be the user in the parameters, have ROLE_ADMIN, or "
-                    + "have ROLE_ACB.",
+    @Operation(summary = "Update the currently logged in user with an additional organization.",
+            description = "Update the currently logged in user with an additional organization.  This"
+                    + "is typically adding another developer or ONC-ACB to an existing user's list "
+                    + "of organizations they have access to.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
+    @RequestMapping(value = "/authorize/{invitationToken}", method = RequestMethod.POST,
+            consumes = MediaType.APPLICATION_JSON_VALUE,
+            produces = "application/json; charset=utf-8")
+    public User addOrganizationToUser(@PathVariable("invitationToken") UUID invitationToken, @RequestHeader("authorization") String jwt)
+            throws UserRetrievalException, InvalidArgumentsException, ActivityException {
+
+        return cognitoUserManager.addOrganizationToUser(invitationToken, jwt.split(" ")[1]);
+    }
+
+    @Operation(summary = "View a specific user's details.",
+            description = "The logged in user must either be the user in the parameters, have ROLE_ADMIN, or "
+                    + "have ROLE_ACB.",
+                    security = {
+                            @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                            @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+                    })
     @RequestMapping(value = "/{cognitoUserId}", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
     public @ResponseBody User getUser(@PathVariable("cognitoUserId") UUID cognitoUserId) throws UserRetrievalException {
@@ -127,14 +145,13 @@ public class UserManagementController {
         return cognitoUserManager.getUserInfo(cognitoUserId);
     }
 
-
     @Operation(summary = "Invite a user to the CHPL.",
             description = "This request creates an invitation that is sent to the email address provided. "
                     + "The recipient of this invitation can then choose to create a new account "
                     + "or add the permissions contained within the invitation to an existing account "
                     + "if they have one. Said another way, an invitation can be used to create or "
                     + "modify CHPL user accounts." + "The correct order to call invitation requests is "
-                    + "the following: 1) /invite 2) /create or /authorize. "
+                    + "the following: 1) POST /users/invitation 2) POST /users or POST users/authorize/{invitationToken}. "
                     + "Security Restrictions: ROLE_ADMIN and ROLE_ONC can invite users to any organization.  "
                     + "ROLE_ACB can add users to their own organization.",
             security = {
@@ -179,7 +196,7 @@ public class UserManagementController {
                     + "That user key along with all the information needed to create a new user's account "
                     + "can be passed in here. The account is created but cannot be used until that user "
                     + "confirms that their email address is valid. The correct order to call invitation requests is "
-                    + "the following: 1) /invite 2) /create or /authorize ",
+                    + "the following: 1) POST /users/invitation 2) POST /users or POST users/authorize/{invitationToken}",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
@@ -196,10 +213,10 @@ public class UserManagementController {
             if (invitation != null) {
                 cognitoUserManager.createUser(userInfo);
             }
+        } catch (ValidationException ex) {
+            throw ex;
         } catch (Exception ex) {
             LOGGER.error("Error creating user from invitation.", ex);
-        } finally {
-            SecurityContextHolder.getContext().setAuthentication(null);
         }
     }
 
@@ -226,6 +243,7 @@ public class UserManagementController {
 
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 
     @Deprecated
     @DeprecatedApi(friendlyUrl = "/users/create",

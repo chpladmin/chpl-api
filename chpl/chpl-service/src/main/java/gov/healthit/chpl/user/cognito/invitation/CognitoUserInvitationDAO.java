@@ -3,11 +3,10 @@ package gov.healthit.chpl.user.cognito.invitation;
 import java.util.List;
 import java.util.UUID;
 
-import jakarta.persistence.Query;
-
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
+import jakarta.persistence.Query;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -37,7 +36,12 @@ public class CognitoUserInvitationDAO extends BaseDAOImpl {
     }
 
     public CognitoUserInvitation getByToken(UUID token) {
-        return getEntityByToken(token).toDomain();
+        CognitoUserInvitationEntity entity = getEntityByToken(token);
+        if (entity != null) {
+            return entity.toDomain();
+        } else {
+            return null;
+        }
     }
 
     public CognitoUserInvitation getById(Long id) {
