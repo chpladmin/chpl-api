@@ -51,7 +51,6 @@ public class ReportDataManager {
         this.surveillanceReportsService = surveillanceReportsService;
         this.productReportsService = productReportsService;
         this.listingReportsService = listingReportsService;
-        this.directReviewReportsService = directReviewReportsService;
         this.reportMetadataDAO = reportMetadataDAO;
         this.criteriaAttributeReportService = criteriaAttributeReportService;
     }

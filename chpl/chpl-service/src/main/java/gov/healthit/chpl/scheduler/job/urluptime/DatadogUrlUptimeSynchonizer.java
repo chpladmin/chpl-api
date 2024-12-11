@@ -184,7 +184,7 @@ public class DatadogUrlUptimeSynchonizer {
     }
 
     private List<UrlUptimeMonitor> generateExpectedUrlIUpTimeMonitors(List<SyntheticsTestDetails> syntheticsTestDetails) {
-        return syntheticsTestDetails.stream()
+        return (List<UrlUptimeMonitor>) syntheticsTestDetails.stream()
                 .flatMap(synthTest -> getDeveloperIdsFromTags(synthTest.getTags()).stream()
                         .map(devId -> UrlUptimeMonitor.builder()
                                 .datadogPublicId(synthTest.getPublicId())

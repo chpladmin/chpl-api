@@ -22,6 +22,7 @@ public class ApiKey implements Serializable {
     private String email;
     private String key;
     private Date lastUsedDate;
+    private Date creationDate;
     private Date deleteWarningSentDate;
 
     @JsonIgnore
