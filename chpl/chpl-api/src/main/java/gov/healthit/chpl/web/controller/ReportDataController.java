@@ -14,20 +14,6 @@ import gov.healthit.chpl.developer.search.DeveloperSearchResult;
 import gov.healthit.chpl.developer.search.DeveloperSearchService;
 import gov.healthit.chpl.report.ReportDataManager;
 import gov.healthit.chpl.report.ReportMetadata;
-import gov.healthit.chpl.report.criteriaattribute.FunctionalityTestedListingReport;
-import gov.healthit.chpl.report.criteriaattribute.FunctionalityTestedReport;
-import gov.healthit.chpl.report.criteriaattribute.OptionalStandardListingReport;
-import gov.healthit.chpl.report.criteriaattribute.OptionalStandardReport;
-import gov.healthit.chpl.report.criteriaattribute.PrivacyAndSecurityFrameworkListingReport;
-import gov.healthit.chpl.report.criteriaattribute.PrivacyAndSecurityFrameworkReport;
-import gov.healthit.chpl.report.criteriaattribute.StandardListingReport;
-import gov.healthit.chpl.report.criteriaattribute.StandardReport;
-import gov.healthit.chpl.report.criteriaattribute.SvapListingReport;
-import gov.healthit.chpl.report.criteriaattribute.SvapReport;
-import gov.healthit.chpl.report.criteriaattribute.TestDataListingReport;
-import gov.healthit.chpl.report.criteriaattribute.TestDataReport;
-import gov.healthit.chpl.report.criteriaattribute.TestToolListingReport;
-import gov.healthit.chpl.report.criteriaattribute.TestToolReport;
 import gov.healthit.chpl.report.criteriamigrationreport.CriteriaMigrationReportDenormalized;
 import gov.healthit.chpl.report.developer.UniqueDeveloperCount;
 import gov.healthit.chpl.report.directreview.DirectReviewCounts;
@@ -411,46 +397,6 @@ public class ReportDataController {
         return reportDataManager.getUniqueListingCount();
     }
 
-    @Operation(summary = "Retrieves the data used to generate the Test Tool Criteria Attribute Summary report.",
-            description = "Retrieves the data used to generate the Test Tool Criteria Attribute Summary report.",
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
-    @RequestMapping(value = "/test-tools", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public @ResponseBody List<TestToolReport> getTestToolReports() {
-        return reportDataManager.getTestToolReports();
-    }
-
-    @Operation(summary = "Retrieves the data used to generate the Test Tool Criteria Attribute Listing report.",
-            description = "Retrieves the data used to generate the Test Tool Criteria Attribute Listing report.",
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
-    @RequestMapping(value = "/test-tools-listing", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public @ResponseBody List<TestToolListingReport> getTestToolListingReports() {
-        return reportDataManager.getTestToolListingReports();
-    }
-
-    @Operation(summary = "Retrieves the data used to generate the Standard Criteria Attribute Summary report.",
-            description = "Retrieves the data used to generate the Standard Criteria Attribute Summary report.",
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
-    @RequestMapping(value = "/standards", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public @ResponseBody List<StandardReport> getStandardReports() {
-        return reportDataManager.getStandardReports();
-    }
-
-    @Operation(summary = "Retrieves the data used to generate the Standard Criteria Attribute Listing report.",
-            description = "Retrieves the data used to generate the Standard Criteria Attribute Listing report.",
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
-    @RequestMapping(value = "/standards-listing", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public @ResponseBody List<StandardListingReport> getStandardListingReports() {
-        return reportDataManager.getStandardListingReports();
-    }
-
     @Operation(summary = "Retrieves the data used to generate the Summary Statistics - Direct Review report.",
             description = "Retrieves the data used to generate the Summary Statistics - Direct Review report.",
             security = {
@@ -459,106 +405,6 @@ public class ReportDataController {
     @RequestMapping(value = "/direct-review-counts", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody DirectReviewCounts getDirectReviewCounts() {
         return reportDataManager.getDirectReviewCounts();
-    }
-
-    @Operation(summary = "Retrieves the data used to generate the Functionality Tested Criteria Attribute Summary report.",
-            description = "Retrieves the data used to generate the Functionality Tested Criteria Attribute Summary report.",
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
-    @RequestMapping(value = "/functionalities-tested", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public @ResponseBody List<FunctionalityTestedReport> getFunctionalityTestedReports() {
-        return reportDataManager.getFunctionalityTestedReports();
-    }
-
-    @Operation(summary = "Retrieves the data used to generate the Functionality Tested Criteria Attribute Listing report.",
-            description = "Retrieves the data used to generate the Functionality Tested Criteria Attribute Listing report.",
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
-    @RequestMapping(value = "/functionalities-tested-listing", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public @ResponseBody List<FunctionalityTestedListingReport> getFunctionalityTestedListingReports() {
-        return reportDataManager.getFunctionalityTestedListingReports();
-    }
-
-    @Operation(summary = "Retrieves the data used to generate the Optional Standard Criteria Attribute Summary report.",
-            description = "Retrgit pushieves the data used to generate the Optional Standard Criteria Attribute Summary report.",
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
-    @RequestMapping(value = "/optional-standards", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public @ResponseBody List<OptionalStandardReport> getOptionalStandardReports() {
-        return reportDataManager.getOptionalStandardReports();
-    }
-
-    @Operation(summary = "Retrieves the data used to generate the Optional Standard Criteria Attribute Listing report.",
-            description = "Retrieves the data used to generate the Optional Standard Criteria Attribute Listing report.",
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
-    @RequestMapping(value = "/optional-standards-listing", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public @ResponseBody List<OptionalStandardListingReport> getOptionalStandardListingReports() {
-        return reportDataManager.getOptionalStandardListingReports();
-    }
-
-    @Operation(summary = "Retrieves the data used to generate the Test Data Criteria Attribute Summary report.",
-            description = "Retrieves the data used to generate the Test Data Criteria Attribute Summary report.",
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
-    @RequestMapping(value = "/test-data", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public @ResponseBody List<TestDataReport> getTestDataReports() {
-        return reportDataManager.getTestDataReports();
-    }
-
-    @Operation(summary = "Retrieves the data used to generate the Test Data Criteria Attribute Listing report.",
-            description = "Retrieves the data used to generate the Test Data Criteria Attribute Listing report.",
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
-    @RequestMapping(value = "/test-data-listing", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public @ResponseBody List<TestDataListingReport> getTestDataListingReports() {
-        return reportDataManager.getTestDataListingReports();
-    }
-
-    @Operation(summary = "Retrieves the data used to generate the SVAP Criteria Attribute Summary report.",
-            description = "Retrieves the data used to generate the SVAP Criteria Attribute Summary report.",
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
-    @RequestMapping(value = "/svaps", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public @ResponseBody List<SvapReport> getSvapReports() {
-        return reportDataManager.getSvapReports();
-    }
-
-    @Operation(summary = "Retrieves the data used to generate the SVAP Criteria Attribute Listing report.",
-            description = "Retrieves the data used to generate the SVAP Criteria Attribute Listing report.",
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
-    @RequestMapping(value = "/svaps-listing", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public @ResponseBody List<SvapListingReport> getSvapListingReports() {
-        return reportDataManager.getSvapListingReports();
-    }
-
-    @Operation(summary = "Retrieves the data used to generate the Privacy & Security Framework Criteria Attribute Summary report.",
-            description = "Retrieves the data used to generate the Privacy & Security Framework Criteria Attribute Summary report.",
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
-    @RequestMapping(value = "/privacy-and-security-frameworks", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public @ResponseBody List<PrivacyAndSecurityFrameworkReport> getPrivacyAndSecurityFrameworkReports() {
-        return reportDataManager.getPrivacyAndSecurityFrameworkReports();
-    }
-
-    @Operation(summary = "Retrieves the data used to generate the Privacy & Security Framework Criteria Attribute Listing report.",
-            description = "Retrieves the data used to generate the Privacy & Security Framework Criteria Attribute Listing report.",
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
-    @RequestMapping(value = "/privacy-and-security-frameworks-listing", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public @ResponseBody List<PrivacyAndSecurityFrameworkListingReport> getPrivacyAndSecurityFrameworkListingReports() {
-        return reportDataManager.getPrivacyAndSecurityFrameworkListingReports();
     }
 
 }

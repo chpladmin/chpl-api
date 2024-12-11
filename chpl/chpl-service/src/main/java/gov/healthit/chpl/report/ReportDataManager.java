@@ -7,27 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.developer.search.DeveloperSearchResult;
-import gov.healthit.chpl.report.criteriaattribute.FunctionalityTestedListingReport;
-import gov.healthit.chpl.report.criteriaattribute.FunctionalityTestedReport;
-import gov.healthit.chpl.report.criteriaattribute.FunctionalityTestedReportService;
-import gov.healthit.chpl.report.criteriaattribute.OptionalStandardListingReport;
-import gov.healthit.chpl.report.criteriaattribute.OptionalStandardReport;
-import gov.healthit.chpl.report.criteriaattribute.OptionalStandardReportService;
-import gov.healthit.chpl.report.criteriaattribute.PrivacyAndSecurityFrameworkListingReport;
-import gov.healthit.chpl.report.criteriaattribute.PrivacyAndSecurityFrameworkReport;
-import gov.healthit.chpl.report.criteriaattribute.PrivacyAndSecurityFrameworkReportService;
-import gov.healthit.chpl.report.criteriaattribute.StandardListingReport;
-import gov.healthit.chpl.report.criteriaattribute.StandardReport;
-import gov.healthit.chpl.report.criteriaattribute.StandardReportService;
-import gov.healthit.chpl.report.criteriaattribute.SvapListingReport;
-import gov.healthit.chpl.report.criteriaattribute.SvapReport;
-import gov.healthit.chpl.report.criteriaattribute.SvapReportService;
-import gov.healthit.chpl.report.criteriaattribute.TestDataListingReport;
-import gov.healthit.chpl.report.criteriaattribute.TestDataReport;
-import gov.healthit.chpl.report.criteriaattribute.TestDataReportService;
-import gov.healthit.chpl.report.criteriaattribute.TestToolListingReport;
-import gov.healthit.chpl.report.criteriaattribute.TestToolReport;
-import gov.healthit.chpl.report.criteriaattribute.TestToolReportService;
+import gov.healthit.chpl.report.criteriaattribute.CriteriaAttributeReportService;
 import gov.healthit.chpl.report.criteriamigrationreport.CriteriaMigrationReportDenormalized;
 import gov.healthit.chpl.report.criteriamigrationreport.CriteriaMigrationReportService;
 import gov.healthit.chpl.report.developer.DeveloperReportsService;
@@ -58,37 +38,22 @@ public class ReportDataManager {
     private DeveloperReportsService developerReportsService;
     private ProductReportsService productReportsService;
     private ListingReportsService listingReportsService;
-    private TestToolReportService testToolReportService;
-    private StandardReportService standardReportService;
     private DirectReviewReportsService directReviewReportsService;
-    private FunctionalityTestedReportService functionalityTestedReportService;
-    private OptionalStandardReportService optionalStandardReportService;
-    private TestDataReportService testDataReportService;
-    private SvapReportService svapReportService;
-    private PrivacyAndSecurityFrameworkReportService privacyAndSecurityFrameworkReportService;
     private ReportMetadataDAO reportMetadataDAO;
+    private CriteriaAttributeReportService criteriaAttributeReportService;
 
     @Autowired
     public ReportDataManager(CriteriaMigrationReportService criteriaMigrationReportService, DeveloperReportsService developerReportsService,
             SurveillanceReportsService surveillanceReportsService, ProductReportsService productReportsService, ListingReportsService listingReportsService,
-            TestToolReportService testToolReportService, DirectReviewReportsService directReviewReportsService, ReportMetadataDAO reportMetadataDAO,
-            StandardReportService standardReportService, FunctionalityTestedReportService functionalityTestedReportService,
-            OptionalStandardReportService optionalStandardReportService, TestDataReportService testDataReportService,
-            SvapReportService svapReportService, PrivacyAndSecurityFrameworkReportService privacyAndSecurityFrameworkReportService) {
+            DirectReviewReportsService directReviewReportsService, ReportMetadataDAO reportMetadataDAO, CriteriaAttributeReportService criteriaAttributeReportService) {
         this.criteriaMigrationReportService = criteriaMigrationReportService;
         this.developerReportsService = developerReportsService;
         this.surveillanceReportsService = surveillanceReportsService;
         this.productReportsService = productReportsService;
         this.listingReportsService = listingReportsService;
-        this.testToolReportService = testToolReportService;
         this.directReviewReportsService = directReviewReportsService;
         this.reportMetadataDAO = reportMetadataDAO;
-        this.standardReportService = standardReportService;
-        this.functionalityTestedReportService = functionalityTestedReportService;
-        this.optionalStandardReportService = optionalStandardReportService;
-        this.testDataReportService = testDataReportService;
-        this.svapReportService = svapReportService;
-        this.privacyAndSecurityFrameworkReportService = privacyAndSecurityFrameworkReportService;
+        this.criteriaAttributeReportService = criteriaAttributeReportService;
     }
 
     public List<ReportMetadata> getReportMetadataByReportGroup(String reportGroup) {
@@ -262,78 +227,12 @@ public class ReportDataManager {
     }
 
     @Synchronized("lock")
-    public List<TestToolReport> getTestToolReports() {
-        return testToolReportService.getTestToolReports();
-    }
-
-    @Synchronized("lock")
-    public List<TestToolListingReport> getTestToolListingReports() {
-        return testToolReportService.getTestToolListingReports();
-    }
-
-    @Synchronized("lock")
-    public List<StandardReport> getStandardReports() {
-        return standardReportService.getStandardReports();
-    }
-
-    @Synchronized("lock")
-    public List<StandardListingReport> getStandardListingReports() {
-        return standardReportService.getStandardListingReports();
-    }
-
-    @Synchronized("lock")
     public DirectReviewCounts getDirectReviewCounts() {
         return directReviewReportsService.getDirectReviewCounts();
     }
 
     @Synchronized("lock")
-    public List<FunctionalityTestedReport> getFunctionalityTestedReports() {
-        return functionalityTestedReportService.getFunctionalityTestedReports();
+    public CriteriaAttributeReportService getCriteriaAttributeAttributeService() {
+        return criteriaAttributeReportService;
     }
-
-    @Synchronized("lock")
-    public List<FunctionalityTestedListingReport> getFunctionalityTestedListingReports() {
-        return functionalityTestedReportService.getFunctionalityTestedListingReports();
-    }
-
-    @Synchronized("lock")
-    public List<OptionalStandardReport> getOptionalStandardReports() {
-        return optionalStandardReportService.getOptionalStandardReports();
-    }
-
-    @Synchronized("lock")
-    public List<OptionalStandardListingReport> getOptionalStandardListingReports() {
-        return optionalStandardReportService.getOptionalStandardListingReports();
-    }
-
-    @Synchronized("lock")
-    public List<TestDataReport> getTestDataReports() {
-        return testDataReportService.getTestDataReports();
-    }
-
-    @Synchronized("lock")
-    public List<TestDataListingReport> getTestDataListingReports() {
-        return testDataReportService.getTestDataListingReports();
-    }
-
-    @Synchronized("lock")
-    public List<SvapReport> getSvapReports() {
-        return svapReportService.getSvapReports();
-    }
-
-    @Synchronized("lock")
-    public List<SvapListingReport> getSvapListingReports() {
-        return svapReportService.getSvapListingReports();
-    }
-
-    @Synchronized("lock")
-    public List<PrivacyAndSecurityFrameworkReport> getPrivacyAndSecurityFrameworkReports() {
-        return privacyAndSecurityFrameworkReportService.getPrivacyAndSecurityFrameworkReports();
-    }
-
-    @Synchronized("lock")
-    public List<PrivacyAndSecurityFrameworkListingReport> getPrivacyAndSecurityFrameworkListingReports() {
-        return privacyAndSecurityFrameworkReportService.getPrivacyAndSecurityFrameworkListingReports();
-    }
-
 }
