@@ -8,7 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 
 import gov.healthit.chpl.scheduler.AuthenticatedUserAwareJob;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 public abstract class QuartzJob extends AuthenticatedUserAwareJob implements Job {
     public static final String JOB_DATA_KEY_EMAIL = "email";
     public static final String JOB_DATA_KEY_ACB = "acb";
