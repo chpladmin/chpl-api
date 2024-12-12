@@ -7,6 +7,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -172,23 +173,44 @@ public class CognitoUserManager {
         CognitoCredentials credentials = null;
         try {
             CognitoUserInvitation invitation = cognitoInvitationManager.getByToken(UUID.fromString(userInfo.getHash()));
-            if (invitation.getOrganizationId() != null) {
-                userInfo.getUser().setOrganizationId(invitation.getOrganizationId());
-            }
-            credentials = cognitoApiWrapper.createUser(userInfo.getUser());
-            cognitoApiWrapper.addUserToGroup(userInfo.getUser().getEmail(), invitation.getGroupName());
-            if (isProdEnvironment) {
-                addUserToAppropriateEnvironments(userInfo.getUser().getEmail(), invitation.getGroupName());
-            } else {
-                cognitoApiWrapper.addUserToGroup(userInfo.getUser().getEmail(), groupNameForEnvironment);
-            }
-            cognitoInvitationManager.deleteToken(UUID.fromString(userInfo.getHash()));
-            cognitoConfirmEmailEmailer.sendConfirmationEmail(credentials);
 
-            User createdUser = cognitoApiWrapper.getUserNoCache(credentials.getCognitoId());
-            activityManager.addUserActivity(createdUser.getCognitoId(),
-                    String.format("User %s was created", createdUser.getEmail()),
-                    null, createdUser);
+            //if the user exists for this environment and is disabled, we should enable them, add the organization in the request,
+            //and put them in FORCE_CHANGE_PASSWORD state, else we create a new user in the regular way
+            User existingUser = null;
+            try {
+                existingUser = cognitoApiWrapper.getUserInfo(userInfo.getUser().getEmail());
+            } catch (Exception ex) {
+                LOGGER.warn("Unable to look up user with email address " + userInfo.getUser().getEmail());
+            }
+
+            if (existingUser != null && BooleanUtils.isFalse(existingUser.getAccountEnabled())) {
+                cognitoApiWrapper.enableUser(existingUser);
+                if (invitation.getOrganizationId() != null) {
+                    cognitoApiWrapper.addOrgToUser(existingUser, invitation.getOrganizationId());
+                }
+                User reenabledUser = cognitoApiWrapper.getUserNoCache(existingUser.getCognitoId());
+                activityManager.addUserActivity(reenabledUser.getCognitoId(),
+                        String.format("User %s was re-enabled", reenabledUser.getEmail()),
+                        null, reenabledUser);
+            } else {
+                if (invitation.getOrganizationId() != null) {
+                    userInfo.getUser().setOrganizationId(invitation.getOrganizationId());
+                }
+                credentials = cognitoApiWrapper.createUser(userInfo.getUser());
+                cognitoApiWrapper.addUserToGroup(userInfo.getUser().getEmail(), invitation.getGroupName());
+                if (isProdEnvironment) {
+                    addUserToAppropriateEnvironments(userInfo.getUser().getEmail(), invitation.getGroupName());
+                } else {
+                    cognitoApiWrapper.addUserToGroup(userInfo.getUser().getEmail(), groupNameForEnvironment);
+                }
+                cognitoInvitationManager.deleteToken(UUID.fromString(userInfo.getHash()));
+                cognitoConfirmEmailEmailer.sendConfirmationEmail(credentials);
+
+                User createdUser = cognitoApiWrapper.getUserNoCache(credentials.getCognitoId());
+                activityManager.addUserActivity(createdUser.getCognitoId(),
+                        String.format("User %s was created", createdUser.getEmail()),
+                        null, createdUser);
+            }
         } catch (Exception e) {
             //Invitation deletion should roll back due to @Transactional
             if (credentials != null) {

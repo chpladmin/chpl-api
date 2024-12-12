@@ -457,11 +457,25 @@ public class CognitoApiWrapper {
             @CacheEvict(value = CacheNames.COGNITO_USERS_BY_EMAIL, key = "#user.email")
     })
     public void enableUser(User user) {
-        AdminEnableUserRequest request = AdminEnableUserRequest.builder()
+        //If a user is getting enabled, it's because they were at one time disabled
+        //and our workflow is that they can only become re-enabled by receiving a new invitation.
+        //As part of the new invitation process, we want to force the user to reset their password as well.
+        AdminEnableUserRequest enableUserRequest = AdminEnableUserRequest.builder()
                 .userPoolId(userPoolId)
                 .username(user.getCognitoId().toString())
                 .build();
-        cognitoClient.adminEnableUser(request);
+        cognitoClient.adminEnableUser(enableUserRequest);
+
+        List<AttributeType> attributes = new ArrayList<AttributeType>();
+        attributes.add(AttributeType.builder().name(FORCE_PASSWORD_RESET_ATTRIBUTE_NAME).value("1").build());
+
+        AdminUpdateUserAttributesRequest setForcePasswordResetRequest = AdminUpdateUserAttributesRequest.builder()
+                .userPoolId(userPoolId)
+                .username(user.getCognitoId().toString())
+                .userAttributes(attributes)
+                .build();
+
+        cognitoClient.adminUpdateUserAttributes(setForcePasswordResetRequest);
     }
 
     @Caching(evict = {
