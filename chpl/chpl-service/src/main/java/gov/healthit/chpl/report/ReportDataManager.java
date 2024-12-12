@@ -25,6 +25,8 @@ import gov.healthit.chpl.report.listing.UniqueListingCount;
 import gov.healthit.chpl.report.product.ProductByAcb;
 import gov.healthit.chpl.report.product.ProductReportsService;
 import gov.healthit.chpl.report.product.UniqueProductCount;
+import gov.healthit.chpl.report.servicebaseurllistreport.ServiceBaseUrlListReportService;
+import gov.healthit.chpl.report.servicebaseurllistreport.UrlUptimeMonitorEx;
 import gov.healthit.chpl.report.surveillance.CapCounts;
 import gov.healthit.chpl.report.surveillance.NonconformityCounts;
 import gov.healthit.chpl.report.surveillance.SurveillanceActivityCounts;
@@ -46,6 +48,7 @@ public class ReportDataManager {
     private ProductReportsService productReportsService;
     private ListingReportsService listingReportsService;
     private TestToolReportService testToolReportService;
+    private ServiceBaseUrlListReportService serviceBaseUrlListReportService;
     private StandardReportService standardReportService;
     private DirectReviewReportsService directReviewReportsService;
     private AttestationReportService attestationReportService;
@@ -54,14 +57,16 @@ public class ReportDataManager {
     @Autowired
     public ReportDataManager(CriteriaMigrationReportService criteriaMigrationReportService, DeveloperReportsService developerReportsService,
             SurveillanceReportsService surveillanceReportsService, ProductReportsService productReportsService, ListingReportsService listingReportsService,
-            TestToolReportService testToolReportService, DirectReviewReportsService directReviewReportsService, AttestationReportService attestationReportService,
-            StandardReportService standardReportService, ReportMetadataDAO reportMetadataDAO) {
+            TestToolReportService testToolReportService, DirectReviewReportsService directReviewReportsService, ReportMetadataDAO reportMetadataDAO,
+            ServiceBaseUrlListReportService serviceBaseUrlListReportService, AttestationReportService attestationReportService,
+            StandardReportService standardReportService) {
         this.criteriaMigrationReportService = criteriaMigrationReportService;
         this.developerReportsService = developerReportsService;
         this.surveillanceReportsService = surveillanceReportsService;
         this.productReportsService = productReportsService;
         this.listingReportsService = listingReportsService;
         this.testToolReportService = testToolReportService;
+        this.serviceBaseUrlListReportService = serviceBaseUrlListReportService;
         this.standardReportService = standardReportService;
         this.directReviewReportsService = directReviewReportsService;
         this.attestationReportService = attestationReportService;
@@ -249,6 +254,10 @@ public class ReportDataManager {
     }
 
     @Synchronized("lock")
+    public List<UrlUptimeMonitorEx> getUrlUptimeMonitors() {
+        return serviceBaseUrlListReportService.getUrlUptimeMonitors();
+    }
+
     public List<StandardReport> getStandardReports() {
         return standardReportService.getStandardReports();
     }

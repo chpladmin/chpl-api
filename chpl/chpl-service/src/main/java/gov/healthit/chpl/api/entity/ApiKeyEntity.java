@@ -2,6 +2,9 @@ package gov.healthit.chpl.api.entity;
 
 import java.util.Date;
 
+import gov.healthit.chpl.api.domain.ApiKey;
+import gov.healthit.chpl.entity.EntityAudit;
+import gov.healthit.chpl.util.Util;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -9,10 +12,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-
-import gov.healthit.chpl.api.domain.ApiKey;
-import gov.healthit.chpl.entity.EntityAudit;
-import gov.healthit.chpl.util.Util;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -83,6 +82,7 @@ public class ApiKeyEntity extends EntityAudit {
                 .name(this.getNameOrganization())
                 .unrestricted(this.getUnrestricted())
                 .lastUsedDate(this.getLastUsedDate())
+                .creationDate(this.getCreationDate())
                 .deleteWarningSentDate(this.getDeleteWarningSentDate())
                 .build();
     }

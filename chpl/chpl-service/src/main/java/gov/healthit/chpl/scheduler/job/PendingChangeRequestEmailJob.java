@@ -32,7 +32,6 @@ import gov.healthit.chpl.changerequest.search.ChangeRequestSearchService;
 import gov.healthit.chpl.changerequest.search.OrderByOption;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.domain.CertificationBody;
-import gov.healthit.chpl.domain.auth.Authority;
 import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
 import gov.healthit.chpl.email.footer.AdminFooter;
@@ -40,6 +39,7 @@ import gov.healthit.chpl.exception.EmailNotSentException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.SchedulerManager;
+import gov.healthit.chpl.scheduler.SchedulerSecurityContextService;
 import gov.healthit.chpl.scheduler.job.changerequest.presenter.ChangeRequestCsvPresenter;
 import gov.healthit.chpl.scheduler.job.changerequest.presenter.ChangeRequestDetailsPresentationService;
 import gov.healthit.chpl.scheduler.job.changerequest.presenter.PendingChangeRequestPresenter;
@@ -90,6 +90,9 @@ public class PendingChangeRequestEmailJob extends QuartzJob {
     @Value("${pendingChangeRequestNoDataEmailBody}")
     private String pendingChangeRequestNoDataEmailBody;
 
+    @Autowired
+    private SchedulerSecurityContextService securityContextService;
+
     public PendingChangeRequestEmailJob() throws Exception {
         super();
     }
@@ -103,7 +106,7 @@ public class PendingChangeRequestEmailJob extends QuartzJob {
         List<ChangeRequestSearchResult> searchResults = null;
         List<CertificationBody> acbs = null;
         try {
-            setSecurityContext(Authority.ROLE_ADMIN);
+            securityContextService.setAdminSecurityContext();
             acbs = getAppropriateAcbs(jobContext);
             searchResults = getPendingChangeRequestSearchResults(getSearchRequest(acbs));
         } catch (ValidationException ex) {
