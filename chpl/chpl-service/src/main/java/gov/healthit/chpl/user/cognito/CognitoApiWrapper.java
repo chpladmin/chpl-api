@@ -81,6 +81,8 @@ import software.amazon.awssdk.services.cognitoidentityprovider.model.UserType;
 @Component
 public class CognitoApiWrapper {
     private static final String HMAC_SHA256_ALGORITHM = "HmacSHA256";
+    private static final String ORGANIZATIONS_ATTRIBUTE_NAME = "custom:organizations";
+    private static final String FORCE_PASSWORD_RESET_ATTRIBUTE_NAME = "custom:forcePasswordReset";
 
     private String clientId;
     private String userPoolId;
@@ -223,7 +225,7 @@ public class CognitoApiWrapper {
                     .userAttributes(
                             AttributeType.builder().name("name").value(userRequest.getFullName()).build(),
                             AttributeType.builder().name("email").value(userRequest.getEmail()).build(),
-                            AttributeType.builder().name("custom:organizations").value(
+                            AttributeType.builder().name(ORGANIZATIONS_ATTRIBUTE_NAME).value(
                                     userRequest.getOrganizationId() != null ? userRequest.getOrganizationId().toString() : "").build())
                     .temporaryPassword(tempPassword)
                     .messageAction(MessageActionType.SUPPRESS)
@@ -364,7 +366,7 @@ public class CognitoApiWrapper {
         List<AttributeType> attributes = new ArrayList<AttributeType>();
         attributes.add(AttributeType.builder().name("name").value(user.getFullName()).build());
         attributes.add(AttributeType.builder().name("email_verified").value("true").build());
-        attributes.add(AttributeType.builder().name("custom:forcePasswordReset").value(user.getPasswordResetRequired() ? "1" : "0").build());
+        attributes.add(AttributeType.builder().name(FORCE_PASSWORD_RESET_ATTRIBUTE_NAME).value(user.getPasswordResetRequired() ? "1" : "0").build());
 
         AdminUpdateUserAttributesRequest request = AdminUpdateUserAttributesRequest.builder()
                 .userPoolId(userPoolId)
@@ -388,7 +390,36 @@ public class CognitoApiWrapper {
                         .collect(Collectors.toSet());
         orgIds.add(orgId);
 
-        attributes.add(AttributeType.builder().name("custom:organizations").value(
+        attributes.add(AttributeType.builder().name(ORGANIZATIONS_ATTRIBUTE_NAME).value(
+                orgIds.stream()
+                        .map(o -> o.toString())
+                        .collect(Collectors.joining(",")))
+                .build());
+
+        AdminUpdateUserAttributesRequest request = AdminUpdateUserAttributesRequest.builder()
+                .userPoolId(userPoolId)
+                .username(user.getCognitoId().toString())
+                .userAttributes(attributes)
+                .build();
+
+        cognitoClient.adminUpdateUserAttributes(request);
+    }
+
+    @Caching(evict = {
+            @CacheEvict(value = CacheNames.COGNITO_USERS_BY_UUID, key = "#user.cognitoId"),
+            @CacheEvict(value = CacheNames.COGNITO_USERS_BY_EMAIL, key = "#user.email")
+    })
+    public void removeOrgsFromUser(User user, List<Long> orgIdsToRemove) throws UserRetrievalException {
+        Set<Long> orgIds = CollectionUtils.isEmpty(user.getOrganizations())
+                ? new HashSet<Long>()
+                : user.getOrganizations().stream()
+                        .map(org -> org.getId())
+                        .collect(Collectors.toSet());
+        orgIdsToRemove.stream()
+            .forEach(orgIdToRemove -> orgIds.remove(orgIdToRemove));
+
+        List<AttributeType> attributes = new ArrayList<AttributeType>();
+        attributes.add(AttributeType.builder().name(ORGANIZATIONS_ATTRIBUTE_NAME).value(
                 orgIds.stream()
                         .map(o -> o.toString())
                         .collect(Collectors.joining(",")))
@@ -496,7 +527,7 @@ public class CognitoApiWrapper {
         user.setPasswordResetRequired(getForcePasswordReset(userType.attributes()));
         user.setRole(getRoleBasedOnFilteredGroups(getGroupsForUser(user.getEmail())));
 
-        AttributeType orgIdsAttribute = getUserAttribute(userType.attributes(), "custom:organizations");
+        AttributeType orgIdsAttribute = getUserAttribute(userType.attributes(), ORGANIZATIONS_ATTRIBUTE_NAME);
         if (orgIdsAttribute != null && StringUtils.isNotEmpty(orgIdsAttribute.value())) {
             user.setOrganizations(getOrganizations(user.getRole(), Stream.of(orgIdsAttribute.value().split(","))
                 .map(Long::valueOf)
@@ -515,7 +546,7 @@ public class CognitoApiWrapper {
         user.setStatus(response.userStatusAsString());
         user.setPasswordResetRequired(getForcePasswordReset(response.userAttributes()));
         user.setRole(getRoleBasedOnFilteredGroups(getGroupsForUser(user.getEmail())));
-        AttributeType orgIdsAttribute = getUserAttribute(response.userAttributes(), "custom:organizations");
+        AttributeType orgIdsAttribute = getUserAttribute(response.userAttributes(), ORGANIZATIONS_ATTRIBUTE_NAME);
         if (orgIdsAttribute != null && StringUtils.isNotEmpty(orgIdsAttribute.value())) {
             user.setOrganizations(getOrganizations(user.getRole(), Stream.of(orgIdsAttribute.value().split(","))
                 .map(Long::valueOf)
@@ -525,7 +556,7 @@ public class CognitoApiWrapper {
     }
 
     private Boolean getForcePasswordReset(List<AttributeType> attributes) {
-        String forcePasswordReset = getUserAttribute(attributes, "custom:forcePasswordReset").value();
+        String forcePasswordReset = getUserAttribute(attributes, FORCE_PASSWORD_RESET_ATTRIBUTE_NAME).value();
         if (!StringUtils.isEmpty(forcePasswordReset)) {
             return forcePasswordReset.equals("1");
         }

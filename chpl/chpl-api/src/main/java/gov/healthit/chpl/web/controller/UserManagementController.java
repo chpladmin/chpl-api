@@ -227,16 +227,16 @@ public class UserManagementController {
             method = RequestMethod.PUT,
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = "application/json; charset=utf-8")
-    public User updateUserDetails(@RequestBody User userInfo, @PathVariable("cognitoUserId") UUID cognitoUserId)
+    public User updateUserDetails(@RequestBody User user, @PathVariable("cognitoUserId") UUID cognitoUserId)
             throws ValidationException, UserRetrievalException, ActivityException {
         if (!ff4j.check(FeatureList.SSO)) {
             throw new NotImplementedException("This method has not been implemented");
         }
 
-        if (!cognitoUserId.equals(userInfo.getCognitoId())) {
+        if (!cognitoUserId.equals(user.getCognitoId())) {
             throw new ValidationException(msgUtil.getMessage("url.body.notMatch"));
         }
-        return cognitoUserManager.updateUser(userInfo);
+        return cognitoUserManager.updateUser(user);
     }
 
 

@@ -3,7 +3,10 @@ package gov.healthit.chpl.user.cognito;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,6 +17,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.domain.CreateUserFromInvitationRequest;
+import gov.healthit.chpl.domain.Organization;
 import gov.healthit.chpl.domain.auth.CognitoEnvironments;
 import gov.healthit.chpl.domain.auth.CognitoGroups;
 import gov.healthit.chpl.domain.auth.User;
@@ -97,9 +101,15 @@ public class CognitoUserManager {
         User originalUser = cognitoApiWrapper.getUserNoCache(user.getCognitoId());
         cognitoApiWrapper.updateUser(user);
 
-        if (originalUser.getAccountEnabled() && !user.getAccountEnabled()) {
+        //check for organizations to remove (organizations are never added here, only removed)
+        List<Long> removedOrganizationIds = getRemovedOrganizationIds(originalUser, user);
+        if (!CollectionUtils.isEmpty(removedOrganizationIds)) {
+            cognitoApiWrapper.removeOrgsFromUser(originalUser, removedOrganizationIds);
+        }
+
+        if (userShouldBeDisabled(originalUser, user)) {
             cognitoApiWrapper.disableUser(user);
-        } else if (!originalUser.getAccountEnabled() && user.getAccountEnabled()) {
+        } else if (userShouldBeEnabled(originalUser, user)) {
             cognitoApiWrapper.enableUser(user);
         }
 
@@ -108,6 +118,45 @@ public class CognitoUserManager {
                 String.format("User %s was updated", updatedUser.getEmail()),
                 originalUser, updatedUser);
         return updatedUser;
+    }
+
+    private List<Long> getRemovedOrganizationIds(User originalUser, User updatedUser) {
+        List<Organization> removedOrgs = subtractLists(originalUser.getOrganizations(), updatedUser.getOrganizations());
+        if (!CollectionUtils.isEmpty(removedOrgs)) {
+            return removedOrgs.stream()
+                    .map(org -> org.getId())
+                    .collect(Collectors.toList());
+        }
+        return null;
+    }
+
+    private List<Organization> subtractLists(List<Organization> listA, List<Organization> listB) {
+        Predicate<Organization> notInListB = orgFromA -> !listB.stream()
+                .anyMatch(orgFromB -> orgFromA.getId().equals(orgFromB.getId()));
+
+        return listA.stream()
+                .filter(notInListB)
+                .collect(Collectors.toList());
+    }
+
+    private boolean userShouldBeDisabled(User originalUser, User updatedUser) {
+        //If there are no organizations remaining for this user and the user is an acb or developer
+        //then they should be disabled.
+        //They should also be disabled if the update to the specifically went from enabled to disabled.
+        if (originalUser.getAccountEnabled() && !updatedUser.getAccountEnabled()) {
+            return true;
+        } else if (!CollectionUtils.isEmpty(resourcePermissionsFactory.get().getAllAcbsForUser(originalUser))
+                && CollectionUtils.isEmpty(resourcePermissionsFactory.get().getAllAcbsForUser(updatedUser))) {
+            return true;
+        } else if (!CollectionUtils.isEmpty(resourcePermissionsFactory.get().getAllDevelopersForUser(originalUser))
+                && CollectionUtils.isEmpty(resourcePermissionsFactory.get().getAllDevelopersForUser(updatedUser))) {
+            return true;
+        }
+        return false;
+    }
+
+    private boolean userShouldBeEnabled(User originalUser, User updatedUser) {
+        return !originalUser.getAccountEnabled() && updatedUser.getAccountEnabled();
     }
 
     @Transactional
@@ -183,7 +232,6 @@ public class CognitoUserManager {
                 break;
         }
     }
-
 
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SECURED_USER, "
