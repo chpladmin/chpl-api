@@ -181,7 +181,13 @@ public class CognitoApiWrapper {
         if (response == null || response.sdkHttpResponse() == null || !response.sdkHttpResponse().isSuccessful()) {
             return null;
         }
-        return createUserFromGetUserResponse(response);
+
+        User user = createUserFromGetUserResponse(response);
+        List<GroupType> groupsForUser = getGroupsForUser(user.getEmail());
+        if (!doesGroupMatchCurrentEnvironment(groupsForUser)) {
+            return null;
+        }
+        return user;
     }
 
     @Cacheable(value = CacheNames.COGNITO_USERS_BY_EMAIL, unless = "#result == null")
@@ -195,7 +201,13 @@ public class CognitoApiWrapper {
             if (response == null || response.sdkHttpResponse() == null || !response.sdkHttpResponse().isSuccessful()) {
                 return null;
             }
-            return createUserFromGetUserResponse(response);
+
+            User user = createUserFromGetUserResponse(response);
+            List<GroupType> groupsForUser = getGroupsForUser(user.getEmail());
+            if (!doesGroupMatchCurrentEnvironment(groupsForUser)) {
+                return null;
+            }
+            return user;
         } catch (Exception e) {
             return null;
         }
@@ -212,7 +224,13 @@ public class CognitoApiWrapper {
         if (response == null || response.sdkHttpResponse() == null || !response.sdkHttpResponse().isSuccessful()) {
             return null;
         }
-        return createUserFromGetUserResponse(response);
+
+        User user = createUserFromGetUserResponse(response);
+        List<GroupType> groupsForUser = getGroupsForUser(user.getEmail());
+        if (!doesGroupMatchCurrentEnvironment(groupsForUser)) {
+            return null;
+        }
+        return user;
     }
 
     public CognitoCredentials createUser(CreateUserRequest userRequest) throws UserCreationException {
@@ -295,7 +313,7 @@ public class CognitoApiWrapper {
         return cognitoClient.adminAddUserToGroup(request);
     }
 
-    // 'beforeInvocation = false allows us to use the return value to get the key to use for the eviction
+    // 'beforeInvocation = false' allows us to use the return value to get the key to use for the eviction
     @Caching(evict = {
             @CacheEvict(value = CacheNames.COGNITO_USERS_BY_UUID, key = "#cognitoId"),
             @CacheEvict(value = CacheNames.COGNITO_USERS_BY_EMAIL, key = "#result.email", beforeInvocation = false)
