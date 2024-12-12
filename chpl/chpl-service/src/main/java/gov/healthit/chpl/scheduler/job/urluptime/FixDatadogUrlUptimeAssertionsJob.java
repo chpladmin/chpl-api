@@ -29,7 +29,7 @@ import gov.healthit.chpl.scheduler.job.QuartzJob;
 import gov.healthit.chpl.util.DateUtil;
 import lombok.extern.log4j.Log4j2;
 
-@Log4j2
+@Log4j2(topic = "fixDatadogUrlUptimeAssertionsJobLogger")
 public class FixDatadogUrlUptimeAssertionsJob extends QuartzJob {
 
     private static final Integer HTTP_STATUS_OK = 200;
