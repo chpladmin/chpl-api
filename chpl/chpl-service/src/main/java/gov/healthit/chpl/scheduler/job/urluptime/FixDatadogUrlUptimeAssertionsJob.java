@@ -62,10 +62,9 @@ public class FixDatadogUrlUptimeAssertionsJob extends QuartzJob {
 
         datadogSyntheticsTestService.getAllSyntheticsTests().forEach(test -> {
             Optional<SyntheticsAssertion> contentHeaderAssertion = getContentHeaderAssertionExist(test.getConfig().getAssertions());
+            String url = test.getConfig().getRequest().getUrl();
 
             if (contentHeaderAssertion.isPresent()) {
-
-                String url = test.getConfig().getRequest().getUrl();
 
                 SyntheticsAPITest body = new SyntheticsAPITest()
                         .config(new SyntheticsAPITestConfig()
@@ -120,10 +119,12 @@ public class FixDatadogUrlUptimeAssertionsJob extends QuartzJob {
 
                 try {
                     datadogSyntheticsTestService.getApiProvider().getApiInstance().updateAPITest(test.getPublicId(), body);
-                    LOGGER.info("Updated test: {}", url);
+                    LOGGER.info("Test updated: {}", url);
                 } catch (ApiException e) {
                     LOGGER.error("Could not update test for URL: {}", url, e);
                 }
+            } else {
+                LOGGER.info("Test NOT updated: {}", url);
             }
         });
 
