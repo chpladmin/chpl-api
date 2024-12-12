@@ -40,7 +40,7 @@
         <url-pattern>/static/*</url-pattern>
     </servlet-mapping>
 
-    <!-- Quartz config -->
+    <!-- Quartz config
     <context-param>
         <param-name>quartz:config-file</param-name>
         <param-value>quartz.properties</param-value>
@@ -60,5 +60,5 @@
     <listener>
         <listener-class>org.quartz.ee.servlet.QuartzInitializerListener</listener-class>
     </listener>
-
+    -->
 </web-app>

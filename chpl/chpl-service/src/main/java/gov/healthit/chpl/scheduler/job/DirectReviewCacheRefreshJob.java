@@ -34,9 +34,9 @@ public class DirectReviewCacheRefreshJob extends QuartzJob {
 
     @Override
     @ListingSearchCacheRefresh
-    @ClearSecurityContext
     public void execute(final JobExecutionContext jobContext) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
+        LOGGER.info("{}", Thread.currentThread().getName());
         LOGGER.info("********* Starting the Direct Review Cache Refresh job. *********");
         try {
             directReviewService.populateDirectReviewsCache(LOGGER);

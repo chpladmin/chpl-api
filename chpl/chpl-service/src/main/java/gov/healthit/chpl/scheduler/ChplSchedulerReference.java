@@ -1,12 +1,12 @@
 package gov.healthit.chpl.scheduler;
 
-import jakarta.annotation.PostConstruct;
-
 import org.quartz.Scheduler;
-import org.quartz.SchedulerException;
-import org.quartz.impl.StdSchedulerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
+import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.stereotype.Component;
+
+import jakarta.annotation.PostConstruct;
 
 /**
  * A Spring singleton object object that provides a reference to the Quartz Scheduler.
@@ -16,17 +16,17 @@ import org.springframework.stereotype.Component;
 @Scope(value = "singleton")
 @Component
 public class ChplSchedulerReference {
+    @Autowired
+    private SchedulerFactoryBean schedulerFactory;
+
     private Scheduler scheduler;
 
     /**
-     * Initializes the Quartz Scheduler when this object is created.
-     * @throws SchedulerException if thrown
+     * Initialize the scheduler service
      */
     @PostConstruct
-    public void init() throws SchedulerException {
-        StdSchedulerFactory sf = new StdSchedulerFactory();
-        sf.initialize();
-        this.scheduler = sf.getScheduler();
+    private void init() {
+      scheduler = schedulerFactory.getScheduler();
     }
 
     public Scheduler getScheduler() {
