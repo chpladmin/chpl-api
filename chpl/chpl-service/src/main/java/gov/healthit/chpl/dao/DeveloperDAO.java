@@ -10,8 +10,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import jakarta.persistence.Query;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -36,6 +34,7 @@ import gov.healthit.chpl.entity.listing.CertifiedProductDetailsEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import jakarta.persistence.Query;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
