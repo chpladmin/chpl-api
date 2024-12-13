@@ -9,7 +9,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 public class JobAspect {
 
     @After("execution(public void  org.quartz.Job.execute(..))")
-    public void logAfter(JoinPoint joinPoint) {
+    public void afterExecute(JoinPoint joinPoint) {
         SecurityContextHolder.clearContext();
     }
 

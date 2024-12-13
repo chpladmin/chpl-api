@@ -248,7 +248,7 @@ public class CognitoApiWrapper {
     public AuthenticationResultType refreshToken(String refreshToken, UUID cognitoId) {
         Map<String, String> authParams = new LinkedHashMap<String, String>();
         authParams.put("REFRESH_TOKEN", refreshToken);
-       authParams.put("SECRET_HASH", calculateSecretHash(cognitoId.toString()));
+        authParams.put("SECRET_HASH", calculateSecretHash(cognitoId.toString()));
 
         AdminInitiateAuthRequest authRequest = AdminInitiateAuthRequest.builder()
                 .authFlow(AuthFlowType.REFRESH_TOKEN_AUTH)
@@ -263,7 +263,7 @@ public class CognitoApiWrapper {
         } catch (Exception e) {
             //This is cluttering the logs when the SSO flag is on, and the user logs in using CHPL creds
             //We might want to uncomment it when we move to only using Cognito creds
-            //LOGGER.error("Error refreshing token", e);
+            LOGGER.error("Error refreshing token", e);
             return null;
         }
     }

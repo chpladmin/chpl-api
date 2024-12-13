@@ -6,8 +6,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.stereotype.Component;
 
-import jakarta.annotation.PostConstruct;
-
 /**
  * A Spring singleton object object that provides a reference to the Quartz Scheduler.
  * @author TYoung
@@ -16,18 +14,24 @@ import jakarta.annotation.PostConstruct;
 @Scope(value = "singleton")
 @Component
 public class ChplSchedulerReference {
-    @Autowired
-    private SchedulerFactoryBean schedulerFactory;
+    //@Autowired
+    //private SchedulerFactoryBean schedulerFactory;
 
     private Scheduler scheduler;
+
+    @Autowired
+    public ChplSchedulerReference(SchedulerFactoryBean schedulerFactory) {
+        this.scheduler = schedulerFactory.getScheduler();
+    }
+
 
     /**
      * Initialize the scheduler service
      */
-    @PostConstruct
-    private void init() {
-      scheduler = schedulerFactory.getScheduler();
-    }
+    //@PostConstruct
+    //private void init() {
+    //  scheduler = schedulerFactory.getScheduler();
+    //}
 
     public Scheduler getScheduler() {
         return scheduler;
