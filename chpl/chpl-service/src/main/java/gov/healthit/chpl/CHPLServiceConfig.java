@@ -287,21 +287,12 @@ public class CHPLServiceConfig implements WebMvcConfigurer, EnvironmentAware {
         return requestTimeout;
     }
 
-    /**
-     * Create the job factory bean
-     * @return Job factory bean
-     */
     @Bean
     public JobFactory jobFactory() {
         QuartzJobFactory jobFactory = new QuartzJobFactory(applicationContext);
-        //jobFactory.setApplicationContext(applicationContext);
         return jobFactory;
     }
 
-    /**
-     * Create the Scheduler Factory bean
-     * @return scheduler factory object
-     */
     @Bean
     public SchedulerFactoryBean schedulerFactory() {
         SchedulerFactoryBean factory = new SchedulerFactoryBean();

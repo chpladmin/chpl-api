@@ -15,7 +15,7 @@ import gov.healthit.chpl.scheduler.JobAspect;
 public class SpringContext extends SpringBeanJobFactory implements ApplicationContextAware {
 
     private static ApplicationContext context;
-    private transient AutowireCapableBeanFactory beanFactory;
+    private AutowireCapableBeanFactory beanFactory;
 
     /**
      * Returns the Spring managed bean instance of the given class type if it exists. Returns null otherwise.
