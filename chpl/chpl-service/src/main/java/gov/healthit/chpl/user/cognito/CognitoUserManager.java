@@ -174,8 +174,8 @@ public class CognitoUserManager {
         try {
             CognitoUserInvitation invitation = cognitoInvitationManager.getByToken(UUID.fromString(userInfo.getHash()));
 
-            //if the user exists for this environment and is disabled, we should enable them, add the organization in the request,
-            //and put them in FORCE_CHANGE_PASSWORD state, else we create a new user in the regular way
+            //if the user exists for this environment and is disabled, we will re-enable them
+            //otherwise we will create a brand new user
             User existingUser = null;
             try {
                 existingUser = cognitoApiWrapper.getUserInfo(userInfo.getUser().getEmail());
@@ -184,32 +184,16 @@ public class CognitoUserManager {
             }
 
             if (existingUser != null && BooleanUtils.isFalse(existingUser.getAccountEnabled())) {
-                cognitoApiWrapper.enableUser(existingUser);
-                if (invitation.getOrganizationId() != null) {
-                    cognitoApiWrapper.addOrgToUser(existingUser, invitation.getOrganizationId());
-                }
-                User reenabledUser = cognitoApiWrapper.getUserNoCache(existingUser.getCognitoId());
-                activityManager.addUserActivity(reenabledUser.getCognitoId(),
-                        String.format("User %s was re-enabled", reenabledUser.getEmail()),
-                        null, reenabledUser);
+                credentials = reenableUser(userInfo, invitation, existingUser);
+            } else if (existingUser == null) {
+                credentials = createNewUser(userInfo, invitation);
             } else {
-                if (invitation.getOrganizationId() != null) {
-                    userInfo.getUser().setOrganizationId(invitation.getOrganizationId());
-                }
-                credentials = cognitoApiWrapper.createUser(userInfo.getUser());
-                cognitoApiWrapper.addUserToGroup(userInfo.getUser().getEmail(), invitation.getGroupName());
-                if (isProdEnvironment) {
-                    addUserToAppropriateEnvironments(userInfo.getUser().getEmail(), invitation.getGroupName());
-                } else {
-                    cognitoApiWrapper.addUserToGroup(userInfo.getUser().getEmail(), groupNameForEnvironment);
-                }
-                cognitoInvitationManager.deleteToken(UUID.fromString(userInfo.getHash()));
-                cognitoConfirmEmailEmailer.sendConfirmationEmail(credentials);
+                LOGGER.warn("The user with email address " + userInfo.getUser().getEmail() + " already exists and is enabled. "
+                        + "A new account cannot be created.");
+            }
 
-                User createdUser = cognitoApiWrapper.getUserNoCache(credentials.getCognitoId());
-                activityManager.addUserActivity(createdUser.getCognitoId(),
-                        String.format("User %s was created", createdUser.getEmail()),
-                        null, createdUser);
+            if (credentials != null) {
+                cognitoConfirmEmailEmailer.sendConfirmationEmail(credentials);
             }
         } catch (Exception e) {
             //Invitation deletion should roll back due to @Transactional
@@ -219,6 +203,50 @@ public class CognitoUserManager {
             throw e;
         }
         return credentials == null ? null : credentials.getCognitoId();
+    }
+
+    private CognitoCredentials reenableUser(CreateUserFromInvitationRequest userInfo, CognitoUserInvitation invitation,
+            User existingUser) throws UserRetrievalException, UserCreationException, EmailNotSentException, ActivityException {
+        LOGGER.info("Re-enabling user " + existingUser.getEmail() + " from invitation " + userInfo.getHash());
+
+        existingUser.setFullName(userInfo.getUser().getFullName());
+        CognitoCredentials credentials = cognitoApiWrapper.reenableUser(existingUser);
+        if (invitation.getOrganizationId() != null) {
+            cognitoApiWrapper.addOrgToUser(existingUser, invitation.getOrganizationId());
+        }
+
+        cognitoApiWrapper.updateUser(existingUser);
+        cognitoInvitationManager.deleteToken(UUID.fromString(userInfo.getHash()));
+
+        User reenabledUser = cognitoApiWrapper.getUserNoCache(existingUser.getCognitoId());
+        activityManager.addUserActivity(reenabledUser.getCognitoId(),
+                String.format("User %s was re-enabled", reenabledUser.getEmail()),
+                existingUser, reenabledUser);
+
+        return credentials;
+    }
+
+    private CognitoCredentials createNewUser(CreateUserFromInvitationRequest userInfo, CognitoUserInvitation invitation)
+            throws UserRetrievalException, UserCreationException, EmailNotSentException, ActivityException {
+        LOGGER.info("Creating new user " + userInfo.getUser().getEmail() + " from invitation " + userInfo.getHash());
+        if (invitation.getOrganizationId() != null) {
+            userInfo.getUser().setOrganizationId(invitation.getOrganizationId());
+        }
+        CognitoCredentials credentials = cognitoApiWrapper.createUser(userInfo.getUser());
+        cognitoApiWrapper.addUserToGroup(userInfo.getUser().getEmail(), invitation.getGroupName());
+        if (isProdEnvironment) {
+            addUserToAppropriateEnvironments(userInfo.getUser().getEmail(), invitation.getGroupName());
+        } else {
+            cognitoApiWrapper.addUserToGroup(userInfo.getUser().getEmail(), groupNameForEnvironment);
+        }
+        cognitoInvitationManager.deleteToken(UUID.fromString(userInfo.getHash()));
+
+        User createdUser = cognitoApiWrapper.getUserNoCache(credentials.getCognitoId());
+        activityManager.addUserActivity(createdUser.getCognitoId(),
+                String.format("User %s was created", createdUser.getEmail()),
+                null, createdUser);
+
+        return credentials;
     }
 
     @Transactional

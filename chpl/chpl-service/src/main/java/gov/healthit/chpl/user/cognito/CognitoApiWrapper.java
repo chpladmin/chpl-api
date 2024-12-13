@@ -261,6 +261,28 @@ public class CognitoApiWrapper {
         }
     }
 
+    @Caching(evict = {
+            @CacheEvict(value = CacheNames.COGNITO_USERS_BY_UUID, key = "#existingUser.cognitoId"),
+            @CacheEvict(value = CacheNames.COGNITO_USERS_BY_EMAIL, key = "#existingUser.email")
+    })
+    public CognitoCredentials reenableUser(User existingUser) throws UserCreationException {
+        try {
+            enableUser(existingUser);
+            updateUser(existingUser);
+
+            String tempPassword = PasswordUtil.generatePassword();
+            setUserPassword(existingUser.getEmail(), tempPassword, false);
+
+            return CognitoCredentials.builder()
+                    .cognitoId(existingUser.getCognitoId())
+                    .userName(existingUser.getEmail())
+                    .password(tempPassword)
+                    .build();
+        } catch (Exception e) {
+            throw new UserCreationException(String.format("Error re-enabling user with email %s in store.", existingUser.getEmail()), e);
+        }
+    }
+
     public AuthenticationResultType refreshToken(String refreshToken, UUID cognitoId) {
         Map<String, String> authParams = new LinkedHashMap<String, String>();
         authParams.put("REFRESH_TOKEN", refreshToken);
@@ -279,7 +301,7 @@ public class CognitoApiWrapper {
         } catch (Exception e) {
             //This is cluttering the logs when the SSO flag is on, and the user logs in using CHPL creds
             //We might want to uncomment it when we move to only using Cognito creds
-            //LOGGER.error("Error refreshing token", e);
+            LOGGER.error("Error refreshing token", e);
             return null;
         }
     }
@@ -294,12 +316,14 @@ public class CognitoApiWrapper {
 
         cognitoClient.adminSetUserPassword(request);
 
-        try {
-            User user = getUserInfo(userName);
-            user.setPasswordResetRequired(false);
-            updateUser(user);
-        } catch (UserRetrievalException e) {
-            LOGGER.error("Could not retrieve user: {}", userName, e);
+        if (permanent) {
+            try {
+                User user = getUserInfo(userName);
+                user.setPasswordResetRequired(false);
+                updateUser(user);
+            } catch (UserRetrievalException e) {
+                LOGGER.error("Could not retrieve user: {}", userName, e);
+            }
         }
     }
 
@@ -465,17 +489,6 @@ public class CognitoApiWrapper {
                 .username(user.getCognitoId().toString())
                 .build();
         cognitoClient.adminEnableUser(enableUserRequest);
-
-        List<AttributeType> attributes = new ArrayList<AttributeType>();
-        attributes.add(AttributeType.builder().name(FORCE_PASSWORD_RESET_ATTRIBUTE_NAME).value("1").build());
-
-        AdminUpdateUserAttributesRequest setForcePasswordResetRequest = AdminUpdateUserAttributesRequest.builder()
-                .userPoolId(userPoolId)
-                .username(user.getCognitoId().toString())
-                .userAttributes(attributes)
-                .build();
-
-        cognitoClient.adminUpdateUserAttributes(setForcePasswordResetRequest);
     }
 
     @Caching(evict = {

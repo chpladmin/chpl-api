@@ -4,12 +4,14 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.CreateUserFromInvitationRequest;
+import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.user.cognito.invitation.CognitoUserInvitation;
 import gov.healthit.chpl.user.cognito.invitation.CognitoUserInvitationDAO;
@@ -52,7 +54,7 @@ public class CognitoUserCreationValidator {
         }
 
         try {
-            if (doesUserExistInCognito(userInfo.getUser().getEmail())) {
+            if (doesEnabledUserExistInCognito(userInfo.getUser().getEmail())) {
                 messages.add(msgUtil.getMessage("user.accountAlreadyExists", userInfo.getUser().getEmail()));
             }
         } catch (UserRetrievalException e) {
@@ -95,7 +97,8 @@ public class CognitoUserCreationValidator {
         return validationErrors;
     }
 
-    private Boolean doesUserExistInCognito(String email) throws UserRetrievalException {
-        return cognitoApiWrapper.getUserInfo(email) != null;
+    private Boolean doesEnabledUserExistInCognito(String email) throws UserRetrievalException {
+        User existingUser = cognitoApiWrapper.getUserInfo(email);
+        return existingUser != null && BooleanUtils.isTrue(existingUser.getAccountEnabled());
     }
 }
