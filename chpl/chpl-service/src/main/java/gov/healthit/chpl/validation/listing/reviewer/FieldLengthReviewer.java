@@ -114,10 +114,20 @@ public class FieldLengthReviewer implements Reviewer {
                     checkFieldLength(listing, certResult.getUseCases(), "useCasesLink");
                     checkFieldLength(listing, certResult.getServiceBaseUrlList(), "serviceBaseUrlListLink");
                     checkFieldLength(listing, certResult.getRiskManagementSummaryInformation(), "riskManagementSummaryInformationLink");
+                    checkAdditionalSoftwareFields(listing, certResult);
                     checkTestToolFields(listing, certResult);
                     checkTestDataFields(listing, certResult);
                     checkTestProcedureFields(listing, certResult);
                 });
+    }
+
+    private void checkAdditionalSoftwareFields(CertifiedProductSearchDetails listing, CertificationResult certResult) {
+        if (certResult.getAdditionalSoftware() != null && certResult.getAdditionalSoftware().size() > 0) {
+            certResult.getAdditionalSoftware().stream()
+                    .forEach(additionalSoftware -> {
+                        checkFieldLength(listing, additionalSoftware.getGrouping(), "additionalSoftwareGroup");
+                    });
+        }
     }
 
     private void checkTestToolFields(CertifiedProductSearchDetails listing, CertificationResult certResult) {
@@ -182,7 +192,9 @@ public class FieldLengthReviewer implements Reviewer {
     private void checkFieldLength(CertifiedProductSearchDetails product, String field, String errorField) {
         int maxAllowedFieldLength = getMaxLength(MAX_LENGTH_PROPERTY_PREFIX + errorField);
         if (!StringUtils.isEmpty(field) && field.length() > maxAllowedFieldLength) {
-            product.addBusinessErrorMessage(
+            //these are data errors because some of the fields could potentially be longer than what is supported
+            //by the data model, in which case overriding the errors would not work anyway
+            product.addDataErrorMessage(
                     msgUtil.getMessage("listing." + errorField + MAX_LENGTH_PROPERTY_SUFFIX, maxAllowedFieldLength, field));
         }
     }
