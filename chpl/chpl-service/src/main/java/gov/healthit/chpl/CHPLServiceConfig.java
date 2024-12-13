@@ -293,8 +293,8 @@ public class CHPLServiceConfig implements WebMvcConfigurer, EnvironmentAware {
      */
     @Bean
     public JobFactory jobFactory() {
-        ApplicationContextHolder jobFactory = new ApplicationContextHolder();
-        jobFactory.setApplicationContext(applicationContext);
+        QuartzJobFactory jobFactory = new QuartzJobFactory(applicationContext);
+        //jobFactory.setApplicationContext(applicationContext);
         return jobFactory;
     }
 
