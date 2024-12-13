@@ -14,24 +14,12 @@ import org.springframework.stereotype.Component;
 @Scope(value = "singleton")
 @Component
 public class ChplSchedulerReference {
-    //@Autowired
-    //private SchedulerFactoryBean schedulerFactory;
-
     private Scheduler scheduler;
 
     @Autowired
     public ChplSchedulerReference(SchedulerFactoryBean schedulerFactory) {
         this.scheduler = schedulerFactory.getScheduler();
     }
-
-
-    /**
-     * Initialize the scheduler service
-     */
-    //@PostConstruct
-    //private void init() {
-    //  scheduler = schedulerFactory.getScheduler();
-    //}
 
     public Scheduler getScheduler() {
         return scheduler;
