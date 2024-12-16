@@ -193,7 +193,7 @@ public class CognitoUserManager {
         User originalUser = cognitoApiWrapper.getUserInfo(AuthUtil.getCurrentUser().getCognitoId());
         CognitoUserInvitation invitation = cognitoInvitationManager.getByToken(invitationToken);
         if (invitation == null || invitation.isOlderThan(invitationLengthDays)) {
-            throw new InvalidArgumentsException(errorMessageUtil.getMessage("user.invitation.expired",
+            throw new InvalidArgumentsException(errorMessageUtil.getMessage("user.invitation.invalid",
                     invitationLengthDays + "",
                     invitationLengthDays == 1 ? "" : "s"));
         }
