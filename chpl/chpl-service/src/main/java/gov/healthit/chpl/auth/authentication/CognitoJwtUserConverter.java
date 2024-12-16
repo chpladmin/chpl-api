@@ -76,8 +76,8 @@ public class CognitoJwtUserConverter implements JWTUserConverter {
         RSAKeyProvider keyProvider = new CognitoRsaKeyProvider(region, userPoolId, tokenizeRsaKeyUrl);
         Algorithm algorithm = Algorithm.RSA256(keyProvider);
         JWTVerifier jwtVerifier = JWT.require(algorithm)
-            //.withAudience(clientId)
-            .build();
+                .acceptLeeway(30000)  //allows for the CHPL server clock and AWS server clock to be off by 30 seconds
+                .build();
 
         DecodedJWT decodedJwt = jwtVerifier.verify(jwt);
 
