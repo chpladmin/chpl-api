@@ -43,7 +43,7 @@ public class CognitoUserCreationValidator {
         Set<String> messages = new HashSet<String>();
 
         if (isInvitationExpired(UUID.fromString(userInfo.getHash()))) {
-            messages.add(msgUtil.getMessage("user.invitation.expired",
+            messages.add(msgUtil.getMessage("user.invitation.invalid",
                     invitationLengthInDays + "",
                     invitationLengthInDays == 1 ? "" : "s"));
         }
