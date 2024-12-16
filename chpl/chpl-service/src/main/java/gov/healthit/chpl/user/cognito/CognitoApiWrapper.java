@@ -91,12 +91,14 @@ public class CognitoApiWrapper {
     private CognitoIdentityProviderClient cognitoClient;
     private CertificationBodyDAO certificationBodyDAO;
     private DeveloperDAO developerDAO;
+    private CertificationBodyDAO acbDao;
 
     @Autowired
     public CognitoApiWrapper(@Value("${cognito.accessKey}") String accessKey, @Value("${cognito.secretKey}") String secretKey,
             @Value("${cognito.region}") String region, @Value("${cognito.clientId}") String clientId, @Value("${cognito.userPoolId}") String userPoolId,
             @Value("${cognito.userPoolClientSecret}") String userPoolClientSecret, @Value("${cognito.environment.groupName}") String environmentGroupName,
-            CertificationBodyDAO certificationBodyDAO, DeveloperDAO developerDAO) {
+            CertificationBodyDAO certificationBodyDAO, DeveloperDAO developerDAO,
+            CertificationBodyDAO acbDao) {
 
         cognitoClient = createCognitoClient(accessKey, secretKey, region);
         this.clientId = clientId;
@@ -105,6 +107,7 @@ public class CognitoApiWrapper {
         this.userPoolClientSecret = userPoolClientSecret;
         this.certificationBodyDAO = certificationBodyDAO;
         this.developerDAO = developerDAO;
+        this.acbDao = acbDao;
     }
 
     public AuthenticationResultType authenticate(LoginCredentials credentials) throws CognitoAuthenticationChallengeException {
@@ -355,10 +358,9 @@ public class CognitoApiWrapper {
     }
 
     public List<User> getAllUsers() {
-        return getAllUsers(false);
-    }
+        List<Developer> allDevIdsAndNames = developerDAO.findAllIdsAndNames();
+        List<CertificationBody> allAcbs = acbDao.findAll();
 
-    public List<User> getAllUsers(boolean includeDisabled) {
         ListUsersInGroupRequest request = ListUsersInGroupRequest.builder()
                 .userPoolId(userPoolId)
                 .groupName(environmentGroupName)
@@ -368,7 +370,7 @@ public class CognitoApiWrapper {
 
         ListUsersInGroupResponse response = cognitoClient.listUsersInGroup(request);
         users.addAll(response.users().stream()
-                .map(userType -> createUserFromUserType(userType))
+                .map(userType -> createUserFromUserType(userType, allDevIdsAndNames, allAcbs))
                 .toList());
 
         while (response.nextToken() != null) {
@@ -381,12 +383,12 @@ public class CognitoApiWrapper {
             response = cognitoClient.listUsersInGroup(request);
 
             users.addAll(response.users().stream()
-                    .map(userType -> createUserFromUserType(userType))
+                    .map(userType -> createUserFromUserType(userType, allDevIdsAndNames, allAcbs))
                     .toList());
 
         }
         return users.stream()
-                .filter(currUser -> includeDisabled ? true : currUser.getAccountEnabled())
+                .filter(currUser -> currUser.getAccountEnabled())
                 .collect(Collectors.toList());
     }
 
@@ -556,12 +558,32 @@ public class CognitoApiWrapper {
         try {
             return developerDAO.getSimpleDeveloperById(developerId, false);
         } catch (EntityRetrievalException e) {
-            LOGGER.error("A user exists with reference to developer organization {} which doees not exist.", developerId, e);
+            LOGGER.error("A user exists with reference to developer organization {} which doees not exist.", developerId);
             return null;
         }
     }
 
-    private User createUserFromUserType(UserType userType) {
+//    private User createUserFromUserType(UserType userType) {
+//        User user = new User();
+//        user.setCognitoId(UUID.fromString(userType.username()));
+//        user.setSubjectName(getUserAttribute(userType.attributes(), "email").value());
+//        user.setFullName(getUserAttribute(userType.attributes(), "name").value());
+//        user.setEmail(getUserAttribute(userType.attributes(), "email").value());
+//        user.setAccountEnabled(userType.enabled());
+//        user.setStatus(userType.userStatusAsString());
+//        user.setPasswordResetRequired(getForcePasswordReset(userType.attributes()));
+//        user.setRole(getRoleBasedOnFilteredGroups(getGroupsForUser(user.getEmail())));
+//
+//        AttributeType orgIdsAttribute = getUserAttribute(userType.attributes(), ORGANIZATIONS_ATTRIBUTE_NAME);
+//        if (orgIdsAttribute != null && StringUtils.isNotEmpty(orgIdsAttribute.value())) {
+//            user.setOrganizations(getOrganizations(user.getRole(), Stream.of(orgIdsAttribute.value().split(","))
+//                .map(Long::valueOf)
+//                .toList()));
+//        }
+//        return user;
+//    }
+
+    private User createUserFromUserType(UserType userType, List<Developer> developers, List<CertificationBody> acbs) {
         User user = new User();
         user.setCognitoId(UUID.fromString(userType.username()));
         user.setSubjectName(getUserAttribute(userType.attributes(), "email").value());
@@ -574,9 +596,18 @@ public class CognitoApiWrapper {
 
         AttributeType orgIdsAttribute = getUserAttribute(userType.attributes(), ORGANIZATIONS_ATTRIBUTE_NAME);
         if (orgIdsAttribute != null && StringUtils.isNotEmpty(orgIdsAttribute.value())) {
-            user.setOrganizations(getOrganizations(user.getRole(), Stream.of(orgIdsAttribute.value().split(","))
-                .map(Long::valueOf)
-                .toList()));
+            List<Long> organizationIds = Stream.of(orgIdsAttribute.value().split(",")).map(Long::valueOf).toList();
+            if (user.getRole().equalsIgnoreCase(CognitoGroups.CHPL_ACB)) {
+                user.setOrganizations(acbs.stream()
+                        .filter(acb -> organizationIds.contains(acb.getId()))
+                        .map(acb -> new Organization(acb.getId(), acb.getName()))
+                        .collect(Collectors.toList()));
+            } else if (user.getRole().equalsIgnoreCase(CognitoGroups.CHPL_DEVELOPER)) {
+                user.setOrganizations(developers.stream()
+                        .filter(dev -> organizationIds.contains(dev.getId()))
+                        .map(dev -> new Organization(dev.getId(), dev.getName()))
+                        .collect(Collectors.toList()));
+            }
         }
         return user;
     }
