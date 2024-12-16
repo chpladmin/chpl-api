@@ -85,7 +85,9 @@ public class MessageDevelopersJob extends QuartzJob implements Job {
                         LOGGER);
             LOGGER.info("Messaging " + developersToMessage.size() + " developers.");
 
-            List<User> enabledDeveloperUsers = resourcePermissionsFactory.get().getAllDeveloperUsers();
+            List<User> enabledDeveloperUsers = resourcePermissionsFactory.get().getAllDeveloperUsers().stream()
+                    .filter(devUser -> devUser.getAccountEnabled() != null && devUser.getAccountEnabled())
+                    .collect(Collectors.toList());
             List<DeveloperSearchResult> developersWithoutUsers = getDevelopersWithoutUsers(developersToMessage, enabledDeveloperUsers);
             List<DeveloperEmail> developerEmails = developersToMessage.stream()
                     .map(developer -> messageGenerator.getDeveloperEmail(developer, developerMessageRequest, enabledDeveloperUsers))

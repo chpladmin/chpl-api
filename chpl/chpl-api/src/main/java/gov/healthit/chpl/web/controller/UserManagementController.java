@@ -7,7 +7,6 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
-import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.StringUtils;
 import org.ff4j.FF4j;
@@ -22,7 +21,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -64,8 +62,6 @@ import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import gov.healthit.chpl.web.controller.annotation.DeprecatedApi;
 import gov.healthit.chpl.web.controller.annotation.DeprecatedApiResponseFields;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.Getter;
@@ -525,18 +521,12 @@ public class UserManagementController {
             })
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     @PreAuthorize("isAuthenticated()")
-    public @ResponseBody UsersResponse getUsers(
-            @Parameter(description = "Whether to include users whose accounts have been marked as disabled. "
-                    + "Any string that can be evaluated as a boolean may be passed in (ex: true, false, off, on, yes, no). "
-                    + "The parameter only affects the response when called by an authenticated ADMIN or ONC user.",
-                allowEmptyValue = true, in = ParameterIn.QUERY, name = "includeDisabled")
-            @RequestParam(value = "includeDisabled", required = false, defaultValue = "false") String includeDisabledStr) {
-        boolean includeDisabled = StringUtils.isEmpty(includeDisabledStr) ? false : BooleanUtils.toBoolean(includeDisabledStr);
+    public @ResponseBody UsersResponse getUsers() {
         List<User> users = null;
         if (ff4j.check(FeatureList.SSO)) {
-            users = getAllCognitoUsers(includeDisabled);
+            users = getAllCognitoUsers();
         } else {
-            users = getAllChplUsers(includeDisabled);
+            users = getAllChplUsers();
         }
 
         UsersResponse response = new UsersResponse();
@@ -564,8 +554,8 @@ public class UserManagementController {
         return userManager.getUserInfo(id);
     }
 
-    private List<User> getAllChplUsers(Boolean includeDisabled) {
-        List<UserDTO> userList = userManager.getAll(includeDisabled);
+    private List<User> getAllChplUsers() {
+        List<UserDTO> userList = userManager.getAll();
         List<User> users = new ArrayList<User>(userList.size());
 
         for (UserDTO userDto : userList) {
@@ -575,8 +565,8 @@ public class UserManagementController {
         return users;
     }
 
-    private List<User> getAllCognitoUsers(Boolean includeDisabled) {
-        return cognitoUserManager.getAll(includeDisabled);
+    private List<User> getAllCognitoUsers() {
+        return cognitoUserManager.getAll();
     }
 
     private class DeletedUser {

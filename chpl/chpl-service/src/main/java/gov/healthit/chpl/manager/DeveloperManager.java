@@ -245,13 +245,9 @@ public class DeveloperManager extends SecuredManager {
     @Transactional(readOnly = true)
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).DEVELOPER, "
             + "T(gov.healthit.chpl.permissions.domains.DeveloperDomainPermissions).GET_ALL_USERS, #devId)")
-    public List<User> getAllUsersOnDeveloper(Long devId, boolean includeDisabled) throws EntityRetrievalException {
+    public List<User> getAllUsersOnDeveloper(Long devId) throws EntityRetrievalException {
         Developer dev = getById(devId);
-        if (!resourcePermissionsFactory.get().isUserRoleAdmin()
-                && !resourcePermissionsFactory.get().isUserRoleOnc()) {
-            includeDisabled = false;
-        }
-        List<User> users = resourcePermissionsFactory.get().getAllUsersOnDeveloper(dev, includeDisabled);
+        List<User> users = resourcePermissionsFactory.get().getAllUsersOnDeveloper(dev);
         return users;
     }
 
