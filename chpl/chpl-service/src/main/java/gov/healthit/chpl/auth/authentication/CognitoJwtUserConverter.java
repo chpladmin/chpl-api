@@ -63,9 +63,11 @@ public class CognitoJwtUserConverter implements JWTUserConverter {
                 throw new JWTValidationException("Invalid authentication token.");
             }
         } catch (JWTValidationException e) {
+            LOGGER.error("JWT Validation Exception", e);
             throw e;
 
         } catch (Exception e) {
+            LOGGER.error("Error decoding JWT token", e);
             return null;
         }
     }
