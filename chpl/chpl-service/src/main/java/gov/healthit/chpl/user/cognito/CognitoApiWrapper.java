@@ -532,6 +532,7 @@ public class CognitoApiWrapper {
     private List<Organization> getCerificationBodyOrganizations(String role, List<Long> orgIds) {
         return orgIds.stream()
                 .map(acbId -> getCertificationBody(acbId))
+                .filter(acb -> acb != null)
                 .map(acb -> new Organization(acb.getId(), acb.getName()))
                 .toList();
     }
@@ -540,7 +541,7 @@ public class CognitoApiWrapper {
         try {
             return certificationBodyDAO.getById(certificationBodyId);
         } catch (EntityRetrievalException e) {
-            LOGGER.error("Could not retrieve ACB: {}", certificationBodyId, e);
+            LOGGER.error("A user exists with reference to ACB organization {} which doees not exist.", certificationBodyId, e);
             return null;
         }
     }
@@ -548,15 +549,16 @@ public class CognitoApiWrapper {
     private List<Organization> getDeveloperOrganizations(String role, List<Long> orgIds) {
         return orgIds.stream()
                 .map(developerId -> getDeveloper(developerId))
+                .filter(dev -> dev != null)
                 .map(dev -> new Organization(dev.getId(), dev.getName()))
                 .toList();
     }
 
     private Developer getDeveloper(Long developerId) {
         try {
-            return developerDAO.getById(developerId);
+            return developerDAO.getSimpleDeveloperById(developerId, false);
         } catch (EntityRetrievalException e) {
-            LOGGER.error("Could not retrieve Developer: {}", developerId, e);
+            LOGGER.error("A user exists with reference to developer organization {} which doees not exist.", developerId, e);
             return null;
         }
     }
