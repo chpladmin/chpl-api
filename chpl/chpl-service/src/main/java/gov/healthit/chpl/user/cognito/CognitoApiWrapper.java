@@ -563,26 +563,6 @@ public class CognitoApiWrapper {
         }
     }
 
-//    private User createUserFromUserType(UserType userType) {
-//        User user = new User();
-//        user.setCognitoId(UUID.fromString(userType.username()));
-//        user.setSubjectName(getUserAttribute(userType.attributes(), "email").value());
-//        user.setFullName(getUserAttribute(userType.attributes(), "name").value());
-//        user.setEmail(getUserAttribute(userType.attributes(), "email").value());
-//        user.setAccountEnabled(userType.enabled());
-//        user.setStatus(userType.userStatusAsString());
-//        user.setPasswordResetRequired(getForcePasswordReset(userType.attributes()));
-//        user.setRole(getRoleBasedOnFilteredGroups(getGroupsForUser(user.getEmail())));
-//
-//        AttributeType orgIdsAttribute = getUserAttribute(userType.attributes(), ORGANIZATIONS_ATTRIBUTE_NAME);
-//        if (orgIdsAttribute != null && StringUtils.isNotEmpty(orgIdsAttribute.value())) {
-//            user.setOrganizations(getOrganizations(user.getRole(), Stream.of(orgIdsAttribute.value().split(","))
-//                .map(Long::valueOf)
-//                .toList()));
-//        }
-//        return user;
-//    }
-
     private User createUserFromUserType(UserType userType, List<Developer> developers, List<CertificationBody> acbs) {
         User user = new User();
         user.setCognitoId(UUID.fromString(userType.username()));
