@@ -16,10 +16,6 @@ import lombok.Data;
 public class RealWorldTestingSummaryReport {
     private Long id;
 
-    @JsonDeserialize(using = LocalDateDeserializer.class)
-    @JsonSerialize(using = LocalDateSerializer.class)
-    private LocalDate reportDate;
-
     private Long realWorldTestingYear;
     private CertificationBody certificationBody;
 
@@ -28,4 +24,5 @@ public class RealWorldTestingSummaryReport {
     private LocalDate checkedDate;
 
     private Long checkedCount;
+    private Long requiresCheckCount;
 }

@@ -11,13 +11,13 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import jakarta.persistence.Query;
 
 @Component
-public class RealWorldTestingPlanSummaryReportDao extends BaseDAOImpl {
+public class RealWorldTestingResultsSummaryReportDao extends BaseDAOImpl {
 
     public void save(RealWorldTestingSummaryReport realWorldTestingSummaryReport) throws EntityRetrievalException {
-        RealWorldTestingPlanSummaryReportEntity entity = getEntityByCheckedDateAndAcb(realWorldTestingSummaryReport.getCheckedDate(),
+        RealWorldTestingResultsSummaryReportEntity entity = getEntityByCheckedDateAndAcb(realWorldTestingSummaryReport.getCheckedDate(),
                 realWorldTestingSummaryReport.getCertificationBody().getId());
         if (entity == null) {
-            entity = RealWorldTestingPlanSummaryReportEntity.builder()
+            entity = RealWorldTestingResultsSummaryReportEntity.builder()
                     .realWorldTestingYear(realWorldTestingSummaryReport.getRealWorldTestingYear())
                     .certificationBody(CertificationBodyEntity.builder()
                             .id(realWorldTestingSummaryReport.getCertificationBody().getId())
@@ -34,14 +34,14 @@ public class RealWorldTestingPlanSummaryReportDao extends BaseDAOImpl {
         }
     }
 
-    private RealWorldTestingPlanSummaryReportEntity getEntity(Long id) throws EntityRetrievalException {
+    private RealWorldTestingResultsSummaryReportEntity getEntity(Long id) throws EntityRetrievalException {
         Query query = entityManager.createQuery(
-                "from RealWorldTestingPlanSummaryReportEntity where (NOT deleted = true) and id = :id", RealWorldTestingPlanSummaryReportEntity.class);
+                "from RealWorldTestingResultsSummaryReportEntity where (NOT deleted = true) and id = :id", RealWorldTestingResultsSummaryReportEntity.class);
         query.setParameter("id", id);
-        List<RealWorldTestingPlanSummaryReportEntity> result = query.getResultList();
+        List<RealWorldTestingResultsSummaryReportEntity> result = query.getResultList();
 
         if (result.size() > 1) {
-            throw new EntityRetrievalException("Data error. Duplicate id in real_world_testing_plan_summary_report table.");
+            throw new EntityRetrievalException("Data error. Duplicate id in real_world_testing_results_summary_report table.");
         }
 
         if (result.size() > 0) {
@@ -50,18 +50,18 @@ public class RealWorldTestingPlanSummaryReportDao extends BaseDAOImpl {
         return null;
     }
 
-    private RealWorldTestingPlanSummaryReportEntity getEntityByCheckedDateAndAcb(LocalDate checkedDate, Long certificationBodyId) throws EntityRetrievalException {
+    private RealWorldTestingResultsSummaryReportEntity getEntityByCheckedDateAndAcb(LocalDate checkedDate, Long certificationBodyId) throws EntityRetrievalException {
         Query query = entityManager.createQuery(
-                "from RealWorldTestingPlanSummaryReportEntity rwtps "
+                "from RealWorldTestingResultsSummaryReportEntity rwtrs "
                 + "where (NOT deleted = true) "
                 + "and checkedDate = :checkedDate "
-                + "and rwtps.certificationBody.id = :certificationBodyId", RealWorldTestingPlanSummaryReportEntity.class);
+                + "and rwtrs.certificationBody.id = :certificationBodyId", RealWorldTestingResultsSummaryReportEntity.class);
         query.setParameter("checkedDate", checkedDate);
         query.setParameter("certificationBodyId", certificationBodyId);
-        List<RealWorldTestingPlanSummaryReportEntity> result = query.getResultList();
+        List<RealWorldTestingResultsSummaryReportEntity> result = query.getResultList();
 
         if (result.size() > 1) {
-            throw new EntityRetrievalException("Data error. Duplicate checked_date in real_world_testing_plan_summary_report table.");
+            throw new EntityRetrievalException("Data error. Duplicate checked_date in real_world_testing_results_summary_report table.");
         }
 
         if (result.size() > 0) {
