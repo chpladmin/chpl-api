@@ -921,5 +921,14 @@
             <durability>true</durability>
             <recover>false</recover>
         </job>
+        
+        <job>
+            <name>realWorldTestingSummaryReportCreatorJob</name>
+            <group>systemJobs</group>
+            <description>Update Task/Participant Friendly Ids Job</description>
+            <job-class>gov.healthit.chpl.scheduler.job.RealWorldTestingSummaryReportCreatorJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+        </job>
     </schedule>
 </job-scheduling-data>
