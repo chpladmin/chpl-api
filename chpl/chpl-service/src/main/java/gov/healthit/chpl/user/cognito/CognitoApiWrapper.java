@@ -261,8 +261,6 @@ public class CognitoApiWrapper {
             AdminInitiateAuthResponse authResult = cognitoClient.adminInitiateAuth(authRequest);
             return authResult.authenticationResult();
         } catch (Exception e) {
-            //This is cluttering the logs when the SSO flag is on, and the user logs in using CHPL creds
-            //We might want to uncomment it when we move to only using Cognito creds
             LOGGER.error("Error refreshing token", e);
             return null;
         }
