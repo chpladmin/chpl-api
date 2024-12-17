@@ -106,7 +106,7 @@ public class CriteriaAttributeReportController {
     }
 
     @Operation(summary = "Retrieves the data used to generate the Optional Standard Criteria Attribute Summary report.",
-            description = "Retrgit pushieves the data used to generate the Optional Standard Criteria Attribute Summary report.",
+            description = "Retrieves the data used to generate the Optional Standard Criteria Attribute Summary report.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
