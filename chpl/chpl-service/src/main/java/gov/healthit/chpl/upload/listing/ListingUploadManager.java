@@ -113,7 +113,7 @@ public class ListingUploadManager {
 
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).LISTING_UPLOAD, "
-            + "T(gov.healthit.chpl.permissions.domains.ListingUploadDomainPerissions).CREATE)")
+            + "T(gov.healthit.chpl.permissions.domains.ListingUploadDomainPerissions).PARSE)")
     public List<ListingUpload> parseUploadFile(MultipartFile file) throws ValidationException {
         List<CSVRecord> allCsvRecords = getFileAsCsvRecords(file);
         int headingRowIndex = uploadUtil.getHeadingRecordIndex(allCsvRecords);
