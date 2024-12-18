@@ -218,7 +218,7 @@ public class ListingUploadManager {
         LOGGER.debug("Converting listing upload into CertifiedProductSearchDetails object");
         CertifiedProductSearchDetails listing = listingDetailsHandler.parseAsListing(headingRecord, allListingRecords);
         LOGGER.debug("Converted listing upload into CertifiedProductSearchDetails object");
-        listingNormalizer.normalize(listing, List.of(baselineStandardAsOfTodayNormalizer));
+        listingNormalizer.normalize(listing, List.of(baselineStandardAsOfCertificationDayNormalizer, baselineStandardAsOfTodayNormalizer));
         LOGGER.debug("Normalized listing upload");
         return listing;
     }
