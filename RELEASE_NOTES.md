@@ -1,5 +1,22 @@
 # Release Notes
 
+## Version 47.6.0
+_18 December 2024_
+
+### Features
+* Add endpoint to return data for Service Base URL List report
+* Allow existing user to be granted access to additional Organizations
+* Return generic msg if invitation token is bad
+* Create /developers/<id>/insights endpoint to fetch insights data
+
+### Bug Fixes
+* Add all required standards to listing as of cert day + current day
+* Give appropriate error if addt'l software group name too long
+* Give pending change request report user correct cognito group
+* Send API Key deletion warning if key was created and never used
+
+---
+
 ## Version 47.5.0
 _9 December 2024_
 
