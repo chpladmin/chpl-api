@@ -130,13 +130,11 @@ public class ApiKeyManager {
     }
 
     private ApiKey createKey(ApiKey toCreate) throws EntityCreationException, ActivityException {
-
         ApiKey created = apiKeyDAO.create(toCreate);
         String activityMsg = "API Key " + created.getKey() + " was created.";
         activityManager.addActivity(ActivityConcept.API_KEY, created.getId(), activityMsg, null,
                 created);
         return created;
-
     }
 
     @Transactional
@@ -151,11 +149,6 @@ public class ApiKeyManager {
     }
 
     @Transactional
-    public ApiKey findKey(Long keyId) throws EntityRetrievalException {
-        return apiKeyDAO.getById(keyId);
-    }
-
-    @Transactional
     public ApiKey findKey(String keyString) throws EntityRetrievalException {
         return apiKeyDAO.getByKey(keyString);
     }
@@ -163,7 +156,6 @@ public class ApiKeyManager {
     @Transactional
     public void logApiKeyActivity(String keyString, String apiCallPath, String apiCallMethod)
             throws EntityRetrievalException, EntityCreationException {
-
         ApiKey apiKey = findKey(keyString);
         ApiKeyActivityDTO apiKeyActivityDto = new ApiKeyActivityDTO();
         apiKeyActivityDto.setApiCallPath(apiCallPath);

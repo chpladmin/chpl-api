@@ -87,12 +87,13 @@ public class CognitoAuthenticationManager {
                 .build();
     }
 
-    public CognitoAuthenticationResponse refreshAuthenticationTokens(String refreshToken, UUID cognitoId) {
+    public CognitoAuthenticationResponse refreshAuthenticationTokens(String refreshToken, UUID cognitoId) throws UserRetrievalException {
         AuthenticationResultType authResult = cognitoApiWrapper.refreshToken(refreshToken, cognitoId);
         return CognitoAuthenticationResponse.builder()
                 .accessToken(authResult.accessToken())
                 .idToken(authResult.idToken())
-                .refreshToken(authResult.refreshToken())
+                .refreshToken(refreshToken)
+                .user(cognitoApiWrapper.getUserInfo(cognitoId))
                 .build();
     }
 

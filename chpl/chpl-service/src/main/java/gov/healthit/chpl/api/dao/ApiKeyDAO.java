@@ -31,7 +31,6 @@ public class ApiKeyDAO extends BaseDAOImpl {
         if (entity != null) {
             throw new EntityCreationException("An entity with this ID already exists.");
         } else {
-
             entity = new ApiKeyEntity();
             entity.setApiKey(apiKey.getKey());
             entity.setEmail(apiKey.getEmail());
@@ -64,7 +63,6 @@ public class ApiKeyDAO extends BaseDAOImpl {
     public List<ApiKey> findAll(Boolean includeDeleted) {
         List<ApiKeyEntity> entities = getAllEntities(includeDeleted);
         return entities.stream().map(entity -> entity.toDomain()).collect(Collectors.toList());
-
     }
 
     public List<ApiKey> findAllUnrestricted() {
@@ -78,24 +76,10 @@ public class ApiKeyDAO extends BaseDAOImpl {
             return entity.toDomain();
         }
         return null;
-
     }
 
     public ApiKey getByKey(String apiKey) throws EntityRetrievalException {
         ApiKeyEntity entity = getEntityByKey(apiKey);
-        if (entity != null) {
-            return entity.toDomain();
-        }
-        return null;
-    }
-
-    public List<ApiKey> findAllRevoked() {
-        List<ApiKeyEntity> entities = getAllRevokedEntities();
-        return entities.stream().map(entity -> entity.toDomain()).collect(Collectors.toList());
-    }
-
-    public ApiKey getRevokedKeyByKey(String apiKey) {
-        ApiKeyEntity entity = getRevokedEntityByKey(apiKey);
         if (entity != null) {
             return entity.toDomain();
         }
@@ -139,10 +123,11 @@ public class ApiKeyDAO extends BaseDAOImpl {
         Calendar cal = Calendar.getInstance();
         cal.add(Calendar.DAY_OF_MONTH, (-1 * days));
         List<ApiKeyEntity> result = entityManager.createQuery(
-                "from ApiKeyEntity where deleted <> true "
-                        + "AND lastUsedDate < :targetDate "
-                        + "AND deleteWarningSentDate is null",
-                ApiKeyEntity.class)
+                "SELECT apiKey "
+                + "FROM ApiKeyEntity apiKey "
+                + "WHERE deleted <> true "
+                + "AND (lastUsedDate < :targetDate OR (lastUsedDate IS NULL AND creationDate < :targetDate)) "
+                + "AND deleteWarningSentDate is null", ApiKeyEntity.class)
                 .setParameter("targetDate", cal.getTime())
                 .getResultList();
         return result;
@@ -152,7 +137,10 @@ public class ApiKeyDAO extends BaseDAOImpl {
         Calendar cal = Calendar.getInstance();
         cal.add(Calendar.DAY_OF_MONTH, (-1 * daysSinceWarningSent));
         List<ApiKeyEntity> result = entityManager.createQuery(
-                "from ApiKeyEntity where deleted <> true AND deleteWarningSentDate < :targetDate",
+                "SELECT apiKey "
+                + "FROM ApiKeyEntity apiKey "
+                + "WHERE deleted <> true "
+                + "AND deleteWarningSentDate < :targetDate",
                 ApiKeyEntity.class)
                 .setParameter("targetDate", cal.getTime())
                 .getResultList();
@@ -162,9 +150,10 @@ public class ApiKeyDAO extends BaseDAOImpl {
     private ApiKeyEntity getEntityById(Long entityId) throws EntityRetrievalException {
         ApiKeyEntity entity = null;
         Query query = entityManager.createQuery(
-                "from ApiKeyEntity "
-                        + "where (id = :entityid) "
-                        + "and deleted <> true",
+                "SELECT apiKey "
+                + "FROM ApiKeyEntity apiKey "
+                + "WHERE (id = :entityid) "
+                + "AND deleted <> true",
                 ApiKeyEntity.class);
         query.setParameter("entityid", entityId);
         List<ApiKeyEntity> result = query.getResultList();
@@ -191,26 +180,6 @@ public class ApiKeyDAO extends BaseDAOImpl {
             String msg = msgUtil.getMessage("apikey.notFound");
             throw new EntityRetrievalException(msg);
         } else {
-            entity = result.get(0);
-        }
-        return entity;
-    }
-
-    private List<ApiKeyEntity> getAllRevokedEntities() {
-        List<ApiKeyEntity> result = entityManager
-                .createQuery("from ApiKeyEntity where (deleted = true) ", ApiKeyEntity.class).getResultList();
-        return result;
-    }
-
-    private ApiKeyEntity getRevokedEntityByKey(String key) {
-        ApiKeyEntity entity = null;
-
-        Query query = entityManager.createQuery("from ApiKeyEntity where (deleted = true) AND (apiKey = :apikey) ",
-                ApiKeyEntity.class);
-        query.setParameter("apikey", key);
-        List<ApiKeyEntity> result = query.getResultList();
-
-        if (result != null && result.size() > 0) {
             entity = result.get(0);
         }
         return entity;

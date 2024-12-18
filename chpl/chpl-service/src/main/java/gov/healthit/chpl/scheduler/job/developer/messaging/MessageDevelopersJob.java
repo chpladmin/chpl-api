@@ -24,14 +24,14 @@ import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
-import gov.healthit.chpl.scheduler.SecurityContextCapableJob;
+import gov.healthit.chpl.scheduler.SchedulerSecurityContextService;
 import gov.healthit.chpl.scheduler.job.QuartzJob;
 import gov.healthit.chpl.user.cognito.CognitoApiWrapper;
 import gov.healthit.chpl.util.Util;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2(topic = "messageDevelopersJobLogger")
-public class MessageDevelopersJob extends SecurityContextCapableJob implements Job {
+public class MessageDevelopersJob extends QuartzJob implements Job {
     public static final String JOB_NAME = "messageDevelopersJob";
     public static final String DEVELOPER_MESSAGE_REQUEST = "developerMessageRequest";
     public static final String PREVIEW = "preview";
@@ -60,6 +60,9 @@ public class MessageDevelopersJob extends SecurityContextCapableJob implements J
     @Autowired
     private UserDAO userDAO;
 
+    @Autowired
+    private SchedulerSecurityContextService securityContextService;
+
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
@@ -68,7 +71,7 @@ public class MessageDevelopersJob extends SecurityContextCapableJob implements J
         try {
             User submittedByUser = getUserFromJobData(context);
             Boolean isPreview = getPreviewFromJobData(context);
-            setSecurityContext(submittedByUser);
+            securityContextService.setSecurityContext(submittedByUser);
             LOGGER.info(String.format("Messaging developers on behalf of %s (%s)", submittedByUser.getFullName(), submittedByUser.getEmail()));
 
             JobDataMap jobDataMap = context.getMergedJobDataMap();

@@ -19,6 +19,7 @@ import gov.healthit.chpl.domain.auth.CognitoGroups;
 import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.exception.ActivityException;
 import gov.healthit.chpl.exception.EmailNotSentException;
+import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.UserCreationException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
@@ -26,6 +27,8 @@ import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.user.cognito.invitation.CognitoInvitationManager;
 import gov.healthit.chpl.user.cognito.invitation.CognitoUserInvitation;
+import gov.healthit.chpl.util.AuthUtil;
+import gov.healthit.chpl.util.ErrorMessageUtil;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -38,9 +41,11 @@ public class CognitoUserManager {
     private CognitoConfirmEmailEmailer cognitoConfirmEmailEmailer;
     private CognitoApiWrapper cognitoApiWrapper;
     private CognitoInvitationManager cognitoInvitationManager;
+    private String groupNameForEnvironment;
+    private Long invitationLengthDays;
+    private ErrorMessageUtil errorMessageUtil;
     private ActivityManager activityManager;
     private ResourcePermissionsFactory resourcePermissionsFactory;
-    private String groupNameForEnvironment;
     private boolean isProdEnvironment = true;
 
     @Autowired
@@ -51,13 +56,19 @@ public class CognitoUserManager {
             CognitoInvitationManager cognitoInvitationManager,
             ActivityManager activityManager,
             ResourcePermissionsFactory resourcePermissionsFactory,
+            ErrorMessageUtil errorMessageUtil,
             @Value("${cognito.environment.groupName}") String groupNameForEnvironment,
+            @Value("${invitationLengthInDays}") Long invitationLengthDays,
             @Value("${server.environment}") String serverEnvironment) {
+
         this.userCreationValidator = userCreationValidator;
         this.userUpdateValidator = userUpdateValidator;
         this.cognitoConfirmEmailEmailer = cognitoConfirmEmailEmailer;
         this.cognitoApiWrapper = cognitoApiWrapper;
         this.cognitoInvitationManager = cognitoInvitationManager;
+        this.errorMessageUtil = errorMessageUtil;
+        this.groupNameForEnvironment = groupNameForEnvironment;
+        this.invitationLengthDays = invitationLengthDays;
         this.activityManager = activityManager;
         this.resourcePermissionsFactory = resourcePermissionsFactory;
         this.groupNameForEnvironment = groupNameForEnvironment;
@@ -72,10 +83,6 @@ public class CognitoUserManager {
             + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).GET_BY_USER_NAME, returnObject)")
     public User getUserInfo(UUID cognitoId) throws UserRetrievalException {
         return cognitoApiWrapper.getUserInfo(cognitoId);
-    }
-
-    public User getUserInfo(String email) throws UserRetrievalException {
-        return cognitoApiWrapper.getUserInfo(email);
     }
 
     @Transactional
@@ -175,5 +182,29 @@ public class CognitoUserManager {
                 LOGGER.error("User role '" + userRole + "' is not recognized. The user '" + userEmail + "' will not have access to any environments.");
                 break;
         }
+    }
+
+
+    @Transactional
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SECURED_USER, "
+            + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).ADD_ORG_TO_USER)")
+    public User addOrganizationToUser(UUID invitationToken, String accessToken) throws InvalidArgumentsException, UserRetrievalException, ActivityException {
+
+        User originalUser = cognitoApiWrapper.getUserInfo(AuthUtil.getCurrentUser().getCognitoId());
+        CognitoUserInvitation invitation = cognitoInvitationManager.getByToken(invitationToken);
+        if (invitation == null || invitation.isOlderThan(invitationLengthDays)) {
+            throw new InvalidArgumentsException(errorMessageUtil.getMessage("user.invitation.invalid",
+                    invitationLengthDays + "",
+                    invitationLengthDays == 1 ? "" : "s"));
+        }
+
+        cognitoApiWrapper.addOrgToUser(originalUser, invitation.getOrganizationId());
+        cognitoInvitationManager.deleteToken(invitationToken);
+
+        User updatedUser = cognitoApiWrapper.getUserNoCache(originalUser.getCognitoId());
+        activityManager.addUserActivity(updatedUser.getCognitoId(),
+                String.format("User %s was updated", updatedUser.getEmail()),
+                originalUser, updatedUser);
+        return updatedUser;
     }
 }

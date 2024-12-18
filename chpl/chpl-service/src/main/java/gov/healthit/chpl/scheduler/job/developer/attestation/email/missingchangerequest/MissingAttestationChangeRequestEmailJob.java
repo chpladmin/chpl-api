@@ -21,7 +21,7 @@ import gov.healthit.chpl.developer.search.DeveloperSearchService;
 import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.exception.UserRetrievalException;
-import gov.healthit.chpl.scheduler.SecurityContextCapableJob;
+import gov.healthit.chpl.scheduler.SchedulerSecurityContextService;
 import gov.healthit.chpl.scheduler.job.QuartzJob;
 import gov.healthit.chpl.scheduler.job.developer.messaging.DeveloperEmail;
 import gov.healthit.chpl.scheduler.job.developer.messaging.MessagingReportEmail;
@@ -31,7 +31,7 @@ import gov.healthit.chpl.util.Util;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2(topic = "missingAttestationChangeRequestEmailJobLogger")
-public class MissingAttestationChangeRequestEmailJob extends SecurityContextCapableJob implements Job {
+public class MissingAttestationChangeRequestEmailJob extends QuartzJob implements Job {
 
     @Autowired
     private DeveloperSearchService developerSearchService;
@@ -51,6 +51,9 @@ public class MissingAttestationChangeRequestEmailJob extends SecurityContextCapa
     @Autowired
     private CognitoApiWrapper cognitoApiWrapper;
 
+    @Autowired
+    private SchedulerSecurityContextService securityContextService;
+
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
@@ -58,7 +61,7 @@ public class MissingAttestationChangeRequestEmailJob extends SecurityContextCapa
         LOGGER.info("********* Starting Developer Missing Attestatation Change Request Email job. *********");
         try {
             User submittedByUser = getUserFromJobData(context);
-            setSecurityContext(submittedByUser);
+            securityContextService.setSecurityContext(submittedByUser);
 
             List<DeveloperSearchResult> developersMissingAttestations = developerSearchService.getAllPagesOfSearchResults(
                     DeveloperSearchRequest.builder()

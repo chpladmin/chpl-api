@@ -14,9 +14,9 @@ import gov.healthit.chpl.domain.CertificationStatus;
 import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.ListingUpdateRequest;
-import gov.healthit.chpl.domain.auth.Authority;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.CertifiedProductManager;
+import gov.healthit.chpl.scheduler.SchedulerSecurityContextService;
 import gov.healthit.chpl.scheduler.job.extra.JobResponse;
 
 public class UpdateSingleListingStatusJob extends QuartzJob {
@@ -30,12 +30,15 @@ public class UpdateSingleListingStatusJob extends QuartzJob {
     @Autowired
     private CertifiedProductManager certifiedProductManager;
 
+    @Autowired
+    private SchedulerSecurityContextService securityContextService;
+
     @Override
     public void execute(JobExecutionContext jobContext) throws JobExecutionException {
 
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
         setLogger(jobContext);
-        setSecurityContext(Authority.ROLE_ADMIN);
+        securityContextService.setAdminSecurityContext();
 
         Long listing = jobContext.getMergedJobDataMap().getLong("listing");
         CertificationStatus certificationStatus = (CertificationStatus) jobContext.getMergedJobDataMap()
