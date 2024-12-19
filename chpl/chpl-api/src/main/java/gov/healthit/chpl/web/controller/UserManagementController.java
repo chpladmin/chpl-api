@@ -185,6 +185,8 @@ public class UserManagementController {
             case CognitoGroups.CHPL_CMS_STAFF:
                 createdInvitiation = cognitoInvitationManager.inviteCmsUser(invitation);
                 break;
+            default:
+                LOGGER.error("Invitation group name not handled: " + invitation.getGroupName());
         }
         return createdInvitiation;
     }
