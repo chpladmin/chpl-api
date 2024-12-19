@@ -216,7 +216,7 @@ public class CognitoUserManager {
         }
 
         cognitoApiWrapper.updateUser(existingUser);
-        cognitoInvitationManager.deleteToken(UUID.fromString(userInfo.getHash()));
+        cognitoInvitationManager.deleteInvitation(invitation);
 
         User reenabledUser = cognitoApiWrapper.getUserNoCache(existingUser.getCognitoId());
         activityManager.addUserActivity(reenabledUser.getCognitoId(),
@@ -239,7 +239,7 @@ public class CognitoUserManager {
         } else {
             cognitoApiWrapper.addUserToGroup(userInfo.getUser().getEmail(), groupNameForEnvironment);
         }
-        cognitoInvitationManager.deleteToken(UUID.fromString(userInfo.getHash()));
+        cognitoInvitationManager.deleteInvitation(invitation);
 
         User createdUser = cognitoApiWrapper.getUserNoCache(credentials.getCognitoId());
         activityManager.addUserActivity(createdUser.getCognitoId(),
@@ -293,7 +293,7 @@ public class CognitoUserManager {
         }
 
         cognitoApiWrapper.addOrgToUser(originalUser, invitation.getOrganizationId());
-        cognitoInvitationManager.deleteToken(invitationToken);
+        cognitoInvitationManager.deleteInvitation(invitation);
 
         User updatedUser = cognitoApiWrapper.getUserNoCache(originalUser.getCognitoId());
         activityManager.addUserActivity(updatedUser.getCognitoId(),
