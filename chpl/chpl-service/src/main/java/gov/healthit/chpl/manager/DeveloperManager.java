@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.ff4j.FF4j;
 import org.quartz.JobDataMap;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.caching.ListingSearchCacheRefresh;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
@@ -39,6 +41,7 @@ import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.DeveloperStatusEvent;
 import gov.healthit.chpl.domain.IdNamePair;
+import gov.healthit.chpl.domain.Organization;
 import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.domain.auth.User;
@@ -70,6 +73,7 @@ import gov.healthit.chpl.scheduler.job.developer.JoinDeveloperJob;
 import gov.healthit.chpl.scheduler.job.developer.messaging.MessageDevelopersJob;
 import gov.healthit.chpl.sharedstore.listing.ListingStoreRemove;
 import gov.healthit.chpl.sharedstore.listing.RemoveBy;
+import gov.healthit.chpl.user.cognito.CognitoUserManager;
 import gov.healthit.chpl.util.AuthUtil;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
@@ -94,7 +98,9 @@ public class DeveloperManager extends SecuredManager {
     private DeveloperValidationFactory developerValidationFactory;
     private SearchRequestValidator developerSearchRequestValidator;
     private SearchRequestNormalizer developerSearchRequestNormalizer;
+    private CognitoUserManager cognitoUserManager;
     private SchedulerManager schedulerManager;
+    private FF4j ff4j;
 
     @Autowired
     @SuppressWarnings("checkstyle:parameternumber")
@@ -104,7 +110,9 @@ public class DeveloperManager extends SecuredManager {
             ActivityManager activityManager, ErrorMessageUtil msgUtil, ResourcePermissionsFactory resourcePermissionsFactory,
             DeveloperValidationFactory developerValidationFactory,
             @Qualifier("developerSearchRequestValidator") SearchRequestValidator developerSearchRequestValidator,
-            SchedulerManager schedulerManager) {
+            CognitoUserManager cognitoUserManager,
+            SchedulerManager schedulerManager,
+            FF4j ff4j) {
         this.developerDao = developerDao;
         this.productManager = productManager;
         this.versionManager = versionManager;
@@ -118,7 +126,9 @@ public class DeveloperManager extends SecuredManager {
         this.developerValidationFactory = developerValidationFactory;
         this.developerSearchRequestValidator = developerSearchRequestValidator;
         this.developerSearchRequestNormalizer = new SearchRequestNormalizer();
+        this.cognitoUserManager = cognitoUserManager;
         this.schedulerManager = schedulerManager;
+        this.ff4j = ff4j;
     }
 
     @Transactional(readOnly = true)
@@ -341,6 +351,47 @@ public class DeveloperManager extends SecuredManager {
     }
 
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).DEVELOPER, "
+            + "T(gov.healthit.chpl.permissions.domains.DeveloperDomainPermissions).DELETE)")
+    @Transactional(readOnly = false)
+    @CacheEvict(value = {
+            CacheNames.ALL_DEVELOPERS,
+            CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED,
+            CacheNames.COLLECTIONS_DEVELOPERS,
+            CacheNames.GET_DECERTIFIED_DEVELOPERS,
+            CacheNames.QUESTIONABLE_ACTIVITIES,
+            CacheNames.COLLECTIONS_LISTINGS,
+            CacheNames.COGNITO_USERS_BY_EMAIL,
+            CacheNames.COGNITO_USERS_BY_UUID
+    }, allEntries = true)
+    public void delete(Long developerId) throws EntityRetrievalException {
+        developerDao.delete(developerId);
+
+        //The soft-delete should take care of any relationship between user-developer in the CHPL db
+        //when the developer is deleted.
+        //The below code is to remove permissions to the developer from any users who might have had them in Cognito
+        if (ff4j.check(FeatureList.SSO)) {
+            List<User> usersOnDeveloper = resourcePermissionsFactory.get().getAllUsersOnDeveloper(Developer.builder().id(developerId).build());
+
+            usersOnDeveloper.stream()
+                .forEach(user -> {
+                    Organization developerOrg = user.getOrganizations().stream()
+                            .filter(org -> org.getId().equals(developerId))
+                            .findAny().orElse(null);
+                    if (developerOrg != null) {
+                        user.getOrganizations().remove(developerOrg);
+                        try {
+                            cognitoUserManager.updateUser(user);
+                        } catch (Exception ex) {
+                            LOGGER.error("Error removing user's permissions on developer organization ID " + developerId + " in Cognito", ex);
+                        }
+                    } else {
+                        LOGGER.error("User " + user.getEmail() + " did not have permissions to developer organization " + developerId + ". No user update will take place.");
+                    }
+                });
+        }
+    }
+
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).DEVELOPER, "
             + "T(gov.healthit.chpl.permissions.domains.DeveloperDomainPermissions).JOIN)")
     @Transactional(readOnly = false)
     @CacheEvict(value = {
@@ -349,7 +400,9 @@ public class DeveloperManager extends SecuredManager {
             CacheNames.COLLECTIONS_DEVELOPERS,
             CacheNames.GET_DECERTIFIED_DEVELOPERS,
             CacheNames.QUESTIONABLE_ACTIVITIES,
-            CacheNames.COLLECTIONS_LISTINGS
+            CacheNames.COLLECTIONS_LISTINGS,
+            CacheNames.COGNITO_USERS_BY_EMAIL,
+            CacheNames.COGNITO_USERS_BY_UUID
     }, allEntries = true)
     public ChplOneTimeTrigger join(Long owningDeveloperId, List<Long> joiningDeveloperIds)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException,

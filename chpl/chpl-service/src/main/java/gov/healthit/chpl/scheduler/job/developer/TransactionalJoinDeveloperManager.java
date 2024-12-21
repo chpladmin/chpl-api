@@ -19,7 +19,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
 import gov.healthit.chpl.compliance.directreview.DirectReviewUpdateEmailService;
-import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.Product;
@@ -32,6 +31,7 @@ import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.CertifiedProductManager;
+import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.ProductManager;
 import gov.healthit.chpl.sharedstore.listing.ListingStoreRemove;
 import gov.healthit.chpl.sharedstore.listing.RemoveBy;
@@ -56,7 +56,7 @@ public class TransactionalJoinDeveloperManager {
     private ActivityManager activityManager;
 
     @Autowired
-    private DeveloperDAO devDao;
+    private DeveloperManager developerManager;
 
     @Autowired
     private DirectReviewUpdateEmailService directReviewEmailService;
@@ -107,7 +107,7 @@ public class TransactionalJoinDeveloperManager {
 
         // mark the passed in developers as deleted
         for (Long developerId : developerIdsJoining) {
-            devDao.delete(developerId);
+            developerManager.delete(developerId);
         }
 
         logListingActivities(preJoinListingDetails, postJoinListingDetails);
