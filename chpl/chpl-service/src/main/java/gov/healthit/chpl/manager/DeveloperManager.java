@@ -363,32 +363,39 @@ public class DeveloperManager extends SecuredManager {
             CacheNames.COGNITO_USERS_BY_EMAIL,
             CacheNames.COGNITO_USERS_BY_UUID
     }, allEntries = true)
-    public void delete(Long developerId) throws EntityRetrievalException {
-        developerDao.delete(developerId);
-
-        //The soft-delete should take care of any relationship between user-developer in the CHPL db
-        //when the developer is deleted.
+    public void deleteDeveloperForJoin(Long developerIdToDelete, Developer developerToJoin) throws EntityRetrievalException {
         //The below code is to remove permissions to the developer from any users who might have had them in Cognito
+        //and add permissions for the users to belong to the joined developer
         if (ff4j.check(FeatureList.SSO)) {
-            List<User> usersOnDeveloper = resourcePermissionsFactory.get().getAllUsersOnDeveloper(Developer.builder().id(developerId).build());
+            List<User> usersOnDeveloper = resourcePermissionsFactory.get().getAllUsersOnDeveloper(
+                    Developer.builder().id(developerIdToDelete).build());
 
             usersOnDeveloper.stream()
                 .forEach(user -> {
-                    Organization developerOrg = user.getOrganizations().stream()
-                            .filter(org -> org.getId().equals(developerId))
+                    Organization developerOrgToDelete = user.getOrganizations().stream()
+                            .filter(org -> org.getId().equals(developerIdToDelete))
                             .findAny().orElse(null);
-                    if (developerOrg != null) {
-                        user.getOrganizations().remove(developerOrg);
-                        try {
-                            cognitoUserManager.updateUser(user);
-                        } catch (Exception ex) {
-                            LOGGER.error("Error removing user's permissions on developer organization ID " + developerId + " in Cognito", ex);
-                        }
+                    if (developerOrgToDelete != null) {
+                        user.getOrganizations().remove(developerOrgToDelete);
                     } else {
-                        LOGGER.error("User " + user.getEmail() + " did not have permissions to developer organization " + developerId + ". No user update will take place.");
+                        LOGGER.error("User " + user.getEmail() + " did not have permissions to developer organization " + developerIdToDelete);
+                    }
+                    Organization developerOrgToJoin = Organization.builder()
+                            .id(developerToJoin.getId())
+                            .name(developerToJoin.getName())
+                            .build();
+                    user.getOrganizations().add(developerOrgToJoin);
+                    try {
+                        cognitoUserManager.updateUser(user);
+                    } catch (Exception ex) {
+                        LOGGER.error("Error removing user's permissions on developer organization ID " + developerIdToDelete + " in Cognito", ex);
                     }
                 });
         }
+
+        //The delete is last because if the developer is marked as deleted
+        //we have trouble finding it's users.
+        developerDao.delete(developerIdToDelete);
     }
 
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).DEVELOPER, "

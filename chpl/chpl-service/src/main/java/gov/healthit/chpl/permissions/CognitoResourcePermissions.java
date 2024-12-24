@@ -254,7 +254,7 @@ public class CognitoResourcePermissions implements ResourcePermissions {
         try {
             return certificationBodyDAO.getById(certificationBodyId);
         } catch (EntityRetrievalException e) {
-            LOGGER.error("Could not retrieve Certification Body: {}", certificationBodyId);
+            LOGGER.error("Could not retrieve Certification Body: {}", certificationBodyId, e);
             return null;
         }
     }
@@ -263,7 +263,7 @@ public class CognitoResourcePermissions implements ResourcePermissions {
         try {
             return developerDAO.getById(developerId);
         } catch (EntityRetrievalException e) {
-            LOGGER.error("Could not retrieve Developer: {}", developerId);
+            LOGGER.error("Could not retrieve Developer: {}", developerId, e);
             return null;
         }
     }

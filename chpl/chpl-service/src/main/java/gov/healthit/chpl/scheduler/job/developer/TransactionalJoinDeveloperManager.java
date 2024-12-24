@@ -107,7 +107,7 @@ public class TransactionalJoinDeveloperManager {
 
         // mark the passed in developers as deleted
         for (Long developerId : developerIdsJoining) {
-            developerManager.delete(developerId);
+            developerManager.deleteDeveloperForJoin(developerId, developerToJoin);
         }
 
         logListingActivities(preJoinListingDetails, postJoinListingDetails);
