@@ -444,6 +444,44 @@ public class DeveloperManager extends SecuredManager {
 
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).DEVELOPER, "
             + "T(gov.healthit.chpl.permissions.domains.DeveloperDomainPermissions).SPLIT, #oldDeveloper)")
+    @Transactional(readOnly = false)
+    @CacheEvict(value = {
+            CacheNames.ALL_DEVELOPERS,
+            CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED,
+            CacheNames.COLLECTIONS_DEVELOPERS,
+            CacheNames.GET_DECERTIFIED_DEVELOPERS,
+            CacheNames.QUESTIONABLE_ACTIVITIES,
+            CacheNames.COLLECTIONS_LISTINGS,
+            CacheNames.COGNITO_USERS_BY_EMAIL,
+            CacheNames.COGNITO_USERS_BY_UUID
+    }, allEntries = true)
+    public void removeUsersForDeveloperSplit(Developer oldDeveloper) throws EntityRetrievalException {
+        //The below code is to remove permissions to the developer from any users who might have had them in Cognito
+        if (ff4j.check(FeatureList.SSO)) {
+            List<User> usersOnDeveloper = resourcePermissionsFactory.get().getAllUsersOnDeveloper(
+                    Developer.builder().id(oldDeveloper.getId()).build());
+
+            usersOnDeveloper.stream()
+                .forEach(user -> {
+                    Organization developerOrgToDelete = user.getOrganizations().stream()
+                            .filter(org -> org.getId().equals(oldDeveloper.getId()))
+                            .findAny().orElse(null);
+                    if (developerOrgToDelete != null) {
+                        user.getOrganizations().remove(developerOrgToDelete);
+                    } else {
+                        LOGGER.error("User " + user.getEmail() + " did not have permissions to developer organization " + oldDeveloper.getId());
+                    }
+                    try {
+                        cognitoUserManager.updateUser(user);
+                    } catch (Exception ex) {
+                        LOGGER.error("Error removing user's permissions on developer organization ID " + oldDeveloper.getId() + " in Cognito", ex);
+                    }
+                });
+        }
+    }
+
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).DEVELOPER, "
+            + "T(gov.healthit.chpl.permissions.domains.DeveloperDomainPermissions).SPLIT, #oldDeveloper)")
     @CacheEvict(value = {
             CacheNames.QUESTIONABLE_ACTIVITIES,
             CacheNames.COLLECTIONS_LISTINGS

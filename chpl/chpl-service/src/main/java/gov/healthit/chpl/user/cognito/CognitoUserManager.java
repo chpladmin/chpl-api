@@ -126,10 +126,10 @@ public class CognitoUserManager {
         }
 
         User userAfterRemovingAndAddingOrgs = cognitoApiWrapper.getUserNoCache(user.getCognitoId());
-        if (userShouldBeDisabled(userAfterRemovingAndAddingOrgs, user)) {
-            cognitoApiWrapper.disableUser(user);
-        } else if (userShouldBeEnabled(userAfterRemovingAndAddingOrgs, user)) {
-            cognitoApiWrapper.enableUser(user);
+        if (userShouldBeDisabled(originalUser, userAfterRemovingAndAddingOrgs)) {
+            cognitoApiWrapper.disableUser(userAfterRemovingAndAddingOrgs);
+        } else if (userShouldBeEnabled(originalUser, userAfterRemovingAndAddingOrgs)) {
+            cognitoApiWrapper.enableUser(userAfterRemovingAndAddingOrgs);
         }
 
         User updatedUser = cognitoApiWrapper.getUserNoCache(user.getCognitoId());
@@ -175,12 +175,12 @@ public class CognitoUserManager {
         if (originalUser.getAccountEnabled() && !updatedUser.getAccountEnabled()) {
             return true;
         } else if (originalUser.hasRole(CognitoGroups.CHPL_ACB)
-                && !CollectionUtils.isEmpty(resourcePermissionsFactory.get().getAllAcbsForUser(originalUser))
-                && CollectionUtils.isEmpty(resourcePermissionsFactory.get().getAllAcbsForUser(updatedUser))) {
+                && !CollectionUtils.isEmpty(originalUser.getOrganizations())
+                && CollectionUtils.isEmpty(updatedUser.getOrganizations())) {
             return true;
         } else if (originalUser.hasRole(CognitoGroups.CHPL_DEVELOPER)
-                && !CollectionUtils.isEmpty(resourcePermissionsFactory.get().getAllDevelopersForUser(originalUser))
-                && CollectionUtils.isEmpty(resourcePermissionsFactory.get().getAllDevelopersForUser(updatedUser))) {
+                && !CollectionUtils.isEmpty(originalUser.getOrganizations())
+                && CollectionUtils.isEmpty(updatedUser.getOrganizations())) {
             return true;
         }
         return false;
