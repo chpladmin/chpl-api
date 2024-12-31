@@ -5,6 +5,7 @@ import java.util.OptionalInt;
 import java.util.stream.Stream;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -206,7 +207,9 @@ public class ChplProductNumberUtil {
     }
 
     public String deriveIcsCodeFromListing(CertifiedProductSearchDetails listing) {
-        if (listing.getIcs() == null || !listing.getIcs().getInherits()
+        if (listing.getIcs() == null
+                || listing.getIcs().getInherits() == null
+                || BooleanUtils.isFalse(listing.getIcs().getInherits())
                 || CollectionUtils.isEmpty(listing.getIcs().getParents())) {
             return "00";
         }

@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.google.common.base.Objects;
 
 import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseField;
 import gov.healthit.chpl.entity.listing.CertificationResultOptionalStandardEntity;
@@ -61,7 +62,7 @@ public class CertificationResultOptionalStandard implements Serializable {
     }
 
     public boolean matches(CertificationResultOptionalStandard existingItem) {
-        return this.optionalStandard.getId().longValue() == existingItem.getOptionalStandard().getId().longValue()
+        return Objects.equal(this.optionalStandard.getId(), existingItem.getOptionalStandard().getId())
                 || this.optionalStandard.getDisplayValue().equalsIgnoreCase(existingItem.getOptionalStandard().getDisplayValue());
     }
 }
