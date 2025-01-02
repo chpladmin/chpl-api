@@ -19,6 +19,8 @@ import gov.healthit.chpl.report.listing.UniqueListingCount;
 import gov.healthit.chpl.report.product.ProductByAcb;
 import gov.healthit.chpl.report.product.ProductReportsService;
 import gov.healthit.chpl.report.product.UniqueProductCount;
+import gov.healthit.chpl.report.servicebaseurllistreport.ServiceBaseUrlListReportService;
+import gov.healthit.chpl.report.servicebaseurllistreport.UrlUptimeMonitorEx;
 import gov.healthit.chpl.report.surveillance.CapCounts;
 import gov.healthit.chpl.report.surveillance.NonconformityCounts;
 import gov.healthit.chpl.report.surveillance.SurveillanceActivityCounts;
@@ -41,11 +43,18 @@ public class ReportDataManager {
     private DirectReviewReportsService directReviewReportsService;
     private ReportMetadataDAO reportMetadataDAO;
     private CriteriaAttributeReportService criteriaAttributeReportService;
+    private ServiceBaseUrlListReportService serviceBaseUrlListReportService;
 
     @Autowired
-    public ReportDataManager(CriteriaMigrationReportService criteriaMigrationReportService, DeveloperReportsService developerReportsService,
-            SurveillanceReportsService surveillanceReportsService, ProductReportsService productReportsService, ListingReportsService listingReportsService,
-            DirectReviewReportsService directReviewReportsService, ReportMetadataDAO reportMetadataDAO, CriteriaAttributeReportService criteriaAttributeReportService) {
+    public ReportDataManager(CriteriaMigrationReportService criteriaMigrationReportService,
+            DeveloperReportsService developerReportsService,
+            SurveillanceReportsService surveillanceReportsService,
+            ProductReportsService productReportsService,
+            ListingReportsService listingReportsService,
+            DirectReviewReportsService directReviewReportsService,
+            ReportMetadataDAO reportMetadataDAO,
+            CriteriaAttributeReportService criteriaAttributeReportService,
+            ServiceBaseUrlListReportService serviceBaseUrlListReportService) {
         this.criteriaMigrationReportService = criteriaMigrationReportService;
         this.developerReportsService = developerReportsService;
         this.surveillanceReportsService = surveillanceReportsService;
@@ -53,6 +62,7 @@ public class ReportDataManager {
         this.listingReportsService = listingReportsService;
         this.reportMetadataDAO = reportMetadataDAO;
         this.criteriaAttributeReportService = criteriaAttributeReportService;
+        this.serviceBaseUrlListReportService = serviceBaseUrlListReportService;
     }
 
     public List<ReportMetadata> getReportMetadataByReportGroup(String reportGroup) {
@@ -234,4 +244,10 @@ public class ReportDataManager {
     public CriteriaAttributeReportService getCriteriaAttributeAttributeService() {
         return criteriaAttributeReportService;
     }
+
+    @Synchronized("lock")
+    public List<UrlUptimeMonitorEx> getUrlUptimeMonitors() {
+        return serviceBaseUrlListReportService.getUrlUptimeMonitors();
+    }
+
 }
