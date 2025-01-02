@@ -60,6 +60,10 @@ public class DatadogSyntheticsTestService {
         this.datadogTestLocation = datadogTestLocation;
     }
 
+    protected DatadogSyntheticsTestApiProvider getApiProvider() {
+        return apiProvider;
+    }
+
     public List<SyntheticsTestDetails> getAllSyntheticsTests() {
         try {
             return apiProvider.getApiInstance().listTests().getTests();

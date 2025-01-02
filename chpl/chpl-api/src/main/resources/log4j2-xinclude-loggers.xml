@@ -266,4 +266,8 @@
         <AppenderRef ref="attestationReportCreatorJob" />
         <AppenderRef ref="attestationReportCreatorJobJson" />
     </Logger>
+    <Logger name="fixDatadogUrlUptimeAssertionsJobLogger" level="INFO" additivity="false">
+        <AppenderRef ref="fixDatadogUrlUptimeAssertionsJob" />
+        <AppenderRef ref="FixDatadogUrlUptimeAssertionsJobJson" />
+    </Logger>
 </Loggers>

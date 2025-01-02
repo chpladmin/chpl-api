@@ -9,10 +9,13 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import gov.healthit.chpl.domain.activity.ActivityConcept;
+import gov.healthit.chpl.exception.ActivityException;
 import gov.healthit.chpl.exception.UserCreationException;
 import gov.healthit.chpl.exception.UserPermissionRetrievalException;
 import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
+import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.service.InvitationEmailer;
 import lombok.extern.log4j.Log4j2;
 
@@ -23,14 +26,17 @@ public class CognitoInvitationManager {
     private CognitoUserInvitationDAO userInvitationDAO;
     private InvitationEmailer invitationEmailer;
     private CognitoInvitationValidator cognitoInvitationValidator;
+    private ActivityManager activityManager;
 
     @Autowired
     public CognitoInvitationManager(CognitoUserInvitationDAO userInvitationDAO, InvitationEmailer invitationEmailer,
-            CognitoInvitationValidator cognitoInvitationValidator) {
+            CognitoInvitationValidator cognitoInvitationValidator,
+            ActivityManager activityManager) {
 
         this.userInvitationDAO = userInvitationDAO;
         this.invitationEmailer = invitationEmailer;
         this.cognitoInvitationValidator = cognitoInvitationValidator;
+        this.activityManager = activityManager;
     }
 
     @Transactional
@@ -111,8 +117,15 @@ public class CognitoInvitationManager {
     }
 
     @Transactional
-    public void deleteToken(UUID invitationToken) {
-        userInvitationDAO.deleteByToken(invitationToken);
+    public void deleteInvitation(CognitoUserInvitation invitation) {
+        userInvitationDAO.deleteByToken(invitation.getInvitationToken());
+
+        try {
+            activityManager.addActivity(ActivityConcept.INVITATION, invitation.getId(),
+                "Deleted invitation for " + invitation.getEmail(), invitation, null);
+        } catch (ActivityException ex) {
+            LOGGER.error("Could not write activity about creating an invitation for " + invitation.getEmail());
+        }
     }
 
     public CognitoUserInvitation getByToken(UUID invitationToken) {
@@ -123,6 +136,13 @@ public class CognitoInvitationManager {
         origInvitation.setInvitationToken(UUID.randomUUID());
 
         CognitoUserInvitation invitation = userInvitationDAO.create(origInvitation);
+
+        try {
+            activityManager.addActivity(ActivityConcept.INVITATION, invitation.getId(),
+                "Created invitation for " + invitation.getEmail(), null, invitation);
+        } catch (ActivityException ex) {
+            LOGGER.error("Could not write activity about creating an invitation for " + invitation.getEmail());
+        }
 
         invitationEmailer.emailInvitedUser(invitation);
         return invitation;

@@ -930,5 +930,14 @@
             <durability>true</durability>
             <recover>false</recover>
         </job>
+
+        <job>
+            <name>fixDatadogUrlUptimeAssertionsJob</name>
+            <group>systemJobs</group>
+            <description>Fix Datadog Url Uptime Assertions Job (BEWARE - THIS JOB CAN ONLY BE RUN ONCE IN EACH DATADOG ENVITRONMENT!)</description>
+            <job-class>gov.healthit.chpl.scheduler.job.urluptime.FixDatadogUrlUptimeAssertionsJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+        </job>
     </schedule>
 </job-scheduling-data>
