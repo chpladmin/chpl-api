@@ -33,7 +33,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
-@Tag(name = "report-data", description = "Allows retrieval of data used by reports.")
+@Tag(name = "report-data", description = "Allows retrieval of data used by reports. Please note that the endpoints \"/report-data/*\" are subject "
+        + "to frequent updates at this time, and they may not follow CHPL's typical deprecation process of notification for 6 months before removal. "
+        + "These endpoints may be removed or have their response format changed without notice.")
 @RestController
 @RequestMapping("/report-data")
 public class ReportDataController {
