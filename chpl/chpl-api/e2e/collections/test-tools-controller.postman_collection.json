@@ -286,12 +286,12 @@
 								"test-tools"
 							]
 						},
-						"description": "ROLE_ONC user should get 200 status and access denied error to create Test Tools"
+						"description": "ROLE_ONC user should get 200 status to create Test Tools"
 					},
 					"response": []
 				},
 				{
-					"name": "PUT /test-tools - ROLE_ONC user should get 200 status and access denied error",
+					"name": "PUT /test-tools - ROLE_ONC user should get 200 status",
 					"event": [
 						{
 							"listen": "test",
@@ -343,7 +343,7 @@
 								"test-tools"
 							]
 						},
-						"description": "PUT /test-tools - ROLE_ONC user should get 200 status and access denied error"
+						"description": "PUT /test-tools - ROLE_ONC user should get 200 status"
 					},
 					"response": []
 				},
