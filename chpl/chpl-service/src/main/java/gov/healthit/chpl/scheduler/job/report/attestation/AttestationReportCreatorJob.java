@@ -28,6 +28,7 @@ import gov.healthit.chpl.changerequest.manager.ChangeRequestManager;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.manager.CertificationBodyManager;
+import gov.healthit.chpl.scheduler.SchedulerSecurityContextService;
 import gov.healthit.chpl.scheduler.job.QuartzJob;
 import gov.healthit.chpl.scheduler.job.developer.attestation.DeveloperAttestationPeriodCalculator;
 import gov.healthit.chpl.util.DateUtil;
@@ -66,13 +67,16 @@ public class AttestationReportCreatorJob extends QuartzJob {
     @Autowired
     private AttestationCertificationBodyService attestationCertificationBodyService;
 
-
+    @Autowired
+    private SchedulerSecurityContextService securityContextService;
 
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
 
         LOGGER.info("********* Starting Attestation Report Creator job. *********");
+        securityContextService.setAdminSecurityContext();
+
         // We need to manually create a transaction in this case because of how
         // AOP works. When a method is annotated with @Transactional, the transaction
         // wrapper is only added if the object's proxy is called. The object's proxy is
