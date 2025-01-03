@@ -331,7 +331,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"id\":33,\r\n  \"value\": \"Drummond G10+ FHIR API powered by Touchstone\",\r\n  \"regulatoryTextCitation\": \"Touchstone\",\r\n  \"startDay\": \"\",\r\n  \"endDay\": \"\",\r\n  \"criteria\": [\r\n    {\r\n      \"id\": 182,\r\n      \"number\": \"170.315 (g)(10)\",\r\n      \"title\": \"Standardized API for Patient and Population Services\",\r\n      \"certificationEditionId\": 3,\r\n      \"certificationEdition\": \"2015\",\r\n      \"description\": null,\r\n      \"removed\": false\r\n    }\r\n  ],\r\n  \"rule\": {\r\n    \"id\": 5,\r\n    \"name\": \"HTI-1\"\r\n  }\r\n}"
+							"raw": "{\r\n  \"id\":33,\r\n  \"value\": \"Drummond G10+ FHIR API powered by Touchstone\",\r\n  \"regulatoryTextCitation\": \"Touchstone\",\r\n  \"startDay\": \"\",\r\n  \"endDay\": \"\",\r\n  \"criteria\": [\r\n    {\r\n      \"id\": 182,\r\n      \"number\": \"170.315 (g)(10)\",\r\n      \"title\": \"Standardized API for Patient and Population Services\",\r\n      \"certificationEditionId\": 3,\r\n      \"certificationEdition\": \"2015\",\r\n      \"description\": null,\r\n      \"removed\": false,\r\n      \"rule\": {\r\n    \"id\": 4,\r\n    \"name\": \"Cures\"\r\n  },\r\n      \"startDay\": \"2020-06-30\",\r\n      \"endDay\": null\r\n    }\r\n  ],\r\n  \"rule\": {\r\n    \"id\": 5,\r\n    \"name\": \"HTI-1\"\r\n  }\r\n}"
 						},
 						"url": {
 							"raw": "{{url}}/rest/test-tools",
