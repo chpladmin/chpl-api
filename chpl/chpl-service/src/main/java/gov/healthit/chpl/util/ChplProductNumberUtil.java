@@ -205,6 +205,15 @@ public class ChplProductNumberUtil {
         return hasIcsConflict;
     }
 
+    public String deriveTestingLabCodeFromListing(CertifiedProductSearchDetails listing) {
+        if (listing.getTestingLabs() != null && listing.getTestingLabs().size() > 1) {
+            return "99";
+        } else if (listing.getTestingLabs() != null) {
+            return listing.getTestingLabs().get(0).getTestingLab().getAtlCode();
+        }
+        return "";
+    }
+
     public String deriveIcsCodeFromListing(CertifiedProductSearchDetails listing) {
         if (listing.getIcs() == null || !listing.getIcs().getInherits()
                 || CollectionUtils.isEmpty(listing.getIcs().getParents())) {
