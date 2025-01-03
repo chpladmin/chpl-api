@@ -133,7 +133,7 @@ public class CognitoUserManager {
             } else {
                 cognitoApiWrapper.addUserToGroup(userInfo.getUser().getEmail(), groupNameForEnvironment);
             }
-            cognitoInvitationManager.deleteToken(UUID.fromString(userInfo.getHash()));
+            cognitoInvitationManager.deleteInvitation(invitation);
             cognitoConfirmEmailEmailer.sendConfirmationEmail(credentials);
 
             User createdUser = cognitoApiWrapper.getUserNoCache(credentials.getCognitoId());
@@ -193,13 +193,13 @@ public class CognitoUserManager {
         User originalUser = cognitoApiWrapper.getUserInfo(AuthUtil.getCurrentUser().getCognitoId());
         CognitoUserInvitation invitation = cognitoInvitationManager.getByToken(invitationToken);
         if (invitation == null || invitation.isOlderThan(invitationLengthDays)) {
-            throw new InvalidArgumentsException(errorMessageUtil.getMessage("user.invitation.expired",
+            throw new InvalidArgumentsException(errorMessageUtil.getMessage("user.invitation.invalid",
                     invitationLengthDays + "",
                     invitationLengthDays == 1 ? "" : "s"));
         }
 
         cognitoApiWrapper.addOrgToUser(originalUser, invitation.getOrganizationId());
-        cognitoInvitationManager.deleteToken(invitationToken);
+        cognitoInvitationManager.deleteInvitation(invitation);
 
         User updatedUser = cognitoApiWrapper.getUserNoCache(originalUser.getCognitoId());
         activityManager.addUserActivity(updatedUser.getCognitoId(),

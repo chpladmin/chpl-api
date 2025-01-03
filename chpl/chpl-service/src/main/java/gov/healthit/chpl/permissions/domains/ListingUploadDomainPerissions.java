@@ -11,11 +11,13 @@ import gov.healthit.chpl.permissions.domains.listingUpload.GetAllActionPermissio
 import gov.healthit.chpl.permissions.domains.listingUpload.GetByIdActionPermissions;
 import gov.healthit.chpl.permissions.domains.listingUpload.GetListingUploadAsListingPermissions;
 import gov.healthit.chpl.permissions.domains.listingUpload.GetUploadedCsvActionPermissions;
+import gov.healthit.chpl.permissions.domains.listingUpload.ParseActionPermissions;
 import gov.healthit.chpl.permissions.domains.listingUpload.ValidateByIdsActionPermissions;
 
 @Component
 public class ListingUploadDomainPerissions extends DomainPermissions {
     public static final String CREATE = "CREATE";
+    public static final String PARSE = "PARSE";
     public static final String GET_ALL = "GET_ALL";
     public static final String GET_BY_ID = "GET_BY_ID";
     public static final String GET_UPLOAD_AS_LISTING = "GET_UPLOAD_AS_LISTING";
@@ -27,6 +29,7 @@ public class ListingUploadDomainPerissions extends DomainPermissions {
     @Autowired
     public ListingUploadDomainPerissions(
             @Qualifier("createListingUploadActionPermissions") CreateActionPermissions createActionPermissions,
+            @Qualifier("parseListingUploadActionPermissions") ParseActionPermissions parseActionPermissions,
             @Qualifier("getAllListingUploadsActionPermissions") GetAllActionPermissions getAllActionPermissions,
             @Qualifier("getListingUploadByIdActionPermissions") GetByIdActionPermissions getByIdActionPermissions,
             @Qualifier("getListingUploadAsListingActionPermissions") GetListingUploadAsListingPermissions getListingUploadAsListingPermissions,
@@ -35,6 +38,7 @@ public class ListingUploadDomainPerissions extends DomainPermissions {
             @Qualifier("deleteListingUploadActionPermissions") DeleteActionPermissions deleteActionPermissions,
             @Qualifier("getUploadedCsvActionPermissions") GetUploadedCsvActionPermissions getUploadedCsvActionPermissions) {
         getActionPermissions().put(CREATE, createActionPermissions);
+        getActionPermissions().put(PARSE, parseActionPermissions);
         getActionPermissions().put(GET_ALL, getAllActionPermissions);
         getActionPermissions().put(GET_BY_ID, getByIdActionPermissions);
         getActionPermissions().put(GET_UPLOAD_AS_LISTING, getListingUploadAsListingPermissions);
