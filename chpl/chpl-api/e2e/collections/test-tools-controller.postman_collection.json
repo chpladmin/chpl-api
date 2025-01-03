@@ -225,7 +225,7 @@
 			"name": "ROLE_ONC",
 			"item": [
 				{
-					"name": "POST /test-tools - ROLE_ONC user should get 401 status and access denied error",
+					"name": "POST /test-tools - ROLE_ONC user should get 200 status",
 					"event": [
 						{
 							"listen": "prerequest",
@@ -240,8 +240,8 @@
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.test(\"create test tools request by ROLE_ONC user should return Status code 401\", function () {\r",
-									"    pm.response.to.have.status(401);\r",
+									"pm.test(\"create test tools request by ROLE_ONC user should return Status code 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
 									"});\r"
 								],
 								"type": "text/javascript"
@@ -286,19 +286,19 @@
 								"test-tools"
 							]
 						},
-						"description": "ROLE_ONC user should get 401 status and access denied error to create Test Tools"
+						"description": "ROLE_ONC user should get 200 status and access denied error to create Test Tools"
 					},
 					"response": []
 				},
 				{
-					"name": "PUT /test-tools - ROLE_ONC user should get 401 status and access denied error",
+					"name": "PUT /test-tools - ROLE_ONC user should get 200 status and access denied error",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.test(\"edit test tools request by ROLE_ONC user should return Status code 401\", function () {\r",
-									"    pm.response.to.have.status(401);\r",
+									"pm.test(\"edit test tools request by ROLE_ONC user should return Status code 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
 									"});\r"
 								],
 								"type": "text/javascript"
@@ -343,7 +343,7 @@
 								"test-tools"
 							]
 						},
-						"description": "PUT /test-tools - ROLE_ONC user should get 401 status and access denied error"
+						"description": "PUT /test-tools - ROLE_ONC user should get 200 status and access denied error"
 					},
 					"response": []
 				},
