@@ -24,6 +24,7 @@ import gov.healthit.chpl.report.listing.UniqueListingCount;
 import gov.healthit.chpl.report.product.ProductByAcb;
 import gov.healthit.chpl.report.product.ProductReportsService;
 import gov.healthit.chpl.report.product.UniqueProductCount;
+import gov.healthit.chpl.report.realworldtesting.RealWorldTestingReportDataService;
 import gov.healthit.chpl.report.servicebaseurllistreport.ServiceBaseUrlListReportService;
 import gov.healthit.chpl.report.servicebaseurllistreport.UrlUptimeMonitorEx;
 import gov.healthit.chpl.report.surveillance.CapCounts;
@@ -50,12 +51,22 @@ public class ReportDataManager {
     private StandardReportService standardReportService;
     private DirectReviewReportsService directReviewReportsService;
     private ReportMetadataDAO reportMetadataDAO;
+    private RealWorldTestingReportDataService realWorldTestingReportDataService;
+
 
     @Autowired
-    public ReportDataManager(CriteriaMigrationReportService criteriaMigrationReportService, DeveloperReportsService developerReportsService,
-            SurveillanceReportsService surveillanceReportsService, ProductReportsService productReportsService, ListingReportsService listingReportsService,
-            TestToolReportService testToolReportService, DirectReviewReportsService directReviewReportsService, ReportMetadataDAO reportMetadataDAO,
-            ServiceBaseUrlListReportService serviceBaseUrlListReportService, StandardReportService standardReportService) {
+    public ReportDataManager(CriteriaMigrationReportService criteriaMigrationReportService,
+            DeveloperReportsService developerReportsService,
+            SurveillanceReportsService surveillanceReportsService,
+            ProductReportsService productReportsService,
+            ListingReportsService listingReportsService,
+            TestToolReportService testToolReportService,
+            DirectReviewReportsService directReviewReportsService,
+            ReportMetadataDAO reportMetadataDAO,
+            ServiceBaseUrlListReportService serviceBaseUrlListReportService,
+            StandardReportService standardReportService,
+            RealWorldTestingReportDataService realWorldTestingReportDataService) {
+
         this.criteriaMigrationReportService = criteriaMigrationReportService;
         this.developerReportsService = developerReportsService;
         this.surveillanceReportsService = surveillanceReportsService;
@@ -66,6 +77,7 @@ public class ReportDataManager {
         this.standardReportService = standardReportService;
         this.directReviewReportsService = directReviewReportsService;
         this.reportMetadataDAO = reportMetadataDAO;
+        this.realWorldTestingReportDataService = realWorldTestingReportDataService;
     }
 
     public List<ReportMetadata> getReportMetadataByReportGroup(String reportGroup) {
@@ -265,5 +277,10 @@ public class ReportDataManager {
     @Synchronized("lock")
     public DirectReviewCounts getDirectReviewCounts() {
         return directReviewReportsService.getDirectReviewCounts();
+    }
+
+    @Synchronized("lock")
+    public RealWorldTestingReportDataService getRealWorldTestingReportDataService() {
+        return realWorldTestingReportDataService;
     }
 }

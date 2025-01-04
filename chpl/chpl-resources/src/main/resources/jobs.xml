@@ -925,7 +925,7 @@
         <job>
             <name>realWorldTestingSummaryReportCreatorJob</name>
             <group>systemJobs</group>
-            <description>Update Task/Participant Friendly Ids Job</description>
+            <description>Populate RWT reporting tables</description>
             <job-class>gov.healthit.chpl.scheduler.job.RealWorldTestingSummaryReportCreatorJob</job-class>
             <durability>true</durability>
             <recover>false</recover>
