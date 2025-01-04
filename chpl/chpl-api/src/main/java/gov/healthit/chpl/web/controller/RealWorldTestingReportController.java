@@ -29,13 +29,23 @@ public class RealWorldTestingReportController {
         this.reportDataManager = reportDataManager;
     }
 
-    @Operation(summary = "Retrieves the data used to generate the Standard Criteria Attribute Summary report.",
-            description = "Retrieves the data used to generate the Standard Criteria Attribute Summary report.",
+    @Operation(summary = "Retrieves the data used to generate the Real World Testing Plans report.",
+            description = "Retrieves the data used to generate the Real World Testing Plans report.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
     @RequestMapping(value = "/plans", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<RealWorldTestingSummaryReport> getRealWorldTestingPlanReports() {
         return reportDataManager.getRealWorldTestingReportDataService().getRealWorldTestingPlanSummaryReports();
+    }
+
+    @Operation(summary = "Retrieves the data used to generate the Real World Testing Results report.",
+            description = "Retrieves the data used to generate the Real World Testing Results report.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
+    @RequestMapping(value = "/results", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public @ResponseBody List<RealWorldTestingSummaryReport> getRealWorldTestingResultsReports() {
+        return reportDataManager.getRealWorldTestingReportDataService().getRealWorldTestingResultsSummaryReports();
     }
 }

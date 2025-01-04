@@ -2,6 +2,7 @@ package gov.healthit.chpl.report.realworldtesting;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Component;
 
@@ -32,6 +33,21 @@ public class RealWorldTestingResultsSummaryReportDao extends BaseDAOImpl {
             entity.setCheckedCount(realWorldTestingSummaryReport.getCheckedCount());
             update(entity);
         }
+    }
+
+    public Optional<Long> getMaxRealWorldTestingYear() {
+        return Optional.ofNullable(entityManager.createQuery(
+                "select MAX(rwtrsr.realWorldTestingYear) "
+                + "from RealWorldTestingResultsSummaryReportEntity rwtrsr "
+                + "where (NOT deleted = true)", Long.class)
+                .getSingleResult());
+
+    }
+
+    public List<RealWorldTestingSummaryReport> getRealWorldTestingReportsByTestingYear(Long realWorldTestingYear) {
+        return getEntitiesByRealWorldTestingYear(realWorldTestingYear).stream()
+                .map(entity -> entity.toDomain())
+                .toList();
     }
 
     private RealWorldTestingResultsSummaryReportEntity getEntity(Long id) throws EntityRetrievalException {
@@ -68,6 +84,15 @@ public class RealWorldTestingResultsSummaryReportDao extends BaseDAOImpl {
             return result.get(0);
         }
         return null;
+    }
+
+    private List<RealWorldTestingResultsSummaryReportEntity> getEntitiesByRealWorldTestingYear(Long testingYear){
+        return entityManager.createQuery(
+                "from RealWorldTestingResultsSummaryReportEntity rwtrs "
+                + "where (NOT deleted = true) "
+                + "and rwtrs.realWorldTestingYear = :realWorldTestingYear", RealWorldTestingResultsSummaryReportEntity.class)
+                .setParameter("realWorldTestingYear", testingYear)
+                .getResultList();
     }
 
 }

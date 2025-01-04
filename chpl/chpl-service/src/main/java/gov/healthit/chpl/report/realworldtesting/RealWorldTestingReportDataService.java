@@ -30,4 +30,14 @@ public class RealWorldTestingReportDataService {
             return List.of();
         }
     }
+
+    @Transactional
+    public List<RealWorldTestingSummaryReport> getRealWorldTestingResultsSummaryReports() {
+        Optional<Long> rwtYear =  realWorldTestingResultsSummaryReportDao.getMaxRealWorldTestingYear();
+        if (rwtYear.isPresent()) {
+            return realWorldTestingResultsSummaryReportDao.getRealWorldTestingReportsByTestingYear(rwtYear.get());
+        } else {
+            return List.of();
+        }
+    }
 }
