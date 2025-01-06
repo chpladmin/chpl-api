@@ -1,6 +1,9 @@
 package gov.healthit.chpl.changerequest.dao;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Repository;
@@ -46,5 +49,27 @@ public class DeveloperCertificationBodyMapDAO extends BaseDAOImpl {
                 .getResultList().stream()
                 .map(item -> item.getDeveloper().toDomain())
                 .collect(Collectors.<Developer>toList());
+    }
+
+    public Map<Long, List<CertificationBody>> getCertificationBodiesForAllDeveloper() {
+        String hql = "SELECT main "
+                + "FROM DeveloperCertificationBodyMapEntity main "
+                + "JOIN FETCH main.developer dev "
+                + "JOIN FETCH main.certificationBody cb "
+                + "LEFT JOIN FETCH cb.address ";
+
+        List<DeveloperCertificationBodyMapEntity> entities = entityManager
+                .createQuery(hql, DeveloperCertificationBodyMapEntity.class)
+                .getResultList();
+
+        Map<Long, List<CertificationBody>> map = new HashMap<Long, List<CertificationBody>>();
+
+        entities.forEach(e -> {
+            if (!map.containsKey(e.getDeveloperId())) {
+                map.put(e.getDeveloperId(), new ArrayList<CertificationBody>());
+            }
+            map.get(e.getDeveloperId()).add(e.getCertificationBody().toDomain());
+        });
+        return map;
     }
 }

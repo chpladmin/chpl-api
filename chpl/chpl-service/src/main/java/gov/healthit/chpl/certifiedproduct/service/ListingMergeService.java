@@ -94,7 +94,6 @@ public class ListingMergeService {
         updatedListing.setEdition(currentListing.getEdition());
         updatedListing.setCuresUpdate(currentListing.getCuresUpdate());
         updatedListing.setSurveillance(currentListing.getSurveillance());
-        updatedListing.setTestingLabs(currentListing.getTestingLabs());
         updatedListing.setCountClosedNonconformities(currentListing.getCountClosedNonconformities());
         updatedListing.setCountClosedSurveillance(currentListing.getCountClosedSurveillance());
         updatedListing.setCountOpenNonconformities(currentListing.getCountOpenNonconformities());
@@ -123,6 +122,7 @@ public class ListingMergeService {
     private String applyUpdatesToChplProductNumber(CertifiedProductSearchDetails updatedListing, CertifiedProductSearchDetails currentListing) {
         ChplProductNumberParts currChplProductNumberParts
             = chplProductNumberUtil.parseChplProductNumber(currentListing.getChplProductNumber());
+        currChplProductNumberParts.setAtlCode(chplProductNumberUtil.deriveTestingLabCodeFromListing(updatedListing));
         currChplProductNumberParts.setIcsCode(chplProductNumberUtil.deriveIcsCodeFromListing(updatedListing));
         currChplProductNumberParts.setAdditionalSoftwareCode(chplProductNumberUtil.deriveAdditionalSoftwareCodeFromListing(updatedListing));
         return chplProductNumberUtil.getChplProductNumber(currChplProductNumberParts);
