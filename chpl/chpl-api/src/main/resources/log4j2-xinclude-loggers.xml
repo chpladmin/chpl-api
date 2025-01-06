@@ -262,6 +262,10 @@
         <AppenderRef ref="updatedSedFriendlyIdsJob" />
         <AppenderRef ref="updatedSedFriendlyIdsJobJson" />
     </Logger>
+    <Logger name="attestationReportCreatorJobLogger" level="INFO" additivity="false">
+        <AppenderRef ref="attestationReportCreatorJob" />
+        <AppenderRef ref="attestationReportCreatorJobJson" />
+    </Logger>
     <Logger name="fixDatadogUrlUptimeAssertionsJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="fixDatadogUrlUptimeAssertionsJob" />
         <AppenderRef ref="FixDatadogUrlUptimeAssertionsJobJson" />
