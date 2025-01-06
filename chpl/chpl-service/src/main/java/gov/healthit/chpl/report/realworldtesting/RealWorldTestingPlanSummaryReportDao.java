@@ -31,6 +31,7 @@ public class RealWorldTestingPlanSummaryReportDao extends BaseDAOImpl {
             create(entity);
         } else {
             entity.setCheckedCount(realWorldTestingSummaryReport.getCheckedCount());
+            entity.setRequiresCheckCount(realWorldTestingSummaryReport.getRequiresCheckCount());
             update(entity);
         }
     }

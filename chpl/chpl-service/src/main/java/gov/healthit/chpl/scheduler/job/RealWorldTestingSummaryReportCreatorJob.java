@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.quartz.JobExecutionContext;
@@ -85,12 +86,16 @@ public class RealWorldTestingSummaryReportCreatorJob extends  QuartzJob {
 
         rwtReportService.getResultsStartDate(rwtEligibilityYear).datesUntil(LocalDate.now()).forEach(reportDate -> {
             certificationBodyManager.getAllActive().forEach(acb -> {
+                Long eligibleListingCountForAcb = reportRows.stream()
+                        .filter(row -> row.getAcbName().equals(acb.getName()))
+                        .collect(Collectors.counting());
+
                 rwtSummaryReports.add(RealWorldTestingSummaryReport.builder()
                         .realWorldTestingYear(rwtEligibilityYear.longValue())
                         .certificationBody(acb)
                         .checkedDate(reportDate)
                         .checkedCount(calculateResulltsCount(reportRows, rwtEligibilityYear, acb, reportDate).longValue())
-                        .requiresCheckCount(Long.valueOf(reportRows.size()))
+                        .requiresCheckCount(eligibleListingCountForAcb)
                         .build());
             });
         });
@@ -121,12 +126,16 @@ public class RealWorldTestingSummaryReportCreatorJob extends  QuartzJob {
 
         rwtReportService.getPlansStartDate(rwtEligibilityYear).datesUntil(LocalDate.now()).forEach(reportDate -> {
             certificationBodyManager.getAllActive().forEach(acb -> {
+                Long eligibleListingCountForAcb = reportRows.stream()
+                        .filter(row -> row.getAcbName().equals(acb.getName()))
+                        .collect(Collectors.counting());
+
                 rwtSummaryReports.add(RealWorldTestingSummaryReport.builder()
                         .realWorldTestingYear(rwtEligibilityYear.longValue())
                         .certificationBody(acb)
                         .checkedDate(reportDate)
                         .checkedCount(calculatePlanCount(reportRows, rwtEligibilityYear, acb, reportDate).longValue())
-                        .requiresCheckCount(Long.valueOf(reportRows.size()))
+                        .requiresCheckCount(eligibleListingCountForAcb)
                         .build());
             });
         });
