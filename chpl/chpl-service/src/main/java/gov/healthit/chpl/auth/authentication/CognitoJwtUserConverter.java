@@ -25,14 +25,13 @@ import lombok.extern.log4j.Log4j2;
 public class CognitoJwtUserConverter implements JWTUserConverter {
     private String region;
     private String userPoolId;
-    private String clientId;
     private String tokenizeRsaKeyUrl;
 
-    public CognitoJwtUserConverter(@Value("${cognito.region}") String region, @Value("${cognito.userPoolId}") String userPoolId,
-            @Value("${cognito.clientId}") String clientId, @Value("${cognito.tokenizezRsaKeyUrl}") String tokenizeRsaKeyUrl) {
+    public CognitoJwtUserConverter(@Value("${cognito.region}") String region,
+            @Value("${cognito.userPoolId}") String userPoolId,
+            @Value("${cognito.tokenizezRsaKeyUrl}") String tokenizeRsaKeyUrl) {
         this.region = region;
         this.userPoolId = userPoolId;
-        this.clientId = clientId;
         this.tokenizeRsaKeyUrl = tokenizeRsaKeyUrl;
     }
 
@@ -54,8 +53,7 @@ public class CognitoJwtUserConverter implements JWTUserConverter {
                                                 .map(Long::valueOf)
                                                 .toList()
                                         : null)
-                        .authorities(decodeJwt.getClaim("cognito:groups").asList(String.class).stream()
-                                .filter(group -> !group.endsWith("-env")) //Remove environment related groups
+                        .authorities(decodeJwt.getClaim("custom:role").asList(String.class).stream()
                                 .map(group -> new SimpleGrantedAuthority(group))
                                 .collect(Collectors.toSet()))
                         .build();
