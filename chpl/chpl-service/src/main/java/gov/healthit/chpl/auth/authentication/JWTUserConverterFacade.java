@@ -25,11 +25,15 @@ public class JWTUserConverterFacade implements JWTUserConverter {
 
     private FF4j ff4j;
 
-    public JWTUserConverterFacade(JWTConsumer jwtConsumer, UserDAO userDAO, @Value("${cognito.region}") String region,
-            @Value("${cognito.userPoolId}") String userPoolId, @Value("${cognito.clientId}") String clientId,
-            @Value("${cognito.tokenizezRsaKeyUrl}") String tokenizeRsaKeyUrl, FF4j ff4j, CognitoApiWrapper cognitoApiWrapper) {
+    public JWTUserConverterFacade(JWTConsumer jwtConsumer,
+            UserDAO userDAO,
+            @Value("${cognito.region}") String region,
+            @Value("${cognito.userPoolId}") String userPoolId,
+            @Value("${cognito.tokenizezRsaKeyUrl}") String tokenizeRsaKeyUrl,
+            FF4j ff4j,
+            CognitoApiWrapper cognitoApiWrapper) {
         chplJwtUserConverter = new ChplJWTUserConverter(jwtConsumer, userDAO);
-        cognitoJwtUserConverter = new CognitoJwtUserConverter(region, userPoolId, clientId, tokenizeRsaKeyUrl);
+        cognitoJwtUserConverter = new CognitoJwtUserConverter(region, userPoolId, tokenizeRsaKeyUrl);
         this.ff4j = ff4j;
         this.cognitoApiWrapper = cognitoApiWrapper;
     }
