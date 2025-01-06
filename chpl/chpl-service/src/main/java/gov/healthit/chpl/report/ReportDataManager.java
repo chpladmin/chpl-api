@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.developer.search.DeveloperSearchResult;
+import gov.healthit.chpl.report.attestation.AttestationReportService;
 import gov.healthit.chpl.report.criteriaattribute.StandardListingReport;
 import gov.healthit.chpl.report.criteriaattribute.StandardReport;
 import gov.healthit.chpl.report.criteriaattribute.StandardReportService;
@@ -30,6 +31,7 @@ import gov.healthit.chpl.report.surveillance.CapCounts;
 import gov.healthit.chpl.report.surveillance.NonconformityCounts;
 import gov.healthit.chpl.report.surveillance.SurveillanceActivityCounts;
 import gov.healthit.chpl.report.surveillance.SurveillanceReportsService;
+import gov.healthit.chpl.scheduler.job.report.attestation.AttestationReport;
 import gov.healthit.chpl.scheduler.job.summarystatistics.data.CertificationBodyStatistic;
 import gov.healthit.chpl.search.domain.ListingSearchResult;
 import lombok.Synchronized;
@@ -49,13 +51,15 @@ public class ReportDataManager {
     private ServiceBaseUrlListReportService serviceBaseUrlListReportService;
     private StandardReportService standardReportService;
     private DirectReviewReportsService directReviewReportsService;
+    private AttestationReportService attestationReportService;
     private ReportMetadataDAO reportMetadataDAO;
 
     @Autowired
     public ReportDataManager(CriteriaMigrationReportService criteriaMigrationReportService, DeveloperReportsService developerReportsService,
             SurveillanceReportsService surveillanceReportsService, ProductReportsService productReportsService, ListingReportsService listingReportsService,
             TestToolReportService testToolReportService, DirectReviewReportsService directReviewReportsService, ReportMetadataDAO reportMetadataDAO,
-            ServiceBaseUrlListReportService serviceBaseUrlListReportService, StandardReportService standardReportService) {
+            ServiceBaseUrlListReportService serviceBaseUrlListReportService, AttestationReportService attestationReportService,
+            StandardReportService standardReportService) {
         this.criteriaMigrationReportService = criteriaMigrationReportService;
         this.developerReportsService = developerReportsService;
         this.surveillanceReportsService = surveillanceReportsService;
@@ -65,6 +69,7 @@ public class ReportDataManager {
         this.serviceBaseUrlListReportService = serviceBaseUrlListReportService;
         this.standardReportService = standardReportService;
         this.directReviewReportsService = directReviewReportsService;
+        this.attestationReportService = attestationReportService;
         this.reportMetadataDAO = reportMetadataDAO;
     }
 
@@ -266,4 +271,10 @@ public class ReportDataManager {
     public DirectReviewCounts getDirectReviewCounts() {
         return directReviewReportsService.getDirectReviewCounts();
     }
+
+    @Synchronized("lock")
+    public List<AttestationReport> getAttestationReports() {
+        return attestationReportService.getAttestationReports();
+    }
+
 }
