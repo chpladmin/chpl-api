@@ -26,7 +26,7 @@ import gov.healthit.chpl.report.realworldtesting.RealWorldTestingSummaryReport;
 import gov.healthit.chpl.util.DateUtil;
 import lombok.extern.log4j.Log4j2;
 
-@Log4j2
+@Log4j2(topic = "realWorldTestingSummaryReportCreatorJobLogger")
 public class RealWorldTestingSummaryReportCreatorJob extends  QuartzJob {
 
     @Autowired
