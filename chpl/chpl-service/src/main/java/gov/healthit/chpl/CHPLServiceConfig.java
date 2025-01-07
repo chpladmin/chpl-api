@@ -27,8 +27,10 @@ import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.TrustStrategy;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.quartz.spi.JobFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.MethodInvokingFactoryBean;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
@@ -39,6 +41,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.PropertySources;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.core.env.Environment;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.MediaType;
@@ -52,6 +55,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
+import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.client.RestTemplate;
@@ -95,6 +99,9 @@ public class CHPLServiceConfig implements WebMvcConfigurer, EnvironmentAware {
 
     @Autowired
     private Environment env;
+
+    @Autowired
+    private ApplicationContext applicationContext;
 
     @Override
     public void setEnvironment(final Environment environment) {
@@ -279,4 +286,21 @@ public class CHPLServiceConfig implements WebMvcConfigurer, EnvironmentAware {
         }
         return requestTimeout;
     }
+
+    @Bean
+    public JobFactory jobFactory() {
+        QuartzJobFactory jobFactory = new QuartzJobFactory(applicationContext);
+        return jobFactory;
+    }
+
+    @Bean
+    public SchedulerFactoryBean schedulerFactory() {
+        SchedulerFactoryBean factory = new SchedulerFactoryBean();
+        factory.setAutoStartup(true);
+        factory.setConfigLocation(new ClassPathResource("quartz.properties"));
+        factory.setJobFactory(jobFactory());
+
+        return factory;
+    }
+
 }

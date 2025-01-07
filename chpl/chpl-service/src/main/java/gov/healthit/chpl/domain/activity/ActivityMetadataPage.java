@@ -3,12 +3,6 @@ package gov.healthit.chpl.domain.activity;
 import java.io.Serializable;
 import java.util.Set;
 
-/**
- * A page of activity metadata including the page number, page size,
- * and total result set size.
- * @author kekey
- *
- */
 public class ActivityMetadataPage implements Serializable {
     private static final long serialVersionUID = -3855142961571461535L;
 
