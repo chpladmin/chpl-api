@@ -64,15 +64,20 @@ public class GenerateListingDownloadFilesAspect {
 
         if (!isJobAlreadyScheduled(info)) {
             ChplOneTimeTrigger downloadFileTrigger = new ChplOneTimeTrigger();
-            ChplJob downloadFileJob = getDownloadFileJob(listingSetToJobNameMap.get(listingSet).jobName);
-            downloadFileTrigger.setJob(downloadFileJob);
-            downloadFileTrigger.setRunDateMillis(listingSetToJobNameMap.get(listingSet).getRunDateTime().toInstant().toEpochMilli());
-            downloadFileTrigger = addTriggerToScheduler(downloadFileTrigger);
+            String downloadFileJobName = listingSetToJobNameMap.get(listingSet).jobName;
+            ChplJob downloadFileJob = getDownloadFileJob(downloadFileJobName);
+            if (downloadFileJob != null) {
+                downloadFileTrigger.setJob(downloadFileJob);
+                downloadFileTrigger.setRunDateMillis(listingSetToJobNameMap.get(listingSet).getRunDateTime().toInstant().toEpochMilli());
+                downloadFileTrigger = addTriggerToScheduler(downloadFileTrigger);
 
-            LOGGER.info("System job {}/{} has been scheduled for {}",
-                    downloadFileTrigger.getJob().getGroup(),
-                    downloadFileTrigger.getJob().getName(),
-                    DateUtil.toLocalDateTime(downloadFileTrigger.getRunDateMillis()).toString());
+                LOGGER.info("System job {}/{} has been scheduled for {}",
+                        downloadFileTrigger.getJob().getGroup(),
+                        downloadFileTrigger.getJob().getName(),
+                        DateUtil.toLocalDateTime(downloadFileTrigger.getRunDateMillis()).toString());
+            } else {
+                LOGGER.error("No job found with name " + downloadFileJobName);
+            }
         }
     }
 
@@ -89,7 +94,7 @@ public class GenerateListingDownloadFilesAspect {
         return getAllJobs().stream()
                 .filter(job -> job.getName().equals(jobName))
                 .findAny()
-                .get();
+                .orElse(null);
     }
 
     private List<ChplJob> getAllJobs() {

@@ -233,15 +233,16 @@
 			"name": "ROLE_ACB",
 			"item": [
 				{
-					"name": "GET /activity/metadata/svaps - ACB user gets 401 status and no response",
+					"name": "GET /activity/metadata/svaps - ACB user gets 200 status and valid response",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.test(\"ACB user gets 401 status and valid response from /activity/metadata/svaps end point\", function () {\r",
+									"pm.test(\"ACB user gets 200 status and valid response from /activity/metadata/svaps end point\", function () {\r",
 									"    var actualResponseBody = pm.response.json();\r",
-									"    pm.response.to.have.status(401);\r",
+									"    pm.response.to.have.status(200);\r",
+                                    "    pm.expect(actualResponseBody).not.eql(null);\r",
 									"});"
 								],
 								"type": "text/javascript",
@@ -285,20 +286,21 @@
 								"svaps"
 							]
 						},
-						"description": "GET /activity/metadata/svaps - ACB user gets 401 status and no response"
+						"description": "GET /activity/metadata/svaps - ACB user gets 200 status and valid response"
 					},
 					"response": []
 				},
 				{
-					"name": "GET /activity/metadata/standards - ACB user gets 401 status and no response",
+					"name": "GET /activity/metadata/standards - ACB user gets 200 status and valid response",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.test(\"ACB user gets 401 status and valid response from /activity/metadata/standards end point\", function () {\r",
+									"pm.test(\"ACB user gets 200 status and valid response from /activity/metadata/standards end point\", function () {\r",
 									"    var actualResponseBody = pm.response.json();\r",
-									"    pm.response.to.have.status(401);\r",
+									"    pm.response.to.have.status(200);\r",
+									"    pm.expect(actualResponseBody).not.eql(null);\r",
 									"});"
 								],
 								"type": "text/javascript",
@@ -342,20 +344,21 @@
 								"standards"
 							]
 						},
-						"description": "GET /activity/metadata/standards - ACB user gets 401 status and no response"
+						"description": "GET /activity/metadata/standards - ACB user gets 200 status and valid response"
 					},
 					"response": []
 				},
 				{
-					"name": "GET /activity/metadata/functionalities-tested - ACB user gets 401 status and no response",
+					"name": "GET /activity/metadata/functionalities-tested - ACB user gets 200 status and valid response",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
 								"exec": [
-									"pm.test(\"ACB user gets 401 status and valid response from /activity/metadata/functionalities-tested end point\", function () {\r",
+									"pm.test(\"ACB user gets 200 status and valid response from /activity/metadata/functionalities-tested end point\", function () {\r",
 									"    var actualResponseBody = pm.response.json();\r",
-									"    pm.response.to.have.status(401);\r",
+									"    pm.response.to.have.status(200);\r",
+									"    pm.expect(actualResponseBody).not.eql(null);\r",
 									"});"
 								],
 								"type": "text/javascript",
@@ -399,7 +402,7 @@
 								"functionalities-tested"
 							]
 						},
-						"description": "GET /activity/metadata/functionalities-tested - ACB user gets 401 status and no response"
+						"description": "GET /activity/metadata/functionalities-tested - ACB user gets 200 status and valid response"
 					},
 					"response": []
 				}
