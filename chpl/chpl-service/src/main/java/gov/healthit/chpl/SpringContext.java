@@ -3,10 +3,11 @@ package gov.healthit.chpl;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.scheduling.quartz.SpringBeanJobFactory;
 import org.springframework.stereotype.Component;
 
 @Component
-public class SpringContext implements ApplicationContextAware {
+public class SpringContext extends SpringBeanJobFactory implements ApplicationContextAware {
 
     private static ApplicationContext context;
 

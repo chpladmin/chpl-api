@@ -208,4 +208,10 @@
     <Logger name="realWorldTestingSummaryReportCreatorJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="realWorldTestingSummaryReportCreatorJob" />
     </Logger>
+    <Logger name="attestationReportCreatorJobLogger" level="INFO" additivity="false">
+        <AppenderRef ref="attestationReportCreatorJob" />
+    </Logger>
+    <Logger name="fixDatadogUrlUptimeAssertionsJobLogger" level="INFO" additivity="false">
+        <AppenderRef ref="fixDatadogUrlUptimeAssertionsJob" />
+    </Logger>
 </Loggers>

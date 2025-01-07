@@ -130,7 +130,7 @@ public class GetActivityDetailsActionPermissions extends ActionPermissions {
             case FUNCTIONALITY_TESTED:
             case SVAP:
             case STANDARD:
-                return false;
+                return getResourcePermissions().isUserRoleAcbAdmin();
             default:
                 // all other types of activity
                 // are accessible to any logged-in or anonymous user
