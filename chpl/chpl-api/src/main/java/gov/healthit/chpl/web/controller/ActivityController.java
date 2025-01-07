@@ -339,7 +339,6 @@ public class ActivityController {
             })
     @RequestMapping(value = "/metadata/versions", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
-    @DeprecatedApiResponseFields(friendlyUrl = "/activity/metadata/versions", responseClass = ActivityMetadataPage.class)
     public ActivityMetadataPage metadataForVersions(@RequestParam(required = false) Long start,
             @RequestParam(required = false) Long end, @RequestParam(required = false) Integer pageNum,
             @RequestParam(required = false) Integer pageSize) throws JsonParseException, IOException, ValidationException {
@@ -354,7 +353,6 @@ public class ActivityController {
             })
     @RequestMapping(value = "/metadata/versions/{id:^-?\\d+$}", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
-    @DeprecatedApiResponseFields(friendlyUrl = "/activity/metadata/versions/{id}", responseClass = ActivityMetadata.class)
     public List<ActivityMetadata> metadataForVersionById(@PathVariable("id") final Long id,
             @RequestParam(required = false) final Long start, @RequestParam(required = false) final Long end)
             throws JsonParseException, IOException, EntityRetrievalException, ValidationException {
@@ -390,7 +388,6 @@ public class ActivityController {
             })
     @RequestMapping(value = "/metadata/acbs", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
-    @DeprecatedApiResponseFields(friendlyUrl = "/activity/metadata/acbs", responseClass = ActivityMetadataPage.class)
     public ActivityMetadataPage metadataForAcbs(@RequestParam(required = false) Long start,
             @RequestParam(required = false) Long end, @RequestParam(required = false) Integer pageNum,
             @RequestParam(required = false) Integer pageSize) throws JsonParseException, IOException, ValidationException {
@@ -405,7 +402,6 @@ public class ActivityController {
             })
     @RequestMapping(value = "/metadata/acbs/{id:^-?\\d+$}", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
-    @DeprecatedApiResponseFields(friendlyUrl = "/activity/metadata/acbs/{id}", responseClass = ActivityMetadata.class)
     public List<ActivityMetadata> metadataForAcbById(@PathVariable("id") final Long id,
             @RequestParam(required = false) final Long start, @RequestParam(required = false) final Long end)
             throws JsonParseException, IOException, EntityRetrievalException, ValidationException {
@@ -438,7 +434,6 @@ public class ActivityController {
             })
     @RequestMapping(value = "/metadata/atls", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
-    @DeprecatedApiResponseFields(friendlyUrl = "/activity/metadata/atls", responseClass = ActivityMetadataPage.class)
     public ActivityMetadataPage metadataForAtls(@RequestParam(required = false) Long start,
             @RequestParam(required = false) Long end, @RequestParam(required = false) Integer pageNum,
             @RequestParam(required = false) Integer pageSize) throws JsonParseException, IOException, ValidationException {
@@ -453,7 +448,6 @@ public class ActivityController {
             })
     @RequestMapping(value = "/metadata/atls/{id:^-?\\d+$}", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
-    @DeprecatedApiResponseFields(friendlyUrl = "/activity/metadata/atls/{id}", responseClass = ActivityMetadata.class)
     public List<ActivityMetadata> metadataForAtlById(@PathVariable("id") final Long id,
             @RequestParam(required = false) final Long start, @RequestParam(required = false) final Long end)
             throws JsonParseException, IOException, EntityRetrievalException, ValidationException {
@@ -485,7 +479,6 @@ public class ActivityController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
     @RequestMapping(value = "/metadata/users", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    @DeprecatedApiResponseFields(friendlyUrl = "/activity/metadata/users", responseClass = ActivityMetadataPage.class)
     public ActivityMetadataPage metadataForUsers(@RequestParam(required = false) Long start,
             @RequestParam(required = false) Long end, @RequestParam(required = false) Integer pageNum,
             @RequestParam(required = false) Integer pageSize) throws JsonParseException, IOException, ValidationException {
@@ -504,7 +497,6 @@ public class ActivityController {
             })
     @RequestMapping(value = "/metadata/announcements", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
-    @DeprecatedApiResponseFields(friendlyUrl = "/activity/metadata/announcements", responseClass = ActivityMetadataPage.class)
     public ActivityMetadataPage metadataForAnnouncements(@RequestParam(required = false) Long start,
             @RequestParam(required = false) Long end, @RequestParam(required = false) Integer pageNum,
             @RequestParam(required = false) Integer pageSize) throws JsonParseException, IOException, ValidationException {
@@ -520,7 +512,6 @@ public class ActivityController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
     @RequestMapping(value = "/metadata/complaints", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    @DeprecatedApiResponseFields(friendlyUrl = "/activity/metadata/complaints", responseClass = ActivityMetadata.class)
     public List<ActivityMetadata> metadataForComplaints(@RequestParam final Long start,
             @RequestParam final Long end) throws JsonParseException, IOException, ValidationException {
         Date startDate = new Date(start);
@@ -538,7 +529,6 @@ public class ActivityController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
     @RequestMapping(value = "/metadata/quarterly-reports", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    @DeprecatedApiResponseFields(friendlyUrl = "/activity/metadata/quarterly-reports", responseClass = ActivityMetadata.class)
     public List<ActivityMetadata> metadataForQuarterlyReports(@RequestParam final Long start,
             @RequestParam final Long end) throws JsonParseException, IOException, ValidationException {
 
@@ -566,7 +556,6 @@ public class ActivityController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
     @RequestMapping(value = "/metadata/annual-reports", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    @DeprecatedApiResponseFields(friendlyUrl = "/activity/metadata/annual-reports", responseClass = ActivityMetadata.class)
     public List<ActivityMetadata> metadataForAnnualReports(@RequestParam final Long start,
             @RequestParam final Long end) throws JsonParseException, IOException, ValidationException {
         Date startDate = new Date(start);
@@ -583,7 +572,6 @@ public class ActivityController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
     @RequestMapping(value = "/metadata/corrective-action-plans", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    @DeprecatedApiResponseFields(friendlyUrl = "/activity/metadata/corrective-action-plans", responseClass = ActivityMetadataPage.class)
     public ActivityMetadataPage metadataForCorrectiveActionPlans(@RequestParam(required = false) Long start,
             @RequestParam(required = false) Long end, @RequestParam(required = false) Integer pageNum,
             @RequestParam(required = false) Integer pageSize) throws JsonParseException, IOException, ValidationException {
@@ -601,7 +589,6 @@ public class ActivityController {
             })
     @RequestMapping(value = "/metadata/pending-surveillances", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
-    @DeprecatedApiResponseFields(friendlyUrl = "/activity/metadata/pending-surveillances", responseClass = ActivityMetadataPage.class)
     public ActivityMetadataPage metadataForPendingSurveillances(@RequestParam(required = false) Long start,
             @RequestParam(required = false) Long end, @RequestParam(required = false) Integer pageNum,
             @RequestParam(required = false) Integer pageSize) throws JsonParseException, IOException, ValidationException {
@@ -618,7 +605,6 @@ public class ActivityController {
             })
     @RequestMapping(value = "/metadata/change-requests", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
-    @DeprecatedApiResponseFields(friendlyUrl = "/activity/metadata/change-requests", responseClass = ActivityMetadata.class)
     public List<ActivityMetadata> metadataForChangeRequests(@RequestParam final Long start,
             @RequestParam final Long end) throws JsonParseException, IOException, ValidationException {
         Date startDate = new Date(start);
@@ -637,7 +623,6 @@ public class ActivityController {
             })
     @RequestMapping(value = "/metadata/api-keys", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
-    @DeprecatedApiResponseFields(friendlyUrl = "/activity/metadata/api-keys", responseClass = ActivityMetadataPage.class)
     public ActivityMetadataPage metadataForApiKeys(@RequestParam(required = false) Long start,
             @RequestParam(required = false) Long end, @RequestParam(required = false) Integer pageNum,
             @RequestParam(required = false) Integer pageSize) throws JsonParseException, IOException, ValidationException {
@@ -654,7 +639,6 @@ public class ActivityController {
             })
     @RequestMapping(value = "/metadata/functionalities-tested", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
-    @DeprecatedApiResponseFields(friendlyUrl = "/activity/metadata/functionalities-tested", responseClass = ActivityMetadataPage.class)
     public ActivityMetadataPage metadataForFunctionalitiesTested(@RequestParam(required = false) Long start,
             @RequestParam(required = false) Long end, @RequestParam(required = false) Integer pageNum,
             @RequestParam(required = false) Integer pageSize) throws JsonParseException, IOException, ValidationException {
@@ -671,7 +655,6 @@ public class ActivityController {
             })
     @RequestMapping(value = "/metadata/standards", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
-    @DeprecatedApiResponseFields(friendlyUrl = "/activity/metadata/standards", responseClass = ActivityMetadataPage.class)
     public ActivityMetadataPage metadataForStandards(@RequestParam(required = false) Long start,
             @RequestParam(required = false) Long end, @RequestParam(required = false) Integer pageNum,
             @RequestParam(required = false) Integer pageSize) throws JsonParseException, IOException, ValidationException {
@@ -688,7 +671,6 @@ public class ActivityController {
             })
     @RequestMapping(value = "/metadata/svaps", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
-    @DeprecatedApiResponseFields(friendlyUrl = "/activity/metadata/svaps", responseClass = ActivityMetadataPage.class)
     public ActivityMetadataPage metadataForSvaps(@RequestParam(required = false) Long start,
             @RequestParam(required = false) Long end, @RequestParam(required = false) Integer pageNum,
             @RequestParam(required = false) Integer pageSize) throws JsonParseException, IOException, ValidationException {
