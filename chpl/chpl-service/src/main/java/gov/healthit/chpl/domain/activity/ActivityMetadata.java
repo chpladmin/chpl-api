@@ -6,7 +6,6 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
-import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseField;
 import gov.healthit.chpl.domain.auth.User;
 import gov.healthit.chpl.util.Util;
 import lombok.AccessLevel;
@@ -17,7 +16,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import lombok.Singular;
 import lombok.ToString;
 
 @Builder
@@ -31,18 +29,16 @@ public class ActivityMetadata implements Serializable {
 
     private Long id;
     private ActivityConcept concept;
-    @Singular
+
+    @Builder.Default
     private Set<ActivityCategory> categories = new HashSet<ActivityCategory>();
+
     @Setter(AccessLevel.NONE)
     @Getter(AccessLevel.NONE)
     private Date date;
 
-    @DeprecatedResponseField(message = "This field is deprecated and will be removed. Use object.id",
-            removalDate = "2024-10-31")
-    @Deprecated
-    private Long objectId;
-
     private ActivityObject object;
+
     private User responsibleUser;
     private String description;
 
