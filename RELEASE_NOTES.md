@@ -1,5 +1,19 @@
 # Release Notes
 
+## Version 47.7.0
+_6 January 2025_
+
+### Features
+* Add endpoints to retrieve data for the Developer Attestation PowerBI report
+* Allow changing of ATL using upload-to-update
+* Save activity for created and deleted invitations
+* Add job to update Service Base URL report items
+
+### Bug Fixes
+* Give ONC users ability to edit listing via upload
+
+---
+
 ## Version 47.6.0
 _18 December 2024_
 

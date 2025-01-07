@@ -173,24 +173,28 @@ public class CognitoApiWrapper {
         }
     }
 
-    @Cacheable(CacheNames.COGNITO_USERS_BY_UUID)
+    @Cacheable(value = CacheNames.COGNITO_USERS_BY_UUID, unless = "#result == null")
     public User getUserInfo(UUID cognitoId) throws UserRetrievalException {
         AdminGetUserRequest request = AdminGetUserRequest.builder()
                 .userPoolId(userPoolId)
                 .username(cognitoId.toString())
                 .build();
 
-        AdminGetUserResponse response = cognitoClient.adminGetUser(request);
-        if (response == null || response.sdkHttpResponse() == null || !response.sdkHttpResponse().isSuccessful()) {
+        try {
+            AdminGetUserResponse response = cognitoClient.adminGetUser(request);
+            if (response == null || response.sdkHttpResponse() == null || !response.sdkHttpResponse().isSuccessful()) {
+                return null;
+            }
+            User user = createUserFromGetUserResponse(response);
+            List<GroupType> groupsForUser = getGroupsForUser(user.getEmail());
+            if (!doesGroupMatchCurrentEnvironment(groupsForUser)) {
+                return null;
+            }
+            return user;
+        } catch (Exception e) {
+            LOGGER.error("Unable to get user " + cognitoId.toString() + " with AdminGetUserRequest", e);
             return null;
         }
-
-        User user = createUserFromGetUserResponse(response);
-        List<GroupType> groupsForUser = getGroupsForUser(user.getEmail());
-        if (!doesGroupMatchCurrentEnvironment(groupsForUser)) {
-            return null;
-        }
-        return user;
     }
 
     @Cacheable(value = CacheNames.COGNITO_USERS_BY_EMAIL, unless = "#result == null")
@@ -289,7 +293,7 @@ public class CognitoApiWrapper {
     public AuthenticationResultType refreshToken(String refreshToken, UUID cognitoId) {
         Map<String, String> authParams = new LinkedHashMap<String, String>();
         authParams.put("REFRESH_TOKEN", refreshToken);
-       authParams.put("SECRET_HASH", calculateSecretHash(cognitoId.toString()));
+        authParams.put("SECRET_HASH", calculateSecretHash(cognitoId.toString()));
 
         AdminInitiateAuthRequest authRequest = AdminInitiateAuthRequest.builder()
                 .authFlow(AuthFlowType.REFRESH_TOKEN_AUTH)
