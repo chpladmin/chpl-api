@@ -127,7 +127,8 @@ public class RealWorldTestingSummaryReportCreatorJob extends  QuartzJob {
         rwtReportService.getPlansStartDate(rwtEligibilityYear).datesUntil(LocalDate.now()).forEach(reportDate -> {
             certificationBodyManager.getAllActive().forEach(acb -> {
                 Long eligibleListingCountForAcb = reportRows.stream()
-                        .filter(row -> row.getAcbName().equals(acb.getName()))
+                        .filter(row -> row.getAcbName().equals(acb.getName())
+                                && isListingValidAsOfDate(row.getCertificationDate(), reportDate))
                         .collect(Collectors.counting());
 
                 rwtSummaryReports.add(RealWorldTestingSummaryReport.builder()
@@ -178,5 +179,10 @@ public class RealWorldTestingSummaryReportCreatorJob extends  QuartzJob {
 
     private boolean isDateInResultsSubmissionWindow(LocalDate dateToTest, Integer rwtYear) {
         return DateUtil.isDateBetweenInclusive(Pair.of(rwtReportService.getResultsStartDate(rwtYear), rwtReportService.getResultsLateDate(rwtYear)), dateToTest);
+    }
+
+    private Boolean isListingValidAsOfDate(LocalDate listingCertificationDate, LocalDate date) {
+        return date.isAfter(listingCertificationDate)
+                || date.equals(listingCertificationDate);
     }
 }
