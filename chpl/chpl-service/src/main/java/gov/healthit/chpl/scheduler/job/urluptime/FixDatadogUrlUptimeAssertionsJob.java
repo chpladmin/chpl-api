@@ -2,8 +2,6 @@ package gov.healthit.chpl.scheduler.job.urluptime;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
 
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -63,8 +61,7 @@ public class FixDatadogUrlUptimeAssertionsJob extends QuartzJob {
         datadogSyntheticsTestService.getAllSyntheticsTests().forEach(test -> {
             String url = test.getConfig().getRequest().getUrl();
 
-            if (url.equals("https://www.praxisemr.com/applicationaccess/api/help/")) {
-                SyntheticsAPITest body = new SyntheticsAPITest()
+            SyntheticsAPITest body = new SyntheticsAPITest()
                     .config(new SyntheticsAPITestConfig()
                             .assertions(Arrays.asList(
                                     new SyntheticsAssertion(new SyntheticsAssertionTarget()
@@ -115,26 +112,15 @@ public class FixDatadogUrlUptimeAssertionsJob extends QuartzJob {
                     .name(url)
                     .tags(test.getTags());
 
-                try {
-                    datadogSyntheticsTestService.getApiProvider().getApiInstance().updateAPITest(test.getPublicId(), body);
-                    LOGGER.info("Test updated: {}", url);
-                } catch (ApiException e) {
-                    LOGGER.error("Could not update test for URL: {}", url, e);
-                }
-            } else {
-                LOGGER.info("Test NOT updated: {}", url);
+            try {
+                datadogSyntheticsTestService.getApiProvider().getApiInstance().updateAPITest(test.getPublicId(), body);
+                LOGGER.info("Test updated: {}", url);
+            } catch (ApiException e) {
+                LOGGER.error("Could not update test for URL: {}", url, e);
             }
         });
 
         LOGGER.info("********* Completed the Fix Datadog Url Uptime Assertions Job *********");
-    }
-
-    private Optional<SyntheticsAssertion> getContentHeaderAssertionExist(List<SyntheticsAssertion> assertions) {
-        return assertions.stream()
-                .filter(assertion -> assertion.getSyntheticsAssertionTarget().getType().equals(SyntheticsAssertionType.HEADER)
-                        && assertion.getSyntheticsAssertionTarget().getProperty().equals("content-length"))
-                .findAny();
-
     }
 
     private Long convertMinutesToSeconds(Long minutes) {
