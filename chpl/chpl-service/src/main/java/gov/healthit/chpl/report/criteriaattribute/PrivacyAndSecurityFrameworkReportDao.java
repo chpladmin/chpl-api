@@ -19,6 +19,7 @@ public class PrivacyAndSecurityFrameworkReportDao extends BaseDAOImpl {
                 + "AND cr.certifiedProductId = cpd.id "
                 + "AND cpd.certificationStatusId IN (1,6,7) "
                 + "AND (cc.endDay is null OR cc.endDay > CURRENT_DATE()) "
+                + "AND cr.privacySecurityFramework != '' "
                 + "AND cc.deleted = false "
                 + "AND cr.deleted = false "
                 + "AND cpd.deleted = false "
@@ -45,6 +46,7 @@ public class PrivacyAndSecurityFrameworkReportDao extends BaseDAOImpl {
                 + "WHERE cc.id = cr.certificationCriterionId "
                 + "AND cr.certifiedProductId = cpd.id "
                 + "AND cpd.certificationStatusId IN (1,6,7) "
+                + "AND cr.privacySecurityFramework != '' "
                 + "AND cc.deleted = false "
                 + "AND cr.deleted = false "
                 + "AND cpd.deleted = false ";
