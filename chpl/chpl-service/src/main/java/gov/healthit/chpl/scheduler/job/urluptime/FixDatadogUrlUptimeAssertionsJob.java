@@ -61,61 +61,59 @@ public class FixDatadogUrlUptimeAssertionsJob extends QuartzJob {
         LOGGER.info("********* Starting the Fix Datadog Url Uptime Assertions Job *********");
 
         datadogSyntheticsTestService.getAllSyntheticsTests().forEach(test -> {
-            Optional<SyntheticsAssertion> contentHeaderAssertion = getContentHeaderAssertionExist(test.getConfig().getAssertions());
             String url = test.getConfig().getRequest().getUrl();
 
-            if (contentHeaderAssertion.isPresent()) {
-
+            if (url.equals("https://www.praxisemr.com/applicationaccess/api/help/")) {
                 SyntheticsAPITest body = new SyntheticsAPITest()
-                        .config(new SyntheticsAPITestConfig()
-                                .assertions(Arrays.asList(
-                                        new SyntheticsAssertion(new SyntheticsAssertionTarget()
-                                                .operator(SyntheticsAssertionOperator.LESS_THAN)
-                                                .target(datadogTestTimeout)
-                                                .type(SyntheticsAssertionType.RESPONSE_TIME)),
-                                        new SyntheticsAssertion(new SyntheticsAssertionTarget()
-                                                .operator(SyntheticsAssertionOperator.IS)
-                                                .target(HTTP_STATUS_OK)
-                                                .type(SyntheticsAssertionType.STATUS_CODE)),
-                                        new SyntheticsAssertion(new SyntheticsAssertionTarget()
-                                                .operator(SyntheticsAssertionOperator.MATCHES)
-                                                .target("/[\\S\s]+[\\S]+/")
-                                                .type(SyntheticsAssertionType.BODY))))
-                                .request(new SyntheticsTestRequest()
-                                            .url(url)
-                                            .method(HTTP_METHOD_GET)))
-                        .options(new SyntheticsTestOptions()
-                                .httpVersion(SyntheticsTestOptionsHTTPVersion.ANY)
-                                .minFailureDuration(0L)
-                                .minLocationFailed(1L)
-                                .scheduling(new SyntheticsTestOptionsScheduling()
-                                        .timezone(DateUtil.ET_ZONE_ID)
-                                        .addTimeframesItem(new SyntheticsTestOptionsSchedulingTimeframe()
-                                                .day(DatadogDayOfWeek.MONDAY)
-                                                .from(datadogTestStartTime)
-                                                .to(datadogTestEndTime))
-                                        .addTimeframesItem(new SyntheticsTestOptionsSchedulingTimeframe()
-                                                .day(DatadogDayOfWeek.TUESDAY)
-                                                .from(datadogTestStartTime)
-                                                .to(datadogTestEndTime))
-                                        .addTimeframesItem(new SyntheticsTestOptionsSchedulingTimeframe()
-                                                .day(DatadogDayOfWeek.WEDNESDAY)
-                                                .from(datadogTestStartTime)
-                                                .to(datadogTestEndTime))
-                                        .addTimeframesItem(new SyntheticsTestOptionsSchedulingTimeframe()
-                                                .day(DatadogDayOfWeek.THURSDAY)
-                                                .from(datadogTestStartTime)
-                                                .to(datadogTestEndTime))
-                                        .addTimeframesItem(new SyntheticsTestOptionsSchedulingTimeframe()
-                                                .day(DatadogDayOfWeek.FRIDAY)
-                                                .from(datadogTestStartTime)
-                                                .to(datadogTestEndTime)))
-                                .tickEvery(convertMinutesToSeconds(datadogCheckEveryMinutes)))
-                        .locations(Collections.singletonList(datadogTestLocation))
-                        .message("Failed: " + url)
-                        .type(SyntheticsAPITestType.API)
-                        .name(url)
-                        .tags(test.getTags());
+                    .config(new SyntheticsAPITestConfig()
+                            .assertions(Arrays.asList(
+                                    new SyntheticsAssertion(new SyntheticsAssertionTarget()
+                                            .operator(SyntheticsAssertionOperator.LESS_THAN)
+                                            .target(datadogTestTimeout)
+                                            .type(SyntheticsAssertionType.RESPONSE_TIME)),
+                                    new SyntheticsAssertion(new SyntheticsAssertionTarget()
+                                            .operator(SyntheticsAssertionOperator.IS)
+                                            .target(HTTP_STATUS_OK)
+                                            .type(SyntheticsAssertionType.STATUS_CODE)),
+                                    new SyntheticsAssertion(new SyntheticsAssertionTarget()
+                                            .operator(SyntheticsAssertionOperator.MATCHES)
+                                            .target("/[\\S]/")
+                                            .type(SyntheticsAssertionType.BODY))))
+                            .request(new SyntheticsTestRequest()
+                                        .url(url)
+                                        .method(HTTP_METHOD_GET)))
+                    .options(new SyntheticsTestOptions()
+                            .httpVersion(SyntheticsTestOptionsHTTPVersion.ANY)
+                            .minFailureDuration(0L)
+                            .minLocationFailed(1L)
+                            .scheduling(new SyntheticsTestOptionsScheduling()
+                                    .timezone(DateUtil.ET_ZONE_ID)
+                                    .addTimeframesItem(new SyntheticsTestOptionsSchedulingTimeframe()
+                                            .day(DatadogDayOfWeek.MONDAY)
+                                            .from(datadogTestStartTime)
+                                            .to(datadogTestEndTime))
+                                    .addTimeframesItem(new SyntheticsTestOptionsSchedulingTimeframe()
+                                            .day(DatadogDayOfWeek.TUESDAY)
+                                            .from(datadogTestStartTime)
+                                            .to(datadogTestEndTime))
+                                    .addTimeframesItem(new SyntheticsTestOptionsSchedulingTimeframe()
+                                            .day(DatadogDayOfWeek.WEDNESDAY)
+                                            .from(datadogTestStartTime)
+                                            .to(datadogTestEndTime))
+                                    .addTimeframesItem(new SyntheticsTestOptionsSchedulingTimeframe()
+                                            .day(DatadogDayOfWeek.THURSDAY)
+                                            .from(datadogTestStartTime)
+                                            .to(datadogTestEndTime))
+                                    .addTimeframesItem(new SyntheticsTestOptionsSchedulingTimeframe()
+                                            .day(DatadogDayOfWeek.FRIDAY)
+                                            .from(datadogTestStartTime)
+                                            .to(datadogTestEndTime)))
+                            .tickEvery(convertMinutesToSeconds(datadogCheckEveryMinutes)))
+                    .locations(Collections.singletonList(datadogTestLocation))
+                    .message("Failed: " + url)
+                    .type(SyntheticsAPITestType.API)
+                    .name(url)
+                    .tags(test.getTags());
 
                 try {
                     datadogSyntheticsTestService.getApiProvider().getApiInstance().updateAPITest(test.getPublicId(), body);
@@ -130,7 +128,6 @@ public class FixDatadogUrlUptimeAssertionsJob extends QuartzJob {
 
         LOGGER.info("********* Completed the Fix Datadog Url Uptime Assertions Job *********");
     }
-
 
     private Optional<SyntheticsAssertion> getContentHeaderAssertionExist(List<SyntheticsAssertion> assertions) {
         return assertions.stream()
