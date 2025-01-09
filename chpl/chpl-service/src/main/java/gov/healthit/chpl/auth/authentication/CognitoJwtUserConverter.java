@@ -19,6 +19,7 @@ import gov.healthit.chpl.auth.user.AuthenticationSystem;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.exception.JWTValidationException;
 import gov.healthit.chpl.exception.MultipleUserAccountsException;
+import gov.healthit.chpl.user.cognito.CognitoApiWrapper;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -48,14 +49,18 @@ public class CognitoJwtUserConverter implements JWTUserConverter {
                         .fullName(decodeJwt.getClaim("name").asString())
                         .email(decodeJwt.getClaim("email").asString())
                         .organizationIds(
-                                decodeJwt.getClaims().containsKey("custom:organizations")
-                                        ? Stream.of(decodeJwt.getClaim("custom:organizations").asString().split(","))
+                                decodeJwt.getClaims().containsKey(CognitoApiWrapper.ORGANIZATIONS_ATTRIBUTE_NAME)
+                                        ? Stream.of(decodeJwt.getClaim(CognitoApiWrapper.ORGANIZATIONS_ATTRIBUTE_NAME).asString().split(","))
                                                 .map(Long::valueOf)
                                                 .toList()
                                         : null)
-                        .authorities(decodeJwt.getClaim("custom:role").asList(String.class).stream()
-                                .map(group -> new SimpleGrantedAuthority(group))
-                                .collect(Collectors.toSet()))
+                        //in CHPL each user can only have a single role, but we are supporting the possibility that
+                        //other applications could need something different
+                        .authorities(decodeJwt.getClaims().containsKey(CognitoApiWrapper.ROLES_ATTRIBUTE_NAME)
+                                        ? Stream.of(decodeJwt.getClaim(CognitoApiWrapper.ROLES_ATTRIBUTE_NAME).asString().split(","))
+                                                .map(attr -> new SimpleGrantedAuthority(attr))
+                                                .collect(Collectors.toSet())
+                                        : null)
                         .build();
             } else {
                 throw new JWTValidationException("Invalid authentication token.");
