@@ -74,7 +74,7 @@ public class FixDatadogUrlUptimeAssertionsJob extends QuartzJob {
                                             .type(SyntheticsAssertionType.STATUS_CODE)),
                                     new SyntheticsAssertion(new SyntheticsAssertionTarget()
                                             .operator(SyntheticsAssertionOperator.MATCHES)
-                                            .target("/[\\S]+/")
+                                            .target(DatadogSyntheticsTestService.NOT_EMPTY_REGEX)
                                             .type(SyntheticsAssertionType.BODY))))
                             .request(new SyntheticsTestRequest()
                                         .url(url)
