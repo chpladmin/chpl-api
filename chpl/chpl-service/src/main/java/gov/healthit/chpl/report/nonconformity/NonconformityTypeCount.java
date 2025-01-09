@@ -9,4 +9,5 @@ import lombok.Data;
 public class NonconformityTypeCount {
     private NonconformityType nonconformityType;
     private Long count;
+    private Integer displayOrder;
 }
