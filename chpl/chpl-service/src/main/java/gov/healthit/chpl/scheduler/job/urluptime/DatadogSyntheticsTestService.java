@@ -110,7 +110,7 @@ public class DatadogSyntheticsTestService {
                                         .type(SyntheticsAssertionType.STATUS_CODE)),
                                 new SyntheticsAssertion(new SyntheticsAssertionTarget()
                                         .operator(SyntheticsAssertionOperator.MATCHES)
-                                        .target("/[\\S]/")
+                                        .target("/[\\S]+/")
                                         .type(SyntheticsAssertionType.BODY))))
                         .request(new SyntheticsTestRequest()
                                     .url(url)
