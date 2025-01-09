@@ -22,6 +22,7 @@ import gov.healthit.chpl.report.directreview.DirectReviewCounts;
 import gov.healthit.chpl.report.directreview.DirectReviewReportsService;
 import gov.healthit.chpl.report.listing.ListingReportsService;
 import gov.healthit.chpl.report.listing.UniqueListingCount;
+import gov.healthit.chpl.report.nonconformity.NonconformityReportService;
 import gov.healthit.chpl.report.product.ProductByAcb;
 import gov.healthit.chpl.report.product.ProductReportsService;
 import gov.healthit.chpl.report.product.UniqueProductCount;
@@ -53,13 +54,15 @@ public class ReportDataManager {
     private DirectReviewReportsService directReviewReportsService;
     private AttestationReportService attestationReportService;
     private ReportMetadataDAO reportMetadataDAO;
+    private NonconformityReportService nonconformityReportService;
 
     @Autowired
     public ReportDataManager(CriteriaMigrationReportService criteriaMigrationReportService, DeveloperReportsService developerReportsService,
             SurveillanceReportsService surveillanceReportsService, ProductReportsService productReportsService, ListingReportsService listingReportsService,
             TestToolReportService testToolReportService, DirectReviewReportsService directReviewReportsService, ReportMetadataDAO reportMetadataDAO,
             ServiceBaseUrlListReportService serviceBaseUrlListReportService, AttestationReportService attestationReportService,
-            StandardReportService standardReportService) {
+            StandardReportService standardReportService,
+            NonconformityReportService nonconformityReportService) {
         this.criteriaMigrationReportService = criteriaMigrationReportService;
         this.developerReportsService = developerReportsService;
         this.surveillanceReportsService = surveillanceReportsService;
@@ -71,6 +74,7 @@ public class ReportDataManager {
         this.directReviewReportsService = directReviewReportsService;
         this.attestationReportService = attestationReportService;
         this.reportMetadataDAO = reportMetadataDAO;
+        this.nonconformityReportService = nonconformityReportService;
     }
 
     public List<ReportMetadata> getReportMetadataByReportGroup(String reportGroup) {
@@ -275,6 +279,11 @@ public class ReportDataManager {
     @Synchronized("lock")
     public List<AttestationReport> getAttestationReports() {
         return attestationReportService.getAttestationReports();
+    }
+
+    @Synchronized("lock")
+    public NonconformityReportService getNonconformityReportService() {
+        return nonconformityReportService;
     }
 
 }
