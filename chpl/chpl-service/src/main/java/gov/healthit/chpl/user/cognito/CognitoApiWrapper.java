@@ -147,11 +147,12 @@ public class CognitoApiWrapper {
         } catch (CognitoAuthenticationChallengeException e) {
             throw e;
         } catch (Exception e) {
-            LOGGER.error("Authentication error: {}", e.getMessage(), e);
+            LOGGER.error("Authentication error for user {}: {}", credentials.getUserName(), e.getMessage(), e);
             return null;
         }
     }
 
+    //@Cacheable(value = CacheNames.COGNITO_USERS_BY_EMAIL, unless = "#result == null")
     public AuthenticationResultType respondToNewPasswordRequiredChallenge(CognitoNewPasswordRequiredRequest newPassworRequiredRequest) {
         AdminRespondToAuthChallengeRequest request = AdminRespondToAuthChallengeRequest.builder()
                 .userPoolId(userPoolId)
@@ -316,7 +317,11 @@ public class CognitoApiWrapper {
         }
     }
 
-    public void setUserPassword(String userName, String password, Boolean permanent) {
+    @Caching(evict = {
+            @CacheEvict(value = CacheNames.COGNITO_USERS_BY_UUID, key = "#result.cognitoId"),
+            @CacheEvict(value = CacheNames.COGNITO_USERS_BY_EMAIL, key = "#result.email")
+    })
+    public User setUserPassword(String userName, String password, Boolean permanent) {
         AdminSetUserPasswordRequest request = AdminSetUserPasswordRequest.builder()
                 .username(userName)
                 .password(password)
@@ -335,6 +340,14 @@ public class CognitoApiWrapper {
                 LOGGER.error("Could not retrieve user: {}", userName, e);
             }
         }
+
+        User user = null;
+        try {
+            user = getUserInfo(userName);
+        } catch (UserRetrievalException e) {
+            LOGGER.error("Could not retrieve user: {}", userName, e);
+        }
+        return user;
     }
 
     public AdminAddUserToGroupResponse addUserToGroup(String email, String groupName) {
