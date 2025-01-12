@@ -1,12 +1,9 @@
 package gov.healthit.chpl.auth.authentication;
 
 import java.util.UUID;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
@@ -19,7 +16,6 @@ import gov.healthit.chpl.auth.user.AuthenticationSystem;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.exception.JWTValidationException;
 import gov.healthit.chpl.exception.MultipleUserAccountsException;
-import gov.healthit.chpl.user.cognito.CognitoApiWrapper;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -39,28 +35,12 @@ public class CognitoJwtUserConverter implements JWTUserConverter {
     @Override
     public JWTAuthenticatedUser getAuthenticatedUser(String jwt) throws JWTValidationException, MultipleUserAccountsException {
         try {
-            DecodedJWT decodeJwt = decodeJwt(jwt);
-            if (decodeJwt.getClaims().size() != 0) {
+            DecodedJWT decodedJwt = decodeJwt(jwt);
+            if (decodedJwt.getClaims().size() != 0) {
                 return JWTAuthenticatedUser.builder()
                         .authenticationSystem(AuthenticationSystem.COGNITO)
                         .authenticated(true)
-                        .cognitoId(UUID.fromString(decodeJwt.getSubject()))
-                        .subjectName(decodeJwt.getClaim("email").asString())
-                        .fullName(decodeJwt.getClaim("name").asString())
-                        .email(decodeJwt.getClaim("email").asString())
-                        .organizationIds(
-                                decodeJwt.getClaims().containsKey(CognitoApiWrapper.ORGANIZATIONS_ATTRIBUTE_NAME)
-                                        ? Stream.of(decodeJwt.getClaim(CognitoApiWrapper.ORGANIZATIONS_ATTRIBUTE_NAME).asString().split(","))
-                                                .map(Long::valueOf)
-                                                .toList()
-                                        : null)
-                        //in CHPL each user can only have a single role, but we are supporting the possibility that
-                        //other applications could need something different
-                        .authorities(decodeJwt.getClaims().containsKey(CognitoApiWrapper.ROLES_ATTRIBUTE_NAME)
-                                        ? Stream.of(decodeJwt.getClaim(CognitoApiWrapper.ROLES_ATTRIBUTE_NAME).asString().split(","))
-                                                .map(attr -> new SimpleGrantedAuthority(attr))
-                                                .collect(Collectors.toSet())
-                                        : null)
+                        .cognitoId(UUID.fromString(decodedJwt.getSubject()))
                         .build();
             } else {
                 throw new JWTValidationException("Invalid authentication token.");

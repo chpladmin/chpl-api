@@ -1,7 +1,13 @@
 package gov.healthit.chpl.auth.authentication;
 
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.ff4j.FF4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.FeatureList;
@@ -46,11 +52,20 @@ public class JWTUserConverterFacade implements JWTUserConverter {
             user = cognitoJwtUserConverter.getAuthenticatedUser(jwt);
             if (user != null) {
                 try {
-                    //Set some values not avail in the Cognito Access Token that were avail in the CHPL token
+                    //Many values are not available from the Cognito Access Token so we have to set them
+                    //manually here from the Cognito user data
                     User cognitoUser = cognitoApiWrapper.getUserInfo(user.getCognitoId());
                     user.setEmail(cognitoUser.getEmail());
                     user.setSubjectName(cognitoUser.getEmail());
                     user.setFullName(cognitoUser.getFullName());
+                    if (!StringUtils.isEmpty(cognitoUser.getRole())) {
+                        user.setAuthorities(Stream.of(new SimpleGrantedAuthority(cognitoUser.getRole())).collect(Collectors.toSet()));
+                    }
+                    if (!CollectionUtils.isEmpty(cognitoUser.getOrganizations())) {
+                        user.setOrganizationIds(cognitoUser.getOrganizations().stream()
+                                .map(org -> org.getId())
+                                .toList());
+                    }
                 } catch (UserRetrievalException e) {
                     throw new JWTValidationException("Could not locate the Cognito user id");
                 }
