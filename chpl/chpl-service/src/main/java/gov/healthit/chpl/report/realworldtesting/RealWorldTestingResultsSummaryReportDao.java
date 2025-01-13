@@ -87,7 +87,7 @@ public class RealWorldTestingResultsSummaryReportDao extends BaseDAOImpl {
         return null;
     }
 
-    private List<RealWorldTestingResultsSummaryReportEntity> getEntitiesByRealWorldTestingYear(Long testingYear){
+    private List<RealWorldTestingResultsSummaryReportEntity> getEntitiesByRealWorldTestingYear(Long testingYear) {
         return entityManager.createQuery(
                 "from RealWorldTestingResultsSummaryReportEntity rwtrs "
                 + "where (NOT deleted = true) "
