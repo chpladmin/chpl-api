@@ -8,12 +8,7 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.developer.search.DeveloperSearchResult;
 import gov.healthit.chpl.report.attestation.AttestationReportService;
-import gov.healthit.chpl.report.criteriaattribute.StandardListingReport;
-import gov.healthit.chpl.report.criteriaattribute.StandardReport;
-import gov.healthit.chpl.report.criteriaattribute.StandardReportService;
-import gov.healthit.chpl.report.criteriaattribute.TestToolListingReport;
-import gov.healthit.chpl.report.criteriaattribute.TestToolReport;
-import gov.healthit.chpl.report.criteriaattribute.TestToolReportService;
+import gov.healthit.chpl.report.criteriaattribute.CriteriaAttributeReportService;
 import gov.healthit.chpl.report.criteriamigrationreport.CriteriaMigrationReportDenormalized;
 import gov.healthit.chpl.report.criteriamigrationreport.CriteriaMigrationReportService;
 import gov.healthit.chpl.report.developer.DeveloperReportsService;
@@ -48,13 +43,13 @@ public class ReportDataManager {
     private DeveloperReportsService developerReportsService;
     private ProductReportsService productReportsService;
     private ListingReportsService listingReportsService;
-    private TestToolReportService testToolReportService;
-    private ServiceBaseUrlListReportService serviceBaseUrlListReportService;
-    private StandardReportService standardReportService;
     private DirectReviewReportsService directReviewReportsService;
     private AttestationReportService attestationReportService;
     private ReportMetadataDAO reportMetadataDAO;
+    private CriteriaAttributeReportService criteriaAttributeReportService;
+    private ServiceBaseUrlListReportService serviceBaseUrlListReportService;
     private RealWorldTestingReportDataService realWorldTestingReportDataService;
+
 
 
     @Autowired
@@ -63,12 +58,11 @@ public class ReportDataManager {
             SurveillanceReportsService surveillanceReportsService,
             ProductReportsService productReportsService,
             ListingReportsService listingReportsService,
-            TestToolReportService testToolReportService,
             DirectReviewReportsService directReviewReportsService,
             AttestationReportService attestationReportService,
             ReportMetadataDAO reportMetadataDAO,
+            CriteriaAttributeReportService criteriaAttributeReportService,
             ServiceBaseUrlListReportService serviceBaseUrlListReportService,
-            StandardReportService standardReportService,
             RealWorldTestingReportDataService realWorldTestingReportDataService) {
 
         this.criteriaMigrationReportService = criteriaMigrationReportService;
@@ -76,12 +70,12 @@ public class ReportDataManager {
         this.surveillanceReportsService = surveillanceReportsService;
         this.productReportsService = productReportsService;
         this.listingReportsService = listingReportsService;
-        this.testToolReportService = testToolReportService;
         this.serviceBaseUrlListReportService = serviceBaseUrlListReportService;
-        this.standardReportService = standardReportService;
         this.directReviewReportsService = directReviewReportsService;
         this.attestationReportService = attestationReportService;
         this.reportMetadataDAO = reportMetadataDAO;
+        this.criteriaAttributeReportService = criteriaAttributeReportService;
+        this.serviceBaseUrlListReportService = serviceBaseUrlListReportService;
         this.realWorldTestingReportDataService = realWorldTestingReportDataService;
     }
 
@@ -256,32 +250,18 @@ public class ReportDataManager {
     }
 
     @Synchronized("lock")
-    public List<TestToolReport> getTestToolReports() {
-        return testToolReportService.getTestToolReports();
+    public DirectReviewCounts getDirectReviewCounts() {
+        return directReviewReportsService.getDirectReviewCounts();
     }
 
     @Synchronized("lock")
-    public List<TestToolListingReport> getTestToolListingReports() {
-        return testToolReportService.getTestToolListingReports();
+    public CriteriaAttributeReportService getCriteriaAttributeAttributeService() {
+        return criteriaAttributeReportService;
     }
 
     @Synchronized("lock")
     public List<UrlUptimeMonitorEx> getUrlUptimeMonitors() {
         return serviceBaseUrlListReportService.getUrlUptimeMonitors();
-    }
-
-    public List<StandardReport> getStandardReports() {
-        return standardReportService.getStandardReports();
-    }
-
-    @Synchronized("lock")
-    public List<StandardListingReport> getStandardListingReports() {
-        return standardReportService.getStandardListingReports();
-    }
-
-    @Synchronized("lock")
-    public DirectReviewCounts getDirectReviewCounts() {
-        return directReviewReportsService.getDirectReviewCounts();
     }
 
     @Synchronized("lock")

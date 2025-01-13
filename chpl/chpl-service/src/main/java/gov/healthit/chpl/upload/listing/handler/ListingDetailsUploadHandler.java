@@ -6,17 +6,22 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.csv.CSVRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.CertificationResult;
+import gov.healthit.chpl.domain.CertificationStatus;
+import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.CertifiedProductTestingLab;
 import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.ProductVersion;
 import gov.healthit.chpl.domain.TestingLab;
+import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.upload.listing.ListingUploadHandlerUtil;
 import gov.healthit.chpl.upload.listing.ListingUploadHeadingUtil.Heading;
 import jakarta.validation.ValidationException;
@@ -95,6 +100,10 @@ public class ListingDetailsUploadHandler {
             .build();
 
         listing.setSed(sedUploadHandler.parseAsSed(headingRecord, listingRecords, listing));
+        listing.setCertificationEvents(Stream.of(CertificationStatusEvent.builder()
+                .eventDate(listing.getCertificationDate())
+                .status(CertificationStatus.builder().name(CertificationStatusType.Active.getName()).build())
+                .build()).collect(Collectors.toList()));
 
         //add cert result data
         List<CertificationResult> certResultList = new ArrayList<CertificationResult>();
