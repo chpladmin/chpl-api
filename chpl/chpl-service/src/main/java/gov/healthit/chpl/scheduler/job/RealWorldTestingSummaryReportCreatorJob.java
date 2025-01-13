@@ -87,7 +87,8 @@ public class RealWorldTestingSummaryReportCreatorJob extends  QuartzJob {
         rwtReportService.getResultsStartDate(rwtEligibilityYear).datesUntil(LocalDate.now()).forEach(reportDate -> {
             certificationBodyManager.getAllActive().forEach(acb -> {
                 Long eligibleListingCountForAcb = reportRows.stream()
-                        .filter(row -> row.getAcbName().equals(acb.getName()))
+                        .filter(row -> row.getAcbName().equals(acb.getName())
+                                && isListingValidAsOfDate(row.getCertificationDate(), reportDate))
                         .collect(Collectors.counting());
 
                 rwtSummaryReports.add(RealWorldTestingSummaryReport.builder()
