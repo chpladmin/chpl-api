@@ -145,7 +145,7 @@ public class SurveillanceManager extends SecuredManager {
             CacheNames.COLLECTIONS_LISTINGS
     }, allEntries = true)
     @ListingSearchCacheRefresh
-    @ListingStoreRemove(removeBy = RemoveBy.LISTING_ID, id = "#survToInsert.certifiedProduct.id")
+    @ListingStoreRemove(removeBy = RemoveBy.LISTING_ID, id = "#certifiedProductId")
     public Long createSurveillance(Long certifiedProductId, Surveillance survToInsert) throws EntityRetrievalException, ValidationException, UserPermissionRetrievalException, ActivityException {
         CertifiedProductSearchDetails beforeListing = cpDetailsManager.getCertifiedProductDetails(certifiedProductId);
 
@@ -173,7 +173,7 @@ public class SurveillanceManager extends SecuredManager {
             CacheNames.COMPLAINTS
     }, allEntries = true)
     @ListingSearchCacheRefresh
-    @ListingStoreRemove(removeBy = RemoveBy.LISTING_ID, id = "#survToUpdate.certifiedProduct.id")
+    @ListingStoreRemove(removeBy = RemoveBy.LISTING_ID, id = "#certifiedProductId")
     public void updateSurveillance(Long certifiedProductId, Surveillance survToUpdate) throws EntityRetrievalException, ValidationException, ActivityException {
         CertifiedProductSearchDetails beforeListing = cpDetailsManager.getCertifiedProductDetails(certifiedProductId);
 
@@ -198,7 +198,7 @@ public class SurveillanceManager extends SecuredManager {
             CacheNames.COLLECTIONS_LISTINGS, CacheNames.COMPLAINTS, CacheNames.QUESTIONABLE_ACTIVITIES
     }, allEntries = true)
     @ListingSearchCacheRefresh
-    @ListingStoreRemove(removeBy = RemoveBy.LISTING_ID, id = "#survToDelete.certifiedProduct.id")
+    @ListingStoreRemove(removeBy = RemoveBy.LISTING_ID, id = "#certifiedProductId")
     public void deleteSurveillance(Long certifiedProductId, Surveillance survToDelete, String reason)
             throws MissingReasonException, InvalidArgumentsException, EntityRetrievalException, ActivityException {
 

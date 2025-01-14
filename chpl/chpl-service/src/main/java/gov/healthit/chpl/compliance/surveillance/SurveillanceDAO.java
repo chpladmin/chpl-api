@@ -40,7 +40,6 @@ public class SurveillanceDAO extends BaseDAOImpl {
     private static final String SURVEILLANCE_FULL_HQL =
             "SELECT DISTINCT surv "
             + "FROM SurveillanceEntity surv "
-            + "JOIN FETCH surv.certifiedProduct "
             + "JOIN FETCH surv.surveillanceType "
             + "LEFT OUTER JOIN FETCH surv.surveilledRequirements reqs "
             + "LEFT OUTER JOIN FETCH reqs.requirementType "
@@ -274,8 +273,10 @@ public class SurveillanceDAO extends BaseDAOImpl {
     public SurveillanceEntity getSurveillanceByCertifiedProductAndFriendlyId(Long certifiedProductId,
             String survFriendlyId) {
         Query query = entityManager.createQuery(
-                "from SurveillanceEntity surv " + "where surv.friendlyId = :friendlyId "
-                        + "and surv.certifiedProductId = :cpId " + "and surv.deleted <> true",
+                "from SurveillanceEntity surv "
+                        + "where surv.friendlyId = :friendlyId "
+                        + "and surv.certifiedProductId = :cpId "
+                        + "and surv.deleted <> true",
                 SurveillanceEntity.class);
         query.setParameter("friendlyId", survFriendlyId);
         query.setParameter("cpId", certifiedProductId);
