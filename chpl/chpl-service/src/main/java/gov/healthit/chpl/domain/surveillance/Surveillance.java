@@ -14,10 +14,12 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import gov.healthit.chpl.activity.ActivityExclude;
+import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseField;
 import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.util.LocalDateDeserializer;
 import gov.healthit.chpl.util.LocalDateSerializer;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.persistence.Transient;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -39,6 +41,11 @@ public class Surveillance implements Serializable {
     @Schema(description = "The user-friendly ID of this surveillance relative to a listing. Ex: SURV01")
     private String friendlyId;
 
+    @Transient
+    private Long certifiedProductId;
+
+    @Deprecated
+    @DeprecatedResponseField(message = "This field will be removed.", removalDate = "2025-08-01")
     @Schema(description = "The listing under surveillance")
     private CertifiedProduct certifiedProduct;
 
@@ -172,11 +179,11 @@ public class Surveillance implements Serializable {
                 && this.randomizedSitesUsed.intValue() != anotherSurveillance.randomizedSitesUsed.intValue()) {
             return false;
         }
-        if (this.certifiedProduct == null && anotherSurveillance.certifiedProduct != null
-                || this.certifiedProduct != null && anotherSurveillance.certifiedProduct == null) {
+        if (this.certifiedProductId == null && anotherSurveillance.certifiedProductId != null
+                || this.certifiedProductId != null && anotherSurveillance.certifiedProductId == null) {
             return false;
-        } else if (this.certifiedProduct != null && anotherSurveillance.certifiedProduct != null
-                && !this.certifiedProduct.matches(anotherSurveillance.certifiedProduct)) {
+        } else if (this.certifiedProductId != null && anotherSurveillance.certifiedProductId != null
+                && !this.certifiedProductId.equals(anotherSurveillance.certifiedProductId)) {
             return false;
         }
         if (this.type == null && anotherSurveillance.type != null

@@ -16,7 +16,7 @@ import lombok.extern.log4j.Log4j2;
 
 @Component
 @Log4j2
-public class SurveillanceNonconformityReviewer implements Reviewer {
+public class SurveillanceNonconformityReviewer implements ReadReviewer {
     private ErrorMessageUtil msgUtil;
 
     @Autowired

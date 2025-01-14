@@ -4,22 +4,23 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.compliance.surveillance.SurveillanceDAO;
-import gov.healthit.chpl.compliance.surveillance.entity.SurveillanceEntity;
+import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
-import gov.healthit.chpl.domain.surveillance.Surveillance;
+import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.permissions.domains.ActionPermissions;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 @Component("surveillanceDeleteActionPermissions")
 public class DeleteActionPermissions extends ActionPermissions {
-    private SurveillanceDAO survDao;
+    private CertifiedProductDAO cpDao;
     private ErrorMessageUtil msgUtil;
 
     @Autowired
-    public DeleteActionPermissions(SurveillanceDAO survDao, ErrorMessageUtil msgUtil) {
-        this.survDao = survDao;
+    public DeleteActionPermissions(CertifiedProductDAO cpDao, ErrorMessageUtil msgUtil) {
+        this.cpDao = cpDao;
         this.msgUtil = msgUtil;
     }
 
@@ -30,34 +31,38 @@ public class DeleteActionPermissions extends ActionPermissions {
 
     @Override
     public boolean hasAccess(Object obj) {
-        if (!(obj instanceof Surveillance)) {
+        if (!(obj instanceof Long)) {
             return false;
         } else if (getResourcePermissions().isUserRoleAdmin()) {
             return true;
         } else if (getResourcePermissions().isUserRoleAcbAdmin()) {
-            Surveillance surv = (Surveillance) obj;
-            SurveillanceEntity survEntity = null;
+            Long listingId = (Long) obj;
+            CertifiedProductDTO listing = null;
             try {
-                survEntity = survDao.getSurveillanceById(surv.getId());
+                if (listingId != null) {
+                    listing = cpDao.getById(listingId);
+                }
             } catch (EntityRetrievalException ex) {
-                return false;
+                LOGGER.error("Could not find listing with ID " + listingId);
             }
 
-            if (isListing2014Edition(survEntity)) {
-              //done instead of returning false to get a more customized message than Access is denied.
-                throw new AccessDeniedException(msgUtil.getMessage(
-                        "surveillance.noDelete2014", survEntity.getFriendlyId()));
+            if (isListing2014Edition(listing)) {
+                throw new AccessDeniedException(msgUtil.getMessage("surveillance.noCreate2014"));
             }
-            return isAcbValidForCurrentUser(survEntity.getCertifiedProduct().getCertificationBodyId());
+            if (listing != null && listing.getCertificationBodyId() != null
+                    && isAcbValidForCurrentUser(listing.getCertificationBodyId())) {
+                return true;
+            }
+            return false;
         } else {
             return false;
         }
     }
 
-    private boolean isListing2014Edition(SurveillanceEntity surv) {
-        return surv.getCertifiedProduct() != null
-                && surv.getCertifiedProduct().getCertificationEditionId() != null
-                && surv.getCertifiedProduct().getCertificationEditionId().equals(
+    private boolean isListing2014Edition(CertifiedProductDTO listing) {
+        return listing != null
+                && listing.getCertificationEditionId() != null
+                && listing.getCertificationEditionId().equals(
                         CertificationEditionConcept.CERTIFICATION_EDITION_2014.getId());
     }
 }

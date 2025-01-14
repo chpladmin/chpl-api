@@ -6,6 +6,15 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.hibernate.annotations.Where;
+
+import gov.healthit.chpl.dao.CertifiedProductDAO;
+import gov.healthit.chpl.domain.CertifiedProduct;
+import gov.healthit.chpl.domain.surveillance.Surveillance;
+import gov.healthit.chpl.domain.surveillance.SurveillanceType;
+import gov.healthit.chpl.entity.EntityAudit;
+import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.service.CertificationCriterionService;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -17,17 +26,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-
-import org.hibernate.annotations.Where;
-
-import gov.healthit.chpl.dao.CertifiedProductDAO;
-import gov.healthit.chpl.domain.CertifiedProduct;
-import gov.healthit.chpl.domain.surveillance.Surveillance;
-import gov.healthit.chpl.domain.surveillance.SurveillanceType;
-import gov.healthit.chpl.entity.EntityAudit;
-import gov.healthit.chpl.entity.listing.CertifiedProductEntity;
-import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.service.CertificationCriterionService;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -56,10 +54,6 @@ public class SurveillanceEntity extends EntityAudit {
 
     @Column(name = "certified_product_id")
     private Long certifiedProductId;
-
-    @OneToOne(optional = true, fetch = FetchType.LAZY)
-    @JoinColumn(name = "certified_product_id", insertable = false, updatable = false)
-    private CertifiedProductEntity certifiedProduct;
 
     @Column(name = "start_date")
     private LocalDate startDate;
@@ -96,6 +90,7 @@ public class SurveillanceEntity extends EntityAudit {
                             .id(this.getSurveillanceType().getId())
                             .name(this.getSurveillanceType().getName())
                             .build())
+                    .certifiedProductId(this.getCertifiedProductId())
                     .certifiedProduct(new CertifiedProduct(certifiedProductDAO.getDetailsById(this.getCertifiedProductId())))
                     .requirements(this.getSurveilledRequirements().stream()
                             .map(e -> e.toDomain(certificationCriterionService))

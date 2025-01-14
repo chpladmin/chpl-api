@@ -19,7 +19,7 @@ import lombok.extern.log4j.Log4j2;
 
 @Component
 @Log4j2
-public class SurveillanceRequirementReviewer implements Reviewer {
+public class SurveillanceRequirementReviewer implements ReadReviewer {
     private static final Long NOT_FOUND = -1L;
     private SurveillanceDAO survDao;
     private ErrorMessageUtil msgUtil;
@@ -35,8 +35,7 @@ public class SurveillanceRequirementReviewer implements Reviewer {
     @Override
     public void review(Surveillance surv) {
         if (surv.getRequirements() == null || surv.getRequirements().size() == 0) {
-            surv.getErrorMessages().add(msgUtil.getMessage("surveillance.requirementIsRequiredForProduct",
-                    surv.getCertifiedProduct().getChplProductNumber()));
+            surv.getErrorMessages().add(msgUtil.getMessage("surveillance.requirementIsRequiredForProduct"));
             return;
         }
         surv.getRequirements().forEach(req -> {
