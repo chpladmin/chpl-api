@@ -263,8 +263,7 @@ public class DeveloperManager extends SecuredManager {
             CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED,
             CacheNames.COLLECTIONS_DEVELOPERS,
             CacheNames.GET_DECERTIFIED_DEVELOPERS,
-            CacheNames.QUESTIONABLE_ACTIVITIES,
-            CacheNames.COLLECTIONS_LISTINGS
+            CacheNames.QUESTIONABLE_ACTIVITIES
     }, allEntries = true)
     @ListingStoreRemove(removeBy = RemoveBy.DEVELOPER_ID, id = "#updatedDev.id")
     @ListingSearchCacheRefresh
@@ -352,8 +351,7 @@ public class DeveloperManager extends SecuredManager {
             CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED,
             CacheNames.COLLECTIONS_DEVELOPERS,
             CacheNames.GET_DECERTIFIED_DEVELOPERS,
-            CacheNames.QUESTIONABLE_ACTIVITIES,
-            CacheNames.COLLECTIONS_LISTINGS
+            CacheNames.QUESTIONABLE_ACTIVITIES
     }, allEntries = true)
     public ChplOneTimeTrigger join(Long owningDeveloperId, List<Long> joiningDeveloperIds)
             throws EntityRetrievalException, JsonProcessingException, EntityCreationException,
@@ -389,8 +387,7 @@ public class DeveloperManager extends SecuredManager {
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).DEVELOPER, "
             + "T(gov.healthit.chpl.permissions.domains.DeveloperDomainPermissions).SPLIT, #oldDeveloper)")
     @CacheEvict(value = {
-            CacheNames.QUESTIONABLE_ACTIVITIES,
-            CacheNames.COLLECTIONS_LISTINGS
+            CacheNames.QUESTIONABLE_ACTIVITIES
     }, allEntries = true)
     @ListingSearchCacheRefresh
     @ListingStoreRemove(removeBy = RemoveBy.DEVELOPER_ID, id = "#oldDeveloper.id")

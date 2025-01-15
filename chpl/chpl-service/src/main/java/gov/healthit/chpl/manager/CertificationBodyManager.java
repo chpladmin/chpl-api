@@ -90,7 +90,6 @@ public class CertificationBodyManager extends SecuredManager {
     @CacheEvict(value = {
             CacheNames.GET_DECERTIFIED_DEVELOPERS,
             CacheNames.COLLECTIONS_DEVELOPERS,
-            CacheNames.COLLECTIONS_LISTINGS,
             CacheNames.COMPLAINTS
     }, allEntries = true)
     @ListingStoreRemove(removeBy = RemoveBy.ACB_ID, id = "#acb.id")
@@ -139,9 +138,6 @@ public class CertificationBodyManager extends SecuredManager {
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CERTIFICATION_BODY, "
             + "T(gov.healthit.chpl.permissions.domains.CertificationBodyDomainPermissions).RETIRE)")
-    @CacheEvict(value = {
-            CacheNames.COLLECTIONS_LISTINGS
-    }, allEntries = true)
     @ListingStoreRemove(removeBy = RemoveBy.ACB_ID, id = "#acb.id")
     @ListingSearchCacheRefresh
     public CertificationBody retire(CertificationBody acb) throws EntityRetrievalException, SchedulerException, ValidationException, ActivityException {
@@ -165,9 +161,6 @@ public class CertificationBodyManager extends SecuredManager {
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CERTIFICATION_BODY, "
             + "T(gov.healthit.chpl.permissions.domains.CertificationBodyDomainPermissions).UNRETIRE)")
-    @CacheEvict(value = {
-            CacheNames.COLLECTIONS_LISTINGS
-    }, allEntries = true)
     @ListingSearchCacheRefresh
     @ListingStoreRemove(removeBy = RemoveBy.ACB_ID, id = "#acbId")
     public CertificationBody unretire(Long acbId) throws EntityRetrievalException, ActivityException {

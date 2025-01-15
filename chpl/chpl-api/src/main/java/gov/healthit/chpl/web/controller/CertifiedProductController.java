@@ -732,7 +732,7 @@ public class CertifiedProductController {
 
         CertifiedProductSearchDetails changedProduct = cpdManager.getCertifiedProductDetails(updatedListing.getId());
         HttpHeaders responseHeaders = new HttpHeaders();
-        responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
+        responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_SEARCH);
         if (!changedProduct.getChplProductNumber().equals(existingListing.getChplProductNumber())) {
             responseHeaders.set("CHPL-Id-Changed", existingListing.getChplProductNumber());
         }
@@ -759,7 +759,7 @@ public class CertifiedProductController {
         Long insertedSurv = null;
         try {
             insertedSurv = survManager.createSurveillance(certifiedProductId, survToInsert);
-            responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
+            responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_SEARCH);
         } catch (ValidationException ex) {
             throw ex;
         }
@@ -793,7 +793,7 @@ public class CertifiedProductController {
         HttpHeaders responseHeaders = new HttpHeaders();
         try {
             survManager.updateSurveillance(certifiedProductId, survToUpdate);
-            responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
+            responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_SEARCH);
         } catch (ValidationException ex) {
             throw ex;
         }
@@ -827,7 +827,7 @@ public class CertifiedProductController {
         HttpHeaders responseHeaders = new HttpHeaders();
         // delete it
         survManager.deleteSurveillance(certifiedProductId, survToDelete, requestBody.getReason());
-        responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
+        responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_SEARCH);
         return new ResponseEntity<BooleanResult>(new BooleanResult(true), responseHeaders, HttpStatus.OK);
     }
 

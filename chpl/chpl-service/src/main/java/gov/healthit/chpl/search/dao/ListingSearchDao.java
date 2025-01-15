@@ -18,7 +18,6 @@ import org.springframework.stereotype.Repository;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.IdNamePair;
 import gov.healthit.chpl.exception.EntityRetrievalException;
-import gov.healthit.chpl.search.domain.CertifiedProductSearchResult;
 import gov.healthit.chpl.search.domain.ListingSearchResult;
 import gov.healthit.chpl.search.domain.ListingSearchResult.CQMSearchResult;
 import gov.healthit.chpl.search.domain.ListingSearchResult.CertificationCriterionSearchResult;
@@ -133,9 +132,9 @@ public class ListingSearchDao extends BaseDAOImpl {
                 .cqmsMet(convertToSetOfCqms(entity.getCqmsMet(), STANDARD_VALUE_SPLIT_CHAR))
                 .previousChplProductNumbers(convertToSetOfStrings(entity.getPreviousChplProductNumbers(), entity.getChplProductNumber(), STANDARD_VALUE_SPLIT_CHAR))
                 .previousDevelopers(convertToSetOfProductOwners(entity.getPreviousDevelopers(), ListingSearchEntity.SMILEY_SPLIT_CHAR))
-                .apiDocumentation(convertToSetOfCriteriaWithStringFields(entity.getCriteriaWithApiDocumentation(), CertifiedProductSearchResult.SMILEY_SPLIT_CHAR))
+                .apiDocumentation(convertToSetOfCriteriaWithStringFields(entity.getCriteriaWithApiDocumentation(), ListingSearchEntity.SMILEY_SPLIT_CHAR))
                 .serviceBaseUrlList(convertToCriterionWithStringField(entity.getCriteriaWithServiceBaseUrlList()))
-                .svaps(convertToSetOfCriteriaWithLongFields(entity.getCriteriaWithSvap(), CertifiedProductSearchResult.SMILEY_SPLIT_CHAR))
+                .svaps(convertToSetOfCriteriaWithLongFields(entity.getCriteriaWithSvap(), ListingSearchEntity.SMILEY_SPLIT_CHAR))
                 .build();
     }
 
@@ -292,7 +291,7 @@ public class ListingSearchDao extends BaseDAOImpl {
             return null;
         }
 
-        String[] criteriaSplitFromStringData = value.split(CertifiedProductSearchResult.FROWNEY_SPLIT_CHAR);
+        String[] criteriaSplitFromStringData = value.split(ListingSearchEntity.FROWNEY_SPLIT_CHAR);
         if (criteriaSplitFromStringData == null || criteriaSplitFromStringData.length == 0) {
             throw new EntityRetrievalException("Unable to parse criteria with string value from '" + value + "'.");
         }
@@ -328,7 +327,7 @@ public class ListingSearchDao extends BaseDAOImpl {
                 return null;
             }
 
-            String[] criteriaSplitFromData = value.split(CertifiedProductSearchResult.FROWNEY_SPLIT_CHAR);
+            String[] criteriaSplitFromData = value.split(ListingSearchEntity.FROWNEY_SPLIT_CHAR);
             if (criteriaSplitFromData == null || criteriaSplitFromData.length != 2) {
                 throw new EntityRetrievalException("Unable to parse criteria with long value from '" + value + "'.");
             }

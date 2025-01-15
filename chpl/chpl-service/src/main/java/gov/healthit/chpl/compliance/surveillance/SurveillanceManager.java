@@ -141,9 +141,6 @@ public class SurveillanceManager extends SecuredManager {
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SURVEILLANCE, "
             + "T(gov.healthit.chpl.permissions.domains.SurveillanceDomainPermissions).CREATE, #certifiedProductId)")
-    @CacheEvict(value = {
-            CacheNames.COLLECTIONS_LISTINGS
-    }, allEntries = true)
     @ListingSearchCacheRefresh
     @ListingStoreRemove(removeBy = RemoveBy.LISTING_ID, id = "#certifiedProductId")
     public Long createSurveillance(Long certifiedProductId, Surveillance survToInsert) throws EntityRetrievalException, ValidationException, UserPermissionRetrievalException, ActivityException {
@@ -169,7 +166,6 @@ public class SurveillanceManager extends SecuredManager {
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SURVEILLANCE, "
             + "T(gov.healthit.chpl.permissions.domains.SurveillanceDomainPermissions).UPDATE, #certifiedProductId)")
     @CacheEvict(value = {
-            CacheNames.COLLECTIONS_LISTINGS,
             CacheNames.COMPLAINTS
     }, allEntries = true)
     @ListingSearchCacheRefresh
@@ -195,7 +191,7 @@ public class SurveillanceManager extends SecuredManager {
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SURVEILLANCE, "
             + "T(gov.healthit.chpl.permissions.domains.SurveillanceDomainPermissions).DELETE, #certifiedProductId)")
     @CacheEvict(value = {
-            CacheNames.COLLECTIONS_LISTINGS, CacheNames.COMPLAINTS, CacheNames.QUESTIONABLE_ACTIVITIES
+            CacheNames.COMPLAINTS, CacheNames.QUESTIONABLE_ACTIVITIES
     }, allEntries = true)
     @ListingSearchCacheRefresh
     @ListingStoreRemove(removeBy = RemoveBy.LISTING_ID, id = "#certifiedProductId")

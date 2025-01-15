@@ -74,7 +74,7 @@ public class SurveillanceController {
         Long insertedSurv = null;
         try {
             insertedSurv = survManager.createSurveillance(survToInsert.getCertifiedProduct().getId(), survToInsert);
-            responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
+            responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_SEARCH);
         } catch (ValidationException ex) {
             throw ex;
         }
@@ -105,7 +105,7 @@ public class SurveillanceController {
         HttpHeaders responseHeaders = new HttpHeaders();
         try {
             survManager.updateSurveillance(survToUpdate.getCertifiedProduct().getId(), survToUpdate);
-            responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
+            responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_SEARCH);
         } catch (ValidationException ex) {
             throw ex;
         }
@@ -141,7 +141,7 @@ public class SurveillanceController {
         HttpHeaders responseHeaders = new HttpHeaders();
         // delete it
         survManager.deleteSurveillance(survToDelete.getCertifiedProduct().getId(), survToDelete, requestBody.getReason());
-        responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
+        responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_SEARCH);
         return new ResponseEntity<String>("{\"success\" : true}", responseHeaders, HttpStatus.OK);
     }
 

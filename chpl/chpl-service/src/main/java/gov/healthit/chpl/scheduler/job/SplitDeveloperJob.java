@@ -251,7 +251,6 @@ public class SplitDeveloperJob extends QuartzJob {
         cacheManager.getCache(CacheNames.ALL_DEVELOPERS).invalidate();
         cacheManager.getCache(CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED).invalidate();
         cacheManager.getCache(CacheNames.COLLECTIONS_DEVELOPERS).invalidate();
-        cacheManager.getCache(CacheNames.COLLECTIONS_LISTINGS).invalidate();
         cacheManager.getCache(CacheNames.GET_DECERTIFIED_DEVELOPERS).invalidate();
     }
 
