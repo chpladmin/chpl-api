@@ -1,0 +1,503 @@
+{
+	"info": {
+		"name": "report-data/criteria-attributes",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "GET /report-data/criteria-attributes/standards - 200 status and response fields validation",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"/report-data/criteria-attributes/standards should retrieve the data used to generate the Standard Criteria Attribute Summary report in response and return 200 status\", function () {\r",
+							"    pm.expect(pm.response.text()).to.include(\"standard\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"regulatoryTextCitation\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"requiredDay\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"groupName\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"retired\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "API-Key",
+						"value": "{{apiKey}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/rest/report-data/criteria-attributes/standards",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"rest",
+						"report-data",
+						"criteria-attributes",
+						"standards"
+					]
+				},
+				"description": "GET /report-data/standards - 200 status and response fields validation"
+			},
+			"response": []
+		},
+		{
+			"name": "GET /report-data/criteria-attributes/standards/listings - 200 status and response fields validation",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"/report-data/criteria-attributes/standards/listings should retrieve the data used to generate the Standard Criteria Attribute Listing report in response and return 200 status\", function () {\r",
+							"    pm.expect(pm.response.text()).to.include(\"chplProductNumber\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"status\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"standard\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"regulatoryTextCitation\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"requiredDay\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"groupName\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"retired\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "API-Key",
+						"value": "{{apiKey}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/rest/report-data/criteria-attributes/standards/listings",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"rest",
+						"report-data",
+						"criteria-attributes",
+						"standards",
+						"listings"
+					]
+				},
+				"description": "GET /report-data/standards-listing - 200 status and response fields validation"
+			},
+			"response": []
+		},
+		{
+			"name": "GET /report-data/criteria-attributes/functionalities-tested",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"/report-data/criteria-attributes/functionalities-tested should retrieve the data used to generate the Functionalities Tested Attribute in response and return 200 status\", function () {\r",
+							"    pm.expect(pm.response.text()).to.include(\"id\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"value\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"regulatoryTextCitation\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"startDay\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"requiredDay\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "API-Key",
+						"value": "{{apiKey}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/rest/report-data/criteria-attributes/functionalities-tested",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"rest",
+						"report-data",
+						"criteria-attributes",
+						"functionalities-tested"
+					]
+				},
+				"description": "GET /report-data/criteria-attributes/functionalities-tested - 200 status and response fields validation"
+			},
+			"response": []
+		},
+		{
+			"name": "GET /report-data/criteria-attributes/functionalities-tested/listings - 200 status and valid response",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"/report-data/criteria-attributes/functionalities-tested/listings should retrieve the data used to generate the Functionalities Tested Attribute in response and return 200 status\", function () {\r",
+							"    pm.expect(pm.response.text()).to.include(\"chplProductNumber\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"criterion\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"companionGuideLink\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"status\");\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "API-Key",
+						"value": "{{apiKey}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/rest/report-data/criteria-attributes/functionalities-tested/listings",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"rest",
+						"report-data",
+						"criteria-attributes",
+						"functionalities-tested",
+						"listings"
+					]
+				},
+				"description": "GET /report-data/criteria-attributes/functionalities-tested/listings - 200 status and valid response"
+			},
+			"response": []
+		},
+		{
+			"name": "GET /report-data/criteria-attributes/svaps - 200 status and valid response",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"/report-data/criteria-attributes/svaps should retrieve the data used to generate the SVAPs Attribute in response and return 200 status\", function () {\r",
+							"    pm.expect(pm.response.text()).to.include(\"svapId\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"regulatoryTextCitation\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"approvedStandardVersion\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"replaced\");\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "API-Key",
+						"value": "{{apiKey}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/rest/report-data/criteria-attributes/svaps",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"rest",
+						"report-data",
+						"criteria-attributes",
+						"svaps"
+					]
+				},
+				"description": "GET /report-data/criteria-attributes/svaps - 200 status and valid response"
+			},
+			"response": []
+		},
+		{
+			"name": "GET /report-data/criteria-attributes/optional-standards",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"/report-data/criteria-attributes/optional-standards should retrieve the data used to generate the optional-standards Attribute in response and return 200 status\", function () {\r",
+							"    pm.expect(pm.response.text()).to.include(\"id\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"citation\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"description\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"displayValue\");\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "API-Key",
+						"value": "{{apiKey}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/rest/report-data/criteria-attributes/optional-standards",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"rest",
+						"report-data",
+						"criteria-attributes",
+						"optional-standards"
+					]
+				},
+				"description": "GET /report-data/criteria-attributes/optional-standards - 200 status and valid response"
+			},
+			"response": []
+		},
+		{
+			"name": "GET /report-data/criteria-attributes/test-data",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"/report-data/criteria-attributes/test data should retrieve the data used to generate the test data Attribute in response and return 200 status\", function () {\r",
+							"    pm.expect(pm.response.text()).to.include(\"id\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"name\");\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "API-Key",
+						"value": "{{apiKey}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/rest/report-data/criteria-attributes/test-data",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"rest",
+						"report-data",
+						"criteria-attributes",
+						"test-data"
+					]
+				},
+				"description": "GET /report-data/criteria-attributes/test-data - 200 status and valid response"
+			},
+			"response": []
+		},
+		{
+			"name": "GET /report-data/criteria-attributes/privacy-and-security-frameworks",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"/report-data/criteria-attributes/privacy-and-security-frameworks should retrieve the data used to generate the privacy and security framework Attribute in response and return 200 status\", function () {\r",
+							"    pm.expect(pm.response.text()).to.include(\"privacyAndSecurityFramework\");\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "API-Key",
+						"value": "{{apiKey}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/rest/report-data/criteria-attributes/privacy-and-security-frameworks",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"rest",
+						"report-data",
+						"criteria-attributes",
+						"privacy-and-security-frameworks"
+					]
+				},
+				"description": "GET /report-data/criteria-attributes/privacy-and-security-frameworks - 200 status and valid response"
+			},
+			"response": []
+		},
+		{
+			"name": "GET /report-data/criteria-attributes/conformance-methods",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"/report-data/criteria-attributes/conformance-methods should retrieve the data used to generate the Conformance Method Attribute in response and return 200 status\", function () {\r",
+							"    pm.expect(pm.response.text()).to.include(\"id\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"name\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"removalDate\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"removed\");\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "API-Key",
+						"value": "{{apiKey}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/rest/report-data/criteria-attributes/conformance-methods",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"rest",
+						"report-data",
+						"criteria-attributes",
+						"conformance-methods"
+					]
+				},
+				"description": "GET /report-data/criteria-attributes/conformance-methods - 200 status and valid response"
+			},
+			"response": []
+		},
+		{
+			"name": "GET /report-data/criteria-attributes/code-sets",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"/report-data/criteria-attributes/code-sets should retrieve the data used to generate the Code Sets Attribute in response and return 200 status\", function () {\r",
+							"    pm.expect(pm.response.text()).to.include(\"id\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"name\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"requiredDay\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"startDay\");\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "API-Key",
+						"value": "{{apiKey}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/rest/report-data/criteria-attributes/code-sets",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"rest",
+						"report-data",
+						"criteria-attributes",
+						"code-sets"
+					]
+				},
+				"description": "GET /report-data/criteria-attributes/code-sets - 200 status and valid response"
+			},
+			"response": []
+		}
+	]
+}

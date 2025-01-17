@@ -27,7 +27,7 @@ public class AdditionalSoftwareNormalizer {
         if (listing.getCertificationResults() != null && listing.getCertificationResults().size() > 0) {
             clearDataForUnattestedCriteria(listing);
             listing.getCertificationResults().stream()
-                .forEach(certResult -> populateAdditionalSoftwareIds(certResult.getAdditionalSoftware()));
+                .forEach(certResult -> normalize(certResult.getAdditionalSoftware()));
         }
     }
 
@@ -38,11 +38,29 @@ public class AdditionalSoftwareNormalizer {
             .forEach(unattestedCertResult -> unattestedCertResult.getAdditionalSoftware().clear());
     }
 
-    private void populateAdditionalSoftwareIds(List<CertificationResultAdditionalSoftware> additionalSoftwares) {
+    private void normalize(List<CertificationResultAdditionalSoftware> additionalSoftwares) {
         if (additionalSoftwares != null && additionalSoftwares.size() > 0) {
+            additionalSoftwares.stream()
+                .forEach(additionalSoftware -> setEmptyStringFieldsToNull(additionalSoftware));
+
             additionalSoftwares.stream()
                 .filter(additionalSoftware -> hasListingAsAdditionalSoftware(additionalSoftware))
                 .forEach(additionalSoftware -> populateAdditionalSoftwareId(additionalSoftware));
+        }
+    }
+
+    private void setEmptyStringFieldsToNull(CertificationResultAdditionalSoftware additionalSoftware) {
+        if (StringUtils.isEmpty(additionalSoftware.getGrouping())) {
+            additionalSoftware.setGrouping(null);
+        }
+        if (StringUtils.isEmpty(additionalSoftware.getJustification())) {
+            additionalSoftware.setJustification(null);
+        }
+        if (StringUtils.isEmpty(additionalSoftware.getVersion())) {
+            additionalSoftware.setVersion(null);
+        }
+        if (StringUtils.isEmpty(additionalSoftware.getName())) {
+            additionalSoftware.setName(null);
         }
     }
 

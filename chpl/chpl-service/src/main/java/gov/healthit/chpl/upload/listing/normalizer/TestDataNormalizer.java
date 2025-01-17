@@ -41,7 +41,21 @@ public class TestDataNormalizer {
             List<CertificationResultTestData> testDatas) {
         if (testDatas != null && testDatas.size() > 0) {
             testDatas.stream()
-                .forEach(testData -> populateTestDataId(criterion, testData));
+                .forEach(testData -> normalize(criterion, testData));
+        }
+    }
+
+    private void normalize(CertificationCriterion criterion, CertificationResultTestData testData) {
+        setEmptyStringFieldsToNull(testData);
+        populateTestDataId(criterion, testData);
+    }
+
+    private void setEmptyStringFieldsToNull(CertificationResultTestData testData) {
+        if (StringUtils.isEmpty(testData.getAlteration())) {
+            testData.setAlteration(null);
+        }
+        if (StringUtils.isEmpty(testData.getVersion())) {
+            testData.setVersion(null);
         }
     }
 

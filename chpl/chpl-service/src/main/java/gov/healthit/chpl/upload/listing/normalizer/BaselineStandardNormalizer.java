@@ -45,6 +45,7 @@ public abstract class BaselineStandardNormalizer implements CertificationResultL
 
             if (!CollectionUtils.isEmpty(criteriaWithBaselineStandardsAdded)) {
                 listing.addWarningMessage(msgUtil.getMessage("listing.criteria.baselineStandardsAdded",
+                        getStandardsCheckDate(listing),
                         Util.joinListGrammatically(criteriaWithBaselineStandardsAdded.stream()
                                 .map(criterion -> Util.formatCriteriaNumber(criterion))
                                 .collect(Collectors.toList()), "and")));

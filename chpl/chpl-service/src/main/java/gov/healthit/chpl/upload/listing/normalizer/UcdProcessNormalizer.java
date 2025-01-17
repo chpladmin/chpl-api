@@ -37,7 +37,10 @@ public class UcdProcessNormalizer {
         if (listing.getSed() != null && !CollectionUtils.isEmpty(listing.getSed().getUcdProcesses())) {
             clearDataForUnattestedCriteria(listing);
             listing.getSed().getUcdProcesses().stream()
-                .forEach(ucdProcess -> populateUcdProcessId(ucdProcess));
+                .forEach(ucdProcess -> {
+                    setEmptyStringFieldsToNull(ucdProcess);
+                    populateUcdProcessId(ucdProcess);
+                });
             findFuzzyMatchesForUnknownUcdProcesses(listing);
 
             List<CertifiedProductUcdProcess> ucdProcessesToRemove = getHopelessUcdProcesses(listing.getSed().getUcdProcesses());
@@ -79,6 +82,12 @@ public class UcdProcessNormalizer {
                     && StringUtils.isBlank(cpUcd.getDetails())
                     && StringUtils.isBlank(cpUcd.getUserEnteredName()))
                 .toList();
+    }
+
+    private void setEmptyStringFieldsToNull(CertifiedProductUcdProcess crup) {
+        if (StringUtils.isEmpty(crup.getDetails())) {
+            crup.setDetails(null);
+        }
     }
 
     private void populateUcdProcessId(CertifiedProductUcdProcess ucdProcess) {
