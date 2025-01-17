@@ -25,8 +25,22 @@ public class QmsStandardNormalizer {
     public void normalize(CertifiedProductSearchDetails listing) {
         if (listing.getQmsStandards() != null && listing.getQmsStandards().size() > 0) {
             listing.getQmsStandards().stream()
-                .forEach(qmsStandard -> populateQmsStandardId(qmsStandard));
+                .forEach(qmsStandard -> normalize(qmsStandard));
             findFuzzyMatchesForUnknownStandards(listing);
+        }
+    }
+
+    private void normalize(CertifiedProductQmsStandard qmsStandard) {
+        setEmptyStringFieldsToNull(qmsStandard);
+        populateQmsStandardId(qmsStandard);
+    }
+
+    private void setEmptyStringFieldsToNull(CertifiedProductQmsStandard qmsStandard) {
+        if (StringUtils.isEmpty(qmsStandard.getApplicableCriteria())) {
+            qmsStandard.setApplicableCriteria(null);
+        }
+        if (StringUtils.isEmpty(qmsStandard.getQmsModification())) {
+            qmsStandard.setQmsModification(null);
         }
     }
 

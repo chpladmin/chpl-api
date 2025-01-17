@@ -318,6 +318,16 @@ const reportDataControllerTests = {
   },
 };
 
+const reportDataCriteriaAttributesControllerTests = {
+  ...commonOptions,
+  collection: collection_path + '/report-data-criteria-attributes.postman_collection.json',
+  reporter: {
+    junit: {
+      export: reports_path + '/report-data-criteria-attributes-controller-tests.xml',
+    },
+  },
+};
+
 const subscriptionsControllerTests = {
   ...commonOptions,
   collection: collection_path + '/search-subscriptions-controller.postman_collection.json',
@@ -356,6 +366,7 @@ const jobs = [
   cb => newman.run(qmsStandardsControllerTests,cb),
   cb => newman.run(ucdProcessesControllerTests,cb),
   cb => newman.run(reportDataControllerTests,cb),
+  cb => newman.run(reportDataCriteriaAttributesControllerTests,cb),
   cb => newman.run(rulesControllerTests,cb),
   cb => newman.run(searchComplaintsControllerTests,cb),
   cb => newman.run(testToolsControllerTests,cb),

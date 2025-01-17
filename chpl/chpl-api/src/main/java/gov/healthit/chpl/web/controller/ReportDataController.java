@@ -14,10 +14,6 @@ import gov.healthit.chpl.developer.search.DeveloperSearchResult;
 import gov.healthit.chpl.developer.search.DeveloperSearchService;
 import gov.healthit.chpl.report.ReportDataManager;
 import gov.healthit.chpl.report.ReportMetadata;
-import gov.healthit.chpl.report.criteriaattribute.StandardListingReport;
-import gov.healthit.chpl.report.criteriaattribute.StandardReport;
-import gov.healthit.chpl.report.criteriaattribute.TestToolListingReport;
-import gov.healthit.chpl.report.criteriaattribute.TestToolReport;
 import gov.healthit.chpl.report.criteriamigrationreport.CriteriaMigrationReportDenormalized;
 import gov.healthit.chpl.report.developer.UniqueDeveloperCount;
 import gov.healthit.chpl.report.directreview.DirectReviewCounts;
@@ -38,7 +34,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
-@Tag(name = "report-data", description = "Allows retrieval of data used by reports.")
+@Tag(name = "report-data", description = "Allows retrieval of data used by reports. Please note that the endpoints \"/report-data/*\" are subject "
+        + "to frequent updates at this time, and they may not follow CHPL's typical deprecation process of notification for 6 months before removal. "
+        + "These endpoints may be removed or have their response format changed without notice.")
 @RestController
 @RequestMapping("/report-data")
 public class ReportDataController {
@@ -403,24 +401,14 @@ public class ReportDataController {
         return reportDataManager.getUniqueListingCount();
     }
 
-    @Operation(summary = "Retrieves the data used to generate the Test Tool Criteria Attribute Summary report.",
-            description = "Retrieves the data used to generate the Test Tool Criteria Attribute Summary report.",
+    @Operation(summary = "Retrieves the data used to generate the Summary Statistics - Direct Review report.",
+            description = "Retrieves the data used to generate the Summary Statistics - Direct Review report.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
-    @RequestMapping(value = "/test-tools", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public @ResponseBody List<TestToolReport> getTestToolReports() {
-        return reportDataManager.getTestToolReports();
-    }
-
-    @Operation(summary = "Retrieves the data used to generate the Test Tool Criteria Attribute Listing report.",
-            description = "Retrieves the data used to generate the Test Tool Criteria Attribute Listing report.",
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
-    @RequestMapping(value = "/test-tools-listing", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public @ResponseBody List<TestToolListingReport> getTestToolListingReports() {
-        return reportDataManager.getTestToolListingReports();
+    @RequestMapping(value = "/direct-review-counts", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
+    public @ResponseBody DirectReviewCounts getDirectReviewCounts() {
+        return reportDataManager.getDirectReviewCounts();
     }
 
     @Operation(summary = "Retrieves the data used to generate the Service Base Url List report.",
@@ -433,35 +421,6 @@ public class ReportDataController {
         return reportDataManager.getUrlUptimeMonitors();
     }
 
-    @Operation(summary = "Retrieves the data used to generate the Standard Criteria Attribute Summary report.",
-            description = "Retrieves the data used to generate the Standard Criteria Attribute Summary report.",
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
-    @RequestMapping(value = "/standards", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public @ResponseBody List<StandardReport> getStandardReports() {
-        return reportDataManager.getStandardReports();
-    }
-
-    @Operation(summary = "Retrieves the data used to generate the Standard Criteria Attribute Listing report.",
-            description = "Retrieves the data used to generate the Standard Criteria Attribute Listing report.",
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
-    @RequestMapping(value = "/standards-listing", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public @ResponseBody List<StandardListingReport> getStandardListingReports() {
-        return reportDataManager.getStandardListingReports();
-    }
-
-    @Operation(summary = "Retrieves the data used to generate the Summary Statistics - Direct Review report.",
-            description = "Retrieves the data used to generate the Summary Statistics - Direct Review report.",
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
-    @RequestMapping(value = "/direct-review-counts", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public @ResponseBody DirectReviewCounts getDirectReviewCounts() {
-        return reportDataManager.getDirectReviewCounts();
-    }
 
     @Operation(summary = "Retrieves the data used to generate the Attestations report.",
             description = "Retrieves the data used to generate the Attestations report.",
@@ -472,5 +431,4 @@ public class ReportDataController {
     public @ResponseBody List<AttestationReport> getAttestationReports() {
         return reportDataManager.getAttestationReports();
     }
-
 }

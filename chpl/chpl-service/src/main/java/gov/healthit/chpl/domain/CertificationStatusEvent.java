@@ -76,7 +76,9 @@ public class CertificationStatusEvent implements Serializable {
     @Deprecated
     public void setEventDate(Long eventDate) {
         this.eventDate = eventDate;
-        this.eventDay = DateUtil.toLocalDate(eventDate);
+        if (eventDate != null) {
+            this.eventDay = DateUtil.toLocalDate(eventDate);
+        }
     }
 
     public void setEventDay(LocalDate eventDay) {

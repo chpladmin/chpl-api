@@ -31,15 +31,7 @@ public class TestToolNormalizer {
         if (!CollectionUtils.isEmpty(listing.getCertificationResults())) {
             clearDataForUnattestedCriteria(listing);
             listing.getCertificationResults().stream()
-                .forEach(certResult -> fillInTestToolData(certResult));
-        }
-    }
-
-    @Transactional
-    public void normalize(List<CertificationResultTestTool> testTools) {
-        if (!CollectionUtils.isEmpty(testTools)) {
-            testTools.stream()
-                    .forEach(certResultTestTool -> populateTestToolId(certResultTestTool));
+                .forEach(certResult -> normalize(certResult));
         }
     }
 
@@ -50,8 +42,18 @@ public class TestToolNormalizer {
             .forEach(unattestedCertResult -> unattestedCertResult.getTestToolsUsed().clear());
     }
 
-    private void fillInTestToolData(CertificationResult certResult) {
+    private void normalize(CertificationResult certResult) {
+        if (!CollectionUtils.isEmpty(certResult.getTestToolsUsed())) {
+            certResult.getTestToolsUsed().stream()
+                .forEach(crtt -> setEmptyStringFieldsToNull(crtt));
+        }
         populateTestToolIds(certResult.getTestToolsUsed());
+    }
+
+    private void setEmptyStringFieldsToNull(CertificationResultTestTool crtt) {
+        if (StringUtils.isEmpty(crtt.getVersion())) {
+            crtt.setVersion(null);
+        }
     }
 
     private void populateTestToolIds(List<CertificationResultTestTool> testTools) {
