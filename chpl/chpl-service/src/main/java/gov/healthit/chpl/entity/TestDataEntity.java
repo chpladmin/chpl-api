@@ -1,5 +1,6 @@
 package gov.healthit.chpl.entity;
 
+import gov.healthit.chpl.domain.TestData;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -7,7 +8,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -36,4 +36,10 @@ public class TestDataEntity extends EntityAudit {
     @Column(name = "name", nullable = false)
     private String name;
 
+    public TestData toDomain() {
+        return TestData.builder()
+                .id(id)
+                .name(name)
+                .build();
+    }
 }
