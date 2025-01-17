@@ -39,7 +39,7 @@ public class ConformanceMethodNormalizer {
         if (!CollectionUtils.isEmpty(listing.getCertificationResults())) {
             clearDataForUnattestedCriteria(listing);
             listing.getCertificationResults().stream()
-                .forEach(certResult -> fillInConformanceMethodData(listing, certResult));
+                .forEach(certResult -> normalize(listing, certResult));
         }
     }
 
@@ -55,9 +55,19 @@ public class ConformanceMethodNormalizer {
             .forEach(unattestedCertResult -> unattestedCertResult.getTestProcedures().clear());
     }
 
-    private void fillInConformanceMethodData(CertifiedProductSearchDetails listing, CertificationResult certResult) {
+    private void normalize(CertifiedProductSearchDetails listing, CertificationResult certResult) {
+        if (!CollectionUtils.isEmpty(certResult.getConformanceMethods())) {
+            certResult.getConformanceMethods().stream()
+                .forEach(crcm -> setEmptyStringFieldsToNull(crcm));
+        }
         populateConformanceMethodIds(certResult.getCriterion(), certResult.getConformanceMethods());
         populateConformanceMethodRemovalDates(certResult.getCriterion(), certResult.getConformanceMethods());
+    }
+
+    private void setEmptyStringFieldsToNull(CertificationResultConformanceMethod crcm) {
+        if (StringUtils.isEmpty(crcm.getConformanceMethodVersion())) {
+            crcm.setConformanceMethodVersion(null);
+        }
     }
 
     private void populateConformanceMethodIds(CertificationCriterion criterion, List<CertificationResultConformanceMethod> conformanceMethods) {

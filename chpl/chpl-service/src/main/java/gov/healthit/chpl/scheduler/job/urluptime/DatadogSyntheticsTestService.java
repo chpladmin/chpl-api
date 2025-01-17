@@ -32,6 +32,7 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2(topic = "serviceBaseUrlListUptimeCreatorJobLogger")
 @Component
 public class DatadogSyntheticsTestService {
+    public static final String NOT_EMPTY_REGEX = "/[\\S]+/";
     private static final Integer HTTP_STATUS_OK = 200;
     private static final String HTTP_METHOD_GET = "GET";
     private static final Long SECONDS_IN_A_MINUTE = 60L;
@@ -110,7 +111,7 @@ public class DatadogSyntheticsTestService {
                                         .type(SyntheticsAssertionType.STATUS_CODE)),
                                 new SyntheticsAssertion(new SyntheticsAssertionTarget()
                                         .operator(SyntheticsAssertionOperator.MATCHES)
-                                        .target("/[\\S\s]+[\\S]+/")
+                                        .target(NOT_EMPTY_REGEX)
                                         .type(SyntheticsAssertionType.BODY))))
                         .request(new SyntheticsTestRequest()
                                     .url(url)
