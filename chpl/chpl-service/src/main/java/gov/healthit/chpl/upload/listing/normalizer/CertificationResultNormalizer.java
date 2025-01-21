@@ -64,6 +64,9 @@ public class CertificationResultNormalizer {
     }
 
     public void normalize(CertifiedProductSearchDetails listing, List<CertificationResultLevelNormalizer> additionalNormalizers) {
+        listing.getCertificationResults().stream()
+            .forEach(certResult -> setEmptyStringFieldsToNull(certResult));
+
         removeCertificationResultsWithNullCriterion(listing);
         removeCertificationResultsForDuplicateCriteria(listing);
 
@@ -148,6 +151,30 @@ public class CertificationResultNormalizer {
                     && BooleanUtils.isTrue(certResult.getSuccess())
                     && certResultRules.hasCertOption(certResult.getCriterion().getId(), CertificationResultRules.SED))
             .forEach(certResult -> certResult.setSed(true));
+    }
+
+    private void setEmptyStringFieldsToNull(CertificationResult cr) {
+        if (StringUtils.isEmpty(cr.getApiDocumentation())) {
+            cr.setApiDocumentation(null);
+        }
+        if (StringUtils.isEmpty(cr.getDocumentationUrl())) {
+            cr.setDocumentationUrl(null);
+        }
+        if (StringUtils.isEmpty(cr.getExportDocumentation())) {
+            cr.setExportDocumentation(null);
+        }
+        if (StringUtils.isEmpty(cr.getPrivacySecurityFramework())) {
+            cr.setPrivacySecurityFramework(null);
+        }
+        if (StringUtils.isEmpty(cr.getRiskManagementSummaryInformation())) {
+            cr.setRiskManagementSummaryInformation(null);
+        }
+        if (StringUtils.isEmpty(cr.getServiceBaseUrlList())) {
+            cr.setServiceBaseUrlList(null);
+        }
+        if (StringUtils.isEmpty(cr.getUseCases())) {
+            cr.setUseCases(null);
+        }
     }
 
     @NoArgsConstructor
