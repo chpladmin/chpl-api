@@ -220,8 +220,7 @@ public class ListingUploadManager {
         LOGGER.debug("Converted listing upload into CertifiedProductSearchDetails object");
 
         listingNormalizer.normalize(listing, List.of(
-                baselineStandardAsOfCertificationDayNormalizer,  // have to re-add older baseline standards that users might not put in their file
-                baselineStandardAsOfTodayNormalizer)); // and add the most current baseline standards we've agreed to always add for users
+                baselineStandardAsOfTodayNormalizer)); // add the most current baseline standards we've agreed to always add for users
         LOGGER.debug("Normalized listing upload");
         return listing;
     }

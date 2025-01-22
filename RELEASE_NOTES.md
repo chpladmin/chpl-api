@@ -1,5 +1,25 @@
 # Release Notes
 
+## Version 48.0.0
+_21 January 2025_
+
+### Breaking Change
+* Remove deprecated activity metadata objectId field
+
+### Features
+* Add endpoints to support Criteria Attributes Power BI report
+* Clear out security context when each Quartz job finishes
+* Give ACB user permission to see activity for functest, stds, svap
+* Give ONC user access to CRUD ops on functest, testtools, stds
+* Deprecate fields in developer, product, and listing activity metadata
+
+### Bug Fixes
+* Stop adding baseline standards valid on cert date
+* Improve upload and merge code when file is very very bad
+* User certification date from upload to create active cert event
+
+---
+
 ## Version 47.7.0
 _6 January 2025_
 
