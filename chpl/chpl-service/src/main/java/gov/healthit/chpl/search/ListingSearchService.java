@@ -33,6 +33,7 @@ import gov.healthit.chpl.search.domain.ListingSearchResult.CertificationCriterio
 import gov.healthit.chpl.search.domain.ListingSearchResult.CertificationCriterionSearchResultWithLongFields;
 import gov.healthit.chpl.search.domain.NonConformitySearchOptions;
 import gov.healthit.chpl.search.domain.OrderByOption;
+import gov.healthit.chpl.search.domain.RiskManagementSummaryInformationlSearchOptions;
 import gov.healthit.chpl.search.domain.RwtSearchOptions;
 import gov.healthit.chpl.search.domain.SearchRequest;
 import gov.healthit.chpl.search.domain.SearchSetOperator;
@@ -68,8 +69,8 @@ public class ListingSearchService {
     public ListingSearchResult findListing(Long listingId) throws InvalidArgumentsException {
         List<ListingSearchResult> listings = listingSearchManager.getAllListings();
         Optional<ListingSearchResult> matchedListing = listings.stream()
-            .filter(listing -> listing.getId().equals(listingId))
-            .findAny();
+                .filter(listing -> listing.getId().equals(listingId))
+                .findAny();
 
         if (matchedListing.isEmpty()) {
             throw new InvalidArgumentsException("Listing with ID " + listingId + " does not exist.");
@@ -105,26 +106,27 @@ public class ListingSearchService {
                 .collect(Collectors.toList());
         LOGGER.debug("Total listings matching search term only: " + listingsMatchingSearchTermOnly.size());
         List<ListingSearchResult> matchedListings = listingsMatchingSearchTermOnly.stream()
-            .filter(listing -> matchesListingIds(listing, searchRequest.getListingIds()))
-            .filter(listing -> matchesAcbNames(listing, searchRequest.getCertificationBodies()))
-            .filter(listing -> matchesCertificationStatuses(listing, searchRequest.getCertificationStatuses()))
-            .filter(listing -> matchesDerivedCertificationEditions(listing, searchRequest.getDerivedCertificationEditions()))
-            .filter(listing -> matchesCertificationEditions(listing, searchRequest.getCertificationEditions()))
-            .filter(listing -> matchesDeveloper(listing, searchRequest.getDeveloper()))
-            .filter(listing -> matchesDeveloperId(listing, searchRequest.getDeveloperId()))
-            .filter(listing -> matchesProduct(listing, searchRequest.getProduct()))
-            .filter(listing -> matchesVersion(listing, searchRequest.getVersion()))
-            .filter(listing -> matchesPracticeType(listing, searchRequest.getPracticeType()))
-            .filter(listing -> matchesCriteria(listing, searchRequest.getCertificationCriteriaIds(), searchRequest.getCertificationCriteriaOperator()))
-            .filter(listing -> matchesCqms(listing, searchRequest.getCqms(), searchRequest.getCqmsOperator()))
-            .filter(listing -> matchesCertificationDateRange(listing, searchRequest.getCertificationDateStart(), searchRequest.getCertificationDateEnd()))
-            .filter(listing -> matchesDecertificationDateRange(listing, searchRequest.getDecertificationDateStart(), searchRequest.getDecertificationDateEnd()))
-            .filter(listing -> matchesComplianceFilter(listing, searchRequest.getComplianceActivity()))
-            .filter(listing -> matchesRwtFilter(listing, searchRequest.getRwtOptions(), searchRequest.getRwtOperator()))
-            .filter(listing -> matchesHasAnySvapFilter(listing, searchRequest.getHasAnySvap()))
-            .filter(listing -> matchesSvapNoticeUrlFilter(listing, searchRequest.getHasSvapNoticeUrl()))
-            .filter(listing -> matchesSvaps(listing, searchRequest.getSvapIds(), searchRequest.getSvapOperator()))
-            .collect(Collectors.toList());
+                .filter(listing -> matchesListingIds(listing, searchRequest.getListingIds()))
+                .filter(listing -> matchesAcbNames(listing, searchRequest.getCertificationBodies()))
+                .filter(listing -> matchesCertificationStatuses(listing, searchRequest.getCertificationStatuses()))
+                .filter(listing -> matchesDerivedCertificationEditions(listing, searchRequest.getDerivedCertificationEditions()))
+                .filter(listing -> matchesCertificationEditions(listing, searchRequest.getCertificationEditions()))
+                .filter(listing -> matchesDeveloper(listing, searchRequest.getDeveloper()))
+                .filter(listing -> matchesDeveloperId(listing, searchRequest.getDeveloperId()))
+                .filter(listing -> matchesProduct(listing, searchRequest.getProduct()))
+                .filter(listing -> matchesVersion(listing, searchRequest.getVersion()))
+                .filter(listing -> matchesPracticeType(listing, searchRequest.getPracticeType()))
+                .filter(listing -> matchesCriteria(listing, searchRequest.getCertificationCriteriaIds(), searchRequest.getCertificationCriteriaOperator()))
+                .filter(listing -> matchesCqms(listing, searchRequest.getCqms(), searchRequest.getCqmsOperator()))
+                .filter(listing -> matchesCertificationDateRange(listing, searchRequest.getCertificationDateStart(), searchRequest.getCertificationDateEnd()))
+                .filter(listing -> matchesDecertificationDateRange(listing, searchRequest.getDecertificationDateStart(), searchRequest.getDecertificationDateEnd()))
+                .filter(listing -> matchesComplianceFilter(listing, searchRequest.getComplianceActivity()))
+                .filter(listing -> matchesRwtFilter(listing, searchRequest.getRwtOptions(), searchRequest.getRwtOperator()))
+                .filter(listing -> matchesHasAnySvapFilter(listing, searchRequest.getHasAnySvap()))
+                .filter(listing -> matchesSvapNoticeUrlFilter(listing, searchRequest.getHasSvapNoticeUrl()))
+                .filter(listing -> matchesSvaps(listing, searchRequest.getSvapIds(), searchRequest.getSvapOperator()))
+                .filter(listing -> matchesRiskManagementSummaryInformationFilter(listing, searchRequest.getRiskManagementSummaryInformationOptions(), searchRequest.getRiskManagementUrlOperator()))
+                .collect(Collectors.toList());
         LOGGER.debug("Total matched listings: " + matchedListings.size());
 
         clearMatchedListingsIfDirectReviewsUnavailableAndComplianceFiltering(searchRequest, matchedListings);
@@ -138,7 +140,7 @@ public class ListingSearchService {
 
         sort(matchedListings, searchRequest.getOrderBy(), searchRequest.getSortDescending());
         List<ListingSearchResult> pageOfListings
-            = getPage(matchedListings, getBeginIndex(searchRequest), getEndIndex(searchRequest));
+        = getPage(matchedListings, getBeginIndex(searchRequest), getEndIndex(searchRequest));
         response.setResults(pageOfListings);
         return response;
     }
@@ -154,7 +156,7 @@ public class ListingSearchService {
     private boolean hasAnyComplianceFilters(ComplianceSearchFilter complianceFilter) {
         return complianceFilter != null
                 && (complianceFilter.getHasHadComplianceActivity() != null
-                    || CollectionUtils.isNotEmpty(complianceFilter.getNonConformityOptions()));
+                || CollectionUtils.isNotEmpty(complianceFilter.getNonConformityOptions()));
     }
 
     public List<ListingSearchResult> getAllPagesOfSearchResults(SearchRequest searchRequest) throws ValidationException {
@@ -207,9 +209,9 @@ public class ListingSearchService {
 
     private boolean doProductOwnersMatchSearchTerm(Set<IdNamePair> productOwners, String searchTerm) {
         Set<String> uppercaseNames = productOwners.stream()
-            .filter(productOwner -> !StringUtils.isEmpty(productOwner.getName()))
-            .map(productOwner -> productOwner.getName().toUpperCase())
-            .collect(Collectors.toSet());
+                .filter(productOwner -> !StringUtils.isEmpty(productOwner.getName()))
+                .map(productOwner -> productOwner.getName().toUpperCase())
+                .collect(Collectors.toSet());
         return uppercaseNames.stream()
                 .filter(productOwnerName -> productOwnerName.contains(searchTerm))
                 .findAny().isPresent();
@@ -217,9 +219,9 @@ public class ListingSearchService {
 
     private boolean doPreviousChplProductNumbersMatchSearchTerm(Set<String> previousChplProductNumbers, String searchTerm) {
         Set<String> uppercaseChplProductNumbers = previousChplProductNumbers.stream()
-            .filter(chplProductNumber -> !StringUtils.isEmpty(chplProductNumber))
-            .map(chplProductNumber -> chplProductNumber.toUpperCase())
-            .collect(Collectors.toSet());
+                .filter(chplProductNumber -> !StringUtils.isEmpty(chplProductNumber))
+                .map(chplProductNumber -> chplProductNumber.toUpperCase())
+                .collect(Collectors.toSet());
         return uppercaseChplProductNumbers.stream()
                 .filter(chplProductNumber -> chplProductNumber.contains(searchTerm))
                 .findAny().isPresent();
@@ -272,7 +274,7 @@ public class ListingSearchService {
         }
 
         return derivedCertificationEditions.stream()
-            .anyMatch(edition -> matchesDerivedCertificationEdition(listing, edition));
+                .anyMatch(edition -> matchesDerivedCertificationEdition(listing, edition));
     }
 
     private boolean matchesDerivedCertificationEdition(ListingSearchResult listing, String derivedCertificationEdition) {
@@ -388,7 +390,7 @@ public class ListingSearchService {
     private boolean matchesComplianceFilter(ListingSearchResult listing, ComplianceSearchFilter complianceFilter) {
         if (complianceFilter == null
                 || (complianceFilter.getHasHadComplianceActivity() == null
-                    && CollectionUtils.isEmpty(complianceFilter.getNonConformityOptions()))) {
+                && CollectionUtils.isEmpty(complianceFilter.getNonConformityOptions()))) {
             return true;
         }
 
@@ -488,6 +490,28 @@ public class ListingSearchService {
         return matchesRwtFilter;
     }
 
+    private boolean matchesRiskManagementSummaryInformationFilter(ListingSearchResult listing,
+            Set<RiskManagementSummaryInformationlSearchOptions> riskManagementSummaryInformationOptions,
+            SearchSetOperator risskManagementSummaryInformationOperator) {
+
+        if (CollectionUtils.isEmpty(riskManagementSummaryInformationOptions)) {
+            return true;
+        }
+
+        Boolean matchesHasPlansFilter = null;
+        if (riskManagementSummaryInformationOptions.contains(RiskManagementSummaryInformationlSearchOptions.HAS_RISK_MANAGEMENT_SUMMARY_INFORMATION)) {
+            matchesHasPlansFilter = StringUtils.isNotBlank(listing.getRiskManagementSummaryInformation().getValue());
+        }
+        Boolean matchesNoPlansFilter = null;
+        if (riskManagementSummaryInformationOptions.contains(RiskManagementSummaryInformationlSearchOptions.NO_RISK_MANAGEMENT_SUMMARY_INFOMRATION)) {
+            matchesNoPlansFilter = StringUtils.isBlank(listing.getRiskManagementSummaryInformation().getValue());
+        }
+
+        boolean matchesRwtFilter = applyOperation(risskManagementSummaryInformationOperator,
+                matchesHasPlansFilter, matchesNoPlansFilter);
+        return matchesRwtFilter;
+    }
+
     private boolean matchesHasAnySvapFilter(ListingSearchResult listing, Boolean hasAnySvapFilter) {
         if (hasAnySvapFilter == null) {
             return true;
@@ -507,7 +531,7 @@ public class ListingSearchService {
             return true;
         }
         if ((BooleanUtils.isTrue(hasSvapNoticeUrlFilter) && !StringUtils.isEmpty(listing.getSvapNoticeUrl()))
-         || (BooleanUtils.isFalse(hasSvapNoticeUrlFilter) && StringUtils.isEmpty(listing.getSvapNoticeUrl()))) {
+                || (BooleanUtils.isFalse(hasSvapNoticeUrlFilter) && StringUtils.isEmpty(listing.getSvapNoticeUrl()))) {
             return true;
         }
         return false;
@@ -630,45 +654,45 @@ public class ListingSearchService {
         }
 
         switch (orderBy) {
-            case DERIVED_EDITION:
-                listings.sort(new DerivedEditionComparator(descending));
-                break;
-            case EDITION:
-                listings.sort(new EditionComparator(descending));
-                break;
-            case DEVELOPER:
-                listings.sort(new DeveloperComparator(descending));
-                break;
-            case PRODUCT:
-                listings.sort(new ProductComparator(descending));
-                break;
-            case VERSION:
-                listings.sort(new VersionComparator(descending));
-                break;
-            case CERTIFICATION_DATE:
-                listings.sort(new CertificationDateComparator(descending));
-                break;
-            case CHPL_ID:
-                listings.sort(new ChplIdComparator(descending));
-                break;
-            case STATUS:
-                listings.sort(new CertificationStatusComparator(descending));
-                break;
-            case OPEN_SURVEILLANCE_NC_COUNT:
-                listings.sort(new OpenSurveillanceNonConformityComparator(descending));
-                break;
-            case CLOSED_SURVEILLANCE_NC_COUNT:
-                listings.sort(new ClosedSurveillanceNonConformityComparator(descending));
-                break;
-            case OPEN_DIRECT_REVIEW_NC_COUNT:
-                listings.sort(new OpenDirectReviewNonConformityComparator(descending));
-                break;
-            case CLOSED_DIRECT_REVIEW_NC_COUNT:
-                listings.sort(new ClosedDirectReviewNonConformityComparator(descending));
-                break;
-            default:
-                LOGGER.error("Unrecognized value for Order By: " + orderBy.name());
-                break;
+        case DERIVED_EDITION:
+            listings.sort(new DerivedEditionComparator(descending));
+            break;
+        case EDITION:
+            listings.sort(new EditionComparator(descending));
+            break;
+        case DEVELOPER:
+            listings.sort(new DeveloperComparator(descending));
+            break;
+        case PRODUCT:
+            listings.sort(new ProductComparator(descending));
+            break;
+        case VERSION:
+            listings.sort(new VersionComparator(descending));
+            break;
+        case CERTIFICATION_DATE:
+            listings.sort(new CertificationDateComparator(descending));
+            break;
+        case CHPL_ID:
+            listings.sort(new ChplIdComparator(descending));
+            break;
+        case STATUS:
+            listings.sort(new CertificationStatusComparator(descending));
+            break;
+        case OPEN_SURVEILLANCE_NC_COUNT:
+            listings.sort(new OpenSurveillanceNonConformityComparator(descending));
+            break;
+        case CLOSED_SURVEILLANCE_NC_COUNT:
+            listings.sort(new ClosedSurveillanceNonConformityComparator(descending));
+            break;
+        case OPEN_DIRECT_REVIEW_NC_COUNT:
+            listings.sort(new OpenDirectReviewNonConformityComparator(descending));
+            break;
+        case CLOSED_DIRECT_REVIEW_NC_COUNT:
+            listings.sort(new ClosedDirectReviewNonConformityComparator(descending));
+            break;
+        default:
+            LOGGER.error("Unrecognized value for Order By: " + orderBy.name());
+            break;
         }
     }
 
