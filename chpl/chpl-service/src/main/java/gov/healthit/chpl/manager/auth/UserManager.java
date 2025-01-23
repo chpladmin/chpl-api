@@ -9,9 +9,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -170,18 +168,8 @@ public class UserManager extends SecuredManager {
     @Transactional
     @PostFilter("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SECURED_USER, "
             + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).GET_ALL, filterObject)")
-    public List<UserDTO> getAll(Boolean includeDisabled) {
-        if (includeDisabled == null
-                ||  (!resourcePermissionsFactory.get().isUserRoleAdmin()
-                && !resourcePermissionsFactory.get().isUserRoleOnc())) {
-            includeDisabled = false;
-        }
+    public List<UserDTO> getAll() {
         List<UserDTO> allUsers = userDAO.findAll();
-        if (includeDisabled == null || BooleanUtils.isFalse(includeDisabled)) {
-            return allUsers.stream()
-                    .filter(user -> user.isAccountEnabled())
-                    .collect(Collectors.toList());
-        }
         return allUsers;
     }
 
