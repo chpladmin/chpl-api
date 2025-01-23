@@ -125,7 +125,8 @@ public class ListingSearchService {
                 .filter(listing -> matchesHasAnySvapFilter(listing, searchRequest.getHasAnySvap()))
                 .filter(listing -> matchesSvapNoticeUrlFilter(listing, searchRequest.getHasSvapNoticeUrl()))
                 .filter(listing -> matchesSvaps(listing, searchRequest.getSvapIds(), searchRequest.getSvapOperator()))
-                .filter(listing -> matchesRiskManagementSummaryInformationFilter(listing, searchRequest.getRiskManagementSummaryInformationOptions(), searchRequest.getRiskManagementUrlOperator()))
+                .filter(listing -> matchesRiskManagementSummaryInformationFilter(listing, searchRequest.getRiskManagementSummaryInformationOptions(),
+                        searchRequest.getRiskManagementSummaryInformationOperator()))
                 .collect(Collectors.toList());
         LOGGER.debug("Total matched listings: " + matchedListings.size());
 
@@ -492,24 +493,26 @@ public class ListingSearchService {
 
     private boolean matchesRiskManagementSummaryInformationFilter(ListingSearchResult listing,
             Set<RiskManagementSummaryInformationlSearchOptions> riskManagementSummaryInformationOptions,
-            SearchSetOperator risskManagementSummaryInformationOperator) {
+            SearchSetOperator riskManagementSummaryInformationOperator) {
 
         if (CollectionUtils.isEmpty(riskManagementSummaryInformationOptions)) {
             return true;
         }
 
-        Boolean matchesHasPlansFilter = null;
+        String riskManagementSummaryInformation = listing.getRiskManagementSummaryInformation() != null ? listing.getRiskManagementSummaryInformation().getValue() : "";
+
+        Boolean riskManagementSummaryInformationFilter = null;
         if (riskManagementSummaryInformationOptions.contains(RiskManagementSummaryInformationlSearchOptions.HAS_RISK_MANAGEMENT_SUMMARY_INFORMATION)) {
-            matchesHasPlansFilter = StringUtils.isNotBlank(listing.getRiskManagementSummaryInformation().getValue());
+            riskManagementSummaryInformationFilter = StringUtils.isNotBlank(riskManagementSummaryInformation);
         }
-        Boolean matchesNoPlansFilter = null;
-        if (riskManagementSummaryInformationOptions.contains(RiskManagementSummaryInformationlSearchOptions.NO_RISK_MANAGEMENT_SUMMARY_INFOMRATION)) {
-            matchesNoPlansFilter = StringUtils.isBlank(listing.getRiskManagementSummaryInformation().getValue());
+        Boolean noRiskManagementSummaryInformationFilter = null;
+        if (riskManagementSummaryInformationOptions.contains(RiskManagementSummaryInformationlSearchOptions.NO_RISK_MANAGEMENT_SUMMARY_INFORMATION)) {
+            noRiskManagementSummaryInformationFilter = StringUtils.isBlank(riskManagementSummaryInformation);
         }
 
-        boolean matchesRwtFilter = applyOperation(risskManagementSummaryInformationOperator,
-                matchesHasPlansFilter, matchesNoPlansFilter);
-        return matchesRwtFilter;
+        boolean matchesRiskManagementSummaryInformationFilter = applyOperation(riskManagementSummaryInformationOperator,
+                riskManagementSummaryInformationFilter, noRiskManagementSummaryInformationFilter);
+        return matchesRiskManagementSummaryInformationFilter;
     }
 
     private boolean matchesHasAnySvapFilter(ListingSearchResult listing, Boolean hasAnySvapFilter) {

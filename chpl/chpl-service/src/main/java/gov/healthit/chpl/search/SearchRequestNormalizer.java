@@ -8,6 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 import gov.healthit.chpl.search.domain.ComplianceSearchFilter;
 import gov.healthit.chpl.search.domain.NonConformitySearchOptions;
 import gov.healthit.chpl.search.domain.OrderByOption;
+import gov.healthit.chpl.search.domain.RiskManagementSummaryInformationlSearchOptions;
 import gov.healthit.chpl.search.domain.RwtSearchOptions;
 import gov.healthit.chpl.search.domain.SearchRequest;
 import gov.healthit.chpl.search.domain.SearchSetOperator;
@@ -31,6 +32,8 @@ public class SearchRequestNormalizer {
         normalizeRwtOptionsOperator(request);
         normalizeSvapIds(request);
         normalizeSvapOperator(request);
+        normalizeRiskManagementSummaryInformationOptions(request);
+        normalizeRiskManagementSummaryInformationOptionsOperator(request);
         normalizeOrderBy(request);
     }
 
@@ -254,6 +257,44 @@ public class SearchRequestNormalizer {
             try {
                 request.setSvapOperator(
                         SearchSetOperator.valueOf(request.getSvapOperatorString().toUpperCase().trim()));
+            } catch (Exception ignore) {
+            }
+        }
+    }
+
+    private void normalizeRiskManagementSummaryInformationOptions(SearchRequest request) {
+        if (!CollectionUtils.isEmpty(request.getRiskManagementSummaryInformationOptionsStrings())
+                && CollectionUtils.isEmpty(request.getRiskManagementSummaryInformationOptions())) {
+            try {
+                request.setRiskManagementSummaryInformationOptions(
+                        request.getRiskManagementSummaryInformationOptionsStrings().stream()
+                        .filter(option -> !StringUtils.isBlank(option))
+                        .map(option -> convertToRiskManagementSummaryInformationSearchOption(option))
+                        .filter(option -> option != null)
+                        .collect(Collectors.toSet()));
+            } catch (Exception ignore) {
+            }
+        }
+    }
+
+    private RiskManagementSummaryInformationlSearchOptions convertToRiskManagementSummaryInformationSearchOption(String option) {
+        if (StringUtils.isBlank(option)) {
+            return null;
+        }
+        RiskManagementSummaryInformationlSearchOptions convertedOption = null;
+        try {
+            convertedOption = RiskManagementSummaryInformationlSearchOptions.valueOf(option.toUpperCase().trim());
+        } catch (Exception ex) {
+        }
+        return convertedOption;
+    }
+
+    private void normalizeRiskManagementSummaryInformationOptionsOperator(SearchRequest request) {
+        if (!StringUtils.isBlank(request.getRiskManagementSummaryInformationOperatorString())
+                && request.getRiskManagementSummaryInformationOperator() == null) {
+            try {
+                request.setRiskManagementSummaryInformationOperator(
+                        SearchSetOperator.valueOf(request.getRiskManagementSummaryInformationOperatorString().toUpperCase().trim()));
             } catch (Exception ignore) {
             }
         }
