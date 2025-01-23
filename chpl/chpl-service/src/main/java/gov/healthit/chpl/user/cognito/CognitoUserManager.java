@@ -1,9 +1,15 @@
 package gov.healthit.chpl.user.cognito;
 
+import static gov.healthit.chpl.util.LambdaExceptionUtil.rethrowConsumer;
+
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,6 +20,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.domain.CreateUserFromInvitationRequest;
+import gov.healthit.chpl.domain.Organization;
 import gov.healthit.chpl.domain.auth.CognitoEnvironments;
 import gov.healthit.chpl.domain.auth.CognitoGroups;
 import gov.healthit.chpl.domain.auth.User;
@@ -97,10 +104,32 @@ public class CognitoUserManager {
         User originalUser = cognitoApiWrapper.getUserNoCache(user.getCognitoId());
         cognitoApiWrapper.updateUser(user);
 
-        if (originalUser.getAccountEnabled() && !user.getAccountEnabled()) {
-            cognitoApiWrapper.disableUser(user);
-        } else if (!originalUser.getAccountEnabled() && user.getAccountEnabled()) {
-            cognitoApiWrapper.enableUser(user);
+        //check for organizations to remove
+        List<Long> removedOrganizationIds = getRemovedOrganizationIds(originalUser, user);
+        if (!CollectionUtils.isEmpty(removedOrganizationIds)) {
+            LOGGER.info("Removing " + removedOrganizationIds + " access from user " + originalUser.getEmail());
+            cognitoApiWrapper.removeOrgsFromUser(originalUser, removedOrganizationIds);
+        }
+
+        //check for organizations to add (this only happens in the case of a join):
+        //Developer A is joining Developer B. All the users of Developer A
+        //have access removed from Developer A in the code block above but now will be given Developer B.
+        //Developer A gets deleted.
+        User userAfterRemovingOrgs = cognitoApiWrapper.getUserNoCache(user.getCognitoId());
+        List<Long> addedOrganizationIds = getAddedOrganizationIds(userAfterRemovingOrgs, user);
+        if (!CollectionUtils.isEmpty(addedOrganizationIds)) {
+            addedOrganizationIds.stream()
+            .forEach(rethrowConsumer(orgId -> {
+                LOGGER.info("Adding " + orgId + " access to user " + userAfterRemovingOrgs.getEmail());
+                cognitoApiWrapper.addOrgToUser(userAfterRemovingOrgs, orgId);
+            }));
+        }
+
+        User userAfterRemovingAndAddingOrgs = cognitoApiWrapper.getUserNoCache(user.getCognitoId());
+        if (userShouldBeDisabled(originalUser, userAfterRemovingAndAddingOrgs)) {
+            cognitoApiWrapper.disableUser(userAfterRemovingAndAddingOrgs);
+        } else if (userShouldBeEnabled(originalUser, userAfterRemovingAndAddingOrgs)) {
+            cognitoApiWrapper.enableUser(userAfterRemovingAndAddingOrgs);
         }
 
         User updatedUser = cognitoApiWrapper.getUserNoCache(user.getCognitoId());
@@ -108,6 +137,57 @@ public class CognitoUserManager {
                 String.format("User %s was updated", updatedUser.getEmail()),
                 originalUser, updatedUser);
         return updatedUser;
+    }
+
+    private List<Long> getRemovedOrganizationIds(User originalUser, User updatedUser) {
+        List<Organization> removedOrgs = subtractLists(originalUser.getOrganizations(), updatedUser.getOrganizations());
+        if (!CollectionUtils.isEmpty(removedOrgs)) {
+            return removedOrgs.stream()
+                    .map(org -> org.getId())
+                    .collect(Collectors.toList());
+        }
+        return null;
+    }
+
+    private List<Long> getAddedOrganizationIds(User originalUser, User updatedUser) {
+        List<Organization> addedOrgs = subtractLists(updatedUser.getOrganizations(), originalUser.getOrganizations());
+        if (!CollectionUtils.isEmpty(addedOrgs)) {
+            return addedOrgs.stream()
+                    .map(org -> org.getId())
+                    .collect(Collectors.toList());
+        }
+        return null;
+    }
+
+    private List<Organization> subtractLists(List<Organization> listA, List<Organization> listB) {
+        Predicate<Organization> notInListB = orgFromA -> !listB.stream()
+                .anyMatch(orgFromB -> orgFromA.getId().equals(orgFromB.getId()));
+
+        return listA.stream()
+                .filter(notInListB)
+                .collect(Collectors.toList());
+    }
+
+    private boolean userShouldBeDisabled(User originalUser, User updatedUser) {
+        //If there are no organizations remaining for this user and the user is an acb or developer
+        //then they should be disabled.
+        //They should also be disabled if the update to the specifically went from enabled to disabled.
+        if (originalUser.getAccountEnabled() && !updatedUser.getAccountEnabled()) {
+            return true;
+        } else if (originalUser.hasRole(CognitoGroups.CHPL_ACB)
+                && !CollectionUtils.isEmpty(originalUser.getOrganizations())
+                && CollectionUtils.isEmpty(updatedUser.getOrganizations())) {
+            return true;
+        } else if (originalUser.hasRole(CognitoGroups.CHPL_DEVELOPER)
+                && !CollectionUtils.isEmpty(originalUser.getOrganizations())
+                && CollectionUtils.isEmpty(updatedUser.getOrganizations())) {
+            return true;
+        }
+        return false;
+    }
+
+    private boolean userShouldBeEnabled(User originalUser, User updatedUser) {
+        return !originalUser.getAccountEnabled() && updatedUser.getAccountEnabled();
     }
 
     @Transactional
@@ -123,23 +203,28 @@ public class CognitoUserManager {
         CognitoCredentials credentials = null;
         try {
             CognitoUserInvitation invitation = cognitoInvitationManager.getByToken(UUID.fromString(userInfo.getHash()));
-            if (invitation.getOrganizationId() != null) {
-                userInfo.getUser().setOrganizationId(invitation.getOrganizationId());
-            }
-            credentials = cognitoApiWrapper.createUser(userInfo.getUser());
-            cognitoApiWrapper.addUserToGroup(userInfo.getUser().getEmail(), invitation.getGroupName());
-            if (isProdEnvironment) {
-                addUserToAppropriateEnvironments(userInfo.getUser().getEmail(), invitation.getGroupName());
-            } else {
-                cognitoApiWrapper.addUserToGroup(userInfo.getUser().getEmail(), groupNameForEnvironment);
-            }
-            cognitoInvitationManager.deleteInvitation(invitation);
-            cognitoConfirmEmailEmailer.sendConfirmationEmail(credentials);
 
-            User createdUser = cognitoApiWrapper.getUserNoCache(credentials.getCognitoId());
-            activityManager.addUserActivity(createdUser.getCognitoId(),
-                    String.format("User %s was created", createdUser.getEmail()),
-                    null, createdUser);
+            //if the user exists for this environment and is disabled, we will re-enable them
+            //otherwise we will create a brand new user
+            User existingUser = null;
+            try {
+                existingUser = cognitoApiWrapper.getUserInfo(userInfo.getUser().getEmail());
+            } catch (Exception ex) {
+                LOGGER.warn("Unable to look up user with email address " + userInfo.getUser().getEmail());
+            }
+
+            if (existingUser != null && BooleanUtils.isFalse(existingUser.getAccountEnabled())) {
+                credentials = reenableUser(userInfo, invitation, existingUser);
+            } else if (existingUser == null) {
+                credentials = createNewUser(userInfo, invitation);
+            } else {
+                LOGGER.warn("The user with email address " + userInfo.getUser().getEmail() + " already exists and is enabled. "
+                        + "A new account cannot be created.");
+            }
+
+            if (credentials != null) {
+                cognitoConfirmEmailEmailer.sendConfirmationEmail(credentials);
+            }
         } catch (Exception e) {
             //Invitation deletion should roll back due to @Transactional
             if (credentials != null) {
@@ -150,15 +235,55 @@ public class CognitoUserManager {
         return credentials == null ? null : credentials.getCognitoId();
     }
 
+    private CognitoCredentials reenableUser(CreateUserFromInvitationRequest userInfo, CognitoUserInvitation invitation,
+            User existingUser) throws UserRetrievalException, UserCreationException, EmailNotSentException, ActivityException {
+        LOGGER.info("Re-enabling user " + existingUser.getEmail() + " from invitation " + userInfo.getHash());
+
+        existingUser.setFullName(userInfo.getUser().getFullName());
+        CognitoCredentials credentials = cognitoApiWrapper.reenableUser(existingUser);
+        if (invitation.getOrganizationId() != null) {
+            cognitoApiWrapper.addOrgToUser(existingUser, invitation.getOrganizationId());
+        }
+
+        cognitoApiWrapper.updateUser(existingUser);
+        cognitoInvitationManager.deleteInvitation(invitation);
+
+        User reenabledUser = cognitoApiWrapper.getUserNoCache(existingUser.getCognitoId());
+        activityManager.addUserActivity(reenabledUser.getCognitoId(),
+                String.format("User %s was re-enabled", reenabledUser.getEmail()),
+                existingUser, reenabledUser);
+
+        return credentials;
+    }
+
+    private CognitoCredentials createNewUser(CreateUserFromInvitationRequest userInfo, CognitoUserInvitation invitation)
+            throws UserRetrievalException, UserCreationException, EmailNotSentException, ActivityException {
+        LOGGER.info("Creating new user " + userInfo.getUser().getEmail() + " from invitation " + userInfo.getHash());
+        if (invitation.getOrganizationId() != null) {
+            userInfo.getUser().setOrganizationId(invitation.getOrganizationId());
+        }
+        CognitoCredentials credentials = cognitoApiWrapper.createUser(userInfo.getUser());
+        cognitoApiWrapper.addUserToGroup(userInfo.getUser().getEmail(), invitation.getGroupName());
+        if (isProdEnvironment) {
+            addUserToAppropriateEnvironments(userInfo.getUser().getEmail(), invitation.getGroupName());
+        } else {
+            cognitoApiWrapper.addUserToGroup(userInfo.getUser().getEmail(), groupNameForEnvironment);
+        }
+        cognitoInvitationManager.deleteInvitation(invitation);
+
+        User createdUser = cognitoApiWrapper.getUserNoCache(credentials.getCognitoId());
+        activityManager.addUserActivity(createdUser.getCognitoId(),
+                String.format("User %s was created", createdUser.getEmail()),
+                null, createdUser);
+
+        return credentials;
+    }
+
     @Transactional
     @PostFilter("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SECURED_USER, "
             + "T(gov.healthit.chpl.permissions.domains.SecuredUserDomainPermissions).GET_ALL, filterObject)")
-    public List<User> getAll(boolean includeDisabled) {
-        if (!resourcePermissionsFactory.get().isUserRoleAdmin()
-                && !resourcePermissionsFactory.get().isUserRoleOnc()) {
-            includeDisabled = false;
-        }
-        return cognitoApiWrapper.getAllUsers(includeDisabled);
+    public List<User> getAll() {
+        return cognitoApiWrapper.getAllUsers();
     }
 
     private void addUserToAppropriateEnvironments(String userEmail, String userRole) {
@@ -183,7 +308,6 @@ public class CognitoUserManager {
                 break;
         }
     }
-
 
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SECURED_USER, "
