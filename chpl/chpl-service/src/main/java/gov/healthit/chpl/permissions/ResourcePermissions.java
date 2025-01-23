@@ -46,10 +46,16 @@ public interface ResourcePermissions {
 
     boolean isUserRoleDeveloperAdmin();
 
+    //Not used with Cognito users
+    @Deprecated
     boolean isUserRoleUserCreator();
 
+    //Not used with Cognito users
+    @Deprecated
     boolean isUserRoleUserAuthenticator();
 
+    //Not used with Cognito users
+    @Deprecated
     boolean isUserRoleInvitedUserCreator();
 
     boolean isUserRoleStartup();

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatusCode;
@@ -61,6 +62,9 @@ public class InsightService {
         try {
             response = insightRestTemplate.getForEntity(url, String.class);
             LOGGER.debug("Response: " + response.getBody());
+            if (response == null || StringUtils.isEmpty(response.getBody())) {
+                LOGGER.warn("A null or empty response was received from the Insights API.");
+            }
         } catch (Exception ex) {
             HttpStatusCode statusCode =  (response != null ? response.getStatusCode() : null);
             if (statusCode == null && ex instanceof RestClientResponseException) {
@@ -69,7 +73,7 @@ public class InsightService {
             LOGGER.error("Unable to connect to the URL " + url + ". Got response status code " + statusCode);
             throw new InsightRequestFailedException(ex.getMessage(), ex, statusCode);
         }
-        String responseBody = response == null ? "" : response.getBody();
+        String responseBody = ((response == null || StringUtils.isEmpty(response.getBody())) ? "{}" : response.getBody());
         JsonNode root = null;
         try {
             root = objectMapper.readTree(responseBody);
