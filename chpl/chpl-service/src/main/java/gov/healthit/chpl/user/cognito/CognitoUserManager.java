@@ -1,5 +1,7 @@
 package gov.healthit.chpl.user.cognito;
 
+import static gov.healthit.chpl.util.LambdaExceptionUtil.rethrowConsumer;
+
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -102,16 +104,32 @@ public class CognitoUserManager {
         User originalUser = cognitoApiWrapper.getUserNoCache(user.getCognitoId());
         cognitoApiWrapper.updateUser(user);
 
-        //check for organizations to remove (organizations are never added here, only removed)
+        //check for organizations to remove
         List<Long> removedOrganizationIds = getRemovedOrganizationIds(originalUser, user);
         if (!CollectionUtils.isEmpty(removedOrganizationIds)) {
+            LOGGER.info("Removing " + removedOrganizationIds + " access from user " + originalUser.getEmail());
             cognitoApiWrapper.removeOrgsFromUser(originalUser, removedOrganizationIds);
         }
 
-        if (userShouldBeDisabled(originalUser, user)) {
-            cognitoApiWrapper.disableUser(user);
-        } else if (userShouldBeEnabled(originalUser, user)) {
-            cognitoApiWrapper.enableUser(user);
+        //check for organizations to add (this only happens in the case of a join):
+        //Developer A is joining Developer B. All the users of Developer A
+        //have access removed from Developer A in the code block above but now will be given Developer B.
+        //Developer A gets deleted.
+        User userAfterRemovingOrgs = cognitoApiWrapper.getUserNoCache(user.getCognitoId());
+        List<Long> addedOrganizationIds = getAddedOrganizationIds(userAfterRemovingOrgs, user);
+        if (!CollectionUtils.isEmpty(addedOrganizationIds)) {
+            addedOrganizationIds.stream()
+            .forEach(rethrowConsumer(orgId -> {
+                LOGGER.info("Adding " + orgId + " access to user " + userAfterRemovingOrgs.getEmail());
+                cognitoApiWrapper.addOrgToUser(userAfterRemovingOrgs, orgId);
+            }));
+        }
+
+        User userAfterRemovingAndAddingOrgs = cognitoApiWrapper.getUserNoCache(user.getCognitoId());
+        if (userShouldBeDisabled(originalUser, userAfterRemovingAndAddingOrgs)) {
+            cognitoApiWrapper.disableUser(userAfterRemovingAndAddingOrgs);
+        } else if (userShouldBeEnabled(originalUser, userAfterRemovingAndAddingOrgs)) {
+            cognitoApiWrapper.enableUser(userAfterRemovingAndAddingOrgs);
         }
 
         User updatedUser = cognitoApiWrapper.getUserNoCache(user.getCognitoId());
@@ -125,6 +143,16 @@ public class CognitoUserManager {
         List<Organization> removedOrgs = subtractLists(originalUser.getOrganizations(), updatedUser.getOrganizations());
         if (!CollectionUtils.isEmpty(removedOrgs)) {
             return removedOrgs.stream()
+                    .map(org -> org.getId())
+                    .collect(Collectors.toList());
+        }
+        return null;
+    }
+
+    private List<Long> getAddedOrganizationIds(User originalUser, User updatedUser) {
+        List<Organization> addedOrgs = subtractLists(updatedUser.getOrganizations(), originalUser.getOrganizations());
+        if (!CollectionUtils.isEmpty(addedOrgs)) {
+            return addedOrgs.stream()
                     .map(org -> org.getId())
                     .collect(Collectors.toList());
         }
@@ -146,11 +174,13 @@ public class CognitoUserManager {
         //They should also be disabled if the update to the specifically went from enabled to disabled.
         if (originalUser.getAccountEnabled() && !updatedUser.getAccountEnabled()) {
             return true;
-        } else if (!CollectionUtils.isEmpty(resourcePermissionsFactory.get().getAllAcbsForUser(originalUser))
-                && CollectionUtils.isEmpty(resourcePermissionsFactory.get().getAllAcbsForUser(updatedUser))) {
+        } else if (originalUser.hasRole(CognitoGroups.CHPL_ACB)
+                && !CollectionUtils.isEmpty(originalUser.getOrganizations())
+                && CollectionUtils.isEmpty(updatedUser.getOrganizations())) {
             return true;
-        } else if (!CollectionUtils.isEmpty(resourcePermissionsFactory.get().getAllDevelopersForUser(originalUser))
-                && CollectionUtils.isEmpty(resourcePermissionsFactory.get().getAllDevelopersForUser(updatedUser))) {
+        } else if (originalUser.hasRole(CognitoGroups.CHPL_DEVELOPER)
+                && !CollectionUtils.isEmpty(originalUser.getOrganizations())
+                && CollectionUtils.isEmpty(updatedUser.getOrganizations())) {
             return true;
         }
         return false;
