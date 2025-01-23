@@ -262,8 +262,7 @@ public class CognitoUserManager {
         if (invitation.getOrganizationId() != null) {
             userInfo.getUser().setOrganizationId(invitation.getOrganizationId());
         }
-        CognitoCredentials credentials = cognitoApiWrapper.createUser(userInfo.getUser());
-        cognitoApiWrapper.addUserToGroup(userInfo.getUser().getEmail(), invitation.getGroupName());
+        CognitoCredentials credentials = cognitoApiWrapper.createUser(userInfo.getUser(), invitation.getGroupName());
         if (isProdEnvironment) {
             addUserToAppropriateEnvironments(userInfo.getUser().getEmail(), invitation.getGroupName());
         } else {

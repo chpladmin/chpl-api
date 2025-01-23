@@ -200,17 +200,17 @@ public class CognitoResourcePermissions implements ResourcePermissions {
 
     @Override
     public boolean isUserRoleUserCreator() {
-        return doesAuditUserHaveRole(CognitoGroups.CHPL_USER_CREATOR);
+        return false;
     }
 
     @Override
     public boolean isUserRoleUserAuthenticator() {
-        return doesAuditUserHaveRole(CognitoGroups.CHPL_USER_AUTHENTICATOR);
+        return false;
     }
 
     @Override
     public boolean isUserRoleInvitedUserCreator() {
-        return doesAuditUserHaveRole(CognitoGroups.CHPL_INVITED_USER_CREATOR);
+        return false;
     }
 
     @Override
