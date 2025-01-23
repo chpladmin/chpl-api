@@ -2,6 +2,11 @@ package gov.healthit.chpl.entity.listing;
 
 import java.util.Date;
 
+import gov.healthit.chpl.domain.CertificationStatus;
+import gov.healthit.chpl.domain.CertificationStatusEvent;
+import gov.healthit.chpl.entity.CertificationStatusEntity;
+import gov.healthit.chpl.entity.EntityAudit;
+import gov.healthit.chpl.util.DateUtil;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -11,11 +16,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-
-import gov.healthit.chpl.domain.CertificationStatus;
-import gov.healthit.chpl.domain.CertificationStatusEvent;
-import gov.healthit.chpl.entity.CertificationStatusEntity;
-import gov.healthit.chpl.entity.EntityAudit;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -66,7 +66,7 @@ public class CertificationStatusEventEntity extends EntityAudit {
         }
         return CertificationStatusEvent.builder()
                 .id(this.getId())
-                .eventDate(this.getEventDate().getTime())
+                .eventDay(DateUtil.toLocalDate(this.getEventDate().getTime()))
                 .status(status)
                 .reason(this.getReason())
                 .build();

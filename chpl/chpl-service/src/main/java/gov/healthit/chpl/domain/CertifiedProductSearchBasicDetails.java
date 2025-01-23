@@ -17,6 +17,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import gov.healthit.chpl.domain.compliance.DirectReview;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
+import gov.healthit.chpl.util.DateUtil;
 import gov.healthit.chpl.util.LocalDateDeserializer;
 import gov.healthit.chpl.util.LocalDateSerializer;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -224,7 +225,8 @@ public class CertifiedProductSearchBasicDetails implements Serializable {
 
         CertificationStatusEvent newest = this.getCertificationEvents().get(0);
         for (CertificationStatusEvent event : this.getCertificationEvents()) {
-            if (event.getEventDate() > newest.getEventDate()) {
+            if (event.getEventDay().isAfter(newest.getEventDay())
+                    && (event.getEventDay().isBefore(LocalDate.now()) || event.getEventDay().equals(LocalDate.now()))) {
                 newest = event;
             }
         }
@@ -238,7 +240,7 @@ public class CertifiedProductSearchBasicDetails implements Serializable {
 
         CertificationStatusEvent oldest = this.getCertificationEvents().get(0);
         for (CertificationStatusEvent event : this.getCertificationEvents()) {
-            if (event.getEventDate() < oldest.getEventDate()) {
+            if (event.getEventDay().isBefore(oldest.getEventDay())) {
                 oldest = event;
             }
         }
@@ -254,20 +256,21 @@ public class CertifiedProductSearchBasicDetails implements Serializable {
         this.getCertificationEvents().sort(new Comparator<CertificationStatusEvent>() {
             @Override
             public int compare(CertificationStatusEvent o1, CertificationStatusEvent o2) {
-                if (o1.getEventDate() == null || o2.getEventDate() == null
-                        || o1.getEventDate().equals(o2.getEventDate())) {
+                if (o1.getEventDay() == null || o2.getEventDay() == null
+                        || o1.getEventDay().equals(o2.getEventDay())) {
                     return 0;
                 }
-                if (o1.getEventDate() < o2.getEventDate()) {
+                if (o1.getEventDay().isBefore(o2.getEventDay())) {
                     return -1;
                 }
-                if (o1.getEventDate() > o2.getEventDate()) {
+                if (o1.getEventDay().isAfter(o2.getEventDay())) {
                     return 1;
                 }
                 return 0;
             }
         });
 
+        LocalDate dateInQuestion = DateUtil.toLocalDate(date.getTime());
         CertificationStatusEvent result = null;
         for (int i = 0; i < this.getCertificationEvents().size() && result == null; i++) {
             CertificationStatusEvent currEvent = this.getCertificationEvents().get(i);
@@ -275,10 +278,10 @@ public class CertifiedProductSearchBasicDetails implements Serializable {
                 CertificationStatusEvent nextEvent = this.getCertificationEvents().get(i + 1);
                 // if the passed-in date is between currEvent and nextEvent then the currEvent
                 // gives the status on the passed-in date.
-                if (currEvent.getEventDate() != null && currEvent.getEventDate().longValue() <= date
-                        .getTime()
-                        && nextEvent.getEventDate() != null && nextEvent.getEventDate().longValue() > date
-                                .getTime()) {
+                if (currEvent.getEventDay() != null
+                        && (currEvent.getEventDay().isBefore(dateInQuestion)|| currEvent.getEventDay().isEqual(dateInQuestion))
+                        && nextEvent.getEventDay() != null
+                        && nextEvent.getEventDay().isAfter(dateInQuestion)) {
                     result = currEvent;
                 }
             } else {
