@@ -38,7 +38,6 @@ import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import gov.healthit.chpl.web.controller.annotation.DeprecatedApi;
-import gov.healthit.chpl.web.controller.annotation.DeprecatedApiResponseFields;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -130,7 +129,6 @@ public class ActivityController {
             })
     @RequestMapping(value = "/metadata/listings/{id:^-?\\d+$}", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
-    @DeprecatedApiResponseFields(friendlyUrl = "/activity/metadata/listings/{id}", responseClass = ActivityMetadata.class)
     public List<ActivityMetadata> metadataForListingById(@PathVariable("id") Long id,
             @RequestParam(required = false) Long start, @RequestParam(required = false) Long end)
             throws JsonParseException, IOException, EntityRetrievalException, ValidationException {
@@ -154,7 +152,6 @@ public class ActivityController {
     @RequestMapping(value = "/metadata/listings/{year}.{testingLab}.{certBody}.{vendorCode}.{productCode}.{versionCode}.{icsCode}.{addlSoftwareCode}.{certDateCode}",
             method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
-    @DeprecatedApiResponseFields(friendlyUrl = "/activity/metadata/listings/{id}", responseClass = ActivityMetadata.class)
     public List<ActivityMetadata> metadataForListingByChplProductNumber(
             @PathVariable("year") final String year,
             @PathVariable("testingLab") final String testingLab,
@@ -192,7 +189,6 @@ public class ActivityController {
     @RequestMapping(value = "/metadata/listings/{chplPrefix}-{identifier}",
             method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
-    @DeprecatedApiResponseFields(friendlyUrl = "/activity/metadata/listings/{id}", responseClass = ActivityMetadata.class)
     public List<ActivityMetadata> metadataForListingByChplProductNumber(
             @PathVariable("chplPrefix") final String chplPrefix,
             @PathVariable("identifier") final String identifier,
@@ -239,7 +235,6 @@ public class ActivityController {
             })
     @RequestMapping(value = "/metadata/developers", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
-    @DeprecatedApiResponseFields(friendlyUrl = "/activity/metadata/developers", responseClass = ActivityMetadataPage.class)
     public ActivityMetadataPage metadataForDevelopers(@RequestParam(required = false) Long start,
             @RequestParam(required = false) Long end, @RequestParam(required = false) Integer pageNum,
             @RequestParam(required = false) Integer pageSize) throws JsonParseException, IOException, ValidationException {
@@ -254,7 +249,6 @@ public class ActivityController {
             })
     @RequestMapping(value = "/metadata/developers/{id:^-?\\d+$}", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
-    @DeprecatedApiResponseFields(friendlyUrl = "/activity/metadata/developers/{id}", responseClass = ActivityMetadata.class)
     public List<ActivityMetadata> metadataForDeveloperById(@PathVariable("id") final Long id,
             @RequestParam(required = false) final Long start, @RequestParam(required = false) final Long end)
             throws JsonParseException, IOException, EntityRetrievalException, ValidationException {
@@ -289,7 +283,6 @@ public class ActivityController {
             })
     @RequestMapping(value = "/metadata/products", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
-    @DeprecatedApiResponseFields(friendlyUrl = "/activity/metadata/products", responseClass = ActivityMetadataPage.class)
     public ActivityMetadataPage metadataForProducts(@RequestParam(required = false) Long start,
             @RequestParam(required = false) Long end, @RequestParam(required = false) Integer pageNum,
             @RequestParam(required = false) Integer pageSize) throws JsonParseException, IOException, ValidationException {
@@ -304,7 +297,6 @@ public class ActivityController {
             })
     @RequestMapping(value = "/metadata/products/{id:^-?\\d+$}", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
-    @DeprecatedApiResponseFields(friendlyUrl = "/activity/metadata/products/{id}", responseClass = ActivityMetadata.class)
     public List<ActivityMetadata> metadataForProductById(@PathVariable("id") final Long id,
             @RequestParam(required = false) final Long start, @RequestParam(required = false) final Long end)
             throws JsonParseException, IOException, EntityRetrievalException, ValidationException {
