@@ -37,7 +37,6 @@ import gov.healthit.chpl.manager.ProductVersionManager;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
-import gov.healthit.chpl.web.controller.annotation.DeprecatedApi;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -100,26 +99,6 @@ public class ActivityController {
             throws EntityRetrievalException, JsonParseException, IOException, ValidationException, UserRetrievalException {
         ActivityDetails details = activityManager.getActivityById(id);
         return details;
-    }
-
-    @Operation(summary = "Get metadata about auditable records in the system for listings.",
-            description = "All parameters are optional and will default to the first page of listing activity "
-                    + "with a page size of the maximum allowed. Page number is 0-based. Activities will be returned "
-                    + "with the most recent activity first.",
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
-    @RequestMapping(value = "/metadata/listings", method = RequestMethod.GET,
-            produces = "application/json; charset=utf-8")
-    @Deprecated
-    @DeprecatedApi(friendlyUrl = "/activity/metadata/listings", httpMethod = "GET",
-        message = "This endpoint is deprecated and will be removed. Please use /activity/metadata/listings/{listingId} to get the activity metadata for a specific listing.",
-        removalDate = "2025-01-01")
-    public ActivityMetadataPage metadataForListings(@RequestParam(required = false) Long start,
-            @RequestParam(required = false) Long end, @RequestParam(required = false) Integer pageNum,
-            @RequestParam(required = false) Integer pageSize) throws JsonParseException, IOException, ValidationException {
-        return pagedMetadataManager.getActivityMetadataByConcept(
-                ActivityConcept.CERTIFIED_PRODUCT, start, end, pageNum, pageSize);
     }
 
     @Operation(summary = "Get metadata about auditable records in the system for a specific listing.",
