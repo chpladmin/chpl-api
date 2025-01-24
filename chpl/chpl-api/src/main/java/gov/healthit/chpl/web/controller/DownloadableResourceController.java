@@ -8,7 +8,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -22,7 +21,6 @@ import gov.healthit.chpl.svap.manager.SvapManager;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.FileUtils;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
-import gov.healthit.chpl.web.controller.annotation.DeprecatedApi;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -63,24 +61,6 @@ public class DownloadableResourceController {
         this.survManager = survManager;
         this.svapManager = svapManager;
         this.fileUtils = fileUtils;
-    }
-
-    @Operation(summary = "Download all listings of a given type in the specified format.",
-            description = "Valid values for 'listingType' are active, inactive, 2011 and 2014."
-                    + "Valid values for 'format' are csv and json.",
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
-    @Deprecated
-    @DeprecatedApi(friendlyUrl = "/download/{listingType}", httpMethod = "GET",
-        message = "This endpoing is deprecated and will be removed. Please use '/listings/download'.",
-        removalDate = "2024-12-31")
-    @RequestMapping(value = "/download/{listingType:2011|2014|active|inactive}", method = RequestMethod.GET, produces = "text/csv")
-    public void downloadListingsDeprecated(@PathVariable(value = "listingType", required = true) String listingType,
-            @RequestParam(value = "format", defaultValue = "csv", required = false) String formatInput,
-            @RequestParam(value = "definition", defaultValue = "false", required = false) Boolean isDefinition,
-            HttpServletRequest request, HttpServletResponse response) throws IOException, InvalidArgumentsException {
-        downloadListings(listingType, formatInput, isDefinition, request, response);
     }
 
     @Operation(summary = "Download all listings of a given type in the specified format.",
