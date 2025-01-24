@@ -63,7 +63,6 @@ public class UserDAO extends BaseDAOImpl {
             UserContactEntity contact = new UserContactEntity();
             contact.setEmail(StringUtils.normalizeSpace(user.getEmail()));
             contact.setFullName(StringUtils.normalizeSpace(user.getFullName()));
-            contact.setFriendlyName(StringUtils.normalizeSpace(user.getFriendlyName()));
             contact.setPhoneNumber(StringUtils.normalizeSpace(user.getPhoneNumber()));
             contact.setDeleted(false);
             contact.setSignatureDate(null); // null for new user, must confirm
@@ -85,7 +84,6 @@ public class UserDAO extends BaseDAOImpl {
         userEntity.getContact().setPhoneNumber(StringUtils.normalizeSpace(user.getPhoneNumber()));
         userEntity.getContact().setSignatureDate(user.getSignatureDate());
         userEntity.getContact().setFullName(StringUtils.normalizeSpace(user.getFullName()));
-        userEntity.getContact().setFriendlyName(StringUtils.normalizeSpace(user.getFriendlyName()));
         userEntity.setAccountEnabled(user.isAccountEnabled());
         userEntity.setAccountExpired(user.isAccountExpired());
         userEntity.setAccountLocked(user.isAccountLocked());

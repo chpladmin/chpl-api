@@ -32,7 +32,6 @@ public class UserDTO implements UserDetails {
     private UserPermission permission;
     private String subjectName;
     private String fullName;
-    private String friendlyName;
     private String email;
     private String phoneNumber;
     private String title;
@@ -100,7 +99,6 @@ public class UserDTO implements UserDetails {
         }
         user.setSubjectName(this.getSubjectName());
         user.setFullName(this.getFullName());
-        user.setFriendlyName(this.getFriendlyName());
         user.setEmail(this.getEmail());
         user.setPhoneNumber(this.getPhoneNumber());
         user.setAccountLocked(this.isAccountLocked());

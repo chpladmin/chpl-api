@@ -9,10 +9,8 @@ public class CreateUserRequest implements Serializable {
     private static final long serialVersionUID = -8036620754066927881L;
 
     private String fullName;
-    private String friendlyName;
     private String email;
     private String phoneNumber;
-    private String title = null;
     private String password = null;
     private Long organizationId;
     private Boolean complianceTermsAccepted = Boolean.FALSE;

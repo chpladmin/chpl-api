@@ -319,12 +319,10 @@ public class InvitationManager extends SecuredManager {
 
     private UserDTO constructUser(UserInvitation invitation, CreateUserRequest user) {
         UserDTO userDto = new UserDTO();
-        userDto.setTitle(user.getTitle());
         userDto.setPermission(invitation.getPermission());
         userDto.setPhoneNumber(user.getPhoneNumber());
         userDto.setPasswordResetRequired(false);
         userDto.setFullName(user.getFullName());
-        userDto.setFriendlyName(user.getFriendlyName());
         userDto.setFailedLoginCount(0);
         userDto.setEmail(user.getEmail());
         userDto.setCredentialsExpired(false);

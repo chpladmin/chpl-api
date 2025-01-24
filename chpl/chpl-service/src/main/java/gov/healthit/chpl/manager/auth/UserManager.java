@@ -40,7 +40,6 @@ import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.ActivityManager;
 import gov.healthit.chpl.manager.impl.SecuredManager;
-import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.service.UserAccountUpdateEmailer;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.UserMapper;
@@ -59,15 +58,13 @@ public class UserManager extends SecuredManager {
     private ActivityManager activityManager;
     private UserAccountUpdateEmailer userAccountUpdateEmailer;
     private UserMapper userMapper;
-    private ResourcePermissionsFactory resourcePermissionsFactory;
 
     @Autowired
     public UserManager(Environment env, UserDAO userDAO,
             UserResetTokenDAO userResetTokenDAO, BCryptPasswordEncoder bCryptPasswordEncoder,
             ErrorMessageUtil errorMessageUtil, ActivityManager activityManager,
             UserAccountUpdateEmailer userAccountUpdateEmailer,
-            UserMapper userMapper,
-            ResourcePermissionsFactory resourcePermissionsFactory) {
+            UserMapper userMapper) {
         this.env = env;
         this.userDAO = userDAO;
         this.userResetTokenDAO = userResetTokenDAO;
@@ -76,7 +73,6 @@ public class UserManager extends SecuredManager {
         this.activityManager = activityManager;
         this.userAccountUpdateEmailer = userAccountUpdateEmailer;
         this.userMapper = userMapper;
-        this.resourcePermissionsFactory = resourcePermissionsFactory;
     }
 
     @Transactional
@@ -115,7 +111,6 @@ public class UserManager extends SecuredManager {
                 .credentialsExpired(user.getCredentialsExpired())
                 .email(user.getEmail())
                 .failedLoginCount(before.getFailedLoginCount())
-                .friendlyName(user.getFriendlyName())
                 .fullName(user.getFullName())
                 .passwordResetRequired(user.getPasswordResetRequired())
                 .permission(before.getPermission())
@@ -300,10 +295,6 @@ public class UserManager extends SecuredManager {
         badWords.add("chpl");
         badWords.add(user.getEmail());
         badWords.add(user.getFullName());
-        if (user.getFriendlyName() != null) {
-            badWords.add(user.getFriendlyName());
-        }
-
         Zxcvbn zxcvbn = new Zxcvbn();
         Strength strength = zxcvbn.measure(password, badWords);
         return strength;

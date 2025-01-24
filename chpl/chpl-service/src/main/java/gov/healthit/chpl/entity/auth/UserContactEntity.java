@@ -37,10 +37,6 @@ public class UserContactEntity extends EntityAudit {
     @Column(name = "full_name", nullable = false)
     private String fullName;
 
-    @Basic(optional = true)
-    @Column(name = "friendly_name", nullable = false)
-    private String friendlyName;
-
     @Basic(optional = false)
     @Column(name = "email", nullable = false)
     private String email;
