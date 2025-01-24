@@ -2,6 +2,7 @@ package gov.healthit.chpl.entity.auth;
 
 import java.util.Date;
 
+import gov.healthit.chpl.entity.EntityAudit;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -9,8 +10,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-
-import gov.healthit.chpl.entity.EntityAudit;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -49,9 +48,6 @@ public class UserContactEntity extends EntityAudit {
     @Basic(optional = false)
     @Column(name = "phone_number", nullable = false)
     private String phoneNumber;
-
-    @Column(name = "title")
-    private String title;
 
     @Column(name = "signature_date")
     private Date signatureDate;

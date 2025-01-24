@@ -103,7 +103,6 @@ public class UserDTO implements UserDetails {
         user.setFriendlyName(this.getFriendlyName());
         user.setEmail(this.getEmail());
         user.setPhoneNumber(this.getPhoneNumber());
-        user.setTitle(this.getTitle());
         user.setAccountLocked(this.isAccountLocked());
         user.setAccountEnabled(this.isAccountEnabled());
         user.setCredentialsExpired(this.isCredentialsExpired());

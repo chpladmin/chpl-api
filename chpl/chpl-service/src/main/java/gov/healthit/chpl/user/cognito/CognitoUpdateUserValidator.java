@@ -65,7 +65,6 @@ public class CognitoUpdateUserValidator {
         user.setFriendlyName(StringUtils.normalizeSpace(user.getFriendlyName()));
         user.setFullName(StringUtils.normalizeSpace(user.getFullName()));
         user.setPhoneNumber(StringUtils.normalizeSpace(user.getPhoneNumber()));
-        user.setTitle(StringUtils.normalizeSpace(user.getTitle()));
     }
 
     private Boolean doesUserExistInCognito(UUID cognitoId) {

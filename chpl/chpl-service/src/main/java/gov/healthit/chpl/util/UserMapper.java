@@ -57,7 +57,6 @@ public class UserMapper {
             dto.setFriendlyName(entity.getContact().getFriendlyName());
             dto.setEmail(entity.getContact().getEmail());
             dto.setPhoneNumber(entity.getContact().getPhoneNumber());
-            dto.setTitle(entity.getContact().getTitle());
             dto.setSignatureDate(entity.getContact().getSignatureDate());
         }
         if (entity.getPermission() != null) {

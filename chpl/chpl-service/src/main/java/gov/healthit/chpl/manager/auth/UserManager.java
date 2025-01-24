@@ -121,7 +121,6 @@ public class UserManager extends SecuredManager {
                 .permission(before.getPermission())
                 .phoneNumber(user.getPhoneNumber())
                 .signatureDate(before.getSignatureDate())
-                .title(user.getTitle())
                 .lastLoggedInDate(before.getLastLoggedInDate())
                 .build();
         if (before.isAccountLocked() && !user.getAccountLocked()) { //unlocking locked users needs to reset failed login count
