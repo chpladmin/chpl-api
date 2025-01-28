@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.quartz.JobDataMap;
@@ -26,7 +27,6 @@ import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.caching.ListingSearchCacheRefresh;
 import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
-import gov.healthit.chpl.dao.auth.UserDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.domain.schedule.ChplJob;
@@ -47,6 +47,7 @@ import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.sharedstore.listing.ListingStoreRemove;
 import gov.healthit.chpl.sharedstore.listing.RemoveBy;
 import gov.healthit.chpl.util.AuthUtil;
+import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.FileUtils;
 import gov.healthit.chpl.validation.surveillance.SurveillanceCreationValidator;
 import gov.healthit.chpl.validation.surveillance.SurveillanceReadValidator;
@@ -66,7 +67,7 @@ public class SurveillanceManager extends SecuredManager {
     private SurveillanceCreationValidator survCreationValidator;
     private FileUtils fileUtils;
     private Environment env;
-    private UserDAO userDAO;
+    private ErrorMessageUtil msgUtil;
     private CertificationCriterionService certificationCriterionService;
     private String schemaBasicSurveillanceName;
 
@@ -82,7 +83,7 @@ public class SurveillanceManager extends SecuredManager {
             SurveillanceCreationValidator survCreationValidator,
             SurveillanceUpdateValidator survUpdateValidator,
             FileUtils fileUtils, Environment env,
-            UserDAO userDAO, CertificationCriterionService certificationCriterionService,
+            ErrorMessageUtil msgUtil, CertificationCriterionService certificationCriterionService,
             @Value("${schemaBasicSurveillanceName}") String schemaBasicSurveillanceName) {
         this.survDao = survDao;
         this.cpDao = cpDao;
@@ -94,7 +95,7 @@ public class SurveillanceManager extends SecuredManager {
         this.survReadValidator = survReadValidator;
         this.fileUtils = fileUtils;
         this.env = env;
-        this.userDAO = userDAO;
+        this.msgUtil = msgUtil;
         this.certificationCriterionService = certificationCriterionService;
         this.schemaBasicSurveillanceName = schemaBasicSurveillanceName;
 
@@ -200,6 +201,9 @@ public class SurveillanceManager extends SecuredManager {
 
         if (survToDelete == null) {
             throw new InvalidArgumentsException("Surveillance to delete is null.");
+        }
+        if (StringUtils.isEmpty(reason)) {
+            throw new MissingReasonException(msgUtil.getMessage("surveillance.reasonRequired"));
         }
 
         CertifiedProductSearchDetails beforeCp = cpDetailsManager.getCertifiedProductDetails(certifiedProductId);
