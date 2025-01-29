@@ -26,6 +26,7 @@ import gov.healthit.chpl.report.surveillance.CapCounts;
 import gov.healthit.chpl.report.surveillance.NonconformityCounts;
 import gov.healthit.chpl.report.surveillance.SurveillanceActivityCounts;
 import gov.healthit.chpl.report.surveillance.SurveillanceReportsService;
+import gov.healthit.chpl.report.svap.SvapReportService;
 import gov.healthit.chpl.scheduler.job.report.attestation.AttestationReport;
 import gov.healthit.chpl.scheduler.job.summarystatistics.data.CertificationBodyStatistic;
 import gov.healthit.chpl.search.domain.ListingSearchResult;
@@ -47,6 +48,7 @@ public class ReportDataManager {
     private ReportMetadataDAO reportMetadataDAO;
     private CriteriaAttributeReportService criteriaAttributeReportService;
     private ServiceBaseUrlListReportService serviceBaseUrlListReportService;
+    private SvapReportService svapReportService;
 
 
     @Autowired
@@ -59,7 +61,8 @@ public class ReportDataManager {
             AttestationReportService attestationReportService,
             ReportMetadataDAO reportMetadataDAO,
             CriteriaAttributeReportService criteriaAttributeReportService,
-            ServiceBaseUrlListReportService serviceBaseUrlListReportService) {
+            ServiceBaseUrlListReportService serviceBaseUrlListReportService,
+            SvapReportService svapReportService) {
         this.criteriaMigrationReportService = criteriaMigrationReportService;
         this.developerReportsService = developerReportsService;
         this.surveillanceReportsService = surveillanceReportsService;
@@ -71,6 +74,7 @@ public class ReportDataManager {
         this.reportMetadataDAO = reportMetadataDAO;
         this.criteriaAttributeReportService = criteriaAttributeReportService;
         this.serviceBaseUrlListReportService = serviceBaseUrlListReportService;
+        this.svapReportService = svapReportService;
     }
 
     public List<ReportMetadata> getReportMetadataByReportGroup(String reportGroup) {
@@ -262,5 +266,11 @@ public class ReportDataManager {
     public List<AttestationReport> getAttestationReports() {
         return attestationReportService.getAttestationReports();
     }
+
+    @Synchronized("lock")
+    public SvapReportService getSvapReportService() {
+        return svapReportService;
+    }
+
 
 }

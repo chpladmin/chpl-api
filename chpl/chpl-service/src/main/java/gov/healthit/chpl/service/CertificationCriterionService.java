@@ -86,10 +86,10 @@ public class CertificationCriterionService {
             }
         }
         staticFields2015AndBeyond.stream()
-            .map(field -> getFieldValue(field))
-            .filter(criterionDescriptor -> !StringUtils.isBlank(criterionDescriptor) && get(criterionDescriptor) != null)
-            .forEach(criterionDescriptor -> criterionHeadingsByIdMap.put(
-                    get(criterionDescriptor).getId(), getCriterionHeadings(criterionDescriptor)));
+        .map(field -> getFieldValue(field))
+        .filter(criterionDescriptor -> !StringUtils.isBlank(criterionDescriptor) && get(criterionDescriptor) != null)
+        .forEach(criterionDescriptor -> criterionHeadingsByIdMap.put(
+                get(criterionDescriptor).getId(), getCriterionHeadings(criterionDescriptor)));
 
         //2014 criteria
         Field[] declaredFields2014 = Criteria2014.class.getDeclaredFields();
@@ -100,12 +100,12 @@ public class CertificationCriterionService {
             }
         }
         staticFields2014.stream()
-            .map(field -> getFieldValue(field))
-            .filter(criterionDescriptor -> !StringUtils.isBlank(criterionDescriptor) && get(criterionDescriptor) != null)
-            .forEach(criterionDescriptor -> criterionHeadingsByIdMap.put(
-                    get(criterionDescriptor).getId(), getCriterionHeadings(criterionDescriptor)));
+        .map(field -> getFieldValue(field))
+        .filter(criterionDescriptor -> !StringUtils.isBlank(criterionDescriptor) && get(criterionDescriptor) != null)
+        .forEach(criterionDescriptor -> criterionHeadingsByIdMap.put(
+                get(criterionDescriptor).getId(), getCriterionHeadings(criterionDescriptor)));
 
-      //2011 criteria
+        //2011 criteria
         Field[] declaredFields2011 = Criteria2014.class.getDeclaredFields();
         List<Field> staticFields2011 = new ArrayList<Field>();
         for (Field field : declaredFields2011) {
@@ -114,10 +114,10 @@ public class CertificationCriterionService {
             }
         }
         staticFields2011.stream()
-            .map(field -> getFieldValue(field))
-            .filter(criterionDescriptor -> !StringUtils.isBlank(criterionDescriptor) && get(criterionDescriptor) != null)
-            .forEach(criterionDescriptor -> criterionHeadingsByIdMap.put(
-                    get(criterionDescriptor).getId(), getCriterionHeadings(criterionDescriptor)));
+        .map(field -> getFieldValue(field))
+        .filter(criterionDescriptor -> !StringUtils.isBlank(criterionDescriptor) && get(criterionDescriptor) != null)
+        .forEach(criterionDescriptor -> criterionHeadingsByIdMap.put(
+                get(criterionDescriptor).getId(), getCriterionHeadings(criterionDescriptor)));
     }
 
     private void initHeadingToCriterionMap() {
@@ -130,9 +130,9 @@ public class CertificationCriterionService {
             }
         }
         staticFields2015AndBeyond.stream()
-            .map(field -> getFieldValue(field))
-            .filter(criterionDescriptor -> !StringUtils.isBlank(criterionDescriptor) && get(criterionDescriptor) != null)
-            .forEach(criterionDescriptor -> addHeadingsToMap(criterionDescriptor));
+        .map(field -> getFieldValue(field))
+        .filter(criterionDescriptor -> !StringUtils.isBlank(criterionDescriptor) && get(criterionDescriptor) != null)
+        .forEach(criterionDescriptor -> addHeadingsToMap(criterionDescriptor));
 
         //2014 criteria
         Field[] declaredFields2014 = Criteria2014.class.getDeclaredFields();
@@ -143,11 +143,11 @@ public class CertificationCriterionService {
             }
         }
         staticFields2014.stream()
-            .map(field -> getFieldValue(field))
-            .filter(criterionDescriptor -> !StringUtils.isBlank(criterionDescriptor) && get(criterionDescriptor) != null)
-            .forEach(criterionDescriptor -> addHeadingsToMap(criterionDescriptor));
+        .map(field -> getFieldValue(field))
+        .filter(criterionDescriptor -> !StringUtils.isBlank(criterionDescriptor) && get(criterionDescriptor) != null)
+        .forEach(criterionDescriptor -> addHeadingsToMap(criterionDescriptor));
 
-      //2011 criteria
+        //2011 criteria
         Field[] declaredFields2011 = Criteria2014.class.getDeclaredFields();
         List<Field> staticFields2011 = new ArrayList<Field>();
         for (Field field : declaredFields2011) {
@@ -156,16 +156,16 @@ public class CertificationCriterionService {
             }
         }
         staticFields2011.stream()
-            .map(field -> getFieldValue(field))
-            .filter(criterionDescriptor -> !StringUtils.isBlank(criterionDescriptor) && get(criterionDescriptor) != null)
-            .forEach(criterionDescriptor -> addHeadingsToMap(criterionDescriptor));
+        .map(field -> getFieldValue(field))
+        .filter(criterionDescriptor -> !StringUtils.isBlank(criterionDescriptor) && get(criterionDescriptor) != null)
+        .forEach(criterionDescriptor -> addHeadingsToMap(criterionDescriptor));
     }
 
     private void addHeadingsToMap(String criterionDescriptor) {
         CertificationCriterion criterion = get(criterionDescriptor);
         String headings = environment.getProperty(criterionDescriptor + HEADINGS_PROPERTY_SUFFIX).toString();
         Stream.of(headings.split(HEADING_DELIMITER))
-            .forEach(heading -> headingToCriterionMap.put(heading.toUpperCase(), criterion));
+        .forEach(heading -> headingToCriterionMap.put(heading.toUpperCase(), criterion));
     }
 
     private void initAllowedHeadingsForNewListing() {
@@ -177,10 +177,10 @@ public class CertificationCriterionService {
             }
         }
         this.allowedHeadingsForNewListing = staticFields.stream()
-            .map(field -> getFieldValue(field))
-            .filter(fieldValue -> !StringUtils.isBlank(fieldValue))
-            .flatMap(fieldValue -> getCriterionHeadings(fieldValue).stream())
-            .collect(Collectors.toList());
+                .map(field -> getFieldValue(field))
+                .filter(fieldValue -> !StringUtils.isBlank(fieldValue))
+                .flatMap(fieldValue -> getCriterionHeadings(fieldValue).stream())
+                .collect(Collectors.toList());
     }
 
     public CertificationCriterion get(Long certificationCriterionId) {
@@ -215,8 +215,8 @@ public class CertificationCriterionService {
 
     public List<String> getEquivalentCriterionHeadings(String criterionHeading) {
         Long keyForCriterionHeading = criterionHeadingsByIdMap.keySet().stream()
-            .filter(key -> criterionHeadingsByIdMap.get(key).contains(criterionHeading.toUpperCase()))
-            .findAny().orElse(null);
+                .filter(key -> criterionHeadingsByIdMap.get(key).contains(criterionHeading.toUpperCase()))
+                .findAny().orElse(null);
         if (keyForCriterionHeading != null) {
             return List.of();
         }
@@ -315,7 +315,7 @@ public class CertificationCriterionService {
         return input;
     }
 
-    private Integer getCertificationResultSortIndex(Long criterionId) {
+    public Integer getCertificationResultSortIndex(Long criterionId) {
         Integer index = referenceSortingCriteriaList.indexOf(criterionId);
         if (index.equals(-1)) {
             // This is case when the criteria ID is not in the array, just make it last...
