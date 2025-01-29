@@ -247,6 +247,15 @@
             <recover>false</recover>
         </job>
 
+        <job>
+            <name>standardsChecker</name>
+            <group>systemJobs</group>
+            <description>Prints out listings have have had standards changed between 2024-12-18 and 2025-01-22</description>
+            <job-class>gov.healthit.chpl.scheduler.job.onetime.StandardsCheckerJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+        </job>
+
         <!-- API Key Delete Warning Job -->
         <job>
             <name>apiKeyDeleteWarningEmailJob</name>

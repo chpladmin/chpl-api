@@ -36,6 +36,10 @@
         <AppenderRef ref="chartDataCreatorJob" />
         <AppenderRef ref="chartDataCreatorJobJson" />
     </Logger>
+    <Logger name="standardsCheckerJobLogger" level="INFO" additivity="false">
+        <AppenderRef ref="standardsCheckerJob" />
+        <AppenderRef ref="standardsCheckerJobJson" />
+    </Logger>
     <Logger name="certifiedProductDownloadableResourceCreatorJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="certifiedProductDownloadableResourceCreatorJob" />
         <AppenderRef ref="certifiedProductDownloadableResourceCreatorJobJson" />
