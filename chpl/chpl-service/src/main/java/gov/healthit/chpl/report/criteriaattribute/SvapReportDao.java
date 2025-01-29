@@ -10,7 +10,6 @@ import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterionEntity;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.report.svap.CriteriaWithAnySvap;
-import gov.healthit.chpl.report.svap.CriteriaWithSvap;
 import gov.healthit.chpl.report.svap.CriterionCount;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.svap.entity.SvapEntity;
@@ -157,41 +156,6 @@ public class SvapReportDao extends BaseDAOImpl {
                 .peek(x -> LOGGER.info(x.toString()))
                 .toList();
     }
-
-    public List<CriteriaWithSvap> getCriteriaWithSvap() {
-        String criteriaCountsWithSvapHql = "SELECT cc, s, count(*) as criteriaCount "
-                + "FROM CertificationCriterionEntity cc, "
-                + "CertificationResultEntity cr, "
-                + "CertifiedProductDetailsEntity cpd, "
-                + "CertificationResultSvapEntity crs, "
-                + "SvapEntity s, "
-                + "CertificationCriterionAttributeEntity cca "
-                + "WHERE cc.id = cr.certificationCriterionId "
-                + "AND cr.certifiedProductId = cpd.id "
-                + "AND cr.id = crs.certificationResultId "
-                + "AND cc.id = cca.criterion.id "
-                + "AND crs.svapId = s.id "
-                + "AND cpd.certificationStatusId IN (1,6,7) "
-                + "AND (cc.endDay is null OR cc.endDay > CURRENT_DATE()) "
-                + "AND cca.svap = true "
-                + "AND cc.deleted = false "
-                + "AND cr.deleted = false "
-                + "AND crs.deleted = false "
-                + "AND cpd.deleted = false "
-                + "GROUP BY cc.id, s.id";
-
-        Query criteriaWithSvapCountsQuery = entityManager.createQuery(criteriaCountsWithSvapHql);
-        List<Object[]> criteriaWithSvapCountsResults = criteriaWithSvapCountsQuery.getResultList();
-
-        return criteriaWithSvapCountsResults.stream()
-                .map(result -> CriteriaWithSvap.builder()
-                        .certificationCriterion(((CertificationCriterionEntity) result[0]).toDomain())
-                        .svap(((SvapEntity) result[1]).toDomain())
-                        .activeListingCountAttestingToSvap((Long) result[2])
-                        .build())
-                .toList();
-    }
-
 
     private Long lookupCountByCriteria(List<CriterionCount> criteriaCounts, CertificationCriterion criterion) {
         Optional<CriterionCount> criterionCount = criteriaCounts.stream()

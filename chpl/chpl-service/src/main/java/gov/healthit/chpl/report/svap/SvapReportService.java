@@ -35,11 +35,6 @@ public class SvapReportService {
     }
 
     @Transactional
-    public List<CriteriaWithSvap> getCriteriaWithSvap() {
-        return svapReportDAO.getCriteriaWithSvap();
-    }
-
-    @Transactional
     public List<SvapListingReport> getSvapListingReports() {
         return svapReportDAO.getSvapListingReports();
     }

@@ -11,8 +11,6 @@ import org.springframework.web.bind.annotation.RestController;
 import gov.healthit.chpl.report.ReportDataManager;
 import gov.healthit.chpl.report.common.CertificationCriterionWithOrder;
 import gov.healthit.chpl.report.criteriaattribute.SvapListingReport;
-import gov.healthit.chpl.report.svap.CriteriaWithAnySvap;
-import gov.healthit.chpl.report.svap.CriteriaWithSvap;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -37,33 +35,13 @@ public class SvapReportController {
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
     })
-    @RequestMapping(value = "/criteria-with-any-svap-counts", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public @ResponseBody List<CriteriaWithAnySvap> getCriteriaWithAnySvap() {
-        return reportDataManager.getSvapReportService().getCriteriaWithAnySvap();
-    }
-
-    @Operation(summary = "",
-            description = "",
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-    })
-    @RequestMapping(value = "/criteria-with-svap-counts", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
-    public @ResponseBody List<CriteriaWithSvap> getTestToolReports() {
-        return reportDataManager.getSvapReportService().getCriteriaWithSvap();
-    }
-
-    @Operation(summary = "",
-            description = "",
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-    })
     @RequestMapping(value = "/listings", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<SvapListingReport> getSvapListingReports() {
         return reportDataManager.getSvapReportService().getSvapListingReports();
     }
 
-    @Operation(summary = "",
-            description = "",
+    @Operation(summary = "Retrieves the list of Certification Criteria that can be associated with an SVAP.",
+            description = "Retrieves the list of Certification Criteria that can be associated with an SVAP.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
     })
