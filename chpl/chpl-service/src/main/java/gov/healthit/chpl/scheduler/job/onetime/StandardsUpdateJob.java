@@ -3,6 +3,7 @@ package gov.healthit.chpl.scheduler.job.onetime;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -24,6 +25,8 @@ import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.dto.ActivityDTO;
 import gov.healthit.chpl.standard.CertificationResultStandard;
+import gov.healthit.chpl.standard.Standard;
+import gov.healthit.chpl.standard.StandardGroupService;
 import gov.healthit.chpl.util.DateUtil;
 import gov.healthit.chpl.util.Util;
 import jakarta.persistence.Query;
@@ -31,11 +34,14 @@ import jakarta.transaction.Transactional;
 import lombok.extern.log4j.Log4j2;
 
 @DisallowConcurrentExecution
-@Log4j2(topic = "standardsCheckerJobLogger")
-public class StandardsCheckerJob implements Job {
+@Log4j2(topic = "standardsUpdateJobLogger")
+public class StandardsUpdateJob implements Job {
 
     @Autowired
     private ListingActivityUtil listingActivityUtil;
+
+    @Autowired
+    private StandardGroupService standardGroupService;
 
     @Autowired
     private StandardsCheckerActivityDAO standardsCheckerActivityDao;
@@ -46,7 +52,7 @@ public class StandardsCheckerJob implements Job {
     @Override
     public void execute(JobExecutionContext jobContext) throws JobExecutionException {
         SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
-        LOGGER.info("********* Standards Checker Job. *********");
+        LOGGER.info("********* Starting the Standards Checker Job. *********");
         try {
             // get all listing ids that were updated between 2024-12-18 and 2025-01-22
             Set<Long> listingIdsWithUpdates = standardsCheckerActivityDao.getListingsUpdatedBetween(startDate, endDate);
@@ -113,8 +119,10 @@ public class StandardsCheckerJob implements Job {
                                             + Util.joinListGrammatically(cr.getStandards().stream().map(std -> std.getStandard().getRegulatoryTextCitation()).toList()));
                                     //TODO
                                     // are any of the added standards currently retired?
+                                    removeRetiredNonGroupedStandards(cr);
                                         // they should be logged and/or removed
                                     // are any of the added standards part of a group where there is a newer standard also included on that criteria?
+                                    removeOldGroupedStandardsIfNewerStandardInGroupIsPresent(cr);
                                         // they should be logged and/or removed
                                 });
 
@@ -129,8 +137,10 @@ public class StandardsCheckerJob implements Job {
 
                                     //TODO
                                     // are any of the added standards currently retired?
+                                    removeRetiredNonGroupedStandards(cr);
                                         // they should be logged and/or removed
                                     // are any of the added standards part of a group where there is a newer standard also included on that criteria?
+                                    removeOldGroupedStandardsIfNewerStandardInGroupIsPresent(cr);
                                         // they should be logged and/or removed
                                 });
                         } catch (Exception ex) {
@@ -167,6 +177,69 @@ public class StandardsCheckerJob implements Job {
                 .filter(certificationResultStandard ->
                         certificationResultStandard != null ? certificationResultStandard.getStandard().getId().equals(crs.getStandard().getId()) : false)
                 .findAny();
+    }
+
+    private void removeRetiredNonGroupedStandards(CertificationResult cr) {
+        Map<String, List<Standard>> groupedStandards = standardGroupService.getGroupedStandardsForCriteria(cr.getCriterion(), LocalDate.now());
+        List<CertificationResultStandard> retiredNonGroupedStandards = cr.getStandards().stream()
+            .filter(std -> !isStandardInAGroup(groupedStandards, std.getStandard()))
+            .filter(std -> std.getStandard().getEndDay() != null && std.getStandard().getEndDay().isBefore(LocalDate.now()))
+            .collect(Collectors.toList());
+
+        if (CollectionUtils.isEmpty(retiredNonGroupedStandards)) {
+            LOGGER.info("\t\t\tNo retired non-grouped standards are present on " + Util.formatCriteriaNumber(cr.getCriterion()));
+        } else {
+            LOGGER.info("\t\t\tRetired non-grouped standards for : " + Util.formatCriteriaNumber(cr.getCriterion()));
+            retiredNonGroupedStandards.stream()
+                .forEach(std -> LOGGER.info("\t\t\t" + std.getStandard().getRegulatoryTextCitation()));
+        }
+    }
+
+    private Boolean isStandardInAGroup(Map<String, List<Standard>> standardGroups, Standard standard) {
+        Boolean isStdInAnyGroup = standardGroups.entrySet().stream()
+            .flatMap(mapEntry -> mapEntry.getValue().stream())
+            .filter(std -> std.getId().equals(standard.getId()))
+            .findAny()
+            .isPresent();
+        return isStdInAnyGroup;
+    }
+
+    private void removeOldGroupedStandardsIfNewerStandardInGroupIsPresent(CertificationResult cr) {
+        Map<String, List<Standard>> groupedStandards = standardGroupService.getGroupedStandardsForCriteria(cr.getCriterion(), LocalDate.now());
+        List<CertificationResultStandard> standardsWithNewerStandardInGroup = cr.getStandards().stream()
+            .filter(std -> isStandardInAGroup(groupedStandards, std.getStandard()))
+            .filter(std -> isNewerStandardInGroup(groupedStandards.get(getStandardGroupName(groupedStandards, std.getStandard())), std.getStandard()))
+            .collect(Collectors.toList());
+
+        if (CollectionUtils.isEmpty(standardsWithNewerStandardInGroup)) {
+            LOGGER.info("\t\t\tNo grouped standards with newer standards present from the group for " + Util.formatCriteriaNumber(cr.getCriterion()));
+        } else {
+            LOGGER.info("\t\t\tGrouped standards with newer standards present from the group for: " + Util.formatCriteriaNumber(cr.getCriterion()));
+            standardsWithNewerStandardInGroup.stream()
+                .forEach(std -> LOGGER.info("\t\t\t" + std.getStandard().getRegulatoryTextCitation()));
+        }
+    }
+
+    private String getStandardGroupName(Map<String, List<Standard>> standardGroups, Standard standard) {
+        return standardGroups.keySet().stream()
+            .filter(key -> isStandardInGroup(standardGroups.get(key), standard))
+            .findAny()
+            .orElse(null);
+    }
+
+    private Boolean isStandardInGroup(List<Standard> standardsInGroup, Standard standard) {
+        Boolean isStdInGroup = standardsInGroup.stream()
+            .filter(std -> std.getId().equals(standard.getId()))
+            .findAny()
+            .isPresent();
+        return isStdInGroup;
+    }
+
+    private boolean isNewerStandardInGroup(List<Standard> standardsInGroup, Standard standard) {
+        return standardsInGroup.stream()
+            .filter(std -> std.getStartDay().isAfter(standard.getStartDay()))
+            .findAny()
+            .isPresent();
     }
 
     @Component

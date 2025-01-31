@@ -7,10 +7,6 @@
         <delete-triggers-in-group>triggerJob</delete-triggers-in-group>
         <delete-triggers-in-group>interruptJob</delete-triggers-in-group>
         <!-- BEGIN REMOVE after PROD push -->
-        <delete-trigger>
-            <name>generateUrlStatusData</name>
-            <group>urlStatusDataCollectorTrigger</group>
-        </delete-trigger>
         <!-- END remove after PROD push -->
     </pre-processing-commands>
     <processing-directives>
@@ -248,10 +244,10 @@
         </job>
 
         <job>
-            <name>standardsChecker</name>
+            <name>standardsUpdateJob</name>
             <group>systemJobs</group>
-            <description>Prints out listings have have had standards changed between 2024-12-18 and 2025-01-22</description>
-            <job-class>gov.healthit.chpl.scheduler.job.onetime.StandardsCheckerJob</job-class>
+            <description>Removes inappropriate standards from listings have have had standards changed between 2024-12-18 and 2025-01-22</description>
+            <job-class>gov.healthit.chpl.scheduler.job.onetime.StandardsUpdateJob</job-class>
             <durability>true</durability>
             <recover>false</recover>
         </job>
