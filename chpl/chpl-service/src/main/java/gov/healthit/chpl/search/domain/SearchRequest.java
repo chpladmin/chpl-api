@@ -92,8 +92,6 @@ public class SearchRequest implements Serializable {
     private Set<RiskManagementSummaryInformationlSearchOptions> riskManagementSummaryInformationOptions = new HashSet<RiskManagementSummaryInformationlSearchOptions>();
     @JsonIgnore
     private String riskManagementSummaryInformationOperatorString;
-    private SearchSetOperator riskManagementSummaryInformationOperator;
-
 
     @JsonIgnore
     private String orderByString;

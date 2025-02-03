@@ -33,7 +33,6 @@ public class SearchRequestNormalizer {
         normalizeSvapIds(request);
         normalizeSvapOperator(request);
         normalizeRiskManagementSummaryInformationOptions(request);
-        normalizeRiskManagementSummaryInformationOptionsOperator(request);
         normalizeOrderBy(request);
     }
 
@@ -167,10 +166,10 @@ public class SearchRequestNormalizer {
             try {
                 complianceSearchFilter.setNonConformityOptions(
                         complianceSearchFilter.getNonConformityOptionsStrings().stream()
-                        .filter(option -> !StringUtils.isBlank(option))
-                        .map(option -> convertToNonconformitySearchOption(option))
-                        .filter(option -> option != null)
-                        .collect(Collectors.toSet()));
+                                .filter(option -> !StringUtils.isBlank(option))
+                                .map(option -> convertToNonconformitySearchOption(option))
+                                .filter(option -> option != null)
+                                .collect(Collectors.toSet()));
             } catch (Exception ignore) {
             }
         }
@@ -207,10 +206,10 @@ public class SearchRequestNormalizer {
             try {
                 request.setRwtOptions(
                         request.getRwtOptionsStrings().stream()
-                        .filter(option -> !StringUtils.isBlank(option))
-                        .map(option -> convertToRwtSearchOption(option))
-                        .filter(option -> option != null)
-                        .collect(Collectors.toSet()));
+                                .filter(option -> !StringUtils.isBlank(option))
+                                .map(option -> convertToRwtSearchOption(option))
+                                .filter(option -> option != null)
+                                .collect(Collectors.toSet()));
             } catch (Exception ignore) {
             }
         }
@@ -268,10 +267,10 @@ public class SearchRequestNormalizer {
             try {
                 request.setRiskManagementSummaryInformationOptions(
                         request.getRiskManagementSummaryInformationOptionsStrings().stream()
-                        .filter(option -> !StringUtils.isBlank(option))
-                        .map(option -> convertToRiskManagementSummaryInformationSearchOption(option))
-                        .filter(option -> option != null)
-                        .collect(Collectors.toSet()));
+                                .filter(option -> !StringUtils.isBlank(option))
+                                .map(option -> convertToRiskManagementSummaryInformationSearchOption(option))
+                                .filter(option -> option != null)
+                                .collect(Collectors.toSet()));
             } catch (Exception ignore) {
             }
         }
@@ -287,17 +286,6 @@ public class SearchRequestNormalizer {
         } catch (Exception ex) {
         }
         return convertedOption;
-    }
-
-    private void normalizeRiskManagementSummaryInformationOptionsOperator(SearchRequest request) {
-        if (!StringUtils.isBlank(request.getRiskManagementSummaryInformationOperatorString())
-                && request.getRiskManagementSummaryInformationOperator() == null) {
-            try {
-                request.setRiskManagementSummaryInformationOperator(
-                        SearchSetOperator.valueOf(request.getRiskManagementSummaryInformationOperatorString().toUpperCase().trim()));
-            } catch (Exception ignore) {
-            }
-        }
     }
 
     private void normalizeOrderBy(SearchRequest request) {

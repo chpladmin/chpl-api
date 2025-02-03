@@ -125,8 +125,7 @@ public class ListingSearchService {
                 .filter(listing -> matchesHasAnySvapFilter(listing, searchRequest.getHasAnySvap()))
                 .filter(listing -> matchesSvapNoticeUrlFilter(listing, searchRequest.getHasSvapNoticeUrl()))
                 .filter(listing -> matchesSvaps(listing, searchRequest.getSvapIds(), searchRequest.getSvapOperator()))
-                .filter(listing -> matchesRiskManagementSummaryInformationFilter(listing, searchRequest.getRiskManagementSummaryInformationOptions(),
-                        searchRequest.getRiskManagementSummaryInformationOperator()))
+                .filter(listing -> matchesRiskManagementSummaryInformationFilter(listing, searchRequest.getRiskManagementSummaryInformationOptions()))
                 .collect(Collectors.toList());
         LOGGER.debug("Total matched listings: " + matchedListings.size());
 
@@ -140,8 +139,7 @@ public class ListingSearchService {
         response.setDirectReviewsAvailable(drService.doesCacheHaveAnyOkData());
 
         sort(matchedListings, searchRequest.getOrderBy(), searchRequest.getSortDescending());
-        List<ListingSearchResult> pageOfListings
-        = getPage(matchedListings, getBeginIndex(searchRequest), getEndIndex(searchRequest));
+        List<ListingSearchResult> pageOfListings = getPage(matchedListings, getBeginIndex(searchRequest), getEndIndex(searchRequest));
         response.setResults(pageOfListings);
         return response;
     }
@@ -157,7 +155,7 @@ public class ListingSearchService {
     private boolean hasAnyComplianceFilters(ComplianceSearchFilter complianceFilter) {
         return complianceFilter != null
                 && (complianceFilter.getHasHadComplianceActivity() != null
-                || CollectionUtils.isNotEmpty(complianceFilter.getNonConformityOptions()));
+                        || CollectionUtils.isNotEmpty(complianceFilter.getNonConformityOptions()));
     }
 
     public List<ListingSearchResult> getAllPagesOfSearchResults(SearchRequest searchRequest) throws ValidationException {
@@ -172,7 +170,6 @@ public class ListingSearchService {
         }
         return searchResults;
     }
-
 
     public List<ListingSearchResult> getAllPagesOfSearchResults(SearchRequest searchRequest, Logger logger) {
         List<ListingSearchResult> searchResults = new ArrayList<ListingSearchResult>();
@@ -391,7 +388,7 @@ public class ListingSearchService {
     private boolean matchesComplianceFilter(ListingSearchResult listing, ComplianceSearchFilter complianceFilter) {
         if (complianceFilter == null
                 || (complianceFilter.getHasHadComplianceActivity() == null
-                && CollectionUtils.isEmpty(complianceFilter.getNonConformityOptions()))) {
+                        && CollectionUtils.isEmpty(complianceFilter.getNonConformityOptions()))) {
             return true;
         }
 
@@ -492,8 +489,7 @@ public class ListingSearchService {
     }
 
     private boolean matchesRiskManagementSummaryInformationFilter(ListingSearchResult listing,
-            Set<RiskManagementSummaryInformationlSearchOptions> riskManagementSummaryInformationOptions,
-            SearchSetOperator riskManagementSummaryInformationOperator) {
+            Set<RiskManagementSummaryInformationlSearchOptions> riskManagementSummaryInformationOptions) {
 
         if (CollectionUtils.isEmpty(riskManagementSummaryInformationOptions)) {
             return true;
@@ -501,18 +497,14 @@ public class ListingSearchService {
 
         String riskManagementSummaryInformation = listing.getRiskManagementSummaryInformation() != null ? listing.getRiskManagementSummaryInformation().getValue() : "";
 
-        Boolean riskManagementSummaryInformationFilter = null;
         if (riskManagementSummaryInformationOptions.contains(RiskManagementSummaryInformationlSearchOptions.HAS_RISK_MANAGEMENT_SUMMARY_INFORMATION)) {
-            riskManagementSummaryInformationFilter = StringUtils.isNotBlank(riskManagementSummaryInformation);
+            return StringUtils.isNotBlank(riskManagementSummaryInformation);
         }
-        Boolean noRiskManagementSummaryInformationFilter = null;
         if (riskManagementSummaryInformationOptions.contains(RiskManagementSummaryInformationlSearchOptions.NO_RISK_MANAGEMENT_SUMMARY_INFORMATION)) {
-            noRiskManagementSummaryInformationFilter = StringUtils.isBlank(riskManagementSummaryInformation);
+            return StringUtils.isBlank(riskManagementSummaryInformation);
         }
 
-        boolean matchesRiskManagementSummaryInformationFilter = applyOperation(riskManagementSummaryInformationOperator,
-                riskManagementSummaryInformationFilter, noRiskManagementSummaryInformationFilter);
-        return matchesRiskManagementSummaryInformationFilter;
+        return true;
     }
 
     private boolean matchesHasAnySvapFilter(ListingSearchResult listing, Boolean hasAnySvapFilter) {
@@ -798,7 +790,7 @@ public class ListingSearchService {
 
         @Override
         public int compare(ListingSearchResult listing1, ListingSearchResult listing2) {
-            if (listing1.getCertificationDate() == null ||  listing2.getCertificationDate() == null) {
+            if (listing1.getCertificationDate() == null || listing2.getCertificationDate() == null) {
                 return 0;
             }
             int sortFactor = descending ? -1 : 1;
