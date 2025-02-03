@@ -17,7 +17,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
-@Tag(name = "report-data/non-conformities", description = "Allows retrieval of data used by Non-conformity reports.")
+@Tag(name = "report-data/non-conformities", description = "Allows retrieval of data used by non-conformity reports.")
 @RestController
 @RequestMapping("/report-data/non-conformities")
 public class NonconformityReportController {
@@ -29,8 +29,8 @@ public class NonconformityReportController {
         this.reportDataManager = reportDataManager;
     }
 
-    @Operation(summary = "Retrieves the data used to generate the Non-conformity Type Counts report.",
-            description = "Retrieves the data used to generate the Non-conformity Type Counts report.",
+    @Operation(summary = "Retrieves the data used to generate the Non-Conformity Type report.",
+            description = "Retrieves the data used to generate the Non-Conformity Type report.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
