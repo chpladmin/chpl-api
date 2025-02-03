@@ -70,7 +70,7 @@ public class SurveillanceRequirementReviewer implements ReadReviewer {
             SurveillanceResultType resType = survDao.findSurveillanceResultType(req.getResult().getName());
             if (resType == null) {
                 surv.getErrorMessages().add(msgUtil.getMessage("surveillance.resultWithNameNotFound",
-                        req.getResult().getName(), req.getRequirementType().getFormattedTitle()));
+                        req.getResult().getName(), req.getFormattedTitle()));
             } else {
                 req.setResult(resType);
             }
@@ -78,7 +78,7 @@ public class SurveillanceRequirementReviewer implements ReadReviewer {
             SurveillanceResultType resType = survDao.findSurveillanceResultType(req.getResult().getId());
             if (resType == null) {
                 surv.getErrorMessages().add(msgUtil.getMessage("surveillance.resultWithIdNotFound",
-                        req.getResult().getId(), req.getRequirementType().getFormattedTitle()));
+                        req.getResult().getId(), req.getFormattedTitle()));
             } else {
                 req.setResult(resType);
             }
@@ -88,7 +88,7 @@ public class SurveillanceRequirementReviewer implements ReadReviewer {
     private void checkRequirementValidForSurveillanceStartDate(Surveillance surv, SurveillanceRequirement req) {
         if (req.getRequirementType() != null
                 && !DateUtil.isDateBetweenInclusive(Pair.of(req.getRequirementType().getStartDay(), req.getRequirementType().getEndDay()), surv.getStartDay())) {
-            surv.getErrorMessages().add(msgUtil.getMessage("surveillance.nonConformityType.notValid", req.getRequirementType().getFormattedTitle()));
+            surv.getErrorMessages().add(msgUtil.getMessage("surveillance.nonConformityType.notValid", req.getFormattedTitle()));
         }
     }
 
