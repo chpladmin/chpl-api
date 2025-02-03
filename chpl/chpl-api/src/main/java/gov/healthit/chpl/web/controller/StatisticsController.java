@@ -38,31 +38,30 @@ public class StatisticsController {
 
     @Deprecated
     @DeprecatedApi(friendlyUrl = "/statistics/nonconformity_criteria_count",
-    message = "This endpoint is deprecated and will be removed in a future release. Please use /report-data/non-conformities/types as a replacement.",
-    removalDate = "2025-07-01")
+            message = "This endpoint is deprecated and will be removed in a future release. Please use /report-data/non-conformities/types as a replacement.",
+            removalDate = "2025-07-01")
     @Operation(summary = "Get count of non-conformities by criteria.",
-    description = "Retrieves and returns the counts.",
-    security = {
-            @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-    })
+            description = "Retrieves and returns the counts.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
     @RequestMapping(value = "/nonconformity_criteria_count", method = RequestMethod.GET,
-    produces = "application/json; charset=utf-8")
+            produces = "application/json; charset=utf-8")
     public NonconformityTypeStatisticsResult getNonconformityCountByCriteria() {
         NonconformityTypeStatisticsResult response = new NonconformityTypeStatisticsResult();
         response.setNonconformityStatisticsResult(statisticsManager.getAllNonconformitiesByCriterion());
         return response;
     }
 
-
     @Deprecated
     @DeprecatedApi(friendlyUrl = "/statistics/listing_count",
-    message = "This endpoint is deprecated and will be removed in a future release. There is no replacement for this endpoint.",
-    removalDate = "2024-06-01")
+            message = "This endpoint is deprecated and will be removed in a future release. There is no replacement for this endpoint.",
+            removalDate = "2024-06-01")
     @Operation(summary = "Get count of Developers and Products with listings.",
-    description = "Retrieves and returns the counts.",
-    security = {
-            @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-    })
+            description = "Retrieves and returns the counts.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
     @RequestMapping(value = "/listing_count", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public ListingCountStatisticsResult getListingCountStatistics() {
         ListingCountStatisticsResult response = new ListingCountStatisticsResult();
@@ -70,14 +69,13 @@ public class StatisticsController {
         return response;
     }
 
-
     @Operation(summary = "Get count of Criteria certified to by unique Product.",
             description = "Retrieves and returns the Criterion/Product counts.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-    })
+            })
     @RequestMapping(value = "/criterion_product", method = RequestMethod.GET,
-    produces = "application/json; charset=utf-8")
+            produces = "application/json; charset=utf-8")
     public @ResponseBody CriterionProductStatisticsResult getCriterionProductStatistics() {
         CriterionProductStatisticsResult response = new CriterionProductStatisticsResult();
         response.setCriterionProductStatisticsResult(statisticsManager.getCriterionProductStatisticsResult());
@@ -88,13 +86,13 @@ public class StatisticsController {
             description = "Retrieves and returns counts grouped by Edition.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-    })
+            })
     @Deprecated
     @DeprecatedApi(friendlyUrl = "/statistics/incumbent_developers",
-    message = "This endpoint is deprecated and will be removed in a future release. There is no replacement for this endpoint.",
-    removalDate = "2024-06-01")
+            message = "This endpoint is deprecated and will be removed in a future release. There is no replacement for this endpoint.",
+            removalDate = "2024-06-01")
     @RequestMapping(value = "incumbent_developers", method = RequestMethod.GET,
-    produces = "application/json; charset=utf-8")
+            produces = "application/json; charset=utf-8")
     public @ResponseBody IncumbentDevelopersStatisticsResult getIncumbentDevelopersStatistics() {
         IncumbentDevelopersStatisticsResult response = new IncumbentDevelopersStatisticsResult();
         response.setIncumbentDevelopersStatisticsResult(statisticsManager.getIncumbentDevelopersStatisticsResult());
@@ -103,15 +101,15 @@ public class StatisticsController {
 
     @Deprecated
     @DeprecatedApi(friendlyUrl = "/statistics/sed_particiapant_count",
-    message = "This endpoint is deprecated and will be removed in a future release. There is no replacement for this endpoint.",
-    removalDate = "2024-06-01")
+            message = "This endpoint is deprecated and will be removed in a future release. There is no replacement for this endpoint.",
+            removalDate = "2024-06-01")
     @Operation(summary = "Get all Sed/Participant counts.",
-    description = "Retrieves and returns the SED/Participant counts.",
-    security = {
-            @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-    })
+            description = "Retrieves and returns the SED/Participant counts.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
     @RequestMapping(value = "/sed_participant_count", method = RequestMethod.GET,
-    produces = "application/json; charset=utf-8")
+            produces = "application/json; charset=utf-8")
     public @ResponseBody SedParticipantStatisticsCountResults getSedParticipantStatisticsCounts() {
         SedParticipantStatisticsCountResults results = new SedParticipantStatisticsCountResults();
         List<SedParticipantStatisticsCountDTO> sedParticipantStatisticsCountDTOs = statisticsManager
@@ -127,15 +125,15 @@ public class StatisticsController {
 
     @Deprecated
     @DeprecatedApi(friendlyUrl = "/statistics/particiapnt_gender_count",
-    message = "This endpoint is deprecated and will be removed in a future release. There is no replacement for this endpoint.",
-    removalDate = "2024-06-01")
+            message = "This endpoint is deprecated and will be removed in a future release. There is no replacement for this endpoint.",
+            removalDate = "2024-06-01")
     @Operation(summary = "Get all Sed/Participant/Gender counts.",
-    description = "Retrieves and returns the SED/Participant/Gender counts.",
-    security = {
-            @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-    })
+            description = "Retrieves and returns the SED/Participant/Gender counts.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
     @RequestMapping(value = "/participant_gender_count", method = RequestMethod.GET,
-    produces = "application/json; charset=utf-8")
+            produces = "application/json; charset=utf-8")
     public @ResponseBody ParticipantGenderStatistics getParticipantGenderStatistics() {
         ParticipantGenderStatisticsDTO stats = statisticsManager.getParticipantGenderStatisticsDTO();
         return new ParticipantGenderStatistics(stats);
@@ -143,15 +141,15 @@ public class StatisticsController {
 
     @Deprecated
     @DeprecatedApi(friendlyUrl = "/statistics/participant_age_count",
-    message = "This endpoint is deprecated and will be removed in a future release. There is no replacement for this endpoint.",
-    removalDate = "2024-06-01")
+            message = "This endpoint is deprecated and will be removed in a future release. There is no replacement for this endpoint.",
+            removalDate = "2024-06-01")
     @Operation(summary = "Get all Sed/Participant/Age counts.",
-    description = "Retrieves and returns the SED/Participant/Age counts.",
-    security = {
-            @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-    })
+            description = "Retrieves and returns the SED/Participant/Age counts.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
     @RequestMapping(value = "/participant_age_count", method = RequestMethod.GET,
-    produces = "application/json; charset=utf-8")
+            produces = "application/json; charset=utf-8")
     public @ResponseBody ParticipantAgeStatisticsResult getParticipantAgeStatistics() {
         ParticipantAgeStatisticsResult response = new ParticipantAgeStatisticsResult();
         response.setParticipantAgeStatistics(statisticsManager.getParticipantAgeStatisticsResult());
@@ -160,15 +158,15 @@ public class StatisticsController {
 
     @Deprecated
     @DeprecatedApi(friendlyUrl = "/statistics/participant_age_count",
-    message = "This endpoint is deprecated and will be removed in a future release. There is no replacement for this endpoint.",
-    removalDate = "2024-06-01")
+            message = "This endpoint is deprecated and will be removed in a future release. There is no replacement for this endpoint.",
+            removalDate = "2024-06-01")
     @Operation(summary = "Get all Sed/Participant/Education counts.",
-    description = "Retrieves and returns the SED/Participant/Education counts.",
-    security = {
-            @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-    })
+            description = "Retrieves and returns the SED/Participant/Education counts.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
     @RequestMapping(value = "/participant_education_count", method = RequestMethod.GET,
-    produces = "application/json; charset=utf-8")
+            produces = "application/json; charset=utf-8")
     public @ResponseBody ParticipantEducationStatisticsResult getParticipantEducationStatistics() {
         ParticipantEducationStatisticsResult response = new ParticipantEducationStatisticsResult();
         response.setParticipantEducationStatistics(statisticsManager.getParticipantEducationStatisticsResult());
@@ -177,15 +175,15 @@ public class StatisticsController {
 
     @Deprecated
     @DeprecatedApi(friendlyUrl = "/statistics/participant_professional_experience_count",
-    message = "This endpoint is deprecated and will be removed in a future release. There is no replacement for this endpoint.",
-    removalDate = "2024-06-01")
+            message = "This endpoint is deprecated and will be removed in a future release. There is no replacement for this endpoint.",
+            removalDate = "2024-06-01")
     @Operation(summary = "Get all Sed/Participant/Professional Experience counts.",
-    description = "Retrieves and returns the SED/Participant/Preofessional Experience counts.",
-    security = {
-            @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-    })
+            description = "Retrieves and returns the SED/Participant/Professional Experience counts.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
     @RequestMapping(value = "/participant_professional_experience_count", method = RequestMethod.GET,
-    produces = "application/json; charset=utf-8")
+            produces = "application/json; charset=utf-8")
     public @ResponseBody ParticipantExperienceStatisticsResult getParticipantProfessionalExperienceStatistics() {
         ParticipantExperienceStatisticsResult response = new ParticipantExperienceStatisticsResult();
         response.setParticipantExperienceStatistics(statisticsManager
@@ -195,15 +193,15 @@ public class StatisticsController {
 
     @Deprecated
     @DeprecatedApi(friendlyUrl = "/statistics/participant_computer_experience_count",
-    message = "This endpoint is deprecated and will be removed in a future release. There is no replacement for this endpoint.",
-    removalDate = "2024-06-01")
+            message = "This endpoint is deprecated and will be removed in a future release. There is no replacement for this endpoint.",
+            removalDate = "2024-06-01")
     @Operation(summary = "Get all Sed/Participant/Computer Experience counts.",
-    description = "Retrieves and returns the SED/Participant/Computer Experience counts.",
-    security = {
-            @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-    })
+            description = "Retrieves and returns the SED/Participant/Computer Experience counts.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
     @RequestMapping(value = "/participant_computer_experience_count", method = RequestMethod.GET,
-    produces = "application/json; charset=utf-8")
+            produces = "application/json; charset=utf-8")
     public @ResponseBody ParticipantExperienceStatisticsResult getParticipantComputerExperienceStatistics() {
         ParticipantExperienceStatisticsResult response = new ParticipantExperienceStatisticsResult();
         response.setParticipantExperienceStatistics(statisticsManager
@@ -213,15 +211,15 @@ public class StatisticsController {
 
     @Deprecated
     @DeprecatedApi(friendlyUrl = "/statistics/participant_product_experience_count",
-    message = "This endpoint is deprecated and will be removed in a future release. There is no replacement for this endpoint.",
-    removalDate = "2024-06-01")
+            message = "This endpoint is deprecated and will be removed in a future release. There is no replacement for this endpoint.",
+            removalDate = "2024-06-01")
     @Operation(summary = "Get all Sed/Participant/Product Experience counts.",
-    description = "Retrieves and returns the SED/Participant/Product Experience counts.",
-    security = {
-            @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-    })
+            description = "Retrieves and returns the SED/Participant/Product Experience counts.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
     @RequestMapping(value = "/participant_product_experience_count", method = RequestMethod.GET,
-    produces = "application/json; charset=utf-8")
+            produces = "application/json; charset=utf-8")
     public @ResponseBody ParticipantExperienceStatisticsResult getParticipantProductExperienceStatistics() {
         ParticipantExperienceStatisticsResult response = new ParticipantExperienceStatisticsResult();
         response.setParticipantExperienceStatistics(statisticsManager
