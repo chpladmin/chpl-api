@@ -31,19 +31,21 @@ public class SvapReportController {
         this.reportDataManager = reportDataManager;
     }
 
-    @Operation(summary = "",
+    @Operation(summary = "Retrieves the data used to generate the SVAP Usage - Criteria with Any SVAP report.",
             description = "",
-            security = {@SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)})
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+            })
     @RequestMapping(value = "/criteria-with-any-svap-counts", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<CriteriaWithAnySvap> getCriteriaWithAnySvap() {
         return reportDataManager.getSvapReportService().getCriteriaWithAnySvap();
     }
 
-    @Operation(summary = "",
-            description = "",
+    @Operation(summary = "Retrieves the data used to generate the SVAP Usage - Listing with SVAP report.",
+            description = "Retrieves the data used to generate the SVAP Usage - Listing with SVAP report.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-    })
+            })
     @RequestMapping(value = "/listings", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<SvapListingReport> getSvapListingReports() {
         return reportDataManager.getSvapReportService().getSvapListingReports();
@@ -53,7 +55,7 @@ public class SvapReportController {
             description = "Retrieves the list of Certification Criteria that can be associated with an SVAP.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-    })
+            })
     @RequestMapping(value = "/criteria", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<CertificationCriterionWithOrder> getCertificationCriteria() {
         return reportDataManager.getSvapReportService().getCertificationCriteria();

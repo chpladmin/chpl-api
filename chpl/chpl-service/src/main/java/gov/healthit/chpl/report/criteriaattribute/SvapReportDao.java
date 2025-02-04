@@ -118,7 +118,6 @@ public class SvapReportDao extends BaseDAOImpl {
                         .build())
                 .toList();
 
-
         String criteriaCountsHql = "SELECT cc, count(*) as criteriaCount "
                 + "FROM CertificationCriterionEntity cc, "
                 + "CertificationResultEntity cr, "
@@ -145,7 +144,6 @@ public class SvapReportDao extends BaseDAOImpl {
                         .build())
                 .toList();
 
-
         return criteriaCounts.stream()
                 .map(cc -> CriteriaWithAnySvap.builder()
                         .certificationCriterion(cc.getCriterion())
@@ -168,5 +166,4 @@ public class SvapReportDao extends BaseDAOImpl {
             return 0L;
         }
     }
-
 }

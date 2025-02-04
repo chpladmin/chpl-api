@@ -50,7 +50,6 @@ public class ReportDataManager {
     private ServiceBaseUrlListReportService serviceBaseUrlListReportService;
     private SvapReportService svapReportService;
 
-
     @Autowired
     public ReportDataManager(CriteriaMigrationReportService criteriaMigrationReportService,
             DeveloperReportsService developerReportsService,
@@ -271,6 +270,4 @@ public class ReportDataManager {
     public SvapReportService getSvapReportService() {
         return svapReportService;
     }
-
-
 }
