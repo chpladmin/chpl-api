@@ -18,7 +18,7 @@ public class NonconformityReportService {
         this.nonconformityReportDao = nonconformityReportDao;
     }
 
-    public List<NonconformityTypeCount> getNonconfomrityCounts() {
+    public List<NonconformityTypeCount> getNonconformityCounts() {
         return nonconformityReportDao.getNonconformityCounts().stream()
                 .filter(count -> !isNonconformityTypeRetired(count.getNonconformityType()))
                 .toList();

@@ -36,6 +36,6 @@ public class NonconformityReportController {
             })
     @RequestMapping(value = "/types", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<NonconformityTypeCount> getNonconformityTypeCounts() {
-        return reportDataManager.getNonconformityReportService().getNonconfomrityCounts();
+        return reportDataManager.getNonconformityReportService().getNonconformityCounts();
     }
 }
