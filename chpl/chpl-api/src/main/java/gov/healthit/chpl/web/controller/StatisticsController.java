@@ -36,6 +36,10 @@ public class StatisticsController {
     @Autowired
     private StatisticsManager statisticsManager;
 
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/statistics/nonconformity_criteria_count",
+            message = "This endpoint is deprecated and will be removed in a future release. Please use /report-data/non-conformities/types as a replacement.",
+            removalDate = "2025-07-01")
     @Operation(summary = "Get count of non-conformities by criteria.",
             description = "Retrieves and returns the counts.",
             security = {
@@ -48,7 +52,6 @@ public class StatisticsController {
         response.setNonconformityStatisticsResult(statisticsManager.getAllNonconformitiesByCriterion());
         return response;
     }
-
 
     @Deprecated
     @DeprecatedApi(friendlyUrl = "/statistics/listing_count",
@@ -65,7 +68,6 @@ public class StatisticsController {
         response.setStatisticsResult(statisticsManager.getListingCountStatisticsResult());
         return response;
     }
-
 
     @Operation(summary = "Get count of Criteria certified to by unique Product.",
             description = "Retrieves and returns the Criterion/Product counts.",
@@ -176,7 +178,7 @@ public class StatisticsController {
             message = "This endpoint is deprecated and will be removed in a future release. There is no replacement for this endpoint.",
             removalDate = "2024-06-01")
     @Operation(summary = "Get all Sed/Participant/Professional Experience counts.",
-            description = "Retrieves and returns the SED/Participant/Preofessional Experience counts.",
+            description = "Retrieves and returns the SED/Participant/Professional Experience counts.",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
             })
