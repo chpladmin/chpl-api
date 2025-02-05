@@ -903,7 +903,7 @@
             <durability>true</durability>
             <recover>false</recover>
         </job>
-        
+
         <job>
             <name>cognitoMassRequirePasswordChangeJob</name>
             <group>systemJobs</group>
@@ -912,7 +912,7 @@
             <durability>true</durability>
             <recover>false</recover>
         </job>
-            
+
         <job>
             <name>updateSedFriendlyIdsJob</name>
             <group>systemJobs</group>

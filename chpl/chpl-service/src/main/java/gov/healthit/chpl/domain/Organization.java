@@ -3,10 +3,12 @@ package gov.healthit.chpl.domain;
 import java.io.Serializable;
 
 import gov.healthit.chpl.dto.OrganizationDTO;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
+@Builder
 @Data
 public class Organization implements Serializable {
     private static final long serialVersionUID = -5910873076481736684L;

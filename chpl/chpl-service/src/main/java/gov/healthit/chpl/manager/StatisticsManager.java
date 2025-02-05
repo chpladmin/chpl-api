@@ -78,6 +78,7 @@ public class StatisticsManager extends ApplicationObjectSupport {
     }
 
 
+    @Deprecated
     public List<NonconformityTypeStatistics> getAllNonconformitiesByCriterion() {
         List<NonconformityTypeStatisticsDTO> dtos = nonconformityTypeStatisticsDAO.getAllNonconformityStatistics();
 

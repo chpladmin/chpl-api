@@ -4,9 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.NotImplementedException;
-import org.apache.commons.lang3.StringUtils;
 import org.ff4j.FF4j;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +16,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -60,8 +57,6 @@ import gov.healthit.chpl.web.controller.annotation.DeprecatedApiResponseFields;
 import gov.healthit.chpl.web.controller.results.DeveloperAttestationSubmissionResults;
 import gov.healthit.chpl.web.controller.results.DeveloperResults;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.log4j.Log4j2;
@@ -309,15 +304,9 @@ public class DeveloperController {
             })
     @RequestMapping(value = "/{developerId}/users", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
-    public @ResponseBody UsersResponse getUsers(@PathVariable("developerId") Long developerId,
-        @Parameter(description = "Whether to include users whose accounts have been marked as disabled. "
-                + "Any string that can be evaluated as a boolean may be passed in (ex: true, false, off, on, yes, no). "
-                + "The parameter only affects the response when called by an authenticated ADMIN or ONC user.",
-            allowEmptyValue = true, in = ParameterIn.QUERY, name = "includeDisabled")
-        @RequestParam(value = "includeDisabled", required = false, defaultValue = "false") String includeDisabled)
-    throws InvalidArgumentsException, EntityRetrievalException {
-        List<User> domainUsers = developerManager.getAllUsersOnDeveloper(developerId,
-                StringUtils.isEmpty(includeDisabled) ? false : BooleanUtils.toBoolean(includeDisabled));
+    public @ResponseBody UsersResponse getUsers(@PathVariable("developerId") Long developerId)
+            throws InvalidArgumentsException, EntityRetrievalException {
+        List<User> domainUsers = developerManager.getAllUsersOnDeveloper(developerId);
         UsersResponse results = new UsersResponse();
         results.setUsers(domainUsers);
         return results;

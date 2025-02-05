@@ -2,9 +2,7 @@ package gov.healthit.chpl.web.controller;
 
 import java.util.List;
 
-import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -35,8 +33,6 @@ import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import gov.healthit.chpl.web.controller.results.CertificationBodyResults;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -245,15 +241,8 @@ public class CertificationBodyController {
     })
     @RequestMapping(value = "/{acbId}/users", method = RequestMethod.GET,
             produces = "application/json; charset=utf-8")
-    public @ResponseBody UsersResponse getUsers(@PathVariable("acbId") Long acbId,
-            @Parameter(description = "Whether to include users whose accounts have been marked as disabled. "
-                    + "Any string that can be evaluated as a boolean may be passed in (ex: true, false, off, on, yes, no). "
-                    + "The parameter only affects the response when called by an authenticated ADMIN or ONC user.",
-                allowEmptyValue = true, in = ParameterIn.QUERY, name = "includeDisabled")
-            @RequestParam(value = "includeDisabled", required = false, defaultValue = "false") String includeDisabled)
-            throws InvalidArgumentsException, EntityRetrievalException {
-        List<User> users = acbManager.getUsers(acbId,
-                StringUtils.isEmpty(includeDisabled) ? false : BooleanUtils.toBoolean(includeDisabled));
+    public @ResponseBody UsersResponse getUsers(@PathVariable("acbId") Long acbId) throws InvalidArgumentsException, EntityRetrievalException {
+        List<User> users = acbManager.getUsers(acbId);
 
         UsersResponse results = new UsersResponse();
         results.setUsers(users);

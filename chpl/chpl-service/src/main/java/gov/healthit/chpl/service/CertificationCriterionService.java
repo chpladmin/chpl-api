@@ -315,7 +315,7 @@ public class CertificationCriterionService {
         return input;
     }
 
-    private Integer getCertificationResultSortIndex(Long criterionId) {
+    public Integer getCertificationResultSortIndex(Long criterionId) {
         Integer index = referenceSortingCriteriaList.indexOf(criterionId);
         if (index.equals(-1)) {
             // This is case when the criteria ID is not in the array, just make it last...

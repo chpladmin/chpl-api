@@ -40,4 +40,8 @@ public class User extends Person implements Serializable {
     private String hash;
     private String status;
 
+    public boolean hasRole(String authority) {
+        return role.equals(authority);
+    }
+
 }

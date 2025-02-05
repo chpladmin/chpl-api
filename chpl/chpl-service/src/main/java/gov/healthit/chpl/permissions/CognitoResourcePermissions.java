@@ -54,12 +54,7 @@ public class CognitoResourcePermissions implements ResourcePermissions {
 
     @Override
     public List<User> getAllUsersOnAcb(CertificationBody acb) {
-        return getAllUsersOnAcb(acb, false);
-    }
-
-    @Override
-    public List<User> getAllUsersOnAcb(CertificationBody acb, boolean includeDisabled) {
-        List<User> allUsersOnAcb = cognitoApiWrapper.getAllUsers(includeDisabled).stream()
+        List<User> allUsersOnAcb = cognitoApiWrapper.getAllUsers().stream()
                 .filter(user -> user.getRole() != null
                         && user.getRole().equals(CognitoGroups.CHPL_ACB)
                         && user.getOrganizations().stream()
@@ -73,12 +68,7 @@ public class CognitoResourcePermissions implements ResourcePermissions {
 
     @Override
     public List<User> getAllUsersOnDeveloper(Developer dev) {
-        return getAllUsersOnDeveloper(dev, false);
-    }
-
-    @Override
-    public List<User> getAllUsersOnDeveloper(Developer dev, boolean includeDisabled) {
-        List<User> allUsersOnDeveloper = cognitoApiWrapper.getAllUsers(includeDisabled).stream()
+        List<User> allUsersOnDeveloper = cognitoApiWrapper.getAllUsers().stream()
                 .filter(user -> user.getRole() != null
                         && user.getRole().equals(CognitoGroups.CHPL_DEVELOPER)
                         && user.getOrganizations().stream()
@@ -92,12 +82,7 @@ public class CognitoResourcePermissions implements ResourcePermissions {
 
     @Override
     public List<User> getAllDeveloperUsers() {
-        return getAllDeveloperUsers(false);
-    }
-
-    @Override
-    public List<User> getAllDeveloperUsers(boolean includeDisabled) {
-        List<User> allDeveloperUsers = cognitoApiWrapper.getAllUsers(includeDisabled).stream()
+        List<User> allDeveloperUsers = cognitoApiWrapper.getAllUsers().stream()
                 .filter(user -> user.getRole() != null
                         && user.getRole().equals(CognitoGroups.CHPL_DEVELOPER))
                 .collect(Collectors.toList());
@@ -107,11 +92,6 @@ public class CognitoResourcePermissions implements ResourcePermissions {
 
     @Override
     public List<User> getAllUsersForCurrentUser() {
-        return getAllUsersForCurrentUser(false);
-    }
-
-    @Override
-    public List<User> getAllUsersForCurrentUser(boolean includeDisabled) {
         LOGGER.error("Not implemented: getAllUsersForCurrentUser");
         throw new NotImplementedException("Not implemented: getAllUsersForCurrentUser");
     }
@@ -220,17 +200,17 @@ public class CognitoResourcePermissions implements ResourcePermissions {
 
     @Override
     public boolean isUserRoleUserCreator() {
-        return doesAuditUserHaveRole(CognitoGroups.CHPL_USER_CREATOR);
+        return false;
     }
 
     @Override
     public boolean isUserRoleUserAuthenticator() {
-        return doesAuditUserHaveRole(CognitoGroups.CHPL_USER_AUTHENTICATOR);
+        return false;
     }
 
     @Override
     public boolean isUserRoleInvitedUserCreator() {
-        return doesAuditUserHaveRole(CognitoGroups.CHPL_INVITED_USER_CREATOR);
+        return false;
     }
 
     @Override
@@ -274,7 +254,7 @@ public class CognitoResourcePermissions implements ResourcePermissions {
         try {
             return certificationBodyDAO.getById(certificationBodyId);
         } catch (EntityRetrievalException e) {
-            LOGGER.error("Could not retrieve Certification Body: {}", certificationBodyId);
+            LOGGER.error("Could not retrieve Certification Body: {}", certificationBodyId, e);
             return null;
         }
     }
@@ -283,7 +263,7 @@ public class CognitoResourcePermissions implements ResourcePermissions {
         try {
             return developerDAO.getById(developerId);
         } catch (EntityRetrievalException e) {
-            LOGGER.error("Could not retrieve Developer: {}", developerId);
+            LOGGER.error("Could not retrieve Developer: {}", developerId, e);
             return null;
         }
     }
