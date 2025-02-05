@@ -24,7 +24,7 @@ public class StatisticsController {
 
     @Deprecated
     @DeprecatedApi(friendlyUrl = "/statistics/nonconformity_criteria_count",
-            message = "This endpoint is deprecated and will be removed in a future release. Please use /report-data/non-conformities/types asa replacement.",
+            message = "This endpoint is deprecated and will be removed in a future release. Please use /report-data/non-conformities/types as a replacement.",
             removalDate = "2025-07-01")
     @Operation(summary = "Get count of non-conformities by criteria.",
             description = "Retrieves and returns the counts.",
@@ -60,7 +60,6 @@ public class StatisticsController {
     @Deprecated
     @Data
     private static class NonconformityTypeStatistics {
-
         private Long id;
         private Long nonconformityCount;
         private String nonconformityType;
