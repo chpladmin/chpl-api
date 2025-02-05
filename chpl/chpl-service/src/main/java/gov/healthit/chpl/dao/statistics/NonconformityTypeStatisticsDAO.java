@@ -3,8 +3,6 @@ package gov.healthit.chpl.dao.statistics;
 import java.util.ArrayList;
 import java.util.List;
 
-import jakarta.persistence.Query;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,8 +15,10 @@ import gov.healthit.chpl.domain.surveillance.NonconformityClassification;
 import gov.healthit.chpl.dto.NonconformityTypeStatisticsDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.service.CertificationCriterionService;
+import jakarta.persistence.Query;
 
 @Repository("nonconformityTypeStatisticsDAO")
+@Deprecated
 public class NonconformityTypeStatisticsDAO extends BaseDAOImpl {
 
     private CertificationCriterionService certificationCriterionService;

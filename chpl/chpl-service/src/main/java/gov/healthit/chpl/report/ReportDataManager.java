@@ -17,6 +17,7 @@ import gov.healthit.chpl.report.directreview.DirectReviewCounts;
 import gov.healthit.chpl.report.directreview.DirectReviewReportsService;
 import gov.healthit.chpl.report.listing.ListingReportsService;
 import gov.healthit.chpl.report.listing.UniqueListingCount;
+import gov.healthit.chpl.report.nonconformity.NonconformityReportService;
 import gov.healthit.chpl.report.product.ProductByAcb;
 import gov.healthit.chpl.report.product.ProductReportsService;
 import gov.healthit.chpl.report.product.UniqueProductCount;
@@ -49,6 +50,7 @@ public class ReportDataManager {
     private CriteriaAttributeReportService criteriaAttributeReportService;
     private ServiceBaseUrlListReportService serviceBaseUrlListReportService;
     private SvapReportService svapReportService;
+    private NonconformityReportService nonconformityReportService;
 
     @Autowired
     public ReportDataManager(CriteriaMigrationReportService criteriaMigrationReportService,
@@ -61,7 +63,9 @@ public class ReportDataManager {
             ReportMetadataDAO reportMetadataDAO,
             CriteriaAttributeReportService criteriaAttributeReportService,
             ServiceBaseUrlListReportService serviceBaseUrlListReportService,
-            SvapReportService svapReportService) {
+            SvapReportService svapReportService,
+            NonconformityReportService nonconformityReportService) {
+
         this.criteriaMigrationReportService = criteriaMigrationReportService;
         this.developerReportsService = developerReportsService;
         this.surveillanceReportsService = surveillanceReportsService;
@@ -74,6 +78,7 @@ public class ReportDataManager {
         this.criteriaAttributeReportService = criteriaAttributeReportService;
         this.serviceBaseUrlListReportService = serviceBaseUrlListReportService;
         this.svapReportService = svapReportService;
+        this.nonconformityReportService = nonconformityReportService;
     }
 
     public List<ReportMetadata> getReportMetadataByReportGroup(String reportGroup) {
@@ -266,8 +271,12 @@ public class ReportDataManager {
         return attestationReportService.getAttestationReports();
     }
 
-    @Synchronized("lock")
     public SvapReportService getSvapReportService() {
         return svapReportService;
+    }
+
+    @Synchronized("lock")
+    public NonconformityReportService getNonconformityReportService() {
+        return nonconformityReportService;
     }
 }
