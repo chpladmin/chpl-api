@@ -26,10 +26,12 @@ import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
+import gov.healthit.chpl.domain.ListingUpdateRequest;
 import gov.healthit.chpl.dto.ActivityDTO;
+import gov.healthit.chpl.manager.CertifiedProductManager;
+import gov.healthit.chpl.scheduler.SchedulerSecurityContextService;
 import gov.healthit.chpl.standard.CertificationResultStandard;
 import gov.healthit.chpl.standard.Standard;
-import gov.healthit.chpl.standard.StandardGroupService;
 import gov.healthit.chpl.util.DateUtil;
 import gov.healthit.chpl.util.Util;
 import jakarta.persistence.Query;
@@ -48,13 +50,16 @@ public class StandardsUpdateJob implements Job {
     private ListingActivityUtil listingActivityUtil;
 
     @Autowired
-    private StandardGroupService standardGroupService;
-
-    @Autowired
     private CertifiedProductDetailsManager cpdManager;
 
     @Autowired
+    private CertifiedProductManager cpManager;
+
+    @Autowired
     private StandardsCheckerActivityDAO standardsCheckerActivityDao;
+
+    @Autowired
+    private SchedulerSecurityContextService securityContextService;
 
     private LocalDate startDate = LocalDate.parse("2024-12-18");
     private LocalDate endDate = LocalDate.parse("2025-01-22");
@@ -172,6 +177,7 @@ public class StandardsUpdateJob implements Job {
                     });
             }
 
+            //log listings with questionable standards before deletion
             LOGGER.info("Listng ID,CHPL Product Number,ONC-ACB,Criterion,Added Questionable Baseline Standards,Added Questionable Grouped Standards,Standard Group");
             listingsWithAddedStandardsDuringTime.keySet().stream()
                 .filter(listingId -> !CollectionUtils.isEmpty(listingsWithAddedStandardsDuringTime.get(listingId)))
@@ -197,12 +203,57 @@ public class StandardsUpdateJob implements Job {
                         + " to current details for that listing", ex);
                     }
             });
+
+            //delete questionable baseline standards
+            securityContextService.setAdminSecurityContext();
+            listingsWithAddedStandardsDuringTime.keySet().stream()
+            .filter(listingId -> !CollectionUtils.isEmpty(listingsWithAddedStandardsDuringTime.get(listingId)))
+            .flatMap(listingId -> listingsWithAddedStandardsDuringTime.get(listingId).stream())
+            .forEach(listingWithAddedStandards -> {
+                try {
+                    CertifiedProductSearchDetails currListing = cpdManager.getCertifiedProductDetailsNoCache(listingWithAddedStandards.getListingId());
+                    List<ListingCriterionQuestionableStandardsMap> addedQuestionableStandardsMap
+                        = getQuestionableAddedStandardsMap(currListing, listingWithAddedStandards);
+                    addedQuestionableStandardsMap.stream()
+                        .forEach(addedQuestionableStandardSet -> {
+                            if (!CollectionUtils.isEmpty(addedQuestionableStandardSet.getRetiredBaselineStandardsAdded())) {
+                                addedQuestionableStandardSet.getRetiredBaselineStandardsAdded().stream()
+                                    .forEach(std -> removeStandardFromListing(std, addedQuestionableStandardSet.getCriterion(), currListing));
+                            }
+                        });
+                    cpManager.update(ListingUpdateRequest.builder()
+                            .acknowledgeBusinessErrors(false)
+                            .acknowledgeWarnings(true)
+                            .reason("Automated update to remove standards incorrectly added by the system.")
+                            .listing(currListing)
+                            .build());
+                } catch (Exception ex) {
+                    LOGGER.error("Unable to delete questionable standards from listing " + listingWithAddedStandards.getListingId(), ex);
+                }
+            });
+
         } catch (Exception ex) {
             LOGGER.fatal("Unexpected exception was caught. All listings may not have been processed.", ex);
         }
 
 
         LOGGER.info("********* Completed the Standards Update job. *********");
+    }
+
+    private void removeStandardFromListing(Standard standard, CertificationCriterion criterion, CertifiedProductSearchDetails listing) {
+        CertificationResultStandard stdMappingToRemove = listing.getCertificationResults().stream()
+            .filter(cr -> cr.getCriterion().getId().equals(criterion.getId()))
+            .flatMap(cr -> cr.getStandards().stream())
+            .filter(crstd -> crstd.getStandard().getId().equals(standard.getId()))
+            .findAny()
+            .orElse(null);
+
+        LOGGER.info("Deleting standard " + stdMappingToRemove.getStandard().getRegulatoryTextCitation() + " for listing " + listing.getId() + " from criterion " + Util.formatCriteriaNumber(criterion));
+
+        listing.getCertificationResults().stream()
+            .filter(cr -> cr.getCriterion().getId().equals(criterion.getId()))
+            .forEach(cr -> cr.getStandards().remove(stdMappingToRemove));
+
     }
 
     private ListingCriterionStandardsMap getMapForListingAndCriterion(Long listingId, Long criterionId, Map<Long, List<ListingCriterionStandardsMap>> listingsWithAddedStandardsDuringTime) {
