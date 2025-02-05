@@ -279,7 +279,7 @@ public class CertifiedProductSearchBasicDetails implements Serializable {
                 // if the passed-in date is between currEvent and nextEvent then the currEvent
                 // gives the status on the passed-in date.
                 if (currEvent.getEventDay() != null
-                        && (currEvent.getEventDay().isBefore(dateInQuestion)|| currEvent.getEventDay().isEqual(dateInQuestion))
+                        && (currEvent.getEventDay().isBefore(dateInQuestion) || currEvent.getEventDay().isEqual(dateInQuestion))
                         && nextEvent.getEventDay() != null
                         && nextEvent.getEventDay().isAfter(dateInQuestion)) {
                     result = currEvent;
