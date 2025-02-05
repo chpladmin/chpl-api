@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -102,124 +101,100 @@ public class StandardsUpdateJob implements Job {
                             List<CertificationResult> updatedCertResults = updatedListing.getCertificationResults();
 
                             //find cert results that were newly attested in this edit that have standards
-                            List<CertificationResult> addedCertResultsWithStandards = new ArrayList<CertificationResult>();
                             if (!CollectionUtils.isEmpty(updatedCertResults)) {
-                                addedCertResultsWithStandards = updatedCertResults.stream()
+                                updatedCertResults.stream()
                                         .filter(cr -> getMatchingCertResultInList(cr, originalCertResults).isEmpty())
                                         .filter(cr -> !CollectionUtils.isEmpty(cr.getStandards()))
-                                        .toList();
+                                        .forEach(cr -> {
+                                            LOGGER.info("\t\t" + Util.formatCriteriaNumber(cr.getCriterion()) + " was attested with standards: "
+                                                    + Util.joinListGrammatically(cr.getStandards().stream().map(std -> std.getStandard().getRegulatoryTextCitation()).toList()));
 
+                                            ListingCriterionStandardsMap existingCriterionMap = getMapForListingAndCriterion(updatedListing.getId(),
+                                                    cr.getCriterion().getId(),
+                                                    listingsWithAddedStandardsDuringTime);
+
+                                            if (existingCriterionMap != null) {
+                                                existingCriterionMap.getStandardsAdded().addAll(
+                                                        cr.getStandards().stream().map(std -> std.getStandard()).toList());
+                                            } else {
+                                                listingsWithAddedStandardsDuringTime.get(updatedListing.getId())
+                                                    .add(ListingCriterionStandardsMap.builder()
+                                                            .listingId(updatedListing.getId())
+                                                            .criterion(cr.getCriterion())
+                                                            .standardsAdded(
+                                                                    cr.getStandards().stream().map(std -> std.getStandard()).collect(Collectors.toSet()))
+                                                            .build());
+                                            }
+                                        });
                             }
 
                             //find already attested cert results that had standards added to them in this edit
-                            List<CertificationResult> certResultsWithUpdatedStandards = updatedCertResults.stream()
-                                    .filter(updatedCr -> {
-                                        if (CollectionUtils.isEmpty(updatedCr.getStandards())) {
-                                            return false;
-                                        }
+                            updatedCertResults.stream()
+                                    .filter(updatedCr -> !CollectionUtils.isEmpty(updatedCr.getStandards()))
+                                    .forEach(updatedCr -> {
                                         Optional<CertificationResult> originalCr = getMatchingCertResultInList(updatedCr, originalCertResults);
                                         if (originalCr.isPresent()) {
                                             List<CertificationResultStandard> addedStandards = updatedCr.getStandards().stream()
                                                     .filter(crs -> getMatchingStandardInList(crs, originalCr.get().getStandards()).isEmpty())
                                                     .toList();
-                                            return !CollectionUtils.isEmpty(addedStandards);
+
+                                            if (!CollectionUtils.isEmpty(addedStandards)) {
+                                                LOGGER.info("\t\t" + Util.formatCriteriaNumber(updatedCr.getCriterion()) + " added standards: "
+                                                        + Util.joinListGrammatically(addedStandards.stream().map(std -> std.getStandard().getRegulatoryTextCitation()).toList()));
+
+                                                ListingCriterionStandardsMap existingCriterionMap = getMapForListingAndCriterion(updatedListing.getId(),
+                                                        updatedCr.getCriterion().getId(),
+                                                        listingsWithAddedStandardsDuringTime);
+
+                                                if (existingCriterionMap != null) {
+                                                    existingCriterionMap.getStandardsAdded().addAll(
+                                                            addedStandards.stream().map(std -> std.getStandard()).toList());
+                                                } else {
+                                                    listingsWithAddedStandardsDuringTime.get(updatedListing.getId())
+                                                        .add(ListingCriterionStandardsMap.builder()
+                                                            .listingId(updatedListing.getId())
+                                                            .criterion(updatedCr.getCriterion())
+                                                            .standardsAdded(
+                                                                    addedStandards.stream().map(std -> std.getStandard()).collect(Collectors.toSet()))
+                                                            .build());
+                                                }
+                                            }
                                         }
-                                        return false;
-                                    })
-                                    .toList();
+                                    });
 
-                            //log the listing id and criterion number and standards added
-                            addedCertResultsWithStandards.stream()
-                                .forEach(cr -> {
-                                    LOGGER.info("\t\t" + Util.formatCriteriaNumber(cr.getCriterion()) + " was attested with standards: "
-                                            + Util.joinListGrammatically(cr.getStandards().stream().map(std -> std.getStandard().getRegulatoryTextCitation()).toList()));
-                                    // are any of the added standards currently retired?
-                                    List<CertificationResultStandard> addedRetiredNonGroupedStandards
-                                        = getAddedRetiredNonGroupedStandards(cr, cr.getStandards());
-                                        // they should be logged and/or removed
-                                    // are any of the added standards part of a group where there is a newer standard also included on that criteria?
-                                    List<CertificationResultStandard> addedOldGroupedStandardsWithNewerStandardsInGroup
-                                        = getAddedOldGroupedStandardsIfNewerStandardInGroupIsPresent(cr, cr.getStandards());
-                                        // they should be logged and/or removed
-
-                                    if (!CollectionUtils.isEmpty(addedRetiredNonGroupedStandards)
-                                            || !CollectionUtils.isEmpty(addedOldGroupedStandardsWithNewerStandardsInGroup)) {
-                                        listingsWithAddedStandardsDuringTime.get(updatedListing.getId())
-                                            .add(ListingCriterionStandardsMap.builder()
-                                                    .listingId(updatedListing.getId())
-                                                    .criterion(cr.getCriterion())
-                                                    .questionableStandardsAdded(Stream.concat(
-                                                            addedRetiredNonGroupedStandards.stream().map(std -> std.getStandard()),
-                                                            addedOldGroupedStandardsWithNewerStandardsInGroup.stream().map(std -> std.getStandard()))
-                                                            .toList())
-                                                    .build());
-                                    }
-                                });
-
-                            certResultsWithUpdatedStandards.stream()
-                                .forEach(cr -> {
-                                    Optional<CertificationResult> originalCr = getMatchingCertResultInList(cr, originalCertResults);
-                                    List<CertificationResultStandard> addedStandards = cr.getStandards().stream()
-                                                .filter(crs -> getMatchingStandardInList(crs, originalCr.get().getStandards()).isEmpty())
-                                                .toList();
-                                    LOGGER.info("\t\t" + Util.formatCriteriaNumber(cr.getCriterion()) + " added standards: "
-                                            + Util.joinListGrammatically(addedStandards.stream().map(std -> std.getStandard().getRegulatoryTextCitation()).toList()));
-
-                                    // are any of the added standards currently retired?
-                                    List<CertificationResultStandard> addedRetiredNonGroupedStandards
-                                        = getAddedRetiredNonGroupedStandards(cr, addedStandards);
-                                        // they should be logged and/or removed
-                                    // are any of the added standards part of a group where there is a newer standard also included on that criteria?
-                                    List<CertificationResultStandard> addedOldGroupedStandardsWithNewerStandardsInGroup
-                                        = getAddedOldGroupedStandardsIfNewerStandardInGroupIsPresent(cr, addedStandards);
-                                        // they should be logged and/or removed
-
-                                    if (!CollectionUtils.isEmpty(addedRetiredNonGroupedStandards)
-                                            || !CollectionUtils.isEmpty(addedOldGroupedStandardsWithNewerStandardsInGroup)) {
-                                        listingsWithAddedStandardsDuringTime.get(updatedListing.getId())
-                                            .add(ListingCriterionStandardsMap.builder()
-                                                    .listingId(updatedListing.getId())
-                                                    .criterion(cr.getCriterion())
-                                                    .questionableStandardsAdded(Stream.concat(
-                                                            addedRetiredNonGroupedStandards.stream().map(std -> std.getStandard()),
-                                                            addedOldGroupedStandardsWithNewerStandardsInGroup.stream().map(std -> std.getStandard()))
-                                                            .toList())
-                                                    .build());
-                                    }
-                                });
+                            //All the listing/cert result/standard info about added standards is in listingsWithAddedStandardsDuringTime
+                            //This is to keep track of all the listings and standards that were added during the period of time in question.
+                            //I want to be careful about what gets deleted later, so I am tracking here what things we added so that I don't
+                            //consider any standards or criterion outside of what we added.
                         } catch (Exception ex) {
                             LOGGER.error("Unable to handle activity " + listingUpdateActivity.getId(), ex);
                         }
                     });
             }
 
-            LOGGER.info("Listng ID,CHPL Product Number,ONC-ACB,Criterion,Added Questionable Standards,Remaining Questionable Standards");
+            LOGGER.info("Listng ID,CHPL Product Number,ONC-ACB,Criterion,Added Questionable Baseline Standards,Added Questionable Grouped Standards,Standard Group");
             listingsWithAddedStandardsDuringTime.keySet().stream()
                 .filter(listingId -> !CollectionUtils.isEmpty(listingsWithAddedStandardsDuringTime.get(listingId)))
                 .flatMap(listingId -> listingsWithAddedStandardsDuringTime.get(listingId).stream())
-                .forEach(item -> {
+                .forEach(listingWithAddedStandards -> {
                     try {
-                        CertifiedProductSearchDetails currListing = cpdManager.getCertifiedProductDetailsNoCache(item.getListingId());
-                        String output = currListing.getId()
-                                + "," + currListing.getChplProductNumber()
-                                + "," + currListing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_NAME_KEY).toString()
-                                + "," + Util.formatCriteriaNumber(item.getCriterion())
-                                + ",\"" + Util.joinListGrammatically(item.getQuestionableStandardsAdded().stream().map(std -> std.getRegulatoryTextCitation()).toList()) + "\"";
-
-                        List<Standard> standardsCurrentlyOnCertResult = currListing.getCertificationResults().stream()
-                                .filter(cr -> cr.getCriterion().getId().equals(item.getCriterion().getId()))
-                                .flatMap(cr -> cr.getStandards().stream())
-                                .map(crStd -> crStd.getStandard())
-                                .collect(Collectors.toList());
-
-                        List<Standard> remainingQuestionableStandards = item.getQuestionableStandardsAdded().stream()
-                                .filter(addedQuestionableStandard -> isStandardInGroup(standardsCurrentlyOnCertResult, addedQuestionableStandard))
-                                .collect(Collectors.toList());
-                        output += ",\"" + Util.joinListGrammatically(remainingQuestionableStandards.stream().map(std -> std.getRegulatoryTextCitation()).toList()) + "\"";
-
-                        LOGGER.info(output);
+                        CertifiedProductSearchDetails currListing = cpdManager.getCertifiedProductDetailsNoCache(listingWithAddedStandards.getListingId());
+                        List<ListingCriterionQuestionableStandardsMap> addedQuestionableStandardsMap
+                            = getQuestionableAddedStandardsMap(currListing, listingWithAddedStandards);
+                        addedQuestionableStandardsMap.stream()
+                            .forEach(addedQuestionableStandardSet -> {
+                                String output = currListing.getId()
+                                        + "," + currListing.getChplProductNumber()
+                                        + "," + currListing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_NAME_KEY).toString()
+                                        + "," + Util.formatCriteriaNumber(addedQuestionableStandardSet.getCriterion())
+                                        + ",\"" + Util.joinListGrammatically(addedQuestionableStandardSet.getRetiredBaselineStandardsAdded().stream().map(std -> std.getRegulatoryTextCitation()).toList()) + "\""
+                                        + ",\"" + Util.joinListGrammatically(addedQuestionableStandardSet.getGroupedStandardsAddedWithMultipleInGroup().stream().map(std -> std.getRegulatoryTextCitation()).toList()) + "\""
+                                        + "," + (addedQuestionableStandardSet.getStandardGroupName() != null ? addedQuestionableStandardSet.getStandardGroupName() : "");
+                                LOGGER.info(output);
+                            });
                     } catch (Exception ex) {
-                        LOGGER.error("Unable to compare listing with ID " + item.getListingId() + " to current details for that listing", ex);
+                        LOGGER.error("Unable to compare listing with ID " + listingWithAddedStandards.getListingId()
+                        + " to current details for that listing", ex);
                     }
             });
         } catch (Exception ex) {
@@ -228,6 +203,102 @@ public class StandardsUpdateJob implements Job {
 
 
         LOGGER.info("********* Completed the Standards Update job. *********");
+    }
+
+    private ListingCriterionStandardsMap getMapForListingAndCriterion(Long listingId, Long criterionId, Map<Long, List<ListingCriterionStandardsMap>> listingsWithAddedStandardsDuringTime) {
+        List<ListingCriterionStandardsMap> existingMaps = listingsWithAddedStandardsDuringTime.get(listingId);
+        return existingMaps.stream()
+                .filter(map -> map.getCriterion().getId().equals(criterionId))
+                .findAny()
+                .orElse(null);
+    }
+
+    private List<ListingCriterionQuestionableStandardsMap> getQuestionableAddedStandardsMap(CertifiedProductSearchDetails currentListing,
+            ListingCriterionStandardsMap allAddedStandardsForCriterion) {
+
+        List<ListingCriterionQuestionableStandardsMap> result = new ArrayList<ListingCriterionQuestionableStandardsMap>();
+        //out of all the added standards for this criterion, determine which ones are still present on the listing today
+        ListingCriterionStandardsMap addedStandardsStillPresentOnCriterion = getStandardsStillPresent(currentListing, allAddedStandardsForCriterion);
+        if (addedStandardsStillPresentOnCriterion == null) {
+            return null;
+        }
+
+        //out of those added standards still present, which ones are "questionable"?
+        //where questionable is defined as either 1) retired or 2) part of a group where other standards in that group are also present
+        List<Standard> questionableBaselineStandards = addedStandardsStillPresentOnCriterion.getStandardsAdded().stream()
+                .filter(std -> isStandardBaselineAndRetired(addedStandardsStillPresentOnCriterion.getCriterion(), std))
+                .toList();
+        if (!CollectionUtils.isEmpty(questionableBaselineStandards)) {
+            result.add(ListingCriterionQuestionableStandardsMap.builder()
+                .listingId(currentListing.getId())
+                .criterion(allAddedStandardsForCriterion.getCriterion())
+                .retiredBaselineStandardsAdded(questionableBaselineStandards)
+                .groupedStandardsAddedWithMultipleInGroup(new ArrayList<Standard>())
+                .standardGroupName(null)
+                .build());
+        }
+
+        //get distinct groups to check
+        Set<String> allGroupsWithAddedStandards = addedStandardsStillPresentOnCriterion.getStandardsAdded().stream()
+                .filter(std -> !StringUtils.isEmpty(std.getGroupName()))
+                .map(std -> std.getGroupName())
+                .collect(Collectors.toSet());
+
+        CertificationResult certResult = currentListing.getCertificationResults().stream()
+                .filter(cr -> cr.getCriterion().getId().equals(addedStandardsStillPresentOnCriterion.getCriterion().getId()))
+                .findAny()
+                .orElse(null);
+
+        if (certResult != null) {
+            for (String group : allGroupsWithAddedStandards) {
+                List<Standard> questionableGroupedStandards = addedStandardsStillPresentOnCriterion.getStandardsAdded().stream()
+                    .filter(std -> StringUtils.equals(std.getGroupName(), group))
+                    .filter(std -> areMultipleStandardsFromGroupPresentOnCertResult(certResult, group))
+                    .toList();
+                if (!CollectionUtils.isEmpty(questionableGroupedStandards)) {
+                    result.add(ListingCriterionQuestionableStandardsMap.builder()
+                        .listingId(currentListing.getId())
+                        .criterion(allAddedStandardsForCriterion.getCriterion())
+                        .standardGroupName(group)
+                        .groupedStandardsAddedWithMultipleInGroup(questionableGroupedStandards)
+                        .retiredBaselineStandardsAdded(new ArrayList<Standard>())
+                        .build());
+                }
+            }
+        }
+
+        return result;
+    }
+
+    private ListingCriterionStandardsMap getStandardsStillPresent(CertifiedProductSearchDetails currentListing,
+            ListingCriterionStandardsMap allAddedStandardsForCriterion) {
+        CertificationResult currentCertResult = currentListing.getCertificationResults().stream()
+                .filter(currCertResult -> currCertResult.getCriterion().getId().equals(allAddedStandardsForCriterion.getCriterion().getId()))
+                .findAny().orElse(null);
+        if (currentCertResult == null) {
+            return null;
+        }
+        Set<Standard> addedStandards = allAddedStandardsForCriterion.getStandardsAdded();
+        Set<Standard> addedStandardsRemainingOnListing = addedStandards.stream()
+            .filter(std -> isStandardInGroup(currentCertResult.getStandards().stream().map(crstd -> crstd.getStandard()).toList(), std))
+            .collect(Collectors.toSet());
+        return ListingCriterionStandardsMap.builder()
+                .listingId(allAddedStandardsForCriterion.getListingId())
+                .criterion(allAddedStandardsForCriterion.getCriterion())
+                .standardsAdded(addedStandardsRemainingOnListing)
+                .build();
+    }
+
+    private boolean isStandardBaselineAndRetired(CertificationCriterion criterion, Standard standard) {
+        return StringUtils.isEmpty(standard.getGroupName())
+                && standard.getEndDay() != null
+                && standard.getEndDay().isBefore(LocalDate.now());
+    }
+
+    private boolean areMultipleStandardsFromGroupPresentOnCertResult(CertificationResult certResult, String standardGroupName) {
+        return certResult.getStandards().stream()
+                .filter(std -> StringUtils.equals(std.getStandard().getGroupName(), standardGroupName))
+                .count() > 1;
     }
 
     private Optional<CertificationResult> getMatchingCertResultInList(CertificationResult cr, List<CertificationResult> certificationResults) {
@@ -252,23 +323,6 @@ public class StandardsUpdateJob implements Job {
                 .findAny();
     }
 
-    private List<CertificationResultStandard> getAddedRetiredNonGroupedStandards(CertificationResult cr, List<CertificationResultStandard> addedStandards) {
-        Map<String, List<Standard>> groupedStandards = standardGroupService.getGroupedStandardsForCriteria(cr.getCriterion(), LocalDate.now());
-        List<CertificationResultStandard> addedRetiredNonGroupedStandards = addedStandards.stream()
-            .filter(std -> !isStandardInAGroup(groupedStandards, std.getStandard()))
-            .filter(std -> std.getStandard().getEndDay() != null && std.getStandard().getEndDay().isBefore(LocalDate.now()))
-            .collect(Collectors.toList());
-
-        if (CollectionUtils.isEmpty(addedRetiredNonGroupedStandards)) {
-            LOGGER.info("\t\t\tNo retired non-grouped standards were added to " + Util.formatCriteriaNumber(cr.getCriterion()));
-        } else {
-            LOGGER.info("\t\t\tRetired non-grouped standards were added for : " + Util.formatCriteriaNumber(cr.getCriterion()));
-            addedRetiredNonGroupedStandards.stream()
-                .forEach(std -> LOGGER.info("\t\t\t" + std.getStandard().getRegulatoryTextCitation()));
-        }
-        return addedRetiredNonGroupedStandards;
-    }
-
     private Boolean isStandardInAGroup(Map<String, List<Standard>> standardGroups, Standard standard) {
         Boolean isStdInAnyGroup = standardGroups.entrySet().stream()
             .flatMap(mapEntry -> mapEntry.getValue().stream())
@@ -278,52 +332,12 @@ public class StandardsUpdateJob implements Job {
         return isStdInAnyGroup;
     }
 
-    private List<CertificationResultStandard> getAddedOldGroupedStandardsIfNewerStandardInGroupIsPresent(CertificationResult cr, List<CertificationResultStandard> addedStandards) {
-        Map<String, List<Standard>> todaysGroupedStandardsForCriterion = standardGroupService.getGroupedStandardsForCriteria(cr.getCriterion(), LocalDate.now());
-        List<CertificationResultStandard> addedStandardsWithNewerStandardInGroup = addedStandards.stream()
-            .filter(std -> isStandardInAGroup(todaysGroupedStandardsForCriterion, std.getStandard()))
-            .filter(std -> isNewerStandardInGroup(
-                    todaysGroupedStandardsForCriterion.get(getStandardGroupName(todaysGroupedStandardsForCriterion, std.getStandard())),
-                    addedStandards.stream().map(crStd -> crStd.getStandard()).toList(),
-                    std.getStandard()))
-            .collect(Collectors.toList());
-
-        if (CollectionUtils.isEmpty(addedStandardsWithNewerStandardInGroup)) {
-            LOGGER.info("\t\t\tNo added grouped standards with newer standards present from the group for " + Util.formatCriteriaNumber(cr.getCriterion()));
-        } else {
-            LOGGER.info("\t\t\tGrouped standards added with newer standards present from the group for: " + Util.formatCriteriaNumber(cr.getCriterion()));
-            addedStandardsWithNewerStandardInGroup.stream()
-                .forEach(std -> LOGGER.info("\t\t\t" + std.getStandard().getRegulatoryTextCitation()));
-        }
-        return addedStandardsWithNewerStandardInGroup;
-    }
-
-    private String getStandardGroupName(Map<String, List<Standard>> standardGroups, Standard standard) {
-        return standardGroups.keySet().stream()
-            .filter(key -> isStandardInGroup(standardGroups.get(key), standard))
-            .findAny()
-            .orElse(null);
-    }
-
     private Boolean isStandardInGroup(List<Standard> standardsInGroup, Standard standard) {
         Boolean isStdInGroup = standardsInGroup.stream()
             .filter(std -> std.getId().equals(standard.getId()))
             .findAny()
             .isPresent();
         return isStdInGroup;
-    }
-
-    private boolean isNewerStandardInGroup(List<Standard> standardsInGroup, List<Standard> allCrStandards, Standard standard) {
-        return allCrStandards.stream()
-                //is there a standard on the cert result that's
-                // a) not this standard
-                // b) also in this standard group
-                // and c) has a more recent start date
-                .filter(crStd -> !crStd.getId().equals(standard.getId())
-                        && isStandardInGroup(standardsInGroup, crStd)
-                        && crStd.getStartDay().isAfter(standard.getStartDay()))
-            .findAny()
-            .isPresent();
     }
 
     @Component
@@ -376,6 +390,18 @@ public class StandardsUpdateJob implements Job {
     private static class ListingCriterionStandardsMap {
         private Long listingId;
         private CertificationCriterion criterion;
-        private List<Standard> questionableStandardsAdded;
+        private Set<Standard> standardsAdded;
+    }
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    private static class ListingCriterionQuestionableStandardsMap {
+        private Long listingId;
+        private CertificationCriterion criterion;
+        private List<Standard> retiredBaselineStandardsAdded;
+        private List<Standard> groupedStandardsAddedWithMultipleInGroup;
+        private String standardGroupName;
     }
 }
