@@ -17,6 +17,7 @@ import gov.healthit.chpl.report.directreview.DirectReviewCounts;
 import gov.healthit.chpl.report.directreview.DirectReviewReportsService;
 import gov.healthit.chpl.report.listing.ListingReportsService;
 import gov.healthit.chpl.report.listing.UniqueListingCount;
+import gov.healthit.chpl.report.nonconformity.NonconformityReportService;
 import gov.healthit.chpl.report.product.ProductByAcb;
 import gov.healthit.chpl.report.product.ProductReportsService;
 import gov.healthit.chpl.report.product.UniqueProductCount;
@@ -47,7 +48,7 @@ public class ReportDataManager {
     private ReportMetadataDAO reportMetadataDAO;
     private CriteriaAttributeReportService criteriaAttributeReportService;
     private ServiceBaseUrlListReportService serviceBaseUrlListReportService;
-
+    private NonconformityReportService nonconformityReportService;
 
     @Autowired
     public ReportDataManager(CriteriaMigrationReportService criteriaMigrationReportService,
@@ -59,7 +60,8 @@ public class ReportDataManager {
             AttestationReportService attestationReportService,
             ReportMetadataDAO reportMetadataDAO,
             CriteriaAttributeReportService criteriaAttributeReportService,
-            ServiceBaseUrlListReportService serviceBaseUrlListReportService) {
+            ServiceBaseUrlListReportService serviceBaseUrlListReportService,
+            NonconformityReportService nonconformityReportService) {
         this.criteriaMigrationReportService = criteriaMigrationReportService;
         this.developerReportsService = developerReportsService;
         this.surveillanceReportsService = surveillanceReportsService;
@@ -71,6 +73,7 @@ public class ReportDataManager {
         this.reportMetadataDAO = reportMetadataDAO;
         this.criteriaAttributeReportService = criteriaAttributeReportService;
         this.serviceBaseUrlListReportService = serviceBaseUrlListReportService;
+        this.nonconformityReportService = nonconformityReportService;
     }
 
     public List<ReportMetadata> getReportMetadataByReportGroup(String reportGroup) {
@@ -261,6 +264,11 @@ public class ReportDataManager {
     @Synchronized("lock")
     public List<AttestationReport> getAttestationReports() {
         return attestationReportService.getAttestationReports();
+    }
+
+    @Synchronized("lock")
+    public NonconformityReportService getNonconformityReportService() {
+        return nonconformityReportService;
     }
 
 }
