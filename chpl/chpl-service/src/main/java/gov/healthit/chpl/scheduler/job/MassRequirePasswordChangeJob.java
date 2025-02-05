@@ -57,7 +57,7 @@ public class MassRequirePasswordChangeJob extends QuartzJob {
             String jwt = authenticationManager.getJWT(actor);
             JWTAuthenticatedUser authenticatedUser = userConverterFacade.getAuthenticatedUser(jwt);
             SecurityContextHolder.getContext().setAuthentication(authenticatedUser);
-            List<UserDTO> allUsers = userManager.getAll(false);
+            List<UserDTO> allUsers = userManager.getAll();
             for (UserDTO user : allUsers) {
                 if (interrupted) {
                     LOGGER.info("Interrupted while marking users as password change required");
