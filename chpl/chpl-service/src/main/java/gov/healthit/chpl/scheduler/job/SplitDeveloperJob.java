@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.ff4j.FF4j;
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
@@ -27,6 +28,7 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
+import gov.healthit.chpl.FeatureList;
 import gov.healthit.chpl.auth.user.JWTAuthenticatedUser;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.caching.ListingSearchCacheRefresh;
@@ -90,6 +92,9 @@ public class SplitDeveloperJob extends QuartzJob {
     @Autowired
     private ChplHtmlEmailBuilder emailBuilder;
 
+    @Autowired
+    private FF4j ff4j;
+
     @Value("${internalErrorEmailRecipients}")
     private String internalErrorEmailRecipients;
 
@@ -117,6 +122,7 @@ public class SplitDeveloperJob extends QuartzJob {
             Exception splitException = null;
             try {
                 postSplitDeveloper = splitDeveloper(newDeveloper, productIdsToMove);
+                devManager.removeUsersForDeveloperSplit(preSplitDeveloper);
             } catch (Exception e) {
                 LOGGER.error("Error completing split of old developer '" + preSplitDeveloper.getName() + "' to new developer '"
                         + newDeveloper.getName() + "'.", e);
@@ -251,8 +257,11 @@ public class SplitDeveloperJob extends QuartzJob {
         cacheManager.getCache(CacheNames.ALL_DEVELOPERS).invalidate();
         cacheManager.getCache(CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED).invalidate();
         cacheManager.getCache(CacheNames.COLLECTIONS_DEVELOPERS).invalidate();
-        cacheManager.getCache(CacheNames.COLLECTIONS_LISTINGS).invalidate();
         cacheManager.getCache(CacheNames.GET_DECERTIFIED_DEVELOPERS).invalidate();
+        cacheManager.getCache(CacheNames.QUESTIONABLE_ACTIVITIES).invalidate();
+        cacheManager.getCache(CacheNames.COLLECTIONS_LISTINGS).invalidate();
+        cacheManager.getCache(CacheNames.COGNITO_USERS_BY_EMAIL).invalidate();
+        cacheManager.getCache(CacheNames.COGNITO_USERS_BY_UUID).invalidate();
     }
 
     private void sendJobCompletionEmails(Developer newDeveloper, List<Long> productIds,
@@ -325,10 +334,23 @@ public class SplitDeveloperJob extends QuartzJob {
         }
         productList += "</ul>";
 
+        String userReminder = "";
+        if (ff4j.check(FeatureList.SSO)) {
+            userReminder = String.format("All users associated with %s have had their access removed "
+                    + "and may have been disabled. Users will need to be manually re-invited with the "
+                    + "correct organization access.",
+                    preSplitDeveloper.getName());
+        } else {
+            userReminder = String.format("User access to the developers %s and %s must be manually updated.",
+                    preSplitDeveloper.getName(),
+                    createdDeveloper.getName());
+        }
+
         String htmlMessage = emailBuilder.initialize()
                 .heading(title)
                 .paragraph(null, summaryText)
                 .paragraph(null, productList)
+                .paragraph(null, userReminder)
                 .footer(AdminFooter.class)
                 .build();
         return htmlMessage;

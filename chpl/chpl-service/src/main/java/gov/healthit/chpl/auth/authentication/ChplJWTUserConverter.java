@@ -45,6 +45,7 @@ public class ChplJWTUserConverter implements JWTUserConverter {
         try {
             validatedClaims = jwtConsumer.consume(jwt);
         } catch (InvalidJwtException e) {
+            LOGGER.error("Invalid JWT Exception", e);
             throw new JWTValidationException("Invalid authentication token.");
         }
 

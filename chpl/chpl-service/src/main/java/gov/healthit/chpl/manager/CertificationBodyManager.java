@@ -86,14 +86,14 @@ public class CertificationBodyManager extends SecuredManager {
 
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CERTIFICATION_BODY, "
-            + "T(gov.healthit.chpl.permissions.domains.CertificationBodyDomainPermissions).UPDATE, #acb)")
+            + "T(gov.healthit.chpl.permissions.domains.CertificationBodyDomainPermissions).UPDATE, #acbToUpdate)")
     @CacheEvict(value = {
             CacheNames.GET_DECERTIFIED_DEVELOPERS,
             CacheNames.COLLECTIONS_DEVELOPERS,
             CacheNames.COLLECTIONS_LISTINGS,
             CacheNames.COMPLAINTS
     }, allEntries = true)
-    @ListingStoreRemove(removeBy = RemoveBy.ACB_ID, id = "#acb.id")
+    @ListingStoreRemove(removeBy = RemoveBy.ACB_ID, id = "#acbToUpdate.id")
     @ListingSearchCacheRefresh
     // no other caches have ACB data so we do not need to clear all
     public CertificationBody update(CertificationBody acbToUpdate) throws EntityRetrievalException, SchedulerException, ValidationException, ActivityException, InvalidArgumentsException {
@@ -210,18 +210,13 @@ public class CertificationBodyManager extends SecuredManager {
     @Transactional(readOnly = true)
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).CERTIFICATION_BODY, "
             + "T(gov.healthit.chpl.permissions.domains.CertificationBodyDomainPermissions).GET_USERS, #acbId)")
-    public List<User> getUsers(Long acbId, boolean includeDisabled)
-            throws InvalidArgumentsException, EntityRetrievalException {
+    public List<User> getUsers(Long acbId) throws InvalidArgumentsException, EntityRetrievalException {
         CertificationBody acb = resourcePermissionsFactory.get().getAcbIfPermissionById(acbId);
         if (acb == null) {
             throw new InvalidArgumentsException("Could not find the ACB specified.");
         }
 
-        if (!resourcePermissionsFactory.get().isUserRoleAdmin()
-                && !resourcePermissionsFactory.get().isUserRoleOnc()) {
-            includeDisabled = false;
-        }
-        List<User> users = resourcePermissionsFactory.get().getAllUsersOnAcb(acb, includeDisabled);
+        List<User> users = resourcePermissionsFactory.get().getAllUsersOnAcb(acb);
         return users;
     }
 
