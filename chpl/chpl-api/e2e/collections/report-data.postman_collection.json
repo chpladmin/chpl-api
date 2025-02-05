@@ -616,6 +616,60 @@
 				"description": "/report-data/service-base-url-list should retrieve status 200 and valid response"
 			},
 			"response": []
+		},
+		{
+			"name": "GET /report-data/non-conformities/types - 200 status and valid response",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"/report-data/non-conformities/types should retrieve status 200 and valid response\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"    pm.expect(pm.response.text()).to.include(\"nonconformityType\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"number\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"title\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"startDay\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"endDay\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"removed\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"status\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "API-Key",
+						"value": "{{apiKey}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/rest/report-data/non-conformities/types",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"rest",
+						"report-data",
+						"non-conformities",
+						"types"
+					]
+				},
+				"description": "GET /report-data/non-conformities/types - 200 status and valid response"
+			},
+			"response": []
 		}
 	]
 }
