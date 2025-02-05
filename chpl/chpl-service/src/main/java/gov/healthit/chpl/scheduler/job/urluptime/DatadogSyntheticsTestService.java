@@ -61,7 +61,7 @@ public class DatadogSyntheticsTestService {
         this.datadogTestLocation = datadogTestLocation;
     }
 
-    protected DatadogSyntheticsTestApiProvider getApiProvider() {
+    public DatadogSyntheticsTestApiProvider getApiProvider() {
         return apiProvider;
     }
 
@@ -114,8 +114,8 @@ public class DatadogSyntheticsTestService {
                                         .target(NOT_EMPTY_REGEX)
                                         .type(SyntheticsAssertionType.BODY))))
                         .request(new SyntheticsTestRequest()
-                                    .url(url)
-                                    .method(HTTP_METHOD_GET)))
+                                .url(url)
+                                .method(HTTP_METHOD_GET)))
                 .options(new SyntheticsTestOptions()
                         .httpVersion(SyntheticsTestOptionsHTTPVersion.ANY)
                         .minFailureDuration(0L)

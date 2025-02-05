@@ -24,7 +24,6 @@ public class DatadogSyntheticsTestResultService {
 
     private DatadogSyntheticsTestApiProvider apiProvider;
 
-
     @Autowired
     public DatadogSyntheticsTestResultService(DatadogSyntheticsTestApiProvider apiProvider) {
         this.apiProvider = apiProvider;
@@ -56,6 +55,27 @@ public class DatadogSyntheticsTestResultService {
         }
 
         return testResults;
+    }
+
+    public SyntheticsGetAPITestLatestResultsResponse getSyntheticsTestResults(String publicTestKey) {
+        // SyntheticsGetAPITestLatestResultsResponse response;
+        // List<SyntheticsAPITestResultShort> testResults = new
+        // ArrayList<SyntheticsAPITestResultShort>();
+        try {
+            return apiProvider.getApiInstance().getAPITestLatestResults(publicTestKey);
+            // while (response.getResults().size() > 1) {
+            // testResults.addAll(response.getResults());
+            // Long ts = getMostRecentTimestamp(response.getResults());
+            // response =
+            // apiProvider.getApiInstance().getAPITestLatestResults(publicTestKey);
+            // }
+            // LOGGER.info("Found {} tests for monitor {}", testResults.size(),
+            // publicTestKey);
+
+        } catch (ApiException e) {
+            LOGGER.error("Could not retrieve results for test key: {}", publicTestKey, e);
+            return null;
+        }
     }
 
     public SyntheticsAPITestResultFull getDetailedTestResult(String publicTestKey, String resultId) {
