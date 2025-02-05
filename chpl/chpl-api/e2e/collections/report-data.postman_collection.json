@@ -618,23 +618,72 @@
 			"response": []
 		},
 		{
-			"name": "GET /report-data/non-conformities/types - 200 status and valid response",
+			"name": "GET /report-data/real-world-testing/plans - 200 status and valid response",
 			"event": [
 				{
 					"listen": "test",
 					"script": {
 						"exec": [
-							"pm.test(\"/report-data/non-conformities/types should retrieve status 200 and valid response\", function () {\r",
+							"pm.test(\"/report-data/real-world-testing/plans should retrieve status 200 and valid response\", function () {\r",
 							"    pm.response.to.have.status(200);\r",
-							"    pm.expect(pm.response.text()).to.include(\"nonconformityType\");\r",
-							"    pm.expect(pm.response.text()).to.include(\"number\");\r",
-							"    pm.expect(pm.response.text()).to.include(\"title\");\r",
-							"    pm.expect(pm.response.text()).to.include(\"startDay\");\r",
-							"    pm.expect(pm.response.text()).to.include(\"endDay\");\r",
-							"    pm.expect(pm.response.text()).to.include(\"removed\");\r",
-							"    pm.expect(pm.response.text()).to.include(\"status\");\r",
-							"});\r",
-							""
+							"    pm.expect(pm.response.text()).to.include(\"realWorldTestingYear\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"checkedDate\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"checkedCount\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"requiresCheckCount\");\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "API-Key",
+						"value": "{{apiKey}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/rest/report-data/real-world-testing/plans",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"rest",
+						"report-data",
+						"real-world-testing",
+						"plans"
+					]
+				},
+				"description": "GET /report-data/real-world-testing/plans - 200 status and valid response"
+			},
+			"response": []
+		},
+		{
+			"name": "GET /report-data/real-world-testing/results - 200 status and valid response",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test.skip(\"/report-data/real-world-testing/results should retrieve status 200 and valid response\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"    pm.expect(pm.response.text()).to.include(\"realWorldTestingYear\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"checkedDate\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"checkedCount\");\r",
+							"    pm.expect(pm.response.text()).to.include(\"requiresCheckCount\");\r",
+							"});"
 						],
 						"type": "text/javascript",
 						"packages": {}
@@ -656,18 +705,18 @@
 					}
 				],
 				"url": {
-					"raw": "{{url}}/rest/report-data/non-conformities/types",
+					"raw": "{{url}}/rest/report-data/real-world-testing/results",
 					"host": [
 						"{{url}}"
 					],
 					"path": [
 						"rest",
 						"report-data",
-						"non-conformities",
-						"types"
+						"real-world-testing",
+						"results"
 					]
 				},
-				"description": "GET /report-data/non-conformities/types - 200 status and valid response"
+				"description": "GET /report-data/real-world-testing/results - 200 status and valid response\r\n"
 			},
 			"response": []
 		}
