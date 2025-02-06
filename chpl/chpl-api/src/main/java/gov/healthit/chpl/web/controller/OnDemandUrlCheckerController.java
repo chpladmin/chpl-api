@@ -8,10 +8,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.datadog.api.client.ApiException;
-import com.datadog.api.client.v1.model.SyntheticsAPITestResultFull;
 
-import gov.healthit.chpl.datadog.OnDemandUrl;
 import gov.healthit.chpl.datadog.OnDemandUrlCheckerManager;
+import gov.healthit.chpl.datadog.OnDemandUrlCheckerResponse;
+import gov.healthit.chpl.datadog.OnDemandUrlRequest;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -38,7 +38,7 @@ public class OnDemandUrlCheckerController {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
             })
     @RequestMapping(value = "", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
-    public SyntheticsAPITestResultFull checkUrl(@RequestBody OnDemandUrl url) throws InterruptedException, ApiException {
+    public OnDemandUrlCheckerResponse checkUrl(@RequestBody OnDemandUrlRequest url) throws InterruptedException, ApiException {
         return onDemandUrlCheckerManager.checkUrl(url.getUrl());
     }
 

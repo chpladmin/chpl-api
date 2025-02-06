@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class OnDemandUrl implements Serializable {
+public class OnDemandUrlRequest implements Serializable {
     private static final long serialVersionUID = -3009297190983937267L;
 
     private String url;
