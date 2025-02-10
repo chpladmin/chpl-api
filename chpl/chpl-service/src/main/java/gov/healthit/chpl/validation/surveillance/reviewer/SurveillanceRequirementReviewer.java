@@ -2,6 +2,7 @@ package gov.healthit.chpl.validation.surveillance.reviewer;
 
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -40,6 +41,7 @@ public class SurveillanceRequirementReviewer implements ReadReviewer {
         }
         surv.getRequirements().forEach(req -> {
             checkRequirementExists(surv, req);
+            checkRequirementOtherPresentIfRequired(surv, req);
             checkResultExistsIfSurveillanceClosed(surv, req);
             checkResultTypeValidity(surv, req);
             checkRequirementValidForSurveillanceStartDate(surv, req);
@@ -52,6 +54,13 @@ public class SurveillanceRequirementReviewer implements ReadReviewer {
             if (reqDetailTypeFound == null) {
                 surv.getErrorMessages().add(msgUtil.getMessage("surveillance.requirementIsRequired"));
             }
+        }
+    }
+
+    private void checkRequirementOtherPresentIfRequired(Surveillance surv, SurveillanceRequirement req) {
+        if (isRequirementTypeOther(req.getRequirementType())
+                && StringUtils.isEmpty(req.getRequirementTypeOther())) {
+            surv.getErrorMessages().add(msgUtil.getMessage("surveillance.requirementOtherIsRequired"));
         }
     }
 
