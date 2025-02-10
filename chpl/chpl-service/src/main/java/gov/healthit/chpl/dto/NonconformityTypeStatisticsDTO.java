@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Data
 @Builder
+@Deprecated
 public class NonconformityTypeStatisticsDTO {
 
     private Long id;
