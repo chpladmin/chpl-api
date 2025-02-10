@@ -88,6 +88,7 @@ public class RealWorldTestingSummaryReportCreatorJob extends QuartzJob {
             certificationBodyManager.getAllActive().forEach(acb -> {
                 Long eligibleListingCountForAcb = reportRows.stream()
                         .filter(row -> row.getAcbName().equals(acb.getName())
+                                && row.getRwtEligibilityYear() != null
                                 && isListingValidAsOfDate(row.getCertificationDate(), reportDate))
                         .collect(Collectors.counting());
 
@@ -129,6 +130,7 @@ public class RealWorldTestingSummaryReportCreatorJob extends QuartzJob {
             certificationBodyManager.getAllActive().forEach(acb -> {
                 Long eligibleListingCountForAcb = reportRows.stream()
                         .filter(row -> row.getAcbName().equals(acb.getName())
+                                && row.getRwtEligibilityYear() != null
                                 && isListingValidAsOfDate(row.getCertificationDate(), reportDate))
                         .collect(Collectors.counting());
 
