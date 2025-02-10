@@ -1,5 +1,23 @@
 # Release Notes
 
+## Version 49.0.0
+_10 February 2025_
+
+### Breaking Change
+* Remove "includeDisabled" request param from GET user endpoints
+
+### Features
+* Add endpoint to retrieve non-conformity counts report
+
+### Flagged Features
+* Get user role from custom attribute
+* Delete users from cognito on developer join
+* Add ability to re-enable a disable user via invitation
+* Disable all users from orig developer on a split
+* Support revoking org access from acb/developer users
+
+---
+
 ## Version 48.0.0
 _21 January 2025_
 
