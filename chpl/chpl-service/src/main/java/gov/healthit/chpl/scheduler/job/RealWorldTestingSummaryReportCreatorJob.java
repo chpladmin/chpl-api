@@ -28,7 +28,7 @@ import gov.healthit.chpl.util.DateUtil;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2(topic = "realWorldTestingSummaryReportCreatorJobLogger")
-public class RealWorldTestingSummaryReportCreatorJob extends  QuartzJob {
+public class RealWorldTestingSummaryReportCreatorJob extends QuartzJob {
 
     @Autowired
     private RealWorldTestingReportService rwtReportService;
@@ -159,6 +159,7 @@ public class RealWorldTestingSummaryReportCreatorJob extends  QuartzJob {
     private Integer calculatePlanCount(List<RealWorldTestingReport> reports, Integer rwtYear, CertificationBody acb, LocalDate checkedDate) {
         return reports.stream()
                 .filter(report -> report.getAcbName().equals(acb.getName())
+                        && report.getRwtEligibilityYear() != null
                         && DateUtil.isDateBetweenInclusive(Pair.of(rwtReportService.getPlansStartDate(rwtYear), checkedDate),
                                 report.getRwtPlansCheckDate()))
                 .toList()
@@ -168,6 +169,7 @@ public class RealWorldTestingSummaryReportCreatorJob extends  QuartzJob {
     private Integer calculateResulltsCount(List<RealWorldTestingReport> reports, Integer rwtYear, CertificationBody acb, LocalDate checkedDate) {
         return reports.stream()
                 .filter(report -> report.getAcbName().equals(acb.getName())
+                        && report.getRwtEligibilityYear() != null
                         && DateUtil.isDateBetweenInclusive(Pair.of(rwtReportService.getResultsStartDate(rwtYear), checkedDate),
                                 report.getRwtResultsCheckDate()))
                 .toList()
