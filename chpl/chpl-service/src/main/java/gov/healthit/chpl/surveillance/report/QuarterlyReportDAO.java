@@ -4,8 +4,6 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import jakarta.persistence.Query;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -21,6 +19,7 @@ import gov.healthit.chpl.surveillance.report.domain.QuarterlyReport;
 import gov.healthit.chpl.surveillance.report.domain.RelevantListing;
 import gov.healthit.chpl.surveillance.report.entity.ListingWithSurveillanceEntity;
 import gov.healthit.chpl.surveillance.report.entity.QuarterlyReportEntity;
+import jakarta.persistence.Query;
 
 @Repository("quarterlyReportDao")
 public class QuarterlyReportDAO extends BaseDAOImpl {
@@ -214,11 +213,15 @@ public class QuarterlyReportDAO extends BaseDAOImpl {
         QuarterlyReportEntity toCreateEntity = QuarterlyReportEntity.builder()
                 .certificationBodyId(toCreate.getAcb().getId())
                 .year(toCreate.getYear())
-                .prioritizedElementSummary(toCreate.getPrioritizedElementSummary())
-                .quarterId(quarterDao.getByName(toCreate.getQuarter()).getId())
                 .activitiesOutcomesSummary(toCreate.getSurveillanceActivitiesAndOutcomes())
-                .reactiveSurveillanceSummary(toCreate.getReactiveSurveillanceSummary())
+                .appropriateDesignMarkUse(toCreate.getAppropriateDesignMarkUse())
+                .developerComplaintsLogReview(toCreate.getDeveloperComplaintsLogReview())
                 .disclosureRequirementsSummary(toCreate.getDisclosureRequirementsSummary())
+                .icsSurveillanceSummary(toCreate.getIcsSurveillanceSummary())
+                .prioritizedElementSummary(toCreate.getPrioritizedElementSummary())
+                .postCertificationPerformance(toCreate.getPostCertificationPerformance())
+                .quarterId(quarterDao.getByName(toCreate.getQuarter()).getId())
+                .reactiveSurveillanceSummary(toCreate.getReactiveSurveillanceSummary())
                 .build();
 
         super.create(toCreateEntity);
@@ -229,9 +232,13 @@ public class QuarterlyReportDAO extends BaseDAOImpl {
     public void update(QuarterlyReport toUpdate) throws EntityRetrievalException {
         QuarterlyReportEntity toUpdateEntity = getEntityById(toUpdate.getId());
         toUpdateEntity.setActivitiesOutcomesSummary(toUpdate.getSurveillanceActivitiesAndOutcomes());
-        toUpdateEntity.setPrioritizedElementSummary(toUpdate.getPrioritizedElementSummary());
-        toUpdateEntity.setReactiveSurveillanceSummary(toUpdate.getReactiveSurveillanceSummary());
+        toUpdateEntity.setAppropriateDesignMarkUse(toUpdate.getAppropriateDesignMarkUse());
+        toUpdateEntity.setDeveloperComplaintsLogReview(toUpdate.getDeveloperComplaintsLogReview());
         toUpdateEntity.setDisclosureRequirementsSummary(toUpdate.getDisclosureRequirementsSummary());
+        toUpdateEntity.setIcsSurveillanceSummary(toUpdate.getIcsSurveillanceSummary());
+        toUpdateEntity.setPrioritizedElementSummary(toUpdate.getPrioritizedElementSummary());
+        toUpdateEntity.setPostCertificationPerformance(toUpdate.getPostCertificationPerformance());
+        toUpdateEntity.setReactiveSurveillanceSummary(toUpdate.getReactiveSurveillanceSummary());
 
         super.update(toUpdateEntity);
     }

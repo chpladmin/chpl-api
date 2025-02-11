@@ -142,6 +142,166 @@ public class ReportInfoWorksheetBuilder2025 extends ReportInfoWorksheetBuilder {
                 + "requirements, as required of the ONC-ACB under 45 CFR § 170.523(k):";
     }
 
+    protected String getDeveloperComplaintsLogReviewTitle() {
+        return "Developer Complaints Log Review";
+    }
+
+    protected String getDeveloperComplaintsLogReviewDescription() {
+        return "Describe the activities conducted in the past quarter related to the review of developers' "
+                + "complaints logs. In your description, include an assessment of the extent to which the developer "
+                + "followed its internal complaints process and any deficiencies in that process. Additionally, "
+                + "specify the frequency of complaints received that relate to each prioritized elements outlined "
+                + "in the Surveillance Resource. Additional insights on individual findings can be included in "
+                + "the Surveillance Activities and Outcomes under \"Surveillance Findings\".";
+    }
+
+    @Override
+    protected int createDeveloperComplaintsLogReviewSubsection(SurveillanceReportWorkbookWrapper workbook, Sheet sheet,
+            List<QuarterlyReport> reports, int beginRow) {
+        int currRow = beginRow;
+        Row row = workbook.getRow(sheet, currRow++);
+        Cell cell = workbook.createCell(row, 1, workbook.getItalicUnderlinedSmallStyle());
+        cell.setCellValue(getDeveloperComplaintsLogReviewTitle());
+        row = workbook.getRow(sheet, currRow++);
+        cell = workbook.createCell(row, 1, workbook.getTopAlignedWrappedStyle());
+        cell.setCellValue(getDeveloperComplaintsLogReviewDescription());
+        row.setHeightInPoints((2 * sheet.getDefaultRowHeightInPoints()));
+        sheet.addMergedRegion(new CellRangeAddress(row.getRowNum(), row.getRowNum(), 1, 3));
+
+        //skip row
+        currRow++;
+        row = workbook.getRow(sheet, currRow++);
+        cell = workbook.createCell(row, 1, workbook.getTopAlignedWrappedStyle());
+        if (reports.size() == 1) {
+            cell.setCellValue(reports.get(0).getDeveloperComplaintsLogReview());
+        } else {
+            StringBuffer buf = new StringBuffer();
+            for (QuarterlyReport report : reports) {
+                if (!StringUtils.isEmpty(report.getDeveloperComplaintsLogReview())) {
+                    buf.append(report.getQuarter()).append(":")
+                        .append(report.getDeveloperComplaintsLogReview())
+                        .append("\n");
+                }
+            }
+            cell.setCellValue(buf.toString());
+        }
+        //this is user-entered text that wraps so we should try to resize the height
+        //of the row to show all the lines of text.
+        int lineCount = workbook.calculateLineCount(cell.getStringCellValue(), sheet, 1, 3);
+        row.setHeightInPoints((Math.max(MIN_TEXT_AREA_LINES, lineCount) * sheet.getDefaultRowHeightInPoints()));
+        pt.drawBorders(new CellRangeAddress(row.getRowNum(), row.getRowNum(), 1, 3),
+                BorderStyle.MEDIUM, BorderExtent.OUTSIDE);
+        sheet.addMergedRegion(new CellRangeAddress(row.getRowNum(), row.getRowNum(), 1, 3));
+        return row.getRowNum() + 1;
+    }
+
+    protected String getPostCertificationPerformanceTitle() {
+        return "Post-certification Performance of Certified Capabilities ";
+    }
+
+    protected String getPostCertificationPerformanceDescription() {
+        return "The assessment of potential non-conformities resulting from a developer's implementation or business "
+                + "practices that may impact the performance of certified capabilities in the field.";
+    }
+
+    @Override
+    protected int createPostCertificationPerformanceSubsection(SurveillanceReportWorkbookWrapper workbook, Sheet sheet,
+            List<QuarterlyReport> reports, int beginRow) {
+        int currRow = beginRow;
+        Row row = workbook.getRow(sheet, currRow++);
+        Cell cell = workbook.createCell(row, 1, workbook.getItalicUnderlinedSmallStyle());
+        cell.setCellValue(getPostCertificationPerformanceTitle());
+        row = workbook.getRow(sheet, currRow++);
+        cell = workbook.createCell(row, 1, workbook.getTopAlignedWrappedStyle());
+        cell.setCellValue(getPostCertificationPerformanceDescription());
+        row.setHeightInPoints((2 * sheet.getDefaultRowHeightInPoints()));
+        sheet.addMergedRegion(new CellRangeAddress(row.getRowNum(), row.getRowNum(), 1, 3));
+
+        //skip row
+        currRow++;
+        row = workbook.getRow(sheet, currRow++);
+        cell = workbook.createCell(row, 1, workbook.getTopAlignedWrappedStyle());
+        if (reports.size() == 1) {
+            cell.setCellValue(reports.get(0).getPostCertificationPerformance());
+        } else {
+            StringBuffer buf = new StringBuffer();
+            for (QuarterlyReport report : reports) {
+                if (!StringUtils.isEmpty(report.getPostCertificationPerformance())) {
+                    buf.append(report.getQuarter()).append(":")
+                        .append(report.getPostCertificationPerformance())
+                        .append("\n");
+                }
+            }
+            cell.setCellValue(buf.toString());
+        }
+        //this is user-entered text that wraps so we should try to resize the height
+        //of the row to show all the lines of text.
+        int lineCount = workbook.calculateLineCount(cell.getStringCellValue(), sheet, 1, 3);
+        row.setHeightInPoints((Math.max(MIN_TEXT_AREA_LINES, lineCount) * sheet.getDefaultRowHeightInPoints()));
+        pt.drawBorders(new CellRangeAddress(row.getRowNum(), row.getRowNum(), 1, 3),
+                BorderStyle.MEDIUM, BorderExtent.OUTSIDE);
+        sheet.addMergedRegion(new CellRangeAddress(row.getRowNum(), row.getRowNum(), 1, 3));
+        return row.getRowNum() + 1;
+    }
+
+    protected String getAppropriateUseOfMarkTitle() {
+        return "Appropriate Use of Mark";
+    }
+
+    protected String getAppropriateUseOfMarkDescription() {
+        return "Describe activities and frequency of assessment of the appropriate use of the ONC Health IT Certification "
+                + "and Design Mark on developer public-facing materials, if applicable.";
+    }
+
+    @Override
+    protected int createAppropriateUseOfMarkSubsection(SurveillanceReportWorkbookWrapper workbook, Sheet sheet,
+            List<QuarterlyReport> reports, int beginRow) {
+        //do any reports have this data?
+        boolean hasAnyNonemptyData = reports.stream()
+            .filter(report -> !StringUtils.isEmpty(report.getAppropriateDesignMarkUse()))
+            .findAny()
+            .isPresent();
+        if (!hasAnyNonemptyData) {
+            return beginRow;
+        }
+
+        int currRow = beginRow;
+        Row row = workbook.getRow(sheet, currRow++);
+        Cell cell = workbook.createCell(row, 1, workbook.getItalicUnderlinedSmallStyle());
+        cell.setCellValue(getAppropriateUseOfMarkTitle());
+        row = workbook.getRow(sheet, currRow++);
+        cell = workbook.createCell(row, 1, workbook.getTopAlignedWrappedStyle());
+        cell.setCellValue(getAppropriateUseOfMarkDescription());
+        row.setHeightInPoints((2 * sheet.getDefaultRowHeightInPoints()));
+        sheet.addMergedRegion(new CellRangeAddress(row.getRowNum(), row.getRowNum(), 1, 3));
+
+        //skip row
+        currRow++;
+        row = workbook.getRow(sheet, currRow++);
+        cell = workbook.createCell(row, 1, workbook.getTopAlignedWrappedStyle());
+        if (reports.size() == 1) {
+            cell.setCellValue(reports.get(0).getAppropriateDesignMarkUse());
+        } else {
+            StringBuffer buf = new StringBuffer();
+            for (QuarterlyReport report : reports) {
+                if (!StringUtils.isEmpty(report.getAppropriateDesignMarkUse())) {
+                    buf.append(report.getQuarter()).append(":")
+                        .append(report.getAppropriateDesignMarkUse())
+                        .append("\n");
+                }
+            }
+            cell.setCellValue(buf.toString());
+        }
+        //this is user-entered text that wraps so we should try to resize the height
+        //of the row to show all the lines of text.
+        int lineCount = workbook.calculateLineCount(cell.getStringCellValue(), sheet, 1, 3);
+        row.setHeightInPoints((Math.max(MIN_TEXT_AREA_LINES, lineCount) * sheet.getDefaultRowHeightInPoints()));
+        pt.drawBorders(new CellRangeAddress(row.getRowNum(), row.getRowNum(), 1, 3),
+                BorderStyle.MEDIUM, BorderExtent.OUTSIDE);
+        sheet.addMergedRegion(new CellRangeAddress(row.getRowNum(), row.getRowNum(), 1, 3));
+        return row.getRowNum() + 1;
+    }
+
     @Override
     protected String getComplaintsReportingTitle() {
         return "Complaints Reported to ONC-ACB";

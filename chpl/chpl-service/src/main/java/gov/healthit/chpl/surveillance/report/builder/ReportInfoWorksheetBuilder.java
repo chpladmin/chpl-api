@@ -35,13 +35,11 @@ public abstract class ReportInfoWorksheetBuilder {
     protected String getRandomizedSurveillanceActivitiesAndOutcomesTitle() {
         return "";
     }
-
     protected abstract String getRandomizedSurveillanceActivitiesAndOutcomesDescription();
 
     protected String getAllSurveillanceActivitiesAndOutcomesTitle() {
         return "";
     }
-
     protected String getAllSurveillanceActivitiesAndOutcomesDescription() {
         return "Please log the surveillance activities and their outcomes to the "
                 + "\"Activities and Outcomes\" sheet of this workbook.";
@@ -53,16 +51,13 @@ public abstract class ReportInfoWorksheetBuilder {
     protected String getIcsSummaryTitle() {
         return "";
     }
-
     protected String getIcsSummaryDescription() {
         return "";
     }
-
     protected int createIcsSurveillanceSubsection(SurveillanceReportWorkbookWrapper workbook,
             Sheet sheet, List<QuarterlyReport> reports, int beginRow) {
         return beginRow;
     }
-
     protected String getPrioritizedSurveillanceDescription() {
         return "";
     }
@@ -72,6 +67,40 @@ public abstract class ReportInfoWorksheetBuilder {
 
     protected abstract String getDisclosureSummaryTitle();
     protected abstract String getDisclosureSummaryDescription();
+
+    protected String getDeveloperComplaintsLogReviewTitle() {
+        return "";
+    }
+    protected String getDeveloperComplaintsLogReviewDescription() {
+        return "";
+    }
+    protected int createDeveloperComplaintsLogReviewSubsection(SurveillanceReportWorkbookWrapper workbook, Sheet sheet,
+            List<QuarterlyReport> reports, int beginRow) {
+        return beginRow;
+    }
+
+    protected String getPostCertificationPerformanceTitle() {
+        return "";
+    }
+    protected String getPostCertificationPerformanceDescription() {
+        return "";
+    }
+    protected int createPostCertificationPerformanceSubsection(SurveillanceReportWorkbookWrapper workbook, Sheet sheet,
+            List<QuarterlyReport> reports, int beginRow) {
+        return beginRow;
+    }
+
+    protected String getAppropriateUseOfMarkTitle() {
+        return "";
+    }
+    protected String getAppropriateUseOfMarkDescription() {
+        return "";
+    }
+    protected int createAppropriateUseOfMarkSubsection(SurveillanceReportWorkbookWrapper workbook, Sheet sheet,
+            List<QuarterlyReport> reports, int beginRow) {
+        return beginRow;
+    }
+
     protected abstract String getComplaintsReportingTitle();
     protected String getComplaintsReportingDescription() {
         return "Please log the complaints and any actions to the \"Complaints\" sheet of this workbook.";
@@ -158,7 +187,7 @@ public abstract class ReportInfoWorksheetBuilder {
         cell.setCellValue(buf.toString());
         pt.drawBorders(new CellRangeAddress(row.getRowNum(), row.getRowNum(), 1, 1),
                 BorderStyle.MEDIUM, BorderExtent.ALL);
-        return row.getRowNum()+1;
+        return row.getRowNum() + 1;
     }
 
     private int createReportingPeriodSection(SurveillanceReportWorkbookWrapper workbook, Sheet sheet,
@@ -191,7 +220,7 @@ public abstract class ReportInfoWorksheetBuilder {
         cell.setCellValue(dateFormatter.format(minDate) + " through " + dateFormatter.format(maxDate));
         pt.drawBorders(new CellRangeAddress(row.getRowNum(), row.getRowNum(), 1, 1),
                 BorderStyle.MEDIUM, BorderExtent.ALL);
-        return row.getRowNum()+1;
+        return row.getRowNum() + 1;
     }
 
     private int createActivitiesAndOutcomesSection(SurveillanceReportWorkbookWrapper workbook, Sheet sheet,
@@ -322,6 +351,20 @@ public abstract class ReportInfoWorksheetBuilder {
             currRow++;
         }
 
+        currRow = createPrioritizedCriteriaSubsection(workbook, sheet, reports, currRow);
+        currRow = createDisclosureRequirementsSubsection(workbook, sheet, reports, currRow);
+        currRow = createDeveloperComplaintsLogReviewSubsection(workbook, sheet, reports, currRow);
+        currRow = createPostCertificationPerformanceSubsection(workbook, sheet, reports, currRow);
+        currRow = createAppropriateUseOfMarkSubsection(workbook, sheet, reports, currRow);
+        return currRow;
+    }
+
+    private int createPrioritizedCriteriaSubsection(SurveillanceReportWorkbookWrapper workbook, Sheet sheet,
+            List<QuarterlyReport> reports, int beginRow) {
+
+        Row row = null;
+        Cell cell = null;
+        int currRow = beginRow;
         if (!StringUtils.isEmpty(getPrioritizedCriteriaTitle())) {
             row = workbook.getRow(sheet, currRow++);
             cell = workbook.createCell(row, 1, workbook.getItalicUnderlinedSmallStyle());
@@ -360,11 +403,14 @@ public abstract class ReportInfoWorksheetBuilder {
         pt.drawBorders(new CellRangeAddress(row.getRowNum(), row.getRowNum(), 1, 3),
                 BorderStyle.MEDIUM, BorderExtent.OUTSIDE);
         sheet.addMergedRegion(new CellRangeAddress(row.getRowNum(), row.getRowNum(), 1, 3));
+        return row.getRowNum();
+    }
 
-        //skip row
-        currRow++;
-        row = workbook.getRow(sheet, currRow++);
-        cell = workbook.createCell(row, 1, workbook.getItalicUnderlinedSmallStyle());
+    private int createDisclosureRequirementsSubsection(SurveillanceReportWorkbookWrapper workbook, Sheet sheet,
+            List<QuarterlyReport> reports, int beginRow) {
+        int currRow = beginRow;
+        Row row = workbook.getRow(sheet, currRow++);
+        Cell cell = workbook.createCell(row, 1, workbook.getItalicUnderlinedSmallStyle());
         cell.setCellValue(getDisclosureSummaryTitle());
         row = workbook.getRow(sheet, currRow++);
         cell = workbook.createCell(row, 1, workbook.getTopAlignedWrappedStyle());
@@ -391,7 +437,7 @@ public abstract class ReportInfoWorksheetBuilder {
         }
         //this is user-entered text that wraps so we should try to resize the height
         //of the row to show all the lines of text.
-        lineCount = workbook.calculateLineCount(cell.getStringCellValue(), sheet, 1, 3);
+        int lineCount = workbook.calculateLineCount(cell.getStringCellValue(), sheet, 1, 3);
         row.setHeightInPoints((Math.max(MIN_TEXT_AREA_LINES, lineCount) * sheet.getDefaultRowHeightInPoints()));
         pt.drawBorders(new CellRangeAddress(row.getRowNum(), row.getRowNum(), 1, 3),
                 BorderStyle.MEDIUM, BorderExtent.OUTSIDE);
@@ -399,30 +445,7 @@ public abstract class ReportInfoWorksheetBuilder {
         return row.getRowNum();
     }
 
-    private int createPrioritizedCriteriaSubsection(SurveillanceReportWorkbookWrapper workbook, Sheet sheet,
-            List<QuarterlyReport> reports, int beginRow) {
 
-    }
-
-    private int createDisclosureRequirementsSubsection(SurveillanceReportWorkbookWrapper workbook, Sheet sheet,
-            List<QuarterlyReport> reports, int beginRow) {
-
-    }
-
-    private int createDeveloperComplaintsLogReviewSubsection(SurveillanceReportWorkbookWrapper workbook, Sheet sheet,
-            List<QuarterlyReport> reports, int beginRow) {
-
-    }
-
-    private int createPostCertificationPerformanceSubsection(SurveillanceReportWorkbookWrapper workbook, Sheet sheet,
-            List<QuarterlyReport> reports, int beginRow) {
-
-    }
-
-    private int createAppropriateUseOfMarkSubsection(SurveillanceReportWorkbookWrapper workbook, Sheet sheet,
-            List<QuarterlyReport> reports, int beginRow) {
-
-    }
 
     private int createComplaintsSection(SurveillanceReportWorkbookWrapper workbook, Sheet sheet, int beginRow) {
         int currRow = beginRow;
