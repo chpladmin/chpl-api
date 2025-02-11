@@ -61,24 +61,36 @@ public class OnDemandUrlCheckerManager {
         }
 
         SyntheticsAPITestResultFull fullTestResults = null;
-        if (result != null && result.getResults().size() > 0) {
+        OnDemandUrlCheckerResponse response = null;
+        if (result != null
+                && result.getResults().size() > 0) {
             fullTestResults = datadogSyntheticsTestResultService.getDetailedTestResult(test.getPublicId(), result.getResults().get(0).getResultId());
-            datadogSyntheticsTestService.deleteSyntheticsTests(List.of(test.getPublicId()));
+            response = convertToResponse(url, fullTestResults);
+            response.setPassed(result.getResults().get(0).getResult().getPassed());
+            if (!result.getResults().get(0).getResult().getPassed()) {
+                response.setErrorMessage(fullTestResults.getResult().getFailure().getMessage());
+            }
         } else {
-            datadogSyntheticsTestService.deleteSyntheticsTests(List.of(test.getPublicId()));
             throw new ApiException("No results found for test " + test.getPublicId());
         }
+        datadogSyntheticsTestService.deleteSyntheticsTests(List.of(test.getPublicId()));
         LOGGER.info("Results: " + fullTestResults.toString());
-        return convertToResponse(url, fullTestResults);
+        return response;
     }
 
     private OnDemandUrlCheckerResponse convertToResponse(String url, SyntheticsAPITestResultFull fullTestResults) {
-        return OnDemandUrlCheckerResponse.builder()
-                .httpResponseAssertion(getAssertionResult(fullTestResults.getResult().getAdditionalProperties(), TYPE_VALUE_STATUS_CODE))
-                .responseTimeAssertion(getAssertionResult(fullTestResults.getResult().getAdditionalProperties(), TYPE_VALUE_RESPONSE_TIME))
-                .bodyNotEmptyAssertion(getAssertionResult(fullTestResults.getResult().getAdditionalProperties(), TYPE_VALUE_BODY))
-                .url(url)
-                .build();
+        if (doAdditionalPropertiesExist(fullTestResults)) {
+            return OnDemandUrlCheckerResponse.builder()
+                    .httpResponseAssertion(getAssertionResult(fullTestResults.getResult().getAdditionalProperties(), TYPE_VALUE_STATUS_CODE))
+                    .responseTimeAssertion(getAssertionResult(fullTestResults.getResult().getAdditionalProperties(), TYPE_VALUE_RESPONSE_TIME))
+                    .bodyNotEmptyAssertion(getAssertionResult(fullTestResults.getResult().getAdditionalProperties(), TYPE_VALUE_BODY))
+                    .url(url)
+                    .build();
+        } else {
+            return OnDemandUrlCheckerResponse.builder()
+                    .url(url)
+                    .build();
+        }
     }
 
     private OnDemandUrlCheckerAssertionResult getAssertionResult(Map<String, Object> results, String value) {
@@ -94,7 +106,7 @@ public class OnDemandUrlCheckerManager {
                     .findAny()
                     .map(map -> OnDemandUrlCheckerAssertionResult.builder()
                             .passed((Boolean) ((Map<?, ?>) map).get(VALID_KEY))
-                            .actualValue(((Map<?, ?>) map).get(ACTUAL_KEY).toString())
+                            .actualValue(((Map<?, ?>) map).containsKey(ACTUAL_KEY) ? ((Map<?, ?>) map).get(ACTUAL_KEY).toString() : "")
                             .build())
                     .orElse(OnDemandUrlCheckerAssertionResult.builder()
                             .passed(false)
@@ -102,5 +114,10 @@ public class OnDemandUrlCheckerManager {
                             .build());
         }
         return null;
+    }
+
+    private Boolean doAdditionalPropertiesExist(SyntheticsAPITestResultFull fullTestResults) {
+        return fullTestResults.getResult().getAdditionalProperties().containsKey(ASSERTION_RESULTS_KEY)
+                && fullTestResults.getResult().getAdditionalProperties().get(ASSERTION_RESULTS_KEY) instanceof List<?>;
     }
 }
