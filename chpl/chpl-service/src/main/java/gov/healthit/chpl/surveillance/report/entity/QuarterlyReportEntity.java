@@ -2,6 +2,10 @@ package gov.healthit.chpl.surveillance.report.entity;
 
 import java.time.LocalDate;
 
+import gov.healthit.chpl.domain.CertificationBody;
+import gov.healthit.chpl.entity.CertificationBodyEntity;
+import gov.healthit.chpl.entity.EntityAudit;
+import gov.healthit.chpl.surveillance.report.domain.QuarterlyReport;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -11,11 +15,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-
-import gov.healthit.chpl.domain.CertificationBody;
-import gov.healthit.chpl.entity.CertificationBodyEntity;
-import gov.healthit.chpl.entity.EntityAudit;
-import gov.healthit.chpl.surveillance.report.domain.QuarterlyReport;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -62,11 +61,23 @@ public class QuarterlyReportEntity extends EntityAudit {
     @Column(name = "reactive_surveillance_summary")
     private String reactiveSurveillanceSummary;
 
+    @Column(name = "ics_surveillance_summary")
+    private String icsSurveillanceSummary;
+
     @Column(name = "prioritized_element_summary")
     private String prioritizedElementSummary;
 
     @Column(name = "disclosure_requirements_summary")
     private String disclosureRequirementsSummary;
+
+    @Column(name = "developer_complaints_log_review")
+    private String developerComplaintsLogReview;
+
+    @Column(name = "post_certification_performance")
+    private String postCertificationPerformance;
+
+    @Column(name = "appropriate_design_mark_use")
+    private String appropriateDesignMarkUse;
 
     public QuarterlyReport toDomain() {
         CertificationBody reportAcb = null;
@@ -79,10 +90,14 @@ public class QuarterlyReportEntity extends EntityAudit {
         }
         return QuarterlyReport.builder()
                 .acb(reportAcb)
+                .appropriateDesignMarkUse(this.getAppropriateDesignMarkUse())
+                .developerComplaintsLogReview(this.getDeveloperComplaintsLogReview())
                 .disclosureRequirementsSummary(this.getDisclosureRequirementsSummary())
                 .endDay(LocalDate.of(getYear(), this.getQuarter().getQuarterEndMonth(), this.getQuarter().getQuarterEndDay()))
                 .id(this.getId())
+                .icsSurveillanceSummary(this.getIcsSurveillanceSummary())
                 .prioritizedElementSummary(this.getPrioritizedElementSummary())
+                .postCertificationPerformance(this.getPostCertificationPerformance())
                 .quarter(this.getQuarter().toDomain().getName())
                 .reactiveSurveillanceSummary(this.getReactiveSurveillanceSummary())
                 .startDay(LocalDate.of(getYear(), this.getQuarter().getQuarterBeginMonth(), this.getQuarter().getQuarterBeginDay()))
