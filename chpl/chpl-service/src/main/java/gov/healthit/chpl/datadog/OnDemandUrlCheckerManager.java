@@ -1,9 +1,8 @@
 package gov.healthit.chpl.datadog;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -16,6 +15,8 @@ import com.datadog.api.client.v1.model.SyntheticsGetAPITestLatestResultsResponse
 import com.datadog.api.client.v1.model.SyntheticsTriggerBody;
 import com.datadog.api.client.v1.model.SyntheticsTriggerTest;
 
+import dev.failsafe.Failsafe;
+import dev.failsafe.RetryPolicy;
 import gov.healthit.chpl.scheduler.job.urluptime.DatadogSyntheticsTestResultService;
 import gov.healthit.chpl.scheduler.job.urluptime.DatadogSyntheticsTestService;
 import lombok.extern.log4j.Log4j2;
@@ -80,20 +81,37 @@ public class OnDemandUrlCheckerManager {
     }
 
     private SyntheticsGetAPITestLatestResultsResponse awaitTestResults(SyntheticsAPITest test) throws ApiException {
-        SyntheticsGetAPITestLatestResultsResponse result;
-        CompletableFuture<SyntheticsGetAPITestLatestResultsResponse> future = CompletableFuture.supplyAsync(() -> {
-            return datadogSyntheticsTestResultService.getSyntheticsTestResults(test.getPublicId());
-        });
+        // SyntheticsGetAPITestLatestResultsResponse result = null;
 
-        try {
-            result = future.get(45, TimeUnit.SECONDS);
-        } catch (Exception e) {
-            LOGGER.error("Error getting test results: " + e.getMessage());
-            throw new ApiException("No results found for test " + test.getPublicId());
-        } finally {
-            datadogSyntheticsTestService.deleteSyntheticsTests(List.of(test.getPublicId()));
-        }
-        return result;
+        // CompletableFuture<SyntheticsGetAPITestLatestResultsResponse> future =
+        // CompletableFuture.supplyAsync(() -> {
+        // return
+        // datadogSyntheticsTestResultService.getSyntheticsTestResults(test.getPublicId());
+        // });
+        //
+        // try {
+        // result = future.get(45, TimeUnit.SECONDS);
+        // } catch (Exception e) {
+        // LOGGER.error("Error getting test results: " + e.getMessage());
+        // throw new ApiException("No results found for test " +
+        // test.getPublicId());
+        // } finally {
+        // datadogSyntheticsTestService.deleteSyntheticsTests(List.of(test.getPublicId()));
+        // }
+
+        RetryPolicy<SyntheticsGetAPITestLatestResultsResponse> retryPolicy = RetryPolicy.<SyntheticsGetAPITestLatestResultsResponse> builder()
+                .withMaxAttempts(45)
+                .withDelay(Duration.ofSeconds(1))
+                .withMaxDuration(Duration.ofSeconds(45))
+                .onRetry(e -> LOGGER.info("Failure #{}. Retrying.", e.getAttemptCount()))
+                .onSuccess(e -> LOGGER.info("Success #{}.", e.getAttemptCount()))
+                .handleResultIf(res -> res == null || res.getResults().size() == 0)
+                .build();
+
+        return Failsafe.with(retryPolicy)
+                .get(() -> datadogSyntheticsTestResultService.getSyntheticsTestResults(test.getPublicId()));
+
+        // return result;
     }
 
     private OnDemandUrlCheckerResponse analyzeTestResults(SyntheticsGetAPITestLatestResultsResponse result, SyntheticsAPITest test) throws ApiException {

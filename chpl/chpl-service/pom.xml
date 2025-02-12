@@ -418,6 +418,13 @@
             <artifactId>jwks-rsa</artifactId>
             <version>0.4.0</version>
         </dependency>
+		
+		<!-- https://failsafe.dev/ -->
+		<dependency>
+    		<groupId>dev.failsafe</groupId>
+    		<artifactId>failsafe</artifactId>
+    		<version>3.3.2</version>
+		</dependency>
 
         <!--  needed for unit tests -->
         <dependency>
