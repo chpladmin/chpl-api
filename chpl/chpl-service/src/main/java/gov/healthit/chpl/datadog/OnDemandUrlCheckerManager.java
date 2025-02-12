@@ -1,10 +1,12 @@
 package gov.healthit.chpl.datadog;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 
 import com.datadog.api.client.ApiException;
@@ -39,33 +41,68 @@ public class OnDemandUrlCheckerManager {
         this.datadogSyntheticsTestResultService = datadogSyntheticsTestResultService;
     }
 
-    public OnDemandUrlCheckerResponse checkUrl(String url) throws InterruptedException, ApiException {
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).URL_CHECKER, "
+            + "T(gov.healthit.chpl.permissions.domains.UrlCheckerDomainPermissions).CHECK)")
+    public OnDemandUrlCheckerResponse checkUrl(String url) throws ApiException {
+        SyntheticsAPITest test = null;
+        try {
+            test = createTest(url);
+            triggerTest(test);
+            SyntheticsGetAPITestLatestResultsResponse result = awaitTestResults(test);
+            OnDemandUrlCheckerResponse response = analyzeTestResults(result, test);
+            return response;
 
-        SyntheticsAPITest test = datadogSyntheticsTestService.createSyntheticsTest(url, List.of(TEMP_DEVELOPER_ID));
+            // Integer attempts = 0;
+            // while ((result == null || result.getResults().size() == 0) &&
+            // attempts < 45) {
+            // Thread.sleep(1000);
+            // attempts++;
+            // result =
+            // datadogSyntheticsTestResultService.getSyntheticsTestResults(test.getPublicId());
+            // }
 
-        LOGGER.info(test.getPublicId());
+        } finally {
+            if (test != null) {
+                datadogSyntheticsTestService.deleteSyntheticsTests(List.of(test.getPublicId()));
+            }
+        }
+    }
 
+    private SyntheticsAPITest createTest(String url) {
+        return datadogSyntheticsTestService.createSyntheticsTest(url, List.of(TEMP_DEVELOPER_ID));
+    }
+
+    private void triggerTest(SyntheticsAPITest test) throws ApiException {
         SyntheticsTriggerBody body = new SyntheticsTriggerBody()
-                .tests(
-                        Collections.singletonList(
-                                new SyntheticsTriggerTest().publicId(test.getPublicId())));
+                .tests(List.of(new SyntheticsTriggerTest().publicId(test.getPublicId())));
 
         datadogSyntheticsTestService.getApiProvider().getApiInstance().triggerTests(body);
+    }
 
-        SyntheticsGetAPITestLatestResultsResponse result = null;
-        Integer attempts = 0;
-        while ((result == null || result.getResults().size() == 0) && attempts < 45) {
-            Thread.sleep(1000);
-            attempts++;
-            result = datadogSyntheticsTestResultService.getSyntheticsTestResults(test.getPublicId());
+    private SyntheticsGetAPITestLatestResultsResponse awaitTestResults(SyntheticsAPITest test) throws ApiException {
+        SyntheticsGetAPITestLatestResultsResponse result;
+        CompletableFuture<SyntheticsGetAPITestLatestResultsResponse> future = CompletableFuture.supplyAsync(() -> {
+            return datadogSyntheticsTestResultService.getSyntheticsTestResults(test.getPublicId());
+        });
+
+        try {
+            result = future.get(45, TimeUnit.SECONDS);
+        } catch (Exception e) {
+            LOGGER.error("Error getting test results: " + e.getMessage());
+            throw new ApiException("No results found for test " + test.getPublicId());
+        } finally {
+            datadogSyntheticsTestService.deleteSyntheticsTests(List.of(test.getPublicId()));
         }
+        return result;
+    }
 
+    private OnDemandUrlCheckerResponse analyzeTestResults(SyntheticsGetAPITestLatestResultsResponse result, SyntheticsAPITest test) throws ApiException {
         SyntheticsAPITestResultFull fullTestResults = null;
         OnDemandUrlCheckerResponse response = null;
         if (result != null
                 && result.getResults().size() > 0) {
             fullTestResults = datadogSyntheticsTestResultService.getDetailedTestResult(test.getPublicId(), result.getResults().get(0).getResultId());
-            response = convertToResponse(url, fullTestResults);
+            response = convertToResponse(test.getConfig().getRequest().getUrl(), fullTestResults);
             response.setPassed(result.getResults().get(0).getResult().getPassed());
             if (!result.getResults().get(0).getResult().getPassed()) {
                 response.setErrorMessage(fullTestResults.getResult().getFailure().getMessage());
@@ -73,8 +110,6 @@ public class OnDemandUrlCheckerManager {
         } else {
             throw new ApiException("No results found for test " + test.getPublicId());
         }
-        datadogSyntheticsTestService.deleteSyntheticsTests(List.of(test.getPublicId()));
-        LOGGER.info("Results: " + fullTestResults.toString());
         return response;
     }
 
