@@ -81,24 +81,6 @@ public class OnDemandUrlCheckerManager {
     }
 
     private SyntheticsGetAPITestLatestResultsResponse awaitTestResults(SyntheticsAPITest test) throws ApiException {
-        // SyntheticsGetAPITestLatestResultsResponse result = null;
-
-        // CompletableFuture<SyntheticsGetAPITestLatestResultsResponse> future =
-        // CompletableFuture.supplyAsync(() -> {
-        // return
-        // datadogSyntheticsTestResultService.getSyntheticsTestResults(test.getPublicId());
-        // });
-        //
-        // try {
-        // result = future.get(45, TimeUnit.SECONDS);
-        // } catch (Exception e) {
-        // LOGGER.error("Error getting test results: " + e.getMessage());
-        // throw new ApiException("No results found for test " +
-        // test.getPublicId());
-        // } finally {
-        // datadogSyntheticsTestService.deleteSyntheticsTests(List.of(test.getPublicId()));
-        // }
-
         RetryPolicy<SyntheticsGetAPITestLatestResultsResponse> retryPolicy = RetryPolicy.<SyntheticsGetAPITestLatestResultsResponse> builder()
                 .withMaxAttempts(45)
                 .withDelay(Duration.ofSeconds(1))
@@ -110,8 +92,6 @@ public class OnDemandUrlCheckerManager {
 
         return Failsafe.with(retryPolicy)
                 .get(() -> datadogSyntheticsTestResultService.getSyntheticsTestResults(test.getPublicId()));
-
-        // return result;
     }
 
     private OnDemandUrlCheckerResponse analyzeTestResults(SyntheticsGetAPITestLatestResultsResponse result, SyntheticsAPITest test) throws ApiException {
