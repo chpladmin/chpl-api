@@ -330,7 +330,7 @@ public abstract class ReportInfoWorksheetBuilder {
         pt.drawBorders(new CellRangeAddress(row.getRowNum(), row.getRowNum(), 1, 3),
                 BorderStyle.MEDIUM, BorderExtent.OUTSIDE);
         sheet.addMergedRegion(new CellRangeAddress(row.getRowNum(), row.getRowNum(), 1, 3));
-        return row.getRowNum();
+        return row.getRowNum() + 1;
     }
 
     private int createPrioritizedSurveillanceSection(SurveillanceReportWorkbookWrapper workbook, Sheet sheet,
@@ -403,7 +403,7 @@ public abstract class ReportInfoWorksheetBuilder {
         pt.drawBorders(new CellRangeAddress(row.getRowNum(), row.getRowNum(), 1, 3),
                 BorderStyle.MEDIUM, BorderExtent.OUTSIDE);
         sheet.addMergedRegion(new CellRangeAddress(row.getRowNum(), row.getRowNum(), 1, 3));
-        return row.getRowNum();
+        return row.getRowNum() + 1;
     }
 
     private int createDisclosureRequirementsSubsection(SurveillanceReportWorkbookWrapper workbook, Sheet sheet,
@@ -442,10 +442,8 @@ public abstract class ReportInfoWorksheetBuilder {
         pt.drawBorders(new CellRangeAddress(row.getRowNum(), row.getRowNum(), 1, 3),
                 BorderStyle.MEDIUM, BorderExtent.OUTSIDE);
         sheet.addMergedRegion(new CellRangeAddress(row.getRowNum(), row.getRowNum(), 1, 3));
-        return row.getRowNum();
+        return row.getRowNum() + 1;
     }
-
-
 
     private int createComplaintsSection(SurveillanceReportWorkbookWrapper workbook, Sheet sheet, int beginRow) {
         int currRow = beginRow;

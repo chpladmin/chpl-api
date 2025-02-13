@@ -29,6 +29,13 @@ public class ActivitiesAndOutcomesWorksheetBuilder2025 extends ActivitiesAndOutc
     }
 
     @Override
+    protected String getSurveillanceFindingsDescription() {
+        return "If the surveilled activity resulted in no non-conformity but the ONC-ACB surveilled prioritized elements, "
+                + "as identified by the ONC Certification Program, the ONC-ACB should use this field to report on any "
+                + "activity and findings related to that aspect of surveillance.";
+    }
+
+    @Override
     protected String getStepsToSurveilDescription() {
         return "What steps did the ONC-ACB take to surveil the Health IT Module, to analyze evidence, "
                 + "and to substantiate the non-conformity or non-conformities?";
