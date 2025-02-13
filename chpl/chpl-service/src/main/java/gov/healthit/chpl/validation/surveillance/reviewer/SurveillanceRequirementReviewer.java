@@ -42,7 +42,7 @@ public class SurveillanceRequirementReviewer implements ReadReviewer {
         surv.getRequirements().forEach(req -> {
             checkRequirementExists(surv, req);
             checkRequirementOtherPresentIfRequired(surv, req);
-            checkResultExistsIfSurveillanceClosed(surv, req);
+            checkResultTypeExists(surv, req);
             checkResultTypeValidity(surv, req);
             checkRequirementValidForSurveillanceStartDate(surv, req);
         });
@@ -64,12 +64,10 @@ public class SurveillanceRequirementReviewer implements ReadReviewer {
         }
     }
 
-    private void checkResultExistsIfSurveillanceClosed(Surveillance surv, SurveillanceRequirement req) {
-        if (surv.getEndDay() != null) {
-            if (req.getResult() == null) {
-                surv.getErrorMessages()
-                        .add(msgUtil.getMessage("surveillance.resultNotFound", req.getRequirementType().getFormattedTitle()));
-            }
+    private void checkResultTypeExists(Surveillance surv, SurveillanceRequirement req) {
+        if (req.getResult() == null || StringUtils.isEmpty(req.getResult().getName())) {
+            surv.getErrorMessages()
+                    .add(msgUtil.getMessage("surveillance.resultNotFound", req.getFormattedTitle()));
         }
     }
 
