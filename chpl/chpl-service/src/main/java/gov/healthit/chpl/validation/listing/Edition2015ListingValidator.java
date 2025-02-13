@@ -14,6 +14,7 @@ import gov.healthit.chpl.upload.listing.validation.reviewer.AdditionalSoftwareCo
 import gov.healthit.chpl.upload.listing.validation.reviewer.ChplNumberFormatReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.CqmResultReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.IcsCodeReviewer;
+import gov.healthit.chpl.upload.listing.validation.reviewer.PrivacyAndSecurityFrameworkReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.QmsStandardReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.SedReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.TestToolReviewer;
@@ -182,6 +183,10 @@ public class Edition2015ListingValidator extends Validator {
     private UnavailableCriteriaUcdComparisonReviewer unavailableCriteriaUcdComparisonReviewer;
 
     @Autowired
+    @Qualifier("listingUploadPrivacyAndSecurityFrameworkReviewer")
+    private PrivacyAndSecurityFrameworkReviewer privacyAndSecurityFrameworkReviewer;
+
+    @Autowired
     @Qualifier("privacyAndSecurityCriteriaReviewer")
     private PrivacyAndSecurityCriteriaReviewer privacyAndSecurityCriteriaReviewer;
 
@@ -296,6 +301,7 @@ public class Edition2015ListingValidator extends Validator {
         reviewers.add(accessibilityStandardReviewer);
         reviewers.add(qmsStandardReviewer);
         reviewers.add(realWorldTestingReviewer);
+        reviewers.add(privacyAndSecurityFrameworkReviewer);
         reviewers.add(privacyAndSecurityCriteriaReviewer);
         reviewers.add(icsCodeReviewer);
         reviewers.add(additionalSoftwareCodeReviewer);

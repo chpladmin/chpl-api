@@ -59,11 +59,6 @@ public class RequiredData2015Reviewer extends PermissionBasedReviewer {
                             "listing.criteria.missingAttestationAnswer", Util.formatCriteriaNumber(cert.getCriterion()));
                 }
 
-                if (certRules.hasCertOption(cert.getCriterion().getId(), CertificationResultRules.PRIVACY_SECURITY)
-                        && StringUtils.isEmpty(cert.getPrivacySecurityFramework())) {
-                    addBusinessCriterionError(listing, cert,
-                            "listing.criteria.missingPrivacySecurityFramework", Util.formatCriteriaNumber(cert.getCriterion()));
-                }
                 if (certRules.hasCertOption(cert.getCriterion().getId(), CertificationResultRules.API_DOCUMENTATION)
                         && StringUtils.isEmpty(cert.getApiDocumentation())) {
                     addDataCriterionError(listing, cert, "listing.criteria.missingApiDocumentation",
