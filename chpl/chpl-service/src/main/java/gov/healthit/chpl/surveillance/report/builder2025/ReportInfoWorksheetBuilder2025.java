@@ -33,8 +33,7 @@ public class ReportInfoWorksheetBuilder2025 extends ReportInfoWorksheetBuilder {
 
     @Override
     protected String getRandomizedSurveillanceActivitiesAndOutcomesDescription() {
-        return "Randomized Surveillance – Selection Methods\n"
-                + "The ONC-ACB used the following selection method to make its random "
+        return "The ONC-ACB used the following selection method to make its random "
                 + "selection of certified Health IT Modules for surveillance initiated "
                 + "during the reporting period.";
     }
@@ -256,14 +255,6 @@ public class ReportInfoWorksheetBuilder2025 extends ReportInfoWorksheetBuilder {
     @Override
     protected int createAppropriateUseOfMarkSubsection(SurveillanceReportWorkbookWrapper workbook, Sheet sheet,
             List<QuarterlyReport> reports, int beginRow) {
-        //do any reports have this data?
-        boolean hasAnyNonemptyData = reports.stream()
-            .filter(report -> !StringUtils.isEmpty(report.getAppropriateDesignMarkUse()))
-            .findAny()
-            .isPresent();
-        if (!hasAnyNonemptyData) {
-            return beginRow;
-        }
 
         int currRow = beginRow;
         Row row = workbook.getRow(sheet, currRow++);
