@@ -17,8 +17,12 @@ import com.datadog.api.client.v1.model.SyntheticsTriggerTest;
 
 import dev.failsafe.Failsafe;
 import dev.failsafe.RetryPolicy;
+import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.scheduler.job.urluptime.DatadogSyntheticsTestResultService;
 import gov.healthit.chpl.scheduler.job.urluptime.DatadogSyntheticsTestService;
+import gov.healthit.chpl.util.ErrorMessageUtil;
+import gov.healthit.chpl.util.Util;
+import gov.healthit.chpl.util.ValidationUtils;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -37,17 +41,23 @@ public class OnDemandUrlCheckerManager {
 
     private DatadogSyntheticsTestService datadogSyntheticsTestService;
     private DatadogSyntheticsTestResultService datadogSyntheticsTestResultService;
+    private ValidationUtils validationUtils;
+    private ErrorMessageUtil errorMessageUtil;
 
     @Autowired
-    public OnDemandUrlCheckerManager(DatadogSyntheticsTestService datadogSyntheticsTestService, DatadogSyntheticsTestResultService datadogSyntheticsTestResultService) {
+    public OnDemandUrlCheckerManager(DatadogSyntheticsTestService datadogSyntheticsTestService, DatadogSyntheticsTestResultService datadogSyntheticsTestResultService,
+            ValidationUtils validationUtils, ErrorMessageUtil errorMessageUtil) {
         this.datadogSyntheticsTestService = datadogSyntheticsTestService;
         this.datadogSyntheticsTestResultService = datadogSyntheticsTestResultService;
+        this.validationUtils = validationUtils;
+        this.errorMessageUtil = errorMessageUtil;
     }
 
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).URL_CHECKER, "
             + "T(gov.healthit.chpl.permissions.domains.UrlCheckerDomainPermissions).CHECK)")
-    public OnDemandUrlCheckerResponse checkUrl(String url) throws ApiException {
+    public OnDemandUrlCheckerResponse checkUrl(String url) throws ApiException, ValidationException {
         SyntheticsAPITest test = null;
+        validateUrl(url);
         try {
             test = createTest(url);
             triggerTest(test);
@@ -60,6 +70,12 @@ public class OnDemandUrlCheckerManager {
                 LOGGER.info("Deleting On Demand URL Check");
                 datadogSyntheticsTestService.deleteSyntheticsTests(List.of(test.getPublicId()));
             }
+        }
+    }
+
+    private void validateUrl(String url) throws ValidationException {
+        if (!validationUtils.isWellFormedUrl(url)) {
+            throw new ValidationException(errorMessageUtil.getMessage("onDemandUrlTest.invalidUrl"));
         }
     }
 
