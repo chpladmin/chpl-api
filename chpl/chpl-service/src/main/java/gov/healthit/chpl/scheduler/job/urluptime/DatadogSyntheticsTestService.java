@@ -150,13 +150,8 @@ public class DatadogSyntheticsTestService {
                 .tags(developerIdsToTags(developerIds));
 
         try {
-            if (datadogIsReadOnly) {
-                LOGGER.info("Not updating datadog (due to environment setting) with Developers: {} and URL: {}", developerIds, url);
-                return body;
-            } else {
-                LOGGER.info("Adding Synthetics Test for URL: {}, with Developers: {}", url, developerIds);
-                return apiProvider.getApiInstance().createSyntheticsAPITest(body);
-            }
+            LOGGER.info("Adding Synthetics Test for URL: {}, with Developers: {}", url, developerIds);
+            return apiProvider.getApiInstance().createSyntheticsAPITest(body);
         } catch (ApiException e) {
             LOGGER.error("Could not create Synthetics Test for URL: {}", url, e);
             return null;
