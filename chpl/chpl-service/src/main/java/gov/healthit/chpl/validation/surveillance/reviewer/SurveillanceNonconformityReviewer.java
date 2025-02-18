@@ -198,7 +198,8 @@ public class SurveillanceNonconformityReviewer implements ReadReviewer {
     }
 
     private void checkNonconformityValidForSurveillanceStartDate(Surveillance surv, SurveillanceRequirement req, SurveillanceNonconformity nc) {
-        if (!DateUtil.isDateBetweenInclusive(Pair.of(nc.getType().getStartDay(), nc.getType().getEndDay()), surv.getStartDay())) {
+        if (nc.getType() != null
+                && !DateUtil.isDateBetweenInclusive(Pair.of(nc.getType().getStartDay(), nc.getType().getEndDay()), surv.getStartDay())) {
                 surv.getErrorMessages().add(msgUtil.getMessage("surveillance.nonConformityType.notValid", nc.getFormattedTitle()));
         }
     }
