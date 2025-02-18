@@ -8,7 +8,6 @@ import org.springframework.stereotype.Component;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultAdditionalSoftware;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.domain.concept.PrivacyAndSecurityFrameworkConcept;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.util.CertifiedProductUtil;
@@ -30,19 +29,6 @@ public class ValidDataReviewer extends PermissionBasedReviewer {
     public void review(CertifiedProductSearchDetails listing) {
         for (CertificationResult cert : listing.getCertificationResults()) {
             if (BooleanUtils.isTrue(cert.getSuccess())) {
-                if (!StringUtils.isEmpty(cert.getPrivacySecurityFramework())) {
-                    String formattedPrivacyAndSecurityFramework = CertificationResult
-                            .formatPrivacyAndSecurityFramework(cert.getPrivacySecurityFramework());
-                    PrivacyAndSecurityFrameworkConcept foundPrivacyAndSecurityFramework = PrivacyAndSecurityFrameworkConcept
-                            .getValue(formattedPrivacyAndSecurityFramework);
-                    if (foundPrivacyAndSecurityFramework == null) {
-                        addDataCriterionError(listing, cert,
-                                "listing.criteria.invalidPrivacySecurityFramework",
-                                Util.formatCriteriaNumber(cert.getCriterion()),
-                                formattedPrivacyAndSecurityFramework, PrivacyAndSecurityFrameworkConcept.getFormattedValues());
-                    }
-                }
-
                 if (cert.getAdditionalSoftware() != null && cert.getAdditionalSoftware().size() > 0) {
                     for (CertificationResultAdditionalSoftware asDto : cert.getAdditionalSoftware()) {
                         if (asDto.getCertifiedProductId() == null
