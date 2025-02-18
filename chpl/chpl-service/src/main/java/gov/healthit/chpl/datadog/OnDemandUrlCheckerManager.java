@@ -25,6 +25,8 @@ import lombok.extern.log4j.Log4j2;
 @Component
 public class OnDemandUrlCheckerManager {
     private static final Long TEMP_DEVELOPER_ID = -99L;
+    private static final Integer MAX_ATTEMPTS = 45;
+    private static final Integer MAX_SECONDS = 45;
     private static final String ASSERTION_RESULTS_KEY = "assertionResults";
     private static final String TYPE_KEY = "type";
     private static final String ACTUAL_KEY = "actual";
@@ -52,28 +54,22 @@ public class OnDemandUrlCheckerManager {
             SyntheticsGetAPITestLatestResultsResponse result = awaitTestResults(test);
             OnDemandUrlCheckerResponse response = analyzeTestResults(result, test);
             return response;
-
-            // Integer attempts = 0;
-            // while ((result == null || result.getResults().size() == 0) &&
-            // attempts < 45) {
-            // Thread.sleep(1000);
-            // attempts++;
-            // result =
-            // datadogSyntheticsTestResultService.getSyntheticsTestResults(test.getPublicId());
-            // }
-
         } finally {
+            LOGGER.info("Completed On Demand URL Check");
             if (test != null) {
+                LOGGER.info("Deleting On Demand URL Check");
                 datadogSyntheticsTestService.deleteSyntheticsTests(List.of(test.getPublicId()));
             }
         }
     }
 
     private SyntheticsAPITest createTest(String url) {
+        LOGGER.info("Creating On Demand URL Check");
         return datadogSyntheticsTestService.createSyntheticsTest(url, List.of(TEMP_DEVELOPER_ID));
     }
 
     private void triggerTest(SyntheticsAPITest test) throws ApiException {
+        LOGGER.info("Triggering On Demand URL Check");
         SyntheticsTriggerBody body = new SyntheticsTriggerBody()
                 .tests(List.of(new SyntheticsTriggerTest().publicId(test.getPublicId())));
 
@@ -81,10 +77,11 @@ public class OnDemandUrlCheckerManager {
     }
 
     private SyntheticsGetAPITestLatestResultsResponse awaitTestResults(SyntheticsAPITest test) throws ApiException {
-        RetryPolicy<SyntheticsGetAPITestLatestResultsResponse> retryPolicy = RetryPolicy.<SyntheticsGetAPITestLatestResultsResponse> builder()
-                .withMaxAttempts(45)
+        LOGGER.info("Awaiting On Demand URL Check");
+        RetryPolicy<SyntheticsGetAPITestLatestResultsResponse> retryPolicy = RetryPolicy.<SyntheticsGetAPITestLatestResultsResponse>builder()
+                .withMaxAttempts(MAX_ATTEMPTS)
                 .withDelay(Duration.ofSeconds(1))
-                .withMaxDuration(Duration.ofSeconds(45))
+                .withMaxDuration(Duration.ofSeconds(MAX_SECONDS))
                 .onRetry(e -> LOGGER.info("Failure #{}. Retrying.", e.getAttemptCount()))
                 .onSuccess(e -> LOGGER.info("Success #{}.", e.getAttemptCount()))
                 .handleResultIf(res -> res == null || res.getResults().size() == 0)
