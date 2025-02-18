@@ -271,7 +271,9 @@ public class StandardsUpdateJob implements Job {
         //out of all the added standards for this criterion, determine which ones are still present on the listing today
         ListingCriterionStandardsMap addedStandardsStillPresentOnCriterion = getStandardsStillPresent(currentListing, allAddedStandardsForCriterion);
         if (addedStandardsStillPresentOnCriterion == null) {
-            return null;
+            LOGGER.info("None of the standards added to " + Util.formatCriteriaNumber(allAddedStandardsForCriterion.getCriterion())
+                + " are still present for listing " + currentListing.getId());
+            return result;
         }
 
         //out of those added standards still present, which ones are "questionable"?
@@ -372,15 +374,6 @@ public class StandardsUpdateJob implements Job {
                 .filter(certificationResultStandard ->
                         certificationResultStandard != null ? certificationResultStandard.getStandard().getId().equals(crs.getStandard().getId()) : false)
                 .findAny();
-    }
-
-    private Boolean isStandardInAGroup(Map<String, List<Standard>> standardGroups, Standard standard) {
-        Boolean isStdInAnyGroup = standardGroups.entrySet().stream()
-            .flatMap(mapEntry -> mapEntry.getValue().stream())
-            .filter(std -> std.getId().equals(standard.getId()))
-            .findAny()
-            .isPresent();
-        return isStdInAnyGroup;
     }
 
     private Boolean isStandardInGroup(List<Standard> standardsInGroup, Standard standard) {
