@@ -214,7 +214,7 @@ public class QuarterlyReportDAO extends BaseDAOImpl {
                 .certificationBodyId(toCreate.getAcb().getId())
                 .year(toCreate.getYear())
                 .activitiesOutcomesSummary(toCreate.getSurveillanceActivitiesAndOutcomes())
-                .appropriateDesignMarkUse(toCreate.getAppropriateDesignMarkUse())
+                .appropriateUseOfMark(toCreate.getAppropriateUseOfMark())
                 .developerComplaintsLogReview(toCreate.getDeveloperComplaintsLogReview())
                 .disclosureRequirementsSummary(toCreate.getDisclosureRequirementsSummary())
                 .icsSurveillanceSummary(toCreate.getIcsSurveillanceSummary())
@@ -232,7 +232,7 @@ public class QuarterlyReportDAO extends BaseDAOImpl {
     public void update(QuarterlyReport toUpdate) throws EntityRetrievalException {
         QuarterlyReportEntity toUpdateEntity = getEntityById(toUpdate.getId());
         toUpdateEntity.setActivitiesOutcomesSummary(toUpdate.getSurveillanceActivitiesAndOutcomes());
-        toUpdateEntity.setAppropriateDesignMarkUse(toUpdate.getAppropriateDesignMarkUse());
+        toUpdateEntity.setAppropriateUseOfMark(toUpdate.getAppropriateUseOfMark());
         toUpdateEntity.setDeveloperComplaintsLogReview(toUpdate.getDeveloperComplaintsLogReview());
         toUpdateEntity.setDisclosureRequirementsSummary(toUpdate.getDisclosureRequirementsSummary());
         toUpdateEntity.setIcsSurveillanceSummary(toUpdate.getIcsSurveillanceSummary());

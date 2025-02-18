@@ -76,8 +76,8 @@ public class QuarterlyReportEntity extends EntityAudit {
     @Column(name = "post_certification_performance")
     private String postCertificationPerformance;
 
-    @Column(name = "appropriate_design_mark_use")
-    private String appropriateDesignMarkUse;
+    @Column(name = "appropriate_use_of_mark")
+    private String appropriateUseOfMark;
 
     public QuarterlyReport toDomain() {
         CertificationBody reportAcb = null;
@@ -90,7 +90,7 @@ public class QuarterlyReportEntity extends EntityAudit {
         }
         return QuarterlyReport.builder()
                 .acb(reportAcb)
-                .appropriateDesignMarkUse(this.getAppropriateDesignMarkUse())
+                .appropriateUseOfMark(this.getAppropriateUseOfMark())
                 .developerComplaintsLogReview(this.getDeveloperComplaintsLogReview())
                 .disclosureRequirementsSummary(this.getDisclosureRequirementsSummary())
                 .endDay(LocalDate.of(getYear(), this.getQuarter().getQuarterEndMonth(), this.getQuarter().getQuarterEndDay()))

@@ -40,6 +40,6 @@ public class QuarterlyReport implements Serializable {
     private String disclosureRequirementsSummary;
     private String developerComplaintsLogReview;
     private String postCertificationPerformance;
-    private String appropriateDesignMarkUse;
+    private String appropriateUseOfMark;
     private boolean acknowledgeWarnings;
 }
