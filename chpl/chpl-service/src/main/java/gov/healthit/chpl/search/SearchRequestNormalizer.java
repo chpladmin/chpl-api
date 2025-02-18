@@ -12,7 +12,9 @@ import gov.healthit.chpl.search.domain.RiskManagementSummaryInformationlSearchOp
 import gov.healthit.chpl.search.domain.RwtSearchOptions;
 import gov.healthit.chpl.search.domain.SearchRequest;
 import gov.healthit.chpl.search.domain.SearchSetOperator;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 public class SearchRequestNormalizer {
 
     public void normalize(SearchRequest request) {
@@ -95,6 +97,7 @@ public class SearchRequestNormalizer {
                 request.setCertificationCriteriaOperator(
                         SearchSetOperator.valueOf(request.getCertificationCriteriaOperatorString().toUpperCase().trim()));
             } catch (Exception ignore) {
+                LOGGER.error(ignore);
             }
         }
     }
@@ -124,6 +127,7 @@ public class SearchRequestNormalizer {
                 request.setCqmsOperator(
                         SearchSetOperator.valueOf(request.getCqmsOperatorString().toUpperCase().trim()));
             } catch (Exception ignore) {
+                LOGGER.error(ignore);
             }
         }
     }
@@ -171,6 +175,7 @@ public class SearchRequestNormalizer {
                                 .filter(option -> option != null)
                                 .collect(Collectors.toSet()));
             } catch (Exception ignore) {
+                LOGGER.error(ignore);
             }
         }
     }
@@ -183,6 +188,7 @@ public class SearchRequestNormalizer {
         try {
             convertedOption = NonConformitySearchOptions.valueOf(option.toUpperCase().trim());
         } catch (Exception ex) {
+            LOGGER.error(ex);
         }
         return convertedOption;
     }
@@ -196,6 +202,7 @@ public class SearchRequestNormalizer {
                 complianceSearchFilter.setNonConformityOptionsOperator(
                         SearchSetOperator.valueOf(complianceSearchFilter.getNonConformityOptionsOperatorString().toUpperCase().trim()));
             } catch (Exception ignore) {
+                LOGGER.error(ignore);
             }
         }
     }
@@ -211,6 +218,7 @@ public class SearchRequestNormalizer {
                                 .filter(option -> option != null)
                                 .collect(Collectors.toSet()));
             } catch (Exception ignore) {
+                LOGGER.error(ignore);
             }
         }
     }
@@ -223,6 +231,7 @@ public class SearchRequestNormalizer {
         try {
             convertedOption = RwtSearchOptions.valueOf(option.toUpperCase().trim());
         } catch (Exception ex) {
+            LOGGER.error(ex);
         }
         return convertedOption;
     }
@@ -234,6 +243,7 @@ public class SearchRequestNormalizer {
                 request.setRwtOperator(
                         SearchSetOperator.valueOf(request.getRwtOperatorString().toUpperCase().trim()));
             } catch (Exception ignore) {
+                LOGGER.error(ignore);
             }
         }
     }
@@ -257,6 +267,7 @@ public class SearchRequestNormalizer {
                 request.setSvapOperator(
                         SearchSetOperator.valueOf(request.getSvapOperatorString().toUpperCase().trim()));
             } catch (Exception ignore) {
+                LOGGER.error(ignore);
             }
         }
     }
@@ -272,6 +283,7 @@ public class SearchRequestNormalizer {
                                 .filter(option -> option != null)
                                 .collect(Collectors.toSet()));
             } catch (Exception ignore) {
+                LOGGER.error(ignore);
             }
         }
     }
@@ -284,6 +296,7 @@ public class SearchRequestNormalizer {
         try {
             convertedOption = RiskManagementSummaryInformationlSearchOptions.valueOf(option.toUpperCase().trim());
         } catch (Exception ex) {
+            LOGGER.error(ex);
         }
         return convertedOption;
     }
@@ -295,6 +308,7 @@ public class SearchRequestNormalizer {
                 request.setOrderBy(
                         OrderByOption.valueOf(request.getOrderByString().toUpperCase().trim()));
             } catch (Exception ignore) {
+                LOGGER.error(ignore);
             }
         }
     }
