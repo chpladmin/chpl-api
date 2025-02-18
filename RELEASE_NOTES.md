@@ -1,5 +1,13 @@
 # Release Notes
 
+## Version 49.1.0
+_18 February 2025_
+
+### Features
+* Make P&S Framework value optional for 170.315 (b)(11) criterion
+
+---
+
 ## Version 49.0.0
 _10 February 2025_
 
