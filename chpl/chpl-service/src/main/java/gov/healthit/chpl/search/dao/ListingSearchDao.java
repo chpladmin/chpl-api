@@ -13,6 +13,7 @@ import java.util.stream.Stream;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
@@ -136,6 +137,7 @@ public class ListingSearchDao extends BaseDAOImpl {
                 .apiDocumentation(convertToSetOfCriteriaWithStringFields(entity.getCriteriaWithApiDocumentation(), CertifiedProductSearchResult.SMILEY_SPLIT_CHAR))
                 .serviceBaseUrlList(convertToCriterionWithStringField(entity.getCriteriaWithServiceBaseUrlList()))
                 .svaps(convertToSetOfCriteriaWithLongFields(entity.getCriteriaWithSvap(), CertifiedProductSearchResult.SMILEY_SPLIT_CHAR))
+                .standardsMet(convertToSetOfLongs(entity.getStandardsMet(), STANDARD_VALUE_SPLIT_CHAR))
                 .build();
     }
 
@@ -169,6 +171,19 @@ public class ListingSearchDao extends BaseDAOImpl {
         String[] splitStrings = delimitedString.split(delimeter);
         return Stream.of(splitStrings)
                 .filter(str -> !str.equals(valueToIgnore))
+                .collect(Collectors.toSet());
+    }
+
+    private Set<Long> convertToSetOfLongs(String delimitedString, String delimeter)
+            throws EntityRetrievalException, NumberFormatException {
+        if (ObjectUtils.isEmpty(delimitedString)) {
+            return new LinkedHashSet<Long>();
+        }
+
+        String[] splitStrings = delimitedString.split(delimeter);
+        return Stream.of(splitStrings)
+                .filter(str -> NumberUtils.isParsable(str))
+                .map(str -> Long.valueOf(str))
                 .collect(Collectors.toSet());
     }
 

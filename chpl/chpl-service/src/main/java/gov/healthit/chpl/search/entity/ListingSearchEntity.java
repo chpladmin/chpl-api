@@ -163,4 +163,7 @@ public class ListingSearchEntity {
 
     @Column(name = "children")
     private String children;
+
+    @Column(name = "standards_met")
+    private String standardsMet;
 }
