@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -212,22 +213,34 @@ public class StandardsUpdateJob implements Job {
                 .flatMap(listingId -> listingsWithAddedStandardsDuringTime.get(listingId).stream())
                 .forEach(listingWithAddedStandards -> {
                     try {
+                        AtomicBoolean madeAnyUpdates = new AtomicBoolean(false);
+                        LOGGER.info("Getting listing ID " + listingWithAddedStandards.getListingId() + " details (no cache)");
                         CertifiedProductSearchDetails currListing = cpdManager.getCertifiedProductDetailsNoCache(listingWithAddedStandards.getListingId());
+                        LOGGER.info("Getting added questionable standards for listing ID " + currListing.getId());
                         List<ListingCriterionQuestionableStandardsMap> addedQuestionableStandardsMap
                             = getQuestionableAddedStandardsMap(currListing, listingWithAddedStandards);
+                        LOGGER.info("Determining which standards can be removed from listing ID " + currListing.getId());
                         addedQuestionableStandardsMap.stream()
                             .forEach(addedQuestionableStandardSet -> {
                                 if (!CollectionUtils.isEmpty(addedQuestionableStandardSet.getRetiredBaselineStandardsAdded())) {
+                                    madeAnyUpdates.set(true);
                                     addedQuestionableStandardSet.getRetiredBaselineStandardsAdded().stream()
                                         .forEach(std -> removeStandardFromListing(std, addedQuestionableStandardSet.getCriterion(), currListing));
                                 }
                             });
-                        cpManager.update(ListingUpdateRequest.builder()
-                                .acknowledgeBusinessErrors(false)
-                                .acknowledgeWarnings(true)
-                                .reason("Automated update to remove standards incorrectly added by the system.")
-                                .listing(currListing)
-                                .build());
+
+                        if (madeAnyUpdates.get()) {
+                            LOGGER.info("Saving updates to listing ID " + currListing.getId());
+                            cpManager.update(ListingUpdateRequest.builder()
+                                    .acknowledgeBusinessErrors(false)
+                                    .acknowledgeWarnings(true)
+                                    .reason("Automated update to remove standards incorrectly added by the system.")
+                                    .listing(currListing)
+                                    .build());
+                            LOGGER.info("Saved updates to listing ID " + currListing.getId());
+                        } else {
+                            LOGGER.info("No updates made to listing ID " + currListing.getId());
+                        }
                     } catch (Exception ex) {
                         LOGGER.error("Unable to delete questionable standards from listing " + listingWithAddedStandards.getListingId(), ex);
                     }
