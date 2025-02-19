@@ -239,7 +239,7 @@ public class StandardsUpdateJob implements Job {
                                     .build());
                             LOGGER.info("Saved updates to listing ID " + currListing.getId());
                         } else {
-                            LOGGER.info("No updates made to listing ID " + currListing.getId());
+                            LOGGER.info("No updates will be made to listing ID " + currListing.getId());
                         }
                     } catch (Exception ex) {
                         LOGGER.error("Unable to delete questionable standards from listing " + listingWithAddedStandards.getListingId(), ex);
