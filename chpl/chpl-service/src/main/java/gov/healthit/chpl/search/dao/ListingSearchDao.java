@@ -66,14 +66,14 @@ public class ListingSearchDao extends BaseDAOImpl {
     }
 
     private List<ListingSearchResult> convertToListingSearchResults(List<ListingSearchEntity> entities)
-        throws EntityRetrievalException, DateTimeParseException, NumberFormatException  {
+            throws EntityRetrievalException, DateTimeParseException, NumberFormatException  {
         return entities.stream()
-            .map(rethrowFunction(entity -> buildListingSearchResult(entity)))
-            .collect(Collectors.toList());
+                .map(rethrowFunction(entity -> buildListingSearchResult(entity)))
+                .collect(Collectors.toList());
     }
 
     private ListingSearchResult buildListingSearchResult(ListingSearchEntity entity)
-        throws EntityRetrievalException, DateTimeParseException, NumberFormatException {
+            throws EntityRetrievalException, DateTimeParseException, NumberFormatException {
         return ListingSearchResult.builder()
                 .id(entity.getId())
                 .chplProductNumber(entity.getChplProductNumber())
@@ -85,18 +85,18 @@ public class ListingSearchDao extends BaseDAOImpl {
                         .build())
                 .acbCertificationId(entity.getAcbCertificationId())
                 .practiceType(entity.getPracticeTypeId() != null
-                    ? IdNamePair.builder()
+                ? IdNamePair.builder()
                         .id(entity.getPracticeTypeId())
                         .name(entity.getPracticeTypeName())
                         .build()
-                    : null)
+                        : null)
                 .developer(DeveloperSearchResult.builder()
                         .id(entity.getDeveloperId())
                         .name(entity.getDeveloper())
                         .status(entity.getDeveloperStatusId() == null ? null
                                 : IdNamePair.builder()
-                                    .id(entity.getDeveloperStatusId())
-                                    .name(entity.getDeveloperStatus())
+                                .id(entity.getDeveloperStatusId())
+                                .name(entity.getDeveloperStatus())
                                 .build())
                         .build())
                 .product(IdNamePair.builder()
@@ -136,6 +136,7 @@ public class ListingSearchDao extends BaseDAOImpl {
                 .apiDocumentation(convertToSetOfCriteriaWithStringFields(entity.getCriteriaWithApiDocumentation(), CertifiedProductSearchResult.SMILEY_SPLIT_CHAR))
                 .serviceBaseUrlList(convertToCriterionWithStringField(entity.getCriteriaWithServiceBaseUrlList()))
                 .svaps(convertToSetOfCriteriaWithLongFields(entity.getCriteriaWithSvap(), CertifiedProductSearchResult.SMILEY_SPLIT_CHAR))
+                .riskManagementSummaryInformation(convertToCriterionWithStringField(entity.getCriteriaWithRiskManagementSummaryInformation()))
                 .build();
     }
 
@@ -144,9 +145,9 @@ public class ListingSearchDao extends BaseDAOImpl {
             return null;
         }
         return IdNamePair.builder()
-            .id(entity.getCertificationEditionId())
-            .name(entity.getCertificationEditionYear())
-            .build();
+                .id(entity.getCertificationEditionId())
+                .name(entity.getCertificationEditionYear())
+                .build();
     }
 
     private PromotingInteroperabilitySearchResult convertToPromotingInteroperability(Long userCount, LocalDate userDate) {
@@ -155,9 +156,9 @@ public class ListingSearchDao extends BaseDAOImpl {
         }
 
         return PromotingInteroperabilitySearchResult.builder()
-            .userCount(userCount)
-            .userDate(userDate)
-            .build();
+                .userCount(userCount)
+                .userDate(userDate)
+                .build();
     }
 
     private Set<String> convertToSetOfStrings(String delimitedString, String valueToIgnore, String delimeter)
@@ -191,10 +192,10 @@ public class ListingSearchDao extends BaseDAOImpl {
             throw new EntityRetrievalException("Unable to parse date range fields from '" + aggregatedDateRangeString + "'.");
         }
         return DateRangeSearchResult.builder()
-                        .start(DateUtil.toLocalDate(Long.parseLong(dateRangeFields[0])))
-                        .end(dateRangeFields.length < DATE_RANGE_FIELD_COUNT || StringUtils.isEmpty(dateRangeFields[1])
-                                ? null : DateUtil.toLocalDate(Long.parseLong(dateRangeFields[1])))
-                        .build();
+                .start(DateUtil.toLocalDate(Long.parseLong(dateRangeFields[0])))
+                .end(dateRangeFields.length < DATE_RANGE_FIELD_COUNT || StringUtils.isEmpty(dateRangeFields[1])
+                        ? null : DateUtil.toLocalDate(Long.parseLong(dateRangeFields[1])))
+                .build();
     }
 
     private Set<StatusEventSearchResult> convertToSetOfStatusEvents(String delimitedStatusEventString, String delimeter)
@@ -216,12 +217,12 @@ public class ListingSearchDao extends BaseDAOImpl {
             throw new EntityRetrievalException("Unable to parse status event fields from '" + aggregatedStatusEventString + "'.");
         }
         return StatusEventSearchResult.builder()
-                        .status(IdNamePair.builder()
-                                .id(Long.parseLong(statusEventFields[0]))
-                                .name(statusEventFields[1])
-                                .build())
-                        .statusStart(LocalDate.parse(statusEventFields[2]))
-                        .build();
+                .status(IdNamePair.builder()
+                        .id(Long.parseLong(statusEventFields[0]))
+                        .name(statusEventFields[1])
+                        .build())
+                .statusStart(LocalDate.parse(statusEventFields[2]))
+                .build();
     }
 
     private Set<CertificationCriterionSearchResult> convertToSetOfCriteria(String delimitedCriteriaString, String delimeter)
@@ -243,10 +244,10 @@ public class ListingSearchDao extends BaseDAOImpl {
             throw new EntityRetrievalException("Unable to parse criteria fields from '" + aggregatedCriterionString + "'.");
         }
         return CertificationCriterionSearchResult.builder()
-                        .id(Long.parseLong(criterionFields[0]))
-                        .number(criterionFields[1])
-                        .title(criterionFields[2])
-                        .build();
+                .id(Long.parseLong(criterionFields[0]))
+                .number(criterionFields[1])
+                .title(criterionFields[2])
+                .build();
     }
 
     private Set<CQMSearchResult> convertToSetOfCqms(String delimitedCqmString, String delimeter)
@@ -268,13 +269,13 @@ public class ListingSearchDao extends BaseDAOImpl {
             throw new EntityRetrievalException("Unable to parse CQM fields from '" + aggregatedCqmString + "'.");
         }
         return CQMSearchResult.builder()
-                        .id(Long.parseLong(cqmFields[0]))
-                        .number(cqmFields[1])
-                        .build();
+                .id(Long.parseLong(cqmFields[0]))
+                .number(cqmFields[1])
+                .build();
     }
 
     private Set<CertificationCriterionSearchResultWithStringField> convertToSetOfCriteriaWithStringFields(String delimitedCriteriaWithValueString, String delimeter)
-        throws EntityRetrievalException, NumberFormatException {
+            throws EntityRetrievalException, NumberFormatException {
         if (ObjectUtils.isEmpty(delimitedCriteriaWithValueString)) {
             return new LinkedHashSet<CertificationCriterionSearchResultWithStringField>();
         }
@@ -287,7 +288,7 @@ public class ListingSearchDao extends BaseDAOImpl {
     }
 
     private CertificationCriterionSearchResultWithStringField convertToCriterionWithStringField(String value)
-        throws EntityRetrievalException, NumberFormatException {
+            throws EntityRetrievalException, NumberFormatException {
         if (StringUtils.isEmpty(value)) {
             return null;
         }
@@ -310,42 +311,42 @@ public class ListingSearchDao extends BaseDAOImpl {
 
     private Set<CertificationCriterionSearchResultWithLongFields> convertToSetOfCriteriaWithLongFields(String delimitedCriteriaWithLongValue, String delimeter)
             throws EntityRetrievalException, NumberFormatException {
-            if (ObjectUtils.isEmpty(delimitedCriteriaWithLongValue)) {
-                return new LinkedHashSet<CertificationCriterionSearchResultWithLongFields>();
-            }
-            Set<CertificationCriterionSearchResultWithLongFields> result = new LinkedHashSet<CertificationCriterionSearchResultWithLongFields>();
+        if (ObjectUtils.isEmpty(delimitedCriteriaWithLongValue)) {
+            return new LinkedHashSet<CertificationCriterionSearchResultWithLongFields>();
+        }
+        Set<CertificationCriterionSearchResultWithLongFields> result = new LinkedHashSet<CertificationCriterionSearchResultWithLongFields>();
 
-            String[] criteriaWithLongFields = delimitedCriteriaWithLongValue.split(delimeter);
-            Stream.of(criteriaWithLongFields)
-                    .map(rethrowFunction(criterionWithValue -> convertToCriterionWithLongField(criterionWithValue)))
-                    .forEach(criterionWithLongField -> addToResult(criterionWithLongField, result));
-            return result;
+        String[] criteriaWithLongFields = delimitedCriteriaWithLongValue.split(delimeter);
+        Stream.of(criteriaWithLongFields)
+        .map(rethrowFunction(criterionWithValue -> convertToCriterionWithLongField(criterionWithValue)))
+        .forEach(criterionWithLongField -> addToResult(criterionWithLongField, result));
+        return result;
     }
 
     private CertificationCriterionSearchResultWithLongFields convertToCriterionWithLongField(String value)
             throws EntityRetrievalException, NumberFormatException {
-            if (StringUtils.isEmpty(value)) {
-                return null;
-            }
+        if (StringUtils.isEmpty(value)) {
+            return null;
+        }
 
-            String[] criteriaSplitFromData = value.split(CertifiedProductSearchResult.FROWNEY_SPLIT_CHAR);
-            if (criteriaSplitFromData == null || criteriaSplitFromData.length != 2) {
-                throw new EntityRetrievalException("Unable to parse criteria with long value from '" + value + "'.");
-            }
-            String aggregatedCriterionFields = criteriaSplitFromData[0];
-            String fieldValueStr = criteriaSplitFromData[1];
-            Long fieldValue = null;
-            try {
-                fieldValue = Long.parseLong(fieldValueStr);
-            } catch (NumberFormatException ex) {
-                LOGGER.error("Cannot parse " + fieldValueStr + " as a Long.", ex);
-                fieldValue = null;
-            }
+        String[] criteriaSplitFromData = value.split(CertifiedProductSearchResult.FROWNEY_SPLIT_CHAR);
+        if (criteriaSplitFromData == null || criteriaSplitFromData.length != 2) {
+            throw new EntityRetrievalException("Unable to parse criteria with long value from '" + value + "'.");
+        }
+        String aggregatedCriterionFields = criteriaSplitFromData[0];
+        String fieldValueStr = criteriaSplitFromData[1];
+        Long fieldValue = null;
+        try {
+            fieldValue = Long.parseLong(fieldValueStr);
+        } catch (NumberFormatException ex) {
+            LOGGER.error("Cannot parse " + fieldValueStr + " as a Long.", ex);
+            fieldValue = null;
+        }
 
-            Set<Long> values = new LinkedHashSet<Long>();
-            values.add(fieldValue);
+        Set<Long> values = new LinkedHashSet<Long>();
+        values.add(fieldValue);
 
-            return CertificationCriterionSearchResultWithLongFields.builder()
+        return CertificationCriterionSearchResultWithLongFields.builder()
                 .criterion(convertToCriterion(aggregatedCriterionFields))
                 .values(values)
                 .build();
@@ -363,8 +364,8 @@ public class ListingSearchDao extends BaseDAOImpl {
     private CertificationCriterionSearchResultWithLongFields getResultWithCriterion(CertificationCriterionSearchResult criterion, Set<CertificationCriterionSearchResultWithLongFields> results) {
         CertificationCriterionSearchResultWithLongFields resultWithCriterion = null;
         Optional<CertificationCriterionSearchResultWithLongFields> resultWithCriterionOpt = results.stream()
-            .filter(result -> result.getCriterion().getId().equals(criterion.getId()))
-            .findAny();
+                .filter(result -> result.getCriterion().getId().equals(criterion.getId()))
+                .findAny();
         if (resultWithCriterionOpt.isPresent()) {
             resultWithCriterion = resultWithCriterionOpt.get();
         }
@@ -390,8 +391,8 @@ public class ListingSearchDao extends BaseDAOImpl {
             throw new EntityRetrievalException("Unable to parse product owner fields from '" + aggregatedProductOwnerString + "'.");
         }
         return IdNamePair.builder()
-                        .id(Long.parseLong(productOwnerFields[0]))
-                        .name(productOwnerFields[1])
-                        .build();
+                .id(Long.parseLong(productOwnerFields[0]))
+                .name(productOwnerFields[1])
+                .build();
     }
 }
