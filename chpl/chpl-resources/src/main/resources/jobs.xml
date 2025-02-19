@@ -913,6 +913,15 @@
         </job>
         
         <job>
+            <name>realWorldTestingSummaryReportCreatorJob</name>
+            <group>systemJobs</group>
+            <description>Populate RWT reporting tables</description>
+            <job-class>gov.healthit.chpl.scheduler.job.RealWorldTestingSummaryReportCreatorJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+        </job>
+
+        <job>
             <name>attestationReportCreatorJob</name>
             <group>systemJobs</group>
             <description>Generate data for the Attestation Report (Power BI)</description>

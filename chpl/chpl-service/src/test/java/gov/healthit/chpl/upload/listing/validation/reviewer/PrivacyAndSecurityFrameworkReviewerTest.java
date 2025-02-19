@@ -17,6 +17,7 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.concept.PrivacyAndSecurityFrameworkConcept;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.service.CertificationCriterionService;
+import gov.healthit.chpl.service.CertificationCriterionService.Criteria2015;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.ValidationUtils;
@@ -27,13 +28,24 @@ public class PrivacyAndSecurityFrameworkReviewerTest {
     private static final String PANDS_INVALID_NOT_FOUND = "Certification %s contains Privacy and Security Framework value '%s' which must match one of %s.";
 
     private CertificationResultRules certResultRules;
+    private CertificationCriterionService criteriaService;
     private ErrorMessageUtil msgUtil;
     private PrivacyAndSecurityFrameworkReviewer reviewer;
+    private CertificationCriterion b11;
 
     @Before
     public void before() throws EntityRetrievalException {
+        this.b11 = CertificationCriterion.builder()
+                .id(210L)
+                .number("170.315 (b)(11)")
+                .startDay(LocalDate.parse("2024-03-11"))
+                .build();
+
         msgUtil = Mockito.mock(ErrorMessageUtil.class);
         certResultRules = Mockito.mock(CertificationResultRules.class);
+        criteriaService = Mockito.mock(CertificationCriterionService.class);
+        Mockito.when(criteriaService.get(ArgumentMatchers.eq(Criteria2015.B_11)))
+            .thenReturn(b11);
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.privacyAndSecurityFrameworkNotApplicable"),
                 ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(PANDS_NOT_APPLICABLE, i.getArgument(1), ""));
@@ -43,7 +55,7 @@ public class PrivacyAndSecurityFrameworkReviewerTest {
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.invalidPrivacySecurityFramework"),
                 ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(PANDS_INVALID_NOT_FOUND, i.getArgument(1), i.getArgument(2), i.getArgument(3)));
-        reviewer = new PrivacyAndSecurityFrameworkReviewer(certResultRules,
+        reviewer = new PrivacyAndSecurityFrameworkReviewer(certResultRules, criteriaService,
                 new ValidationUtils(Mockito.mock(CertificationCriterionService.class)), msgUtil);
     }
 
@@ -71,6 +83,24 @@ public class PrivacyAndSecurityFrameworkReviewerTest {
     }
 
     @Test
+    public void review_nullPAndSNotRequiredForB11_noError() {
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.PRIVACY_SECURITY)))
+            .thenReturn(false);
+
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .criterion(b11)
+                        .success(true)
+                        .privacySecurityFramework(null)
+                        .build())
+                .build();
+        reviewer.review(listing);
+
+        assertEquals(0, listing.getWarningMessages().size());
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
     public void review_emptyPAndSNotRequiredForCriteria_noError() {
         Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.PRIVACY_SECURITY)))
             .thenReturn(false);
@@ -83,6 +113,24 @@ public class PrivacyAndSecurityFrameworkReviewerTest {
                                 .startDay(LocalDate.parse("2023-01-01"))
                                 .certificationEdition("2015")
                                 .build())
+                        .success(true)
+                        .privacySecurityFramework("")
+                        .build())
+                .build();
+        reviewer.review(listing);
+
+        assertEquals(0, listing.getWarningMessages().size());
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_emptyPAndSNotRequiredFoB11_noError() {
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.PRIVACY_SECURITY)))
+            .thenReturn(false);
+
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .criterion(b11)
                         .success(true)
                         .privacySecurityFramework("")
                         .build())
@@ -268,6 +316,26 @@ public class PrivacyAndSecurityFrameworkReviewerTest {
     }
 
     @Test
+    public void review_providedPAndSNotValidValueB11_hasError() {
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.PRIVACY_SECURITY)))
+            .thenReturn(true);
+
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .criterion(b11)
+                        .success(true)
+                        .privacySecurityFramework("junk")
+                        .build())
+                .build();
+        reviewer.review(listing);
+
+        assertEquals(0, listing.getWarningMessages().size());
+        assertEquals(1, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(
+                String.format(PANDS_INVALID_NOT_FOUND, "170.315 (b)(11)", "junk", PrivacyAndSecurityFrameworkConcept.getFormattedValues())));
+    }
+
+    @Test
     public void review_providedPAndSNotValidValueForRemovedCriteria_noError() {
         Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.PRIVACY_SECURITY)))
             .thenReturn(true);
@@ -304,6 +372,24 @@ public class PrivacyAndSecurityFrameworkReviewerTest {
                                 .startDay(LocalDate.parse("2023-01-01"))
                                 .certificationEdition("2015")
                                 .build())
+                        .success(true)
+                        .privacySecurityFramework("Approach 1")
+                        .build())
+                .build();
+        reviewer.review(listing);
+
+        assertEquals(0, listing.getWarningMessages().size());
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    @Test
+    public void review_providedPAndSValidValueB11_noError() {
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.PRIVACY_SECURITY)))
+            .thenReturn(true);
+
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .criterion(b11)
                         .success(true)
                         .privacySecurityFramework("Approach 1")
                         .build())

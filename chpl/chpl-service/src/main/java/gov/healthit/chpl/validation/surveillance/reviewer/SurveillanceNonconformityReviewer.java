@@ -74,19 +74,19 @@ public class SurveillanceNonconformityReviewer implements ReadReviewer {
         if (nc.getCapApprovalDay() != null && nc.getCapMustCompleteDay() == null) {
             surv.getErrorMessages().add(msgUtil.getMessage("surveillance.dateCAPMustCompleteIsRequired",
                     req.getFormattedTitle(),
-                    nc.getType().getFormattedTitle()));
+                    nc.getFormattedTitle()));
         }
 
         if (nc.getCapEndDay() != null && nc.getCapStartDay() == null) {
             surv.getErrorMessages().add(msgUtil.getMessage("surveillance.dateCAPStartIsRequired",
                     req.getFormattedTitle(),
-                    nc.getType().getFormattedTitle()));
+                    nc.getFormattedTitle()));
         }
 
         if (nc.getCapEndDay() != null && nc.getCapApprovalDay() == null) {
             surv.getErrorMessages().add(msgUtil.getMessage("surveillance.dateCAPApprovalIsRequired",
                     req.getFormattedTitle(),
-                    nc.getType().getFormattedTitle()));
+                    nc.getFormattedTitle()));
         }
 
         if (nc.getCapEndDay() != null && nc.getCapStartDay() != null
@@ -94,7 +94,7 @@ public class SurveillanceNonconformityReviewer implements ReadReviewer {
             surv.getErrorMessages()
                     .add(msgUtil.getMessage("surveillance.dateCAPEndNotGreaterThanDateCAPStart",
                             req.getFormattedTitle(),
-                            nc.getType().getFormattedTitle()));
+                            nc.getFormattedTitle()));
         }
     }
 
@@ -103,7 +103,7 @@ public class SurveillanceNonconformityReviewer implements ReadReviewer {
         if (nc.getDateOfDeterminationDay() == null) {
             surv.getErrorMessages().add(msgUtil.getMessage("surveillance.dateOfDeterminationIsRequired",
                     req.getFormattedTitle(),
-                    nc.getType().getFormattedTitle()));
+                    nc.getFormattedTitle()));
         }
     }
 
@@ -112,7 +112,7 @@ public class SurveillanceNonconformityReviewer implements ReadReviewer {
         if (StringUtils.isEmpty(nc.getSummary())) {
             surv.getErrorMessages().add(msgUtil.getMessage("surveillance.summaryIsRequired",
                     req.getFormattedTitle(),
-                    nc.getType().getFormattedTitle()));
+                    nc.getFormattedTitle()));
         }
     }
 
@@ -121,7 +121,7 @@ public class SurveillanceNonconformityReviewer implements ReadReviewer {
         if (StringUtils.isEmpty(nc.getFindings())) {
             surv.getErrorMessages().add(msgUtil.getMessage("surveillance.findingsAreRequired",
                     req.getFormattedTitle(),
-                    nc.getType().getFormattedTitle()));
+                    nc.getFormattedTitle()));
         }
     }
 
@@ -133,27 +133,27 @@ public class SurveillanceNonconformityReviewer implements ReadReviewer {
                 surv.getErrorMessages()
                         .add(msgUtil.getMessage("surveillance.numberOfSitesPassedIsRequired",
                                 req.getFormattedTitle(),
-                                nc.getType().getFormattedTitle()));
+                                nc.getFormattedTitle()));
             }
 
             if (nc.getTotalSites() == null || nc.getTotalSites().intValue() < 0) {
                 surv.getErrorMessages()
                         .add(msgUtil.getMessage("surveillance.totalNumberOfSitesIsRequired",
                                 req.getFormattedTitle(),
-                                nc.getType().getFormattedTitle()));
+                                nc.getFormattedTitle()));
             }
 
             if (nc.getSitesPassed() != null && nc.getTotalSites() != null
                     && nc.getSitesPassed() > nc.getTotalSites()) {
                 surv.getErrorMessages().add(msgUtil.getMessage("surveillance.tooManySitesPassed",
                         req.getFormattedTitle(),
-                        nc.getType().getFormattedTitle()));
+                        nc.getFormattedTitle()));
             }
 
             if (nc.getTotalSites() != null && nc.getTotalSites() > surv.getRandomizedSitesUsed()) {
                 surv.getErrorMessages().add(msgUtil.getMessage("surveillance.tooManyTotalSites",
                         req.getFormattedTitle(),
-                        nc.getType().getFormattedTitle()));
+                        nc.getFormattedTitle()));
             }
         }
     }
@@ -166,14 +166,14 @@ public class SurveillanceNonconformityReviewer implements ReadReviewer {
                 surv.getErrorMessages()
                         .add(msgUtil.getMessage("surveillance.numberOfSitesPassedNotApplicable",
                                 req.getFormattedTitle(),
-                                nc.getType().getFormattedTitle()));
+                                nc.getFormattedTitle()));
             }
 
             if (nc.getTotalSites() != null && nc.getTotalSites().intValue() >= 0) {
                 surv.getErrorMessages()
                         .add(msgUtil.getMessage("surveillance.totalNumberOfSitesNotApplicable",
                                 req.getFormattedTitle(),
-                                nc.getType().getFormattedTitle()));
+                                nc.getFormattedTitle()));
             }
         }
     }
@@ -185,21 +185,22 @@ public class SurveillanceNonconformityReviewer implements ReadReviewer {
                 surv.getErrorMessages()
                         .add(msgUtil.getMessage("surveillance.resolutionDescriptionIsRequired",
                                 req.getFormattedTitle(),
-                                nc.getType().getFormattedTitle()));
+                                nc.getFormattedTitle()));
             }
         } else if (nc.getNonconformityCloseDay() == null) {
             if (!StringUtils.isEmpty(nc.getResolution())) {
                 surv.getErrorMessages()
                         .add(msgUtil.getMessage("surveillance.resolutionDescriptionNotApplicable",
                                 req.getFormattedTitle(),
-                                nc.getType().getFormattedTitle()));
+                                nc.getFormattedTitle()));
             }
         }
     }
 
     private void checkNonconformityValidForSurveillanceStartDate(Surveillance surv, SurveillanceRequirement req, SurveillanceNonconformity nc) {
-        if (!DateUtil.isDateBetweenInclusive(Pair.of(nc.getType().getStartDay(), nc.getType().getEndDay()), surv.getStartDay())) {
-                surv.getErrorMessages().add(msgUtil.getMessage("surveillance.nonConformityType.notValid", nc.getType().getFormattedTitle()));
+        if (nc.getType() != null
+                && !DateUtil.isDateBetweenInclusive(Pair.of(nc.getType().getStartDay(), nc.getType().getEndDay()), surv.getStartDay())) {
+                surv.getErrorMessages().add(msgUtil.getMessage("surveillance.nonConformityType.notValid", nc.getFormattedTitle()));
         }
     }
 }
