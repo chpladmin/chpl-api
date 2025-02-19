@@ -205,6 +205,9 @@
     <Logger name="updatedSedFriendlyIdsJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="updatedSedFriendlyIdsJob" />
     </Logger>
+    <Logger name="realWorldTestingSummaryReportCreatorJobLogger" level="INFO" additivity="false">
+        <AppenderRef ref="realWorldTestingSummaryReportCreatorJob" />
+    </Logger>
     <Logger name="attestationReportCreatorJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="attestationReportCreatorJob" />
     </Logger>

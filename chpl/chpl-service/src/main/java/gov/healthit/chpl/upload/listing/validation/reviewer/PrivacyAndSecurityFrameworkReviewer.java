@@ -4,27 +4,34 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.concept.PrivacyAndSecurityFrameworkConcept;
+import gov.healthit.chpl.service.CertificationCriterionService;
+import gov.healthit.chpl.service.CertificationCriterionService.Criteria2015;
 import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
 import gov.healthit.chpl.util.ValidationUtils;
+import gov.healthit.chpl.validation.listing.reviewer.Reviewer;
 
 @Component("listingUploadPrivacyAndSecurityFrameworkReviewer")
-public class PrivacyAndSecurityFrameworkReviewer {
+public class PrivacyAndSecurityFrameworkReviewer  implements Reviewer {
     private CertificationResultRules certResultRules;
     private ValidationUtils validationUtils;
     private ErrorMessageUtil msgUtil;
+    private CertificationCriterion b11;
 
     @Autowired
     public PrivacyAndSecurityFrameworkReviewer(CertificationResultRules certResultRules,
+            CertificationCriterionService criteriaService,
             ValidationUtils validationUtils,
             ErrorMessageUtil msgUtil) {
         this.certResultRules = certResultRules;
         this.validationUtils = validationUtils;
         this.msgUtil = msgUtil;
+        this.b11 = criteriaService.get(Criteria2015.B_11);
     }
 
     public void review(CertifiedProductSearchDetails listing) {
@@ -59,6 +66,7 @@ public class PrivacyAndSecurityFrameworkReviewer {
 
     private void reviewPrivacyAndSecurityRequired(CertifiedProductSearchDetails listing, CertificationResult certResult) {
         if (certResultRules.hasCertOption(certResult.getCriterion().getId(), CertificationResultRules.PRIVACY_SECURITY)
+                && !b11.getId().equals(certResult.getCriterion().getId())
                 && StringUtils.isEmpty(certResult.getPrivacySecurityFramework())) {
             listing.addDataErrorMessage(msgUtil.getMessage(
                     "listing.criteria.missingPrivacySecurityFramework",

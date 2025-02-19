@@ -262,6 +262,10 @@
         <AppenderRef ref="updatedSedFriendlyIdsJob" />
         <AppenderRef ref="updatedSedFriendlyIdsJobJson" />
     </Logger>
+    <Logger name="realWorldTestingSummaryReportCreatorJobLogger" level="INFO" additivity="false">
+        <AppenderRef ref="realWorldTestingSummaryReportCreatorJob" />
+        <AppenderRef ref="realWorldTestingSummaryReportCreatorJobJson" />
+    </Logger>
     <Logger name="attestationReportCreatorJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="attestationReportCreatorJob" />
         <AppenderRef ref="attestationReportCreatorJobJson" />

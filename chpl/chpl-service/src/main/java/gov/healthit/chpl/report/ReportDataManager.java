@@ -21,6 +21,7 @@ import gov.healthit.chpl.report.nonconformity.NonconformityReportService;
 import gov.healthit.chpl.report.product.ProductByAcb;
 import gov.healthit.chpl.report.product.ProductReportsService;
 import gov.healthit.chpl.report.product.UniqueProductCount;
+import gov.healthit.chpl.report.realworldtesting.RealWorldTestingReportDataService;
 import gov.healthit.chpl.report.servicebaseurllistreport.ServiceBaseUrlListReportService;
 import gov.healthit.chpl.report.servicebaseurllistreport.UrlUptimeMonitorEx;
 import gov.healthit.chpl.report.surveillance.CapCounts;
@@ -48,6 +49,7 @@ public class ReportDataManager {
     private ReportMetadataDAO reportMetadataDAO;
     private CriteriaAttributeReportService criteriaAttributeReportService;
     private ServiceBaseUrlListReportService serviceBaseUrlListReportService;
+    private RealWorldTestingReportDataService realWorldTestingReportDataService;
     private NonconformityReportService nonconformityReportService;
 
     @Autowired
@@ -61,7 +63,9 @@ public class ReportDataManager {
             ReportMetadataDAO reportMetadataDAO,
             CriteriaAttributeReportService criteriaAttributeReportService,
             ServiceBaseUrlListReportService serviceBaseUrlListReportService,
+            RealWorldTestingReportDataService realWorldTestingReportDataService,
             NonconformityReportService nonconformityReportService) {
+
         this.criteriaMigrationReportService = criteriaMigrationReportService;
         this.developerReportsService = developerReportsService;
         this.surveillanceReportsService = surveillanceReportsService;
@@ -73,6 +77,7 @@ public class ReportDataManager {
         this.reportMetadataDAO = reportMetadataDAO;
         this.criteriaAttributeReportService = criteriaAttributeReportService;
         this.serviceBaseUrlListReportService = serviceBaseUrlListReportService;
+        this.realWorldTestingReportDataService = realWorldTestingReportDataService;
         this.nonconformityReportService = nonconformityReportService;
     }
 
@@ -259,6 +264,11 @@ public class ReportDataManager {
     @Synchronized("lock")
     public List<UrlUptimeMonitorEx> getUrlUptimeMonitors() {
         return serviceBaseUrlListReportService.getUrlUptimeMonitors();
+    }
+
+    @Synchronized("lock")
+    public RealWorldTestingReportDataService getRealWorldTestingReportDataService() {
+        return realWorldTestingReportDataService;
     }
 
     @Synchronized("lock")
