@@ -219,7 +219,7 @@ public class QuarterlyReportDAO extends BaseDAOImpl {
                 .disclosureRequirementsSummary(toCreate.getDisclosureRequirementsSummary())
                 .icsSurveillanceSummary(toCreate.getIcsSurveillanceSummary())
                 .prioritizedElementSummary(toCreate.getPrioritizedElementSummary())
-                .postCertificationPerformance(toCreate.getPostCertificationPerformance())
+                .postCertificationPerformanceOfCertifiedCapabilities(toCreate.getPostCertificationPerformanceOfCertifiedCapabilities())
                 .quarterId(quarterDao.getByName(toCreate.getQuarter()).getId())
                 .reactiveSurveillanceSummary(toCreate.getReactiveSurveillanceSummary())
                 .build();
@@ -237,7 +237,7 @@ public class QuarterlyReportDAO extends BaseDAOImpl {
         toUpdateEntity.setDisclosureRequirementsSummary(toUpdate.getDisclosureRequirementsSummary());
         toUpdateEntity.setIcsSurveillanceSummary(toUpdate.getIcsSurveillanceSummary());
         toUpdateEntity.setPrioritizedElementSummary(toUpdate.getPrioritizedElementSummary());
-        toUpdateEntity.setPostCertificationPerformance(toUpdate.getPostCertificationPerformance());
+        toUpdateEntity.setPostCertificationPerformanceOfCertifiedCapabilities(toUpdate.getPostCertificationPerformanceOfCertifiedCapabilities());
         toUpdateEntity.setReactiveSurveillanceSummary(toUpdate.getReactiveSurveillanceSummary());
 
         super.update(toUpdateEntity);

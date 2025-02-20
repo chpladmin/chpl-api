@@ -39,7 +39,7 @@ public class QuarterlyReport implements Serializable {
     private String prioritizedElementSummary;
     private String disclosureRequirementsSummary;
     private String developerComplaintsLogReview;
-    private String postCertificationPerformance;
+    private String postCertificationPerformanceOfCertifiedCapabilities;
     private String appropriateUseOfMark;
     private boolean acknowledgeWarnings;
 }

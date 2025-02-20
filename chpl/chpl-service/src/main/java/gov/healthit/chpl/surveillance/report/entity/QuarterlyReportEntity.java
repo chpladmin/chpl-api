@@ -73,8 +73,8 @@ public class QuarterlyReportEntity extends EntityAudit {
     @Column(name = "developer_complaints_log_review")
     private String developerComplaintsLogReview;
 
-    @Column(name = "post_certification_performance")
-    private String postCertificationPerformance;
+    @Column(name = "post_certification_performance_of_certified_capabilities")
+    private String postCertificationPerformanceOfCertifiedCapabilities;
 
     @Column(name = "appropriate_use_of_mark")
     private String appropriateUseOfMark;
@@ -97,7 +97,7 @@ public class QuarterlyReportEntity extends EntityAudit {
                 .id(this.getId())
                 .icsSurveillanceSummary(this.getIcsSurveillanceSummary())
                 .prioritizedElementSummary(this.getPrioritizedElementSummary())
-                .postCertificationPerformance(this.getPostCertificationPerformance())
+                .postCertificationPerformanceOfCertifiedCapabilities(this.getPostCertificationPerformanceOfCertifiedCapabilities())
                 .quarter(this.getQuarter().toDomain().getName())
                 .reactiveSurveillanceSummary(this.getReactiveSurveillanceSummary())
                 .startDay(LocalDate.of(getYear(), this.getQuarter().getQuarterBeginMonth(), this.getQuarter().getQuarterBeginDay()))

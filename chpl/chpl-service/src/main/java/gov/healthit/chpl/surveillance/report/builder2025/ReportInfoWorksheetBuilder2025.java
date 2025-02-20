@@ -221,13 +221,13 @@ public class ReportInfoWorksheetBuilder2025 extends ReportInfoWorksheetBuilder {
         row = workbook.getRow(sheet, currRow++);
         cell = workbook.createCell(row, 1, workbook.getTopAlignedWrappedStyle());
         if (reports.size() == 1) {
-            cell.setCellValue(reports.get(0).getPostCertificationPerformance());
+            cell.setCellValue(reports.get(0).getPostCertificationPerformanceOfCertifiedCapabilities());
         } else {
             StringBuffer buf = new StringBuffer();
             for (QuarterlyReport report : reports) {
-                if (!StringUtils.isEmpty(report.getPostCertificationPerformance())) {
+                if (!StringUtils.isEmpty(report.getPostCertificationPerformanceOfCertifiedCapabilities())) {
                     buf.append(report.getQuarter()).append(":")
-                        .append(report.getPostCertificationPerformance())
+                        .append(report.getPostCertificationPerformanceOfCertifiedCapabilities())
                         .append("\n");
                 }
             }
