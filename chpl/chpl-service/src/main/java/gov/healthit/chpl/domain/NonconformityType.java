@@ -17,6 +17,7 @@ import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.domain.surveillance.NonconformityClassification;
 import gov.healthit.chpl.util.LocalDateDeserializer;
 import gov.healthit.chpl.util.LocalDateSerializer;
+import gov.healthit.chpl.util.NullSafeEvaluator;
 import gov.healthit.chpl.util.Util;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -68,6 +69,16 @@ public class NonconformityType implements Serializable {
             }
             return CriterionStatus.ACTIVE;
         }
+    }
+
+    @JsonProperty(access = Access.READ_ONLY)
+    public Boolean isRemoved() {
+        return getStatus().equals(CriterionStatus.REMOVED);
+    }
+
+    @JsonIgnore
+    public String getEdition() {
+        return NullSafeEvaluator.eval(() -> certificationEdition.getName(), null);
     }
 
     @JsonIgnore
