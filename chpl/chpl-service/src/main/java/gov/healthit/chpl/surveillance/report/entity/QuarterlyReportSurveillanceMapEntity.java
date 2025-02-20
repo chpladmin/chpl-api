@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.hibernate.annotations.Where;
+import org.hibernate.annotations.SQLRestriction;
 import org.springframework.beans.BeanUtils;
 
 import gov.healthit.chpl.compliance.surveillance.entity.SurveillanceBasicEntity;
@@ -78,7 +78,7 @@ public class QuarterlyReportSurveillanceMapEntity extends EntityAudit {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "quarterlyReportSurveillanceMapId")
     @Basic(optional = false)
     @Column(name = "quarterly_report_surveillance_map_id", nullable = false)
-    @Where(clause = "deleted <> 'true'")
+    @SQLRestriction("deleted <> 'true'")
     private Set<QuarterlyReportSurveillanceProcessTypeMapEntity> surveillanceProcessTypeMaps = new HashSet<QuarterlyReportSurveillanceProcessTypeMapEntity>();
 
     @Column(name = "surveillance_process_type_other")
@@ -140,7 +140,7 @@ public class QuarterlyReportSurveillanceMapEntity extends EntityAudit {
                 .nondisclosureEvaluation(this.getNondisclosureEvaluation())
                 .stepsToEngage(this.getStepsToEngage())
                 .stepsToSurveil(this.getStepsToSurveil())
-                .surveillanceOutcome(this.getSurveillanceOutcome().toDomain())
+                .surveillanceOutcome(this.getSurveillanceOutcome() != null ? this.getSurveillanceOutcome().toDomain() : null)
                 .surveillanceOutcomeOther(this.getSurveillanceOutcomeOther())
                 .surveillanceProcessTypes(processTypes)
                 .surveillanceProcessTypeOther(this.getSurveillanceProcessTypeOther())
