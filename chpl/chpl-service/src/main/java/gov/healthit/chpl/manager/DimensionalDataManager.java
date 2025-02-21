@@ -13,7 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.compliance.surveillance.SurveillanceDAO;
-import gov.healthit.chpl.cqm.CQMCriterion;
 import gov.healthit.chpl.cqm.dao.CQMCriterionDAO;
 import gov.healthit.chpl.dao.AgeRangeDAO;
 import gov.healthit.chpl.dao.CertificationBodyDAO;
@@ -272,12 +271,6 @@ public class DimensionalDataManager {
                     null, dto.getCriteria()));
         }
         return testData;
-    }
-
-    @Transactional
-    @Cacheable(value = CacheNames.CQM_CRITERION)
-    public List<CQMCriterion> getCQMCriteria() {
-        return cqmCriterionDao.findAll();
     }
 
     @Transactional
