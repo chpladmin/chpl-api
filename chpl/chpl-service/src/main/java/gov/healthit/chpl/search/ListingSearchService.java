@@ -124,6 +124,7 @@ public class ListingSearchService {
             .filter(listing -> matchesHasAnySvapFilter(listing, searchRequest.getHasAnySvap()))
             .filter(listing -> matchesSvapNoticeUrlFilter(listing, searchRequest.getHasSvapNoticeUrl()))
             .filter(listing -> matchesSvaps(listing, searchRequest.getSvapIds(), searchRequest.getSvapOperator()))
+            .filter(listing -> matchesStandards(listing, searchRequest.getStandardIds(), searchRequest.getStandardOperator()))
             .collect(Collectors.toList());
         LOGGER.debug("Total matched listings: " + matchedListings.size());
 
@@ -531,6 +532,20 @@ public class ListingSearchService {
         return certResultWithSvapIds.stream()
                 .flatMap(result -> result.getValues().stream())
                 .collect(Collectors.toSet());
+    }
+
+    private boolean matchesStandards(ListingSearchResult listing, Set<Long> standardIds, SearchSetOperator searchOperator) {
+        if (CollectionUtils.isEmpty(standardIds)) {
+            return true;
+        }
+        if (searchOperator.equals(SearchSetOperator.AND)) {
+            return standardIds.stream()
+                    .allMatch(standardId -> listing.getStandardsMet().contains(standardId));
+        } else if (searchOperator.equals(SearchSetOperator.OR)) {
+            return standardIds.stream()
+                    .anyMatch(standardId -> listing.getStandardsMet().contains(standardId));
+        }
+        return false;
     }
 
     private boolean applyOperation(SearchSetOperator operation, Boolean... filters) {

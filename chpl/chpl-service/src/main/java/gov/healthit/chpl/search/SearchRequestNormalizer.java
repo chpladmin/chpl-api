@@ -11,7 +11,9 @@ import gov.healthit.chpl.search.domain.OrderByOption;
 import gov.healthit.chpl.search.domain.RwtSearchOptions;
 import gov.healthit.chpl.search.domain.SearchRequest;
 import gov.healthit.chpl.search.domain.SearchSetOperator;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 public class SearchRequestNormalizer {
 
     public void normalize(SearchRequest request) {
@@ -31,6 +33,8 @@ public class SearchRequestNormalizer {
         normalizeRwtOptionsOperator(request);
         normalizeSvapIds(request);
         normalizeSvapOperator(request);
+        normalizeStanadrdIds(request);
+        normalizeStandardOperator(request);
         normalizeOrderBy(request);
     }
 
@@ -255,6 +259,30 @@ public class SearchRequestNormalizer {
                 request.setSvapOperator(
                         SearchSetOperator.valueOf(request.getSvapOperatorString().toUpperCase().trim()));
             } catch (Exception ignore) {
+            }
+        }
+    }
+
+    private void normalizeStanadrdIds(SearchRequest request) {
+        if (request.getStandardIdStrings() != null && request.getStandardIdStrings().size() > 0
+                && (request.getStandardIds() == null || request.getStandardIds().size() == 0)) {
+            request.setStandardIds(request.getStandardIdStrings().stream()
+                    .filter(standardIdString -> !StringUtils.isBlank(standardIdString))
+                    .map(standardIdString -> standardIdString.trim())
+                    .filter(standardIdString -> isParseableLong(standardIdString))
+                    .map(standardIdString -> Long.parseLong(standardIdString))
+                    .collect(Collectors.toSet()));
+        }
+    }
+
+    private void normalizeStandardOperator(SearchRequest request) {
+        if (!StringUtils.isBlank(request.getStandardOperatorString())
+                && request.getStandardOperator() == null) {
+            try {
+                request.setStandardOperator(
+                        SearchSetOperator.valueOf(request.getStandardOperatorString().toUpperCase().trim()));
+            } catch (Exception ignore) {
+                LOGGER.error(ignore);
             }
         }
     }
