@@ -4,7 +4,7 @@ import java.util.Comparator;
 
 import org.apache.commons.lang3.StringUtils;
 
-import gov.healthit.chpl.domain.CQMResultDetails;
+import gov.healthit.chpl.cqm.CQMResultDetails;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor

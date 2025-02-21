@@ -7,7 +7,7 @@ import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.domain.CQMResultDetails;
+import gov.healthit.chpl.cqm.CQMResultDetails;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.questionableactivity.QuestionableActivityTriggerConcept;
 import gov.healthit.chpl.questionableactivity.domain.QuestionableActivityListing;

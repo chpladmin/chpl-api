@@ -10,18 +10,18 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.healthit.chpl.caching.CacheNames;
+import gov.healthit.chpl.cqm.CQMCriterion;
+import gov.healthit.chpl.cqm.CqmCriterionService;
 import gov.healthit.chpl.dao.CertificationEditionDAO;
 import gov.healthit.chpl.dao.CertificationStatusDAO;
 import gov.healthit.chpl.dao.PracticeTypeDAO;
 import gov.healthit.chpl.dao.ProductClassificationTypeDAO;
-import gov.healthit.chpl.domain.CQMCriterion;
 import gov.healthit.chpl.domain.CertificationEdition;
 import gov.healthit.chpl.domain.CertificationStatus;
 import gov.healthit.chpl.domain.DescriptiveModel;
 import gov.healthit.chpl.domain.KeyValueModel;
 import gov.healthit.chpl.domain.PracticeType;
 import gov.healthit.chpl.dto.ProductClassificationTypeDTO;
-import gov.healthit.chpl.service.CqmCriterionService;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2

@@ -1,12 +1,11 @@
-package gov.healthit.chpl.dto;
+package gov.healthit.chpl.cqm;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import gov.healthit.chpl.domain.CQMResultCertification;
-import gov.healthit.chpl.entity.listing.CQMResultEntity;
+import gov.healthit.chpl.cqm.entity.CQMResultEntity;
 import gov.healthit.chpl.util.Util;
 
 public class CQMResultDTO implements Serializable {

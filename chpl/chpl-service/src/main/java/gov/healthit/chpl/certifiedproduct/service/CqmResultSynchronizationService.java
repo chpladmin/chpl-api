@@ -13,13 +13,13 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import gov.healthit.chpl.dao.CQMCriterionDAO;
-import gov.healthit.chpl.dao.CQMResultDAO;
-import gov.healthit.chpl.domain.CQMCriterion;
-import gov.healthit.chpl.domain.CQMResultCertification;
-import gov.healthit.chpl.domain.CQMResultDetails;
+import gov.healthit.chpl.cqm.CQMCriterion;
+import gov.healthit.chpl.cqm.CQMResultCertification;
+import gov.healthit.chpl.cqm.CQMResultDTO;
+import gov.healthit.chpl.cqm.CQMResultDetails;
+import gov.healthit.chpl.cqm.dao.CQMCriterionDAO;
+import gov.healthit.chpl.cqm.dao.CQMResultDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
-import gov.healthit.chpl.dto.CQMResultDTO;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import lombok.Data;

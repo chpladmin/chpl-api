@@ -11,8 +11,8 @@ import gov.healthit.chpl.certifiedproduct.service.CertificationStatusEventsServi
 import gov.healthit.chpl.certifiedproduct.service.CqmResultsService;
 import gov.healthit.chpl.certifiedproduct.service.ListingMeasuresService;
 import gov.healthit.chpl.certifiedproduct.service.ListingService;
+import gov.healthit.chpl.cqm.CQMResultDetails;
 import gov.healthit.chpl.dao.CertifiedProductSearchResultDAO;
-import gov.healthit.chpl.domain.CQMResultDetails;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;

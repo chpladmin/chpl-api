@@ -22,7 +22,7 @@ import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
 import gov.healthit.chpl.certificationCriteria.CertificationCriterionWithAttributes;
 import gov.healthit.chpl.codeset.CertificationResultCodeSet;
 import gov.healthit.chpl.conformanceMethod.domain.CertificationResultConformanceMethod;
-import gov.healthit.chpl.domain.CQMResultDetails;
+import gov.healthit.chpl.cqm.CQMResultDetails;
 import gov.healthit.chpl.domain.CertificationResult;
 import gov.healthit.chpl.domain.CertificationResultAdditionalSoftware;
 import gov.healthit.chpl.domain.CertificationResultTestData;

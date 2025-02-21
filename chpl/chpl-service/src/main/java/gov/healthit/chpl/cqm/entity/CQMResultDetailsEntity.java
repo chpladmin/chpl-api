@@ -1,4 +1,4 @@
-package gov.healthit.chpl.entity.listing;
+package gov.healthit.chpl.cqm.entity;
 
 import java.util.LinkedHashSet;
 import java.util.stream.Collectors;
@@ -6,7 +6,7 @@ import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 
-import gov.healthit.chpl.domain.CQMResultDetails;
+import gov.healthit.chpl.cqm.CQMResultDetails;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

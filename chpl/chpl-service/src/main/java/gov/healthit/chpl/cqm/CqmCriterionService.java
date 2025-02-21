@@ -1,4 +1,4 @@
-package gov.healthit.chpl.service;
+package gov.healthit.chpl.cqm;
 
 import java.util.HashMap;
 import java.util.List;
@@ -10,8 +10,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import gov.healthit.chpl.dao.CQMCriterionDAO;
-import gov.healthit.chpl.domain.CQMCriterion;
+import gov.healthit.chpl.cqm.dao.CQMCriterionDAO;
 
 @Component
 public class CqmCriterionService {
