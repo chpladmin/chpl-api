@@ -1,6 +1,8 @@
 package gov.healthit.chpl.scheduler.job.onetime.jobedit;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.quartz.Job;
@@ -39,7 +41,7 @@ public class FixJobDataJob implements Job {
                         try {
                             LOGGER.info("Authorities: {}", job.getJobDataMap().get("authorities"));
 
-                            List<String> authoritiesList = Arrays.asList(job.getJobDataMap().get("authorities").toString().split(";"));
+                            List<String> authoritiesList = new ArrayList<String>(Arrays.asList(job.getJobDataMap().get("authorities").toString().split(";")));
 
                             if (authoritiesList.contains("ROLE_ADMIN") && !authoritiesList.contains("chpl-admin")) {
                                 authoritiesList.add("chpl-admin");
