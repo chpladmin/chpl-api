@@ -214,4 +214,7 @@
     <Logger name="fixDatadogUrlUptimeAssertionsJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="fixDatadogUrlUptimeAssertionsJob" />
     </Logger>
+    <Logger name="fixJobDataJobLogger" level="INFO" additivity="false">
+        <AppenderRef ref="fixJobDataJob" />
+    </Logger>
 </Loggers>
