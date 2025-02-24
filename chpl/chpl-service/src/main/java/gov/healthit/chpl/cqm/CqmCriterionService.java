@@ -1,5 +1,6 @@
 package gov.healthit.chpl.cqm;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,6 +21,28 @@ public class CqmCriterionService {
     @Autowired
     public CqmCriterionService(CQMCriterionDAO cqmCriterionDao) {
         this.cqmCriterionDao = cqmCriterionDao;
+    }
+
+    public List<CQMCriterionAllVersions> getAllCmsCqmsWithAllVersions() {
+        List<CQMCriterionAllVersions> result = new ArrayList<CQMCriterionAllVersions>();
+        //this is an exploded list of CQMs - each one has only one version, but we can group by CMS ID
+        List<CQMCriterion> allCmsCqms = getAllCmsCqms();
+        Map<String, List<CQMCriterion>> cqmsGroupedByCmsId = allCmsCqms.stream()
+            .collect(Collectors.groupingBy(CQMCriterion::getCmsId));
+        cqmsGroupedByCmsId.keySet().stream()
+            .forEach(key -> {
+                CQMCriterion cqmWithMaxVersion = getCqmForMostRecentVersion(cqmsGroupedByCmsId.get(key));
+
+                result.add(CQMCriterionAllVersions.builder()
+                        .cmsId(key)
+                        .description(cqmWithMaxVersion.getDescription())
+                        .domain(cqmWithMaxVersion.getCqmDomain())
+                        .nqfNumber(cqmWithMaxVersion.getNqfNumber())
+                        .title(cqmWithMaxVersion.getTitle())
+                        .versions(cqmsGroupedByCmsId.get(key).stream().map(cqm -> cqm.getCqmVersion()).toList())
+                        .build());
+            });
+        return result;
     }
 
     public List<CQMCriterion> getAllCmsCqms() {
