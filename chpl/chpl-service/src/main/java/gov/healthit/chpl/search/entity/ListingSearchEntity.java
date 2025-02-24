@@ -155,6 +155,9 @@ public class ListingSearchEntity {
     @Column(name = "criteria_with_svap")
     private String criteriaWithSvap;
 
+    @Column(name = "criteria_with_risk_management")
+    private String criteriaWithRiskManagementSummaryInformation;
+
     @Column(name = "cqms_met")
     private String cqmsMet;
 

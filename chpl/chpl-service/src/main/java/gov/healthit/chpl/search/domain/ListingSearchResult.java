@@ -77,6 +77,7 @@ public class ListingSearchResult implements Serializable {
     private Set<StatusEventSearchResult> statusEvents;
     private Set<CertificationCriterionSearchResultWithStringField> apiDocumentation;
     private CertificationCriterionSearchResultWithStringField serviceBaseUrlList;
+    private CertificationCriterionSearchResultWithStringField riskManagementSummaryInformation;
     private Set<CertificationCriterionSearchResultWithLongFields> svaps;
     private String rwtPlansUrl;
     private String rwtResultsUrl;
@@ -132,7 +133,7 @@ public class ListingSearchResult implements Serializable {
     public String getDerivedEdition() {
         return getEdition() == null || StringUtils.isEmpty(getEdition().getName())
                 ? null
-                : getEdition().getName() + (BooleanUtils.isTrue(getCuresUpdate()) ? CertificationEdition.CURES_SUFFIX : "");
+                        : getEdition().getName() + (BooleanUtils.isTrue(getCuresUpdate()) ? CertificationEdition.CURES_SUFFIX : "");
     }
 
     @Getter
