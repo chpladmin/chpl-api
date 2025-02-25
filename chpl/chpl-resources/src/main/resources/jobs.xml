@@ -948,5 +948,14 @@
             <durability>true</durability>
             <recover>false</recover>
         </job>
+        
+        <job>
+            <name>fixJobDataJob</name>
+            <group>systemJobs</group>
+            <description>Fix job data - add new Cognito Roles</description>
+            <job-class>gov.healthit.chpl.scheduler.job.onetime.jobedit.FixJobDataJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+        </job>
     </schedule>
 </job-scheduling-data>
