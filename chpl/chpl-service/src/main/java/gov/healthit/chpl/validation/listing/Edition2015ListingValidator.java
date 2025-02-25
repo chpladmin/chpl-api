@@ -13,6 +13,7 @@ import gov.healthit.chpl.upload.listing.validation.reviewer.AccessibilityStandar
 import gov.healthit.chpl.upload.listing.validation.reviewer.AdditionalSoftwareCodeReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.ChplNumberFormatReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.CqmResultReviewer;
+import gov.healthit.chpl.upload.listing.validation.reviewer.FunctionalityTestedReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.IcsCodeReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.PrivacyAndSecurityFrameworkReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.QmsStandardReviewer;
@@ -147,8 +148,12 @@ public class Edition2015ListingValidator extends Validator {
     private UrlReviewer urlReviewer;
 
     @Autowired
+    @Qualifier("listingUploadFunctionalityTestedReviewer")
+    private FunctionalityTestedReviewer functionalityTestedReviewer;
+
+    @Autowired
     @Qualifier("functionalityTestedAllowedByCriteriaReviewer")
-    private FunctionalityTestedAllowedByCriteriaReviewer functionalityTestedReviewer;
+    private FunctionalityTestedAllowedByCriteriaReviewer functionalityTestedAllowedByCriteriaReviewer;
 
     @Autowired
     @Qualifier("duplicateDataReviewer")
@@ -292,6 +297,7 @@ public class Edition2015ListingValidator extends Validator {
         reviewers.add(ttReviewer);
         reviewers.add(urlReviewer);
         reviewers.add(functionalityTestedReviewer);
+        reviewers.add(functionalityTestedAllowedByCriteriaReviewer);
         reviewers.add(standardReviewer);
         reviewers.add(invalidCriteriaCombinationReviewer);
         reviewers.add(cqmResultReviewer);
