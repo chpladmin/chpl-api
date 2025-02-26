@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.validation.surveillance.reviewer.ComparisonReviewer;
-import gov.healthit.chpl.validation.surveillance.reviewer.Reviewer;
+import gov.healthit.chpl.validation.surveillance.reviewer.ReadReviewer;
 import gov.healthit.chpl.validation.surveillance.reviewer.SurveillanceDetailsReviewer;
 import gov.healthit.chpl.validation.surveillance.reviewer.SurveillanceNonconformityReviewer;
 import gov.healthit.chpl.validation.surveillance.reviewer.SurveillanceRequirementReviewer;
@@ -18,7 +18,7 @@ import gov.healthit.chpl.validation.surveillance.reviewer.UnsupportedCharacterRe
 @Component("surveillanceUpdateValidator")
 public class SurveillanceUpdateValidator {
 
-    private List<Reviewer> reviewers;
+    private List<ReadReviewer> reviewers;
     private List<ComparisonReviewer> comparisonReviewers;
 
     @Autowired
@@ -26,7 +26,7 @@ public class SurveillanceUpdateValidator {
             SurveillanceRequirementReviewer survReqReviewer,
             SurveillanceNonconformityReviewer survNcReviewer,
             @Qualifier("surveillanceUnsupportedCharacterReviewer") UnsupportedCharacterReviewer charReviewer) {
-        reviewers = new ArrayList<Reviewer>();
+        reviewers = new ArrayList<ReadReviewer>();
         reviewers.add(survDetailsReviewer);
         reviewers.add(survReqReviewer);
         reviewers.add(survNcReviewer);
@@ -36,7 +36,7 @@ public class SurveillanceUpdateValidator {
     }
 
     public void validate(Surveillance existingSurv, Surveillance updatedSurv) {
-        for (Reviewer reviewer : reviewers) {
+        for (ReadReviewer reviewer : reviewers) {
             reviewer.review(updatedSurv);
         }
         if (existingSurv != null) {
@@ -46,7 +46,7 @@ public class SurveillanceUpdateValidator {
         }
     }
 
-    public List<Reviewer> getReviewers() {
+    public List<ReadReviewer> getReviewers() {
         return reviewers;
     }
 
