@@ -385,16 +385,16 @@ public abstract class ActivitiesAndOutcomesWorksheetBuilder {
         //get some details (surveillance and status history) about each relevant listing for each quarterly report
         List<CertifiedProductSearchDetails> relevantListings = getRelevantListingsDetails(quarterlyReports, logger);
         //get all the surveillances relevant to the time period of the report from the listings
-        List<Surveillance> relevantSuveillances = new ArrayList<Surveillance>();
+        List<Surveillance> relevantSurveillances = new ArrayList<Surveillance>();
         for (CertifiedProductSearchDetails listing : relevantListings) {
             //each listing has 1 or more surveillances
             //but maybe not all are from the periods of time covered by the quarters
             List<Surveillance> listingSurveillances
                 = determineRelevantSurveillances(quarterlyReports, listing.getSurveillance());
-            relevantSuveillances.addAll(listingSurveillances);
+            relevantSurveillances.addAll(listingSurveillances);
         }
         //sort the relevant surveillances with oldest start date first and newest start date last
-        relevantSuveillances.sort(new Comparator<Surveillance>() {
+        relevantSurveillances.sort(new Comparator<Surveillance>() {
             @Override
             public int compare(final Surveillance o1, final Surveillance o2) {
                 if (o1.getStartDay().isBefore(o2.getStartDay())) {
@@ -408,13 +408,13 @@ public abstract class ActivitiesAndOutcomesWorksheetBuilder {
         });
 
 
-        for (Surveillance surv : relevantSuveillances) {
+        for (Surveillance surv : relevantSurveillances) {
             boolean isFirstRowForSurveillance = true;
             Row row = workbook.getRow(sheet, rowNum++);
 
             CertifiedProductSearchDetails listing = null;
             for (CertifiedProductSearchDetails currListing : relevantListings) {
-                if (surv.getCertifiedProduct().getId().equals(currListing.getId())) {
+                if (surv.getCertifiedProductId().equals(currListing.getId())) {
                     listing = currListing;
                 }
             }

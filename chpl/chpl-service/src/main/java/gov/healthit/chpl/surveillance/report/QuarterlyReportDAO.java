@@ -112,10 +112,10 @@ public class QuarterlyReportDAO extends BaseDAOImpl {
      */
     public boolean isSurveillanceRelevant(QuarterlyReport quarterlyReport, Long survId) {
         String queryStr = "SELECT surv "
-                + "FROM SurveillanceEntity surv "
-                + "JOIN FETCH surv.certifiedProduct listing "
+                + "FROM SurveillanceEntity surv, CertifiedProductEntity cp "
                 + "WHERE surv.id = :survId "
-                + "AND listing.certificationBodyId = :acbId "
+                + "AND surv.certifiedProductId = cp.id "
+                + "AND cp.certificationBodyId = :acbId "
                 + "AND surv.startDate <= :endDate "
                 + "AND (surv.endDate IS NULL OR surv.endDate >= :startDate)";
         Query query = entityManager.createQuery(queryStr);

@@ -4,6 +4,8 @@ import java.io.Serializable;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,6 +16,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class RequirementGroupType implements Serializable {
     private static final long serialVersionUID = -5865384642096284604L;
     public static final String CERTIFIED_CAPABILITY = "Certified Capability";
