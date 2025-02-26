@@ -146,7 +146,7 @@ public class ProductController {
             // product and old products create a new
             // product with the rest of the passed in information
             result = mergeProducts(productInfo);
-            responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
+            responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_SEARCH);
         } else if (productInfo.getProductIds().size() == 1) {
             if (didOwnerChange(productInfo)) {
                 List<DuplicateChplProdNumber> duplicateChplProdNbrs = getDuplicateChplProdNumbersCausedByDeveloperChange(
@@ -162,7 +162,7 @@ public class ProductController {
             } else {
                 result = productManager.update(productInfo.getProduct());
             }
-            responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
+            responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_SEARCH);
         }
 
         if (result == null) {
@@ -351,7 +351,7 @@ public class ProductController {
         }
         Product splitProductNew = productManager.split(oldProduct, newProduct, splitRequest.getNewProductCode(),
                 newProductVersions);
-        responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
+        responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_SEARCH);
         Product splitProductOld = productManager.getById(oldProduct.getId());
         SplitProductResponse response = new SplitProductResponse();
         response.setNewProduct(splitProductNew);

@@ -2,16 +2,21 @@ package gov.healthit.chpl.permissions.domain.surveillance;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import gov.healthit.chpl.dao.CertifiedProductDAO;
+import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.permissions.ResourcePermissions;
+import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
 import gov.healthit.chpl.permissions.domain.ActionPermissionsBaseTest;
 import gov.healthit.chpl.permissions.domains.surveillance.DeleteActionPermissions;
 
@@ -19,14 +24,30 @@ public class DeleteActionPermissionsTest extends ActionPermissionsBaseTest {
     @Mock
     private ResourcePermissions resourcePermissions;
 
+    @Mock
+    private CertifiedProductDAO certifiedProductDAO;
+
+    @Mock
+    private ResourcePermissionsFactory resourcePermissionsFacotry;
+
     @InjectMocks
     private DeleteActionPermissions permissions;
 
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-
+        Mockito.when(resourcePermissionsFacotry.get()).thenReturn(resourcePermissions);
         Mockito.when(resourcePermissions.getAllAcbsForCurrentUser()).thenReturn(getAllAcbForUser(2L, 4L));
+        try {
+            CertifiedProductDTO listingNoAccess = new CertifiedProductDTO();
+            listingNoAccess.setCertificationBodyId(1L);
+            Mockito.when(certifiedProductDAO.getById(ArgumentMatchers.eq(1L))).thenReturn(listingNoAccess);
+            CertifiedProductDTO listingWithAccess = new CertifiedProductDTO();
+            listingWithAccess.setCertificationBodyId(2L);
+            Mockito.when(certifiedProductDAO.getById(ArgumentMatchers.eq(2L))).thenReturn(listingWithAccess);
+        } catch (Exception ex) {
+            fail(ex.getMessage());
+        }
     }
 
     @Override

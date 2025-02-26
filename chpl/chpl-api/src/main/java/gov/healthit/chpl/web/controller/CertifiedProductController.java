@@ -3,6 +3,7 @@ package gov.healthit.chpl.web.controller;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Function;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,16 +20,20 @@ import org.springframework.web.bind.annotation.RestController;
 import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
 import gov.healthit.chpl.certifiedproduct.csv.ListingCsvWriter;
+import gov.healthit.chpl.compliance.surveillance.SurveillanceManager;
 import gov.healthit.chpl.domain.CertifiedProductSearchBasicDetails;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.ListingUpdateRequest;
+import gov.healthit.chpl.domain.SimpleExplainableAction;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
+import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.exception.ActivityException;
 import gov.healthit.chpl.exception.CertifiedProductUpdateException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.InvalidArgumentsException;
 import gov.healthit.chpl.exception.MissingReasonException;
+import gov.healthit.chpl.exception.UserPermissionRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.listing.ics.IcsManager;
 import gov.healthit.chpl.listing.ics.ListingIcsNode;
@@ -44,6 +49,7 @@ import gov.healthit.chpl.web.controller.annotation.CacheControl;
 import gov.healthit.chpl.web.controller.annotation.CacheMaxAge;
 import gov.healthit.chpl.web.controller.annotation.CachePolicy;
 import gov.healthit.chpl.web.controller.annotation.DeprecatedApiResponseFields;
+import gov.healthit.chpl.web.controller.results.BooleanResult;
 import gov.healthit.chpl.web.controller.results.CQMResultDetailResults;
 import gov.healthit.chpl.web.controller.results.CertificationResults;
 import gov.healthit.chpl.web.controller.results.MeasureResults;
@@ -68,6 +74,7 @@ public class CertifiedProductController {
     private CertifiedProductDetailsManager cpdManager;
     private CertifiedProductManager cpManager;
     private IcsManager icsManager;
+    private SurveillanceManager survManager;
     private ListingCsvWriter listingCsvWriter;
     private ActivityManager activityManager;
     private ListingValidatorFactory validatorFactory;
@@ -79,13 +86,15 @@ public class CertifiedProductController {
     })
     @Autowired
     public CertifiedProductController(CertifiedProductDetailsManager cpdManager, CertifiedProductManager cpManager,
-            IcsManager icsManager, ListingCsvWriter listingCsvWriter,
+            IcsManager icsManager, SurveillanceManager survManager,
+            ListingCsvWriter listingCsvWriter,
             ActivityManager activityManager, ListingValidatorFactory validatorFactory,
             ErrorMessageUtil msgUtil, ChplProductNumberUtil chplProductNumberUtil,
             FileUtils fileUtils) {
         this.cpdManager = cpdManager;
         this.cpManager = cpManager;
         this.icsManager = icsManager;
+        this.survManager = survManager;
         this.listingCsvWriter = listingCsvWriter;
         this.activityManager = activityManager;
         this.validatorFactory = validatorFactory;
@@ -723,11 +732,103 @@ public class CertifiedProductController {
 
         CertifiedProductSearchDetails changedProduct = cpdManager.getCertifiedProductDetails(updatedListing.getId());
         HttpHeaders responseHeaders = new HttpHeaders();
-        responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
+        responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_SEARCH);
         if (!changedProduct.getChplProductNumber().equals(existingListing.getChplProductNumber())) {
             responseHeaders.set("CHPL-Id-Changed", existingListing.getChplProductNumber());
         }
         return new ResponseEntity<CertifiedProductSearchDetails>(changedProduct, responseHeaders, HttpStatus.OK);
+    }
+
+    @Operation(summary = "Create a new surveillance activity for a certified product.",
+            description = "Creates a new surveillance activity, surveilled requirements, and any applicable non-conformities "
+                    + "in the system and associates them with the certified product indicated in the "
+                    + "request body. The surveillance passed into this request will first be validated "
+                    + " to check for errors. "
+                    + "Security Restrictions: ROLE_ADMIN or ROLE_ACB and administrative authority on the ACB associated with "
+                    + "the certified product is required.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
+    @RequestMapping(value = "/{certifiedProductId:^-?\\d+$}/surveillance", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
+    public ResponseEntity<Surveillance> createSurveillance(@PathVariable(value = "certifiedProductId") Long certifiedProductId,
+            @RequestBody(required = true) Surveillance survToInsert)
+            throws EntityRetrievalException, UserPermissionRetrievalException, ActivityException, ValidationException {
+
+        HttpHeaders responseHeaders = new HttpHeaders();
+        Long insertedSurv = null;
+        try {
+            insertedSurv = survManager.createSurveillance(certifiedProductId, survToInsert);
+            responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_SEARCH);
+        } catch (ValidationException ex) {
+            throw ex;
+        }
+
+        // query the inserted surveillance
+        Surveillance result = survManager.getById(insertedSurv);
+        return new ResponseEntity<Surveillance>(result, responseHeaders, HttpStatus.OK);
+    }
+
+   @Operation(summary = "Update a surveillance activity for a certified product.",
+            description = "Updates an existing surveillance activity, surveilled requirements, and any applicable "
+                    + "non-conformities in the system. The surveillance passed into this request will first be "
+                    + "validated to check for errors. Security Restrictions: ROLE_ADMIN or ROLE_ACB "
+                    + "and associated with the certified product is required.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
+    @RequestMapping(value = "/{certifiedProductId:^-?\\d+$}/surveillance/{surveillanceId}", method = RequestMethod.PUT,
+            produces = "application/json; charset=utf-8")
+    public ResponseEntity<Surveillance> updateSurveillance(@PathVariable(value = "certifiedProductId") Long certifiedProductId,
+            @PathVariable(value = "surveillanceId") Long surveillanceId,
+            @RequestBody(required = true) Surveillance survToUpdate)
+            throws InvalidArgumentsException, EntityRetrievalException, ActivityException, ValidationException {
+
+       if (!Objects.equals(surveillanceId, survToUpdate.getId())) {
+           throw new InvalidArgumentsException("Surveillance ID " + surveillanceId + " does not match request body ID " + survToUpdate.getId());
+       }
+
+        // update the surveillance
+        HttpHeaders responseHeaders = new HttpHeaders();
+        try {
+            survManager.updateSurveillance(certifiedProductId, survToUpdate);
+            responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_SEARCH);
+        } catch (ValidationException ex) {
+            throw ex;
+        }
+
+        // query the inserted surveillance
+        Surveillance result = survManager.getById(survToUpdate.getId());
+        return new ResponseEntity<Surveillance>(result, responseHeaders, HttpStatus.OK);
+    }
+
+    @Operation(summary = "Delete a surveillance activity for a certified product.",
+            description = "Deletes an existing surveillance activity, surveilled requirements, and any applicable "
+                    + "non-conformities in the system. Security Restrictions: ROLE_ADMIN or ROLE_ACB and have "
+                    + "administrative authority on the specified ACB for each pending surveillance is required.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
+    @RequestMapping(value = "/{certifiedProductId:^-?\\d+$}/surveillance/{surveillanceId}", method = RequestMethod.DELETE,
+            produces = "application/json; charset=utf-8")
+    public ResponseEntity<BooleanResult> deleteSurveillance(@PathVariable(value = "certifiedProductId") Long certifiedProductId,
+            @PathVariable(value = "surveillanceId") Long surveillanceId,
+            @RequestBody(required = false) SimpleExplainableAction requestBody)
+                    throws MissingReasonException, InvalidArgumentsException, EntityRetrievalException, ActivityException {
+
+        Surveillance survToDelete = null;
+        try {
+            survToDelete = survManager.getById(surveillanceId);
+        } catch (EntityRetrievalException ex) {
+            throw new InvalidArgumentsException("No surveillance with ID " + surveillanceId + " was found.");
+        }
+        HttpHeaders responseHeaders = new HttpHeaders();
+        // delete it
+        survManager.deleteSurveillance(certifiedProductId, survToDelete, requestBody.getReason());
+        responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_SEARCH);
+        return new ResponseEntity<BooleanResult>(new BooleanResult(true), responseHeaders, HttpStatus.OK);
     }
 
     private CertifiedProductSearchDetails validateCertifiedProduct(

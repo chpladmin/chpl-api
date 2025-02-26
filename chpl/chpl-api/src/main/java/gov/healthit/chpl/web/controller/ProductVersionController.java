@@ -136,7 +136,7 @@ public class ProductVersionController {
                     toUpdate.setProductId(versionInfo.getNewProductId());
                 }
                 result = pvManager.update(toUpdate);
-                responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
+                responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_SEARCH);
             }
         } else {
             if (versionInfo.getVersionIds().size() > 1) {
@@ -152,7 +152,7 @@ public class ProductVersionController {
                 newVersion.setVersion(versionInfo.getVersion().getVersion());
                 newVersion.setProductId(versionInfo.getNewProductId());
                 result = pvManager.merge(versionInfo.getVersionIds(), newVersion);
-                responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
+                responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_SEARCH);
             } else if (versionInfo.getVersionIds().size() == 1) {
                 // update the given version id with new data
                 ProductVersionDTO toUpdate = new ProductVersionDTO();
@@ -162,7 +162,7 @@ public class ProductVersionController {
                     toUpdate.setProductId(versionInfo.getNewProductId());
                 }
                 result = pvManager.update(toUpdate);
-                responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
+                responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_SEARCH);
             }
         }
 
@@ -225,7 +225,7 @@ public class ProductVersionController {
 
         ProductVersionDTO newVersionFromSplit = pvManager.split(oldVersion, newVersion, splitRequest.getNewVersionCode(),
                 newVersionListingIds);
-        responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
+        responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_SEARCH);
         SplitVersionResponse response = new SplitVersionResponse();
         response.setNewVersion(new ProductVersion(newVersionFromSplit));
         response.setOldVersion(new ProductVersion(oldVersion));
