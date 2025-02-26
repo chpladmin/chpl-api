@@ -4,6 +4,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import gov.healthit.chpl.util.NullSafeEvaluator;
@@ -38,6 +41,17 @@ public class SurveillanceRequirement implements Serializable {
     @Schema(description = "List of nonconformities found for this surveilled requirement")
     @Builder.Default
     private List<SurveillanceNonconformity> nonconformities = new ArrayList<SurveillanceNonconformity>();
+
+    @JsonIgnore
+    public String getFormattedTitle() {
+        if (this.requirementType != null) {
+            return this.requirementType.getFormattedTitle();
+        }
+        if (!StringUtils.isEmpty(this.requirementTypeOther)) {
+            return this.requirementTypeOther;
+        }
+        return "";
+    }
 
     public boolean matches(SurveillanceRequirement anotherRequirement) {
         if (!propertiesMatch(anotherRequirement)) {

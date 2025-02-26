@@ -4,8 +4,6 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import jakarta.persistence.Query;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -21,6 +19,7 @@ import gov.healthit.chpl.surveillance.report.domain.QuarterlyReport;
 import gov.healthit.chpl.surveillance.report.domain.RelevantListing;
 import gov.healthit.chpl.surveillance.report.entity.ListingWithSurveillanceEntity;
 import gov.healthit.chpl.surveillance.report.entity.QuarterlyReportEntity;
+import jakarta.persistence.Query;
 
 @Repository("quarterlyReportDao")
 public class QuarterlyReportDAO extends BaseDAOImpl {
@@ -113,10 +112,10 @@ public class QuarterlyReportDAO extends BaseDAOImpl {
      */
     public boolean isSurveillanceRelevant(QuarterlyReport quarterlyReport, Long survId) {
         String queryStr = "SELECT surv "
-                + "FROM SurveillanceEntity surv "
-                + "JOIN FETCH surv.certifiedProduct listing "
+                + "FROM SurveillanceEntity surv, CertifiedProductEntity cp "
                 + "WHERE surv.id = :survId "
-                + "AND listing.certificationBodyId = :acbId "
+                + "AND surv.certifiedProductId = cp.id "
+                + "AND cp.certificationBodyId = :acbId "
                 + "AND surv.startDate <= :endDate "
                 + "AND (surv.endDate IS NULL OR surv.endDate >= :startDate)";
         Query query = entityManager.createQuery(queryStr);
