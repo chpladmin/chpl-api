@@ -38,6 +38,9 @@
     <Logger name="chartDataCreatorJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="chartDataCreatorJob" />
     </Logger>
+    <Logger name="standardsUpdateJobLogger" level="INFO" additivity="false">
+        <AppenderRef ref="standardsUpdateJob" />
+    </Logger>
     <Logger name="certifiedProductDownloadableResourceCreatorJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="certifiedProductDownloadableResourceCreatorJob" />
     </Logger>
