@@ -5,8 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import jakarta.persistence.Query;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Repository;
@@ -33,6 +31,7 @@ import gov.healthit.chpl.domain.surveillance.SurveillanceType;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.UserPermissionRetrievalException;
 import gov.healthit.chpl.util.NullSafeEvaluator;
+import jakarta.persistence.Query;
 import lombok.extern.log4j.Log4j2;
 
 @Repository("surveillanceDAO")
@@ -41,7 +40,6 @@ public class SurveillanceDAO extends BaseDAOImpl {
     private static final String SURVEILLANCE_FULL_HQL =
             "SELECT DISTINCT surv "
             + "FROM SurveillanceEntity surv "
-            + "JOIN FETCH surv.certifiedProduct "
             + "JOIN FETCH surv.surveillanceType "
             + "LEFT OUTER JOIN FETCH surv.surveilledRequirements reqs "
             + "LEFT OUTER JOIN FETCH reqs.requirementType "
@@ -50,9 +48,9 @@ public class SurveillanceDAO extends BaseDAOImpl {
             + "LEFT OUTER JOIN FETCH ncs.type nct "
             + "WHERE surv.deleted <> true ";
 
-    public Long insertSurveillance(Surveillance surv) throws UserPermissionRetrievalException {
+    public Long insertSurveillance(Long certifiedProductId, Surveillance surv) throws UserPermissionRetrievalException {
         SurveillanceEntity toInsert = new SurveillanceEntity();
-        populateSurveillanceEntity(toInsert, surv);
+        populateSurveillanceEntity(certifiedProductId, toInsert, surv);
         toInsert.setDeleted(false);
         entityManager.persist(toInsert);
         entityManager.flush();
@@ -247,9 +245,9 @@ public class SurveillanceDAO extends BaseDAOImpl {
         }
     }
 
-    public Long updateSurveillance(Surveillance updatedSurveillance) throws EntityRetrievalException {
+    public Long updateSurveillance(Long certifiedProductId, Surveillance updatedSurveillance) throws EntityRetrievalException {
         SurveillanceEntity originalSurveillance = fetchSurveillanceById(updatedSurveillance.getId());
-        populateSurveillanceEntity(originalSurveillance, updatedSurveillance);
+        populateSurveillanceEntity(certifiedProductId, originalSurveillance, updatedSurveillance);
         originalSurveillance.setDeleted(false);
         entityManager.merge(originalSurveillance);
         entityManager.flush();
@@ -275,8 +273,10 @@ public class SurveillanceDAO extends BaseDAOImpl {
     public SurveillanceEntity getSurveillanceByCertifiedProductAndFriendlyId(Long certifiedProductId,
             String survFriendlyId) {
         Query query = entityManager.createQuery(
-                "from SurveillanceEntity surv " + "where surv.friendlyId = :friendlyId "
-                        + "and surv.certifiedProductId = :cpId " + "and surv.deleted <> true",
+                "from SurveillanceEntity surv "
+                        + "where surv.friendlyId = :friendlyId "
+                        + "and surv.certifiedProductId = :cpId "
+                        + "and surv.deleted <> true",
                 SurveillanceEntity.class);
         query.setParameter("friendlyId", survFriendlyId);
         query.setParameter("cpId", certifiedProductId);
@@ -649,10 +649,8 @@ public class SurveillanceDAO extends BaseDAOImpl {
         return result;
     }
 
-    private void populateSurveillanceEntity(SurveillanceEntity to, Surveillance from) {
-        if (from.getCertifiedProduct() != null) {
-            to.setCertifiedProductId(from.getCertifiedProduct().getId());
-        }
+    private void populateSurveillanceEntity(Long certifiedProductId, SurveillanceEntity to, Surveillance from) {
+        to.setCertifiedProductId(certifiedProductId);
         to.setEndDate(from.getEndDay());
         to.setNumRandomizedSites(from.getRandomizedSitesUsed());
         to.setStartDate(from.getStartDay());

@@ -343,8 +343,8 @@ public class ComplaintsWorksheetBuilder {
             orderedSurveillances.sort(new Comparator<Surveillance>() {
                 @Override
                 public int compare(final Surveillance o1, final Surveillance o2) {
-                    String o1CompareStr = o1.getCertifiedProduct().getChplProductNumber() + o1.getFriendlyId();
-                    String o2CompareStr = o2.getCertifiedProduct().getChplProductNumber() + o2.getFriendlyId();
+                    String o1CompareStr = o1.getCertifiedProductId() + o1.getFriendlyId();
+                    String o2CompareStr = o2.getCertifiedProductId() + o2.getFriendlyId();
                     return o1CompareStr.compareTo(o2CompareStr);
                 }
             });
@@ -352,12 +352,12 @@ public class ComplaintsWorksheetBuilder {
             // we need the dev, product, and version for each listing associated with surveillance
             // but in case listings are duplicated get the details only once
             for (Surveillance surv : orderedSurveillances) {
-                if (listingDetailsCache.get(surv.getCertifiedProduct().getId()) == null) {
+                if (listingDetailsCache.get(surv.getCertifiedProductId()) == null) {
                     try {
-                        listingDetailsCache.put(surv.getCertifiedProduct().getId(),
-                                cpdManager.getCertifiedProductDetailsBasic(surv.getCertifiedProduct().getId()));
+                        listingDetailsCache.put(surv.getCertifiedProductId(),
+                                cpdManager.getCertifiedProductDetailsBasic(surv.getCertifiedProductId()));
                     } catch (EntityRetrievalException ex) {
-                        LOGGER.error("Could not find basic details for listing " + surv.getCertifiedProduct().getId(), ex);
+                        LOGGER.error("Could not find basic details for listing " + surv.getCertifiedProductId(), ex);
                     }
                 }
             }
@@ -417,20 +417,15 @@ public class ComplaintsWorksheetBuilder {
                     addedRows++;
                 }
                 addDataCell(workbook, row, COL_CRITERIA_ID, "");
-                addDataCell(workbook, row, COL_CHPL_ID, surv.getCertifiedProduct().getChplProductNumber());
+                CertifiedProductSearchDetails cpd = listingDetailsCache.get(surv.getCertifiedProductId());
+
+                addDataCell(workbook, row, COL_CHPL_ID, cpd.getChplProductNumber());
                 addDataCell(workbook, row, COL_SURV_ID, surv.getFriendlyId());
-                // if we have the listing details print them out, otherwise print an error
-                CertifiedProductSearchDetails cpd = listingDetailsCache.get(surv.getCertifiedProduct().getId());
                 if (cpd != null) {
                     addDataCell(workbook, row, COL_DEVELOPER, cpd.getDeveloper().getName());
                     addDataCell(workbook, row, COL_PRODUCT, cpd.getProduct().getName());
                     addDataCell(workbook, row, COL_VERSION, cpd.getVersion().getVersion());
-                } else {
-                    addDataCell(workbook, row, COL_DEVELOPER, "?");
-                    addDataCell(workbook, row, COL_PRODUCT, "?");
-                    addDataCell(workbook, row, COL_VERSION, "?");
                 }
-
                 addDataCell(workbook, row, COL_SURV_NONCONFORMITY_COUNT, getNonconformityCount(surv) + "");
                 addDataCell(workbook, row, COL_SURV_NONCONFORMITY_TYPE, getNonconformityTypes(surv));
                 addDataCell(workbook, row, COL_SURV_OUTCOME, getSurveillanceOutcome(quarterlyReports, surv.getId()));

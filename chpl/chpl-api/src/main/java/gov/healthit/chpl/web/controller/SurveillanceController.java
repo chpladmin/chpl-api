@@ -30,6 +30,7 @@ import gov.healthit.chpl.exception.UserRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
+import gov.healthit.chpl.web.controller.annotation.DeprecatedApi;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -51,6 +52,9 @@ public class SurveillanceController {
         this.errorMessageUtil = errorMessageUtil;
     }
 
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/surveillance", httpMethod = "POST", removalDate = "2025-08-01",
+        message = "This endpoint is deprecated and will be removed. Please POST to /certified-products/{certifiedProductId}/surveillance")
     @Operation(summary = "Create a new surveillance activity for a certified product.",
             description = "Creates a new surveillance activity, surveilled requirements, and any applicable non-conformities "
                     + "in the system and associates them with the certified product indicated in the "
@@ -69,8 +73,8 @@ public class SurveillanceController {
         HttpHeaders responseHeaders = new HttpHeaders();
         Long insertedSurv = null;
         try {
-            insertedSurv = survManager.createSurveillance(survToInsert);
-            responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
+            insertedSurv = survManager.createSurveillance(survToInsert.getCertifiedProduct().getId(), survToInsert);
+            responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_SEARCH);
         } catch (ValidationException ex) {
             throw ex;
         }
@@ -80,6 +84,9 @@ public class SurveillanceController {
         return new ResponseEntity<Surveillance>(result, responseHeaders, HttpStatus.OK);
     }
 
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/surveillance/{surveillanceId}", httpMethod = "PUT", removalDate = "2025-08-01",
+        message = "This endpoint is deprecated and will be removed. Please PUT to /certified-products/{certifiedProductId}/surveillance/{surveillanceId}")
     @Operation(summary = "Update a surveillance activity for a certified product.",
             description = "Updates an existing surveillance activity, surveilled requirements, and any applicable "
                     + "non-conformities in the system. The surveillance passed into this request will first be "
@@ -97,8 +104,8 @@ public class SurveillanceController {
         // update the surveillance
         HttpHeaders responseHeaders = new HttpHeaders();
         try {
-            survManager.updateSurveillance(survToUpdate);
-            responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
+            survManager.updateSurveillance(survToUpdate.getCertifiedProduct().getId(), survToUpdate);
+            responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_SEARCH);
         } catch (ValidationException ex) {
             throw ex;
         }
@@ -108,6 +115,9 @@ public class SurveillanceController {
         return new ResponseEntity<Surveillance>(result, responseHeaders, HttpStatus.OK);
     }
 
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/surveillance", httpMethod = "DELETE", removalDate = "2025-08-01",
+        message = "This endpoint is deprecated and will be removed. Please DELETE from /certified-products/{certifiedProductId}/surveillance")
     @Operation(summary = "Delete a surveillance activity for a certified product.",
             description = "Deletes an existing surveillance activity, surveilled requirements, and any applicable "
                     + "non-conformities in the system. Security Restrictions: ROLE_ADMIN or ROLE_ACB and have "
@@ -130,8 +140,8 @@ public class SurveillanceController {
         }
         HttpHeaders responseHeaders = new HttpHeaders();
         // delete it
-        survManager.deleteSurveillance(survToDelete, requestBody.getReason());
-        responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
+        survManager.deleteSurveillance(survToDelete.getCertifiedProduct().getId(), survToDelete, requestBody.getReason());
+        responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_SEARCH);
         return new ResponseEntity<String>("{\"success\" : true}", responseHeaders, HttpStatus.OK);
     }
 

@@ -14,10 +14,9 @@ public class SurveillanceRequirementComparator implements Comparator<Surveillanc
     @Override
     public int compare(SurveillanceRequirement req1, SurveillanceRequirement req2) {
         if (ObjectUtils.allNotNull(req1.getRequirementType(), req2.getRequirementType())
-                && !StringUtils.isEmpty(req1.getRequirementType().getFormattedTitle())
-                && !StringUtils.isEmpty(req2.getRequirementType().getFormattedTitle())) {
-            return req1.getRequirementType().getFormattedTitle().compareTo(
-                    req2.getRequirementType().getFormattedTitle());
+                && !StringUtils.isEmpty(req1.getFormattedTitle())
+                && !StringUtils.isEmpty(req2.getFormattedTitle())) {
+            return req1.getFormattedTitle().compareTo(req2.getFormattedTitle());
         } else if (req1.getId() != null && req2.getId() != null) {
             return req1.getId().compareTo(req2.getId());
         }
