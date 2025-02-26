@@ -16,6 +16,7 @@ import gov.healthit.chpl.compliance.surveillance.SurveillanceManager;
 import gov.healthit.chpl.dao.ListingGraphDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
+import gov.healthit.chpl.domain.surveillance.SurveillanceRequirement;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import lombok.extern.log4j.Log4j2;
 
@@ -93,9 +94,19 @@ public class MissingIcsSurveillanceReviewer extends IcsErrorsReviewer {
         }
         return surveillances.stream()
                 .flatMap(surv -> surv.getRequirements().stream())
-                .filter(req -> req.getRequirementType() != null && !StringUtils.isEmpty(req.getRequirementType().getTitle()))
-                .filter(req -> req.getRequirementType().getTitle().equals(ICS_REQUIREMENT_TYPE))
+                .filter(req -> isRequirementTypeIcs(req) || isRequirementGroupTypeIcs(req))
                 .count() > 0;
 
+    }
+
+    private boolean isRequirementTypeIcs(SurveillanceRequirement req) {
+        return req.getRequirementType() != null
+                && StringUtils.equals(req.getRequirementType().getTitle(), ICS_REQUIREMENT_TYPE);
+    }
+
+    private boolean isRequirementGroupTypeIcs(SurveillanceRequirement req) {
+        return req.getRequirementType() != null
+                && req.getRequirementType().getRequirementGroupType() != null
+                && StringUtils.equals(req.getRequirementType().getRequirementGroupType().getName(), ICS_REQUIREMENT_TYPE);
     }
 }

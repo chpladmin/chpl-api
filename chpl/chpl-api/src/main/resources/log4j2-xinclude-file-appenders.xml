@@ -1,5 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Appenders>
+    <RollingFile name="standardsUpdateJob"
+        fileName="${logDir}/scheduler/standardsUpdateJob.log"
+        filePattern="${logDir}/scheduler/history/standardsUpdateJob-%d{yyyy-MM-dd}.log"
+        filePermissions="rw-rw-r--">
+        <PatternLayout>
+            <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1}:%L - %X{dd.trace_id} %X{dd.span_id} - %m%n</Pattern>
+        </PatternLayout>
+        <Policies>
+            <TimeBasedTriggeringPolicy
+                interval="1" modulate="true" />
+        </Policies>
+    </RollingFile>
     <RollingFile name="summaryStatisticsEmailJob"
         fileName="${logDir}/scheduler/summaryStatisticsEmailJob.log"
         filePattern="${logDir}/scheduler/history/summaryStatisticsEmailJob-%d{yyyy-MM-dd}.log"
@@ -823,6 +835,18 @@
     <RollingFile name="fixDatadogUrlUptimeAssertionsJob"
         fileName="${logDir}/scheduler/fixDatadogUrlUptimeAssertionsJob.log"
         filePattern="${logDir}/scheduler/history/fixDatadogUrlUptimeAssertionsJob-%d{yyyy-MM-dd}.log"
+        filePermissions="rw-rw-r--">
+        <PatternLayout>
+            <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>
+        </PatternLayout>
+        <Policies>
+            <TimeBasedTriggeringPolicy
+                interval="1" modulate="true" />
+        </Policies>
+    </RollingFile>
+    <RollingFile name="fixJobDataJob"
+        fileName="${logDir}/scheduler/fixJobDataJob.log"
+        filePattern="${logDir}/scheduler/history/fixJobDataJob-%d{yyyy-MM-dd}.log"
         filePermissions="rw-rw-r--">
         <PatternLayout>
             <Pattern>%d{ISO8601} %-5p (%t) [%C{1}(%M:%L)] %m%n</Pattern>

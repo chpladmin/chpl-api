@@ -218,16 +218,6 @@ const activityControllerTests = {
   },
 };
 
-const surveillanceControllerTests = {
-  ...commonOptions,
-  collection: collection_path + '/surveillance-controller.postman_collection.json',
-  reporter: {
-    junit: {
-      export: reports_path + '/surveillance-controller-tests.xml',
-    },
-  },
-};
-
 const changerequestsControllerTests = {
   ...commonOptions,
   collection: collection_path + '/change-requests-controller.postman_collection.json',
@@ -356,7 +346,6 @@ const jobs = [
   cb => newman.run(schedulerControllerTests,cb),
   cb => newman.run(dimensionaldataControllerTests,cb),
   cb => newman.run(surveillanceReportControllerTests,cb),
-  cb => newman.run(surveillanceControllerTests,cb),
   cb => newman.run(searchControllerTests,cb),
   cb => newman.run(searchActivityControllerTests,cb),
   cb => newman.run(searchDevelopersControllerTests,cb),

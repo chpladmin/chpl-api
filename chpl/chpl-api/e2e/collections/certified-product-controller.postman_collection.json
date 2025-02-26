@@ -1389,6 +1389,196 @@
 								"description": "GET /certified_products/10948/download - get 200 status for ACB users for listings they own regardless of listing status"
 							},
 							"response": []
+						},
+						{
+							"name": "POST /surveillance - ROLE_ACB user has access",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"ROLE_ACB user should have access to create surveillance\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "API-Key",
+										"value": "{{apiKey}}",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\"startDay\":\"2025-02-02\",\"endDay\":\"\",\"type\":{\"id\":1,\"name\":\"Reactive\",\"description\":null},\"randomizedSitesUsed\":\"\",\"reason\":\"\",\"listingId\":11329,\"requirements\":[{\"guid\":1739387293922,\"requirementGroupType\":{\"id\":5,\"name\":\"Attestations Submission\",\"description\":null},\"requirementType\":{\"id\":194,\"number\":null,\"title\":\"Semiannual Attestations Submission\",\"startDay\":null,\"endDay\":null,\"certificationEdition\":null,\"requirementGroupType\":{\"id\":5,\"name\":\"Attestations Submission\"},\"removed\":false,\"status\":\"ACTIVE\"},\"requirementTypeOther\":\"\",\"result\":{\"id\":1,\"name\":\"Non-Conformity\",\"description\":null},\"nonconformities\":[{\"guid\":1739387301161,\"capApprovalDay\":\"\",\"capEndDay\":\"\",\"capMustCompleteDay\":\"\",\"capStartDay\":\"\",\"dateOfDeterminationDay\":\"2025-02-03\",\"developerExplanation\":\"\",\"findings\":\"Test-findings\",\"nonconformityCloseDay\":\"\",\"nonconformityStatus\":\"\",\"resolution\":\"\",\"sitesPassed\":\"\",\"summary\":\"Test-summary\",\"totalSites\":\"\",\"type\":{\"id\":165,\"certificationEdition\":{\"id\":3,\"name\":\"2015\",\"retired\":false},\"number\":\"170.315 (b)(1)\",\"title\":\"Transitions of Care\",\"startDay\":\"2020-06-30\",\"endDay\":null,\"removed\":false,\"status\":\"ACTIVE\"}}]}]}"
+								},
+								"url": {
+									"raw": "{{url}}/rest/certified_products/11329/surveillance",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"rest",
+										"certified_products",
+										"11329",
+										"surveillance"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "PUT /surveillance/{surveillanceId} - ROLE_ACB user has access",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"ROLE_ACB user should have access to edit surveillance\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [
+									{
+										"key": "API-Key",
+										"value": "{{apiKey}}",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\"id\":1210,\"surveillanceIdToReplace\":null,\"friendlyId\":\"SURV01\",\"certifiedProductId\":10904,\"certifiedProduct\":{\"id\":10904,\"chplProductNumber\":\"15.04.04.3112.Canv.01.00.1.220523\",\"edition\":\"2015\",\"certificationDate\":1653264000000,\"certificationStatus\":\"Active\",\"curesUpdate\":true,\"certificationDay\":\"2022-05-23\"},\"startDay\":\"2023-05-25\",\"endDay\":\"2023-07-20\",\"type\":{\"id\":1,\"name\":\"Reactive\",\"description\":null},\"randomizedSitesUsed\":\"\",\"requirements\":[{\"id\":1976,\"requirementType\":{\"id\":179,\"number\":\"170.315 (f)(5)\",\"title\":\"Transmission to Public Health Agencies - Electronic Case Reporting\",\"startDay\":\"2020-06-30\",\"endDay\":null,\"certificationEdition\":{\"id\":3,\"name\":\"2015\",\"retired\":false},\"requirementGroupType\":{\"id\":1,\"name\":\"Certified Capability\"},\"removed\":false,\"status\":\"ACTIVE\"},\"requirementTypeOther\":null,\"result\":{\"id\":1,\"name\":\"Non-Conformity\"},\"nonconformities\":[{\"id\":1406,\"type\":{\"id\":179,\"certificationEdition\":{\"id\":3,\"name\":\"2015\",\"retired\":false},\"number\":\"170.315 (f)(5)\",\"title\":\"Transmission to Public Health Agencies - Electronic Case Reporting\",\"startDay\":\"2020-06-30\",\"endDay\":null,\"removed\":false,\"status\":\"ACTIVE\"},\"nonconformityStatus\":\"Closed\",\"dateOfDeterminationDay\":\"2023-05-24\",\"capApprovalDay\":\"\",\"capStartDay\":\"\",\"capEndDay\":\"\",\"capMustCompleteDay\":\"\",\"nonconformityCloseDay\":\"2023-07-20\",\"summary\":\"Test1\",\"findings\":\"Test2\",\"sitesPassed\":\"\",\"totalSites\":\"\",\"developerExplanation\":\"Test3\",\"resolution\":\"Test4\",\"lastModifiedDate\":1690897771212,\"guid\":1406}],\"guid\":1976}],\"errorMessages\":[],\"warningMessages\":[],\"lastModifiedDate\":1690897771212,\"reason\":\"\",\"listingId\":10904}"
+								},
+								"url": {
+									"raw": "{{url}}/rest/certified_products/10904/surveillance/1210",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"rest",
+										"certified_products",
+										"10904",
+										"surveillance",
+										"1210"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "DELETE /surveillance/{surveillanceId} - ROLE_ACB has access",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"ROLE_ACB user should have access to delete surveillance\", function () {\r",
+											"    pm.response.to.not.have.status(401);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "API-Key",
+										"value": "{{apiKey}}",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"reason\": \"Test\"\r\n}"
+								},
+								"url": {
+									"raw": "{{url}}/rest/certified_products/10904/surveillance/1367",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"rest",
+										"certified_products",
+										"10904",
+										"surveillance",
+										"1367"
+									]
+								}
+							},
+							"response": []
 						}
 					],
 					"event": [
@@ -1421,6 +1611,257 @@
 							"script": {
 								"type": "text/javascript",
 								"packages": {},
+								"exec": [
+									""
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "ROLE_ONC",
+					"item": [
+						{
+							"name": "POST /surveillance - ROLE_ONC user should get 401 status and access denied error",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"create surveillance request by ROLE_ONC user should return Status code 401\", function () {\r",
+											"    pm.response.to.have.status(401);\r",
+											"});\r"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "API-Key",
+										"value": "{{apiKey}}",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\"startDay\":\"2025-02-02\",\"endDay\":\"\",\"type\":{\"id\":1,\"name\":\"Reactive\",\"description\":null},\"randomizedSitesUsed\":\"\",\"reason\":\"\",\"listingId\":11329,\"requirements\":[{\"guid\":1739387293922,\"requirementGroupType\":{\"id\":5,\"name\":\"Attestations Submission\",\"description\":null},\"requirementType\":{\"id\":194,\"number\":null,\"title\":\"Semiannual Attestations Submission\",\"startDay\":null,\"endDay\":null,\"certificationEdition\":null,\"requirementGroupType\":{\"id\":5,\"name\":\"Attestations Submission\"},\"removed\":false,\"status\":\"ACTIVE\"},\"requirementTypeOther\":\"\",\"result\":{\"id\":1,\"name\":\"Non-Conformity\",\"description\":null},\"nonconformities\":[{\"guid\":1739387301161,\"capApprovalDay\":\"\",\"capEndDay\":\"\",\"capMustCompleteDay\":\"\",\"capStartDay\":\"\",\"dateOfDeterminationDay\":\"2025-02-03\",\"developerExplanation\":\"\",\"findings\":\"Test-findings\",\"nonconformityCloseDay\":\"\",\"nonconformityStatus\":\"\",\"resolution\":\"\",\"sitesPassed\":\"\",\"summary\":\"Test-summary\",\"totalSites\":\"\",\"type\":{\"id\":165,\"certificationEdition\":{\"id\":3,\"name\":\"2015\",\"retired\":false},\"number\":\"170.315 (b)(1)\",\"title\":\"Transitions of Care\",\"startDay\":\"2020-06-30\",\"endDay\":null,\"removed\":false,\"status\":\"ACTIVE\"}}]}]}"
+								},
+								"url": {
+									"raw": "{{url}}/rest/certified_products/11329/surveillance",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"rest",
+										"certified_products",
+										"11329",
+										"surveillance"
+									]
+								},
+								"description": "ROLE_ONC user has access to create surveillance"
+							},
+							"response": []
+						},
+						{
+							"name": "PUT /surveillance/{surveillanceId} - ROLE_ONC user should get 401 status and access denied error",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"edit surveillance request by ROLE_ONC user should return Status code 401\", function () {\r",
+											"    pm.response.to.have.status(401);\r",
+											"});\r"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [
+									{
+										"key": "API-Key",
+										"value": "{{apiKey}}",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\"id\":1210,\"surveillanceIdToReplace\":null,\"friendlyId\":\"SURV01\",\"certifiedProductId\":10904,\"certifiedProduct\":{\"id\":10904,\"chplProductNumber\":\"15.04.04.3112.Canv.01.00.1.220523\",\"edition\":\"2015\",\"certificationDate\":1653264000000,\"certificationStatus\":\"Active\",\"curesUpdate\":true,\"certificationDay\":\"2022-05-23\"},\"startDay\":\"2023-05-25\",\"endDay\":\"2023-07-20\",\"type\":{\"id\":1,\"name\":\"Reactive\",\"description\":null},\"randomizedSitesUsed\":\"\",\"requirements\":[{\"id\":1976,\"requirementType\":{\"id\":179,\"number\":\"170.315 (f)(5)\",\"title\":\"Transmission to Public Health Agencies - Electronic Case Reporting\",\"startDay\":\"2020-06-30\",\"endDay\":null,\"certificationEdition\":{\"id\":3,\"name\":\"2015\",\"retired\":false},\"requirementGroupType\":{\"id\":1,\"name\":\"Certified Capability\"},\"removed\":false,\"status\":\"ACTIVE\"},\"requirementTypeOther\":null,\"result\":{\"id\":1,\"name\":\"Non-Conformity\"},\"nonconformities\":[{\"id\":1406,\"type\":{\"id\":179,\"certificationEdition\":{\"id\":3,\"name\":\"2015\",\"retired\":false},\"number\":\"170.315 (f)(5)\",\"title\":\"Transmission to Public Health Agencies - Electronic Case Reporting\",\"startDay\":\"2020-06-30\",\"endDay\":null,\"removed\":false,\"status\":\"ACTIVE\"},\"nonconformityStatus\":\"Closed\",\"dateOfDeterminationDay\":\"2023-05-24\",\"capApprovalDay\":\"\",\"capStartDay\":\"\",\"capEndDay\":\"\",\"capMustCompleteDay\":\"\",\"nonconformityCloseDay\":\"2023-07-20\",\"summary\":\"Test1\",\"findings\":\"Test2\",\"sitesPassed\":\"\",\"totalSites\":\"\",\"developerExplanation\":\"Test3\",\"resolution\":\"Test4\",\"lastModifiedDate\":1690897771212,\"guid\":1406}],\"guid\":1976}],\"errorMessages\":[],\"warningMessages\":[],\"lastModifiedDate\":1690897771212,\"reason\":\"\",\"listingId\":10904}"
+								},
+								"url": {
+									"raw": "{{url}}/rest/certified_products/10904/surveillance/1210",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"rest",
+										"certified_products",
+										"10904",
+										"surveillance",
+										"1210"
+									]
+								},
+								"description": "ROLE_ONC user should have access to edit surveillance"
+							},
+							"response": []
+						},
+						{
+							"name": "DELETE /surveillance/{surveillanceId} - ROLE_ONC should get 401 status and access denied error",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"ROLE_ONC user should not have access to delete surveillance\", function () {\r",
+											"    pm.expect(pm.response.code).to.be.oneOf([401,400]);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "API-Key",
+										"value": "{{apiKey}}",
+										"type": "text"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"reason\": \"Test\"\r\n}"
+								},
+								"url": {
+									"raw": "{{url}}/rest/certified_products/10904/surveillance/1367",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"rest",
+										"certified_products",
+										"10904",
+										"surveillance",
+										"1367"
+									]
+								},
+								"description": "ROLE_ONC user should have access to delete surveillance"
+							},
+							"response": []
+						}
+					],
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"var ReqBody= {",
+									"        userName:pm.environment.get(\"emailONC\"),password:pm.environment.get(\"passwordONC\")",
+									"    };",
+									"pm.sendRequest({",
+									"    url: pm.environment.get(\"authurl\"),",
+									"    method: \"POST\",",
+									"    header: {",
+									"        \"Content-Type\": \"application/json\",",
+									"        \"API-KEY\": pm.environment.get(\"apiKey\")",
+									"    },",
+									"    body: JSON.stringify(ReqBody)",
+									"}, function (err, response) {",
+									"   var jsonData = response.json();",
+									"   pm.environment.set(\"token\",jsonData[pm.environment.get(\"authTokenField\")])",
+									"});"
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
 								"exec": [
 									""
 								]

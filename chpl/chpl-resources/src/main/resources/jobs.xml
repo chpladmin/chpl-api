@@ -237,6 +237,28 @@
             </job-data-map>
         </job>
 
+<<<<<<< HEAD
+=======
+        <!-- Chart data creator -->
+        <job>
+            <name>chartDataCreator</name>
+            <group>systemJobs</group>
+            <description>Generates the chart data</description>
+            <job-class>gov.healthit.chpl.scheduler.job.chartdata.ChartDataCreatorJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+        </job>
+
+        <job>
+            <name>standardsUpdateJob</name>
+            <group>systemJobs</group>
+            <description>Removes inappropriate standards from listings have have had standards changed between 2024-12-18 and 2025-01-22</description>
+            <job-class>gov.healthit.chpl.scheduler.job.onetime.StandardsUpdateJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+        </job>
+
+>>>>>>> staging
         <!-- API Key Delete Warning Job -->
         <job>
             <name>apiKeyDeleteWarningEmailJob</name>
@@ -935,6 +957,15 @@
             <group>systemJobs</group>
             <description>Fix Datadog Url Uptime Assertions Job (BEWARE - THIS JOB CAN ONLY BE RUN ONCE IN EACH DATADOG ENVIRONMENT!)</description>
             <job-class>gov.healthit.chpl.scheduler.job.urluptime.FixDatadogUrlUptimeAssertionsJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+        </job>
+        
+        <job>
+            <name>fixJobDataJob</name>
+            <group>systemJobs</group>
+            <description>Fix job data - add new Cognito Roles</description>
+            <job-class>gov.healthit.chpl.scheduler.job.onetime.jobedit.FixJobDataJob</job-class>
             <durability>true</durability>
             <recover>false</recover>
         </job>

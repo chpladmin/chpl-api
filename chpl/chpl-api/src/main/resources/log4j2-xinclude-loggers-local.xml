@@ -35,6 +35,9 @@
     <Logger name="questionableUrlReportGeneratorJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="questionableUrlReportGeneratorJob" />
     </Logger>
+    <Logger name="standardsUpdateJobLogger" level="INFO" additivity="false">
+        <AppenderRef ref="standardsUpdateJob" />
+    </Logger>
     <Logger name="certifiedProductDownloadableResourceCreatorJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="certifiedProductDownloadableResourceCreatorJob" />
     </Logger>
@@ -210,5 +213,8 @@
     </Logger>
     <Logger name="fixDatadogUrlUptimeAssertionsJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="fixDatadogUrlUptimeAssertionsJob" />
+    </Logger>
+    <Logger name="fixJobDataJobLogger" level="INFO" additivity="false">
+        <AppenderRef ref="fixJobDataJob" />
     </Logger>
 </Loggers>

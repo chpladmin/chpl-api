@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -16,6 +17,7 @@ import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
 import gov.healthit.chpl.domain.surveillance.NonconformityClassification;
 import gov.healthit.chpl.util.LocalDateDeserializer;
 import gov.healthit.chpl.util.LocalDateSerializer;
+import gov.healthit.chpl.util.NullSafeEvaluator;
 import gov.healthit.chpl.util.Util;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -27,6 +29,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @AllArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class NonconformityType implements Serializable {
 
     private static final long serialVersionUID = -7437221753188417890L;
@@ -66,6 +69,16 @@ public class NonconformityType implements Serializable {
             }
             return CriterionStatus.ACTIVE;
         }
+    }
+
+    @JsonProperty(access = Access.READ_ONLY)
+    public Boolean isRemoved() {
+        return getStatus().equals(CriterionStatus.REMOVED);
+    }
+
+    @JsonIgnore
+    public String getEdition() {
+        return NullSafeEvaluator.eval(() -> certificationEdition.getName(), null);
     }
 
     @JsonIgnore
