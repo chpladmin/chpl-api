@@ -4,12 +4,9 @@ import java.io.Serializable;
 import java.time.LocalDate;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseField;
 import gov.healthit.chpl.util.DateUtil;
 import gov.healthit.chpl.util.LocalDateDeserializer;
 import gov.healthit.chpl.util.LocalDateSerializer;
@@ -20,35 +17,15 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CertificationStatusEvent implements Serializable {
     private static final long serialVersionUID = -2498656549844148886L;
 
-
-    // This exists so that when the builder is used, we can call the setter for eventDate.  The
-    // setters keeps the attributes synchronized.  This can removed when eventDay is removed from the system.
-    // By not having eventDay in the list of params, it cannot be set via a Builder.
-    @Builder
-    public CertificationStatusEvent(Long id, Long eventDate, CertificationStatus status,
-            String reason, Long lastModifiedUser, Long lastModifiedDate) {
-        super();
-        this.id = id;
-        setEventDate(eventDate);
-        this.status = status;
-        this.reason = reason;
-        this.lastModifiedUser = lastModifiedUser;
-        this.lastModifiedDate = lastModifiedDate;
-    }
-
     @Schema(description = "Internal ID")
     private Long id;
-
-    @Deprecated
-    @DeprecatedResponseField(removalDate = "2024-04-01", message = "This field is deprecated and will be removed. Please use eventDay.")
-    @Schema(description = "The date on which a change of certification status occurred.")
-    private Long eventDate;
 
     @Schema(description = "The day on which a change of certification status occurred.")
     @JsonDeserialize(using = LocalDateDeserializer.class)
@@ -58,41 +35,17 @@ public class CertificationStatusEvent implements Serializable {
     @Schema(description = "The certification status for the listing on the eventDate.")
     private CertificationStatus status;
 
-    /**
-     * This property exists solely to be able to deserialize listing activity events from very old data.
-     * Since we care about certification status changes when categorizing listing activity we need to be able to read
-     * this value in old listing activity event data. Not all old listing properties need to be present
-     * for this reason. This property should not be visible in any response from an API call.
-     */
-    @Deprecated
-    @JsonProperty(access = Access.WRITE_ONLY)
-    private Long certificationStatusId;
-
     @Schema(description = "The user-provided reason that a change of certification status occurred.")
     private String reason;
     private Long lastModifiedUser;
     private Long lastModifiedDate;
 
+    //this setter remains for parsing old activity which did not always have the "eventDay" field
     @Deprecated
     public void setEventDate(Long eventDate) {
-        this.eventDate = eventDate;
-        if (eventDate != null) {
-            this.eventDay = DateUtil.toLocalDate(eventDate);
-        }
+        this.eventDay = DateUtil.toLocalDate(eventDate);
     }
 
-    public void setEventDay(LocalDate eventDay) {
-        this.eventDay = eventDay;
-        this.eventDate = DateUtil.toEpochMillis(eventDay);
-    }
-
-    /**
-     * Check to see if this CSE matches another one.
-     *
-     * @param other
-     *            CSE to check against
-     * @return true if the IDs match
-     */
     public boolean matches(CertificationStatusEvent other) {
         boolean result = false;
 

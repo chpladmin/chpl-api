@@ -40,7 +40,7 @@ public class CertificationStatusReviewer implements Reviewer {
 
     private void doStatusesRepeat(CertifiedProductSearchDetails listing) {
         List<CertificationStatusEvent> sortedStatusEvents = listing.getCertificationEvents().stream()
-                .sorted((o1, o2) -> o1.getEventDate().compareTo(o2.getEventDate()))
+                .sorted((o1, o2) -> o1.getEventDay().compareTo(o2.getEventDay()))
                 .collect(Collectors.toList());
 
         CertificationStatusEvent lastStatusEvent = null;

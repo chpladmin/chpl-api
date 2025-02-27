@@ -1,10 +1,7 @@
 package gov.healthit.chpl.scheduler.surveillance.rules;
 
-import java.time.Instant;
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
-import java.util.List;
 
 import org.springframework.stereotype.Component;
 
@@ -31,23 +28,12 @@ public class CapClosedComplianceChecker implements RuleComplianceChecker {
                                 .equals(CertificationStatusType.WithdrawnByDeveloper.getName())
                         || cp.getCurrentStatus().getStatus().getName()
                                 .equals(CertificationStatusType.WithdrawnByDeveloperUnderReview.getName()))) {
-            List<CertificationStatusEvent> statusEvents = cp.getCertificationEvents();
-            // find the most recent one
-            CertificationStatusEvent mostRecent = null;
-            for (CertificationStatusEvent statusEvent : statusEvents) {
-                if (mostRecent == null
-                        || (statusEvent.getEventDate().longValue() > mostRecent.getEventDate().longValue())) {
-                    mostRecent = statusEvent;
-                }
-            }
 
-            if (mostRecent != null) {
-                LocalDate statusDate = LocalDate.ofInstant(Instant.ofEpochMilli(mostRecent.getEventDate()),
-                        ZoneId.systemDefault());
-                long numDays = ChronoUnit.DAYS.between(statusDate, LocalDate.now());
-                if (numDays > getNumDaysAllowed()) {
-                    result = statusDate.plusDays(getNumDaysAllowed() + 1);
-                }
+            CertificationStatusEvent currentStatusEvent = cp.getCurrentStatus();
+            LocalDate currentStatusDate = currentStatusEvent.getEventDay();
+            long numDays = ChronoUnit.DAYS.between(currentStatusDate, LocalDate.now());
+            if (numDays > getNumDaysAllowed()) {
+                result = currentStatusDate.plusDays(getNumDaysAllowed() + 1);
             }
         }
         return result;

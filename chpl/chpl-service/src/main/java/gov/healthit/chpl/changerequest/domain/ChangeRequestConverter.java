@@ -148,12 +148,11 @@ public final class ChangeRequestConverter {
         crDev.setAddress(address);
         PointOfContact contact = null;
         if (entity.getContactFullName() != null || entity.getContactEmail() != null
-                || entity.getContactPhoneNumber() != null || entity.getContactTitle() != null) {
+                || entity.getContactPhoneNumber() != null) {
             contact = new PointOfContact();
             contact.setFullName(entity.getContactFullName());
             contact.setEmail(entity.getContactEmail());
             contact.setPhoneNumber(entity.getContactPhoneNumber());
-            contact.setTitle(entity.getContactTitle());
         }
         crDev.setContact(contact);
         return crDev;

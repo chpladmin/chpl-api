@@ -50,6 +50,7 @@ import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.manager.ProductManager;
 import gov.healthit.chpl.manager.ProductVersionManager;
 import gov.healthit.chpl.standard.CertificationResultStandardDAO;
+import gov.healthit.chpl.util.DateUtil;
 import jakarta.transaction.Transactional;
 import lombok.extern.log4j.Log4j2;
 
@@ -357,7 +358,7 @@ public class ListingConfirmationManager {
             throws EntityCreationException {
         Date certificationDate = new Date(listing.getCertificationDate());
         CertificationStatusEvent certEvent = CertificationStatusEvent.builder()
-                .eventDate(certificationDate.getTime())
+                .eventDay(DateUtil.toLocalDate(certificationDate.getTime()))
                 .status(activeStatus)
                 .build();
         statusEventDao.create(listing.getId(), certEvent);

@@ -387,7 +387,6 @@ public class DeveloperDAO extends BaseDAOImpl {
                         .email(qr.getEmail())
                         .fullName(qr.getFullName())
                         .phoneNumber(qr.getPhoneNumber())
-                        .title(qr.getTitle())
                         .build())
                 .toList();
     }

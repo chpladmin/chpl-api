@@ -136,7 +136,6 @@ public class CertifiedProductDetailsDTO implements Serializable {
             developerContact.setFullName(entity.getFullName());
             developerContact.setEmail(entity.getEmail());
             developerContact.setPhoneNumber(entity.getPhoneNumber());
-            developerContact.setTitle(entity.getTitle());
             this.developer.setContact(developerContact);
         }
 
@@ -226,7 +225,6 @@ public class CertifiedProductDetailsDTO implements Serializable {
             developerContact.setFullName(entity.getFullName());
             developerContact.setEmail(entity.getEmail());
             developerContact.setPhoneNumber(entity.getPhoneNumber());
-            developerContact.setTitle(entity.getTitle());
             this.developer.setContact(developerContact);
         }
 

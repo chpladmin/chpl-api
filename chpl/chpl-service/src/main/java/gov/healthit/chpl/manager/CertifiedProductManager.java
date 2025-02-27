@@ -896,7 +896,7 @@ public class CertifiedProductManager extends SecuredManager {
             CertificationStatusEvent certificationEvent = statusEventDao
                     .findInitialCertificationEventForCertifiedProduct(listingId);
             if (certificationEvent != null) {
-                certificationEvent.setEventDate(newCertDate.getTime());
+                certificationEvent.setEventDay(DateUtil.toLocalDate(newCertDate.getTime()));
                 statusEventDao.update(listingId, certificationEvent);
             }
         }
@@ -923,7 +923,7 @@ public class CertifiedProductManager extends SecuredManager {
         numChanges = statusEventsToAdd.size() + idsToRemove.size();
         for (CertificationStatusEvent toAdd : statusEventsToAdd) {
             CertificationStatusEvent statusEventToAdd = CertificationStatusEvent.builder()
-                    .eventDate(toAdd.getEventDate())
+                    .eventDay(toAdd.getEventDay())
                     .reason(toAdd.getReason())
                     .build();
             statusEventToAdd.setReason(toAdd.getReason());

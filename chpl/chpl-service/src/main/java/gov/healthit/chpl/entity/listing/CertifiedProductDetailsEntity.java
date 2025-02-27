@@ -3,6 +3,8 @@ package gov.healthit.chpl.entity.listing;
 import java.time.LocalDate;
 import java.util.Date;
 
+import gov.healthit.chpl.domain.CertifiedProduct;
+import gov.healthit.chpl.entity.ProductEntity;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -11,9 +13,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-
-import gov.healthit.chpl.domain.CertifiedProduct;
-import gov.healthit.chpl.entity.ProductEntity;
 import lombok.Data;
 
 @Entity
@@ -188,9 +187,6 @@ public class CertifiedProductDetailsEntity {
 
     @Column(name = "phone_number")
     private String phoneNumber;
-
-    @Column(name = "title")
-    private String title;
 
     @Column(name = "creation_date")
     private Date creationDate;

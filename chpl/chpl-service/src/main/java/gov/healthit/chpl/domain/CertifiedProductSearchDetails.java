@@ -352,7 +352,7 @@ public class CertifiedProductSearchDetails implements Serializable {
 
         CertificationStatusEvent oldest = this.getCertificationEvents().get(0);
         for (CertificationStatusEvent event : this.getCertificationEvents()) {
-            if (event.getEventDate() < oldest.getEventDate()) {
+            if (event.getEventDay().isBefore(oldest.getEventDay())) {
                 oldest = event;
             }
         }
@@ -378,7 +378,7 @@ public class CertifiedProductSearchDetails implements Serializable {
         if (result == null) {
             return null;
         }
-        return result.getEventDate();
+        return DateUtil.toEpochMillis(result.getEventDay());
     }
 
     @Schema(description = "Certification day")
@@ -408,6 +408,7 @@ public class CertifiedProductSearchDetails implements Serializable {
         // first we need to make sure the status events are in ascending order
         this.getCertificationEvents().sort(new CertificationStatusEventComparator());
 
+        LocalDate dateInQuestion = DateUtil.toLocalDate(date.getTime());
         CertificationStatusEvent result = null;
         for (int i = 0; i < this.getCertificationEvents().size() && result == null; i++) {
             CertificationStatusEvent currEvent = this.getCertificationEvents().get(i);
@@ -415,8 +416,10 @@ public class CertifiedProductSearchDetails implements Serializable {
                 CertificationStatusEvent nextEvent = this.getCertificationEvents().get(i + 1);
                 // if the passed-in date is between currEvent and nextEvent then the currEvent
                 // gives the status on the passed-in date.
-                if (currEvent.getEventDate() != null && currEvent.getEventDate().longValue() <= date.getTime()
-                        && nextEvent.getEventDate() != null && nextEvent.getEventDate().longValue() > date.getTime()) {
+                if (currEvent.getEventDay() != null
+                        && (currEvent.getEventDay().isBefore(dateInQuestion) || currEvent.getEventDay().isEqual(dateInQuestion))
+                        && nextEvent.getEventDay() != null
+                        && nextEvent.getEventDay().isAfter(dateInQuestion)) {
                     result = currEvent;
                 }
             } else {

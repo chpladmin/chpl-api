@@ -1,13 +1,10 @@
 package gov.healthit.chpl.dao;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
-import jakarta.persistence.Query;
 
 import org.springframework.stereotype.Repository;
 
@@ -16,6 +13,8 @@ import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.entity.listing.CertificationStatusEventEntity;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.util.DateUtil;
+import jakarta.persistence.Query;
 
 @Repository("certificationStatusEventDAO")
 public class CertificationStatusEventDAO extends BaseDAOImpl {
@@ -25,7 +24,7 @@ public class CertificationStatusEventDAO extends BaseDAOImpl {
             CertificationStatusEventEntity entity = new CertificationStatusEventEntity();
             entity.setCertifiedProductId(listingId);
             entity.setCertificationStatusId(cse.getStatus().getId());
-            entity.setEventDate(new Date(cse.getEventDate()));
+            entity.setEventDate(DateUtil.toDate(cse.getEventDay()));
             entity.setReason(cse.getReason());
             entity.setDeleted(false);
             create(entity);
@@ -43,7 +42,7 @@ public class CertificationStatusEventDAO extends BaseDAOImpl {
         }
         entity.setCertifiedProductId(listingId);
         entity.setCertificationStatusId(cse.getStatus().getId());
-        entity.setEventDate(new Date(cse.getEventDate()));
+        entity.setEventDate(DateUtil.toDate(cse.getEventDay()));
         entity.setReason(cse.getReason());
 
         update(entity);

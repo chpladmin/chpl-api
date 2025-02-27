@@ -20,6 +20,7 @@ import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.permissions.ChplResourcePermissions;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
+import gov.healthit.chpl.util.DateUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 @SuppressWarnings("checkstyle:MethodName")
@@ -433,7 +434,7 @@ public class ListingStatusAndUserRoleReviewerTest {
             throws ParseException {
         return Stream.of(CertificationStatusEvent.builder()
                 .id(eventId)
-                .eventDate(sdf.parse(date).getTime())
+                .eventDay(DateUtil.toLocalDate(sdf.parse(date).getTime()))
                 .status(certificationStatusProvider.get(statusId))
                 .build()).collect(Collectors.toList());
     }

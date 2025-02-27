@@ -63,6 +63,7 @@ import gov.healthit.chpl.qmsStandard.QmsStandardDAO;
 import gov.healthit.chpl.scheduler.job.certificationStatus.TransactionalDeveloperBanHelper;
 import gov.healthit.chpl.sharedstore.listing.ListingIcsSharedStoreHandler;
 import gov.healthit.chpl.upload.listing.normalizer.ListingDetailsNormalizer;
+import gov.healthit.chpl.util.DateUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.validation.listing.ListingValidatorFactory;
 import gov.healthit.chpl.validation.listing.Validator;
@@ -227,7 +228,7 @@ public class CertifiedProductManagerTest {
                 .certificationDate(cal1.getTime().getTime())
                 .edition(CertificationEdition.builder().id(3L).name("2015").build())
                 .certificationEvents(Stream.of(CertificationStatusEvent.builder()
-                        .eventDate(cal1.getTime().getTime())
+                        .eventDay(DateUtil.toLocalDate(cal1.getTimeInMillis()))
                         .id(1L)
                         .status(CertificationStatus.builder()
                                 .id(1L)
