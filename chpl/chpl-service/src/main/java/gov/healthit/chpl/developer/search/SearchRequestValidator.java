@@ -92,7 +92,7 @@ public class SearchRequestValidator {
             try {
                 LocalDate.parse(decertificationDateStart, dateFormatter);
             } catch (DateTimeParseException ex) {
-                errors.add(msgUtil.getMessage("search.developer.decertificationDate.invalid", decertificationDateStart, DeveloperSearchRequestV2.DATE_SEARCH_FORMAT));
+                errors.add(msgUtil.getMessage("search.developer.decertificationDate.invalid", decertificationDateStart, DeveloperSearchRequest.DATE_SEARCH_FORMAT));
             }
         }
 
@@ -100,7 +100,7 @@ public class SearchRequestValidator {
             try {
                 LocalDate.parse(decertificationDateEnd, dateFormatter);
             } catch (DateTimeParseException ex) {
-                errors.add(msgUtil.getMessage("search.developer.decertificationDate.invalid", decertificationDateEnd, DeveloperSearchRequestV2.DATE_SEARCH_FORMAT));
+                errors.add(msgUtil.getMessage("search.developer.decertificationDate.invalid", decertificationDateEnd, DeveloperSearchRequest.DATE_SEARCH_FORMAT));
             }
         }
 
@@ -220,8 +220,8 @@ public class SearchRequestValidator {
     }
 
     private Set<String> getPageSizeErrors(Integer pageSize) {
-        if (pageSize != null && pageSize > DeveloperSearchRequestV2.MAX_PAGE_SIZE) {
-            return Stream.of(msgUtil.getMessage("search.pageSize.invalid", DeveloperSearchRequestV2.MAX_PAGE_SIZE))
+        if (pageSize != null && pageSize > DeveloperSearchRequest.MAX_PAGE_SIZE) {
+            return Stream.of(msgUtil.getMessage("search.pageSize.invalid", DeveloperSearchRequest.MAX_PAGE_SIZE))
                     .collect(Collectors.toSet());
         }
         return Collections.emptySet();

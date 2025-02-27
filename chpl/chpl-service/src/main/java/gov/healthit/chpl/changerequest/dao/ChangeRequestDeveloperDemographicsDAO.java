@@ -47,7 +47,6 @@ public class ChangeRequestDeveloperDemographicsDAO extends BaseDAOImpl {
             entity.setContactFullName(crDev.getContact().getFullName());
             entity.setContactEmail(crDev.getContact().getEmail());
             entity.setContactPhoneNumber(crDev.getContact().getPhoneNumber());
-            entity.setContactTitle(crDev.getContact().getTitle());
         }
         update(entity);
         return ChangeRequestConverter.convert(getEntity(entity.getId()));
@@ -55,7 +54,7 @@ public class ChangeRequestDeveloperDemographicsDAO extends BaseDAOImpl {
 
     private ChangeRequestDeveloperDemographicsEntity getNewEntity(ChangeRequest cr, ChangeRequestDeveloperDemographics crDev) {
         ChangeRequestDeveloperDemographicsEntity entity = new ChangeRequestDeveloperDemographicsEntity();
-        entity.setChangeRequest(getSession().load(ChangeRequestEntity.class, cr.getId()));
+        entity.setChangeRequest(getSession().get(ChangeRequestEntity.class, cr.getId()));
         if (crDev.getSelfDeveloper() != null) {
             entity.setSelfDeveloper(crDev.getSelfDeveloper());
         }
@@ -72,7 +71,6 @@ public class ChangeRequestDeveloperDemographicsDAO extends BaseDAOImpl {
             entity.setContactFullName(crDev.getContact().getFullName());
             entity.setContactEmail(crDev.getContact().getEmail());
             entity.setContactPhoneNumber(crDev.getContact().getPhoneNumber());
-            entity.setContactTitle(crDev.getContact().getTitle());
         }
         entity.setDeleted(false);
         return entity;

@@ -307,16 +307,6 @@ public class UserManagementController {
             validationErrors.add(msgUtil.getMessage("user.fullName.maxlength",
                     msgUtil.getMessageAsInteger("maxLength.fullName")));
         }
-        if (!StringUtils.isEmpty(request.getUser().getFriendlyName())
-                && request.getUser().getFriendlyName().length() > msgUtil.getMessageAsInteger("maxLength.friendlyName")) {
-            validationErrors.add(msgUtil.getMessage("user.friendlyName.maxlength",
-                    msgUtil.getMessageAsInteger("maxLength.friendlyName")));
-        }
-        if (!StringUtils.isEmpty(request.getUser().getTitle())
-                && request.getUser().getTitle().length() > msgUtil.getMessageAsInteger("maxLength.title")) {
-            validationErrors.add(msgUtil.getMessage("user.title.maxlength",
-                    msgUtil.getMessageAsInteger("maxLength.title")));
-        }
         if (request.getUser().getEmail().length() > msgUtil.getMessageAsInteger("maxLength.email")) {
             validationErrors.add(msgUtil.getMessage("user.email.maxlength",
                     msgUtil.getMessageAsInteger("maxLength.email")));

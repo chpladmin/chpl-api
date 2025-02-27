@@ -3,14 +3,13 @@ package gov.healthit.chpl.entity.listing;
 import java.time.LocalDate;
 import java.util.Date;
 
+import org.hibernate.annotations.Immutable;
+
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-
-import org.hibernate.annotations.Immutable;
-
 import lombok.Data;
 
 @Entity
@@ -177,9 +176,6 @@ public class CertifiedProductDetailsEntitySimple {
 
     @Column(name = "phone_number")
     private String phoneNumber;
-
-    @Column(name = "title")
-    private String title;
 
     @Column(name = "creation_date")
     private Date creationDate;

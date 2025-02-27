@@ -29,7 +29,6 @@ public class DeveloperTree extends Developer {
         this.setLastModifiedDate(developer.getLastModifiedDate());
         this.setName(developer.getName());
         this.setSelfDeveloper(developer.getSelfDeveloper());
-        this.setStatusEvents(developer.getStatusEvents());
         this.setStatuses(developer.getStatuses());
         this.setWebsite(developer.getWebsite());
     }

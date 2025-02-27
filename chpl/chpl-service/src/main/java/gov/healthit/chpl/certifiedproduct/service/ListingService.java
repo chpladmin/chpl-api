@@ -52,6 +52,7 @@ import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.manager.DimensionalDataManager;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
+import gov.healthit.chpl.util.DateUtil;
 import lombok.extern.log4j.Log4j2;
 
 @Component
@@ -287,7 +288,7 @@ public class ListingService {
         }
         CertificationStatusEvent cse = certificationStatusEventsService.getInitialCertificationEvent(dto.getId());
         if (cse != null) {
-            cp.setCertificationDate(cse.getEventDate());
+            cp.setCertificationDate(DateUtil.toDate(cse.getEventDay()).getTime());
         } else {
             cp.setCertificationDate(-1);
         }
