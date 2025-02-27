@@ -17,7 +17,6 @@ import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.questionableactivity.domain.QuestionableActivityListing;
-import gov.healthit.chpl.util.DateUtil;
 
 public class NonActiveCertificateEditedActivityTest {
 
@@ -31,7 +30,7 @@ public class NonActiveCertificateEditedActivityTest {
     @Test
     public void check_activeStatusUnchanged_noActivitiesReturned() {
         CertificationStatusEvent activeStatusEvent = CertificationStatusEvent.builder()
-                .eventDate(System.currentTimeMillis())
+                .eventDay(LocalDate.now())
                 .status(CertificationStatus.builder()
                         .name(CertificationStatusType.Active.getName())
                         .build())
@@ -49,7 +48,7 @@ public class NonActiveCertificateEditedActivityTest {
     @Test
     public void check_suspendedByAcbStatusUnchanged_noActivitiesReturned() {
         CertificationStatusEvent activeStatusEvent = CertificationStatusEvent.builder()
-                .eventDate(System.currentTimeMillis())
+                .eventDay(LocalDate.now())
                 .status(CertificationStatus.builder()
                         .name(CertificationStatusType.SuspendedByAcb.getName())
                         .build())
@@ -67,7 +66,7 @@ public class NonActiveCertificateEditedActivityTest {
     @Test
     public void check_suspendedByOncStatusUnchanged_noActivitiesReturned() {
         CertificationStatusEvent activeStatusEvent = CertificationStatusEvent.builder()
-                .eventDate(System.currentTimeMillis())
+                .eventDay(LocalDate.now())
                 .status(CertificationStatus.builder()
                         .name(CertificationStatusType.SuspendedByOnc.getName())
                         .build())
@@ -85,14 +84,14 @@ public class NonActiveCertificateEditedActivityTest {
     @Test
     public void check_activeStatusOriginalAndInactiveStatusUpdate_noActivitiesReturned() {
         CertificationStatusEvent activeStatusEvent = CertificationStatusEvent.builder()
-                .eventDate(System.currentTimeMillis())
+                .eventDay(LocalDate.now())
                 .status(CertificationStatus.builder()
                         .name(CertificationStatusType.Active.getName())
                         .build())
                 .build();
 
         CertificationStatusEvent inactiveStatusEvent = CertificationStatusEvent.builder()
-                .eventDate(System.currentTimeMillis() + 1000)
+                .eventDay(LocalDate.now().plusDays(1))
                 .status(CertificationStatus.builder()
                         .name(CertificationStatusType.WithdrawnByAcb.getName())
                         .build())
@@ -113,14 +112,14 @@ public class NonActiveCertificateEditedActivityTest {
         LocalDate yesterday = LocalDate.now().minusDays(1);
 
         CertificationStatusEvent activeStatusEvent = CertificationStatusEvent.builder()
-                .eventDate(DateUtil.toEpochMillis(twoDaysAgo))
+                .eventDay(twoDaysAgo)
                 .status(CertificationStatus.builder()
                         .name(CertificationStatusType.Active.getName())
                         .build())
                 .build();
 
         CertificationStatusEvent inactiveStatusEvent = CertificationStatusEvent.builder()
-                .eventDate(DateUtil.toEpochMillis(yesterday))
+                .eventDay(yesterday)
                 .status(CertificationStatus.builder()
                         .name(CertificationStatusType.WithdrawnByAcb.getName())
                         .build())

@@ -27,8 +27,8 @@ public class PointOfContact extends Person {
     }
 
     @Builder
-    public PointOfContact(String fullName, String email, String phoneNumber, String title, Long contactId) {
-        super(fullName, email, phoneNumber, title);
+    public PointOfContact(String fullName, String email, String phoneNumber, Long contactId) {
+        super(fullName, email, phoneNumber);
         this.contactId = contactId;
     }
 
@@ -47,7 +47,6 @@ public class PointOfContact extends Person {
         this.setFullName(StringUtils.normalizeSpace(this.getFullName()));
         this.setEmail(StringUtils.normalizeSpace(this.getEmail()));
         this.setPhoneNumber(StringUtils.normalizeSpace(this.getPhoneNumber()));
-        this.setTitle(StringUtils.normalizeSpace(this.getTitle()));
     }
 
     @Override

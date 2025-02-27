@@ -23,6 +23,7 @@ import gov.healthit.chpl.domain.ListingUpdateRequest;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.scheduler.SchedulerSecurityContextService;
+import gov.healthit.chpl.util.DateUtil;
 
 public class UpdateListingStatusJob extends QuartzJob {
     private static final Logger LOGGER = LogManager.getLogger("updateListingStatusJobLogger");
@@ -71,7 +72,7 @@ public class UpdateListingStatusJob extends QuartzJob {
     private CertificationStatusEvent getCertifiectionStatusEvent(CertificationStatus cs, Date effectiveDate) {
         CertificationStatusEvent cse = new CertificationStatusEvent();
         cse.setStatus(cs);
-        cse.setEventDate(effectiveDate.getTime());
+        cse.setEventDay(DateUtil.toLocalDate(effectiveDate.getTime()));
 
         return cse;
     }

@@ -4,6 +4,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -30,7 +31,7 @@ public class UpdatedCertificationStatusHistoryActivityTest {
     @Test
     public void check_noCertificationStatusEventChanges_noActivitiesReturned() {
         CertificationStatusEvent activeStatusEvent = CertificationStatusEvent.builder()
-                .eventDate(1568592000000L)
+                .eventDay(LocalDate.parse("2019-09-15"))
                 .id(18469L)
                 .status(CertificationStatus.builder()
                         .name(CertificationStatusType.Active.getName())
@@ -53,14 +54,14 @@ public class UpdatedCertificationStatusHistoryActivityTest {
     @Test
     public void check_activeListingIsWithdrawn_noActivitiesReturned() {
         CertificationStatusEvent activeStatusEvent = CertificationStatusEvent.builder()
-                .eventDate(1568592000000L)
+                .eventDay(LocalDate.parse("2019-09-15"))
                 .id(18469L)
                 .status(CertificationStatus.builder()
                         .name(CertificationStatusType.Active.getName())
                         .build())
                 .build();
         CertificationStatusEvent withdrawnStatusEvent = CertificationStatusEvent.builder()
-                .eventDate(1640930400000L)
+                .eventDay(LocalDate.parse("2021-12-31"))
                 .id(25323L)
                 .status(CertificationStatus.builder()
                         .id(2L)
@@ -84,7 +85,7 @@ public class UpdatedCertificationStatusHistoryActivityTest {
     @Test
     public void check_withdrawnListingNoChanges_noActivitiesReturned() {
         CertificationStatusEvent activeStatusEvent = CertificationStatusEvent.builder()
-                .eventDate(1592870400000L)
+                .eventDay(LocalDate.parse("2020-06-22"))
                 .id(18469L)
                 .status(CertificationStatus.builder()
                         .id(1L)
@@ -92,7 +93,7 @@ public class UpdatedCertificationStatusHistoryActivityTest {
                         .build())
                 .build();
         CertificationStatusEvent withdrawnStatusEvent = CertificationStatusEvent.builder()
-                .eventDate(1671080400000L)
+                .eventDay(LocalDate.parse("2022-12-15"))
                 .id(25323L)
                 .status(CertificationStatus.builder()
                         .id(2L)
@@ -116,14 +117,14 @@ public class UpdatedCertificationStatusHistoryActivityTest {
     @Test
     public void check_withdrawnListingisRetired_noActivitiesReturned() {
         CertificationStatusEvent activeStatusEvent = CertificationStatusEvent.builder()
-                .eventDate(1568592000000L)
+                .eventDay(LocalDate.parse("2019-09-15"))
                 .id(18469L)
                 .status(CertificationStatus.builder()
                         .name(CertificationStatusType.Active.getName())
                         .build())
                 .build();
         CertificationStatusEvent withdrawnStatusEvent = CertificationStatusEvent.builder()
-                .eventDate(1640930400000L)
+                .eventDay(LocalDate.parse("2021-12-31"))
                 .id(25323L)
                 .status(CertificationStatus.builder()
                         .id(2L)
@@ -131,7 +132,7 @@ public class UpdatedCertificationStatusHistoryActivityTest {
                         .build())
                 .build();
         CertificationStatusEvent retiredStatusEvent = CertificationStatusEvent.builder()
-                .eventDate(1641930400000L)
+                .eventDay(LocalDate.parse("2022-01-11"))
                 .id(25340L)
                 .status(CertificationStatus.builder()
                         .id(3L)
@@ -155,14 +156,14 @@ public class UpdatedCertificationStatusHistoryActivityTest {
     @Test
     public void check_activeListingCertificationDateChanged_noActivitiesReturned() {
         CertificationStatusEvent activeStatusEvent = CertificationStatusEvent.builder()
-                .eventDate(1568592000000L)
+                .eventDay(LocalDate.parse("2019-09-15"))
                 .id(18469L)
                 .status(CertificationStatus.builder()
                         .name(CertificationStatusType.Active.getName())
                         .build())
                 .build();
         CertificationStatusEvent updatedActiveStatusEvent = CertificationStatusEvent.builder()
-                .eventDate(1640930400000L)
+                .eventDay(LocalDate.parse("2021-12-31"))
                 .id(25323L)
                 .status(CertificationStatus.builder()
                         .name(CertificationStatusType.Active.getName())
@@ -185,7 +186,7 @@ public class UpdatedCertificationStatusHistoryActivityTest {
     @Test
     public void check_addsStatusEventBetweenTwoExistingStatusEvents_activityReturned() {
         CertificationStatusEvent activeStatusEvent = CertificationStatusEvent.builder()
-                .eventDate(1568592000000L)
+                .eventDay(LocalDate.parse("2019-09-15"))
                 .id(18469L)
                 .status(CertificationStatus.builder()
                         .id(1L)
@@ -194,7 +195,7 @@ public class UpdatedCertificationStatusHistoryActivityTest {
                 .build();
 
         CertificationStatusEvent retiredStatusEvent = CertificationStatusEvent.builder()
-                .eventDate(1641030400000L)
+                .eventDay(LocalDate.parse("2022-01-01"))
                 .id(25324L)
                 .status(CertificationStatus.builder()
                         .id(3L)
@@ -203,7 +204,7 @@ public class UpdatedCertificationStatusHistoryActivityTest {
                 .build();
 
         CertificationStatusEvent withdrawnStatusEvent = CertificationStatusEvent.builder()
-                .eventDate(1640930400000L)
+                .eventDay(LocalDate.parse("2021-12-31"))
                 .id(25323L)
                 .status(CertificationStatus.builder()
                         .id(2L)
@@ -231,7 +232,7 @@ public class UpdatedCertificationStatusHistoryActivityTest {
     @Test
     public void check_existingHistoryWithdrawnDateChanges_activityReturned() {
         CertificationStatusEvent activeStatusEvent = CertificationStatusEvent.builder()
-                .eventDate(1568577600000L)
+                .eventDay(LocalDate.parse("2019-09-15"))
                 .id(18469L)
                 .status(CertificationStatus.builder()
                         .id(1L)
@@ -240,7 +241,7 @@ public class UpdatedCertificationStatusHistoryActivityTest {
                 .build();
 
         CertificationStatusEvent withdrawnStatusEvent = CertificationStatusEvent.builder()
-                .eventDate(1640930400000L)
+                .eventDay(LocalDate.parse("2021-12-31"))
                 .id(25323L)
                 .status(CertificationStatus.builder()
                         .id(2L)
@@ -249,7 +250,7 @@ public class UpdatedCertificationStatusHistoryActivityTest {
                 .build();
 
         CertificationStatusEvent updatedWithdrawnStatusEvent = CertificationStatusEvent.builder()
-                .eventDate(1640816000000L)
+                .eventDay(LocalDate.parse("2021-12-29"))
                 .id(25324L)
                 .status(CertificationStatus.builder()
                         .id(2L)
@@ -278,7 +279,7 @@ public class UpdatedCertificationStatusHistoryActivityTest {
     @Test
     public void check_historyAddedForWithdrawnThenRetired_activityReturned() {
         CertificationStatusEvent activeStatusEvent = CertificationStatusEvent.builder()
-                .eventDate(1568577600000L)
+                .eventDay(LocalDate.parse("2019-09-15"))
                 .id(18469L)
                 .status(CertificationStatus.builder()
                         .id(1L)
@@ -287,7 +288,7 @@ public class UpdatedCertificationStatusHistoryActivityTest {
                 .build();
 
         CertificationStatusEvent withdrawnStatusEvent = CertificationStatusEvent.builder()
-                .eventDate(1640816000000L)
+                .eventDay(LocalDate.parse("2021-12-29"))
                 .id(25323L)
                 .status(CertificationStatus.builder()
                         .id(2L)
@@ -296,7 +297,7 @@ public class UpdatedCertificationStatusHistoryActivityTest {
                 .build();
 
         CertificationStatusEvent retiredStatusEvent = CertificationStatusEvent.builder()
-                .eventDate(1640930400000L)
+                .eventDay(LocalDate.parse("2021-12-31"))
                 .id(25324L)
                 .status(CertificationStatus.builder()
                         .id(3L)

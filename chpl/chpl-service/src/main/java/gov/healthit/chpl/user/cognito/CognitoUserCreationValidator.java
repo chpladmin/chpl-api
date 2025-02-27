@@ -70,10 +70,8 @@ public class CognitoUserCreationValidator {
 
     private void normalizeSpacesInUserInfo(CreateUserFromInvitationRequest userInfo) {
         userInfo.getUser().setEmail(StringUtils.normalizeSpace(userInfo.getUser().getEmail()));
-        userInfo.getUser().setFriendlyName(StringUtils.normalizeSpace(userInfo.getUser().getFriendlyName()));
         userInfo.getUser().setFullName(StringUtils.normalizeSpace(userInfo.getUser().getFullName()));
         userInfo.getUser().setPhoneNumber(StringUtils.normalizeSpace(userInfo.getUser().getPhoneNumber()));
-        userInfo.getUser().setTitle(StringUtils.normalizeSpace(userInfo.getUser().getTitle()));
     }
 
     private Boolean isInvitationExpired(UUID token) {

@@ -1,8 +1,7 @@
 package gov.healthit.chpl.scheduler.job;
 
-import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -240,13 +239,11 @@ public class BrokenSurveillanceRulesCreatorJob extends QuartzJob {
         base.setUrl(productDetailsUrl);
 
         base.setCertificationStatus(listing.getCurrentStatus().getStatus().getName());
-        Long lastCertificationChangeMillis = listing.getCurrentStatus().getEventDate();
-        if (lastCertificationChangeMillis.longValue() == listing.getCertificationDate().longValue()) {
+        LocalDate lastCertificationStatusChangeDay = listing.getCurrentStatus().getEventDay();
+        if (lastCertificationStatusChangeDay.isEqual(listing.getCertificationDay())) {
             base.setDateOfLastStatusChange("No status change");
         } else {
-            LocalDateTime lastStatusChangeDate = LocalDateTime
-                    .ofInstant(Instant.ofEpochMilli(lastCertificationChangeMillis), ZoneId.systemDefault());
-            base.setDateOfLastStatusChange(dateFormatter.format(lastStatusChangeDate));
+            base.setDateOfLastStatusChange(dateFormatter.format(lastCertificationStatusChangeDay));
         }
         List<OversightRuleResult> result = ruleComplianceCalculator.calculateCompliance(listing, null, null);
         if (result != null && result.size() > 0 && result.get(0).getDateBroken() != null) {
