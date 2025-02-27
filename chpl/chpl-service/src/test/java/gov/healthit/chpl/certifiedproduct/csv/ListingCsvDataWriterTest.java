@@ -22,7 +22,6 @@ import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.ProductVersion;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.standard.StandardManager;
-import gov.healthit.chpl.util.DateUtil;
 
 public class ListingCsvDataWriterTest {
 
@@ -55,7 +54,7 @@ public class ListingCsvDataWriterTest {
                         .build())
                 .certifyingBody(acb)
                 .certificationEvents(Stream.of(CertificationStatusEvent.builder()
-                        .eventDate(DateUtil.toDate(LocalDate.of(2024, 8, 1)).getTime())
+                        .eventDay(LocalDate.of(2024, 8, 1))
                         .status(CertificationStatus.builder()
                                 .id(1L)
                                 .name(CertificationStatusType.Active.getName())

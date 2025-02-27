@@ -7,7 +7,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseField;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -29,11 +28,6 @@ public class Person implements Serializable {
     @Schema(description = "Phone number of the person.")
     private String phoneNumber;
 
-    @DeprecatedResponseField(message = "This field is deprecated and will be removed.", removalDate = "2024-11-01")
-    @Deprecated
-    @Schema(description = "Title (Ms., Mr., Dr., etc) of the person.")
-    private String title;
-
     public Person(HashMap<String, Object> map) {
         if (map.containsKey("fullName") && map.get("fullName") != null) {
             this.fullName = map.get("fullName").toString();
@@ -43,9 +37,6 @@ public class Person implements Serializable {
         }
         if (map.containsKey("phoneNumber") && map.get("phoneNumber") != null) {
             this.phoneNumber = map.get("phoneNumber").toString();
-        }
-        if (map.containsKey("title") && map.get("title") != null) {
-            this.title = map.get("title").toString();
         }
     }
 
@@ -60,9 +51,7 @@ public class Person implements Serializable {
                 && (StringUtils.isAllEmpty(this.email, anotherPerson.email)
                     || StringUtils.equals(this.email, anotherPerson.email))
                 && (StringUtils.isAllEmpty(this.phoneNumber, anotherPerson.phoneNumber)
-                    || StringUtils.equals(this.phoneNumber, anotherPerson.phoneNumber))
-                && (StringUtils.isAllEmpty(this.title, anotherPerson.title)
-                    || StringUtils.equals(this.title, anotherPerson.title));
+                    || StringUtils.equals(this.phoneNumber, anotherPerson.phoneNumber));
     }
 
     @Override
@@ -77,9 +66,6 @@ public class Person implements Serializable {
         if (!StringUtils.isEmpty(this.phoneNumber)) {
             hashCode += this.phoneNumber.hashCode();
         }
-        if (!StringUtils.isEmpty(this.title)) {
-            hashCode += this.title.hashCode();
-        }
         return hashCode;
     }
 
@@ -87,7 +73,7 @@ public class Person implements Serializable {
     public String toString() {
         return String.format("[Person domain object: [Full Name: %s] [Email: %s],"
                 + "[Phone Number: %s], [Title: %s]]", this.getFullName(),
-                this.getEmail(), this.getPhoneNumber(), this.getTitle());
+                this.getEmail(), this.getPhoneNumber());
 
     }
 }

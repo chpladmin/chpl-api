@@ -1,9 +1,8 @@
 package gov.healthit.chpl.scheduler.presenter;
 
 import java.io.IOException;
-import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -120,24 +119,21 @@ public class SurveillanceBasicCsvPresenter extends SurveillanceCsvPresenter {
         return req.getNonconformities();
     }
 
-    private List<String> getSurveillanceFields(final CertifiedProductSearchDetails data,
-            final Surveillance surv) {
+    private List<String> getSurveillanceFields(CertifiedProductSearchDetails listing, Surveillance surv) {
         List<String> survFields = new ArrayList<String>();
-        survFields.add(data.getDeveloper().getName());
-        survFields.add(data.getProduct().getName());
-        survFields.add(data.getVersion().getVersion());
-        survFields.add(data.getChplProductNumber());
-        String productDetailsUrl = getEnvironment().getProperty("chplUrlBegin").trim() + getEnvironment().getProperty("listingDetailsUrl") + data.getId();
+        survFields.add(listing.getDeveloper().getName());
+        survFields.add(listing.getProduct().getName());
+        survFields.add(listing.getVersion().getVersion());
+        survFields.add(listing.getChplProductNumber());
+        String productDetailsUrl = getEnvironment().getProperty("chplUrlBegin").trim() + getEnvironment().getProperty("listingDetailsUrl") + listing.getId();
         survFields.add(productDetailsUrl);
-        survFields.add(data.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_NAME_KEY).toString());
-        survFields.add(data.getCurrentStatus().getStatus().getName());
-        Long lastCertificationChangeMillis = data.getCurrentStatus().getEventDate();
-        if (lastCertificationChangeMillis.longValue() == data.getCertificationDate().longValue()) {
+        survFields.add(listing.getCertifyingBody().get(CertifiedProductSearchDetails.ACB_NAME_KEY).toString());
+        survFields.add(listing.getCurrentStatus().getStatus().getName());
+        LocalDate lastCertificationStatusChangeDay = listing.getCurrentStatus().getEventDay();
+        if (lastCertificationStatusChangeDay.isEqual(listing.getCertificationDay())) {
             survFields.add("No status change");
         } else {
-            LocalDateTime lastStatusChangeDate = LocalDateTime
-                    .ofInstant(Instant.ofEpochMilli(lastCertificationChangeMillis), ZoneId.systemDefault());
-            survFields.add(getDateFormatter().format(lastStatusChangeDate));
+            survFields.add(getDateFormatter().format(lastCertificationStatusChangeDay));
         }
 
         if (surv.getFriendlyId() != null) {

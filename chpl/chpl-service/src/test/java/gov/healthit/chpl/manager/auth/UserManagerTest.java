@@ -111,7 +111,7 @@ public class UserManagerTest {
     public void create_GoodData_Success() throws UserCreationException, EntityCreationException, EntityRetrievalException, JsonProcessingException, ActivityException {
 
         UserDTO user = getUserDTO(1L);
-        UserManager userManager = new UserManager(null, userDAO, null, bCryptPasswordEncoder,  null, activityManager, null, Mockito.mock(UserMapper.class), null);
+        UserManager userManager = new UserManager(null, userDAO, null, bCryptPasswordEncoder,  null, activityManager, null, Mockito.mock(UserMapper.class));
 
         UserDTO newUser = userManager.create(user, "@ThisShouldBeAStrongPassword1!");
 
@@ -125,7 +125,7 @@ public class UserManagerTest {
 
         UserDTO user = getUserDTO(1L);
 
-        UserManager userManager = new UserManager(null, userDAO, null, bCryptPasswordEncoder, null, null, null, Mockito.mock(UserMapper.class), null);
+        UserManager userManager = new UserManager(null, userDAO, null, bCryptPasswordEncoder, null, null, null, Mockito.mock(UserMapper.class));
 
         userManager.create(user, "@ThisShouldBeAStrongPassword1!");
 
@@ -135,7 +135,7 @@ public class UserManagerTest {
     @Test
     public void update_GoodData_SuccessAndActivityWritten() throws ValidationException, UserRetrievalException, MultipleUserAccountsException, ActivityException {
 
-        UserManager userManager = new UserManager(null, userDAO, null, null, null, activityManager, null, Mockito.mock(UserMapper.class), null);
+        UserManager userManager = new UserManager(null, userDAO, null, null, null, activityManager, null, Mockito.mock(UserMapper.class));
 
         UserDTO user = getUserDTO(1L);
         UserDTO updatedUser = userManager.update(user);
@@ -150,7 +150,7 @@ public class UserManagerTest {
     public void update_MissingFullName_ValidationExceptionThrown()
             throws ValidationException, UserRetrievalException, MultipleUserAccountsException, ActivityException {
 
-        UserManager userManager = new UserManager(null, null, null, null, errorMessageUtil, null, null, Mockito.mock(UserMapper.class), null);
+        UserManager userManager = new UserManager(null, null, null, null, errorMessageUtil, null, null, Mockito.mock(UserMapper.class));
 
         UserDTO user = getUserDTO(1L);
         user.setFullName("");
@@ -162,7 +162,7 @@ public class UserManagerTest {
     @Test(expected = ValidationException.class)
     public void update_MissingEmail_ValidationExceptionThrown() throws ValidationException, UserRetrievalException, MultipleUserAccountsException, ActivityException {
 
-        UserManager userManager = new UserManager(null, null, null, null, errorMessageUtil, null, null, Mockito.mock(UserMapper.class), null);
+        UserManager userManager = new UserManager(null, null, null, null, errorMessageUtil, null, null, Mockito.mock(UserMapper.class));
 
         UserDTO user = getUserDTO(1L);
         user.setFullName("");
@@ -174,7 +174,7 @@ public class UserManagerTest {
     @Test()
     public void update_MissingEmailAndPhoneNumber_ValidationExceptionThrown() throws UserRetrievalException, MultipleUserAccountsException, ActivityException {
 
-        UserManager userManager = new UserManager(null, null, null, null, errorMessageUtil, null, null, Mockito.mock(UserMapper.class), null);
+        UserManager userManager = new UserManager(null, null, null, null, errorMessageUtil, null, null, Mockito.mock(UserMapper.class));
 
         UserDTO user = getUserDTO(1L);
         user.setPhoneNumber("");
@@ -190,7 +190,7 @@ public class UserManagerTest {
 
     @Test(expected = ValidationException.class)
     public void update_ChangedEmailAddress_ValidationExceptionThrown() throws ValidationException, UserRetrievalException, MultipleUserAccountsException, ActivityException {
-        UserManager userManager = new UserManager(null, userDAO, null, null, errorMessageUtil, null, null, Mockito.mock(UserMapper.class), null);
+        UserManager userManager = new UserManager(null, userDAO, null, null, errorMessageUtil, null, null, Mockito.mock(UserMapper.class));
 
         UserDTO user = getUserDTO(1L);
         user.setEmail("anotheremail@test.com");
@@ -202,7 +202,7 @@ public class UserManagerTest {
     @Test()
     public void delete_GoodData_Success() throws UserRetrievalException, ActivityException {
 
-        UserManager userManager = new UserManager(null, userDAO, null, null, null, activityManager, null, Mockito.mock(UserMapper.class), null);
+        UserManager userManager = new UserManager(null, userDAO, null, null, null, activityManager, null, Mockito.mock(UserMapper.class));
         userManager.delete(getUserDTO(1L));
 
         Mockito.verify(userDAO).delete(1L);
@@ -212,7 +212,7 @@ public class UserManagerTest {
     public void delete_UserNotValid_UserRetrievalExceptionThrown() throws UserRetrievalException, ActivityException {
         Mockito.doThrow(UserRetrievalException.class).when(userDAO).delete(ArgumentMatchers.anyLong());
 
-        UserManager userManager = new UserManager(null, userDAO, null, null, null, null, null, Mockito.mock(UserMapper.class), null);
+        UserManager userManager = new UserManager(null, userDAO, null, null, null, null, null, Mockito.mock(UserMapper.class));
         userManager.delete(getUserDTO(1L));
 
         fail();
@@ -222,7 +222,7 @@ public class UserManagerTest {
     public void updateFailedLoginCount_FailedLoginCountLessThanMaxFailedAttempts_NoErrors()
             throws UserRetrievalException, MultipleUserAccountsException, EmailNotSentException {
 
-        UserManager userManager = new UserManager(env, userDAO, null, null, null, null, null, Mockito.mock(UserMapper.class), null);
+        UserManager userManager = new UserManager(env, userDAO, null, null, null, null, null, Mockito.mock(UserMapper.class));
 
         userManager.updateFailedLoginCount(getUserDTO(1L));
 
@@ -236,7 +236,7 @@ public class UserManagerTest {
         Mockito.doThrow(UserRetrievalException.class).when(userDAO).updateFailedLoginCount(
                 ArgumentMatchers.anyString(), ArgumentMatchers.anyInt());
 
-        UserManager userManager = new UserManager(null, userDAO, null, null, null, null, null, Mockito.mock(UserMapper.class), null);
+        UserManager userManager = new UserManager(null, userDAO, null, null, null, null, null, Mockito.mock(UserMapper.class));
 
         userManager.updateFailedLoginCount(getUserDTO(1L));
 
@@ -247,7 +247,7 @@ public class UserManagerTest {
     public void updateFailedLoginCount_FailedLoginCountGreaterThanMaxFailedAttempts_AccountIsLocked()
             throws UserRetrievalException, MultipleUserAccountsException, EmailNotSentException {
 
-        UserManager userManager = new UserManager(env, userDAO, null, null, null, null, null, Mockito.mock(UserMapper.class), null);
+        UserManager userManager = new UserManager(env, userDAO, null, null, null, null, null, Mockito.mock(UserMapper.class));
 
         UserDTO user = getUserDTO(1L);
         user.setFailedLoginCount(FOUR_FAILED_LOGIN_ATTEMPTS);
@@ -259,7 +259,7 @@ public class UserManagerTest {
 
     @Test
     public void createResetUserPasswordToken_UserIsValid_ValidUserResetTokenDTO() throws UserRetrievalException {
-        UserManager userManager = new UserManager(null, userDAO, userResetTokenDAO, null, null, null, null, Mockito.mock(UserMapper.class), null);
+        UserManager userManager = new UserManager(null, userDAO, userResetTokenDAO, null, null, null, null, Mockito.mock(UserMapper.class));
         UserResetTokenDTO token = userManager.createResetUserPasswordToken("abc@def.com");
 
         assertNotNull(token);
@@ -270,7 +270,7 @@ public class UserManagerTest {
         Mockito.when(userDAO.findUserByEmail(ArgumentMatchers.anyString()))
                 .thenReturn(null);
 
-        UserManager userManager = new UserManager(null, userDAO, userResetTokenDAO, null, null, null, null, Mockito.mock(UserMapper.class), null);
+        UserManager userManager = new UserManager(null, userDAO, userResetTokenDAO, null, null, null, null, Mockito.mock(UserMapper.class));
         userManager.createResetUserPasswordToken("abc@def.com");
 
         fail();
@@ -287,7 +287,7 @@ public class UserManagerTest {
                     .build());
         UserManager userManager = new UserManager(env, Mockito.mock(UserDAO.class),
                 userResetTokenDAO, Mockito.mock(BCryptPasswordEncoder.class),
-                null, null, Mockito.mock(UserAccountUpdateEmailer.class), userMapper, null);
+                null, null, Mockito.mock(UserAccountUpdateEmailer.class), userMapper);
 
         Mockito.when(userResetTokenDAO.findByAuthToken(ArgumentMatchers.anyString()))
         .thenReturn(UserResetTokenDTO.builder()
@@ -313,7 +313,7 @@ public class UserManagerTest {
         Mockito.when(userResetTokenDAO.findByAuthToken(ArgumentMatchers.anyString()))
                 .thenReturn(null);
 
-        UserManager userManager = new UserManager(null, null, userResetTokenDAO, null, null, null, null, Mockito.mock(UserMapper.class), null);
+        UserManager userManager = new UserManager(null, null, userResetTokenDAO, null, null, null, null, Mockito.mock(UserMapper.class));
         UpdatePasswordResponse response = userManager.authorizePasswordReset(ResetPasswordRequest.builder()
                 .token("token")
                 .build());
@@ -331,7 +331,7 @@ public class UserManagerTest {
                 .thenReturn(UserResetTokenDTO.builder()
                         .creationDate(oldDate.getTime())
                         .build());
-        UserManager userManager = new UserManager(env, null, userResetTokenDAO, null, null, null, null, Mockito.mock(UserMapper.class), null);
+        UserManager userManager = new UserManager(env, null, userResetTokenDAO, null, null, null, null, Mockito.mock(UserMapper.class));
         UpdatePasswordResponse response = userManager.authorizePasswordReset(ResetPasswordRequest.builder()
                 .token("token")
                 .build());
@@ -348,13 +348,11 @@ public class UserManagerTest {
                 .credentialsExpired(false)
                 .email("abc@def.com")
                 .failedLoginCount(0)
-                .friendlyName("Friendly Name")
                 .fullName("Full Name")
                 .id(id)
                 .lastLoggedInDate(new Date())
                 .phoneNumber("555-555-5555")
                 .signatureDate(new Date())
-                .title("Sr Eng")
                 .build();
     }
 

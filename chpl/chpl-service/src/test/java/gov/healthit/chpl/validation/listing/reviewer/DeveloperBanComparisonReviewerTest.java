@@ -22,7 +22,6 @@ import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.permissions.ResourcePermissions;
 import gov.healthit.chpl.permissions.ResourcePermissionsFactory;
-import gov.healthit.chpl.util.DateUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 
 public class DeveloperBanComparisonReviewerTest {
@@ -56,7 +55,7 @@ public class DeveloperBanComparisonReviewerTest {
         List<CertificationStatusEvent> events = Stream.of(
                 CertificationStatusEvent.builder()
                     .status(CertificationStatus.builder().name("Active").build())
-                    .eventDate(DateUtil.toEpochMillis(LocalDate.parse("2024-01-01")))
+                    .eventDay(LocalDate.parse("2024-01-01"))
                     .build()).toList();
         CertifiedProductSearchDetails existingListing = CertifiedProductSearchDetails.builder()
                 .certificationEvents(events)
@@ -77,7 +76,7 @@ public class DeveloperBanComparisonReviewerTest {
         List<CertificationStatusEvent> events = Stream.of(
                 CertificationStatusEvent.builder()
                     .status(CertificationStatus.builder().name("Active").build())
-                    .eventDate(DateUtil.toEpochMillis(LocalDate.parse("2024-01-01")))
+                    .eventDay(LocalDate.parse("2024-01-01"))
                     .build()).toList();
         CertifiedProductSearchDetails existingListing = CertifiedProductSearchDetails.builder()
                 .certificationEvents(events)
@@ -98,11 +97,11 @@ public class DeveloperBanComparisonReviewerTest {
         List<CertificationStatusEvent> events = Stream.of(
                 CertificationStatusEvent.builder()
                     .status(CertificationStatus.builder().name("Active").build())
-                    .eventDate(DateUtil.toEpochMillis(LocalDate.parse("2024-01-01")))
+                    .eventDay(LocalDate.parse("2024-01-01"))
                     .build(),
                 CertificationStatusEvent.builder()
                     .status(CertificationStatus.builder().name("Suspended by ONC").build())
-                    .eventDate(DateUtil.toEpochMillis(LocalDate.parse("2024-01-30")))
+                    .eventDay(LocalDate.parse("2024-01-30"))
                     .build()).toList();
         CertifiedProductSearchDetails existingListing = CertifiedProductSearchDetails.builder()
                 .certificationEvents(events)
@@ -123,11 +122,11 @@ public class DeveloperBanComparisonReviewerTest {
         List<CertificationStatusEvent> events = Stream.of(
                 CertificationStatusEvent.builder()
                     .status(CertificationStatus.builder().name("Active").build())
-                    .eventDate(DateUtil.toEpochMillis(LocalDate.parse("2024-01-01")))
+                    .eventDay(LocalDate.parse("2024-01-01"))
                     .build(),
                 CertificationStatusEvent.builder()
                     .status(CertificationStatus.builder().name("Suspended by ONC").build())
-                    .eventDate(DateUtil.toEpochMillis(LocalDate.parse("2024-01-30")))
+                    .eventDay(LocalDate.parse("2024-01-30"))
                     .build()).toList();
         CertifiedProductSearchDetails existingListing = CertifiedProductSearchDetails.builder()
                 .certificationEvents(events)
@@ -148,16 +147,16 @@ public class DeveloperBanComparisonReviewerTest {
         List<CertificationStatusEvent> beforeEvents = Stream.of(
                 CertificationStatusEvent.builder()
                     .status(CertificationStatus.builder().name("Active").build())
-                    .eventDate(DateUtil.toEpochMillis(LocalDate.parse("2024-01-01")))
+                    .eventDay(LocalDate.parse("2024-01-01"))
                     .build()).toList();
         List<CertificationStatusEvent> afterEvents = Stream.of(
                 CertificationStatusEvent.builder()
                     .status(CertificationStatus.builder().name("Active").build())
-                    .eventDate(DateUtil.toEpochMillis(LocalDate.parse("2024-01-01")))
+                    .eventDay(LocalDate.parse("2024-01-01"))
                     .build(),
                 CertificationStatusEvent.builder()
                     .status(CertificationStatus.builder().name("Withdrawn by Developer").build())
-                    .eventDate(DateUtil.toEpochMillis(LocalDate.parse("2024-01-02")))
+                    .eventDay(LocalDate.parse("2024-01-02"))
                     .build()).toList();
         CertifiedProductSearchDetails existingListing = CertifiedProductSearchDetails.builder()
                 .certificationEvents(beforeEvents)
@@ -178,16 +177,16 @@ public class DeveloperBanComparisonReviewerTest {
         List<CertificationStatusEvent> afterEvents = Stream.of(
                 CertificationStatusEvent.builder()
                     .status(CertificationStatus.builder().name("Active").build())
-                    .eventDate(DateUtil.toEpochMillis(LocalDate.parse("2024-01-01")))
+                    .eventDay(LocalDate.parse("2024-01-01"))
                     .build()).toList();
         List<CertificationStatusEvent> beforeEvents = Stream.of(
                 CertificationStatusEvent.builder()
                     .status(CertificationStatus.builder().name("Active").build())
-                    .eventDate(DateUtil.toEpochMillis(LocalDate.parse("2024-01-01")))
+                    .eventDay(LocalDate.parse("2024-01-01"))
                     .build(),
                 CertificationStatusEvent.builder()
                     .status(CertificationStatus.builder().name("Withdrawn by Developer").build())
-                    .eventDate(DateUtil.toEpochMillis(LocalDate.parse("2024-01-02")))
+                    .eventDay(LocalDate.parse("2024-01-02"))
                     .build()).toList();
         CertifiedProductSearchDetails existingListing = CertifiedProductSearchDetails.builder()
                 .certificationEvents(beforeEvents)
@@ -208,16 +207,16 @@ public class DeveloperBanComparisonReviewerTest {
         List<CertificationStatusEvent> beforeEvents = Stream.of(
                 CertificationStatusEvent.builder()
                     .status(CertificationStatus.builder().name("Active").build())
-                    .eventDate(DateUtil.toEpochMillis(LocalDate.parse("2024-01-01")))
+                    .eventDay(LocalDate.parse("2024-01-01"))
                     .build()).toList();
         List<CertificationStatusEvent> afterEvents = Stream.of(
                 CertificationStatusEvent.builder()
                     .status(CertificationStatus.builder().name("Active").build())
-                    .eventDate(DateUtil.toEpochMillis(LocalDate.parse("2024-01-01")))
+                    .eventDay(LocalDate.parse("2024-01-01"))
                     .build(),
                 CertificationStatusEvent.builder()
                     .status(CertificationStatus.builder().name("Suspended by ONC").build())
-                    .eventDate(DateUtil.toEpochMillis(LocalDate.parse("2024-01-02")))
+                    .eventDay(LocalDate.parse("2024-01-02"))
                     .build()).toList();
         CertifiedProductSearchDetails existingListing = CertifiedProductSearchDetails.builder()
                 .certificationEvents(beforeEvents)
@@ -240,16 +239,16 @@ public class DeveloperBanComparisonReviewerTest {
         List<CertificationStatusEvent> beforeEvents = Stream.of(
                 CertificationStatusEvent.builder()
                     .status(CertificationStatus.builder().name("Active").build())
-                    .eventDate(DateUtil.toEpochMillis(LocalDate.parse("2024-01-01")))
+                    .eventDay(LocalDate.parse("2024-01-01"))
                     .build()).toList();
         List<CertificationStatusEvent> afterEvents = Stream.of(
                 CertificationStatusEvent.builder()
                     .status(CertificationStatus.builder().name("Active").build())
-                    .eventDate(DateUtil.toEpochMillis(LocalDate.parse("2024-01-01")))
+                    .eventDay(LocalDate.parse("2024-01-01"))
                     .build(),
                 CertificationStatusEvent.builder()
                     .status(CertificationStatus.builder().name("Suspended by ONC").build())
-                    .eventDate(DateUtil.toEpochMillis(LocalDate.parse("2024-01-02")))
+                    .eventDay(LocalDate.parse("2024-01-02"))
                     .build()).toList();
         CertifiedProductSearchDetails existingListing = CertifiedProductSearchDetails.builder()
                 .certificationEvents(beforeEvents)
@@ -270,16 +269,16 @@ public class DeveloperBanComparisonReviewerTest {
         List<CertificationStatusEvent> afterEvents = Stream.of(
                 CertificationStatusEvent.builder()
                     .status(CertificationStatus.builder().name("Active").build())
-                    .eventDate(DateUtil.toEpochMillis(LocalDate.parse("2024-01-01")))
+                    .eventDay(LocalDate.parse("2024-01-01"))
                     .build()).toList();
         List<CertificationStatusEvent> beforeEvents = Stream.of(
                 CertificationStatusEvent.builder()
                     .status(CertificationStatus.builder().name("Active").build())
-                    .eventDate(DateUtil.toEpochMillis(LocalDate.parse("2024-01-01")))
+                    .eventDay(LocalDate.parse("2024-01-01"))
                     .build(),
                 CertificationStatusEvent.builder()
                     .status(CertificationStatus.builder().name("Suspended by ONC").build())
-                    .eventDate(DateUtil.toEpochMillis(LocalDate.parse("2024-01-02")))
+                    .eventDay(LocalDate.parse("2024-01-02"))
                     .build()).toList();
         CertifiedProductSearchDetails existingListing = CertifiedProductSearchDetails.builder()
                 .certificationEvents(beforeEvents)
@@ -302,16 +301,16 @@ public class DeveloperBanComparisonReviewerTest {
         List<CertificationStatusEvent> beforeEvents = Stream.of(
                 CertificationStatusEvent.builder()
                     .status(CertificationStatus.builder().name("Active").build())
-                    .eventDate(DateUtil.toEpochMillis(LocalDate.parse("2024-01-01")))
+                    .eventDay(LocalDate.parse("2024-01-01"))
                     .build()).toList();
         List<CertificationStatusEvent> afterEvents = Stream.of(
                 CertificationStatusEvent.builder()
                     .status(CertificationStatus.builder().name("Active").build())
-                    .eventDate(DateUtil.toEpochMillis(LocalDate.parse("2024-01-01")))
+                    .eventDay(LocalDate.parse("2024-01-01"))
                     .build(),
                 CertificationStatusEvent.builder()
                     .status(CertificationStatus.builder().name("Suspended by ONC").build())
-                    .eventDate(DateUtil.toEpochMillis(LocalDate.parse("2024-01-02")))
+                    .eventDay(LocalDate.parse("2024-01-02"))
                     .build()).toList();
         CertifiedProductSearchDetails existingListing = CertifiedProductSearchDetails.builder()
                 .certificationEvents(beforeEvents)
@@ -332,20 +331,20 @@ public class DeveloperBanComparisonReviewerTest {
         List<CertificationStatusEvent> beforeEvents = Stream.of(
                 CertificationStatusEvent.builder()
                     .status(CertificationStatus.builder().name("Active").build())
-                    .eventDate(DateUtil.toEpochMillis(LocalDate.parse("2024-01-01")))
+                    .eventDay(LocalDate.parse("2024-01-01"))
                     .build(),
                 CertificationStatusEvent.builder()
                     .status(CertificationStatus.builder().name("Terminated by ONC").build())
-                    .eventDate(DateUtil.toEpochMillis(LocalDate.parse("2024-01-03")))
+                    .eventDay(LocalDate.parse("2024-01-03"))
                     .build()).toList();
         List<CertificationStatusEvent> afterEvents = Stream.of(
                 CertificationStatusEvent.builder()
                     .status(CertificationStatus.builder().name("Active").build())
-                    .eventDate(DateUtil.toEpochMillis(LocalDate.parse("2024-01-01")))
+                    .eventDay(LocalDate.parse("2024-01-01"))
                     .build(),
                 CertificationStatusEvent.builder()
                     .status(CertificationStatus.builder().name("Suspended by ONC").build())
-                    .eventDate(DateUtil.toEpochMillis(LocalDate.parse("2024-01-02")))
+                    .eventDay(LocalDate.parse("2024-01-02"))
                     .build()).toList();
         CertifiedProductSearchDetails existingListing = CertifiedProductSearchDetails.builder()
                 .certificationEvents(beforeEvents)
@@ -368,20 +367,20 @@ public class DeveloperBanComparisonReviewerTest {
         List<CertificationStatusEvent> beforeEvents = Stream.of(
                 CertificationStatusEvent.builder()
                     .status(CertificationStatus.builder().name("Active").build())
-                    .eventDate(DateUtil.toEpochMillis(LocalDate.parse("2024-01-01")))
+                    .eventDay(LocalDate.parse("2024-01-01"))
                     .build(),
                 CertificationStatusEvent.builder()
                     .status(CertificationStatus.builder().name("Terminated by ONC").build())
-                    .eventDate(DateUtil.toEpochMillis(LocalDate.parse("2024-01-03")))
+                    .eventDay(LocalDate.parse("2024-01-03"))
                     .build()).toList();
         List<CertificationStatusEvent> afterEvents = Stream.of(
                 CertificationStatusEvent.builder()
                     .status(CertificationStatus.builder().name("Active").build())
-                    .eventDate(DateUtil.toEpochMillis(LocalDate.parse("2024-01-01")))
+                    .eventDay(LocalDate.parse("2024-01-01"))
                     .build(),
                 CertificationStatusEvent.builder()
                     .status(CertificationStatus.builder().name("Suspended by ONC").build())
-                    .eventDate(DateUtil.toEpochMillis(LocalDate.parse("2024-01-02")))
+                    .eventDay(LocalDate.parse("2024-01-02"))
                     .build()).toList();
         CertifiedProductSearchDetails existingListing = CertifiedProductSearchDetails.builder()
                 .certificationEvents(beforeEvents)
@@ -402,20 +401,20 @@ public class DeveloperBanComparisonReviewerTest {
         List<CertificationStatusEvent> beforeEvents = Stream.of(
                 CertificationStatusEvent.builder()
                     .status(CertificationStatus.builder().name("Active").build())
-                    .eventDate(DateUtil.toEpochMillis(LocalDate.parse("2024-01-01")))
+                    .eventDay(LocalDate.parse("2024-01-01"))
                     .build(),
                 CertificationStatusEvent.builder()
                     .status(CertificationStatus.builder().name("Terminated by ONC").build())
-                    .eventDate(DateUtil.toEpochMillis(LocalDate.parse("2024-01-03")))
+                    .eventDay(LocalDate.parse("2024-01-03"))
                     .build()).toList();
         List<CertificationStatusEvent> afterEvents = Stream.of(
                 CertificationStatusEvent.builder()
                     .status(CertificationStatus.builder().name("Active").build())
-                    .eventDate(DateUtil.toEpochMillis(LocalDate.parse("2024-01-01")))
+                    .eventDay(LocalDate.parse("2024-01-01"))
                     .build(),
                 CertificationStatusEvent.builder()
                     .status(CertificationStatus.builder().name("Terminated by ONC").build())
-                    .eventDate(DateUtil.toEpochMillis(LocalDate.parse("2024-01-04")))
+                    .eventDay(LocalDate.parse("2024-01-04"))
                     .build()).toList();
         CertifiedProductSearchDetails existingListing = CertifiedProductSearchDetails.builder()
                 .certificationEvents(beforeEvents)
@@ -438,20 +437,20 @@ public class DeveloperBanComparisonReviewerTest {
         List<CertificationStatusEvent> beforeEvents = Stream.of(
                 CertificationStatusEvent.builder()
                     .status(CertificationStatus.builder().name("Active").build())
-                    .eventDate(DateUtil.toEpochMillis(LocalDate.parse("2024-01-01")))
+                    .eventDay(LocalDate.parse("2024-01-01"))
                     .build(),
                 CertificationStatusEvent.builder()
                     .status(CertificationStatus.builder().name("Terminated by ONC").build())
-                    .eventDate(DateUtil.toEpochMillis(LocalDate.parse("2024-01-03")))
+                    .eventDay(LocalDate.parse("2024-01-03"))
                     .build()).toList();
         List<CertificationStatusEvent> afterEvents = Stream.of(
                 CertificationStatusEvent.builder()
                     .status(CertificationStatus.builder().name("Active").build())
-                    .eventDate(DateUtil.toEpochMillis(LocalDate.parse("2024-01-01")))
+                    .eventDay(LocalDate.parse("2024-01-01"))
                     .build(),
                 CertificationStatusEvent.builder()
                     .status(CertificationStatus.builder().name("Terminated by ONC").build())
-                    .eventDate(DateUtil.toEpochMillis(LocalDate.parse("2024-01-03")))
+                    .eventDay(LocalDate.parse("2024-01-03"))
                     .reason("Test!")
                     .build()).toList();
         CertifiedProductSearchDetails existingListing = CertifiedProductSearchDetails.builder()
