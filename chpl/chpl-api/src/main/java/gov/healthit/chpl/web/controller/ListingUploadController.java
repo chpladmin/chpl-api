@@ -308,7 +308,7 @@ public class ListingUploadController {
     private ResponseEntity<CertifiedProductSearchDetails> getConfirmResponse(CertifiedProductSearchDetails createdListing) {
         if (createdListing != null) {
             HttpHeaders responseHeaders = new HttpHeaders();
-            responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
+            responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_SEARCH);
             return new ResponseEntity<CertifiedProductSearchDetails>(createdListing, responseHeaders, HttpStatus.OK);
         } else {
             return new ResponseEntity<CertifiedProductSearchDetails>(null, null, HttpStatus.BAD_REQUEST);

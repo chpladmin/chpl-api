@@ -1,23 +1,20 @@
 package gov.healthit.chpl.permissions.domains.surveillance;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
-import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.permissions.domains.ActionPermissions;
 import gov.healthit.chpl.util.ErrorMessageUtil;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 @Component("surveillanceUpdateActionPermissions")
 public class UpdateActionPermissions extends ActionPermissions {
-    private static final Logger LOGGER = LogManager.getLogger(UpdateActionPermissions.class);
-
     private CertifiedProductDAO cpDao;
     private ErrorMessageUtil msgUtil;
 
@@ -34,19 +31,19 @@ public class UpdateActionPermissions extends ActionPermissions {
 
     @Override
     public boolean hasAccess(Object obj) {
-        if (!(obj instanceof Surveillance)) {
+        if (!(obj instanceof Long)) {
             return false;
         } else if (getResourcePermissions().isUserRoleAdmin()) {
             return true;
         } else if (getResourcePermissions().isUserRoleAcbAdmin()) {
-            Surveillance surv = (Surveillance) obj;
+            Long listingId = (Long) obj;
             CertifiedProductDTO listing = null;
             try {
-                if (surv.getCertifiedProduct() != null && surv.getCertifiedProduct().getId() != null) {
-                    listing = cpDao.getById(surv.getCertifiedProduct().getId());
+                if (listingId != null) {
+                    listing = cpDao.getById(listingId);
                 }
             } catch (EntityRetrievalException ex) {
-                LOGGER.error("Could not find listing with ID " + surv.getCertifiedProduct().getId());
+                LOGGER.error("Could not find listing with ID " + listingId);
             }
 
             if (isListing2014Edition(listing)) {

@@ -195,7 +195,7 @@ public class DeveloperController {
 
         Developer result = developerManager.update(developerToUpdate, true);
         HttpHeaders responseHeaders = new HttpHeaders();
-        responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
+        responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_SEARCH);
         if (result == null) {
             throw new EntityCreationException("There was an error inserting or updating the developer information.");
         }
