@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 import com.datadog.api.client.ApiException;
 import com.datadog.api.client.v1.model.SyntheticsAPITest;
 import com.datadog.api.client.v1.model.SyntheticsAPITestResultFull;
+import com.datadog.api.client.v1.model.SyntheticsApiTestFailureCode;
 import com.datadog.api.client.v1.model.SyntheticsGetAPITestLatestResultsResponse;
 import com.datadog.api.client.v1.model.SyntheticsTriggerBody;
 import com.datadog.api.client.v1.model.SyntheticsTriggerTest;
@@ -28,7 +29,7 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 @Component
 public class OnDemandUrlCheckerManager {
-    private static final Long TEMP_DEVELOPER_ID = -99L;
+    public static final Long TEMP_DEVELOPER_ID = -99L;
     private static final Integer MAX_ATTEMPTS = 45;
     private static final Integer MAX_SECONDS = 45;
     private static final String ASSERTION_RESULTS_KEY = "assertionResults";
@@ -38,7 +39,9 @@ public class OnDemandUrlCheckerManager {
     private static final String TYPE_VALUE_STATUS_CODE = "statusCode";
     private static final String TYPE_VALUE_BODY = "body";
     private static final String TYPE_VALUE_RESPONSE_TIME = "responseTime";
-
+    
+    private List<String> errorsToIgnore = List.of("BODY_TOO_LARGE_TO_PROCESS");    
+    
     private DatadogSyntheticsTestService datadogSyntheticsTestService;
     private DatadogSyntheticsTestResultService datadogSyntheticsTestResultService;
     private ValidationUtils validationUtils;
@@ -80,7 +83,7 @@ public class OnDemandUrlCheckerManager {
     }
 
     private SyntheticsAPITest createTest(String url) {
-        LOGGER.info("Creating On Demand URL Check");
+        LOGGER.info("Creating On Demand URL Check for: {}", url);
         return datadogSyntheticsTestService.createSyntheticsTest(url, List.of(TEMP_DEVELOPER_ID));
     }
 
@@ -114,9 +117,15 @@ public class OnDemandUrlCheckerManager {
                 && result.getResults().size() > 0) {
             fullTestResults = datadogSyntheticsTestResultService.getDetailedTestResult(test.getPublicId(), result.getResults().get(0).getResultId());
             response = convertToResponse(test.getConfig().getRequest().getUrl(), fullTestResults);
-            response.setPassed(result.getResults().get(0).getResult().getPassed());
-            if (!result.getResults().get(0).getResult().getPassed()) {
-                response.setErrorMessage(fullTestResults.getResult().getFailure().getMessage());
+            if (fullTestResults.getResult().getFailure() != null
+                    && isErrorIgnorable(fullTestResults.getResult().getFailure().getCode())) {
+                response.setPassed(true);
+                response.setErrorMessage("");
+            } else {
+                response.setPassed(result.getResults().get(0).getResult().getPassed());
+                if (!result.getResults().get(0).getResult().getPassed()) {
+                    response.setErrorMessage(fullTestResults.getResult().getFailure().getMessage());
+                }
             }
         } else {
             throw new ApiException("No results found for test " + test.getPublicId());
@@ -126,6 +135,15 @@ public class OnDemandUrlCheckerManager {
 
     private OnDemandUrlCheckerResponse convertToResponse(String url, SyntheticsAPITestResultFull fullTestResults) {
         if (doAdditionalPropertiesExist(fullTestResults)) {
+            if (fullTestResults.getResult().getFailure() != null
+                    && isErrorIgnorable(fullTestResults.getResult().getFailure().getCode())) {
+                return OnDemandUrlCheckerResponse.builder()
+                        .httpResponseAssertion(OnDemandUrlCheckerAssertionResult.builder().passed(true).actualValue("").build())
+                        .responseTimeAssertion(OnDemandUrlCheckerAssertionResult.builder().passed(true).actualValue("").build())
+                        .bodyNotEmptyAssertion(OnDemandUrlCheckerAssertionResult.builder().passed(true).actualValue("").build())
+                        .url(url)
+                        .build();
+            }
             return OnDemandUrlCheckerResponse.builder()
                     .httpResponseAssertion(getAssertionResult(fullTestResults.getResult().getAdditionalProperties(), TYPE_VALUE_STATUS_CODE))
                     .responseTimeAssertion(getAssertionResult(fullTestResults.getResult().getAdditionalProperties(), TYPE_VALUE_RESPONSE_TIME))
@@ -166,4 +184,12 @@ public class OnDemandUrlCheckerManager {
         return fullTestResults.getResult().getAdditionalProperties().containsKey(ASSERTION_RESULTS_KEY)
                 && fullTestResults.getResult().getAdditionalProperties().get(ASSERTION_RESULTS_KEY) instanceof List<?>;
     }
+
+    private boolean isErrorIgnorable(SyntheticsApiTestFailureCode errorCode) {
+        return errorsToIgnore.stream()
+                .filter(code -> code.equals(errorCode.getValue()))
+                .findAny()
+                .isPresent();
+    }
+
 }
