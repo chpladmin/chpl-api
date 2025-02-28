@@ -60,7 +60,7 @@ public class OnDemandUrlCheckerManager {
             + "T(gov.healthit.chpl.permissions.domains.UrlCheckerDomainPermissions).CHECK)")
     public OnDemandUrlCheckerResponse checkUrl(String url) throws ApiException, ValidationException {
         SyntheticsAPITest test = null;
-        validateUrl(url);
+        validateUrlWellFormed(url);
         try {
             test = createTest(url);
             triggerTest(test);
@@ -70,13 +70,14 @@ public class OnDemandUrlCheckerManager {
         } finally {
             LOGGER.info("Completed On Demand URL Check");
             if (test != null) {
-                LOGGER.info("Deleting On Demand URL Check");
+                LOGGER.info("Deleting On Demand URL Check: {}", test.getPublicId());
                 datadogSyntheticsTestService.deleteSyntheticsTests(List.of(test.getPublicId()));
+                LOGGER.info("Deleted On Demand URL Check: {}", test.getPublicId());
             }
         }
     }
 
-    private void validateUrl(String url) throws ValidationException {
+    private void validateUrlWellFormed(String url) throws ValidationException {
         if (!validationUtils.isWellFormedUrl(url)) {
             throw new ValidationException(errorMessageUtil.getMessage("onDemandUrlTest.invalidUrl"));
         }
@@ -84,7 +85,9 @@ public class OnDemandUrlCheckerManager {
 
     private SyntheticsAPITest createTest(String url) {
         LOGGER.info("Creating On Demand URL Check for: {}", url);
-        return datadogSyntheticsTestService.createSyntheticsTest(url, List.of(TEMP_DEVELOPER_ID));
+        var x =  datadogSyntheticsTestService.createSyntheticsTest(url, List.of(TEMP_DEVELOPER_ID));
+        LOGGER.info("Created On Demand URL Check: {}", x.getPublicId());
+        return x;
     }
 
     private void triggerTest(SyntheticsAPITest test) throws ApiException {
