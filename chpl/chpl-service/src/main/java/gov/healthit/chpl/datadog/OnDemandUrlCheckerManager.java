@@ -68,12 +68,17 @@ public class OnDemandUrlCheckerManager {
             OnDemandUrlCheckerResponse response = analyzeTestResults(result, test);
             return response;
         } finally {
-            LOGGER.info("Completed On Demand URL Check");
-            if (test != null) {
-                LOGGER.info("Deleting On Demand URL Check: {}", test.getPublicId());
-                datadogSyntheticsTestService.deleteSyntheticsTests(List.of(test.getPublicId()));
-                LOGGER.info("Deleted On Demand URL Check: {}", test.getPublicId());
+            try {
+                LOGGER.info("Completed On Demand URL Check");
+                if (test != null) {
+                    LOGGER.info("Deleting On Demand URL Check: {}", test.getPublicId());
+                    datadogSyntheticsTestService.deleteSyntheticsTests(List.of(test.getPublicId()));
+                    LOGGER.info("Deleted On Demand URL Check: {}", test.getPublicId());
+                }
+            } catch (Exception e) {
+                LOGGER.error("Failed to delete On Demand URL Check", e);
             }
+            
         }
     }
 
