@@ -86,12 +86,7 @@ public class DatadogSyntheticsTestService {
 
     public void deleteSyntheticsTests(List<String> publicIds) {
         try {
-            if (datadogIsReadOnly) {
-                LOGGER.info("Not deleting from datadog (due to environment setting) with Public Ids: {}", publicIds);
-            } else {
-                apiProvider.getApiInstance().deleteTests(new SyntheticsDeleteTestsPayload().publicIds(publicIds));
-            }
-
+            apiProvider.getApiInstance().deleteTests(new SyntheticsDeleteTestsPayload().publicIds(publicIds));
         } catch (ApiException e) {
             LOGGER.error("Could not delete Synthetic Tests from Datadog: {}", publicIds, e);
         }
