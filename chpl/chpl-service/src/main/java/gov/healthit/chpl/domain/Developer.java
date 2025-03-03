@@ -12,7 +12,6 @@ import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseField;
 import gov.healthit.chpl.domain.contact.PointOfContact;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Transient;
@@ -56,13 +55,6 @@ public class Developer implements Serializable {
     private String lastModifiedDate;
     private Boolean deleted;
 
-    @DeprecatedResponseField(message = "This field is deprecated and will be removed. Please use 'statuses'.",
-            removalDate = "2025-01-01")
-    @Deprecated
-    @Schema(description = "Status changes that have occurred on the developer.")
-    @Builder.Default
-    private List<DeveloperStatusEventDeprecated> statusEvents = new ArrayList<DeveloperStatusEventDeprecated>();
-
     @Schema(description = "Developer bans or suspensions that have occurred over time.")
     @Builder.Default
     private List<DeveloperStatusEvent> statuses = new ArrayList<DeveloperStatusEvent>();
@@ -86,7 +78,6 @@ public class Developer implements Serializable {
     private PointOfContact userEnteredPointOfContact;
 
     public Developer() {
-        this.statusEvents = new ArrayList<DeveloperStatusEventDeprecated>();
         this.statuses = new ArrayList<DeveloperStatusEvent>();
     }
 
@@ -118,34 +109,6 @@ public class Developer implements Serializable {
         return statusToday;
     }
 
-    @Deprecated
-    @DeprecatedResponseField(message = "This field is deprecated and will be removed.", removalDate = "2025-01-01")
-    @Schema(description = "The status of a developer with certified Health IT. Allowable values are null, \"Suspended by ONC\", or \"Under "
-            + "Certification Ban by ONC\"")
-    public DeveloperStatus getStatus() {
-        if (CollectionUtils.isEmpty(this.getStatuses())) {
-            return null;
-        }
-
-        return getCurrentStatusEvent() != null ? getCurrentStatusEvent().getStatus() : null;
-    }
-
-    @Deprecated
-    @JsonIgnore
-    public DeveloperStatusEventDeprecated getMostRecentStatusEvent() {
-        if (CollectionUtils.isEmpty(this.getStatusEvents())) {
-            return null;
-        }
-
-        DeveloperStatusEventDeprecated newest = this.getStatusEvents().get(0);
-        for (DeveloperStatusEventDeprecated event : this.getStatusEvents()) {
-            if (event.getStatusDate().after(newest.getStatusDate())) {
-                newest = event;
-            }
-        }
-        return newest;
-    }
-
     // Not all attributes have been included. The attributes being used were selected so the DeveloperManager could
     // determine equality when updating a Developer
     @Override
@@ -158,7 +121,6 @@ public class Developer implements Serializable {
         result = prime * result + ((id == null) ? 0 : id.hashCode());
         result = prime * result + ((name == null) ? 0 : name.hashCode());
         result = prime * result + ((selfDeveloper == null) ? 0 : selfDeveloper.hashCode());
-        result = prime * result + ((statusEvents == null) ? 0 : statusEvents.hashCode());
         result = prime * result + ((website == null) ? 0 : website.hashCode());
         return result;
     }

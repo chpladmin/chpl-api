@@ -7,6 +7,7 @@ import java.util.Objects;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -208,5 +209,13 @@ public class SurveillanceNonconformity implements Serializable {
             return false;
         }
         return true;
+    }
+
+    @JsonIgnore
+    public String getFormattedTitle() {
+        if (this.getType() != null) {
+            return this.getType().getFormattedTitle();
+        }
+        return "";
     }
 }

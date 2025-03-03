@@ -3,8 +3,6 @@ package gov.healthit.chpl.dao;
 import java.util.ArrayList;
 import java.util.List;
 
-import jakarta.persistence.Query;
-
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -16,12 +14,9 @@ import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.entity.listing.CertifiedProductDetailsEntity;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import jakarta.persistence.Query;
 
-/**
- * Data access object for the certified_product_details view.
- * @author TYoung
- *
- */
+
 @Repository(value = "certifiedProductSearchResultDAO")
 public class CertifiedProductSearchResultDAO extends BaseDAOImpl {
     private static final Logger LOGGER = LogManager.getLogger(CertifiedProductSearchResultDAO.class);

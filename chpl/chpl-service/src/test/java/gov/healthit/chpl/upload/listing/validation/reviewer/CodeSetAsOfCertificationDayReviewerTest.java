@@ -30,7 +30,6 @@ import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.util.CertificationResultRules;
-import gov.healthit.chpl.util.DateUtil;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
 import gov.healthit.chpl.util.ValidationUtils;
@@ -125,7 +124,7 @@ public class CodeSetAsOfCertificationDayReviewerTest {
     public void review_nullCodeSetsOnCriteriaWithoutCodeSets_noError() {
         List<CertificationStatusEvent> statusEvents = new ArrayList<CertificationStatusEvent>();
         statusEvents.add(CertificationStatusEvent.builder()
-                        .eventDate(DateUtil.toEpochMillis(LocalDate.parse("2024-03-13")))
+                        .eventDay(LocalDate.parse("2024-03-13"))
                         .status(CertificationStatus.builder()
                                 .id(1L)
                                 .name(CertificationStatusType.Active.getName())
@@ -150,7 +149,7 @@ public class CodeSetAsOfCertificationDayReviewerTest {
     public void review_emptyCodeSetsOnCriteriaWithoutCodeSets_noError() {
         List<CertificationStatusEvent> statusEvents = new ArrayList<CertificationStatusEvent>();
         statusEvents.add(CertificationStatusEvent.builder()
-                        .eventDate(DateUtil.toEpochMillis(LocalDate.parse("2024-03-13")))
+                        .eventDay(LocalDate.parse("2024-03-13"))
                         .status(CertificationStatus.builder()
                                 .id(1L)
                                 .name(CertificationStatusType.Active.getName())
@@ -178,7 +177,7 @@ public class CodeSetAsOfCertificationDayReviewerTest {
 
         List<CertificationStatusEvent> statusEvents = new ArrayList<CertificationStatusEvent>();
         statusEvents.add(CertificationStatusEvent.builder()
-                        .eventDate(DateUtil.toEpochMillis(LocalDate.parse("2024-03-13")))
+                        .eventDay(LocalDate.parse("2024-03-13"))
                         .status(CertificationStatus.builder()
                                 .id(1L)
                                 .name(CertificationStatusType.Active.getName())
@@ -215,7 +214,7 @@ public class CodeSetAsOfCertificationDayReviewerTest {
 
       List<CertificationStatusEvent> statusEvents = new ArrayList<CertificationStatusEvent>();
       statusEvents.add(CertificationStatusEvent.builder()
-                      .eventDate(DateUtil.toEpochMillis(LocalDate.parse("2025-03-13")))
+                      .eventDay(LocalDate.parse("2025-03-13"))
                       .status(CertificationStatus.builder()
                               .id(1L)
                               .name(CertificationStatusType.Active.getName())
@@ -256,7 +255,7 @@ public class CodeSetAsOfCertificationDayReviewerTest {
 
       List<CertificationStatusEvent> statusEvents = new ArrayList<CertificationStatusEvent>();
       statusEvents.add(CertificationStatusEvent.builder()
-                      .eventDate(DateUtil.toEpochMillis(LocalDate.parse("2024-03-13")))
+                      .eventDay(LocalDate.parse("2024-03-13"))
                       .status(CertificationStatus.builder()
                               .id(1L)
                               .name(CertificationStatusType.Active.getName())
@@ -294,7 +293,7 @@ public class CodeSetAsOfCertificationDayReviewerTest {
 
       List<CertificationStatusEvent> statusEvents = new ArrayList<CertificationStatusEvent>();
       statusEvents.add(CertificationStatusEvent.builder()
-                      .eventDate(DateUtil.toEpochMillis(LocalDate.parse("2024-03-13")))
+                      .eventDay(LocalDate.parse("2024-03-13"))
                       .status(CertificationStatus.builder()
                               .id(1L)
                               .name(CertificationStatusType.Active.getName())
@@ -330,7 +329,7 @@ public class CodeSetAsOfCertificationDayReviewerTest {
 
       List<CertificationStatusEvent> statusEvents = new ArrayList<CertificationStatusEvent>();
       statusEvents.add(CertificationStatusEvent.builder()
-                      .eventDate(DateUtil.toEpochMillis(LocalDate.parse("2024-03-13")))
+                      .eventDay(LocalDate.parse("2024-03-13"))
                       .status(CertificationStatus.builder()
                               .id(1L)
                               .name(CertificationStatusType.Active.getName())
@@ -367,7 +366,7 @@ public class CodeSetAsOfCertificationDayReviewerTest {
 
       List<CertificationStatusEvent> statusEvents = new ArrayList<CertificationStatusEvent>();
       statusEvents.add(CertificationStatusEvent.builder()
-                      .eventDate(DateUtil.toEpochMillis(LocalDate.parse("2024-03-13")))
+                      .eventDay(LocalDate.parse("2024-03-13"))
                       .status(CertificationStatus.builder()
                               .id(1L)
                               .name(CertificationStatusType.Active.getName())
@@ -402,7 +401,7 @@ public class CodeSetAsOfCertificationDayReviewerTest {
 
       List<CertificationStatusEvent> statusEvents = new ArrayList<CertificationStatusEvent>();
       statusEvents.add(CertificationStatusEvent.builder()
-                      .eventDate(DateUtil.toEpochMillis(LocalDate.parse("2024-03-13")))
+                      .eventDay(LocalDate.parse("2024-03-13"))
                       .status(CertificationStatus.builder()
                               .id(1L)
                               .name(CertificationStatusType.Active.getName())
@@ -435,7 +434,7 @@ public class CodeSetAsOfCertificationDayReviewerTest {
 
       List<CertificationStatusEvent> statusEvents = new ArrayList<CertificationStatusEvent>();
       statusEvents.add(CertificationStatusEvent.builder()
-                      .eventDate(DateUtil.toEpochMillis(LocalDate.parse("2024-03-13")))
+                      .eventDay(LocalDate.parse("2024-03-13"))
                       .status(CertificationStatus.builder()
                               .id(1L)
                               .name(CertificationStatusType.Active.getName())
@@ -480,7 +479,7 @@ public class CodeSetAsOfCertificationDayReviewerTest {
 
       List<CertificationStatusEvent> statusEvents = new ArrayList<CertificationStatusEvent>();
       statusEvents.add(CertificationStatusEvent.builder()
-                      .eventDate(DateUtil.toEpochMillis(LocalDate.parse("2024-03-13")))
+                      .eventDay(LocalDate.parse("2024-03-13"))
                       .status(CertificationStatus.builder()
                               .id(1L)
                               .name(CertificationStatusType.Active.getName())

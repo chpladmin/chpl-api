@@ -13,7 +13,6 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.security.access.AccessDeniedException;
 
 import gov.healthit.chpl.dao.CertifiedProductDAO;
-import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.permissions.ResourcePermissions;
@@ -54,8 +53,7 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
         assertFalse(permissions.hasAccess());
 
         // Since it is admin it has access to all - param value does not matter.
-        Surveillance surv = new Surveillance();
-        assertTrue(permissions.hasAccess(surv));
+        assertTrue(permissions.hasAccess(1L));
     }
 
     @Override
@@ -67,8 +65,7 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
         assertFalse(permissions.hasAccess());
 
         // Since it is onc it has access to all - param value does not matter.
-        Surveillance surv = new Surveillance();
-        assertFalse(permissions.hasAccess(surv));
+        assertFalse(permissions.hasAccess(1L));
     }
 
     @Override
@@ -79,17 +76,13 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
         // This should always be false
         assertFalse(permissions.hasAccess());
 
-        Surveillance surv = new Surveillance();
-        surv.setCertifiedProduct(new CertifiedProduct());
-        surv.getCertifiedProduct().setId(1L);
-
         Mockito.when(cpDAO.getById(ArgumentMatchers.anyLong()))
                 .thenReturn(getCertifiedProductWithAcbAndEdition(1L, 3L));
-        assertFalse(permissions.hasAccess(surv));
+        assertFalse(permissions.hasAccess(1L));
 
         Mockito.when(cpDAO.getById(ArgumentMatchers.anyLong()))
                 .thenReturn(getCertifiedProductWithAcbAndEdition(2L, 3L));
-        assertTrue(permissions.hasAccess(surv));
+        assertTrue(permissions.hasAccess(1L));
     }
 
     @Test(expected = AccessDeniedException.class)
@@ -99,17 +92,13 @@ public class UpdateActionPermissionsTest extends ActionPermissionsBaseTest {
         // This should always be false
         assertFalse(permissions.hasAccess());
 
-        Surveillance surv = new Surveillance();
-        surv.setCertifiedProduct(new CertifiedProduct());
-        surv.getCertifiedProduct().setId(1L);
-
         Mockito.when(cpDAO.getById(ArgumentMatchers.anyLong()))
                 .thenReturn(getCertifiedProductWithAcbAndEdition(3L, 2L));
 
         Mockito.when(errorMessageUtil.getMessage(ArgumentMatchers.anyString()))
                 .thenReturn("message");
 
-        permissions.hasAccess(surv);
+        permissions.hasAccess(1L);
     }
 
     @Override
