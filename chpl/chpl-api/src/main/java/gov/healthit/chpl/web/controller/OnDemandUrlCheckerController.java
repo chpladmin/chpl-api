@@ -32,13 +32,13 @@ public class OnDemandUrlCheckerController {
         this.onDemandUrlCheckerManager = onDemandUrlCheckerManager;
     }
 
-    @Operation(summary = "",
-            description = "Security Restrictions: ROLE_ADMIN or ROLE_ONC",
+    @Operation(summary = "Validates a URL.  Three checks are performed: 1) HTTP Status code is 200, 2) Response time is less than 30 seconds, and 3) Response body is not empty.",
+            description = "Security Restrictions: chpl-admin, chpl-onc, or chpl-onc-acb",
             security = {
                     @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
                     @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
-            })
-    @RequestMapping(value = "", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
+    })
+    @RequestMapping(value = "/validate", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = "application/json; charset=utf-8")
     public OnDemandUrlCheckerResponse checkUrl(@RequestBody OnDemandUrlRequest url) throws InterruptedException, ApiException, ValidationException {
         return onDemandUrlCheckerManager.checkUrl(url.getUrl());
     }
