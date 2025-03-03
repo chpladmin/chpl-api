@@ -6,16 +6,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class CqmCriteriaManager {
+public class CqmManager {
 
     private CqmCriterionService cqmCriterionService;
 
     @Autowired
-    public CqmCriteriaManager(CqmCriterionService cqmCriterionService) {
+    public CqmManager(CqmCriterionService cqmCriterionService) {
         this.cqmCriterionService = cqmCriterionService;
     }
 
-    public List<CQMCriterionAllVersions> getAllCqmCriteria() {
+    public List<CQMCriterionAllVersions> getAllCqms() {
         List<CQMCriterionAllVersions> allCqms = cqmCriterionService.getAllCmsCqmsWithAllVersions();
         allCqms.stream().sorted();
         List<CQMCriterion> nqfCqms = cqmCriterionService.getAllNqfCqms();

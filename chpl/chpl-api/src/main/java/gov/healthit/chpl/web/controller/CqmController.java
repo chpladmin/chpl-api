@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import gov.healthit.chpl.cqm.CQMCriterionAllVersions;
-import gov.healthit.chpl.cqm.CqmCriteriaManager;
+import gov.healthit.chpl.cqm.CqmManager;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -18,12 +18,12 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @Tag(name = "cqms", description = "Endpoints related to Clinical Quality Measures.")
 @RestController
 @RequestMapping("/cqms")
-public class CqmCriteriaController {
-    private CqmCriteriaManager cqmCriteriaManager;
+public class CqmController {
+    private CqmManager cqmManager;
 
     @Autowired
-    public CqmCriteriaController(CqmCriteriaManager cqmCriteriaManager) {
-        this.cqmCriteriaManager = cqmCriteriaManager;
+    public CqmController(CqmManager cqmManager) {
+        this.cqmManager = cqmManager;
     }
 
     @Operation(summary = "Retrieve all Clinical Quality Measures. ",
@@ -33,6 +33,6 @@ public class CqmCriteriaController {
             })
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json; charset=utf-8")
     public @ResponseBody List<CQMCriterionAllVersions> getAllCqms() {
-        return cqmCriteriaManager.getAllCqmCriteria();
+        return cqmManager.getAllCqms();
     }
 }
