@@ -5,19 +5,19 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
-import org.apache.commons.lang3.StringUtils;
 import org.jfree.data.time.DateRange;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.attestation.domain.AttestationPeriod;
 import gov.healthit.chpl.attestation.manager.AttestationPeriodService;
+import gov.healthit.chpl.certifiedproduct.service.CertificationStatusEventsService;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.CertificationStatus;
 import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.domain.Developer;
+import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.CertificationBodyManager;
@@ -36,15 +36,18 @@ public class AttestationCertificationBodyService {
 
     private ListingSearchService listingSearchService;
     private AttestationPeriodService attestationPeriodService;
+    private CertificationStatusEventsService certStatusEventsService;
     private DeveloperManager developerManager;
     private CertificationBodyManager certificationBodyManager;
-    private List<String> activeStatusNames = CertificationStatusUtil.getActiveStatusNames();
+    private List<CertificationStatusType> activeStatuses = CertificationStatusUtil.getActiveStatuses();
 
     @Autowired
     public AttestationCertificationBodyService(ListingSearchService listingSearchService, AttestationPeriodService attestationPeriodService,
+            CertificationStatusEventsService certStatusEventsService,
             DeveloperManager developerManager, CertificationBodyManager certificationBodyManager) {
         this.listingSearchService = listingSearchService;
         this.attestationPeriodService = attestationPeriodService;
+        this.certStatusEventsService = certStatusEventsService;
         this.developerManager = developerManager;
         this.certificationBodyManager = certificationBodyManager;
     }
@@ -73,7 +76,7 @@ public class AttestationCertificationBodyService {
 
     private List<ListingSearchResult> getListingDataForDeveloper(Developer developer) throws ValidationException {
         SearchRequest request = SearchRequest.builder()
-                .certificationStatuses(activeStatusNames.stream().collect(Collectors.toSet()))
+                .certificationStatuses(activeStatuses.stream().map(status -> status.getName()).collect(Collectors.toSet()))
                 .developer(developer.getName())
                 .pageSize(MAX_PAGE_SIZE)
                 .build();
@@ -86,9 +89,9 @@ public class AttestationCertificationBodyService {
                         .status(CertificationStatus.builder()
                                 .name(statusEventSearchResult.getStatus().getName())
                                 .build())
-                        .eventDate(toDate(statusEventSearchResult.getStatusStart()).getTime())
+                        .eventDay(statusEventSearchResult.getStatusStart())
                         .build())
-                .sorted(Comparator.comparing(CertificationStatusEvent::getEventDate))
+                .sorted(Comparator.comparing(CertificationStatusEvent::getEventDay))
                 .toList();
 
         return isListingActiveDuringAttestationPeriod(statusEvents, period);
@@ -103,16 +106,7 @@ public class AttestationCertificationBodyService {
     }
 
     private List<DateRange> getDateRangesWithActiveStatus(List<CertificationStatusEvent> listingStatusEvents) {
-        //Assumes statuses are sorted
-        return IntStream.range(0, listingStatusEvents.size())
-            .filter(i -> listingStatusEvents.get(i) != null && listingStatusEvents.get(i).getStatus() != null
-                && !StringUtils.isEmpty(listingStatusEvents.get(i).getStatus().getName()))
-            .filter(i -> activeStatusNames.contains(listingStatusEvents.get(i).getStatus().getName()))
-            .mapToObj(i -> new DateRange(new Date(listingStatusEvents.get(i).getEventDate()),
-                    i < (listingStatusEvents.size() - 1) ? new Date(listingStatusEvents.get(i + 1).getEventDate())
-                            //Math.max here to handle the case where status is a future date
-                            : new Date(Math.max(System.currentTimeMillis(), listingStatusEvents.get(i).getEventDate()))))
-            .collect(Collectors.toList());
+        return certStatusEventsService.getDateRangesWithStatuses(listingStatusEvents, activeStatuses);
     }
 
     private CertificationBody getCertificationBody(Long acbId) {

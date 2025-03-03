@@ -14,7 +14,6 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import gov.healthit.chpl.dao.CertifiedProductDAO;
-import gov.healthit.chpl.domain.CertifiedProduct;
 import gov.healthit.chpl.domain.surveillance.Surveillance;
 import gov.healthit.chpl.dto.CertifiedProductDTO;
 import gov.healthit.chpl.permissions.ResourcePermissions;
@@ -61,7 +60,7 @@ public class CreateActionPermissionsTest extends ActionPermissionsBaseTest {
         assertFalse(permissions.hasAccess());
 
         // Since it is admin it has access to all - param value does not matter.
-        assertTrue(permissions.hasAccess(new Surveillance()));
+        assertTrue(permissions.hasAccess(1L));
     }
 
     @Override
@@ -71,7 +70,7 @@ public class CreateActionPermissionsTest extends ActionPermissionsBaseTest {
 
         // This should always be false
         assertFalse(permissions.hasAccess());
-        assertFalse(permissions.hasAccess(new Surveillance()));
+        assertFalse(permissions.hasAccess(1L));
     }
 
     @Override
@@ -83,15 +82,11 @@ public class CreateActionPermissionsTest extends ActionPermissionsBaseTest {
         // This should always be false
         assertFalse(permissions.hasAccess());
 
-        Surveillance surv = new Surveillance();
-        surv.setCertifiedProduct(new CertifiedProduct());
-        surv.getCertifiedProduct().setId(1L);
-
         Mockito.when(certifiedProductDAO.getById(ArgumentMatchers.anyLong())).thenReturn(getListing(1L));
-        assertFalse(permissions.hasAccess(surv));
+        assertFalse(permissions.hasAccess(1L));
 
         Mockito.when(certifiedProductDAO.getById(ArgumentMatchers.anyLong())).thenReturn(getListing(2L));
-        assertTrue(permissions.hasAccess(surv));
+        assertTrue(permissions.hasAccess(1L));
     }
 
     @Override

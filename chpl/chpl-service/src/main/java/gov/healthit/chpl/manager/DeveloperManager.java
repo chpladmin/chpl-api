@@ -1,11 +1,9 @@
 package gov.healthit.chpl.manager;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -33,14 +31,12 @@ import gov.healthit.chpl.dao.CertifiedProductDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.developer.messaging.DeveloperMessageRequest;
 import gov.healthit.chpl.developer.search.DeveloperSearchResult;
-import gov.healthit.chpl.developer.search.DeveloperSearchResultV2;
 import gov.healthit.chpl.developer.search.SearchRequestNormalizer;
 import gov.healthit.chpl.developer.search.SearchRequestValidator;
 import gov.healthit.chpl.domain.Address;
 import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.domain.Developer;
 import gov.healthit.chpl.domain.DeveloperStatusEvent;
-import gov.healthit.chpl.domain.IdNamePair;
 import gov.healthit.chpl.domain.Organization;
 import gov.healthit.chpl.domain.Product;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
@@ -55,7 +51,6 @@ import gov.healthit.chpl.domain.schedule.ChplOneTimeTrigger;
 import gov.healthit.chpl.dto.CertifiedProductDetailsDTO;
 import gov.healthit.chpl.dto.ProductVersionDTO;
 import gov.healthit.chpl.dto.auth.UserDTO;
-import gov.healthit.chpl.entity.developer.DeveloperStatusType;
 import gov.healthit.chpl.exception.ActivityException;
 import gov.healthit.chpl.exception.EntityCreationException;
 import gov.healthit.chpl.exception.EntityRetrievalException;
@@ -146,47 +141,6 @@ public class DeveloperManager extends SecuredManager {
     }
 
     @Transactional(readOnly = true)
-    @Deprecated
-    public List<DeveloperSearchResultV2> getDeveloperSearchResultsV2() {
-        Map<Developer, Set<CertificationBody>> allDevelopersWithAcbs = developerDao.findAllDevelopersWithAcbs();
-        return allDevelopersWithAcbs.keySet().stream()
-                .map(developer -> convertToSearchResultV2(developer, allDevelopersWithAcbs.get(developer)))
-                .collect(Collectors.toList());
-    }
-
-    @Deprecated
-    private DeveloperSearchResultV2 convertToSearchResultV2(Developer developer, Set<CertificationBody> acbs) {
-        return DeveloperSearchResultV2.builder()
-                .id(developer.getId())
-                .name(developer.getName())
-                .code(developer.getDeveloperCode())
-                .address(developer.getAddress())
-                .contact(developer.getContact())
-                .associatedAcbs(acbs.stream()
-                        .map(acb -> IdNamePair.builder()
-                                .id(acb.getId())
-                                .name(acb.getName())
-                                .build())
-                        .collect(Collectors.toSet()))
-                .status(developer.getCurrentStatusEvent() == null ? null
-                        : IdNamePair.builder()
-                            .id(developer.getCurrentStatusEvent().getStatus().getId())
-                            .name(developer.getCurrentStatusEvent().getStatus().getName())
-                            .build())
-                .decertificationDate(calculateDecertificationDate(developer))
-                .build();
-    }
-
-    private LocalDate calculateDecertificationDate(Developer developer) {
-        DeveloperStatusEvent developerStatusNow = developer.getCurrentStatusEvent();
-        if (developerStatusNow != null
-                && developerStatusNow.getStatus().getName().equals(DeveloperStatusType.UnderCertificationBanByOnc.getName())) {
-            return developerStatusNow.getStartDate();
-        }
-        return null;
-    }
-
-    @Transactional(readOnly = true)
     public Developer getById(Long id, boolean allowDeleted) throws EntityRetrievalException {
         Developer developer = developerDao.getById(id, allowDeleted);
         return developer;
@@ -269,8 +223,7 @@ public class DeveloperManager extends SecuredManager {
             CacheNames.ALL_DEVELOPERS_INCLUDING_DELETED,
             CacheNames.COLLECTIONS_DEVELOPERS,
             CacheNames.GET_DECERTIFIED_DEVELOPERS,
-            CacheNames.QUESTIONABLE_ACTIVITIES,
-            CacheNames.COLLECTIONS_LISTINGS
+            CacheNames.QUESTIONABLE_ACTIVITIES
     }, allEntries = true)
     @ListingStoreRemove(removeBy = RemoveBy.DEVELOPER_ID, id = "#updatedDev.id")
     @ListingSearchCacheRefresh
@@ -359,7 +312,6 @@ public class DeveloperManager extends SecuredManager {
             CacheNames.COLLECTIONS_DEVELOPERS,
             CacheNames.GET_DECERTIFIED_DEVELOPERS,
             CacheNames.QUESTIONABLE_ACTIVITIES,
-            CacheNames.COLLECTIONS_LISTINGS,
             CacheNames.COGNITO_USERS_BY_EMAIL,
             CacheNames.COGNITO_USERS_BY_UUID
     }, allEntries = true)
@@ -407,7 +359,6 @@ public class DeveloperManager extends SecuredManager {
             CacheNames.COLLECTIONS_DEVELOPERS,
             CacheNames.GET_DECERTIFIED_DEVELOPERS,
             CacheNames.QUESTIONABLE_ACTIVITIES,
-            CacheNames.COLLECTIONS_LISTINGS,
             CacheNames.COGNITO_USERS_BY_EMAIL,
             CacheNames.COGNITO_USERS_BY_UUID
     }, allEntries = true)
@@ -451,7 +402,6 @@ public class DeveloperManager extends SecuredManager {
             CacheNames.COLLECTIONS_DEVELOPERS,
             CacheNames.GET_DECERTIFIED_DEVELOPERS,
             CacheNames.QUESTIONABLE_ACTIVITIES,
-            CacheNames.COLLECTIONS_LISTINGS,
             CacheNames.COGNITO_USERS_BY_EMAIL,
             CacheNames.COGNITO_USERS_BY_UUID
     }, allEntries = true)
@@ -483,8 +433,7 @@ public class DeveloperManager extends SecuredManager {
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).DEVELOPER, "
             + "T(gov.healthit.chpl.permissions.domains.DeveloperDomainPermissions).SPLIT, #oldDeveloper)")
     @CacheEvict(value = {
-            CacheNames.QUESTIONABLE_ACTIVITIES,
-            CacheNames.COLLECTIONS_LISTINGS
+            CacheNames.QUESTIONABLE_ACTIVITIES
     }, allEntries = true)
     @ListingSearchCacheRefresh
     @ListingStoreRemove(removeBy = RemoveBy.DEVELOPER_ID, id = "#oldDeveloper.id")

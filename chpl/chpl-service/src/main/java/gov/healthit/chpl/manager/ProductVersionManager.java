@@ -115,9 +115,6 @@ public class ProductVersionManager extends SecuredManager {
     @Transactional(readOnly = false)
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PRODUCT_VERSION, "
             + "T(gov.healthit.chpl.permissions.domains.ProductVersionDomainPermissions).CREATE)")
-    @CacheEvict(value = {
-            CacheNames.COLLECTIONS_LISTINGS
-    }, allEntries = true)
     @ListingSearchCacheRefresh
     public Long create(Long productId, ProductVersion version)
             throws EntityCreationException, EntityRetrievalException,
@@ -153,9 +150,6 @@ public class ProductVersionManager extends SecuredManager {
     @Transactional(readOnly = false)
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PRODUCT_VERSION, "
             + "T(gov.healthit.chpl.permissions.domains.ProductVersionDomainPermissions).CREATE)")
-    @CacheEvict(value = {
-            CacheNames.COLLECTIONS_LISTINGS
-    }, allEntries = true)
     @ListingSearchCacheRefresh
     public ProductVersionDTO create(ProductVersionDTO dto, List<Long> versionsBeingMerged) throws EntityCreationException,
         ValidationException, EntityRetrievalException, ActivityException {
@@ -189,7 +183,7 @@ public class ProductVersionManager extends SecuredManager {
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PRODUCT_VERSION, "
             + "T(gov.healthit.chpl.permissions.domains.ProductVersionDomainPermissions).UPDATE, #version)")
     @CacheEvict(value = {
-            CacheNames.COLLECTIONS_LISTINGS, CacheNames.QUESTIONABLE_ACTIVITIES
+            CacheNames.QUESTIONABLE_ACTIVITIES
     }, allEntries = true)
     @ListingSearchCacheRefresh
     @ListingStoreRemove(removeBy = RemoveBy.VERSION_ID, id = "#version.id")
@@ -236,7 +230,7 @@ public class ProductVersionManager extends SecuredManager {
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PRODUCT_VERSION, "
             + "T(gov.healthit.chpl.permissions.domains.ProductVersionDomainPermissions).MERGE, #versionIdsToMerge)")
     @CacheEvict(value = {
-            CacheNames.COLLECTIONS_LISTINGS, CacheNames.QUESTIONABLE_ACTIVITIES
+            CacheNames.QUESTIONABLE_ACTIVITIES
     }, allEntries = true)
     @ListingSearchCacheRefresh
     @ListingStoreRemove(removeBy = RemoveBy.VERSION_ID, id = "#toCreate.id")
@@ -282,7 +276,7 @@ public class ProductVersionManager extends SecuredManager {
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PRODUCT_VERSION, "
             + "T(gov.healthit.chpl.permissions.domains.ProductVersionDomainPermissions).SPLIT, #oldVersion)")
     @CacheEvict(value = {
-            CacheNames.COLLECTIONS_LISTINGS, CacheNames.QUESTIONABLE_ACTIVITIES
+            CacheNames.QUESTIONABLE_ACTIVITIES
     }, allEntries = true)
     @ListingSearchCacheRefresh
     @ListingStoreRemove(removeBy = RemoveBy.VERSION_ID, id = "#newVersion.id")

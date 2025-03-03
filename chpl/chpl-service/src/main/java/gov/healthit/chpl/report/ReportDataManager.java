@@ -21,6 +21,7 @@ import gov.healthit.chpl.report.nonconformity.NonconformityReportService;
 import gov.healthit.chpl.report.product.ProductByAcb;
 import gov.healthit.chpl.report.product.ProductReportsService;
 import gov.healthit.chpl.report.product.UniqueProductCount;
+import gov.healthit.chpl.report.realworldtesting.RealWorldTestingReportDataService;
 import gov.healthit.chpl.report.servicebaseurllistreport.ServiceBaseUrlListReportService;
 import gov.healthit.chpl.report.servicebaseurllistreport.UrlUptimeMonitorEx;
 import gov.healthit.chpl.report.surveillance.CapCounts;
@@ -50,6 +51,7 @@ public class ReportDataManager {
     private CriteriaAttributeReportService criteriaAttributeReportService;
     private ServiceBaseUrlListReportService serviceBaseUrlListReportService;
     private SvapReportService svapReportService;
+    private RealWorldTestingReportDataService realWorldTestingReportDataService;
     private NonconformityReportService nonconformityReportService;
 
     @Autowired
@@ -64,6 +66,7 @@ public class ReportDataManager {
             CriteriaAttributeReportService criteriaAttributeReportService,
             ServiceBaseUrlListReportService serviceBaseUrlListReportService,
             SvapReportService svapReportService,
+            RealWorldTestingReportDataService realWorldTestingReportDataService,
             NonconformityReportService nonconformityReportService) {
 
         this.criteriaMigrationReportService = criteriaMigrationReportService;
@@ -78,6 +81,7 @@ public class ReportDataManager {
         this.criteriaAttributeReportService = criteriaAttributeReportService;
         this.serviceBaseUrlListReportService = serviceBaseUrlListReportService;
         this.svapReportService = svapReportService;
+        this.realWorldTestingReportDataService = realWorldTestingReportDataService;
         this.nonconformityReportService = nonconformityReportService;
     }
 
@@ -264,6 +268,11 @@ public class ReportDataManager {
     @Synchronized("lock")
     public List<UrlUptimeMonitorEx> getUrlUptimeMonitors() {
         return serviceBaseUrlListReportService.getUrlUptimeMonitors();
+    }
+
+    @Synchronized("lock")
+    public RealWorldTestingReportDataService getRealWorldTestingReportDataService() {
+        return realWorldTestingReportDataService;
     }
 
     @Synchronized("lock")

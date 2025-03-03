@@ -19,7 +19,6 @@ public class ContactDAO extends BaseDAOImpl {
         toInsert.setEmail(StringUtils.normalizeSpace(contact.getEmail()));
         toInsert.setFullName(StringUtils.normalizeSpace(contact.getFullName()));
         toInsert.setPhoneNumber(StringUtils.normalizeSpace(contact.getPhoneNumber()));
-        toInsert.setTitle(StringUtils.normalizeSpace(contact.getTitle()));
         toInsert.setSignatureDate(null);
         toInsert.setDeleted(false);
         create(toInsert);
@@ -31,7 +30,6 @@ public class ContactDAO extends BaseDAOImpl {
         contactEntity.setEmail(StringUtils.normalizeSpace(contact.getEmail()));
         contactEntity.setFullName(StringUtils.normalizeSpace(contact.getFullName()));
         contactEntity.setPhoneNumber(StringUtils.normalizeSpace(contact.getPhoneNumber()));
-        contactEntity.setTitle(StringUtils.normalizeSpace(contact.getTitle()));
         contactEntity.setSignatureDate(null);
         contactEntity.setDeleted(false);
         update(contactEntity);

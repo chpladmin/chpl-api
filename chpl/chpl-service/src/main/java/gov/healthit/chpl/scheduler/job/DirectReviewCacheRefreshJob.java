@@ -11,7 +11,6 @@ import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.caching.ListingSearchCacheRefresh;
 import gov.healthit.chpl.compliance.directreview.DirectReviewCachingService;
 import gov.healthit.chpl.manager.DeveloperManager;
-import gov.healthit.chpl.search.CertifiedProductSearchManager;
 import lombok.extern.log4j.Log4j2;
 
 @DisallowConcurrentExecution
@@ -22,9 +21,6 @@ public class DirectReviewCacheRefreshJob extends QuartzJob {
 
     @Autowired
     private DirectReviewCachingService directReviewService;
-
-    @Autowired
-    private CertifiedProductSearchManager certifiedProductSearchManager;
 
     @Autowired
     private DeveloperManager developerManager;
@@ -43,12 +39,10 @@ public class DirectReviewCacheRefreshJob extends QuartzJob {
             LOGGER.error(e.getMessage(), e);
         }
 
-        LOGGER.info("Refreshing searchable listing collection (deprecated)");
-        cacheManager.getCache(CacheNames.COLLECTIONS_LISTINGS).invalidate();
+        LOGGER.info("Refreshing developer search");
         cacheManager.getCache(CacheNames.COLLECTIONS_DEVELOPERS).invalidate();
         developerManager.getDeveloperSearchResults();
-        certifiedProductSearchManager.getFlatListingCollection();
-        LOGGER.info("Completed refreshing searchable listing collection (deprecated)");
+        LOGGER.info("Completed refreshing developer search");
 
         LOGGER.info("********* Completed the Direct Review Cache Refresh job. *********");
     }

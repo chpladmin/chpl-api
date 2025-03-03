@@ -131,7 +131,7 @@ public class TestingLabController {
 
         TestingLab result = atlManager.getById(updatedAtl.getId());
         HttpHeaders responseHeaders = new HttpHeaders();
-        responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_LISTINGS);
+        responseHeaders.set("Cache-cleared", CacheNames.COLLECTIONS_SEARCH);
         return new ResponseEntity<TestingLab>(result, responseHeaders, HttpStatus.OK);
     }
 }

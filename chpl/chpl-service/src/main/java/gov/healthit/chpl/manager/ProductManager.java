@@ -127,7 +127,6 @@ public class ProductManager extends SecuredManager {
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PRODUCT, "
             + "T(gov.healthit.chpl.permissions.domains.ProductDomainPermissions).CREATE)")
     @CacheEvict(value = {
-            CacheNames.COLLECTIONS_LISTINGS,
             CacheNames.QUESTIONABLE_ACTIVITIES
     }, allEntries = true)
     @ListingSearchCacheRefresh
@@ -148,7 +147,7 @@ public class ProductManager extends SecuredManager {
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PRODUCT, "
             + "T(gov.healthit.chpl.permissions.domains.ProductDomainPermissions).UPDATE_OWNERSHIP, #product)")
     @CacheEvict(value = {
-            CacheNames.COLLECTIONS_LISTINGS, CacheNames.QUESTIONABLE_ACTIVITIES
+            CacheNames.QUESTIONABLE_ACTIVITIES
     }, allEntries = true)
     @ListingSearchCacheRefresh
     @ListingStoreRemove(removeBy = RemoveBy.PRODUCT_ID, id = "#product.id")
@@ -195,7 +194,6 @@ public class ProductManager extends SecuredManager {
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PRODUCT, "
             + "T(gov.healthit.chpl.permissions.domains.ProductDomainPermissions).UPDATE, #product)")
     @CacheEvict(value = {
-            CacheNames.COLLECTIONS_LISTINGS,
             CacheNames.QUESTIONABLE_ACTIVITIES
     }, allEntries = true)
     @ListingSearchCacheRefresh
@@ -208,7 +206,6 @@ public class ProductManager extends SecuredManager {
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PRODUCT, "
             + "T(gov.healthit.chpl.permissions.domains.ProductDomainPermissions).UPDATE, #product)")
     @CacheEvict(value = {
-            CacheNames.COLLECTIONS_LISTINGS,
             CacheNames.QUESTIONABLE_ACTIVITIES
     }, allEntries = true)
     @ListingSearchCacheRefresh
@@ -221,7 +218,6 @@ public class ProductManager extends SecuredManager {
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PRODUCT, "
             + "T(gov.healthit.chpl.permissions.domains.ProductDomainPermissions).MERGE, #productIdsToMerge)")
     @CacheEvict(value = {
-            CacheNames.COLLECTIONS_LISTINGS,
             CacheNames.QUESTIONABLE_ACTIVITIES
     }, allEntries = true)
     @ListingSearchCacheRefresh
@@ -266,7 +262,6 @@ public class ProductManager extends SecuredManager {
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).PRODUCT, "
             + "T(gov.healthit.chpl.permissions.domains.ProductDomainPermissions).SPLIT, #oldProduct)")
     @CacheEvict(value = {
-            CacheNames.COLLECTIONS_LISTINGS,
             CacheNames.QUESTIONABLE_ACTIVITIES
     }, allEntries = true)
     @ListingSearchCacheRefresh
@@ -384,12 +379,11 @@ public class ProductManager extends SecuredManager {
             product.getContact().setEmail(StringUtils.normalizeSpace(product.getContact().getEmail()));
             product.getContact().setFullName(StringUtils.normalizeSpace(product.getContact().getFullName()));
             product.getContact().setPhoneNumber(StringUtils.normalizeSpace(product.getContact().getPhoneNumber()));
-            product.getContact().setTitle(StringUtils.normalizeSpace(product.getContact().getTitle()));
 
             //if all empty contact info is passed in, set the contact to null
             PointOfContact contact = product.getContact();
-            if (StringUtils.isAllEmpty(contact.getEmail(), contact.getFullName(), contact.getPhoneNumber(),
-                    contact.getTitle()) && contact.getContactId() == null) {
+            if (StringUtils.isAllEmpty(contact.getEmail(), contact.getFullName(), contact.getPhoneNumber())
+                    && contact.getContactId() == null) {
                 product.setContact(null);
             }
         }

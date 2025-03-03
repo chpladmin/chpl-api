@@ -284,10 +284,10 @@ public class QuestionableActivityEmailJob extends QuartzJob {
     }
 
     private List<List<String>> createListingActivityRows(Date startDate, Date endDate) {
-        LOGGER.debug("Getting listing activity between " + startDate + " and " + endDate);
+        LOGGER.info("Getting listing activity between " + startDate + " and " + endDate);
         List<QuestionableActivityListing> listingActivities = questionableActivityDao
                 .findListingActivityBetweenDates(startDate, endDate);
-        LOGGER.debug("Found " + listingActivities.size() + " questionable listing activities");
+        LOGGER.info("Found " + listingActivities.size() + " questionable listing activities");
 
         // create a bucket for each activity timestamp+trigger type
         Map<ActivityDateTriggerGroup, List<QuestionableActivityListing>> activityByGroup =
@@ -324,10 +324,10 @@ public class QuestionableActivityEmailJob extends QuartzJob {
     }
 
     private List<List<String>> createDeveloperActivityRows(Date startDate, Date endDate) {
-        LOGGER.debug("Getting developer activity between " + startDate + " and " + endDate);
+        LOGGER.info("Getting developer activity between " + startDate + " and " + endDate);
         List<QuestionableActivityDeveloper> developerActivities = questionableActivityDao
                 .findDeveloperActivityBetweenDates(startDate, endDate);
-        LOGGER.debug("Found " + developerActivities.size() + " questionable developer activities");
+        LOGGER.info("Found " + developerActivities.size() + " questionable developer activities");
 
         // create a bucket for each activity timestamp+trigger type
         Map<ActivityDateTriggerGroup, List<QuestionableActivityDeveloper>> activityByGroup =
@@ -366,10 +366,10 @@ public class QuestionableActivityEmailJob extends QuartzJob {
     }
 
     private List<List<String>> createProductActivityRows(Date startDate, Date endDate) {
-        LOGGER.debug("Getting product activity between " + startDate + " and " + endDate);
+        LOGGER.info("Getting product activity between " + startDate + " and " + endDate);
         List<QuestionableActivityProduct> productActivities = questionableActivityDao
                 .findProductActivityBetweenDates(startDate, endDate);
-        LOGGER.debug("Found " + productActivities.size() + " questionable developer activities");
+        LOGGER.info("Found " + productActivities.size() + " questionable developer activities");
 
         // create a bucket for each activity timestamp+trigger type
         Map<ActivityDateTriggerGroup, List<QuestionableActivityProduct>> activityByGroup =
@@ -408,10 +408,10 @@ public class QuestionableActivityEmailJob extends QuartzJob {
     }
 
     private List<List<String>> createVersionActivityRows(Date startDate, Date endDate) {
-        LOGGER.debug("Getting version activity between " + startDate + " and " + endDate);
+        LOGGER.info("Getting version activity between " + startDate + " and " + endDate);
         List<QuestionableActivityVersion> versionActivities = questionableActivityDao
                 .findVersionActivityBetweenDates(startDate, endDate);
-        LOGGER.debug("Found " + versionActivities.size() + " questionable developer activities");
+        LOGGER.info("Found " + versionActivities.size() + " questionable developer activities");
 
         // create a bucket for each activity timestamp+trigger type
         Map<ActivityDateTriggerGroup, List<QuestionableActivityVersion>> activityByGroup =

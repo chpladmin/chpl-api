@@ -35,8 +35,8 @@
     <Logger name="questionableUrlReportGeneratorJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="questionableUrlReportGeneratorJob" />
     </Logger>
-    <Logger name="chartDataCreatorJobLogger" level="INFO" additivity="false">
-        <AppenderRef ref="chartDataCreatorJob" />
+    <Logger name="standardsUpdateJobLogger" level="INFO" additivity="false">
+        <AppenderRef ref="standardsUpdateJob" />
     </Logger>
     <Logger name="certifiedProductDownloadableResourceCreatorJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="certifiedProductDownloadableResourceCreatorJob" />
@@ -205,10 +205,16 @@
     <Logger name="updatedSedFriendlyIdsJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="updatedSedFriendlyIdsJob" />
     </Logger>
+    <Logger name="realWorldTestingSummaryReportCreatorJobLogger" level="INFO" additivity="false">
+        <AppenderRef ref="realWorldTestingSummaryReportCreatorJob" />
+    </Logger>
     <Logger name="attestationReportCreatorJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="attestationReportCreatorJob" />
     </Logger>
     <Logger name="fixDatadogUrlUptimeAssertionsJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="fixDatadogUrlUptimeAssertionsJob" />
+    </Logger>
+    <Logger name="fixJobDataJobLogger" level="INFO" additivity="false">
+        <AppenderRef ref="fixJobDataJob" />
     </Logger>
 </Loggers>

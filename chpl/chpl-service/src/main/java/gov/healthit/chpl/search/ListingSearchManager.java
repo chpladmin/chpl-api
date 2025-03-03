@@ -15,7 +15,6 @@ import gov.healthit.chpl.domain.compliance.DirectReviewNonConformity;
 import gov.healthit.chpl.search.dao.ListingSearchDao;
 import gov.healthit.chpl.search.domain.ListingSearchResult;
 import gov.healthit.chpl.search.domain.ListingSearchResult.StatusEventSearchResult;
-import gov.healthit.chpl.util.DateUtil;
 import lombok.extern.log4j.Log4j2;
 
 @Service
@@ -59,7 +58,7 @@ public class ListingSearchManager {
             .status(CertificationStatus.builder()
                     .name(statusEvent.getStatus().getName())
                     .build())
-            .eventDate(DateUtil.toEpochMillis(statusEvent.getStatusStart()))
+            .eventDay(statusEvent.getStatusStart())
             .build();
     }
 
