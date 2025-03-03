@@ -38,7 +38,6 @@ public class DatadogSyntheticsTestService {
     private static final Long SECONDS_IN_A_MINUTE = 60L;
 
     private DatadogSyntheticsTestApiProvider apiProvider;
-    private Boolean datadogIsReadOnly;
     private String datadogTestStartTime;
     private String datadogTestEndTime;
     private Long datadogCheckEveryMinutes;
@@ -46,14 +45,12 @@ public class DatadogSyntheticsTestService {
     private String datadogTestLocation;
 
     public DatadogSyntheticsTestService(DatadogSyntheticsTestApiProvider apiProvider,
-            @Value("${datadog.syntheticsTest.readOnly}") Boolean datadogIsReadOnly,
             @Value("${datadog.syntheticsTest.startTime}") String datadogTestStartTime,
             @Value("${datadog.syntheticsTest.endTime}") String datadogTestEndTime,
             @Value("${datadog.syntheticsTest.checkEveryMinutes}") Long datadogCheckEveryMinutes,
             @Value("${datadog.syntheticsTest.timeout}") Integer datadogTestTimeout,
             @Value("${datadog.syntheticsTest.location}") String datadogTestLocation) {
         this.apiProvider = apiProvider;
-        this.datadogIsReadOnly = datadogIsReadOnly;
         this.datadogTestStartTime = datadogTestStartTime;
         this.datadogTestEndTime = datadogTestEndTime;
         this.datadogCheckEveryMinutes = datadogCheckEveryMinutes;
@@ -164,11 +161,7 @@ public class DatadogSyntheticsTestService {
                         .path("/tags")
                         .value(test.getTags()));
         try {
-            if (datadogIsReadOnly) {
-                LOGGER.info("Not adding Developer(s) (due to environment setting) to existing Synthetics Test {}", developerIds);
-            } else {
-                apiProvider.getApiInstance().patchTest(syntheticsApiTestPublicId, body);
-            }
+            apiProvider.getApiInstance().patchTest(syntheticsApiTestPublicId, body);
         } catch (ApiException e) {
             LOGGER.error("Could not add Developer(s) to existing Synthetics Test {}", developerIds, e);
         }
