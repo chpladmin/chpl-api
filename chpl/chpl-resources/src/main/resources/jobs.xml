@@ -7,10 +7,10 @@
         <delete-triggers-in-group>triggerJob</delete-triggers-in-group>
         <delete-triggers-in-group>interruptJob</delete-triggers-in-group>
         <!-- BEGIN REMOVE after PROD push -->
-        <delete-trigger>
-            <name>generateUrlStatusData</name>
-            <group>urlStatusDataCollectorTrigger</group>
-        </delete-trigger>
+        <delete-job>
+            <name>chartDataCreator</name>
+            <group>systemJobs</group>
+        </delete-job>
         <!-- END remove after PROD push -->
     </pre-processing-commands>
     <processing-directives>
@@ -237,12 +237,11 @@
             </job-data-map>
         </job>
 
-        <!-- Chart data creator -->
         <job>
-            <name>chartDataCreator</name>
+            <name>standardsUpdateJob</name>
             <group>systemJobs</group>
-            <description>Generates the chart data</description>
-            <job-class>gov.healthit.chpl.scheduler.job.chartdata.ChartDataCreatorJob</job-class>
+            <description>Removes inappropriate standards from listings have have had standards changed between 2024-12-18 and 2025-01-22</description>
+            <job-class>gov.healthit.chpl.scheduler.job.onetime.StandardsUpdateJob</job-class>
             <durability>true</durability>
             <recover>false</recover>
         </job>
@@ -923,6 +922,15 @@
         </job>
         
         <job>
+            <name>realWorldTestingSummaryReportCreatorJob</name>
+            <group>systemJobs</group>
+            <description>Populate RWT reporting tables</description>
+            <job-class>gov.healthit.chpl.scheduler.job.RealWorldTestingSummaryReportCreatorJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+        </job>
+
+        <job>
             <name>attestationReportCreatorJob</name>
             <group>systemJobs</group>
             <description>Generate data for the Attestation Report (Power BI)</description>
@@ -936,6 +944,15 @@
             <group>systemJobs</group>
             <description>Fix Datadog Url Uptime Assertions Job (BEWARE - THIS JOB CAN ONLY BE RUN ONCE IN EACH DATADOG ENVIRONMENT!)</description>
             <job-class>gov.healthit.chpl.scheduler.job.urluptime.FixDatadogUrlUptimeAssertionsJob</job-class>
+            <durability>true</durability>
+            <recover>false</recover>
+        </job>
+        
+        <job>
+            <name>fixJobDataJob</name>
+            <group>systemJobs</group>
+            <description>Fix job data - add new Cognito Roles</description>
+            <job-class>gov.healthit.chpl.scheduler.job.onetime.jobedit.FixJobDataJob</job-class>
             <durability>true</durability>
             <recover>false</recover>
         </job>

@@ -157,7 +157,6 @@ public class ChangeRequestDeveloperDemographicsService extends ChangeRequestDeta
             contact.setFullName(crDevDetails.getContact().getFullName());
             contact.setEmail(crDevDetails.getContact().getEmail());
             contact.setPhoneNumber(crDevDetails.getContact().getPhoneNumber());
-            contact.setTitle(crDevDetails.getContact().getTitle());
             developer.setContact(contact);
         }
         try {
@@ -307,12 +306,6 @@ public class ChangeRequestDeveloperDemographicsService extends ChangeRequestDeta
                 contactHtml += "<br/>";
             }
             contactHtml += "Phone Number: " + contact.getPhoneNumber();
-        }
-        if (!StringUtils.isEmpty(contact.getTitle())) {
-            if (contactHtml.length() > 0) {
-                contactHtml += "<br/>";
-            }
-            contactHtml += "Title: " + contact.getTitle();
         }
         return contactHtml;
     }

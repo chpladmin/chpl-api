@@ -128,28 +128,28 @@ public class ComplaintsReportCsvCreator {
             row.add("");
         }
         if (!CollectionUtils.isEmpty(report.getRelatedSurveillance())
-                && hasSurveillanceRelatedToListing(report.getRelatedSurveillance(), associatedListing.getChplProductNumber())) {
+                && hasSurveillanceRelatedToListing(report.getRelatedSurveillance(), associatedListing.getId())) {
             row.add(report.getRelatedSurveillance().stream()
-                    .filter(surv -> isSurveillanceRelatedToListing(surv, associatedListing.getChplProductNumber()))
+                    .filter(surv -> isSurveillanceRelatedToListing(surv, associatedListing.getId()))
                     .sorted(Comparator.comparing(Surveillance::getFriendlyId))
                     .map(surv -> surv.getFriendlyId())
                     .collect(Collectors.joining(", ")));
 
             row.add(report.getRelatedSurveillance().stream()
-                    .filter(surv -> isSurveillanceRelatedToListing(surv, associatedListing.getChplProductNumber()))
+                    .filter(surv -> isSurveillanceRelatedToListing(surv, associatedListing.getId()))
                     .sorted(Comparator.comparing(Surveillance::getFriendlyId))
                     .map(surv -> surv.getFriendlyId() + ":" + getSurveillanceResult(surv))
                     .collect(Collectors.joining(", ")));
 
             row.add(report.getRelatedSurveillance().stream()
-                    .filter(surv -> isSurveillanceRelatedToListing(surv, associatedListing.getChplProductNumber()))
+                    .filter(surv -> isSurveillanceRelatedToListing(surv, associatedListing.getId()))
                     .filter(surv -> doesSurveillanceHaveNonconformities(surv))
                     .sorted(Comparator.comparing(Surveillance::getFriendlyId))
                     .map(surv -> surv.getFriendlyId() + ":" + getNonConformityTypes(surv))
                     .collect(Collectors.joining("; ")));
 
             long countNonconformities = report.getRelatedSurveillance().stream()
-                    .filter(surv -> isSurveillanceRelatedToListing(surv, associatedListing.getChplProductNumber()))
+                    .filter(surv -> isSurveillanceRelatedToListing(surv, associatedListing.getId()))
                     .flatMap(surv -> surv.getRequirements().stream())
                     .filter(survReq -> !CollectionUtils.isEmpty(survReq.getNonconformities()))
                     .flatMap(survReq -> survReq.getNonconformities().stream())
@@ -210,14 +210,14 @@ public class ComplaintsReportCsvCreator {
         return row;
     }
 
-    private boolean hasSurveillanceRelatedToListing(Set<Surveillance> surveillance, String chplProductNumber) {
+    private boolean hasSurveillanceRelatedToListing(Set<Surveillance> surveillance, Long certifiedProductId) {
         return surveillance.stream()
-                .filter(surv -> isSurveillanceRelatedToListing(surv, chplProductNumber))
+                .filter(surv -> isSurveillanceRelatedToListing(surv, certifiedProductId))
                 .findAny().isPresent();
     }
 
-    private boolean isSurveillanceRelatedToListing(Surveillance surv, String chplProductNumber) {
-        return surv.getCertifiedProduct().getChplProductNumber().equals(chplProductNumber);
+    private boolean isSurveillanceRelatedToListing(Surveillance surv, Long certifiedProductId) {
+        return surv.getCertifiedProductId().equals(certifiedProductId);
     }
 
     private List<String> getComplaintFields(ComplaintsReportItem report) {

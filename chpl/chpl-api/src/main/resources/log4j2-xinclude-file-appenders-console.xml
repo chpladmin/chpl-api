@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Appenders>
-    <Console name="chartDataCreatorJobJson" target="SYSTEM_OUT">
+    <Console name="standardsUpdateJobJson" target="SYSTEM_OUT">
         <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
-            <KeyValuePair key="service" value="chartDataCreatorJob" />
+            <KeyValuePair key="service" value="standardsUpdateJob" />
             <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
             <KeyValuePair key="dd.span_id" value="%X{dd.span_id}" />
         </JsonLayout>
@@ -489,4 +489,12 @@
             <KeyValuePair key="dd.span_id" value="%X{dd.span_id}" />
         </JsonLayout>
     </Console>
+        <Console name="fixJobDataJobJson" target="SYSTEM_OUT">
+        <JsonLayout compact="true" eventEol="true" properties="true" stacktraceAsString="true">
+            <KeyValuePair key="service" value="fixJobDataJob" />
+            <KeyValuePair key="dd.trace_id" value="%X{dd.trace_id}" />
+            <KeyValuePair key="dd.span_id" value="%X{dd.span_id}" />
+        </JsonLayout>
+    </Console>
+    
 </Appenders>

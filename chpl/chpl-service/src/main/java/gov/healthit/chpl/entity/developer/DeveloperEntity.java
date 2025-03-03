@@ -7,6 +7,23 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections4.CollectionUtils;
+import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.annotations.Where;
+
+import gov.healthit.chpl.attestation.domain.AttestationPeriod;
+import gov.healthit.chpl.attestation.entity.AttestationPeriodEntity;
+import gov.healthit.chpl.attestation.entity.AttestationSubmissionEntity;
+import gov.healthit.chpl.changerequest.entity.DeveloperCertificationBodyMapEntity;
+import gov.healthit.chpl.developer.DeveloperStatusEventComparator;
+import gov.healthit.chpl.developer.PublicAttestationComparator;
+import gov.healthit.chpl.domain.Developer;
+import gov.healthit.chpl.domain.DeveloperStatusEvent;
+import gov.healthit.chpl.domain.PublicAttestation;
+import gov.healthit.chpl.domain.concept.PublicAttestationStatus;
+import gov.healthit.chpl.entity.AddressEntity;
+import gov.healthit.chpl.entity.ContactEntity;
+import gov.healthit.chpl.entity.EntityAudit;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -19,26 +36,6 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
-
-import org.apache.commons.collections4.CollectionUtils;
-import org.hibernate.annotations.DynamicUpdate;
-import org.hibernate.annotations.Where;
-
-import gov.healthit.chpl.attestation.domain.AttestationPeriod;
-import gov.healthit.chpl.attestation.entity.AttestationPeriodEntity;
-import gov.healthit.chpl.attestation.entity.AttestationSubmissionEntity;
-import gov.healthit.chpl.changerequest.entity.DeveloperCertificationBodyMapEntity;
-import gov.healthit.chpl.developer.DeveloperStatusEventComparator;
-import gov.healthit.chpl.developer.DeveloperStatusEventComparatorDeprecated;
-import gov.healthit.chpl.developer.PublicAttestationComparator;
-import gov.healthit.chpl.domain.Developer;
-import gov.healthit.chpl.domain.DeveloperStatusEvent;
-import gov.healthit.chpl.domain.DeveloperStatusEventDeprecated;
-import gov.healthit.chpl.domain.PublicAttestation;
-import gov.healthit.chpl.domain.concept.PublicAttestationStatus;
-import gov.healthit.chpl.entity.AddressEntity;
-import gov.healthit.chpl.entity.ContactEntity;
-import gov.healthit.chpl.entity.EntityAudit;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -62,9 +59,6 @@ public class DeveloperEntity extends EntityAudit {
 
     @Transient
     private final DeveloperStatusEventComparator developerStatusEventComparator = new DeveloperStatusEventComparator();
-    @Deprecated
-    @Transient
-    private final DeveloperStatusEventComparatorDeprecated developerStatusEventComparatorDeprecated = new DeveloperStatusEventComparatorDeprecated();
     @Transient
     private final PublicAttestationComparator publicAttestationComparator = new PublicAttestationComparator();
 
@@ -136,7 +130,6 @@ public class DeveloperEntity extends EntityAudit {
                 .developerCode(this.getDeveloperCode())
                 .name(this.getName())
                 .selfDeveloper(this.getSelfDeveloper())
-                .statusEvents(toStatusEventsDeprecated())
                 .statuses(toStatusEvents())
                 .lastModifiedDate(this.getLastModifiedDate().getTime() + "")
                 .website(this.getWebsite())
@@ -151,17 +144,6 @@ public class DeveloperEntity extends EntityAudit {
         return this.statusEvents.stream()
                 .map(statusEvent -> statusEvent.toDomain())
                 .sorted(developerStatusEventComparator)
-                .collect(Collectors.toList());
-    }
-
-    @Deprecated
-    private List<DeveloperStatusEventDeprecated> toStatusEventsDeprecated() {
-        if (CollectionUtils.isEmpty(this.getStatusEvents())) {
-            return new ArrayList<DeveloperStatusEventDeprecated>();
-        }
-        return this.statusEvents.stream()
-                .map(statusEvent -> statusEvent.toStatusEventsDeprecated())
-                .sorted(developerStatusEventComparatorDeprecated)
                 .collect(Collectors.toList());
     }
 

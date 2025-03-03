@@ -187,7 +187,7 @@ public class TriggerDeveloperBanJob implements Job {
                 Util.getDateFormatter().format(listingChangeDate), // date of change
                 userPerformingAction.getFullName(),
                 listing.getCurrentStatus().getStatus().getName(), // target status
-                Util.getDateFormatter().format(new Date(listing.getCurrentStatus().getEventDate())),
+                Util.getDateFormatter().format(listing.getCurrentStatus().getEventDay()),
                 reasonForStatusChange, // reason for change
                 reasonForListingChange, // reason for change
                 (openSurveillanceNcs != 1 ? "were" : "was"), openSurveillanceNcs, (openSurveillanceNcs != 1 ? "ies" : "y"), // formatted counts of open

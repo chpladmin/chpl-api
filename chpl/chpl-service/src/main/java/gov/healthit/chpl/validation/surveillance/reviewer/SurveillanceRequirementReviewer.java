@@ -2,6 +2,7 @@ package gov.healthit.chpl.validation.surveillance.reviewer;
 
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -19,7 +20,7 @@ import lombok.extern.log4j.Log4j2;
 
 @Component
 @Log4j2
-public class SurveillanceRequirementReviewer implements Reviewer {
+public class SurveillanceRequirementReviewer implements ReadReviewer {
     private static final Long NOT_FOUND = -1L;
     private SurveillanceDAO survDao;
     private ErrorMessageUtil msgUtil;
@@ -35,13 +36,13 @@ public class SurveillanceRequirementReviewer implements Reviewer {
     @Override
     public void review(Surveillance surv) {
         if (surv.getRequirements() == null || surv.getRequirements().size() == 0) {
-            surv.getErrorMessages().add(msgUtil.getMessage("surveillance.requirementIsRequiredForProduct",
-                    surv.getCertifiedProduct().getChplProductNumber()));
+            surv.getErrorMessages().add(msgUtil.getMessage("surveillance.requirementIsRequiredForProduct"));
             return;
         }
         surv.getRequirements().forEach(req -> {
             checkRequirementExists(surv, req);
-            checkResultExistsIfSurveillanceClosed(surv, req);
+            checkRequirementOtherPresentIfRequired(surv, req);
+            checkResultTypeExists(surv, req);
             checkResultTypeValidity(surv, req);
             checkRequirementValidForSurveillanceStartDate(surv, req);
         });
@@ -56,12 +57,17 @@ public class SurveillanceRequirementReviewer implements Reviewer {
         }
     }
 
-    private void checkResultExistsIfSurveillanceClosed(Surveillance surv, SurveillanceRequirement req) {
-        if (surv.getEndDay() != null) {
-            if (req.getResult() == null) {
-                surv.getErrorMessages()
-                        .add(msgUtil.getMessage("surveillance.resultNotFound", req.getRequirementType().getFormattedTitle()));
-            }
+    private void checkRequirementOtherPresentIfRequired(Surveillance surv, SurveillanceRequirement req) {
+        if (isRequirementTypeOther(req.getRequirementType())
+                && StringUtils.isEmpty(req.getRequirementTypeOther())) {
+            surv.getErrorMessages().add(msgUtil.getMessage("surveillance.requirementOtherIsRequired"));
+        }
+    }
+
+    private void checkResultTypeExists(Surveillance surv, SurveillanceRequirement req) {
+        if (req.getResult() == null || StringUtils.isEmpty(req.getResult().getName())) {
+            surv.getErrorMessages()
+                    .add(msgUtil.getMessage("surveillance.resultNotFound", req.getFormattedTitle()));
         }
     }
 
@@ -71,7 +77,7 @@ public class SurveillanceRequirementReviewer implements Reviewer {
             SurveillanceResultType resType = survDao.findSurveillanceResultType(req.getResult().getName());
             if (resType == null) {
                 surv.getErrorMessages().add(msgUtil.getMessage("surveillance.resultWithNameNotFound",
-                        req.getResult().getName(), req.getRequirementType().getFormattedTitle()));
+                        req.getResult().getName(), req.getFormattedTitle()));
             } else {
                 req.setResult(resType);
             }
@@ -79,7 +85,7 @@ public class SurveillanceRequirementReviewer implements Reviewer {
             SurveillanceResultType resType = survDao.findSurveillanceResultType(req.getResult().getId());
             if (resType == null) {
                 surv.getErrorMessages().add(msgUtil.getMessage("surveillance.resultWithIdNotFound",
-                        req.getResult().getId(), req.getRequirementType().getFormattedTitle()));
+                        req.getResult().getId(), req.getFormattedTitle()));
             } else {
                 req.setResult(resType);
             }
@@ -89,7 +95,7 @@ public class SurveillanceRequirementReviewer implements Reviewer {
     private void checkRequirementValidForSurveillanceStartDate(Surveillance surv, SurveillanceRequirement req) {
         if (req.getRequirementType() != null
                 && !DateUtil.isDateBetweenInclusive(Pair.of(req.getRequirementType().getStartDay(), req.getRequirementType().getEndDay()), surv.getStartDay())) {
-            surv.getErrorMessages().add(msgUtil.getMessage("surveillance.nonConformityType.notValid", req.getRequirementType().getFormattedTitle()));
+            surv.getErrorMessages().add(msgUtil.getMessage("surveillance.nonConformityType.notValid", req.getFormattedTitle()));
         }
     }
 

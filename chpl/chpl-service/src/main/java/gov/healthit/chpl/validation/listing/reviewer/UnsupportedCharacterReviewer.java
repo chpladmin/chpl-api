@@ -215,8 +215,6 @@ public class UnsupportedCharacterReviewer implements Reviewer {
                     "Developer Contact's Email Address '" + contact.getEmail() + "'");
             addListingWarningIfNotValid(listing, contact.getPhoneNumber(),
                     "Developer Contact's Phone Number '" + contact.getPhoneNumber() + "'");
-            addListingWarningIfNotValid(listing, contact.getTitle(),
-                    "Developer Contact's Title '" + contact.getTitle() + "'");
         }
     }
 

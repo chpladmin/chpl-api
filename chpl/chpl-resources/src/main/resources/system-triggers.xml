@@ -247,6 +247,17 @@
         </trigger>
         <trigger>
             <cron>
+                <name>realWorldTestingSummaryReportCreator</name>
+                <group>realWorldTestingSummaryReportCreatorJobTrigger</group>
+                <job-name>realWorldTestingSummaryReportCreatorJob</job-name>
+                <job-group>systemJobs</job-group>
+                <misfire-instruction>MISFIRE_INSTRUCTION_DO_NOTHING</misfire-instruction>
+                <cron-expression>0 15 6 * * ?</cron-expression> <!-- At 0615 UTC every day -->
+            </cron>
+        </trigger>
+        
+        <trigger>
+            <cron>
                 <name>attestationReportCreator</name>
                 <group>AttestationReportCreatorJobTrigger</group>
                 <job-name>attestationReportCreatorJob</job-name>

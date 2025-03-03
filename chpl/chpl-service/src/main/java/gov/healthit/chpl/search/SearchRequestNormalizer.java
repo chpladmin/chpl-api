@@ -8,10 +8,13 @@ import org.apache.commons.lang3.StringUtils;
 import gov.healthit.chpl.search.domain.ComplianceSearchFilter;
 import gov.healthit.chpl.search.domain.NonConformitySearchOptions;
 import gov.healthit.chpl.search.domain.OrderByOption;
+import gov.healthit.chpl.search.domain.RiskManagementSummaryInformationlSearchOptions;
 import gov.healthit.chpl.search.domain.RwtSearchOptions;
 import gov.healthit.chpl.search.domain.SearchRequest;
 import gov.healthit.chpl.search.domain.SearchSetOperator;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 public class SearchRequestNormalizer {
 
     public void normalize(SearchRequest request) {
@@ -31,6 +34,7 @@ public class SearchRequestNormalizer {
         normalizeRwtOptionsOperator(request);
         normalizeSvapIds(request);
         normalizeSvapOperator(request);
+        normalizeRiskManagementSummaryInformationOptions(request);
         normalizeOrderBy(request);
     }
 
@@ -93,6 +97,7 @@ public class SearchRequestNormalizer {
                 request.setCertificationCriteriaOperator(
                         SearchSetOperator.valueOf(request.getCertificationCriteriaOperatorString().toUpperCase().trim()));
             } catch (Exception ignore) {
+                LOGGER.error(ignore);
             }
         }
     }
@@ -122,6 +127,7 @@ public class SearchRequestNormalizer {
                 request.setCqmsOperator(
                         SearchSetOperator.valueOf(request.getCqmsOperatorString().toUpperCase().trim()));
             } catch (Exception ignore) {
+                LOGGER.error(ignore);
             }
         }
     }
@@ -164,11 +170,12 @@ public class SearchRequestNormalizer {
             try {
                 complianceSearchFilter.setNonConformityOptions(
                         complianceSearchFilter.getNonConformityOptionsStrings().stream()
-                        .filter(option -> !StringUtils.isBlank(option))
-                        .map(option -> convertToNonconformitySearchOption(option))
-                        .filter(option -> option != null)
-                        .collect(Collectors.toSet()));
+                                .filter(option -> !StringUtils.isBlank(option))
+                                .map(option -> convertToNonconformitySearchOption(option))
+                                .filter(option -> option != null)
+                                .collect(Collectors.toSet()));
             } catch (Exception ignore) {
+                LOGGER.error(ignore);
             }
         }
     }
@@ -181,6 +188,7 @@ public class SearchRequestNormalizer {
         try {
             convertedOption = NonConformitySearchOptions.valueOf(option.toUpperCase().trim());
         } catch (Exception ex) {
+            LOGGER.error(ex);
         }
         return convertedOption;
     }
@@ -194,6 +202,7 @@ public class SearchRequestNormalizer {
                 complianceSearchFilter.setNonConformityOptionsOperator(
                         SearchSetOperator.valueOf(complianceSearchFilter.getNonConformityOptionsOperatorString().toUpperCase().trim()));
             } catch (Exception ignore) {
+                LOGGER.error(ignore);
             }
         }
     }
@@ -204,11 +213,12 @@ public class SearchRequestNormalizer {
             try {
                 request.setRwtOptions(
                         request.getRwtOptionsStrings().stream()
-                        .filter(option -> !StringUtils.isBlank(option))
-                        .map(option -> convertToRwtSearchOption(option))
-                        .filter(option -> option != null)
-                        .collect(Collectors.toSet()));
+                                .filter(option -> !StringUtils.isBlank(option))
+                                .map(option -> convertToRwtSearchOption(option))
+                                .filter(option -> option != null)
+                                .collect(Collectors.toSet()));
             } catch (Exception ignore) {
+                LOGGER.error(ignore);
             }
         }
     }
@@ -221,6 +231,7 @@ public class SearchRequestNormalizer {
         try {
             convertedOption = RwtSearchOptions.valueOf(option.toUpperCase().trim());
         } catch (Exception ex) {
+            LOGGER.error(ex);
         }
         return convertedOption;
     }
@@ -232,6 +243,7 @@ public class SearchRequestNormalizer {
                 request.setRwtOperator(
                         SearchSetOperator.valueOf(request.getRwtOperatorString().toUpperCase().trim()));
             } catch (Exception ignore) {
+                LOGGER.error(ignore);
             }
         }
     }
@@ -255,8 +267,38 @@ public class SearchRequestNormalizer {
                 request.setSvapOperator(
                         SearchSetOperator.valueOf(request.getSvapOperatorString().toUpperCase().trim()));
             } catch (Exception ignore) {
+                LOGGER.error(ignore);
             }
         }
+    }
+
+    private void normalizeRiskManagementSummaryInformationOptions(SearchRequest request) {
+        if (!CollectionUtils.isEmpty(request.getRiskManagementSummaryInformationOptionsStrings())
+                && CollectionUtils.isEmpty(request.getRiskManagementSummaryInformationOptions())) {
+            try {
+                request.setRiskManagementSummaryInformationOptions(
+                        request.getRiskManagementSummaryInformationOptionsStrings().stream()
+                                .filter(option -> !StringUtils.isBlank(option))
+                                .map(option -> convertToRiskManagementSummaryInformationSearchOption(option))
+                                .filter(option -> option != null)
+                                .collect(Collectors.toSet()));
+            } catch (Exception ignore) {
+                LOGGER.error(ignore);
+            }
+        }
+    }
+
+    private RiskManagementSummaryInformationlSearchOptions convertToRiskManagementSummaryInformationSearchOption(String option) {
+        if (StringUtils.isBlank(option)) {
+            return null;
+        }
+        RiskManagementSummaryInformationlSearchOptions convertedOption = null;
+        try {
+            convertedOption = RiskManagementSummaryInformationlSearchOptions.valueOf(option.toUpperCase().trim());
+        } catch (Exception ex) {
+            LOGGER.error(ex);
+        }
+        return convertedOption;
     }
 
     private void normalizeOrderBy(SearchRequest request) {
@@ -266,6 +308,7 @@ public class SearchRequestNormalizer {
                 request.setOrderBy(
                         OrderByOption.valueOf(request.getOrderByString().toUpperCase().trim()));
             } catch (Exception ignore) {
+                LOGGER.error(ignore);
             }
         }
     }

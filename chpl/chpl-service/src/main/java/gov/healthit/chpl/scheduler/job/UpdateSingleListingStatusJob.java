@@ -18,6 +18,7 @@ import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.manager.CertifiedProductManager;
 import gov.healthit.chpl.scheduler.SchedulerSecurityContextService;
 import gov.healthit.chpl.scheduler.job.extra.JobResponse;
+import gov.healthit.chpl.util.DateUtil;
 
 public class UpdateSingleListingStatusJob extends QuartzJob {
 
@@ -60,7 +61,7 @@ public class UpdateSingleListingStatusJob extends QuartzJob {
     private CertificationStatusEvent getCertificationStatusEvent(CertificationStatus cs, Date effectiveDate) {
         CertificationStatusEvent cse = new CertificationStatusEvent();
         cse.setStatus(cs);
-        cse.setEventDate(effectiveDate.getTime());
+        cse.setEventDay(DateUtil.toLocalDate(effectiveDate.getTime()));
 
         return cse;
     }

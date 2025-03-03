@@ -6,20 +6,20 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.jfree.data.time.DateRange;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.attestation.domain.AttestationPeriod;
+import gov.healthit.chpl.certifiedproduct.service.CertificationStatusEventsService;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.domain.CertificationStatus;
 import gov.healthit.chpl.domain.CertificationStatusEvent;
 import gov.healthit.chpl.domain.Developer;
+import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.search.ListingSearchService;
 import gov.healthit.chpl.search.domain.ListingSearchResult;
 import gov.healthit.chpl.search.domain.SearchRequest;
@@ -32,13 +32,16 @@ public class DeveloperAttestationPeriodCalculator {
 
     private DeveloperDAO developerDao;
     private ListingSearchService listingSearchService;
-    private List<String> activeStatuses = CertificationStatusUtil.getActiveStatusNames();
+    private CertificationStatusEventsService certStatusEventsService;
+    private List<CertificationStatusType> activeStatuses = CertificationStatusUtil.getActiveStatuses();
 
     @Autowired
     public DeveloperAttestationPeriodCalculator(DeveloperDAO developerDao,
-            ListingSearchService listingSearchService) {
+            ListingSearchService listingSearchService,
+            CertificationStatusEventsService certStatusEventsService) {
         this.developerDao = developerDao;
         this.listingSearchService = listingSearchService;
+        this.certStatusEventsService = certStatusEventsService;
     }
 
     public List<Developer> getDevelopersWithActiveListingsDuringAttestationPeriod(AttestationPeriod period, Logger logger) {
@@ -83,9 +86,9 @@ public class DeveloperAttestationPeriodCalculator {
                         .status(CertificationStatus.builder()
                                 .name(statusEventSearchResult.getStatus().getName())
                                 .build())
-                        .eventDate(toDate(statusEventSearchResult.getStatusStart()).getTime())
+                        .eventDay(statusEventSearchResult.getStatusStart())
                         .build())
-                .sorted(Comparator.comparing(CertificationStatusEvent::getEventDate))
+                .sorted(Comparator.comparing(CertificationStatusEvent::getEventDay))
                 .toList();
 
         return isListingActiveDuringAttestationPeriod(statusEvents, period);
@@ -100,16 +103,7 @@ public class DeveloperAttestationPeriodCalculator {
     }
 
     private List<DateRange> getDateRangesWithActiveStatus(List<CertificationStatusEvent> listingStatusEvents) {
-        //Assumes statuses are sorted
-        return IntStream.range(0, listingStatusEvents.size())
-            .filter(i -> listingStatusEvents.get(i) != null && listingStatusEvents.get(i).getStatus() != null
-                && !StringUtils.isEmpty(listingStatusEvents.get(i).getStatus().getName()))
-            .filter(i -> activeStatuses.contains(listingStatusEvents.get(i).getStatus().getName()))
-            .mapToObj(i -> new DateRange(new Date(listingStatusEvents.get(i).getEventDate()),
-                    i < (listingStatusEvents.size() - 1) ? new Date(listingStatusEvents.get(i + 1).getEventDate())
-                            //Math.max here to handle the case where status is a future date
-                            : new Date(Math.max(System.currentTimeMillis(), listingStatusEvents.get(i).getEventDate()))))
-            .collect(Collectors.toList());
+        return certStatusEventsService.getDateRangesWithStatuses(listingStatusEvents, activeStatuses);
     }
 
     private Date toDate(LocalDate localDate) {
