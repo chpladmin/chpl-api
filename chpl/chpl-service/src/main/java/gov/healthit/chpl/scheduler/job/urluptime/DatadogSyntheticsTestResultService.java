@@ -58,20 +58,8 @@ public class DatadogSyntheticsTestResultService {
     }
 
     public SyntheticsGetAPITestLatestResultsResponse getSyntheticsTestResults(String publicTestKey) {
-        // SyntheticsGetAPITestLatestResultsResponse response;
-        // List<SyntheticsAPITestResultShort> testResults = new
-        // ArrayList<SyntheticsAPITestResultShort>();
         try {
-            return apiProvider.getApiInstance().getAPITestLatestResults(publicTestKey);
-            // while (response.getResults().size() > 1) {
-            // testResults.addAll(response.getResults());
-            // Long ts = getMostRecentTimestamp(response.getResults());
-            // response =
-            // apiProvider.getApiInstance().getAPITestLatestResults(publicTestKey);
-            // }
-            // LOGGER.info("Found {} tests for monitor {}", testResults.size(),
-            // publicTestKey);
-
+           return apiProvider.getApiInstance().getAPITestLatestResults(publicTestKey);
         } catch (ApiException e) {
             LOGGER.error("Could not retrieve results for test key: {}", publicTestKey, e);
             return null;

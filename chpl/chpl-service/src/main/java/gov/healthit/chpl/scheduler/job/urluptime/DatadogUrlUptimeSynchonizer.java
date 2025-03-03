@@ -161,7 +161,7 @@ public class DatadogUrlUptimeSynchonizer {
         urlUptimeMonitors = urlUptimeMonitorDAO.getAll();
         removeOutdatedUrlMonitors(urlUptimeMonitors, expectedUrlUptimeMonitors);
     }
-    
+
     private void addMissingUrlMonitors(List<UrlUptimeMonitor> existing, List<UrlUptimeMonitor> expected) {
         expected.stream()
                 .filter(uum -> !contains(existing, uum))
