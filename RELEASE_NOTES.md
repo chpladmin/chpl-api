@@ -1,5 +1,27 @@
 # Release Notes
 
+## Version 50.0.0
+_3 March 2025_
+
+### Breaking Changes
+* Remove statistics endpoints, chart data creator job
+* Remove 'friendlyName' from user contact
+* Remove optional standard citation, description optionalStandardId
+* Remove developer 'status' and 'statusEvents' fields
+* Remove 'title' from contact information
+* Remove 'eventDate' field from listing certificationEvents
+* Remove collections/certified-products endpoint
+
+### Features
+* Create one time job to update roles in Job data
+* Add Risk Summary Information as a searchable attribute
+* Add job and endpoints for Real World Testing report in Power BI
+* Account for ICS requirement group in ICS errors report
+* Create one-time job to review standards and remove retired ones
+* Deprecate surveillance endpoints, certifiedProduct field
+
+---
+
 ## Version 49.1.0
 _18 February 2025_
 
