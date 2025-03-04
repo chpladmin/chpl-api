@@ -420,9 +420,6 @@ public class ListingMergeService {
                 .orElse(null);
             if (matchedCurrOptionalStandard != null) {
                 updatedCertOptionalStandard.setId(matchedCurrOptionalStandard.getId());
-                updatedCertOptionalStandard.setOptionalStandardId(updatedCertOptionalStandard.getOptionalStandard().getId());
-                updatedCertOptionalStandard.setCitation(updatedCertOptionalStandard.getOptionalStandard().getCitation());
-                updatedCertOptionalStandard.setDescription(updatedCertOptionalStandard.getOptionalStandard().getDescription());
             }
     }
 

@@ -24,6 +24,7 @@ import gov.healthit.chpl.domain.TestingLab;
 import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.upload.listing.ListingUploadHandlerUtil;
 import gov.healthit.chpl.upload.listing.ListingUploadHeadingUtil.Heading;
+import gov.healthit.chpl.util.DateUtil;
 import jakarta.validation.ValidationException;
 
 @Component("listingDetailsUploadHandler")
@@ -100,10 +101,12 @@ public class ListingDetailsUploadHandler {
             .build();
 
         listing.setSed(sedUploadHandler.parseAsSed(headingRecord, listingRecords, listing));
-        listing.setCertificationEvents(Stream.of(CertificationStatusEvent.builder()
-                .eventDate(listing.getCertificationDate())
+        if (listing.getCertificationDate() != null) {
+            listing.setCertificationEvents(Stream.of(CertificationStatusEvent.builder()
+                .eventDay(DateUtil.toLocalDate(listing.getCertificationDate()))
                 .status(CertificationStatus.builder().name(CertificationStatusType.Active.getName()).build())
                 .build()).collect(Collectors.toList()));
+        }
 
         //add cert result data
         List<CertificationResult> certResultList = new ArrayList<CertificationResult>();

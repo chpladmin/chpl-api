@@ -58,9 +58,8 @@ public class StatusController {
 
     private CacheStatusName determineCacheStatus() {
         boolean listingsCacheIsLoaded = redisUtil.cacheHasAnyData(cacheManager.getCache(CacheNames.COLLECTIONS_SEARCH));
-        boolean deprecatedListingsCacheIsLoaded = redisUtil.cacheHasAnyData(cacheManager.getCache(CacheNames.COLLECTIONS_LISTINGS));
         boolean developersCacheIsLoaded = redisUtil.cacheHasAnyData(cacheManager.getCache(CacheNames.COLLECTIONS_DEVELOPERS));
-        return (drService.areDirectReviewsLoading() || !listingsCacheIsLoaded || !developersCacheIsLoaded || !deprecatedListingsCacheIsLoaded)
+        return (drService.areDirectReviewsLoading() || !listingsCacheIsLoaded || !developersCacheIsLoaded)
                 ? CacheStatusName.INITIALIZING : CacheStatusName.OK;
     }
 }

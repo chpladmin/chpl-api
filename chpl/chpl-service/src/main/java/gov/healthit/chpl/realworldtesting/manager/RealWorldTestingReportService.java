@@ -249,28 +249,28 @@ public class RealWorldTestingReportService {
         return date1.isEqual(date2) || date1.isAfter(date2);
     }
 
-    private LocalDate getPlansStartDate(Integer rwtEligYear) {
+    public LocalDate getPlansStartDate(Integer rwtEligYear) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
         String mmdd = env.getProperty("rwtPlanStartDayOfYear");
         String mmddyyyy = mmdd + "/" + String.valueOf(rwtEligYear - 1);
         return LocalDate.parse(mmddyyyy, formatter);
     }
 
-    private LocalDate getPlansLateDate(Integer rwtEligYear) {
+    public LocalDate getPlansLateDate(Integer rwtEligYear) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
         String mmdd = env.getProperty("rwtPlanDueDate");
         String mmddyyyy = mmdd + "/" + String.valueOf(rwtEligYear - 1);
         return LocalDate.parse(mmddyyyy, formatter);
     }
 
-    private LocalDate getResultsStartDate(Integer rwtEligYear) {
+    public LocalDate getResultsStartDate(Integer rwtEligYear) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
         String mmdd = env.getProperty("rwtResultsStartDayOfYear");
         String mmddyyyy = mmdd + "/" + String.valueOf(rwtEligYear + 1);
         return LocalDate.parse(mmddyyyy, formatter);
     }
 
-    private LocalDate getResultsLateDate(Integer rwtEligYear) {
+    public LocalDate getResultsLateDate(Integer rwtEligYear) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
         String mmdd = env.getProperty("rwtResultsDueDate");
         String mmddyyyy = mmdd + "/" + String.valueOf(rwtEligYear + 1);

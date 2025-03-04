@@ -21,12 +21,14 @@ import gov.healthit.chpl.report.nonconformity.NonconformityReportService;
 import gov.healthit.chpl.report.product.ProductByAcb;
 import gov.healthit.chpl.report.product.ProductReportsService;
 import gov.healthit.chpl.report.product.UniqueProductCount;
+import gov.healthit.chpl.report.realworldtesting.RealWorldTestingReportDataService;
 import gov.healthit.chpl.report.servicebaseurllistreport.ServiceBaseUrlListReportService;
 import gov.healthit.chpl.report.servicebaseurllistreport.UrlUptimeMonitorEx;
 import gov.healthit.chpl.report.surveillance.CapCounts;
 import gov.healthit.chpl.report.surveillance.NonconformityCounts;
 import gov.healthit.chpl.report.surveillance.SurveillanceActivityCounts;
 import gov.healthit.chpl.report.surveillance.SurveillanceReportsService;
+import gov.healthit.chpl.report.svap.SvapReportService;
 import gov.healthit.chpl.scheduler.job.report.attestation.AttestationReport;
 import gov.healthit.chpl.scheduler.job.summarystatistics.data.CertificationBodyStatistic;
 import gov.healthit.chpl.search.domain.ListingSearchResult;
@@ -48,6 +50,8 @@ public class ReportDataManager {
     private ReportMetadataDAO reportMetadataDAO;
     private CriteriaAttributeReportService criteriaAttributeReportService;
     private ServiceBaseUrlListReportService serviceBaseUrlListReportService;
+    private SvapReportService svapReportService;
+    private RealWorldTestingReportDataService realWorldTestingReportDataService;
     private NonconformityReportService nonconformityReportService;
 
     @Autowired
@@ -61,7 +65,10 @@ public class ReportDataManager {
             ReportMetadataDAO reportMetadataDAO,
             CriteriaAttributeReportService criteriaAttributeReportService,
             ServiceBaseUrlListReportService serviceBaseUrlListReportService,
+            SvapReportService svapReportService,
+            RealWorldTestingReportDataService realWorldTestingReportDataService,
             NonconformityReportService nonconformityReportService) {
+
         this.criteriaMigrationReportService = criteriaMigrationReportService;
         this.developerReportsService = developerReportsService;
         this.surveillanceReportsService = surveillanceReportsService;
@@ -73,6 +80,8 @@ public class ReportDataManager {
         this.reportMetadataDAO = reportMetadataDAO;
         this.criteriaAttributeReportService = criteriaAttributeReportService;
         this.serviceBaseUrlListReportService = serviceBaseUrlListReportService;
+        this.svapReportService = svapReportService;
+        this.realWorldTestingReportDataService = realWorldTestingReportDataService;
         this.nonconformityReportService = nonconformityReportService;
     }
 
@@ -262,13 +271,21 @@ public class ReportDataManager {
     }
 
     @Synchronized("lock")
+    public RealWorldTestingReportDataService getRealWorldTestingReportDataService() {
+        return realWorldTestingReportDataService;
+    }
+
+    @Synchronized("lock")
     public List<AttestationReport> getAttestationReports() {
         return attestationReportService.getAttestationReports();
+    }
+
+    public SvapReportService getSvapReportService() {
+        return svapReportService;
     }
 
     @Synchronized("lock")
     public NonconformityReportService getNonconformityReportService() {
         return nonconformityReportService;
     }
-
 }

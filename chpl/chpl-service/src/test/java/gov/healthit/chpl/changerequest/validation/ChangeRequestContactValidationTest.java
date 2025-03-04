@@ -242,7 +242,6 @@ public class ChangeRequestContactValidationTest {
         PointOfContact contact = new PointOfContact();
         contact.setContactId(id);
         contact.setFullName(fullName);
-        contact.setTitle(title);
         contact.setPhoneNumber(phoneNumber);
         contact.setEmail(email);
         return contact;

@@ -74,7 +74,6 @@ public class DeveloperNormalizer {
         userEnteredDev.setContact(systemDev.getContact());
         userEnteredDev.setAddress(systemDev.getAddress());
         userEnteredDev.setStatuses(systemDev.getStatuses());
-        userEnteredDev.setStatusEvents(systemDev.getStatusEvents());
     }
 
     private void copyUserEnteredDeveloperValues(Developer userEnteredDev) {

@@ -12,10 +12,10 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
 import gov.healthit.chpl.compliance.surveillance.entity.SurveillanceEntity;
 import gov.healthit.chpl.compliance.surveillance.entity.SurveillanceNonconformityEntity;
-import gov.healthit.chpl.dao.CertificationBodyDAO;
-import gov.healthit.chpl.domain.CertificationBody;
+import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 
 @Component
@@ -24,13 +24,13 @@ public class NonConformityDataCalculator {
     private static final Long NONCONFORMITY_SURVEILLANCE_RESULT = 1L;
 
     private SurveillanceStatisticsDAO surveillanceStatisticsDAO;
-    private CertificationBodyDAO certificationBodyDAO;
+    private CertifiedProductDetailsManager cpdManager;
 
     @Autowired
     public NonConformityDataCalculator(SurveillanceStatisticsDAO surveillanceStatisticsDAO,
-            CertificationBodyDAO certificationBodyDAO) {
+            CertifiedProductDetailsManager cpdManager) {
         this.surveillanceStatisticsDAO = surveillanceStatisticsDAO;
-        this.certificationBodyDAO = certificationBodyDAO;
+        this.cpdManager = cpdManager;
     }
 
     public Long getTotalNonConformities() {
@@ -170,9 +170,8 @@ public class NonConformityDataCalculator {
                 && nc.getCapEndDate() == null)
                 .distinct()
                 .map(nc -> new NonconformanceStatistic(
-                        getCertificationBody(
-                                findSurveillanceForNonconformity(
-                                        nc, surveillances).getCertifiedProduct().getCertificationBodyId()).getName(), nc))
+                        getCertifiedProductForSurveillance(findSurveillanceForNonconformity(nc, surveillances))
+                        .getCertifyingBody().get(CertifiedProductSearchDetails.ACB_NAME_KEY).toString(), nc))
                 .collect(Collectors.groupingBy(stat -> stat.getCertificationBodyName(), Collectors.counting()));
 
         return openCapsByAcb.entrySet().stream()
@@ -195,9 +194,8 @@ public class NonConformityDataCalculator {
                 && nc.getCapEndDate() != null)
                 .distinct()
                 .map(nc -> new NonconformanceStatistic(
-                        getCertificationBody(
-                                findSurveillanceForNonconformity(
-                                        nc, surveillances).getCertifiedProduct().getCertificationBodyId()).getName(), nc))
+                                getCertifiedProductForSurveillance(findSurveillanceForNonconformity(nc, surveillances))
+                                .getCertifyingBody().get(CertifiedProductSearchDetails.ACB_NAME_KEY).toString(), nc))
                 .collect(Collectors.groupingBy(stat -> stat.getCertificationBodyName(), Collectors.counting()));
 
         return closedCapsByAcb.entrySet().stream()
@@ -247,13 +245,14 @@ public class NonConformityDataCalculator {
                 surveillance.getEndDate()));
     }
 
-    private CertificationBody getCertificationBody(Long id) {
+    private CertifiedProductSearchDetails getCertifiedProductForSurveillance(SurveillanceEntity survEntity) {
+        CertifiedProductSearchDetails listing = null;
         try {
-            return certificationBodyDAO.getById(id);
-        } catch (EntityRetrievalException e) {
-            LOGGER.error("Could not retrieve ACB: " + id, e);
-            return new CertificationBody();
+            listing = cpdManager.getCertifiedProductDetails(survEntity.getCertifiedProductId());
+        } catch (EntityRetrievalException ex) {
+            LOGGER.error("Could not find listing with ID " + survEntity.getCertifiedProductId(), ex);
         }
+        return listing;
     }
 
     private class NonconformanceStatistic {

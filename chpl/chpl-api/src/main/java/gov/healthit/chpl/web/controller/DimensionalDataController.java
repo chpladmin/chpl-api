@@ -27,7 +27,6 @@ import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import gov.healthit.chpl.web.controller.annotation.CacheControl;
 import gov.healthit.chpl.web.controller.annotation.CacheMaxAge;
 import gov.healthit.chpl.web.controller.annotation.CachePolicy;
-import gov.healthit.chpl.web.controller.annotation.DeprecatedApi;
 import gov.healthit.chpl.web.controller.results.SvapResults;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -139,36 +138,6 @@ public class DimensionalDataController {
     @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
     public @ResponseBody Set<KeyValueModel> getPracticeTypeNames() {
         return dimensionalDataManager.getPracticeTypeNames();
-    }
-
-    @Deprecated
-    @DeprecatedApi(friendlyUrl = "/data/products", removalDate = "2024-06-01",
-            message = "This endpoint is deprecated and will be removed.")
-    @Operation(summary = "Get all possible product names in the CHPL",
-            description = "This is useful for knowing what values one might possibly search for.",
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
-    @RequestMapping(value = "/products", method = RequestMethod.GET,
-            produces = "application/json; charset=utf-8")
-    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
-    public @ResponseBody Set<String> getProductNames() {
-        return null;
-    }
-
-    @Deprecated
-    @DeprecatedApi(friendlyUrl = "/data/developers", removalDate = "2024-06-01",
-            message = "This endpoint is deprecated and will be removed. A list of developers can be found at /developers.")
-    @Operation(summary = "Get all possible developer names in the CHPL",
-            description = "This is useful for knowing what values one might possibly search for.",
-            security = {
-                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
-            })
-    @RequestMapping(value = "/developers", method = RequestMethod.GET,
-            produces = "application/json; charset=utf-8")
-    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
-    public @ResponseBody Set<String> getDeveloperNames() {
-        return null;
     }
 
     @Operation(summary = "Get all possible ACBs in the CHPL",

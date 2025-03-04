@@ -28,9 +28,9 @@ public class SurveillanceStatisticsDAO extends BaseDAOImpl {
 
     public Long getTotalSurveillanceActivities(Date endDate) {
         String hql = "SELECT count(surv) "
-                + "FROM SurveillanceEntity surv "
-                + "JOIN surv.certifiedProduct cp "
-                + "WHERE (cp.certificationEditionId NOT IN (:retiredEditions) OR cp.certificationEditionId IS NULL) ";
+                + "FROM SurveillanceEntity surv, CertifiedProductEntity cp "
+                + "WHERE surv.certifiedProductId = cp.id "
+                + "AND (cp.certificationEditionId NOT IN (:retiredEditions) OR cp.certificationEditionId IS NULL) ";
         if (endDate == null) {
             hql += " AND surv.deleted = false";
         } else {
@@ -48,9 +48,9 @@ public class SurveillanceStatisticsDAO extends BaseDAOImpl {
 
     public Long getTotalOpenSurveillanceActivities(Date endDate) {
         String hql = "SELECT count(surv) "
-                + "FROM SurveillanceEntity surv "
-                + "JOIN surv.certifiedProduct cp "
-                + "WHERE (cp.certificationEditionId NOT IN (:retiredEditions) OR cp.certificationEditionId IS NULL) "
+                + "FROM SurveillanceEntity surv, CertifiedProductEntity cp "
+                + "WHERE surv.certifiedProductId = cp.id "
+                + "AND (cp.certificationEditionId NOT IN (:retiredEditions) OR cp.certificationEditionId IS NULL) "
                 + "AND surv.startDate <= local_date "
                 + "AND (surv.endDate IS NULL OR surv.endDate >= local_date) ";
         if (endDate == null) {
@@ -70,9 +70,9 @@ public class SurveillanceStatisticsDAO extends BaseDAOImpl {
 
     public Long getTotalClosedSurveillanceActivities(Date endDate) {
         String hql = "SELECT count(surv) "
-                + "FROM SurveillanceEntity surv "
-                + "JOIN surv.certifiedProduct cp "
-                + "WHERE (cp.certificationEditionId NOT IN (:retiredEditions) OR cp.certificationEditionId IS NULL) "
+                + "FROM SurveillanceEntity surv, CertifiedProductEntity cp "
+                + "WHERE surv.certifiedProductId = cp.id "
+                + "AND (cp.certificationEditionId NOT IN (:retiredEditions) OR cp.certificationEditionId IS NULL) "
                 + "AND surv.startDate <= local_date "
                 + "AND (surv.endDate IS NOT NULL AND surv.endDate <= local_date) ";
         if (endDate == null) {
@@ -92,11 +92,11 @@ public class SurveillanceStatisticsDAO extends BaseDAOImpl {
 
     public Long getTotalNonConformities(Date endDate) {
         String hql = "SELECT count(nc) "
-                + "FROM SurveillanceEntity surv "
+                + "FROM SurveillanceEntity surv, CertifiedProductEntity cp "
                 + "JOIN surv.surveilledRequirements reqs "
                 + "JOIN reqs.nonconformities nc "
-                + "JOIN surv.certifiedProduct cp "
-                + "WHERE (cp.certificationEditionId NOT IN (:retiredEditions) OR cp.certificationEditionId IS NULL) ";
+                + "WHERE surv.certifiedProductId = cp.id "
+                + "AND (cp.certificationEditionId NOT IN (:retiredEditions) OR cp.certificationEditionId IS NULL) ";
         if (endDate == null) {
             hql += " AND nc.deleted = false";
         } else {
@@ -114,11 +114,11 @@ public class SurveillanceStatisticsDAO extends BaseDAOImpl {
 
     public Long getTotalOpenNonconformities(Date endDate) {
         String hql = "SELECT count(nc) "
-                + "FROM SurveillanceEntity surv "
+                + "FROM SurveillanceEntity surv, CertifiedProductEntity cp "
                 + "JOIN surv.surveilledRequirements reqs "
                 + "JOIN reqs.nonconformities nc "
-                + "JOIN surv.certifiedProduct cp "
-                + "WHERE (cp.certificationEditionId NOT IN (:retiredEditions) OR cp.certificationEditionId IS NULL) "
+                + "WHERE surv.certifiedProductId = cp.id "
+                + "AND (cp.certificationEditionId NOT IN (:retiredEditions) OR cp.certificationEditionId IS NULL) "
                 + "AND nc.nonconformityCloseDate IS NULL ";
         if (endDate == null) {
             hql += " AND nc.deleted = false";
@@ -177,11 +177,11 @@ public class SurveillanceStatisticsDAO extends BaseDAOImpl {
 
     public Long getTotalClosedNonconformities(Date endDate) {
         String hql = "SELECT count(nc) "
-                + "FROM SurveillanceEntity surv "
+                + "FROM SurveillanceEntity surv, CertifiedProductEntity cp "
                 + "JOIN surv.surveilledRequirements reqs "
                 + "JOIN reqs.nonconformities nc "
-                + "JOIN surv.certifiedProduct cp "
-                + "WHERE (cp.certificationEditionId NOT IN (:retiredEditions) OR cp.certificationEditionId IS NULL) "
+                + "WHERE surv.certifiedProductId = cp.id "
+                + "AND (cp.certificationEditionId NOT IN (:retiredEditions) OR cp.certificationEditionId IS NULL) "
                 + "AND nc.nonconformityCloseDate IS NOT NULL ";
         if (endDate == null) {
             hql += " AND nc.deleted = false";
@@ -237,11 +237,11 @@ public class SurveillanceStatisticsDAO extends BaseDAOImpl {
 
     public List<SurveillanceEntity> getAllSurveillancesWithNonconformities() {
         String hql = "SELECT surv "
-                + "FROM SurveillanceEntity surv "
+                + "FROM SurveillanceEntity surv, CertifiedProductEntity cp "
                 + "JOIN FETCH surv.surveilledRequirements reqs "
                 + "JOIN FETCH reqs.nonconformities nc "
-                + "JOIN FETCH surv.certifiedProduct cp "
-                + "WHERE (cp.certificationEditionId NOT IN (:retiredEditions) OR cp.certificationEditionId IS NULL) "
+                + "WHERE surv.certifiedProductId = cp.id "
+                + "AND (cp.certificationEditionId NOT IN (:retiredEditions) OR cp.certificationEditionId IS NULL) "
                 + "AND surv.deleted = false "
                 + "AND reqs.deleted = false "
                 + "AND nc.deleted = false ";
@@ -252,10 +252,10 @@ public class SurveillanceStatisticsDAO extends BaseDAOImpl {
 
     public List<SurveillanceEntity> getAllSurveillances() {
         String hql = "SELECT surv "
-                + "FROM SurveillanceEntity surv "
-                + "JOIN surv.certifiedProduct cp "
+                + "FROM SurveillanceEntity surv, CertifiedProductEntity cp "
                 + "JOIN FETCH surv.surveilledRequirements req "
-                + "WHERE (cp.certificationEditionId NOT IN (:retiredEditions) OR cp.certificationEditionId IS NULL) "
+                + "WHERE surv.certifiedProductId = cp.id "
+                + "AND (cp.certificationEditionId NOT IN (:retiredEditions) OR cp.certificationEditionId IS NULL) "
                 + "AND surv.deleted = false ";
         Query query = entityManager.createQuery(hql);
         query.setParameter("retiredEditions", retiredEditions);

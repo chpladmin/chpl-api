@@ -2,6 +2,7 @@ package gov.healthit.chpl.entity;
 
 import java.util.Date;
 
+import gov.healthit.chpl.domain.contact.PointOfContact;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -9,8 +10,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-
-import gov.healthit.chpl.domain.contact.PointOfContact;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -31,7 +30,6 @@ public class ContactEntity extends EntityAudit {
     private static final int EMAIL_LENGTH = 250;
     private static final int FULL_NAME_LENGTH = 500;
     private static final int PHONE_LENGTH = 50;
-    private static final int TITLE_LENGTH = 250;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -55,17 +53,12 @@ public class ContactEntity extends EntityAudit {
     @Column(name = "signature_date")
     private Date signatureDate;
 
-    @Basic(optional = true)
-    @Column(length = TITLE_LENGTH)
-    private String title;
-
     public PointOfContact toDomain() {
         return PointOfContact.builder()
                 .contactId(this.getId())
                 .email(this.getEmail())
                 .fullName(this.getFullName())
                 .phoneNumber(this.getPhoneNumber())
-                .title(this.getTitle())
         .build();
     }
 }

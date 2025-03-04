@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.quartz.JobDataMap;
@@ -26,7 +27,6 @@ import gov.healthit.chpl.caching.CacheNames;
 import gov.healthit.chpl.caching.ListingSearchCacheRefresh;
 import gov.healthit.chpl.certifiedproduct.CertifiedProductDetailsManager;
 import gov.healthit.chpl.dao.CertifiedProductDAO;
-import gov.healthit.chpl.dao.auth.UserDAO;
 import gov.healthit.chpl.domain.CertifiedProductSearchDetails;
 import gov.healthit.chpl.domain.activity.ActivityConcept;
 import gov.healthit.chpl.domain.schedule.ChplJob;
@@ -47,6 +47,7 @@ import gov.healthit.chpl.service.CertificationCriterionService;
 import gov.healthit.chpl.sharedstore.listing.ListingStoreRemove;
 import gov.healthit.chpl.sharedstore.listing.RemoveBy;
 import gov.healthit.chpl.util.AuthUtil;
+import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.FileUtils;
 import gov.healthit.chpl.validation.surveillance.SurveillanceCreationValidator;
 import gov.healthit.chpl.validation.surveillance.SurveillanceReadValidator;
@@ -66,7 +67,7 @@ public class SurveillanceManager extends SecuredManager {
     private SurveillanceCreationValidator survCreationValidator;
     private FileUtils fileUtils;
     private Environment env;
-    private UserDAO userDAO;
+    private ErrorMessageUtil msgUtil;
     private CertificationCriterionService certificationCriterionService;
     private String schemaBasicSurveillanceName;
 
@@ -82,7 +83,7 @@ public class SurveillanceManager extends SecuredManager {
             SurveillanceCreationValidator survCreationValidator,
             SurveillanceUpdateValidator survUpdateValidator,
             FileUtils fileUtils, Environment env,
-            UserDAO userDAO, CertificationCriterionService certificationCriterionService,
+            ErrorMessageUtil msgUtil, CertificationCriterionService certificationCriterionService,
             @Value("${schemaBasicSurveillanceName}") String schemaBasicSurveillanceName) {
         this.survDao = survDao;
         this.cpDao = cpDao;
@@ -94,7 +95,7 @@ public class SurveillanceManager extends SecuredManager {
         this.survReadValidator = survReadValidator;
         this.fileUtils = fileUtils;
         this.env = env;
-        this.userDAO = userDAO;
+        this.msgUtil = msgUtil;
         this.certificationCriterionService = certificationCriterionService;
         this.schemaBasicSurveillanceName = schemaBasicSurveillanceName;
 
@@ -104,7 +105,7 @@ public class SurveillanceManager extends SecuredManager {
     }
 
     @Transactional(readOnly = true)
-    public Surveillance getById(final Long survId) throws EntityRetrievalException {
+    public Surveillance getById(Long survId) throws EntityRetrievalException {
         Surveillance result = survDao.getSurveillanceById(survId).toDomain(cpDao, certificationCriterionService);
         survReadValidator.validate(result);
         result.setRequirements(result.getRequirements().stream()
@@ -140,24 +141,20 @@ public class SurveillanceManager extends SecuredManager {
 
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SURVEILLANCE, "
-            + "T(gov.healthit.chpl.permissions.domains.SurveillanceDomainPermissions).CREATE, #survToInsert)")
-    @CacheEvict(value = {
-            CacheNames.COLLECTIONS_LISTINGS
-    }, allEntries = true)
+            + "T(gov.healthit.chpl.permissions.domains.SurveillanceDomainPermissions).CREATE, #certifiedProductId)")
     @ListingSearchCacheRefresh
-    @ListingStoreRemove(removeBy = RemoveBy.LISTING_ID, id = "#survToInsert.certifiedProduct.id")
-    public Long createSurveillance(Surveillance survToInsert) throws EntityRetrievalException, ValidationException, UserPermissionRetrievalException, ActivityException {
-        CertifiedProductSearchDetails beforeListing = cpDetailsManager
-                .getCertifiedProductDetails(survToInsert.getCertifiedProduct().getId());
+    @ListingStoreRemove(removeBy = RemoveBy.LISTING_ID, id = "#certifiedProductId")
+    public Long createSurveillance(Long certifiedProductId, Surveillance survToInsert) throws EntityRetrievalException, ValidationException, UserPermissionRetrievalException, ActivityException {
+        CertifiedProductSearchDetails beforeListing = cpDetailsManager.getCertifiedProductDetails(certifiedProductId);
 
-        validateSurveillanceCreation(survToInsert);
+        validateSurveillanceCreation(beforeListing, survToInsert);
         if (survToInsert.getErrorMessages() != null && survToInsert.getErrorMessages().size() > 0) {
             throw new ValidationException(survToInsert.getErrorMessages(), null);
         }
 
         Long insertedId = null;
         try {
-            insertedId = survDao.insertSurveillance(survToInsert);
+            insertedId = survDao.insertSurveillance(certifiedProductId, survToInsert);
         } catch (final UserPermissionRetrievalException ex) {
             LOGGER.error("Error inserting surveillance.", ex);
             throw ex;
@@ -168,16 +165,14 @@ public class SurveillanceManager extends SecuredManager {
 
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SURVEILLANCE, "
-            + "T(gov.healthit.chpl.permissions.domains.SurveillanceDomainPermissions).UPDATE, #survToUpdate)")
+            + "T(gov.healthit.chpl.permissions.domains.SurveillanceDomainPermissions).UPDATE, #certifiedProductId)")
     @CacheEvict(value = {
-            CacheNames.COLLECTIONS_LISTINGS,
             CacheNames.COMPLAINTS
     }, allEntries = true)
     @ListingSearchCacheRefresh
-    @ListingStoreRemove(removeBy = RemoveBy.LISTING_ID, id = "#survToUpdate.certifiedProduct.id")
-    public void updateSurveillance(final Surveillance survToUpdate) throws EntityRetrievalException, ValidationException, ActivityException {
-        CertifiedProductSearchDetails beforeListing = cpDetailsManager
-                .getCertifiedProductDetails(survToUpdate.getCertifiedProduct().getId());
+    @ListingStoreRemove(removeBy = RemoveBy.LISTING_ID, id = "#certifiedProductId")
+    public void updateSurveillance(Long certifiedProductId, Surveillance survToUpdate) throws EntityRetrievalException, ValidationException, ActivityException {
+        CertifiedProductSearchDetails beforeListing = cpDetailsManager.getCertifiedProductDetails(certifiedProductId);
 
         Optional<Surveillance> beforeSurv = beforeListing.getSurveillance().stream()
             .filter(surv -> surv.getId().equals(survToUpdate.getId()))
@@ -188,33 +183,34 @@ public class SurveillanceManager extends SecuredManager {
         }
 
         if (beforeSurv.isPresent() && !beforeSurv.get().matches(survToUpdate)) {
-            survDao.updateSurveillance(survToUpdate);
+            survDao.updateSurveillance(certifiedProductId, survToUpdate);
             logSurveillanceUpdateActivity(beforeListing);
         }
     }
 
     @Transactional
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SURVEILLANCE, "
-            + "T(gov.healthit.chpl.permissions.domains.SurveillanceDomainPermissions).DELETE, #survToDelete)")
+            + "T(gov.healthit.chpl.permissions.domains.SurveillanceDomainPermissions).DELETE, #certifiedProductId)")
     @CacheEvict(value = {
-            CacheNames.COLLECTIONS_LISTINGS, CacheNames.COMPLAINTS, CacheNames.QUESTIONABLE_ACTIVITIES
+            CacheNames.COMPLAINTS, CacheNames.QUESTIONABLE_ACTIVITIES
     }, allEntries = true)
     @ListingSearchCacheRefresh
-    @ListingStoreRemove(removeBy = RemoveBy.LISTING_ID, id = "#survToDelete.certifiedProduct.id")
-    public void deleteSurveillance(Surveillance survToDelete, String reason)
+    @ListingStoreRemove(removeBy = RemoveBy.LISTING_ID, id = "#certifiedProductId")
+    public void deleteSurveillance(Long certifiedProductId, Surveillance survToDelete, String reason)
             throws MissingReasonException, InvalidArgumentsException, EntityRetrievalException, ActivityException {
 
         if (survToDelete == null) {
-            throw new InvalidArgumentsException("Cannot find surveillance with id " + survToDelete.getId() + " to delete.");
+            throw new InvalidArgumentsException("Surveillance to delete is null.");
+        }
+        if (StringUtils.isEmpty(reason)) {
+            throw new MissingReasonException(msgUtil.getMessage("surveillance.reasonRequired"));
         }
 
-        CertifiedProductSearchDetails beforeCp = cpDetailsManager
-                .getCertifiedProductDetails(survToDelete.getCertifiedProduct().getId());
+        CertifiedProductSearchDetails beforeCp = cpDetailsManager.getCertifiedProductDetails(certifiedProductId);
 
         survDao.deleteSurveillance(survToDelete);
 
-        CertifiedProductSearchDetails afterCp = cpDetailsManager
-                .getCertifiedProductDetailsNoCache(survToDelete.getCertifiedProduct().getId());
+        CertifiedProductSearchDetails afterCp = cpDetailsManager.getCertifiedProductDetailsNoCache(certifiedProductId);
         activityManager.addActivity(ActivityConcept.CERTIFIED_PRODUCT, afterCp.getId(),
                 "Surveillance was delete from certified product " + afterCp.getChplProductNumber(),
                 beforeCp, afterCp, reason);
@@ -252,9 +248,9 @@ public class SurveillanceManager extends SecuredManager {
         survUpdateValidator.validate(existingSurv, updatedSurv);
     }
 
-    private void validateSurveillanceCreation(Surveillance createdSurv) {
+    private void validateSurveillanceCreation(CertifiedProductSearchDetails listing, Surveillance createdSurv) {
         createdSurv.getErrorMessages().clear();
-        survCreationValidator.validate(createdSurv);
+        survCreationValidator.validate(listing, createdSurv);
     }
 
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SURVEILLANCE, "
