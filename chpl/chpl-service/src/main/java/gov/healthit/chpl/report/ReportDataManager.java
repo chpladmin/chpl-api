@@ -28,6 +28,7 @@ import gov.healthit.chpl.report.surveillance.CapCounts;
 import gov.healthit.chpl.report.surveillance.NonconformityCounts;
 import gov.healthit.chpl.report.surveillance.SurveillanceActivityCounts;
 import gov.healthit.chpl.report.surveillance.SurveillanceReportsService;
+import gov.healthit.chpl.report.svap.SvapReportService;
 import gov.healthit.chpl.scheduler.job.report.attestation.AttestationReport;
 import gov.healthit.chpl.scheduler.job.summarystatistics.data.CertificationBodyStatistic;
 import gov.healthit.chpl.search.domain.ListingSearchResult;
@@ -49,6 +50,7 @@ public class ReportDataManager {
     private ReportMetadataDAO reportMetadataDAO;
     private CriteriaAttributeReportService criteriaAttributeReportService;
     private ServiceBaseUrlListReportService serviceBaseUrlListReportService;
+    private SvapReportService svapReportService;
     private RealWorldTestingReportDataService realWorldTestingReportDataService;
     private NonconformityReportService nonconformityReportService;
 
@@ -63,6 +65,7 @@ public class ReportDataManager {
             ReportMetadataDAO reportMetadataDAO,
             CriteriaAttributeReportService criteriaAttributeReportService,
             ServiceBaseUrlListReportService serviceBaseUrlListReportService,
+            SvapReportService svapReportService,
             RealWorldTestingReportDataService realWorldTestingReportDataService,
             NonconformityReportService nonconformityReportService) {
 
@@ -77,6 +80,7 @@ public class ReportDataManager {
         this.reportMetadataDAO = reportMetadataDAO;
         this.criteriaAttributeReportService = criteriaAttributeReportService;
         this.serviceBaseUrlListReportService = serviceBaseUrlListReportService;
+        this.svapReportService = svapReportService;
         this.realWorldTestingReportDataService = realWorldTestingReportDataService;
         this.nonconformityReportService = nonconformityReportService;
     }
@@ -276,9 +280,12 @@ public class ReportDataManager {
         return attestationReportService.getAttestationReports();
     }
 
+    public SvapReportService getSvapReportService() {
+        return svapReportService;
+    }
+
     @Synchronized("lock")
     public NonconformityReportService getNonconformityReportService() {
         return nonconformityReportService;
     }
-
 }
