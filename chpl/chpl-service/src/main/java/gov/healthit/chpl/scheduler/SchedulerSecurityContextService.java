@@ -47,7 +47,6 @@ public class SchedulerSecurityContextService {
         } else {
             user = new User();
             user.setFullName("Administrator");
-            user.setFriendlyName("Admin");
             user.setSubjectName("admin");
         }
 
@@ -57,7 +56,6 @@ public class SchedulerSecurityContextService {
                 .fullName(user.getFullName())
                 .id(ff4j.check(FeatureList.SSO) ? null : ChplSystemUsers.ADMIN_USER_ID)
                 .cognitoId(ff4j.check(FeatureList.SSO) ? user.getCognitoId() : null)
-                .friendlyName(user.getFriendlyName())
                 .subjectName(user.getSubjectName())
                 .authorities(List.of(
                         new SimpleGrantedAuthority(ff4j.check(FeatureList.SSO) ? CognitoGroups.CHPL_ADMIN : Authority.ROLE_ADMIN)))
@@ -72,7 +70,6 @@ public class SchedulerSecurityContextService {
                 .fullName(user.getFullName())
                 .id(ff4j.check(FeatureList.SSO) ? null : user.getUserId())
                 .cognitoId(ff4j.check(FeatureList.SSO) ? user.getCognitoId() : null)
-                .friendlyName(user.getFriendlyName())
                 .subjectName(user.getEmail())
                 .authorities(List.of(new SimpleGrantedAuthority(user.getRole())))
                 .build());

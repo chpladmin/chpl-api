@@ -32,10 +32,6 @@
         <AppenderRef ref="questionableUrlReportGeneratorJob" />
         <AppenderRef ref="questionableUrlReportGeneratorJobJson" />
     </Logger>
-    <Logger name="chartDataCreatorJobLogger" level="INFO" additivity="false">
-        <AppenderRef ref="chartDataCreatorJob" />
-        <AppenderRef ref="chartDataCreatorJobJson" />
-    </Logger>
     <Logger name="standardsUpdateJobLogger" level="INFO" additivity="false">
         <AppenderRef ref="standardsUpdateJob" />
         <AppenderRef ref="standardsUpdateJobJson" />

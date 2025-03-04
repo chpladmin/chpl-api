@@ -1,5 +1,6 @@
 package gov.healthit.chpl.changerequest.entity;
 
+import gov.healthit.chpl.entity.EntityAudit;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -10,8 +11,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-
-import gov.healthit.chpl.entity.EntityAudit;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -73,8 +72,5 @@ public class ChangeRequestDeveloperDemographicsEntity extends EntityAudit {
 
     @Column(name = "phone_number", nullable = false)
     private String contactPhoneNumber;
-
-    @Column(name = "title", nullable = false)
-    private String contactTitle;
 
 }

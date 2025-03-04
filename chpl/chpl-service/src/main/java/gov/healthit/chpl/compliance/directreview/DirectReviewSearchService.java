@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -18,12 +17,13 @@ import org.springframework.cache.CacheManager;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.caching.CacheNames;
+import gov.healthit.chpl.certifiedproduct.service.CertificationStatusEventsService;
 import gov.healthit.chpl.domain.CertificationStatusEvent;
-import gov.healthit.chpl.domain.comparator.CertificationStatusEventComparator;
 import gov.healthit.chpl.domain.compliance.DirectReview;
 import gov.healthit.chpl.domain.compliance.DirectReviewContainer;
 import gov.healthit.chpl.domain.compliance.DirectReviewNonConformity;
 import gov.healthit.chpl.domain.concept.CertificationEditionConcept;
+import gov.healthit.chpl.entity.CertificationStatusType;
 import gov.healthit.chpl.util.CertificationStatusUtil;
 import gov.healthit.chpl.util.RedisUtil;
 import lombok.NoArgsConstructor;
@@ -35,12 +35,16 @@ import one.util.streamex.StreamEx;
 @Log4j2
 public class DirectReviewSearchService {
     private DirectReviewCachingService drCacheService;
+    private CertificationStatusEventsService certStatusEventsService;
     private CacheManager cacheManager;
     private RedisUtil redisUtil;
 
     @Autowired
-    public DirectReviewSearchService(DirectReviewCachingService drCacheService, CacheManager cacheManager, RedisUtil redisUtil) {
+    public DirectReviewSearchService(DirectReviewCachingService drCacheService,
+            CertificationStatusEventsService certStatusEventsService,
+            CacheManager cacheManager, RedisUtil redisUtil) {
         this.drCacheService = drCacheService;
+        this.certStatusEventsService = certStatusEventsService;
         this.cacheManager = cacheManager;
         this.redisUtil = redisUtil;
     }
@@ -161,17 +165,8 @@ public class DirectReviewSearchService {
     }
 
     private List<DateRange> getDateRangesWithActiveStatus(List<CertificationStatusEvent> listingStatusEvents) {
-        List<String> activeStatusNames = CertificationStatusUtil.getActiveStatusNames();
-        listingStatusEvents.sort(new CertificationStatusEventComparator());
-        return IntStream.range(0, listingStatusEvents.size())
-            .filter(i -> listingStatusEvents.get(i) != null && listingStatusEvents.get(i).getStatus() != null
-                && !StringUtils.isEmpty(listingStatusEvents.get(i).getStatus().getName()))
-            .filter(i -> activeStatusNames.contains(listingStatusEvents.get(i).getStatus().getName()))
-            .mapToObj(i -> new DateRange(new Date(listingStatusEvents.get(i).getEventDate()),
-                    i < (listingStatusEvents.size() - 1) ? new Date(listingStatusEvents.get(i + 1).getEventDate())
-                            //Math.max here to handle the case where status is a future date
-                            : new Date(Math.max(System.currentTimeMillis(), listingStatusEvents.get(i).getEventDate()))))
-            .collect(Collectors.toList());
+        List<CertificationStatusType> activeStatuses = CertificationStatusUtil.getActiveStatuses();
+        return certStatusEventsService.getDateRangesWithStatuses(listingStatusEvents, activeStatuses);
     }
 
     private Cache getDirectReviewsCache() {

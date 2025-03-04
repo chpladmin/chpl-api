@@ -1,8 +1,10 @@
 package gov.healthit.chpl.upload.listing.handler;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDate;
 import java.time.Month;
@@ -10,6 +12,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.stream.Stream;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.csv.CSVRecord;
 import org.junit.Before;
 import org.junit.Test;
@@ -226,6 +229,7 @@ public class ListingDetailsUploadHandlerTest {
         CertifiedProductSearchDetails listing = handler.parseAsListing(headingRecord, listingRecords);
         assertNotNull(listing);
         assertNull(listing.getCertificationDate());
+        assertTrue(CollectionUtils.isEmpty(listing.getCertificationEvents()));
     }
 
     @Test
@@ -244,6 +248,8 @@ public class ListingDetailsUploadHandlerTest {
         cal.set(2018, 1, 14, 0, 0, 0);
         cal.set(Calendar.MILLISECOND, 0);
         assertEquals(cal.getTime().getTime(), listing.getCertificationDate().longValue());
+        assertFalse(CollectionUtils.isEmpty(listing.getCertificationEvents()));
+        assertTrue(listing.getCertificationEvents().get(0).getEventDay().equals(LocalDate.parse("2018-02-14")));
     }
 
     @Test
@@ -263,6 +269,8 @@ public class ListingDetailsUploadHandlerTest {
         cal.set(2020, 8, 9, 0, 0, 0);
         cal.set(Calendar.MILLISECOND, 0);
         assertEquals(cal.getTime().getTime(), listing.getCertificationDate().longValue());
+        assertFalse(CollectionUtils.isEmpty(listing.getCertificationEvents()));
+        assertTrue(listing.getCertificationEvents().get(0).getEventDay().equals(LocalDate.parse("2020-09-09")));
     }
 
     @Test
@@ -281,6 +289,8 @@ public class ListingDetailsUploadHandlerTest {
         cal.set(2018, 1, 14, 0, 0, 0);
         cal.set(Calendar.MILLISECOND, 0);
         assertEquals(cal.getTime().getTime(), listing.getCertificationDate().longValue());
+        assertFalse(CollectionUtils.isEmpty(listing.getCertificationEvents()));
+        assertTrue(listing.getCertificationEvents().get(0).getEventDay().equals(LocalDate.parse("2018-02-14")));
     }
 
     @Test
@@ -295,6 +305,7 @@ public class ListingDetailsUploadHandlerTest {
 
         CertifiedProductSearchDetails listing = handler.parseAsListing(headingRecord, listingRecords);
         assertNull(listing.getCertificationDate());
+        assertTrue(CollectionUtils.isEmpty(listing.getCertificationEvents()));
         assertNotNull(listing.getCertificationDateStr());
         assertEquals("BADDATE", listing.getCertificationDateStr());
     }
