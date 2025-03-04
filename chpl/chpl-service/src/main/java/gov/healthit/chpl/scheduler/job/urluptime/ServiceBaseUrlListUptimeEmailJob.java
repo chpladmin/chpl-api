@@ -28,11 +28,20 @@ import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
 import gov.healthit.chpl.email.footer.AdminFooter;
 import gov.healthit.chpl.exception.EmailNotSentException;
+import gov.healthit.chpl.exception.EntityRetrievalException;
+import gov.healthit.chpl.exception.ValidationException;
+import gov.healthit.chpl.manager.CertificationBodyManager;
+import gov.healthit.chpl.manager.DeveloperManager;
 import gov.healthit.chpl.scheduler.job.QuartzJob;
+import gov.healthit.chpl.search.ListingSearchService;
+import gov.healthit.chpl.search.domain.ListingSearchResult;
+import gov.healthit.chpl.search.domain.SearchRequest;
+import gov.healthit.chpl.util.CertificationStatusUtil;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2(topic = "serviceBaseUrlListUptimeEmailJobLogger")
 public class ServiceBaseUrlListUptimeEmailJob extends QuartzJob {
+    private static final Integer MAX_PAGE_SIZE = 100;
 
     @Autowired
     private ChplHtmlEmailBuilder chplHtmlEmailBuilder;
@@ -53,12 +62,21 @@ public class ServiceBaseUrlListUptimeEmailJob extends QuartzJob {
     private CertificationBodyDAO certificationBodyDAO;
 
     @Autowired
+    private DeveloperManager developerManager;
+
+    @Autowired
+    private CertificationBodyManager certificationBodyManager;
+
+    @Autowired
+    private ListingSearchService listingSearchService;
+
+    @Autowired
     private JpaTransactionManager txManager;
+
 
     @Autowired
     private Environment env;
 
-    private Map<Long, Set<CertificationBody>> developerIdAndCertificationBodyMap;
     private List<CertificationBody> activeAcbs;
 
     @Override
@@ -71,7 +89,7 @@ public class ServiceBaseUrlListUptimeEmailJob extends QuartzJob {
             @Override
             protected void doInTransactionWithoutResult(TransactionStatus status) {
                 try {
-                    developerIdAndCertificationBodyMap = getDeveloperIdAndCertificationBodyMap();
+                    //developerIdAndCertificationBodyMap = getDeveloperIdAndCertificationBodyMap();
                     activeAcbs = certificationBodyDAO.findAllActive();
 
                     sendEmail(context, getReportRows());
@@ -81,13 +99,6 @@ public class ServiceBaseUrlListUptimeEmailJob extends QuartzJob {
             }
         });
         LOGGER.info("********* Completed the Service Base Url List Uptime Email job *********");
-    }
-
-    private Map<Long, Set<CertificationBody>> getDeveloperIdAndCertificationBodyMap() {
-        Map<Developer, Set<CertificationBody>> developerAcbMaps = developerDAO.findAllDevelopersWithAcbs();
-        return developerAcbMaps.entrySet().stream()
-            .filter(entry -> !CollectionUtils.isEmpty(entry.getValue()))
-            .collect(Collectors.toMap(entry -> entry.getKey().getId(), entry -> entry.getValue()));
     }
 
     private List<ServiceBaseUrlListUptimeReport> getReportRows() {
@@ -101,7 +112,7 @@ public class ServiceBaseUrlListUptimeEmailJob extends QuartzJob {
     }
 
     private Map<Long, Boolean> getApplicableAcbsForDeveloper(Long developerId) {
-        Set<CertificationBody> acbsForDeveloper = developerIdAndCertificationBodyMap.get(developerId);
+        Set<CertificationBody> acbsForDeveloper = getAssociatedCertificationBodies(developerId);
         if (CollectionUtils.isEmpty(acbsForDeveloper)) {
             LOGGER.warn("The developer " + developerId + " has no associated ACBs and will not be included in the report.");
             return new HashMap<Long, Boolean>();
@@ -111,19 +122,19 @@ public class ServiceBaseUrlListUptimeEmailJob extends QuartzJob {
                 .collect(Collectors.toMap(
                         acb -> acb.getId(),
                         acb -> acbsForDeveloper.stream()
-                                .filter(acbForDev -> acbForDev.getId().equals(acb.getId()))
-                                .findAny().isPresent()));
+                        .filter(acbForDev -> acbForDev.getId().equals(acb.getId()))
+                        .findAny().isPresent()));
 
     }
 
     private void sendEmail(JobExecutionContext context, List<ServiceBaseUrlListUptimeReport> rows) throws EmailNotSentException, IOException {
         LOGGER.info("Sending email to: " + context.getMergedJobDataMap().getString("email"));
         chplEmailFactory.emailBuilder()
-                .recipient(context.getMergedJobDataMap().getString("email"))
-                .subject(env.getProperty("serviceBaseUrlListUptime.report.subject"))
-                .htmlMessage(createHtmlMessage())
-                .fileAttachments(Arrays.asList(serviceBaseUrlListUptimeCsvWriter.generateFile(rows)))
-                .sendEmail();
+        .recipient(context.getMergedJobDataMap().getString("email"))
+        .subject(env.getProperty("serviceBaseUrlListUptime.report.subject"))
+        .htmlMessage(createHtmlMessage())
+        .fileAttachments(Arrays.asList(serviceBaseUrlListUptimeCsvWriter.generateFile(rows)))
+        .sendEmail();
         LOGGER.info("Completed Sending email to: " + context.getMergedJobDataMap().getString("email"));
     }
 
@@ -135,5 +146,36 @@ public class ServiceBaseUrlListUptimeEmailJob extends QuartzJob {
                 .paragraph("", env.getProperty("serviceBaseUrlListUptime.report.paragraph3.body"))
                 .footer(AdminFooter.class)
                 .build();
+    }
+
+    public Set<CertificationBody> getAssociatedCertificationBodies(Long developerId) {
+        try {
+            return getListingDataForDeveloper(developerManager.getById(developerId)).stream()
+                    .map(listing -> listing.getCertificationBody())
+                    .collect(Collectors.toSet()).stream()
+                    .map(pair -> getCertificationBody(pair.getId()))
+                    .collect(Collectors.toSet());
+        } catch (ValidationException | EntityRetrievalException e) {
+            LOGGER.error("Could not identify Certification Body for Developer with id: {}", developerId);
+            return null;
+        }
+    }
+
+    private CertificationBody getCertificationBody(Long acbId) {
+        try {
+            return certificationBodyManager.getById(acbId);
+        } catch (Exception e) {
+            LOGGER.error("Could not identify Certification Body with id: {}", acbId);
+            return null;
+        }
+    }
+
+    private List<ListingSearchResult> getListingDataForDeveloper(Developer developer) throws ValidationException {
+        SearchRequest request = SearchRequest.builder()
+                .certificationStatuses(CertificationStatusUtil.getActiveStatuses().stream().map(status -> status.getName()).collect(Collectors.toSet()))
+                .developer(developer.getName())
+                .pageSize(MAX_PAGE_SIZE)
+                .build();
+        return listingSearchService.getAllPagesOfSearchResults(request);
     }
 }
