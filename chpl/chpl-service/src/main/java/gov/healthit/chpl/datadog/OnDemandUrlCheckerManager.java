@@ -22,7 +22,6 @@ import gov.healthit.chpl.exception.ValidationException;
 import gov.healthit.chpl.scheduler.job.urluptime.DatadogSyntheticsTestResultService;
 import gov.healthit.chpl.scheduler.job.urluptime.DatadogSyntheticsTestService;
 import gov.healthit.chpl.util.ErrorMessageUtil;
-import gov.healthit.chpl.util.Util;
 import gov.healthit.chpl.util.ValidationUtils;
 import lombok.extern.log4j.Log4j2;
 
@@ -39,9 +38,9 @@ public class OnDemandUrlCheckerManager {
     private static final String TYPE_VALUE_STATUS_CODE = "statusCode";
     private static final String TYPE_VALUE_BODY = "body";
     private static final String TYPE_VALUE_RESPONSE_TIME = "responseTime";
-    
-    private List<String> errorsToIgnore = List.of("BODY_TOO_LARGE_TO_PROCESS");    
-    
+
+    private List<String> errorsToIgnore = List.of("BODY_TOO_LARGE_TO_PROCESS");
+
     private DatadogSyntheticsTestService datadogSyntheticsTestService;
     private DatadogSyntheticsTestResultService datadogSyntheticsTestResultService;
     private ValidationUtils validationUtils;
@@ -78,7 +77,7 @@ public class OnDemandUrlCheckerManager {
             } catch (Exception e) {
                 LOGGER.error("Failed to delete On Demand URL Check", e);
             }
-            
+
         }
     }
 
