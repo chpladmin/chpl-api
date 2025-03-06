@@ -1957,12 +1957,8 @@
 									"pm.test(\"expect to see an error for invalid Test Procedure ID\", function () {\r",
 									"    pm.expect(pm.response.text()).to.include(\"Certification 170.315 (b)(6) contains an invalid test procedure ID: '100125'\");\r",
 									"});\r",
-									"pm.test(\"expect to see an error for invalid SVAP ID\", function () {\r",
-									"    pm.expect(pm.response.text()).to.include(\"Standards Version Advancement Process 170.204(a)(1) is not valid for criteria 170.315 (b)(6)\");\r",
-									"});\r",
 									"pm.test(\"expect to see an error for invalid Test Functionality ID and name\", function () {\r",
-									"    pm.expect(pm.response.text()).to.include(\"Certification 170.315 (g)(8) contains invalid Functionality Tested ID '45'.\");\r",
-									"});\r",
+									"    pm.expect(pm.response.text()).to.include(\"In Criteria 170.315 (g)(8), Functionality Tested (g)(4)(i)(B) is for Criteria 170.315 (g)(4) and is not valid for Criteria 170.315 (g)(8). The invalid Functionality Tested has been removed.\");\r",
 									"pm.test(\"expect to see an error for invalid Test Standard ID\", function () {\r",
 									"    pm.expect(pm.response.text()).to.include(\"Criteria 170.315 (b)(6) contains a test standard ID '2021' which does not exist for edition 2015\");\r",
 									"});\r",
@@ -2013,6 +2009,97 @@
 							]
 						},
 						"description": "listing edit request with invalid inputs should result in 400 status code and errors in response"
+					},
+					"response": []
+				},
+				{
+					"name": "POST: /upload/{certifiedProductId} - Invalid SVAP value shows warning on listing edit",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var ReqBody= {\r",
+									"        userName:pm.environment.get(\"emailACB\"),password:pm.environment.get(\"passwordACB\")\r",
+									"    };\r",
+									"pm.sendRequest({\r",
+									"    url: pm.environment.get(\"authurl\"),\r",
+									"    method: \"POST\",\r",
+									"    header: {\r",
+									"        \"Content-Type\": \"application/json\",\r",
+									"        \"API-KEY\": pm.environment.get(\"apiKey\")\r",
+									"    },\r",
+									"    body: JSON.stringify(ReqBody)\r",
+									"}, function (err, response) {\r",
+									"   var jsonData = response.json();\r",
+									"   pm.environment.set(\"token\",jsonData[pm.environment.get(\"authTokenField\")])\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"expect to see a warning for invalid SVAP ID\", function () {\r",
+									"    pm.expect(pm.response.text()).to.include(\"Standards Version Advancement Process 170.205(a)(4-6) is not valid for criteria 170.315 (b)(11). It has been removed.\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "API-KEY",
+								"value": "{{apiKey}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "text/csv",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": "chpl/chpl-api/e2e/data/15-04-04-2813-Tech-05-00-0-191208.csv"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{url}}/rest/listings/upload/10207",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"rest",
+								"listings",
+								"upload",
+								"10207"
+							]
+						},
+						
 					},
 					"response": []
 				},
