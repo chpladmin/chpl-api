@@ -362,7 +362,7 @@
             <version>${redisson.version}</version>
         </dependency>
 
-        <dependency> 
+        <dependency>
             <groupId>org.htmlunit</groupId>
             <artifactId>htmlunit</artifactId>
             <version>4.4.0</version>
@@ -418,14 +418,14 @@
             <artifactId>jwks-rsa</artifactId>
             <version>0.4.0</version>
         </dependency>
-		
-		<!-- https://failsafe.dev/ --> 
-		<dependency>
-    		<groupId>dev.failsafe</groupId>
-    		<artifactId>failsafe</artifactId>
-    		<version>3.3.2</version>
-		</dependency>
-		
+
+        <!-- https://failsafe.dev/ -->
+        <dependency>
+            <groupId>dev.failsafe</groupId>
+            <artifactId>failsafe</artifactId>
+            <version>3.3.2</version>
+        </dependency>
+
 		<!--  needed for unit tests -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
