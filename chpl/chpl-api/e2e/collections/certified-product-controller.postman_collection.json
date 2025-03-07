@@ -1959,6 +1959,7 @@
 									"});\r",
 									"pm.test(\"expect to see an error for invalid Test Functionality ID and name\", function () {\r",
 									"    pm.expect(pm.response.text()).to.include(\"In Criteria 170.315 (g)(8), Functionality Tested (g)(4)(i)(B) is for Criteria 170.315 (g)(4) and is not valid for Criteria 170.315 (g)(8). The invalid Functionality Tested has been removed.\");\r",
+									"});\r",
 									"pm.test(\"expect to see an error for invalid Test Standard ID\", function () {\r",
 									"    pm.expect(pm.response.text()).to.include(\"Criteria 170.315 (b)(6) contains a test standard ID '2021' which does not exist for edition 2015\");\r",
 									"});\r",
@@ -2075,6 +2076,12 @@
 								"key": "Content-Type",
 								"value": "text/csv",
 								"type": "text"
+							},
+							{
+								"key": "",
+								"value": "",
+								"type": "text",
+								"disabled": true
 							}
 						],
 						"body": {
@@ -2084,6 +2091,12 @@
 									"key": "file",
 									"type": "file",
 									"src": "chpl/chpl-api/e2e/data/15-04-04-2813-Tech-05-00-0-191208.csv"
+								},
+								{
+									"key": "",
+									"value": "",
+									"type": "text",
+									"disabled": true
 								}
 							]
 						},
@@ -2099,10 +2112,10 @@
 								"10207"
 							]
 						},
-						
+						"description": "listing edit request with invalid inputs should result in 400 status code and errors in response"
 					},
 					"response": []
-				},
+				},		
 				{
 					"name": "PUT:/certified_products/{certifiedProductId}- 2014 listing edit (old-style CHPL ID)",
 					"event": [
