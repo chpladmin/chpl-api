@@ -1,10 +1,12 @@
 package gov.healthit.chpl.scheduler.job.urluptime;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
+import gov.healthit.chpl.domain.CertificationBody;
 import gov.healthit.chpl.entity.developer.DeveloperEntitySimple;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import jakarta.persistence.Query;
@@ -24,10 +26,19 @@ public class UrlUptimeMonitorDAO extends BaseDAOImpl {
         UrlUptimeMonitorEntity entity = UrlUptimeMonitorEntity.builder()
                 .url(datadogMonitor.getDatadogPublicId())
                 .developer(getSimpleDeveloperById(datadogMonitor.getDeveloper().getId(), false))
+                .delimitedAcbIds(datadogMonitor.getDelimitedAcbIds())
                 .url(datadogMonitor.getUrl())
                 .build();
 
         create(entity);
+        return getEntityById(entity.getId()).toDomain();
+    }
+
+    public UrlUptimeMonitor updateAcbsForMonitor(UrlUptimeMonitor datadogMonitor, List<CertificationBody> acbs) throws EntityRetrievalException {
+        UrlUptimeMonitorEntity entity = getEntityById(datadogMonitor.getId());
+        entity.setDelimitedAcbIds(acbs.stream().map(acb -> acb.getId().toString()).collect(Collectors.joining(",")));
+        update(entity);
+
         return getEntityById(entity.getId()).toDomain();
     }
 
@@ -45,8 +56,8 @@ public class UrlUptimeMonitorDAO extends BaseDAOImpl {
 
         Query query = entityManager.createQuery(
                 "FROM UrlUptimeMonitorEntity "
-                + "WHERE (NOT deleted = true) "
-                + "AND id = :id", UrlUptimeMonitorEntity.class);
+                        + "WHERE (NOT deleted = true) "
+                        + "AND id = :id", UrlUptimeMonitorEntity.class);
         query.setParameter("id", id);
         List<UrlUptimeMonitorEntity> result = query.getResultList();
         if (result.size() > 0) {
@@ -59,8 +70,8 @@ public class UrlUptimeMonitorDAO extends BaseDAOImpl {
     private List<UrlUptimeMonitorEntity> getEntitiesAll() {
         return entityManager.createQuery(
                 "FROM UrlUptimeMonitorEntity uume "
-                + "JOIN FETCH uume.developer dev "
-                + "WHERE (uume.deleted = false)", UrlUptimeMonitorEntity.class)
+                        + "JOIN FETCH uume.developer dev "
+                        + "WHERE (uume.deleted = false)", UrlUptimeMonitorEntity.class)
                 .getResultList();
     }
 

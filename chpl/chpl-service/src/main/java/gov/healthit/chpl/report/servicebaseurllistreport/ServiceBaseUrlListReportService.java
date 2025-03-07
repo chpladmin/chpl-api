@@ -51,7 +51,7 @@ public class ServiceBaseUrlListReportService {
                     .filter(test -> test.getCheckTime().isAfter(LocalDateTime.now().minusYears(1)))
                     .toList());
 
-            monitor.setAcbs(List.copyOf(getAssocatedAcbs(monitor.getDeveloper())));
+            // monitor.setAcbs(List.copyOf(getAssocatedAcbs(monitor.getDeveloper())));
         });
 
         return urlUptimeMonitors;

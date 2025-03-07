@@ -2,7 +2,6 @@ package gov.healthit.chpl.report.servicebaseurllistreport;
 
 import java.util.List;
 
-import gov.healthit.chpl.domain.IdNamePair;
 import gov.healthit.chpl.scheduler.job.urluptime.UrlUptimeMonitor;
 import gov.healthit.chpl.scheduler.job.urluptime.UrlUptimeMonitorTest;
 import lombok.Data;
@@ -14,5 +13,5 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 public class UrlUptimeMonitorEx extends UrlUptimeMonitor {
     private List<UrlUptimeMonitorTest> tests;
-    private List<IdNamePair> acbs;
+    // private List<IdNamePair> acbs;
 }

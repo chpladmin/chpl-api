@@ -1,5 +1,9 @@
 package gov.healthit.chpl.scheduler.job.urluptime;
 
+import gov.healthit.chpl.entity.EntityAudit;
+import gov.healthit.chpl.entity.developer.DeveloperEntitySimple;
+import gov.healthit.chpl.entity.lastmodifieduserstrategy.CurrentUserThenSystemUserStrategy;
+import gov.healthit.chpl.entity.lastmodifieduserstrategy.LastModifiedUserStrategy;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -10,11 +14,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-
-import gov.healthit.chpl.entity.EntityAudit;
-import gov.healthit.chpl.entity.developer.DeveloperEntitySimple;
-import gov.healthit.chpl.entity.lastmodifieduserstrategy.CurrentUserThenSystemUserStrategy;
-import gov.healthit.chpl.entity.lastmodifieduserstrategy.LastModifiedUserStrategy;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -49,6 +48,10 @@ public class UrlUptimeMonitorEntity extends EntityAudit {
     @JoinColumn(name = "developer_id")
     private DeveloperEntitySimple developer;
 
+    // @Convert(converter = DelimitedAcbIdColumnConverter.class)
+    @Column(name = "delimited_acb_ids")
+    private String delimitedAcbIds;
+
     @Basic(optional = false)
     @Column(name = "url", nullable = false)
     private String url;
@@ -57,6 +60,7 @@ public class UrlUptimeMonitorEntity extends EntityAudit {
         return UrlUptimeMonitor.builder()
                 .id(id)
                 .developer(developer.toDomain())
+                .delimitedAcbIds(delimitedAcbIds)
                 .url(url)
                 .build();
     }
