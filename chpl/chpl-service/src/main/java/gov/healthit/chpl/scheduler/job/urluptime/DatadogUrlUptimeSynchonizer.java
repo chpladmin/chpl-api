@@ -69,8 +69,7 @@ public class DatadogUrlUptimeSynchonizer {
         //These must called in the order
         synchronizeDatadogSyntheticsTestsWithServiceBaseUrlLists();
         synchronizeUrlUptimeMonitorsWithDatadogSyntheticsTests();
-        // TODO: Uncomment this line when done debugging
-        // synchronizeUrlUptimeMonitorTestsWithDatadogSyntheticsTestResults();
+        synchronizeUrlUptimeMonitorTestsWithDatadogSyntheticsTestResults();
     }
 
     private void synchronizeUrlUptimeMonitorTestsWithDatadogSyntheticsTestResults() {
@@ -79,18 +78,21 @@ public class DatadogUrlUptimeSynchonizer {
 
         getDatesToRetrieveResultsFor().stream()
         .peek(testDate -> LOGGER.info("**************** Retrieving test results for: {} ****************", testDate))
-        .forEach(testDate -> urlUptimeMonitorDAO.getAll().forEach(urlUptimeMonitor ->  {
-            String publicId = getDatadogPublicId(syntheticsTestDetails, urlUptimeMonitor.getUrl(), urlUptimeMonitor.getDeveloper().getId());
-
-            datadogSyntheticsTestResultService.getSyntheticsTestResults(publicId, testDate).forEach(syntheticsTestResult -> {
-                urlUptimeMonitorTestDAO.create(UrlUptimeMonitorTest.builder()
-                        .urlUptimeMonitorId(urlUptimeMonitor.getId())
-                        .datadogTestKey(syntheticsTestResult.getResultId())
-                        .checkTime(toLocalDateTime(syntheticsTestResult.getCheckTime().longValue()))
-                        .passed(calculatePassed(syntheticsTestResult, publicId))
-                        .build());
-            });
-        }));
+        .forEach(testDate -> urlUptimeMonitorDAO.getAll()
+                .forEach(urlUptimeMonitor -> {
+                    String publicId = getDatadogPublicId(syntheticsTestDetails, urlUptimeMonitor.getUrl(), urlUptimeMonitor.getDeveloper()
+                            .getId());
+                    datadogSyntheticsTestResultService.getSyntheticsTestResults(publicId, testDate)
+                                    .forEach(syntheticsTestResult -> {
+                                        urlUptimeMonitorTestDAO.create(UrlUptimeMonitorTest.builder()
+                                                .urlUptimeMonitorId(urlUptimeMonitor.getId())
+                                                .datadogTestKey(syntheticsTestResult.getResultId())
+                                                .checkTime(toLocalDateTime(syntheticsTestResult.getCheckTime()
+                                                        .longValue()))
+                                                .passed(calculatePassed(syntheticsTestResult, publicId))
+                                                .build());
+                                    });
+                }));
     }
 
     private boolean calculatePassed(SyntheticsAPITestResultShort result, String publicId) {

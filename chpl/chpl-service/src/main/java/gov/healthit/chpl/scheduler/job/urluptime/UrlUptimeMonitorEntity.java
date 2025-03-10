@@ -48,7 +48,6 @@ public class UrlUptimeMonitorEntity extends EntityAudit {
     @JoinColumn(name = "developer_id")
     private DeveloperEntitySimple developer;
 
-    // @Convert(converter = DelimitedAcbIdColumnConverter.class)
     @Column(name = "delimited_acb_ids")
     private String delimitedAcbIds;
 

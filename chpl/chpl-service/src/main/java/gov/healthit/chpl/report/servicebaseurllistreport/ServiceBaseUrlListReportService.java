@@ -50,8 +50,6 @@ public class ServiceBaseUrlListReportService {
             monitor.setTests(urlUptimeMonitorTestDAO.getChplUptimeMonitorTests(monitor.getId()).stream()
                     .filter(test -> test.getCheckTime().isAfter(LocalDateTime.now().minusYears(1)))
                     .toList());
-
-            // monitor.setAcbs(List.copyOf(getAssocatedAcbs(monitor.getDeveloper())));
         });
 
         return urlUptimeMonitors;
