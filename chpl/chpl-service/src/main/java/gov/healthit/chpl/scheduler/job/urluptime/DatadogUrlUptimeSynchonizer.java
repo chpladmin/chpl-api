@@ -87,7 +87,7 @@ public class DatadogUrlUptimeSynchonizer {
                                         .checkTime(toLocalDateTime(syntheticsTestResult.getCheckTime().longValue()))
                                         .passed(calculatePassed(syntheticsTestResult, publicId))
                                         .build());
-                                });
+                        });
                 }));
     }
 

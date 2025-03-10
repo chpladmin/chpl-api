@@ -15,7 +15,6 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
-import gov.healthit.chpl.dao.CertificationBodyDAO;
 import gov.healthit.chpl.dao.DeveloperDAO;
 import gov.healthit.chpl.email.ChplEmailFactory;
 import gov.healthit.chpl.email.ChplHtmlEmailBuilder;
@@ -26,8 +25,6 @@ import lombok.extern.log4j.Log4j2;
 
 @Log4j2(topic = "serviceBaseUrlListUptimeEmailJobLogger")
 public class ServiceBaseUrlListUptimeEmailJob extends QuartzJob {
-    private static final Integer MAX_PAGE_SIZE = 100;
-
     @Autowired
     private ChplHtmlEmailBuilder chplHtmlEmailBuilder;
 
@@ -44,15 +41,10 @@ public class ServiceBaseUrlListUptimeEmailJob extends QuartzJob {
     private DeveloperDAO developerDAO;
 
     @Autowired
-    private CertificationBodyDAO certificationBodyDAO;
-
-    @Autowired
     private JpaTransactionManager txManager;
-
 
     @Autowired
     private Environment env;
-
 
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
