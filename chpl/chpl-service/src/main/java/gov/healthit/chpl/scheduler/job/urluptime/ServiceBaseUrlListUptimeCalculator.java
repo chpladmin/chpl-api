@@ -38,7 +38,7 @@ public class ServiceBaseUrlListUptimeCalculator {
         List<ServiceBaseUrlListUptimeReport> reports = new ArrayList<ServiceBaseUrlListUptimeReport>();
 
         getChplUptimeMonitors().stream()
-        .forEach(monitor -> reports.add(summarize(monitor, getUrlUptimeMonitorTests(monitor.getId()))));
+                .forEach(monitor -> reports.add(summarize(monitor, getUrlUptimeMonitorTests(monitor.getId()))));
         return reports;
     }
 

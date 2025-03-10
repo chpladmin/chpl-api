@@ -77,21 +77,17 @@ public class DatadogUrlUptimeSynchonizer {
         List<SyntheticsTestDetails> syntheticsTestDetails = datadogSyntheticsTestService.getAllSyntheticsTests();
 
         getDatesToRetrieveResultsFor().stream()
-        .peek(testDate -> LOGGER.info("**************** Retrieving test results for: {} ****************", testDate))
-        .forEach(testDate -> urlUptimeMonitorDAO.getAll()
-                .forEach(urlUptimeMonitor -> {
-                    String publicId = getDatadogPublicId(syntheticsTestDetails, urlUptimeMonitor.getUrl(), urlUptimeMonitor.getDeveloper()
-                            .getId());
-                    datadogSyntheticsTestResultService.getSyntheticsTestResults(publicId, testDate)
-                                    .forEach(syntheticsTestResult -> {
-                                        urlUptimeMonitorTestDAO.create(UrlUptimeMonitorTest.builder()
-                                                .urlUptimeMonitorId(urlUptimeMonitor.getId())
-                                                .datadogTestKey(syntheticsTestResult.getResultId())
-                                                .checkTime(toLocalDateTime(syntheticsTestResult.getCheckTime()
-                                                        .longValue()))
-                                                .passed(calculatePassed(syntheticsTestResult, publicId))
-                                                .build());
-                                    });
+                .peek(testDate -> LOGGER.info("**************** Retrieving test results for: {} ****************", testDate))
+                .forEach(testDate -> urlUptimeMonitorDAO.getAll().forEach(urlUptimeMonitor -> {
+                        String publicId = getDatadogPublicId(syntheticsTestDetails, urlUptimeMonitor.getUrl(), urlUptimeMonitor.getDeveloper().getId());
+                        datadogSyntheticsTestResultService.getSyntheticsTestResults(publicId, testDate).forEach(syntheticsTestResult -> {
+                                urlUptimeMonitorTestDAO.create(UrlUptimeMonitorTest.builder()
+                                        .urlUptimeMonitorId(urlUptimeMonitor.getId())
+                                        .datadogTestKey(syntheticsTestResult.getResultId())
+                                        .checkTime(toLocalDateTime(syntheticsTestResult.getCheckTime().longValue()))
+                                        .passed(calculatePassed(syntheticsTestResult, publicId))
+                                        .build());
+                                });
                 }));
     }
 
@@ -193,18 +189,18 @@ public class DatadogUrlUptimeSynchonizer {
     }
     private void addMissingUrlMonitors(List<UrlUptimeMonitor> existing, List<UrlUptimeMonitor> expected) {
         expected.stream()
-        .filter(uum -> !contains(existing, uum))
-        // Need to remove duplicates here
-        .forEach(urlMonitor -> addUrlUptimeMonitor(urlMonitor));
+                .filter(uum -> !contains(existing, uum))
+                // Need to remove duplicates here
+                .forEach(urlMonitor -> addUrlUptimeMonitor(urlMonitor));
     }
 
     private void removeOutdatedUrlMonitors(List<UrlUptimeMonitor> existing, List<UrlUptimeMonitor> expected) {
         existing.stream()
-        .filter(uum -> !contains(expected, uum))
-        .forEach(urlMonitor -> {
-            LOGGER.info("Removing the following URL to url_uptime_monitor table: {}, {}", urlMonitor.getUrl(), urlMonitor.getDeveloper().getId());
-            urlUptimeMonitorDAO.delete(urlMonitor);
-        });
+                .filter(uum -> !contains(expected, uum))
+                .forEach(urlMonitor -> {
+                        LOGGER.info("Removing the following URL to url_uptime_monitor table: {}, {}", urlMonitor.getUrl(), urlMonitor.getDeveloper().getId());
+                        urlUptimeMonitorDAO.delete(urlMonitor);
+                });
     }
 
     private Boolean contains(List<UrlUptimeMonitor> list, UrlUptimeMonitor value) {

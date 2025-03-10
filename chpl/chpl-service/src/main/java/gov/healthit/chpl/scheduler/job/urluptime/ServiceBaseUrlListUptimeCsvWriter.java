@@ -45,15 +45,15 @@ public class ServiceBaseUrlListUptimeCsvWriter {
             writer.write('\ufeff');
             csvPrinter.printRecord(ServiceBaseUrlListUptimeReport.getHeaders(activeAcbs));
             rows.stream()
-            .forEach(row -> {
-                try {
-                    if (row.getApplicableAcbsMap().size() != 0) {
-                        csvPrinter.printRecord(row.toListOfStrings(activeAcbs));
-                    }
-                } catch (Exception e) {
-                    LOGGER.error(e);
-                }
-            });
+                .forEach(row -> {
+                        try {
+                            if (row.getApplicableAcbsMap().size() != 0) {
+                                csvPrinter.printRecord(row.toListOfStrings(activeAcbs));
+                            }
+                        } catch (Exception e) {
+                            LOGGER.error(e);
+                        }
+                });
         } catch (Exception e) {
             LOGGER.error(e);
         }

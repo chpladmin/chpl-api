@@ -56,8 +56,8 @@ public class UrlUptimeMonitorDAO extends BaseDAOImpl {
 
         Query query = entityManager.createQuery(
                 "FROM UrlUptimeMonitorEntity "
-                        + "WHERE (NOT deleted = true) "
-                        + "AND id = :id", UrlUptimeMonitorEntity.class);
+                 + "WHERE (NOT deleted = true) "
+                 + "AND id = :id", UrlUptimeMonitorEntity.class);
         query.setParameter("id", id);
         List<UrlUptimeMonitorEntity> result = query.getResultList();
         if (result.size() > 0) {
@@ -70,8 +70,8 @@ public class UrlUptimeMonitorDAO extends BaseDAOImpl {
     private List<UrlUptimeMonitorEntity> getEntitiesAll() {
         return entityManager.createQuery(
                 "FROM UrlUptimeMonitorEntity uume "
-                        + "JOIN FETCH uume.developer dev "
-                        + "WHERE (uume.deleted = false)", UrlUptimeMonitorEntity.class)
+                + "JOIN FETCH uume.developer dev "
+                + "WHERE (uume.deleted = false)", UrlUptimeMonitorEntity.class)
                 .getResultList();
     }
 
