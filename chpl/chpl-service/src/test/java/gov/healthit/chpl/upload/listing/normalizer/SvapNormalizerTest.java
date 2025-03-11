@@ -119,6 +119,32 @@ public class SvapNormalizerTest {
     }
 
     @Test
+    public void normalize_svapWithIdNotInDatabase_idIsNull() {
+        List<CertificationResultSvap> svaps = new ArrayList<CertificationResultSvap>();
+        svaps.add(CertificationResultSvap.builder()
+                .svapId(100L)
+                .regulatoryTextCitation("notindb")
+                .build());
+
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .edition(create2015Edition())
+                .certificationResult(CertificationResult.builder()
+                        .success(true)
+                        .criterion(CertificationCriterion.builder()
+                                .id(1L)
+                                .number("170.315 (a)(1)")
+                                .build())
+                        .svaps(svaps)
+                        .build())
+                .build();
+        normalizer.normalize(listing);
+        assertEquals(1, listing.getCertificationResults().get(0).getSvaps().size());
+        assertNull(listing.getCertificationResults().get(0).getSvaps().get(0).getSvapId());
+        assertEquals("notindb", listing.getCertificationResults().get(0).getSvaps().get(0).getRegulatoryTextCitation());
+    }
+
+
+    @Test
     public void normalize_svapInDatabase_setsAllFields() {
         List<CertificationResultSvap> svaps = new ArrayList<CertificationResultSvap>();
         svaps.add(CertificationResultSvap.builder()
