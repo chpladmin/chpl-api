@@ -17,6 +17,7 @@ import gov.healthit.chpl.upload.listing.validation.reviewer.IcsCodeReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.PrivacyAndSecurityFrameworkReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.QmsStandardReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.SedReviewer;
+import gov.healthit.chpl.upload.listing.validation.reviewer.SvapReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.TestToolReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.UcdProcessReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.CertificationDateReviewer;
@@ -37,7 +38,6 @@ import gov.healthit.chpl.validation.listing.reviewer.RealWorldTestingReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.Reviewer;
 import gov.healthit.chpl.validation.listing.reviewer.StandardAsOfTodayReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.StandardRemovalReviewer;
-import gov.healthit.chpl.validation.listing.reviewer.SvapReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.TestProcedureReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.TestStandardRemovalReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.TestStandardReviewer;
@@ -59,6 +59,7 @@ import gov.healthit.chpl.validation.listing.reviewer.edition2015.PrivacyAndSecur
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.RequiredAndRelatedCriteriaReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.RequiredData2015Reviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.SedG32015Reviewer;
+import gov.healthit.chpl.validation.listing.reviewer.edition2015.SvapComparisonReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.UnavailableCriteriaComparisonReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.UnavailableCriteriaTestTaskComparisonReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.UnavailableCriteriaUcdComparisonReviewer;
@@ -167,6 +168,10 @@ public class Edition2015ListingValidator extends Validator {
     private MeasureComparisonReviewer measureComparisonReviewer;
 
     @Autowired
+    @Qualifier("svapComparisonReviewer")
+    private SvapComparisonReviewer svapComparisonReviewer;
+
+    @Autowired
     @Qualifier("oldCriteriaWithoutIcsReviewer")
     private OldCriteriaWithoutIcsReviewer oldCriteriaWithoutIcsReviewer;
 
@@ -206,7 +211,7 @@ public class Edition2015ListingValidator extends Validator {
     private ListingStatusAndUserRoleReviewer listingStatusAndUserRoleReviewer;
 
     @Autowired
-    @Qualifier("svapReviewer")
+    @Qualifier("listingUploadSvapReviewer")
     private SvapReviewer svapReviewer;
 
     @Autowired
@@ -306,6 +311,7 @@ public class Edition2015ListingValidator extends Validator {
         reviewers.add(icsCodeReviewer);
         reviewers.add(additionalSoftwareCodeReviewer);
         reviewers.add(codeSetReviewer);
+        reviewers.add(svapReviewer);
         return reviewers;
     }
 
@@ -315,12 +321,12 @@ public class Edition2015ListingValidator extends Validator {
         comparisonReviewers.add(chplNumberComparisonReviewer);
         comparisonReviewers.add(devBanComparisonReviewer);
         comparisonReviewers.add(measureComparisonReviewer);
+        comparisonReviewers.add(svapComparisonReviewer);
         comparisonReviewers.add(unavailableCriteriaComparisonReviewer);
         comparisonReviewers.add(unavailableCriteriaTestTaskComparisonReviewer);
         comparisonReviewers.add(unavailableCriteriaUcdComparisonReviewer);
         comparisonReviewers.add(functionalityTestedAllowedByRoleReviewer);
         comparisonReviewers.add(listingStatusAndUserRoleReviewer);
-        comparisonReviewers.add(svapReviewer);
         comparisonReviewers.add(inheritanceComparisonReviewer);
         comparisonReviewers.add(deprecatedFieldReviewer);
         comparisonReviewers.add(testingLabComparisonReviewer);
