@@ -85,6 +85,15 @@ public class SearchRequest implements Serializable {
     private String svapOperatorString;
     private SearchSetOperator svapOperator;
 
+    @Builder.Default
+    @JsonIgnore
+    private Set<String> standardIdStrings = new HashSet<String>();
+    @Builder.Default
+    private Set<Long> standardIds = new HashSet<Long>();
+    @JsonIgnore
+    private String standardOperatorString;
+    private SearchSetOperator standardOperator;
+
     @JsonIgnore
     @Builder.Default
     private Set<String> riskManagementSummaryInformationOptionsStrings = new HashSet<String>();
