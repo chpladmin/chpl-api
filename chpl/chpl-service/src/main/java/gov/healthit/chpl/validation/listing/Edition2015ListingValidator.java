@@ -11,8 +11,10 @@ import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.upload.listing.validation.reviewer.AccessibilityStandardReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.AdditionalSoftwareCodeReviewer;
+import gov.healthit.chpl.upload.listing.validation.reviewer.AdditionalSoftwareReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.ChplNumberFormatReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.CqmResultReviewer;
+import gov.healthit.chpl.upload.listing.validation.reviewer.FunctionalityTestedReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.IcsCodeReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.PrivacyAndSecurityFrameworkReviewer;
 import gov.healthit.chpl.upload.listing.validation.reviewer.QmsStandardReviewer;
@@ -46,7 +48,6 @@ import gov.healthit.chpl.validation.listing.reviewer.TestingLabReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.UnavailableCriteriaReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.UnsupportedCharacterReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.UrlReviewer;
-import gov.healthit.chpl.validation.listing.reviewer.ValidDataReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.CodeSetAsOfTodayReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.FunctionalityTestedAllowedByCriteriaReviewer;
 import gov.healthit.chpl.validation.listing.reviewer.edition2015.FunctionalityTestedAllowedByRoleReviewer;
@@ -100,8 +101,8 @@ public class Edition2015ListingValidator extends Validator {
     private TestingLabReviewer testingLabReviewer;
 
     @Autowired
-    @Qualifier("validDataReviewer")
-    private ValidDataReviewer validDataReviewer;
+    @Qualifier("listingUploadAdditionalSoftwareReviewer")
+    private AdditionalSoftwareReviewer additionalSoftwareReviewer;
 
     @Autowired
     @Qualifier("sedG32015Reviewer")
@@ -148,8 +149,12 @@ public class Edition2015ListingValidator extends Validator {
     private UrlReviewer urlReviewer;
 
     @Autowired
+    @Qualifier("listingUploadFunctionalityTestedReviewer")
+    private FunctionalityTestedReviewer functionalityTestedReviewer;
+
+    @Autowired
     @Qualifier("functionalityTestedAllowedByCriteriaReviewer")
-    private FunctionalityTestedAllowedByCriteriaReviewer functionalityTestedReviewer;
+    private FunctionalityTestedAllowedByCriteriaReviewer functionalityTestedAllowedByCriteriaReviewer;
 
     @Autowired
     @Qualifier("duplicateDataReviewer")
@@ -282,7 +287,7 @@ public class Edition2015ListingValidator extends Validator {
         reviewers.add(requiredAndRelatedCriteriaReviewer);
         reviewers.add(unavailableCriteriaReviewer);
         reviewers.add(testingLabReviewer);
-        reviewers.add(validDataReviewer);
+        reviewers.add(additionalSoftwareReviewer);
         reviewers.add(sedG3Reviewer);
         reviewers.add(sedReviewer);
         reviewers.add(ucdProcessReviewer);
@@ -297,6 +302,7 @@ public class Edition2015ListingValidator extends Validator {
         reviewers.add(ttReviewer);
         reviewers.add(urlReviewer);
         reviewers.add(functionalityTestedReviewer);
+        reviewers.add(functionalityTestedAllowedByCriteriaReviewer);
         reviewers.add(standardReviewer);
         reviewers.add(invalidCriteriaCombinationReviewer);
         reviewers.add(cqmResultReviewer);

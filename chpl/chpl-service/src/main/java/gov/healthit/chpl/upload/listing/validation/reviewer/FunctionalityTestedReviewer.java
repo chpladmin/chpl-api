@@ -19,9 +19,10 @@ import gov.healthit.chpl.util.CertificationResultRules;
 import gov.healthit.chpl.util.ErrorMessageUtil;
 import gov.healthit.chpl.util.Util;
 import gov.healthit.chpl.util.ValidationUtils;
+import gov.healthit.chpl.validation.listing.reviewer.Reviewer;
 
 @Component("listingUploadFunctionalityTestedReviewer")
-public class FunctionalityTestedReviewer {
+public class FunctionalityTestedReviewer implements Reviewer {
     private CertificationResultRules certResultRules;
     private ValidationUtils validationUtils;
     private FunctionalityTestedDAO functionalityTestedDao;

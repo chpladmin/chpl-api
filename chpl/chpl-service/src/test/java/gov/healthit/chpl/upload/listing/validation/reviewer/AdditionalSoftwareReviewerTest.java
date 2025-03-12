@@ -29,6 +29,7 @@ public class AdditionalSoftwareReviewerTest {
     private static final String NO_ADDITIONAL_SOFTWARE_BUT_SHOULD = "Criteria %s contains no additional software but it is expected.";
     private static final String ADDITIONAL_SOFTWARE_INVALID = "No CHPL product was found matching additional software %s for %s.";
     private static final String ADDITIONAL_SOFTWARE_BOTH_FIELDS_HAVE_DATA = "Additional Software for %s has both a listing and software name/version specified. Only one is expected.";
+    private static final String ADDITIONAL_SOFTWARE_REQUIRES_GROUPING = "Criteria %s requires groupings on additional software.";
 
     private CertificationResultRules certResultRules;
     private ErrorMessageUtil msgUtil;
@@ -53,6 +54,10 @@ public class AdditionalSoftwareReviewerTest {
         Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.invalidAdditionalSoftware"),
                 ArgumentMatchers.anyString(), ArgumentMatchers.anyString()))
             .thenAnswer(i -> String.format(ADDITIONAL_SOFTWARE_INVALID, i.getArgument(1), i.getArgument(2)));
+        Mockito.when(msgUtil.getMessage(ArgumentMatchers.eq("listing.criteria.additionalSoftwareRequiresGrouping"),
+                ArgumentMatchers.anyString()))
+            .thenAnswer(i -> String.format(ADDITIONAL_SOFTWARE_REQUIRES_GROUPING, i.getArgument(1), ""));
+
         reviewer = new AdditionalSoftwareReviewer(certResultRules,
                 new ValidationUtils(Mockito.mock(CertificationCriterionService.class)),
                 msgUtil);
@@ -544,6 +549,36 @@ public class AdditionalSoftwareReviewerTest {
     }
 
     @Test
+    public void review_additionalSoftwareMultipleWithoutGrouping_hasError() {
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.ADDITIONAL_SOFTWARE)))
+            .thenReturn(true);
+
+        List<CertificationResultAdditionalSoftware> additionalSoftware = new ArrayList<CertificationResultAdditionalSoftware>();
+        additionalSoftware.add(CertificationResultAdditionalSoftware.builder()
+                .name("test")
+                .build());
+        additionalSoftware.add(CertificationResultAdditionalSoftware.builder()
+                .name("test2")
+                .build());
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .criterion(CertificationCriterion.builder()
+                                .id(1L)
+                                .number("170.315 (a)(1)")
+                                .build())
+                        .success(true)
+                        .additionalSoftware(additionalSoftware)
+                        .build())
+                .build();
+        reviewer.review(listing);
+
+        assertEquals(0, listing.getWarningMessages().size());
+        assertEquals(1, listing.getErrorMessages().size());
+        assertTrue(listing.getErrorMessages().contains(
+                String.format(ADDITIONAL_SOFTWARE_REQUIRES_GROUPING, "170.315 (a)(1)")));
+    }
+
+    @Test
     public void review_additionalSoftwareValidName_noError() {
         Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.ADDITIONAL_SOFTWARE)))
             .thenReturn(true);
@@ -551,6 +586,35 @@ public class AdditionalSoftwareReviewerTest {
         List<CertificationResultAdditionalSoftware> additionalSoftware = new ArrayList<CertificationResultAdditionalSoftware>();
         additionalSoftware.add(CertificationResultAdditionalSoftware.builder()
                 .name("test")
+                .build());
+        CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
+                .certificationResult(CertificationResult.builder()
+                        .criterion(CertificationCriterion.builder()
+                                .id(1L)
+                                .number("170.315 (a)(1)")
+                                .build())
+                        .success(true)
+                        .additionalSoftware(additionalSoftware)
+                        .build())
+                .build();
+        reviewer.review(listing);
+
+        assertEquals(0, listing.getWarningMessages().size());
+        assertEquals(0, listing.getErrorMessages().size());
+    }
+
+    public void review_additionalSoftwareValidNamesWithMultipleAndGrouping_noError() {
+        Mockito.when(certResultRules.hasCertOption(ArgumentMatchers.anyLong(), ArgumentMatchers.eq(CertificationResultRules.ADDITIONAL_SOFTWARE)))
+            .thenReturn(true);
+
+        List<CertificationResultAdditionalSoftware> additionalSoftware = new ArrayList<CertificationResultAdditionalSoftware>();
+        additionalSoftware.add(CertificationResultAdditionalSoftware.builder()
+                .name("test")
+                .grouping("a")
+                .build());
+        additionalSoftware.add(CertificationResultAdditionalSoftware.builder()
+                .name("test2")
+                .grouping("a")
                 .build());
         CertifiedProductSearchDetails listing = CertifiedProductSearchDetails.builder()
                 .certificationResult(CertificationResult.builder()
