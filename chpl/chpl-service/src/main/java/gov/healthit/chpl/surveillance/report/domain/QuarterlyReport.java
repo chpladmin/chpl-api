@@ -35,7 +35,11 @@ public class QuarterlyReport implements Serializable {
     private LocalDate endDay;
     private String surveillanceActivitiesAndOutcomes;
     private String reactiveSurveillanceSummary;
+    private String icsSurveillanceSummary;
     private String prioritizedElementSummary;
     private String disclosureRequirementsSummary;
+    private String developerComplaintsLogReview;
+    private String postCertificationPerformanceOfCertifiedCapabilities;
+    private String appropriateUseOfMark;
     private boolean acknowledgeWarnings;
 }

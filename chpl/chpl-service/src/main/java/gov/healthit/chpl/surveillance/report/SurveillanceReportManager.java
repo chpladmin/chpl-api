@@ -423,7 +423,7 @@ public class SurveillanceReportManager extends SecuredManager {
         }
 
         Quarter quarter = null;
-        if(StringUtils.isEmpty(toCreate.getQuarter())) {
+        if (StringUtils.isEmpty(toCreate.getQuarter())) {
             throw new InvalidArgumentsException("report.quarterlySurveillance.missingQuarter");
         } else {
             quarter = quarterDao.getByName(toCreate.getQuarter());
@@ -447,9 +447,13 @@ public class SurveillanceReportManager extends SecuredManager {
     private void copyPreviousReportDataIntoNextReport(QuarterlyReport nextReport) {
         QuarterlyReport prevReport = getPreviousReport(nextReport);
         if (prevReport != null) {
-            //copy the four data fields
+            //copy the data fields
             nextReport.setSurveillanceActivitiesAndOutcomes(prevReport.getSurveillanceActivitiesAndOutcomes());
+            nextReport.setIcsSurveillanceSummary(prevReport.getIcsSurveillanceSummary());
             nextReport.setPrioritizedElementSummary(prevReport.getPrioritizedElementSummary());
+            nextReport.setAppropriateUseOfMark(prevReport.getAppropriateUseOfMark());
+            nextReport.setDeveloperComplaintsLogReview(prevReport.getDeveloperComplaintsLogReview());
+            nextReport.setPostCertificationPerformanceOfCertifiedCapabilities(prevReport.getPostCertificationPerformanceOfCertifiedCapabilities());
             nextReport.setReactiveSurveillanceSummary(prevReport.getReactiveSurveillanceSummary());
             nextReport.setDisclosureRequirementsSummary(prevReport.getDisclosureRequirementsSummary());
             try {
@@ -487,6 +491,7 @@ public class SurveillanceReportManager extends SecuredManager {
                             nextReportSurv.setSurveillanceOutcome(prevReportSurv.getSurveillanceOutcome());
                             nextReportSurv.setSurveillanceOutcomeOther(prevReportSurv.getSurveillanceOutcomeOther());
                             nextReportSurv.setSurveillanceProcessTypes(prevReportSurv.getSurveillanceProcessTypes());
+                            nextReportSurv.setSurveillanceFindings(prevReportSurv.getSurveillanceFindings());
                             try {
                                 quarterlySurvMapDao.create(nextReport.getId(), nextReportSurv);
                             } catch (Exception ex) {

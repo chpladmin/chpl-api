@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -55,51 +56,48 @@ import gov.healthit.chpl.util.NullSafeEvaluator;
 public abstract class ActivitiesAndOutcomesWorksheetBuilder {
     private static final int LAST_DATA_COLUMN = 37;
 
-    private static final int COL_CHPL_ID = 1;
-    private static final int COL_SURV_ID = 2;
-    private static final int COL_SURV_ACTIVITY_TRACKER = 3;
-    private static final int COL_RELATED_COMPLAINT_ACB_ID = 4;
-    private static final int COL_RELATED_COMPLAINT_ONC_ID = 5;
-    private static final int COL_Q1 = 6;
-    private static final int COL_Q2 = 7;
-    private static final int COL_Q3 = 8;
-    private static final int COL_Q4 = 9;
-    private static final int COL_DEVELOPER_NAME = 10;
-    private static final int COL_PRODUCT_NAME = 11;
-    private static final int COL_PRODUCT_VERSION = 12;
-    private static final int COL_K1_REVIEWED = 13;
-    private static final int COL_SURV_TYPE = 14;
-    private static final int COL_SURV_RANDOMIZED_SITES_USED = 15;
-    private static final int COL_SURV_BEGIN = 16;
-    private static final int COL_SURV_END = 17;
-    private static final int COL_SURV_OUTCOME = 18;
-    private static final int COL_SURV_OUTCOME_OTHER = 19;
-    private static final int COL_NC_SURVEILLED_REQ_TYPE = 20;
-    private static final int COL_NC_SURVEILLED_REQ = 21;
-    private static final int COL_NC_TYPE = 22;
-    private static final int COL_NC_CLOSE_DATE = 23;
-    private static final int COL_NC_CAP_APPROVAL_DATE = 24;
-    private static final int COL_NC_CAP_MUST_COMPLETE_DATE = 25;
-    private static final int COL_NC_CAP_WAS_COMPLETE_DATE = 26;
-    private static final int COL_NC_FINDINGS = 27;
-    private static final int COL_CERT_STATUS_RESULTANT = 28;
-    private static final int COL_SUSPENDED = 29;
-    private static final int COL_SURV_PROCESS_TYPE = 30;
-    private static final int COL_SURV_PROCESS_TYPE_OTHER = 31;
-    private static final int COL_SURV_GROUNDS = 32;
-    private static final int COL_NONCONFORMITY_CAUSES = 33;
-    private static final int COL_NONCONFORMITY_NATURES = 34;
-    private static final int COL_SURV_STEPS = 35;
-    private static final int COL_ENGAGEMENT_STEPS = 36;
-    private static final int COL_ADDITIONAL_COSTS = 37;
-    private static final int COL_LIMITATIONS_EVAL = 38;
-    private static final int COL_NONDISCLOSURE_EVAL = 39;
-    private static final int COL_DEV_RESOLUTION = 40;
-    private static final int COL_COMPLETED_CAP = 41;
-    private static final int[] HIDDEN_COLS =
-        {COL_SURV_ACTIVITY_TRACKER, COL_Q1, COL_Q2, COL_Q3, COL_Q4, COL_NONCONFORMITY_NATURES,
-                COL_SURV_STEPS, COL_ENGAGEMENT_STEPS, COL_ADDITIONAL_COSTS, COL_LIMITATIONS_EVAL,
-                COL_NONDISCLOSURE_EVAL, COL_DEV_RESOLUTION};
+    protected static final int COL_CHPL_ID = 1;
+    protected static final int COL_SURV_ID = 2;
+    protected static final int COL_SURV_ACTIVITY_TRACKER = 3;
+    protected static final int COL_RELATED_COMPLAINT_ACB_ID = 4;
+    protected static final int COL_RELATED_COMPLAINT_ONC_ID = 5;
+    protected static final int COL_Q1 = 6;
+    protected static final int COL_Q2 = 7;
+    protected static final int COL_Q3 = 8;
+    protected static final int COL_Q4 = 9;
+    protected static final int COL_DEVELOPER_NAME = 10;
+    protected static final int COL_PRODUCT_NAME = 11;
+    protected static final int COL_PRODUCT_VERSION = 12;
+    protected static final int COL_K1_REVIEWED = 13;
+    protected static final int COL_SURV_TYPE = 14;
+    protected static final int COL_SURV_RANDOMIZED_SITES_USED = 15;
+    protected static final int COL_SURV_BEGIN = 16;
+    protected static final int COL_SURV_END = 17;
+    protected static final int COL_SURV_OUTCOME = 18;
+    protected static final int COL_SURV_OUTCOME_OTHER = 19;
+    protected static final int COL_NC_SURVEILLED_REQ_TYPE = 20;
+    protected static final int COL_NC_SURVEILLED_REQ = 21;
+    protected static final int COL_NC_TYPE = 22;
+    protected static final int COL_NC_CLOSE_DATE = 23;
+    protected static final int COL_NC_CAP_APPROVAL_DATE = 24;
+    protected static final int COL_NC_CAP_MUST_COMPLETE_DATE = 25;
+    protected static final int COL_NC_CAP_WAS_COMPLETE_DATE = 26;
+    protected static final int COL_NC_FINDINGS = 27;
+    protected static final int COL_CERT_STATUS_RESULTANT = 28;
+    protected static final int COL_SUSPENDED = 29;
+    protected static final int COL_SURV_PROCESS_TYPE = 30;
+    protected static final int COL_SURV_PROCESS_TYPE_OTHER = 31;
+    protected static final int COL_SURV_GROUNDS = 32;
+    protected static final int COL_SURV_FINDINGS = 33;
+    protected static final int COL_NONCONFORMITY_CAUSES = 34;
+    protected static final int COL_NONCONFORMITY_NATURES = 35;
+    protected static final int COL_SURV_STEPS = 36;
+    protected static final int COL_ENGAGEMENT_STEPS = 37;
+    protected static final int COL_ADDITIONAL_COSTS = 38;
+    protected static final int COL_LIMITATIONS_EVAL = 39;
+    protected static final int COL_NONDISCLOSURE_EVAL = 40;
+    protected static final int COL_DEV_RESOLUTION = 41;
+    protected static final int COL_COMPLETED_CAP = 42;
 
     private SurveillanceReportManager reportManager;
     private CertifiedProductDetailsManager detailsManager;
@@ -122,10 +120,16 @@ public abstract class ActivitiesAndOutcomesWorksheetBuilder {
     }
 
     protected abstract String getGroundsForInitiatingSurveillanceDescription();
+    protected abstract String getSurveillanceFindingsDescription();
     protected abstract String getStepsToSurveilDescription();
     protected abstract String getAdditionalCostsEvaluationDescription();
     protected abstract String getLimitationsEvaluationDescription();
     protected abstract String getNonDisclosureEvaluationDescription();
+    protected List<Integer> getHiddenColumnsIndices() {
+        return Stream.of(COL_SURV_ACTIVITY_TRACKER, COL_Q1, COL_Q2, COL_Q3, COL_Q4,
+                COL_NONCONFORMITY_NATURES, COL_SURV_STEPS, COL_ENGAGEMENT_STEPS, COL_ADDITIONAL_COSTS,
+                COL_LIMITATIONS_EVAL, COL_NONDISCLOSURE_EVAL, COL_DEV_RESOLUTION).toList();
+    }
 
     public int getLastDataColumn() {
         return LAST_DATA_COLUMN;
@@ -188,6 +192,7 @@ public abstract class ActivitiesAndOutcomesWorksheetBuilder {
         sheet.setColumnWidth(COL_SURV_PROCESS_TYPE, workbook.getColumnWidth(30.67));
         sheet.setColumnWidth(COL_SURV_PROCESS_TYPE_OTHER, workbook.getColumnWidth(30.67));
         sheet.setColumnWidth(COL_SURV_GROUNDS, longTextColWidth);
+        sheet.setColumnWidth(COL_SURV_FINDINGS, longTextColWidth);
         sheet.setColumnWidth(COL_NONCONFORMITY_CAUSES, longTextColWidth);
         sheet.setColumnWidth(COL_NONCONFORMITY_NATURES, longTextColWidth);
         sheet.setColumnWidth(COL_SURV_STEPS, longTextColWidth);
@@ -271,9 +276,7 @@ public abstract class ActivitiesAndOutcomesWorksheetBuilder {
         sheet.addValidationData(validation);
 
         //hide some rows the ACBs are not expected to fill out (columns D-I)
-        for (int i = 0; i < HIDDEN_COLS.length; i++) {
-            sheet.setColumnHidden(HIDDEN_COLS[i], true);
-        }
+        getHiddenColumnsIndices().forEach(index -> sheet.setColumnHidden(index, true));
 
         //apply the borders after the sheet has been created
         pt.drawBorders(new CellRangeAddress(1, getLastDataRow(), 1, LAST_DATA_COLUMN - 1),
@@ -323,6 +326,10 @@ public abstract class ActivitiesAndOutcomesWorksheetBuilder {
         String cellTitle = "Grounds for Initiating Surveillance";
         String cellSubtitle = getGroundsForInitiatingSurveillanceDescription();
         addRichTextHeadingCell(workbook, row, COL_SURV_GROUNDS, cellTitle, cellSubtitle);
+
+        cellTitle = "Surveillance Findings";
+        cellSubtitle = getSurveillanceFindingsDescription();
+        addRichTextHeadingCell(workbook, row, COL_SURV_FINDINGS, cellTitle, cellSubtitle);
 
         cellTitle = "Potential Causes of Non-Conformities or Suspected Non-Conformities";
         cellSubtitle = "What were the substantial factors that, in the ONC-ACB’s assessment, "
@@ -589,6 +596,8 @@ public abstract class ActivitiesAndOutcomesWorksheetBuilder {
                 generateSurveillanceProcessTypeOtherValue(quarterlyReports, privilegedSurvQuarterlyData));
         addDataCell(workbook, row, COL_SURV_GROUNDS,
                 generateGroundsForInitiatingValue(quarterlyReports, privilegedSurvQuarterlyData));
+        addDataCell(workbook, row, COL_SURV_FINDINGS,
+                generateSurveillanceFindingsValue(quarterlyReports, privilegedSurvQuarterlyData));
         addDataCell(workbook, row, COL_NONCONFORMITY_CAUSES,
                 generateNonconformityCausesValue(quarterlyReports, privilegedSurvQuarterlyData));
         addDataCell(workbook, row, COL_NONCONFORMITY_NATURES,
@@ -858,6 +867,42 @@ public abstract class ActivitiesAndOutcomesWorksheetBuilder {
                             ArrayList<String> quarterNameList = new ArrayList<String>();
                             quarterNameList.add(currReport.getQuarter());
                             valueMap.put(survGroundsVal, quarterNameList);
+                        }
+                    }
+                }
+            }
+            result = MultiQuarterWorksheetBuilderUtil.buildStringFromMap(valueMap);
+        }
+        return result;
+    }
+
+    private String generateSurveillanceFindingsValue(List<QuarterlyReport> quarterlyReports,
+            List<PrivilegedSurveillance> privilegedSurvData) {
+        String result = "";
+        if (quarterlyReports.size() == 1) {
+            //find the privileged surv data for the single report
+            QuarterlyReport report = quarterlyReports.get(0);
+            for (PrivilegedSurveillance currSurv : privilegedSurvData) {
+                if (currSurv.getQuarterlyReport().getId().longValue() == report.getId().longValue()
+                        && currSurv.getSurveillanceFindings() != null) {
+                    result = currSurv.getSurveillanceFindings();
+                }
+            }
+        } else {
+            //there are multiple reports... combine the values for this field in a nice way for the user
+            //key is surveillance findings str and value is applicable quarter name(s) like 'Q1, Q2'
+            Map<String, ArrayList<String>> valueMap = new LinkedHashMap<String, ArrayList<String>>();
+            for (QuarterlyReport currReport : quarterlyReports) {
+                for (PrivilegedSurveillance currSurv : privilegedSurvData) {
+                    if (currSurv.getQuarterlyReport().getId().longValue() == currReport.getId().longValue()
+                            && currSurv.getSurveillanceFindings() != null) {
+                        String survFindingsVal = currSurv.getSurveillanceFindings();
+                        if (valueMap.get(survFindingsVal) != null) {
+                            valueMap.get(survFindingsVal).add(currReport.getQuarter());
+                        } else {
+                            ArrayList<String> quarterNameList = new ArrayList<String>();
+                            quarterNameList.add(currReport.getQuarter());
+                            valueMap.put(survFindingsVal, quarterNameList);
                         }
                     }
                 }

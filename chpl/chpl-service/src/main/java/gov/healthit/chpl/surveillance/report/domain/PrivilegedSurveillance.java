@@ -28,6 +28,7 @@ public class PrivilegedSurveillance extends SurveillanceBasic {
     @Builder.Default
     private List<SurveillanceProcessType> surveillanceProcessTypes = new ArrayList<SurveillanceProcessType>();
     private String surveillanceProcessTypeOther;
+    private String surveillanceFindings;
     private Boolean k1Reviewed;
     private String groundsForInitiating;
     private String nonconformityCauses;
@@ -59,5 +60,6 @@ public class PrivilegedSurveillance extends SurveillanceBasic {
         this.surveillanceProcessTypes = new ArrayList<SurveillanceProcessType>(
                 another.getSurveillanceProcessTypes());
         this.surveillanceProcessTypeOther = another.getSurveillanceProcessTypeOther();
+        this.surveillanceFindings = another.getSurveillanceFindings();
     }
 }

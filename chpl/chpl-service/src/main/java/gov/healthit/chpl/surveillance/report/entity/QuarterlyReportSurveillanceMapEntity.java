@@ -5,6 +5,14 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.hibernate.annotations.SQLRestriction;
+import org.springframework.beans.BeanUtils;
+
+import gov.healthit.chpl.compliance.surveillance.entity.SurveillanceBasicEntity;
+import gov.healthit.chpl.domain.surveillance.SurveillanceBasic;
+import gov.healthit.chpl.entity.EntityAudit;
+import gov.healthit.chpl.surveillance.report.domain.PrivilegedSurveillance;
+import gov.healthit.chpl.surveillance.report.domain.SurveillanceProcessType;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -16,15 +24,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-
-import org.hibernate.annotations.Where;
-import org.springframework.beans.BeanUtils;
-
-import gov.healthit.chpl.compliance.surveillance.entity.SurveillanceBasicEntity;
-import gov.healthit.chpl.domain.surveillance.SurveillanceBasic;
-import gov.healthit.chpl.entity.EntityAudit;
-import gov.healthit.chpl.surveillance.report.domain.PrivilegedSurveillance;
-import gov.healthit.chpl.surveillance.report.domain.SurveillanceProcessType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -79,11 +78,14 @@ public class QuarterlyReportSurveillanceMapEntity extends EntityAudit {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "quarterlyReportSurveillanceMapId")
     @Basic(optional = false)
     @Column(name = "quarterly_report_surveillance_map_id", nullable = false)
-    @Where(clause = "deleted <> 'true'")
+    @SQLRestriction("deleted <> 'true'")
     private Set<QuarterlyReportSurveillanceProcessTypeMapEntity> surveillanceProcessTypeMaps = new HashSet<QuarterlyReportSurveillanceProcessTypeMapEntity>();
 
     @Column(name = "surveillance_process_type_other")
     private String surveillanceProcessTypeOther;
+
+    @Column(name = "surveillance_findings")
+    private String surveillanceFindings;
 
     @Column(name = "k1_reviewed")
     private Boolean k1Reviewed;
@@ -138,10 +140,11 @@ public class QuarterlyReportSurveillanceMapEntity extends EntityAudit {
                 .nondisclosureEvaluation(this.getNondisclosureEvaluation())
                 .stepsToEngage(this.getStepsToEngage())
                 .stepsToSurveil(this.getStepsToSurveil())
-                .surveillanceOutcome(this.getSurveillanceOutcome().toDomain())
+                .surveillanceOutcome(this.getSurveillanceOutcome() != null ? this.getSurveillanceOutcome().toDomain() : null)
                 .surveillanceOutcomeOther(this.getSurveillanceOutcomeOther())
                 .surveillanceProcessTypes(processTypes)
                 .surveillanceProcessTypeOther(this.getSurveillanceProcessTypeOther())
+                .surveillanceFindings(this.getSurveillanceFindings())
                 .build();
 
         SurveillanceBasic relatedSurv = this.getSurveillance().buildSurveillanceBasic();
