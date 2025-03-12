@@ -36,7 +36,7 @@ public class ProductActivityMetadataBuilder extends ActivityMetadataBuilder {
         if (metadata.getObject() != null && metadata.getObject().getId() != null) {
             Product product = null;
             try {
-                product = productDao.getById(metadata.getObject().getId(), false);
+                product = productDao.getById(metadata.getObject().getId(), true);
                 metadata.getObject().setName(product.getName());
             } catch (Exception ex) {
                 LOGGER.error("Could not find product " + metadata.getObject().getId() + " for activity metadata.", ex);
