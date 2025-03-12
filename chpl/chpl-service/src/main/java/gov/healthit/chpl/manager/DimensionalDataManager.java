@@ -259,7 +259,6 @@ public class DimensionalDataManager {
 
     @Deprecated
     @Transactional
-    @Cacheable(value = CacheNames.TEST_DATA)
     public Set<CriteriaSpecificDescriptiveModel> getTestData() {
         LOGGER.debug("Getting all test data from the database (not cached).");
 

@@ -48,8 +48,8 @@ public class TestDataEntity extends EntityAudit {
 
     @OneToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "test_data_criteria_map",
-        joinColumns = {@JoinColumn(name = "test_data_id", referencedColumnName = "test_data_id")},
-        inverseJoinColumns = {@JoinColumn(name = "certification_criterion_id", referencedColumnName = "certification_criterion_id")})
+        joinColumns = {@JoinColumn(name = "test_data_id", referencedColumnName = "id")},
+        inverseJoinColumns = {@JoinColumn(name = "criteria_id", referencedColumnName = "certification_criterion_id")})
     @SQLJoinTableRestriction(value = "deleted <> true")
     private List<CertificationCriterionEntity> criteria;
 
