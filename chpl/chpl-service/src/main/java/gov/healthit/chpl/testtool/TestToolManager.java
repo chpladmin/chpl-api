@@ -52,7 +52,6 @@ public class TestToolManager {
         return certificationCriterionAttributeDAO.getCriteriaForTestTools();
     }
 
-
     @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).TEST_TOOL, "
             + "T(gov.healthit.chpl.permissions.domains.TestToolDomainPermissions).UPDATE)")
     @Transactional

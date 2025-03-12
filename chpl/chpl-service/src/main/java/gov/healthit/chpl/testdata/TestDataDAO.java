@@ -14,6 +14,12 @@ import jakarta.persistence.Query;
 @Repository("testDataDAO")
 public class TestDataDAO extends BaseDAOImpl {
 
+    public List<TestData> getAll() {
+        return getAllEntities().stream()
+                .map(entity -> entity.toDomainWithCriteria())
+                .toList();
+    }
+
     public List<TestData> getByCriterionId(Long criterionId) {
         Set<TestDataEntity> entities = getTestDataByCertificationCriteria(criterionId);
         return entities.stream()
@@ -48,6 +54,16 @@ public class TestDataDAO extends BaseDAOImpl {
             maps.add(dto);
         }
         return maps;
+    }
+
+    private List<TestDataEntity> getAllEntities() {
+        return entityManager.createQuery("SELECT DISTINCT td "
+                + "FROM TestDataEntity td "
+                + "LEFT JOIN FETCH td.criteria crit "
+                + "LEFT JOIN FETCH crit.certificationEdition "
+                + "LEFT JOIN FETCH crit.rule "
+                + "WHERE td.deleted <> true ", TestDataEntity.class)
+                .getResultList();
     }
 
     private Set<TestDataEntity> getTestDataByCertificationCriteria(Long criterionId) {

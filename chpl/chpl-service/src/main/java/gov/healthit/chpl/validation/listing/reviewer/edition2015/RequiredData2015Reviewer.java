@@ -108,8 +108,7 @@ public class RequiredData2015Reviewer extends PermissionBasedReviewer {
                                     Util.formatCriteriaNumber(cert.getCriterion()), TestData.DEFAULT_TEST_DATA));
                             TestData foundTestData = testDataDao.getByCriterionAndValue(cert.getCriterion().getId(),
                                     TestData.DEFAULT_TEST_DATA);
-                            TestData foundTestDataDomain = new TestData(foundTestData.getId(), foundTestData.getName());
-                            crTestData.setTestData(foundTestDataDomain);
+                            crTestData.setTestData(foundTestData);
                         } else if (crTestData.getTestData() != null && crTestData.getTestData().getId() == null
                                 && !StringUtils.isEmpty(crTestData.getTestData().getName())) {
                             TestData foundTestData = testDataDao.getByCriterionAndValue(cert.getCriterion().getId(),
