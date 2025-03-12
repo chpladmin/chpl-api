@@ -4,9 +4,6 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import jakarta.persistence.Query;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.csv.CSVFormat;
@@ -17,6 +14,7 @@ import org.springframework.stereotype.Repository;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
 import gov.healthit.chpl.domain.ListingUpload;
 import gov.healthit.chpl.exception.EntityRetrievalException;
+import jakarta.persistence.Query;
 import lombok.extern.log4j.Log4j2;
 
 @Repository("listingUploadDao")
@@ -69,9 +67,10 @@ public class ListingUploadDao extends BaseDAOImpl {
         }
     }
 
-    public void updateConfirmedListingId(Long listingUploadId, Long confirmedListingId) {
+    public void updateStatusAndConfirmedListingId(Long listingUploadId, ListingUploadStatus status, Long confirmedListingId) {
         ListingUploadEntity entity = entityManager.find(ListingUploadEntity.class, listingUploadId);
         if (entity != null) {
+            entity.setStatus(status);
             entity.setCertifiedProductId(confirmedListingId);
             update(entity);
         }
@@ -101,8 +100,7 @@ public class ListingUploadDao extends BaseDAOImpl {
         Query query = entityManager.createQuery(GET_ENTITY_HQL_BEGIN
                 + "WHERE ul.status NOT IN (:statuses) "
                 + "AND ul.deleted = false", ListingUploadEntity.class);
-        query.setParameter("statuses",
-                Stream.of(ListingUploadStatus.CONFIRMED, ListingUploadStatus.REJECTED).collect(Collectors.toList()));
+        query.setParameter("statuses", ListingUploadStatus.getFinalStatuses());
         List<ListingUploadEntity> entities = query.getResultList();
         List<ListingUpload> availableUploadedLisitngs = entities.stream()
                 .map(entity -> entity.toDomain())
