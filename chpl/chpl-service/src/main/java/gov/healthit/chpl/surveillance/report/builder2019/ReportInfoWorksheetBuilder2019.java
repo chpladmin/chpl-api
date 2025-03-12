@@ -26,10 +26,15 @@ public class ReportInfoWorksheetBuilder2019 extends ReportInfoWorksheetBuilder {
     }
 
     @Override
-    protected String getSurveillanceActivitiesAndOutcomesDescription() {
+    protected String getRandomizedSurveillanceActivitiesAndOutcomesDescription() {
         return "The ONC-ACB used the following selection method to make its "
                 + "random selection of certified Complete EHRs and certified Health IT "
                 + "Modules for surveillance initiated during the reporting period.";
+    }
+
+    @Override
+    protected String getReactiveSummaryTitle() {
+        return "Reactive Surveillance";
     }
 
     @Override
@@ -43,6 +48,18 @@ public class ReportInfoWorksheetBuilder2019 extends ReportInfoWorksheetBuilder {
     }
 
     @Override
+    protected String getPrioritizedCriteriaTitle() {
+        return "Prioritized Elements";
+    }
+
+    @Override
+    protected String getPrioritizedCriteriaDescription() {
+        return "The ONC-ACB undertook the following activities and implemented the following measures to "
+                + "evaluate and address the prioritized elements of surveillance referred to in Program "
+                + "Policy Resource #18-03 (October 5, 2018).";
+    }
+
+    @Override
     protected String getDisclosureSummaryTitle() {
         return "Transparency and Disclosure Requirements";
     }
@@ -53,12 +70,6 @@ public class ReportInfoWorksheetBuilder2019 extends ReportInfoWorksheetBuilder {
                 + "to ensure adherence by developers to transparency and disclosure requirements, as required of "
                 + "the ONC-ACB under 45 CFR § 170.523(k):";
     }
-
-    @Override
-    protected String getReactiveSummaryTitle() {
-        return "Reactive Surveillance";
-    }
-
 
     @Override
     protected int addExclusionAndExhaustionSection(SurveillanceReportWorkbookWrapper workbook,
@@ -89,5 +100,10 @@ public class ReportInfoWorksheetBuilder2019 extends ReportInfoWorksheetBuilder {
         //skip a row after the table
         currRow++;
         return currRow;
+    }
+
+    @Override
+    protected String getComplaintsReportingTitle() {
+        return "Complaints Reporting";
     }
 }
