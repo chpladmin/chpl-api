@@ -373,7 +373,7 @@ public class ListingCsvDataWriter {
             csvDataMatrix[0][col++] = "1";
             for (int i = 0; i < accStds.size(); i++) {
                 CertifiedProductAccessibilityStandard accStd = accStds.get(i);
-                csvDataMatrix[i][col++] = accStd.getAccessibilityStandardName();
+                csvDataMatrix[i][col] = accStd.getAccessibilityStandardName();
             }
         }
     }

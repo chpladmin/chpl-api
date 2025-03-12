@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import jakarta.persistence.Query;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -21,6 +19,7 @@ import gov.healthit.chpl.surveillance.report.entity.QuarterlyReportSurveillanceP
 import gov.healthit.chpl.surveillance.report.entity.SurveillanceOutcomeEntity;
 import gov.healthit.chpl.surveillance.report.entity.SurveillanceProcessTypeEntity;
 import gov.healthit.chpl.util.ChplProductNumberUtil;
+import jakarta.persistence.Query;
 import lombok.extern.log4j.Log4j2;
 
 @Repository("quarterlyReportSurveillanceMapDao")
@@ -167,6 +166,7 @@ public class PrivilegedSurveillanceDAO extends BaseDAOImpl {
         entity.setDirectionDeveloperResolution(toCreate.getDirectionDeveloperResolution());
         entity.setCompletedCapVerification(toCreate.getCompletedCapVerification());
         entity.setSurveillanceProcessTypeOther(toCreate.getSurveillanceProcessTypeOther());
+        entity.setSurveillanceFindings(toCreate.getSurveillanceFindings());
         entity.setDeleted(false);
         create(entity);
 
@@ -218,6 +218,7 @@ public class PrivilegedSurveillanceDAO extends BaseDAOImpl {
         entity.setDirectionDeveloperResolution(toUpdate.getDirectionDeveloperResolution());
         entity.setCompletedCapVerification(toUpdate.getCompletedCapVerification());
         entity.setSurveillanceProcessTypeOther(toUpdate.getSurveillanceProcessTypeOther());
+        entity.setSurveillanceFindings(toUpdate.getSurveillanceFindings());
         update(entity);
         updateSurveillanceProcessTypes(entity,
                 existing.getSurveillanceProcessTypes(),

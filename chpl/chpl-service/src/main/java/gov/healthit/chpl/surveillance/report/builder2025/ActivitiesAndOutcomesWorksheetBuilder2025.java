@@ -1,7 +1,4 @@
-package gov.healthit.chpl.surveillance.report.builder2021;
-
-import java.util.List;
-import java.util.stream.Stream;
+package gov.healthit.chpl.surveillance.report.builder2025;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -13,21 +10,14 @@ import gov.healthit.chpl.surveillance.report.SurveillanceReportManager;
 import gov.healthit.chpl.surveillance.report.builder.ActivitiesAndOutcomesWorksheetBuilder;
 
 @Component
-public class ActivitiesAndOutcomesWorksheetBuilder2021 extends ActivitiesAndOutcomesWorksheetBuilder {
+public class ActivitiesAndOutcomesWorksheetBuilder2025 extends ActivitiesAndOutcomesWorksheetBuilder {
 
     @Autowired
-    public ActivitiesAndOutcomesWorksheetBuilder2021(SurveillanceReportManager reportManager,
+    public ActivitiesAndOutcomesWorksheetBuilder2025(SurveillanceReportManager reportManager,
             CertifiedProductDetailsManager detailsManager,
             PrivilegedSurveillanceDAO privilegedSurvDao,
             ComplaintDAO complaintDao) {
         super(reportManager, detailsManager, privilegedSurvDao, complaintDao);
-    }
-
-    @Override
-    protected List<Integer> getHiddenColumnsIndices() {
-        return Stream.of(COL_SURV_ACTIVITY_TRACKER, COL_Q1, COL_Q2, COL_Q3, COL_Q4, COL_SURV_FINDINGS,
-                COL_NONCONFORMITY_NATURES, COL_SURV_STEPS, COL_ENGAGEMENT_STEPS, COL_ADDITIONAL_COSTS,
-                COL_LIMITATIONS_EVAL, COL_NONDISCLOSURE_EVAL, COL_DEV_RESOLUTION).toList();
     }
 
     @Override
@@ -40,7 +30,9 @@ public class ActivitiesAndOutcomesWorksheetBuilder2021 extends ActivitiesAndOutc
 
     @Override
     protected String getSurveillanceFindingsDescription() {
-        return "";
+        return "If the surveilled activity resulted in no non-conformity but the ONC-ACB surveilled prioritized elements, "
+                + "as identified by the ONC Certification Program, the ONC-ACB should use this field to report on any "
+                + "activity and findings related to that aspect of surveillance.";
     }
 
     @Override

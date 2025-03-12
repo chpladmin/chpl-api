@@ -34,6 +34,8 @@ public class SearchRequestNormalizer {
         normalizeRwtOptionsOperator(request);
         normalizeSvapIds(request);
         normalizeSvapOperator(request);
+        normalizeStanadrdIds(request);
+        normalizeStandardOperator(request);
         normalizeRiskManagementSummaryInformationOptions(request);
         normalizeOrderBy(request);
     }
@@ -266,6 +268,30 @@ public class SearchRequestNormalizer {
             try {
                 request.setSvapOperator(
                         SearchSetOperator.valueOf(request.getSvapOperatorString().toUpperCase().trim()));
+            } catch (Exception ignore) {
+                LOGGER.error(ignore);
+            }
+        }
+    }
+
+    private void normalizeStanadrdIds(SearchRequest request) {
+        if (request.getStandardIdStrings() != null && request.getStandardIdStrings().size() > 0
+                && (request.getStandardIds() == null || request.getStandardIds().size() == 0)) {
+            request.setStandardIds(request.getStandardIdStrings().stream()
+                    .filter(standardIdString -> !StringUtils.isBlank(standardIdString))
+                    .map(standardIdString -> standardIdString.trim())
+                    .filter(standardIdString -> isParseableLong(standardIdString))
+                    .map(standardIdString -> Long.parseLong(standardIdString))
+                    .collect(Collectors.toSet()));
+        }
+    }
+
+    private void normalizeStandardOperator(SearchRequest request) {
+        if (!StringUtils.isBlank(request.getStandardOperatorString())
+                && request.getStandardOperator() == null) {
+            try {
+                request.setStandardOperator(
+                        SearchSetOperator.valueOf(request.getStandardOperatorString().toUpperCase().trim()));
             } catch (Exception ignore) {
                 LOGGER.error(ignore);
             }

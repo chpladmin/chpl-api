@@ -213,11 +213,15 @@ public class QuarterlyReportDAO extends BaseDAOImpl {
         QuarterlyReportEntity toCreateEntity = QuarterlyReportEntity.builder()
                 .certificationBodyId(toCreate.getAcb().getId())
                 .year(toCreate.getYear())
-                .prioritizedElementSummary(toCreate.getPrioritizedElementSummary())
-                .quarterId(quarterDao.getByName(toCreate.getQuarter()).getId())
                 .activitiesOutcomesSummary(toCreate.getSurveillanceActivitiesAndOutcomes())
-                .reactiveSurveillanceSummary(toCreate.getReactiveSurveillanceSummary())
+                .appropriateUseOfMark(toCreate.getAppropriateUseOfMark())
+                .developerComplaintsLogReview(toCreate.getDeveloperComplaintsLogReview())
                 .disclosureRequirementsSummary(toCreate.getDisclosureRequirementsSummary())
+                .icsSurveillanceSummary(toCreate.getIcsSurveillanceSummary())
+                .prioritizedElementSummary(toCreate.getPrioritizedElementSummary())
+                .postCertificationPerformanceOfCertifiedCapabilities(toCreate.getPostCertificationPerformanceOfCertifiedCapabilities())
+                .quarterId(quarterDao.getByName(toCreate.getQuarter()).getId())
+                .reactiveSurveillanceSummary(toCreate.getReactiveSurveillanceSummary())
                 .build();
 
         super.create(toCreateEntity);
@@ -228,9 +232,13 @@ public class QuarterlyReportDAO extends BaseDAOImpl {
     public void update(QuarterlyReport toUpdate) throws EntityRetrievalException {
         QuarterlyReportEntity toUpdateEntity = getEntityById(toUpdate.getId());
         toUpdateEntity.setActivitiesOutcomesSummary(toUpdate.getSurveillanceActivitiesAndOutcomes());
-        toUpdateEntity.setPrioritizedElementSummary(toUpdate.getPrioritizedElementSummary());
-        toUpdateEntity.setReactiveSurveillanceSummary(toUpdate.getReactiveSurveillanceSummary());
+        toUpdateEntity.setAppropriateUseOfMark(toUpdate.getAppropriateUseOfMark());
+        toUpdateEntity.setDeveloperComplaintsLogReview(toUpdate.getDeveloperComplaintsLogReview());
         toUpdateEntity.setDisclosureRequirementsSummary(toUpdate.getDisclosureRequirementsSummary());
+        toUpdateEntity.setIcsSurveillanceSummary(toUpdate.getIcsSurveillanceSummary());
+        toUpdateEntity.setPrioritizedElementSummary(toUpdate.getPrioritizedElementSummary());
+        toUpdateEntity.setPostCertificationPerformanceOfCertifiedCapabilities(toUpdate.getPostCertificationPerformanceOfCertifiedCapabilities());
+        toUpdateEntity.setReactiveSurveillanceSummary(toUpdate.getReactiveSurveillanceSummary());
 
         super.update(toUpdateEntity);
     }

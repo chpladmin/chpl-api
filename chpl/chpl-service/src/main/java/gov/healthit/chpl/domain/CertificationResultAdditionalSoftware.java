@@ -101,7 +101,7 @@ public class CertificationResultAdditionalSoftware implements Serializable {
             } else if (!StringUtils.isEmpty(this.getName()) && !StringUtils.isEmpty(other.getName())
                     && this.getName().equalsIgnoreCase(other.getName())
                     && ((StringUtils.isEmpty(this.getVersion()) && StringUtils.isEmpty(other.getVersion()))
-                            || this.getVersion().equalsIgnoreCase(other.getVersion()))) {
+                            || StringUtils.equals(this.getVersion(), other.getVersion()))) {
                 result = true;
             }
         }

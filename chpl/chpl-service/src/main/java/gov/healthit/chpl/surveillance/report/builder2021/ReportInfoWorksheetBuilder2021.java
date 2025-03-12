@@ -1,13 +1,8 @@
 package gov.healthit.chpl.surveillance.report.builder2021;
 
-import java.util.List;
-
-import org.apache.poi.ss.usermodel.Sheet;
 import org.springframework.stereotype.Component;
 
 import gov.healthit.chpl.surveillance.report.builder.ReportInfoWorksheetBuilder;
-import gov.healthit.chpl.surveillance.report.builder.SurveillanceReportWorkbookWrapper;
-import gov.healthit.chpl.surveillance.report.domain.QuarterlyReport;
 import lombok.NoArgsConstructor;
 
 @Component
@@ -21,10 +16,15 @@ public class ReportInfoWorksheetBuilder2021 extends ReportInfoWorksheetBuilder {
     }
 
     @Override
-    protected String getSurveillanceActivitiesAndOutcomesDescription() {
+    protected String getRandomizedSurveillanceActivitiesAndOutcomesDescription() {
         return "The ONC-ACB used the following selection method to make its "
                 + "random selection of certified Health IT Modules for surveillance "
                 + "initiated during the reporting period.";
+    }
+
+    @Override
+    protected String getReactiveSummaryTitle() {
+        return "Reactive Surveillance Summary";
     }
 
     @Override
@@ -34,6 +34,18 @@ public class ReportInfoWorksheetBuilder2021 extends ReportInfoWorksheetBuilder {
                 + "measures to ensure that it was able to systematically obtain, synthesize and "
                 + "act on all facts and circumstances that would cause a reasonable person to "
                 + "question the ongoing compliance of any certified Health IT Module.";
+    }
+
+    @Override
+    protected String getPrioritizedCriteriaTitle() {
+        return "Prioritized Elements";
+    }
+
+    @Override
+    protected String getPrioritizedCriteriaDescription() {
+        return "The ONC-ACB undertook the following activities and implemented the following measures to "
+                + "evaluate and address the prioritized elements of surveillance referred to in Program "
+                + "Policy Resource #18-03 (October 5, 2018).";
     }
 
     @Override
@@ -49,13 +61,7 @@ public class ReportInfoWorksheetBuilder2021 extends ReportInfoWorksheetBuilder {
     }
 
     @Override
-    protected String getReactiveSummaryTitle() {
-        return "Reactive Surveillance Summary";
-    }
-
-    @Override
-    protected int addExclusionAndExhaustionSection(SurveillanceReportWorkbookWrapper workbook,
-            Sheet sheet, List<QuarterlyReport> reports, int beginRow) {
-        return beginRow;
+    protected String getComplaintsReportingTitle() {
+        return "Complaints Reporting";
     }
 }
