@@ -8,6 +8,8 @@ import gov.healthit.chpl.surveillance.report.builder2019.AnnualReportBuilder2019
 import gov.healthit.chpl.surveillance.report.builder2019.QuarterlyReportBuilder2019;
 import gov.healthit.chpl.surveillance.report.builder2021.AnnualReportBuilder2021;
 import gov.healthit.chpl.surveillance.report.builder2021.QuarterlyReportBuilder2021;
+import gov.healthit.chpl.surveillance.report.builder2025.AnnualReportBuilder2025;
+import gov.healthit.chpl.surveillance.report.builder2025.QuarterlyReportBuilder2025;
 import gov.healthit.chpl.surveillance.report.domain.AnnualReport;
 import gov.healthit.chpl.surveillance.report.domain.QuarterlyReport;
 
@@ -15,21 +17,31 @@ import gov.healthit.chpl.surveillance.report.domain.QuarterlyReport;
 public class ReportBuilderFactory {
     private static final int YEAR_2019 = 2019;
     private static final int YEAR_2020 = 2020;
+    private static final int YEAR_2021 = 2021;
+    private static final int YEAR_2022 = 2022;
+    private static final int YEAR_2023 = 2023;
+    private static final int YEAR_2024 = 2024;
 
     private AnnualReportBuilder2019 annualReportBuilder2019;
     private AnnualReportBuilder2021 annualReportBuilder2021;
+    private AnnualReportBuilder2025 annualReportBuilder2025;
     private QuarterlyReportBuilder2019 quarterlyReportBuilder2019;
     private QuarterlyReportBuilder2021 quarterlyReportBuilder2021;
+    private QuarterlyReportBuilder2025 quarterlyReportBuilder2025;
 
     @Autowired
     public ReportBuilderFactory(AnnualReportBuilder2019 annualReportBuilder2019,
             AnnualReportBuilder2021 annualReportBuilder2021,
+            AnnualReportBuilder2025 annualReportBuilder2025,
             QuarterlyReportBuilder2019 quarterlyReportBuilder2019,
-            QuarterlyReportBuilder2021 quarterlyReportBuilder2021) {
+            QuarterlyReportBuilder2021 quarterlyReportBuilder2021,
+            QuarterlyReportBuilder2025 quarterlyReportBuilder2025) {
         this.annualReportBuilder2019 = annualReportBuilder2019;
         this.annualReportBuilder2021 = annualReportBuilder2021;
+        this.annualReportBuilder2025 = annualReportBuilder2025;
         this.quarterlyReportBuilder2019 = quarterlyReportBuilder2019;
         this.quarterlyReportBuilder2021 = quarterlyReportBuilder2021;
+        this.quarterlyReportBuilder2025 = quarterlyReportBuilder2025;
     }
 
     public QuarterlyReportBuilderXlsx getReportBuilder(QuarterlyReport quarterlyReport)
@@ -42,8 +54,13 @@ public class ReportBuilderFactory {
             case YEAR_2019:
             case YEAR_2020:
                 return quarterlyReportBuilder2019;
-            default:
+            case YEAR_2021:
+            case YEAR_2022:
+            case YEAR_2023:
+            case YEAR_2024:
                 return quarterlyReportBuilder2021;
+            default:
+                return quarterlyReportBuilder2025;
         }
     }
 
@@ -57,8 +74,13 @@ public class ReportBuilderFactory {
                 case YEAR_2019:
                 case YEAR_2020:
                     return annualReportBuilder2019;
-                default:
+                case YEAR_2021:
+                case YEAR_2022:
+                case YEAR_2023:
+                case YEAR_2024:
                     return annualReportBuilder2021;
+                default:
+                    return annualReportBuilder2025;
             }
         }
 }

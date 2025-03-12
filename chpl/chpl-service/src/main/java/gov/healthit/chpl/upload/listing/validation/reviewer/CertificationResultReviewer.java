@@ -44,7 +44,7 @@ public class CertificationResultReviewer {
     public CertificationResultReviewer(@Qualifier("listingUploadUnavailableCriteriaReviewer") UnavailableCriteriaReviewer unavailableCriteriaReviewer,
             @Qualifier("listingUploadCriteriaReviewer") CriteriaReviewer criteriaReviewer,
             @Qualifier("listingUploadPrivacyAndSecurityFrameworkReviewer") PrivacyAndSecurityFrameworkReviewer privacyAndSecurityFrameworkReviewer,
-            @Qualifier("listingUploadAdditionalSoftwareFrameworkReviewer") AdditionalSoftwareReviewer additionalSoftwareReviewer,
+            @Qualifier("listingUploadAdditionalSoftwareReviewer") AdditionalSoftwareReviewer additionalSoftwareReviewer,
             @Qualifier("gapAllowedReviewer") GapAllowedReviewer gapAllowedReviewer,
             @Qualifier("listingUploadTestToolReviewer") TestToolReviewer testToolReviewer,
             @Qualifier("listingUploadTestDataReviewer") TestDataReviewer testDataReviewer,
