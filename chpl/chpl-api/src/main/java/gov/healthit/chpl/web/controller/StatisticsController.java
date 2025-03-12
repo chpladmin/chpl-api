@@ -4,13 +4,17 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterion;
+import gov.healthit.chpl.manager.StatisticsManager;
 import gov.healthit.chpl.util.SwaggerSecurityRequirement;
 import gov.healthit.chpl.web.controller.annotation.DeprecatedApi;
+import gov.healthit.chpl.web.controller.results.CriterionProductStatisticsResult;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -21,6 +25,30 @@ import lombok.Data;
 @RestController
 @RequestMapping("/statistics")
 public class StatisticsController {
+    private StatisticsManager statisticsManager;
+
+    @Autowired
+    public StatisticsController(StatisticsManager statisticsManager) {
+        this.statisticsManager = statisticsManager;
+    }
+
+    @Deprecated
+    @DeprecatedApi(friendlyUrl = "/statistics/criterion_product",
+            message = "This endpoint is deprecated and will be removed in a future release. Please use /report-data/criterion-product as a replacement.",
+            removalDate = "2025-09-01")
+    @Operation(summary = "Get count of Criteria certified to by unique Product.",
+        description = "Retrieves and returns the Criterion/Product counts.",
+        security = {
+                @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY)
+        })
+    @RequestMapping(value = "/criterion_product", method = RequestMethod.GET,
+        produces = "application/json; charset=utf-8")
+    public @ResponseBody CriterionProductStatisticsResult getCriterionProductStatistics() {
+        CriterionProductStatisticsResult response = new CriterionProductStatisticsResult();
+        response.setCriterionProductStatisticsResult(statisticsManager.getCriterionProductStatisticsResult());
+        return response;
+    }
+
 
     @Deprecated
     @DeprecatedApi(friendlyUrl = "/statistics/nonconformity_criteria_count",
