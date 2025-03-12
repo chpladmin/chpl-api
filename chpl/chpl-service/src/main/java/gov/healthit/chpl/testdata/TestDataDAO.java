@@ -1,43 +1,36 @@
-package gov.healthit.chpl.dao;
+package gov.healthit.chpl.testdata;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import jakarta.persistence.Query;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
-import gov.healthit.chpl.dto.TestDataCriteriaMapDTO;
-import gov.healthit.chpl.dto.TestDataDTO;
-import gov.healthit.chpl.entity.TestDataCriteriaMapEntity;
-import gov.healthit.chpl.entity.TestDataEntity;
+import jakarta.persistence.Query;
 
 @Repository("testDataDAO")
 public class TestDataDAO extends BaseDAOImpl {
 
-    public List<TestDataDTO> getByCriterionId(Long criterionId) {
+    public List<TestData> getByCriterionId(Long criterionId) {
         Set<TestDataEntity> entities = getTestDataByCertificationCriteria(criterionId);
-        List<TestDataDTO> dtos = new ArrayList<TestDataDTO>();
-
-        for (TestDataEntity entity : entities) {
-            TestDataDTO dto = new TestDataDTO(entity);
-            dtos.add(dto);
-        }
-        return dtos;
+        return entities.stream()
+                .map(entity -> entity.toDomain())
+                .collect(Collectors.toList());
     }
 
-    public TestDataDTO getByCriterionAndValue(Long criterionId, String value) {
+    public TestData getByCriterionAndValue(Long criterionId, String value) {
         TestDataEntity entity = getTestDataByCertificationCriteriaAndValue(criterionId, value);
         if (entity == null) {
             return null;
         }
-        return new TestDataDTO(entity);
+        return entity.toDomain();
     }
 
-    public List<TestDataCriteriaMapDTO> findAllWithMappedCriteria() {
+    @Deprecated
+    public List<TestDataCriteriaMap> findAllWithMappedCriteria() {
         List<TestDataCriteriaMapEntity> entities =
                 entityManager.createQuery("SELECT tdMap "
                         + "FROM TestDataCriteriaMapEntity tdMap "
@@ -48,13 +41,13 @@ public class TestDataDAO extends BaseDAOImpl {
                         + "WHERE tdMap.deleted <> true "
                         + "AND td.deleted <> true ",
                         TestDataCriteriaMapEntity.class).getResultList();
-        List<TestDataCriteriaMapDTO> dtos = new ArrayList<TestDataCriteriaMapDTO>();
+        List<TestDataCriteriaMap> maps = new ArrayList<TestDataCriteriaMap>();
 
         for (TestDataCriteriaMapEntity entity : entities) {
-            TestDataCriteriaMapDTO dto = new TestDataCriteriaMapDTO(entity);
-            dtos.add(dto);
+            TestDataCriteriaMap dto = new TestDataCriteriaMap(entity);
+            maps.add(dto);
         }
-        return dtos;
+        return maps;
     }
 
     private Set<TestDataEntity> getTestDataByCertificationCriteria(Long criterionId) {

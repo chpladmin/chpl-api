@@ -1,6 +1,6 @@
-package gov.healthit.chpl.entity;
+package gov.healthit.chpl.testdata;
 
-import gov.healthit.chpl.domain.TestData;
+import gov.healthit.chpl.entity.EntityAudit;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

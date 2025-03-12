@@ -1,4 +1,4 @@
-package gov.healthit.chpl.domain;
+package gov.healthit.chpl.testdata;
 
 import java.io.Serializable;
 
@@ -16,6 +16,8 @@ import lombok.NoArgsConstructor;
 @Builder
 public class TestData implements Serializable {
     private static final long serialVersionUID = -3763885258251736516L;
+    public static final String DEFAULT_TEST_DATA = "ONC Test Method";
+
     private Long id;
     private String name;
 }

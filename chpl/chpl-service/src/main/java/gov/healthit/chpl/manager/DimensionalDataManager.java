@@ -23,7 +23,6 @@ import gov.healthit.chpl.dao.DeveloperStatusDAO;
 import gov.healthit.chpl.dao.EducationTypeDAO;
 import gov.healthit.chpl.dao.ProductDAO;
 import gov.healthit.chpl.dao.TargetedUserDAO;
-import gov.healthit.chpl.dao.TestDataDAO;
 import gov.healthit.chpl.dao.TestProcedureDAO;
 import gov.healthit.chpl.dao.TestStandardDAO;
 import gov.healthit.chpl.domain.CertificationBody;
@@ -46,13 +45,14 @@ import gov.healthit.chpl.domain.surveillance.RequirementType;
 import gov.healthit.chpl.domain.surveillance.SurveillanceResultType;
 import gov.healthit.chpl.domain.surveillance.SurveillanceType;
 import gov.healthit.chpl.dto.TargetedUserDTO;
-import gov.healthit.chpl.dto.TestDataCriteriaMapDTO;
 import gov.healthit.chpl.dto.TestProcedureCriteriaMapDTO;
 import gov.healthit.chpl.exception.EntityRetrievalException;
 import gov.healthit.chpl.listing.measure.ListingMeasureDAO;
 import gov.healthit.chpl.listing.measure.MeasureDAO;
 import gov.healthit.chpl.surveillance.report.QuarterDAO;
 import gov.healthit.chpl.surveillance.report.domain.Quarter;
+import gov.healthit.chpl.testdata.TestDataCriteriaMap;
+import gov.healthit.chpl.testdata.TestDataDAO;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
@@ -257,15 +257,16 @@ public class DimensionalDataManager {
         return testProcedures;
     }
 
+    @Deprecated
     @Transactional
     @Cacheable(value = CacheNames.TEST_DATA)
     public Set<CriteriaSpecificDescriptiveModel> getTestData() {
         LOGGER.debug("Getting all test data from the database (not cached).");
 
-        List<TestDataCriteriaMapDTO> testDataDtos = testDataDao.findAllWithMappedCriteria();
+        List<TestDataCriteriaMap> testDataDtos = testDataDao.findAllWithMappedCriteria();
         Set<CriteriaSpecificDescriptiveModel> testData = new HashSet<CriteriaSpecificDescriptiveModel>();
 
-        for (TestDataCriteriaMapDTO dto : testDataDtos) {
+        for (TestDataCriteriaMap dto : testDataDtos) {
             testData.add(new CriteriaSpecificDescriptiveModel(
                     dto.getTestDataId(), dto.getTestData().getName(), null,
                     null, dto.getCriteria()));

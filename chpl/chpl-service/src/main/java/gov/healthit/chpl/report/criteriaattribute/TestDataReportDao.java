@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository;
 
 import gov.healthit.chpl.certificationCriteria.CertificationCriterionEntity;
 import gov.healthit.chpl.dao.impl.BaseDAOImpl;
-import gov.healthit.chpl.entity.TestDataEntity;
+import gov.healthit.chpl.testdata.TestDataEntity;
 import jakarta.persistence.Query;
 
 @Repository
