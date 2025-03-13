@@ -15,6 +15,6 @@ public enum ListingUploadStatus {
     }
 
     public boolean isFinalStatus() {
-        return !getFinalStatuses().contains(this);
+        return getFinalStatuses().contains(this);
     }
 }
