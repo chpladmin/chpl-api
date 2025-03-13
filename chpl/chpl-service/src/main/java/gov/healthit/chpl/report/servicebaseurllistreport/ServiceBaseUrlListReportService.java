@@ -49,6 +49,10 @@ public class ServiceBaseUrlListReportService {
     }
 
     private List<IdNamePair> getAssocatedAcbs(UrlUptimeMonitor monitor) {
+        if (monitor.getDelimitedAcbIds() == null || monitor.getDelimitedAcbIds().equals("")) {
+            return List.of();
+        }
+
         return Arrays.asList(monitor.getDelimitedAcbIds().split(",")).stream()
                 .map(acbId -> Long.parseLong(acbId))
                 .map(acbId -> {
