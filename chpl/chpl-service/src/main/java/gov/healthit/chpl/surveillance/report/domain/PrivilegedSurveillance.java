@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import gov.healthit.chpl.api.deprecatedUsage.DeprecatedResponseField;
 import gov.healthit.chpl.domain.surveillance.SurveillanceBasic;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -33,6 +34,11 @@ public class PrivilegedSurveillance extends SurveillanceBasic {
     private String surveillanceGroundsForInitiatingOther;
     private String surveillanceFindings;
     private Boolean k1Reviewed;
+
+    @Deprecated
+    @DeprecatedResponseField(message = "Please use surveillanceGroundsForInitiating and surveillanceGroundsForInitiatingOther.",
+        removalDate = "2025-10-01")
+    private String groundsForInitiating;
     private String nonconformityCauses;
     private String nonconformityNature;
     private String stepsToSurveil;

@@ -38,6 +38,7 @@ import gov.healthit.chpl.surveillance.report.domain.PrivilegedSurveillance;
 import gov.healthit.chpl.surveillance.report.domain.Quarter;
 import gov.healthit.chpl.surveillance.report.domain.QuarterlyReport;
 import gov.healthit.chpl.surveillance.report.domain.RelevantListing;
+import gov.healthit.chpl.surveillance.report.domain.SurveillanceGroundsForInitiating;
 import gov.healthit.chpl.surveillance.report.domain.SurveillanceOutcome;
 import gov.healthit.chpl.surveillance.report.domain.SurveillanceProcessType;
 import gov.healthit.chpl.util.AuthUtil;
@@ -99,6 +100,21 @@ public class SurveillanceReportManager extends SecuredManager {
             currProcessType.setId(pt.getId());
             currProcessType.setName(pt.getName());
             result.add(currProcessType);
+        }
+        return result;
+    }
+
+    @Transactional
+    @PreAuthorize("@permissions.hasAccess(T(gov.healthit.chpl.permissions.Permissions).SURVEILLANCE_REPORT, "
+            + "T(gov.healthit.chpl.permissions.domains.SurveillanceReportDomainPermissions).GET_QUARTERLY)")
+    public Set<KeyValueModel> getSurveillanceGroundsForInitiating() {
+        List<SurveillanceGroundsForInitiating> grounds = quarterlySurvMapDao.getSurveillanceGroundsForInitiating();
+        Set<KeyValueModel> result = new HashSet<KeyValueModel>();
+        for (SurveillanceGroundsForInitiating ground : grounds) {
+            KeyValueModel currGround = new KeyValueModel();
+            currGround.setId(ground.getId());
+            currGround.setName(ground.getName());
+            result.add(currGround);
         }
         return result;
     }

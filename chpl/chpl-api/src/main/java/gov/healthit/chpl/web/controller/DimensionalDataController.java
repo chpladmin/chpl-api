@@ -92,6 +92,19 @@ public class DimensionalDataController {
         return survReportManager.getSurveillanceOutcomes();
     }
 
+    @Operation(summary = "Get a list of options for grounds for initiating surveillance.",
+            description = "Security Restrictions: ROLE_ADMIN, ROLE_ONC, or ROLE_ACB.",
+            security = {
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.API_KEY),
+                    @SecurityRequirement(name = SwaggerSecurityRequirement.BEARER)
+            })
+    @RequestMapping(value = "/surveillance-grounds-for-initiating", method = RequestMethod.GET,
+            produces = "application/json; charset=utf-8")
+    @CacheControl(policy = CachePolicy.PUBLIC, maxAge = CacheMaxAge.TWELVE_HOURS)
+    public @ResponseBody Set<KeyValueModel> getSurveillanceGroundsForInitiating() {
+        return survReportManager.getSurveillanceGroundsForInitiating();
+    }
+
     @Operation(summary = "Get all possible classifications in the CHPL",
             description = "This is useful for knowing what values one might possibly search for.",
             security = {
