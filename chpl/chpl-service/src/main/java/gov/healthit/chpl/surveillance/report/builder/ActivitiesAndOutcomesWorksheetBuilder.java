@@ -192,7 +192,7 @@ public abstract class ActivitiesAndOutcomesWorksheetBuilder {
         sheet.setColumnWidth(COL_SUSPENDED, workbook.getColumnWidth(17.78));
         sheet.setColumnWidth(COL_SURV_PROCESS_TYPE, workbook.getColumnWidth(30.67));
         sheet.setColumnWidth(COL_SURV_PROCESS_TYPE_OTHER, workbook.getColumnWidth(30.67));
-        sheet.setColumnWidth(COL_SURV_GROUNDS, workbook.getColumnWidth(30.67));
+        sheet.setColumnWidth(COL_SURV_GROUNDS, longTextColWidth);
         sheet.setColumnWidth(COL_SURV_GROUNDS_OTHER, workbook.getColumnWidth(30.67));
         sheet.setColumnWidth(COL_SURV_FINDINGS, longTextColWidth);
         sheet.setColumnWidth(COL_NONCONFORMITY_CAUSES, longTextColWidth);
